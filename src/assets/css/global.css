@@ -1,0 +1,15 @@
+@import 'reset.css';
+@import 'font.css';
+html,
+body {
+  height: 100%;
+}
+#app-container,
+.appPage {
+  height: 100%;
+}
+/* 版心 */
+.w {
+  width: 1200px;
+  margin: 0 auto;
+}
