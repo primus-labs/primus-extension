@@ -9,3 +9,17 @@ Module['onRuntimeInitialized'] = () => {
 };
 console.log('This is the background page.');
 console.log('Put the background scripts here.');
+chrome.runtime.onInstalled.addListener(({ reason, version }) => {
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    showIndex();
+  }
+});
+
+chrome.action.onClicked.addListener((tab) => {
+  showIndex();
+});
+
+const showIndex = (info, tab)=> {
+  let url = chrome.runtime.getURL("home.html");
+  chrome.tabs.create({ url });
+}

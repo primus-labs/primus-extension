@@ -11,7 +11,9 @@ var ReactRefreshTypeScript = require('react-refresh-typescript');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
-var alias = {};
+var alias = {
+  "@": path.resolve(__dirname, "./src"),
+};
 
 // load the secrets
 var secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
@@ -38,7 +40,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 var options = {
   mode: process.env.NODE_ENV || 'development',
   entry: {
-    popup: path.join(__dirname, 'src', 'pages', 'Popup', 'index.jsx'),
+    home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
     contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.js'),
   },
@@ -56,6 +58,19 @@ var options = {
       {
         // look for .css or .scss files
         test: /\.(css|scss)$/,
+        // in the `src` directory
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          }
+        ],
+      },
+      {
+        // look for .css or .scss files
+        test: /\.s[ac]ss$/,
         // in the `src` directory
         use: [
           {
@@ -181,9 +196,9 @@ var options = {
       ],
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src', 'pages', 'Popup', 'index.html'),
-      filename: 'popup.html',
-      chunks: ['popup'],
+      template: path.join(__dirname, 'src', 'pages', 'Home', 'index.html'),
+      filename: 'home.html',
+      chunks: ['home'],
       cache: false,
     }),
   ].filter(Boolean),
