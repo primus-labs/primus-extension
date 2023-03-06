@@ -11,9 +11,8 @@ import BackgroundAnimation from '@/components/BackgroundAnimation'
 
 import illustration from '@/assets/img/illustration.svg';
 import rightArrow from '@/assets/img/rightArrow.svg';
-
 import './Home.sass';
-
+// import "../../../utils/mouseTail.js"
 const Home = () => {
   const [maskVisible, setMaskVisible] = useState(false)
   const [step, setStep] = useState(0)
