@@ -1,26 +1,46 @@
-
-@keyframes layer1Animation
-  0%, 100%
-    top: -74px
-  50%
-    top: 74px
-@keyframes layer2Animation
-  0%, 100%
-    bottom: -392px
-  50%
-    bottom: 392px
-@keyframes layer3Animation
-  0%,100%
-    left: -159px
-  50%
-    left: 1126px
-@keyframes layer4Animation
-  0%,100%
-    right: -159px
-  50%
-    right: 1126px
+$circleRadiusSmall: 250px
+$circleDiameterSmall: $circleRadiusSmall*2
+$circleRadiusMedium: $circleRadiusSmall*2
+$circleDiameterMedium: $circleRadiusMedium*2
+$circleRadiusLarge: $circleDiameterMedium
+$circleDiameterLarge: $circleRadiusLarge*2
+$minBlur: 210px
+$maxBlur: 310px
+@mixin filterBlur($blur)
+  filter: blur($blur)
 @mixin shapeAnimation($animationName)
-  animation: $animationName 10s ease 0s infinite
+  animation: $animationName 10s linear 0s infinite
+$test: prod
+.centerImg
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  margin: auto
+@keyframes layer1Animation
+  from
+    transform: rotateZ(0) translateX($circleRadiusSmall) rotateZ(0) rotateY(-75deg)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusSmall) rotateZ(-360deg) rotateY(-75deg)
+
+@keyframes layer2Animation
+  from
+    transform: rotateZ(0) translateX($circleRadiusMedium) rotateZ(0)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusMedium) rotateZ(-360deg)
+
+@keyframes layer3Animation
+  from
+    transform: rotateZ(0) translateX($circleRadiusSmall) rotateZ(0)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusSmall) rotateZ(-360deg)
+
+@keyframes layer4Animation
+  from
+    transform: rotateZ(0) translateX($circleRadiusLarge) rotateZ(0) rotateY(-75deg)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
 
 .bgAnimation
   position: absolute
@@ -30,48 +50,83 @@
   display: flex
   justify-content: center
   align-items: center
-  // &:before
-  //   position: absolute
-  //   content: ""
-  //   width: 100%
-  //   height: 100%
-  //   z-index: 5
-  //   background: rgba(255, 255, 255, 0.6)
-  //   backdrop-filter: blur(16px)
-  .layer1
+  @if ($test == prod)
+    &:before
+      position: absolute
+      content: ""
+      width: 100%
+      height: 100%
+      z-index: 5
+      background: rgba(255, 255, 255, 0.6)
+      backdrop-filter: blur(16px)
+  .layer1,.layer2,.layer3,.layer4
     position: absolute
+    border-radius: 50%
+    transform-style: preserve-3d
+    @if($test == test)
+      border: 3px solid transparent
+    img
+      @extend .centerImg
+  .layer1
     z-index: 1
     top: -74px
     right: 98px
-    width: 769px
-    height: 761px
-    // filter: blur(310px)
-    @include shapeAnimation(layer1Animation)
+    width: $circleDiameterSmall
+    height: $circleDiameterSmall
+    transform: rotateZ(60deg) rotateY(75deg)
+    @if($test == test)
+      border-color: cyan
+    img
+      @if($test == prod)
+        @include filterBlur($maxBlur)
+      @include shapeAnimation(layer1Animation)
+      width: 769px
+      height: 761px
   .layer2
-    position: absolute
     z-index: 2
     bottom: -392px
     left: 130px
-    width: 1722px
-    height: 1204px
-    // filter: blur(210px)
-    @include shapeAnimation(layer2Animation)
+    width: $circleDiameterMedium
+    height: $circleDiameterMedium
+    @if($test == test)
+      border-color: yellow
+    // transform: rotateZ(60deg) rotateY(75deg)
+    img
+      width: 1722px
+      height: 1204px
+      @if($test == prod)
+        @include filterBlur($minBlur)
+      @include shapeAnimation(layer2Animation)
+      animation: layer2Animation 20s linear 0s infinite
   .layer3
-    position: absolute
     z-index: 3
-    top: 164px
+    top: 164p
     left: -159px
-    width: 569px
-    height: 1065px
-    // filter: blur(310px)
-    @include shapeAnimation(layer3Animation)
+    width: $circleDiameterSmall
+    height: $circleDiameterSmall
+    @if($test == test)
+      border-color: yellowgreen
+    // transform: rotateZ(60deg) rotateY(75deg)
+    img
+      width: 569px
+      height: 1065px
+      @if($test == prod)
+        @include filterBlur($minBlur)
+      @include shapeAnimation(layer3Animation)
   .layer4
-    position: absolute
     z-index: 4
-    top: 101px
-    right: 1126px
-    width: 445px
-    height: 867px
-    // filter: blur(210px)
-    transform: rotate(-13.27deg)
-    @include shapeAnimation(layer4Animation)
+    top: -500px
+    left: -159px
+    width: $circleDiameterLarge
+    height: $circleDiameterLarge
+
+    @if($test == test)
+      border-color: skyblue
+      transform: rotateZ(60deg) rotateY(75deg)
+    img
+      width: 445px
+      height: 867px
+      @if($test == prod)
+        @include filterBlur($minBlur)
+      // transform: rotate(-13.27deg)
+      @include shapeAnimation(layer4Animation)

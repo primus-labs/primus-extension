@@ -62,6 +62,9 @@ const Home = () => {
       {step === 1 && <AuthDialog onSubmit={handleSubmitAuth}/>}
       {step === 2 && <CreateAccountDialog onSubmit={handleSubmitCreateAccount}/>}
       {step === 3 && <SetPwdDialog onSubmit={handleSubmitSetPwd}/>}
+      <div class="ellips">
+        <div class="dot"></div>
+      </div>
     </div>
   );
 };

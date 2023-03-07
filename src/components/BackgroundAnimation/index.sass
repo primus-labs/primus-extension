@@ -1,6 +1,6 @@
 $circleRadiusSmall: 250px
 $circleDiameterSmall: $circleRadiusSmall*2
-$circleRadiusMedium: $circleDiameterSmall
+$circleRadiusMedium: $circleRadiusSmall*3
 $circleDiameterMedium: $circleRadiusMedium*2
 $circleRadiusLarge: $circleDiameterMedium
 $circleDiameterLarge: $circleRadiusLarge*2
@@ -9,7 +9,8 @@ $maxBlur: 310px
 @mixin filterBlur($blur)
   filter: blur($blur)
 @mixin shapeAnimation($animationName)
-  animation: $animationName 10s ease 0s infinite
+  animation: $animationName 10s linear 0s infinite
+$test: prod
 .centerImg
   position: absolute
   top: 0
@@ -49,19 +50,22 @@ $maxBlur: 310px
   display: flex
   justify-content: center
   align-items: center
-  &:before
-    position: absolute
-    content: ""
-    width: 100%
-    height: 100%
-    z-index: 5
-    background: rgba(255, 255, 255, 0.6)
-    backdrop-filter: blur(16px)
+  @if ($test == prod)
+    &:before
+      position: absolute
+      content: ""
+      width: 100%
+      height: 100%
+      z-index: 5
+      background: rgba(255, 255, 255, 0.6)
+      backdrop-filter: blur(16px)
   .layer1,.layer2,.layer3,.layer4
     position: absolute
     border-radius: 50%
-    border: 3px solid transparent !important
+
     transform-style: preserve-3d
+    @if($test == test)
+      border: 3px solid transparent
     img
       @extend .centerImg
   .layer1
@@ -70,38 +74,47 @@ $maxBlur: 310px
     right: 98px
     width: $circleDiameterSmall
     height: $circleDiameterSmall
-    border-color: cyan
     transform: rotateZ(60deg) rotateY(75deg)
+    @if($test == test)
+      border-color: cyan
     img
-      @include filterBlur($maxBlur)
+      @if($test == prod)
+        @include filterBlur($maxBlur)
       @include shapeAnimation(layer1Animation)
       width: 769px
       height: 761px
+      animation: layer1Animation 10s linear 3s infinite
   .layer2
     z-index: 2
     bottom: -392px
     left: 130px
     width: $circleDiameterMedium
     height: $circleDiameterMedium
-    border-color: yellow
+    @if($test == test)
+      border-color: yellow
     // transform: rotateZ(60deg) rotateY(75deg)
     img
       width: 1722px
       height: 1204px
-      @include filterBlur($minBlur)
+      @if($test == prod)
+        @include filterBlur($minBlur)
       @include shapeAnimation(layer2Animation)
+      // animation: layer2Animation 20s linear 0s infinite
+      animation: layer2Animation 20s linear 5s infinite
   .layer3
     z-index: 3
-    top: 164px
+    top: 164p
     left: -159px
     width: $circleDiameterSmall
     height: $circleDiameterSmall
-    border-color: yellowgreen
+    @if($test == test)
+      border-color: yellowgreen
     // transform: rotateZ(60deg) rotateY(75deg)
     img
       width: 569px
       height: 1065px
-      @include filterBlur($maxBlur)
+      @if($test == prod)
+        @include filterBlur($minBlur)
       @include shapeAnimation(layer3Animation)
   .layer4
     z-index: 4
@@ -109,11 +122,15 @@ $maxBlur: 310px
     left: -159px
     width: $circleDiameterLarge
     height: $circleDiameterLarge
-    border-color: skyblue
-    transform: rotateZ(60deg) rotateY(75deg)
+
+    @if($test == test)
+      border-color: skyblue
+      transform: rotateZ(60deg) rotateY(75deg)
     img
       width: 445px
       height: 867px
-      @include filterBlur($minBlur)
+      @if($test == prod)
+        @include filterBlur($minBlur)
       // transform: rotate(-13.27deg)
       @include shapeAnimation(layer4Animation)
+      animation: layer4Animation 20s linear 5s infinite

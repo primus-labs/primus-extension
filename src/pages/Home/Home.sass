@@ -56,21 +56,34 @@ $headerHeight: 106px
             line-height: 29px
             color: #000000
 
-// @keyframes bgShapeAnimation1
-//   0%
-//     transform: rotate(0deg)
+$a: 160px // 椭圆x轴半径(长半径)
+$b: 80px // 椭圆y轴半径(短半径)
+$s: 40 // 坐标点的数目(数目越大，动画越精细)
 
-//   50%
-//     transform: rotate(180deg)
+// .ellips
+//   width: $a*2
+//   height: $b*2
+//   border-radius: 100%
+//   border: 1px solid #333
+//   position: relative
+//   margin: 30px 0 0 20px
 
-//   100%
-//     transform: rotate(360deg)
-// @keyframes bgShapeAnimation2
-//   0%
-//     height: 700px
+// .dot
+//   width: 20px
+//   height: 20px
+//   left: $a - 10px
+//   top: $b - 10px
+//   background: red
+//   border-radius: 100%
+//   position: absolute
+//   animation: move 10s linear infinite
 
-//   50%
-//     height: 1000px
+// @function loop($index)
+//   @while ($index < $s+1)
+//     loop($index + 1)
+//     $keyframeSel: $index * 100%/$s
+//     #{$keyframeSel}
+//       transform: translate($a*cos(360deg/$s*$index),$b*sin(360deg/$s*$index),)
 
-//   100%
-//     height: 700px
+// @keyframes move
+//   loop(0)

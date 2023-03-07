@@ -57,7 +57,7 @@ var options = {
     rules: [
       {
         // look for .css or .scss files
-        test: /\.(css|scss)$/,
+        test: /\.css$/,
         // in the `src` directory
         use: [
           {
@@ -84,6 +84,20 @@ var options = {
             options: {
               sourceMap: true,
             },
+          },
+        ],
+      },
+      {
+        test: /\.less$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'less-loader',
           },
         ],
       },
