@@ -2,7 +2,7 @@ $circleRadiusSmall: 1.3021rem
 $circleDiameterSmall: $circleRadiusSmall*2
 $circleRadiusMedium: $circleRadiusSmall*3
 $circleDiameterMedium: $circleRadiusMedium*2
-$circleRadiusLarge: $circleRadiusSmall*4
+$circleRadiusLarge: $circleDiameterMedium
 $circleDiameterLarge: $circleRadiusLarge*2
 $minBlur: 1.0938rem
 $maxBlur: 1.6146rem
@@ -37,14 +37,10 @@ $test: prod
     transform: rotateZ(360deg) translateX($circleRadiusSmall) rotateZ(-360deg)
 
 @keyframes layer4Animation
-  // from
-  //   transform: rotateZ(0) translateX($circleRadiusLarge) rotateZ(0) rotateY(-75deg)
-  // to
-  //   transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
   from
-    transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
-  to
     transform: rotateZ(0) translateX($circleRadiusLarge) rotateZ(0) rotateY(-75deg)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
 
 .bgAnimation
   position: absolute
@@ -78,7 +74,7 @@ $test: prod
     right: .5104rem
     width: $circleDiameterSmall
     height: $circleDiameterSmall
-    transform: rotateZ(-60deg) rotateY(75deg)
+    transform: rotateZ(60deg) rotateY(75deg)
     @if($test == test)
       border-color: cyan
     img
@@ -87,10 +83,10 @@ $test: prod
       @include shapeAnimation(layer1Animation)
       width: 4.0052rem
       height: 3.9635rem
-      animation: layer1Animation 20s linear 3s infinite
+      animation: layer1Animation 10s linear 3s infinite
   .layer2
     z-index: 2
-    top: .6979rem
+    bottom: -2.0417rem
     left: .6771rem
     width: $circleDiameterMedium
     height: $circleDiameterMedium
@@ -126,10 +122,10 @@ $test: prod
     left: -0.8281rem
     width: $circleDiameterLarge
     height: $circleDiameterLarge
-    transform: rotateZ(60deg) rotateY(75deg)
+
     @if($test == test)
       border-color: skyblue
-
+      transform: rotateZ(60deg) rotateY(75deg)
     img
       width: 2.3177rem
       height: 4.5156rem

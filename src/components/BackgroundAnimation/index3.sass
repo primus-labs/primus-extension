@@ -20,9 +20,9 @@ $test: prod
   margin: auto
 @keyframes layer1Animation
   from
-    transform: rotateZ(0) translateX($circleRadiusSmall) rotateZ(0) rotateY(-75deg)
+    transform: rotateZ(0) translateX($circleRadiusMedium) rotateZ(0) rotateY(-75deg)
   to
-    transform: rotateZ(360deg) translateX($circleRadiusSmall) rotateZ(-360deg) rotateY(-75deg)
+    transform: rotateZ(360deg) translateX($circleRadiusMedium) rotateZ(-360deg) rotateY(-75deg)
 
 @keyframes layer2Animation
   from
@@ -37,14 +37,10 @@ $test: prod
     transform: rotateZ(360deg) translateX($circleRadiusSmall) rotateZ(-360deg)
 
 @keyframes layer4Animation
-  // from
-  //   transform: rotateZ(0) translateX($circleRadiusLarge) rotateZ(0) rotateY(-75deg)
-  // to
-  //   transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
   from
-    transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
-  to
     transform: rotateZ(0) translateX($circleRadiusLarge) rotateZ(0) rotateY(-75deg)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
 
 .bgAnimation
   position: absolute
@@ -74,10 +70,10 @@ $test: prod
       @extend .centerImg
   .layer1
     z-index: 1
-    top: -0.3854rem
-    right: .5104rem
-    width: $circleDiameterSmall
-    height: $circleDiameterSmall
+    top: -2.6042rem
+    right: -0.5208rem
+    width: $circleDiameterMedium
+    height: $circleDiameterMedium
     transform: rotateZ(-60deg) rotateY(75deg)
     @if($test == test)
       border-color: cyan
@@ -98,13 +94,13 @@ $test: prod
       border-color: yellow
     // transform: rotateZ(60deg) rotateY(75deg)
     img
+      margin: 0
       width: 8.9688rem
       height: 6.2708rem
       @if($test == prod)
         @include filterBlur($minBlur)
-      @include shapeAnimation(layer2Animation)
-      // animation: layer2Animation 20s linear 0s infinite
-      animation: layer2Animation 20s linear 5s infinite
+      // @include shapeAnimation(layer2Animation)
+      // animation: layer2Animation 20s linear 5s infinite
   .layer3
     z-index: 3
     top: .8542rem
@@ -126,10 +122,10 @@ $test: prod
     left: -0.8281rem
     width: $circleDiameterLarge
     height: $circleDiameterLarge
-    transform: rotateZ(60deg) rotateY(75deg)
+
     @if($test == test)
       border-color: skyblue
-
+      transform: rotateZ(60deg) rotateY(75deg)
     img
       width: 2.3177rem
       height: 4.5156rem
