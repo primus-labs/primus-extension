@@ -1,0 +1,86 @@
+
+$illustrationWidth: 5.2188rem
+$illustrationHeight: 4.6979rem
+$lineLargeRadius: 2.5521rem
+$lineMediumRadius: 1.5625rem
+$ballWidth: .1406rem
+$lineLargeborderColor: #fff
+$rotateZ: -76deg
+$rotateY: -84deg
+@keyframes move
+  from
+    transform: rotateZ(0deg) translateX($lineLargeRadius) rotateZ(0deg) rotateY(-1*$rotateZ)
+
+  to
+    transform: rotateZ(360deg) translateX($lineLargeRadius) rotateZ(-360deg) rotateY(-1*$rotateZ)
+@keyframes move2
+  from
+    transform: rotateZ(0deg) translateX($lineMediumRadius) rotateZ(0deg) rotateY(-1*$rotateZ)
+
+  to
+    transform: rotateZ(360deg) translateX($lineMediumRadius) rotateZ(-360deg) rotateY(-1*$rotateZ)
+aside
+  .illustrationWrapper
+    width: $illustrationWidth
+    height: $illustrationHeight
+    background: url(../../assets/img/illustration.svg) no-repeat
+    background-size: 100% 100%
+    position: relative
+            // perspective: 1200px
+            // perspective-origin: 50% 50%
+    transform-style: preserve-3d
+    .circle-line1
+      position: absolute
+      top: 50%
+      left: 50%
+      margin-left: -1*$lineLargeRadius
+      margin-top: -1*$lineLargeRadius
+      width: $lineLargeRadius *2
+      height: $lineLargeRadius *2
+      border-radius: 50%
+      border: 5px solid $lineLargeborderColor
+      transform-style: preserve-3d
+      transform: rotateZ($rotateZ) rotateY($rotateY)
+      &:before
+        position: absolute
+        content: ""
+        top: 0
+        left: 0
+        right: 0
+        bottom: 0
+        margin: auto
+        width: $ballWidth
+        height: $ballWidth
+        border-radius: 50%
+        background: #8BD6E2
+                // filter: drop-shadow(10px 10px 10px #8BD6E2)
+        animation: move 20s linear infinite
+        transform: rotateZ(0deg) translateX($lineLargeRadius) rotateZ(0deg) rotateY(-1*$rotateY)
+    .circle-line2
+      position: absolute
+      top: 50%
+      left: 50%
+      margin-left: -1*$lineMediumRadius
+      margin-top: -1*$lineMediumRadius
+      margin-top: -0.8021rem
+      width: $lineMediumRadius *2
+      height: $lineMediumRadius *2
+      border-radius: 50%
+      border: 5px solid skyblue
+      transform-style: preserve-3d
+      transform: rotateZ($rotateZ) rotateY($rotateY)
+      // &:before
+      //   position: absolute
+      //   content: ""
+      //   top: 0
+      //   left: 0
+      //   right: 0
+      //   bottom: 0
+      //   margin: auto
+      //   width: $ballWidth
+      //   height: $ballWidth
+      //   border-radius: 50%
+      //   background: yellow
+      //           // filter: drop-shadow(10px 10px 10px #8BD6E2)
+      //   animation: move2 20s linear infinite
+      //   transform: rotateZ(0deg) translateX($lineLargeRadius) rotateZ(0deg) rotateY(-1*$rotateY)

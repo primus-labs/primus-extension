@@ -1,11 +1,11 @@
-$circleRadiusSmall: 250px
+$circleRadiusSmall: 1.3021rem
 $circleDiameterSmall: $circleRadiusSmall*2
 $circleRadiusMedium: $circleRadiusSmall*3
 $circleDiameterMedium: $circleRadiusMedium*2
 $circleRadiusLarge: $circleDiameterMedium
 $circleDiameterLarge: $circleRadiusLarge*2
-$minBlur: 210px
-$maxBlur: 310px
+$minBlur: 1.0938rem
+$maxBlur: 1.6146rem
 @mixin filterBlur($blur)
   filter: blur($blur)
 @mixin shapeAnimation($animationName)
@@ -70,8 +70,8 @@ $test: prod
       @extend .centerImg
   .layer1
     z-index: 1
-    top: -74px
-    right: 98px
+    top: -0.3854rem
+    right: .5104rem
     width: $circleDiameterSmall
     height: $circleDiameterSmall
     transform: rotateZ(60deg) rotateY(75deg)
@@ -81,21 +81,21 @@ $test: prod
       @if($test == prod)
         @include filterBlur($maxBlur)
       @include shapeAnimation(layer1Animation)
-      width: 769px
-      height: 761px
+      width: 4.0052rem
+      height: 3.9635rem
       animation: layer1Animation 10s linear 3s infinite
   .layer2
     z-index: 2
-    bottom: -392px
-    left: 130px
+    bottom: -2.0417rem
+    left: .6771rem
     width: $circleDiameterMedium
     height: $circleDiameterMedium
     @if($test == test)
       border-color: yellow
     // transform: rotateZ(60deg) rotateY(75deg)
     img
-      width: 1722px
-      height: 1204px
+      width: 8.9688rem
+      height: 6.2708rem
       @if($test == prod)
         @include filterBlur($minBlur)
       @include shapeAnimation(layer2Animation)
@@ -103,23 +103,23 @@ $test: prod
       animation: layer2Animation 20s linear 5s infinite
   .layer3
     z-index: 3
-    top: 164p
-    left: -159px
+    top: .8542rem
+    left: -0.8281rem
     width: $circleDiameterSmall
     height: $circleDiameterSmall
     @if($test == test)
       border-color: yellowgreen
     // transform: rotateZ(60deg) rotateY(75deg)
     img
-      width: 569px
-      height: 1065px
+      width: 2.9635rem
+      height: 5.5469rem
       @if($test == prod)
         @include filterBlur($minBlur)
       @include shapeAnimation(layer3Animation)
   .layer4
     z-index: 4
-    top: -500px
-    left: -159px
+    top: -2.6042rem
+    left: -0.8281rem
     width: $circleDiameterLarge
     height: $circleDiameterLarge
 
@@ -127,8 +127,8 @@ $test: prod
       border-color: skyblue
       transform: rotateZ(60deg) rotateY(75deg)
     img
-      width: 445px
-      height: 867px
+      width: 2.3177rem
+      height: 4.5156rem
       @if($test == prod)
         @include filterBlur($minBlur)
       // transform: rotate(-13.27deg)

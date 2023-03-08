@@ -29,23 +29,21 @@ const Login = (props) => {
     props.onSubmit()
   }
   return (
-      <div className="pDialog authDialog appContentWrapper">
-        {/* <div className="appContent"> */}
-          <PHeader/>
-          <main>
-            <h1>Sign up</h1>
-            <ul className="licensorList">
-              {licensorList.map(licensor => {
-                return (<li className="licensorItem">
-                  <img src={licensor.icon} alt="" />
-                </li>)
-              })}
-            </ul>
-          </main>
-          <button className="nextBtn" onClick={handleClickNext}>
-            <span>Next</span>
-            <img src={rightArrow} alt="right arrow" /></button>
-        {/* </div> */}
+      <div className="pDialog authDialog">
+        <PHeader/>
+        <main>
+          <h1>Sign up</h1>
+          <ul className="licensorList">
+            {licensorList.map(licensor => {
+              return (<li className="licensorItem">
+                <img src={licensor.icon} alt="" />
+              </li>)
+            })}
+          </ul>
+        </main>
+        <button className="nextBtn" onClick={handleClickNext}>
+          <span>Next</span>
+          <img src={rightArrow} alt="right arrow" /></button>
       </div>
   );
 };

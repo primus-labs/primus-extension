@@ -1,4 +1,4 @@
-import React, {useRef,useEffect} from 'react';
+import React from 'react';
 import './index.sass'
 import bgLayer1 from '@/assets/img/bgLayer1.svg';
 import bgLayer2 from '@/assets/img/bgLayer2.svg';

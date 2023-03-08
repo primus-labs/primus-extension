@@ -1,61 +1,195 @@
 
-.pDialog.authDialog.appContentWrapper
+.pDialog.authDialog
   position: absolute
   z-index: 3
   top: 50%
   left: 50%
   transform: translate(-50%,-50%)
-
-  // height: 100%
-  // display: flex
-  // justify-content: center
-  // align-items: center
-  // .appContent
-  width: 600px
+  width: 3.125rem
       // height: 800px
-  padding-top: 50px
-  padding-bottom: 70px
+  padding-top: .2604rem
+  padding-bottom: .3646rem
   background: rgba(255, 255, 255, 0.7)
   backdrop-filter: blur(32px)
-  border-radius: 24px
+  border-radius: .125rem
   display: flex
   flex-direction: column
   align-items: center
   main
-    padding-top: 84px
-    padding-bottom: 68px
-    h1
-      font-family: 'Inter-Bold'
-      font-size: 32px
-      line-height: 39px
-      color: #000000
-      padding-top: 84px
-      padding-bottom: 80px
-      text-align: center
-    ul.licensorList
-      display: flex
-      justify-content: space-around
-      gap: 12px
-      li.licensorItem
-        border: 2px solid rgba(0, 0, 0, 0.1)
-        backdrop-filter: blur(18.1333px)
-        border-radius: 13.6px
-        display: flex
-        justify-content: center
-        align-items: center
-        width: 68px
-        height: 68px
+    // padding-top: .4375rem
+    // padding-bottom: .3542rem
+    // h1
+    //   font-family: 'Inter-Bold'
+    //   font-size: .1667rem
+    //   line-height: .2031rem
+    //   color: #000000
+    //   padding-top: .4375rem
+    //   padding-bottom: .4167rem
+    //   text-align: center
+    // ul.licensorList
+    //   display: flex
+    //   justify-content: space-around
+    //   // gap: .0625rem
+    //   li.licensorItem
+    //     border: 2px solid rgba(0, 0, 0, 0.1)
+    //     backdrop-filter: blur(18.1333px)
+    //     border-radius: .0708rem
+    //     display: flex
+    //     justify-content: center
+    //     align-items: center
+    //     width: .3542rem
+    //     height: .3542rem
   button.nextBtn
-    width: 420px
-    height: 60px
+    width: 2.1875rem
+    height: .3125rem
     background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-    border-radius: 12px
+    border-radius: .0625rem
     display: flex
     justify-content: center
     align-items: center
-    gap: 8px
+    gap: .0417rem
     span
       font-family: 'Inter-Bold'
-      font-size: 18px
-      line-height: 22px
+      font-size: .0938rem
+      line-height: .1146rem
       color: #000000
+.pDialog.authDialog.setPwdDialog
+  padding-top: .099rem
+  .setPwdDialogHeader
+    width: 100%
+    display: flex
+    justify-content: center
+    // padding: 0 .1563rem
+    position: relative
+    &:before
+      position: absolute
+      content: ''
+      top: 50%
+      transform: translateY(-50%)
+      left: .1667rem
+      width: .1667rem
+      height: .1667rem
+      background: url('../../assets/img/iconArrowLeft.svg')
+      background-size: 100% 100%
+    .headerContent
+      background: rgba(0, 0, 0, 0.05)
+      border-radius: 100px
+      padding: .0417rem .0625rem
+      display: flex
+      .iconWrapper
+        width: .25rem
+        height: .25rem
+        background-color: #fff
+        border-radius: 50%
+        display: flex
+        justify-content: center
+        align-items: center
+        img
+          flex-shink: 1
+          flex-frow: 1
+          width: .25rem
+      p
+        width: 1.4479rem
+        padding-left: .0417rem
+        font-family: 'Inter-Regular'
+        font-size: .0833rem
+        line-height: .125rem
+        color: rgba(0,0,0,0.8)
+
+  main
+    padding: .2344rem 0 .375rem
+    display: flex
+    flex-direction: column
+    align-items: flex-start
+    h1
+      font-family: 'Inter-Bold'
+      font-size: .1667rem
+      line-height: .2031rem
+      color: #000000
+      padding-top: 0
+      padding-bottom: 0
+      text-align: center
+    h2
+      font-family: 'Inter-Regular'
+      font-size: .0729rem
+      line-height: .0885rem
+      color: rgba(0,0,0,0.6)
+      padding-top: .0938rem
+      text-align: center
+    h6
+      font-family: 'Inter-Regular'
+      font-size: .0938rem
+      line-height: .1146rem
+      color: rgba(0,0,0,0.6)
+      padding: .1667rem 0 .0417rem
+    .validateWrapper
+      padding-top: .0625rem
+      .descTitle
+        font-family: 'Inter-Regular'
+        font-size: .0729rem
+        line-height: .1146rem
+        color: rgba(0, 0, 0, 0.6)
+      .descItem
+        font-family: 'Inter-Regular'
+        font-size: .0833rem
+        line-height: .1563rem
+        color: rgba(0, 0, 0, 0.6)
+        font-family: 'Inter-Bold'
+        img
+          width: .0938rem
+
+    .networkItem
+      width: .375rem
+      height: .375rem
+      border: 1px solid rgba(0, 0, 0, 0.1)
+      border-radius: 50%
+      display: flex
+      justify-content: center
+      align-items: center
+      img
+        flex-shrink: 1
+    .dividerWrapper
+      display: flex
+      justify-content: space-between
+      align-items: center
+      margin: .1302rem 0 .1354rem
+      width: 100%
+      i
+        flex: 1
+        width: 100%
+        height: 1px
+        background-color: #D9D9D9
+      .divider
+        font-family: 'Inter-Regular'
+        font-size: .0729rem
+        line-height: .1823rem
+        color: rgba(0,0,0,0.6)
+        width: .25rem
+        // width: .25rem
+        // height: .1823rem
+        // background-color: #D9D9D9
+        // position: relative
+        // 
+        // &:before
+        //   position: absolute
+        //   top: 50%
+        //   left: 50%
+        //   width: .25rem
+        //   height: .1823rem
+        //   background-color: #fff
+    // .activeNetwork
+    //   width: .375rem
+    //   height: .375rem
+    //   border: 1px solid rgba(0, 0, 0, 0.1)
+    //   border-radius: 50%
+    //   display: flex
+    //   justify-content: center
+    //   align-items: center
+    //   img
+    //     flex-shrink: 1
+    ul
+      display: flex
+      justify-content: space-around
+      gap: .0938rem
+      li.networkItem
+        flex: 1

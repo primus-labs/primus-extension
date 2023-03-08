@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   useNavigate
 } from "react-router-dom";
@@ -7,11 +7,14 @@ import PMask from '@/components/PMask'
 import AuthDialog from '@/components/AuthDialog'
 import CreateAccountDialog from '@/components/CreateAccountDialog'
 import SetPwdDialog from '@/components/SetPwdDialog'
+import SetSucDialog from '@/components/SetSucDialog'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
+import AsideAnimation from '@/components/AsideAnimation'
 
 import illustration from '@/assets/img/illustration.svg';
 import rightArrow from '@/assets/img/rightArrow.svg';
 import './Home.sass';
+import rem from '@/utils/rem.js';
 // import "../../../utils/mouseTail.js"
 const Home = () => {
   const [maskVisible, setMaskVisible] = useState(false)
@@ -35,6 +38,15 @@ const Home = () => {
   const handleSubmitSetPwd = () => {
     setStep(4)
   }
+  const handleSubmitSetSuc = () => {
+    setMaskVisible(false)
+    setStep(0)
+  }
+  
+  useEffect(() => {
+    rem()
+  }, [])
+
   return (
     <div className="appPage appHome">
       <div className="baseLayer">
@@ -43,9 +55,7 @@ const Home = () => {
           <PHeader/>
         </header>
         <main className="appContent">
-          <aside>
-            <img src={illustration} className="illustration" alt="illustration" />
-          </aside>
+          <AsideAnimation/>
           <article>
             <section className="descWrapper">
               <h1>Welcome to PADO data gateway</h1>
@@ -62,9 +72,7 @@ const Home = () => {
       {step === 1 && <AuthDialog onSubmit={handleSubmitAuth}/>}
       {step === 2 && <CreateAccountDialog onSubmit={handleSubmitCreateAccount}/>}
       {step === 3 && <SetPwdDialog onSubmit={handleSubmitSetPwd}/>}
-      <div class="ellips">
-        <div class="dot"></div>
-      </div>
+      {step === 4 && <SetSucDialog onSubmit={handleSubmitSetSuc}/>}
     </div>
   );
 };

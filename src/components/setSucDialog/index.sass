@@ -53,8 +53,8 @@
       font-size: .0938rem
       line-height: .1146rem
       color: #000000
-.createAccountDialog
-  padding-top: .1563rem
+.pDialog.authDialog.setSucDialog
+  padding-top: .099rem
   .createAccountDialogHeader
     width: 100%
     display: flex
@@ -63,17 +63,6 @@
     gap: .0417rem
     // padding: 0 .1563rem
     position: relative
-    &:before
-      position: absolute
-      content: ''
-      top: 50%
-      transform: translateY(-50%)
-      left: .1667rem
-      width: .1667rem
-      height: .1667rem
-      background: url('../../assets/img/iconArrowLeft.svg')
-      background-size: 100% 100%
-
     i
       width: .2188rem
       height: .2188rem
@@ -86,8 +75,40 @@
       font-family: 'Inter-SemiBold'
     img
       width: .125rem
+  .setPwdDialogHeader
+    margin-top: .1042rem
+    width: 100%
+    display: flex
+    justify-content: center
+    // padding: 0 .1563rem
+    position: relative
+    .headerContent
+      background: rgba(0, 0, 0, 0.05)
+      border-radius: 100px
+      padding: .0417rem .0625rem
+      display: flex
+      .iconWrapper
+        width: .25rem
+        height: .25rem
+        background-color: #fff
+        border-radius: 50%
+        display: flex
+        justify-content: center
+        align-items: center
+        img
+          flex-shink: 1
+          flex-frow: 1
+          width: .25rem
+      p
+        width: 1.4479rem
+        padding-left: .0417rem
+        font-family: 'Inter-Regular'
+        font-size: .0833rem
+        line-height: .125rem
+        color: rgba(0,0,0,0.8)
+
   main
-    padding: .276rem .4688rem .3646rem
+    padding: .7188rem 0 .9948rem
     display: flex
     flex-direction: column
     align-items: center
@@ -96,72 +117,15 @@
       font-size: .1667rem
       line-height: .2031rem
       color: #000000
-      padding: 0 !important
-      // padding-bottom: 0
+      padding-top: .2188rem
+      padding-bottom: .0625rem
+      text-align: center
     h2
       font-family: 'Inter-Regular'
-      font-size: .0729rem
-      line-height: .1146rem
+      font-size: .0833rem
+      line-height: .1354rem
       color: rgba(0,0,0,0.6)
-      padding: .0938rem 0 .3646rem 0
-    h6
-      font-family: 'Inter-Bold'
-      font-size: .0938rem
-      line-height: .1146rem
-      color: rgba(0,0,0,0.6)
-      padding-bottom: .2917rem
-    .networkItem
-      width: .375rem
-      height: .375rem
-      border: 1px solid rgba(0, 0, 0, 0.1)
-      border-radius: 50%
-      display: flex
-      justify-content: center
-      align-items: center
-      img
-        flex-shrink: 1
-    .dividerWrapper
-      display: flex
-      justify-content: space-between
-      align-items: center
-      margin: .1302rem 0 .1354rem
-      width: 100%
-      i
-        flex: 1
-        width: 100%
-        height: 1px
-        background-color: #D9D9D9
-      .divider
-        font-family: 'Inter-Regular'
-        font-size: .0729rem
-        line-height: .1823rem
-        color: rgba(0,0,0,0.6)
-        width: .25rem
-        // width: .25rem
-        // height: .1823rem
-        // background-color: #D9D9D9
-        // position: relative
-        // 
-        // &:before
-        //   position: absolute
-        //   top: 50%
-        //   left: 50%
-        //   width: .25rem
-        //   height: .1823rem
-        //   background-color: #fff
-    // .activeNetwork
-    //   width: .375rem
-    //   height: .375rem
-    //   border: 1px solid rgba(0, 0, 0, 0.1)
-    //   border-radius: 50%
-    //   display: flex
-    //   justify-content: center
-    //   align-items: center
-    //   img
-    //     flex-shrink: 1
-    ul
-      display: flex
-      justify-content: space-around
-      gap: .0938rem
-      li.networkItem
-        flex: 1
+      padding-top: .0938rem
+      text-align: center
+    img
+      width: .5573rem
