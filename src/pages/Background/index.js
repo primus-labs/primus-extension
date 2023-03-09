@@ -23,3 +23,6 @@ const showIndex = (info, tab)=> {
   let url = chrome.runtime.getURL("home.html");
   chrome.tabs.create({ url });
 }
+chrome.storage.local.set({ a: '1' }, () => {
+  console.log('suc======')
+})

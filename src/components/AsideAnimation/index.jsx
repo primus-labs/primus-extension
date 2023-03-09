@@ -6,8 +6,8 @@ const BackgroundAnimation = (props) => {
     <aside>
       {/* <img src={illustration} className="illustration" alt="illustration" /> */}
       <div className="illustrationWrapper">
-        <div class="circle-line1"></div>
-        <div class="circle-line2"></div>
+        <div className="circle-line1"></div>
+        <div className="circle-line2"></div>
       </div>
     </aside>
   );
