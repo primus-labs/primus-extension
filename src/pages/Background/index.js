@@ -30,7 +30,11 @@ chrome.runtime.onConnect.addListener(
     switch (port.name) {
       case "invokealgo":
         console.log("invokealgo connectted port=", port);
-        port.onMessage.addListener(processMsg);
+        port.onMessage.addListener(processAlgoMsg);
+        break;
+      case "networkreq":
+        console.log("networkreq connectted port=", port);
+        port.onMessage.addListener(processNetworkReq);
         break;
       default:
         break;
@@ -53,7 +57,7 @@ message : {
   }
 }
 */
-const processMsg = (message, port) => {
+const processAlgoMsg = (message, port) => {
   switch (message.algoMethod) {
     case "start":
       console.log("recv start=", message.algoParams.proxyUrl);
@@ -70,4 +74,35 @@ const processMsg = (message, port) => {
     default:
       break;
   }
+}
+
+/*
+message : {
+  requestId,
+  type,
+  params {
+    appKey,
+    appSecret,
+    functionName,
+    funcParams
+  }
+}
+*/
+const processNetworkReq = async (message, port) => {
+  switch (message.type) {
+    case "exchange-binance":
+      const response = await processBinaceReq(message);
+      console.log('exchange-binance response', response);
+      port.postMessage({requestId: message.requestId, type: message.type,
+        function: message.params.functionName, data: response });
+      break;
+    default:
+      break;
+  }
+}
+
+const processBinaceReq = async (message) => {
+  const res = await fetch("https://api.binance.com/sapi/v1/system/status");
+  const resJson = res.json();
+  return resJson;
 }
