@@ -28,8 +28,5 @@
   "permissions": [
     "storage",
     "notifications"
-  ],
-  "optional_permissions": [
-    "unlimitedStorage"
   ]
 }

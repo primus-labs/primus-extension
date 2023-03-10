@@ -48,7 +48,7 @@ type CheckIsLoginRes = {
 }
 
 export const getAllOAuthSources = () => {
-  return request<unknown, GetAllOAuthSourcesRes>({
+  return request({
     method: 'get',
     url: '/public/sources',
   });
@@ -56,7 +56,7 @@ export const getAllOAuthSources = () => {
 
 // Request authorization and jump to the corresponding authorization page
 export const requestAuthorization = (params:RequestAuthorizationParams) => {
-  return request<unknown, unknown>({
+  return request({
     method: 'get',
     url: `/public/render/${params.source}?state=${params.state}`,
   });
@@ -64,7 +64,7 @@ export const requestAuthorization = (params:RequestAuthorizationParams) => {
 
 // Check login is finished with state.
 export const checkIsLogin = (params:CheckIsLoginParams) => {
-  return request<CheckIsLoginParams, CheckIsLoginRes>({
+  return request({
     method: 'get',
     url: `/public/oauth/check?state=${params.state}`,
   });

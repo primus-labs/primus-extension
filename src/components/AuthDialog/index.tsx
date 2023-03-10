@@ -16,59 +16,42 @@ interface authDialogProps {
 
 const Login: React.FC<authDialogProps> = ({onSubmit}) => {
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([])
+  const padoServicePort = chrome.runtime.connect({name:"padoService"})
   const handleClickNext = () => {
     onSubmit()
   }
-  const ajaxGetAllOAuthSources = async () => {
-    const response = await getAllOAuthSources()
-    const { rc, msg, result } = response
-    if (rc === 0) {
-      setOAuthSources(result)
-    } else {
-      return response
-    }
-  }
-  const ajaxGetIsLogin = async(state: string,windowId: number) => {
-    console.log('windowId:', windowId)
-    let queryLoginTimer;
-    const response = await checkIsLogin({state})
-    const { rc, msg, result } = response
-    if (rc === 0 && result?.uniqueId) {
-      clearTimeout(queryLoginTimer)
-      // debugger
-      // chrome.storage.local.set({ b: '1' }, () => {
-      //   console.log('suc????')
-      // })
-      chrome.storage.local.set({ userInfo: JSON.stringify(result) })
-      chrome.windows.remove(windowId)
-      onSubmit()
-    } else {
-      queryLoginTimer = setTimeout(async() => {
-        ajaxGetIsLogin(state, windowId)
-      }, 500)
-    }
+  const fetchGetAllOAuthSources = async () => {
+    padoServicePort.postMessage({
+      reqMethodName: 'getAllOAuthSources',
+    })
+    console.log("content_send:getAllOAuthSources request");
+    padoServicePort.onMessage.addListener(async function(message){
+      switch (message.resMethodName) {
+        case "getAllOAuthSources":
+          console.log("content_get:", message.res);
+          setOAuthSources(message.res)
+          break;
+        case "auth":
+          console.log("content_get:", message.res);
+          onSubmit()
+          break;
+        default:
+          break;
+      }
+    })
   }
   const handleClickOAuthSource = (source:string) => {
     const state = uuidv4()
-    const windowOptions = {
-      url:`https://18.179.8.186:8081/public/render/${source}?state=${state}`,
-      // state: 'minimized',
-      type:'popup',
-      top: parseInt(screen.availHeight/4),
-      left: parseInt(screen.availWidth/3),
-      width: screen.availWidth/3,
-      height: screen.availHeight/2
-    }
-    console.log(state)
-    chrome.windows.create(windowOptions)
-    .then(res => {
-      console.log('授权Url:', windowOptions.url)
-      const newWindowId = res.tabs[0].windowId
-      ajaxGetIsLogin(state, newWindowId)
+    padoServicePort.postMessage({
+      reqMethodName: 'auth',
+      params: {
+        source,
+        state
+      }
     })
   }
   useEffect(() => {
-    ajaxGetAllOAuthSources()
+    fetchGetAllOAuthSources()
   }, [])
   return (
       <div className="pDialog authDialog">
