@@ -1,53 +1,26 @@
+// 动画2：shapeInnerWrapper绕圆旋转360°
 $outerDiameter: 25vh
 $innerDiameter: 100vh
-// 动画4：shapeInnerWrapper绕圆 & 两椭圆和海豹形旋转
 $minBlur: 1.0938rem
 $maxBlur: 1.6146rem
 @mixin filterBlur($blur)
   filter: blur($blur)
-$test: prod
+$test: test
 .centerImg
   width: 100%
   height: 100%
-@keyframes layer3Animation
-  from
-    transform: rotateZ(0)
-  to
-    transform: rotateZ(-360deg)
-@keyframes layer4Animation
-  from
-    transform: rotateZ(0)
-  to
-    transform: rotateZ(360deg)
 
 @keyframes shapeOuterWrapperAnimation
   from
     transform: translate(-50%,-50%) rotate(0)
   to
     transform: translate(-50%,-50%) rotate(360deg)
-// @keyframes shapeInnerWrapperAnimation
-//   from
-//     transform: translate(-50%,-50%) translateY(translateY(calc(-1 * $outerDiameter / 2))) rotate(0)
-//   to
-//     transform: translate(-50%,-50%) translateY(translateY(calc(-1 * $outerDiameter / 2))) rotate(360deg)
-// 等同1shapeWrapper整体旋转360°
-// @keyframes shapeInnerWrapperAnimation
-//   from
-//     transform: translate(-50%,-50%) rotateZ(0)
-//   to
-//     transform: translate(-50%,-50%) rotateZ(360deg)
-// 等同2shapeInnerWrapper绕圆旋转360°
-// @keyframes shapeInnerWrapperAnimation
-//   from
-//     transform: translate(-50%,-50%) rotateZ(0) translateX(calc($outerDiameter / 2))
-//   to
-//     transform: translate(-50%,-50%) rotateZ(360deg) translateX(calc($outerDiameter / 2))
-// 动画3：shapeInnerWrapper绕圆
 @keyframes shapeInnerWrapperAnimation
   from
-    transform: translate(-50%,-50%) rotateZ(0) translateX(calc($outerDiameter / 2)) rotateZ(0)
+    transform: translate(-50%,-50%) translateY(translateY(calc(-1 * $outerDiameter / 2))) rotate(0)
   to
-    transform: translate(-50%,-50%) rotateZ(360deg) translateX(calc($outerDiameter / 2)) rotateZ(-360deg)
+    transform: translate(-50%,-50%) translateY(translateY(calc(-1 * $outerDiameter / 2))) rotate(360deg)
+
 .bgAnimation
   position: absolute
   z-index: -1
@@ -74,21 +47,23 @@ $test: prod
     transform: translate(-50%,-50%)
     width: $outerDiameter
     height: $outerDiameter
-    // transform-origin: 50% 50%
-    // animation: shapeOuterWrapperAnimation 60s linear 0s infinite
-    transform-style: preserve-3d
+    transform-origin: 50% 50%
+    animation: shapeOuterWrapperAnimation 60s linear 0s infinite
+
     @if($test == test)
       border: 10px solid blue
   .shapeInnerWrapper
     position: absolute
     width: $innerDiameter
     height: $innerDiameter
+    display: flex
+    justify-content: center
+    align-items: center
     border-radius: 50%
     top: 50%
     left: 50%
-    // transform: translate(-50%,-50%) translateY(calc(-1 * $outerDiameter / 2))
-    transform: translate(-50%,-50%)
-    animation: shapeInnerWrapperAnimation 6s linear 0s infinite
+    transform: translate(-50%,-50%) translateY(calc(-1 * $outerDiameter / 2))
+    // animation: shapeInnerWrapperAnimation 6s linear 0s infinite
     @if($test == test)
       border: 10px solid red
   .layer1,.layer2,.layer3,.layer4
@@ -112,27 +87,22 @@ $test: prod
     width: 8.9688rem
     height: 6.2708rem
     img
-      animation: layer4Animation 60s linear 0s infinite
       @if($test == prod)
         @include filterBlur($minBlur)
-
   .layer3
     z-index: 3
     left: 0
     width: 2.9635rem
     height: 5.5469rem
     img
-      animation: layer3Animation 20s linear 0s infinite
       @if($test == prod)
         @include filterBlur($minBlur)
-
   .layer4
     z-index: 4
     left: 100%
     width: 2.3177rem
     height: 4.5156rem
     img
-      // transform: rotate(-13.27deg)
-      animation: layer4Animation 10s linear 0s infinite
+      transform: rotate(-13.27deg)
       @if($test == prod)
         @include filterBlur($minBlur)

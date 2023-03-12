@@ -4,7 +4,7 @@
   "description": "PADO Browser Extension",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
-    "default_icon": "logo.png"
+    "default_icon": "logo.svg"
   },
   "icons": {
     "128": "logo.png"

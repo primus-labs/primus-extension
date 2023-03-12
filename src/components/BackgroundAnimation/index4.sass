@@ -1,0 +1,140 @@
+$circleRadiusSmall: 1.3021rem
+$circleDiameterSmall: $circleRadiusSmall*2
+$circleRadiusMedium: $circleRadiusSmall*3
+$circleDiameterMedium: $circleRadiusMedium*2
+$circleRadiusLarge: $circleRadiusSmall*4
+$circleDiameterLarge: $circleRadiusLarge*2
+$minBlur: 1.0938rem
+$maxBlur: 1.6146rem
+@mixin filterBlur($blur)
+  filter: blur($blur)
+@mixin shapeAnimation($animationName)
+  animation: $animationName 10s linear 0s infinite
+$test: prod
+.centerImg
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  margin: auto
+@keyframes layer1Animation
+  from
+    transform: rotateZ(0) translateX($circleRadiusSmall) rotateZ(0) rotateY(-75deg)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusSmall) rotateZ(-360deg) rotateY(-75deg)
+
+@keyframes layer2Animation
+  from
+    transform: rotateZ(0) translateX($circleRadiusMedium) rotateZ(0)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusMedium) rotateZ(-360deg)
+
+@keyframes layer3Animation
+  from
+    transform: rotateZ(0) translateX($circleRadiusSmall) rotateZ(0)
+  to
+    transform: rotateZ(360deg) translateX($circleRadiusSmall) rotateZ(-360deg)
+
+@keyframes layer4Animation
+  // from
+  //   transform: rotateZ(0) translateX($circleRadiusLarge) rotateZ(0) rotateY(-75deg)
+  // to
+  //   transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
+  from
+    transform: rotateZ(360deg) translateX($circleRadiusLarge) rotateZ(-360deg) rotateY(-75deg)
+  to
+    transform: rotateZ(0) translateX($circleRadiusLarge) rotateZ(0) rotateY(-75deg)
+
+.bgAnimation
+  position: absolute
+  z-index: -1
+  width: 100%
+  height: 100%
+  display: flex
+  justify-content: center
+  align-items: center
+  @if ($test == prod)
+    &:before
+      position: absolute
+      content: ""
+      width: 100%
+      height: 100%
+      z-index: 5
+      background: rgba(255, 255, 255, 0.6)
+      backdrop-filter: blur(16px)
+  .layer1,.layer2,.layer3,.layer4
+    position: absolute
+    border-radius: 50%
+
+    transform-style: preserve-3d
+    @if($test == test)
+      border: 3px solid transparent
+    img
+      @extend .centerImg
+  .layer1
+    z-index: 1
+    top: -0.3854rem
+    right: .5104rem
+    width: $circleDiameterSmall
+    height: $circleDiameterSmall
+    transform: rotateZ(-60deg) rotateY(75deg)
+    @if($test == test)
+      border-color: cyan
+    img
+      @if($test == prod)
+        @include filterBlur($maxBlur)
+      @include shapeAnimation(layer1Animation)
+      width: 4.0052rem
+      height: 3.9635rem
+      animation: layer1Animation 20s linear 3s infinite
+  .layer2
+    z-index: 2
+    top: .6979rem
+    left: .6771rem
+    width: $circleDiameterMedium
+    height: $circleDiameterMedium
+    @if($test == test)
+      border-color: yellow
+    // transform: rotateZ(60deg) rotateY(75deg)
+    img
+      width: 8.9688rem
+      height: 6.2708rem
+      @if($test == prod)
+        @include filterBlur($minBlur)
+      @include shapeAnimation(layer2Animation)
+      // animation: layer2Animation 20s linear 0s infinite
+      animation: layer2Animation 20s linear 5s infinite
+  .layer3
+    z-index: 3
+    top: .8542rem
+    left: -0.8281rem
+    width: $circleDiameterSmall
+    height: $circleDiameterSmall
+    @if($test == test)
+      border-color: yellowgreen
+    // transform: rotateZ(60deg) rotateY(75deg)
+    img
+      width: 2.9635rem
+      height: 5.5469rem
+      @if($test == prod)
+        @include filterBlur($minBlur)
+      @include shapeAnimation(layer3Animation)
+  .layer4
+    z-index: 4
+    top: -2.6042rem
+    left: -0.8281rem
+    width: $circleDiameterLarge
+    height: $circleDiameterLarge
+    transform: rotateZ(60deg) rotateY(75deg)
+    @if($test == test)
+      border-color: skyblue
+
+    img
+      width: 2.3177rem
+      height: 4.5156rem
+      @if($test == prod)
+        @include filterBlur($minBlur)
+      // transform: rotate(-13.27deg)
+      @include shapeAnimation(layer4Animation)
+      animation: layer4Animation 20s linear 5s infinite

@@ -19,7 +19,19 @@ $rotateY: -84deg
 
   to
     transform: rotateZ(360deg) translateX($lineMediumRadius) rotateZ(-360deg) rotateY(-1*$rotateZ)
+@keyframes asideAnimation
+  from
+    transform: rotateY(0)
+  to
+    transform: rotateY(30deg)
 aside
+  transform-style: preserve-3d
+  perspective: 3000px
+  img
+    // transition: all 1s
+    &:hover
+      transform: rotateY(30deg)
+      // animation: asideAnimation 1s linear 0s infinite
   .illustrationWrapper
     width: $illustrationWidth
     height: $illustrationHeight
