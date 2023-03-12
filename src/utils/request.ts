@@ -3,13 +3,14 @@ type FetchParams = {
   url: string;
   data?: any;
 }
+
 const request = async(fetchParams: FetchParams) => {
   let {method, url, data= {}} = fetchParams
   const baseUrl = "http://18.179.8.186:8080" // 基础路径
   method = method.toUpperCase(); // 请求方式小写转换成大写
   url = baseUrl + url; // 请求地址的拼接
 
-  if (method == 'GET') {
+  if (method === 'GET') {
       let dataStr = ''; //数据拼接字符串
       Object.keys(data).forEach(key => {
           dataStr += key + '=' + data[key] + '&';
@@ -19,7 +20,7 @@ const request = async(fetchParams: FetchParams) => {
           url = url + '?' + dataStr;
       }
   }
-  let requestConfig = {
+  let requestConfig: any = {
       credentials: 'same-origin',
       method: method,
       headers: {
@@ -30,7 +31,7 @@ const request = async(fetchParams: FetchParams) => {
       cache: "force-cache" // 是否缓存请求资源 可选值有 default 、 no-store 、 reload 、 no-cache 、 force-cache 或者 only-if-cached 。
   }
 
-  if (method == 'POST') {
+  if (method === 'POST') {
       Object.defineProperty(requestConfig, 'body', {
           value: JSON.stringify(data)
       })
@@ -39,7 +40,7 @@ const request = async(fetchParams: FetchParams) => {
       const response = await fetch(url, requestConfig);
       const responseJson = await response.json();
       return responseJson
-  } catch (error) {
+  } catch (error:any) {
       throw new Error(error)
   }
 }
