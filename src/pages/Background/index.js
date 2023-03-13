@@ -148,7 +148,7 @@ const fetchGetIsLogin = async(state,windowId, resMethodName, port) => {
   let queryLoginTimer;
   const response = await checkIsLogin({state})
   const { rc, msg, result } = response
-  if (rc === 0 && result.uniqueId) {
+  if (rc === 0 && result && result.uniqueId) {
     clearTimeout(queryLoginTimer)
     chrome.storage.local.set({ userInfo: JSON.stringify(result) })
     chrome.windows.remove(windowId)
@@ -156,6 +156,6 @@ const fetchGetIsLogin = async(state,windowId, resMethodName, port) => {
   } else {
     queryLoginTimer = setTimeout(async() => {
       fetchGetIsLogin(state,windowId, resMethodName, port)
-    }, 500)
+    }, 1000)
   }
 }

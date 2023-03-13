@@ -7,7 +7,7 @@
     "default_icon": "logo.svg"
   },
   "icons": {
-    "128": "logo.png"
+    "128": "logo.svg"
   },
   "content_scripts": [
     {
