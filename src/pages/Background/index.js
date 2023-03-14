@@ -121,23 +121,17 @@ const processpadoServiceReq  = async (message, port) => {
         port.postMessage({resMethodName: message.reqMethodName, res: result });
       }
       break;
-    case "auth":
-      const { source, state } = message.params
-      const windowOptions = {
-        url:`https://18.179.8.186:8081/public/render/${source}?state=${state}`,
-        // state: 'minimized',
-        type:'popup',
-        // top: parseInt(screen.availHeight/4),
-        // left: parseInt(screen.availWidth/3),
-        // width: screen.availWidth/3,
-        // height: screen.availHeight/2
+    case 'checkIsLogin': 
+    
+      const checkIsLoginResponse = await checkIsLogin(message.params);
+      // const { rc, result } = checkIsLoginResponse
+      if (checkIsLoginResponse.rc === 0) {
+        console.log('log suc')
+        port.postMessage({resMethodName: 'checkIsLogin', res: checkIsLoginResponse });
+        chrome.storage.local.set({ userInfo: JSON.stringify(checkIsLoginResponse?.result) })
+      } else {
+        port.postMessage({resMethodName: 'checkIsLogin', res: checkIsLoginResponse });
       }
-      chrome.windows.create(windowOptions)
-      .then(res => {
-        console.log('授权Url:', windowOptions.url)
-        const newWindowId = res.tabs[0].windowId
-        fetchGetIsLogin(state, newWindowId, message.reqMethodName, port)
-      })
       break;
     default:
       break;

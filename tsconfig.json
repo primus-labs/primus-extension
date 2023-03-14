@@ -20,7 +20,8 @@
       "@/*": [
         "src/*"
       ]
-    }
+    },
+    "types": ["chrome", "@types/chrome"]
   },
   "include": ["src"],
   "exclude": ["build", "node_modules"]
