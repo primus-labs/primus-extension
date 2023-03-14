@@ -5,11 +5,9 @@ import './index.sass'
 import rightArrow from '@/assets/img/rightArrow.svg';
 import {getAllOAuthSources, checkIsLogin} from '@/services/user'
 import type { AuthSourcesItem, AuthSourcesItems } from '@/services/user';
-// import type {Window} from '@types/chrome'
-// import {Window} from '@types/chrome'
-// import {chrome} from 'chrome'
-// import {Window} from '@types/chrome'
-type MessageSender = chrome.runtime.MessageSender
+
+
+
 
 const onMessage: typeof chrome.runtime.onMessage.addListener = () => {
    //...code
@@ -34,6 +32,15 @@ type WindowCreateData = {
 }
 
 const Login: React.FC<authDialogProps> = ({onSubmit}) => {
+  const EXTENSION_CONTEXT_INVALIDATED_CHROMIUM_ERROR =
+  'Extension context invalidated.';
+const WORKER_KEEP_ALIVE_INTERVAL = 1000;
+const ACK_KEEP_ALIVE_MESSAGE = 'ACK_KEEP_ALIVE_MESSAGE';
+const WORKER_KEEP_ALIVE_MESSAGE = 'WORKER_KEEP_ALIVE_MESSAGE';
+const TIME_45_MIN_IN_MS = 45 * 60 * 1000;
+let keepAliveInterval: any;
+let keepAliveTimer: any;
+
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([])
   const [userState, setUserState] = useState()
   const [userSource, setUserSource] = useState<string>()
@@ -49,6 +56,9 @@ const Login: React.FC<authDialogProps> = ({onSubmit}) => {
         case "getAllOAuthSources":
           console.log("page_get:getAllOAuthSources:", message.res);
           setOAuthSources(message.res)
+          break;
+        case ACK_KEEP_ALIVE_MESSAGE:
+          console.log("page_get:", message.resMethodName);
           break;
         default:
           break;
@@ -121,26 +131,49 @@ const Login: React.FC<authDialogProps> = ({onSubmit}) => {
 
   useEffect(() => {
     setPadoServicePort(chrome.runtime.connect({name:"padoService"}))
+    
   }, [])
   useEffect(() => {
     if(padoServicePort ){
+      runWorkerKeepAliveInterval();
       // padoServicePort.onMessage.addListener(padoServicePortMsgListener)
       fetchGetAllOAuthSources()
     }
-    console.log('padoServicePort变化')
   }, [padoServicePort])
   useEffect(() => {
     if(userState && userSource ){
       handleAuth()
     }
   }, [userState, userSource])
+  const sendMessageWorkerKeepAlive = () => {
+    padoServicePort.postMessage({ reqMethodName: WORKER_KEEP_ALIVE_MESSAGE })
+      // .catch((e) => {
+      //   e.message === EXTENSION_CONTEXT_INVALIDATED_CHROMIUM_ERROR
+      //     ? console.error(`Please refresh the page. PADO: ${e}`)
+      //     : console.error(`PADO: ${e}`);
+      // });
+      console.log("page_send:", WORKER_KEEP_ALIVE_MESSAGE);
+  };
+  const runWorkerKeepAliveInterval = () => {
+    clearTimeout(keepAliveTimer);
+    keepAliveTimer = setTimeout(() => {
+      clearInterval(keepAliveInterval);
+    }, TIME_45_MIN_IN_MS);
+    clearInterval(keepAliveInterval);
+    sendMessageWorkerKeepAlive();
+    keepAliveInterval = setInterval(() => {
+      if (padoServicePort) {
+        sendMessageWorkerKeepAlive();
+      }
+    }, WORKER_KEEP_ALIVE_INTERVAL);
+  };
   return (
       <div className="pDialog authDialog">
         <PHeader/>
         <main>
           <h1>Sign up</h1>
           <ul className="licensorList">
-            {oAuthSources.map((item:AuthSourcesItem) => {
+            {oAuthSources && oAuthSources.map((item:AuthSourcesItem) => {
               return (<li key={item.id} className="licensorItem" onClick={() => {handleClickOAuthSource(item.name)}}>
                 <img src={item.logoUrl} alt={item.name} />
               </li>)
