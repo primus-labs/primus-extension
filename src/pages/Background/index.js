@@ -8,8 +8,6 @@ Module['onRuntimeInitialized'] = () => {
       null // arguments
   )
 };
-const ACK_KEEP_ALIVE_MESSAGE = 'ACK_KEEP_ALIVE_MESSAGE';
-const WORKER_KEEP_ALIVE_MESSAGE = 'WORKER_KEEP_ALIVE_MESSAGE';
 console.log('This is the background page.');
 console.log('Put the background scripts here.');
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
@@ -134,9 +132,6 @@ const processpadoServiceReq  = async (message, port) => {
       } else {
         port.postMessage({resMethodName: 'checkIsLogin', res: checkIsLoginResponse });
       }
-      break;
-    case WORKER_KEEP_ALIVE_MESSAGE: 
-      port.postMessage({ resMethodName: ACK_KEEP_ALIVE_MESSAGE });
       break;
     default:
       break;
