@@ -13,6 +13,7 @@ const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 var alias = {
   "@": path.resolve(__dirname, "./src"),
+  "buffer": path.resolve(__dirname, 'node_modules/buffer'),
 };
 
 // load the secrets
@@ -141,6 +142,12 @@ var options = {
     extensions: fileExtensions
       .map((extension) => '.' + extension)
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
+    fallback: {
+      //https: require.resolve('https-browserify'),
+      //http: require.resolve("stream-http"),
+      crypto: require.resolve("crypto-browserify"),
+      stream: require.resolve("stream-browserify")
+    },
   },
   plugins: [
     isDevelopment && new ReactRefreshWebpackPlugin(),
@@ -170,6 +177,15 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
+          from: 'src/pages/Content/content.styles.css',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
           from: 'src/assets/img/logo.png',
           to: path.join(__dirname, 'build'),
           force: true,
@@ -191,7 +207,11 @@ var options = {
       chunks: ['home'],
       cache: false,
     }),
-    new FriendlyErrorsWebpackPlugin()
+    new FriendlyErrorsWebpackPlugin(),
+    new webpack.ProvidePlugin({
+			process: 'process/browser',
+            Buffer: ['buffer', 'Buffer']
+		}),
   ].filter(Boolean),
   infrastructureLogging: {
     level: 'info',
