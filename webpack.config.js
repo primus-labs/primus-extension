@@ -41,11 +41,10 @@ var options = {
   mode: process.env.NODE_ENV || 'development',
   entry: {
     home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
-    background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
-    contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.js'),
+    background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js')
   },
   chromeExtensionBoilerplate: {
-    notHotReload: ['background', 'contentScript'],
+    notHotReload: ['background'],
   },
   output: {
     filename: '[name].bundle.js',
@@ -165,15 +164,6 @@ var options = {
               })
             );
           },
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'src/pages/Content/content.styles.css',
-          to: path.join(__dirname, 'build'),
-          force: true,
         },
       ],
     }),

@@ -8,8 +8,10 @@ Module['onRuntimeInitialized'] = () => {
       null // arguments
   )
 };
-console.log('This is the background page.');
-console.log('Put the background scripts here.');
+const padoServices = {
+  getAllOAuthSources,
+  checkIsLogin
+}
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     showIndex();
@@ -113,43 +115,23 @@ const processBinaceReq = async (message) => {
 }
 
 const processpadoServiceReq  = async (message, port) => {
-  switch (message.reqMethodName) {
+  const { reqMethodName, params } = message
+  const { rc, result } = await padoServices[reqMethodName]({...params})
+  switch (reqMethodName) {
     case "getAllOAuthSources":
-      const response = await getAllOAuthSources();
-      const { rc, result } = response
       if (rc === 0) {
         port.postMessage({resMethodName: message.reqMethodName, res: result });
       }
       break;
-    case 'checkIsLogin': 
-    
-      const checkIsLoginResponse = await checkIsLogin(message.params);
-      // const { rc, result } = checkIsLoginResponse
-      if (checkIsLoginResponse.rc === 0) {
-        console.log('log suc')
-        port.postMessage({resMethodName: 'checkIsLogin', res: checkIsLoginResponse });
-        chrome.storage.local.set({ userInfo: JSON.stringify(checkIsLoginResponse?.result) })
+    case 'checkIsLogin':
+      if (rc === 0) {
+        port.postMessage({resMethodName: 'checkIsLogin', res: true });
+        chrome.storage.local.set({ userInfo: JSON.stringify(result) })
       } else {
-        port.postMessage({resMethodName: 'checkIsLogin', res: checkIsLoginResponse });
+        port.postMessage({resMethodName: 'checkIsLogin', res: false });
       }
       break;
     default:
       break;
-  }
-}
-const fetchGetIsLogin = async(state,windowId, resMethodName, port) => {
-  console.log('windowId:', windowId)
-  let queryLoginTimer;
-  const response = await checkIsLogin({state})
-  const { rc, msg, result } = response
-  if (rc === 0 && result && result.uniqueId) {
-    clearTimeout(queryLoginTimer)
-    chrome.storage.local.set({ userInfo: JSON.stringify(result) })
-    chrome.windows.remove(windowId)
-    port.postMessage({resMethodName: resMethodName, res: 'success' });
-  } else {
-    queryLoginTimer = setTimeout(async() => {
-      fetchGetIsLogin(state,windowId, resMethodName, port)
-    }, 1000)
   }
 }
