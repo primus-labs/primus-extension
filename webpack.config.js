@@ -15,6 +15,8 @@ const ASSET_PATH = process.env.ASSET_PATH || '/';
 var alias = {
   "@": path.resolve(__dirname, "./src"),
   "buffer": path.resolve(__dirname, 'node_modules/buffer'),
+  "bn.js": path.resolve(__dirname, 'node_modules/bn.js'),
+  'ethereumjs-util': path.resolve(__dirname, 'node_modules/ethereumjs-util'),
 };
 
 // load the secrets
