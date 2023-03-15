@@ -21,7 +21,7 @@
         "src/*"
       ]
     },
-    "types": ["chrome", "@types/chrome"]
+    "types": ["chrome", "@types/chrome", "node"]
   },
   "include": ["src"],
   "exclude": ["build", "node_modules"]

@@ -9,6 +9,7 @@ var { CleanWebpackPlugin } = require('clean-webpack-plugin');
 var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 var ReactRefreshTypeScript = require('react-refresh-typescript');
 var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 var alias = {
@@ -177,15 +178,6 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/pages/Content/content.styles.css',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
           from: 'src/assets/img/logo.png',
           to: path.join(__dirname, 'build'),
           force: true,
@@ -212,6 +204,7 @@ var options = {
 			process: 'process/browser',
             Buffer: ['buffer', 'Buffer']
 		}),
+    new NodePolyfillPlugin()
   ].filter(Boolean),
   infrastructureLogging: {
     level: 'info',

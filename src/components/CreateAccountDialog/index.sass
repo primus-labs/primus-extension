@@ -57,13 +57,9 @@
   padding-top: .1563rem
   .createAccountDialogHeader
     width: 100%
-    display: flex
-    justify-content: center
-    align-items: center
-    gap: .0417rem
     // padding: 0 .1563rem
     position: relative
-    &:before
+    .iconBack
       position: absolute
       content: ''
       top: 50%
@@ -73,19 +69,24 @@
       height: .1667rem
       background: url('../../assets/img/iconArrowLeft.svg')
       background-size: 100% 100%
-
-    i
-      width: .2188rem
-      height: .2188rem
-      border-radius: 50%
-      background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-    span
-      font-size: .0938rem
-      line-height: .1146rem
-      color: #000000
-      font-family: 'Inter-SemiBold'
-    img
-      width: .125rem
+      cursor: pointer
+    .haderContent
+      display: flex
+      justify-content: center
+      align-items: center
+      gap: .0417rem
+      i
+        width: .2188rem
+        height: .2188rem
+        border-radius: 50%
+        background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+      span
+        font-size: .0938rem
+        line-height: .1146rem
+        color: #000000
+        font-family: 'Inter-SemiBold'
+      img
+        width: .125rem
   main
     padding: .276rem .4688rem .3646rem
     display: flex

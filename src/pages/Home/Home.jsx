@@ -1,7 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  useNavigate
-} from "react-router-dom";
+import rem from '@/utils/rem.js';
 import PHeader from '@/components/PHeader'
 import PMask from '@/components/PMask'
 import AuthDialog from '@/components/AuthDialog'
@@ -10,18 +8,13 @@ import SetPwdDialog from '@/components/SetPwdDialog'
 import SetSucDialog from '@/components/SetSucDialog'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import AsideAnimation from '@/components/AsideAnimation'
-
-import illustration from '@/assets/img/illustration.svg';
 import rightArrow from '@/assets/img/rightArrow.svg';
 import './Home.sass';
-import rem from '@/utils/rem.js';
-// import "../../../utils/mouseTail.js"
+
 const Home = () => {
   const [maskVisible, setMaskVisible] = useState(false)
-  const [step, setStep] = useState(0)
-  const navigate = useNavigate();
+  const [step, setStep] = useState(3)
   const handleClickStart = () => {
-    // navigate("auth");
     setMaskVisible(true)
     setStep(1)
   }
@@ -30,13 +23,19 @@ const Home = () => {
     setStep(0)
   }
   const handleSubmitAuth = () => {
-    setStep(2)
-  } 
+    setStep(step => ++step)
+  }
   const handleSubmitCreateAccount = () => {
-    setStep(3)
-  } 
+    setStep(step => ++step)
+  }
+  const handleCancelCreateAccount = () => {
+    setStep(step => --step)
+  }
   const handleSubmitSetPwd = () => {
-    setStep(4)
+    setStep(step => ++step)
+  }
+  const handleCancelSetPwd= () => {
+    setStep(step => --step)
   }
   const handleSubmitSetSuc = () => {
     setMaskVisible(false)
@@ -70,8 +69,8 @@ const Home = () => {
       </div>
       {maskVisible && <PMask onClose={handleCloseMask}/>}
       {step === 1 && <AuthDialog onSubmit={handleSubmitAuth}/>}
-      {step === 2 && <CreateAccountDialog onSubmit={handleSubmitCreateAccount}/>}
-      {step === 3 && <SetPwdDialog onSubmit={handleSubmitSetPwd}/>}
+      {step === 2 && <CreateAccountDialog onSubmit={handleSubmitCreateAccount} onCancel={handleCancelCreateAccount}/>}
+      {step === 3 && <SetPwdDialog onSubmit={handleSubmitSetPwd} onCancel={handleCancelSetPwd}/>}
       {step === 4 && <SetSucDialog onSubmit={handleSubmitSetSuc}/>}
     </div>
   );

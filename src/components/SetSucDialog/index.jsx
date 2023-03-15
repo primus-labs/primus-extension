@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './index.sass'
 import rightArrow from '@/assets/img/rightArrow.svg';
 import iconETH from '@/assets/img/iconETH.svg';
@@ -10,6 +10,11 @@ const Login = (props) => {
   const handleClickNext = () => {
     props.onSubmit()
   }
+  useEffect(() => {
+    chrome.storage.local.get(['wallet', 'userInfo'],  (items) => {
+      console.log(2, items)
+    })
+  }, [])
   return (
       <div className="pDialog authDialog setSucDialog">
         <header className="createAccountDialogHeader">

@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './index.sass'
 import iconETH from '@/assets/img/iconETH.svg';
 import iconChecked from '@/assets/img/iconChecked.svg';
 import PInput from '@/components/PInput'
+const Web3EthAccounts = require('web3-eth-accounts');
 
-const Login = (props) => {
+interface SetPwdDialogProps {
+  onSubmit: () => void,
+  onCancel: () => void
+}
+
+const SetPwdDialog: React.FC<SetPwdDialogProps> = ({onSubmit, onCancel}) => {
+  const [account, setAccount] = useState<any>()
   const handleClickNext = () => {
-    props.onSubmit()
+    const encryptAccount = account.encrypt('padopado2023')
+    chrome.storage.local.set({ wallet: JSON.stringify(encryptAccount) })
+    onSubmit()
   }
+  const initAccount = () => {
+    const accounts = new Web3EthAccounts();
+    const acc = accounts.create()
+    setAccount(acc)
+  }
+  useEffect(() => {
+    initAccount()
+  }, [])
   return (
       <div className="pDialog authDialog setPwdDialog">
           <header className="setPwdDialogHeader">
@@ -15,7 +32,7 @@ const Login = (props) => {
               <div className="iconWrapper">
                 <img src={iconETH} alt="" />
               </div>
-              <p className="address">0xCEd6324CaA3bF9df5ce0bc67   146b7A9E7657fFB1</p>
+              <p className="address">{account?.address}</p>
             </div>
           </header>
           <main>
@@ -49,4 +66,4 @@ const Login = (props) => {
   );
 };
 
-export default Login;
+export default SetPwdDialog;
