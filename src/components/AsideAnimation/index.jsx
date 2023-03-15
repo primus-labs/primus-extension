@@ -7,8 +7,8 @@ const BackgroundAnimation = (props) => {
     const element = illustrationEl.current
     const multiple = 20;
     let box = element.getBoundingClientRect();
-    let calcX = (y - box.y - (box.height / 2)) / multiple;
-    let calcY = -(x - box.x - (box.width / 2)) / multiple;
+    let calcX = -(y - box.y - (box.height / 2)) / multiple;
+    let calcY = (x - box.x - (box.width / 2)) / multiple;
     element.style.transform = "rotateX(" + calcX + "deg) "
       + "rotateY(" + calcY + "deg)";
   }
