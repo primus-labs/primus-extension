@@ -51,6 +51,9 @@ export const getAllOAuthSources = () => {
   return request({
     method: 'get',
     url: '/public/sources',
+    config: {
+      cache: 'force-cache'
+    }
   });
 };
 
@@ -58,7 +61,7 @@ export const getAllOAuthSources = () => {
 export const requestAuthorization = (params:RequestAuthorizationParams) => {
   return request({
     method: 'get',
-    url: `/public/render/${params.source}?state=${params.state}`,
+    url: `/public/render/${params.source}?state=${params.state}`
   });
 };
 
