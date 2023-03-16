@@ -36,12 +36,12 @@ const AuthDialog: React.FC<authDialogProps> = ({onSubmit}) => {
   }
   const fetchIsAuthDialog = (state: string) => {
     padoServicePort.postMessage({
-      reqMethodName: 'checkIsAuthDialog',
+      reqMethodName: 'checkIsLogin',
       params: {
         state
       }
     })
-    console.log("page_send:checkIsAuthDialog request");
+    console.log("page_send:checkIsLogin request");
   }
   const createAuthWindowCallBack:(state: string, window?: chrome.windows.Window | undefined) => void = (state, res) => {
     const newWindowId = res?.id
@@ -51,8 +51,8 @@ const AuthDialog: React.FC<authDialogProps> = ({onSubmit}) => {
       windowId === newWindowId && checkIsAuthDialogTimer && clearInterval(checkIsAuthDialogTimer)
     } 
     const padoServicePortListener = async function(message:any){
-      if( message.resMethodName === 'checkIsAuthDialog') {
-        console.log("page_get:checkIsAuthDialog:", message.res);
+      if( message.resMethodName === 'checkIsLogin') {
+        console.log("page_get:checkIsLogin:", message.res);
         if (message.res) {
           newWindowId && chrome.windows.remove(newWindowId)
           checkIsAuthDialogTimer && clearInterval(checkIsAuthDialogTimer)
