@@ -46,6 +46,10 @@ type CheckIsLoginRes = {
     userName: string;
   }
 }
+type BindUserAddressParams = {
+  userId: number;
+  walletAddress: string;
+}
 
 export const getAllOAuthSources = () => {
   return request({
@@ -70,5 +74,13 @@ export const checkIsLogin = (params:CheckIsLoginParams) => {
   return request({
     method: 'get',
     url: `/public/oauth/check?state=${params.state}`,
+  });
+};
+
+// Bind user and wallet address
+export const bindUserAddress = (data:BindUserAddressParams) => {
+  return request({
+    method: 'post',
+    url: `/oauth/wallet`,
   });
 };

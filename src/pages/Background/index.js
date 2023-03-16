@@ -30,6 +30,7 @@ const showIndex = (info, tab)=> {
 // listen msg from extension tab page
 chrome.runtime.onConnect.addListener(
   (port) => {
+    console.log('port', port)
     switch (port.name) {
       case "invokealgo":
         console.log("invokealgo connectted port=", port);
@@ -43,6 +44,10 @@ chrome.runtime.onConnect.addListener(
         console.log("padoService connectted port=", port);
         port.onMessage.addListener(processpadoServiceReq);
         break;
+      // case "storage":
+      //   console.log("storage connectted port=", port);
+      //   port.onMessage.addListener(processStorage);
+      //   break;
       default:
         break;
     }
@@ -135,3 +140,14 @@ const processpadoServiceReq  = async (message, port) => {
       break;
   }
 }
+
+
+chrome.runtime.onMessage.addListener(
+  (message, sender, sendResponse) => {
+    console.log(message, sender, sendResponse)
+    const {type, key, value} = message
+    if(type === 'storage') {
+      chrome.storage.local.set({ [key]: value })
+    }
+  }
+);

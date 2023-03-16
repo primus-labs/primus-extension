@@ -51,11 +51,22 @@ $headerHeight: .5521rem
           justify-content: center
           align-items: center
           gap: .0417rem
+          color: #000000
+          &:hover,&:active
+            border: 0
+            background: #000
+            color: #fff
+            .iconArrow
+              background-image: url("../../assets/img/rightArrowHover.svg")
           span
             font-family: 'Inter-SemiBold'
             font-size: .125rem
             line-height: .151rem
-            color: #000000
+          .iconArrow
+            width: .1667rem
+            height: .1667rem
+            background: url("../../assets/img/rightArrow.svg") no-repeat
+            background-size: 100% 100%
 
 // $a: 160px // 椭圆x轴半径(长半径)
 // $b: 80px // 椭圆y轴半径(短半径)

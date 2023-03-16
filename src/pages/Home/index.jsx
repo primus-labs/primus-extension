@@ -11,6 +11,6 @@ import routes from '@/router'
 const router = createHashRouter(routes);
 const container = document.getElementById('app-container');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
-root.render(<React.StrictMode>
+root.render(<>
   <RouterProvider router={router} />
-</React.StrictMode>);
+</>);

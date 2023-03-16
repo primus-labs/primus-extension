@@ -1,9 +1,10 @@
 import React, {useRef} from 'react';
+import type { MouseEvent } from 'react'
 import './index.sass'
 import illustration from '@/assets/img/illustration.svg';
-const BackgroundAnimation = (props) => {
-  const illustrationEl = useRef()
-  function transformElement(x, y) {
+const BackgroundAnimation = () => {
+  const illustrationEl = useRef<any>(null)
+  function transformElement(x: number, y: number) {
     const element = illustrationEl.current
     const multiple = 20;
     let box = element.getBoundingClientRect();
@@ -12,7 +13,7 @@ const BackgroundAnimation = (props) => {
     element.style.transform = "rotateX(" + calcX + "deg) "
       + "rotateY(" + calcY + "deg)";
   }
-  const handleMousemove = (e) => {
+  const handleMousemove = (e: MouseEvent) => {
     window.requestAnimationFrame(function () {
       transformElement(e.clientX, e.clientY);
     });
@@ -20,10 +21,6 @@ const BackgroundAnimation = (props) => {
   return (
     <aside onMouseMove={handleMousemove}>
       <img ref={illustrationEl} src={illustration} className="illustration" alt="illustration" />
-      {/* <div className="illustrationWrapper">
-        <div className="circle-line1"></div>
-        <div className="circle-line2"></div>
-      </div> */}
     </aside>
   );
 };

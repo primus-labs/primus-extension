@@ -48,6 +48,8 @@
     justify-content: center
     align-items: center
     gap: .0417rem
+    &:hover,&:active
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
     span
       font-family: 'Inter-Bold'
       font-size: .0938rem
@@ -61,7 +63,7 @@
     justify-content: center
     // padding: 0 .1563rem
     position: relative
-    &:before
+    .iconBack
       position: absolute
       content: ''
       top: 50%
@@ -71,6 +73,7 @@
       height: .1667rem
       background: url('../../assets/img/iconArrowLeft.svg')
       background-size: 100% 100%
+      cursor: pointer
     .headerContent
       background: rgba(0, 0, 0, 0.05)
       border-radius: 100px
@@ -88,14 +91,14 @@
           flex-shink: 1
           flex-frow: 1
           width: .25rem
-      p
+      p.address
         width: 1.4479rem
         padding-left: .0417rem
         font-family: 'Inter-Regular'
         font-size: .0833rem
         line-height: .125rem
         color: rgba(0,0,0,0.8)
-
+        word-break: break-word
   main
     padding: .2344rem 0 .375rem
     display: flex
@@ -129,15 +132,36 @@
         font-size: .0729rem
         line-height: .1146rem
         color: rgba(0, 0, 0, 0.6)
+        padding-bottom: .0313rem
+      ul.descItems
+        display: flex
+        flex-direction: column
       .descItem
         font-family: 'Inter-Regular'
-        font-size: .0833rem
-        line-height: .1563rem
         color: rgba(0, 0, 0, 0.6)
-        font-family: 'Inter-Bold'
-        img
-          width: .0938rem
-
+        font-size: .0729rem
+        line-height: .1458rem
+        padding-left: .125rem
+        position: relative
+        &.checked
+          color: #000
+          font-family: 'Inter-Bold'
+          &::before
+            background: url(../../assets/img/iconChecked.svg)
+            background-size: 100% 100%
+            width: .0938rem
+            height: .0938rem
+            position: absolute
+            content: ''
+            top: 50%
+            left: 0
+            transform: translateY(-50%)
+    .errorTip
+      padding-top: .0625rem
+      font-family: 'Inter-Regular'
+      font-size: .0729rem
+      line-height: .1146rem
+      color: rgba(255, 0, 0, 0.8)
     .networkItem
       width: .375rem
       height: .375rem
@@ -165,31 +189,3 @@
         line-height: .1823rem
         color: rgba(0,0,0,0.6)
         width: .25rem
-        // width: .25rem
-        // height: .1823rem
-        // background-color: #D9D9D9
-        // position: relative
-        // 
-        // &:before
-        //   position: absolute
-        //   top: 50%
-        //   left: 50%
-        //   width: .25rem
-        //   height: .1823rem
-        //   background-color: #fff
-    // .activeNetwork
-    //   width: .375rem
-    //   height: .375rem
-    //   border: 1px solid rgba(0, 0, 0, 0.1)
-    //   border-radius: 50%
-    //   display: flex
-    //   justify-content: center
-    //   align-items: center
-    //   img
-    //     flex-shrink: 1
-    ul
-      display: flex
-      justify-content: space-around
-      gap: .0938rem
-      li.networkItem
-        flex: 1

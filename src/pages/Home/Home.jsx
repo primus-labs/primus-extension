@@ -8,7 +8,6 @@ import SetPwdDialog from '@/components/SetPwdDialog'
 import SetSucDialog from '@/components/SetSucDialog'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import AsideAnimation from '@/components/AsideAnimation'
-import rightArrow from '@/assets/img/rightArrow.svg';
 import './Home.sass';
 
 const Home = () => {
@@ -63,7 +62,8 @@ const Home = () => {
             </section>
             <button className="startBtn" onClick={handleClickStart}>
               <span>Click here to start</span>
-              <img src={rightArrow} alt="right arrow" /></button>
+              <div className="iconArrow"></div>
+            </button>
           </article>
         </main>
       </div>

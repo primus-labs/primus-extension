@@ -1,20 +1,17 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import './index.sass'
-import rightArrow from '@/assets/img/rightArrow.svg';
 import iconETH from '@/assets/img/iconETH.svg';
 import iconChecked from '@/assets/img/iconChecked.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
-import PInput from '@/components/PInput'
 
-const Login = (props) => {
+interface SetSucDialogProps {
+  onSubmit: () => void
+}
+
+const SetSucDialog: React.FC<SetSucDialogProps> = ({onSubmit}) => {
   const handleClickNext = () => {
-    props.onSubmit()
+    onSubmit()
   }
-  useEffect(() => {
-    chrome.storage.local.get(['wallet', 'userInfo'],  (items) => {
-      console.log(2, items)
-    })
-  }, [])
   return (
       <div className="pDialog authDialog setSucDialog">
         <header className="createAccountDialogHeader">
@@ -42,4 +39,4 @@ const Login = (props) => {
   );
 };
 
-export default Login;
+export default SetSucDialog;
