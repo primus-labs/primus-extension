@@ -9,7 +9,6 @@ var { CleanWebpackPlugin } = require('clean-webpack-plugin');
 var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 var ReactRefreshTypeScript = require('react-refresh-typescript');
 var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 var alias = {
@@ -146,10 +145,13 @@ var options = {
       .map((extension) => '.' + extension)
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
     fallback: {
-      //https: require.resolve('https-browserify'),
-      //http: require.resolve("stream-http"),
+      https: require.resolve('https-browserify'),
+      http: require.resolve("stream-http"),
       crypto: require.resolve("crypto-browserify"),
-      stream: require.resolve("stream-browserify")
+      stream: require.resolve("stream-browserify"),
+      assert: require.resolve("assert"),
+      os: require.resolve("os-browserify"),
+      url: require.resolve("url")
     },
   },
   plugins: [
@@ -205,8 +207,7 @@ var options = {
     new webpack.ProvidePlugin({
 			process: 'process/browser',
             Buffer: ['buffer', 'Buffer']
-		}),
-    new NodePolyfillPlugin()
+		})
   ].filter(Boolean),
   infrastructureLogging: {
     level: 'info',
