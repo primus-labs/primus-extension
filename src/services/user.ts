@@ -78,9 +78,11 @@ export const checkIsLogin = (params:CheckIsLoginParams) => {
 };
 
 // Bind user and wallet address
-export const bindUserAddress = (data:BindUserAddressParams) => {
+export const bindUserAddress = (data:BindUserAddressParams, config:any) => {
   return request({
     method: 'post',
     url: `/oauth/wallet`,
+    data,
+    config
   });
 };

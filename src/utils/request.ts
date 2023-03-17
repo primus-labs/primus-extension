@@ -26,7 +26,8 @@ const request = async(fetchParams: FetchParams) => {
       method: method,
       headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...config?.extraHeader
       },
       mode: "cors", //  same-origin | no-cors（default）|cores;
       cache: config?.cache ?? "default" //  default | no-store | reload | no-cache | force-cache | only-if-cached 。

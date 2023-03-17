@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { connect } from 'react-redux'
+// import { countAdd, countMinus } from '../../store/reducers/app'
 import './index.sass'
 import iconETH from '@/assets/img/iconETH.svg';
-import iconChecked from '@/assets/img/iconChecked.svg';
 import PInput from '@/components/PInput/index'
 const Web3EthAccounts = require('web3-eth-accounts');
 
+
 interface SetPwdDialogProps {
   onSubmit: () => void,
-  onCancel: () => void
+  onCancel: () => void,
+  padoServicePort: chrome.runtime.Port
 }
 
-const SetPwdDialog: React.FC<SetPwdDialogProps> = ({onSubmit, onCancel}) => {
+const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
+  const {onSubmit, onCancel, padoServicePort} = props
+  console.log('props', props)
   const [account, setAccount] = useState<any>()
   const [pwd, setPwd] = useState<string>()
   const [confirm, setConfirm] = useState<string>()
@@ -52,35 +57,49 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = ({onSubmit, onCancel}) => {
     }
     const pwdIsLegal = pwdRules.every(i=>i.legal)
     if (!pwdIsLegal) { return }
-    const encryptAccount = account.encrypt(pwd)
-    chrome.runtime.sendMessage({
-      type: 'storage',
-      key: 'keyStore',
-      value: JSON.stringify(encryptAccount)
-    })
-    
+    fetchBindUserAddress()
     onSubmit()
+  }
+  const fetchBindUserAddress = () => {
+    chrome.storage.local.get(['userInfo'],  (storedData) => {
+      if ( storedData['userInfo'] ) {
+       const userId =  JSON.parse(storedData['userInfo']).id
+       const padoServicePortListener = function(message:any){
+          if(message.resMethodName === 'bindUserAddress') {
+            console.log("page_get:bindUserAddress:", message.res);
+            if(message.res) {
+              const encryptAccount = account.encrypt(pwd)
+              chrome.runtime.sendMessage({
+                type: 'storage',
+                key: 'keyStore',
+                value: JSON.stringify(encryptAccount)
+              })
+            }
+          }
+        }
+        padoServicePort.onMessage.addListener(padoServicePortListener)
+        padoServicePort.postMessage({
+          reqMethodName: 'bindUserAddress',
+          params: {
+            userId: userId,
+            walletAddress: account?.address,
+          },
+          config: {
+            extraHeader: {
+              'user-id': userId
+            }
+          }
+        })
+      }
+    })
   }
   const handleClickBack = () => {
     onCancel()
   }
   const initAccount = () => {
     const web3EthAccounts = new Web3EthAccounts();
-    chrome.storage.local.get(['privateKey'],  (storedData) => {
-      console.log('storage-privateKey', storedData['privateKey'])
-      if ( storedData['privateKey'] ) {
-        const acc = web3EthAccounts.privateKeyToAccount(account.privateKey);
-        setAccount(acc)
-      } else {
-        const acc = web3EthAccounts.create()
-        chrome.runtime.sendMessage({
-          type: 'storage',
-          key: 'privateKey',
-          value: acc.privateKey
-        })
-        setAccount(acc)
-      }
-    })
+    const acc = web3EthAccounts.create()
+    setAccount(acc)
   }
   const handleChangePwd = (val: string) => {
     setPwd(val)
@@ -147,4 +166,4 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = ({onSubmit, onCancel}) => {
   );
 };
 
-export default SetPwdDialog;
+export default connect((store) => store, {})(SetPwdDialog);

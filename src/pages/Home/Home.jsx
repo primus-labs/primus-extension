@@ -40,9 +40,18 @@ const Home = () => {
     setMaskVisible(false)
     setStep(0)
   }
-  
+  const checkActiveStep = () => {
+    chrome.storage.local.get(['userInfo', 'keyStore'],  (storedData) => {
+      // If user information is cached,it represents that it is authorized => step2 
+      if ( storedData['userInfo'] ) {
+        setStep(2)
+      }
+      // If keyStore is cached,,it represents that the user has already bound a wallet => data page TODO
+    })
+  }
   useEffect(() => {
     rem()
+    checkActiveStep()
   }, [])
 
   return (

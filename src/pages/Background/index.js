@@ -1,4 +1,4 @@
-import {getAllOAuthSources, checkIsLogin} from '@/services/user'
+import {getAllOAuthSources, checkIsLogin, bindUserAddress} from '@/services/user'
 import Module from './hello'
 Module['onRuntimeInitialized'] = () => {
   Module.ccall(
@@ -10,7 +10,8 @@ Module['onRuntimeInitialized'] = () => {
 };
 const padoServices = {
   getAllOAuthSources,
-  checkIsLogin
+  checkIsLogin,
+  bindUserAddress
 }
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -120,21 +121,24 @@ const processBinaceReq = async (message) => {
 }
 
 const processpadoServiceReq  = async (message, port) => {
-  const { reqMethodName, params } = message
-  const { rc, result } = await padoServices[reqMethodName]({...params})
+  const { reqMethodName, params = {}, config = {} } = message
+  const { rc, result } = await padoServices[reqMethodName]({...params}, {...config})
   switch (reqMethodName) {
     case "getAllOAuthSources":
       if (rc === 0) {
-        port.postMessage({resMethodName: message.reqMethodName, res: result });
+        port.postMessage({resMethodName: reqMethodName, res: result });
       }
       break;
     case 'checkIsLogin':
       if (rc === 0) {
-        port.postMessage({resMethodName: 'checkIsLogin', res: true });
+        port.postMessage({resMethodName: reqMethodName, res: true });
         chrome.storage.local.set({ userInfo: JSON.stringify(result) })
       } else {
-        port.postMessage({resMethodName: 'checkIsLogin', res: false });
+        port.postMessage({resMethodName: reqMethodName, res: false });
       }
+      break;
+    case 'bindUserAddress':
+      port.postMessage({resMethodName: reqMethodName, res: rc === 0 });
       break;
     default:
       break;
