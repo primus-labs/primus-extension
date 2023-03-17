@@ -1,0 +1,69 @@
+$headerHeight: .5521rem
+
+.appHome
+  position: relative
+  .baseLayer
+    position: absolute
+    z-index: 1
+    width: 100%
+    height: 100%
+    overflow: hidden
+    .appHeader
+      padding: 0 .2604rem
+      height: $headerHeight
+      display: flex
+      align-items: center
+    .appContent
+      // padding-top: 205px
+      margin-top: -5px
+      padding-left: .0729rem
+      padding-right: 1.875rem
+      display: flex
+      justify-content: space-between
+      align-items: center
+      gap: .125rem
+      article
+        width: 1.3385rem
+        display: flex
+        flex-direction: column
+        gap: .3125rem
+        .descWrapper
+          display: flex
+          flex-direction: column
+          gap: .0938rem
+          h1
+            font-family: 'Inter-Black'
+            font-size: .25rem
+            line-height: .3021rem
+            text-transform: uppercase
+            color: #000000
+          p
+            font-family: 'Inter-Regular'
+            font-size: .0938rem
+            line-height: .1146rem
+            color: rgba(0, 0, 0, 0.6)
+        button.startBtn
+          width: 1.7865rem
+          height: .4167rem
+          border: 2px solid #000000
+          border-radius: .5208rem
+          display: flex
+          justify-content: center
+          align-items: center
+          gap: .0417rem
+          color: #000000
+          &:hover,&:active
+            border: 0
+            background: #000
+            color: #fff
+            .iconArrow
+              background-image: url("../../assets/img/rightArrowHover.svg")
+          span
+            font-family: 'Inter-SemiBold'
+            font-size: .125rem
+            line-height: .151rem
+          .iconArrow
+            width: .1667rem
+            height: .1667rem
+            background: url("../../assets/img/rightArrow.svg") no-repeat
+            background-size: 100% 100%
