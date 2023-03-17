@@ -75,17 +75,20 @@ const AuthDialog: React.FC<authDialogProps> = ({onSubmit}) => {
       return 
     }
     const state = uuidv4()
-    const clientRect = document.documentElement.getBoundingClientRect()
-    const {width: clientRectWidth, height: clientRectHeight} = clientRect
+    var width = 520;
+    var height = 620;
+    const windowScreen: Screen = window.screen
+    var left = Math.round((windowScreen.width / 2) - (width / 2));
+    var top = Math.round((windowScreen.height / 2) - (height / 2));
     const windowOptions:chrome.windows.CreateData = {
       url:`https://18.179.8.186:8081/public/render/${source}?state=${state}`,
       type:'popup',
       focused: true,
-      setSelfAsOpener: false,
-      top: Number(clientRectHeight/3),
-      left: Number(clientRectWidth*1.35/3.7),
-      width: Number(clientRectWidth/3.7),
-      height: Number(clientRectHeight/1.54)
+      // setSelfAsOpener: false,
+      top,
+      left,
+      width,
+      height
     }
     chrome.windows.create(windowOptions, (window) => {createAuthWindowCallBack(state, window)})
   }
