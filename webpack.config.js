@@ -151,7 +151,14 @@ var options = {
       stream: require.resolve("stream-browserify"),
       assert: require.resolve("assert"),
       os: require.resolve("os-browserify"),
-      url: require.resolve("url")
+      url: require.resolve("url"),
+      constants: require.resolve("constants-browserify"),
+      zlib: require.resolve("browserify-zlib"),
+      util: require.resolve("util"),
+      path: require.resolve("path-browserify"),
+      net: require.resolve("net"),
+      async_hooks: false,
+      fs: false,
     },
   },
   plugins: [
@@ -205,9 +212,40 @@ var options = {
     }),
     new FriendlyErrorsWebpackPlugin(),
     new webpack.ProvidePlugin({
-			process: 'process/browser',
-            Buffer: ['buffer', 'Buffer']
-		})
+      process: 'process/browser.js',
+      Buffer: ['buffer', 'Buffer']
+		}),
+    new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+      const mod = resource.request.replace(/^node:/, "");
+      switch (mod) {
+          case "buffer":
+            resource.request = "buffer";
+            break;
+          case "http":
+            resource.request = "http";
+            break;
+          case "https":
+            resource.request = "https";
+            break;
+          case "stream":
+            resource.request = "stream";
+            break;
+          case "url":
+            resource.request = "url";
+            break;
+          case "zlib":
+            resource.request = "zlib";
+            break;
+          case "util":
+            resource.request = "util";
+            break;
+          case "net":
+            resource.request = "net";
+            break;
+          default:
+              throw new Error(`Not found ${mod}`);
+      }
+  }),
   ].filter(Boolean),
   infrastructureLogging: {
     level: 'info',
