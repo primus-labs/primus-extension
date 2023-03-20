@@ -21,16 +21,6 @@ $test: prod
     transform: rotateZ(0)
   to
     transform: rotateZ(-360deg)
-@keyframes layer3Animation
-  from
-    transform: rotateZ(0)
-  to
-    transform: rotateZ(-360deg)
-@keyframes shapeInnerWrapperAnimation
-  from
-    transform: rotateZ(0)
-  to
-    transform: rotateZ(360deg)
 .bgAnimation
   position: absolute
   z-index: -1
@@ -55,7 +45,7 @@ $test: prod
     // border-radius: 50%
     // transform: translate(-50%,-50%) translateY(calc(-1 * $outerDiameter / 2))
     // transform: translate(-50%,-50%)
-    animation: shapeInnerWrapperAnimation 10s linear 0s infinite
+    animation: layer1Animation 15s linear 0s infinite
     z-index: 2
   .shapeInnerWrapper2
     position: absolute
@@ -74,9 +64,6 @@ $test: prod
     width: 4.0052rem
     height: 3.9635rem
     img
-      // @include filterBlur($maxBlur)
-      // transform-origin: 25% 75%
-      // animation: layer1Animation 10s linear 0s infinite
       @if($test == prod)
         @include filterBlur($maxBlur)
   .layer2
@@ -86,10 +73,9 @@ $test: prod
     width: 8.9688rem
     height: 6.2708rem
     img
-      // @include filterBlur($minBlur)
-      // animation: layer2Animation 10s linear 0s infinite
       @if($test == prod)
         @include filterBlur($minBlur)
+        @include filterBlur(1.2031rem)
 
   .layer3
     top: .8542rem
@@ -104,8 +90,7 @@ $test: prod
       background-color: #7CE5DF
       @include filterBlur($maxBlur)
     img
-      // @include filterBlur($maxBlur)
-      animation: layer3Animation 10s linear 0s infinite
+      animation: layer1Animation 10s linear 0s infinite
       @if($test == prod)
         @include filterBlur($maxBlur)
 
@@ -116,8 +101,7 @@ $test: prod
     width: 2.3177rem
     height: 4.5156rem
     img
-      // @include filterBlur($minBlur)
       // transform: rotate(-13.27deg)
-      animation: layer1Animation 5s linear 0s infinite
+      animation: layer1Animation 3s linear 0s infinite
       @if($test == prod)
         @include filterBlur($minBlur)

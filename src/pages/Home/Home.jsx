@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router';
 import rem from '@/utils/rem.js';
 import PHeader from '@/components/PHeader'
 import PMask from '@/components/PMask'
@@ -11,6 +12,7 @@ import AsideAnimation from '@/components/AsideAnimation'
 import './Home.sass';
 
 const Home = () => {
+  const navigate = useNavigate()
   const [maskVisible, setMaskVisible] = useState(false)
   const [step, setStep] = useState(0)
   const handleClickStart = () => {
@@ -47,6 +49,9 @@ const Home = () => {
         setStep(2)
       }
       // If keyStore is cached,,it represents that the user has already bound a wallet => data page TODO
+      if ( storedData['keyStore'] ) {
+        navigate('/datas')
+      }
     })
   }
   useEffect(() => {

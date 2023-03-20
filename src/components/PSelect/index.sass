@@ -1,0 +1,84 @@
+
+.pSelect
+  width: .875rem
+  height: .3125rem
+  .selectInput
+    box-sizing: border-box
+    width: 100%
+    height: 100%
+    padding: .0938rem .125rem
+    background: rgba(255, 255, 255, 0.6)
+    backdrop-filter: blur(.0833rem)
+    border-radius: .0625rem
+    font-size: .0833rem
+    line-height: .099rem
+    font-family: 'Inter-Medium'
+    color: rgba(0, 0, 0, 0.6)
+    position: relative
+    cursor: pointer
+    &:before
+      width: .125rem
+      height: .125rem
+      position: absolute
+      content: ''
+      right: .125rem
+      top: 50%
+      transform: translateY(-50%)
+      background: url('../../assets/img/iconBottomArrow.svg') no-repeat
+      background-size: 100% 100%
+  .selectOptions
+    display: flex
+    flex-direction: column
+    border-radius: .0521rem
+    background: rgba(255, 255, 255, 0.4)
+    .selectOption
+      cursor: pointer
+      box-sizing: border-box
+      width: 100%
+      line-height: .2083rem
+      font-size: .0833rem
+      line-height: .2083rem
+      font-family: 'Inter-Medium'
+      color: rgba(0, 0, 0, 0.6)
+
+      padding-left: 24px
+      &:hover
+        color: rgba(0, 0, 0, 0.6)
+  //   appearance: none
+  //   cursor: pointer
+  //   background: url('../../assets/img/iconBottomArrow.svg') no-repeat scroll .625rem center rgba(255, 255, 255, 0.6)
+  //   outline: none
+  //   border: none
+  //   overflow: hidden
+
+  // option
+  //   appearance: none
+  //   border: 0
+  // option::-ms-expand
+  //   display: none
+  //   &:hover
+  //     color: red
+  //     background: green
+  // .abc
+  //   color: yellow
+  // &:before
+  //   position: absolute
+  //   content: ''
+  //   right: .125rem
+  //   top: 50%
+  //   transform: translateY(-50%)
+  //   background: url('../../assets/img/iconBottomArrow.svg') no-repeat scroll right 0.03rem transparent
+  //   background-size: 100% 100%
+  //   width: .125rem
+  //   height: .125rem
+  // width: 100%
+  // height: .3125rem
+  // line-height: .3125rem
+  // background: rgba(0, 0, 0, 0.05)
+  // backdrop-filter: blur(.0833rem)
+  // border-radius: .0625rem
+  // padding-left: .1458rem
+  // font-family: 'Inter-Bold'
+  // font-size: .0938rem
+  // line-height: .1146rem
+  // color: #000
