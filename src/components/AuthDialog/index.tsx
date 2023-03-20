@@ -1,19 +1,19 @@
 import React, {useState, useEffect} from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { connect } from 'react-redux'
 import type { AuthSourcesItem, AuthSourcesItems } from '@/services/user';
 import PHeader from '@/components/PHeader'
 import rightArrow from '@/assets/img/rightArrow.svg';
 import './index.sass'
 
 interface authDialogProps {
-  onSubmit: () => void
+  onSubmit: () => void,
+  padoServicePort: chrome.runtime.Port
 }
 
-const AuthDialog: React.FC<authDialogProps> = ({onSubmit}) => {
+const AuthDialog: React.FC<authDialogProps> = ({onSubmit, padoServicePort}) => {
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([])
   const [authWindowId, setAuthWindowId] = useState<number>()
-  const [padoServicePort, setPadoServicePort] = useState<any>()
-  console.log('auth======padoServicePort', padoServicePort)
 
   const handleClickNext = () => {
     onSubmit()// TODO
@@ -94,9 +94,6 @@ const AuthDialog: React.FC<authDialogProps> = ({onSubmit}) => {
   }
   
   useEffect(() => {
-    setPadoServicePort(chrome.runtime.connect({name:"padoService"}))
-  }, [])
-  useEffect(() => {
     padoServicePort && getAllOAuthSources()
   }, [padoServicePort])
 
@@ -120,4 +117,4 @@ const AuthDialog: React.FC<authDialogProps> = ({onSubmit}) => {
   );
 };
 
-export default AuthDialog;
+export default connect((store) => store, {})(AuthDialog);
