@@ -28,9 +28,9 @@ $test: prod
     transform: rotateZ(-360deg)
 @keyframes shapeInnerWrapperAnimation
   from
-    transform: rotateZ(0)
+    transform: translate(-50%,-50%) rotateZ(0)
   to
-    transform: rotateZ(360deg)
+    transform: translate(-50%,-50%) rotateZ(360deg)
 .bgAnimation
   position: absolute
   z-index: -1
@@ -53,15 +53,11 @@ $test: prod
     width: 100vw
     height: 100vh
     // border-radius: 50%
+    top: 50%
+    left: 50%
     // transform: translate(-50%,-50%) translateY(calc(-1 * $outerDiameter / 2))
-    // transform: translate(-50%,-50%)
+    transform: translate(-50%,-50%)
     animation: shapeInnerWrapperAnimation 10s linear 0s infinite
-    z-index: 2
-  .shapeInnerWrapper2
-    position: absolute
-    width: 100vw
-    height: 100vh
-    z-index: 1
   .layer1,.layer2,.layer3,.layer4
     position: absolute
     img
@@ -87,7 +83,7 @@ $test: prod
     height: 6.2708rem
     img
       // @include filterBlur($minBlur)
-      // animation: layer2Animation 10s linear 0s infinite
+      // animation: layer2Animation 100s linear 0s infinite
       @if($test == prod)
         @include filterBlur($minBlur)
 
