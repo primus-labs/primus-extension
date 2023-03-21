@@ -1,0 +1,47 @@
+$dropdownPadding: .0833rem
+$headerHeight: .5521rem
+.pageHeader
+  padding: 0 .2604rem
+  height: $headerHeight
+  display: flex
+  align-items: center
+  justify-content: space-between
+  .pLogo
+    width: .8229rem
+    height: .2135rem
+  .rightHeader
+    position: relative
+    .pAvatarWrapper
+      padding: .0938rem
+    .dropdownWrapper
+      padding: .0833rem
+      position: absolute
+      z-index: 9999
+      top: .2188rem
+      right: 0
+      background: #FFFFFF
+      border-radius: .0625rem
+      .pAvatarWrapper
+        padding: 0 $dropdownPadding
+      .dropdown
+
+        .dropdownItemWrapper
+          padding: .0417rem 0
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05)
+          .dropdownItem
+            padding: 18px $dropdownPadding
+            display: flex
+            gap: .0625rem
+            font-size: .0833rem
+            line-height: .099rem
+            font-family: 'Inter-Medium'
+            color: #000
+            cursor: pointer
+            img
+              width: .0938rem
+          &:last-child
+            padding: .0521rem 0 0 0
+            border-bottom: 0
+            .dropdownItem
+              background: rgba(0, 0, 0, 0.05)
+              border-radius: .0417rem

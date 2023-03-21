@@ -29,10 +29,17 @@ const PTabs: React.FC<PInputProps> = ({ onChange }) => {
     },
   ]);
   const [activeTab, setActiveTab] = useState<string>('Data');
+  const [focusTab, setFocusTab] = useState<string>();
 
   const handleClickTab = (text: string) => {
     setActiveTab(text);
     onChange(text)
+  };
+  const handleMouseEnter = (text: string) => {
+    setFocusTab(text);
+  };
+  const handleMouseLeave = () => {
+    setFocusTab('');
   };
 
   return (
@@ -40,12 +47,14 @@ const PTabs: React.FC<PInputProps> = ({ onChange }) => {
       {tabs.map((item) => {
         return (
           <div
-            className={activeTab === item.text ? 'tab activeTab' : 'tab'}
+            className={activeTab === item.text ? 'tab activeTab' : focusTab === item.text ? 'tab focusTab' : 'tab'}
             key={item.text}
             onClick={() => handleClickTab(item.text)}
+            onMouseEnter={() => handleMouseEnter(item.text)}
+            onMouseLeave={handleMouseLeave}
           >
             <img
-              src={activeTab === item.text ? item.activeIcon : item.icon}
+              src={activeTab === item.text || focusTab === item.text ? item.activeIcon : item.icon}
               alt=""
             />
             <span>{item.text}</span>

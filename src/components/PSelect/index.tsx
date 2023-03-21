@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import type { ChangeEvent } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import type { ChangeEvent, MouseEvent, PointerEvent } from 'react';
 import './index.sass';
 
 interface PInputProps {
@@ -31,6 +31,7 @@ const PSelect: React.FC<PInputProps> = ({ onChange, placeholder = '' }) => {
     text: 'All',
   });
   const [optionsVisible, setOptionsVisible] = useState(false);
+  const selectInputEl = useRef(null)
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const formatVal = e.target.value.trim();
     onChange(formatVal);
@@ -38,9 +39,21 @@ const PSelect: React.FC<PInputProps> = ({ onChange, placeholder = '' }) => {
   const handleClickSelect = () => {
     setOptionsVisible(visible => !visible);
   };
+  useEffect(() => {
+    const dE = document.documentElement
+    const dEClickHandler: any = (ev: MouseEvent<HTMLElement>) => {
+      if (ev.target !== selectInputEl.current) {
+        setOptionsVisible(false);
+      }
+    }
+    dE.addEventListener('click', dEClickHandler)
+    return () => {
+      dE.removeEventListener('click', dEClickHandler)
+    }
+  }, [])
   return (
     <div className="pSelect">
-      <div className="selectInput" onClick={handleClickSelect}>
+      <div ref={selectInputEl} className="selectInput" onClick={handleClickSelect}>
         {activeOption?.text}
       </div>
       {optionsVisible && (

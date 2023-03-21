@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import PHeader from '@/components/PHeader'
+import PageHeader from '@/components/PageHeader'
 import PTabs from '@/components/PTabs'
 import PInput from '@/components/PInput'
 import PSelect from '@/components/PSelect'
+import DataSourceList from '@/components/DataSourceList'
 import AuthDialog from '@/components/AuthDialog'
 import CreateAccountDialog from '@/components/CreateAccountDialog'
 import SetPwdDialog from '@/components/SetPwdDialog'
@@ -35,9 +36,7 @@ const Lock = () => {
     <div className="appPage appHome pageDataSourceOverview">
       <div className="baseLayer overviewLayer">
         <BackgroundAnimation />
-        <header className="appHeader">
-          <PHeader />
-        </header>
+        <PageHeader />
         <main className="appContent">
           <PTabs onChange={handleChangeTab} />
           <div className="filterWrapper">
@@ -46,6 +45,7 @@ const Lock = () => {
               <PInput onChange={handleChangeSearch} type="text" placeholder="Search" />
             </div>
           </div>
+          <DataSourceList />
         </main>
       </div>
     </div>

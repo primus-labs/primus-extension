@@ -1,0 +1,77 @@
+$dataSourceItemPaddingX: .1146rem
+$dataSourceItemPaddingTop: .1667rem
+.smallFont
+  font-size: .0729rem
+  line-height: .0885rem
+  font-family: 'Inter-Medium'
+  color: rgba(0, 0, 0, 0.6)
+
+.dataSourceItem
+  width: 2.0156rem
+  min-height: 1.2604rem
+  margin-bottom: .1667rem
+  cursor: pointer
+  box-sizing: border-box
+  padding: $dataSourceItemPaddingTop .1146rem .0781rem
+  background: rgba(255, 255, 255, 0.6)
+  backdrop-filter: blur(.0833rem)
+  border-radius: .0625rem
+  display: flex
+  flex-direction: column
+  gap: $dataSourceItemPaddingTop
+  position: relative
+
+  .tag
+    position: absolute
+    content: ''
+    top: .0781rem
+    right: .1146rem
+    @extend .smallFont
+  .dataSourceItemT
+    display: flex
+    gap: .1458rem
+    img
+      width: .4167rem
+    .titleWrapper
+      h6
+        font-size: .1667rem
+        line-height: .2031rem
+        font-family: 'Inter-Medium'
+        color: #000
+      .dateWrapper
+        margin-top: .0573rem
+        padding: .0313rem 8px .0313rem .1667rem
+        background: #E2F8EE
+        border-radius: .0625rem
+        position: relative
+        @extend .smallFont
+        &:before
+          position: absolute
+          content: ''
+          left: .0417rem
+          top: 50%
+          transform: translateY(-50%)
+          width: .1042rem
+          height: .1042rem
+          background: url('../../assets/img/iconSuc.svg')
+          background-size: 100% 100%
+  .dataSourceItemC
+    display: flex
+    justify-content: space-between
+    gap: .0833rem
+    .descItem
+      background: rgba(217, 217, 217, 0.3)
+      border-radius: .0625rem
+      flex: 1
+      display: flex
+      flex-direction: column
+      align-items: center
+      gap: .0365rem
+      padding: .1042rem 0 .1406rem
+      .descT
+        font-size: .0625rem
+        font-family: 'Inter-Medium'
+        color: rgba(0,0,0,0.6)
+      .descC
+        @extend .smallFont
+        color: rgba(0,0,0,0.8)
