@@ -14,7 +14,7 @@ interface SetPwdDialogProps {
 }
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
-  const {onSubmit, onCancel, padoServicePort} = props
+  const { onSubmit, onCancel, padoServicePort } = props
   console.log('props', props)
   const [account, setAccount] = useState<any>()
   const [pwd, setPwd] = useState<string>()
@@ -27,8 +27,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
         legal: false
       },
       {
-        desc: 'A-Z letters',
-        reg: /[A-Z]/,
+        desc: 'a-z letters',
+        reg: /[A-Za-z]/,
         legal: false
       },
       {
@@ -37,37 +37,37 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
         legal: false
       },
       {
-        desc: 'Greater than 10 characters',
+        desc: 'Greater than 8 characters',
         reg: /[\w\W]{8,60}/,
         legal: false
       }
     ]
-    const currentRules =  initalRules.map((rule: any) => {
-          if (rule.reg.test(pwd) ) {
-            rule.legal = true
-          }
-          return rule
-        })
-    return pwd? currentRules: initalRules
+    const currentRules = initalRules.map((rule: any) => {
+      if (rule.reg.test(pwd)) {
+        rule.legal = true
+      }
+      return rule
+    })
+    return pwd ? currentRules : initalRules
   }, [pwd])
   const handleClickNext = () => {
     // TODO validate form again
-    if(!pwd || !confirm || errorTipVisible) {
+    if (!pwd || !confirm || errorTipVisible) {
       return
     }
-    const pwdIsLegal = pwdRules.every(i=>i.legal)
+    const pwdIsLegal = pwdRules.every(i => i.legal)
     if (!pwdIsLegal) { return }
     fetchBindUserAddress()
     onSubmit()
   }
   const fetchBindUserAddress = () => {
-    chrome.storage.local.get(['userInfo'],  (storedData) => {
-      if ( storedData['userInfo'] ) {
-       const userId =  JSON.parse(storedData['userInfo']).id
-       const padoServicePortListener = function(message:any){
-          if(message.resMethodName === 'bindUserAddress') {
+    chrome.storage.local.get(['userInfo'], (storedData) => {
+      if (storedData['userInfo']) {
+        const userId = JSON.parse(storedData['userInfo']).id
+        const padoServicePortListener = function (message: any) {
+          if (message.resMethodName === 'bindUserAddress') {
             console.log("page_get:bindUserAddress:", message.res);
-            if(message.res) {
+            if (message.res) {
               const encryptAccount = account.encrypt(pwd)
               chrome.runtime.sendMessage({
                 type: 'storage',
@@ -108,14 +108,14 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
     setConfirm(val)
   }
 
-  const errorTipVisible = useMemo( () => {
+  const errorTipVisible = useMemo(() => {
     return pwd && confirm && pwd !== confirm
-  },[pwd, confirm])
+  }, [pwd, confirm])
 
   useEffect(() => {
     initAccount()
   }, [])
-  
+
   return (
     <div className="pDialog authDialog setPwdDialog">
       <header className="setPwdDialogHeader">
@@ -131,13 +131,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
         <h1>Set Password</h1>
         <h2>Set a password to protect the information you store locally</h2>
         <h6>Setting</h6>
-        <PInput type="password" onChange={handleChangePwd}/>
+        <PInput type="password" onChange={handleChangePwd} />
         <div className="validateWrapper">
           <div className="descTitle">The following combinations are recommended：</div>
           <ul className="descItems">
             {pwdRules.map(i => {
-              return <li key={i.desc} className={i.legal? 'descItem checked': 'descItem'} >
-              {i.desc}
+              return <li key={i.desc} className={i.legal ? 'descItem checked' : 'descItem'} >
+                {i.desc}
               </li>
             })
             }
@@ -156,7 +156,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
           </div> */}
         </div>
         <h6>Reconfirm</h6>
-        <PInput type="password" onChange={handleChangeConfirm}/>
+        <PInput type="password" onChange={handleChangeConfirm} />
         {errorTipVisible && <p className="errorTip">Entered passwords differ!</p>}
       </main>
       <button className="nextBtn" onClick={handleClickNext}>
