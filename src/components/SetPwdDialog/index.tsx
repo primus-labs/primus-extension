@@ -15,7 +15,6 @@ interface SetPwdDialogProps {
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
   const { onSubmit, onCancel, padoServicePort } = props
-  console.log('props', props)
   const [account, setAccount] = useState<any>()
   const [pwd, setPwd] = useState<string>()
   const [confirm, setConfirm] = useState<string>()

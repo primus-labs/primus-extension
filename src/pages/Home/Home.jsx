@@ -13,47 +13,66 @@ import './Home.sass';
 
 const Home = () => {
   const navigate = useNavigate()
-  const [maskVisible, setMaskVisible] = useState(false)
   const [step, setStep] = useState(0)
-  const handleClickStart = () => {
-    setMaskVisible(true)
-    setStep(1)
+  const handleClickStart = async() => {
+    // setMaskVisible(true)
+    // setStep(1)
+    const isInProcess = await checkActiveStep()
+    if(!isInProcess) {
+      setStep(1)
+    }
   }
   const handleCloseMask = () => {
-    setMaskVisible(false)
     setStep(0)
   }
   const handleSubmitAuth = () => {
-    setStep(step => ++step)
+    setStep(2)
   }
   const handleSubmitCreateAccount = () => {
-    setStep(step => ++step)
+    setStep(3)
   }
   const handleCancelCreateAccount = () => {
-    setStep(step => --step)
+    setStep(2)
   }
   const handleSubmitSetPwd = () => {
-    setStep(step => ++step)
+    setStep(4)
   }
   const handleCancelSetPwd= () => {
-    setStep(step => --step)
+    setStep(3)
   }
   const handleSubmitSetSuc = () => {
-    setMaskVisible(false)
-    setStep(0)
-  }
-  const checkActiveStep = () => {
     navigate('/datas')
-    // chrome.storage.local.get(['userInfo', 'keyStore'],  (storedData) => {
-    //   // If user information is cached,it represents that it is authorized => step2 
-    //   if ( storedData['userInfo'] ) {
-    //     setStep(2)
-    //   }
-    //   // If keyStore is cached,,it represents that the user has already bound a wallet => data page TODO
-    //   if ( storedData['keyStore'] ) {
-    //     navigate('/datas')
-    //   }
-    // })
+  }
+  const checkActiveStep = async() => {
+    // chrome.storage.local.remove(['userInfo', 'keyStore'],  (storedData) => {
+    //   console.log("remove 'userinfo' & 'keyStore' successfully")
+    // })// TODO DEL!!!
+    function getAllStorageSyncData(top_key) {
+      // Immediately return a promise and start asynchronous work
+      return new Promise((resolve, reject) => {
+        // Asynchronously fetch all data from storage.sync.
+        chrome.storage.local.get(top_key, (items) => {
+          // Pass any observed errors down the promise chain.
+          if (chrome.runtime.lastError) {
+            return reject(chrome.runtime.lastError);
+          }
+          // Pass the data retrieved from storage down the promise chain.
+          resolve(items);
+        });
+      });
+    }
+    
+    // It can be called like this:
+    const {userInfo, keyStore} = await getAllStorageSyncData(['userInfo', 'keyStore']);
+    // If user information is cached,it represents that it is authorized => step2 
+    if ( userInfo ) {
+      setStep(2)
+    }
+    // If keyStore is cached,,it represents that the user has already bound a wallet => data page TODO
+    if ( keyStore ) {
+      navigate('/datas')
+    }
+    return userInfo || keyStore
   }
   useEffect(() => {
     rem()
@@ -82,7 +101,7 @@ const Home = () => {
           </article>
         </main>
       </div>
-      {maskVisible && <PMask onClose={handleCloseMask}/>}
+      {[1,2,3,4].includes(step) && <PMask onClose={handleCloseMask}/>}
       {step === 1 && <AuthDialog onSubmit={handleSubmitAuth}/>}
       {step === 2 && <CreateAccountDialog onSubmit={handleSubmitCreateAccount} onCancel={handleCancelCreateAccount}/>}
       {step === 3 && <SetPwdDialog onSubmit={handleSubmitSetPwd} onCancel={handleCancelSetPwd}/>}
