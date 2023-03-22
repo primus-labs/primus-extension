@@ -10,9 +10,14 @@ import SetPwdDialog from '@/components/SetPwdDialog'
 import SetSucDialog from '@/components/SetSucDialog'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import AsideAnimation from '@/components/AsideAnimation'
+import PMask from '@/components/PMask'
+import DataFieldsDialog from '@/components/DataFieldsDialog'
+import type { DataFieldItem } from '@/components/DataFieldsDialog'
+import GetaDataDialog from '@/components/GetDataDialog'
 import './index.sass';
 
 const Lock = () => {
+  const [step, setStep] = useState(1)
   const [maskVisible, setMaskVisible] = useState(false)
   const [step, setStep] = useState(0)
   const handleClickStart = () => {
@@ -28,7 +33,18 @@ const Lock = () => {
   const handleChangeTab = () => {
 
   }
-
+  const handleAdd = () => {
+    setStep(1)
+  }
+  const handleCloseMask = () => {
+    setStep(0)
+  }
+  const onSubmitDataFieldsDialog = (item: DataFieldItem) => {
+    setStep(2)
+  }
+  const onSubmitGetDataDialog = () => {
+    setStep(3)
+  }
   useEffect(() => {
   }, [])
 
@@ -45,9 +61,12 @@ const Lock = () => {
               <PInput onChange={handleChangeSearch} type="text" placeholder="Search" />
             </div>
           </div>
-          <DataSourceList />
+          <DataSourceList onAdd={handleAdd} />
         </main>
       </div>
+      {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
+      {step === 1 && <DataFieldsDialog onSubmit={onSubmitDataFieldsDialog} />}
+      {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} />}
     </div>
   );
 };

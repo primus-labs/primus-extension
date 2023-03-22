@@ -2,10 +2,15 @@ import React, { useEffect, useState, useMemo } from 'react';
 import iconAdd from '@/assets/img/iconAdd.svg'
 import './index.sass';
 
-
-const DataSourceItem = () => {
+interface DataSourceItemProps {
+  onAdd: () => void
+}
+const DataSourceItem: React.FC<DataSourceItemProps> = ({ onAdd }) => {
+  const handleClickAdd = () => {
+    onAdd()
+  }
   return (
-    <div className="dataSourceItem emptyDataSourceItem">
+    <div className="dataSourceItem emptyDataSourceItem" onClick={handleClickAdd}>
       <div className="emptyDataSourceItemC">
         <img src={iconAdd} alt="" />
         <span>Add</span>

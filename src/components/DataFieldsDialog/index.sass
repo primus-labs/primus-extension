@@ -1,0 +1,83 @@
+
+.dataFieldsDialog
+  position: absolute
+  z-index: 3
+  top: 50%
+  left: 50%
+  transform: translate(-50%,-50%)
+  width: 3.125rem
+  background: rgba(255, 255, 255, 0.7)
+  backdrop-filter: blur(32px)
+  border-radius: .125rem
+  display: flex
+  flex-direction: column
+  align-items: center
+
+  button.nextBtn
+    width: 2.1875rem
+    height: .3125rem
+    width: 2.6042rem
+    height: .3021rem
+    background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+    border-radius: .0625rem
+    display: flex
+    justify-content: center
+    align-items: center
+    gap: .0417rem
+    &:hover,&:active
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+    span
+      font-family: 'Inter-Bold'
+      font-size: .0938rem
+      line-height: .1146rem
+      color: #000000
+.dataFieldsDialog
+  padding: .3333rem .2604rem .2604rem
+  .header
+    display: flex
+    flex-direction: column
+    align-items: center
+    gap: .1667rem
+    h1
+      font-family: 'Inter-Bold'
+      font-size: .1667rem
+      line-height: .2031rem
+      color: #000000
+    h2
+      font-family: 'Inter-Regular'
+      font-size: .0833rem
+      line-height: .1354rem
+      color: rgba(0,0,0,.6)
+  main
+    padding: .4401rem 0 .4505rem 0
+    width: 100%
+    ul.dataList
+      width: 100%
+      display: flex
+      justify-content: space-between
+      flex-wrap: wrap
+      li
+        cursor: pointer
+        width: .6771rem
+        height: .6771rem
+        padding: .0911rem 0 .1536rem
+        margin-bottom: .1927rem
+        border: 2px solid rgba(0, 0, 0, 0.1)
+        backdrop-filter: blur(.0944rem)
+        border-radius: .0708rem
+        display: flex
+        flex-direction: column
+
+        align-items: center
+        gap: .0625rem
+        img
+          width: .2917rem
+          height: .2917rem
+        p
+          font-family: 'Inter-Bold'
+          font-size: .0625rem
+          line-height: .0781rem
+          color: #000000
+  button.nextBtn
+    width: 100%
+    cursor: not-allowed

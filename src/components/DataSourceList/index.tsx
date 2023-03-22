@@ -8,7 +8,12 @@ import iconDataSourceOKX from '@/assets/img/iconDataSourceOKX.svg';
 
 import './index.sass';
 
-const DataSourceList = () => {
+interface DataSourceItemProps {
+  onAdd: () => void
+}
+
+const DataSourceList: React.FC<DataSourceItemProps> = ({ onAdd }) => {
+
   const [sourceList, setSourceList] = useState<DataSource[]>([
     {
       icon: iconDataSourceBinance,
@@ -37,13 +42,22 @@ const DataSourceList = () => {
       assetsNo: 2,
       pnl: '-$2000.01'
     }])
+
+  const handleAdd = () => {
+    onAdd()
+  }
+  const handleSelectItem = () => {
+
+  }
+
   return (
     <div className="dataSourceList">
-      {sourceList.length >= 10 && <EmptyDataSourceItem />}
+      {sourceList.length >= 10 && <EmptyDataSourceItem onAdd={handleAdd} />}
       {sourceList.map(item => {
         return (<DataSourceItem key={item.name} {...item} />)
       })}
-      {sourceList.length < 10 && <EmptyDataSourceItem />}
+      {sourceList.length < 10 && <EmptyDataSourceItem onAdd={handleAdd} />}
+
     </div>
   );
 };

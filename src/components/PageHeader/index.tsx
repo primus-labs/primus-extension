@@ -56,7 +56,7 @@ const PHeader = () => {
     <header className="pageHeader">
       <img src={logo} className="pLogo" alt="logo" />
       <div className="rightHeader">
-        <div onClick={handleClickAvatar} onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
+        <div className="rightHeaderInner" onClick={handleClickAvatar} onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
           <PAvatar />
         </div>
         {dorpdownVisible && <div className="dropdownWrapper" onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
