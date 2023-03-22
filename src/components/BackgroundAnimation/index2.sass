@@ -4,7 +4,7 @@ $innerDiameter: 100vh
 // $maxBlur: 1.2135rem
 $minBlur: .7656rem
 $maxBlur: 1.1302rem
-$miniBlur: 1.3021rem
+$miniBlur: .0833rem
 @mixin filterBlur($blur)
   filter: blur($blur)
 $test: prod
@@ -46,7 +46,6 @@ $test: prod
     // transform: translate(-50%,-50%) translateY(calc(-1 * $outerDiameter / 2))
     // transform: translate(-50%,-50%)
     animation: layer1Animation 15s linear 0s infinite
-    animation: layer1Animation 20s linear 0s infinite
     z-index: 2
   .shapeInnerWrapper2
     position: absolute
@@ -66,7 +65,7 @@ $test: prod
     height: 3.9635rem
     img
       @if($test == prod)
-        // @include filterBlur($maxBlur)
+        @include filterBlur($maxBlur)
   .layer2
     top: .6979rem
     left: .6771rem
@@ -75,8 +74,8 @@ $test: prod
     height: 6.2708rem
     img
       @if($test == prod)
-        // @include filterBlur($minBlur)
-        // @include filterBlur(1.2031rem)
+        @include filterBlur($minBlur)
+        @include filterBlur(1.2031rem)
 
   .layer3
     top: .8542rem
@@ -89,12 +88,11 @@ $test: prod
       height: 5.5469rem
       border-radius: 50%
       background-color: #7CE5DF
-      // @include filterBlur($maxBlur)
+      @include filterBlur($maxBlur)
     img
       animation: layer1Animation 10s linear 0s infinite
-      animation: layer1Animation 13s linear 0s infinite
       @if($test == prod)
-        // @include filterBlur($maxBlur)
+        @include filterBlur($maxBlur)
 
   .layer4
     top: .526rem
@@ -105,6 +103,5 @@ $test: prod
     img
       // transform: rotate(-13.27deg)
       animation: layer1Animation 3s linear 0s infinite
-      animation: layer1Animation 4s linear 0s infinite
       @if($test == prod)
-        // @include filterBlur($minBlur)
+        @include filterBlur($minBlur)

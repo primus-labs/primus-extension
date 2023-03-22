@@ -1,4 +1,5 @@
 $headerHeight: .5521rem
+$headerHeight: 106px
 
 .appHome
   position: relative
@@ -10,6 +11,7 @@ $headerHeight: .5521rem
     overflow: hidden
     .appHeader
       padding: 0 .2604rem
+      padding: 50px
       height: $headerHeight
       display: flex
       align-items: center
@@ -17,40 +19,53 @@ $headerHeight: .5521rem
       // padding-top: 205px
       margin-top: -5px
       padding-left: .0729rem
+      padding-left: 14px
       padding-right: 1.875rem
+      padding-right: 360px
       display: flex
       justify-content: space-between
       align-items: center
       gap: .125rem
+      gap: 24px
       article
         width: 2.7083rem
+        width: 520px
         display: flex
         flex-direction: column
         gap: .3125rem
+        gap: 60px
         .descWrapper
           display: flex
           flex-direction: column
           gap: .0938rem
+          gap: 18px
           h1
             font-family: 'Inter-Black'
             font-size: .25rem
+            font-size: 48px
             line-height: .3021rem
+            line-height: 58px
             text-transform: uppercase
             color: #000000
           p
             font-family: 'Inter-Regular'
             font-size: .0938rem
+            font-size: 18px
             line-height: .1146rem
-            color: rgba(0, 0, 0, 0.6)
+            line-height: 22px
+            color: rgba(31, 16, 16, 0.6)
         button.startBtn
           width: 1.7865rem
-          height: .4167rem
+          width: 343px
+          height: 80px
           border: 2px solid #000000
           border-radius: .5208rem
+          border-radius: 100px
           display: flex
           justify-content: center
           align-items: center
           gap: .0417rem
+          gap: 8px
           color: #000000
           &:hover,&:active
             border: 0
@@ -61,41 +76,13 @@ $headerHeight: .5521rem
           span
             font-family: 'Inter-SemiBold'
             font-size: .125rem
+            font-size: 24px
             line-height: .151rem
+            line-height: 29px
           .iconArrow
             width: .1667rem
+            width: 32px
             height: .1667rem
+            height: 32px
             background: url("../../assets/img/rightArrow.svg") no-repeat
             background-size: 100% 100%
-
-// $a: 160px // 椭圆x轴半径(长半径)
-// $b: 80px // 椭圆y轴半径(短半径)
-// $s: 40 // 坐标点的数目(数目越大，动画越精细)
-
-// .ellips
-//   width: $a*2
-//   height: $b*2
-//   border-radius: 100%
-//   border: 1px solid #333
-//   position: relative
-//   margin: 30px 0 0 20px
-
-// .dot
-//   width: 20px
-//   height: 20px
-//   left: $a - 10px
-//   top: $b - 10px
-//   background: red
-//   border-radius: 100%
-//   position: absolute
-//   animation: move 10s linear infinite
-
-// @function loop($index)
-//   @while ($index < $s+1)
-//     loop($index + 1)
-//     $keyframeSel: $index * 100%/$s
-//     #{$keyframeSel}
-//       transform: translate($a*cos(360deg/$s*$index),$b*sin(360deg/$s*$index),)
-
-// @keyframes move
-//   loop(0)

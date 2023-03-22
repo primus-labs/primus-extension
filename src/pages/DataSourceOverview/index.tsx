@@ -17,9 +17,8 @@ import GetaDataDialog from '@/components/GetDataDialog'
 import './index.sass';
 
 const Lock = () => {
-  const [step, setStep] = useState(1)
   const [maskVisible, setMaskVisible] = useState(false)
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(2)
   const handleClickStart = () => {
     setMaskVisible(true)
     setStep(1)
