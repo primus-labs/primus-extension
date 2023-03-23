@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router';
+import {connect} from 'react-redux';
 import rem from '@/utils/rem.js';
+import {getAllStorageAsync} from '@/store/actions'
+// import store from '@/store/index'
 import PHeader from '@/components/PHeader'
 import PMask from '@/components/PMask'
 import AuthDialog from '@/components/AuthDialog'
@@ -10,10 +13,12 @@ import SetSucDialog from '@/components/SetSucDialog'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import AsideAnimation from '@/components/AsideAnimation'
 import './Home.sass';
+import { getMutipleStorageSyncData } from '@/utils/utils'
 
-const Home = () => {
+const Home = (props) => {
+  // const {getAllStorageAsync} = props
   const navigate = useNavigate()
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(1)
   const handleClickStart = async() => {
     // setMaskVisible(true)
     // setStep(1)
@@ -32,13 +37,13 @@ const Home = () => {
     setStep(3)
   }
   const handleCancelCreateAccount = () => {
-    setStep(2)
+    setStep(1)
   }
   const handleSubmitSetPwd = () => {
     setStep(4)
   }
   const handleCancelSetPwd= () => {
-    setStep(3)
+    setStep(2)
   }
   const handleSubmitSetSuc = () => {
     navigate('/datas')
@@ -47,23 +52,9 @@ const Home = () => {
     // chrome.storage.local.remove(['userInfo', 'keyStore'],  (storedData) => {
     //   console.log("remove 'userinfo' & 'keyStore' successfully")
     // })// TODO DEL!!!
-    function getAllStorageSyncData(top_key) {
-      // Immediately return a promise and start asynchronous work
-      return new Promise((resolve, reject) => {
-        // Asynchronously fetch all data from storage.sync.
-        chrome.storage.local.get(top_key, (items) => {
-          // Pass any observed errors down the promise chain.
-          if (chrome.runtime.lastError) {
-            return reject(chrome.runtime.lastError);
-          }
-          // Pass the data retrieved from storage down the promise chain.
-          resolve(items);
-        });
-      });
-    }
     
     // It can be called like this:
-    const {userInfo, keyStore} = await getAllStorageSyncData(['userInfo', 'keyStore']);
+    let {userInfo, keyStore} = await getMutipleStorageSyncData(['userInfo','keyStore']);
     // If user information is cached,it represents that it is authorized => step2 
     if ( userInfo ) {
       setStep(2)
@@ -74,9 +65,15 @@ const Home = () => {
     }
     return userInfo || keyStore
   }
+  const initalPage = async () => {
+    await getAllStorageAsync()
+    // console.log('props', props, store.getState())
+    await checkActiveStep()
+  }
   useEffect(() => {
     rem()
-    checkActiveStep()
+    initalPage()
+    // navigate('/datas')// TODO !!!DEL
   }, [])
 
   return (
@@ -109,5 +106,9 @@ const Home = () => {
     </div>
   );
 };
-
 export default Home;
+// export default connect(
+//   (store) => store, 
+//   {
+//     getAllStorageAsync
+//   })(Home);

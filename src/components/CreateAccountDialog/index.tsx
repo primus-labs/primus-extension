@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux'
 import rightArrow from '@/assets/img/rightArrow.svg';
 import iconChecked from '@/assets/img/iconChecked.svg';
 import iconETH from '@/assets/img/iconETH.svg';
@@ -8,13 +9,16 @@ import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.svg';
 import iconNetwork6 from '@/assets/img/iconNetwork6.svg';
 import './index.sass'
-
+import { getSingleStorageSyncData } from '@/utils/utils'
 
 interface CretateAccountDialogProps {
   onSubmit: () => void,
-  onCancel: () => void
+  onCancel: () => void,
+  // userInfo: object
 }
-const CretateAccountDialog: React.FC<CretateAccountDialogProps> = ({onSubmit, onCancel}) => {
+const CreateAccountDialog: React.FC<CretateAccountDialogProps> = (props) => {
+  const { onSubmit, onCancel } = props
+  const [email, setEmail] = useState<string>()
   const networkList = [
     // {
     //   icon: iconETH,
@@ -47,14 +51,24 @@ const CretateAccountDialog: React.FC<CretateAccountDialogProps> = ({onSubmit, on
   const handleClickBack = () => {
     onCancel()
   }
-  
+  const getUserInfo = async () => {
+    const userInfo: any = await getSingleStorageSyncData('userInfo');
+    if (userInfo) {
+      const em = JSON.parse(userInfo).email
+      setEmail(em)
+    }
+  }
+  useEffect(() => {
+    getUserInfo()
+  }, [])
+
   return (
     <div className="pDialog authDialog createAccountDialog">
       <header className="createAccountDialogHeader">
         <div className="iconBack" onClick={handleClickBack}></div>
         <div className="haderContent">
           <i></i>
-          <span>tate@padolabs.org</span>
+          <span>{email}</span>
           <img src={iconChecked} alt="back" />
         </div>
       </header>
@@ -86,4 +100,4 @@ const CretateAccountDialog: React.FC<CretateAccountDialogProps> = ({onSubmit, on
   );
 };
 
-export default CretateAccountDialog;
+export default connect((store) => store, {})(CreateAccountDialog);

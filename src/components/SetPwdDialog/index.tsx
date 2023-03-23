@@ -41,13 +41,18 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
         legal: false
       }
     ]
-    const currentRules = initalRules.map((rule: any) => {
-      if (rule.reg.test(pwd)) {
-        rule.legal = true
-      }
-      return rule
-    })
-    return pwd ? currentRules : initalRules
+    if (pwd) {
+      const currentRules = initalRules.map((rule: any) => {
+        if (rule.reg.test(pwd)) {
+          rule.legal = true
+        }
+        return rule
+      })
+      console.log(pwd, currentRules)
+      return currentRules
+    } else {
+      return initalRules
+    }
   }, [pwd])
   const handleClickNext = () => {
     // TODO validate form again
