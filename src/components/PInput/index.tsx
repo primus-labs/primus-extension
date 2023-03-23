@@ -17,19 +17,16 @@ const PInput: React.FC<PInputProps> = ({
   placeholder = '',
   copiable = false
 }) => {
-  const inputEl = useRef(null);
+  const inputEl = useRef<any>(null);
   const [copied, setCopied] = useState<boolean>(false)
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const formatVal = e.target.value.trim();
     onChange(formatVal);
   };
   const handleCopy = () => {
-    // alert('Completed')
-
     // if (navigator?.clipboard?.writeText)
-    //   return navigator.clipboard.writeText(str);
+    navigator.clipboard.writeText(inputEl.current?.value);
     // return Promise.reject('The Clipboard API is not available.');
-
     setCopied(true)
     setTimeout(() => {
       setCopied(false)

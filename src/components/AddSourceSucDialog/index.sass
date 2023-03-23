@@ -1,4 +1,4 @@
-.getDataDialog
+.addSourceDialog
   position: absolute
   z-index: 3
   top: 50%
@@ -12,7 +12,43 @@
   display: flex
   flex-direction: column
   align-items: center
-
+  justify-content: space-between
+  padding: 64px 50px 50px
+  button.nextBtn
+    width: 100%
+    height: 58px
+    background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+    border-radius: 12px
+    display: flex
+    justify-content: center
+    align-items: center
+    gap: 8px
+    &:hover,&:active
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+      span
+        font-family: 'Inter-Bold'
+        font-size: 18px
+        line-height: 22px
+        color: #000000
+  main
+    display: flex
+    flex-direction: column
+    align-items: center
+    paddint-top: 128px
+    img
+      width: 128px
+    h1
+      font-family: 'Inter-Bold'
+      font-size: 32px
+      line-height: 39px
+      color: #000000
+      padding-top: 32px
+      padding-bottom: 12px
+    h2
+      font-family: 'Inter-Regular'
+      font-size: 16px
+      line-height: 26px
+      color: rgba(0,0,0,0.6)
   button.nextBtn
     width: 420px
     height: 60px
@@ -31,52 +67,3 @@
       font-size: 18px
       line-height: 22px
       color: #000000
-.getDataDialog
-  padding: 64px 50px 50px
-
-  main
-    padding: 0 0 129px 0
-    width: 100%
-    display: flex
-    flex-direction: column
-    align-items: center
-    gap: 32px
-    &.compactMain
-      gap: 18px
-      padding-bottom: 51px
-      h1
-        padding-bottom: 14px
-    h1
-      font-family: 'Inter-Bold'
-      font-size: 32px
-      line-height: 39px
-      color: #000000
-    h2
-      font-family: 'Inter-Regular'
-      font-size: 16px
-      line-height: 26px
-      color: rgba(0,0,0,.6)
-      align-self: flex-start
-
-    .formItem
-      width: 100%
-      display: flex
-      flex-direction: column
-      h6
-        font-family: 'Inter-Regular'
-        font-size: 18px
-        line-height: 22px
-        color: rgba(0,0,0,0.6)
-        padding-bottom: 8px
-    .tipWrapper
-      display: flex
-      justify-content: center
-      gap: 12px
-      font-family: 'Inter-Regular'
-      font-size: 14px
-      line-height: 22px
-      color: rgba(0,0,0,0.6)
-      >a
-        color: #0066FF
-  button.nextBtn
-    width: 100%

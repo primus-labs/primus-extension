@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import PInput from '@/components/PInput/index'
-import iconB from '@/assets/img/iconB.svg';
-import iconUser from '@/assets/img/iconUser.svg';
-import iconConnect from '@/assets/img/iconConnect.svg';
+import Bridge from '@/components/Bridge/index'
 
 import './index.sass'
 
@@ -13,11 +11,13 @@ export type DataFieldItem = {
 }
 interface CretateAccountDialogProps {
   onSubmit: (name: DataFieldItem) => void,
+  needPassword: boolean
   // onCancel: () => void
 }
-const GetDataDialog: React.FC<CretateAccountDialogProps> = ({ onSubmit }) => {
+const GetDataDialog: React.FC<CretateAccountDialogProps> = ({ onSubmit, needPassword }) => {
   const [pwd, setPwd] = useState<string>()
   const [confirm, setConfirm] = useState<string>()
+  const [passphase, setPasspahse] = useState<string>()
   const handleClickNext = () => {
     // onSubmit()// TODO
   }
@@ -28,18 +28,16 @@ const GetDataDialog: React.FC<CretateAccountDialogProps> = ({ onSubmit }) => {
   const handleChangeConfirm = (val: string) => {
     setConfirm(val)
   }
+  const handleChangePassphase = (val: string) => {
+    setPasspahse(val)
+  }
 
   return (
     <div className="getDataDialog">
-      <main>
+      <main className={needPassword ? 'compactMain' : ''}>
         <h1>Get data</h1>
         <h2>Use your API keys to get data from Binance. .......</h2>
-
-        <div className="bridgeWrapper">
-          <img className="from" src={iconUser} alt="" />
-          <img className="connectSymbol" src={iconConnect} alt="" />
-          <img className="to" src={iconB} alt="" />
-        </div>
+        <Bridge />
         <div className="formItem">
           <h6>API Key</h6>
           <PInput type="text" onChange={handleChangePwd} copiable />
@@ -47,6 +45,10 @@ const GetDataDialog: React.FC<CretateAccountDialogProps> = ({ onSubmit }) => {
         <div className="formItem">
           <h6>Secret Key</h6>
           <PInput type="password" placeholder="Please enter Secret Key" onChange={handleChangeConfirm} copiable />
+        </div>
+        <div className="formItem">
+          <h6>PassPhase</h6>
+          <PInput type="password" placeholder="" onChange={handleChangePassphase} copiable />
         </div>
         <div className="tipWrapper">
           <span>How to get API Key&Secret key?</span>

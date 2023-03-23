@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux'
+// import { connect } from 'react-redux'
 import rightArrow from '@/assets/img/rightArrow.svg';
 import iconChecked from '@/assets/img/iconChecked.svg';
 import iconETH from '@/assets/img/iconETH.svg';
@@ -100,4 +100,5 @@ const CreateAccountDialog: React.FC<CretateAccountDialogProps> = (props) => {
   );
 };
 
-export default connect((store) => store, {})(CreateAccountDialog);
+export default CreateAccountDialog;
+// export default connect((store) => store, {})(CreateAccountDialog);

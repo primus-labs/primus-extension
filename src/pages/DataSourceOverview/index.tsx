@@ -14,11 +14,12 @@ import PMask from '@/components/PMask'
 import DataFieldsDialog from '@/components/DataFieldsDialog'
 import type { DataFieldItem } from '@/components/DataFieldsDialog'
 import GetaDataDialog from '@/components/GetDataDialog'
+import AddSourceSucDialog from '@/components/AddSourceSucDialog'
 import './index.sass';
 
 const Lock = () => {
   const [maskVisible, setMaskVisible] = useState(false)
-  const [step, setStep] = useState(2)
+  const [step, setStep] = useState(0)
   const handleClickStart = () => {
     setMaskVisible(true)
     setStep(1)
@@ -44,6 +45,10 @@ const Lock = () => {
   const onSubmitGetDataDialog = () => {
     setStep(3)
   }
+  const onSubmitAddSourceSucDialog = () => {
+    setStep(0)
+    // TODO refresh data source
+  }
   useEffect(() => {
   }, [])
 
@@ -65,7 +70,8 @@ const Lock = () => {
       </div>
       {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
       {step === 1 && <DataFieldsDialog onSubmit={onSubmitDataFieldsDialog} />}
-      {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} />}
+      {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} needPassword />}
+      {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} />}
     </div>
   );
 };

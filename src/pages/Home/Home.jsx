@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router';
 import {connect} from 'react-redux';
 import rem from '@/utils/rem.js';
-import {getAllStorageAsync} from '@/store/actions'
+// import {getAllStorageAsync} from '@/store/actions'
 // import store from '@/store/index'
 import PHeader from '@/components/PHeader'
 import PMask from '@/components/PMask'
@@ -66,7 +66,7 @@ const Home = (props) => {
     return userInfo || keyStore
   }
   const initalPage = async () => {
-    await getAllStorageAsync()
+    // await getAllStorageAsync()
     // console.log('props', props, store.getState())
     await checkActiveStep()
   }
