@@ -1,10 +1,10 @@
 $outerDiameter: 25vh
 $innerDiameter: 100vh
-// $minBlur: .8229rem
-// $maxBlur: 1.2135rem
-$minBlur: .7656rem
-$maxBlur: 1.1302rem
-$miniBlur: 1.3021rem
+// $minBlur: 157.9968px
+// $maxBlur: 232.992px
+$minBlur: 146.9952px
+$maxBlur: 217px
+$miniBlur: 250.0032px
 @mixin filterBlur($blur)
   filter: blur($blur)
 $test: prod
@@ -59,34 +59,34 @@ $test: prod
       @extend .centerImg
 
   .layer1
-    top: -0.3854rem
-    right: .5104rem
+    top: -73.9968px
+    right: 97.9968px
     z-index: 1
-    width: 4.0052rem
-    height: 3.9635rem
+    width: 768.9984px
+    height: 760.992px
     img
       @if($test == prod)
         // @include filterBlur($maxBlur)
   .layer2
-    top: .6979rem
-    left: .6771rem
+    top: 133.9968px
+    left: 130.0032px
     z-index: 2
-    width: 8.9688rem
-    height: 6.2708rem
+    width: 1722.0096px
+    height: 1203.9936px
     img
       @if($test == prod)
         // @include filterBlur($minBlur)
-        // @include filterBlur(1.2031rem)
+        // @include filterBlur(230.9952px)
 
   .layer3
-    top: .8542rem
-    left: -0.8281rem
+    top: 164.0064px
+    left: -158.9952px
     z-index: 3
-    width: 2.9635rem
-    height: 5.5469rem
+    width: 568.992px
+    height: 1065.0048px
     .imgBox
-      width: 2.9635rem
-      height: 5.5469rem
+      width: 568.992px
+      height: 1065.0048px
       border-radius: 50%
       background-color: #7CE5DF
       // @include filterBlur($maxBlur)
@@ -97,11 +97,11 @@ $test: prod
         // @include filterBlur($maxBlur)
 
   .layer4
-    top: .526rem
-    left: .8438rem
+    top: 100.992px
+    left: 162.0096px
     z-index: 4
-    width: 2.3177rem
-    height: 4.5156rem
+    width: 444.9984px
+    height: 866.9952px
     img
       // transform: rotate(-13.27deg)
       animation: layer1Animation 3s linear 0s infinite
