@@ -15,7 +15,7 @@ const PInput: React.FC<PInputProps> = ({
   onChange,
   type = 'text',
   placeholder = '',
-  copiable = true
+  copiable = false
 }) => {
   const inputEl = useRef(null);
   const [copied, setCopied] = useState<boolean>(false)

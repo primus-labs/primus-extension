@@ -42,11 +42,11 @@ const GetDataDialog: React.FC<CretateAccountDialogProps> = ({ onSubmit }) => {
         </div>
         <div className="formItem">
           <h6>API Key</h6>
-          <PInput type="text" onChange={handleChangePwd} />
+          <PInput type="text" onChange={handleChangePwd} copiable />
         </div>
         <div className="formItem">
           <h6>Secret Key</h6>
-          <PInput type="password" placeholder="Please enter Secret Key" onChange={handleChangeConfirm} />
+          <PInput type="password" placeholder="Please enter Secret Key" onChange={handleChangeConfirm} copiable />
         </div>
         <div className="tipWrapper">
           <span>How to get API Key&Secret key?</span>
