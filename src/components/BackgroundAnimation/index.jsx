@@ -8,6 +8,8 @@ import bgLayer4 from '@/assets/img/bgLayer42.svg';
 const BackgroundAnimation = (props) => {
   return (
     <div className="bgAnimation">
+      <div className="backingBoard">
+      </div>
       <div className="shapeInnerWrapper2">
         <div className="layer2"><img src={bgLayer2}  alt="shapeImg"/></div>
       </div>
