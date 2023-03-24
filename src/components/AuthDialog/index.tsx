@@ -133,4 +133,4 @@ const AuthDialog: React.FC<authDialogProps> = ({ onSubmit, padoServicePort }) =>
   );
 };
 
-export default connect((store) => store, {})(AuthDialog);
+export default connect(({ padoServicePort }) => ({ padoServicePort }), {})(AuthDialog);

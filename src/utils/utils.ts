@@ -1,3 +1,30 @@
+import BigNumber from 'bignumber.js';
+
+export function gt(a: number,b: number) {
+  return new BigNumber(a).gt(new BigNumber(b))
+}
+export function gte(a: number,b: number) {
+  return new BigNumber(a).gte(new BigNumber(b))
+}
+export function lt(a: number,b: number) {
+  return new BigNumber(a).lt(new BigNumber(b))
+}
+export function lte(a: number,b: number) {
+  return new BigNumber(a).lte(new BigNumber(b))
+}
+export function add(a: number,b: number) {
+  return new BigNumber(a).plus(new BigNumber(b))
+}
+export function sub(a: number,b: number) {
+  return new BigNumber(a).minus(new BigNumber(b))
+}
+export function mul(a: number,b: number) {
+  return new BigNumber(a).times(new BigNumber(b))
+}
+export function div(a: number,b: number) {
+  return new BigNumber(a).div(new BigNumber(b))
+}
+
 export  function formatAddress (str:string) {
   const startS = str.substr(0, 6)
   const endS = str.substr(-4)

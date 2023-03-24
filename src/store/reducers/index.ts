@@ -6,6 +6,7 @@
 // initial state
 const initState = {
   padoServicePort: chrome.runtime.connect({ name: 'padoService' }),
+  networkreqPort: chrome.runtime.connect({ name: 'networkreq' }),
   // userInfo: {},
   // keyStore: '',
 };

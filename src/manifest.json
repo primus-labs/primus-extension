@@ -19,6 +19,8 @@
   "host_permissions": [
     "http://18.179.8.186:8080/",
     "https://18.179.8.186:8081/",
-    "https://www.okx.com/"
+    "https://www.okx.com/",
+    "https://api.binance.com/",
+    "https://api.kucoin.com/"
   ]
 }

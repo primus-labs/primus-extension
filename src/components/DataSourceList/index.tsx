@@ -26,7 +26,7 @@ const DataSourceList: React.FC<DataSourceItemProps> = ({ onAdd }) => {
     },
     {
       icon: iconDataSourceTwitter,
-      name: 'Binance',
+      name: 'KuCoin',
       type: 'Social',
       date: '12 Mar, 2023',
       commits: 3000,
