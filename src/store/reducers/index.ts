@@ -11,7 +11,7 @@ const initState = {
 };
 
 // reducer
-const reducer:any = async function (state = initState, action: any) {
+const reducer:any = function (state = initState, action: any) {
   // switch (action.type) {
     // case SETKEYSTORE:
     //   return { ...state, keyStore: action.payload };

@@ -18,7 +18,7 @@ import { getMutipleStorageSyncData } from '@/utils/utils'
 const Home = (props) => {
   // const {getAllStorageAsync} = props
   const navigate = useNavigate()
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0)
   const handleClickStart = async() => {
     // setMaskVisible(true)
     // setStep(1)
