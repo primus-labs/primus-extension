@@ -3,7 +3,7 @@ import PInput from '@/components/PInput/index'
 import Bridge from '@/components/Bridge/index'
 import './index.sass'
 
-type GetDataFormProps = {
+export type GetDataFormProps = {
   apiKey: string;
   secretKey: string;
   passPhase?: string;
