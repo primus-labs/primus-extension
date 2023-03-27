@@ -4,6 +4,9 @@ import {
   bindUserAddress,
 } from '@/services/user';
 import Binance from '@/services/exchange/binance';
+import { getBinanceDataAsync } from '@/store/actions';
+import { getCurrentDate } from '@/utils/utils';
+import store from '@/store/index';
 import Module from './hello';
 Module['onRuntimeInitialized'] = () => {
   Module.ccall(
@@ -125,10 +128,21 @@ const processNetworkReq = async (message, port) => {
   switch (type) {
     case 'exchange-binance':
       EXCHANGEINFO.binance = { apiKey, secretKey };
-      const ex = new networkreq[type]({ apiKey, secretKey });
-      const res = await ex.getInfo();
-      console.log('binance account info', ex);
-      port.postMessage({ resType: type, res: true });
+      await store.dispatch(getBinanceDataAsync(message));
+      const { totalBalance, tokenListMap } = store.getState().binance;
+      const binanceData = {
+        apiKey,
+        secretKey, // TODO encryption
+        totalBalance,
+        tokenListMap,
+        date: getCurrentDate(),
+      };
+      chrome.storage.local.set(
+        { [binance]: JSON.stringify(binanceData) },
+        () => {
+          port.postMessage({ resType: type, res: true });
+        }
+      );
       // const response = await processBinaceReq(message);
       // console.log('exchange-binance response', response);
       // port.postMessage({

@@ -146,6 +146,7 @@ class Binance {
   }
   async getInfo() {
     await this.getTotalAccountBalance();
+    return this.exchange;
   }
 }
 export default Binance;

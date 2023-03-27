@@ -18,17 +18,29 @@ import GetaDataDialog from '@/components/GetDataDialog'
 import type { GetDataFormProps } from '@/components/GetDataDialog'
 import AddSourceSucDialog from '@/components/AddSourceSucDialog'
 import './index.sass';
-
-
+import { getMutipleStorageSyncData } from '@/utils/utils'
+import { DATASOURCEMAP } from '@/utils/constants'
+import type { DataSourceItemList } from '@/components/DataSourceList'
 
 interface DataSourceOverviewProps {
-  networkreqPort: chrome.runtime.Port
+  networkreqPort: chrome.runtime.Port,
+  binance?: {
+    totalBalance: any,
+    tokenListMap: any
+  }
 }
 
+type DataSourceStorages = {
+  binance?: any,
+  okx?: any,
+  kucoin?: any,
+  twitter?: any,
+}
 
-const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort }) => {
+const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort, binance }) => {
   const [maskVisible, setMaskVisible] = useState(false)
   const [step, setStep] = useState(0)
+  const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
   const handleClickStart = () => {
     setMaskVisible(true)
     setStep(1)
@@ -67,9 +79,45 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort 
   }
   const onSubmitAddSourceSucDialog = () => {
     setStep(0)
-    // TODO refresh data source
+    getDataSourceList()// refresh data source
+  }
+  const handleClearStorage = () => {
+    chrome.storage.local.remove(['userInfo', 'keyStore', 'binance'], () => {
+      console.log("remove 'userinfo' & 'keyStore' successfully")
+    })
+  }
+  const getDataSourceList = async () => {
+    const sourceNameList = Object.keys(DATASOURCEMAP)
+    let res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
+    const activeSourceList = sourceNameList.filter(item => res[item as keyof typeof res]).map((item) => {
+      const sourceData = JSON.parse(res[item as keyof typeof res])
+      return ({
+        ...DATASOURCEMAP[item as keyof typeof res],
+        ...sourceData,
+        assetsNo: Object.keys(sourceData.tokenListMap).length
+      })
+
+    })
+    console.log('getDataSourceList', activeSourceList)
+    setDataSourceList(activeSourceList)
   }
   useEffect(() => {
+    getDataSourceList()
+    chrome.management.setEnabled(
+      'fmkadmapgofadopljbjfkapdkoienihi',
+      true,
+      () => {
+        console.log('you can use react developer tool')
+      },
+    )
+    chrome.management.setEnabled(
+      'lmhkpmbekcpmknklioeibfkpmmfibljd',
+      true,
+      () => {
+        console.log('you can use redux developer tool')
+      },
+    )
+
   }, [])
 
   return (
@@ -85,7 +133,9 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort 
               <PInput onChange={handleChangeSearch} type="text" placeholder="Search" />
             </div>
           </div>
-          <DataSourceList onAdd={handleAdd} />
+          <DataSourceList onAdd={handleAdd} list={dataSourceList} />
+          {/* // TODO DEL!!! */}
+          <button className="clearStorageBtn" onClick={handleClearStorage}>点这里，从头再来</button>
         </main>
       </div>
       {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
@@ -97,4 +147,4 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort 
 };
 
 
-export default connect(({ networkreqPort }) => ({ networkreqPort }), {})(DataSourceOverview);
+export default connect(({ networkreqPort, binance }) => ({ networkreqPort, binance }), {})(DataSourceOverview);

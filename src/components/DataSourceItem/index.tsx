@@ -1,26 +1,38 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import BigNumber from 'bignumber.js'
+import { gt } from '@/utils/utils';
 import './index.sass';
 
 
-export type DataSource = {
-  icon: any;
-  name: string;
+export type DataSourceItemType = {
+  icon: any,
+  name: string,
   type: 'Social' | 'Assets';
-  date: string;
+  date: string,
+  totalBalance: string, // TODO format amount
+  assetsNo: number,
+  pnlAmount?: string,
+  pnlPercent?: string,
   commits?: number;
   followers?: number;
   totalViews?: number;
-  totalBalance?: string; // TODO format amount
-  assetsNo?: number;
   pnl?: string; // TODO format amount
 };
 type SourceDescItem = {
   name: string;
   sourceKey: string;
 };
+interface DataSourceItemProps {
+  item: DataSourceItemType
+}
 
-const DataSourceItem: React.FC<DataSource> = (source) => {
-  const { icon, name, type, date, commits, followers, totalViews } = source;
+const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source }) => {
+  const { icon, name, type, date, totalBalance, assetsNo, pnlAmount, commits, followers, totalViews } = source;
+  const formatSource = {
+    ...source,
+    totalBalance: totalBalance ? `$${new BigNumber(totalBalance).toFixed(2)}` : '-',
+    pnlAmount: pnlAmount ? (gt(Number(pnlAmount), 0) ? `+$${new BigNumber(pnlAmount).toFixed(2)}` : `-$${new BigNumber(pnlAmount).abs().toFixed(2)}`) : '-'
+  }
   const descArr: SourceDescItem[] = useMemo(() => {
     const descTypeMap = {
       Social: [
@@ -48,7 +60,7 @@ const DataSourceItem: React.FC<DataSource> = (source) => {
         },
         {
           name: 'PnL',
-          sourceKey: 'pnl',
+          sourceKey: 'pnlAmount',
         },
       ]
     };
@@ -57,21 +69,23 @@ const DataSourceItem: React.FC<DataSource> = (source) => {
 
   return (
     <div className="dataSourceItem">
-      <div className="tag">{type}</div>
       <div className="dataSourceItemT">
-        <img src={icon} alt="" />
-        <div className="titleWrapper">
+        <div className="TLeft">
+          <img src={icon} alt="" />
           <h6>{name}</h6>
+        </div>
+        <div className="TRight titleWrapper">
           <div className="dateWrapper">{date}</div>
+          <div className="tag">{type}</div>
         </div>
       </div>
       <div className="dataSourceItemC">
         {descArr.map((item) => {
           return (
-            <div key="item" className="descItem">
+            <div key={item.name} className="descItem">
               <div className="descT">{item.name}</div>
               <div className="descC">
-                {source[item.sourceKey as keyof typeof source]}
+                {formatSource[item.sourceKey as keyof typeof source]}
               </div>
             </div>
           );

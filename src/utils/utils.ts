@@ -31,7 +31,7 @@ export  function formatAddress (str:string) {
   return `${startS}...${endS}`
 }
 
-export function getMutipleStorageSyncData (storageKeys: string[]) {
+export function getMutipleStorageSyncData (storageKeys: string[]):object {
   // Immediately return a promise and start asynchronous work
   return new Promise((resolve, reject) => {
     // Asynchronously fetch all data from storage.sync.
@@ -59,4 +59,17 @@ export function getSingleStorageSyncData (storageKey: string) {
       resolve(items[storageKey]);
     });
   });
+}
+
+// transform date from timestamp to string such as 12 Mar, 2023
+export function formatDate(timestamp: number) {
+  var date = new Date(timestamp),
+  Y = date.getFullYear(),
+  M = date.toLocaleString('en', {month:'short'}),
+  D = (date.getDate()+'').padStart(2, '0');
+  return `${M} ${D},${Y}`;
+}
+
+export function getCurrentDate() {
+  return formatDate(+new Date())
 }

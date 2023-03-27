@@ -1,77 +1,89 @@
 $dataSourceItemPaddingX: 22.0032px
-$dataSourceItemPaddingTop: 32.0064px
+$dataSourceItemPaddingTop: 32px
+$tagBorderRadius: 100px
 .smallFont
-  font-size: 13.9968px
+  font-size: 14px
   line-height: 17px
   font-family: 'Inter-Medium'
-  color: rgba(0, 0, 0, 0.6)
 
 .dataSourceItem
-  width: 386.9952px
-  min-height: 241.9968px
-  margin-bottom: 32.0064px
+  width: 588px
+  height: 242px
+  margin-bottom: 24px
   cursor: pointer
   box-sizing: border-box
-  padding: $dataSourceItemPaddingTop 22.0032px 14.9952px
+  padding: $dataSourceItemPaddingTop
   background: rgba(255, 255, 255, 0.6)
-  backdrop-filter: blur(15.9936px)
+  backdrop-filter: blur(64px)
   border-radius: 12px
   display: flex
   flex-direction: column
-  gap: $dataSourceItemPaddingTop
+  gap: 30px
   position: relative
 
-  .tag
-    position: absolute
-    content: ''
-    top: 14.9952px
-    right: 22.0032px
-    @extend .smallFont
   .dataSourceItemT
+    margin-right: -8px
     display: flex
-    gap: 27.9936px
-    img
-      width: 80.0064px
-    .titleWrapper
+    justify-content: space-between
+    align-items: center
+    .TLeft
+      display: flex
+      align-items: center
+      gap: 12px
+      img
+        width: 44px
       h6
-        font-size: 32.0064px
-        line-height: 38.9952px
-        font-family: 'Inter-Medium'
+        font-size: 32px
+        line-height: 39px
+        font-family: 'Inter-SemiBold'
         color: #000
+    .TRight
+      display: flex
+      align-items: center
+      gap: 12px
       .dateWrapper
-        margin-top: 11.0016px
-        padding: 6.0096px 8.0064px 6.0096px 32.0064px
+        border: 1px solid rgba(0, 0, 0, 0.05)
+        border-radius: $tagBorderRadius
+        padding: 6px 10px 7px 30px
         background: #E2F8EE
-        border-radius: 12px
         position: relative
         @extend .smallFont
+        color: rgba(0, 0, 0, 0.6)
         &:before
           position: absolute
           content: ''
-          left: 8.0064px
+          left: 5px
           top: 50%
           transform: translateY(-50%)
-          width: 20.0064px
-          height: 20.0064px
+          width: 20px
+          height: 20px
           background: url('../../assets/img/iconSuc.svg')
           background-size: 100% 100%
+      .tag
+        background: linear-gradient(113.11deg, rgba(0, 133, 255, 0.2) 19.32%, rgba(84, 224, 255, 0.2) 83.47%)
+        border-radius: $tagBorderRadius
+        padding: 6px 16px 7px
+
+        @extend .smallFont
+        color: #4172BB
   .dataSourceItemC
     display: flex
     justify-content: space-between
     gap: 15.9936px
     .descItem
-      background: rgba(217, 217, 217, 0.3)
-      border-radius: 12px
       flex: 1
       display: flex
       flex-direction: column
       align-items: center
-      gap: 7.008px
-      padding: 20.0064px 0 26.9952px
+      gap: 6px
+      padding: 27px 5px
       .descT
         font-size: 12px
+        line-height: 15px
         font-family: 'Inter-Medium'
         color: rgba(0,0,0,0.6)
       .descC
-        @extend .smallFont
+        font-size: 24px
+        line-height: 29px
+        font-family: 'Inter-Bold'
         color: rgba(0,0,0,0.8)
