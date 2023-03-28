@@ -63,7 +63,7 @@ const GetDataDialog: React.FC<GetDataDialogProps> = ({ onSubmit, activeSource })
           </div>
           {requirePassphase && <div className="formItem">
             <h6>PassPhase</h6>
-            <PInput key="passPhase" type="password" placeholder="" onChange={handleChangePassphase} copiable />
+            <PInput key="passPhase" type="password" placeholder="" onChange={handleChangePassphase} visible />
           </div>}
           <div className="tipWrapper">
             <span>How to get API Key&Secret key?</span>
