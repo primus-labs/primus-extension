@@ -65,7 +65,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
   }
   const onSubmitGetDataDialog = async (form: GetDataFormProps) => {
     networkreqPort.postMessage({
-      type: 'exchange-binance',
+      type: 'exchange-binance',// TODO
       params: { ...form }
     })
     console.log("page_send:exchange-binance request");

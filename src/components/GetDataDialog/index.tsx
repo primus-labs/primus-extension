@@ -16,7 +16,7 @@ interface GetDataDialogProps {
 const GetDataDialog: React.FC<GetDataDialogProps> = ({ onSubmit, needPassword = false }) => {
   const [apiKey, setApiKey] = useState<string>('AH2jrvzC91cNrgItJhTftQTfhwnqbT573ZdnjYeTrVUUJFaojyxBM8fhk0vzt9lH')
   const [secretKey, setSecretKey] = useState<string>('8qOOSo8JVNahkwTkVMWvYbz9TKnk4rNdeUXO5REwULe0WewkGb9VUi2wN0oXykIO')
-  const [passphase, setPasspahse] = useState<string>()
+  const [passphase, setPassphase] = useState<string>()
   const handleClickNext = () => {
     if (!apiKey || !secretKey || (needPassword && !passphase)) {
       return
@@ -37,7 +37,7 @@ const GetDataDialog: React.FC<GetDataDialogProps> = ({ onSubmit, needPassword = 
     setSecretKey(val)
   }
   const handleChangePassphase = (val: string) => {
-    setPasspahse(val)
+    setPassphase(val)
   }
 
   return (

@@ -3,11 +3,12 @@ import {
   checkIsLogin,
   bindUserAddress,
 } from '@/services/user';
-import Binance from '@/services/exchange/binance';
-import { getBinanceDataAsync } from '@/store/actions';
+import { getExchangeDataAsync } from '@/store/actions';
 import { getCurrentDate } from '@/utils/utils';
+import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
 import Module from './hello';
+
 Module['onRuntimeInitialized'] = () => {
   Module.ccall(
     'myFunction', // name of C function
@@ -21,17 +22,28 @@ const padoServices = {
   checkIsLogin,
   bindUserAddress,
 };
-const networkreq = {
-  'exchange-binance': Binance,
-};
+
 const EXCHANGEINFO = {
   binance: {
+    name: 'binance',
     apiKey: '',
     secretKey: '',
     // TODO DEL!!!
     // apiKey: 'AH2jrvzC91cNrgItJhTftQTfhwnqbT573ZdnjYeTrVUUJFaojyxBM8fhk0vzt9lH', // TODO DEL!!!
     //     secretKey:
     //       '8qOOSo8JVNahkwTkVMWvYbz9TKnk4rNdeUXO5REwULe0WewkGb9VUi2wN0oXykIO', // TODO DEL!!!
+  },
+  okx: {
+    name: 'okx',
+    apiKey: '',
+    secretKey: '',
+    passphase: '',
+  },
+  kucoin: {
+    name: 'kucoin',
+    apiKey: '',
+    secretKey: '',
+    passphase: '',
   },
 };
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
@@ -123,14 +135,20 @@ message : {
 const processNetworkReq = async (message, port) => {
   const {
     type,
-    params: { apiKey, secretKey },
+    params: { apiKey, secretKey, passphase },
   } = message;
+
   switch (type) {
     case 'exchange-binance':
-      EXCHANGEINFO.binance = { apiKey, secretKey };
-      await store.dispatch(getBinanceDataAsync(message));
-      const { totalBalance, tokenListMap } = store.getState().binance;
-      const binanceData = {
+    case 'exchange-okx':
+    case 'exchange-kucoin':
+      const exchangeName = type.split('-')[1];
+      EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };
+      DATASOURCEMAP[exchangeName].requirePassphase &&
+        (EXCHANGEINFO[exchangeName].passphase = passphase);
+      await store.dispatch(getExchangeDataAsync(EXCHANGEINFO[exchangeName]));
+      const { totalBalance, tokenListMap } = store.getState()[exchangeName];
+      const exchangeData = {
         apiKey,
         secretKey, // TODO encryption
         totalBalance,
@@ -138,7 +156,7 @@ const processNetworkReq = async (message, port) => {
         date: getCurrentDate(),
       };
       chrome.storage.local.set(
-        { [binance]: JSON.stringify(binanceData) },
+        { [exchangeName]: JSON.stringify(exchangeData) },
         () => {
           port.postMessage({ resType: type, res: true });
         }
