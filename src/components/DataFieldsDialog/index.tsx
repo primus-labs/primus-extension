@@ -1,59 +1,78 @@
-import React from 'react';
-import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
-import iconDataSourceOKX from '@/assets/img/iconDataSourceOKX.svg';
-import './index.sass'
+import React, { useState, useMemo } from 'react';
+import { DATASOURCEMAP } from '@/utils/constants';
+import type { ExchangeMeta } from '@/utils/constants';
+import iconInfo from '@/assets/img/iconInfo.svg';
+import './index.sass';
 
 export type DataFieldItem = {
   icon: any;
   name: string;
-  title: string
-}
+  desc: string;
+  requirePassphase?: boolean
+};
 interface CretateAccountDialogProps {
-  onSubmit: (name: DataFieldItem) => void,
+  onSubmit: (item: DataFieldItem) => void;
   // onCancel: () => void
 }
-const DataFieldsDialog: React.FC<CretateAccountDialogProps> = ({ onSubmit }) => {
-  const networkList = [
-    {
-      icon: iconDataSourceBinance,
-      title: 'Assets Detail',
-      name: 'binance'
-    },
-    {
-      icon: iconDataSourceTwitter,
-      title: '3',
-      name: 'twitter'
-    },
-    {
-      icon: iconDataSourceOKX,
-      title: 'Performance Detail',
-      name: 'okx',
-    },
-  ]
+const DataFieldsDialog: React.FC<CretateAccountDialogProps> = ({
+  onSubmit,
+}) => {
+  const [activeItem, setActiveItem] = useState<DataFieldItem>()
+  const list: DataFieldItem[] = useMemo(() => {
+    return Object.keys(DATASOURCEMAP).map((key) => {
+      const sourceInfo: ExchangeMeta = DATASOURCEMAP[key as keyof typeof DATASOURCEMAP]
+      const { name, icon, type, requirePassphase } = sourceInfo;
+      const infoObj: DataFieldItem = {
+        name,
+        icon,
+        desc: `${type} Data`,// TODO tooltip style
+        requirePassphase
+      }
+      return infoObj;
+    });
+  }, []);
+
   const handleClickNext = () => {
-    // onSubmit()// TODO
-  }
+    if (!activeItem) { return }
+    onSubmit(activeItem);
+  };
 
   const handleClickData = (item: DataFieldItem) => {
-    onSubmit(item)
-  }
+    setActiveItem(item)
+  };
 
   return (
     <div className="dataFieldsDialog">
       <header className="header">
-        <h1>Data Fields</h1>
-        <h2>Securely validate your data with PADO's MPC technology and store it locally to fully protect your privacy and security.</h2>
+        <h1>
+          <span>Data Sources</span>
+          <img src={iconInfo} alt="" />
+        </h1>
+        <h2>
+          Select a platform to connect, and let PADO validate your data
+          authenticity.
+        </h2>
       </header>
       <main>
-        <ul className="dataList">
-          {networkList.map(item => {
-            return (<li className="networkItem" key={item.title} onClick={() => { handleClickData(item) }}>
-              <img src={item.icon} alt="" />
-              <p>{item.title}</p>
-            </li>)
-          })}
-        </ul>
+        <div className="scrollList">
+          <ul className="dataList">
+            {list.map((item) => {
+              return (
+                <li
+                  className={activeItem?.name === item.name ? "networkItem active" : "networkItem"}
+                  key={item.name}
+                  onClick={() => {
+                    handleClickData(item);
+                  }}
+                >
+                  <img src={item.icon} alt="" />
+                  <div className="desc" title={item.desc}>{item.desc}</div>
+                  <h6>{item.name}</h6>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </main>
       <button className="nextBtn" onClick={handleClickNext}>
         Select

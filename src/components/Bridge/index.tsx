@@ -1,19 +1,23 @@
 import React from 'react';
-import './index.sass'
-import iconB from '@/assets/img/iconB.svg';
 import iconUser from '@/assets/img/iconUser.svg';
 import iconConnect from '@/assets/img/iconConnect.svg';
+import './index.sass'
 
 interface BridgeProps {
-
+  startIcon?: any;
+  endIcon: any;
 }
 
-const Bridge: React.FC<BridgeProps> = () => {
+const Bridge: React.FC<BridgeProps> = ({ startIcon = iconUser, endIcon }) => {
   return (
     <div className="bridgeWrapper">
-      <img className="from" src={iconUser} alt="" />
+      <div className="from">
+        <img src={startIcon} alt="" />
+      </div>
       <img className="connectSymbol" src={iconConnect} alt="" />
-      <img className="to" src={iconB} alt="" />
+      <div className="to">
+        <img src={endIcon} alt="" />
+      </div>
     </div>
   );
 };

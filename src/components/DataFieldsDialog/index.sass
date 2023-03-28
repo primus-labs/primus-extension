@@ -6,78 +6,134 @@
   left: 50%
   transform: translate(-50%,-50%)
   width: 600px
-  background: rgba(255, 255, 255, 0.7)
-  backdrop-filter: blur(32.0064px)
+  height: 800px
+  background: rgba(255, 255, 255, 0.8)
+  backdrop-filter: blur(32px)
   border-radius: 24px
   display: flex
   flex-direction: column
   align-items: center
 
   button.nextBtn
-    width: 420px
-    height: 60px
-    width: 500.0064px
-    height: 58.0032px
+    width: 100%
+    height: 58px
     background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
     border-radius: 12px
     display: flex
     justify-content: center
     align-items: center
-    gap: 8.0064px
     &:hover,&:active
       background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
     span
       font-family: 'Inter-Bold'
-      font-size: 18.0096px
-      line-height: 22.0032px
+      font-size: 18px
+      line-height: 22px
       color: #000000
 .dataFieldsDialog
-  padding: 63.9936px 49.9968px 49.9968px
+  padding: 64px 50px 50px
   .header
     display: flex
     flex-direction: column
     align-items: center
-    gap: 32.0064px
+    gap: 32px
     h1
-      font-family: 'Inter-Bold'
-      font-size: 32.0064px
-      line-height: 38.9952px
-      color: #000000
+      display: flex
+      align-items: center
+      gap: 8px
+      span
+        font-family: 'Inter-Bold'
+        font-size: 32px
+        line-height: 39px
+        color: #000000
+      img
+        width: 32px
     h2
       font-family: 'Inter-Regular'
-      font-size: 15.9936px
-      line-height: 25.9968px
+      font-size: 16px
+      line-height: 26px
       color: rgba(0,0,0,.6)
   main
-    padding: 84.4992px 0 86.496px 0
+    padding: 32px 0 142px
     width: 100%
-    ul.dataList
-      width: 100%
-      display: flex
-      justify-content: space-between
-      flex-wrap: wrap
-      li
-        cursor: pointer
-        width: 130.0032px
-        height: 130.0032px
-        padding: 17.4912px 0 29.4912px
-        margin-bottom: 36.9984px
-        border: 2PX solid rgba(0, 0, 0, 0.1)
-        backdrop-filter: blur(18.1248px)
-        border-radius: 13.5936px
+    .scrollList
+      width: calc( 100% + 38px )
+      height: 332px
+      overflow-y: auto
+      overflow-x: hidden
+      &::-webkit-scrollbar
+        width: 6px
+        height: 300px
+      &::-webkit-scrollbar-thumb
+        background: rgba(0, 0, 0, 0.2)
+        border-radius: 100px
+      ul.dataList
+        width: 100%
         display: flex
-        flex-direction: column
+        flex-wrap: wrap
+        gap: 16px
 
-        align-items: center
-        gap: 12px
-        img
-          width: 56.0064px
-          height: 56.0064px
-        p
-          font-family: 'Inter-Bold'
-          font-size: 12px
-          line-height: 14.9952px
-          color: #000000
+        li
+          cursor: pointer
+          width: 156px
+          height: 150px
+          padding: 28px 12px
+          background: rgba(0, 0, 0, 0.05)
+          backdrop-filter: blur(18.1333px)
+          border-radius: 12px
+          display: flex
+          flex-direction: column
+          align-items: center
+          &.active
+            padding: 26px 10px
+            background: #FFFFFF
+            border: 2PX solid transparent
+            background-clip: padding-box, border-box
+            background-origin: padding-box, border-box
+            background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+            position: relative
+            &:after
+              position: absolute
+              content: ''
+              right: 6px
+              bottom: 6px
+              width: 24px
+              height: 24px
+              background: url('../../assets/img/iconSuc.svg')
+              background-size: 100% 100%
+          img
+            width: 48px
+          .desc
+            font-family: 'Inter-Bold'
+            font-size: 14px
+            line-height: 16px
+            color: #000000
+            padding: 13px 0 1px
+            width: 132px
+            text-align: center
+            text-overflow: ellipsis
+            overflow: hidden
+            white-space: nowrap
+            position: relative
+          .desc[title]:hover:after
+            position: absolute
+            content: attr(title)
+            z-index: 99999
+            padding: 6px 12px
+            left: -16px
+            top: -44px
+              // white-space: nowrap
+            background: rgba(0, 0, 0, 0.6)
+            backdrop-filter: blur(16px)
+            border-radius: 12px
+            color: #fff
+            font-size: 14px
+            line-height: 16px
+          h6
+            font-family: 'Inter-Regular'
+            font-size: 12px
+            line-height: 16px
+            color: rgba(0, 0, 0, 0.6)
+
   button.nextBtn
     width: 100%
-    cursor: not-allowed
+    cursor: pointer

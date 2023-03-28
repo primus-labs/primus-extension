@@ -35,17 +35,24 @@
   padding: 64px 50px 50px
 
   main
-    padding: 0 0 129px 0
-    width: 100%
-    display: flex
-    flex-direction: column
-    align-items: center
-    gap: 32px
-    &.compactMain
-      gap: 18px
-      padding-bottom: 51px
-      h1
-        padding-bottom: 14px
+
+    .scrollList
+      padding: 0 0 129px 0
+      width: 100%
+      display: flex
+      flex-direction: column
+      align-items: center
+      gap: 32px
+      width: calc( 100% + 38px )
+      height: 628px
+      overflow-y: auto
+      overflow-x: hidden
+      &::-webkit-scrollbar
+        width: 6px
+        height: 300px
+      &::-webkit-scrollbar-thumb
+        background: rgba(0, 0, 0, 0.2)
+        border-radius: 100px
     h1
       font-family: 'Inter-Bold'
       font-size: 32px

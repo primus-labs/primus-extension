@@ -8,7 +8,7 @@ export type ExchangeMeta = {
   name: string,
   type: string,
   icon: any,
-  requirePassphase?: Boolean,
+  requirePassphase?: boolean,
   constructorF?: any,
 };
 
