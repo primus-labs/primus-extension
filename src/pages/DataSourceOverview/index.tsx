@@ -8,6 +8,7 @@ import DataSourceList from '@/components/DataSourceList'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import PMask from '@/components/PMask'
 import DataFieldsDialog from '@/components/DataFieldsDialog'
+import DataFieldsExplainDialog from '@/components/DataFieldsExplainDialog'
 import type { DataFieldItem } from '@/components/DataFieldsDialog'
 import GetaDataDialog from '@/components/GetDataDialog'
 import type { GetDataFormProps } from '@/components/GetDataDialog'
@@ -58,6 +59,12 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
   const onSubmitDataFieldsDialog = (item: DataFieldItem) => {
     setActiveSource(item)
     setStep(2)
+  }
+  const onCheckDataFieldsDialog = () => {
+    setStep(1.5)
+  }
+  const onSubmitDataFieldsExplainDialog = () => {
+    setStep(1)
   }
   const onSubmitGetDataDialog = async (form: GetDataFormProps) => {
     const { apiKey, secretKey } = form
@@ -137,8 +144,9 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
           <button className="clearStorageBtn" onClick={handleClearStorage}>点这里，从头再来</button>
         </main>
       </div>
-      {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
-      {step === 1 && <DataFieldsDialog onSubmit={onSubmitDataFieldsDialog} />}
+      {[1, 2, 3, 4, 1.5].includes(step) && <PMask onClose={handleCloseMask} />}
+      {step === 1 && <DataFieldsDialog onSubmit={onSubmitDataFieldsDialog} onCheck={onCheckDataFieldsDialog} />}
+      {step === 1.5 && <DataFieldsExplainDialog onSubmit={onSubmitDataFieldsExplainDialog} />}
       {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} activeSource={activeSource} />}
       {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} />}
     </div>

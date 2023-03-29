@@ -12,10 +12,12 @@ export type DataFieldItem = {
 };
 interface CretateAccountDialogProps {
   onSubmit: (item: DataFieldItem) => void;
+  onCheck: () => void;
   // onCancel: () => void
 }
 const DataFieldsDialog: React.FC<CretateAccountDialogProps> = ({
   onSubmit,
+  onCheck
 }) => {
   const [activeItem, setActiveItem] = useState<DataFieldItem>()
   const list: DataFieldItem[] = useMemo(() => {
@@ -46,7 +48,7 @@ const DataFieldsDialog: React.FC<CretateAccountDialogProps> = ({
       <header className="header">
         <h1>
           <span>Data Sources</span>
-          <img src={iconInfo} alt="" />
+          <img src={iconInfo} alt="" onClick={onCheck} />
         </h1>
         <h2>
           Select a platform to connect, and let PADO validate your data
