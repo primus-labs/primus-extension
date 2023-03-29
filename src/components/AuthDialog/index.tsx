@@ -20,6 +20,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onSubmit, padoServicePort }) =>
   }
   const fetchAllOAuthSources = () => {
     padoServicePort.postMessage({
+      fullScreenType: 'padoService',
       reqMethodName: 'getAllOAuthSources',
     })
     console.log("page_send:getAllOAuthSources request");
@@ -36,6 +37,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onSubmit, padoServicePort }) =>
   }
   const fetchIsAuthDialog = (state: string) => {
     padoServicePort.postMessage({
+      fullScreenType: 'padoService',
       reqMethodName: 'checkIsLogin',
       params: {
         state

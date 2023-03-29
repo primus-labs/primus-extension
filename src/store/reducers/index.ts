@@ -7,8 +7,7 @@ import { SETEXCHAGEDATA } from '../actions';
 
 // initial state
 const initState = {
-  padoServicePort: chrome.runtime.connect({ name: 'padoService' }),
-  networkreqPort: chrome.runtime.connect({ name: 'networkreq' }),
+  padoServicePort: chrome.runtime.connect({ name: 'fullscreen' }),
   binance: {
     totalBalance: null,
     tokenListMap: {}

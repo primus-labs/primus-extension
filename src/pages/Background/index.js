@@ -61,26 +61,27 @@ const showIndex = (info, tab) => {
 chrome.runtime.onConnect.addListener((port) => {
   console.log('port', port);
   switch (port.name) {
-    case 'invokealgo':
-      console.log('invokealgo connectted port=', port);
-      port.onMessage.addListener(processAlgoMsg);
+    case 'fullscreen':
+      console.log('fullscreen connectted port=', port);
+      port.onMessage.addListener(processFullscreenReq);
       break;
-    case 'networkreq':
-      console.log('networkreq connectted port=', port);
-      port.onMessage.addListener(processNetworkReq);
-      break;
-    case 'padoService':
-      console.log('padoService connectted port=', port);
-      port.onMessage.addListener(processpadoServiceReq);
-      break;
-    // case "storage":
-    //   console.log("storage connectted port=", port);
-    //   port.onMessage.addListener(processStorage);
-    //   break;
     default:
       break;
   }
 });
+
+const processFullscreenReq = (message, port) => {
+  switch (message.fullScreenType) {
+    case 'padoService':
+      processpadoServiceReq(message, port);
+      break;
+    case 'networkreq':
+      processNetworkReq(message, port);
+      break;
+    default:
+      break;
+  }
+};
 
 /*
 message : {
@@ -157,24 +158,10 @@ const processNetworkReq = async (message, port) => {
           port.postMessage({ resType: type, res: true });
         }
       );
-      // const response = await processBinaceReq(message);
-      // console.log('exchange-binance response', response);
-      // port.postMessage({
-      //   requestId: message.requestId,
-      //   type: message.type,
-      //   function: message.params.functionName,
-      //   data: response,
-      // });
       break;
     default:
       break;
   }
-};
-
-const processBinaceReq = async (message) => {
-  const res = await fetch('https://api.binance.com/sapi/v1/system/status');
-  const resJson = res.json();
-  return resJson;
 };
 
 const processpadoServiceReq = async (message, port) => {

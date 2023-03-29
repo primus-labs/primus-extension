@@ -23,7 +23,7 @@ import type { DataSourceItemList } from '@/components/DataSourceList'
 import './index.sass';
 
 interface DataSourceOverviewProps {
-  networkreqPort: chrome.runtime.Port,
+  padoServicePort: chrome.runtime.Port,
   binance?: {
     totalBalance: any,
     tokenListMap: any
@@ -37,7 +37,7 @@ type DataSourceStorages = {
   twitter?: any,
 }
 
-const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort, binance }) => {
+const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort, binance }) => {
   const [step, setStep] = useState(0)
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
@@ -105,6 +105,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
     const { type, requirePassphase }: ExchangeMeta = DATASOURCEMAP[sourceName as keyof typeof DATASOURCEMAP]
     if (type === 'Assets') {
       const msg: any = {
+        fullScreenType: 'networkreq',
         type: `exchange-${sourceName}`,
         params: {
           apiKey,
@@ -115,15 +116,16 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
         const { passphase } = form
         msg.params.passphase = passphase
       }
-      networkreqPort.postMessage(msg)
+
+      padoServicePort.postMessage(msg)
       console.log(`page_send:exchange-${sourceName} request`);
-      const networkreqPortListener = async function (message: any) {
+      const padoServicePortListener = async function (message: any) {
         console.log(`page_get:exchange-${sourceName}:`, message.res);
         if (message.resType === `exchange-${sourceName}` && message.res) {
           setStep(3)
         }
       }
-      networkreqPort.onMessage.addListener(networkreqPortListener)
+      padoServicePort.onMessage.addListener(padoServicePortListener)
 
     } else {
       // TODO social
@@ -188,4 +190,4 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
 };
 
 
-export default connect(({ networkreqPort, binance }) => ({ networkreqPort, binance }), {})(DataSourceOverview);
+export default connect(({ padoServicePort, binance }) => ({ padoServicePort, binance }), {})(DataSourceOverview);

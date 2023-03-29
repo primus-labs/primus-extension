@@ -83,6 +83,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
         }
         padoServicePort.onMessage.addListener(padoServicePortListener)
         padoServicePort.postMessage({
+          fullScreenType: 'padoService',
           reqMethodName: 'bindUserAddress',
           params: {
             userId: userId,
