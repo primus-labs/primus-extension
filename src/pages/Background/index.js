@@ -28,10 +28,6 @@ const EXCHANGEINFO = {
     name: 'binance',
     apiKey: '',
     secretKey: '',
-    // TODO DEL!!!
-    // apiKey: 'AH2jrvzC91cNrgItJhTftQTfhwnqbT573ZdnjYeTrVUUJFaojyxBM8fhk0vzt9lH', // TODO DEL!!!
-    //     secretKey:
-    //       '8qOOSo8JVNahkwTkVMWvYbz9TKnk4rNdeUXO5REwULe0WewkGb9VUi2wN0oXykIO', // TODO DEL!!!
   },
   okx: {
     name: 'okx',
