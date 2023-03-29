@@ -73,8 +73,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
             console.log("page_get:bindUserAddress:", message.res);
             if (message.res) {
               const encryptAccount = account.encrypt(pwd)
-              chrome.runtime.sendMessage({
-                type: 'storage',
+              padoServicePort.postMessage({
+                fullScreenType: 'storage',
                 key: 'keyStore',
                 value: JSON.stringify(encryptAccount)
               })

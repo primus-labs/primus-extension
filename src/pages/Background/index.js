@@ -78,6 +78,8 @@ const processFullscreenReq = (message, port) => {
     case 'networkreq':
       processNetworkReq(message, port);
       break;
+    case 'storage':
+      processStorageReq(message, port);
     default:
       break;
   }
@@ -192,10 +194,8 @@ const processpadoServiceReq = async (message, port) => {
   }
 };
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log(message, sender, sendResponse);
-  const { type, key, value } = message;
-  if (type === 'storage') {
-    chrome.storage.local.set({ [key]: value });
-  }
-});
+const processStorageReq = async (message, port) => {
+  console.log('processStorageReq message', message);
+  const { key, value } = message;
+  chrome.storage.local.set({ [key]: value });
+};
