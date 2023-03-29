@@ -2,6 +2,7 @@
 .pSelect
   width: 168px
   height: 60px
+  position: relative
   .selectInput
     box-sizing: border-box
     width: 100%
@@ -28,10 +29,13 @@
       background: url('../../assets/img/iconBottomArrow.svg') no-repeat
       background-size: 100% 100%
   .selectOptions
+    position: absolute
+    width: 100%
+    z-index: 1
     display: flex
     flex-direction: column
     border-radius: 10.0032px
-    background: rgba(255, 255, 255, 0.4)
+    background: rgba(255, 255, 255, 1)
     .selectOption
       cursor: pointer
       box-sizing: border-box

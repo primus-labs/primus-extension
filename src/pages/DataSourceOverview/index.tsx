@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { connect } from 'react-redux'
 import PageHeader from '@/components/PageHeader'
 import PTabs from '@/components/PTabs'
@@ -13,6 +13,9 @@ import type { DataFieldItem } from '@/components/DataFieldsDialog'
 import GetaDataDialog from '@/components/GetDataDialog'
 import type { GetDataFormProps } from '@/components/GetDataDialog'
 import AddSourceSucDialog from '@/components/AddSourceSucDialog'
+import AssetsOverview from '@/components/AssetsOverview'
+import SocialOverview from '@/components/SocialOverview'
+
 import { getMutipleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
 import type { ExchangeMeta } from '@/utils/constants'
@@ -35,17 +38,47 @@ type DataSourceStorages = {
 }
 
 const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort, binance }) => {
-
   const [step, setStep] = useState(0)
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
+  const [filterWord, setFilterWord] = useState<string>()
+  const dataSourceTypeList = useMemo(() => {
+    return [
+      {
+        value: 'All',
+        text: 'All',
+      },
+      {
+        value: 'Assets',
+        text: 'Assets',
+      },
+      {
+        value: 'Social',
+        text: 'Social',
+      },
+    ]
+  }, [])
+  const activeDataSourceList = useMemo(() => {
+    if (filterWord) {
+      return dataSourceList.filter(item => {
+        const lowerCaseName = item.name.toLowerCase()
+        const lowerFilterWord = filterWord?.toLowerCase()
+        return lowerCaseName.startsWith(lowerFilterWord as string)
+      })
+    } else {
+      return dataSourceList
+    }
+  }, [dataSourceList, filterWord])
+  const [activeSourceType, setActiveSourceType] = useState<string>('All')
 
-
-  const handleChangeSearch = (val: string) => {
+  const handleChangeInput = (val: string) => {
 
   }
+  const handleSearch = (val: string) => {
+    setFilterWord(val)
+  }
   const handleChangeSelect = (val: string) => {
-
+    setActiveSourceType(val)
   }
   const handleChangeTab = () => {
 
@@ -123,7 +156,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
   }
   useEffect(() => {
     getDataSourceList()
-
   }, [])
 
   return (
@@ -134,12 +166,14 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
         <main className="appContent">
           <PTabs onChange={handleChangeTab} />
           <div className="filterWrapper">
-            <PSelect onChange={handleChangeSelect} />
+            <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} />
             <div className="pSearch">
-              <PInput onChange={handleChangeSearch} type="text" placeholder="Search" />
+              <PInput onChange={handleChangeInput} type="text" placeholder="Search" onSearch={handleSearch} />
             </div>
           </div>
-          <DataSourceList onAdd={handleAdd} list={dataSourceList} />
+          {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} />}
+          {activeSourceType === 'Assets' && <AssetsOverview />}
+          {activeSourceType === 'Social' && <SocialOverview />}
           {/* // TODO DEL!!! */}
           <button className="clearStorageBtn" onClick={handleClearStorage}>点这里，从头再来</button>
         </main>

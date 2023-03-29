@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, KeyboardEvent } from 'react';
 import iconCopy from '@/assets/img/iconCopy.svg';
 import iconCompleted from '@/assets/img/iconCompleted.svg';
 import iconEye from '@/assets/img/iconEye.svg';
@@ -12,6 +12,7 @@ interface PInputProps {
   placeholder?: string;
   copiable?: boolean;
   visible?: boolean;
+  onSearch?: (val: string) => void;
 }
 
 const PInput: React.FC<PInputProps> = ({
@@ -19,7 +20,8 @@ const PInput: React.FC<PInputProps> = ({
   type = 'text',
   placeholder = '',
   copiable = false,
-  visible = false
+  visible = false,
+  onSearch
 }) => {
   const inputEl = useRef<any>(null);
   const [copied, setCopied] = useState<boolean>(false)
@@ -45,6 +47,12 @@ const PInput: React.FC<PInputProps> = ({
   const handleLookPwd = () => {
     setOpen(open => !open)
   }
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.keyCode === 13) {
+      const formatVal = (e.target as HTMLInputElement).value.trim();
+      onSearch && onSearch(formatVal)
+    }
+  }
 
   return (
     <div className="pInputWrapper">
@@ -53,6 +61,7 @@ const PInput: React.FC<PInputProps> = ({
         type={activeType}
         className="pInput"
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
       />
       {copiable &&
