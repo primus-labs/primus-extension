@@ -3,13 +3,21 @@
 //   getMutipleStorageSyncData,
 // } from '@/utils/utils';
 // import { SETKEYSTORE, SETUSERINFO, SETALLSTORAGE } from '../actions';
-import { SETBALANCEDATA } from '../actions';
+import { SETEXCHAGEDATA } from '../actions';
 
 // initial state
 const initState = {
   padoServicePort: chrome.runtime.connect({ name: 'padoService' }),
   networkreqPort: chrome.runtime.connect({ name: 'networkreq' }),
   binance: {
+    totalBalance: null,
+    tokenListMap: {}
+  },
+  okx: {
+    totalBalance: null,
+    tokenListMap: {}
+  },
+  kucoin: {
     totalBalance: null,
     tokenListMap: {}
   },
@@ -26,7 +34,7 @@ const reducer:any = function (state = initState, action: any) {
     //   return { ...state, userInfo: action.payload };
     // case SETALLSTORAGE:
     //   return { ...state, ...action.payload };
-    case SETBALANCEDATA:
+    case SETEXCHAGEDATA:
       return { ...state, ...action.payload };
     default:
       return state;

@@ -5,22 +5,18 @@ import PTabs from '@/components/PTabs'
 import PInput from '@/components/PInput'
 import PSelect from '@/components/PSelect'
 import DataSourceList from '@/components/DataSourceList'
-import AuthDialog from '@/components/AuthDialog'
-import CreateAccountDialog from '@/components/CreateAccountDialog'
-import SetPwdDialog from '@/components/SetPwdDialog'
-import SetSucDialog from '@/components/SetSucDialog'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
-import AsideAnimation from '@/components/AsideAnimation'
 import PMask from '@/components/PMask'
 import DataFieldsDialog from '@/components/DataFieldsDialog'
 import type { DataFieldItem } from '@/components/DataFieldsDialog'
 import GetaDataDialog from '@/components/GetDataDialog'
 import type { GetDataFormProps } from '@/components/GetDataDialog'
 import AddSourceSucDialog from '@/components/AddSourceSucDialog'
-import './index.sass';
 import { getMutipleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
+import type { ExchangeMeta } from '@/utils/constants'
 import type { DataSourceItemList } from '@/components/DataSourceList'
+import './index.sass';
 
 interface DataSourceOverviewProps {
   networkreqPort: chrome.runtime.Port,
@@ -38,13 +34,12 @@ type DataSourceStorages = {
 }
 
 const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort, binance }) => {
-  const [maskVisible, setMaskVisible] = useState(false)
+
   const [step, setStep] = useState(0)
+  const [activeSource, setActiveSource] = useState<DataFieldItem>()
   const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
-  const handleClickStart = () => {
-    setMaskVisible(true)
-    setStep(1)
-  }
+
+
   const handleChangeSearch = (val: string) => {
 
   }
@@ -61,23 +56,41 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
     setStep(0)
   }
   const onSubmitDataFieldsDialog = (item: DataFieldItem) => {
+    setActiveSource(item)
     setStep(2)
   }
   const onSubmitGetDataDialog = async (form: GetDataFormProps) => {
-    networkreqPort.postMessage({
-      type: 'exchange-binance',
-      params: { ...form }
-    })
-    console.log("page_send:exchange-binance request");
-    const networkreqPortListener = async function (message: any) {
-      console.log("page_get:exchange-binance:", message.res);
-      if (message.resType === 'exchange-binance' && message.res) {
-        setStep(3)
+    const { apiKey, secretKey } = form
+    const sourceName = form?.name?.toLowerCase()
+    const { type, requirePassphase }: ExchangeMeta = DATASOURCEMAP[sourceName as keyof typeof DATASOURCEMAP]
+    if (type === 'Assets') {
+      const msg: any = {
+        type: `exchange-${sourceName}`,
+        params: {
+          apiKey,
+          secretKey
+        }
       }
+      if (requirePassphase) {
+        const { passphase } = form
+        msg.params.passphase = passphase
+      }
+      networkreqPort.postMessage(msg)
+      console.log(`page_send:exchange-${sourceName} request`);
+      const networkreqPortListener = async function (message: any) {
+        console.log(`page_get:exchange-${sourceName}:`, message.res);
+        if (message.resType === `exchange-${sourceName}` && message.res) {
+          setStep(3)
+        }
+      }
+      networkreqPort.onMessage.addListener(networkreqPortListener)
+
+    } else {
+      // TODO social
     }
-    networkreqPort.onMessage.addListener(networkreqPortListener)
   }
   const onSubmitAddSourceSucDialog = () => {
+    setActiveSource(undefined)
     setStep(0)
     getDataSourceList()// refresh data source
   }
@@ -103,20 +116,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
   }
   useEffect(() => {
     getDataSourceList()
-    chrome.management.setEnabled(
-      'fmkadmapgofadopljbjfkapdkoienihi',
-      true,
-      () => {
-        console.log('you can use react developer tool')
-      },
-    )
-    chrome.management.setEnabled(
-      'lmhkpmbekcpmknklioeibfkpmmfibljd',
-      true,
-      () => {
-        console.log('you can use redux developer tool')
-      },
-    )
 
   }, [])
 
@@ -140,8 +139,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ networkreqPort,
       </div>
       {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
       {step === 1 && <DataFieldsDialog onSubmit={onSubmitDataFieldsDialog} />}
-      {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} />}
-      {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} />}
+      {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} activeSource={activeSource} />}
+      {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} />}
     </div>
   );
 };

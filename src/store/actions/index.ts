@@ -1,13 +1,12 @@
 // import { getSingleStorageSyncData, getMutipleStorageSyncData } from '@/utils/utils'
-import Binance from '@/services/exchange/binance';
+import { DATASOURCEMAP } from '@/utils/constants';
+import type { ExchangeMeta } from '@/utils/constants';
 // export const SETKEYSTORE = 'SETKEYSTORE';
 // export const SETUSERINFO = 'SETUSERINFO';
 // export const SETALLSTORAGE = 'SETALLSTORAGE';
-export const SETBALANCEDATA = 'SETBALANCEDATA';
+export const SETEXCHAGEDATA = 'SETEXCHAGEDATA';
 
-const networkreq = {
-  'exchange-binance': Binance,
-};
+
 // export const  getKeyStore = (data: string) => ({
 //   type: SETKEYSTORE,
 //   payload: data
@@ -47,30 +46,34 @@ const networkreq = {
 //     dispatch(getAllStorage({userInfo, keyStore}))
 //   }
 // }
-export const  getBinanceData = (values: object) => {
-  return ({
-    type: 'SETBALANCEDATA',
-    payload: values
-  })
-}
+export const getExchangeData = (values: object) => {
+  return {
+    type: 'SETEXCHAGEDATA',
+    payload: values,
+  };
+};
 type ExchangeNetworkReq = {
-  type: string;
-  params: any
-}
-export const getBinanceDataAsync = (message: ExchangeNetworkReq) => {
+  name: string;
+  apiKey: string;
+  secretKey: string;
+  passphase?: string;
+};
+export const getExchangeDataAsync = (message: ExchangeNetworkReq) => {
   return async (dispatch: any) => {
-    const {
-      type,
-      params: { apiKey, secretKey },
-    } = message;
-    const ex = new networkreq[type as keyof typeof networkreq]({ apiKey, secretKey });
+    const { name, apiKey, secretKey, passphase } = message;
+    const exchangeInfo: ExchangeMeta =
+      DATASOURCEMAP[name as keyof typeof DATASOURCEMAP];
+    const constructorF = exchangeInfo.constructorF;
+    const ex = new constructorF({ apiKey, secretKey, passphase });
     await ex.getInfo();
-    console.log('binance account info', ex);
-    dispatch(getBinanceData({
-      binance: {
-        totalBalance: ex.totalAccountBalance, 
-        tokenListMap: ex.totalAccountTokenMap
-      }
-    }))
-  }
-}
+    console.log('exchange info', ex);
+    dispatch(
+      getExchangeData({
+        [name]: {
+          totalBalance: ex.totalAccountBalance,
+          tokenListMap: ex.totalAccountTokenMap,
+        },
+      })
+    );
+  };
+};
