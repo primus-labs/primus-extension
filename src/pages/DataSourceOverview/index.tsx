@@ -174,7 +174,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
             </div>
           </div>
           {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} />}
-          {activeSourceType === 'Assets' && <AssetsOverview />}
+          {activeSourceType === 'Assets' && <AssetsOverview list={activeDataSourceList} />}
           {activeSourceType === 'Social' && <SocialOverview />}
           {/* // TODO DEL!!! */}
           <button className="clearStorageBtn" onClick={handleClearStorage}>点这里，从头再来</button>

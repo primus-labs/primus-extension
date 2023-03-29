@@ -1,1 +1,185 @@
+$col-raise: #E12828
+$col-fall: #27C265
 
+.thFontS
+  font-size: 16px
+  line-height: 19px
+.thFontF
+  font-size: 16px
+  line-height: 19px
+  font-family: 'Inter-Medium'
+.labelFont
+  font-size: 24px
+  line-height: 29px
+.valueFont
+  font-size: 32px
+  line-height: 39px
+.sectionTitle
+  font-family: 'Inter-Bold'
+  @extend .labelFont
+  color: rgba(0,0,0,0.6)
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+.sectionBackground
+  background: rgba(255, 255, 255, 0.6)
+  backdrop-filter: blur(16px)
+  border-radius: 12px
+.descLabel
+  font-family: 'Inter-Regular'
+  font-size: 16px
+  line-height: 19px
+  color: rgba(0,0,0,0.6)
+.assetsOverview
+  display: flex
+  flex-direction: column
+  gap: 24px
+  padding-top: 48px
+  .updateBtn
+    display: flex
+    justify-self: flex-end
+    justify-content: start
+    gap: 6px
+    font-family: 'Inter-Medium'
+    font-size: 14px
+    line-height: 17px
+    color: rgba(0,0,0,0.6)
+  .statisticsWrapper
+    display: flex
+    justify-content: space-between
+    gap: 16px
+    .card
+      width: 588px
+      height: 400px
+      @extend .sectionBackground
+      backdrop-filter: blur(64px)
+      padding: 0 32px
+      header
+        padding: 32px 0 24px 0
+        @extend .sectionTitle
+    .cardL
+      .cardCon
+        display: flex
+        flex-direction: column
+        gap: 42px
+        padding-top: 48px
+        padding-bottom: 78px
+        .descItem
+          display: flex
+          flex-direction: column
+          gap: 6px
+          .label
+            @extend .descLabel
+          .value
+            font-family: 'Inter-Bold'
+            color: #000
+            padding-right: 20px
+        .mainDescItem
+          .value
+            font-size: 48px
+            line-height: 58px
+        .descItemsWrapper
+          display: flex
+          .descItem
+            flex: 1
+            .value
+              @extend .valueFont
+              display: flex
+              align-items: center
+              gap: 4px
+              .percent
+                font-family: 'Inter-Bold'
+                font-size: 12px
+                line-height: 15px
+                &.raise
+                  color: rgba(225, 40, 40, 0.8)
+                &.fall
+                  color: rgba(39, 194, 101, 0.8)
+  .sourcesWrapper
+    @extend .sectionBackground
+    padding: 0 50px
+    header
+      @extend .sectionTitle
+      padding: 32px 0 16px 0
+    ul.sources
+      padding: 32px 0 16px 0
+      display: flex
+      flex-wrap: wrap
+      // justify-content: space-between
+      align-items: center
+      row-gap: 32px
+      column-gap: 123.66px
+      li.source
+        width: 182.25px
+        display: flex
+        flex-direction: column
+        gap: 16px
+        margin-bottom: 32px
+        .label
+          @extend .descLabel
+        .value
+          @extend .valueFont
+          display: flex
+          align-content: center
+          gap: 8px
+          img
+            width: 32px
+        &:nth-child(4n)
+          justify-item: end
+          align-self: end
+  .tokenListWrapper
+    @extend .sectionBackground
+    padding: 0 50px
+    header
+      @extend .sectionTitle
+      padding: 32px 0 16px 0
+      display: flex
+      justify-content: space-between
+      align-items: center
+      .pSearch
+        width: 427px
+        position: relative
+        &:before
+          position: absolute
+          z-index: 1
+          content: ''
+          top: 50%
+          left: 24px
+          transform: translateY(-50%)
+          width: 24px
+          height: 24px
+          background: url('../../assets/img/iconSearch.svg')
+          background-size: 100% 100%
+        .pInputWrapper
+          background-color: rgba(0, 0, 0, 0.05)
+          border-radius: 12px
+          height: 44px
+          .pInput
+            padding-left: 60px
+            font-size: 16px
+            line-height: 19px
+            font-family: 'Inter-Medium'
+            color: rgba(0, 0, 0, 0.6)
+            height: 44px
+    ul.tokens
+      li.token
+        display: flex
+        gap: 189px
+        justify-content: space-between
+        align-items: center
+        margin-bottom: 32px
+        @extend .thFontF
+        >div
+          width: 133.25px
+        &.th
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+          margin-bottom: 24px
+          padding: 16px 0
+          color: rgba(0,0,0,0.6)
+        .token
+          color: #000
+          display: flex
+          align-items: center
+          gap: 8px
+          >img
+            width: 20px
+          >span
+            line-height: 22px
