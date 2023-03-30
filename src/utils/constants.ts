@@ -8,13 +8,15 @@ import KuCoin from '@/services/exchange/kucoin';
 
 export type ExchangeMeta = {
   name: string,
-  type: string,
+  type: 'Social' | 'Assets',
   icon: any,
   requirePassphase?: boolean,
   constructorF?: any,
 };
-
-export const DATASOURCEMAP = {
+export type DataSourceMapType = {
+  [propName: string]: ExchangeMeta
+};
+export const DATASOURCEMAP: DataSourceMapType = {
   binance: {
     name: 'Binance',
     type: 'Assets',
