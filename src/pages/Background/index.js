@@ -7,6 +7,7 @@ import { getExchangeDataAsync } from '@/store/actions';
 import { getCurrentDate } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
+import { encrypt, decrypt } from '@/utils/crypto';
 import Module from './hello';
 
 Module['onRuntimeInitialized'] = () => {
@@ -42,6 +43,9 @@ const EXCHANGEINFO = {
     passphase: '',
   },
 };
+
+const USERPASSWORD = '';
+
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     showIndex();
@@ -132,34 +136,59 @@ message : {
 }
 */
 const processNetworkReq = async (message, port) => {
-  const {
+  var {
     type,
     params: { apiKey, secretKey, passphase },
   } = message;
-
   switch (type) {
     case 'exchange-binance':
     case 'exchange-okx':
     case 'exchange-kucoin':
       const exchangeName = type.split('-')[1];
-      EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };
-      DATASOURCEMAP[exchangeName].requirePassphase &&
-        (EXCHANGEINFO[exchangeName].passphase = passphase);
+      if (secretKey) {
+        EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };
+        DATASOURCEMAP[exchangeName].requirePassphase &&
+          (EXCHANGEINFO[exchangeName].passphase = passphase);
+      } else if (!EXCHANGEINFO[exchangeName].secretKey) {
+        const cipherData = await chrome.storage.local.get(exchangeName+'cipher');
+        const { apiKey, secretKey, passphase } = JSON.parse(
+          decrypt(cipherData[exchangeName+'cipher'], USERPASSWORD));
+        EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };
+        DATASOURCEMAP[exchangeName].requirePassphase &&
+          (EXCHANGEINFO[exchangeName].passphase = passphase);
+      }
       await store.dispatch(getExchangeDataAsync(EXCHANGEINFO[exchangeName]));
       const { totalBalance, tokenListMap } = store.getState()[exchangeName];
       const exchangeData = {
-        apiKey,
-        secretKey, // TODO encryption
+        apiKey: EXCHANGEINFO[exchangeName].apiKey,
         totalBalance,
         tokenListMap,
         date: getCurrentDate(),
       };
-      chrome.storage.local.set(
-        { [exchangeName]: JSON.stringify(exchangeData) },
-        () => {
-          port.postMessage({ resType: type, res: true });
+
+      if (secretKey) {
+        const exCipherData = {
+          apiKey: EXCHANGEINFO[exchangeName].apiKey,
+          secretKey: EXCHANGEINFO[exchangeName].secretKey,
         }
-      );
+        DATASOURCEMAP[exchangeName].requirePassphase &&
+          (exCipherData.passphase = EXCHANGEINFO[exchangeName].passphase);
+        console.log('set cipher data');
+        chrome.storage.local.set(
+          { [exchangeName]: JSON.stringify(exchangeData),
+            [exchangeName+'cipher'] : encrypt(JSON.stringify(exCipherData), USERPASSWORD) },
+          () => {
+            port.postMessage({ resType: type, res: true });
+          }
+        );
+      } else {
+        chrome.storage.local.set(
+          { [exchangeName]: JSON.stringify(exchangeData) },
+          () => {
+            port.postMessage({ resType: type, res: true });
+          }
+        );
+      }
       break;
     default:
       break;
