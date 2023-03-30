@@ -73,3 +73,12 @@ export function formatDate(timestamp: number) {
 export function getCurrentDate() {
   return formatDate(+new Date())
 }
+
+//format deciamls
+export  function formatD (totalBalance: string, decimal: number = 2)  {
+  return totalBalance ? `${new BigNumber(totalBalance).toFixed(decimal)}` : '-'
+}
+//format unit & deciamls
+export  function formatUD (totalBalance: string)  {
+  return `$${formatD(totalBalance)}`
+}

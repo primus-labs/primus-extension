@@ -1,24 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import iconRefresh from '@/assets/img/iconRefresh.svg';
 import './index.sass';
+import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceItem'
 import type { DataSourceItemList } from '@/components/DataSourceList'
+import SourcesStatisticsBar from '@/components/SourcesStatisticsBar'
+import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
-import PInput from '@/components/PInput'
-import iconBNB from '@/assets/img/iconBNB.svg'
-interface AssetsOverviewProps {
-  list: DataSourceItemList
-}
-const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list }) => {
-  const [filterWord, setFilterWord] = useState<string>()
-  const formatTotalBalance = (totalBalance: string) => {
-    return totalBalance ? `$${new BigNumber(totalBalance).toFixed(2)}` : '-'
-  }
-  const handleChangeInput = (val: string) => {
+import { add, mul } from '@/utils/utils'
 
+interface AssetsOverviewProps {
+  list: DataSourceItemList,
+  filterSource: string | undefined
+}
+
+const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) => {
+  const [activeSourceName, setActiveSourceName] = useState<string>()
+  const totalAssetsBalance = useMemo(() => {
+    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
+      const { totalBalance } = curr
+      return add(prev.toNumber(), (Number(totalBalance)))
+    }
+    const bal = list.reduce(reduceF, new BigNumber(0))
+    return `$${bal.toFixed(2)}`
+  }, [list])
+  const totalAssetsNo = useMemo(() => {
+    const reduceF: (prev: number, curr: DataSourceItemType) => number = (prev, curr) => {
+      const { assetsNo } = curr
+      return add(prev, assetsNo).toNumber()
+    }
+    const num = list.reduce(reduceF, 0)
+    return num
+  }, [list])
+  const totalAssetsMap = useMemo(() => {
+    const reduceF: (prev: AssetsMap, curr: DataSourceItemType) => AssetsMap = (prev, curr) => {
+      const { tokenListMap } = curr
+      Object.keys(tokenListMap).forEach(symbol => {
+        if (symbol in prev) {
+          const { amount: prevAmount, price } = prev[symbol]
+          const { amount } = tokenListMap[symbol]
+          const totalAmount = add(Number(prevAmount), Number(amount)).toFixed()
+          const totalValue = mul(Number(totalAmount), Number(price)).toFixed()
+          prev[symbol] = {
+            symbol,
+            price,
+            amount: totalAmount,
+            value: totalValue
+          }
+        } else {
+          prev = {
+            ...prev,
+            [symbol]: {
+              ...tokenListMap[symbol]
+            }
+          }
+        }
+      })
+      return prev
+    }
+    const totalTokenMap = list.reduce(reduceF, {})
+    return totalTokenMap
+  }, [list])
+  const activeAssetsMap = useMemo(() => {
+    if (activeSourceName) {
+      const activeS: DataSourceItemType = (list.find(item => item.name === activeSourceName)) as DataSourceItemType
+      return activeS.tokenListMap
+    } else {
+      return totalAssetsMap
+    }
+  }, [list, activeSourceName, totalAssetsMap,])
+  const activeSourceTokenList = useMemo(() => {
+    return Object.values(activeAssetsMap)
+  }, [activeAssetsMap])
+
+  const handleSelectSource = (sourceName: string | undefined) => {
+    setActiveSourceName(sourceName)
   }
-  const handleSearch = (val: string) => {
-    setFilterWord(val)
-  }
+
   return (
     <div className="assetsOverview">
       <header className="updateBtn">
@@ -31,19 +88,20 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list }) => {
           <div className="cardCon">
             <div className="descItem mainDescItem">
               <div className="label">Total Balance</div>
-              <div className="value">$4,959.70</div>
+              <div className="value">{totalAssetsBalance}</div>
             </div>
             <div className="descItemsWrapper">
               <div className="descItem">
                 <div className="label">PnL</div>
+                {/* TODO */}
                 <div className="value">
-                  <span>$4,959.70</span>
-                  <div className="percent raise fall">-1.29%</div>
+                  <span>-</span>
+                  {/* <div className="percent raise fall">-1.29%</div> */}
                 </div>
               </div>
               <div className="descItem">
                 <div className="label">Assets No.</div>
-                <div className="value">9</div>
+                <div className="value">{totalAssetsNo}</div>
               </div>
             </div>
           </div>
@@ -54,48 +112,8 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list }) => {
           </div>
         </div>
       </section>
-      <section className="sourcesWrapper">
-        <header>Sources</header>
-        <ul className="sources">
-          {list.map(item => {
-            return <li className="source">
-              <div className="label">Data on {item.name}</div>
-              <div className="value">
-                <img src={item.icon} alt="" />
-                <span>{formatTotalBalance(item.totalBalance)}</span>
-              </div>
-            </li>
-          })}
-        </ul>
-      </section>
-      <section className="tokenListWrapper">
-        <header>
-          <span>Profile</span>
-          <div className="pSearch">
-            <PInput onChange={handleChangeInput} type="text" placeholder="Search" onSearch={handleSearch} />
-          </div>
-        </header>
-        <ul className="tokens">
-          <li className="token th">
-            <div className="token">Token</div>
-            <div className="price">Price</div>
-            <div className="amount">Amount</div>
-            <div className="value">USD Value</div>
-          </li>
-
-          {list.map(item => {
-            return <li className="token tr" key={item.name}>
-              <div className="token">
-                <img src={iconBNB} alt="" />
-                <span>BTC</span>
-              </div>
-              <div className="price">$24,771.06</div>
-              <div className="amount">0.036100</div>
-              <div className="value">$894.24</div>
-            </li>
-          })}
-        </ul>
-      </section>
+      <SourcesStatisticsBar list={list} onSelect={handleSelectSource} filterSource={filterSource} />
+      <TokenTable list={activeSourceTokenList} />
     </div>
   );
 };

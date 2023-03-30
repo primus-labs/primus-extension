@@ -1,0 +1,57 @@
+$col-raise: #E12828
+$col-fall: #27C265
+
+.labelFont
+  font-size: 24px
+  line-height: 29px
+.valueFont
+  font-size: 32px
+  line-height: 39px
+.sectionTitle
+  font-family: 'Inter-Bold'
+  @extend .labelFont
+  color: rgba(0,0,0,0.6)
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+.sectionBackground
+  background: rgba(255, 255, 255, 0.6)
+  backdrop-filter: blur(16px)
+  border-radius: 12px
+.descLabel
+  font-family: 'Inter-Regular'
+  font-size: 16px
+  line-height: 19px
+  color: rgba(0,0,0,0.6)
+
+.sourcesStatisticsBar
+  @extend .sectionBackground
+  padding: 0 50px
+  header
+    @extend .sectionTitle
+    padding: 32px 0 16px 0
+  ul.sources
+    padding: 32px 0 16px 0
+    display: flex
+    flex-wrap: wrap
+    // justify-content: space-between
+    align-items: center
+    row-gap: 32px
+    column-gap: 123.66px
+    li.source
+      width: 182.25px
+      display: flex
+      flex-direction: column
+      gap: 16px
+      margin-bottom: 32px
+      cursor: pointer
+      .label
+        @extend .descLabel
+      .value
+        @extend .valueFont
+        display: flex
+        align-content: center
+        gap: 8px
+        img
+          width: 32px
+      &:nth-child(4n)
+        justify-item: end
+        align-self: end

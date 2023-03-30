@@ -1,23 +1,32 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import BigNumber from 'bignumber.js'
 import { gt } from '@/utils/utils';
+import type { ExchangeMeta } from '@/utils/constants';
 import './index.sass';
 
-
-export type DataSourceItemType = {
-  icon: any,
-  name: string,
-  type: 'Social' | 'Assets';
-  date: string,
-  totalBalance: string, // TODO format amount
+export type TokenMap = {
+  symbol: string;
+  price: string;
+  amount: string;
+  value: string;
+}
+export type AssetsMap = {
+  [propName: string]: TokenMap
+}
+export type DataSourceData = {
+  tokenListMap: AssetsMap;
+  totalBalance: string,// TODO format amount
   assetsNo: number,
+};
+export type DataSourceItemType = {
+  date: string,
   pnlAmount?: string,
   pnlPercent?: string,
   commits?: number;
   followers?: number;
   totalViews?: number;
   pnl?: string; // TODO format amount
-};
+} & ExchangeMeta & DataSourceData;
 type SourceDescItem = {
   name: string;
   sourceKey: string;
