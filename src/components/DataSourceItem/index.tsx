@@ -32,10 +32,11 @@ type SourceDescItem = {
   sourceKey: string;
 };
 interface DataSourceItemProps {
-  item: DataSourceItemType
+  item: DataSourceItemType,
+  onCheck: (item: DataSourceItemType) => void
 }
 
-const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source }) => {
+const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }) => {
   const { icon, name, type, date, totalBalance, assetsNo, pnlAmount, commits, followers, totalViews } = source;
   const formatSource = {
     ...source,
@@ -75,9 +76,11 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source }) => {
     };
     return descTypeMap[type]
   }, [type]);
-
+  const handleClick = () => {
+    onCheck(source)
+  }
   return (
-    <div className="dataSourceItem">
+    <div className="dataSourceItem" onClick={handleClick}>
       <div className="dataSourceItemT">
         <div className="TLeft">
           <img src={icon} alt="" />

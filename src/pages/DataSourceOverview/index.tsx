@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { connect } from 'react-redux'
+import { useNavigate } from 'react-router';
 import PageHeader from '@/components/PageHeader'
 import PTabs from '@/components/PTabs'
 import PInput from '@/components/PInput'
@@ -20,6 +21,7 @@ import { getMutipleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
 import type { ExchangeMeta } from '@/utils/constants'
 import type { DataSourceItemList } from '@/components/DataSourceList'
+import type { DataSourceItemType } from '@/components/DataSourceItem'
 import './index.sass';
 
 interface DataSourceOverviewProps {
@@ -38,6 +40,7 @@ type DataSourceStorages = {
 }
 
 const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort, binance }) => {
+  const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
@@ -82,6 +85,9 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   }
   const handleChangeTab = () => {
 
+  }
+  const handleCheckDataSourceDetail = ({ type, name }: DataSourceItemType) => {
+    navigate(`/dataDetail?type=${type}&name=${name}`)
   }
   const handleAdd = () => {
     setStep(1)
@@ -173,7 +179,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
               <PInput onChange={handleChangeInput} type="text" placeholder="Search" onSearch={handleSearch} />
             </div>
           </div>
-          {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} />}
+          {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} onCheck={handleCheckDataSourceDetail} />}
           {activeSourceType === 'Assets' && <AssetsOverview list={dataSourceList} filterSource={filterWord} />}
           {activeSourceType === 'Social' && <SocialOverview />}
           {/* // TODO DEL!!! */}

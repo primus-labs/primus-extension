@@ -1,0 +1,135 @@
+
+$col-raise: #E12828
+$col-fall: #27C265
+.miniFont
+  font-size: 14px
+  line-height: 17px
+.mediumFont
+  font-size: 24px
+  line-height: 29px
+.thFontS
+  font-size: 16px
+  line-height: 19px
+.thFontF
+  font-size: 16px
+  line-height: 19px
+  font-family: 'Inter-Medium'
+.h3Font
+  @extend .mediumFont
+  font-family: 'Inter-Bold'
+  color: #000
+.labelFont
+  @extend .miniFont
+  font-family: 'Inter-Regular'
+  color: rgba(0,0,0,0.6)
+.valueFont
+  font-size: 32px
+  line-height: 39px
+.sectionTitle
+  font-family: 'Inter-Bold'
+  @extend .labelFont
+  color: rgba(0,0,0,0.6)
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+.sectionBackground
+  background: rgba(255, 255, 255, 0.6)
+  backdrop-filter: blur(16px)
+  border-radius: 12px
+.descLabel
+  font-family: 'Inter-Regular'
+  font-size: 16px
+  line-height: 19px
+  color: rgba(0,0,0,0.6)
+.assetsDetail
+  width: 1200px
+  display: flex
+  flex-direction: column
+  gap: 24px
+  >header
+    padding: 32px 0 8px 0
+    display: flex
+    flex-direction: column
+    align-items: center
+    img.avatar
+      width: 120px
+    h3
+      @extend .h3Font
+      padding: 24px 0 32px 0
+    .descItems
+      display: flex
+      align-items: center
+      gap: 18px
+      .descItem
+        display: flex
+        align-items: center
+
+        .sourceIcon
+          margin-right: 12px
+          width: 32px
+        .clockIcon
+          margin-left: 12px
+          width: 18px
+        .label
+          @extend .labelFont
+        .value
+          @extend .miniFont
+          font-family: 'Inter-Bold'
+          color: rgba(0,0,0,0.8)
+  .sourceStatisticsBar
+    @extend .sectionBackground
+    background: linear-gradient(186.59deg, rgba(255, 255, 255, 0.6) 0.28%, rgba(255, 255, 255, 0.6) 94.82%)
+    padding: 36px 135px
+    display: flex
+    align-items: center
+    .descItem
+      flex: 1
+      display: flex
+      flex-direction: column
+      gap: 8px
+      height: 108px
+      position: relative
+      &::after
+        position: absolute
+        content: ''
+        top: 50%
+        right: 0
+        transform: translateY(-50%)
+        width: 2px
+        height: 63px
+        background: rgba(0,0,0,0.1)
+      &:last-child::after
+        display: none
+      &:nth-child(n+2)
+        align-items: center
+      &:nth-child(n+3)
+        align-items: flex-end
+      .label
+        @extend .labelFont
+      .value
+        font-size: 48px
+        line-height: 58px
+        font-family: 'Inter-Bold'
+        color: #000
+      .btcValue
+        @extend .miniFont
+        font-family: 'Inter-Regular'
+        color: #000
+  .proofsBar
+    cursor: pointer
+    display: flex
+    justify-content: space-between
+    gap: 24px
+    .proofCard
+      flex: 1
+      @extend .sectionBackground
+      display: flex
+      justify-content: center
+      align-items: center
+      height: 152px
+      .cardC
+        @extend .h3Font
+        display: flex
+        align-items: center
+        gap: 12px
+        >img
+          width: 24px
+          transform: rotate(180deg)

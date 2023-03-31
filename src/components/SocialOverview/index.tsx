@@ -4,7 +4,7 @@ import './index.sass';
 const SocialOverview = () => {
   return (
     <div className="assetsOverview">
-      socialOverview
+      social overvew
     </div>
   );
 };
