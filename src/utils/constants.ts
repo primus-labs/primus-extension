@@ -43,3 +43,17 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceTwitter,
   },
 };
+
+export const CHARTCOLORS = [
+  '#5DD8BA',
+  '#59CDFF',
+  '#74F0DC',
+  '#41CEE1',
+  '#4164E1',
+  '#8741E1',
+  '#D663D9',
+  '#6FD85D',
+  '#BFD85D',
+  '#EDC45A',
+  '#ED8F5A'
+]
