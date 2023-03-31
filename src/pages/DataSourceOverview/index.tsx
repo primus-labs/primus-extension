@@ -170,6 +170,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     <div className="appPage appHome pageDataSourceOverview">
       <div className="baseLayer overviewLayer">
         <BackgroundAnimation />
+      </div>
+      <div className="pageLayer">
         <PageHeader />
         <main className="appContent">
           <PTabs onChange={handleChangeTab} />

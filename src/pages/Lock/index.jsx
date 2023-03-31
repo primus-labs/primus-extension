@@ -26,7 +26,10 @@ const Lock = () => {
     <div className="appPage appHome">
       <div className="baseLayer">
         <BackgroundAnimation/>
-        <header className="appHeader">
+        
+      </div>
+      <div className="pageLayer">
+      <header className="appHeader">
           <PHeader/>
         </header>
         <main className="appContent">
