@@ -32,8 +32,14 @@ interface PPieChartProps {
 }
 const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
   const [options, setOptions] = useState({})
-  const getOption = useCallback(() => {
+  const getOption = useCallback((name?: string) => {
     const chartData = list
+    const allSelected = list.reduce((prev, curr) => {
+      const { name } = curr
+      return { ...prev, [name]: true }
+    }, {})
+    const legendData = name ? list.map(i => i.name === name ? ({ name: i.name, textStyle: { backgroundColor: 'rgba(0, 0, 0, 0.05)', borderRadius: 8 } }) : ({ name: i.name })) : Object.keys(allSelected)
+    console.log('legendData', name, legendData)
     const reduceF = (prev: BigNumber, curr: ChartDataType) => {
       const { value } = curr
       return add(prev.toNumber(), (Number(value)))
@@ -55,57 +61,57 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
         // borderRadius: '8px',
         orient: 'vertical',
         padding: [6, 12],
-        // itemGap: 0,
+        itemGap: 0,
         icon: 'circle',
         itemWidth: 14,
         itemHeight: 14,
-        selected: {
-          'KuCoin': true,
-          'Binance': true,
-          'OKX': true,
-        },
+        selected: allSelected,
         // selectedMode: false,
         formatter: (name: string) => {
           const val = (list.find((i) => i.name === name) as ChartDataType).value
           const percent = mul(Number(div(Number(val), Number(totalBal))), 100).toFixed(2) + '%'
-          console.log('name', name, val, totalBal)
           return [`{name|${name}}`, `{value|${percent}}`].join(' ')
         },
         textStyle: {
+          width: 191,
+          height: 41,
           rich: {
             name: {
               fontFamily: 'Inter-Medium',
               color: 'rgba(0,0,0,0.6)',
               fontSize: 14,
+              height: 41,
               lineHeight: 41,
-              width: 70
+              width: 94
             },
             value: {
               fontFamily: 'Inter-Bold',
               color: 'rgb(0,0,0)',
               fontSize: 24,
+              height: 41,
               lineHeight: 41,
-              width: 77
+              width: 53
             }
           }
         },
+        data: legendData
       },
       series: [
         {
           type: 'pie',
-          // radius: [60, 83.5],
-          // top: 'middle',
-          // left: 36.5,
-          // width: 167,
-          // height: 167,
-          radius: [60, 92],
+          radius: [60, 83.5],
           top: 'middle',
-          left: 28,
-          width: 184,
-          height: 184,
+          left: 36.5,
+          width: 167,
+          height: 167,
+          // radius: [60, 92],
+          // top: 'middle',
+          // left: 28,
+          // width: 184,
+          // height: 184,
           // selectedOffset: 50,
           startAngle: 135,
-          minAngle: 10,
+          minAngle: 5,
           legendHoverLink: true,
           // avoidLabelOverlap: false,
           label: {
@@ -113,7 +119,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
             position: 'center'
           },
           emphasis: {
-            scaleSize: 8.5,
+            scaleSize: 11,
             label: {
               show: false,
             }
@@ -122,7 +128,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
             show: false
           },
           data: chartData,
-          animation: false
+          // animation: false
         }
       ]
     }
@@ -132,10 +138,10 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
   }, [list, getOption])
 
   const onEvents = {
-    // 'legendselectchanged': (params) =>{
-    //   console.log('legendselectchanged', params, options);
-    //   setOptions(getOption())
-    // }
+    'legendselectchanged': (params: any) => {
+      console.log('legendselectchanged', params, options);
+      setOptions(getOption(params.name))
+    }
   }
   return (
     <ReactEChartsCore

@@ -24,14 +24,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
     const bal = list.reduce(reduceF, new BigNumber(0))
     return `$${bal.toFixed(2)}`
   }, [list])
-  const totalAssetsNo = useMemo(() => {
-    const reduceF: (prev: number, curr: DataSourceItemType) => number = (prev, curr) => {
-      const { assetsNo } = curr
-      return add(prev, assetsNo).toNumber()
-    }
-    const num = list.reduce(reduceF, 0)
-    return num
-  }, [list])
+
   const totalAssetsMap = useMemo(() => {
     const reduceF: (prev: AssetsMap, curr: DataSourceItemType) => AssetsMap = (prev, curr) => {
       const { tokenListMap } = curr
@@ -61,6 +54,9 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
     const totalTokenMap = list.reduce(reduceF, {})
     return totalTokenMap
   }, [list])
+  const totalAssetsNo = useMemo(() => {
+    return Object.keys(totalAssetsMap).length
+  }, [totalAssetsMap])
   const activeAssetsMap = useMemo(() => {
     if (activeSourceName) {
       const activeS: DataSourceItemType = (list.find(item => item.name === activeSourceName)) as DataSourceItemType
