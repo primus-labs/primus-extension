@@ -6,18 +6,14 @@ import type { DataSourceItemList } from '@/components/DataSourceList'
 import SourcesStatisticsBar from '@/components/SourcesStatisticsBar'
 import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
-import { add, mul, div } from '@/utils/utils'
+import { add, mul } from '@/utils/utils'
 import PieChart from '@/components/PieChart'
-import { CHARTCOLORS } from '@/utils/constants'
+
 interface AssetsOverviewProps {
   list: DataSourceItemList,
   filterSource: string | undefined
 }
-type ChartDataType = {
-  value: string;
-  name: string;
-}
-type ChartDatas = ChartDataType[]
+
 const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const totalAssetsBalance = useMemo(() => {
@@ -80,106 +76,9 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
   const handleSelectSource = (sourceName: string | undefined) => {
     setActiveSourceName(sourceName)
   }
-  const getOption = () => {
-    const chartData: ChartDatas = list.map(({ name, totalBalance }) => ({ name, value: new BigNumber(totalBalance).toFixed(2) }))
-    console.log('chartData', chartData)
-    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
-      const { totalBalance } = curr
-      return add(prev.toNumber(), (Number(totalBalance)))
-    }
-    const totalBal = list.reduce(reduceF, new BigNumber(0))
-    return {
-      color: CHARTCOLORS,
-      tooltip: {
-        trigger: 'item',
-        // show: false
-        valueFormatter: (value: string) => '$' + new BigNumber(value).toFixed(2),
-        formatter: "{b} : {c} ({d}%)"
-      },
-      legend: {
-        // type: 'scroll',//  Can be used when the number of legends is large
-        top: 'center',
-        left: 324,
-        width: 191,
-        // backgroundColor: 'rgba(0, 0, 0, 0.05)',
-        // borderRadius: '8px',
-        orient: 'vertical',
-        padding: [6, 12],
-        // itemGap: 0,
-        icon: 'circle',
-        itemWidth: 14,
-        itemHeight: 14,
-        selected: {
-          'KuCoin': true
-        },
-        // selectedMode: false,
-        formatter: (name: string) => {
-          // 只接受一个参数，即类目名称
-          // const formatName = name
-          const val = (chartData.find((i) => i.name === name) as ChartDataType).value
-          // name|value|为样式标记符，用于在符文笨重设置对应样式
-          const percent = mul(Number(div(Number(val), Number(totalBal))), 100).toFixed(2) + '%'
-          // return [`{name|${name}}`, `{value|${percent}}`].join('\n')
-          return [`{name|${name}}`, `{value|${percent}}`].join(' ')
-        },
-        textStyle: {
-          rich: {
-            name: {
-              fontFamily: 'Inter-Medium',
-              color: 'rgba(0,0,0,0.6)',
-              fontSize: 14,
-              lineHeight: 41,
-              // padding: [0, 0, 27, 0]
-              // display: "inline-block"
-              justifyContent: 'flex-start'
-            },
-            value: {
-              fontFamily: 'Inter-Bold',
-              color: 'rgb(0,0,0)',
-              fontSize: 24,
-              lineHeight: 41,
-              // padding: [0, 0, 27, 0]
-              // display: "inline-block"
-              justifyContent: 'flex-end',
-              textAlign: 'right'
-            }
-          }
-        }
-      },
-      series: [
-        {
-          type: 'pie',
-          // radius: [60, 92],
-          // center: [100, 145], // 设置饼图圆心
-          // width: 184,
-          // height: 184,
-          radius: [60, 83.5],
-          top: 'middle',
-          left: 18.5,
-          width: 167,
-          height: 167,
-          // selectedOffset: 50,
-          startAngle: 135,
-          minAngle: 10,
-          legendHoverLink: true,
-          // avoidLabelOverlap: false,
-          label: {
-            show: false,
-            position: 'center'
-          },
-          emphasis: {
-            scaleSize: 8.5,
-            label: {
-              show: false,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: chartData
-        }
-      ]
-    }
+  const getChartData = () => {
+    const chartData = list.map(({ name, totalBalance }) => ({ name, value: new BigNumber(totalBalance).toFixed(2) }))
+    return chartData
   }
   return (
     <div className="assetsOverview">
@@ -214,7 +113,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
         <div className="card cardR">
           <header>Distribution</header>
           <div className="cardCon">
-            <PieChart option={getOption()} />
+            <PieChart list={getChartData()} />
           </div>
         </div>
       </section>
