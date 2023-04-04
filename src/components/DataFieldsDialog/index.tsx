@@ -7,7 +7,7 @@ import './index.sass';
 export type DataFieldItem = {
   icon: any;
   name: string;
-  desc: string;
+  desc?: string;
   requirePassphase?: boolean
 };
 interface CretateAccountDialogProps {

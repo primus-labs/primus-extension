@@ -6,10 +6,11 @@ import type { DataFieldItem } from '@/components/DataFieldsDialog'
 
 interface SetSucDialogProps {
   activeSource?: DataFieldItem;
-  onSubmit: () => void
+  onSubmit: () => void;
+  desc: string
 }
 
-const AddSourceDialog: React.FC<SetSucDialogProps> = ({ activeSource, onSubmit }) => {
+const AddSourceDialog: React.FC<SetSucDialogProps> = ({ activeSource, onSubmit, desc }) => {
   const icon = activeSource?.icon
   const handleClickNext = () => {
     onSubmit()
@@ -20,7 +21,7 @@ const AddSourceDialog: React.FC<SetSucDialogProps> = ({ activeSource, onSubmit }
         <Bridge endIcon={icon} />
         <img className="sucImg" src={iconSuc} alt="" />
         <h1>Congratulations</h1>
-        <h2>Data Connected!</h2>
+        <h2>{desc}</h2>
       </main>
       <button className="nextBtn" onClick={handleClickNext}>
         <span>OK</span>

@@ -192,7 +192,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       {step === 1 && <DataFieldsDialog onSubmit={onSubmitDataFieldsDialog} onCheck={onCheckDataFieldsDialog} />}
       {step === 1.5 && <DataFieldsExplainDialog onSubmit={onSubmitDataFieldsExplainDialog} />}
       {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} activeSource={activeSource} />}
-      {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} />}
+      {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
     </div>
   );
 };

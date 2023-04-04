@@ -7,21 +7,25 @@ import { getSingleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
 import TokenTable from '@/components/TokenTable'
 import iconArrowLeft from '@/assets/img/iconArrowLeft.svg'
+import iconSuc from '@/assets/img/iconSuc.svg'
 import iconAvatar from '@/assets/img/iconAvatar.svg'
 import iconClock from '@/assets/img/iconClock.svg'
 import './index.sass';
 
-type DataSourceType = {
+export type DataSourceType = {
   date: string;
   tokenListMap: AssetsMap;
   totalBalance: string,// TODO format amount
   [propName: string]: any
 }
-const AssetsDetail = () => {
+interface AssetsDetailProps {
+  onProve: (name: string) => void
+}
+const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve }) => {
   const [searchParams] = useSearchParams()
   const [dataSource, setDataSource] = useState<DataSourceType>()
   const [proofList, setProofList] = useState([
-    'Assets Proof', 'Active User Proof'
+    'Assets', 'Active User'
   ])
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const totalAssetsBalance = useMemo(() => {
@@ -52,7 +56,10 @@ const AssetsDetail = () => {
       return []
     }
   }, [dataSource])
-
+  const handleProve = (item: string) => {
+    // 'Assets', 'Active User'
+    onProve(item)
+  }
   const getDataSource = async () => {
     const name = searchParams.get('name') as string
     const sName = name.toLowerCase()
@@ -110,10 +117,11 @@ const AssetsDetail = () => {
       </section>
       <section className="proofsBar">
         {proofList.map(item => {
-          return (<div key={item} className="proofCard">
+          return (<div key={item} className="proofCard" onClick={() => handleProve(item)}>
             <div className="cardC">
-              <div className="label">{item}</div>
-              <img src={iconArrowLeft} alt="" />
+              <div className="label">{item}  Proof</div>
+              <img className="iconSuc" src={iconSuc} alt="" />
+              <img className="iconArrow" src={iconArrowLeft} alt="" />
             </div>
           </div>)
         })}

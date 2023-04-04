@@ -1,61 +1,84 @@
 import React, { useState } from 'react';
-import iconShield1 from '@/assets/img/iconShield1.svg';
-import iconShield2 from '@/assets/img/iconShield2.svg';
-import './index.sass';
+import type { ChangeEvent } from 'react';
+import type { DataSourceType } from '@/components/AssetsDetail'
+import { getCurrentDate } from '@/utils/utils'
+import './index.sass'
 
-export type ExplainItem = {
-  icon: any;
-  title: string;
-  desc: string;
-};
-interface DataFieldsExplainDialogProps {
-  onSubmit: () => void;
+interface GetDataDialogProps {
+  dataSource?: DataSourceType;
+  onSubmit: (proofs: string[]) => void
 }
-const CreateAttestationDialog: React.FC<DataFieldsExplainDialogProps> = ({
-  onSubmit
-}) => {
-  const [list,] = useState<ExplainItem[]>([
+
+const CreateAttesationDialog: React.FC<GetDataDialogProps> = ({ onSubmit, dataSource }) => {
+  const [list, setList] = useState([
     {
-      icon: iconShield1,
-      title: 'Your account is under your control',
-      desc: 'PADO has no access to your account, cannot modify or delete your account data.'
+      label: 'Create Qualification Proof',
+      value: '< 100days',
+      disabled: false,
+      defaultValue: false
     },
     {
-      icon: iconShield2,
-      title: 'Your data is safe and secure',
-      desc: 'Your data is invisible to PADO. The data is only stored on your local device. We take best security practices for data transfer and aggregation.'
+      label: 'Create Balance Proof',
+      value: '< $1000',
+      disabled: false,
+      defaultValue: false
+    },
+    {
+      label: 'PADO Signature',
+      value: 'Required',
+      disabled: true,
+      defaultValue: true
     },
   ])
+  const [proofs, setProofs] = useState<string[]>(['PADO Signature'])
+  const handleClickNext = () => {
+    onSubmit(proofs)
+  }
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, label: string) => {
+    // console.log(e, label)
+    const curChecked = e.target.checked
+    const newProofs = curChecked ? proofs.concat(label) : proofs.filter(item => item !== label)
+    setProofs(newProofs)
+  }
   return (
-    <div className="dataFieldsExplainDialog">
-      <div className="iconBack" onClick={onSubmit}></div>
-      <header className="header">
-        <h1>Connect data under your control
-        </h1>
-      </header>
+    <div className="createAttesationDialog">
       <main>
-        <ul className="explainItemList">
-          {list.map((item) => {
-            return (
-              <li
-                className="explainItem"
-                key={item.title}
-              >
-                <img src={item.icon} alt="" />
-                <div className="explainItemC">
-                  <h5>{item.title}</h5>
-                  <h6>{item.desc}</h6>
+        <div className="scrollList">
+          <h1>Create Attestation</h1>
+          <div className="descItems">
+            <div className="descItem">
+              <div className="label">Data Source:</div>
+              <div className="value">
+                <img src={dataSource?.icon} alt="" />
+                <span>{dataSource?.name} API</span>
+              </div>
+            </div>
+            <div className="descItem">
+              <div className="label">Accessed Date：</div>
+              <div className="value">
+                <span>After {getCurrentDate()}</span>
+              </div>
+            </div>
+          </div>
+          <div className="formItems">
+            {list && list.map(item => {
+              return (<label className="formItem">
+                <input className="checkbox" name="proof" type="checkbox" defaultChecked={item.defaultValue} disabled={item.disabled} onChange={(e) => handleChange(e, item.label)} />
+                <div className="descItem">
+                  <div className="label">{item.label}</div>
+                  <div className="value">{item.value} </div>
                 </div>
-              </li>
-            );
-          })}
-        </ul>
+              </label>)
+            })}
+          </div>
+        </div>
       </main>
-      <button className="nextBtn" onClick={onSubmit}>
-        Continue
+      <button className="nextBtn" onClick={handleClickNext}>
+        Next
       </button>
     </div>
   );
 };
 
-export default CreateAttestationDialog;
+export default CreateAttesationDialog;
