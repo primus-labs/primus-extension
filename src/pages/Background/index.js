@@ -4,7 +4,7 @@ import {
   bindUserAddress,
 } from '@/services/user';
 import { getExchangeDataAsync } from '@/store/actions';
-import { getCurrentDate } from '@/utils/utils';
+import { getCurrentDate, getSingleStorageSyncData } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
 import { encrypt, decrypt } from '@/utils/crypto';
@@ -19,6 +19,7 @@ Module['onRuntimeInitialized'] = () => {
     null // arguments
   );
 };
+const web3EthAccount = new Web3EthAccounts();
 const padoServices = {
   getAllOAuthSources,
   checkIsLogin,
@@ -210,9 +211,13 @@ const processNetworkReq = async (message, port) => {
 
 const processpadoServiceReq = async (message, port) => {
   const { reqMethodName, params = {}, config = {} } = message;
+  const formatParams = { ...params };
+  delete formatParams.password;
   const { rc, result } = await padoServices[reqMethodName](
-    { ...params },
-    { ...config }
+    { ...formatParams },
+    {
+      ...config,
+    }
   );
   switch (reqMethodName) {
     case 'getAllOAuthSources':
@@ -223,13 +228,36 @@ const processpadoServiceReq = async (message, port) => {
     case 'checkIsLogin':
       if (rc === 0) {
         port.postMessage({ resMethodName: reqMethodName, res: true });
-        chrome.storage.local.set({ userInfo: JSON.stringify(result) });
+        chrome.storage.local.set({ userInfo: JSON.stringify(result) }); // TODO
       } else {
         port.postMessage({ resMethodName: reqMethodName, res: false });
       }
       break;
     case 'bindUserAddress':
-      port.postMessage({ resMethodName: reqMethodName, res: rc === 0 });
+      // if (rc === 0) {
+      //   web3EthAccount.decrypt(keyStore, password);
+      //   const encryptAccount = account.encrypt(pwd)
+      //         padoServicePort.postMessage({
+      //           fullScreenType: 'storage',
+      //           key: 'keyStore',
+      //           value: JSON.stringify(encryptAccount)
+      //         })
+      // }
+      if (rc === 0) {
+        const msg = {
+          fullScreenType: 'wallet',
+          reqMethodName: 'encrypt',
+          params: {
+            password: params.password,
+          },
+        };
+        await processWalletReq(msg, port);
+        console.log('BBB');
+        port.postMessage({ resMethodName: reqMethodName, res: true });
+      } else {
+        port.postMessage({ resMethodName: reqMethodName, res: false });
+      }
+
       break;
     default:
       break;
@@ -238,8 +266,17 @@ const processpadoServiceReq = async (message, port) => {
 
 const processStorageReq = async (message, port) => {
   console.log('processStorageReq message', message);
-  const { key, value } = message;
-  chrome.storage.local.set({ [key]: value });
+  const { type, key, value } = message;
+  switch (type) {
+    case 'set':
+      await chrome.storage.local.set({ [key]: value });
+      break;
+    case 'remove':
+      await chrome.storage.local.remove(key);
+      break;
+    default:
+      break;
+  }
 };
 
 const processWalletReq = async (message, port) => {
@@ -248,14 +285,14 @@ const processWalletReq = async (message, port) => {
     reqMethodName,
     params: { password },
   } = message;
+  let transferMsg;
   switch (reqMethodName) {
     case 'decrypt':
       chrome.storage.local.get(['keyStore'], (storedData) => {
         const keyStore = storedData['keyStore'];
         if (keyStore) {
-          const web3EthAccounts = new Web3EthAccounts();
           try {
-            web3EthAccounts.decrypt(keyStore, password);
+            web3EthAccount.wallet.decrypt(keyStore, password);
             USERPASSWORD = password;
             port.postMessage({ resMethodName: reqMethodName, res: true });
           } catch {
@@ -265,9 +302,44 @@ const processWalletReq = async (message, port) => {
       });
       break;
     case 'encrypt':
+      let privateKey = await getSingleStorageSyncData('privateKey');
+      const orignAccount = web3EthAccount.privateKeyToAccount(privateKey);
+      const encryptAccount = orignAccount.encrypt(password);
+      USERPASSWORD = password;
+      transferMsg = {
+        fullScreenType: 'storage',
+        type: 'set',
+        key: 'keyStore',
+        value: JSON.stringify(encryptAccount),
+      };
+      await processStorageReq(transferMsg, port);
+
+      const transferRemoveMsg = {
+        fullScreenType: 'storage',
+        type: 'remove',
+        key: 'privateKey',
+      };
+      await processStorageReq(transferRemoveMsg, port);
+      //   }
+      // });
       break;
     case 'clearUserPassword':
       USERPASSWORD = '';
+      break;
+    case 'create':
+      try {
+        const acc = web3EthAccount.create();
+        transferMsg = {
+          fullScreenType: 'storage',
+          type: 'set',
+          key: 'privateKey',
+          value: acc.privateKey,
+        };
+        processStorageReq(transferMsg, port);
+        port.postMessage({ resMethodName: reqMethodName, res: acc.address });
+      } catch {
+        port.postMessage({ resMethodName: reqMethodName, res: '' });
+      }
       break;
     default:
       break;

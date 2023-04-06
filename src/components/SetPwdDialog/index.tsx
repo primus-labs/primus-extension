@@ -15,7 +15,7 @@ interface SetPwdDialogProps {
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
   const { onSubmit, onCancel, padoServicePort } = props
-  const [account, setAccount] = useState<any>()
+  const [accountAddr, setAccountAddr] = useState<any>()
   const [pwd, setPwd] = useState<string>()
   const [confirm, setConfirm] = useState<string>()
   const pwdRules = useMemo(() => {
@@ -54,7 +54,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
       return initalRules
     }
   }, [pwd])
-  const handleClickNext = () => {
+  const handleClickNext = async () => {
     // TODO validate form again
     if (!pwd || !confirm || errorTipVisible) {
       return
@@ -62,7 +62,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
     const pwdIsLegal = pwdRules.every(i => i.legal)
     if (!pwdIsLegal) { return }
     fetchBindUserAddress()
-    onSubmit()
+
   }
   const fetchBindUserAddress = () => {
     chrome.storage.local.get(['userInfo'], (storedData) => {
@@ -72,12 +72,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
           if (message.resMethodName === 'bindUserAddress') {
             console.log("page_get:bindUserAddress:", message.res);
             if (message.res) {
-              const encryptAccount = account.encrypt(pwd)
-              padoServicePort.postMessage({
-                fullScreenType: 'storage',
-                key: 'keyStore',
-                value: JSON.stringify(encryptAccount)
-              })
+              onSubmit()
+            } else {
+              // loading
             }
           }
         }
@@ -87,7 +84,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
           reqMethodName: 'bindUserAddress',
           params: {
             userId: userId,
-            walletAddress: account?.address,
+            walletAddress: accountAddr,
+            password: pwd,
           },
           config: {
             // TODO
@@ -103,9 +101,26 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
     onCancel()
   }
   const initAccount = () => {
-    const web3EthAccounts = new Web3EthAccounts();
-    const acc = web3EthAccounts.create()
-    setAccount(acc)
+    const padoServicePortListener = function (message: any) {
+      if (message.resMethodName === 'create') {
+        console.log("page_get:create:", message.res);
+        if (message.res) {
+          setAccountAddr(message.res)
+        }
+      }
+    }
+    padoServicePort.onMessage.addListener(padoServicePortListener)
+
+    const msg = {
+      fullScreenType: 'wallet',
+      reqMethodName: 'create',
+      params: {}
+    }
+    padoServicePort.postMessage(msg)
+
+    // const web3EthAccounts = new Web3EthAccounts();
+    // const acc = web3EthAccounts.create()
+    // setAccount(acc)
   }
   const handleChangePwd = (val: string) => {
     setPwd(val)
@@ -130,7 +145,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
           <div className="iconWrapper">
             <img src={iconETH} alt="" />
           </div>
-          <p className="address">{account?.address}</p>
+          <p className="address">{accountAddr}</p>
         </div>
       </header>
       <main>
@@ -148,18 +163,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
             })
             }
           </ul>
-          {/* <div className="descItem">
-            0-9 digits
-          </div>
-          <div className="descItem">
-            A-Z letters
-          </div>
-          <div className="descItem">
-            Special symbols
-          </div>
-          <div className="descItem">
-            Greater than 10 characters
-          </div> */}
         </div>
         <h6>Reconfirm</h6>
         <PInput type="password" onChange={handleChangeConfirm} />
