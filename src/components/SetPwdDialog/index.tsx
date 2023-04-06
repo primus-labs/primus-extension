@@ -90,6 +90,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
             walletAddress: account?.address,
           },
           config: {
+            // TODO
             extraHeader: {
               'user-id': userId
             }

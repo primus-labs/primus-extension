@@ -116,7 +116,7 @@ const DataSourceDetail = () => {
         list={proveToolList}
       />}
       {/* TODO */}
-      {step === 4 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource} desc="Your attestation is successfully granted!" />}
+      {step === 4 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource} desc="Your attestation is recorded on-chain!" />}
     </div>
   );
 };

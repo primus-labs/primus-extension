@@ -9,6 +9,7 @@ import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
 import { encrypt, decrypt } from '@/utils/crypto';
 import Module from './hello';
+const Web3EthAccounts = require('web3-eth-accounts');
 
 Module['onRuntimeInitialized'] = () => {
   Module.ccall(
@@ -44,7 +45,7 @@ const EXCHANGEINFO = {
   },
 };
 
-const USERPASSWORD = '';
+let USERPASSWORD = '';
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -84,6 +85,10 @@ const processFullscreenReq = (message, port) => {
       break;
     case 'storage':
       processStorageReq(message, port);
+      break;
+    case 'wallet':
+      processWalletReq(message, port);
+      break;
     default:
       break;
   }
@@ -150,9 +155,12 @@ const processNetworkReq = async (message, port) => {
         DATASOURCEMAP[exchangeName].requirePassphase &&
           (EXCHANGEINFO[exchangeName].passphase = passphase);
       } else if (!EXCHANGEINFO[exchangeName].secretKey) {
-        const cipherData = await chrome.storage.local.get(exchangeName+'cipher');
+        const cipherData = await chrome.storage.local.get(
+          exchangeName + 'cipher'
+        );
         const { apiKey, secretKey, passphase } = JSON.parse(
-          decrypt(cipherData[exchangeName+'cipher'], USERPASSWORD));
+          decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
+        );
         EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };
         DATASOURCEMAP[exchangeName].requirePassphase &&
           (EXCHANGEINFO[exchangeName].passphase = passphase);
@@ -170,13 +178,18 @@ const processNetworkReq = async (message, port) => {
         const exCipherData = {
           apiKey: EXCHANGEINFO[exchangeName].apiKey,
           secretKey: EXCHANGEINFO[exchangeName].secretKey,
-        }
+        };
         DATASOURCEMAP[exchangeName].requirePassphase &&
           (exCipherData.passphase = EXCHANGEINFO[exchangeName].passphase);
         console.log('set cipher data');
         chrome.storage.local.set(
-          { [exchangeName]: JSON.stringify(exchangeData),
-            [exchangeName+'cipher'] : encrypt(JSON.stringify(exCipherData), USERPASSWORD) },
+          {
+            [exchangeName]: JSON.stringify(exchangeData),
+            [exchangeName + 'cipher']: encrypt(
+              JSON.stringify(exCipherData),
+              USERPASSWORD
+            ),
+          },
           () => {
             port.postMessage({ resType: type, res: true });
           }
@@ -227,4 +240,36 @@ const processStorageReq = async (message, port) => {
   console.log('processStorageReq message', message);
   const { key, value } = message;
   chrome.storage.local.set({ [key]: value });
+};
+
+const processWalletReq = async (message, port) => {
+  console.log('processWalletReq message', message);
+  const {
+    reqMethodName,
+    params: { password },
+  } = message;
+  switch (reqMethodName) {
+    case 'decrypt':
+      chrome.storage.local.get(['keyStore'], (storedData) => {
+        const keyStore = storedData['keyStore'];
+        if (keyStore) {
+          const web3EthAccounts = new Web3EthAccounts();
+          try {
+            web3EthAccounts.decrypt(keyStore, password);
+            USERPASSWORD = password;
+            port.postMessage({ resMethodName: reqMethodName, res: true });
+          } catch {
+            port.postMessage({ resMethodName: reqMethodName, res: false });
+          }
+        }
+      });
+      break;
+    case 'encrypt':
+      break;
+    case 'clearUserPassword':
+      USERPASSWORD = '';
+      break;
+    default:
+      break;
+  }
 };
