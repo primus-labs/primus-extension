@@ -1,5 +1,10 @@
-$headerHeight: 106.0032px
-
+$headerHeight: 106px
+.mediumFont
+  font-size: 18px
+  line-height: 22px
+.mediumRegularFont
+  @extend .mediumFont
+  font-family: 'Inter-Regular'
 .appHome
   position: relative
   .baseLayer
@@ -12,61 +17,73 @@ $headerHeight: 106.0032px
     position: relative
     z-index: 2
     .appHeader
-      padding: 0 49.9968px
+      padding: 0 50px
       height: $headerHeight
       display: flex
       align-items: center
     .appContent
       // padding-top: 1.0677rem
-      margin-top: -0.026rem
-      padding-left: 13.9968px
+      margin-top: -5px
+      padding-left: 14px
       padding-right: 360px
       display: flex
       justify-content: space-between
       align-items: center
       gap: 24px
-      article
-        width: 256.992px
+
+.appLock
+  article
+    width: 520px
+    display: flex
+    flex-direction: column
+    gap: 60px
+    .articleHeader
+      display: flex
+      flex-direction: column
+      gap: 18px
+      h1
+        font-family: 'Inter-Black'
+        font-size: 48px
+        line-height: 58px
+        text-transform: uppercase
+        color: #000000
+      p
+        font-family: 'Inter-Regular'
+        font-size: 18px
+        line-height: 22px
+        color: rgba(0, 0, 0, 0.6)
+    .formItem
+      width: 100%
+      display: flex
+      flex-direction: column
+      gap: 8px
+      h6
+        @extend .mediumRegularFont
+        color: rgba(0,0,0,0.6)
+      .errorTip
+        @extend .mediumRegularFont
+        color: rgba(255,0,0,0.8)
+    .articleFooter
+      width: 100%
+      display: flex
+      flex-direction: column
+      align-items: center
+      gap: 32px
+
+      button.unLockBtn
+        width: 100%
+        height: 58px
+        background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+        border-radius: 12px
         display: flex
-        flex-direction: column
-        gap: 60px
-        .descWrapper
-          display: flex
-          flex-direction: column
-          gap: 18.0096px
-          h1
-            font-family: 'Inter-Black'
-            font-size: 48px
-            line-height: 58.0032px
-            text-transform: uppercase
-            color: #000000
-          p
-            font-family: 'Inter-Regular'
-            font-size: 18.0096px
-            line-height: 22.0032px
-            color: rgba(0, 0, 0, 0.6)
-        button.startBtn
-          width: 343.008px
-          height: 80.0064px
-          border: .0104rem solid #000000
-          border-radius: 99.9936px
-          display: flex
-          justify-content: center
-          align-items: center
-          gap: 8.0064px
+        justify-content: center
+        align-items: center
+        &:hover,&:active
+          background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+        span
+          @extend .mediumFont
+          font-family: 'Inter-Bold'
           color: #000000
-          &:hover,&:active
-            border: 0
-            background: #000
-            color: #fff
-            .iconArrow
-              background-image: url("../../assets/img/rightArrowHover.svg")
-          span
-            font-family: 'Inter-SemiBold'
-            font-size: 24px
-            line-height: 28.992px
-          .iconArrow
-            width: 32.0064px
-            height: 32.0064px
-            background: url("../../assets/img/rightArrow.svg") no-repeat
-            background-size: 100% 100%
+      >p
+        @extend .mediumRegularFont
+        color: rgba(0,0,0,0.4)
