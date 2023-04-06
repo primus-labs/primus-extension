@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import './index.sass'
 import iconETH from '@/assets/img/iconETH.svg';
 import PInput from '@/components/PInput/index'
-const Web3EthAccounts = require('web3-eth-accounts');
 
 
 interface SetPwdDialogProps {
@@ -117,10 +116,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
       params: {}
     }
     padoServicePort.postMessage(msg)
-
-    // const web3EthAccounts = new Web3EthAccounts();
-    // const acc = web3EthAccounts.create()
-    // setAccount(acc)
   }
   const handleChangePwd = (val: string) => {
     setPwd(val)

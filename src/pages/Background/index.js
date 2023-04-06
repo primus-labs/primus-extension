@@ -234,15 +234,6 @@ const processpadoServiceReq = async (message, port) => {
       }
       break;
     case 'bindUserAddress':
-      // if (rc === 0) {
-      //   web3EthAccount.decrypt(keyStore, password);
-      //   const encryptAccount = account.encrypt(pwd)
-      //         padoServicePort.postMessage({
-      //           fullScreenType: 'storage',
-      //           key: 'keyStore',
-      //           value: JSON.stringify(encryptAccount)
-      //         })
-      // }
       if (rc === 0) {
         const msg = {
           fullScreenType: 'wallet',
@@ -252,12 +243,10 @@ const processpadoServiceReq = async (message, port) => {
           },
         };
         await processWalletReq(msg, port);
-        console.log('BBB');
         port.postMessage({ resMethodName: reqMethodName, res: true });
       } else {
         port.postMessage({ resMethodName: reqMethodName, res: false });
       }
-
       break;
     default:
       break;
@@ -270,6 +259,10 @@ const processStorageReq = async (message, port) => {
   switch (type) {
     case 'set':
       await chrome.storage.local.set({ [key]: value });
+      break;
+    case 'get':
+      const res = await chrome.storage.local.get(key);
+      debugger;
       break;
     case 'remove':
       await chrome.storage.local.remove(key);
@@ -320,22 +313,26 @@ const processWalletReq = async (message, port) => {
         key: 'privateKey',
       };
       await processStorageReq(transferRemoveMsg, port);
-      //   }
-      // });
       break;
     case 'clearUserPassword':
       USERPASSWORD = '';
       break;
     case 'create':
       try {
-        const acc = web3EthAccount.create();
-        transferMsg = {
-          fullScreenType: 'storage',
-          type: 'set',
-          key: 'privateKey',
-          value: acc.privateKey,
-        };
-        processStorageReq(transferMsg, port);
+        let privateKey = await getSingleStorageSyncData('privateKey');
+        let acc;
+        if (privateKey) {
+          acc = web3EthAccount.privateKeyToAccount(privateKey);
+        } else {
+          acc = web3EthAccount.create();
+          transferMsg = {
+            fullScreenType: 'storage',
+            type: 'set',
+            key: 'privateKey',
+            value: acc.privateKey,
+          };
+          await processStorageReq(transferMsg, port);
+        }
         port.postMessage({ resMethodName: reqMethodName, res: acc.address });
       } catch {
         port.postMessage({ resMethodName: reqMethodName, res: '' });

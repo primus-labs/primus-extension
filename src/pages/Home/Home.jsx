@@ -54,19 +54,28 @@ const Home = (props) => {
     // })// TODO DEL!!!
 
     // It can be called like this:
-    let { userInfo, keyStore } = await getMutipleStorageSyncData([
+    let { userInfo, privateKey, keyStore } = await getMutipleStorageSyncData([
       'userInfo',
+      'privateKey',
       'keyStore',
     ]);
-    // If user information is cached,it represents that it is authorized => step2
-    if (userInfo) {
-      setStep(2);
-    }
-    // If keyStore is cached,,it represents that the user has already bound a wallet => data page TODO
+    // If keyStore is cached,,it represents that the user has already bound a wallet => data page
     if (keyStore) {
       navigate('/datas');
+      return
     }
-    return userInfo || keyStore;
+    // If privateKey is cached,,it represents that the user has created account without password => step3
+    if (privateKey) {
+      setStep(3)
+      return
+    }
+    // If user information is cached,it represents that it is authorized => step2
+    if (userInfo) {
+      setStep(2)
+      return
+    }
+    
+    return userInfo || keyStore || privateKey;
   };
   const initalPage = async () => {
     // await getAllStorageAsync()
