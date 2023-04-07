@@ -1,0 +1,33 @@
+@import '@/assets/css/pDialog.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pVars.sass'
+.setSucDialog
+  padding: 50px 90px 72px
+  @extend .fcbc
+  main
+    @extend .fcsc
+    img.iconSuc
+      width: 128px
+      padding: 100px 0 32px
+    h1
+      @extend .xlLBlackBoldFont
+      padding-bottom: 12px
+    h2
+      @extend .tipFont
+      line-height: 26px
+    ul.descItems
+      padding-top: 24px
+      width: 244px
+      .descItem
+        @extend .tipFont
+        @extend .frsc
+        gap: 13px
+        line-height: 17px
+        padding-bottom: 16px
+        img.iconChecked
+          width: 24px
+          height: 24px
+        &:last-child>span
+          line-height: 14px
+          word-break: break-all

@@ -5,10 +5,10 @@ import rem from '@/utils/rem.js';
 // import {getAllStorageAsync} from '@/store/actions'
 // import store from '@/store/index'
 import PHeader from '@/components/PHeader';
-import TransferToChainDialog from '@/components/TransferToChainDialog'
+import TransferToChainDialog from '@/components/TransferToChainDialog';
 import AuthDialog from '@/components/Home/AuthDialog';
 import SetPwdDialog from '@/components/Home/SetPwdDialog';
-import SetSucDialog from '@/components/SetSucDialog';
+import SetSucDialog from '@/components/Home/SetSucDialog';
 import BackgroundAnimation from '@/components/BackgroundAnimation';
 import AsideAnimation from '@/components/AsideAnimation';
 import './Home.sass';
@@ -22,29 +22,29 @@ import iconNetwork6 from '@/assets/img/iconNetwork6.svg';
 const networkList = [
   {
     icon: iconETH,
-    title: 'ETH'
+    title: 'ETH',
   },
   {
     icon: iconBinance,
-    title: 'Binance'
+    title: 'Binance',
   },
   {
     icon: iconNetwork3,
-    title: '3'
+    title: '3',
   },
   {
     icon: iconNetwork4,
-    title: '4'
+    title: '4',
   },
   {
     icon: iconNetwork5,
-    title: '5'
+    title: '5',
   },
   {
     icon: iconNetwork6,
-    title: '6'
+    title: '6',
   },
-]
+];
 const Home = (props) => {
   // const {getAllStorageAsync} = props
   const navigate = useNavigate();
@@ -90,20 +90,20 @@ const Home = (props) => {
     // If keyStore is cached,,it represents that the user has already bound a wallet => data page
     if (keyStore) {
       navigate('/datas');
-      return true
+      return true;
     }
     // If privateKey is cached,,it represents that the user has created account without password => step3
     if (privateKey) {
-      setStep(3)
-      return true
+      setStep(3);
+      return true;
     }
     // If user information is cached,it represents that it is authorized => step2
     if (userInfo) {
-      setStep(2)
-      return true
+      setStep(2);
+      return true;
     }
-    
-    return false
+
+    return false;
   };
   const initalPage = async () => {
     // await getAllStorageAsync()
@@ -112,11 +112,11 @@ const Home = (props) => {
   };
   useEffect(() => {
     rem();
-    initalPage()
+    initalPage();
     // navigate('/datas')// TODO !!!DEL
   }, []);
   useEffect(() => {
-    console.log('step', step)
+    console.log('step', step);
   }, [step]);
 
   return (
@@ -146,24 +146,30 @@ const Home = (props) => {
           </article>
         </main>
       </div>
-      {step === 1 && <AuthDialog onSubmit={handleSubmitAuth} onClose={handleCloseMask} />}
-      {step === 2 && <TransferToChainDialog
-        onClose={handleCloseMask}
-        onSubmit={handleSubmitCreateAccount}
-        onCancel={handleCancelCreateAccount}
-        title='Create account'
-        desc='Create an on-chain address to easily manage your data to Web 3.0. The address will bind to your sign up account.'
-        list={networkList}
-        showButtonSuffixIcon={true}
-      />}
+      {step === 1 && (
+        <AuthDialog onSubmit={handleSubmitAuth} onClose={handleCloseMask} />
+      )}
+      {step === 2 && (
+        <TransferToChainDialog
+          onClose={handleCloseMask}
+          onSubmit={handleSubmitCreateAccount}
+          onCancel={handleCancelCreateAccount}
+          title="Create account"
+          desc="Create an on-chain address to easily manage your data to Web 3.0. The address will bind to your sign up account."
+          list={networkList}
+          showButtonSuffixIcon={true}
+        />
+      )}
       {step === 3 && (
         <SetPwdDialog
-        onClose={handleCloseMask}
+          onClose={handleCloseMask}
           onSubmit={handleSubmitSetPwd}
           onCancel={handleCancelSetPwd}
         />
       )}
-      {step === 4 && <SetSucDialog onSubmit={handleSubmitSetSuc} />}
+      {step === 4 && (
+        <SetSucDialog onClose={handleCloseMask} onSubmit={handleSubmitSetSuc} />
+      )}
     </div>
   );
 };

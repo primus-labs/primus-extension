@@ -146,7 +146,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
             </div>
           </header>
           <h1>Set Password</h1>
-          <h2>Set a password to protect the information you store locally</h2>
+          <h2>Enter an secure password to protect local data and private key.</h2>
           <h6>Setting</h6>
           <PInput type="password" onChange={handleChangePwd} />
           <div className="validateWrapper">
