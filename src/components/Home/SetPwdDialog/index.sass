@@ -1,0 +1,81 @@
+@import '@/assets/css/pDialog.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pVars.sass'
+.setPwdDialog
+  padding: 19px 90px 72px
+  @extend .fcbc
+  main
+    width: 100%
+    @extend .fcss
+    .setPwdDialogHeader
+      width: 100%
+      @extend .frcc
+      position: relative
+      .iconBack
+        position: absolute
+        content: ''
+        top: 50%
+        transform: translateY(-50%)
+        left: -58px
+        width: 32px
+        height: 32px
+        background: url('../../../assets/img/iconArrowLeft.svg')
+        background-size: 100% 100%
+        cursor: pointer
+      .headerContent
+        background: rgba(0, 0, 0, 0.05)
+        border-radius: 100px
+        padding: 8px 12px
+        @extend .frcc
+        gap: $xxsGap
+        img.iconNetwork
+          width: 48px
+          border-radius: 50%
+        p.address
+          width: 278px
+          font-size: 16px
+          line-height: 24px
+          font-family: 'Inter-Regular'
+          color: $colMBlack
+          word-break: break-word
+    h1
+      @extend .xlLBlackBoldFont
+      padding-top: 45px
+      padding-bottom: 18px
+      align-self: center
+    h2
+      @extend .xsSBlackRegularFont
+      align-self: center
+    h6
+      @extend .mSBlackRegularFont
+      padding: 32px 0 8px
+    .validateWrapper
+      padding-top: 12px
+      .descTitle
+        @extend .tipFont
+        padding-bottom: 6px
+      ul.descItems
+        @extend .fcss
+      .descItem
+        @extend .tipFont
+        line-height: 28px
+        padding-left: 24px
+        position: relative
+        &.checked
+          color: #000
+          font-family: 'Inter-Bold'
+          &::before
+            background: url(../../../assets/img/iconChecked.svg)
+            background-size: 100% 100%
+            width: 18px
+            height: 18px
+            position: absolute
+            content: ''
+            top: 50%
+            left: 0
+            transform: translateY(-50%)
+    .errorTip
+      padding-top: 8px
+      @extend .tipFont
+      color: $colError

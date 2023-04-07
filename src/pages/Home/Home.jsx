@@ -7,7 +7,7 @@ import rem from '@/utils/rem.js';
 import PHeader from '@/components/PHeader';
 import TransferToChainDialog from '@/components/TransferToChainDialog'
 import AuthDialog from '@/components/Home/AuthDialog';
-import SetPwdDialog from '@/components/SetPwdDialog';
+import SetPwdDialog from '@/components/Home/SetPwdDialog';
 import SetSucDialog from '@/components/SetSucDialog';
 import BackgroundAnimation from '@/components/BackgroundAnimation';
 import AsideAnimation from '@/components/AsideAnimation';
@@ -158,6 +158,7 @@ const Home = (props) => {
       />}
       {step === 3 && (
         <SetPwdDialog
+        onClose={handleCloseMask}
           onSubmit={handleSubmitSetPwd}
           onCancel={handleCancelSetPwd}
         />

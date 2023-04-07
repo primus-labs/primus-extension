@@ -4,16 +4,17 @@ import { connect } from 'react-redux'
 import './index.sass'
 import iconETH from '@/assets/img/iconETH.svg';
 import PInput from '@/components/PInput/index'
-
+import PMask from '@/components/PMask'
 
 interface SetPwdDialogProps {
-  onSubmit: () => void,
-  onCancel: () => void,
-  padoServicePort: chrome.runtime.Port
+  onClose: () => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  padoServicePort: chrome.runtime.Port;
 }
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
-  const { onSubmit, onCancel, padoServicePort } = props
+  const { onClose, onSubmit, onCancel, padoServicePort } = props
   const [accountAddr, setAccountAddr] = useState<any>()
   const [pwd, setPwd] = useState<string>()
   const [confirm, setConfirm] = useState<string>()
@@ -133,40 +134,41 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
   }, [])
 
   return (
-    <div className="pDialog authDialog setPwdDialog">
-      <header className="setPwdDialogHeader">
-        <div className="iconBack" onClick={handleClickBack}></div>
-        <div className="headerContent">
-          <div className="iconWrapper">
-            <img src={iconETH} alt="" />
+    <PMask onClose={onClose}>
+      <div className="padoDialog setPwdDialog">
+        <main>
+          <header className="setPwdDialogHeader">
+            <div className="iconBack" onClick={handleClickBack}></div>
+            <div className="headerContent">
+              {/* TODO */}
+              <img className="iconNetwork" src={iconETH} alt="" />
+              <p className="address">{accountAddr}</p>
+            </div>
+          </header>
+          <h1>Set Password</h1>
+          <h2>Set a password to protect the information you store locally</h2>
+          <h6>Setting</h6>
+          <PInput type="password" onChange={handleChangePwd} />
+          <div className="validateWrapper">
+            <div className="descTitle">The following combinations are recommended：</div>
+            <ul className="descItems">
+              {pwdRules.map(i => {
+                return <li key={i.desc} className={i.legal ? 'descItem checked' : 'descItem'} >
+                  {i.desc}
+                </li>
+              })
+              }
+            </ul>
           </div>
-          <p className="address">{accountAddr}</p>
-        </div>
-      </header>
-      <main>
-        <h1>Set Password</h1>
-        <h2>Set a password to protect the information you store locally</h2>
-        <h6>Setting</h6>
-        <PInput type="password" onChange={handleChangePwd} />
-        <div className="validateWrapper">
-          <div className="descTitle">The following combinations are recommended：</div>
-          <ul className="descItems">
-            {pwdRules.map(i => {
-              return <li key={i.desc} className={i.legal ? 'descItem checked' : 'descItem'} >
-                {i.desc}
-              </li>
-            })
-            }
-          </ul>
-        </div>
-        <h6>Reconfirm</h6>
-        <PInput type="password" onChange={handleChangeConfirm} />
-        {errorTipVisible && <p className="errorTip">Entered passwords differ!</p>}
-      </main>
-      <button className="nextBtn" onClick={handleClickNext}>
-        <span>OK</span>
-      </button>
-    </div>
+          <h6>Reconfirm</h6>
+          <PInput type="password" onChange={handleChangeConfirm} />
+          {errorTipVisible && <p className="errorTip">Entered passwords differ!</p>}
+        </main>
+        <button className="nextBtn" onClick={handleClickNext}>
+          <span>OK</span>
+        </button>
+      </div>
+    </PMask>
   );
 };
 
