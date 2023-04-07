@@ -116,9 +116,9 @@ const AuthDialog: React.FC<authDialogProps> = ({ onSubmit, padoServicePort }) =>
   }, [checkIsAuthDialogTimer])
 
   return (
-    <div className="pDialog authDialog">
-      <PHeader />
+    <div className="padoDialog authDialog">
       <main>
+        <PHeader />
         <h1>Sign up</h1>
         <ul className="licensorList">
           {oAuthSources.map((item: AuthSourcesItem) => {
@@ -132,6 +132,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onSubmit, padoServicePort }) =>
         <span>Next</span>
         <img src={rightArrow} alt="right arrow" /></button>
     </div>
+
   );
 };
 

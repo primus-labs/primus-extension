@@ -89,7 +89,7 @@ const Home = (props) => {
   }, []);
 
   return (
-    <div className="appPage appHome">
+    <div className="pageHome">
       <div className="baseLayer">
         <BackgroundAnimation />
       </div>

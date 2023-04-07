@@ -1,0 +1,32 @@
+.xsFont
+  font-size: 14px
+  line-height: 17px
+.sFont
+  font-size: 16px
+  line-height: 19px
+.mFont
+  font-size: 18px
+  line-height: 22px
+.lFont
+  font-size: 24px
+  line-height: 29px
+.xlFont
+  font-size: 32px
+  line-height: 39px
+
+$colSBlack: rgba(0,0,0,0.6)
+$colMBlack: rgba(0,0,0,0.8)
+$colLBlack: rgba(0,0,0, 1)
+
+.mLBalckBoldFont
+  @extend .mFont
+  font-family: 'Inter-Bold'
+.mLBlackBoldFont
+  @extend .mLBalckBoldFont
+  color: $colLBlack
+.xlBoldFont
+  @extend .xlFont
+  font-family: 'Inter-Bold'
+.xlLBlackBoldFont
+  @extend .xlBoldFont
+  color: $colLBlack

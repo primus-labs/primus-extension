@@ -1,36 +1,20 @@
 
-.pDialog.authDialog
-  position: absolute
-  z-index: 3
-  top: 50%
-  left: 50%
-  transform: translate(-50%,-50%)
-
-  // height: 100%
-  // display: flex
-  // justify-content: center
-  // align-items: center
-  // .appContent
-  width: 600px
-      // height: 4.1667rem
-  padding-top: 49.9968px
-  padding-bottom: 70.0032px
-  background: rgba(255, 255, 255, 0.7)
-  backdrop-filter: blur(32.0064px)
-  border-radius: 24px
+@import '../../assets/css/pDialog.sass'
+@import '../../assets/css/pFont.sass'
+.authDialog
+  padding: 50px 90px 70px
   display: flex
   flex-direction: column
+  justify-content: space-between
   align-items: center
   main
-    padding-top: 84px
-    padding-bottom: 68.0064px
+    display: flex
+    flex-direction: column
+    align-items: center
     h1
-      font-family: 'Inter-Bold'
-      font-size: 32.0064px
-      line-height: 38.9952px
-      color: #000000
+      @extend .xlLBlackBoldFont
       padding-top: 84px
-      padding-bottom: 80.0064px
+      padding-bottom: 80px
       text-align: center
     ul.licensorList
       display: flex
@@ -39,28 +23,14 @@
       li.licensorItem
         cursor: pointer
         border: 2PX solid rgba(0, 0, 0, 0.1)
-        backdrop-filter: blur(18.1248px)
-        border-radius: 13.5936px
+        backdrop-filter: blur(18.1333px)
+        border-radius: 13.6px
         display: flex
         justify-content: center
         align-items: center
-        width: 68.0064px
-        height: 68.0064px
+        width: 68px
+        height: 68px
   button.nextBtn
-    width: 420px
     height: 60px
-    background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-    border-radius: 12px
-    display: flex
-    justify-content: center
-    align-items: center
-    gap: 8.0064px
-    &:hover,&:active
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-    span
-      font-family: 'Inter-Bold'
-      font-size: 18.0096px
-      line-height: 22.0032px
-      color: #000000
     &.authDialogNextBtn
       cursor: not-allowed
