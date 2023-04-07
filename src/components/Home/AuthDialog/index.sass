@@ -1,0 +1,33 @@
+
+@import '../../../assets/css/pDialog.sass'
+@import '../../../assets/css/pFont.sass'
+@import '../../../assets/css/pFlex.sass'
+.authDialog
+  padding: 50px 90px 70px
+  @extend .fcbc
+  main
+    @extend .fcsc
+    h1
+      @extend .xlLBlackBoldFont
+      padding-top: 84px
+      padding-bottom: 80px
+      padding-top: 140px
+      padding-bottom: 96px
+      text-transform: capitalize
+    ul.licensorList
+      @extend .frac
+      gap: $xsGap
+      li.licensorItem
+        cursor: pointer
+        border: 2PX solid rgba(0, 0, 0, 0.1)
+        backdrop-filter: blur(18.1333px)
+        border-radius: 13.6px
+        @extend .frcc
+        width: 68px
+        height: 68px
+        >img
+          width: 36.27px
+  button.nextBtn
+    height: $dialogLBtnHeight
+    &.authDialogNextBtn
+      cursor: not-allowed

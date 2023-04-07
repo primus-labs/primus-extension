@@ -262,7 +262,6 @@ const processStorageReq = async (message, port) => {
       break;
     case 'get':
       const res = await chrome.storage.local.get(key);
-      debugger;
       break;
     case 'remove':
       await chrome.storage.local.remove(key);

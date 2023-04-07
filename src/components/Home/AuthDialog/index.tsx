@@ -3,15 +3,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux'
 import type { AuthSourcesItem, AuthSourcesItems } from '@/services/user';
 import PHeader from '@/components/PHeader'
+
+import PMask from '@/components/PMask'
 import rightArrow from '@/assets/img/rightArrow.svg';
 import './index.sass'
 
 interface authDialogProps {
-  onSubmit: () => void,
-  padoServicePort: chrome.runtime.Port
+  onClose: () => void;
+  onSubmit: () => void;
+  padoServicePort: chrome.runtime.Port;
 }
 
-const AuthDialog: React.FC<authDialogProps> = ({ onSubmit, padoServicePort }) => {
+const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServicePort }) => {
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([])
   const [authWindowId, setAuthWindowId] = useState<number>()
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>()
@@ -116,22 +119,25 @@ const AuthDialog: React.FC<authDialogProps> = ({ onSubmit, padoServicePort }) =>
   }, [checkIsAuthDialogTimer])
 
   return (
-    <div className="padoDialog authDialog">
-      <main>
-        <PHeader />
-        <h1>Sign up</h1>
-        <ul className="licensorList">
-          {oAuthSources.map((item: AuthSourcesItem) => {
-            return (<li key={item.id} className="licensorItem" onClick={() => { handleClickOAuthSource(item.name) }}>
-              <img src={item.logoUrl} alt={item.name} />
-            </li>)
-          })}
-        </ul>
-      </main>
-      <button className="nextBtn authDialogNextBtn" onClick={handleClickNext}>
-        <span>Next</span>
-        <img src={rightArrow} alt="right arrow" /></button>
-    </div>
+    <PMask onClose={onClose}>
+      <div className="padoDialog authDialog">
+        <main>
+          <PHeader />
+          <h1>Sign up</h1>
+          <ul className="licensorList">
+            {oAuthSources.map((item: AuthSourcesItem) => {
+              return (<li key={item.id} className="licensorItem" onClick={() => { handleClickOAuthSource(item.name) }}>
+                <img src={item.logoUrl} alt={item.name} />
+              </li>)
+            })}
+          </ul>
+        </main>
+        <button className="nextBtn authDialogNextBtn" onClick={handleClickNext}>
+          <span>Next</span>
+          <img src={rightArrow} alt="right arrow" /></button>
+      </div>
+    </PMask>
+
 
   );
 };

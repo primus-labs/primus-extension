@@ -1,110 +1,35 @@
-.pDialog
-  position: absolute
-  z-index: 3
-  top: 50%
-  left: 50%
-  transform: translate(-50%,-50%)
-  width: 600px
-  height: 800px
-  background: rgba(255, 255, 255, 0.8)
-  backdrop-filter: blur(32px)
-  border-radius: 24px
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: space-between
-  button.nextBtn
-    width: 100%
-    height: 60px // TODO
-    height: 58px
-    background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-    border-radius: 12px
-    display: flex
-    justify-content: center
-    align-items: center
-    gap: 8px
-    &:hover,&:active
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-    span
-      font-family: 'Inter-Bold'
-      font-size: 18px
-      line-height: 22px
-      color: #000000
+@import '../../assets/css/pDialog.sass'
+@import '../../assets/css/pFont.sass'
+@import '../../assets/css/pFlex.sass'
+
 .TransferToChainDialog
-  // padding: 30px 90px 70px
   padding: 30px 50px 50px
+  @extend .fcbc
   main
+    @extend .fcsc
     padding: 0 40px
-    display: flex
-    flex-direction: column
-    align-items: center
-    .createAccountDialogHeader
-      width: 100%
-      position: relative
-      .iconBack
-        position: absolute
-        content: ''
-        top: 50%
-        transform: translateY(-50%)
-        left: -58px
-        width: 32px
-        height: 32px
-        background: url('../../assets/img/iconArrowLeft.svg')
-        background-size: 100% 100%
-        cursor: pointer
-      .headerContent
-        display: flex
-        justify-content: center
-        align-items: center
-        gap: 8px
-      img.avatar
-        width: 42px
-        border-radius: 50%
-      >i
-        width: 42px
-        height: 42px
-        border-radius: 50%
-        background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-      span
-        font-size: 18px
-        line-height: 22px
-        color: #000000
-        font-family: 'Inter-SemiBold'
-      img.checked
-        width: 24px
     h1
-      margin-top: 53px
-      font-family: 'Inter-Bold'
-      font-size: 32px
-      line-height: 39px
-      color: #000000
+      @extend .xlLBlackBoldFont
+      padding-top: 53px
     h2
-      font-family: 'Inter-Regular'
-      font-size: 14px
-      line-height: 22px
-      color: rgba(0,0,0,0.6)
+      @extend .tipFont
       padding: 18px 0 70px 0
     h6
+      @extend .mFont
       font-family: 'Inter-Bold'
-      font-size: 18px
-      line-height: 22px
-      color: rgba(0,0,0,0.6)
+      color: $colSBlack
       padding-bottom: 56px
     .networkItem
       width: 72px
       height: 72px
       border: 1PX solid rgba(0, 0, 0, 0.1)
       border-radius: 50%
-      display: flex
-      justify-content: center
-      align-items: center
+      @extend .frcc
       cursor: pointer
       img
         width: 48.38px
     .dividerWrapper
-      display: flex
-      justify-content: space-between
-      align-items: center
+      @extend .frbc
       margin: 25px 0 26px
       width: 100%
       i
@@ -112,13 +37,12 @@
         height: 1PX
         background-color: #D9D9D9
       .divider
-        font-family: 'Inter-Regular'
         font-size: 14px
         line-height: 35px
-        color: rgba(0,0,0,0.6)
+        font-family: 'Inter-Regular'
+        color: $colSBlack
         width: 48px
         text-align: center
     ul.networkList
-      display: flex
-      justify-content: space-around
-      gap: 18px
+      @extend .frac
+      gap: $mGap

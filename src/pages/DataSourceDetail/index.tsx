@@ -109,6 +109,7 @@ const DataSourceDetail = () => {
       {step === 1 && <CreateAttesationDialog dataSource={dataSource} onSubmit={handleSubmitCreateAttesationDialog} />}
       {step === 2 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Your attestation is successfully granted!" />}
       {step === 3 && <TransferToChainDialog
+        onClose={handleCloseMask}
         onSubmit={handleSubmitTransferToChain}
         onCancel={handleCancelTransferToChain}
         title='Provide Attestation'

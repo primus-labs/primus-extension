@@ -5,23 +5,51 @@ import rem from '@/utils/rem.js';
 // import {getAllStorageAsync} from '@/store/actions'
 // import store from '@/store/index'
 import PHeader from '@/components/PHeader';
-import PMask from '@/components/PMask';
-import AuthDialog from '@/components/AuthDialog';
-import CreateAccountDialog from '@/components/CreateAccountDialog';
+import TransferToChainDialog from '@/components/TransferToChainDialog'
+import AuthDialog from '@/components/Home/AuthDialog';
 import SetPwdDialog from '@/components/SetPwdDialog';
 import SetSucDialog from '@/components/SetSucDialog';
 import BackgroundAnimation from '@/components/BackgroundAnimation';
 import AsideAnimation from '@/components/AsideAnimation';
 import './Home.sass';
 import { getMutipleStorageSyncData } from '@/utils/utils';
-
+import iconETH from '@/assets/img/iconETH.svg';
+import iconBinance from '@/assets/img/iconBinance.svg';
+import iconNetwork3 from '@/assets/img/iconNetwork3.svg';
+import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
+import iconNetwork5 from '@/assets/img/iconNetwork5.svg';
+import iconNetwork6 from '@/assets/img/iconNetwork6.svg';
+const networkList = [
+  {
+    icon: iconETH,
+    title: 'ETH'
+  },
+  {
+    icon: iconBinance,
+    title: 'Binance'
+  },
+  {
+    icon: iconNetwork3,
+    title: '3'
+  },
+  {
+    icon: iconNetwork4,
+    title: '4'
+  },
+  {
+    icon: iconNetwork5,
+    title: '5'
+  },
+  {
+    icon: iconNetwork6,
+    title: '6'
+  },
+]
 const Home = (props) => {
   // const {getAllStorageAsync} = props
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const handleClickStart = async () => {
-    // setMaskVisible(true)
-    // setStep(1)
     const isInProcess = await checkActiveStep();
     if (!isInProcess) {
       setStep(1);
@@ -62,20 +90,20 @@ const Home = (props) => {
     // If keyStore is cached,,it represents that the user has already bound a wallet => data page
     if (keyStore) {
       navigate('/datas');
-      return
+      return true
     }
     // If privateKey is cached,,it represents that the user has created account without password => step3
     if (privateKey) {
       setStep(3)
-      return
+      return true
     }
     // If user information is cached,it represents that it is authorized => step2
     if (userInfo) {
       setStep(2)
-      return
+      return true
     }
     
-    return userInfo || keyStore || privateKey;
+    return false
   };
   const initalPage = async () => {
     // await getAllStorageAsync()
@@ -87,6 +115,9 @@ const Home = (props) => {
     initalPage()
     // navigate('/datas')// TODO !!!DEL
   }, []);
+  useEffect(() => {
+    console.log('step', step)
+  }, [step]);
 
   return (
     <div className="pageHome">
@@ -115,14 +146,16 @@ const Home = (props) => {
           </article>
         </main>
       </div>
-      {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
-      {step === 1 && <AuthDialog onSubmit={handleSubmitAuth} />}
-      {step === 2 && (
-        <CreateAccountDialog
-          onSubmit={handleSubmitCreateAccount}
-          onCancel={handleCancelCreateAccount}
-        />
-      )}
+      {step === 1 && <AuthDialog onSubmit={handleSubmitAuth} onClose={handleCloseMask} />}
+      {step === 2 && <TransferToChainDialog
+        onClose={handleCloseMask}
+        onSubmit={handleSubmitCreateAccount}
+        onCancel={handleCancelCreateAccount}
+        title='Create account'
+        desc='Create an on-chain address to easily manage your data to Web 3.0. The address will bind to your sign up account.'
+        list={networkList}
+        showButtonSuffixIcon={true}
+      />}
       {step === 3 && (
         <SetPwdDialog
           onSubmit={handleSubmitSetPwd}

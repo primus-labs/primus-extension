@@ -1,0 +1,33 @@
+@import '../../assets/css/pFlex.sass'
+@import '../../assets/css/pFont.sass'
+.authInfoHeader
+  width: 100%
+  position: relative
+  .iconBack
+    position: absolute
+    content: ''
+    top: 50%
+    transform: translateY(-50%)
+    left: -58px
+    width: 32px
+    height: 32px
+    background: url('../../assets/img/iconArrowLeft.svg')
+    background-size: 100% 100%
+    cursor: pointer
+  .content
+    @extend .frcc
+    gap: 8px
+    img.avatar
+      width: 42px
+      border-radius: 50%
+    >i.avatarAlternate
+      width: 42px
+      height: 42px
+      border-radius: 50%
+      background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+    span.email
+      @extend .mFont
+      color: $colLBlack
+      font-family: 'Inter-SemiBold'
+    img.checked
+      width: 24px
