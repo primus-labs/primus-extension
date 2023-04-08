@@ -8,9 +8,9 @@ import PSelect from '@/components/PSelect'
 import DataSourceList from '@/components/DataSourceList'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import PMask from '@/components/PMask'
-import DataFieldsDialog from '@/components/DataFieldsDialog'
+import DataFieldsDialog from '@/components/DataSourceOverview/DataFieldsDialog'
 import DataFieldsExplainDialog from '@/components/DataFieldsExplainDialog'
-import type { DataFieldItem } from '@/components/DataFieldsDialog'
+import type { DataFieldItem } from '@/components/DataSourceOverview/DataFieldsDialog'
 import GetaDataDialog from '@/components/GetDataDialog'
 import type { GetDataFormProps } from '@/components/GetDataDialog'
 import AddSourceSucDialog from '@/components/AddSourceSucDialog'
@@ -189,7 +189,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
         </main>
       </div>
       {[1, 2, 3, 4, 1.5].includes(step) && <PMask onClose={handleCloseMask} />}
-      {step === 1 && <DataFieldsDialog onSubmit={onSubmitDataFieldsDialog} onCheck={onCheckDataFieldsDialog} />}
+      {step === 1 && <DataFieldsDialog onClose={handleCloseMask} onSubmit={onSubmitDataFieldsDialog} onCheck={onCheckDataFieldsDialog} />}
       {step === 1.5 && <DataFieldsExplainDialog onSubmit={onSubmitDataFieldsExplainDialog} />}
       {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} activeSource={activeSource} />}
       {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}

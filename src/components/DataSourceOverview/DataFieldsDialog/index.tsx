@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import PMask from '@/components/PMask'
 import { DATASOURCEMAP } from '@/utils/constants';
 import type { ExchangeMeta } from '@/utils/constants';
 import iconInfo from '@/assets/img/iconInfo.svg';
@@ -11,11 +12,13 @@ export type DataFieldItem = {
   requirePassphase?: boolean
 };
 interface CretateAccountDialogProps {
+  onClose: () => void;
   onSubmit: (item: DataFieldItem) => void;
   onCheck: () => void;
   // onCancel: () => void
 }
 const DataFieldsDialog: React.FC<CretateAccountDialogProps> = ({
+  onClose,
   onSubmit,
   onCheck
 }) => {
@@ -44,42 +47,42 @@ const DataFieldsDialog: React.FC<CretateAccountDialogProps> = ({
   };
 
   return (
-    <div className="dataFieldsDialog">
-      <header className="header">
-        <h1>
-          <span>Data Sources</span>
-          <img src={iconInfo} alt="" onClick={onCheck} />
-        </h1>
-        <h2>
-          Select a platform to connect, and let PADO validate your data
-          authenticity.
-        </h2>
-      </header>
-      <main>
-        <div className="scrollList">
-          <ul className="dataList">
-            {list.map((item) => {
-              return (
-                <li
-                  className={activeItem?.name === item.name ? "networkItem active" : "networkItem"}
-                  key={item.name}
-                  onClick={() => {
-                    handleClickData(item);
-                  }}
-                >
-                  <img src={item.icon} alt="" />
-                  <div className="desc" title={item.desc}>{item.desc}</div>
-                  <h6>{item.name}</h6>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </main>
-      <button className="nextBtn" onClick={handleClickNext}>
-        Select
-      </button>
-    </div>
+    <PMask onClose={onClose}>
+      <div className="padoDialog dataSourcesDialog">
+        <main>
+          <h1>
+            <span>Data Sources</span>
+            <img src={iconInfo} alt="" onClick={onCheck} />
+          </h1>
+          <h2>
+            Select a platform to connect, and let PADO validate your data
+            authenticity.
+          </h2>
+          <div className="scrollList">
+            <ul className="dataList">
+              {list.map((item) => {
+                return (
+                  <li
+                    className={activeItem?.name === item.name ? "networkItem active" : "networkItem"}
+                    key={item.name}
+                    onClick={() => {
+                      handleClickData(item);
+                    }}
+                  >
+                    <img src={item.icon} alt="" />
+                    <div className="desc" title={item.desc}>{item.desc}</div>
+                    <h6>{item.name}</h6>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </main>
+        <button className="nextBtn" onClick={handleClickNext}>
+          Select
+        </button>
+      </div>
+    </PMask>
   );
 };
 
