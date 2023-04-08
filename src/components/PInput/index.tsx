@@ -3,6 +3,7 @@ import type { ChangeEvent, KeyboardEvent } from 'react';
 import iconCopy from '@/assets/img/iconCopy.svg';
 import iconCompleted from '@/assets/img/iconCompleted.svg';
 import iconEye from '@/assets/img/iconEye.svg';
+import iconCloseEye from '@/assets/img/iconCloseEye.svg';
 
 import './index.sass';
 
@@ -67,7 +68,7 @@ const PInput: React.FC<PInputProps> = ({
       {copiable &&
         <img className="suffixIcon" src={copied ? iconCompleted : iconCopy} alt="" onClick={handleCopy} />}
       {visible &&
-        <img className="suffixIcon" src={iconEye} alt="" onClick={handleLookPwd} />}
+        <img className="suffixIcon" src={activeType === 'password' ? iconCloseEye : iconEye} alt="" onClick={handleLookPwd} />}
     </div>
   );
 };

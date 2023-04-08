@@ -1,10 +1,11 @@
+@import '@/assets/css/pFont.sass'
 .pInputWrapper
   width: 100%
   height: 60px
   background: rgba(0, 0, 0, 0.05)
-  backdrop-filter: blur(15.9936px)
+  backdrop-filter: blur(16px)
   border-radius: 12px
-  padding-right: 18.0096px
+  padding-right: 18px
   display: flex
   align-items: center
   .suffixIcon
@@ -13,11 +14,10 @@
 .pInput
   width: 100%
   height: 100%
-  padding-left: 27.9936px
-  font-family: 'Inter-Bold'
-  font-size: 18.0096px
-  line-height: 22.0032px
-  color: #000
+  padding-left: 28px
+  padding-right: 18px
+  @extend .mLBlackBoldFont
   background: transparent
   &::placeholder
+    font-family: 'Inter-Regular'
     color: rgba(0, 0, 0, 0.4)

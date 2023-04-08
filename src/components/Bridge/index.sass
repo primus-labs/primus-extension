@@ -1,6 +1,6 @@
+@import '@/assets/css/pFlex.sass'
 .bridgeWrapper
-  display: flex
-  justify-content: center
+  @extend .frcc
   gap: 27px
   .from,.to
     width: 72px
@@ -8,12 +8,10 @@
     background: #FFFFFF
     border: 1PX solid rgba(0, 0, 0, 0.1)
     border-radius: 50%
-    display: flex
-    justify-content: center
-    align-items: center
+    @extend .frcc
   .from img
     width: 32px
   .to img
-    width: 48px
+    width: 48.38px
   .connectSymbol
     widht: 24px

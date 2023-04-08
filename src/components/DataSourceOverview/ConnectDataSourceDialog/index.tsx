@@ -52,7 +52,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
     <PMask onClose={onClose}>
       <div className="padoDialog connectDataSourceDialog">
         <main>
-          <div className="scrollList">
+          <div className={requirePassphase ? "scrollList scroll" : "scrollList"}>
             <h1>Connect Data Source</h1>
             <h2>Please configure with your READ-ONLY API keys. PADO never accesses to your API keys or your data.</h2>
             <Bridge endIcon={icon} />

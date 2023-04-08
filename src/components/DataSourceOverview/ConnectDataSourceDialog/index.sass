@@ -5,14 +5,17 @@
   main
     .scrollList
       padding-bottom: 103px
-      width: 100%
       @extend .fcsc
       gap: $xlGap
-      width: calc( 100% + 38px )
+      // width: 500px
       max-height: 628px
-      padding-right: 38px
       overflow-y: auto
       overflow-x: hidden
+      width: 100%
+      padding-right: 0
+      &.scroll
+        width: calc( 100% + 38px )
+        padding-right: 32px
       &::-webkit-scrollbar
         width: 6px
         height: 300px
@@ -21,6 +24,7 @@
         border-radius: 100px
     h1
       @extend .xlLBlackBoldFont
+      align-self: center
     h2
       @extend .sSBlackRegularFont
       line-height: 26px
