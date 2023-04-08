@@ -1,0 +1,43 @@
+@import '@/assets/css/pDialog.sass'
+.dataFieldsExplainDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  position: relative
+  .iconBack
+    position: absolute
+    content: ''
+    top: 35px
+    left: 32px
+    width: 32px
+    height: 32px
+    background: url('../../../assets/img/iconArrowLeft.svg')
+    background-size: 100% 100%
+    cursor: pointer
+  main
+    width: 100%
+    @extend .fcsc
+    gap: 124px
+    >h1
+      width: 318px
+      @extend .xlLBlackBoldFont
+    ul.explainItemList
+      width: 446px
+      @extend .fcss
+      gap: 56px
+      li
+        display: flex
+        @extend .frss
+        gap: 10px
+        img
+          width: 32px
+        .explainItemC
+          display: flex
+          flex-direction: column
+          gap: 12px
+          h5
+            @extend .lLBlackBoldFont
+          h6
+            font-size: 12px
+            line-height: 16px
+            font-family: 'Inter-Regular'
+            color: $colSBlack

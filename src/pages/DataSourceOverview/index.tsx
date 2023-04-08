@@ -8,9 +8,9 @@ import PSelect from '@/components/PSelect'
 import DataSourceList from '@/components/DataSourceList'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import PMask from '@/components/PMask'
-import DataFieldsDialog from '@/components/DataSourceOverview/DataFieldsDialog'
-import DataFieldsExplainDialog from '@/components/DataFieldsExplainDialog'
-import type { DataFieldItem } from '@/components/DataSourceOverview/DataFieldsDialog'
+import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog'
+import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSourcesExplainDialog'
+import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
 import GetaDataDialog from '@/components/GetDataDialog'
 import type { GetDataFormProps } from '@/components/GetDataDialog'
 import AddSourceSucDialog from '@/components/AddSourceSucDialog'
@@ -95,14 +95,14 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const handleCloseMask = () => {
     setStep(0)
   }
-  const onSubmitDataFieldsDialog = (item: DataFieldItem) => {
+  const onSubmitDataSourcesDialog = (item: DataFieldItem) => {
     setActiveSource(item)
     setStep(2)
   }
-  const onCheckDataFieldsDialog = () => {
+  const onCheckDataSourcesDialog = () => {
     setStep(1.5)
   }
-  const onSubmitDataFieldsExplainDialog = () => {
+  const onSubmitDataSourcesExplainDialog = () => {
     setStep(1)
   }
   const onSubmitGetDataDialog = async (form: GetDataFormProps) => {
@@ -188,9 +188,9 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
           <button className="clearStorageBtn" onClick={handleClearStorage}>点这里，从头再来</button>
         </main>
       </div>
-      {[1, 2, 3, 4, 1.5].includes(step) && <PMask onClose={handleCloseMask} />}
-      {step === 1 && <DataFieldsDialog onClose={handleCloseMask} onSubmit={onSubmitDataFieldsDialog} onCheck={onCheckDataFieldsDialog} />}
-      {step === 1.5 && <DataFieldsExplainDialog onSubmit={onSubmitDataFieldsExplainDialog} />}
+      {/* {[1, 2, 3, 4, 1.5].includes(step) && <PMask onClose={handleCloseMask} />} */}
+      {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
+      {step === 1.5 && <DataSourcesExplainDialog onSubmit={onSubmitDataSourcesExplainDialog} />}
       {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} activeSource={activeSource} />}
       {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
     </div>
