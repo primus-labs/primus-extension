@@ -11,8 +11,8 @@ import PMask from '@/components/PMask'
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog'
 import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSourcesExplainDialog'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
-import GetaDataDialog from '@/components/GetDataDialog'
-import type { GetDataFormProps } from '@/components/GetDataDialog'
+import ConnectDataSourceDialog from '@/components/DataSourceOverview/ConnectDataSourceDialog'
+import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog'
 import AddSourceSucDialog from '@/components/AddSourceSucDialog'
 import AssetsOverview from '@/components/AssetsOverview'
 import SocialOverview from '@/components/SocialOverview'
@@ -105,7 +105,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const onSubmitDataSourcesExplainDialog = () => {
     setStep(1)
   }
-  const onSubmitGetDataDialog = async (form: GetDataFormProps) => {
+  const onSubmitConnectDataSourceDialogDialog = async (form: GetDataFormProps) => {
     const { apiKey, secretKey } = form
     const sourceName = form?.name?.toLowerCase()
     const { type, requirePassphase }: ExchangeMeta = DATASOURCEMAP[sourceName as keyof typeof DATASOURCEMAP]
@@ -190,8 +190,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       </div>
       {/* {[1, 2, 3, 4, 1.5].includes(step) && <PMask onClose={handleCloseMask} />} */}
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
-      {step === 1.5 && <DataSourcesExplainDialog onSubmit={onSubmitDataSourcesExplainDialog} />}
-      {step === 2 && <GetaDataDialog onSubmit={onSubmitGetDataDialog} activeSource={activeSource} />}
+      {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}
+      {step === 2 && <ConnectDataSourceDialog onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}
       {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
     </div>
   );

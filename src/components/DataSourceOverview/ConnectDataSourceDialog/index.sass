@@ -1,0 +1,38 @@
+@import '@/assets/css/pDialog.sass'
+.connectDataSourceDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  main
+    .scrollList
+      padding-bottom: 103px
+      width: 100%
+      @extend .fcsc
+      gap: $xlGap
+      width: calc( 100% + 38px )
+      max-height: 628px
+      padding-right: 38px
+      overflow-y: auto
+      overflow-x: hidden
+      &::-webkit-scrollbar
+        width: 6px
+        height: 300px
+      &::-webkit-scrollbar-thumb
+        background: rgba(0, 0, 0, 0.2)
+        border-radius: 100px
+    h1
+      @extend .xlLBlackBoldFont
+    h2
+      @extend .sSBlackRegularFont
+      line-height: 26px
+    .formItem
+      width: 100%
+      @extend .fcss
+      gap: $xxsGap
+      h6
+        @extend .mSBlackRegularFont
+    .tipWrapper
+      @extend .frcs
+      gap: $xsGap
+      @extend .xsSBlackRegularFont
+      >a
+        color: #0066FF
