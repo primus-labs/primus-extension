@@ -12,7 +12,7 @@ import PMask from '@/components/PMask'
 import CreateAttesationDialog from '@/components/CreateAttesationDialog'
 import AddSourceSucDialog from '@/components/AddSourceSucDialog'
 import TransferToChainDialog from '@/components/TransferToChainDialog'
-import type { DataFieldItem } from '@/components/DataFieldsDialog'
+import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
 import type { ExchangeMeta } from '@/utils/constants'
 import './index.sass';
 import iconTool1 from '@/assets/img/iconTool1.svg'

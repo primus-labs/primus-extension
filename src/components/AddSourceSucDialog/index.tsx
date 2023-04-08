@@ -2,7 +2,7 @@ import React from 'react';
 import './index.sass'
 import iconSuc from '@/assets/img/iconSuc.svg';
 import Bridge from '@/components/Bridge/index'
-import type { DataFieldItem } from '@/components/DataFieldsDialog'
+import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
 
 interface SetSucDialogProps {
   activeSource?: DataFieldItem;

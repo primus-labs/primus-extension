@@ -13,7 +13,7 @@ import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSource
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
 import ConnectDataSourceDialog from '@/components/DataSourceOverview/ConnectDataSourceDialog'
 import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog'
-import AddSourceSucDialog from '@/components/AddSourceSucDialog'
+import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog'
 import AssetsOverview from '@/components/AssetsOverview'
 import SocialOverview from '@/components/SocialOverview'
 
@@ -188,11 +188,10 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
           <button className="clearStorageBtn" onClick={handleClearStorage}>点这里，从头再来</button>
         </main>
       </div>
-      {/* {[1, 2, 3, 4, 1.5].includes(step) && <PMask onClose={handleCloseMask} />} */}
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}
       {step === 2 && <ConnectDataSourceDialog onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}
-      {step === 3 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
+      {step === 3 && <AddSourceSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
     </div>
   );
 };
