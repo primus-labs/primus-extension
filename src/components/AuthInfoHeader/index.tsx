@@ -19,13 +19,9 @@ const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = false, onBack
     const userInfo: any = await getSingleStorageSyncData('userInfo');
     if (userInfo) {
       const parseUserInfo = JSON.parse(userInfo)
-      const em = parseUserInfo.email
+      const { email: em, picture } = parseUserInfo
       setEmail(em)
-      const rawUserInfoStr = parseUserInfo.rawUserInfo
-      if (rawUserInfoStr) {
-        const { picture } = JSON.parse(rawUserInfoStr);
-        setAvatar(picture);
-      }
+      setAvatar(picture);
     }
   }
   useEffect(() => {

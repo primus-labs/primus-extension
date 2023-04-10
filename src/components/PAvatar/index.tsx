@@ -12,7 +12,7 @@ const PAvatar = () => {
       console.log(JSON.parse(userInfo), JSON.parse(keyStore))
       if (userInfo) {
         const parseUserInfo = JSON.parse(userInfo);
-        const { picture } = JSON.parse(parseUserInfo.rawUserInfo);
+        const { picture } = parseUserInfo
         setAvatar(picture);
       }
       if (keyStore) {
