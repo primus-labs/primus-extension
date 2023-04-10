@@ -3,6 +3,8 @@ import {
   checkIsLogin,
   bindUserAddress,
 } from '@/services/user';
+import { getSysConfig } from '@/services/config';
+
 import { getExchangeDataAsync } from '@/store/actions';
 import { getCurrentDate, getSingleStorageSyncData } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/utils/constants';
@@ -24,6 +26,7 @@ const padoServices = {
   getAllOAuthSources,
   checkIsLogin,
   bindUserAddress,
+  getSysConfig,
 };
 
 const EXCHANGEINFO = {
@@ -254,6 +257,11 @@ const processpadoServiceReq = async (message, port) => {
         port.postMessage({ resMethodName: reqMethodName, res: false });
       }
       break;
+    case 'getSysConfig':
+      if (rc === 0) {
+        port.postMessage({ resMethodName: reqMethodName, res: result });
+      }
+      break;
     default:
       break;
   }
@@ -268,6 +276,16 @@ const processStorageReq = async (message, port) => {
       break;
     case 'get':
       const res = await chrome.storage.local.get(key);
+      if (key.endsWith('cipher')) {
+        const valStr = res[key];
+        const val = JSON.parse(decrypt(valStr, USERPASSWORD));
+        // const { apiKey, secretKey, passphase } = val
+        port.postMessage({
+          resType: 'get',
+          key: key,
+          value: val,
+        });
+      }
       break;
     case 'remove':
       await chrome.storage.local.remove(key);

@@ -3,8 +3,24 @@
 //   getMutipleStorageSyncData,
 // } from '@/utils/utils';
 // import { SETKEYSTORE, SETUSERINFO, SETALLSTORAGE } from '../actions';
-import { SETEXCHAGEDATA } from '../actions';
+import { SETEXCHAGEDATA, SETSYSCONFIG } from '../actions';
+import type  {AssetsMap} from '@/components/DataSourceItem'
 
+type ExInfo = {
+  totalBalance: string;
+  tokenListMap: AssetsMap
+}
+type SysConfigInfo = {
+  [propName: string]: any
+}
+export type UserState = {
+  padoServicePort: chrome.runtime.Port;
+  binance: ExInfo;
+  okx: ExInfo;
+  kucoin: ExInfo;
+  coinbase: ExInfo;
+  sysConfig: SysConfigInfo
+}
 // initial state
 const initState = {
   padoServicePort: chrome.runtime.connect({ name: 'fullscreen' }),
@@ -22,6 +38,9 @@ const initState = {
   },
   // userInfo: {},
   // keyStore: '',
+  sysConfig: {
+
+  }
 };
 
 // reducer
@@ -35,6 +54,8 @@ const reducer:any = function (state = initState, action: any) {
     //   return { ...state, ...action.payload };
     case SETEXCHAGEDATA:
       return { ...state, ...action.payload };
+    case SETSYSCONFIG:
+      return { ...state, sysConfig:action.payload };
     default:
       return state;
   }

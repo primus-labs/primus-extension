@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { connect } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import rem from '@/utils/rem.js';
+import {getSysConfigAction} from '@/store/actions'
 // import {getAllStorageAsync} from '@/store/actions'
 // import store from '@/store/index'
 import PHeader from '@/components/PHeader';
@@ -46,7 +47,8 @@ const networkList = [
   },
 ];
 const Home = (props) => {
-  // const {getAllStorageAsync} = props
+  const {padoServicePort} = props
+  const dispatch = useDispatch()
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const handleClickStart = async () => {
@@ -110,15 +112,35 @@ const Home = (props) => {
     // console.log('props', props, store.getState())
     await checkActiveStep();
   };
+  const getSysConfig = async () => {
+    const padoServicePortListener = async function (message) {
+      if (message.resMethodName === 'getSysConfig') {
+        console.log("page_get:getSysConfig:", message.res);
+        const configMap = message.res.reduce((prev, curr) => {
+          const {configName, configValue} = curr
+          prev[configName] = configValue
+          return prev
+        }, {})
+        dispatch(getSysConfigAction(configMap))
+      }
+    }
+    padoServicePort.onMessage.addListener(padoServicePortListener)
+    padoServicePort.postMessage({
+      fullScreenType: 'padoService',
+      reqMethodName: 'getSysConfig',
+    })
+    console.log("page_send:getSysConfig request");
+  }
   useEffect(() => {
     rem();
     initalPage();
+    getSysConfig()
     // navigate('/datas')// TODO !!!DEL
   }, []);
   useEffect(() => {
     console.log('step', step);
   }, [step]);
-
+  
   return (
     <div className="pageHome">
       <div className="baseLayer">
@@ -173,9 +195,7 @@ const Home = (props) => {
     </div>
   );
 };
-export default Home;
-// export default connect(
-//   (store) => store,
-//   {
-//     getAllStorageAsync
-//   })(Home);
+// export default Home;
+export default connect(
+  (store) => store,
+  {})(Home);

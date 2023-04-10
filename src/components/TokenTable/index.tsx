@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
+import { useSelector } from 'react-redux'
 import { formatD, formatUD } from '@/utils/utils'
 import type { TokenMap } from '@/components/DataSourceItem'
 import PInput from '@/components/PInput'
-import iconBNB from '@/assets/img/iconBNB.svg'
 import './index.sass';
+import type { UserState } from '@/store/reducers'
 
 interface TokenTableProps {
   list: TokenMap[]
@@ -11,6 +12,8 @@ interface TokenTableProps {
 
 const TokenTable: React.FC<TokenTableProps> = ({ list }) => {
   console.log('TokenTable-list', list);
+  const tokenLogoPrefix = useSelector((state: UserState) => state.sysConfig.TOKEN_LOGO_PREFIX)
+  console.log('TokenTable-sysconfig', tokenLogoPrefix)
   const [filterToken, setFilterToken] = useState<string>()
   const activeList = useMemo(() => {
     if (filterToken) {
@@ -48,7 +51,8 @@ const TokenTable: React.FC<TokenTableProps> = ({ list }) => {
         {activeList.map(item => {
           return <li className="tokenItem tr" key={item.symbol}>
             <div className="token">
-              <img src={`https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/icon${item.symbol}.png`} alt="" />
+              {/* TODO */}
+              <img src={`${tokenLogoPrefix}icon${item.symbol}.png`} alt="" />
               <span>{item.symbol}</span>
             </div>
             {/* TODO  */}

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { connect } from 'react-redux'
 import { useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js'
 import { add } from '@/utils/utils'
@@ -19,11 +20,13 @@ export type DataSourceType = {
   [propName: string]: any
 }
 interface AssetsDetailProps {
-  onProve: (name: string) => void
+  onProve: (name: string) => void;
+  padoServicePort: chrome.runtime.Port
 }
-const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve }) => {
+const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve, padoServicePort }) => {
   const [searchParams] = useSearchParams()
   const [dataSource, setDataSource] = useState<DataSourceType>()
+  const [apiKey, setApiKey] = useState<string>()
   const [proofList, setProofList] = useState([
     'Assets', 'Active User'
   ])
@@ -56,6 +59,12 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve }) => {
       return []
     }
   }, [dataSource])
+  const formatApiKey = useMemo(() => {
+    if (apiKey) {
+      return apiKey.substring(0, 10)
+    }
+    return ''
+  }, [apiKey])
   const handleProve = (item: string) => {
     // 'Assets', 'Active User'
     onProve(item)
@@ -68,33 +77,69 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve }) => {
     // const activeSourceList = sourceNameList.filter(item => res[item as keyof typeof res]).map((item) => {
     const sData: DataSourceType = JSON.parse(res)
     sData.icon = icon
+    sData.name = name
     // })
-    console.log('getDataSource', sData)
+    // console.log('getDataSource', sData)
     setDataSource(sData)
+  }
+
+  const getApiKey = async () => {
+    const name = searchParams.get('name') as string
+    const sName = name.toLowerCase()
+    const storageKey = sName + 'cipher'
+    const msg: any = {
+      fullScreenType: 'storage',
+      type: 'get',
+      key: storageKey
+    }
+    padoServicePort.postMessage(msg)
+    const padoServicePortListener = async function (message: any) {
+      // console.log(`page_get:storeg-${storageKey}:`, message.res);
+      if (message.resType === `get` && message.key === storageKey) {
+        const { apiKey } = message.value
+        setApiKey(apiKey)
+      }
+    }
+    padoServicePort.onMessage.addListener(padoServicePortListener)
+  }
+
+  const getSysConfig = async () => {
+    const padoServicePortListener = async function (message: any) {
+      if (message.resMethodName === 'getSysConfig') {
+        console.log("page_get:getSysConfig:", message.res);
+      }
+    }
+    padoServicePort.onMessage.addListener(padoServicePortListener)
+    padoServicePort.postMessage({
+      fullScreenType: 'padoService',
+      reqMethodName: 'getSysConfig',
+    })
+    console.log("page_send:getSysConfig request");
   }
   useEffect(() => {
     getDataSource()
+    getApiKey()
+    getSysConfig()
   }, [])
   return (
     <div className="assetsDetail">
       <header>
         <img src={iconAvatar} alt="" className="avatar" />
-        <h3>User Name</h3>
+        <h3>{formatApiKey || 'ApiKey'} </h3>
         <div className="descItems">
           <div className="descItem">
             {/* TODO */}
             <img src={dataSource?.icon} alt="" className="sourceIcon" />
-            <div className="value">Binance</div>
+            <div className="value">{dataSource?.name}</div>
           </div>
-          <div className="descItem">
+          {/* <div className="descItem">
             <div className="label">ID: </div>
             <div className="value">tPekpYpExd</div>
-          </div>
+          </div> */}
           <div className="descItem">
             <div className="label">Date: </div>
             <div className="value">{dataSource?.date}</div>
-            {/* TODO */}
-            <img src={iconClock} alt="" className="clockIcon" />
+            {/* <img src={iconClock} alt="" className="clockIcon" /> */}
           </div>
         </div>
       </header>
@@ -131,4 +176,4 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve }) => {
   );
 };
 
-export default AssetsDetail;
+export default connect(({ padoServicePort }) => ({ padoServicePort }), {})(AssetsDetail);

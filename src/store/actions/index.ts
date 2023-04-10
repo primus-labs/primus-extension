@@ -1,3 +1,4 @@
+// import { getSysConfig } from './../../services/config';
 // import { getSingleStorageSyncData, getMutipleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants';
 import type { ExchangeMeta } from '@/utils/constants';
@@ -5,8 +6,12 @@ import type { ExchangeMeta } from '@/utils/constants';
 // export const SETUSERINFO = 'SETUSERINFO';
 // export const SETALLSTORAGE = 'SETALLSTORAGE';
 export const SETEXCHAGEDATA = 'SETEXCHAGEDATA';
+export const SETSYSCONFIG = 'SETSYSCONFIG'
 
-
+export const getSysConfigAction = (data: object) => ({
+    type: SETSYSCONFIG,
+    payload: data
+  })
 // export const  getKeyStore = (data: string) => ({
 //   type: SETKEYSTORE,
 //   payload: data
