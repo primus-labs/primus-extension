@@ -4,12 +4,13 @@ import { formatUD } from '@/utils/utils'
 import './index.sass';
 
 interface SourcesStatisticsBarProps {
+  type?: string;
   list: DataSourceItemList,
   filterSource: string | undefined,
   onSelect: (sourceName: string | undefined) => void
 }
 
-const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ list, filterSource, onSelect }) => {
+const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Assets', list, filterSource, onSelect }) => {
   console.log('SourcesStatisticsBar-list', list)
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const handleClickSource = (sourceName: string) => {
@@ -39,12 +40,13 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ list, filte
       <header>Sources</header>
       <ul className="sources">
         {list.map(item => {
-          return <li className="source" key={item.name} onClick={() => handleClickSource(item.name)}>
+          return <li className={type === 'Social' ? "source social" : "source"} key={item.name} onClick={() => handleClickSource(item.name)}>
             <div className="label">Data on {item.name}</div>
             <div className="value">
               <img src={item.icon} alt="" />
-              <span>{formatUD(item.totalBalance)}</span>
+              <span>{type === 'Social' ? item.followers : formatUD(item.totalBalance as string)}</span>
             </div>
+            {type === 'Social' && <div className="tip">Followers</div>}
           </li>
         })}
       </ul>

@@ -25,6 +25,8 @@ type RequestAuthorizationParams = {
 }
 type CheckIsLoginParams = {
   state: string;
+  source: string;
+  data_type: string;
 }
 type CheckIsLoginRes = {
   mc: string;
@@ -73,7 +75,8 @@ export const requestAuthorization = (params:RequestAuthorizationParams) => {
 export const checkIsLogin = (params:CheckIsLoginParams) => {
   return request({
     method: 'get',
-    url: `/public/oauth/check?state=${params.state}`,
+    url: `/public/oauth/check`,
+    data: params
   });
 };
 

@@ -194,7 +194,7 @@ const processNetworkReq = async (message, port) => {
         console.log('set cipher data');
         chrome.storage.local.set(
           {
-            [exchangeName]: JSON.stringify(exchangeData),
+            [exchangeName]: JSON.stringify(exchangeData), // TODO
             [exchangeName + 'cipher']: encrypt(
               JSON.stringify(exCipherData),
               USERPASSWORD
@@ -236,8 +236,20 @@ const processpadoServiceReq = async (message, port) => {
       break;
     case 'checkIsLogin':
       if (rc === 0) {
+        if (params.data_type === 'LOGIN') {
+          await chrome.storage.local.set({ userInfo: JSON.stringify(result) }); // TODO
+        } else {
+          const lowerCaseSourceName = params.source.toLowerCase();
+          const socialSourceData = {
+            ...result,
+            date: getCurrentDate(),
+          };
+          debugger;
+          await chrome.storage.local.set({
+            [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+          }); // TODO
+        }
         port.postMessage({ resMethodName: reqMethodName, res: true });
-        chrome.storage.local.set({ userInfo: JSON.stringify(result) }); // TODO
       } else {
         port.postMessage({ resMethodName: reqMethodName, res: false });
       }

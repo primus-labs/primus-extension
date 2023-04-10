@@ -6,7 +6,7 @@ import * as echarts from 'echarts/core';
 // Import charts, all with Chart suffix
 import { PieChart } from 'echarts/charts';
 import BigNumber from 'bignumber.js'
-import { add, mul, div } from '@/utils/utils'
+import { add, mul, div, gt } from '@/utils/utils'
 import { CHARTCOLORS } from '@/utils/constants'
 // import components, all suffixed with Component
 import {
@@ -31,6 +31,7 @@ interface PPieChartProps {
   list: ChartDataType[]
 }
 const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
+  console.log('PPieChart', list)
   const [options, setOptions] = useState({})
   const getOption = useCallback((name?: string) => {
     const chartData = list
@@ -69,7 +70,10 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
         // selectedMode: false,
         formatter: (name: string) => {
           const val = (list.find((i) => i.name === name) as ChartDataType).value
-          const percent = mul(Number(div(Number(val), Number(totalBal))), 100).toFixed(2) + '%'
+          let percent = '0%'
+          if (gt(Number(totalBal), 0)) {
+            percent = mul(Number(div(Number(val), Number(totalBal))), 100).toFixed(2) + '%'
+          }
           return [`{name|${name}}`, `{value|${percent}}`].join(' ')
         },
         textStyle: {

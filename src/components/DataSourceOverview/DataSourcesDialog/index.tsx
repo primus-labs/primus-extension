@@ -8,6 +8,7 @@ import './index.sass';
 export type DataFieldItem = {
   icon: any;
   name: string;
+  type: string;
   desc?: string;
   requirePassphase?: boolean
 };
@@ -30,6 +31,7 @@ const DataSourcesDialog: React.FC<DataSourcesDialogProps> = ({
       const infoObj: DataFieldItem = {
         name,
         icon,
+        type,
         desc: `${type} Data`,// TODO tooltip style
         requirePassphase
       }

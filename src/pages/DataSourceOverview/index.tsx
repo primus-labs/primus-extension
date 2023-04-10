@@ -22,6 +22,7 @@ import { DATASOURCEMAP } from '@/utils/constants'
 import type { ExchangeMeta } from '@/utils/constants'
 import type { DataSourceItemList } from '@/components/DataSourceList'
 import type { DataSourceItemType } from '@/components/DataSourceItem'
+import Authorization from '@/components/Authorization'
 import './index.sass';
 
 interface DataSourceOverviewProps {
@@ -42,6 +43,7 @@ type DataSourceStorages = {
 const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort, binance }) => {
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
+  const [activeSourceUpperCaseName, setActiveSourceUpperCaseName] = useState<string>()
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
   const [filterWord, setFilterWord] = useState<string>()
@@ -72,6 +74,12 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       return dataSourceList
     }
   }, [dataSourceList, filterWord])
+  const activeAssetsDataSourceList = useMemo(() => {
+    return activeDataSourceList.filter(item => item.type === 'Assets')
+  }, [activeDataSourceList])
+  const activeSocialDataSourceList = useMemo(() => {
+    return activeDataSourceList.filter(item => item.type === 'Social')
+  }, [activeDataSourceList])
   const [activeSourceType, setActiveSourceType] = useState<string>('All')
 
   const handleChangeInput = (val: string) => {
@@ -96,9 +104,20 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     setStep(0)
   }
   const onSubmitDataSourcesDialog = (item: DataFieldItem) => {
-    setActiveSource(item)
-    setStep(2)
+    if (item.type === 'Assets') {
+      setActiveSource(item)
+      setStep(2)
+    } else if (item.type === 'Social') {
+      setActiveSourceUpperCaseName(item.name.toUpperCase())
+      // handleClickOAuthSource(item.name)
+    }
   }
+  const handleSubmitAuthorization = () => {
+    console.log('auth successfully')
+    setActiveSourceUpperCaseName(undefined)
+    setStep(0)
+  }
+
   const onCheckDataSourcesDialog = () => {
     setStep(1.5)
   }
@@ -152,12 +171,20 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     let res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
     const activeSourceList = sourceNameList.filter(item => res[item as keyof typeof res]).map((item) => {
       const sourceData = JSON.parse(res[item as keyof typeof res])
-      return ({
+      // return ({
+      //   ...DATASOURCEMAP[item as keyof typeof res],
+      //   ...sourceData,
+      //   assetsNo: Object.keys(sourceData.tokenListMap).length
+      // })
+      const itemObj = {
         ...DATASOURCEMAP[item as keyof typeof res],
-        ...sourceData,
-        assetsNo: Object.keys(sourceData.tokenListMap).length
-      })
-
+        ...sourceData
+      }
+      const { type } = DATASOURCEMAP[item as keyof typeof res]
+      if (type === 'Assets') {
+        itemObj.assetsNo = Object.keys(sourceData.tokenListMap).length
+      }
+      return itemObj
     })
     console.log('getDataSourceList', activeSourceList)
     setDataSourceList(activeSourceList)
@@ -183,11 +210,12 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
           </div>
           {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} onCheck={handleCheckDataSourceDetail} />}
           {activeSourceType === 'Assets' && <AssetsOverview list={dataSourceList} filterSource={filterWord} />}
-          {activeSourceType === 'Social' && <SocialOverview />}
+          {activeSourceType === 'Social' && <SocialOverview list={activeSocialDataSourceList} filterSource={filterWord} />}
           {/* // TODO DEL!!! */}
           <button className="clearStorageBtn" onClick={handleClearStorage}>点这里，从头再来</button>
         </main>
       </div>
+      <Authorization source={activeSourceUpperCaseName} onSubmit={handleSubmitAuthorization} />
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}
       {step === 2 && <ConnectDataSourceDialog onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}

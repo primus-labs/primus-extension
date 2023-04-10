@@ -14,19 +14,22 @@ export type AssetsMap = {
   [propName: string]: TokenMap
 }
 export type DataSourceData = {
-  tokenListMap: AssetsMap;
-  totalBalance: string,// TODO format amount
-  assetsNo: number,
+  tokenListMap?: AssetsMap;
+  totalBalance?: string,// TODO format amount
+  assetsNo?: number,
+};
+export type SocialDataSourceData = {
+  followers?: number | string;
+  posts?: number | string;// TODO format amount
+  followings?: number | string;
+  verified?: boolean;
 };
 export type DataSourceItemType = {
   date: string,
   pnlAmount?: string,
   pnlPercent?: string,
-  commits?: number;
-  followers?: number;
-  totalViews?: number;
   pnl?: string; // TODO format amount
-} & ExchangeMeta & DataSourceData;
+} & ExchangeMeta & DataSourceData & SocialDataSourceData;
 type SourceDescItem = {
   name: string;
   sourceKey: string;
@@ -37,7 +40,7 @@ interface DataSourceItemProps {
 }
 
 const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }) => {
-  const { icon, name, type, date, totalBalance, assetsNo, pnlAmount, commits, followers, totalViews } = source;
+  const { icon, name, type, date, totalBalance, assetsNo, pnlAmount, } = source;
   const formatSource = {
     ...source,
     totalBalance: totalBalance ? `$${new BigNumber(totalBalance).toFixed(2)}` : '-',
@@ -47,16 +50,16 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }
     const descTypeMap = {
       Social: [
         {
-          name: 'Commits',
-          sourceKey: 'commits',
-        },
-        {
-          name: 'Followers',
+          name: 'Total Followers',
           sourceKey: 'followers',
         },
         {
-          name: 'Total Views',
-          sourceKey: 'totalViews',
+          name: 'Total Tweets',
+          sourceKey: 'posts',
+        },
+        {
+          name: 'Total Likes',
+          sourceKey: 'followings',
         },
       ],
       Assets: [
@@ -65,22 +68,25 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }
           sourceKey: 'totalBalance',
         },
         {
-          name: 'Assets No.',
-          sourceKey: 'assetsNo',
-        },
-        {
           name: 'PnL',
           sourceKey: 'pnlAmount',
+        },
+        {
+          name: 'Assets No.',
+          sourceKey: 'assetsNo',
         },
       ]
     };
     return descTypeMap[type]
   }, [type]);
   const handleClick = () => {
+    if (type === 'Social') {
+      return
+    }
     onCheck(source)
   }
   return (
-    <div className="dataSourceItem" onClick={handleClick}>
+    <div className={type === 'Social' ? "dataSourceItem deactive" : "dataSourceItem"} onClick={handleClick}>
       <div className="dataSourceItemT">
         <div className="TLeft">
           <img src={icon} alt="" />

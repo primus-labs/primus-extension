@@ -102,24 +102,9 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve, padoServicePort })
     }
     padoServicePort.onMessage.addListener(padoServicePortListener)
   }
-
-  const getSysConfig = async () => {
-    const padoServicePortListener = async function (message: any) {
-      if (message.resMethodName === 'getSysConfig') {
-        console.log("page_get:getSysConfig:", message.res);
-      }
-    }
-    padoServicePort.onMessage.addListener(padoServicePortListener)
-    padoServicePort.postMessage({
-      fullScreenType: 'padoService',
-      reqMethodName: 'getSysConfig',
-    })
-    console.log("page_send:getSysConfig request");
-  }
   useEffect(() => {
     getDataSource()
     getApiKey()
-    getSysConfig()
   }, [])
   return (
     <div className="assetsDetail">

@@ -43,6 +43,11 @@ $col-fall: #27C265
       gap: 16px
       margin-bottom: 32px
       cursor: pointer
+      &:nth-child(4n)
+        justify-item: end
+        align-self: end
+      &.social
+        margin-bottom: 15px
       .label
         @extend .descLabel
       .value
@@ -52,6 +57,10 @@ $col-fall: #27C265
         gap: 8px
         img
           width: 32px
-      &:nth-child(4n)
-        justify-item: end
-        align-self: end
+      .tip
+        font-size: 12px
+        line-height: 15px
+        font-family: 'Inter-Medium'
+        color: rgba(0,0,0,0.7)
+        margin-top: -14px
+        margin-left: 40px

@@ -137,9 +137,6 @@ const Home = (props) => {
     getSysConfig()
     // navigate('/datas')// TODO !!!DEL
   }, []);
-  useEffect(() => {
-    console.log('step', step);
-  }, [step]);
   
   return (
     <div className="pageHome">

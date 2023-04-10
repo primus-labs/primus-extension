@@ -16,6 +16,7 @@ interface authDialogProps {
 
 const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServicePort }) => {
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([])
+  // const [activeSource, setActiveSource] = useState<string>()
   const [authWindowId, setAuthWindowId] = useState<number>()
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>()
   const handleClickNext = () => {
@@ -38,21 +39,23 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
     padoServicePort.onMessage.addListener(padoServicePortListener)
     fetchAllOAuthSources()
   }
-  const fetchIsAuthDialog = (state: string) => {
+  const fetchIsAuthDialog = (state: string, source: string) => {
     padoServicePort.postMessage({
       fullScreenType: 'padoService',
       reqMethodName: 'checkIsLogin',
       params: {
-        state
+        state,
+        source,
+        data_type: 'LOGIN'
       }
     })
     console.log("page_send:checkIsLogin request");
   }
-  const createAuthWindowCallBack: (state: string, window?: chrome.windows.Window | undefined) => void = (state, res) => {
+  const createAuthWindowCallBack: (state: string, source: string, window?: chrome.windows.Window | undefined) => void = (state, source, res) => {
     const newWindowId = res?.id
     setAuthWindowId(newWindowId)
     // console.log('create', newWindowId)
-    const timer = setInterval(() => { fetchIsAuthDialog(state) }, 1000)
+    const timer = setInterval(() => { fetchIsAuthDialog(state, source) }, 1000)
     setCheckIsAuthDialogTimer(timer)
     const removeWindowCallBack = (windowId: number) => {
       setAuthWindowId(undefined)
@@ -80,6 +83,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
     padoServicePort.onMessage.addListener(padoServicePortListener)
   }
   const handleClickOAuthSource = (source: string) => {
+
     // If the authorization window is open,focus on it
     if (authWindowId) {
       chrome.windows.update(
@@ -90,6 +94,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
       )
       return
     }
+    // setActiveSource(source)
     const state = uuidv4()
     var width = 520;
     var height = 620;
@@ -106,7 +111,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
       width,
       height
     }
-    chrome.windows.create(windowOptions, (window) => { createAuthWindowCallBack(state, window) })
+    chrome.windows.create(windowOptions, (window) => { createAuthWindowCallBack(state, source, window) })
   }
 
   useEffect(() => {
