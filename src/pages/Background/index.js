@@ -44,6 +44,11 @@ const EXCHANGEINFO = {
     secretKey: '',
     passphase: '',
   },
+  coinbase: {
+    name: 'coinbase',
+    apiKey: '',
+    secretKey: '',
+  },
 };
 
 let USERPASSWORD = '';
@@ -150,6 +155,7 @@ const processNetworkReq = async (message, port) => {
     case 'exchange-binance':
     case 'exchange-okx':
     case 'exchange-kucoin':
+    case 'exchange-coinbase':
       const exchangeName = type.split('-')[1];
       if (secretKey) {
         EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };

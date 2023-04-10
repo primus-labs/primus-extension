@@ -2,9 +2,11 @@ import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
 import iconDataSourceOKX from '@/assets/img/iconDataSourceOKX.svg';
 import iconDataSourceKucoin from '@/assets/img/iconDataSourceKucoin.svg';
+import iconDataSourceCoinbase from '@/assets/img/iconDataSourceCoinbase.png';
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
+import Coinbase from '@/services/exchange/coinbase';
 
 export type ExchangeMeta = {
   name: string,
@@ -37,11 +39,19 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: true,
     constructorF: KuCoin,
   },
+  coinbase: {
+    name: 'coinbase',
+    type: 'Assets',
+    icon: iconDataSourceCoinbase,
+    requirePassphase: false,
+    constructorF: Coinbase,
+  },
   twitter: {
     name: 'Twitter',
     type: 'Social',
     icon: iconDataSourceTwitter,
   },
+  
 };
 
 export const CHARTCOLORS = [

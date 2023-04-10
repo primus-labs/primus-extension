@@ -40,7 +40,7 @@ const proveToolList = [
 ]
 const DataSourceDetail = () => {
   const [searchParams] = useSearchParams()
-  const [step, setStep] = useState(3)
+  const [step, setStep] = useState(0)
   const [proveFlag, setProveFlag] = useState<boolean>(false)
   const [upChainFlag, setUpChainFlag] = useState<boolean>(false)
   const [activeSource, setActiveSource] = useState<ExchangeMeta>()
