@@ -7,11 +7,16 @@ import type { ExchangeMeta } from '@/utils/constants';
 // export const SETALLSTORAGE = 'SETALLSTORAGE';
 export const SETEXCHAGEDATA = 'SETEXCHAGEDATA';
 export const SETSYSCONFIG = 'SETSYSCONFIG'
+export const SETSOCIALDATA = 'SETSOCIALDATA'
 
 export const getSysConfigAction = (data: object) => ({
     type: SETSYSCONFIG,
     payload: data
   })
+export const getSocialDataAction = (data: object) => ({
+  type: SETSOCIALDATA,
+  payload: data
+})
 // export const  getKeyStore = (data: string) => ({
 //   type: SETKEYSTORE,
 //   payload: data
@@ -80,5 +85,25 @@ export const getExchangeDataAsync = (message: ExchangeNetworkReq) => {
         },
       })
     );
+  };
+};
+
+export const getSocialDataAsync = (message: ExchangeNetworkReq) => {
+  return async (dispatch: any) => {
+    // const { name, apiKey, secretKey, passphase } = message;
+    // const exchangeInfo: ExchangeMeta =
+    //   DATASOURCEMAP[name as keyof typeof DATASOURCEMAP];
+    // const constructorF = exchangeInfo.constructorF;
+    // const ex = new constructorF({ apiKey, secretKey, passphase });
+    // await ex.getInfo();
+    // console.log('exchange info', ex);
+    // dispatch(
+    //   getSocialData({
+    //     [name]: {
+    //       totalBalance: ex.totalAccountBalance,
+    //       tokenListMap: ex.totalAccountTokenMap,
+    //     },
+    //   })
+    // );
   };
 };

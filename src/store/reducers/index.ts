@@ -3,7 +3,7 @@
 //   getMutipleStorageSyncData,
 // } from '@/utils/utils';
 // import { SETKEYSTORE, SETUSERINFO, SETALLSTORAGE } from '../actions';
-import { SETEXCHAGEDATA, SETSYSCONFIG } from '../actions';
+import { SETEXCHAGEDATA, SETSYSCONFIG, SETSOCIALDATA } from '../actions';
 import type  {AssetsMap} from '@/components/DataSourceItem'
 
 type ExInfo = {
@@ -19,6 +19,7 @@ export type UserState = {
   okx: ExInfo;
   kucoin: ExInfo;
   coinbase: ExInfo;
+  twitter: any;
   sysConfig: SysConfigInfo
 }
 // initial state
@@ -35,6 +36,13 @@ const initState = {
   kucoin: {
     totalBalance: null,
     tokenListMap: {}
+  },
+  coinbase: {
+    totalBalance: null,
+    tokenListMap: {}
+  },
+  twitter: {
+
   },
   // userInfo: {},
   // keyStore: '',
@@ -54,6 +62,9 @@ const reducer:any = function (state = initState, action: any) {
     //   return { ...state, ...action.payload };
     case SETEXCHAGEDATA:
       return { ...state, ...action.payload };
+    case SETSOCIALDATA:
+      const obj = { ...state, ...action.payload }
+      return obj;
     case SETSYSCONFIG:
       return { ...state, sysConfig:action.payload };
     default:

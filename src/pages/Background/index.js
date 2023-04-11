@@ -2,10 +2,11 @@ import {
   getAllOAuthSources,
   checkIsLogin,
   bindUserAddress,
+  refreshAuthData,
 } from '@/services/user';
 import { getSysConfig } from '@/services/config';
 
-import { getExchangeDataAsync } from '@/store/actions';
+import { getExchangeDataAsync, getSocialDataAction } from '@/store/actions';
 import { getCurrentDate, getSingleStorageSyncData } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
@@ -27,6 +28,7 @@ const padoServices = {
   checkIsLogin,
   bindUserAddress,
   getSysConfig,
+  refreshAuthData,
 };
 
 let EXCHANGEINFO = {
@@ -164,7 +166,10 @@ const processNetworkReq = async (message, port) => {
         EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };
         DATASOURCEMAP[exchangeName].requirePassphase &&
           (EXCHANGEINFO[exchangeName].passphase = passphase);
-      } else if (!EXCHANGEINFO[exchangeName].secretKey) {
+      } else if (
+        !EXCHANGEINFO[exchangeName] ||
+        !EXCHANGEINFO[exchangeName].secretKey
+      ) {
         const cipherData = await chrome.storage.local.get(
           exchangeName + 'cipher'
         );
@@ -222,7 +227,7 @@ const processpadoServiceReq = async (message, port) => {
   const { reqMethodName, params = {}, config = {} } = message;
   const formatParams = { ...params };
   delete formatParams.password;
-  const { rc, result } = await padoServices[reqMethodName](
+  const { rc, result, mc } = await padoServices[reqMethodName](
     { ...formatParams },
     {
       ...config,
@@ -271,6 +276,30 @@ const processpadoServiceReq = async (message, port) => {
     case 'getSysConfig':
       if (rc === 0) {
         port.postMessage({ resMethodName: reqMethodName, res: result });
+      }
+      break;
+    case 'refreshAuthData':
+      if (rc === 0) {
+        const lowerCaseSourceName = params.source.toLowerCase();
+        const socialSourceData = {
+          ...result,
+          date: getCurrentDate(),
+        };
+        const storageObj = {
+          [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+        };
+        await chrome.storage.local.set(storageObj);
+        await store.dispatch(
+          getSocialDataAction({
+            [lowerCaseSourceName]: socialSourceData,
+          })
+        );
+        port.postMessage({ resMethodName: reqMethodName, res: true });
+      } else if (rc === 1 && mc === 'UNAUTHORIZED_401') {
+        //Token expiration
+        port.postMessage({ resMethodName: reqMethodName, res: mc });
+      } else {
+        port.postMessage({ resMethodName: reqMethodName, res: false });
       }
       break;
     default:

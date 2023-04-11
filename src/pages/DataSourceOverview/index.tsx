@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { connect } from 'react-redux'
+import { connect, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router';
 import PageHeader from '@/components/PageHeader'
 import PTabs from '@/components/PTabs'
@@ -7,7 +7,6 @@ import PInput from '@/components/PInput'
 import PSelect from '@/components/PSelect'
 import DataSourceList from '@/components/DataSourceList'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
-import PMask from '@/components/PMask'
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog'
 import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSourcesExplainDialog'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
@@ -24,13 +23,15 @@ import type { DataSourceItemList } from '@/components/DataSourceList'
 import type { DataSourceItemType } from '@/components/DataSourceItem'
 import Authorization from '@/components/Authorization'
 import './index.sass';
+import type { UserState } from '@/store/reducers'
 
 interface DataSourceOverviewProps {
   padoServicePort: chrome.runtime.Port,
   binance?: {
     totalBalance: any,
     tokenListMap: any
-  }
+  },
+  twitter: object
 }
 
 type DataSourceStorages = {
@@ -39,8 +40,12 @@ type DataSourceStorages = {
   kucoin?: any,
   twitter?: any,
 }
+type PortMsg = {
+  resMethodName: string;
+  res: any;
+}
 
-const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort, binance }) => {
+const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort, binance, twitter }) => {
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [activeSourceUpperCaseName, setActiveSourceUpperCaseName] = useState<string>()
@@ -114,9 +119,9 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     }
   }
   const handleSubmitAuthorization = () => {
-    console.log('auth successfully')
     setActiveSourceUpperCaseName(undefined)
     setStep(0)
+    getDataSourceList()// refresh data source
   }
 
   const onCheckDataSourcesDialog = () => {
@@ -152,7 +157,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
         }
       }
       padoServicePort.onMessage.addListener(padoServicePortListener)
-
     } else {
       // TODO social
     }
@@ -167,11 +171,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     let res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
     const activeSourceList = sourceNameList.filter(item => res[item as keyof typeof res]).map((item) => {
       const sourceData = JSON.parse(res[item as keyof typeof res])
-      // return ({
-      //   ...DATASOURCEMAP[item as keyof typeof res],
-      //   ...sourceData,
-      //   assetsNo: Object.keys(sourceData.tokenListMap).length
-      // })
       const itemObj = {
         ...DATASOURCEMAP[item as keyof typeof res],
         ...sourceData
@@ -182,11 +181,80 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       }
       return itemObj
     })
-    console.log('getDataSourceList', activeSourceList)
+    console.log('activeSourceList', activeSourceList)
     setDataSourceList(activeSourceList)
   }
+  const fetchDataSources = async () => {
+    const sourceNameList = Object.keys(DATASOURCEMAP)
+    let res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
+    const LEN = sourceNameList.length
+    let refreshNum = 0
+    sourceNameList.filter(item => res[item as keyof typeof res]).map((item) => {
+      const sourceData = JSON.parse(res[item as keyof typeof res])
+      const itemObj = {
+        ...DATASOURCEMAP[item as keyof typeof res],
+        ...sourceData
+      }
+      const { type } = DATASOURCEMAP[item as keyof typeof res]
+      if (type === 'Assets') {
+        const sourceName = item
+        const msg: any = {
+          fullScreenType: 'networkreq',
+          type: `exchange-${sourceName}`,
+          params: {
+          }
+        }
+        padoServicePort.postMessage(msg)
+        console.log(`page_send:exchange-${sourceName} request`);
+        const padoServicePortListener = async function (message: any) {
+          console.log(`page_get:exchange-${sourceName}:`, message.res);
+          if (message.resType === `exchange-${sourceName}` && message.res) {
+            refreshNum += 1
+            console.log('assets-refreshNum', refreshNum)
+            if (refreshNum === LEN) {
+              getDataSourceList()
+            }
+          } else {
+            // TODO
+          }
+        }
+        padoServicePort.onMessage.addListener(padoServicePortListener)
+      } else if (type === 'Social') {
+        const upperCaseName = item.toUpperCase()
+        const padoServicePortListener = async function (message: PortMsg) {
+          if (message.resMethodName === 'refreshAuthData') {
+            console.log("page_get:refreshAuthData:", message.res);
+            if (message.res) {
+              refreshNum += 1
+              console.log('social-refreshNum', refreshNum)
+              if (refreshNum === LEN) {
+                getDataSourceList()
+              }
+            }
+            if (message.res === 'UNAUTHORIZED_401') {
+              setActiveSourceUpperCaseName(upperCaseName)
+            }
+          }
+        }
+        padoServicePort.onMessage.addListener(padoServicePortListener)
+        padoServicePort.postMessage({
+          fullScreenType: 'padoService',
+          reqMethodName: 'refreshAuthData',
+          params: {
+            // userId: parseUserInfo.id,
+            uniqueId: sourceData.uniqueId,
+            source: upperCaseName,
+          }
+        })
+        console.log("page_send:refreshAuthData request");
+      }
+      return itemObj
+    })
+
+  }
   useEffect(() => {
-    getDataSourceList()
+    fetchDataSources()
+    // getDataSourceList()
   }, [])
 
   return (
@@ -219,4 +287,4 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
 };
 
 
-export default connect(({ padoServicePort, binance }) => ({ padoServicePort, binance }), {})(DataSourceOverview);
+export default connect(({ padoServicePort, binance, twitter }) => ({ padoServicePort, binance, twitter }), {})(DataSourceOverview);

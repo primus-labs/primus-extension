@@ -91,7 +91,7 @@ const Authorization = (props: AuthorizationProps) => {
     if (source) {
       handleClickOAuthSource(source)
     }
-  }, [source, handleClickOAuthSource])
+  }, [source])
   useEffect(() => {
     return () => {
       checkIsAuthDialogTimer && clearInterval(checkIsAuthDialogTimer)

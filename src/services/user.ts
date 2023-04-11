@@ -1,5 +1,10 @@
 import request from '@/utils/request';
 
+type RefreshAuthDataParams = {
+  userId?:string;
+  uniqueId?:string;
+  source?:string;
+}
 type RC = 0 | 1; //response code, 0:success, 1:error
 interface RequestRes {
   mc: string; // message code
@@ -87,5 +92,14 @@ export const bindUserAddress = (data:BindUserAddressParams, config:any) => {
     url: `/oauth/wallet`,
     data,
     config
+  });
+};
+
+// refresh social data (twitter,google)
+export const refreshAuthData = (data:RefreshAuthDataParams) => {
+  return request({
+    method: 'get',
+    url: `/public/data/refresh`,
+    data
   });
 };
