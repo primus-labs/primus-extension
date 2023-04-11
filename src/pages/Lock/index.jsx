@@ -56,14 +56,7 @@ const Lock = ({padoServicePort}) => {
   }, []);
 
   return (
-    <div className="appPage appHome appLock">
-      <div className="baseLayer">
-        <BackgroundAnimation />
-      </div>
-      <div className="pageLayer">
-        <header className="appHeader">
-          <PHeader />
-        </header>
+    <div className="pageLock">
         <main className="appContent">
           <AsideAnimation />
           <article>
@@ -89,7 +82,6 @@ const Lock = ({padoServicePort}) => {
             </footer>
           </article>
         </main>
-      </div>
     </div>
   );
 };

@@ -258,12 +258,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   }, [])
 
   return (
-    <div className="appPage appHome pageDataSourceOverview">
-      <div className="baseLayer overviewLayer">
-        <BackgroundAnimation />
-      </div>
-      <div className="pageLayer">
-        <PageHeader />
+    <div className="pageDataSourceOverview">
+      
         <main className="appContent">
           <PTabs onChange={handleChangeTab} />
           <div className="filterWrapper">
@@ -276,7 +272,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
           {activeSourceType === 'Assets' && <AssetsOverview list={activeAssetsDataSourceList} filterSource={filterWord} />}
           {activeSourceType === 'Social' && <SocialOverview list={activeSocialDataSourceList} filterSource={filterWord} />}
         </main>
-      </div>
+      
       <Authorization source={activeSourceUpperCaseName} onSubmit={handleSubmitAuthorization} />
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}

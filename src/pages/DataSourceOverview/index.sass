@@ -1,75 +1,44 @@
 
-$headerHeight: 106px
-
-.appHome
-  position: relative
-  .baseLayer
-    position: fixed
-    z-index: 1
-    width: 100%
-    height: 100%
-    overflow: hidden
-    .appHeader
-      padding: 0 50px
-      height: $headerHeight
-      display: flex
-      align-items: center
-
 .pageDataSourceOverview
   display: flex
   flex-direction: column
   gap: 32px
-  .pageLayer
-    position: relative
-    z-index: 2
-    main.appContent
-      margin: 0 auto
-      width: 1200px
-      padding: 0
+
+  main.appContent
+    margin: 0 auto
+    width: 1200px
+    padding: 0
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: space-between
+    .filterWrapper
+      width: 100%
       display: flex
-      flex-direction: column
-      align-items: center
-      justify-content: space-between
-      .filterWrapper
-        width: 100%
+      gap: 24px
+      padding: 32px 0 48px 0
+      .pSearch
+        flex: 1
         display: flex
-        gap: 24px
-        padding: 32px 0 48px 0
+        position: relative
+        &:before
+          position: absolute
+          z-index: 1
+          content: ''
+          top: 50%
+          left: 24px
+          transform: translateY(-50%)
+          width: 24px
+          height: 24px
+          background: url('../../assets/img/iconSearch.svg')
+          background-size: 100% 100%
         .pInputWrapper
           background-color: rgba(255,255,255,0.6)
           border-radius: 12px
-        .pInput
-          padding-left: 60px
-          font-size: 16px
-          line-height: 19px
-          font-family: 'Inter-Medium'
-          color: rgba(0, 0, 0, 0.6)
-          height: 60px
-        .pSearch
-          flex: 1
-          display: flex
-          position: relative
-          &:before
-            position: absolute
-            z-index: 1
-            content: ''
-            top: 50%
-            left: 24px
-            transform: translateY(-50%)
-            width: 24px
-            height: 24px
-            background: url('../../assets/img/iconSearch.svg')
-            background-size: 100% 100%
-
-.clearStorageBtn
-  background: #ccc
-  width: 400px
-  height: 58px
-  //   width: 500px
-  //   height: 58px
-  background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-  border-radius: 12px
-  font-family: 'Inter-Bold'
-  font-size: 18px
-  line-height: 22px
-  color: #000000
+          .pInput
+            padding-left: 60px
+            font-size: 16px
+            line-height: 19px
+            font-family: 'Inter-Medium'
+            color: rgba(0, 0, 0, 0.6)
+            height: 60px

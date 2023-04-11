@@ -152,31 +152,23 @@ const Home = (props) => {
   
   return (
     <div className="pageHome">
-      <div className="baseLayer">
-        <BackgroundAnimation />
-      </div>
-      <div className="pageLayer">
-        <header className="appHeader">
-          <PHeader />
-        </header>
-        <main className="appContent">
-          <AsideAnimation />
-          <article>
-            <section className="descWrapper">
-              <h1>Welcome to PADO data gateway</h1>
-              <p>A Trustless Data Gateway Connecting Web2 and Web3</p>
-              <p>
-                Seems like your first time using. Please click on below button
-                to proceed
-              </p>
-            </section>
-            <button className="startBtn" onClick={handleClickStart}>
-              <span>Click here to start</span>
-              <div className="iconArrow"></div>
-            </button>
-          </article>
-        </main>
-      </div>
+      <main className="appContent">
+        <AsideAnimation />
+        <article>
+          <section className="descWrapper">
+            <h1>Welcome to PADO data gateway</h1>
+            <p>A Trustless Data Gateway Connecting Web2 and Web3</p>
+            <p>
+              Seems like your first time using. Please click on below button
+              to proceed
+            </p>
+          </section>
+          <button className="startBtn" onClick={handleClickStart}>
+            <span>Click here to start</span>
+            <div className="iconArrow"></div>
+          </button>
+        </article>
+      </main>
       {step === 1 && (
         <AuthDialog onSubmit={handleSubmitAuth} onClose={handleCloseMask} />
       )}

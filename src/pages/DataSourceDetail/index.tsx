@@ -94,18 +94,12 @@ const DataSourceDetail = () => {
   }, [])
 
   return (
-    <div className="appPage appHome pageDataSourceOverview">
-      <div className="baseLayer overviewLayer">
-        <BackgroundAnimation />
-      </div>
-      <div className="pageLayer">
-        <PageHeader />
-        <main className="appContent">
-          <PTabs onChange={handleChangeTab} />
-          <AssetsDetail onProve={handleProve} />
-          {/* list={dataSourceList} */}
-        </main>
-      </div>
+    <div className="pageDataSourceDetail">
+      <main className="appContent">
+        <PTabs onChange={handleChangeTab} />
+        <AssetsDetail onProve={handleProve} />
+        {/* list={dataSourceList} */}
+      </main>
       {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
       {step === 1 && <CreateAttesationDialog dataSource={dataSource} onSubmit={handleSubmitCreateAttesationDialog} />}
       {step === 2 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Your attestation is successfully granted!" />}
