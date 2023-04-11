@@ -42,10 +42,10 @@ const PHeader = () => {
   const handleClickDropdownItem = (text: string) => {
     switch (text) {
       case 'Logout':
-        navigate('/')
+        // navigate('/')
         break;
       case 'My':
-        navigate('/my')
+        // navigate('/my')
         break;
       case 'Lock Account':
         navigate('/lock')

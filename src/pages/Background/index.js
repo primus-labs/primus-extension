@@ -21,7 +21,7 @@ Module['onRuntimeInitialized'] = () => {
     null // arguments
   );
 };
-const web3EthAccount = new Web3EthAccounts();
+let web3EthAccount = new Web3EthAccounts();
 const padoServices = {
   getAllOAuthSources,
   checkIsLogin,
@@ -29,7 +29,7 @@ const padoServices = {
   getSysConfig,
 };
 
-const EXCHANGEINFO = {
+let EXCHANGEINFO = {
   binance: {
     name: 'binance',
     apiKey: '',
@@ -244,7 +244,6 @@ const processpadoServiceReq = async (message, port) => {
             ...result,
             date: getCurrentDate(),
           };
-          debugger;
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           }); // TODO
@@ -320,7 +319,8 @@ const processWalletReq = async (message, port) => {
         const keyStore = storedData['keyStore'];
         if (keyStore) {
           try {
-            web3EthAccount.wallet.decrypt(keyStore, password);
+            web3EthAccount = new Web3EthAccounts();
+            web3EthAccount.decrypt(keyStore, password);
             USERPASSWORD = password;
             port.postMessage({ resMethodName: reqMethodName, res: true });
           } catch {
@@ -351,6 +351,11 @@ const processWalletReq = async (message, port) => {
       break;
     case 'clearUserPassword':
       USERPASSWORD = '';
+      EXCHANGEINFO = {};
+      web3EthAccount = null;
+      break;
+    case 'queryUserPassword':
+      port.postMessage({ resMethodName: reqMethodName, res: !!USERPASSWORD });
       break;
     case 'create':
       try {
