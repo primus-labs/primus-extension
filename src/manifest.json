@@ -14,8 +14,7 @@
   },
   "permissions": [
     "storage",
-    "notifications",
-    "management"
+    "unlimitedStorage"
   ],
   "host_permissions": [
     "http://18.179.8.186:8080/",
