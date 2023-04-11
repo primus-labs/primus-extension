@@ -23,6 +23,8 @@ export type SocialDataSourceData = {
   posts?: number | string;// TODO format amount
   followings?: number | string;
   verified?: boolean;
+  userName?: string;
+  createdTime?: string;
 };
 export type DataSourceItemType = {
   date: string,

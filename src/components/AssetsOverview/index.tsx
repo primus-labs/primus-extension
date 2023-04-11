@@ -15,6 +15,7 @@ interface AssetsOverviewProps {
 }
 
 const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) => {
+  console.log('AssetsOverview-list', list);
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const totalAssetsBalance = useMemo(() => {
     const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {

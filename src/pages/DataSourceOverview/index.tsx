@@ -80,6 +80,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const activeSocialDataSourceList = useMemo(() => {
     return activeDataSourceList.filter(item => item.type === 'Social')
   }, [activeDataSourceList])
+
   const [activeSourceType, setActiveSourceType] = useState<string>('All')
 
   const handleChangeInput = (val: string) => {
@@ -161,11 +162,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     setStep(0)
     getDataSourceList()// refresh data source
   }
-  const handleClearStorage = () => {
-    chrome.storage.local.remove(['userInfo', 'keyStore', 'binance'], () => {
-      console.log("remove 'userinfo' & 'keyStore' successfully")
-    })
-  }
   const getDataSourceList = async () => {
     const sourceNameList = Object.keys(DATASOURCEMAP)
     let res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
@@ -209,10 +205,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
             </div>
           </div>
           {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} onCheck={handleCheckDataSourceDetail} />}
-          {activeSourceType === 'Assets' && <AssetsOverview list={dataSourceList} filterSource={filterWord} />}
+          {activeSourceType === 'Assets' && <AssetsOverview list={activeAssetsDataSourceList} filterSource={filterWord} />}
           {activeSourceType === 'Social' && <SocialOverview list={activeSocialDataSourceList} filterSource={filterWord} />}
-          {/* // TODO DEL!!! */}
-          <button className="clearStorageBtn" onClick={handleClearStorage}>点这里，从头再来</button>
         </main>
       </div>
       <Authorization source={activeSourceUpperCaseName} onSubmit={handleSubmitAuthorization} />

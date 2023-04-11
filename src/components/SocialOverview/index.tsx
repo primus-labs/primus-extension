@@ -15,6 +15,7 @@ interface AssetsOverviewProps {
 }
 
 const SocialOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) => {
+  console.log('SocialOverview', list)
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const totalFollowers = useMemo(() => {
     const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
@@ -49,35 +50,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
     return bal
   }, [list])
 
-  // const totalLikes = useMemo(() => {
-  //   const reduceF: (prev: BigNumber, curr: DataSourceItemType) => AssetsMap = (prev, curr) => {
-  //     const { tokenListMap } = curr
-  //     Object.keys(tokenListMap).forEach(symbol => {
-  //       if (symbol in prev) {
-  //         const { amount: prevAmount, price } = prev[symbol]
-  //         const { amount } = tokenListMap[symbol]
-  //         const totalAmount = add(Number(prevAmount), Number(amount)).toFixed()
-  //         const totalValue = mul(Number(totalAmount), Number(price)).toFixed()
-  //         prev[symbol] = {
-  //           symbol,
-  //           price,
-  //           amount: totalAmount,
-  //           value: totalValue
-  //         }
-  //       } else {
-  //         prev = {
-  //           ...prev,
-  //           [symbol]: {
-  //             ...tokenListMap[symbol]
-  //           }
-  //         }
-  //       }
-  //     })
-  //     return prev
-  //   }
-  //   const totalTokenMap = list.reduce(reduceF, {})
-  //   return totalTokenMap
-  // }, [list])
+
   // const totalAssetsNo = useMemo(() => {
   //   return Object.keys(totalAssetsMap).length
   // }, [totalAssetsMap])
@@ -140,7 +113,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
         </div>
       </section>
       <SourcesStatisticsBar list={list} onSelect={handleSelectSource} filterSource={filterSource} type="Social" />
-      {/* <TokenTable list={activeSourceTokenList} /> */}
+      <TokenTable list={list} type="Social" />
     </div>
   );
 };
