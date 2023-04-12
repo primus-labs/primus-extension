@@ -80,6 +80,7 @@ chrome.runtime.onConnect.addListener((port) => {
     case 'fullscreen':
       console.log('fullscreen connectted port=', port);
       port.onMessage.addListener(processFullscreenReq);
+      port.onDisconnect.addListener(onDisconnectFullScreen);
       break;
     default:
       break;
@@ -408,3 +409,9 @@ const processWalletReq = async (message, port) => {
       break;
   }
 };
+
+const onDisconnectFullScreen = (port) => {
+  console.log('onDisconnectFullScreen port', port);
+  port.onDisconnect.removeListener(onDisconnectFullScreen);
+  port.onMessage.removeListener(processFullscreenReq);
+}
