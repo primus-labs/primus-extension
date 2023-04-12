@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { connect, useSelector } from 'react-redux'
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import type { Dispatch } from 'react';
+import { connect, useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router';
-import PageHeader from '@/components/PageHeader'
 import PTabs from '@/components/PTabs'
 import PInput from '@/components/PInput'
 import PSelect from '@/components/PSelect'
 import DataSourceList from '@/components/DataSourceList'
-import BackgroundAnimation from '@/components/BackgroundAnimation'
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog'
 import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSourcesExplainDialog'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
@@ -24,7 +23,8 @@ import type { DataSourceItemType } from '@/components/DataSourceItem'
 import Authorization from '@/components/Authorization'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
-
+import { getExDataAsync, initExDataAsync, initSocialDataAsync, getSocialDataAction } from '@/store/actions'
+import store from '@/store/index';
 interface DataSourceOverviewProps {
   padoServicePort: chrome.runtime.Port,
   binance?: {
@@ -34,24 +34,73 @@ interface DataSourceOverviewProps {
   twitter: object
 }
 
-type DataSourceStorages = {
+export type DataSourceStorages = {
   binance?: any,
   okx?: any,
   kucoin?: any,
   twitter?: any,
+  coinbase?: any,
+  [propName: string]: any
 }
 type PortMsg = {
   resMethodName: string;
   res: any;
 }
-
+type UserAction = {
+  type: string;
+  payload: any;
+}
+type ExKeysStorages = {
+  [propName: string]: any;
+}
 const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort, binance, twitter }) => {
+  const dispatch: Dispatch<any> = useDispatch()
+  const exDatas = useSelector((state: UserState) => state.exDatas)
+  const socialDatas = useSelector((state: UserState) => state.socialDatas)
+  console.log('store-exDatas&socialDatas', exDatas, socialDatas)
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [activeSourceUpperCaseName, setActiveSourceUpperCaseName] = useState<string>()
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
-  const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
+  // const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
   const [filterWord, setFilterWord] = useState<string>()
+  const dataSourceMap = useMemo(() => {
+    const sourceNameList = Object.keys(exDatas)
+    const existExNames = sourceNameList.filter(item => exDatas[item as keyof typeof exDatas])
+    const reduceF = (prev: any, curr: string) => {
+      const sourceData = exDatas[curr] || socialDatas[curr]
+      const itemObj: DataSourceItemType = {
+        ...DATASOURCEMAP[curr as keyof typeof exDatas],
+        ...sourceData
+      }
+      const { type } = DATASOURCEMAP[curr as keyof typeof exDatas]
+      if (type === 'Assets') {
+        itemObj.assetsNo = Object.keys(sourceData.tokenListMap).length
+      }
+      return {
+        ...prev,
+        [curr]: itemObj
+      }
+    }
+    const dataMap = existExNames.reduce(reduceF, {})
+    return dataMap
+  }, [exDatas, socialDatas])
+  const dataSourceList: DataSourceItemList = useMemo(() => {
+    // const activeSourceList = Object.keys(exDatas).filter(item => exDatas[item as keyof typeof exDatas]).map((item) => {
+    //   const sourceData = exDatas[item as keyof typeof exDatas]
+    //   const itemObj = {
+    //     ...DATASOURCEMAP[item as keyof typeof exDatas],
+    //     ...sourceData
+    //   }
+    //   const { type } = DATASOURCEMAP[item as keyof typeof exDatas]
+    //   if (type === 'Assets') {
+    //     itemObj.assetsNo = Object.keys(sourceData.tokenListMap).length
+    //   }
+    //   return itemObj
+    // })
+    // console.log('activeSourceList2', activeSourceList)
+    return Object.values(dataSourceMap)
+  }, [dataSourceMap])
   const dataSourceTypeList = useMemo(() => {
     return [
       {
@@ -121,7 +170,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const handleSubmitAuthorization = () => {
     setActiveSourceUpperCaseName(undefined)
     setStep(0)
-    getDataSourceList()// refresh data source
+    // refresh data source
   }
 
   const onCheckDataSourcesDialog = () => {
@@ -130,137 +179,124 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const onSubmitDataSourcesExplainDialog = () => {
     setStep(1)
   }
-  const onSubmitConnectDataSourceDialogDialog = async (form: GetDataFormProps) => {
-    const { apiKey, secretKey } = form
-    const sourceName = form?.name?.toLowerCase()
-    const { type, requirePassphase }: ExchangeMeta = DATASOURCEMAP[sourceName as keyof typeof DATASOURCEMAP]
-    if (type === 'Assets') {
-      const msg: any = {
-        fullScreenType: 'networkreq',
-        type: `exchange-${sourceName}`,
-        params: {
-          apiKey,
-          secretKey
-        }
+  const onSubmitConnectDataSourceDialogDialog = useCallback(async (form: GetDataFormProps) => {
+    const lowerCaseSourceName = form?.name?.toLowerCase()
+    await dispatch(getExDataAsync(form))
+    // console.log('$$$$$$$$$$$$$$', dataSourceMap, exDatas, binanceD, store, store.getState())
+    const msg: any = {
+      fullScreenType: 'networkreq',
+      type: `setData-${lowerCaseSourceName}`,
+      params: {
+        ...form,
+        exData: ((store.getState()) as UserState)[lowerCaseSourceName as keyof UserState] // TODO
       }
-      if (requirePassphase) {
-        const { passphase } = form
-        msg.params.passphase = passphase
-      }
-
-      padoServicePort.postMessage(msg)
-      console.log(`page_send:exchange-${sourceName} request`);
-      const padoServicePortListener = async function (message: any) {
-        console.log(`page_get:exchange-${sourceName}:`, message.res);
-        if (message.resType === `exchange-${sourceName}` && message.res) {
-          setStep(3)
-        }
-      }
-      padoServicePort.onMessage.addListener(padoServicePortListener)
-    } else {
-      // TODO social
     }
-  }
+    // if (requirePassphase) {
+    //   const { passphase } = form
+    //   msg.params.passphase = passphase
+    // }
+
+    padoServicePort.postMessage(msg)
+    console.log(`page_send:setData-${lowerCaseSourceName} request`);
+    const padoServicePortListener = async function (message: any) {
+      console.log(`page_get:setData-${lowerCaseSourceName}:`, message.res);
+      if (message.resType === `setData-${lowerCaseSourceName}` && message.res) {
+        setStep(3)
+      }
+    }
+    padoServicePort.onMessage.addListener(padoServicePortListener)
+
+  }, [dataSourceMap])
   const onSubmitAddSourceSucDialog = () => {
     setActiveSource(undefined)
     setStep(0)
-    getDataSourceList()// refresh data source
   }
-  const getDataSourceList = async () => {
+
+  const fetchExDatas = async () => {
     const sourceNameList = Object.keys(DATASOURCEMAP)
-    let res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
-    const activeSourceList = sourceNameList.filter(item => res[item as keyof typeof res]).map((item) => {
-      const sourceData = JSON.parse(res[item as keyof typeof res])
-      const itemObj = {
-        ...DATASOURCEMAP[item as keyof typeof res],
-        ...sourceData
-      }
-      const { type } = DATASOURCEMAP[item as keyof typeof res]
-      if (type === 'Assets') {
-        itemObj.assetsNo = Object.keys(sourceData.tokenListMap).length
-      }
-      return itemObj
-    })
-    console.log('activeSourceList', activeSourceList)
-    setDataSourceList(activeSourceList)
-  }
-  const fetchDataSources = async () => {
-    const sourceNameList = Object.keys(DATASOURCEMAP)
-    let res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
-    const LEN = sourceNameList.length
-    let refreshNum = 0
-    sourceNameList.filter(item => res[item as keyof typeof res]).map((item) => {
-      const sourceData = JSON.parse(res[item as keyof typeof res])
-      const itemObj = {
-        ...DATASOURCEMAP[item as keyof typeof res],
-        ...sourceData
-      }
-      const { type } = DATASOURCEMAP[item as keyof typeof res]
-      if (type === 'Assets') {
-        const sourceName = item
+    // const exInfoKeys = sourceNameList.map(item => `${item}ciper`)
+    sourceNameList.forEach(async item => {
+      const exInfoKey = `${item}cipher`
+      let res: ExKeysStorages = await getMutipleStorageSyncData([exInfoKey]);
+      if (res[exInfoKey]) {
         const msg: any = {
           fullScreenType: 'networkreq',
-          type: `exchange-${sourceName}`,
+          type: `getKey-${item}`,
+          params: {}
+        }
+        padoServicePort.postMessage(msg)
+        console.log(`page_send:getKey-${item} request`);
+      }
+    })
+  }
+  const fetchSocialDatas = async () => {
+    const sourceNameList = Object.keys(DATASOURCEMAP)
+    sourceNameList.forEach(async item => {
+      let res: ExKeysStorages = await getMutipleStorageSyncData([item]);
+      if (res[item]) {
+        const uniqueId = JSON.parse(res[item]).uniqueId
+        const msg: any = {
+          fullScreenType: 'padoService',
+          reqMethodName: `refreshAuthData`,
           params: {
+            uniqueId,
+            source: item.toUpperCase()
           }
         }
         padoServicePort.postMessage(msg)
-        console.log(`page_send:exchange-${sourceName} request`);
-        const padoServicePortListener = async function (message: any) {
-          console.log(`page_get:exchange-${sourceName}:`, message.res);
-          if (message.resType === `exchange-${sourceName}` && message.res) {
-            refreshNum += 1
-            console.log('assets-refreshNum', refreshNum)
-            if (refreshNum === LEN) {
-              getDataSourceList()
-            }
-          } else {
-            // TODO
-          }
-        }
-        padoServicePort.onMessage.addListener(padoServicePortListener)
-      } else if (type === 'Social') {
-        const upperCaseName = item.toUpperCase()
-        const padoServicePortListener = async function (message: PortMsg) {
-          if (message.resMethodName === 'refreshAuthData') {
-            console.log("page_get:refreshAuthData:", message.res);
-            if (message.res) {
-              refreshNum += 1
-              console.log('social-refreshNum', refreshNum)
-              if (refreshNum === LEN) {
-                getDataSourceList()
-              }
-            }
-            if (message.res === 'UNAUTHORIZED_401') {
-              setActiveSourceUpperCaseName(upperCaseName)
-            }
-          }
-        }
-        padoServicePort.onMessage.addListener(padoServicePortListener)
-        padoServicePort.postMessage({
-          fullScreenType: 'padoService',
-          reqMethodName: 'refreshAuthData',
-          params: {
-            // userId: parseUserInfo.id,
-            uniqueId: sourceData.uniqueId,
-            source: upperCaseName,
-          }
-        })
-        console.log("page_send:refreshAuthData request");
+        console.log(`page_send:refreshAuthData request`);
       }
-      return itemObj
     })
-
+  }
+  const addPortListeners = () => {
+    const padoServicePortListener = async function (message: any) {
+      const { resMethodName, resType, res } = message
+      const lowerCaseSourceName = resType?.split('-')[1]
+      console.log(`page_get:${resType}:`, res);
+      if (resType?.startsWith(`setData-`)) {
+        if (message.res) {
+          console.log('setData successfully')
+        }
+      } else if (resType?.startsWith(`getKey-`)) {
+        await dispatch(getExDataAsync(res))
+        const msg: any = {
+          fullScreenType: 'networkreq',
+          type: `setData-${lowerCaseSourceName}`,
+          params: {
+            ...res,
+          }
+        }
+        padoServicePort.postMessage(msg)
+        console.log(`page_send:setData-${lowerCaseSourceName} request`);
+      } else if (resMethodName === `refreshAuthData`) {
+        if (res) {
+          await dispatch(
+            getSocialDataAction({
+              twitter: res,
+            })
+          );
+        }
+      }
+    }
+    padoServicePort.onMessage.addListener(padoServicePortListener)
+  }
+  const initPage = async () => {
+    addPortListeners()
+    await dispatch(initExDataAsync())
+    await dispatch(initSocialDataAsync())
+    fetchExDatas()
+    fetchSocialDatas()
   }
   useEffect(() => {
-    // fetchDataSources()
-    getDataSourceList()
+    initPage()
   }, [])
+
 
   return (
     <div className="pageDataSourceOverview">
-
       <main className="appContent">
+        {/* {count?.a}
+        <button onClick={hh}>+++</button> */}
         <PTabs onChange={handleChangeTab} />
         <div className="filterWrapper">
           <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} />
@@ -272,7 +308,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
         {activeSourceType === 'Assets' && <AssetsOverview list={activeAssetsDataSourceList} filterSource={filterWord} />}
         {activeSourceType === 'Social' && <SocialOverview list={activeSocialDataSourceList} filterSource={filterWord} />}
       </main>
-
       <Authorization source={activeSourceUpperCaseName} onSubmit={handleSubmitAuthorization} />
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}

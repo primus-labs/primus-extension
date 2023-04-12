@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid';
 import type { UserState } from '@/store/reducers'
+import { getSocialDataAction } from '@/store/actions';
 
 interface AuthorizationProps {
   source: string | undefined;
   onSubmit: () => void;
 }
 const Authorization = (props: AuthorizationProps) => {
+  const dispatch = useDispatch()
   const { source, onSubmit } = props
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   // const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([])
@@ -51,6 +53,12 @@ const Authorization = (props: AuthorizationProps) => {
               },
             )
             timer && clearInterval(timer)
+            // debugger
+            await dispatch(
+              getSocialDataAction({
+                twitter: message.res,
+              })
+            );
             onSubmit()
           }
         }

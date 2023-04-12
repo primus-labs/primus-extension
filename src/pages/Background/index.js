@@ -6,7 +6,7 @@ import {
 } from '@/services/user';
 import { getSysConfig } from '@/services/config';
 
-import { getExchangeDataAsync, getSocialDataAction } from '@/store/actions';
+import { getSocialDataAction } from '@/store/actions';
 import { getCurrentDate, getSingleStorageSyncData } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
@@ -154,69 +154,58 @@ message : {
 const processNetworkReq = async (message, port) => {
   var {
     type,
-    params: { apiKey, secretKey, passphase },
+    params: { apiKey, secretKey, passphase, name, exData },
   } = message;
+  const exchangeName = type.split('-')[1];
   switch (type) {
-    case 'exchange-binance':
-    case 'exchange-okx':
-    case 'exchange-kucoin':
-    case 'exchange-coinbase':
-      const exchangeName = type.split('-')[1];
-      if (secretKey) {
-        EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };
-        DATASOURCEMAP[exchangeName].requirePassphase &&
-          (EXCHANGEINFO[exchangeName].passphase = passphase);
-      } else if (
-        !EXCHANGEINFO[exchangeName] ||
-        !EXCHANGEINFO[exchangeName].secretKey
-      ) {
-        const cipherData = await chrome.storage.local.get(
-          exchangeName + 'cipher'
-        );
-        const { apiKey, secretKey, passphase } = JSON.parse(
-          decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
-        );
-        EXCHANGEINFO[exchangeName] = { name: exchangeName, apiKey, secretKey };
-        DATASOURCEMAP[exchangeName].requirePassphase &&
-          (EXCHANGEINFO[exchangeName].passphase = passphase);
-      }
-      await store.dispatch(getExchangeDataAsync(EXCHANGEINFO[exchangeName]));
-      const { totalBalance, tokenListMap } = store.getState()[exchangeName];
-      const exchangeData = {
-        apiKey: EXCHANGEINFO[exchangeName].apiKey,
-        totalBalance,
-        tokenListMap,
-        date: getCurrentDate(),
+    case 'getKey-binance':
+    case 'getKey-okx':
+    case 'getKey-kucoin':
+    case 'getKey-coinbase':
+      const cipherData = await chrome.storage.local.get(
+        exchangeName + 'cipher'
+      );
+      // console.log(1111, cipherData, USERPASSWORD);
+      const apiKeyInfo = JSON.parse(
+        decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
+      );
+      port.postMessage({
+        resType: type,
+        res: { ...apiKeyInfo, name: exchangeName },
+      });
+      break;
+    case 'setData-binance':
+    case 'setData-okx':
+    case 'setData-kucoin':
+    case 'setData-coinbase':
+      EXCHANGEINFO[exchangeName] = {
+        apiKey,
+        secretKey,
+        passphase,
+        name: exchangeName,
       };
-
-      if (secretKey) {
-        const exCipherData = {
-          apiKey: EXCHANGEINFO[exchangeName].apiKey,
-          secretKey: EXCHANGEINFO[exchangeName].secretKey,
-        };
-        DATASOURCEMAP[exchangeName].requirePassphase &&
-          (exCipherData.passphase = EXCHANGEINFO[exchangeName].passphase);
-        console.log('set cipher data');
-        chrome.storage.local.set(
-          {
-            [exchangeName]: JSON.stringify(exchangeData), // TODO
-            [exchangeName + 'cipher']: encrypt(
-              JSON.stringify(exCipherData),
-              USERPASSWORD
-            ),
-          },
-          () => {
-            port.postMessage({ resType: type, res: true });
-          }
-        );
-      } else {
-        chrome.storage.local.set(
-          { [exchangeName]: JSON.stringify(exchangeData) },
-          () => {
-            port.postMessage({ resType: type, res: true });
-          }
-        );
-      }
+      const exCipherData = {
+        apiKey,
+        secretKey,
+        passphase,
+      };
+      const encryptedKey = encrypt(JSON.stringify(exCipherData), USERPASSWORD);
+      console.log(
+        '$$$==========',
+        exchangeName,
+        exData,
+        encryptedKey,
+        store.getState()
+      );
+      chrome.storage.local.set(
+        {
+          [exchangeName]: JSON.stringify(exData),
+          [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
+        },
+        () => {
+          port.postMessage({ resType: type, res: true });
+        }
+      );
       break;
     default:
       break;
@@ -243,6 +232,7 @@ const processpadoServiceReq = async (message, port) => {
       if (rc === 0) {
         if (params.data_type === 'LOGIN') {
           await chrome.storage.local.set({ userInfo: JSON.stringify(result) }); // TODO
+          port.postMessage({ resMethodName: reqMethodName, res: true });
         } else {
           const lowerCaseSourceName = params.source.toLowerCase();
           const socialSourceData = {
@@ -252,8 +242,12 @@ const processpadoServiceReq = async (message, port) => {
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           }); // TODO
+          // debugger;
+          port.postMessage({
+            resMethodName: reqMethodName,
+            res: socialSourceData,
+          });
         }
-        port.postMessage({ resMethodName: reqMethodName, res: true });
       } else {
         port.postMessage({ resMethodName: reqMethodName, res: false });
       }
@@ -286,15 +280,18 @@ const processpadoServiceReq = async (message, port) => {
           date: getCurrentDate(),
         };
         const storageObj = {
-          [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+          [lowerCaseSourceName]: JSON.stringify(getSocialDataAction),
         };
         await chrome.storage.local.set(storageObj);
-        await store.dispatch(
-          getSocialDataAction({
-            [lowerCaseSourceName]: socialSourceData,
-          })
-        );
-        port.postMessage({ resMethodName: reqMethodName, res: true });
+        // await store.dispatch(
+        //   getSocialDataAction({
+        //     [lowerCaseSourceName]: socialSourceData,
+        //   })
+        // );
+        port.postMessage({
+          resMethodName: reqMethodName,
+          res: socialSourceData,
+        });
       } else if (rc === 1 && mc === 'UNAUTHORIZED_401') {
         //Token expiration
         port.postMessage({ resMethodName: reqMethodName, res: mc });

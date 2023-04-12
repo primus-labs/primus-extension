@@ -7,10 +7,18 @@ import { SETEXCHAGEDATA, SETSYSCONFIG, SETSOCIALDATA } from '../actions';
 import type  {AssetsMap} from '@/components/DataSourceItem'
 
 type ExInfo = {
+  date: string;
+  apiKey: string;
   totalBalance: string;
-  tokenListMap: AssetsMap
+  tokenListMap: AssetsMap;
 }
 type SysConfigInfo = {
+  [propName: string]: any
+}
+type ExDatas = {
+  [propName: string]: ExInfo
+}
+type SocialDatas = {
   [propName: string]: any
 }
 export type UserState = {
@@ -20,35 +28,26 @@ export type UserState = {
   kucoin: ExInfo;
   coinbase: ExInfo;
   twitter: any;
-  sysConfig: SysConfigInfo
+  sysConfig: SysConfigInfo;
+  count: number,
+  exDatas: ExDatas,
+  socialDatas: SocialDatas
 }
 // initial state
 const initState = {
   padoServicePort: chrome.runtime.connect({ name: 'fullscreen' }),
-  binance: {
-    totalBalance: null,
-    tokenListMap: {}
-  },
-  okx: {
-    totalBalance: null,
-    tokenListMap: {}
-  },
-  kucoin: {
-    totalBalance: null,
-    tokenListMap: {}
-  },
-  coinbase: {
-    totalBalance: null,
-    tokenListMap: {}
-  },
-  twitter: {
-
-  },
+  binance: null,
+  okx: null,
+  kucoin: null,
+  coinbase: null,
+  twitter: null,
   // userInfo: {},
   // keyStore: '',
   sysConfig: {
 
-  }
+  },
+  exDatas: {},
+  socialDatas: {}
 };
 
 // reducer
@@ -60,13 +59,14 @@ const reducer:any = function (state = initState, action: any) {
     //   return { ...state, userInfo: action.payload };
     // case SETALLSTORAGE:
     //   return { ...state, ...action.payload };
+    
     case SETEXCHAGEDATA:
-      return { ...state, ...action.payload };
+      return { ...state, exDatas: {...state.exDatas, ...action.payload}, ...action.payload};
     case SETSOCIALDATA:
-      const obj = { ...state, ...action.payload }
-      return obj;
+      return { ...state, socialDatas: {...state.socialDatas, ...action.payload}};
     case SETSYSCONFIG:
       return { ...state, sysConfig:action.payload };
+    
     default:
       return state;
   }

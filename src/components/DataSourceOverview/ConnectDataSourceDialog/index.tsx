@@ -29,7 +29,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
       return
     }
     const form = {
-      name,
+      name: name.toLowerCase(),
       apiKey,
       secretKey,
       passphase
