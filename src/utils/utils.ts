@@ -70,7 +70,7 @@ export function formatDate(timestamp: number) {
   return `${M} ${D},${Y}`;
 }
 
-export function getCurrentDate(timestamp: any) {
+export function getCurrentDate(timestamp?: any) {
   const time = +new Date(timestamp??null)
   return formatDate(time)
 }

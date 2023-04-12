@@ -19,11 +19,20 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
   const activeList = useMemo(() => {
     if (filterToken) {
       const lowerFilterWord = filterToken?.toLowerCase()
-      return list.filter(item => {
-        const anchorName = type === 'Assets' ? item.symbol : item.name
-        const lowerCaseName = anchorName.toLowerCase()
-        return lowerCaseName.startsWith(lowerFilterWord as string)
-      })
+      if (type === 'Assets') {
+        return (list as TokenMap[]).filter(item => {
+          const anchorName = item.symbol
+          const lowerCaseName = anchorName.toLowerCase()
+          return lowerCaseName.startsWith(lowerFilterWord as string)
+        })
+      } else {
+        return (list as DataSourceItemType[]).filter(item => {
+          const anchorName = item.name
+          const lowerCaseName = anchorName.toLowerCase()
+          return lowerCaseName.startsWith(lowerFilterWord as string)
+        })
+      }
+
     } else {
       return list
     }
@@ -51,7 +60,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
             <div className="amount">Amount</div>
             <div className="value">USD Value</div>
           </li>
-          {activeList.map((item: TokenMap) => {
+          {(activeList as TokenMap[]).map(item => {
             return <li className="tokenItem tr" key={item.symbol}>
               <div className="token">
                 <img src={`${tokenLogoPrefix}icon${item.symbol}.png`} alt="" />
@@ -72,7 +81,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
             <div className="followers">Followers</div>
             <div className="post">Post</div>
           </li>
-          {activeList.map((item: DataSourceItemType) => {
+          {(activeList as DataSourceItemType[]).map(item => {
             return <li className="tokenItem tr" key={item.name}>
               <div className="token">
                 <img src={item.icon} alt="" />

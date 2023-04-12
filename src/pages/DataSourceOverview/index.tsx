@@ -253,26 +253,26 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
 
   }
   useEffect(() => {
-    fetchDataSources()
-    // getDataSourceList()
+    // fetchDataSources()
+    getDataSourceList()
   }, [])
 
   return (
     <div className="pageDataSourceOverview">
-      
-        <main className="appContent">
-          <PTabs onChange={handleChangeTab} />
-          <div className="filterWrapper">
-            <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} />
-            <div className="pSearch">
-              <PInput onChange={handleChangeInput} type="text" placeholder="Search" onSearch={handleSearch} />
-            </div>
+
+      <main className="appContent">
+        <PTabs onChange={handleChangeTab} />
+        <div className="filterWrapper">
+          <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} />
+          <div className="pSearch">
+            <PInput onChange={handleChangeInput} type="text" placeholder="Search" onSearch={handleSearch} />
           </div>
-          {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} onCheck={handleCheckDataSourceDetail} />}
-          {activeSourceType === 'Assets' && <AssetsOverview list={activeAssetsDataSourceList} filterSource={filterWord} />}
-          {activeSourceType === 'Social' && <SocialOverview list={activeSocialDataSourceList} filterSource={filterWord} />}
-        </main>
-      
+        </div>
+        {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} onCheck={handleCheckDataSourceDetail} />}
+        {activeSourceType === 'Assets' && <AssetsOverview list={activeAssetsDataSourceList} filterSource={filterWord} />}
+        {activeSourceType === 'Social' && <SocialOverview list={activeSocialDataSourceList} filterSource={filterWord} />}
+      </main>
+
       <Authorization source={activeSourceUpperCaseName} onSubmit={handleSubmitAuthorization} />
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}

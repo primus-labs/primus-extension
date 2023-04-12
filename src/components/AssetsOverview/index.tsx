@@ -26,30 +26,33 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
     return `$${bal.toFixed(2)}`
   }, [list])
 
-  const totalAssetsMap = useMemo(() => {
+  const totalAssetsMap: AssetsMap = useMemo(() => {
     const reduceF: (prev: AssetsMap, curr: DataSourceItemType) => AssetsMap = (prev, curr) => {
       const { tokenListMap } = curr
-      Object.keys(tokenListMap).forEach(symbol => {
-        if (symbol in prev) {
-          const { amount: prevAmount, price } = prev[symbol]
-          const { amount } = tokenListMap[symbol]
-          const totalAmount = add(Number(prevAmount), Number(amount)).toFixed()
-          const totalValue = mul(Number(totalAmount), Number(price)).toFixed()
-          prev[symbol] = {
-            symbol,
-            price,
-            amount: totalAmount,
-            value: totalValue
-          }
-        } else {
-          prev = {
-            ...prev,
-            [symbol]: {
-              ...tokenListMap[symbol]
+      if (tokenListMap) {
+        Object.keys(tokenListMap).forEach(symbol => {
+          if (symbol in prev) {
+            const { amount: prevAmount, price } = prev[symbol]
+            const { amount } = tokenListMap[symbol]
+            const totalAmount = add(Number(prevAmount), Number(amount)).toFixed()
+            const totalValue = mul(Number(totalAmount), Number(price)).toFixed()
+            prev[symbol] = {
+              symbol,
+              price,
+              amount: totalAmount,
+              value: totalValue
+            }
+          } else {
+            prev = {
+              ...prev,
+              [symbol]: {
+                ...tokenListMap[symbol]
+              }
             }
           }
-        }
-      })
+        })
+      }
+
       return prev
     }
     const totalTokenMap = list.reduce(reduceF, {})
@@ -67,14 +70,14 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
     }
   }, [list, activeSourceName, totalAssetsMap,])
   const activeSourceTokenList = useMemo(() => {
-    return Object.values(activeAssetsMap)
+    return Object.values(activeAssetsMap as AssetsMap)
   }, [activeAssetsMap])
 
   const handleSelectSource = (sourceName: string | undefined) => {
     setActiveSourceName(sourceName)
   }
   const getChartData = () => {
-    const chartData = list.map(({ name, totalBalance }) => ({ name, value: new BigNumber(totalBalance).toFixed(2) }))
+    const chartData = list.map(({ name, totalBalance }) => ({ name, value: new BigNumber(totalBalance as string).toFixed(2) }))
     return chartData
   }
   return (
