@@ -20,6 +20,8 @@ import iconNetwork3 from '@/assets/img/iconNetwork3.svg';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.svg';
 import iconNetwork6 from '@/assets/img/iconNetwork6.svg';
+import { initExDataAsync, initSocialDataAsync,  } from '@/store/actions'
+import useUpdateAllSources from '@/hooks/useUpdateAllSources'
 const networkList = [
   {
     icon: iconETH,
@@ -47,6 +49,7 @@ const networkList = [
   },
 ];
 const Home = (props) => {
+  const [updating,updateF] = useUpdateAllSources()
   const {padoServicePort} = props
   const dispatch = useDispatch()
   const navigate = useNavigate();
@@ -143,11 +146,19 @@ const Home = (props) => {
     })
     console.log("page_send:getSysConfig request");
   }
-  useEffect(() => {
+  const initalData = async () => {
     rem();
-    initalPage();
-    getSysConfig()
-    // navigate('/datas')// TODO !!!DEL
+    await dispatch(initExDataAsync())
+    await dispatch(initSocialDataAsync())
+    await updateF()
+    await getSysConfig()
+  }
+  const initalF = async () => {
+    await initalData();
+    await initalPage();
+  }
+  useEffect(() => {
+    initalF()
   }, []);
   
   return (

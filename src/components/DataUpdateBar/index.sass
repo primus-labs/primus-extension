@@ -1,0 +1,34 @@
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+@keyframes rotateAnimation
+  from
+    transform: rotateZ(0)
+  to
+    transform: rotateZ(360deg)
+.dataUpdateBar
+  position: fixed
+  right: 60px
+  bottom: 100px
+  >button.updateBtn
+    border-radius: 100px
+    background: #fff
+    @extend .xsSBlackRegularFont
+    font-family: 'Inter-Medium'
+    @extend .frsc
+    gap: 6px
+    padding: 10px
+    &:hover
+      padding: 10px 12px
+      >.imgUpdate
+        background-image: url('../../assets/img/iconUpdateActive.svg')
+      >span
+        display: block
+    >.imgUpdate
+      width: 24px
+      height: 24px
+      background: url('../../assets/img/iconUpdate.svg')
+      background-size: 100% 100%
+      &.rotate
+        animation: rotateAnimation 2s linear 0s infinite
+    >span
+      display: none

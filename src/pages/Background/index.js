@@ -54,7 +54,7 @@ let EXCHANGEINFO = {
   },
 };
 
-let USERPASSWORD = 'pado2023.'; // TODO!!!
+let USERPASSWORD = '';
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -167,10 +167,14 @@ const processNetworkReq = async (message, port) => {
       const apiKeyInfo = JSON.parse(
         decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
       );
-      port.postMessage({
-        resType: type,
-        res: { ...apiKeyInfo, name: exchangeName },
-      });
+      if (apiKeyInfo?.apiKey) {
+        port.postMessage({
+          resType: type,
+          res: { ...apiKeyInfo, name: exchangeName },
+        });
+      } else {
+        console.log('Failed to decrypt key');
+      }
       break;
     case 'setData-binance':
     case 'setData-okx':
@@ -233,7 +237,6 @@ const processpadoServiceReq = async (message, port) => {
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           }); // TODO
-          // debugger;
           port.postMessage({
             resMethodName: reqMethodName,
             res: true,

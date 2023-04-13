@@ -9,6 +9,7 @@ import BigNumber from 'bignumber.js'
 import { add, mul } from '@/utils/utils'
 import PieChart from '@/components/PieChart'
 
+
 interface AssetsOverviewProps {
   list: DataSourceItemList,
   filterSource: string | undefined
@@ -82,10 +83,10 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
   }
   return (
     <div className="assetsOverview">
-      <header className="updateBtn">
+      {/* <header className="updateBtn">
         <img src={iconRefresh} alt="" />
         <span>Data Update</span>
-      </header>
+      </header> */}
       <section className="statisticsWrapper">
         <div className="card cardL">
           <header>Overview</header>
