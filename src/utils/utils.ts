@@ -71,7 +71,7 @@ export function formatDate(timestamp: number) {
 }
 
 export function getCurrentDate(timestamp?: any) {
-  const time = +new Date(timestamp??null)
+  const time = timestamp? +new Date(timestamp):+new Date()
   return formatDate(time)
 }
 

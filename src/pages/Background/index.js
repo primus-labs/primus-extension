@@ -414,4 +414,4 @@ const onDisconnectFullScreen = (port) => {
   console.log('onDisconnectFullScreen port', port);
   port.onDisconnect.removeListener(onDisconnectFullScreen);
   port.onMessage.removeListener(processFullscreenReq);
-}
+};
