@@ -35,10 +35,10 @@ class Binance {
       const amt = add(add(free, locked), freeze).toFixed();
       gt(amt, BIGZERO) && this.fundingAccountTokenAmountMap.set(asset, amt);
     });
-    console.log(
-      'fundingAccountTokenAmountMap',
-      this.fundingAccountTokenAmountMap
-    );
+    // console.log(
+    //   'fundingAccountTokenAmountMap',
+    //   this.fundingAccountTokenAmountMap
+    // );
     return this.fundingAccountTokenAmountMap;
   }
   async getTradingAccountTokenAmountMap() {
@@ -48,10 +48,10 @@ class Binance {
       const amt = add(free, locked).toFixed();
       gt(amt, BIGZERO) && this.tradingAccountTokenAmountMap.set(asset, amt);
     });
-    console.log(
-      'tradingAccountTokenAmountMap',
-      this.tradingAccountTokenAmountMap
-    );
+    // console.log(
+    //   'tradingAccountTokenAmountMap',
+    //   this.tradingAccountTokenAmountMap
+    // );
     return this.tradingAccountTokenAmountMap;
   }
   async getTotalHoldingTokenSymbolList() {
@@ -67,10 +67,10 @@ class Binance {
       ...this.tradingAccountTokenAmountMap.keys(),
     ];
     this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
-    console.log(
-      'totalHoldingTokenSymbolList',
-      this.totalHoldingTokenSymbolList
-    );
+    // console.log(
+    //   'totalHoldingTokenSymbolList',
+    //   this.totalHoldingTokenSymbolList
+    // );
     return this.totalHoldingTokenSymbolList;
   }
   async getTotalAccountTokenAmountMap() {
@@ -88,7 +88,7 @@ class Binance {
       },
       new Map()
     );
-    console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
+    // console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
     return this.totalAccountTokenAmountMap;
   }
   async getTokenPriceMap() {
@@ -105,7 +105,7 @@ class Binance {
       const tokenSymbol = symbol.replace(`/${USDT}`, '');
       return prev.set(tokenSymbol, new BigNumber(last).toFixed());
     }, new Map([[USDT, ONE]]));
-    console.log('tokenPriceMap', this.tokenPriceMap);
+    // console.log('tokenPriceMap', this.tokenPriceMap);
     return this.tokenPriceMap;
   }
   async getTotalAccountTokenMap() {
@@ -128,7 +128,7 @@ class Binance {
       },
       {}
     );
-    console.log('totalAccountTokenMap', this.totalAccountTokenMap);
+    // console.log('totalAccountTokenMap', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;
   }
   async getTotalAccountBalance() {
@@ -141,7 +141,7 @@ class Binance {
       BIGZERO
     );
     this.totalAccountBalance = totalAccBal.toFixed();
-    console.log('totalAccountBalance', this.totalAccountBalance);
+    // console.log('totalAccountBalance', this.totalAccountBalance);
     return this.totalAccountBalance;
   }
   async getInfo() {

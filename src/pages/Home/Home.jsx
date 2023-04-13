@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import rem from '@/utils/rem.js';
-import {getSysConfigAction} from '@/store/actions'
+import {setSysConfigAction} from '@/store/actions'
 // import {getAllStorageAsync} from '@/store/actions'
 // import store from '@/store/index'
 import PHeader from '@/components/PHeader';
@@ -133,7 +133,7 @@ const Home = (props) => {
           prev[configName] = configValue
           return prev
         }, {})
-        dispatch(getSysConfigAction(configMap))
+        dispatch(setSysConfigAction(configMap))
       }
     }
     padoServicePort.onMessage.addListener(padoServicePortListener)

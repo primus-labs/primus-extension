@@ -5,8 +5,6 @@ import {
   refreshAuthData,
 } from '@/services/user';
 import { getSysConfig } from '@/services/config';
-
-import { getSocialDataAction } from '@/store/actions';
 import { getCurrentDate, getSingleStorageSyncData } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
@@ -56,7 +54,7 @@ let EXCHANGEINFO = {
   },
 };
 
-let USERPASSWORD = '';
+let USERPASSWORD = 'pado2023.'; // TODO!!!
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -166,7 +164,6 @@ const processNetworkReq = async (message, port) => {
       const cipherData = await chrome.storage.local.get(
         exchangeName + 'cipher'
       );
-      // console.log(1111, cipherData, USERPASSWORD);
       const apiKeyInfo = JSON.parse(
         decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
       );
@@ -191,13 +188,6 @@ const processNetworkReq = async (message, port) => {
         passphase,
       };
       const encryptedKey = encrypt(JSON.stringify(exCipherData), USERPASSWORD);
-      console.log(
-        '$$$==========',
-        exchangeName,
-        exData,
-        encryptedKey,
-        store.getState()
-      );
       chrome.storage.local.set(
         {
           [exchangeName]: JSON.stringify(exData),
@@ -234,7 +224,7 @@ const processpadoServiceReq = async (message, port) => {
         if (params.data_type === 'LOGIN') {
           await chrome.storage.local.set({ userInfo: JSON.stringify(result) }); // TODO
           port.postMessage({ resMethodName: reqMethodName, res: true });
-        } else {
+        } else if (params.data_type === 'DATASOURCE') {
           const lowerCaseSourceName = params.source.toLowerCase();
           const socialSourceData = {
             ...result,
@@ -246,7 +236,13 @@ const processpadoServiceReq = async (message, port) => {
           // debugger;
           port.postMessage({
             resMethodName: reqMethodName,
-            res: socialSourceData,
+            res: true,
+            params: {
+              data_type: params.data_type,
+              result: {
+                [lowerCaseSourceName]: socialSourceData,
+              },
+            },
           });
         }
       } else {
@@ -280,22 +276,26 @@ const processpadoServiceReq = async (message, port) => {
           ...result,
           date: getCurrentDate(),
         };
-        const storageObj = {
-          [lowerCaseSourceName]: JSON.stringify(getSocialDataAction),
-        };
-        await chrome.storage.local.set(storageObj);
-        // await store.dispatch(
-        //   getSocialDataAction({
-        //     [lowerCaseSourceName]: socialSourceData,
-        //   })
-        // );
+        await chrome.storage.local.set({
+          [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+        });
         port.postMessage({
           resMethodName: reqMethodName,
-          res: socialSourceData,
+          res: true,
+          params: {
+            [lowerCaseSourceName]: socialSourceData,
+          },
         });
       } else if (rc === 1 && mc === 'UNAUTHORIZED_401') {
         //Token expiration
-        port.postMessage({ resMethodName: reqMethodName, res: mc });
+        port.postMessage({
+          resMethodName: reqMethodName,
+          res: false,
+          params: {
+            mc,
+            source: params.source,
+          },
+        });
       } else {
         port.postMessage({ resMethodName: reqMethodName, res: false });
       }

@@ -36,11 +36,6 @@ export type UserState = {
 // initial state
 const initState = {
   padoServicePort: chrome.runtime.connect({ name: 'fullscreen' }),
-  binance: null,
-  okx: null,
-  kucoin: null,
-  coinbase: null,
-  twitter: null,
   // userInfo: {},
   // keyStore: '',
   sysConfig: {
@@ -61,7 +56,7 @@ const reducer:any = function (state = initState, action: any) {
     //   return { ...state, ...action.payload };
     
     case SETEXCHAGEDATA:
-      return { ...state, exDatas: {...state.exDatas, ...action.payload}, ...action.payload};
+      return { ...state, exDatas: {...state.exDatas, ...action.payload}};
     case SETSOCIALDATA:
       return { ...state, socialDatas: {...state.socialDatas, ...action.payload}};
     case SETSYSCONFIG:

@@ -8,13 +8,13 @@ import './index.sass'
 
 const Layout = () => {
   const location = useLocation()
-  console.log('Layout', location.pathname)
+  // console.log('Layout', location.pathname)
   return (
     <div className="pageApp">
       <BackgroundAnimation />
       <div className="pageLayer">
         <header className="appHeader">
-          {location.pathname === '/' ? <PHeader /> : <PageHeader />}
+          {location.pathname === '/' || location.pathname === '/lock' ? <PHeader /> : <PageHeader />}
         </header>
         <main className="appContent">
           <Outlet />

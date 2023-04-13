@@ -17,11 +17,11 @@ type ExchangeNetworkReq = {
   passphase?: string;
 };
 
-export const getSysConfigAction = (data: object) => ({
+export const setSysConfigAction = (data: object) => ({
     type: SETSYSCONFIG,
     payload: data
   })
-export const getSocialDataAction = (values: object) => ({
+export const setSocialDataAction = (values: object) => ({
   type: SETSOCIALDATA,
   payload: values
 })
@@ -66,7 +66,7 @@ export const getSocialDataAction = (values: object) => ({
 //     dispatch(getAllStorage({userInfo, keyStore}))
 //   }
 // }
-export const getExchangeData = (values: object) => ({
+export const setExchangeData = (values: object) => ({
       type: 'SETEXCHAGEDATA',
       payload: values,
     })
@@ -86,11 +86,11 @@ export const initExDataAsync = () => {
     const exDataMap = existExNames.reduce(reduceF, {})
     console.log('initExDataAsync', exDataMap);
     dispatch(
-      getExchangeData(exDataMap)
+      setExchangeData(exDataMap)
     );
   };
 };
-export const getExDataAsync = (message: ExchangeNetworkReq) => {
+export const setExDataAsync = (message: ExchangeNetworkReq) => {
   return async (dispatch: any) => {
     const { name, apiKey, secretKey, passphase } = message;
     const exchangeInfo: ExchangeMeta =
@@ -98,9 +98,9 @@ export const getExDataAsync = (message: ExchangeNetworkReq) => {
     const constructorF = exchangeInfo.constructorF;
     const ex = new constructorF({ apiKey, secretKey, passphase });
     await ex.getInfo();
-    console.log('getExDataAsync',  name,ex);
+    // console.log('setExDataAsync',  name,ex);
       dispatch(
-        getExchangeData({
+        setExchangeData({
           [name]: {
             totalBalance: ex.totalAccountBalance,
             tokenListMap: ex.totalAccountTokenMap,
@@ -128,7 +128,7 @@ export const initSocialDataAsync = () => {
     const exDataMap = existExNames.reduce(reduceF, {})
     console.log('initSocialDataAsync', exDataMap);
     dispatch(
-      getExchangeData(exDataMap)
+      setSocialDataAction(exDataMap)
     );
   };
 };

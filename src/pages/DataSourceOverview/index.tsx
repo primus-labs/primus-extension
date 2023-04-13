@@ -23,7 +23,7 @@ import type { DataSourceItemType } from '@/components/DataSourceItem'
 import Authorization from '@/components/Authorization'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
-import { getExDataAsync, initExDataAsync, initSocialDataAsync, getSocialDataAction } from '@/store/actions'
+import { setExDataAsync, initExDataAsync, initSocialDataAsync, setSocialDataAction } from '@/store/actions'
 import store from '@/store/index';
 interface DataSourceOverviewProps {
   padoServicePort: chrome.runtime.Port,
@@ -57,25 +57,44 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const dispatch: Dispatch<any> = useDispatch()
   const exDatas = useSelector((state: UserState) => state.exDatas)
   const socialDatas = useSelector((state: UserState) => state.socialDatas)
-  console.log('store-exDatas&socialDatas', exDatas, socialDatas)
+  // console.log('store-exDatas&socialDatas', exDatas, socialDatas)
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
-  const [activeSourceUpperCaseName, setActiveSourceUpperCaseName] = useState<string>()
+  const [activeSocialSourceUpperCaseName, setActiveSocialSourceUpperCaseName] = useState<string>()
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   // const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
   const [filterWord, setFilterWord] = useState<string>()
-  const dataSourceMap = useMemo(() => {
+  const assetsDataSourceMap = useMemo(() => {
     const sourceNameList = Object.keys(exDatas)
     const existExNames = sourceNameList.filter(item => exDatas[item as keyof typeof exDatas])
+
     const reduceF = (prev: any, curr: string) => {
-      const sourceData = exDatas[curr] || socialDatas[curr]
+      const sourceData = exDatas[curr]
       const itemObj: DataSourceItemType = {
         ...DATASOURCEMAP[curr as keyof typeof exDatas],
         ...sourceData
       }
-      const { type } = DATASOURCEMAP[curr as keyof typeof exDatas]
-      if (type === 'Assets') {
-        itemObj.assetsNo = Object.keys(sourceData.tokenListMap).length
+      // const { type } = DATASOURCEMAP[curr as keyof typeof exDatas]
+      // if (type === 'Assets') {
+      itemObj.assetsNo = Object.keys(sourceData.tokenListMap).length
+      // }
+      return {
+        ...prev,
+        [curr]: itemObj
+      }
+    }
+    const dataMap = existExNames.reduce(reduceF, {})
+    return dataMap
+  }, [exDatas])
+  const socialDataSourceMap = useMemo(() => {
+    const sourceNameList = Object.keys(socialDatas)
+    const existExNames = sourceNameList.filter(item => socialDatas[item as keyof typeof socialDatas])
+
+    const reduceF = (prev: any, curr: string) => {
+      const sourceData = socialDatas[curr]
+      const itemObj: DataSourceItemType = {
+        ...DATASOURCEMAP[curr as keyof typeof socialDatas],
+        ...sourceData
       }
       return {
         ...prev,
@@ -84,7 +103,10 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     }
     const dataMap = existExNames.reduce(reduceF, {})
     return dataMap
-  }, [exDatas, socialDatas])
+  }, [socialDatas])
+  const dataSourceMap = useMemo(() => {
+    return { ...assetsDataSourceMap, ...socialDataSourceMap }
+  }, [assetsDataSourceMap, socialDataSourceMap])
   const dataSourceList: DataSourceItemList = useMemo(() => {
     // const activeSourceList = Object.keys(exDatas).filter(item => exDatas[item as keyof typeof exDatas]).map((item) => {
     //   const sourceData = exDatas[item as keyof typeof exDatas]
@@ -158,17 +180,16 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const handleCloseMask = () => {
     setStep(0)
   }
-  const onSubmitDataSourcesDialog = (item: DataFieldItem) => {
+  const onSubmitDataSourcesDialog = async (item: DataFieldItem) => {
     if (item.type === 'Assets') {
       setActiveSource(item)
       setStep(2)
     } else if (item.type === 'Social') {
-      setActiveSourceUpperCaseName(item.name.toUpperCase())
-      // handleClickOAuthSource(item.name)
+      setActiveSocialSourceUpperCaseName(item.name.toUpperCase())
     }
   }
   const handleSubmitAuthorization = () => {
-    setActiveSourceUpperCaseName(undefined)
+    setActiveSocialSourceUpperCaseName(undefined)
     setStep(0)
     // refresh data source
   }
@@ -181,8 +202,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   }
   const onSubmitConnectDataSourceDialogDialog = useCallback(async (form: GetDataFormProps) => {
     const lowerCaseSourceName = form?.name?.toLowerCase()
-    await dispatch(getExDataAsync(form))
-    // console.log('$$$$$$$$$$$$$$', dataSourceMap, exDatas, binanceD, store, store.getState())
+    await dispatch(setExDataAsync(form))
     const msg: any = {
       fullScreenType: 'networkreq',
       type: `setData-${lowerCaseSourceName}`,
@@ -213,7 +233,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   }
 
   const fetchExDatas = async () => {
-    const sourceNameList = Object.keys(DATASOURCEMAP)
+    const sourceNameList = Object.keys(DATASOURCEMAP).filter(i => DATASOURCEMAP[i].type === 'Assets')
     // const exInfoKeys = sourceNameList.map(item => `${item}ciper`)
     sourceNameList.forEach(async item => {
       const exInfoKey = `${item}cipher`
@@ -230,7 +250,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     })
   }
   const fetchSocialDatas = async () => {
-    const sourceNameList = Object.keys(DATASOURCEMAP)
+    const sourceNameList = Object.keys(DATASOURCEMAP).filter(i => DATASOURCEMAP[i].type === 'Social')
     sourceNameList.forEach(async item => {
       let res: ExKeysStorages = await getMutipleStorageSyncData([item]);
       if (res[item]) {
@@ -252,13 +272,15 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     const padoServicePortListener = async function (message: any) {
       const { resMethodName, resType, res } = message
       const lowerCaseSourceName = resType?.split('-')[1]
-      console.log(`page_get:${resType}:`, res);
+
       if (resType?.startsWith(`setData-`)) {
-        if (message.res) {
-          console.log('setData successfully')
+        console.log(`page_get:${resType}:`, res);
+        if (res) {
+          // console.log('setData successfully')
         }
       } else if (resType?.startsWith(`getKey-`)) {
-        await dispatch(getExDataAsync(res))
+        console.log(`page_get:${resType}:`, res);
+        await dispatch(setExDataAsync(res))
         const msg: any = {
           fullScreenType: 'networkreq',
           type: `setData-${lowerCaseSourceName}`,
@@ -269,12 +291,15 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
         padoServicePort.postMessage(msg)
         console.log(`page_send:setData-${lowerCaseSourceName} request`);
       } else if (resMethodName === `refreshAuthData`) {
+        console.log(`page_get:${resMethodName}:`, res);
         if (res) {
           await dispatch(
-            getSocialDataAction({
-              twitter: res,
-            })
+            setSocialDataAction(res.params)
           );
+        } else {
+          if (message.params?.mc === 'UNAUTHORIZED_401') {
+            setActiveSocialSourceUpperCaseName(message.params?.source)
+          }
         }
       }
     }
@@ -308,7 +333,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
         {activeSourceType === 'Assets' && <AssetsOverview list={activeAssetsDataSourceList} filterSource={filterWord} />}
         {activeSourceType === 'Social' && <SocialOverview list={activeSocialDataSourceList} filterSource={filterWord} />}
       </main>
-      <Authorization source={activeSourceUpperCaseName} onSubmit={handleSubmitAuthorization} />
+      <Authorization source={activeSocialSourceUpperCaseName} onSubmit={handleSubmitAuthorization} />
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}
       {step === 2 && <ConnectDataSourceDialog onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}

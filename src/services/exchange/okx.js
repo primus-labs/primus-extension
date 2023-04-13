@@ -8,7 +8,7 @@ const USDT = 'USDT';
 
 class OKX {
   constructor(exchangeInfo) {
-    console.log('okx constructor',exchangeInfo);
+    // console.log('okx constructor',exchangeInfo);
     const { apiKey, secretKey, passphase } = exchangeInfo;
     this.apiKey = apiKey;
     this.secretKey = secretKey;
@@ -27,7 +27,7 @@ class OKX {
     this.exchange = new okx({
       apiKey: this.apiKey,
       secret: this.secretKey,
-      password: this.passphase
+      password: this.passphase,
     });
   }
 
@@ -37,10 +37,10 @@ class OKX {
     res.info.data.forEach(({ ccy, bal }) => {
       this.fundingAccountTokenAmountMap.set(ccy, bal);
     });
-    console.log(
-      'okx fundingAccountTokenAmountMap',
-      this.fundingAccountTokenAmountMap
-    );
+    // console.log(
+    //   'okx fundingAccountTokenAmountMap',
+    //   this.fundingAccountTokenAmountMap
+    // );
     return this.fundingAccountTokenAmountMap;
   }
 
@@ -49,10 +49,10 @@ class OKX {
     res.info.data[0].details.forEach(({ ccy, eq }) => {
       this.tradingAccountTokenAmountMap.set(ccy, eq);
     });
-    console.log(
-      'okx tradingAccountTokenAmountMap',
-      this.tradingAccountTokenAmountMap
-    );
+    // console.log(
+    //   'okx tradingAccountTokenAmountMap',
+    //   this.tradingAccountTokenAmountMap
+    // );
     return this.tradingAccountTokenAmountMap;
   }
 
@@ -69,10 +69,10 @@ class OKX {
       ...this.tradingAccountTokenAmountMap.keys(),
     ];
     this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
-    console.log(
-      'okx totalHoldingTokenSymbolList',
-      this.totalHoldingTokenSymbolList
-    );
+    // console.log(
+    //   'okx totalHoldingTokenSymbolList',
+    //   this.totalHoldingTokenSymbolList
+    // );
     return this.totalHoldingTokenSymbolList;
   }
 
@@ -91,7 +91,7 @@ class OKX {
       },
       new Map()
     );
-    console.log('okx totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
+    // console.log('okx totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
     return this.totalAccountTokenAmountMap;
   }
 
@@ -106,7 +106,7 @@ class OKX {
       const tokenSymbol = symbol.replace(`/${USDT}`, '');
       return prev.set(tokenSymbol, new BigNumber(last).toFixed());
     }, new Map([[USDT, ONE]]));
-    console.log('okx tokenPriceMap', this.tokenPriceMap);
+    // console.log('okx tokenPriceMap', this.tokenPriceMap);
     return this.tokenPriceMap;
   }
 
@@ -130,7 +130,7 @@ class OKX {
       },
       {}
     );
-    console.log('okx totalAccountTokenMap', this.totalAccountTokenMap);
+    // console.log('okx totalAccountTokenMap', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;
   }
 
@@ -144,7 +144,7 @@ class OKX {
       BIGZERO
     );
     this.totalAccountBalance = totalAccBal.toFixed();
-    console.log('okx totalAccountBalance', this.totalAccountBalance);
+    // console.log('okx totalAccountBalance', this.totalAccountBalance);
     return this.totalAccountBalance;
   }
 
@@ -152,7 +152,6 @@ class OKX {
     await this.getTotalAccountBalance();
     return this.exchange;
   }
-
 }
 
 export default OKX;

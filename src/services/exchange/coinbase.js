@@ -25,26 +25,25 @@ class CoinBase {
   initCctx() {
     this.exchange = new coinbase({
       apiKey: this.apiKey,
-      secret: this.secretKey
+      secret: this.secretKey,
     });
   }
   async getFundingAccountTokenAmountMap() {
     const res = await this.exchange.fetchBalance();
-    console.log('res', res);
+    // console.log('res', res);
     res.info.data.forEach(({ currency, balance }) => {
       // Tip: funding account balance = free + locked + freeze
       const amt = new BigNumber(balance.amount);
-      gt(amt, BIGZERO) && this.fundingAccountTokenAmountMap.set(balance.currency, balance.amount);
+      gt(amt, BIGZERO) &&
+        this.fundingAccountTokenAmountMap.set(balance.currency, balance.amount);
     });
-    console.log(
-      'fundingAccountTokenAmountMap',
-      this.fundingAccountTokenAmountMap
-    );
+    // console.log(
+    //   'fundingAccountTokenAmountMap',
+    //   this.fundingAccountTokenAmountMap
+    // );
     return this.fundingAccountTokenAmountMap;
   }
-  async getTradingAccountTokenAmountMap() {
-
-  }
+  async getTradingAccountTokenAmountMap() {}
   async getTotalHoldingTokenSymbolList() {
     if (this.totalHoldingTokenSymbolList.length > 0) {
       return this.totalHoldingTokenSymbolList;
@@ -58,10 +57,10 @@ class CoinBase {
       ...this.tradingAccountTokenAmountMap.keys(),
     ];
     this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
-    console.log(
-      'totalHoldingTokenSymbolList',
-      this.totalHoldingTokenSymbolList
-    );
+    // console.log(
+    //   'totalHoldingTokenSymbolList',
+    //   this.totalHoldingTokenSymbolList
+    // );
     return this.totalHoldingTokenSymbolList;
   }
   async getTotalAccountTokenAmountMap() {
@@ -79,7 +78,7 @@ class CoinBase {
       },
       new Map()
     );
-    console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
+    // console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
     return this.totalAccountTokenAmountMap;
   }
   async getTokenPriceMap() {
@@ -88,21 +87,21 @@ class CoinBase {
     // ex: ETH => ETHUSDT
     // price unit: USD
     const LPSymbols = this.totalHoldingTokenSymbolList
-      .filter((i) => i !== USDT )
-        //filter USD
-      .filter((i) => i !== USD )
+      .filter((i) => i !== USDT)
+      //filter USD
+      .filter((i) => i !== USD)
       .map((j) => `${j}-${USDT}`);
-    console.log('symbol', LPSymbols);
+    // console.log('symbol', LPSymbols);
     const res = await this.exchange.fetchTickers(LPSymbols);
-    console.log('symbol res', LPSymbols);
+    // console.log('symbol res', LPSymbols);
 
     this.tokenPriceMap = Object.keys(res).reduce((prev, curr) => {
       const { symbol, last } = res[curr];
       const tokenSymbol = symbol.replace(`/${USDT}`, '');
       return prev.set(tokenSymbol, new BigNumber(last).toFixed());
     }, new Map([[USDT, ONE]]));
-    this.tokenPriceMap.set(USD,ONE);
-    console.log('tokenPriceMap', this.tokenPriceMap);
+    this.tokenPriceMap.set(USD, ONE);
+    // console.log('tokenPriceMap', this.tokenPriceMap);
     return this.tokenPriceMap;
   }
   async getTotalAccountTokenMap() {
@@ -110,11 +109,9 @@ class CoinBase {
       this.getTokenPriceMap(),
       this.getTotalAccountTokenAmountMap(),
     ]);
-    console.log('tokenPriceMap-----');
+    // console.log('tokenPriceMap-----');
     this.totalAccountTokenMap = this.totalHoldingTokenSymbolList.reduce(
       (prev, curr) => {
-        console.log('prev', prev);
-        console.log('curr', curr);
         const amount = this.totalAccountTokenAmountMap.get(curr);
         const price = this.tokenPriceMap.get(curr);
         const value = mul(amount, price).toFixed();
@@ -128,24 +125,22 @@ class CoinBase {
       },
       {}
     );
-    console.log('------totalAccountTokenMap', this.totalAccountTokenMap);
+    // console.log('------totalAccountTokenMap', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;
   }
   async getTotalAccountBalance() {
     await this.getTotalAccountTokenMap();
-    console.log('-----', this.totalAccountTokenMap);
+    // console.log('-----', this.totalAccountTokenMap);
     const totalAccBal = Object.keys(this.totalAccountTokenMap).reduce(
       (prev, curr) => {
-        console.log('prev', prev);
-        console.log('curr', curr);
         prev = add(prev, this.totalAccountTokenMap[curr].value);
         return prev;
       },
       BIGZERO
     );
-    console.log('totalAccBal', totalAccBal);
+    // console.log('totalAccBal', totalAccBal);
     this.totalAccountBalance = totalAccBal.toFixed();
-    console.log('totalAccountBalance', this.totalAccountBalance);
+    // console.log('totalAccountBalance', this.totalAccountBalance);
     return this.totalAccountBalance;
   }
   async getInfo() {

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid';
 import type { UserState } from '@/store/reducers'
-import { getSocialDataAction } from '@/store/actions';
+import { setSocialDataAction } from '@/store/actions';
 
 interface AuthorizationProps {
   source: string | undefined;
@@ -53,12 +53,12 @@ const Authorization = (props: AuthorizationProps) => {
               },
             )
             timer && clearInterval(timer)
-            // debugger
-            await dispatch(
-              getSocialDataAction({
-                twitter: message.res,
-              })
-            );
+            if (message.params?.data_type === 'DATASOURCE') {
+              await dispatch(
+                setSocialDataAction(message.params?.result)
+              );
+            }
+
             onSubmit()
           }
         }
