@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { connect, useSelector } from 'react-redux'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import PHeader from '@/components/PHeader';
+import PageHeader from '@/components/PageHeader';
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import './index.sass'
 
-const DataSourceOverview = () => {
+const Layout = () => {
+  const location = useLocation()
+  console.log('Layout', location.pathname)
   return (
     <div className="pageApp">
       <BackgroundAnimation />
       <div className="pageLayer">
         <header className="appHeader">
-          <PHeader />
+          {location.pathname === '/' ? <PHeader /> : <PageHeader />}
         </header>
         <main className="appContent">
           <Outlet />
@@ -22,4 +25,4 @@ const DataSourceOverview = () => {
 };
 
 
-export default DataSourceOverview
+export default Layout
