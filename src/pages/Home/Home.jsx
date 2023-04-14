@@ -116,20 +116,17 @@ const Home = () => {
   
   useEffect(() => {
     checkActiveStep();
+    navigate('/lock')
   }, []);
   
   return (
-    <div className="pageHome">
+    <div className="pageIndex pageHome">
       <main className="appContent">
         <AsideAnimation />
         <article>
           <section className="descWrapper">
-            <h1>Welcome to PADO data gateway</h1>
-            <p>A Trustless Data Gateway Connecting Web2 and Web3</p>
-            <p>
-              Seems like your first time using. Please click on below button
-              to proceed
-            </p>
+            <h1>Welcome to zkData Attestation Service</h1>
+            <p>Manage and share your web data simply and safely.</p>
           </section>
           <button className="startBtn" onClick={handleClickStart}>
             <span>Click here to start</span>

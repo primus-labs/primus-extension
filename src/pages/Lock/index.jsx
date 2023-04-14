@@ -56,17 +56,13 @@ const Lock = ({padoServicePort}) => {
   }, []);
 
   return (
-    <div className="pageLock">
+    <div className="pageIndex pageLock">
         <main className="appContent">
           <AsideAnimation />
           <article>
             <header className="articleHeader">
               <h1>Welcome BACK！</h1>
-              <p>A Trustless Data Gateway Connecting Web2 and Web3</p>
-              <p>
-                Seems like your first time using. Please click on below button
-                to proceed
-              </p>
+              <p>Manage and share your web data simply and safely.</p>
             </header>
             <main className="articleMain formItem" >
               <h6>Password</h6>
@@ -77,7 +73,7 @@ const Lock = ({padoServicePort}) => {
               <button className="unLockBtn" onClick={handleClickStart}>
                 <span>Unlock</span>
                 </button>
-              <p className="forgetPwd">Forgot password?</p>
+              {/* <p className="forgetPwd">Forgot password?</p> */}
               <p className="help">Need help? Contact PADO support</p>
             </footer>
           </article>

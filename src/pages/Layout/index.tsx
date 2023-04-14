@@ -62,12 +62,10 @@ const Layout = () => {
     <div className="pageApp">
       <BackgroundAnimation />
       <div className="pageLayer">
-        <header className="appHeader">
-          {location.pathname === '/' || location.pathname === '/lock' ? <PHeader /> : <PageHeader />}
-        </header>
-        <main className="appContent">
-          <Outlet />
-        </main>
+        {location.pathname === '/' || location.pathname === '/lock' ?
+          <header className="appHeader"><PHeader /></header> :
+          <PageHeader />}
+        <Outlet />
       </div>
     </div>
   );

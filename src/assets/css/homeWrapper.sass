@@ -1,0 +1,29 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+
+.pageIndex
+  @extend .frcc
+  .appContent
+    margin-top: -5px
+    padding-left: 14px
+    padding-right: 278px
+    @extend .frbc
+    gap: $lGap
+
+@media (max-width: 1680px)
+  .pageIndex
+    .appContent
+      padding-right: 243px
+      gap: 21px
+
+@media (max-width: 1440px)
+  .pageIndex
+    .appContent
+      padding-right: 208.5px
+      gap: 18px
+
+@media (max-width: 1366px)
+  .pageIndex
+    .appContent
+      padding-right: 197px
+      gap: 17px

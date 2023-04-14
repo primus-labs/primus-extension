@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, { useRef } from 'react';
 import type { MouseEvent } from 'react'
 import './index.sass'
 import illustration from '@/assets/img/illustration.svg';

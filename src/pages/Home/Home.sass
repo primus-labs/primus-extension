@@ -1,59 +1,97 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/homeWrapper.sass'
 
 .pageHome
-  .appContent
-    margin-top: -5px
-    padding-left: 14px
-    padding-right: 360px
-    display: flex
-    justify-content: space-between
-    align-items: center
-    gap: 24px
-    article
-      width: 520px
-      display: flex
-      flex-direction: column
-      gap: 60px
-      .descWrapper
-        display: flex
-        flex-direction: column
-        gap: 18px
-        h1
-          font-family: 'Inter-Black'
-          font-size: 48px
-          line-height: 58px
-          text-transform: uppercase
-          color: #000000
-        p
-          font-family: 'Inter-Regular'
-          font-size: 18px
-          line-height: 22px
-          color: rgba(31, 16, 16, 0.6)
-      button.startBtn
-        width: 343px
-        height: 80px
-        border: 2px solid #000000
-        border-radius: 100px
-        display: flex
-        justify-content: center
-        align-items: center
-        gap: 8px
-        color: #000000
-        &:hover,&:active
-          border: 0
-          background: #000
-          color: #fff
-          .iconArrow
-            background-image: url("../../assets/img/rightArrowHover.svg")
-        span
-          font-family: 'Inter-SemiBold'
-          font-size: 24px
-          line-height: 29px
+  article
+    width: 602px
+    @extend .fcss
+    gap: 60px
+    .descWrapper
+      @extend .fcss
+      gap: 20px
+      h1
+        font-size: 48px
+        line-height: 58px
+        font-family: 'Inter-Black'
+        color: $colLBlack
+        text-transform: uppercase
+      p
+        @extend .mSBlackRegularFont
+    button.startBtn
+      width: 343px
+      height: 80px
+      border: 2PX solid $colLBlack
+      border-radius: 100px
+      @extend .frcc
+      gap: $xxsGap
+      color: $colLBlack
+      @extend .lLBlackSemiBoldFont
+      &:hover,&:active
+        border: 0
+        background: $colLBlack
+        color: #fff
         .iconArrow
-          width: 32px
-          height: 32px
-          background: url("../../assets/img/rightArrow.svg") no-repeat
-          background-size: 100% 100%
+          background-image: url("../../assets/img/rightArrowHover.svg")
+      .iconArrow
+        width: 32px
+        height: 32px
+        background-size: 100% 100%
+        background-image: url("../../assets/img/rightArrow.svg")
+
 .TransferToChainDialog
   padding: 30px 90px 70px
   >main
     padding: 0
+
+@media (max-width: 1680px)
+  .pageHome
+    .descWrapper
+      gap: 17.5px
+      h1
+        font-size: 42px
+        line-height: 51px
+    button.startBtn
+      width: 300px
+      height: 70px
+      border-radius: 87.5px
+      font-size: 18px
+      line-height: 22px
+      .iconArrow
+        width: 28px
+        height: 28px
+@media (max-width: 1440px)
+  .pageHome
+    article
+      width: 451.5px
+      gap: 45px
+      .descWrapper
+        gap: 15px
+        h1
+          font-size: 36px
+          line-height: 43.5px
+        p
+          font-size: 16px
+          line-height: 19px
+      button.startBtn
+        width: 260px
+        height: 60px
+        border: 2PX solid $colLBlack
+        border-radius: 75px
+        .iconArrow
+          width: 24px
+          height: 24px
+@media (max-width: 1366px)
+  .pageHome
+    article
+      width: 427px
+      gap: 43px
+      .descWrapper
+        gap: 14px
+        h1
+          font-size: 34px
+          line-height: 41px
+        p
+          font-size: 16px
+          line-height: 19px

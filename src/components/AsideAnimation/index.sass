@@ -1,9 +1,20 @@
 $illustrationWidth: 1002px
 $illustrationHeight: 902px
-
 aside
   transform-style: preserve-3d
   perspective: 3000px
-  img
+  img.illustration
     width: $illustrationWidth
     transition: all .1s
+@media (max-width: 1680px)
+  aside
+    img.illustration
+      width: $illustrationWidth* 0.875
+@media (max-width: 1440px)
+  aside
+    img.illustration
+      width: $illustrationWidth* 0.75
+@media (max-width: 1366px)
+  aside
+    img.illustration
+      width: $illustrationWidth* 0.71

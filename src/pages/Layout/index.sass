@@ -1,10 +1,26 @@
-
-$headerHeight: 106px
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pVars.sass'
 
 .pageApp
   .pageLayer
+    max-width: 1920px
+    margin: 0 auto
     .appHeader
-      padding: 50px
-      height: $headerHeight
-      display: flex
-      align-items: center
+      padding: 0 50px
+      height: $pageHeaderHeight
+      @extend .frsc
+@media (max-width: 1680px)
+  .pageApp
+    .pageLayer
+      .appHeader
+        height: 93px
+@media (max-width: 1440px)
+  .pageApp
+    .pageLayer
+      .appHeader
+        height: 79.5px
+@media (max-width: 1366px)
+  .pageApp
+    .pageLayer
+      .appHeader
+        height: 75px

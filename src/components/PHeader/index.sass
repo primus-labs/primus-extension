@@ -1,17 +1,43 @@
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pVars.sass'
 .pHeader
-  display: flex
-  align-items: center
-  gap: 24px
+  @extend .frsc
+  gap: $lGap
   .pLogo
     width: 158px
-    height: 41px
   i
     width: 1PX
     height: 40px
     background-color: rgba(0, 0, 0, 0.1)
   p
     width: 179px
-    font-family: 'Inter-Regular'
     font-size: 12px
     line-height: 18px
-    color: rgba(0, 0, 0, 0.8)
+    font-family: 'Inter-Regular'
+    color: $colSBlack
+@media (max-width: 1680px)
+  .pHeader
+    gap: 21px
+    .pLogo
+      width: 138px
+    i
+      height: 35px
+    p
+      line-height: 16px
+@media (max-width: 1440px)
+  .pHeader
+    gap: 17.4px
+    .pLogo
+      width: 118.5px
+    i
+      height: 30px
+    p
+      line-height: 13.5px
+
+@media (max-width: 1366px)
+  .pHeader
+    gap: 18px
+    .pLogo
+      width: 112px
+    i
+      height: 28.4px

@@ -1,7 +1,4 @@
-$colSBlack: rgba(0,0,0,0.6)
-$colMBlack: rgba(0,0,0,0.8)
-$colLBlack: rgba(0,0,0, 1)
-
+@import '@/assets/css/pVars.sass'
 .xsFont
   font-size: 14px
   line-height: 17px
@@ -39,6 +36,10 @@ $colLBlack: rgba(0,0,0, 1)
 .lLBlackBoldFont
   @extend .lFont
   font-family: 'Inter-Bold'
+  color: $colLBlack
+.lLBlackSemiBoldFont
+  @extend .lFont
+  font-family: 'Inter-SemiBold'
   color: $colLBlack
 .xlBoldFont
   @extend .xlFont
