@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { connect, useSelector, useDispatch } from 'react-redux';
-import rem from '@/utils/rem.js';
-import {setSysConfigAction} from '@/store/actions'
-// import {getAllStorageAsync} from '@/store/actions'
-// import store from '@/store/index'
-import PHeader from '@/components/PHeader';
+import { connect, useSelector } from 'react-redux';
 import TransferToChainDialog from '@/components/TransferToChainDialog';
 import AuthDialog from '@/components/Home/AuthDialog';
 import SetPwdDialog from '@/components/Home/SetPwdDialog';
 import SetSucDialog from '@/components/Home/SetSucDialog';
-import BackgroundAnimation from '@/components/BackgroundAnimation';
 import AsideAnimation from '@/components/AsideAnimation';
 import './Home.sass';
 import { getMutipleStorageSyncData } from '@/utils/utils';
@@ -20,8 +14,7 @@ import iconNetwork3 from '@/assets/img/iconNetwork3.svg';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.svg';
 import iconNetwork6 from '@/assets/img/iconNetwork6.svg';
-import { initExDataAsync, initSocialDataAsync,  } from '@/store/actions'
-import useUpdateAllSources from '@/hooks/useUpdateAllSources'
+
 const networkList = [
   {
     icon: iconETH,
@@ -48,10 +41,8 @@ const networkList = [
     title: '6',
   },
 ];
-const Home = (props) => {
-  const [updating,updateF] = useUpdateAllSources()
-  const {padoServicePort} = props
-  const dispatch = useDispatch()
+const Home = () => {
+  const padoServicePort = useSelector((state) => state.padoServicePort)
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const handleClickStart = async () => {
@@ -122,43 +113,9 @@ const Home = (props) => {
 
     return false;
   };
-  const initalPage = async () => {
-    // await getAllStorageAsync()
-    // console.log('props', props, store.getState())
-    await checkActiveStep();
-  };
-  const getSysConfig = async () => {
-    const padoServicePortListener = async function (message) {
-      if (message.resMethodName === 'getSysConfig') {
-        console.log("page_get:getSysConfig:", message.res);
-        const configMap = message.res.reduce((prev, curr) => {
-          const {configName, configValue} = curr
-          prev[configName] = configValue
-          return prev
-        }, {})
-        dispatch(setSysConfigAction(configMap))
-      }
-    }
-    padoServicePort.onMessage.addListener(padoServicePortListener)
-    padoServicePort.postMessage({
-      fullScreenType: 'padoService',
-      reqMethodName: 'getSysConfig',
-    })
-    console.log("page_send:getSysConfig request");
-  }
-  const initalData = async () => {
-    rem();
-    await dispatch(initExDataAsync())
-    await dispatch(initSocialDataAsync())
-    await updateF()
-    await getSysConfig()
-  }
-  const initalF = async () => {
-    await initalData();
-    await initalPage();
-  }
+  
   useEffect(() => {
-    initalF()
+    checkActiveStep();
   }, []);
   
   return (
@@ -207,7 +164,4 @@ const Home = (props) => {
     </div>
   );
 };
-// export default Home;
-export default connect(
-  (store) => store,
-  {})(Home);
+export default Home;
