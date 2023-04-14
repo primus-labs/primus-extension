@@ -66,4 +66,7 @@ export const CHARTCOLORS = [
   '#BFD85D',
   '#EDC45A',
   '#ED8F5A'
-]
+];
+
+export const ExchangeStoreVersion = '1.0.0';
+export const SocailStoreVersion = '1.0.0';

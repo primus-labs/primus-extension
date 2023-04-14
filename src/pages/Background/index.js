@@ -10,6 +10,7 @@ import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
 import { encrypt, decrypt } from '@/utils/crypto';
 import Module from './hello';
+import {ExchangeStoreVersion, SocailStoreVersion} from '@/utils/constants';
 const Web3EthAccounts = require('web3-eth-accounts');
 
 Module['onRuntimeInitialized'] = () => {
@@ -192,6 +193,7 @@ const processNetworkReq = async (message, port) => {
         passphase,
       };
       const encryptedKey = encrypt(JSON.stringify(exCipherData), USERPASSWORD);
+      exData.version = ExchangeStoreVersion;
       chrome.storage.local.set(
         {
           [exchangeName]: JSON.stringify(exData),
@@ -234,6 +236,7 @@ const processpadoServiceReq = async (message, port) => {
             ...result,
             date: getCurrentDate(),
           };
+          socialSourceData.version = SocailStoreVersion;
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           }); // TODO
@@ -279,6 +282,7 @@ const processpadoServiceReq = async (message, port) => {
           ...result,
           date: getCurrentDate(),
         };
+        socialSourceData.version = SocailStoreVersion;
         await chrome.storage.local.set({
           [lowerCaseSourceName]: JSON.stringify(socialSourceData),
         });
