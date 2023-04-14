@@ -1,0 +1,39 @@
+
+.pLoading
+  @keyframes rotate
+    from
+      transform: rotate(0deg)
+
+    to
+      transform: rotate(360deg)
+  // .loader
+  //   width: 96px
+  //   height: 96px
+  //   border-radius: 50%
+  //   border-width: 10.5px
+  //   border-style: solid
+  //   border-color: transparent #70FFBA #78DEFF #70FFBA
+  //   animation: rotate 1.5s linear infinite
+
+  .loader
+    position: relative
+    width: 240px
+    height: 240px
+    background: linear-gradient(#78DEFF,#70FFBA,transparent 70%)
+    border-radius: 50%
+    animation: roll 2s linear infinite
+
+.loader::before
+  content: ""
+  width: calc(100% - 21px)
+  height: calc(100% - 21px)
+  position: absolute
+  left: 50%
+  top: 50%
+  transform: translate(-50%,-50%)
+  background-color: #fff
+  border-radius: 50%
+
+@keyframes roll
+  to
+    transform: rotateZ(360deg)

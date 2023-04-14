@@ -14,7 +14,6 @@ import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDa
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog'
 import AssetsOverview from '@/components/AssetsOverview'
 import SocialOverview from '@/components/SocialOverview'
-
 import { getMutipleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
 import type { ExchangeMeta } from '@/utils/constants'
@@ -63,6 +62,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   // console.log('store-exDatas&socialDatas', exDatas, socialDatas)
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
+  const [loading, setLoading] = useState(false)
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   // const [dataSourceList, setDataSourceList] = useState<DataSourceItemList>([])
   const [filterWord, setFilterWord] = useState<string>()
@@ -189,6 +189,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   }
   const onSubmitConnectDataSourceDialogDialog = useCallback(async (form: GetDataFormProps) => {
     const lowerCaseSourceName = form?.name?.toLowerCase()
+    setLoading(true)
     await dispatch(setExDataAsync(form))
     const msg: any = {
       fullScreenType: 'networkreq',
@@ -204,6 +205,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       console.log(`page_get:setData-${lowerCaseSourceName}:`, message.res);
       if (message.resType === `setData-${lowerCaseSourceName}` && message.res) {
         setStep(3)
+        setLoading(false)
       }
       padoServicePort.onMessage.removeListener(padoServicePortListener);
     }
@@ -231,7 +233,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       </main>
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}
-      {step === 2 && <ConnectDataSourceDialog onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}
+      {step === 2 && <ConnectDataSourceDialog loading={loading} onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}
       {step === 3 && <AddSourceSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
       <DataUpdateBar />
     </div>
