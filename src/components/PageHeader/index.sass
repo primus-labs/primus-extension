@@ -1,14 +1,15 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFlex.sass'
 @import '@/assets/css/pFont.sass'
-
+$headerLogoWidth: 158px
+$LogoSeparatorHeight: 40px
+$LogoTextLineHeight: 18px
 .pageHeader
   padding: 0 50px
   height: $pageHeaderHeight
   @extend .frbc
   .pLogo
-    width: 158px
-    height: 41px
+    width: $headerLogoWidth
   .rightHeader
     position: relative
     .rightHeaderInner
@@ -44,3 +45,18 @@
             .dropdownItem
               background: rgba(0, 0, 0, 0.05)
               border-radius: 8px
+@media (max-width: 1680px)
+  .pageHeader
+    height: $pageHeaderHeight*$mN
+    .pLogo
+      width: $headerLogoWidth*$mN
+@media (max-width: 1440px)
+  .pageHeader
+    height: $pageHeaderHeight*$sN
+    .pLogo
+      width: $headerLogoWidth*$sN
+@media (max-width: 1366px)
+  .pageHeader
+    height: $pageHeaderHeight*$xsN
+    .pLogo
+      width: $headerLogoWidth*$xsN

@@ -116,7 +116,6 @@ const Home = () => {
   
   useEffect(() => {
     checkActiveStep();
-    navigate('/lock')
   }, []);
   
   return (

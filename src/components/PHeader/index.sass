@@ -1,43 +1,46 @@
 @import '@/assets/css/pFlex.sass'
 @import '@/assets/css/pVars.sass'
+$headerLogoWidth: 158px
+$LogoSeparatorHeight: 40px
+$LogoTextLineHeight: 18px
 .pHeader
   @extend .frsc
   gap: $lGap
   .pLogo
-    width: 158px
+    width: $headerLogoWidth
   i
     width: 1PX
-    height: 40px
+    height: $LogoSeparatorHeight
     background-color: rgba(0, 0, 0, 0.1)
   p
     width: 179px
     font-size: 12px
-    line-height: 18px
+    line-height: $LogoTextLineHeight
     font-family: 'Inter-Regular'
     color: $colSBlack
 @media (max-width: 1680px)
   .pHeader
-    gap: 21px
+    gap: $lGap*$mN
     .pLogo
-      width: 138px
+      width: $headerLogoWidth*$mN
     i
-      height: 35px
+      height: $LogoSeparatorHeight*$mN
     p
-      line-height: 16px
+      line-height: $LogoTextLineHeight*$mN
 @media (max-width: 1440px)
   .pHeader
-    gap: 17.4px
+    gap: $lGap*$sN
     .pLogo
-      width: 118.5px
+      width: $headerLogoWidth*$sN
     i
-      height: 30px
+      height: $LogoSeparatorHeight*$sN
     p
-      line-height: 13.5px
+      line-height: $LogoTextLineHeight*$sN
 
 @media (max-width: 1366px)
   .pHeader
-    gap: 18px
+    gap: $lGap*$xsN
     .pLogo
-      width: 112px
+      width: $headerLogoWidth*$xsN
     i
-      height: 28.4px
+      height: $LogoSeparatorHeight*$xsN
