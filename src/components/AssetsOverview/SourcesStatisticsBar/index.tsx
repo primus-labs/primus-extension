@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { DataSourceItemList } from '@/components/DataSourceList'
+import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
 import { formatUD } from '@/utils/utils'
 import './index.sass';
 

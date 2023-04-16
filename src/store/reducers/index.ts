@@ -4,7 +4,7 @@
 // } from '@/utils/utils';
 // import { SETKEYSTORE, SETUSERINFO, SETALLSTORAGE } from '../actions';
 import { SETEXCHAGEDATA, SETSYSCONFIG, SETSOCIALDATA } from '../actions';
-import type  {AssetsMap} from '@/components/DataSourceItem'
+import type  {AssetsMap} from '@/components/DataSourceOverview/DataSourceItem'
 
 type ExInfo = {
   date: string;

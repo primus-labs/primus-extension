@@ -1,13 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import iconRefresh from '@/assets/img/iconRefresh.svg';
-import '@/components/AssetsOverview/index.sass';
-import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceItem'
-import type { DataSourceItemList } from '@/components/DataSourceList'
-import SourcesStatisticsBar from '@/components/SourcesStatisticsBar'
+import '../AssetsOverview/index.sass';
+import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
+import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
+import SourcesStatisticsBar from '../SourcesStatisticsBar'
 import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
 import { add, mul } from '@/utils/utils'
-import PieChart from '@/components/PieChart'
+import PieChart from '../PieChart'
 
 interface AssetsOverviewProps {
   list: DataSourceItemList,
@@ -75,10 +74,6 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
   }
   return (
     <div className="assetsOverview">
-      <header className="updateBtn">
-        <img src={iconRefresh} alt="" />
-        <span>Data Update</span>
-      </header>
       <section className="statisticsWrapper">
         <div className="card cardL">
           <header>Overview</header>

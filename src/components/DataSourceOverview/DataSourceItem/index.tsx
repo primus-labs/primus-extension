@@ -96,7 +96,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }
         </div>
         <div className="TRight titleWrapper">
           <div className="dateWrapper">{date}</div>
-          <div className="tag">{type}</div>
+          <div className={type === 'Social' ? "tag social" : "tag"}>{type}</div>
         </div>
       </div>
       <div className="dataSourceItemC">

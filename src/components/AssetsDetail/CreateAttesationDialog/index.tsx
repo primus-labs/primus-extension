@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { ChangeEvent } from 'react';
-import type { DataSourceType } from '@/components/AssetsDetail'
+import type { DataSourceType } from '../AssetsDetail'
 import { getCurrentDate } from '@/utils/utils'
 import './index.sass'
 

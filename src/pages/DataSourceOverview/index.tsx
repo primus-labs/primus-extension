@@ -5,25 +5,71 @@ import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs'
 import PInput from '@/components/PInput'
 import PSelect from '@/components/PSelect'
-import DataSourceList from '@/components/DataSourceList'
+import DataSourceList from '@/components/DataSourceOverview/DataSourceList'
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog'
 import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSourcesExplainDialog'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
 import ConnectDataSourceDialog from '@/components/DataSourceOverview/ConnectDataSourceDialog'
 import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog'
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog'
-import AssetsOverview from '@/components/AssetsOverview'
-import SocialOverview from '@/components/SocialOverview'
+import AssetsOverview from '@/components/AssetsOverview/AssetsOverview'
+import SocialOverview from '@/components/AssetsOverview/SocialOverview'
 import { getMutipleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import type { ExchangeMeta } from '@/utils/constants'
-import type { DataSourceItemList } from '@/components/DataSourceList'
-import type { DataSourceItemType } from '@/components/DataSourceItem'
+import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
+import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
 import { setExDataAsync, initExDataAsync, initSocialDataAsync, setSocialDataAction } from '@/store/actions'
 import store from '@/store/index';
-import DataUpdateBar from '@/components/DataUpdateBar'
+import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar'
 import useAuthorization from '@/hooks/useAuthorization'
 
 interface DataSourceOverviewProps {

@@ -1,7 +1,7 @@
 import React from 'react';
-import DataSourceItem from '@/components/DataSourceItem'
-import EmptyDataSourceItem from '@/components/EmptyDataSourceItem'
-import type { DataSourceItemType } from '@/components/DataSourceItem'
+import DataSourceItem from '@/components/DataSourceOverview/DataSourceItem'
+import EmptyDataSourceItem from '@/components/DataSourceOverview/EmptyDataSourceItem'
+import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
 import './index.sass';
 
 export type DataSourceItemList = DataSourceItemType[]

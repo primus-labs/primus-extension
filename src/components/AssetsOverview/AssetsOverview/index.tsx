@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import './index.sass';
-import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceItem'
-import type { DataSourceItemList } from '@/components/DataSourceList'
-import SourcesStatisticsBar from '@/components/SourcesStatisticsBar'
+import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
+import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
+import SourcesStatisticsBar from '../SourcesStatisticsBar'
 import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
 import { add, mul } from '@/utils/utils'
-import PieChart from '@/components/PieChart'
+import PieChart from '../PieChart'
 
 
 interface AssetsOverviewProps {

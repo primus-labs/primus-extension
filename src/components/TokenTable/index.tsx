@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux'
 import { formatD, formatUD } from '@/utils/utils'
-import type { TokenMap } from '@/components/DataSourceItem'
+import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem'
 import PInput from '@/components/PInput'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
-import type { DataSourceItemType } from '@/components/DataSourceItem'
+import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
 import { getCurrentDate } from '@/utils/utils'
 interface TokenTableProps {
   list: TokenMap[] | DataSourceItemType[];

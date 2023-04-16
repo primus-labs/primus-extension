@@ -27,6 +27,9 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
   const [secretKey, setSecretKey] = useState<string>()
   const [passphase, setPassphase] = useState<string>()
   const handleClickNext = () => {
+    if (loading) {
+      return
+    }
     if (!apiKey || !secretKey || (requirePassphase && !passphase)) {
       return
     }
