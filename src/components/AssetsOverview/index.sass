@@ -1,88 +1,59 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
 $col-raise: #E12828
 $col-fall: #27C265
-.thFontS
-  font-size: 16px
-  line-height: 19px
-.thFontF
-  font-size: 16px
-  line-height: 19px
-  font-family: 'Inter-Medium'
-.labelFont
-  font-size: 24px
-  line-height: 29px
-.valueFont
-  font-size: 32px
-  line-height: 39px
+$cardWidth: 588px
+$cardHeight: 400px
 .sectionTitle
-  font-family: 'Inter-Bold'
-  @extend .labelFont
-  color: #000
+  @extend .lLBlackBoldFont
   border-bottom: 1px solid rgba(0, 0, 0, 0.1)
-.sectionBackground
-  background: rgba(255, 255, 255, 0.6)
-  backdrop-filter: blur(16px)
-  border-radius: 12px
-.descLabel
-  font-family: 'Inter-Regular'
-  font-size: 16px
-  line-height: 19px
-  color: rgba(0,0,0,0.6)
+
 .assetsOverview
   width: 100%
-  display: flex
-  flex-direction: column
-  gap: 24px
+  @extend .fcss
+  gap: $lGap
   margin-top: -24px
   .updateBtn
     display: flex
     justify-content: flex-end
     gap: 6px
+    @extend .xsSBlackRegularFont
     font-family: 'Inter-Medium'
-    font-size: 14px
-    line-height: 17px
-    color: rgba(0,0,0,0.6)
   .statisticsWrapper
-    display: flex
-    justify-content: space-between
-    gap: 16px
+    @extend .frbs
+    gap: $sGap
     .card
-      width: 588px
-      height: 400px
-      @extend .sectionBackground
-      backdrop-filter: blur(64px)
+      width: $cardWidth
+      height: $cardHeight
+      @include backdropMixin(64px)
       padding: 0 32px
       header
         padding: 32px 0 24px 0
         @extend .sectionTitle
     .cardL
       .cardCon
-        display: flex
-        flex-direction: column
+        @extend .fcss
         gap: 42px
         padding-top: 48px
         padding-bottom: 78px
         .descItem
-          display: flex
-          flex-direction: column
+          @extend .fcss
           gap: 6px
           .label
-            @extend .descLabel
+            @extend .sSBlackRegularFont
           .value
-            font-family: 'Inter-Bold'
-            color: #000
+            @extend .xlLBlackBoldFont
             padding-right: 20px
         .mainDescItem
           .value
-            font-size: 48px
-            line-height: 58px
+            @extend .xxlLBlackBoldFont
         .descItemsWrapper
           display: flex
           .descItem
             flex: 1
             .value
-              @extend .valueFont
-              display: flex
-              align-items: center
+              @extend .frsc
               gap: 4px
               .percent
                 font-family: 'Inter-Bold'

@@ -10,7 +10,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ onAdd }) => {
     onAdd()
   }
   return (
-    <div className="dataSourceItem emptyDataSourceItem" onClick={handleClickAdd}>
+    <div className="emptyDataSourceItem" onClick={handleClickAdd}>
       <div className="emptyDataSourceItemC">
         <img src={iconAdd} alt="" />
         <span>Add</span>

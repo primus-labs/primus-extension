@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import iconRefresh from '@/assets/img/iconRefresh.svg';
 import './index.sass';
 import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceItem'
 import type { DataSourceItemList } from '@/components/DataSourceList'
@@ -83,10 +82,6 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
   }
   return (
     <div className="assetsOverview">
-      {/* <header className="updateBtn">
-        <img src={iconRefresh} alt="" />
-        <span>Data Update</span>
-      </header> */}
       <section className="statisticsWrapper">
         <div className="card cardL">
           <header>Overview</header>

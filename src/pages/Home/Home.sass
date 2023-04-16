@@ -3,6 +3,11 @@
 @import '@/assets/css/pFlex.sass'
 @import '@/assets/css/homeWrapper.sass'
 
+$btnWidth: 343px
+$btnHeight: 80px
+$btnBorderRadius: 100px
+$btnFontSize: 24px
+$btnIconWidth: 32px
 .pageHome
   article
     width: 602px
@@ -20,10 +25,10 @@
       p
         @extend .mSBlackRegularFont
     button.startBtn
-      width: 343px
-      height: 80px
+      width: $btnWidth
+      height: $btnHeight
       border: 2PX solid $colLBlack
-      border-radius: 100px
+      border-radius: $btnBorderRadius
       @extend .frcc
       gap: $xxsGap
       color: $colLBlack
@@ -35,8 +40,8 @@
         .iconArrow
           background-image: url("../../assets/img/rightArrowHover.svg")
       .iconArrow
-        width: 32px
-        height: 32px
+        width: $btnIconWidth
+        height: $btnIconWidth
         background-size: 100% 100%
         background-image: url("../../assets/img/rightArrow.svg")
 
@@ -53,14 +58,13 @@
         font-size: 42px
         line-height: 51px
     button.startBtn
-      width: 300px
-      height: 70px
-      border-radius: 87.5px
-      font-size: 18px
-      line-height: 22px
+      width: $btnWidth * $mN
+      height: $btnHeight * $mN
+      border-radius: $btnBorderRadius * $mN
+      font-size: $btnFontSize * $mN
       .iconArrow
-        width: 28px
-        height: 28px
+        width: $btnIconWidth * $mN
+        height: $btnIconWidth * $mN
 @media (max-width: 1440px)
   .pageHome
     article
@@ -75,13 +79,13 @@
           font-size: 16px
           line-height: 19px
       button.startBtn
-        width: 260px
-        height: 60px
-        border: 2PX solid $colLBlack
-        border-radius: 75px
+        width: $btnWidth * $sN
+        height: $btnHeight * $sN
+        border-radius: $btnBorderRadius * $sN
+        font-size: $btnFontSize * $sN
         .iconArrow
-          width: 24px
-          height: 24px
+          width: $btnIconWidth * $sN
+          height: $btnIconWidth * $sN
 @media (max-width: 1366px)
   .pageHome
     article
@@ -95,3 +99,11 @@
         p
           font-size: 16px
           line-height: 19px
+        button.startBtn
+          width: $btnWidth * $xsN
+          height: $btnHeight * $xsN
+          border-radius: $btnBorderRadius * $xsN
+          font-size: $btnFontSize * $xsN
+          .iconArrow
+            width: $btnIconWidth * $xsN
+            height: $btnIconWidth * $xsN

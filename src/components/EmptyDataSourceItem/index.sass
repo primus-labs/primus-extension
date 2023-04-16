@@ -1,24 +1,20 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
 
-.dataSourceItem.emptyDataSourceItem
-  width: 588px
-  height: 242px
+$dataSourceItemWidth: 588px
+$dataSourceItemHeight: 242px
+
+.emptyDataSourceItem
+  width: $dataSourceItemWidth
+  height: $dataSourceItemHeight
   margin-bottom: 24px
   cursor: pointer
-  background: rgba(255, 255, 255, 0.6)
-  backdrop-filter: blur(64px)
-  border-radius: 12px
-  display: flex
-  justify-content: center
-  align-items: center
-
+  @include backdropMixin
+  @extend .frcc
   .emptyDataSourceItemC
-    font-size: 24px
-    line-height: 29px
-    font-family: 'Inter-SemiBold'
-    color: #000
-    display: flex
-    flex-direction: row
-    align-items: center
+    @extend .lLBlackSemiBoldFont
+    @extend .frcc
     gap: 4px
     img
-      width: 24px
+      width: $sIconSize

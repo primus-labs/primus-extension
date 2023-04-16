@@ -5,6 +5,7 @@ $pageHeaderHeight: 106px
 $colSBlack: rgba(0,0,0,0.6)
 $colMBlack: rgba(0,0,0,0.8)
 $colLBlack: rgba(0,0,0, 1)
+$colSWhite: rgba(255,255,255,0.6)
 
 $xxsGap: 8px
 $xsGap: 12px
@@ -13,6 +14,22 @@ $mGap: 18px
 $lGap: 24px
 $xlGap: 32px
 
+$xxsIconSize: 18px
+$xsIconSize: 20px
+$sIconSize: 24px
+$mIconSize: 32px
+
+$sBorderRadius: 12px
+$mBorderRadius: 24px
+$xxLBorderRadius: 100px
+
+$centerWidth: 1200px
+
 $mN: 0.875
 $sN: 0.75
 $xsN: 0.71
+
+@mixin backdropMixin ($blur:16px, $backdropBgc:$colSBlack,$backdropBr:$sBorderRadius)
+  backdrop-filter: blur($blur)
+  background: $backdropBgc
+  border-radius: $backdropBr

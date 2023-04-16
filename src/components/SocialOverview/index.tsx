@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import iconRefresh from '@/assets/img/iconRefresh.svg';
-import './index.sass';
+import '@/components/AssetsOverview/index.sass';
 import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceItem'
 import type { DataSourceItemList } from '@/components/DataSourceList'
 import SourcesStatisticsBar from '@/components/SourcesStatisticsBar'

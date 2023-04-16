@@ -1,21 +1,19 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
 
 .pageDataSourceOverview
-  display: flex
-  flex-direction: column
-  gap: 32px
-
+  @extend .fcss
+  gap: $xlGap
   main.appContent
     margin: 0 auto
-    width: 1200px
+    width: $centerWidth
     padding: 0
-    display: flex
-    flex-direction: column
-    align-items: center
-    justify-content: space-between
+    @extend .fcbc
     .filterWrapper
       width: 100%
       display: flex
-      gap: 24px
+      gap: $lGap
       padding: 32px 0 48px 0
       .pSearch
         flex: 1
@@ -33,12 +31,9 @@
           background: url('../../assets/img/iconSearch.svg')
           background-size: 100% 100%
         .pInputWrapper
-          background-color: rgba(255,255,255,0.6)
-          border-radius: 12px
+          @include backdropMixin
           .pInput
             padding-left: 60px
-            font-size: 16px
-            line-height: 19px
+            @extend .sSBlackRegularFont
             font-family: 'Inter-Medium'
-            color: rgba(0, 0, 0, 0.6)
             height: 60px

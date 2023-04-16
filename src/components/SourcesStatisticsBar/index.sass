@@ -1,46 +1,25 @@
-$col-raise: #E12828
-$col-fall: #27C265
-
-.labelFont
-  font-size: 24px
-  line-height: 29px
-.valueFont
-  font-size: 32px
-  line-height: 39px
-.sectionTitle
-  font-family: 'Inter-Bold'
-  @extend .labelFont
-  color: #000
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1)
-.sectionBackground
-  background: rgba(255, 255, 255, 0.6)
-  backdrop-filter: blur(16px)
-  border-radius: 12px
-.descLabel
-  font-family: 'Inter-Regular'
-  font-size: 16px
-  line-height: 19px
-  color: rgba(0,0,0,0.6)
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
 
 .sourcesStatisticsBar
-  @extend .sectionBackground
+  @include backdropMixin
   padding: 0 50px
   header
-    @extend .sectionTitle
+    @extend .lLBlackBoldFont
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1)
     padding: 32px 0 16px 0
   ul.sources
     padding: 32px 0 16px 0
-    display: flex
     flex-wrap: wrap
     // justify-content: space-between
-    align-items: center
-    row-gap: 32px
+    @extend .frsc
+    row-gap: $mIconSize
     column-gap: 123.66px
     li.source
       width: 182.25px
-      display: flex
-      flex-direction: column
-      gap: 16px
+      @extend .fcss
+      gap: $sGap
       margin-bottom: 32px
       cursor: pointer
       &:nth-child(4n)
@@ -49,14 +28,15 @@ $col-fall: #27C265
       &.social
         margin-bottom: 15px
       .label
-        @extend .descLabel
+        @extend .sSBlackRegularFont
       .value
-        @extend .valueFont
+        @extend .xlLBlackBoldFont
         display: flex
         align-content: center
-        gap: 8px
+        @extend .frsc
+        gap: $xxsGap
         img
-          width: 32px
+          width: $mIconSize
       .tip
         font-size: 12px
         line-height: 15px

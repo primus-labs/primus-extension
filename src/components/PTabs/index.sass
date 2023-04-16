@@ -1,24 +1,45 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFont.sass'
+$pTabsPadding: 4px
+$pTabsBorderRaiuds: 100px
+$tabspaddingY: 16px
+$tabspaddingX: 32px
+$tabIconWidth: 24px
+$tabFontSize: 18px
+$tabLineHeight: 22px
+
+@mixin ptabsMinxin($N)
+  padding: $pTabsPadding *$N
+  .tab
+    padding: $tabspaddingY*$N $tabspaddingX*$N
+    border-radius: $pTabsBorderRaiuds*$N
+    img
+      width: $tabIconWidth*$N
 
 .pTabs
-  padding: 3.9936px
-  background: rgba(255, 255, 255, 0.6)
-  backdrop-filter: blur(15.9936px)
-  border-radius: 99.9936px
+  @include ptabsMinxin(1)
+  // padding: 4px
+  @include backdropMixin(16px,$colSWhite,$xxLBorderRadius)
   display: flex
   .tab
     cursor: pointer
-    padding: 15.9936px 32.0064px
-    border-radius: 99.9936px
     display: flex
-    gap: 8.0064px
-    font-size: 18.0096px
-    line-height: 22.0032px
-    font-family: 'Inter-SemiBold'
-    color: rgba(0,0,0,0.6)
+    gap: $xxsGap
+    @extend .mSBlackSemiBoldFont
     &.focusTab
       color: #000000
     &.activeTab
       background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
       color: #000000
-    img
-      width: 24px
+// @media (max-width: 1680px)
+//   .pTabs
+//     @include ptabsMinxin($mN)
+// @media (max-width: 1440px)
+//   .pTabs
+//     @include ptabsMinxin($sN)
+//     .tab
+//       font-size: 16px
+//       line-height: 19px
+// @media (max-width: 1366px)
+//   .pTabs
+//     @include ptabsMinxin($xsN)

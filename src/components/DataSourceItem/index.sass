@@ -1,50 +1,39 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/components/EmptyDataSourceItem/index.sass'
+
 $dataSourceItemPaddingX: 22.0032px
 $dataSourceItemPaddingTop: 32px
-$tagBorderRadius: 100px
+$xxLBorderRadius: 100px
 .smallFont
-  font-size: 14px
-  line-height: 17px
+  @extend .xsFont
   font-family: 'Inter-Medium'
-
 .dataSourceItem
-  width: 588px
-  height: 242px
-  margin-bottom: 24px
-  cursor: pointer
-  box-sizing: border-box
-  padding: $dataSourceItemPaddingTop
-  background: rgba(255, 255, 255, 0.6)
+  @extend .emptyDataSourceItem
   backdrop-filter: blur(64px)
-  border-radius: 12px
-  display: flex
-  flex-direction: column
+  @extend .fcss
   gap: 30px
   position: relative
+  padding: $dataSourceItemPaddingTop
   &.deactive
     cursor: default
   .dataSourceItemT
     margin-right: -8px
-    display: flex
-    justify-content: space-between
-    align-items: center
+    @extend .frbc
+    .TLeft,.TRight
+      @extend .frsc
+      gap: $xsGap
     .TLeft
-      display: flex
-      align-items: center
-      gap: 12px
       img
         width: 44px
       h6
-        font-size: 32px
-        line-height: 39px
+        @extend .xlLBlackBoldFont
         font-family: 'Inter-SemiBold'
-        color: #000
     .TRight
-      display: flex
-      align-items: center
-      gap: 12px
       .dateWrapper
-        border: 1px solid rgba(0, 0, 0, 0.05)
-        border-radius: $tagBorderRadius
+        border: 1PX solid rgba(0, 0, 0, 0.05)
+        border-radius: $xxLBorderRadius
         padding: 6px 10px 7px 30px
         background: #E2F8EE
         position: relative
@@ -56,35 +45,31 @@ $tagBorderRadius: 100px
           left: 5px
           top: 50%
           transform: translateY(-50%)
-          width: 20px
-          height: 20px
+          width: $xsIconSize
+          height: $xsIconSize
           background: url('../../assets/img/iconSuc.svg')
           background-size: 100% 100%
       .tag
         background: linear-gradient(113.11deg, rgba(0, 133, 255, 0.2) 19.32%, rgba(84, 224, 255, 0.2) 83.47%)
-        border-radius: $tagBorderRadius
+        border-radius: $xxLBorderRadius
         padding: 6px 16px 7px
-
         @extend .smallFont
         color: #4172BB
   .dataSourceItemC
     display: flex
     justify-content: space-between
-    gap: 15.9936px
+    @extend .frbs
+    gap: $sGap
     .descItem
       flex: 1
-      display: flex
-      flex-direction: column
-      align-items: center
+      @extend .fcsc
       gap: 6px
       padding: 27px 5px
       .descT
         font-size: 12px
         line-height: 15px
         font-family: 'Inter-Medium'
-        color: rgba(0,0,0,0.6)
+        color: $colSBlack
       .descC
-        font-size: 24px
-        line-height: 29px
-        font-family: 'Inter-Bold'
+        @extend .lLBlackBoldFont
         color: rgba(0,0,0,0.8)

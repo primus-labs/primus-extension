@@ -1,16 +1,37 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
 
+$avatarWidth: 42px
+$addressFontSize: 18px
 .pAvatar
-  display: flex
-  align-items: center
-  gap: 8.0064px
+  @extend .frsc
+  gap: $xxsGap
   cursor: pointer
   .avatar
-    width: 42.0096px
-    height: 42.0096px
+    width: $avatarWidth
+    height: $avatarWidth
     border-radius: 50%
     background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
   .address
-    font-size: 18.0096px
-    line-height: 22.0032px
-    color: #000000
+    @extend .mLBlackBoldFont
     font-family: 'Inter-SemiBold'
+
+// @media (max-width: 1680px)
+//   .pAvatar
+//     .avatar
+//       width: $avatarWidth * $mN
+//       height: $avatarWidth * $mN
+// @media (max-width: 1440px)
+//   .pAvatar
+//     .avatar
+//       width: $avatarWidth * $sN
+//       height: $avatarWidth * $sN
+//     .address
+//       font-size: 16px
+//       line-height: 19px
+// @media (max-width: 1366px)
+//   .pAvatar
+//     .avatar
+//       width: $avatarWidth * $xsN
+//       height: $avatarWidth * $xsN

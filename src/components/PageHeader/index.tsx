@@ -59,21 +59,23 @@ const PHeader = () => {
         <div className="rightHeaderInner" onClick={handleClickAvatar} onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
           <PAvatar />
         </div>
-        {dorpdownVisible && <div className="dropdownWrapper" onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
-          <div className="pAvatarWrapper">
-            <PAvatar />
+        {dorpdownVisible &&
+          <div className="dropdownWrapper" onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
+            <div className="pAvatarWrapper">
+              <PAvatar />
+            </div>
+            <ul className="dropdown">
+              {navs.map(item => {
+                return (<li key={item.text} className="dropdownItemWrapper" onClick={() => { handleClickDropdownItem(item.text) }}>
+                  <div className="dropdownItem">
+                    <img src={item.icon} alt="" />
+                    <span>{item.text}</span>
+                  </div>
+                </li>)
+              })}
+            </ul>
           </div>
-          <ul className="dropdown">
-            {navs.map(item => {
-              return (<li key={item.text} className="dropdownItemWrapper" onClick={() => { handleClickDropdownItem(item.text) }}>
-                <div className="dropdownItem">
-                  <img src={item.icon} alt="" />
-                  <span>{item.text}</span>
-                </div>
-              </li>)
-            })}
-          </ul>
-        </div>}
+        }
       </div>
     </header>
   );

@@ -4,59 +4,81 @@
 $headerLogoWidth: 158px
 $LogoSeparatorHeight: 40px
 $LogoTextLineHeight: 18px
-.pageHeader
-  padding: 0 50px
-  height: $pageHeaderHeight
-  @extend .frbc
+$rightHeaderInnerPaddingX: 18px
+$dropdownWrapperPadding: 16px
+$dropdownWrapperBorderRadius: 12px
+$dropdownWrapperTop: 92px
+$dropdownItemWrapperY: 8px
+$dropdownItemY: 18px
+$dropdownItemX: 16px
+$dropdownItemImgWidth: 18px
+$lastDropdownItemPaddingTop: 10px
+$lastDropdownItemBorderRadius: 8px
+@mixin pageHeaderMixin($N)
+  height: $pageHeaderHeight*$N
   .pLogo
-    width: $headerLogoWidth
+    width: $headerLogoWidth*$N
   .rightHeader
-    position: relative
-    .rightHeaderInner
-      padding: 18px 0
+    height: 100%
     .dropdownWrapper
-      padding: 16px
-      position: absolute
-      z-index: 9999
-      top: 78px
-      right: 0
-      background: #FFFFFF
-      border-radius: 12px
-      box-shadow: 0rem 24px 32px rgba(0, 0, 0, 0.1)
+      padding: $dropdownWrapperPadding*$N
+      top: $dropdownWrapperTop*$N
+      border-radius: $dropdownWrapperBorderRadius*$N
       .pAvatarWrapper
-        padding: 0 16px
+        padding: 0 $dropdownWrapperPadding*$N
       .dropdown
         .dropdownItemWrapper
-          padding: 8px 0
+          padding: $dropdownItemWrapperY*$N 0
+          .dropdownItem
+            padding: $dropdownItemY*$N $dropdownItemX*$N
+            gap: $xsGap*$N
+            img
+              width: $dropdownItemImgWidth*$N
+          &:last-child
+            padding: $lastDropdownItemPaddingTop*$N 0 0 0
+            .dropdownItem
+              border-radius: $lastDropdownItemBorderRadius*$N
+
+.pageHeader
+  @include pageHeaderMixin(1)
+  padding: 0 50px
+  @extend .frbc
+  .rightHeader
+    height: 100%
+    position: relative
+    @extend .frcc
+    .dropdownWrapper
+      position: absolute
+      z-index: 9999
+      right: 0
+      background: #FFFFFF
+      box-shadow: 0 24px 32px rgba(0, 0, 0, 0.1)
+      .dropdown
+        .dropdownItemWrapper
           border-bottom: 1PX solid rgba(0, 0, 0, 0.05)
           .dropdownItem
-            padding: 18px 16px
             display: flex
-            gap: $xsGap
             @extend .sFont
             font-family: 'Inter-Medium'
             color: $colLBlack
             cursor: pointer
-            img
-              width: 18px
           &:last-child
-            padding: 10px 0 0 0
             border-bottom: 0
             .dropdownItem
               background: rgba(0, 0, 0, 0.05)
-              border-radius: 8px
 @media (max-width: 1680px)
   .pageHeader
-    height: $pageHeaderHeight*$mN
-    .pLogo
-      width: $headerLogoWidth*$mN
+    @include pageHeaderMixin($mN)
 @media (max-width: 1440px)
   .pageHeader
-    height: $pageHeaderHeight*$sN
-    .pLogo
-      width: $headerLogoWidth*$sN
+    @include pageHeaderMixin($sN)
+    .rightHeader
+      .dropdownWrapper
+        .dropdown
+          .dropdownItemWrapper
+            .dropdownItem
+              font-size: 14px
+              line-height: 17px
 @media (max-width: 1366px)
   .pageHeader
-    height: $pageHeaderHeight*$xsN
-    .pLogo
-      width: $headerLogoWidth*$xsN
+    @include pageHeaderMixin($xsN)

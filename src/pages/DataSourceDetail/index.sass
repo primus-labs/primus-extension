@@ -1,44 +1,4 @@
 
+@import '@/pages/DataSourceOverview/index.sass'
 .pageDataSourceDetail
-  display: flex
-  flex-direction: column
-  gap: 32px
-  padding-bottom: 45px
-
-  main.appContent
-    margin: 0 auto
-    width: 1200px
-    padding: 0
-    display: flex
-    flex-direction: column
-    align-items: center
-    justify-content: space-between
-    .filterWrapper
-      width: 100%
-      display: flex
-      gap: 24px
-      .pSearch
-        flex: 1
-        display: flex
-        position: relative
-        &:before
-          position: absolute
-          z-index: 1
-          content: ''
-          top: 50%
-          left: 24px
-          transform: translateY(-50%)
-          width: 24px
-          height: 24px
-          background: url('../../assets/img/iconSearch.svg')
-          background-size: 100% 100%
-          .pInputWrapper
-            background-color: rgba(255,255,255,0.6)
-            border-radius: 12px
-            .pInput
-              padding-left: 60px
-              font-size: 16px
-              line-height: 19px
-              font-family: 'Inter-Medium'
-              color: rgba(0, 0, 0, 0.6)
-              height: 60px
+  @extend .pageDataSourceOverview
