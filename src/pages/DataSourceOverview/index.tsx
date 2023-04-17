@@ -16,52 +16,6 @@ import AssetsOverview from '@/components/AssetsOverview/AssetsOverview'
 import SocialOverview from '@/components/AssetsOverview/SocialOverview'
 import { getMutipleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import type { ExchangeMeta } from '@/utils/constants'
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
@@ -242,7 +196,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       type: `setData-${lowerCaseSourceName}`,
       params: {
         ...form,
-        exData: ((store.getState()) as UserState)[lowerCaseSourceName as keyof UserState] // TODO
+        exData: ((store.getState()) as UserState).exDatas[lowerCaseSourceName as keyof UserState] // TODO
       }
     }
     padoServicePort.postMessage(msg)
