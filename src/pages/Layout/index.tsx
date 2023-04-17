@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Dispatch } from 'react'
-import { connect, useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Outlet, useLocation } from 'react-router-dom'
 import PHeader from '@/components/PHeader';
@@ -29,10 +29,10 @@ const Layout = () => {
   const dispatch: Dispatch<any> = useDispatch()
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const location = useLocation()
-  const [updating, updateF] = useUpdateAllSources()
+  const [updating, updateF] = useUpdateAllSources(true)
 
   // console.log('Layout', location.pathname)
-  const getSysConfig = async () => {
+  const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
       if (message.resMethodName === 'getSysConfig') {
         console.log("page_get:getSysConfig:", message.res);
@@ -50,14 +50,21 @@ const Layout = () => {
       reqMethodName: 'getSysConfig',
     })
     console.log("page_send:getSysConfig request");
-  }
+  }, [dispatch, padoServicePort])
   useEffect(() => {
     rem();
-    dispatch(initExDataAsync())
-    dispatch(initSocialDataAsync());
-    (updateF as () => void)()
-    getSysConfig()
   }, []);
+  // useEffect(() => {
+  //   rem();
+  //   dispatch(initExDataAsync())
+  //   dispatch(initSocialDataAsync());
+  // }, [dispatch]);
+  useEffect(() => {
+    (updateF as () => void)()
+  }, [updateF, getSysConfig]);
+  useEffect(() => {
+    getSysConfig()
+  }, [getSysConfig]);
   return (
     <div className="pageApp">
       <BackgroundAnimation />

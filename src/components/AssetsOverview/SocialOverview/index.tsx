@@ -7,14 +7,16 @@ import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
 import { add, mul } from '@/utils/utils'
 import PieChart from '../PieChart'
-
+import useSocialSources from '@/hooks/useSocialSources';
 interface AssetsOverviewProps {
-  list: DataSourceItemList,
   filterSource: string | undefined
 }
 
-const SocialOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) => {
-  console.log('SocialOverview', list)
+const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
+  const [socialDatasMap, refreshSocialSources] = useSocialSources()
+  const list = useMemo(() => {
+    return socialDatasMap ? Object.values(socialDatasMap) : []
+  }, [socialDatasMap])
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const totalFollowers = useMemo(() => {
     const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
@@ -48,23 +50,6 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) =
     const bal = list.reduce(reduceF, 0)
     return bal
   }, [list])
-
-
-  // const totalAssetsNo = useMemo(() => {
-  //   return Object.keys(totalAssetsMap).length
-  // }, [totalAssetsMap])
-  // const activeAssetsMap = useMemo(() => {
-  //   if (activeSourceName) {
-  //     const activeS: DataSourceItemType = (list.find(item => item.name === activeSourceName)) as DataSourceItemType
-  //     return activeS.tokenListMap
-  //   } else {
-  //     return totalAssetsMap
-  //   }
-  // }, [list, activeSourceName, totalAssetsMap,])
-  // const activeSourceTokenList = useMemo(() => {
-  //   return Object.values(activeAssetsMap)
-  // }, [activeAssetsMap])
-
   const handleSelectSource = (sourceName: string | undefined) => {
     setActiveSourceName(sourceName)
   }

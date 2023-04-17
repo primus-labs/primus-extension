@@ -1,81 +1,87 @@
-import React, {useState, useEffect, useCallback, useMemo} from 'react'
-import type { Dispatch } from 'react';
-import {useSelector, useDispatch} from 'react-redux'
-import { DATASOURCEMAP } from '@/utils/constants'
-import { getMutipleStorageSyncData } from '@/utils/utils'
-import type { UserState } from '@/store/reducers'
-import { setExDataAsync } from '@/store/actions'
-import store from '@/store/index';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
+import { useSelector } from 'react-redux';
+import { DATASOURCEMAP } from '@/utils/constants';
+import { getMutipleStorageSyncData } from '@/utils/utils';
+import type { UserState } from '@/store/reducers';
 
 type ExKeysStorages = {
   [propName: string]: any;
-}
-
-const useUpdateAssetSources = () => {
-
-  const dispatch: Dispatch<any> = useDispatch()
-  const padoServicePort = useSelector((state:UserState) => state.padoServicePort)
-  const [queryNum, setQueryNum] = useState(0)
-  const [queriedNum, setQueriedNum] = useState(0)
+};
+type queryObjType = {
+  [propName: string]: any;
+};
+const useUpdateAssetSources = (flag = false) => {
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
+  );
+  const [queryObj, setQueryObj] = useState<queryObjType>();
   const loading = useMemo(() => {
-    console.log(23333,queryNum, queriedNum)
-      return queryNum !== queriedNum
-  },[queryNum, queriedNum] )
-  useEffect(() => {
-      if((queryNum > 0 && queryNum === queriedNum) || queriedNum > queryNum) {
-        setQueryNum(0)
-        setQueriedNum(0)
-      }
-  },[queryNum, queriedNum] )
+    const len = queryObj && Object.keys(queryObj).length || 0;
+    if (queryObj && len > 0) {
+      const flag = Object.values(queryObj).every((i) => i);
+      console.log(23333666, queryObj, 'loading:', !flag);
+      return !flag;
+    } else {
+      return false;
+    }
+  }, [queryObj]);
   const fetchExDatas = useCallback(async () => {
-    const sourceNameList = Object.keys(DATASOURCEMAP).filter(i => DATASOURCEMAP[i].type === 'Assets')
-    sourceNameList.forEach(async item => {
-      const exInfoKey = `${item}cipher`
-      let res: ExKeysStorages = await getMutipleStorageSyncData([exInfoKey]);
-      if (res[exInfoKey]) {
-        setQueryNum(num => num+1)
-        const msg: any = {
-          fullScreenType: 'networkreq',
-          type: `getKey-${item}`,
-          params: {}
-        }
-        padoServicePort.postMessage(msg)
-        console.log(`page_send:getKey-${item} request`);
-      }
+    const sourceNameList = Object.keys(DATASOURCEMAP).filter(
+      (i) => DATASOURCEMAP[i].type === 'Assets'
+    );
+    const exCipherKeys = sourceNameList.map(i => `${i}cipher`)
+    let res: ExKeysStorages = await getMutipleStorageSyncData(exCipherKeys);
+   
+    const list = Object.keys(res).map(i => {
+      const exName = i.split('cipher')[0]
+      setQueryObj((obj) => ({ ...obj, [exName]: undefined }));
+      return exName
     })
-  }, [padoServicePort])
+    list.forEach(async (item ) => {
+      const reqType = `set-${item}`;
+      const msg: any = {
+        fullScreenType: 'networkreq',
+        type: reqType,
+        params: {},
+      };
+      padoServicePort.postMessage(msg);
+      console.log(`page_send:${reqType} request`);
+    })
+ 
+    // const padoServicePortListener = async function (message: any) {
+    //   const {resType, res} = message
+    //   if (resType?.startsWith(`set-`)  && res) {
+    //     console.log(`page_get:${resType}:`, message.res);
+    //     const name = resType.split('-')[1]
+    //     setQueryObj(obj => ({...obj,[name]: true}))
+    //   }
+    //   // padoServicePort.onMessage.removeListener(padoServicePortListener);
+    // };
+    // padoServicePort.onMessage.addListener(padoServicePortListener);
+  }, [padoServicePort]);
   useEffect(() => {
-    const padoServicePortListener = async function (message: any) {
-      const { resType, res } = message
-      const lowerCaseSourceName = resType?.split('-')[1]
-      if (resType?.startsWith(`getKey-` ) && res) {
-        console.log(`page_get:${resType}:`, res);
-        await dispatch(setExDataAsync(res))
-        const msg2: any = {
-          fullScreenType: 'networkreq',
-          type: `setData-${lowerCaseSourceName}`,
-          params: {
-            ...res,
-            exData: ((store.getState()) as UserState).exDatas[lowerCaseSourceName]
-            // exData: exDatas[item] // TODO
-          }
+    // if (flag) {
+      const padoServicePortListener = async function (message: any) {
+        const {resType, res} = message
+        if (resType?.startsWith(`set-`)  && res) {
+          console.log(`page_get:${resType}:`, message.res);
+          const name = resType.split('-')[1]
+          setQueryObj(obj => ({...obj,[name]: true}))
         }
-        padoServicePort.postMessage(msg2)
-      }else if (resType?.startsWith(`setData-`)) {
-        console.log(`page_get:${resType}:`, res);
-        setQueriedNum(num => num+1)
-        if (res) {
-          // console.log('setData successfully')
-        }
-      }
-    }
-    padoServicePort.onMessage.addListener(padoServicePortListener)
-    return () => {
-      padoServicePort.onMessage.removeListener(padoServicePortListener)
-    }
-  }, [dispatch, padoServicePort])
-  
-  return [loading,fetchExDatas]
-}
+        // padoServicePort.onMessage.removeListener(padoServicePortListener);
+      };
+      padoServicePort.onMessage.addListener(padoServicePortListener);
+    // }
+    
+  }, [padoServicePort.onMessage]);
 
-export default useUpdateAssetSources
+  return [loading, fetchExDatas];
+};
+
+export default useUpdateAssetSources;

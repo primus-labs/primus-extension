@@ -6,7 +6,7 @@
 import { SETEXCHAGEDATA, SETSYSCONFIG, SETSOCIALDATA } from '../actions';
 import type  {AssetsMap} from '@/components/DataSourceOverview/DataSourceItem'
 
-type ExInfo = {
+export type ExInfo = {
   date: string;
   apiKey: string;
   totalBalance: string;

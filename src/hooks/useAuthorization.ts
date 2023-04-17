@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid';
 import type { UserState } from '@/store/reducers'
 import { setSocialDataAction } from '@/store/actions';
 
 const useAuthorization = () => {
-  const dispatch = useDispatch()
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [authWindowId, setAuthWindowId] = useState<number>()
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>()
@@ -38,28 +37,29 @@ const useAuthorization = () => {
         if (message.resMethodName === 'checkIsLogin') {
           console.log("page_get:checkIsLogin:", message.res);
           if (message.res) {
-            // console.log('remove', newWindowId)
-            newWindowId && chrome.windows.get(
-              newWindowId,
-              {},
-              (win) => {
-                win?.id && chrome.windows.remove(newWindowId)
-              },
-            )
-            timer && clearInterval(timer)
             if (message.params?.data_type === 'DATASOURCE') {
-              await dispatch(
-                setSocialDataAction(message.params?.result)
-              );
+              // console.log('remove', newWindowId)
+              newWindowId && chrome.windows.get(
+                newWindowId,
+                {},
+                (win) => {
+                  win?.id && chrome.windows.remove(newWindowId)
+                },
+              )
+              timer && clearInterval(timer)
+              onSubmit && onSubmit()
+            //   await dispatch(
+            //     setSocialDataAction(message.params?.result)
+            //   );
             }
 
-            onSubmit && onSubmit()
+            
           }
         }
       }
       chrome.windows.onRemoved.addListener(removeWindowCallBack)
       padoServicePort.onMessage.addListener(padoServicePortListener)
-    }, [ dispatch, padoServicePort])
+    }, [ padoServicePort])
   const handleClickOAuthSource = useCallback((source: string,onSubmit?:() => void) => {
     // If the authorization window is open,focus on it
     if (authWindowId) {

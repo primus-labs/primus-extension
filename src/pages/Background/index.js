@@ -10,7 +10,8 @@ import { DATASOURCEMAP } from '@/utils/constants';
 import store from '@/store/index';
 import { encrypt, decrypt } from '@/utils/crypto';
 import Module from './hello';
-import {ExchangeStoreVersion, SocailStoreVersion} from '@/utils/constants';
+import { ExchangeStoreVersion, SocailStoreVersion } from '@/utils/constants';
+import processExReq from './exData';
 const Web3EthAccounts = require('web3-eth-accounts');
 
 Module['onRuntimeInitialized'] = () => {
@@ -92,7 +93,8 @@ const processFullscreenReq = (message, port) => {
       processpadoServiceReq(message, port);
       break;
     case 'networkreq':
-      processNetworkReq(message, port);
+      // processNetworkReq(message, port);
+      processExReq(message, port, USERPASSWORD);
       break;
     case 'storage':
       processStorageReq(message, port);
@@ -204,6 +206,7 @@ const processNetworkReq = async (message, port) => {
         }
       );
       break;
+
     default:
       break;
   }
@@ -245,9 +248,9 @@ const processpadoServiceReq = async (message, port) => {
             res: true,
             params: {
               data_type: params.data_type,
-              result: {
-                [lowerCaseSourceName]: socialSourceData,
-              },
+              // result: {
+              //   [lowerCaseSourceName]: socialSourceData,
+              // },
             },
           });
         }

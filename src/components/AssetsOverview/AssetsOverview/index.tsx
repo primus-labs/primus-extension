@@ -7,18 +7,20 @@ import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
 import { add, mul } from '@/utils/utils'
 import PieChart from '../PieChart'
-
+import useExSources from '@/hooks/useExSources';
 
 interface AssetsOverviewProps {
-  list: DataSourceItemList,
   filterSource: string | undefined
 }
 
-const AssetsOverview: React.FC<AssetsOverviewProps> = ({ list, filterSource }) => {
-  console.log('AssetsOverview-list', list);
+const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>()
+  const [exDatasMap, refreshExSources] = useExSources()
+  const list = useMemo(() => {
+    return exDatasMap ? Object.values(exDatasMap) : []
+  }, [exDatasMap])
   const totalAssetsBalance = useMemo(() => {
-    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
+    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev, curr) => {
       const { totalBalance } = curr
       return add(prev.toNumber(), (Number(totalBalance)))
     }
