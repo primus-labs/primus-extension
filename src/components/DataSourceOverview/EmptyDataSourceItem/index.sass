@@ -12,6 +12,9 @@ $dataSourceItemHeight: 242px
   cursor: pointer
   @include backdropMixin
   @extend .frcc
+  transition: all 0.5s
+  &:hover
+    transform: translateY(-10px)
   .emptyDataSourceItemC
     @extend .lLBlackSemiBoldFont
     @extend .frcc
