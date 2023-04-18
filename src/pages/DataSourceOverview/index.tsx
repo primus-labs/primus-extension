@@ -55,12 +55,12 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   const [filterWord, setFilterWord] = useState<string>()
   const [dataSourceMap, refreshAllSources] = useAllSources()
-  const [, refreshExSources] = useExSources()
-  const [, refreshSocialSources] = useSocialSources()
+  const [exSources, refreshExSources] = useExSources()
+  const [socialSources, refreshSocialSources] = useSocialSources()
 
   const dataSourceList: DataSourceItemList = useMemo(() => {
-    return Object.values(dataSourceMap)
-  }, [dataSourceMap])
+    return Object.values({ ...exSources, ...socialSources })
+  }, [exSources, socialSources])
   const dataSourceTypeList = useMemo(() => {
     return [
       {
