@@ -147,7 +147,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       if (message.resType === `${reqType}` && message.res) {
         setStep(3)
         setLoading(false);
-        debugger
         (refreshExSources as () => void)()
       }
       padoServicePort.onMessage.removeListener(padoServicePortListener);
@@ -179,7 +178,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}
       {step === 2 && <ConnectDataSourceDialog loading={loading} onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}
       {step === 3 && <AddSourceSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
-      <DataUpdateBar />
+      <DataUpdateBar type={activeSourceType} />
     </div>
   );
 };

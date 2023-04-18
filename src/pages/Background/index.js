@@ -248,6 +248,7 @@ const processpadoServiceReq = async (message, port) => {
             res: true,
             params: {
               data_type: params.data_type,
+              source: params.source,
               // result: {
               //   [lowerCaseSourceName]: socialSourceData,
               // },
@@ -293,7 +294,8 @@ const processpadoServiceReq = async (message, port) => {
           resMethodName: reqMethodName,
           res: true,
           params: {
-            [lowerCaseSourceName]: socialSourceData,
+            mc,
+            source: params.source,
           },
         });
       } else if (rc === 1 && mc === 'UNAUTHORIZED_401') {

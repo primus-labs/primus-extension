@@ -22,7 +22,7 @@ const useUpdateAssetSources = (flag = false) => {
   );
   const [queryObj, setQueryObj] = useState<queryObjType>();
   const loading = useMemo(() => {
-    const len = queryObj && Object.keys(queryObj).length || 0;
+    const len = (queryObj && Object.keys(queryObj).length) || 0;
     if (queryObj && len > 0) {
       const flag = Object.values(queryObj).every((i) => i);
       console.log(23333666, queryObj, 'loading:', !flag);
