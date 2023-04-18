@@ -44,9 +44,10 @@ $lastDropdownItemBorderRadius: 8px
   padding: 0 50px
   @extend .frbc
   .rightHeader
-    height: 100%
     position: relative
-    @extend .frcc
+    .rightHeaderInner
+      height: $pageHeaderHeight
+      @extend .frsc
     .dropdownWrapper
       position: absolute
       z-index: 9999
