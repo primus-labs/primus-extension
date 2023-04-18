@@ -1,6 +1,6 @@
 import { binance } from 'ccxt';
 import BigNumber from 'bignumber.js';
-import { add, mul, gt } from '@/utils/utils';
+import { add, mul, gt, div } from '@/utils/utils';
 const BIGZERO = new BigNumber(0);
 const BIGONE = new BigNumber(1);
 const ONE = 1;
@@ -147,6 +147,13 @@ class Binance {
   async getInfo() {
     await this.getTotalAccountBalance();
     return this.exchange;
+  }
+  async getTokenPrice(symbol) {
+    const LPSymbol = `${symbol}${USDT}`;
+    const res = await this.exchange.fetchTickers([LPSymbol]);
+    const { last } = res[`${symbol}/${USDT}`];
+    // console.log(`binance-getTokenPrice-${symbol}`, last);
+    return new BigNumber(last).toFixed();
   }
 }
 export default Binance;

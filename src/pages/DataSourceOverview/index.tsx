@@ -54,7 +54,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const [loading, setLoading] = useState(false)
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   const [filterWord, setFilterWord] = useState<string>()
-  const [dataSourceMap, refreshAllSources] = useAllSources()
   const [exSources, refreshExSources] = useExSources()
   const [socialSources, refreshSocialSources] = useSocialSources()
 

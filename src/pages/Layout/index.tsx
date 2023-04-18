@@ -61,7 +61,7 @@ const Layout = () => {
   // }, [dispatch]);
   useEffect(() => {
     (updateF as () => void)()
-  }, [updateF, getSysConfig]);
+  }, [updateF]);
   useEffect(() => {
     getSysConfig()
   }, [getSysConfig]);

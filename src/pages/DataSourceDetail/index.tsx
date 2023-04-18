@@ -17,6 +17,7 @@ import iconTool1 from '@/assets/img/iconTool1.svg'
 import iconArbitrum from '@/assets/img/iconArbitrum.svg'
 import iconOptimism from '@/assets/img/iconOptimism.svg'
 import iconMina from '@/assets/img/iconMina.svg'
+import useExSource from '@/hooks/useExSource';
 
 const proveToolList = [
   {
@@ -39,31 +40,18 @@ const proveToolList = [
 ]
 const DataSourceDetail = () => {
   const [searchParams] = useSearchParams()
+  const sourceName = (searchParams.get('name') as string).toLowerCase()
+  const [activeSource, getDataSource] = useExSource()
   const [step, setStep] = useState(0)
   const [proveFlag, setProveFlag] = useState<boolean>(false)
   const [upChainFlag, setUpChainFlag] = useState<boolean>(false)
-  const [activeSource, setActiveSource] = useState<ExchangeMeta>()
   const [dataSource, setDataSource] = useState<DataSourceType>()
   const handleChangeTab = () => {
   }
   const handleCloseMask = () => {
     setStep(0)
   }
-  const getDataSource = async () => {
-    const name = searchParams.get('name') as string
-    const sName = name.toLowerCase()
-    const icon = DATASOURCEMAP[sName].icon
-    let res = (await getSingleStorageSyncData(sName)) as string
-    // const activeSourceList = sourceNameList.filter(item => res[item as keyof typeof res]).map((item) => {
-    const sData: DataSourceType = JSON.parse(res)
-    sData.icon = icon
-    sData.name = name
-    // })
-    console.log('getDataSource', sData)
-    setDataSource(sData)
-    const sourceInfo: ExchangeMeta = DATASOURCEMAP[sName as keyof typeof DATASOURCEMAP]
-    setActiveSource(sourceInfo)
-  }
+
   const handleProve = (name: string) => {
     setStep(proveFlag ? 3 : 1)
   }
@@ -72,8 +60,6 @@ const DataSourceDetail = () => {
     setStep(2)
     setProveFlag(true)
   }
-
-
   const onSubmitAddSourceSucDialog = () => {
     setStep(0)
   }
@@ -88,15 +74,14 @@ const DataSourceDetail = () => {
     setStep(2)
   }
   useEffect(() => {
-    getDataSource()
-  }, [])
+    (getDataSource as (name: string) => void)(sourceName);
+  }, [sourceName, getDataSource])
 
   return (
     <div className="pageDataSourceDetail">
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <AssetsDetail onProve={handleProve} />
-        {/* list={dataSourceList} */}
       </main>
       {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
       {step === 1 && <CreateAttesationDialog dataSource={dataSource} onSubmit={handleSubmitCreateAttesationDialog} />}
@@ -109,7 +94,6 @@ const DataSourceDetail = () => {
         desc='Sending your proof/badge to one of the following chain. Allows dApp complete on-chain attestation.'
         list={proveToolList}
       />}
-      {/* TODO */}
       {step === 4 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource} desc="Your attestation is recorded on-chain!" />}
     </div>
   );
