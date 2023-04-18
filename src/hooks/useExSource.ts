@@ -8,6 +8,7 @@ type ExInfo = {
   apiKey: string;
   totalBalance: string;
   tokenListMap: AssetsMap;
+  pnl?:string;
 }
 export type DataSourceStorages = {
   binance?: any,
@@ -24,7 +25,7 @@ const useExSource = () => {
   const getExDatas = useCallback(async (name:string) => {
     let res: DataSourceStorages = await chrome.storage.local.get(name);
     const storageData = res[name]
-    console.log('$$$$$$$$$', storageData)
+    // console.log('$$$$$$$$$', storageData)
     if(storageData) {
       let sourceData = JSON.parse(storageData)
       sourceData = {

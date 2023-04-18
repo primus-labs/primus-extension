@@ -42,11 +42,11 @@ interface DataSourceItemProps {
 }
 
 const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }) => {
-  const { icon, name, type, date, totalBalance, assetsNo, pnlAmount, } = source;
+  const { icon, name, type, date, totalBalance, pnl, } = source;
   const formatSource = {
     ...source,
     totalBalance: totalBalance ? `$${new BigNumber(totalBalance).toFixed(2)}` : '-',
-    pnlAmount: pnlAmount ? (gt(Number(pnlAmount), 0) ? `+$${new BigNumber(pnlAmount).toFixed(2)}` : `-$${new BigNumber(pnlAmount).abs().toFixed(2)}`) : '-'
+    pnlAmount: pnl ? ((gt(Number(pnl), 0) ? `+$${new BigNumber(Number(pnl)).toFixed(2)}` : `-$${new BigNumber(Number(pnl)).abs().toFixed(2)}`)) : '--'
   }
   const descArr: SourceDescItem[] = useMemo(() => {
     const descTypeMap = {

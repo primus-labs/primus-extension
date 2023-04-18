@@ -1,6 +1,6 @@
 import { encrypt, decrypt } from '@/utils/crypto';
 import { DATASOURCEMAP } from '@/utils/constants';
-import { getCurrentDate } from '@/utils/utils';
+import { getCurrentDate, sub, gt } from '@/utils/utils';
 import { ExchangeStoreVersion } from '@/utils/constants';
 
 let EXCHANGEINFO = {
@@ -63,6 +63,24 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
       const constructorF = exchangeInfo.constructorF;
       const ex = new constructorF(exParams);
       await ex.getInfo();
+      // compute changes from last time => pnl
+      let storageRes = await chrome.storage.local.get(exchangeName);
+      const lastData = storageRes[exchangeName];
+      let pnl = null;
+      if (lastData) {
+        const lastTotalBal = JSON.parse(lastData).totalBalance;
+        pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
+      }
+      const exData = {
+        totalBalance: ex.totalAccountBalance,
+        tokenListMap: ex.totalAccountTokenMap,
+        apiKey: exParams.apiKey,
+        date: getCurrentDate(),
+        version: ExchangeStoreVersion,
+      };
+      if (pnl !== null && pnl !== undefined) {
+        exData.pnl = pnl;
+      }
       // store data
       if (apiKey) {
         const { apiKey, secretKey, passphase } = exParams;
@@ -75,13 +93,6 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           JSON.stringify(exCipherData),
           USERPASSWORD
         );
-        const exData = {
-          totalBalance: ex.totalAccountBalance,
-          tokenListMap: ex.totalAccountTokenMap,
-          apiKey,
-          date: getCurrentDate(),
-          version: ExchangeStoreVersion,
-        };
         await chrome.storage.local.set({
           [exchangeName]: JSON.stringify(exData),
           [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
@@ -89,25 +100,11 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
         EXCHANGEINFO[exchangeName] = exParams;
         port.postMessage({ resType: type, res: true });
       } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
-        const exData = {
-          totalBalance: ex.totalAccountBalance,
-          tokenListMap: ex.totalAccountTokenMap,
-          apiKey,
-          date: getCurrentDate(),
-          version: ExchangeStoreVersion,
-        };
         await chrome.storage.local.set({
           [exchangeName]: JSON.stringify(exData),
         });
         port.postMessage({ resType: type, res: true });
       } else {
-        const exData = {
-          totalBalance: ex.totalAccountBalance,
-          tokenListMap: ex.totalAccountTokenMap,
-          apiKey,
-          date: getCurrentDate(),
-          version: ExchangeStoreVersion,
-        };
         await chrome.storage.local.set({
           [exchangeName]: JSON.stringify(exData),
         });

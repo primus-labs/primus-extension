@@ -34,6 +34,14 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve, padoServicePort })
   const [proofList, setProofList] = useState([
     'Assets', 'Active User'
   ])
+  const pnl = useMemo(() => {
+    if (typeof dataSource === 'object') {
+      const originPnl = dataSource?.pnl
+      return originPnl ? ((gt(Number(originPnl), 0) ? `+$${new BigNumber(Number(originPnl)).toFixed(2)}` : `-$${new BigNumber(Number(originPnl)).abs().toFixed(2)}`)) : '--'
+    } else {
+      return '--'
+    }
+  }, [dataSource])
   const totalAssetsBalance = useMemo(() => {
     if (typeof dataSource === 'object') {
       const totalBal = new BigNumber(dataSource.totalBalance)
@@ -145,8 +153,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve, padoServicePort })
         </div>
         <div className="descItem">
           <div className="label">PnL </div>
-          {/* TODO */}
-          <div className="value">200</div>
+          <div className="value">{pnl}</div>
         </div>
       </section >
       <section className="proofsBar">

@@ -5,7 +5,7 @@ import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSou
 import SourcesStatisticsBar from '../SourcesStatisticsBar'
 import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
-import { add, mul } from '@/utils/utils'
+import { add, mul, gt, sub, div } from '@/utils/utils'
 import PieChart from '../PieChart'
 import useExSources from '@/hooks/useExSources';
 
@@ -16,6 +16,7 @@ interface AssetsOverviewProps {
 const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const [exDatasMap, refreshExSources] = useExSources()
+
   const list = useMemo(() => {
     return exDatasMap ? Object.values(exDatasMap) : []
   }, [exDatasMap])
@@ -25,8 +26,37 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
       return add(prev.toNumber(), (Number(totalBalance)))
     }
     const bal = list.reduce(reduceF, new BigNumber(0))
-    return `$${bal.toFixed(2)}`
+    return `${bal.toFixed(2)}`
   }, [list])
+
+  const totalPnl = useMemo(() => {
+    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev, curr) => {
+      const { pnl } = curr
+      if (pnl !== null && pnl !== undefined) {
+        return add(prev.toNumber(), (Number(pnl)))
+      }
+      return prev
+    }
+    const bal = list.reduce(reduceF, new BigNumber(0))
+    return bal
+  }, [list])
+
+  const formatTotalPnl = useMemo(() => {
+    return totalPnl ? ((gt(Number(totalPnl), 0) ? `+$${new BigNumber(Number(totalPnl)).toFixed(2)}` : `-$${new BigNumber(Number(totalPnl)).abs().toFixed(2)}`)) : '--'
+  }, [totalPnl])
+  const formatTotalPnlPercent = useMemo(() => {
+    if (totalPnl !== null && totalPnl !== undefined && totalAssetsBalance) {
+      const currVN = Number(totalAssetsBalance)
+      const lastV = add(currVN, Number(totalPnl))
+      const lastVN = lastV.toNumber()
+      const p = div(sub(currVN, lastVN).toNumber(), lastVN)
+      const formatNum = mul(p.toNumber(), 100)
+      const formatTxt = (gt(Number(formatNum), 0) ? `+${new BigNumber(Number(formatNum)).toFixed(2)}%` : `-${new BigNumber(Number(formatNum)).abs().toFixed(2)}%`)
+      return formatTxt
+    } else {
+      return ''
+    }
+  }, [totalPnl, totalAssetsBalance])
 
   const totalAssetsMap: AssetsMap = useMemo(() => {
     const reduceF: (prev: AssetsMap, curr: DataSourceItemType) => AssetsMap = (prev, curr) => {
@@ -63,6 +93,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
   const totalAssetsNo = useMemo(() => {
     return Object.keys(totalAssetsMap).length
   }, [totalAssetsMap])
+
   const activeAssetsMap = useMemo(() => {
     if (activeSourceName) {
       const activeS: DataSourceItemType = (list.find(item => item.name === activeSourceName)) as DataSourceItemType
@@ -90,15 +121,14 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
           <div className="cardCon">
             <div className="descItem mainDescItem">
               <div className="label">Total Balance</div>
-              <div className="value">{totalAssetsBalance}</div>
+              <div className="value">${totalAssetsBalance}</div>
             </div>
             <div className="descItemsWrapper">
               <div className="descItem">
                 <div className="label">PnL</div>
-                {/* TODO */}
                 <div className="value">
-                  <span>-</span>
-                  {/* <div className="percent raise fall">-1.29%</div> */}
+                  <span>{formatTotalPnl}</span>
+                  <div className="percent raise fall">{formatTotalPnlPercent}</div>
                 </div>
               </div>
               <div className="descItem">
