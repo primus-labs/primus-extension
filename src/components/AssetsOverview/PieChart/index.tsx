@@ -46,6 +46,21 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
       return add(prev.toNumber(), (Number(value)))
     }
     const totalBal = list.reduce(reduceF, new BigNumber(0))
+    let innerRadius = 60
+    let outerRadius = 82
+    let cLeft = 28
+    let legendItemLabelWidth = 94
+    let legendItemValueWidth = 88
+    let legendItemValueFontSize = 24
+    let legendItemHeight = 41
+    if (document.documentElement.getBoundingClientRect().width < 1680) {
+      innerRadius = 53.5
+      outerRadius = 82.5
+      cLeft = 24
+      legendItemValueWidth = 81
+      legendItemValueFontSize = 22
+      legendItemHeight = 39
+    }
     return {
       color: CHARTCOLORS,
       tooltip: {
@@ -77,24 +92,24 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
           return [`{name|${name}}`, `{value|${percent}}`].join(' ')
         },
         textStyle: {
-          width: 191,
-          height: 41,
+          // width: 191,
+          // height: 41,
           rich: {
             name: {
               fontFamily: 'Inter-Medium',
               color: 'rgba(0,0,0,0.6)',
               fontSize: 14,
-              height: 41,
-              lineHeight: 41,
-              width: 94
+              height: legendItemHeight,
+              lineHeight: legendItemHeight,
+              width: legendItemLabelWidth
             },
             value: {
               fontFamily: 'Inter-Bold',
               color: 'rgb(0,0,0)',
-              fontSize: 24,
-              height: 41,
-              lineHeight: 41,
-              width: 53
+              fontSize: legendItemValueFontSize,
+              height: legendItemHeight,
+              lineHeight: legendItemHeight,
+              width: legendItemValueWidth
             }
           }
         },
@@ -103,11 +118,11 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
       series: [
         {
           type: 'pie',
-          radius: [60, 83.5],
+          radius: [innerRadius, outerRadius],
           top: 'middle',
-          left: 36.5,
-          width: 167,
-          height: 167,
+          left: cLeft,
+          width: outerRadius * 2,
+          height: outerRadius * 2,
           // radius: [60, 92],
           // top: 'middle',
           // left: 28,

@@ -6,6 +6,7 @@
 $dataSourceItemPaddingX: 22.0032px
 $dataSourceItemPaddingTop: 32px
 $xxLBorderRadius: 100px
+$tagHeight: 30px
 .smallFont
   @extend .xsFont
   font-family: 'Inter-Medium'
@@ -32,44 +33,40 @@ $xxLBorderRadius: 100px
         @extend .xlLBlackBoldFont
         font-family: 'Inter-SemiBold'
     .TRight
+      .dateWrapper,.tag
+        height: $tagHeight
+        line-height: $tagHeight
+        @extend .frcc
+        gap: 5px
       .dateWrapper
         border: 1PX solid rgba(0, 0, 0, 0.05)
         border-radius: $xxLBorderRadius
-        padding: 6px 10px 7px 30px
+        padding: 0 8px 0 4px
         background: #E2F8EE
         position: relative
         @extend .smallFont
         color: rgba(0, 0, 0, 0.6)
-        &:before
-          position: absolute
-          content: ''
-          left: 5px
-          top: 50%
-          transform: translateY(-50%)
+        >img
           width: $xsIconSize
-          height: $xsIconSize
-          background: url('../../../assets/img/iconSuc.svg')
-          background-size: 100% 100%
       .tag
         color: #BF9912
         background: linear-gradient(113.11deg, rgba(255, 230, 0, 0.2) 19.32%, rgba(255, 238, 84, 0.2) 83.47%)
         border-radius: $xxLBorderRadius
-        padding: 6px 16px 7px
+        padding: 0 16px
         @extend .smallFont
-
         &.social
           color: #4172BB
           background: linear-gradient(113.11deg, rgba(0, 133, 255, 0.2) 19.32%, rgba(84, 224, 255, 0.2) 83.47%)
-
   .dataSourceItemC
     width: 100%
     @extend .frbs
-    gap: $sGap
+    // gap: $sGap
     .descItem
       flex: 1
       @extend .fcsc
       gap: 6px
       padding: 27px 5px
+      position: relative
       .descT
         font-size: 12px
         line-height: 15px
@@ -78,3 +75,37 @@ $xxLBorderRadius: 100px
       .descC
         @extend .lLBlackBoldFont
         color: rgba(0,0,0,0.8)
+      &::after
+        position: absolute
+        content: ''
+        width: 1PX
+        height: 26px
+        background: rgba(0,0,0,0.1)
+        top: 50%
+        right: 0
+        transform: translateY(-50%)
+      &:last-child::after
+        display: none
+@media (max-width: 1680px)
+  .dataSourceItem
+    gap: 24px
+    padding: 26px 26px 20px
+    .dataSourceItemT
+      margin-right: -3px
+      .TLeft
+        padding: 2px 0
+        img
+          width: 40px
+        h6
+          font-size: 28px
+      .TRight
+        .dateWrapper
+          padding: 0 14px 0 4px
+        .dateWrapper,.tag
+          font-size: 13px
+    .dataSourceItemC
+      .descItem
+        padding: 25.5px 5px
+        .descC
+          font-size: 20px
+          line-height: 24px

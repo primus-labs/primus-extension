@@ -5,6 +5,10 @@ $dialogWidth: 600px
 $dialogHeight: 800px
 $dialogMBtnHeight: 58px
 $dialogLBtnHeight: 60px
+
+$sDialogWidth: 500px
+$sDialogHeight: 622px
+
 .padoDialog
   width: $dialogWidth
   height: $dialogHeight
@@ -19,9 +23,12 @@ $dialogLBtnHeight: 60px
     border-radius: 12px
     @extend .frcc
     gap: $xxsGap
+    @extend .mLBlackBoldFont
     &:hover,&:active
       background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-    span
-      @extend .mLBlackBoldFont
     img
       width: 24px
+@media (max-width: 1680px)
+  .padoDialog
+    width: $sDialogWidth
+    height: $sDialogHeight

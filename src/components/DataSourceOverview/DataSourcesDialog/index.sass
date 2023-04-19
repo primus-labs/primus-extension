@@ -1,3 +1,4 @@
+@import '@/assets/css/pVars.sass'
 @import '@/assets/css/pDialog.sass'
 
 .dataSourcesDialog
@@ -29,7 +30,7 @@
         height: 300px
       &::-webkit-scrollbar-thumb
         background: rgba(0, 0, 0, 0.2)
-        border-radius: 100px
+        border-radius: $xxLBorderRadius
       ul.dataList
         width: 100%
         display: flex
@@ -95,4 +96,34 @@
             line-height: 16px
             color: $colSBlack
   button.nextBtn
-    height: 58px
+    height: 58px !important
+@media (max-width: 1680px)
+  .dataSourcesDialog
+    padding: 48px 42px 32px
+    main
+      h1
+        font-size: 30px
+        line-height: 38px
+        img
+          width: 30px
+      h2
+        font-size: 14px
+      .scrollList
+        width: calc( 100% + 34px )
+        height: 270px
+      &::-webkit-scrollbar
+        height: 250px
+      ul.dataList
+        gap: 7px
+        li
+          cursor: pointer
+          width: 134px
+          height: 128px
+          padding: 18px 2px
+          &.active
+            padding: 16px 0px
+            &:after
+              width: 20px
+              height: 20px
+          .desc
+            padding: 11px 0 1px

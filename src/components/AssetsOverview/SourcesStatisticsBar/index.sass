@@ -17,8 +17,10 @@
     @extend .frsc
     row-gap: $mIconSize
     column-gap: 123.66px
+    column-gap: 119px
     li.source
       width: 182.25px
+      width: 247px
       @extend .fcss
       gap: $sGap
       margin-bottom: 32px
@@ -45,3 +47,22 @@
         color: rgba(0,0,0,0.7)
         margin-top: -14px
         margin-left: 40px
+@media (max-width: 1680px)
+  .sourcesStatisticsBar
+    padding: 0 44px
+    header
+      padding: 28px 0 13px 0
+    ul.sources
+      padding: 25px 0 37px 0
+      column-gap: 92px
+      li.source
+        width: 168px
+        margin-bottom: 0
+        .label
+          font-size: 14px
+          line-height: 17px
+        .value
+          font-size: 28px
+          line-height: 34px
+          img
+            width: $mIconSize

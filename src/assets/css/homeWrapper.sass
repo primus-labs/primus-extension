@@ -1,29 +1,31 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFlex.sass'
 
+$contentGap: 37.73px
+$contentPaddingLeft: 43px
+$contentPaddingTop: 156px
+$contentMarginTop: -5px
+@mixin pageIndexMixin ($x:1)
+  .appContent
+    margin-top: $contentMarginTop * $x
+    padding-left: $contentPaddingLeft * $x
+    padding-top: $contentPaddingTop * $x
+    gap: $contentGap * $x
 .pageIndex
+  @include pageIndexMixin
   @extend .frsc
   .appContent
-    margin-top: -5px
-    padding-left: 14px
     padding-right: 278px
     @extend .frbc
-    gap: $lGap
 
 @media (max-width: 1680px)
   .pageIndex
-    .appContent
-      // padding-right: 243px
-      gap: 21px
+    @include pageIndexMixin($mN)
 
 @media (max-width: 1440px)
   .pageIndex
-    .appContent
-      // padding-right: 208.5px
-      gap: 18px
+    @include pageIndexMixin($sN)
 
 @media (max-width: 1366px)
   .pageIndex
-    .appContent
-      // padding-right: 197px
-      gap: 17px
+    @include pageIndexMixin($xsN)

@@ -4,11 +4,11 @@
 .assetsDetail
   width: $centerWidth
   @extend .fcss
-  gap: $mBorderRadius
+  gap: $lGap
   padding-bottom: 50px
   >header
     width: 100%
-    padding: 32px 0 8px 0
+    padding: 74px 0 49px 0
     @extend .fcsc
     img.avatar
       width: 120px
@@ -38,7 +38,7 @@
     width: 100%
     @include backdropMixin(64px)
     background: linear-gradient(186.59deg, rgba(255, 255, 255, 0.6) 0.28%, rgba(255, 255, 255, 0.6) 94.82%)
-    padding: 36px 135px
+    padding: 46px 135px
     @extend .frsc
     .descItem
       flex: 1
@@ -87,7 +87,33 @@
         gap: $xsGap
         >img
           width: $sIconSize
-        .iconSuc
-          margin-left: -8px
         .iconArrow
           transform: rotate(180deg)
+@media (max-width: 1680px)
+  .assetsDetail
+    gap: $mGap
+    width: $sCenterWidth
+    >header
+      padding: 48px 0 30px 0
+      h3
+        padding: 24px 0
+    .sourceStatisticsBar
+      padding: 30px 100px
+      .descItem
+        height: 100px
+        .label
+          font-size: 12px
+          line-height: 15px
+        .value
+          font-size: 40px
+          line-height: 48px
+        .btcValue
+          font-size: 14px
+          line-height: 17px
+    .proofsBar
+      gap: 18px
+      .proofCard
+        height: 130px
+        .cardC
+          font-size: 22px
+          line-height: 27px

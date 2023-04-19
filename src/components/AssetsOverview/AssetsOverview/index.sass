@@ -5,6 +5,8 @@ $col-raise: #E12828
 $col-fall: #27C265
 $cardWidth: 588px
 $cardHeight: 400px
+$sCardWidth: 504px
+$sCardHeight: 303px
 .sectionTitle
   @extend .lLBlackBoldFont
   border-bottom: 1px solid rgba(0, 0, 0, 0.1)
@@ -13,12 +15,12 @@ $cardHeight: 400px
   width: 100%
   @extend .fcss
   gap: $lGap
-  margin-top: -24px
   padding-bottom: 50px
+  padding-top: 24px
   .statisticsWrapper
     width: 100%
     @extend .frbs
-    gap: $sGap
+    gap: $lGap
     .card
       width: $cardWidth
       height: $cardHeight
@@ -60,3 +62,25 @@ $cardHeight: 400px
                   color: rgba(225, 40, 40, 0.8)
                 &.fall
                   color: rgba(39, 194, 101, 0.8)
+@media (max-width: 1680px)
+  .assetsOverview
+    .statisticsWrapper
+      .card
+        width: $sCardWidth
+        height: $sCardHeight
+        padding: 0 26px
+        header
+          padding: 32px 0 14px 0
+      .cardL
+        .cardCon
+          @extend .fcss
+          gap: 28px
+          padding-top: 26px
+          padding-bottom: 46px
+          .descItem
+            .label
+              font-size: 14px
+              line-height: 17px
+            .value
+              font-size: 40px
+              line-height: 48px

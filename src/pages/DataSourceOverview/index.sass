@@ -14,7 +14,7 @@
       width: 100%
       display: flex
       gap: $lGap
-      padding: 32px 0 48px 0
+      padding-top: 32px
       .pSearch
         flex: 1
         display: flex
@@ -37,3 +37,10 @@
             @extend .sSBlackRegularFont
             font-family: 'Inter-Medium'
             height: 60px
+@media (max-width: 1680px)
+  .pageDataSourceOverview
+    main.appContent
+      width: $sCenterWidth
+      // width: 1032px
+      .filterWrapper
+        padding-top: 24px

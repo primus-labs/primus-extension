@@ -2,6 +2,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import BigNumber from 'bignumber.js'
 import { gt } from '@/utils/utils';
 import type { ExchangeMeta } from '@/utils/constants';
+
+import iconSuc from '@/assets/img/iconSuc.svg'
 import './index.sass';
 
 export type TokenMap = {
@@ -95,7 +97,10 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }
           <h6>{name}</h6>
         </div>
         <div className="TRight titleWrapper">
-          <div className="dateWrapper">{date}</div>
+          <div className="dateWrapper">
+            <img src={iconSuc} alt="" />
+            <span>{date}</span>
+          </div>
           <div className={type === 'Social' ? "tag social" : "tag"}>{type}</div>
         </div>
       </div>
