@@ -35,7 +35,7 @@ const useExSource = () => {
       }
       setAssetDataSourceMap(sourceData)
     } else {
-      setAssetDataSourceMap( {})
+      setAssetDataSourceMap(undefined)
     }
   },[])
   // useEffect(() => {

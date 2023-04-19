@@ -18,7 +18,7 @@ import iconArbitrum from '@/assets/img/iconArbitrum.svg'
 import iconOptimism from '@/assets/img/iconOptimism.svg'
 import iconMina from '@/assets/img/iconMina.svg'
 import useExSource from '@/hooks/useExSource';
-
+import type { ExDataType } from '@/hooks/useExSource';
 const proveToolList = [
   {
     icon: iconTool1,
@@ -85,7 +85,7 @@ const DataSourceDetail = () => {
       </main>
       {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
       {step === 1 && <CreateAttesationDialog dataSource={dataSource} onSubmit={handleSubmitCreateAttesationDialog} />}
-      {step === 2 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Your attestation is successfully granted!" />}
+      {step === 2 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource as ExDataType} desc="Your attestation is successfully granted!" />}
       {step === 3 && <TransferToChainDialog
         onClose={handleCloseMask}
         onSubmit={handleSubmitTransferToChain}
@@ -94,7 +94,7 @@ const DataSourceDetail = () => {
         desc='Sending your proof/badge to one of the following chain. Allows dApp complete on-chain attestation.'
         list={proveToolList}
       />}
-      {step === 4 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource} desc="Your attestation is recorded on-chain!" />}
+      {step === 4 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource as ExDataType} desc="Your attestation is recorded on-chain!" />}
     </div>
   );
 };
