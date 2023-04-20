@@ -7,21 +7,23 @@ $btnWidth: 343px
 $btnHeight: 80px
 $btnBorderRadius: 100px
 $btnFontSize: 24px
-$btnIconWidth: 32px
+
 .pageHome
   article
-    width: 602px
+    flex: 1
     @extend .fcss
     gap: 60px
     .descWrapper
       @extend .fcss
       gap: 20px
       h1
-        font-size: 48px
-        line-height: 58px
+        @extend .xxlLBlackBoldFont
         font-family: 'Inter-Black'
-        color: $colLBlack
         text-transform: uppercase
+        >span
+          font-size: 44px
+          line-height: 53px
+          font-family: 'Inter-Bold'
       p
         @extend .mSBlackRegularFont
     button.startBtn
@@ -40,8 +42,8 @@ $btnIconWidth: 32px
         .iconArrow
           background-image: url("../../assets/img/rightArrowHover.svg")
       .iconArrow
-        width: $btnIconWidth
-        height: $btnIconWidth
+        width: $mIconSize
+        height: $mIconSize
         background-size: 100% 100%
         background-image: url("../../assets/img/rightArrow.svg")
 
@@ -49,6 +51,20 @@ $btnIconWidth: 32px
   padding: 30px 90px 70px
   >main
     padding: 0
+@media (max-width: 1680px)
+  .pageHome
+    article
+      .descWrapper
+        h1
+          font-size: 44px
+          line-height: 53px
+          >span
+            font-size: 38px
+            line-height: 46px
+            font-family: 'Inter-Bold'
+        p
+          font-size: 20px
+          line-height: 24px
 
 // @media (max-width: 1680px)
 //   .pageHome
@@ -63,48 +79,48 @@ $btnIconWidth: 32px
 //       border-radius: $btnBorderRadius * $mN
 //       font-size: $btnFontSize * $mN
 //       .iconArrow
-//         width: $btnIconWidth * $mN
-//         height: $btnIconWidth * $mN
+//         width: $mIconSize * $mN
+//         height: $mIconSize * $mN
 // @media (max-width: 1440px)
-@media (max-width: 1680px)
-  .pageHome
-    article
-      width: 451.5px
-      gap: 45px
-      .descWrapper
-        gap: 15px
-        h1
-          font-size: 36px
-          line-height: 43.5px
-        p
-          font-size: 16px
-          line-height: 19px
-      button.startBtn
-        width: $btnWidth * $sN
-        height: $btnHeight * $sN
-        border-radius: $btnBorderRadius * $sN
-        font-size: $btnFontSize * $sN
-        .iconArrow
-          width: $btnIconWidth * $sN
-          height: $btnIconWidth * $sN
-@media (max-width: 1366px)
-  .pageHome
-    article
-      width: 427px
-      gap: 43px
-      .descWrapper
-        gap: 14px
-        h1
-          font-size: 34px
-          line-height: 41px
-        p
-          font-size: 16px
-          line-height: 19px
-        button.startBtn
-          width: $btnWidth * $xsN
-          height: $btnHeight * $xsN
-          border-radius: $btnBorderRadius * $xsN
-          font-size: $btnFontSize * $xsN
-          .iconArrow
-            width: $btnIconWidth * $xsN
-            height: $btnIconWidth * $xsN
+// @media (max-width: 1680px)
+//   .pageHome
+//     article
+//       width: 451.5px
+//       gap: 45px
+//       .descWrapper
+//         gap: 15px
+//         h1
+//           font-size: 36px
+//           line-height: 43.5px
+//         p
+//           font-size: 16px
+//           line-height: 19px
+//       button.startBtn
+//         width: $btnWidth * $sN
+//         height: $btnHeight * $sN
+//         border-radius: $btnBorderRadius * $sN
+//         font-size: $btnFontSize * $sN
+//         .iconArrow
+//           width: $mIconSize * $sN
+//           height: $mIconSize * $sN
+// @media (max-width: 1366px)
+//   .pageHome
+//     article
+//       width: 427px
+//       gap: 43px
+//       .descWrapper
+//         gap: 14px
+//         h1
+//           font-size: 34px
+//           line-height: 41px
+//         p
+//           font-size: 16px
+//           line-height: 19px
+//         button.startBtn
+//           width: $btnWidth * $xsN
+//           height: $btnHeight * $xsN
+//           border-radius: $btnBorderRadius * $xsN
+//           font-size: $btnFontSize * $xsN
+//           .iconArrow
+//             width: $mIconSize * $xsN
+//             height: $mIconSize * $xsN

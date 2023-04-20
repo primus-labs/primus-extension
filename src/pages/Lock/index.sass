@@ -13,128 +13,135 @@ $inputBorderRadius: 12px
 $contentWrapperPaddingRight: 360px
 .pageLock
   .appContent
-    padding-right: $contentWrapperPaddingRight
-  article
-    width: $contentWidth
-    @extend .fcss
-    gap: $contentGap
-    .articleHeader
+    article
+      width: $contentWidth
       @extend .fcss
-      gap: $mGap
-      h1
-        font-size: $h1FontSize
-        line-height: $h1LineHeight
-        font-family: 'Inter-Black'
-        color: #000000
-        text-transform: uppercase
-      p
-        @extend .mSBlackRegularFont
-    .articleMain
-      width: 100%
-      @extend .fcss
-      gap: $xxsGap
-      h6,.errorTip
-        @extend .mSBlackRegularFont
-      h6
-        color: $colSBlack
-      .errorTip
-        color: rgba(255,0,0,0.8)
-    .articleFooter
-      width: 100%
-      @extend .fcsc
-      gap: $xlGap
-
-      button.unLockBtn
+      gap: $contentGap
+      .articleHeader
+        @extend .fcss
+        gap: $mGap
+        h1
+          @extend .xxlLBlackBoldFont
+          font-family: 'Inter-Black'
+          color: #000000
+        p
+          @extend .mSBlackRegularFont
+      .articleMain
         width: 100%
-        height: $btnHeight
-        background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-        border-radius: $btnBorderRadius
-        @extend .frcc
-        @extend .mLBlackBoldFont
-        &:hover,&:active
-          background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-      >p
-        @extend .mSBlackRegularFont
-        color: rgba(0,0,0,0.4)
+        @extend .fcss
+        gap: $xxsGap
+        h6,.errorTip
+          @extend .mSBlackRegularFont
+        h6
+          color: $colSBlack
+        .errorTip
+          color: rgba(255,0,0,0.8)
+      .articleFooter
+        width: 100%
+        @extend .fcss
+        gap: $xlGap
 
+        button.unLockBtn
+          width: 100%
+          height: $btnHeight
+          background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+          border-radius: $btnBorderRadius
+          @extend .frcc
+          @extend .mLBlackBoldFont
+          &:hover,&:active
+            background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+        >p
+          @extend .mSBlackRegularFont
+          color: rgba(0,0,0,0.4)
 @media (max-width: 1680px)
   .pageLock
     .appContent
-      padding-right: $contentWrapperPaddingRight* $mN
-    article
-      width: 446px
-      gap: $contentGap* $mN
-      .articleHeader
-        gap: $mGap* $mN
-        h1
-          font-size: $h1FontSize* $mN
-          line-height: $h1LineHeight* $mN
-      .articleMain
-        .pInputWrapper
-          height: $inputWrapperHeight* $mN
-          border-radius: $inputBorderRadius* $mN
-      .articleFooter
-        gap: $xlGap* $mN
-        button.unLockBtn
-          height: $btnHeight* $mN
-          border-radius: $btnBorderRadius* $mN
-        >p
-          font-size: 16px
-          line-height: 19px
+      article
+        // flex: 1
+        width: 492px
+        gap: 40px
+        .articleHeader
+          h1
+            font-size: 44px
+            line-height: 53px
+// @media (max-width: 1680px)
+//   .pageLock
+//     .appContent
+//       padding-right: $contentWrapperPaddingRight* $mN
+//     article
+//       width: 446px
+//       gap: $contentGap* $mN
+//       .articleHeader
+//         gap: $mGap* $mN
+//         h1
+//           font-size: $h1FontSize* $mN
+//           line-height: $h1LineHeight* $mN
+//       .articleMain
+//         .pInputWrapper
+//           height: $inputWrapperHeight* $mN
+//           border-radius: $inputBorderRadius* $mN
+//       .articleFooter
+//         gap: $xlGap* $mN
+//         button.unLockBtn
+//           height: $btnHeight* $mN
+//           border-radius: $btnBorderRadius* $mN
+//         >p
+//           font-size: 16px
+//           line-height: 19px
 
-@media (max-width: 1440px)
-  .pageLock
-    .appContent
-      padding-right: $contentWrapperPaddingRight* $sN
-    article
-      width: 400px
-      gap: $contentGap* $sN
-      .articleHeader
-        gap: $mGap* $sN
-        h1
-          font-size: $h1FontSize* $sN
-          line-height: $h1LineHeight* $sN
-        p
-          font-size: 16px
-          line-height: 19px
-      .articleMain
-        h6, .errorTip
-          font-size: 16px
-          line-height: 19px
-        .pInputWrapper
-          height: $inputWrapperHeight* $sN
-          border-radius: $inputBorderRadius* $sN
-          .pInput
-            font-size: 16px
-            line-height: 19px
-      .articleFooter
-        gap: $xlGap* $sN
-        button.unLockBtn
-          height: $btnHeight* $sN
-          border-radius: $btnBorderRadius* $sN
-          font-size: 14px
-          line-height: 17px
-        >p
-          font-size: 14px
-          line-height: 17px
+// @media (max-width: 1440px)
+//   .pageLock
+//     .appContent
+//       padding-right: $contentWrapperPaddingRight* $sN
+//     article
+//       width: 400px
+//       gap: $contentGap* $sN
+//       .articleHeader
+//         gap: $mGap* $sN
+//         h1
+//           font-size: $h1FontSize* $sN
+//           line-height: $h1LineHeight* $sN
+//         p
+//           font-size: 16px
+//           line-height: 19px
+//       .articleMain
+//         h6, .errorTip
+//           font-size: 16px
+//           line-height: 19px
+//         .pInputWrapper
+//           height: $inputWrapperHeight* $sN
+//           border-radius: $inputBorderRadius* $sN
+//           .pInput
+//             font-size: 16px
+//             line-height: 19px
+//       .articleFooter
+//         gap: $xlGap* $sN
+//         button.unLockBtn
+//           height: $btnHeight* $sN
+//           border-radius: $btnBorderRadius* $sN
+//           font-size: 14px
+//           line-height: 17px
+//         >p
+//           font-size: 14px
+//           line-height: 17px
 
-@media (max-width: 1366px)
-  .pageLock
-    .appContent
-      padding-right: $contentWrapperPaddingRight* $xsN
-    article
-      gap: $contentGap* $xsN
-      .articleHeader
-        gap: $mGap* $xsN
-        h1
-          font-size: $h1FontSize* $xsN
-          line-height: $h1LineHeight* $xsN
-      .articleMain
-        .pInputWrapper
-          height: $inputWrapperHeight* $xsN
-          border-radius: $inputBorderRadius* $xsN
-      .articleFooter
-        gap: $xlGap* $xsN
-        button.unLockBtn
-          height: $btnHeight* $xsN
-          border-radius: $btnBorderRadius* $xsN
+// @media (max-width: 1366px)
+//   .pageLock
+//     .appContent
+//       padding-right: $contentWrapperPaddingRight* $xsN
+//     article
+//       gap: $contentGap* $xsN
+//       .articleHeader
+//         gap: $mGap* $xsN
+//         h1
+//           font-size: $h1FontSize* $xsN
+//           line-height: $h1LineHeight* $xsN
+//       .articleMain
+//         .pInputWrapper
+//           height: $inputWrapperHeight* $xsN
+//           border-radius: $inputBorderRadius* $xsN
+//       .articleFooter
+//         gap: $xlGap* $xsN
+//         button.unLockBtn
+//           height: $btnHeight* $xsN
+//           border-radius: $btnBorderRadius* $xsN

@@ -124,7 +124,7 @@ const Home = () => {
         <AsideAnimation />
         <article>
           <section className="descWrapper">
-            <h1>Welcome to <br/>zkData Attestation Service</h1>
+            <h1><span>Welcome to </span><br/>zkData Attestation Service</h1>
             <p>Manage and share your web data simply and safely.</p>
           </section>
           <button className="startBtn" onClick={handleClickStart}>

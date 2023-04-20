@@ -3,6 +3,7 @@
 @import '@/assets/css/pFont.sass'
 
 $avatarWidth: 42px
+$sAvatarWidth: 36px
 $addressFontSize: 18px
 .pAvatar
   @extend .frsc
@@ -16,7 +17,15 @@ $addressFontSize: 18px
   .address
     @extend .mLBlackBoldFont
     font-family: 'Inter-SemiBold'
-
+@media (max-width: 1680px)
+  .pAvatar
+    gap: 6px
+    .avatar
+      width: $sAvatarWidth
+      height: $sAvatarWidth
+    .address
+      font-size: 16px
+      line-height: 19px
 // @media (max-width: 1680px)
 //   .pAvatar
 //     .avatar

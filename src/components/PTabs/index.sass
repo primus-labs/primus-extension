@@ -1,29 +1,32 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
 $pTabsPadding: 4px
 $pTabsBorderRaiuds: 100px
 $tabspaddingY: 16px
 $tabspaddingX: 32px
-$tabIconWidth: 24px
+
 $tabFontSize: 18px
 $tabLineHeight: 22px
 
 @mixin ptabsMinxin($N)
   padding: $pTabsPadding *$N
   .tab
-    padding: $tabspaddingY*$N $tabspaddingX*$N
     border-radius: $pTabsBorderRaiuds*$N
     img
-      width: $tabIconWidth*$N
+      width: $sIconSize*$N
 
 .pTabs
   @include ptabsMinxin(1)
   // padding: 4px
   @include backdropMixin(16px,$colSWhite,$xxLBorderRadius)
   display: flex
+  gap: 21px
   .tab
+    width: 137px
+    height: 56px
     cursor: pointer
-    display: flex
+    @extend .frcc
     gap: $xxsGap
     @extend .mSBlackSemiBoldFont
     &.focusTab
@@ -31,6 +34,19 @@ $tabLineHeight: 22px
     &.activeTab
       background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
       color: #000000
+@media (max-width: 1680px)
+  .pTabs
+    padding: 6px
+    gap: 13px
+    .tab
+      width: 116px
+      height: 43px
+      font-size: 16px
+      line-height: 22px
+      gap: 6px
+      img
+        width: 18px
+
 // @media (max-width: 1680px)
 //   .pTabs
 //     @include ptabsMinxin($mN)

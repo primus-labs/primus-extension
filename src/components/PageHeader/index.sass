@@ -11,7 +11,6 @@ $dropdownWrapperTop: 92px
 $dropdownItemWrapperY: 8px
 $dropdownItemY: 18px
 $dropdownItemX: 16px
-$dropdownItemImgWidth: 18px
 $lastDropdownItemPaddingTop: 10px
 $lastDropdownItemBorderRadius: 8px
 @mixin pageHeaderMixin($N)
@@ -24,8 +23,6 @@ $lastDropdownItemBorderRadius: 8px
       padding: $dropdownWrapperPadding*$N
       top: $dropdownWrapperTop*$N
       border-radius: $dropdownWrapperBorderRadius*$N
-      .pAvatarWrapper
-        padding: 0 $dropdownWrapperPadding*$N
       .dropdown
         .dropdownItemWrapper
           padding: $dropdownItemWrapperY*$N 0
@@ -33,7 +30,7 @@ $lastDropdownItemBorderRadius: 8px
             padding: $dropdownItemY*$N $dropdownItemX*$N
             gap: $xsGap*$N
             img
-              width: $dropdownItemImgWidth*$N
+              width: $xxsIconSize*$N
           &:last-child
             padding: $lastDropdownItemPaddingTop*$N 0 0 0
             .dropdownItem
@@ -58,6 +55,7 @@ $lastDropdownItemBorderRadius: 8px
         .dropdownItemWrapper
           border-bottom: 1PX solid rgba(0, 0, 0, 0.05)
           .dropdownItem
+            width: 240px
             display: flex
             @extend .sFont
             font-family: 'Inter-Medium'
@@ -67,6 +65,15 @@ $lastDropdownItemBorderRadius: 8px
             border-bottom: 0
             .dropdownItem
               background: rgba(0, 0, 0, 0.05)
+@media (max-width: 1680px)
+  .pageHeade
+    .rightHeader
+      .dropdownWrapper
+        top: 92px
+        .dropdown
+          .dropdownItem
+            width: 176px
+            padding: 0
 // @media (max-width: 1680px)
 //   .pageHeader
 //     @include pageHeaderMixin($mN)

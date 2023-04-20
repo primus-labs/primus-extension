@@ -61,9 +61,6 @@ const PHeader = () => {
         </div>
         {dorpdownVisible &&
           <div className="dropdownWrapper" onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
-            <div className="pAvatarWrapper">
-              <PAvatar />
-            </div>
             <ul className="dropdown">
               {navs.map(item => {
                 return (<li key={item.text} className="dropdownItemWrapper" onClick={() => { handleClickDropdownItem(item.text) }}>

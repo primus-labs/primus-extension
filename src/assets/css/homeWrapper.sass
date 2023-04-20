@@ -1,33 +1,45 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFlex.sass'
 
-$contentGap: 38px
+$contentMarginTop: -5px
+$contentPaddingTop: 156px
 $contentPaddingLeft: 43px
 $contentPaddingRight: 278px
-$contentPaddingTop: 156px
-$contentMarginTop: -5px
-@mixin pageIndexMixin ($x:1)
-  .appContent
-    margin-top: $contentMarginTop * $x
-    padding-left: $contentPaddingLeft * $x
-    padding-top: $contentPaddingTop * $x
+
+// @mixin pageIndexMixin ($x:1)
+//   .appContent
+//     margin-top: $contentMarginTop * $x
+//     padding-top: $contentPaddingTop * $x
+//     padding-left: $contentPaddingLeft * $x
     // padding-right: $contentPaddingRight * $x
-    gap: $contentGap
 .pageIndex
-  @include pageIndexMixin
   @extend .frsc
+  height: 100vh
+  margin-top: -$pageHeaderHeight
+  padding-left: 71px
   .appContent
-    width: 100%
     @extend .frsc
+    width: 1599px
+    gap: 37.73px
 
 @media (max-width: 1680px)
   .pageIndex
-    @include pageIndexMixin($mN)
+    justify-content: center
+    padding-left: 27px
+    padding-right: 143px
+    .appContent
 
-@media (max-width: 1440px)
-  .pageIndex
-    @include pageIndexMixin($sN)
+      width: 1194px
+      gap: 35px
 
-@media (max-width: 1366px)
-  .pageIndex
-    @include pageIndexMixin($xsN)
+// @media (max-width: 1680px)
+//   .pageIndex
+//     @include pageIndexMixin($mN)
+
+// @media (max-width: 1440px)
+//   .pageIndex
+//     @include pageIndexMixin($sN)
+
+// @media (max-width: 1366px)
+//   .pageIndex
+//     @include pageIndexMixin($xsN)
