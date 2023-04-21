@@ -85,11 +85,17 @@ class Exchange {
       .filter((i) => i !== USD)
       .map((j) => (this.exName === 'binance' ? `${j}${USDT}` : `${j}-${USDT}`));
     const res = await this.exchange.fetchTickers(LPSymbols);
-    this.tokenPriceMap = Object.keys(res).reduce((prev, curr) => {
-      const { symbol, last } = res[curr];
-      const tokenSymbol = symbol.replace(`/${USDT}`, '');
-      return prev.set(tokenSymbol, new BigNumber(last).toFixed());
-    }, new Map([[USDT, ONE]]));
+    this.tokenPriceMap = Object.keys(res).reduce(
+      (prev, curr) => {
+        const { symbol, last } = res[curr];
+        const tokenSymbol = symbol.replace(`/${USDT}`, '');
+        return prev.set(tokenSymbol, new BigNumber(last).toFixed());
+      },
+      new Map([
+        [USDT, ONE],
+        [USD, ONE],
+      ])
+    );
     // console.log('tokenPriceMap', this.tokenPriceMap);
     return this.tokenPriceMap;
   }
@@ -139,6 +145,9 @@ class Exchange {
     const price = this.tokenPriceMap.get(symbol);
     if (price) {
       return price;
+    }
+    if ([USD, USDT].includes(symbol)) {
+      return ONE;
     }
     const LPSymbol =
       this.exName === 'binance' ? `${symbol}${USDT}` : `${symbol}-${USDT}`;
