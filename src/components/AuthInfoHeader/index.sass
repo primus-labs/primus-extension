@@ -1,5 +1,7 @@
 @import '../../assets/css/pFlex.sass'
 @import '../../assets/css/pFont.sass'
+
+$sAvatar: 36px
 .authInfoHeader
   width: 100%
   position: relative
@@ -31,3 +33,16 @@
       font-family: 'Inter-SemiBold'
     img.checked
       width: 24px
+@media (max-width: 1680px)
+  .authInfoHeader
+    .iconBack
+      left: -20px
+    .content
+      img.avatar
+        width: $sAvatar
+      >i.avatarAlternate
+        width: $sAvatar
+        height: $sAvatar
+      span.email
+        font-size: 16px
+        line-height: 19px

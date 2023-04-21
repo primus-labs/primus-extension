@@ -18,8 +18,8 @@
         top: 50%
         transform: translateY(-50%)
         left: -58px
-        width: 32px
-        height: 32px
+        width: $mIconSize
+        height: $mIconSize
         background: url('../../../assets/img/iconArrowLeft.svg')
         background-size: 100% 100%
         cursor: pointer
@@ -79,3 +79,46 @@
       padding-top: 8px
       @extend .tipFont
       color: $colError
+@media (max-width: 1680px)
+  .setPwdDialog
+    padding: 28px 60px 60px
+    main
+      .setPwdDialogHeader
+        .iconBack
+          left: -20px
+      h1
+        font-size: 26px
+        line-height: 31px
+        font-family: 'Inter-SemiBold'
+        padding-top: 12px
+        padding-bottom: 12px
+      h2
+        font-size: 12px
+        line-height: 18px
+      h6
+        font-size: 14px
+        line-height: 17px
+        font-family: 'Inter-Regular'
+        padding: 24px 0 6px 0
+      .pInputWrapper
+        height: 52px
+        .pInput
+          font-size: 16px
+          line-height: 19px
+          font-family: 'Inter-SemiBold'
+          padding-left: 20px
+      .validateWrapper
+        .descTitle
+          font-size: 12px
+          line-height: 20px
+        ul.descItems
+          .descItem
+            font-size: 12px
+            line-height: 20px
+            padding-left: 22px
+            &.checked
+              color: #000
+              font-family: 'Inter-Bold'
+              &::before
+                width: 16px
+                height: 16px

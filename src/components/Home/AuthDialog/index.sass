@@ -8,7 +8,7 @@
   main
     width: 100%
     @extend .fcsc
-    h1
+    >h1
       @extend .xlLBlackBoldFont
       padding-top: 84px
       padding-bottom: 80px
@@ -16,7 +16,7 @@
       padding-bottom: 96px
       text-transform: capitalize
     ul.licensorList
-      @extend .frac
+      @extend .frcc
       gap: $xsGap
       li.licensorItem
         cursor: pointer
@@ -32,3 +32,18 @@
     height: $dialogLBtnHeight
     &.authDialogNextBtn
       cursor: not-allowed
+@media (max-width: 1680px)
+  .authDialog
+    padding: 55px 60px 60px
+    main
+      .pHeader
+        >img
+          width: 134.22px
+      >h1
+        padding-top: 81px
+        padding-bottom: 59px
+      ul.licensorList
+        gap: 32px
+        li.licensorItem
+          width: 66px
+          height: 66px

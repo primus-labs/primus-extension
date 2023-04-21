@@ -38,12 +38,37 @@
         height: 1PX
         background-color: #D9D9D9
       .divider
-        font-size: 14px
-        line-height: 35px
-        font-family: 'Inter-Regular'
-        color: $colSBlack
+        @extend .mSBlackRegularFont
         width: 48px
         text-align: center
     ul.networkList
       @extend .frac
       gap: $mGap
+@media (max-width: 1680px)
+  .TransferToChainDialog
+    padding: 30px 42px 31px
+    main
+      padding: 0 18px
+      h1
+        padding-top: 54px
+        font-size: 26px
+        line-height: 31px
+        font-family: 'Inter-SemiBold'
+      h2
+        font-size: 12px
+        line-height: 18px
+        padding: 12px 0 44px 0
+      h6
+        font-size: 14px
+        line-height: 17px
+        font-family: 'Inter-SemiBold'
+        padding-bottom: 10px
+      .networkItem
+        width: 55px
+        height: 55px
+        img
+          width: 36.95px
+      .dividerWrapper
+
+        .divider
+          font-size: 12px
