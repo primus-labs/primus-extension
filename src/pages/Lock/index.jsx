@@ -21,7 +21,7 @@ const Lock = ({padoServicePort}) => {
           console.log("page_get:decrypt:", message.res);
           if (message.res) {
             // encrypt successfully
-            navigate('/')
+            navigate('/?refreshData=true')
           } else {
             setErrorMsg('Incorrect password')
           }

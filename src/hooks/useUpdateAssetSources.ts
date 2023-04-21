@@ -25,7 +25,7 @@ const useUpdateAssetSources = (flag = false) => {
     const len = (queryObj && Object.keys(queryObj).length) || 0;
     if (queryObj && len > 0) {
       const flag = Object.values(queryObj).every((i) => i);
-      console.log(23333666, queryObj, 'loading:', !flag);
+      // console.log(23333666, queryObj, 'loading:', !flag);
       return !flag;
     } else {
       return false;
