@@ -38,7 +38,7 @@ $col-fall: #27C265
           font-family: 'Inter-Medium'
           height: 44px
   ul.tokens
-    padding-bottom: 64px
+    padding-bottom: 62px
     &.social
       li.tokenItem
         gap: 0
@@ -64,43 +64,46 @@ $col-fall: #27C265
       color: $colLBlack
       &.th
         border-bottom: 1px solid rgba(0, 0, 0, 0.1)
-        margin-bottom: 12px
-        padding: 16px 0
+        margin-bottom: 3px
+        padding: 16px 0 15px
         color: $colSBlack
         &:hover
           background: transparent
       &.tr
-        margin: 12px -50px 0
-        padding: 10px 50px
+        margin: 10px -50px 0
+        padding: 11px 50px
+        color: $colLBlack
         &:hover
           background: rgba(0, 0, 0, 0.05)
       >div
         width: 133.25px
         text-align: right
       .token
-        color: $colLBlack
         @extend .frsc
         gap: $xxsGap
         text-align: left
         >img
           width: $xsIconSize
           border-radius: 50%
-        >span
-          line-height: 22px
+        // >span
+        //   line-height: 22px
 @media (max-width: 1680px)
   .tokenListWrapper
     padding: 0 44px
     header
-      padding: 28px 0 15px 0
+      padding: 26px 0 16px 0
+      font-size: 20px
+      line-height: 24px
+      font-family: 'Inter-SemiBold'
     ul.tokens
-      padding-bottom: 48px
+      padding-bottom: 36px
       li.tokenItem
         gap: 140px
         &.th
           margin-bottom: 20px
-          padding: 12px 0
+          padding: 12px 0 11px
         &.tr
           margin: 4px -44px 0
-          padding: 10px 44px
+          padding: 11px 44px
         >div
           width: 132px

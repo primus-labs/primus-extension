@@ -1,16 +1,48 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFont.sass'
 @import '@/assets/css/pFlex.sass'
-@import '@/assets/css/homeWrapper.sass'
+// @import '@/assets/css/homeWrapper.sass'
 
 $btnWidth: 343px
 $btnHeight: 80px
 $btnBorderRadius: 100px
 $btnFontSize: 24px
 
+$contentMarginTop: -5px
+$contentPaddingTop: 156px
+$contentPaddingLeft: 43px
+$contentPaddingRight: 278px
+$sContentGap: 35px
+
+.pageIndex.pageHome
+  @extend .frsc
+  height: 100vh
+  margin-top: -$pageHeaderHeight
+  .appContent
+    padding-left: 43px
+    padding-right: 278px
+    @extend .frsc
+    gap: 37.73px
+    // width: 1599px
+
+@media (max-width: 1680px)
+  .pageIndex.pageHome
+    justify-content: center
+    .appContent
+      padding-left: 79px
+      padding-right: 197px
+      justify-content: center
+      gap: 0.1823rem
+@media (max-width: 1470px)
+  .pageIndex
+    .appContent
+      padding-left: 27px
+      padding-right: 143px
+      // width: 1194px
+      gap: 35px
 .pageHome
   article
-    flex: 1
+    width: 602px
     @extend .fcss
     gap: 60px
     .descWrapper
@@ -54,6 +86,7 @@ $btnFontSize: 24px
 @media (max-width: 1680px)
   .pageHome
     article
+      width: 515px
       .descWrapper
         h1
           font-size: 44px

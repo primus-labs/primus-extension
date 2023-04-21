@@ -5,6 +5,7 @@ $contentMarginTop: -5px
 $contentPaddingTop: 156px
 $contentPaddingLeft: 43px
 $contentPaddingRight: 278px
+$sContentGap: 35px
 
 // @mixin pageIndexMixin ($x:1)
 //   .appContent
@@ -25,13 +26,17 @@ $contentPaddingRight: 278px
 @media (max-width: 1680px)
   .pageIndex
     justify-content: center
+    padding-left: 0.1406rem
+    padding-right: 0.7448rem
+    .appContent
+      gap: 0.1823rem
+@media (max-width: 1470px)
+  .pageIndex
     padding-left: 27px
     padding-right: 143px
     .appContent
-
       width: 1194px
       gap: 35px
-
 // @media (max-width: 1680px)
 //   .pageIndex
 //     @include pageIndexMixin($mN)

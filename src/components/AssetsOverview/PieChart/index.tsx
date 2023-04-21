@@ -19,7 +19,7 @@ import {
 import {
   CanvasRenderer,
 } from 'echarts/renderers';
-
+import './index.sass'
 // Register the required components
 echarts.use([TooltipComponent, PieChart, LegendComponent, CanvasRenderer]);
 
@@ -53,13 +53,15 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
     let legendItemValueWidth = 88
     let legendItemValueFontSize = 24
     let legendItemHeight = 41
+    let legendItemRight = 6
     if (document.documentElement.getBoundingClientRect().width < 1680) {
       innerRadius = 53.5
       outerRadius = 82.5
-      cLeft = 24
+      cLeft = 0
       legendItemValueWidth = 81
-      legendItemValueFontSize = 22
-      legendItemHeight = 39
+      legendItemValueFontSize = 20
+      legendItemHeight = 36
+      legendItemRight = 9
     }
     return {
       color: CHARTCOLORS,
@@ -72,7 +74,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
       legend: {
         // type: 'scroll',//  Can be used when the number of legends is large
         top: 'center',
-        right: 41,
+        right: legendItemRight,
         // backgroundColor: 'rgba(0, 0, 0, 0.05)',
         // borderRadius: '8px',
         orient: 'vertical',
@@ -169,6 +171,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
       notMerge={true}
       lazyUpdate={true}
       onEvents={onEvents}
+      className="pPie"
     />
   );
 };

@@ -16,10 +16,10 @@ type NavItem = {
 const PHeader = () => {
   const navigate = useNavigate()
   const [navs, setNavs] = useState<NavItem[]>([
-    {
-      icon: iconLogout,
-      text: 'Logout',
-    },
+    // {
+    //   icon: iconLogout,
+    //   text: 'Logout',
+    // },
     {
       icon: iconMy,
       text: 'My',

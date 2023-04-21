@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux'
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js'
 import { add, gt, div } from '@/utils/utils'
 import type { TokenMap, AssetsMap } from '@/components/DataSourceOverview/DataSourceItem'
@@ -27,6 +27,7 @@ interface AssetsDetailProps {
 }
 const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve, padoServicePort }) => {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const sourceName = (searchParams.get('name') as string).toLowerCase()
   const [dataSource, getDataSource] = useExSource()
   const [btcPrice, setBtcPrice] = useState<string>()
@@ -117,8 +118,12 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve, padoServicePort })
   useEffect(() => {
     getBTCPrice()
   }, [])
+  const handleBack = () => {
+    navigate(-1)
+  }
   return (
     <div className="assetsDetail">
+      <img className="iconBack" src={iconArrowLeft} alt="" onClick={handleBack} />
       <header>
         <img src={iconAvatar} alt="" className="avatar" />
         <h3>{formatApiKey || 'ApiKey'} </h3>

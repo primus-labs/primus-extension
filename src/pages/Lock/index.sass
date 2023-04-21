@@ -1,7 +1,7 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFont.sass'
 @import '@/assets/css/pFlex.sass'
-@import '@/assets/css/homeWrapper.sass'
+// @import '@/assets/css/homeWrapper.sass'
 $contentWidth: 520px
 $contentGap: 60px
 $h1FontSize: 48px
@@ -11,6 +11,34 @@ $btnBorderRadius: 12px
 $inputWrapperHeight: 60px
 $inputBorderRadius: 12px
 $contentWrapperPaddingRight: 360px
+
+.pageIndex.pageLock
+  @extend .frsc
+  height: 100vh
+  margin-top: -$pageHeaderHeight
+  .appContent
+    padding-left: 43px
+    padding-right: 360px
+    @extend .frsc
+    gap: 37.73px
+    // width: 1517px
+
+@media (max-width: 1680px)
+  .pageIndex.pageLock
+    justify-content: center
+    .appContent
+      padding-left: 79px
+      padding-right: 220px
+      justify-content: center
+      gap: 0.1823rem
+@media (max-width: 1470px)
+  .pageIndex.pageLock
+    .appContent
+      padding-left: 27px
+      padding-right: 168px
+      // width: 1171px
+      gap: 35px
+
 .pageLock
   .appContent
     article
@@ -57,7 +85,6 @@ $contentWrapperPaddingRight: 360px
   .pageLock
     .appContent
       article
-        // flex: 1
         width: 492px
         gap: 40px
         .articleHeader
