@@ -81,7 +81,23 @@ const Home = () => {
     ]);
     // If keyStore is cached,,it represents that the user has already bound a wallet => data page
     if (keyStore) {
-      navigate('/datas');
+      const padoServicePortListener = async function (message) {
+        if (message.resMethodName === 'queryUserPassword') {
+          console.log("page_get:queryUserPassword:", message.res);
+          if(!message.res) {
+            navigate('/lock')
+          } else {
+            navigate('/datas');
+          }
+        }
+      }
+      padoServicePort.onMessage.addListener(padoServicePortListener)
+      const msg = {
+        fullScreenType: 'wallet',
+        reqMethodName: 'queryUserPassword',
+        params: {}
+      }
+      padoServicePort.postMessage(msg)
       return true;
     }
     // If privateKey is cached,,it represents that the user has created account without password => step3

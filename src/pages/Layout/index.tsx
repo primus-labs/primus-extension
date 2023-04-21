@@ -57,7 +57,6 @@ const Layout = () => {
     console.log("page_send:getSysConfig request");
   }, [dispatch, padoServicePort])
   const initPage = async () => {
-
     const padoServicePortListener = async function (message: any) {
       if (message.resMethodName === 'queryUserPassword') {
         console.log("page_get:queryUserPassword:", message.res);
@@ -85,13 +84,13 @@ const Layout = () => {
     getSysConfig()
   }, [getSysConfig]);
   useEffect(() => {
-    if (refreshDataFlag) {
+    if (pathname !== '/lock' || refreshDataFlag) {
       (updateF as () => void)();
     }
-  }, [refreshDataFlag, updateF])
-  useEffect(() => {
-    initPage()
-  }, []);
+  }, [refreshDataFlag, updateF, pathname])
+  // useEffect(() => {
+  //   initPage()
+  // }, []);
   return (
     <div className="pageApp">
       <BackgroundAnimation />
