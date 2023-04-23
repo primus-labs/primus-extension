@@ -1,0 +1,27 @@
+@import '../AddSourceSucDialog/index.sass'
+
+
+
+@keyframes roll
+  to
+    transform: rotateZ(360deg)
+
+
+.requestLoadingDialog
+    main
+      .sucImg
+        animation: roll 2s linear infinite
+@media (max-width: 1680px)
+  .requestLoadingDialog
+    main
+      .pLoading
+        margin-top: 61px
+        width: 80px
+        height: 80px
+        .loader
+          width: 66.67px
+          height: 66.67px
+          &::before
+            width: calc(100% - 13px)
+            height: calc(100% - 13px)
+

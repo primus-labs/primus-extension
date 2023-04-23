@@ -12,6 +12,7 @@ import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesD
 import ConnectDataSourceDialog from '@/components/DataSourceOverview/ConnectDataSourceDialog'
 import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog'
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog'
+import RequestLoadingDialog from '@/components/DataSourceOverview/RequestLoadingDialog'
 import AssetsOverview from '@/components/AssetsOverview/AssetsOverview'
 import SocialOverview from '@/components/AssetsOverview/SocialOverview'
 import { getMutipleStorageSyncData } from '@/utils/utils'
@@ -51,7 +52,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   const authorize = useAuthorization()
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
   const [activeSource, setActiveSource] = useState<DataFieldItem>()
   const [filterWord, setFilterWord] = useState<string>()
   const [exSources, refreshExSources] = useExSources()
@@ -130,7 +131,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   }
   const onSubmitConnectDataSourceDialogDialog = useCallback(async (form: GetDataFormProps) => {
     const lowerCaseSourceName = form?.name?.toLowerCase()
-    setLoading(true)
+    // setLoading(true)
+    setStep(2.5)
     const reqType = `set-${lowerCaseSourceName}`
     const msg: any = {
       fullScreenType: 'networkreq',
@@ -144,8 +146,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     const padoServicePortListener = async function (message: any) {
       console.log(`page_get:${reqType}:`, message.res);
       if (message.resType === `${reqType}` && message.res) {
-        setStep(3)
-        setLoading(false);
+        setStep(3);
+        // setLoading(false);
         (refreshExSources as () => void)()
       }
       padoServicePort.onMessage.removeListener(padoServicePortListener);
@@ -158,7 +160,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     setActiveSource(undefined)
     setStep(0)
   }
-
 
   return (
     <div className="pageDataSourceOverview">
@@ -176,7 +177,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
       </main>
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}
-      {step === 2 && <ConnectDataSourceDialog loading={loading} onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}
+      {step === 2 && <ConnectDataSourceDialog onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}
+      {step === 2.5 && <RequestLoadingDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} title="Data being requested" desc="It may take a few minutes." />}
       {step === 3 && <AddSourceSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
       <DataUpdateBar type={activeSourceType} />
     </div>

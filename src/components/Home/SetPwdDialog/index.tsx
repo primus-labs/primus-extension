@@ -141,14 +141,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
             <div className="iconBack" onClick={handleClickBack}></div>
             <div className="headerContent">
               {/* TODO */}
-              <img className="iconNetwork" src={iconETH} alt="" />
+              <div className="networkItem">
+                <img className="iconNetwork" src={iconETH} alt="" />
+              </div>
               <p className="address">{accountAddr}</p>
             </div>
           </header>
           <h1>Set Password</h1>
           <h2>Enter an secure password to protect local data and private key.</h2>
           <h6>Setting</h6>
-          <PInput type="password" onChange={handleChangePwd} />
+          <PInput type="password" onChange={handleChangePwd} visible/>
           <div className="validateWrapper">
             <div className="descTitle">The following combinations are recommended：</div>
             <ul className="descItems">
@@ -160,8 +162,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
               }
             </ul>
           </div>
-          <h6>Reconfirm</h6>
-          <PInput type="password" onChange={handleChangeConfirm} />
+          <h6 className="reconfirmLabel">Reconfirm</h6>
+          <PInput type="password" onChange={handleChangeConfirm} visible/>
           {errorTipVisible && <p className="errorTip">Entered passwords differ!</p>}
         </main>
         <button className="nextBtn" onClick={handleClickNext}>

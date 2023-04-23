@@ -10,8 +10,18 @@
     border-radius: 50%
     @extend .frcc
   .from img
-    width: 32px
+    width: $mIconSize
   .to img
     width: 48.38px
   .connectSymbol
-    widht: 24px
+    widht: $sIconSize
+@media (max-width: 1680px)
+  .bridgeWrapper
+    gap: 24px
+    .from,.to
+      width: 55px
+      height: 55px
+    .from img
+      width: 24.44px
+    .to img
+      width: 36.96px

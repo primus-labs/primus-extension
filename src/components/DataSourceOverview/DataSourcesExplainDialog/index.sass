@@ -8,8 +8,8 @@
     content: ''
     top: 35px
     left: 32px
-    width: 32px
-    height: 32px
+    width: $mIconSize
+    height: $mIconSize
     background: url('../../../assets/img/iconArrowLeft.svg')
     background-size: 100% 100%
     cursor: pointer
@@ -20,6 +20,7 @@
     >h1
       width: 318px
       @extend .xlLBlackBoldFont
+      text-align: center
     ul.explainItemList
       width: 446px
       @extend .fcss
@@ -29,11 +30,11 @@
         @extend .frss
         gap: 10px
         img
-          width: 32px
+          width: $mIconSize
         .explainItemC
           display: flex
           flex-direction: column
-          gap: 12px
+          gap: $xsGap
           h5
             @extend .lLBlackBoldFont
           h6
@@ -42,5 +43,35 @@
             font-family: 'Inter-Regular'
             color: $colSBlack
   button.nextBtn
-    height: 58px
+    height: 58px !important
     background: rgba(0, 0, 0, 0.05)
+@media (max-width: 1680px)
+  .dataFieldsExplainDialog
+    padding: 48px 42px 32px
+    .iconBack
+      top: 30px
+      left: 40px
+    main
+      gap: 70px
+      >h1
+        width: 295px
+        font-size: 28px
+        line-height: 34px
+        font-family: 'Inter-SemiBold'
+      ul.explainItemList
+        width: 357px
+        gap: 32px
+        li
+          gap: 9px
+          img
+            width: 28px
+          .explainItemC
+            gap: $xxsGap
+            h5
+              font-size: 20px
+              line-height: 24px
+              font-family: 'Inter-Medium'
+            h6
+              line-height: 18px
+    button.nextBtn
+      font-family: 'Inter-SemiBold' !important

@@ -1,9 +1,10 @@
 import React from 'react';
 import './index.sass'
-import iconSuc from '@/assets/img/iconSuc.svg';
+import iconLoading from '@/assets/img/loading.svg';
 import Bridge from '@/components/Bridge/index'
 import PMask from '@/components/PMask'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
+import PLoading from '@/components/PLoading'
 
 interface AddSourceSucDialogProps {
   onClose: () => void;
@@ -20,10 +21,11 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({ onClose, active
   }
   return (
     <PMask onClose={onClose}>
-      <div className="padoDialog addDataSourceSucDialog">
+      <div className="padoDialog addDataSourceSucDialog requestLoadingDialog">
         <main>
           <Bridge endIcon={icon} />
-          <img className="sucImg" src={iconSuc} alt="" />
+          {/* <img className="sucImg" src={iconLoading} alt="" /> */}
+          <PLoading/>
           <h1>{title}</h1>
           <h2>{desc}</h2>
         </main>

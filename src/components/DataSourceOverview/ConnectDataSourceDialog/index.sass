@@ -21,7 +21,7 @@
         height: 300px
       &::-webkit-scrollbar-thumb
         background: rgba(0, 0, 0, 0.2)
-        border-radius: 100px
+        border-radius: $xxLBorderRadius
     h1
       @extend .xlLBlackBoldFont
       align-self: center
@@ -49,3 +49,45 @@
         height: 128px
   button.nextBtn
     height: 58px
+@media (max-width: 1680px)
+  .connectDataSourceDialog
+    padding: 48px 42px 32px
+    main
+      .scrollList
+        padding-bottom: 75px
+        gap: $lGap
+        max-height: 484px
+        &.scroll
+          width: calc( 100% + 34px )
+          padding-right: 30px
+        &::-webkit-scrollbar
+            width: 4px
+            height: 280px
+        h1
+          font-size: 30px
+          line-height: 36px
+          font-family:'Inter-SemiBold'
+        h2
+          line-height: 20px
+        .formItem
+          gap: 6px
+          h6
+            font-size: 14px
+            line-height: 17px
+          .pInputWrapper
+            height: 49px
+            .pInput
+              padding-left: 25px
+              font-size: 16px
+              line-height: 19px
+              font-family: 'Inter-Medium'
+        .lastFormItem,.tipWrapper
+          margin-top: -4px
+        .tipWrapper
+          font-size: 12px 
+          line-height: 17px
+
+    button.nextBtn
+      font-family: 'Inter-SemiBold' !important      
+      
+      
