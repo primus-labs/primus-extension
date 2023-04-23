@@ -13,9 +13,9 @@ const Lock = ({padoServicePort}) => {
   const navigate = useNavigate()
   const [pwd, setPwd] = useState();
   const [errorMsg, setErrorMsg] = useState();
-  const handleClickStart = () => {
-    
-    if (![undefined, null].includes(pwd)) {
+  const handleClickStart = (val) => {
+    const curPwd = pwd ?? val
+    if (![undefined, null].includes(curPwd)) {
       const padoServicePortListener = function (message) {
         if (message.resMethodName === 'decrypt') {
           console.log("page_get:decrypt:", message.res);
@@ -32,7 +32,7 @@ const Lock = ({padoServicePort}) => {
         fullScreenType: 'wallet',
         reqMethodName: `decrypt`,
         params: {
-          password: pwd
+          password: curPwd
         }
       }
       padoServicePort.postMessage(msg)
@@ -40,6 +40,9 @@ const Lock = ({padoServicePort}) => {
   };
   const handleChangePwd = (val) => {
     setPwd(val)
+  }
+  const handleSubmitPwd = (val) => {
+    handleClickStart(val)
   }
   const handleClearUserPwd = () => {
     const msg = {
@@ -66,7 +69,7 @@ const Lock = ({padoServicePort}) => {
             </header>
             <main className="articleMain formItem" >
               <h6>Password</h6>
-              <PInput type="password" placeholder="" onChange={handleChangePwd} visible/>
+              <PInput type="password" placeholder="" onChange={handleChangePwd} onSearch={handleSubmitPwd} visible/>
               {errorMsg && <div className="errorTip">{errorMsg}</div>}
             </main>
             <footer className="articleFooter">
