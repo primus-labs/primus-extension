@@ -6,7 +6,7 @@ const PHeader = () => {
     <header className="pHeader">
         <img src={logo} className="pLogo" alt="logo" />
         <i></i>
-        <p>Privacy-preserving Authenticated Data Operator</p>
+        <p>Privacy-preserving Attestation Data Operator</p>
       </header>
   );
 };

@@ -8,6 +8,7 @@ import { getSingleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
 import TokenTable from '@/components/TokenTable'
 import iconArrowLeft from '@/assets/img/iconArrowLeft.svg'
+import iconArrowRight from '@/assets/img/iconArrowRight.svg'
 import iconSuc from '@/assets/img/iconSuc.svg'
 import iconAvatar from '@/assets/img/iconAvatar.svg'
 import iconClock from '@/assets/img/iconClock.svg'
@@ -167,7 +168,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({ onProve, padoServicePort })
             <div className="cardC">
               <div className="label">{item}  Proof</div>
               <img className="iconSuc" src={iconSuc} alt="" />
-              <img className="iconArrow" src={iconArrowLeft} alt="" />
+              <img className="iconArrow" src={iconArrowRight} alt="" />
             </div>
           </div>)
         })}

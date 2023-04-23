@@ -66,7 +66,7 @@ const Lock = ({padoServicePort}) => {
             </header>
             <main className="articleMain formItem" >
               <h6>Password</h6>
-              <PInput type="password" placeholder="" onChange={handleChangePwd} />
+              <PInput type="password" placeholder="" onChange={handleChangePwd} visible/>
               {errorMsg && <div className="errorTip">{errorMsg}</div>}
             </main>
             <footer className="articleFooter">

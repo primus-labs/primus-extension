@@ -11,6 +11,10 @@ $selectOptionsPadding: 8px
 $selectOptionHeight: 40px
 $selectOptionPaddingX: 16px
 $selectOptionBorderRadius: 8px
+
+$sPSelectHeight: 48px
+$sSelectInput: 48px
+
 @mixin pSelectMixin ($N)
   width: $pSelectWidth*$N
   height: $pSelectHeight*$N
@@ -70,6 +74,11 @@ $selectOptionBorderRadius: 8px
       &:hover
         color: #000
         background-color: rgba(0, 0, 0, 0.03)
+@media (max-width: 1680px)
+  .pSelect
+    height: $sPSelectHeight
+    .selectInput
+      line-height: $sSelectInput
 // @media (max-width: 1680px)
 //   .pSelect
 //     @include pSelectMixin($mN)

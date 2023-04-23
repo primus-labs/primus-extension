@@ -51,7 +51,7 @@ $sContentGap: 35px
       h1
         @extend .xxlLBlackBoldFont
         font-family: 'Inter-Black'
-        text-transform: uppercase
+        // text-transform: uppercase
         >span
           font-size: 44px
           line-height: 53px
@@ -92,16 +92,25 @@ $sContentGap: 35px
     article
       width: 515px
       .descWrapper
+        gap: 22px
         h1
           font-size: 44px
           line-height: 53px
           >span
-            font-size: 38px
-            line-height: 46px
+            font-size: 36px
+            line-height: 44px
             font-family: 'Inter-Bold'
         p
           font-size: 20px
           line-height: 24px
+      button.startBtn
+        width: 256px
+        height: 64px
+        font-size: 18px
+        line-height: 22px
+        .iconArrow
+          width: 28px
+          height: 28px
 
 // @media (max-width: 1680px)
 //   .pageHome
