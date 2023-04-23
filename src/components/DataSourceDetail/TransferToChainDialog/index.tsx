@@ -32,7 +32,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
     onCancel()
   }
   const handleClickNetwork = (item: ToolItem) => {
-    setActiveTool(item)
+    // setActiveTool(item)
   }
 
   const activeList = useMemo(() => {
