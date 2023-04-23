@@ -45,6 +45,7 @@ var options = {
   entry: {
     home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
+    //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
   },
   chromeExtensionBoilerplate: {
     // notHotReload: ['background'],
@@ -198,7 +199,52 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/pages/Background/hello.wasm',
+          from: 'src/services/algorithms/offscreen.html',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/services/algorithms/offscreen.js',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/services/algorithms/client_plugin_sim.data',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/services/algorithms/client_plugin_sim.wasm',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/services/algorithms/client_plugin_sim.worker.js',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/services/algorithms/client_plugin_sim.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },

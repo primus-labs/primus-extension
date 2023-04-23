@@ -6,22 +6,12 @@ import {
 } from '@/services/user';
 import { getSysConfig } from '@/services/config';
 import { getCurrentDate, getSingleStorageSyncData } from '@/utils/utils';
-import { DATASOURCEMAP } from '@/utils/constants';
-import store from '@/store/index';
-import { encrypt, decrypt } from '@/utils/crypto';
-import Module from './hello';
-import { ExchangeStoreVersion, SocailStoreVersion } from '@/utils/constants';
-import processExReq from './exData';
+import { decrypt } from '@/utils/crypto';
+import { SocailStoreVersion } from '@/utils/constants';
+import {default as processExReq, clear} from './exData';
 const Web3EthAccounts = require('web3-eth-accounts');
 
-Module['onRuntimeInitialized'] = () => {
-  Module.ccall(
-    'myFunction', // name of C function
-    null, // return type
-    null, // argument types
-    null // arguments
-  );
-};
+let fullscreenPort = null;
 let web3EthAccount = new Web3EthAccounts();
 const padoServices = {
   getAllOAuthSources,
@@ -29,31 +19,6 @@ const padoServices = {
   bindUserAddress,
   getSysConfig,
   refreshAuthData,
-};
-
-let EXCHANGEINFO = {
-  binance: {
-    name: 'binance',
-    apiKey: '',
-    secretKey: '',
-  },
-  okx: {
-    name: 'okx',
-    apiKey: '',
-    secretKey: '',
-    passphase: '',
-  },
-  kucoin: {
-    name: 'kucoin',
-    apiKey: '',
-    secretKey: '',
-    passphase: '',
-  },
-  coinbase: {
-    name: 'coinbase',
-    apiKey: '',
-    secretKey: '',
-  },
 };
 
 let USERPASSWORD = '';
@@ -76,6 +41,7 @@ const showIndex = (info, tab) => {
 // listen msg from extension tab page
 chrome.runtime.onConnect.addListener((port) => {
   console.log('port', port);
+  fullscreenPort = port;
   switch (port.name) {
     case 'fullscreen':
       console.log('fullscreen connectted port=', port);
@@ -93,7 +59,6 @@ const processFullscreenReq = (message, port) => {
       processpadoServiceReq(message, port);
       break;
     case 'networkreq':
-      // processNetworkReq(message, port);
       processExReq(message, port, USERPASSWORD);
       break;
     case 'storage':
@@ -102,111 +67,62 @@ const processFullscreenReq = (message, port) => {
     case 'wallet':
       processWalletReq(message, port);
       break;
+    case 'algorithm':
+      processAlgorithmReq(message, port);
+      break;
     default:
       break;
   }
 };
 
-/*
-message : {
-  requestId,
-  algoMethod, // start or getData
-  algoParams { // this is getData params, start only proxyUrl
-    source,
-    host,
-    path,
-    appKey,
-    appSecret,
-    netMethod,
-    netParams
+async function hasOffscreenDocument(path) {
+  // Check all windows controlled by the service worker to see if one 
+  // of them is the offscreen document with the given path
+  const offscreenUrl = chrome.runtime.getURL(path);
+  console.log(offscreenUrl);
+  const matchedClients = await clients.matchAll();
+  console.log('matchedClients', matchedClients);
+  for (const client of matchedClients) {
+    if (client.url === offscreenUrl) {
+      return true;
+    }
   }
+  return false;
 }
-*/
-const processAlgoMsg = (message, port) => {
-  switch (message.algoMethod) {
+
+const processAlgorithmReq = async (message, port) => {
+  const matchedClients = await clients.matchAll();
+  console.log('matchedClients', matchedClients);
+
+  const { reqMethodName, params = {} } = message;
+  switch (reqMethodName) {
     case 'start':
-      console.log('recv start=', message.algoParams.proxyUrl);
-      Module.ccall(
-        'myFunction', // name of C function
-        null, // return type
-        null, // argument types
-        null // arguments
-      );
-      port.postMessage({ requestId: message.requestId, result: 'success' });
-      break;
-    case 'getData':
-      break;
-    default:
-      break;
-  }
-};
-
-/*
-message : {
-  requestId,
-  type,
-  params {
-    appKey,
-    appSecret,
-    functionName,
-    funcParams
-  }
-}
-*/
-const processNetworkReq = async (message, port) => {
-  var {
-    type,
-    params: { apiKey, secretKey, passphase, name, exData },
-  } = message;
-  const exchangeName = type.split('-')[1];
-  switch (type) {
-    case 'getKey-binance':
-    case 'getKey-okx':
-    case 'getKey-kucoin':
-    case 'getKey-coinbase':
-      const cipherData = await chrome.storage.local.get(
-        exchangeName + 'cipher'
-      );
-      const apiKeyInfo = JSON.parse(
-        decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
-      );
-      if (apiKeyInfo?.apiKey) {
-        port.postMessage({
-          resType: type,
-          res: { ...apiKeyInfo, name: exchangeName },
+      const offscreenDocumentPath = 'offscreen.html'
+      if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
+        console.log('create offscreen document...........');
+        await chrome.offscreen.createDocument({
+          url: chrome.runtime.getURL(offscreenDocumentPath),
+          reasons: ['IFRAME_SCRIPTING'],
+          justification: 'WORKERS for needing the document',
         });
+        console.log('offscreen document created');
       } else {
-        console.log('Failed to decrypt key');
+        console.log('offscreen document has already created');
       }
       break;
-    case 'setData-binance':
-    case 'setData-okx':
-    case 'setData-kucoin':
-    case 'setData-coinbase':
-      EXCHANGEINFO[exchangeName] = {
-        apiKey,
-        secretKey,
-        passphase,
-        name: exchangeName,
-      };
-      const exCipherData = {
-        apiKey,
-        secretKey,
-        passphase,
-      };
-      const encryptedKey = encrypt(JSON.stringify(exCipherData), USERPASSWORD);
-      exData.version = ExchangeStoreVersion;
-      chrome.storage.local.set(
-        {
-          [exchangeName]: JSON.stringify(exData),
-          [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
-        },
-        () => {
-          port.postMessage({ resType: type, res: true });
-        }
-      );
+    case 'init':
+      chrome.runtime.sendMessage({type: 'algorithm', method:'init', params:params});
       break;
-
+    case 'getAttestation':
+      chrome.runtime.sendMessage({type: 'algorithm', method:'getAttestation', params:params});
+      break;
+    case 'getAttestationResult':
+      chrome.runtime.sendMessage({type: 'algorithm', method:'getAttestationResult', params:params});
+      break;
+    case 'stop':
+      await chrome.offscreen.closeDocument();
+      fullscreenPort.postMessage({ resType: 'algorithm', resMethodName: 'stop', res: {retcode:0} });
+      break;
     default:
       break;
   }
@@ -390,7 +306,7 @@ const processWalletReq = async (message, port) => {
       break;
     case 'clearUserPassword':
       USERPASSWORD = '';
-      EXCHANGEINFO = {};
+      clear();
       web3EthAccount = null;
       break;
     case 'queryUserPassword':
@@ -427,3 +343,10 @@ const onDisconnectFullScreen = (port) => {
   port.onDisconnect.removeListener(onDisconnectFullScreen);
   port.onMessage.removeListener(processFullscreenReq);
 };
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('background onMessage message', message);
+  if (message.resType === 'algorithm' && fullscreenPort) {
+      fullscreenPort.postMessage(message);
+  }
+});
