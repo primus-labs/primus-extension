@@ -4,16 +4,17 @@ import { getSingleStorageSyncData } from '@/utils/utils'
 import './index.sass'
 
 interface AuthInfoHeaderProps {
-  onBack: () => void;
+  onBack?: () => void;
   checked?: boolean;
+  backable?:boolean;
 }
 
-const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = false, onBack }) => {
+const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = false, onBack, backable=true }) => {
   const [email, setEmail] = useState<string>()
   const [avatar, setAvatar] = useState<string>()
 
   const handleClickBack = () => {
-    onBack()
+    onBack && onBack()
   }
   const getUserInfo = async () => {
     const userInfo: any = await getSingleStorageSyncData('userInfo');
@@ -29,7 +30,8 @@ const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = false, onBack
   }, [])
   return (
     <header className="authInfoHeader">
-      <div className="iconBack" onClick={handleClickBack}></div>
+      {backable && <div className="iconBack" onClick={handleClickBack}></div>}
+      
       <div className="content">
         {avatar ? <img className="avatar" src={avatar} alt="back" /> : <i className="avatarAlternate"></i>}
         <span className="email">{email}</span>

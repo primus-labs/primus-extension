@@ -6,11 +6,20 @@
   to
     transform: rotateZ(360deg)
 
-
 .requestLoadingDialog
     main
       .sucImg
         animation: roll 2s linear infinite
+      .pLoading
+        margin-top: 128px
+        width: 128px
+        height: 128px
+        .loader
+          width: 96px
+          height: 96px
+          &::before
+            width: calc(100% - 21px)
+            height: calc(100% - 21px)
 @media (max-width: 1680px)
   .requestLoadingDialog
     main

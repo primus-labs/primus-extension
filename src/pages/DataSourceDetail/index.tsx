@@ -4,12 +4,13 @@ import { connect } from 'react-redux'
 import { getSingleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
 import PTabs from '@/components/PTabs'
-import AssetsDetail from '@/components/AssetsDetail/AssetsDetail'
-import type { DataSourceType } from '@/components/AssetsDetail/AssetsDetail'
+import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail'
+import type { DataSourceType } from '@/components/DataSourceDetail/AssetsDetail'
 import PMask from '@/components/PMask'
-import CreateAttesationDialog from '@/components/AssetsDetail/CreateAttesationDialog'
-import AddSourceSucDialog from '@/components/AddSourceSucDialog'
-import TransferToChainDialog from '@/components/TransferToChainDialog'
+import CreateAttesationDialog from '@/components/DataSourceDetail/CreateAttesationDialog'
+
+import OnChainSucDialog from '@/components/DataSourceDetail/OnChainSucDialog'
+import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
 import type { ExchangeMeta } from '@/utils/constants'
 import './index.sass';
@@ -83,18 +84,17 @@ const DataSourceDetail = () => {
         <PTabs onChange={handleChangeTab} />
         <AssetsDetail onProve={handleProve} />
       </main>
-      {[1, 2, 3, 4].includes(step) && <PMask onClose={handleCloseMask} />}
-      {step === 1 && <CreateAttesationDialog dataSource={dataSource} onSubmit={handleSubmitCreateAttesationDialog} />}
-      {step === 2 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource as ExDataType} desc="Your attestation is successfully granted!" />}
+      {step === 1 && <CreateAttesationDialog onClose={handleCloseMask} dataSource={activeSource as DataSourceType} onSubmit={handleSubmitCreateAttesationDialog} />}
+      {step === 2 && <OnChainSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource as ExDataType} desc="Your attestation is successfully granted!" />}
       {step === 3 && <TransferToChainDialog
         onClose={handleCloseMask}
         onSubmit={handleSubmitTransferToChain}
         onCancel={handleCancelTransferToChain}
         title='Provide Attestation'
-        desc='Sending your proof/badge to one of the following chain. Allows dApp complete on-chain attestation.'
+        desc='Send your proof to one of the following chain. Provide an on-chain attestation for dApps.'
         list={proveToolList}
       />}
-      {step === 4 && <AddSourceSucDialog onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource as ExDataType} desc="Your attestation is recorded on-chain!" />}
+      {step === 4 && <OnChainSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource as ExDataType} desc="Your attestation is recorded on-chain!" />}
     </div>
   );
 };
