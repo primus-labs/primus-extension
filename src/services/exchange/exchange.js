@@ -85,7 +85,7 @@ class Exchange {
     let LPSymbols = this.totalHoldingTokenSymbolList
       .filter((i) => i !== USDT)
       .filter((i) => i !== USD)
-      .filter((i) => this.errorSymbolList.includes(i))
+      .filter((i) => !this.errorSymbolList.includes(i))
       .map((j) => (this.exName === 'binance' ? `${j}${USDT}` : `${j}-${USDT}`));
     let res;
     let errorSymbol;
