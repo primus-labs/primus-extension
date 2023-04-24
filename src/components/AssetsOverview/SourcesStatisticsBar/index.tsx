@@ -20,7 +20,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Ass
   }
   useEffect(() => {
     onSelect(activeSourceName)
-  }, [activeSourceName, onSelect])
+  }, [activeSourceName])
   useEffect(() => {
     if (filterSource) {
       const lowerFilterWord = filterSource?.toLowerCase()
@@ -31,8 +31,6 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Ass
       console.log('filterSource', filterSource, filterList);
       // TODO what if filter several sources
       setActiveSourceName(filterList[0]?.name ?? undefined)
-    } else {
-      setActiveSourceName(undefined)
     }
   }, [filterSource, list, setActiveSourceName, onSelect])
   return (
