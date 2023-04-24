@@ -13,7 +13,6 @@
     top: 20px
     left: calc($mIconSize/-2)
     cursor: pointer
-    
   .iconBackWrapper
     width: $mIconSize
     height: $mIconSize
@@ -62,6 +61,7 @@
     .descItem
       flex: 1
       @extend .fcss
+      gap: $xxsGap
       height: 108px
       position: relative
       &::after
@@ -81,6 +81,7 @@
         align-items: flex-end
       .inner
         @extend .fcss
+        justify-content: center
         gap: $xxsGap
       .label
         @extend .xsSBlackRegularFont
@@ -102,6 +103,9 @@
       align-items: center
       @extend .frcc
       height: 152px
+      transition: all 0.5s
+      &:hover
+        transform: translateY(-20px)
       .cardC
         @extend .lLBlackBoldFont
         @extend .frsc
@@ -113,22 +117,21 @@
     width: $sCenterWidth
     >header
       padding: 32px 0 8px 0
-      gap: $xsGap
       img.avatar
         width: 80px
       h3
         padding: 24px 0 12px
         font-family: 'Inter-SemiBold'
     .sourceStatisticsBar
-      padding: 22px 100px
+      padding: 24px 100px
       .descItem
-        height: 96px
+        // height: 94px
         .label
           font-size: 12px
           line-height: 15px
         .value
-          font-size: 40px
-          line-height: 48px
+          font-size: 36px
+          line-height: 44px
           font-family: 'Inter-SemiBold'
         .btcValue
           font-size: 14px
@@ -136,6 +139,9 @@
     .proofsBar
       .proofCard
         height: 130px
+        &:hover
+          transform: translateY(-14px)
         .cardC
           font-size: 22px
           line-height: 27px
+          font-family: 'Inter-SemiBold'

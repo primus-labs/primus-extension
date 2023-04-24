@@ -131,7 +131,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
           <h1>Sign up</h1>
           <ul className="licensorList">
             {oAuthSources.map((item: AuthSourcesItem) => {
-              return (<li key={item.id} className="licensorItem" onClick={() => { handleClickOAuthSource(item.name) }}>
+              return (<li key={item.id} className={item.name==='GOOGLE'?"licensorItem":"licensorItem disabled"} onClick={() => { handleClickOAuthSource(item.name) }}>
                 <img src={item.logoUrl} alt={item.name} />
               </li>)
             })}

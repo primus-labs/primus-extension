@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import type { ChangeEvent } from 'react';
 import type { DataSourceType } from '../AssetsDetail'
 import { getCurrentDate } from '@/utils/utils'
@@ -9,31 +9,45 @@ import './index.sass'
 interface GetDataDialogProps {
   onClose: () => void;
   dataSource?: DataSourceType;
-  onSubmit: (proofs: string[]) => void
+  onSubmit: (proofs: string[]) => void;
+  type: string
 }
 
-const CreateAttesationDialog: React.FC<GetDataDialogProps> = ({ onClose, onSubmit, dataSource }) => {
+const CreateAttesationDialog: React.FC<GetDataDialogProps> = ({ type, onClose, onSubmit, dataSource }) => {
   console.log('CreateAttesationDialog', dataSource)
-  const [list, setList] = useState([
-    {
-      label: 'User Qualification Proof ',
-      value: 'L1 User',
-      disabled: false,
-      defaultValue: false
-    },
-    {
-      label: 'Assets Balance Proof',
-      value: '> $1000',
-      disabled: false,
-      defaultValue: false
-    },
-    {
-      label: 'PADO Signature',
-      value: 'Required',
-      disabled: true,
-      defaultValue: true
-    },
-  ])
+  const list = useMemo(() => {
+    if (type === 'Active User') {
+      return [
+        {
+          label: 'User Qualification Proof ',
+          value: 'L1 User',
+          disabled: false,
+          defaultValue: false
+        },
+        {
+          label: 'PADO Signature',
+          value: 'Required',
+          disabled: true,
+          defaultValue: true
+        },
+      ]
+    } else if (type === 'Assets'){
+      return [
+        {
+          label: 'Assets Balance Proof',
+          value: '> $1000',
+          disabled: false,
+          defaultValue: false
+        },
+        {
+          label: 'PADO Signature',
+          value: 'Required',
+          disabled: true,
+          defaultValue: true
+        },
+      ]
+    }
+  }, [type])
   const [proofs, setProofs] = useState<string[]>(['PADO Signature'])
   const handleClickNext = () => {
     onSubmit(proofs)

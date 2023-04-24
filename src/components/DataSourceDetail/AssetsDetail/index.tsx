@@ -27,10 +27,14 @@ export type DataSourceType = {
 interface AssetsDetailProps {
   onProve: (name: string) => void;
   padoServicePort: chrome.runtime.Port;
+  assetsProveFlag:boolean;
+  userProveFlag:boolean;
 }
 const AssetsDetail: React.FC<AssetsDetailProps> = ({
   onProve,
   padoServicePort,
+  assetsProveFlag,
+  userProveFlag
 }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -191,7 +195,8 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
             >
               <div className="cardC">
                 <div className="label">{item} Proof</div>
-                <img className="iconSuc" src={iconSuc} alt="" />
+                {item === 'Active User' && userProveFlag && <img className="iconSuc" src={iconSuc} alt="" />}
+                {item === 'Assets' && assetsProveFlag && <img className="iconSuc" src={iconSuc} alt="" />}
                 <img className="iconArrow" src={iconArrowRight} alt="" />
               </div>
             </div>

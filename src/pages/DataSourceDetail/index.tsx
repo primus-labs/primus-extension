@@ -44,9 +44,11 @@ const DataSourceDetail = () => {
   const sourceName = (searchParams.get('name') as string).toLowerCase()
   const [activeSource, getDataSource] = useExSource()
   const [step, setStep] = useState(0)
-  const [proveFlag, setProveFlag] = useState<boolean>(false)
+  const [assetsProveFlag, setAssetsProveFlag] = useState<boolean>(false)
+  const [userProveFlag, setUserProveFlag] = useState<boolean>(false)
   const [upChainFlag, setUpChainFlag] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<DataSourceType>()
+  const [activeOperateItem, setActiveOperateItem] = useState<string>('')
   const handleChangeTab = () => {
   }
   const handleCloseMask = () => {
@@ -54,12 +56,21 @@ const DataSourceDetail = () => {
   }
 
   const handleProve = (name: string) => {
-    setStep(proveFlag ? 3 : 1)
+    setActiveOperateItem(name)
+    if(name === 'Assets') {
+      setStep(assetsProveFlag ? 3 : 1)
+    } else {
+      setStep(userProveFlag ? 3 : 1)
+    }
   }
   const handleSubmitCreateAttesationDialog = (proofs: string[]) => {
     // TODO prove
     setStep(2)
-    setProveFlag(true)
+    if(activeOperateItem === 'Assets') {
+      setAssetsProveFlag(true)
+    } else {
+      setUserProveFlag(true)
+    }
   }
   const onSubmitAddSourceSucDialog = () => {
     setStep(0)
@@ -82,9 +93,9 @@ const DataSourceDetail = () => {
     <div className="pageDataSourceDetail">
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
-        <AssetsDetail onProve={handleProve} />
+        <AssetsDetail onProve={handleProve} assetsProveFlag={assetsProveFlag} userProveFlag={userProveFlag}/>
       </main>
-      {step === 1 && <CreateAttesationDialog onClose={handleCloseMask} dataSource={activeSource as DataSourceType} onSubmit={handleSubmitCreateAttesationDialog} />}
+      {step === 1 && <CreateAttesationDialog type={activeOperateItem} onClose={handleCloseMask} dataSource={activeSource as DataSourceType} onSubmit={handleSubmitCreateAttesationDialog} />}
       {step === 2 && <OnChainSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource as ExDataType} desc="Your attestation is successfully granted!" />}
       {step === 3 && <TransferToChainDialog
         onClose={handleCloseMask}

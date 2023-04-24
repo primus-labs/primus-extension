@@ -142,7 +142,7 @@ const Home = () => {
           onSubmit={handleSubmitCreateAccount}
           onCancel={handleCancelCreateAccount}
           title="Create account"
-          desc="Create an on-chain address to easily manage your data to Web 3.0. The address will bind to your sign up account."
+          desc="Create an on-chain address to easily manage your data. The address will bind to your sign up account."
           list={networkList}
           showButtonSuffixIcon={true}
         />

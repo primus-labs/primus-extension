@@ -58,6 +58,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
       innerRadius = 53.5
       outerRadius = 82.5
       cLeft = 15
+      legendItemLabelWidth = 76
       legendItemValueWidth = 81
       legendItemValueFontSize = 20
       legendItemHeight = 36
@@ -106,7 +107,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
               width: legendItemLabelWidth
             },
             value: {
-              fontFamily: 'Inter-Bold',
+              fontFamily: 'Inter-SemiBold',
               color: 'rgb(0,0,0)',
               fontSize: legendItemValueFontSize,
               height: legendItemHeight,
