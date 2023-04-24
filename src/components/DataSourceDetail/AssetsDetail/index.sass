@@ -12,6 +12,19 @@
     position: absolute
     top: 20px
     left: calc($mIconSize/-2)
+    cursor: pointer
+    
+  .iconBackWrapper
+    width: $mIconSize
+    height: $mIconSize
+    background-image: url("../../../assets/img/iconArrowLeft.svg")
+    background-size: 100% 100%
+    position: absolute
+    top: 20px
+    left: calc($mIconSize/-2)
+    cursor: pointer
+    &:hover
+      background-image: url("../../../assets/img/iconArrowLeftActive.svg")
   >header
     width: 100%
     padding: 74px 0 49px 0
@@ -49,7 +62,6 @@
     .descItem
       flex: 1
       @extend .fcss
-      gap: $xxsGap
       height: 108px
       position: relative
       &::after
@@ -67,6 +79,9 @@
         align-items: center
       &:nth-child(n+3)
         align-items: flex-end
+      .inner
+        @extend .fcss
+        gap: $xxsGap
       .label
         @extend .xsSBlackRegularFont
       .value
@@ -97,16 +112,17 @@
   .assetsDetail
     width: $sCenterWidth
     >header
-      padding: 44px 0 8px 0
+      padding: 32px 0 8px 0
+      gap: $xsGap
       img.avatar
         width: 80px
       h3
         padding: 24px 0 12px
         font-family: 'Inter-SemiBold'
     .sourceStatisticsBar
-      padding: 32px 100px
+      padding: 22px 100px
       .descItem
-        height: 94px
+        height: 96px
         .label
           font-size: 12px
           line-height: 15px

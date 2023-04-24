@@ -64,7 +64,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
           <header>Overview</header>
           <div className="cardCon">
             <div className="descItem mainDescItem">
-              <div className="label">Total Followering</div>
+              <div className="label">Total Follower</div>
               <div className="value">{totalFollowers}</div>
             </div>
             <div className="descItemsWrapper">

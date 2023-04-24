@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux'
 import { formatD, formatUD } from '@/utils/utils'
 import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem'
-import PInput from '@/components/PInput'
+// import PInput from '@/components/PInput'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
@@ -38,19 +38,19 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
     }
   }, [list, filterToken, type])
 
-  const handleChangeInput = (val: string) => {
-  }
-  const handleSearch = (val: string) => {
-    setFilterToken(val)
-  }
+  // const handleChangeInput = (val: string) => {
+  // }
+  // const handleSearch = (val: string) => {
+  //   setFilterToken(val)
+  // }
 
   return (
     <section className="tokenListWrapper">
       <header>
         <span>Profile</span>
-        <div className="pSearch">
+        {/* <div className="pSearch">
           <PInput onChange={handleChangeInput} type="text" placeholder="Search" onSearch={handleSearch} />
-        </div>
+        </div> */}
       </header>
       {type === 'Assets' ?
         <ul className="tokens">

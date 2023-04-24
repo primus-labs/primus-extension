@@ -77,8 +77,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
                   <PInput key="secretKey" type="password" placeholder="Please enter Secret Key" onChange={handleChangeSecretKey}  />
                 </div>
                 {requirePassphase && <div className="formItem lastFormItem">
-                  {/* TODO */}
-                  <h6>PassPhase</h6>
+                  <h6>Passphase</h6>
                   <PInput key="passPhase" type="password" placeholder="" onChange={handleChangePassphase} visible />
                 </div>}
                 <div className="tipWrapper">

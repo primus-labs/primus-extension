@@ -57,7 +57,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
     if (document.documentElement.getBoundingClientRect().width < 1680) {
       innerRadius = 53.5
       outerRadius = 82.5
-      cLeft = 0
+      cLeft = 15
       legendItemValueWidth = 81
       legendItemValueFontSize = 20
       legendItemHeight = 36
@@ -135,6 +135,11 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
           minAngle: 5,
           legendHoverLink: true,
           // avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 0,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
           label: {
             show: false,
             position: 'center'

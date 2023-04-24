@@ -58,7 +58,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }
           sourceKey: 'followers',
         },
         {
-          name: 'Total Tweets',
+          name: 'Total Posts',
           sourceKey: 'posts',
         },
         {
