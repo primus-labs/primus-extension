@@ -80,11 +80,25 @@ class Exchange {
     // ex: ETH => ETHUSDT,// binance=>'ETHUSDT',others:'ETH-USDT'
     // price unit: USD
     // coninbase need filter USD
-    const LPSymbols = this.totalHoldingTokenSymbolList
+    let LPSymbols = this.totalHoldingTokenSymbolList
       .filter((i) => i !== USDT)
       .filter((i) => i !== USD)
       .map((j) => (this.exName === 'binance' ? `${j}${USDT}` : `${j}-${USDT}`));
-    const res = await this.exchange.fetchTickers(LPSymbols);
+    
+    let res;
+    let errorSymbol;
+    try {
+      res = await this.exchange.fetchTickers(LPSymbols);
+    } catch (e) {
+      console.log('fetchTickers error', e);
+      if (e.name === 'BadSymbol') {
+        const errormsg = e.message.split(' ');
+        errorSymbol = errormsg[errormsg.length - 1];
+        LPSymbols = LPSymbols.filter((i) => i !== errorSymbol);
+        res = await this.exchange.fetchTickers(LPSymbols);
+      }
+    }
+
     this.tokenPriceMap = Object.keys(res).reduce(
       (prev, curr) => {
         const { symbol, last } = res[curr];
@@ -96,7 +110,10 @@ class Exchange {
         [USD, ONE],
       ])
     );
-    // console.log('tokenPriceMap', this.tokenPriceMap);
+    if (errorSymbol) {
+      const eSymbol = this.exName === 'binance'?errorSymbol.replace(`${USDT}`, ''):errorSymbol.replace(`-${USDT}`, '');
+      this.tokenPriceMap.set(eSymbol, 0);
+    }
     return this.tokenPriceMap;
   }
   async getTotalAccountTokenMap() {
