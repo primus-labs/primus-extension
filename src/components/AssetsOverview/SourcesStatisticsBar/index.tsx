@@ -11,7 +11,6 @@ interface SourcesStatisticsBarProps {
 }
 
 const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Assets', list, filterSource, onSelect }) => {
-  console.log('SourcesStatisticsBar-list', list)
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const handleClickSource = (sourceName: string) => {
     // Click to activate and then click to deactivate
@@ -38,7 +37,11 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Ass
       <header>Sources</header>
       <ul className="sources">
         {list.map(item => {
-          return <li className={type === 'Social' ? "source social" : "source"} key={item.name} onClick={() => handleClickSource(item.name)}>
+          return <li className={
+            ((!!activeSourceName  && activeSourceName=== item.name) || !activeSourceName)? 
+            (type === 'Social' ? "source social" : "source"): 
+            (type === 'Social' ? "source social disabled" : "source disabled")} 
+            key={item.name} onClick={() => handleClickSource(item.name)}>
             <div className="label">Data on {item.name}</div>
             <div className="value">
               <img src={item.icon} alt="" />
