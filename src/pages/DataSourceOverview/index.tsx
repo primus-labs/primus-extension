@@ -160,11 +160,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     setActiveSource(undefined)
     setStep(0)
   }
-  useEffect(() => {
-    chrome.storage.local.remove(['twitter'], () => {
-      console.log("remove 'twitter' successfully")
-    })
-  }, [])
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">

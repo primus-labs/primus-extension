@@ -4,6 +4,7 @@ import { add, mul, gt, div } from '@/utils/utils';
 const BIGZERO = new BigNumber(0);
 const BIGONE = new BigNumber(1);
 const ONE = 1;
+const ZERO = 0;
 const USDT = 'USDT';
 const USD = 'USD';
 
@@ -19,6 +20,7 @@ class Exchange {
     this.fundingAccountTokenAmountMap = new Map();
     this.tradingAccountTokenAmountMap = new Map();
     this.totalHoldingTokenSymbolList = [];
+    this.errorSymbolList = [];
     this.totalAccountTokenAmountMap = new Map();
     this.tokenPriceMap = new Map();
     this.totalAccountTokenMap = {};
@@ -83,8 +85,8 @@ class Exchange {
     let LPSymbols = this.totalHoldingTokenSymbolList
       .filter((i) => i !== USDT)
       .filter((i) => i !== USD)
+      .filter((i) => this.errorSymbolList.includes(i))
       .map((j) => (this.exName === 'binance' ? `${j}${USDT}` : `${j}-${USDT}`));
-    
     let res;
     let errorSymbol;
     try {
@@ -94,8 +96,11 @@ class Exchange {
       if (e.name === 'BadSymbol') {
         const errormsg = e.message.split(' ');
         errorSymbol = errormsg[errormsg.length - 1];
-        LPSymbols = LPSymbols.filter((i) => i !== errorSymbol);
-        res = await this.exchange.fetchTickers(LPSymbols);
+        this.errorSymbolList.push(errorSymbol)
+        this.getTokenPriceMap()
+        return
+        // LPSymbols = LPSymbols.filter((i) => i !== errorSymbol);
+        // res = await this.exchange.fetchTickers(LPSymbols);
       }
     }
 
@@ -110,9 +115,11 @@ class Exchange {
         [USD, ONE],
       ])
     );
-    if (errorSymbol) {
-      const eSymbol = this.exName === 'binance'?errorSymbol.replace(`${USDT}`, ''):errorSymbol.replace(`-${USDT}`, '');
-      this.tokenPriceMap.set(eSymbol, 0);
+    
+    if (this.errorSymbolList.length > 0) {
+      this.errorSymbolList.forEach((symbol) => {
+        this.tokenPriceMap.set(symbol, ZERO);
+      })
     }
     return this.tokenPriceMap;
   }
@@ -168,10 +175,15 @@ class Exchange {
     }
     const LPSymbol =
       this.exName === 'binance' ? `${symbol}${USDT}` : `${symbol}-${USDT}`;
-    const res = await this.exchange.fetchTickers([LPSymbol]);
-    const { last } = res[`${symbol}/${USDT}`];
-    // console.log(`binance-getTokenPrice-${symbol}`, last);
-    return new BigNumber(last).toFixed();
+      try{
+        const res = await this.exchange.fetchTickers([LPSymbol]);
+        const { last } = res[`${symbol}/${USDT}`];
+        // console.log(`binance-getTokenPrice-${symbol}`, last);
+        return new BigNumber(last).toFixed();
+      }catch{
+        return ZERO
+      }
+    
   }
 }
 export default Exchange;
