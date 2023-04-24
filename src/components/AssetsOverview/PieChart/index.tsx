@@ -84,6 +84,9 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
         icon: 'circle',
         itemWidth: 14,
         itemHeight: 14,
+        itemStyle: {
+          borderWidth: 0
+        },
         selected: allSelected,
         // selectedMode: false,
         formatter: (name: string) => {

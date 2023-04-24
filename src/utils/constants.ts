@@ -55,10 +55,15 @@ export const DATASOURCEMAP: DataSourceMapType = {
 };
 
 export const CHARTCOLORS = [
+  // '#59CDFF',// 1
+  '#7BD7FF',
+  // '#30c1ff',
   '#74F0DC',
-  '#59CDFF',
+  // '#60F5DD',
   '#41CEE1',
+  // '#24D3EB',
   '#4164E1',
+  '#335BEB',
   '#8741E1',
   '#D663D9',
   '#5DD8BA',

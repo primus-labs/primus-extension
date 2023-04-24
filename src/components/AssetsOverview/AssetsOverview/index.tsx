@@ -42,7 +42,11 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
   }, [list])
 
   const formatTotalPnl = useMemo(() => {
-    return totalPnl ? ((gt(Number(totalPnl), 0) ? `+$${new BigNumber(Number(totalPnl)).toFixed(2)}` : `-$${new BigNumber(Number(totalPnl)).abs().toFixed(2)}`)) : '--'
+    return totalPnl ? 
+            ((gt(Number(totalPnl), 0) ? 
+              `+$${new BigNumber(Number(totalPnl)).toFixed(2)}` : 
+                `-$${new BigNumber(Number(totalPnl)).abs().toFixed(2)}`)) 
+            : '--'
   }, [totalPnl])
   const formatTotalPnlPercent = useMemo(() => {
     if (totalPnl !== null && totalPnl !== undefined && totalAssetsBalance) {
