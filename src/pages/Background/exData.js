@@ -52,10 +52,14 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           exchangeName + 'cipher'
         );
         if (cipherData) {
-          const apiKeyInfo = JSON.parse(
-            decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
-          );
-          exParams = { ...apiKeyInfo };
+          try {
+            const apiKeyInfo = JSON.parse(
+              decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
+            );
+            exParams = { ...apiKeyInfo };
+          } catch (err) {
+            console.log('decrypt', err);
+          }
         }
       }
       // request ex data
@@ -76,7 +80,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
         tokenListMap: ex.totalAccountTokenMap,
         apiKey: exParams.apiKey,
         date: getCurrentDate(),
-        timestamp: + new Date(),
+        timestamp: +new Date(),
         version: ExchangeStoreVersion,
       };
       if (pnl !== null && pnl !== undefined) {

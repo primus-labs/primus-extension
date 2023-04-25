@@ -27,7 +27,7 @@ type ObjectType = {
 }
 const Layout = () => {
   const dispatch: Dispatch<any> = useDispatch()
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const refreshDataFlag = searchParams.get('refreshData')
 
@@ -60,9 +60,7 @@ const Layout = () => {
     const padoServicePortListener = async function (message: any) {
       if (message.resMethodName === 'queryUserPassword') {
         console.log("page_get:queryUserPassword:", message.res);
-        if (!message.res) {
-          navigate('/lock')
-        } else {
+        if (message.res) {
           (updateF as () => void)();
         }
       }
@@ -84,13 +82,13 @@ const Layout = () => {
     getSysConfig()
   }, [getSysConfig]);
   useEffect(() => {
-    if (pathname !== '/lock' || refreshDataFlag) {
+    if (refreshDataFlag) {
       (updateF as () => void)();
     }
-  }, [refreshDataFlag, updateF, pathname])
-  // useEffect(() => {
-  //   initPage()
-  // }, []);
+  }, [refreshDataFlag, updateF])
+  useEffect(() => {
+    initPage()
+  }, []);
   return (
     <div className="pageApp">
       <BackgroundAnimation />
