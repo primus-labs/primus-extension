@@ -76,6 +76,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
         tokenListMap: ex.totalAccountTokenMap,
         apiKey: exParams.apiKey,
         date: getCurrentDate(),
+        timestamp: + new Date(),
         version: ExchangeStoreVersion,
       };
       if (pnl !== null && pnl !== undefined) {

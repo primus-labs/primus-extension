@@ -3,11 +3,6 @@ import { DATASOURCEMAP } from '@/utils/constants'
 import { getMutipleStorageSyncData } from '@/utils/utils'
 
 export type DataSourceStorages = {
-  binance?: any,
-  okx?: any,
-  kucoin?: any,
-  twitter?: any,
-  coinbase?: any,
   [propName: string]: any
 }
 type SocialDataMap = {

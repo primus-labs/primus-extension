@@ -31,9 +31,15 @@ const useUpdateSocialSources = () => {
     );
     let res: ExKeysStorages = await getMutipleStorageSyncData(sourceNameList);
    
-    const list = Object.keys(res).map(i => {
-      setQueryObj((obj) => ({ ...obj, [i]: undefined }));
-      return i
+    let list:string[] = []
+    Object.keys(res).forEach(i => {
+      const {timestamp} = JSON.parse(res[i])
+      const now = + new Date()
+      // refresh data more than an hour since the last time it was obtained
+      if(i === 'twitter' && (now - timestamp) > 1000*60*60) {
+        setQueryObj((obj) => ({ ...obj, [i]: undefined }));
+        list.push(i)
+      }
     })
     list.forEach(async (item ) => {
       const uniqueId = JSON.parse(res[item]).uniqueId

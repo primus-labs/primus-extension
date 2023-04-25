@@ -154,6 +154,7 @@ const processpadoServiceReq = async (message, port) => {
           const socialSourceData = {
             ...result,
             date: getCurrentDate(),
+            timestamp: + new Date()
           };
           socialSourceData.version = SocailStoreVersion;
           await chrome.storage.local.set({
@@ -201,6 +202,7 @@ const processpadoServiceReq = async (message, port) => {
         const socialSourceData = {
           ...result,
           date: getCurrentDate(),
+          timestamp: + new Date()
         };
         socialSourceData.version = SocailStoreVersion;
         await chrome.storage.local.set({
