@@ -60,17 +60,28 @@
   .sourcesStatisticsBar
     padding: 0 44px
     header
-      padding: 28px 0 12px 0
+      padding: 25px 0 15px 0
       font-size: 20px
-      line-height: 24px
+      line-height: 28px
       font-family: 'Inter-SemiBold'
     ul.sources
-      padding: 25px 0 41px 0
+      padding: 25px 0 9px 0
       // column-gap: 92px
       li.source
         // width: 167px
-        margin-bottom: 0
-        gap: 12px
+        // margin-bottom: 0
+        gap: $xsGap
+        &.social
+          gap: 14px
+          .label
+            font-size: 16px
+            line-height: 19px
+          .value
+            font-size: 28px
+            line-height: 22px
+            align-items: flex-start
+          .tip
+            margin-top: -22px
         .label
           font-size: 14px
           line-height: 17px

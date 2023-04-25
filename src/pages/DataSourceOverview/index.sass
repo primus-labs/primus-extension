@@ -33,11 +33,21 @@
           background-size: 100% 100%
         .pInputWrapper
           @include backdropMixin
+          padding-right: 0
           .pInput
             padding-left: 60px
             @extend .sSBlackRegularFont
             font-family: 'Inter-Medium'
+            color: $colLBlack
             height: 60px
+            &:focus
+              border-radius: $sBorderRadius
+              background: #FFFFFF
+              border: 2PX solid transparent
+              background-clip: padding-box, border-box
+              background-origin: padding-box, border-box
+              background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+              
 @media (max-width: 1680px)
   .pageDataSourceOverview
     margin-top: -29px
