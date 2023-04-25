@@ -51,7 +51,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
   const formatTotalPnlPercent = useMemo(() => {
     if (totalPnl !== null && totalPnl !== undefined && totalAssetsBalance) {
       const currVN = Number(totalAssetsBalance)
-      const lastV = add(currVN, Number(totalPnl))
+      const lastV = sub(currVN, Number(totalPnl))
       const lastVN = lastV.toNumber()
       const p = div(sub(currVN, lastVN).toNumber(), lastVN)
       const formatNum = mul(p.toNumber(), 100)
