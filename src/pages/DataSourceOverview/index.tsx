@@ -62,21 +62,26 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
     return Object.values({ ...exSources, ...socialSources })
   }, [exSources, socialSources])
   const dataSourceTypeList = useMemo(() => {
-    return [
+    let deaultList = [
       {
         value: 'All',
         text: 'All',
       },
-      {
+    ]
+    if(typeof exSources === 'object' && Object.values(exSources).length > 0) {
+      deaultList.push({
         value: 'Assets',
         text: 'Assets',
-      },
-      {
+      })
+    } 
+    if(typeof socialSources === 'object' && Object.values(socialSources).length > 0) {
+      deaultList.push({
         value: 'Social',
         text: 'Social',
-      },
-    ]
-  }, [])
+      })
+    } 
+    return deaultList
+  }, [exSources, socialSources])
   const activeDataSourceList = useMemo(() => {
     if (filterWord) {
       return dataSourceList.filter(item => {
