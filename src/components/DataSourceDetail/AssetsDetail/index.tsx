@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { add, gt, div } from '@/utils/utils';
@@ -17,7 +16,8 @@ import iconClock from '@/assets/img/iconClock.svg';
 import './index.sass';
 import useExSource from '@/hooks/useExSource';
 import Binance from '@/services/exchange/binance';
-
+import { useSelector } from 'react-redux'
+import type { UserState } from '@/store/reducers'
 export type DataSourceType = {
   date: string;
   tokenListMap: AssetsMap;
@@ -26,16 +26,15 @@ export type DataSourceType = {
 };
 interface AssetsDetailProps {
   onProve: (name: string) => void;
-  padoServicePort: chrome.runtime.Port;
   assetsProveFlag: boolean;
   userProveFlag: boolean;
 }
 const AssetsDetail: React.FC<AssetsDetailProps> = ({
   onProve,
-  padoServicePort,
   assetsProveFlag,
   userProveFlag,
 }) => {
+  const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const sourceName = (searchParams.get('name') as string).toLowerCase();
@@ -210,7 +209,4 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   );
 };
 
-export default connect(
-  ({ padoServicePort }) => ({ padoServicePort }),
-  {}
-)(AssetsDetail);
+export default AssetsDetail;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {useNavigate} from 'react-router-dom'
-import {connect } from 'react-redux'
 
 import rem from '@/utils/rem.js';
 import PHeader from '@/components/PHeader';
@@ -8,8 +7,10 @@ import PInput from '@/components/PInput/index'
 import BackgroundAnimation from '@/components/BackgroundAnimation';
 import AsideAnimation from '@/components/AsideAnimation';
 import './index.sass';
+import { useSelector } from 'react-redux'
 
-const Lock = ({padoServicePort}) => {
+const Lock = () => {
+  const padoServicePort = useSelector((state) => state.padoServicePort)
   const navigate = useNavigate()
   const [pwd, setPwd] = useState();
   const [errorMsg, setErrorMsg] = useState();
@@ -87,4 +88,4 @@ const Lock = ({padoServicePort}) => {
 
 
 
-export default connect(({ padoServicePort }) => ({ padoServicePort }), {})(Lock);
+export default Lock

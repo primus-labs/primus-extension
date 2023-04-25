@@ -5,6 +5,7 @@ import type { ExchangeMeta } from '@/utils/constants';
 import iconInfo from '@/assets/img/iconInfo.svg';
 import './index.sass';
 
+
 export type DataFieldItem = {
   icon: any;
   name: string;

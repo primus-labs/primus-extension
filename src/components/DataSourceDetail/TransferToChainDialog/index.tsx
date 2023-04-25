@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from 'react';
-// import { connect } from 'react-redux'
 import AuthInfoHeader from '@/components/AuthInfoHeader'
 import PMask from '@/components/PMask'
 import rightArrow from '@/assets/img/rightArrow.svg';
@@ -78,4 +77,3 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
 };
 
 export default TransferToChainDialog;
-// export default connect((store) => store, {})(TransferToChainDialog);

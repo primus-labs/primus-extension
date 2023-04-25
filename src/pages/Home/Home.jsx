@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
 import AuthDialog from '@/components/Home/AuthDialog';
 import SetPwdDialog from '@/components/Home/SetPwdDialog';

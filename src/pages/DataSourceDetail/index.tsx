@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { connect } from 'react-redux'
 import { getSingleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
 import PTabs from '@/components/PTabs'
@@ -111,4 +110,4 @@ const DataSourceDetail = () => {
 };
 
 
-export default connect(({ padoServicePort, binance }) => ({ padoServicePort, binance }), {})(DataSourceDetail);
+export default DataSourceDetail

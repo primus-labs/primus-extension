@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { connect } from 'react-redux'
 // import { countAdd, countMinus } from '../../store/reducers/app'
 import './index.sass'
 import iconETH from '@/assets/img/iconETH.svg';
 import PInput from '@/components/PInput/index'
 import PMask from '@/components/PMask'
+import { useSelector } from 'react-redux'
+import type { UserState } from '@/store/reducers'
 
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
   onCancel: () => void;
-  padoServicePort: chrome.runtime.Port;
 }
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
-  const { onClose, onSubmit, onCancel, padoServicePort } = props
+  const { onClose, onSubmit, onCancel } = props
+  const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [accountAddr, setAccountAddr] = useState<any>()
   const [pwd, setPwd] = useState<string>()
   const [confirm, setConfirm] = useState<string>()
@@ -174,4 +175,4 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
   );
 };
 
-export default connect((store) => store, {})(SetPwdDialog);
+export default SetPwdDialog;

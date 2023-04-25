@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import type { Dispatch } from 'react';
-import { connect, useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs'
 import PInput from '@/components/PInput'
@@ -26,9 +26,9 @@ import useAuthorization from '@/hooks/useAuthorization'
 import useAllSources from '@/hooks/useAllSources'
 import useExSources from '@/hooks/useExSources'
 import useSocialSources from '@/hooks/useSocialSources'
+import type { UserState } from '@/store/reducers'
 
 interface DataSourceOverviewProps {
-  padoServicePort: chrome.runtime.Port,
   binance?: {
     totalBalance: any,
     tokenListMap: any
@@ -48,7 +48,8 @@ type PortMsg = {
   resMethodName: string;
   res: any;
 }
-const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort, binance, twitter }) => {
+const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({  binance, twitter }) => {
+  const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const authorize = useAuthorization()
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
@@ -189,4 +190,4 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({ padoServicePort
   );
 };
 
-export default connect(({ padoServicePort }) => ({ padoServicePort }), {})(DataSourceOverview);
+export default DataSourceOverview

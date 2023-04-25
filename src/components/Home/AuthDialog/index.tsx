@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { connect } from 'react-redux'
 import type { AuthSourcesItem, AuthSourcesItems } from '@/services/user';
 import PHeader from '@/components/PHeader'
 
 import PMask from '@/components/PMask'
 import rightArrow from '@/assets/img/rightArrow.svg';
 import './index.sass'
+import { useSelector } from 'react-redux'
+import type { UserState } from '@/store/reducers'
 
 interface authDialogProps {
   onClose: () => void;
   onSubmit: () => void;
-  padoServicePort: chrome.runtime.Port;
 }
 
-const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServicePort }) => {
+const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
+  const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([])
   const [activeSource, setActiveSource] = useState<string>()
   const [authWindowId, setAuthWindowId] = useState<number>()
@@ -150,4 +151,4 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
   );
 };
 
-export default connect(({ padoServicePort }) => ({ padoServicePort }), {})(AuthDialog);
+export default AuthDialog
