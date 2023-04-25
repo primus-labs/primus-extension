@@ -7,7 +7,6 @@
     @extend .fcbc
     gap: 62px
     .scrollList
-      
       width: 100%
       @extend .fcsc
       gap: 62px
@@ -48,46 +47,20 @@
         width: 100%
         height: 24px
         @extend .frsc
-        padding-left: 3PX
-        gap: 11px
-        // .iconCheckedWrapper
-        //   width: $mIconSize
-        //   height: $mIconSize
-        //   background-image: url("../../../assets/img/iconArrowLeft.svg")
-        //   background-size: 100% 100%
-        //   position: absolute
-        //   top: 20px
-        //   left: calc($mIconSize/-2)
-        //   cursor: pointer
-        //   &:hover
-        //     background-image: url("../../../assets/img/iconArrowLeftActive.svg")
-        input[type="checkBox"].checkbox
-          width: 18px
-          height: 18px
+        // padding-left: 3PX
+        gap: $xxsGap
+        .iconCheckedWrapper
+          width: $sIconSize
+          height: $sIconSize
+          background-image: url("../../../assets/img/iconCheckbox.svg")
+          background-size: 100% 100%
           cursor: pointer
-          position: relative
-          &::after
-            position: absolute
-            top: 0
-            box-sizing: border-box
-            width: 18px
-            height: 18px
-            border: 2PX solid #000
-            border-radius: 1px
-            display: inline-block
-            visibility: visible
-            padding-left: 0
-            text-align: center
-            content: ''
-          &:checked::after
-            border: 0
-            color: #fff
-            content: '\2714'
-            content: '✓'
-            background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-          &:disabled::after
-            border: 0
-            background: rgba(0,0,0,0.4)
+          &.checked
+            background-image: url("../../../assets/img/iconCheckboxActive.svg")
+          &.disabled
+            background-image: url("../../../assets/img/iconCheckboxDisabled.svg")
+        .checkbox
+          display: none
         .descItem
           flex: 1
           @extend .frbc
@@ -99,7 +72,6 @@
             @extend .sFont
             font-family: 'Inter-Regular'
             color: rgba(0,0,0,0.8)
-
   button.nextBtn
     height: 58px
 

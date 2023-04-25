@@ -64,7 +64,7 @@ const Lock = ({padoServicePort}) => {
           <AsideAnimation />
           <article>
             <header className="articleHeader">
-              <h1>Welcome BACK！</h1>
+              <h1>WELCOME BACK！</h1>
               <p>Manage and share your web data simply and safely.</p>
             </header>
             <main className="articleMain formItem" >

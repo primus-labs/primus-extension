@@ -50,10 +50,12 @@ $sSelectInput: 48px
     color: rgba(0, 0, 0, 0.6)
     position: relative
     cursor: pointer
+    &:hover
+      &::before
+        background-image: url('../../assets/img/iconBottomArrowActive.svg')
     &:before
       position: absolute
       content: ''
-
       top: 50%
       transform: translateY(-50%)
       background: url('../../assets/img/iconBottomArrow.svg') no-repeat

@@ -16,7 +16,7 @@ interface authDialogProps {
 
 const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServicePort }) => {
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([])
-  // const [activeSource, setActiveSource] = useState<string>()
+  const [activeSource, setActiveSource] = useState<string>()
   const [authWindowId, setAuthWindowId] = useState<number>()
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>()
   const handleClickNext = () => {
@@ -83,7 +83,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
     padoServicePort.onMessage.addListener(padoServicePortListener)
   }
   const handleClickOAuthSource = (source: string) => {
-
+    setActiveSource(source)
     // If the authorization window is open,focus on it
     if (authWindowId) {
       chrome.windows.update(
@@ -94,7 +94,6 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
       )
       return
     }
-    // setActiveSource(source)
     const state = uuidv4()
     var width = 520;
     var height = 620;
@@ -131,7 +130,11 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit, padoServiceP
           <h1>Sign up</h1>
           <ul className="licensorList">
             {oAuthSources.map((item: AuthSourcesItem) => {
-              return (<li key={item.id} className={item.name==='GOOGLE'?"licensorItem":"licensorItem disabled"} onClick={() => { handleClickOAuthSource(item.name) }}>
+              return (<li key={item.id} className={
+                    item.name==='GOOGLE'?
+                    "licensorItem":
+                      "licensorItem disabled"
+                  } onClick={() => { handleClickOAuthSource(item.name) }}>
                 <img src={item.logoUrl} alt={item.name} />
               </li>)
             })}

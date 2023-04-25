@@ -56,23 +56,27 @@
     width: 100%
     @include backdropMixin
     background: linear-gradient(186.59deg, rgba(255, 255, 255, 0.6) 0.28%, rgba(255, 255, 255, 0.6) 94.82%)
-    padding: 46px 135px
-    @extend .frsc
+    padding: 0 135px
+    @extend .frbc
+    .separtor
+      width: 2px
+      height: 63px
+      background: rgba(0,0,0,0.1)
     .descItem
-      flex: 1
-      @extend .fcss
+      // flex: 1
+      @extend .fccs
       gap: $xxsGap
-      height: 108px
-      position: relative
-      &::after
-        position: absolute
-        content: ''
-        top: 50%
-        right: 0
-        transform: translateY(-50%)
-        width: 2px
-        height: 63px
-        background: rgba(0,0,0,0.1)
+      height: 200px
+      // position: relative
+      // &::after
+      //   position: absolute
+      //   content: ''
+      //   top: 50%
+      //   right: 0
+      //   transform: translateY(-50%)
+      //   width: 2px
+      //   height: 63px
+      //   background: rgba(0,0,0,0.1)
       &:last-child::after
         display: none
       &:nth-child(n+2)
@@ -123,9 +127,9 @@
         padding: 24px 0 12px
         font-family: 'Inter-SemiBold'
     .sourceStatisticsBar
-      padding: 24px 100px
+      padding: 0 100px
       .descItem
-        // height: 94px
+        height: 140px
         .label
           font-size: 12px
           line-height: 15px

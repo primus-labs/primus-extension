@@ -27,14 +27,14 @@ export type DataSourceType = {
 interface AssetsDetailProps {
   onProve: (name: string) => void;
   padoServicePort: chrome.runtime.Port;
-  assetsProveFlag:boolean;
-  userProveFlag:boolean;
+  assetsProveFlag: boolean;
+  userProveFlag: boolean;
 }
 const AssetsDetail: React.FC<AssetsDetailProps> = ({
   onProve,
   padoServicePort,
   assetsProveFlag,
-  userProveFlag
+  userProveFlag,
 }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -143,45 +143,43 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
         {typeof dataSource === 'object' && (
           <div className="descItems">
             <div className="descItem">
-                <img src={dataSource?.icon} alt="" className="sourceIcon" />
-                <div className="value">{dataSource?.name}</div>
+              <img src={dataSource?.icon} alt="" className="sourceIcon" />
+              <div className="value">{dataSource?.name}</div>
             </div>
             <div className="descItem">
-              
-                <div className="label">API Key: </div>
-                <div className="value">{formatApiKey || 'ApiKey'}</div>
-                {/* <img src={iconClock} alt="" className="clockIcon" /> */}
-              
+              <div className="label">API Key: </div>
+              <div className="value">{formatApiKey || 'ApiKey'}</div>
+              {/* <img src={iconClock} alt="" className="clockIcon" /> */}
             </div>
             <div className="descItem">
-              
-                <div className="label">Date: </div>
-                <div className="value">{dataSource?.date}</div>
-                {/* <img src={iconClock} alt="" className="clockIcon" /> */}
-              
+              <div className="label">Date: </div>
+              <div className="value">{dataSource?.date}</div>
+              {/* <img src={iconClock} alt="" className="clockIcon" /> */}
             </div>
           </div>
         )}
       </header>
       <section className="sourceStatisticsBar">
         <div className="descItem">
-        <div className="inner">
-          <div className="label">Est Total Value</div>
-          <div className="value">${totalAssetsBalance}</div>
-          {/* TODO  */}
-          <div className="btcValue">≈ {eqBtcNum} BTC</div>
+          <div className="inner">
+            <div className="label">Est Total Value</div>
+            <div className="value">${totalAssetsBalance}</div>
+            {/* TODO  */}
+            <div className="btcValue">≈ {eqBtcNum} BTC</div>
           </div>
         </div>
+        <div className="separtor"></div>
         <div className="descItem">
-        <div className="inner">
-          <div className="label">Assets No. </div>
-          <div className="value">{totalAssetsNo}</div>
+          <div className="inner">
+            <div className="label">Assets No. </div>
+            <div className="value">{totalAssetsNo}</div>
           </div>
         </div>
+        <div className="separtor"></div>
         <div className="descItem">
-        <div className="inner">
-          <div className="label">PnL </div>
-          <div className="value">{pnl}</div>
+          <div className="inner">
+            <div className="label">PnL </div>
+            <div className="value">{pnl}</div>
           </div>
         </div>
       </section>
@@ -195,8 +193,12 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
             >
               <div className="cardC">
                 <div className="label">{item} Proof</div>
-                {item === 'Active User' && userProveFlag && <img className="iconSuc" src={iconSuc} alt="" />}
-                {item === 'Assets' && assetsProveFlag && <img className="iconSuc" src={iconSuc} alt="" />}
+                {item === 'Active User' && userProveFlag && (
+                  <img className="iconSuc" src={iconSuc} alt="" />
+                )}
+                {item === 'Assets' && assetsProveFlag && (
+                  <img className="iconSuc" src={iconSuc} alt="" />
+                )}
                 <img className="iconArrow" src={iconArrowRight} alt="" />
               </div>
             </div>

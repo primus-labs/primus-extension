@@ -28,6 +28,28 @@
       border-radius: 50%
       @extend .frcc
       cursor: pointer
+      &:hover
+        background: #FFFFFF
+        border: 2PX solid transparent
+        background-clip: padding-box, border-box
+        background-origin: padding-box, border-box
+        background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+      &.active
+        position: relative
+        background: #FFFFFF
+        border: 2PX solid transparent
+        background-clip: padding-box, border-box
+        background-origin: padding-box, border-box
+        background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+        &:after
+          position: absolute
+          content: ''
+          right: 2px
+          bottom: 2px
+          width: 14px
+          height: 14px
+          background: url('../../../assets/img/iconSuc.svg')
+          background-size: 100% 100%
       img
         width: 48.38px
     .dividerWrapper
@@ -68,6 +90,12 @@
       .networkItem
         width: 55px
         height: 55px
+        &.active
+          &:after
+            right: 1px
+            bottom: 1px
+            width: 12px
+            height: 12px
         img
           width: 36.95px
       .dividerWrapper

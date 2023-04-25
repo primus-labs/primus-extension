@@ -25,6 +25,7 @@ interface TransferToChainDialogProps {
 const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
   const { onClose, onSubmit, onCancel, title, desc, list, showButtonSuffixIcon = false } = props
   const [activeTool, setActiveTool] = useState<ToolItem>()
+  const [activeName, setActiveName] = useState<string>()
   const handleClickNext = () => {
     onSubmit()
   }
@@ -32,7 +33,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
     onCancel()
   }
   const handleClickNetwork = (item: ToolItem) => {
-    // setActiveTool(item)
+    setActiveName(item.title)
   }
 
   const activeList = useMemo(() => {
@@ -61,7 +62,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
           </div>
           <ul className="networkList">
             {activeList.map(item => {
-              return (<li className="networkItem" key={item.title} onClick={() => handleClickNetwork(item)}>
+              return (<li className={item.title===activeName ? "networkItem active": "networkItem"} key={item.title} onClick={() => handleClickNetwork(item)}>
                 <img src={item.icon} alt="" />
               </li>)
             })}
