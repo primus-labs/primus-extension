@@ -70,7 +70,7 @@ const Lock = () => {
             </header>
             <main className="articleMain formItem" >
               <h6>Password</h6>
-              <PInput type="password" placeholder="" onChange={handleChangePwd} onSearch={handleSubmitPwd} visible/>
+              <PInput type="password" placeholder="Please enter your password" onChange={handleChangePwd} onSearch={handleSubmitPwd} visible/>
               {errorMsg && <div className="errorTip">{errorMsg}</div>}
             </main>
             <footer className="articleFooter">

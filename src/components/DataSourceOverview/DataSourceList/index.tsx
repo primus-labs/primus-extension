@@ -18,11 +18,10 @@ const DataSourceList: React.FC<DataSourceItemProps> = ({ onAdd, onCheck, list = 
   }
   return (
     <div className="dataSourceList">
-      {list.length >= 4 && <EmptyDataSourceItem onAdd={handleAdd} />}
+      {list.length < 1 && <EmptyDataSourceItem onAdd={handleAdd} />}
       {list.map(item => {
         return (<DataSourceItem key={item.name} item={item} onCheck={onCheck} />)
       })}
-      {list.length < 4 && <EmptyDataSourceItem onAdd={handleAdd} />}
     </div>
   );
 };

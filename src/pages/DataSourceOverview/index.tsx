@@ -22,6 +22,7 @@ import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSou
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
 import './index.sass';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar'
+import DataAddBar from '@/components/DataSourceOverview/DataAddBar'
 import useAuthorization from '@/hooks/useAuthorization'
 import useAllSources from '@/hooks/useAllSources'
 import useExSources from '@/hooks/useExSources'
@@ -185,7 +186,8 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({  binance, twitt
       {step === 2 && <ConnectDataSourceDialog onClose={handleCloseMask} onSubmit={onSubmitConnectDataSourceDialogDialog} activeSource={activeSource} />}
       {step === 2.5 && <RequestLoadingDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} title="Data being requested" desc="It may take a few minutes." />}
       {step === 3 && <AddSourceSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource} desc="Data Connected!" />}
-      <DataUpdateBar type={activeSourceType} />
+      {activeSourceType !== 'All' && <DataUpdateBar type={activeSourceType} />}
+      {activeSourceType === 'All' && <DataAddBar onClick={handleAdd}/>}
     </div>
   );
 };

@@ -151,7 +151,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
           <h1>Set Password</h1>
           <h2>Enter an secure password to protect local data and private key.</h2>
           <h6>Setting</h6>
-          <PInput type="password" onChange={handleChangePwd} visible/>
+          <PInput type="password" placeholder="Please enter your password" onChange={handleChangePwd} visible/>
           <div className="validateWrapper">
             <div className="descTitle">The following combinations are recommended：</div>
             <ul className="descItems">
@@ -164,7 +164,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
             </ul>
           </div>
           <h6 className="reconfirmLabel">Reconfirm</h6>
-          <PInput type="password" onChange={handleChangeConfirm} visible/>
+          <PInput type="password" placeholder="Please confirm your password" onChange={handleChangeConfirm} visible/>
           {errorTipVisible && <p className="errorTip">Entered passwords differ!</p>}
         </main>
         <button className="nextBtn" onClick={handleClickNext}>

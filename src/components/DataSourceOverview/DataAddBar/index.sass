@@ -1,0 +1,31 @@
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pVars.sass'
+
+.dataAddBar
+  position: fixed
+  right: 100px
+  bottom: 100px
+  >button.updateBtn
+    border-radius: $xxLBorderRadius
+    @extend .mFont
+    font-family: 'Inter-SemiBold'
+    color:$colMBlack
+    @extend .frsc
+    gap: $xsGap
+    background: #fff
+    padding: 14px
+    &:hover
+      padding: 12px 20px 12px 24px
+      >.imgUpdate
+        width: 30px
+        height: 30px
+      >span
+        display: block
+    >.imgUpdate
+      width: 32px
+      height: 32px
+      background-image: url('../../../assets/img/iconColorfulAdd.svg')
+      background-size: 100% 100%
+    >span
+      display: none

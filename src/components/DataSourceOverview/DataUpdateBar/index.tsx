@@ -7,7 +7,6 @@ import './index.sass'
 interface DataUpdateBarProps {
   type?: string
 }
-// TODO query assets or social or  all sources
 const DataUpdateBar: React.FC<DataUpdateBarProps> = memo(({ type = 'All' }) => {
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSources()
   const [fetchSocialDatasLoading, fetchSocialDatas] = useUpdateSocialSources()

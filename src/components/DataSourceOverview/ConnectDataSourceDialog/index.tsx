@@ -70,15 +70,15 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
                 <Bridge endIcon={icon} />
                 <div className="formItem">
                   <h6>API Key</h6>
-                  <PInput key="apiKey" type="text" onChange={handleChangeApiKey}  />
+                  <PInput key="apiKey" type="text" placeholder="Please enter your API Key" onChange={handleChangeApiKey}  />
                 </div>
                 <div className="formItem">
                   <h6>Secret Key</h6>
-                  <PInput key="secretKey" type="password" placeholder="Please enter Secret Key" onChange={handleChangeSecretKey}  />
+                  <PInput key="secretKey" type="password" placeholder="Please enter your Secret Key" onChange={handleChangeSecretKey} visible />
                 </div>
                 {requirePassphase && <div className="formItem lastFormItem">
                   <h6>Passphase</h6>
-                  <PInput key="passPhase" type="password" placeholder="" onChange={handleChangePassphase} visible />
+                  <PInput key="passPhase" type="password" placeholder="Please enter your Passphase" onChange={handleChangePassphase} visible />
                 </div>}
                 <div className="tipWrapper">
                   <span>How to get API Key&Secret key?</span>

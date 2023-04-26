@@ -1,5 +1,6 @@
 @import '@/assets/css/pFont.sass'
 @import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pVars.sass'
 @keyframes rotateAnimation
   from
     transform: rotateZ(0)
@@ -8,9 +9,9 @@
 .dataUpdateBar
   position: fixed
   right: 60px
-  bottom: 100px
+  bottom: 60px
   >button.updateBtn
-    border-radius: 100px
+    border-radius: $xxLBorderRadius
     @extend .xsSBlackRegularFont
     font-family: 'Inter-Medium'
     @extend .frsc
