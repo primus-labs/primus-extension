@@ -9,7 +9,7 @@ interface AuthInfoHeaderProps {
   backable?:boolean;
 }
 
-const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = false, onBack, backable=true }) => {
+const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = true, onBack, backable=true }) => {
   const [email, setEmail] = useState<string>()
   const [avatar, setAvatar] = useState<string>()
 

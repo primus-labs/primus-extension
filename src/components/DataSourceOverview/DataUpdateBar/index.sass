@@ -11,22 +11,26 @@
   bottom: 100px
   >button.updateBtn
     border-radius: 100px
-    background: #fff
     @extend .xsSBlackRegularFont
     font-family: 'Inter-Medium'
     @extend .frsc
     gap: 6px
-    padding: 10px
     &:hover
+      background: #fff
       padding: 10px 12px
       >.imgUpdate
+        width: $sIconSize
+        height: $sIconSize
         background-image: url('../../../assets/img/iconUpdateActive.svg')
       >span
         display: block
     >.imgUpdate
-      width: 24px
-      height: 24px
-      background: url('../../../assets/img/iconUpdate.svg')
+      // width: $sIconSize
+      // height: $sIconSize
+      // background: url('../../../assets/img/iconUpdate.svg')
+      width: 44px
+      height: 44px
+      background-image: url('../../../assets/img/iconUpdate2.svg')
       background-size: 100% 100%
       &.rotate
         animation: rotateAnimation 2s linear 0s infinite

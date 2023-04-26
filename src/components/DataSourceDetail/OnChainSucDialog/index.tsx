@@ -22,7 +22,7 @@ const OnChainSucDialog: React.FC<AddSourceSucDialogProps> = ({ onClose, activeSo
     <PMask onClose={onClose}>
       <div className="padoDialog addDataSourceSucDialog onChainSucDialog">
         <main>
-          <AuthInfoHeader backable={false} />
+          <AuthInfoHeader checked={false} backable={false} />
           <img className="sucImg" src={iconSuc} alt="" />
           <h1>{title}</h1>
           <h2>{desc}</h2>

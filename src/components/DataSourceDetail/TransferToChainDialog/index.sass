@@ -67,15 +67,25 @@
     ul.networkList
       @extend .frac
       gap: $mGap
-    .errorTip
-      margin-top: 54px
-      padding: 0 12px
-      @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
-      
-      font-size: 12px
-      line-height: 25px
-      font-family: 'Inter-Regualr'
-      color: rgba(0,0,0,0.4)
+  button.nextBtn
+    position: relative
+    .tipWrapper
+      position: absolute
+      content: ''
+      top: -49px
+      left: 50%
+      transform: translateX(-50%)
+      width: 100%
+      text-align: center
+      .errorTip
+        width: fit-content
+        margin: 0 auto
+        padding: 0 12px
+        @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
+        font-size: 12px
+        line-height: 25px
+        font-family: 'Inter-Regualr'
+        color: rgba(0,0,0,0.4)
 @media (max-width: 1680px)
   .TransferToChainDialog
     padding: 30px 42px 31px
