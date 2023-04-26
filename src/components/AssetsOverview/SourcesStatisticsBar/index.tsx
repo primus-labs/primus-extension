@@ -7,15 +7,22 @@ interface SourcesStatisticsBarProps {
   type?: string;
   list: DataSourceItemList,
   filterSource: string | undefined,
-  onSelect: (sourceName: string | undefined) => void
+  onSelect: (sourceName: string | undefined) => void;
+  onClearFilter: () => void
 }
 
-const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Assets', list, filterSource, onSelect }) => {
+const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Assets', list, filterSource, onSelect,onClearFilter }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const handleClickSource = (sourceName: string) => {
     // Click to activate and then click to deactivate
-    const targetName = sourceName === activeSourceName ? undefined : sourceName
-    setActiveSourceName(targetName)
+    // const targetName = sourceName === activeSourceName ? undefined : sourceName
+    // setActiveSourceName(targetName)
+    if(sourceName === activeSourceName) {
+      setActiveSourceName(undefined)
+      onClearFilter()
+    } else {
+      setActiveSourceName(sourceName)
+    }
   }
   useEffect(() => {
     onSelect(activeSourceName)
@@ -30,8 +37,12 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Ass
       console.log('filterSource', filterSource, filterList);
       // TODO what if filter several sources
       setActiveSourceName(filterList[0]?.name ?? undefined)
+    } else {
+      if (filterSource !==null && filterSource !==undefined) {
+        setActiveSourceName(undefined)
+      }
     }
-  }, [filterSource, list, setActiveSourceName, onSelect])
+  }, [filterSource])
   return (
     <section className="sourcesStatisticsBar">
       <header>Sources</header>

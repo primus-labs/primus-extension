@@ -1,122 +1,148 @@
 import React, { useState, useMemo } from 'react';
 import './index.sass';
-import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
-import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
-import SourcesStatisticsBar from '../SourcesStatisticsBar'
-import TokenTable from '@/components/TokenTable'
-import BigNumber from 'bignumber.js'
-import { add, mul, gt, sub, div } from '@/utils/utils'
-import PieChart from '../PieChart'
+import type {
+  AssetsMap,
+  DataSourceItemType,
+} from '@/components/DataSourceOverview/DataSourceItem';
+import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
+import SourcesStatisticsBar from '../SourcesStatisticsBar';
+import TokenTable from '@/components/TokenTable';
+import BigNumber from 'bignumber.js';
+import { add, mul, gt, sub, div } from '@/utils/utils';
+import PieChart from '../PieChart';
 import useExSources from '@/hooks/useExSources';
 
 interface AssetsOverviewProps {
-  filterSource: string | undefined
+  filterSource: string | undefined;
+  onClearFilter: () => void;
 }
 
-const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
-  const [activeSourceName, setActiveSourceName] = useState<string>()
-  const [exDatasMap, refreshExSources] = useExSources()
+const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFilter }) => {
+  const [activeSourceName, setActiveSourceName] = useState<string>();
+  const [exDatasMap, refreshExSources] = useExSources();
 
   const list = useMemo(() => {
-    return exDatasMap ? Object.values(exDatasMap) : []
-  }, [exDatasMap])
+    return exDatasMap ? Object.values(exDatasMap) : [];
+  }, [exDatasMap]);
   const totalAssetsBalance = useMemo(() => {
-    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev, curr) => {
-      const { totalBalance } = curr
-      return add(prev.toNumber(), (Number(totalBalance)))
-    }
-    const bal = list.reduce(reduceF, new BigNumber(0))
-    return `${bal.toFixed(2)}`
-  }, [list])
+    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (
+      prev,
+      curr
+    ) => {
+      const { totalBalance } = curr;
+      return add(prev.toNumber(), Number(totalBalance));
+    };
+    const bal = list.reduce(reduceF, new BigNumber(0));
+    return `${bal.toFixed(2)}`;
+  }, [list]);
 
   const totalPnl = useMemo(() => {
-    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev, curr) => {
-      const { pnl } = curr
+    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (
+      prev,
+      curr
+    ) => {
+      const { pnl } = curr;
       if (pnl !== null && pnl !== undefined) {
-        return add(prev.toNumber(), (Number(pnl)))
+        return add(prev.toNumber(), Number(pnl));
       }
-      return prev
-    }
-    const bal = list.reduce(reduceF, new BigNumber(0))
-    return bal
-  }, [list])
+      return prev;
+    };
+    const bal = list.reduce(reduceF, new BigNumber(0));
+    return bal;
+  }, [list]);
 
   const formatTotalPnl = useMemo(() => {
-    return totalPnl ? 
-            ((gt(Number(totalPnl), 0) ? 
-              `+$${new BigNumber(Number(totalPnl)).toFixed(2)}` : 
-                `-$${new BigNumber(Number(totalPnl)).abs().toFixed(2)}`)) 
-            : '--'
-  }, [totalPnl])
+    return totalPnl
+      ? gt(Number(totalPnl), 0)
+        ? `+$${new BigNumber(Number(totalPnl)).toFixed(2)}`
+        : `-$${new BigNumber(Number(totalPnl)).abs().toFixed(2)}`
+      : '--';
+  }, [totalPnl]);
   const formatTotalPnlPercent = useMemo(() => {
     if (totalPnl !== null && totalPnl !== undefined && totalAssetsBalance) {
-      const currVN = Number(totalAssetsBalance)
-      const lastV = sub(currVN, Number(totalPnl))
-      const lastVN = lastV.toNumber()
-      const p = div(sub(currVN, lastVN).toNumber(), lastVN)
-      const formatNum = mul(p.toNumber(), 100)
-      const formatTxt = (gt(Number(formatNum), 0) ? `+${new BigNumber(Number(formatNum)).toFixed(2)}%` : `-${new BigNumber(Number(formatNum)).abs().toFixed(2)}%`)
-      return formatTxt
+      const currVN = Number(totalAssetsBalance);
+      const lastV = sub(currVN, Number(totalPnl));
+      const lastVN = lastV.toNumber();
+      const p = div(sub(currVN, lastVN).toNumber(), lastVN);
+      const formatNum = mul(p.toNumber(), 100);
+      const formatTxt = gt(Number(formatNum), 0)
+        ? `+${new BigNumber(Number(formatNum)).toFixed(2)}%`
+        : `-${new BigNumber(Number(formatNum)).abs().toFixed(2)}%`;
+      return formatTxt;
     } else {
-      return ''
+      return '';
     }
-  }, [totalPnl, totalAssetsBalance])
+  }, [totalPnl, totalAssetsBalance]);
 
   const totalAssetsMap: AssetsMap = useMemo(() => {
-    const reduceF: (prev: AssetsMap, curr: DataSourceItemType) => AssetsMap = (prev, curr) => {
-      const { tokenListMap } = curr
+    const reduceF: (prev: AssetsMap, curr: DataSourceItemType) => AssetsMap = (
+      prev,
+      curr
+    ) => {
+      const { tokenListMap } = curr;
       if (tokenListMap) {
-        Object.keys(tokenListMap).forEach(symbol => {
+        Object.keys(tokenListMap).forEach((symbol) => {
           if (symbol in prev) {
-            const { amount: prevAmount, price } = prev[symbol]
-            const { amount } = tokenListMap[symbol]
-            const totalAmount = add(Number(prevAmount), Number(amount)).toFixed()
-            const totalValue = mul(Number(totalAmount), Number(price)).toFixed()
+            const { amount: prevAmount, price } = prev[symbol];
+            const { amount } = tokenListMap[symbol];
+            const totalAmount = add(
+              Number(prevAmount),
+              Number(amount)
+            ).toFixed();
+            const totalValue = mul(
+              Number(totalAmount),
+              Number(price)
+            ).toFixed();
             prev[symbol] = {
               symbol,
               price,
               amount: totalAmount,
-              value: totalValue
-            }
+              value: totalValue,
+            };
           } else {
             prev = {
               ...prev,
               [symbol]: {
-                ...tokenListMap[symbol]
-              }
-            }
+                ...tokenListMap[symbol],
+              },
+            };
           }
-        })
+        });
       }
 
-      return prev
-    }
-    const totalTokenMap = list.reduce(reduceF, {})
-    return totalTokenMap
-  }, [list])
+      return prev;
+    };
+    const totalTokenMap = list.reduce(reduceF, {});
+    return totalTokenMap;
+  }, [list]);
   const totalAssetsNo = useMemo(() => {
-    return Object.keys(totalAssetsMap).length
-  }, [totalAssetsMap])
+    return Object.keys(totalAssetsMap).length;
+  }, [totalAssetsMap]);
 
   const activeAssetsMap = useMemo(() => {
     if (activeSourceName) {
-      const activeS: DataSourceItemType = (list.find(item => item.name === activeSourceName)) as DataSourceItemType
-      return activeS.tokenListMap
+      const activeS: DataSourceItemType = list.find(
+        (item) => item.name === activeSourceName
+      ) as DataSourceItemType;
+      return activeS.tokenListMap;
     } else {
-      return totalAssetsMap
+      return totalAssetsMap;
     }
-  }, [list, activeSourceName, totalAssetsMap,])
+  }, [list, activeSourceName, totalAssetsMap]);
   const activeSourceTokenList = useMemo(() => {
-    return Object.values(activeAssetsMap as AssetsMap)
-  }, [activeAssetsMap])
+    return Object.values(activeAssetsMap as AssetsMap);
+  }, [activeAssetsMap]);
 
   const handleSelectSource = (sourceName: string | undefined) => {
-    setActiveSourceName(sourceName)
-  }
+    setActiveSourceName(sourceName);
+  };
   const getChartData = () => {
-    const chartData = list.map(({ name, totalBalance }) => ({ name, value: new BigNumber(totalBalance as string).toFixed(2) }))
-    return chartData
-  }
+    const chartData = list.map(({ name, totalBalance }) => ({
+      name,
+      value: new BigNumber(totalBalance as string).toFixed(2),
+    }));
+    return chartData;
+  };
   return (
     <div className="assetsOverview">
       <section className="statisticsWrapper">
@@ -132,7 +158,9 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
                 <div className="label">PnL</div>
                 <div className="value">
                   <span>{formatTotalPnl}</span>
-                  <div className="percent raise fall">{formatTotalPnlPercent}</div>
+                  <div className="percent raise fall">
+                    {formatTotalPnlPercent}
+                  </div>
                 </div>
               </div>
               <div className="descItem">
@@ -149,7 +177,12 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
           </div>
         </div>
       </section>
-      <SourcesStatisticsBar list={list} onSelect={handleSelectSource} filterSource={filterSource} />
+      <SourcesStatisticsBar
+        list={list}
+        onSelect={handleSelectSource}
+        filterSource={filterSource}
+        onClearFilter={onClearFilter}
+      />
       <TokenTable list={activeSourceTokenList} />
     </div>
   );

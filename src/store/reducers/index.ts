@@ -27,7 +27,8 @@ export type UserState = {
   exDatas: ExDatas,
   socialDatas: SocialDatas
 }
-let padoServicePort = chrome.runtime.connect({ name: 'fullscreen' })
+let padoServicePort = chrome.runtime.connect({ name: 'fullscreen'})
+
 const onDisconnectFullScreen = (port:chrome.runtime.Port) => {
   console.log('onDisconnectFullScreen store-port', port);
   padoServicePort = chrome.runtime.connect({ name: 'fullscreen' })

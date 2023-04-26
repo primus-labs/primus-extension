@@ -39,8 +39,8 @@ type SourceDescItem = {
   sourceKey: string;
 };
 interface DataSourceItemProps {
-  item: DataSourceItemType,
-  onCheck: (item: DataSourceItemType) => void
+  item: DataSourceItemType;
+  onCheck: (item: DataSourceItemType) => void;
 }
 
 const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }) => {
@@ -89,8 +89,15 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }
     }
     onCheck(source)
   }
+  const activeClassName = useMemo(() => {
+    let defalutClass = "dataSourceItem"
+    if(type === 'Social') {
+      defalutClass += ' deactive'
+    }
+    return defalutClass
+  }, [type])
   return (
-    <div className={type === 'Social' ? "dataSourceItem deactive" : "dataSourceItem"} onClick={handleClick}>
+    <div className={activeClassName} onClick={handleClick}>
       <div className="dataSourceItemT">
         <div className="TLeft">
           <img src={icon} alt="" />

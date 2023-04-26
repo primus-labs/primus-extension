@@ -59,7 +59,6 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({  binance, twitt
   const [filterWord, setFilterWord] = useState<string>()
   const [exSources, refreshExSources] = useExSources()
   const [socialSources, refreshSocialSources] = useSocialSources()
-
   const dataSourceList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources, ...socialSources })
   }, [exSources, socialSources])
@@ -99,11 +98,9 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({  binance, twitt
   const [activeSourceType, setActiveSourceType] = useState<string>('All')
 
   const handleChangeInput = (val: string) => {
-
-  }
-  const handleSearch = (val: string) => {
     setFilterWord(val)
   }
+  
   const handleChangeSelect = (val: string) => {
     setActiveSourceType(val)
   }
@@ -167,6 +164,9 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({  binance, twitt
     setActiveSource(undefined)
     setStep(0)
   }
+  const onClearFilter = () => {
+    setFilterWord('')
+  }
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
@@ -174,12 +174,12 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({  binance, twitt
         <div className="filterWrapper">
           <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} />
           <div className="pSearch">
-            <PInput onChange={handleChangeInput} type="text" placeholder="Search" onSearch={handleSearch} />
+            <PInput onChange={handleChangeInput} type="text" placeholder="Search" value={filterWord}/>
           </div>
         </div>
         {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} onCheck={handleCheckDataSourceDetail} />}
-        {activeSourceType === 'Assets' && <AssetsOverview filterSource={filterWord} />}
-        {activeSourceType === 'Social' && <SocialOverview filterSource={filterWord} />}
+        {activeSourceType === 'Assets' && <AssetsOverview filterSource={filterWord} onClearFilter={onClearFilter}/>}
+        {/* {activeSourceType === 'Social' && <SocialOverview filterSource={filterWord} />} */}
       </main>
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}

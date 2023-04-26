@@ -87,8 +87,8 @@ const Layout = () => {
     }
   }, [refreshDataFlag, updateF])
   useEffect(() => {
-    initPage()
-  }, []);
+    padoServicePort && initPage()
+  }, [padoServicePort]);
   return (
     <div className="pageApp">
       <BackgroundAnimation />
