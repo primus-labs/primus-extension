@@ -30,11 +30,13 @@ class Binance extends Exchange {
       const amt = add(free, locked).toFixed();
       gt(amt, BIGZERO) && this.tradingAccountTokenAmountMap.set(asset, amt);
     });
+
     this.tradingAccountTokenAmountMap.forEach((amt, symbol) => {
       if (symbol.startsWith('LD')) {
         const tokensymbol = symbol.replace('LD', '');
-        const tokenValue = this.tradingAccountTokenAmountMap.get(symbol);
-          + this.tradingAccountTokenAmountMap.get(tokensymbol);
+        const symbolAmount = this.tradingAccountTokenAmountMap.get(symbol) || BIGZERO;
+        const tokenSymbolAmount = this.tradingAccountTokenAmountMap.get(tokensymbol) || BIGZERO;
+        const tokenValue = add(symbolAmount,tokenSymbolAmount).toFixed();
         this.tradingAccountTokenAmountMap.set(tokensymbol, tokenValue);
         this.tradingAccountTokenAmountMap.delete(symbol);
       }
