@@ -82,12 +82,12 @@ const CreateAttesationDialog: React.FC<GetDataDialogProps> = ({ type, onClose, o
             </div>
             <div className="formItems">
               {list && list.map(item => {
-                return (<label className="formItem">
+                return (<label className="formItem" key={item.label}>
                   <input className="checkbox" name="proof" type="checkbox" defaultChecked={item.defaultValue} disabled={item.disabled} onChange={(e) => handleChange(e, item.label)} />
-                  <div className={proofs.includes(item.label)? 
-                                    "iconCheckedWrapper checked": 
-                                    (item.disabled? 
-                                      "iconCheckedWrapper disabled": 
+                  <div className={item.disabled? 
+                                    "iconCheckedWrapper disabled": 
+                                    (proofs.includes(item.label)? 
+                                      "iconCheckedWrapper checked": 
                                       "iconCheckedWrapper")}></div>
                   <div className="descItem">
                     <div className="label">{item.label}</div>

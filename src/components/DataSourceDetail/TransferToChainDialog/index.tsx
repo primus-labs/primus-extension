@@ -31,8 +31,8 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
   const handleClickBack = () => {
     onCancel()
   }
-  const handleClickNetwork = (item: ToolItem) => {
-    setActiveName(item.title)
+  const handleClickNetwork = (item: ToolItem |undefined) => {
+    setActiveName(item?.title)
   }
 
   const activeList = useMemo(() => {
@@ -40,6 +40,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
   }, [list, activeTool])
   useEffect(() => {
     setActiveTool(list[0])
+    setActiveName(list[0].title)
   }, [list])
 
 
@@ -51,7 +52,9 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
           <h1>{title}</h1>
           <h2>{desc}</h2>
           <h6>Continue with</h6>
-          <div className="activeNetwork networkItem">
+          <div
+            className={activeTool?.title===activeName ? "activeNetwork networkItem active": "activeNetwork networkItem"}
+            onClick={() => handleClickNetwork(activeTool)}>
             <img src={activeTool?.icon} alt="ETH" />
           </div>
           <div className="dividerWrapper">
