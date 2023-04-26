@@ -23,21 +23,19 @@ type SocialDatas = {
 }
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
-  binance: ExInfo;
-  okx: ExInfo;
-  kucoin: ExInfo;
-  coinbase: ExInfo;
-  twitter: any;
   sysConfig: SysConfigInfo;
-  count: number,
   exDatas: ExDatas,
   socialDatas: SocialDatas
 }
+let padoServicePort = chrome.runtime.connect({ name: 'fullscreen' })
+const onDisconnectFullScreen = (port:chrome.runtime.Port) => {
+  console.log('onDisconnectFullScreen store-port', port);
+  padoServicePort = chrome.runtime.connect({ name: 'fullscreen' })
+};
+padoServicePort.onDisconnect.addListener(onDisconnectFullScreen);
 // initial state
 const initState = {
-  padoServicePort: chrome.runtime.connect({ name: 'fullscreen' }),
-  // userInfo: {},
-  // keyStore: '',
+  padoServicePort,
   sysConfig: {
 
   },
