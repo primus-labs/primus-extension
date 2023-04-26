@@ -62,9 +62,6 @@ export const getAllOAuthSources = () => {
   return request({
     method: 'get',
     url: '/public/sources',
-    config: {
-      cache: 'force-cache'
-    }
   });
 };
 

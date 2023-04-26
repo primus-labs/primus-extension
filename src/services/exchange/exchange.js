@@ -7,6 +7,7 @@ const ONE = 1;
 const ZERO = 0;
 const USDT = 'USDT';
 const USD = 'USD';
+const DAI = 'DAI';
 
 class Exchange {
   constructor(exName, exchangeInfo) {
@@ -20,7 +21,6 @@ class Exchange {
     this.fundingAccountTokenAmountMap = new Map();
     this.tradingAccountTokenAmountMap = new Map();
     this.totalHoldingTokenSymbolList = [];
-    this.errorSymbolList = [];
     this.totalAccountTokenAmountMap = new Map();
     this.tokenPriceMap = new Map();
     this.totalAccountTokenMap = {};
@@ -85,42 +85,33 @@ class Exchange {
     let LPSymbols = this.totalHoldingTokenSymbolList
       .filter((i) => i !== USDT)
       .filter((i) => i !== USD)
-      .filter((i) => !this.errorSymbolList.includes(i))
-      .map((j) => (this.exName === 'binance' ? `${j}${USDT}` : `${j}-${USDT}`));
+      .filter((i) => i !== DAI)
+      .map((j) => (`${j}/${USDT}`));
     let res;
-    let errorSymbol;
+    //let errorSymbol;
     try {
-      res = await this.exchange.fetchTickers(LPSymbols);
+      res = await this.exchange.fetchTickers();
     } catch (e) {
-      console.log('fetchTickers error', e);
-      if (e.name === 'BadSymbol') {
-        const errormsg = e.message.split(' ');
-        errorSymbol = errormsg[errormsg.length - 1];
-        this.errorSymbolList.push(errorSymbol)
-        this.getTokenPriceMap()
-        return
-        // LPSymbols = LPSymbols.filter((i) => i !== errorSymbol);
-        // res = await this.exchange.fetchTickers(LPSymbols);
-      }
+      console.log('fetchTickers error:', this.exName, e);
+      return;
     }
+    //console.log('fetchTickers res:', this.exName, res);
 
-    this.tokenPriceMap = Object.keys(res).reduce(
-      (prev, curr) => {
-        const { symbol, last } = res[curr];
-        const tokenSymbol = symbol.replace(`/${USDT}`, '');
-        return prev.set(tokenSymbol, new BigNumber(last).toFixed());
-      },
-      new Map([
-        [USDT, ONE],
-        [USD, ONE],
-      ])
-    );
-    
-    if (this.errorSymbolList.length > 0) {
-      this.errorSymbolList.forEach((symbol) => {
-        this.tokenPriceMap.set(symbol, ZERO);
-      })
-    }
+    this.tokenPriceMap = new Map([
+      [USDT, ONE],
+      [USD, ONE],
+      [DAI, ONE]
+    ]);
+    LPSymbols.forEach((lpsymbol) => {
+      const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
+      if (res[lpsymbol]) {
+        const { last } = res[lpsymbol];
+        this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
+      } else {
+        this.tokenPriceMap.set(tokenSymbol, ZERO);
+      }
+    });
+    console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap);
     return this.tokenPriceMap;
   }
   async getTotalAccountTokenMap() {
