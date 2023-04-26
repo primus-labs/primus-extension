@@ -146,6 +146,7 @@ const Home = () => {
           desc="Create an on-chain address to easily manage your data. The address will bind to your sign up account."
           list={networkList}
           showButtonSuffixIcon={true}
+          tip="Please select one chain to create"
         />
       )}
       {step === 3 && (

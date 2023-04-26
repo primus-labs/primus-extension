@@ -18,21 +18,33 @@ interface TransferToChainDialogProps {
   title: string;
   desc: string;
   list: ToolItem[];
-  showButtonSuffixIcon?: boolean
+  showButtonSuffixIcon?: boolean;
+  tip: string;
 }
 
 const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
-  const { onClose, onSubmit, onCancel, title, desc, list, showButtonSuffixIcon = false } = props
+  const { onClose, onSubmit, onCancel, title, desc, list, showButtonSuffixIcon = false ,tip} = props
   const [activeTool, setActiveTool] = useState<ToolItem>()
   const [activeName, setActiveName] = useState<string>()
+  const [errorTip, setErrorTip] = useState<string>()
   const handleClickNext = () => {
+    if(!activeName) {
+      setErrorTip(tip)
+      return
+    }
     onSubmit()
   }
   const handleClickBack = () => {
+    
     onCancel()
   }
   const handleClickNetwork = (item: ToolItem |undefined) => {
-    setActiveName(item?.title)
+    if (item?.title === activeName) {
+      setActiveName(undefined)
+    } else {
+      setActiveName(item?.title)
+      setErrorTip(undefined)
+    }
   }
 
   const activeList = useMemo(() => {
@@ -40,7 +52,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
   }, [list, activeTool])
   useEffect(() => {
     setActiveTool(list[0])
-    setActiveName(list[0].title)
+    // setActiveName(list[0].title)
   }, [list])
 
 
@@ -69,6 +81,9 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
               </li>)
             })}
           </ul>
+          {errorTip && <div className="errorTip">
+            {errorTip}
+          </div>}
         </main>
         <button className="nextBtn" onClick={handleClickNext}>
           <span>Next</span>

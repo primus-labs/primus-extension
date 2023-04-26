@@ -67,6 +67,15 @@
     ul.networkList
       @extend .frac
       gap: $mGap
+    .errorTip
+      margin-top: 54px
+      padding: 0 12px
+      @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
+      
+      font-size: 12px
+      line-height: 25px
+      font-family: 'Inter-Regualr'
+      color: rgba(0,0,0,0.4)
 @media (max-width: 1680px)
   .TransferToChainDialog
     padding: 30px 42px 31px
@@ -99,5 +108,7 @@
         img
           width: 36.95px
       .dividerWrapper
+        margin: 10px 0
         .divider
           font-size: 12px
+          line-height:15px

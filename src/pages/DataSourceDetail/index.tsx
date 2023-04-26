@@ -103,6 +103,7 @@ const DataSourceDetail = () => {
         title='Provide Attestation'
         desc='Send your proof to one of the following chain. Provide an on-chain attestation for dApps.'
         list={proveToolList}
+        tip="Please select"
       />}
       {step === 4 && <OnChainSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource as ExDataType} desc="Your attestation is recorded on-chain!" />}
     </div>
