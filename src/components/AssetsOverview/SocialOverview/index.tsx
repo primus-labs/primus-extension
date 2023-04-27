@@ -9,10 +9,11 @@ import { add, mul } from '@/utils/utils'
 import PieChart from '../PieChart'
 import useSocialSources from '@/hooks/useSocialSources';
 interface AssetsOverviewProps {
-  filterSource: string | undefined
+  filterSource: string | undefined;
+  onClearFilter: () => void;
 }
 
-const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
+const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFilter }) => {
   const [socialDatasMap, refreshSocialSources] = useSocialSources()
   const list = useMemo(() => {
     return socialDatasMap ? Object.values(socialDatasMap) : []
@@ -92,7 +93,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource }) => {
           </div>
         </div>
       </section>
-      <SourcesStatisticsBar list={list} onSelect={handleSelectSource} filterSource={filterSource} type="Social" />
+      <SourcesStatisticsBar list={list} onSelect={handleSelectSource} filterSource={filterSource} type="Social" onClearFilter={onClearFilter}/>
       <TokenTable list={list} type="Social" />
     </div>
   );

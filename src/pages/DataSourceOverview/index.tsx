@@ -179,7 +179,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({  binance, twitt
         </div>
         {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} onCheck={handleCheckDataSourceDetail} />}
         {activeSourceType === 'Assets' && <AssetsOverview filterSource={filterWord} onClearFilter={onClearFilter}/>}
-        {/* {activeSourceType === 'Social' && <SocialOverview filterSource={filterWord} />} */}
+        {activeSourceType === 'Social' && <SocialOverview filterSource={filterWord} onClearFilter={onClearFilter} />}
       </main>
       {step === 1 && <DataSourcesDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesDialog} onCheck={onCheckDataSourcesDialog} />}
       {step === 1.5 && <DataSourcesExplainDialog onClose={handleCloseMask} onSubmit={onSubmitDataSourcesExplainDialog} />}
