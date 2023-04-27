@@ -86,8 +86,21 @@ const Layout = () => {
       (updateF as () => void)();
     }
   }, [refreshDataFlag, updateF])
+  const addDisconnectListener = () => {
+    const onDisconnectFullScreen = (port:chrome.runtime.Port) => {
+      console.log('onDisconnectFullScreen port in page', port);
+      dispatch({
+        type: 'setPort'
+      })
+    };
+    padoServicePort.onDisconnect.addListener(onDisconnectFullScreen);
+  }
   useEffect(() => {
-    padoServicePort && initPage()
+    if(padoServicePort) {
+      initPage()
+      addDisconnectListener()
+    }
+    
   }, [padoServicePort]);
   return (
     <div className="pageApp">

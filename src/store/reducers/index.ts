@@ -27,16 +27,10 @@ export type UserState = {
   exDatas: ExDatas,
   socialDatas: SocialDatas
 }
-let padoServicePort = chrome.runtime.connect({ name: 'fullscreen'})
 
-const onDisconnectFullScreen = (port:chrome.runtime.Port) => {
-  console.log('onDisconnectFullScreen store-port', port);
-  padoServicePort = chrome.runtime.connect({ name: 'fullscreen' })
-};
-padoServicePort.onDisconnect.addListener(onDisconnectFullScreen);
 // initial state
 const initState = {
-  padoServicePort,
+  padoServicePort:chrome.runtime.connect({ name: 'fullscreen'}),
   sysConfig: {
 
   },
@@ -47,24 +41,20 @@ const initState = {
 // reducer
 const reducer:any = function (state = initState, action: any) {
   switch (action.type) {
-    // case SETKEYSTORE:
-    //   return { ...state, keyStore: action.payload };
-    // case SETUSERINFO:
-    //   return { ...state, userInfo: action.payload };
-    // case SETALLSTORAGE:
-    //   return { ...state, ...action.payload };
-    
+    case 'setPort':
+      return { ...state, padoServicePort: chrome.runtime.connect({ name: 'fullscreen' }) };
     case SETEXCHAGEDATA:
       return { ...state, exDatas: {...state.exDatas, ...action.payload}};
     case SETSOCIALDATA:
       return { ...state, socialDatas: {...state.socialDatas, ...action.payload}};
     case SETSYSCONFIG:
-      return { ...state, sysConfig:action.payload };
-    
+      return { ...state, sysConfig:action.payload }; 
     default:
       return state;
   }
 };
+
+
 export default reducer;
 
 // action creator
