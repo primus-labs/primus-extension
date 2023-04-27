@@ -6,7 +6,7 @@ import * as echarts from 'echarts/core';
 // Import charts, all with Chart suffix
 import { PieChart } from 'echarts/charts';
 import BigNumber from 'bignumber.js'
-import { add, mul, div, gt } from '@/utils/utils'
+import { add, mul, div, gt,sub } from '@/utils/utils'
 import { CHARTCOLORS } from '@/utils/constants'
 // import components, all suffixed with Component
 import {
@@ -34,7 +34,15 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
   console.log('PPieChart', list)
   const [options, setOptions] = useState({})
   const getOption = useCallback((name?: string) => {
-    const chartData = list
+    const chartData = list.sort((a,b) => sub(Number(a.value),Number(b.value)).toNumber()).map((i,k) => {
+      return {
+        ...i,
+        itemStyle: {
+          normal: {color:CHARTCOLORS[k]},
+          emphasis: {color:CHARTCOLORS[k]},
+        }
+      }
+    })
     const allSelected = list.reduce((prev, curr) => {
       const { name } = curr
       return { ...prev, [name]: true }
@@ -65,7 +73,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
       legendItemRight = 9
     }
     return {
-      color: CHARTCOLORS,
+      // color: CHARTCOLORS,
       tooltip: {
         trigger: 'item',
         // show: false
@@ -141,7 +149,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
           // avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 0,
-            borderColor: '#fff',
+            borderColor: 'rgba(255, 255, 255, 0.6)',
             borderWidth: 2
           },
           label: {
