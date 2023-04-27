@@ -1,9 +1,12 @@
 import React from 'react';
 import './index.sass'
 import iconSuc from '@/assets/img/iconSuc.svg';
+import iconError from '@/assets/img/iconError.svg';
+import iconInfoColorful from '@/assets/img/iconInfoColorful.svg';
 import Bridge from '@/components/Bridge/index'
 import PMask from '@/components/PMask'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
+import PLoading from '@/components/PLoading'
 
 interface AddSourceSucDialogProps {
   onClose: () => void;
@@ -11,9 +14,10 @@ interface AddSourceSucDialogProps {
   onSubmit: () => void;
   desc: string;
   title?:string;
+  type?:string;
 }
 
-const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({ onClose, activeSource, onSubmit, title='Congratulations',desc }) => {
+const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({ onClose, activeSource, onSubmit, title='Congratulations',desc,type='suc' }) => {
   const icon = activeSource?.icon
   const handleClickNext = () => {
     onSubmit()
@@ -23,7 +27,10 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({ onClose, active
       <div className="padoDialog addDataSourceSucDialog">
         <main>
           <Bridge endIcon={icon} />
-          <img className="sucImg" src={iconSuc} alt="" />
+          {type === 'suc' && <img className="sucImg" src={iconSuc} alt="" />}
+          {type === 'error' && <img className="sucImg" src={iconError} alt="" />}
+          {type === 'warn' && <img className="sucImg" src={iconInfoColorful} alt="" />}
+          {type === 'loading' && <PLoading/>}
           <h1>{title}</h1>
           <h2>{desc}</h2>
         </main>

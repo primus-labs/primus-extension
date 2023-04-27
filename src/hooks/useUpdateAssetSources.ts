@@ -69,11 +69,12 @@ const useUpdateAssetSources = (flag = false) => {
     // if (flag) {
       const padoServicePortListener = async function (message: any) {
         const {resType, res} = message
-        if (resType?.startsWith(`set-`)  && res) {
+        if (resType?.startsWith(`set-`)) {
           console.log(`page_get:${resType}:`, message.res);
           const name = resType.split('-')[1]
           setQueryObj(obj => ({...obj,[name]: true}))
         }
+        // TODO request fail
         // padoServicePort.onMessage.removeListener(padoServicePortListener);
       };
       padoServicePort.onMessage.addListener(padoServicePortListener);

@@ -43,20 +43,25 @@ class Exchange {
     if (this.totalHoldingTokenSymbolList.length > 0) {
       return this.totalHoldingTokenSymbolList;
     }
-    await Promise.all([
-      this.getFundingAccountTokenAmountMap(),
-      this.getTradingAccountTokenAmountMap(),
-    ]);
-    const duplicateSymbolArr = [
-      ...this.fundingAccountTokenAmountMap.keys(),
-      ...this.tradingAccountTokenAmountMap.keys(),
-    ];
-    this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
-    // console.log(
-    //   'totalHoldingTokenSymbolList',
-    //   this.totalHoldingTokenSymbolList
-    // );
-    return this.totalHoldingTokenSymbolList;
+    // try {
+      await Promise.all([
+        this.getFundingAccountTokenAmountMap(),
+        this.getTradingAccountTokenAmountMap(),
+      ]);
+      const duplicateSymbolArr = [
+        ...this.fundingAccountTokenAmountMap.keys(),
+        ...this.tradingAccountTokenAmountMap.keys(),
+      ];
+      this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
+      // console.log(
+      //   'totalHoldingTokenSymbolList',
+      //   this.totalHoldingTokenSymbolList
+      // );
+      return this.totalHoldingTokenSymbolList;
+    // }  catch (error) {
+    //   console.log('exchange getTotalHoldingTokenSymbolList error', error);
+    // }
+    
   }
   async getTotalAccountTokenAmountMap() {
     await this.getTotalHoldingTokenSymbolList();
@@ -152,8 +157,13 @@ class Exchange {
     return this.totalAccountBalance;
   }
   async getInfo() {
-    await this.getTotalAccountBalance();
-    return this.exchange;
+    try {
+      await this.getTotalAccountBalance();
+      return this.exchange;
+    } catch (error) {
+      console.log('exchange getInfo error', error);
+      throw new Error(error)
+    }
   }
   async getTokenPrice(symbol) {
     // binance=>'ETHUSDT',others:'ETH-USDT'

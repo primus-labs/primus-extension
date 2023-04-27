@@ -41,80 +41,89 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
     case 'set-okx':
     case 'set-kucoin':
     case 'set-coinbase':
-      // get ex constructor params
-      let exParams = {};
-      if (apiKey) {
-        exParams = message.params;
-      } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
-        exParams = EXCHANGEINFO[exchangeName];
-      } else {
-        const cipherData = await chrome.storage.local.get(
-          exchangeName + 'cipher'
-        );
-        if (cipherData) {
-          try {
-            const apiKeyInfo = JSON.parse(
-              decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
-            );
-            exParams = { ...apiKeyInfo };
-          } catch (err) {
-            console.log('decrypt', err);
+      try{
+        // get ex constructor params
+        let exParams = {};
+        if (apiKey) {
+          exParams = message.params;
+        } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
+          exParams = EXCHANGEINFO[exchangeName];
+        } else {
+          const cipherData = await chrome.storage.local.get(
+            exchangeName + 'cipher'
+          );
+          if (cipherData) {
+            try {
+              const apiKeyInfo = JSON.parse(
+                decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
+              );
+              exParams = { ...apiKeyInfo };
+            } catch (err) {
+              console.log('decrypt', err);
+            }
           }
         }
-      }
-      // request ex data
-      const exchangeInfo = DATASOURCEMAP[exchangeName];
-      const constructorF = exchangeInfo.constructorF;
-      const ex = new constructorF(exParams);
-      await ex.getInfo();
-      // compute changes from last time => pnl
-      let storageRes = await chrome.storage.local.get(exchangeName);
-      const lastData = storageRes[exchangeName];
-      let pnl = null;
-      if (lastData) {
-        const lastTotalBal = JSON.parse(lastData).totalBalance;
-        pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
-      }
-      const exData = {
-        totalBalance: ex.totalAccountBalance,
-        tokenListMap: ex.totalAccountTokenMap,
-        apiKey: exParams.apiKey,
-        date: getCurrentDate(),
-        timestamp: +new Date(),
-        version: ExchangeStoreVersion,
-      };
-      if (pnl !== null && pnl !== undefined) {
-        exData.pnl = pnl;
-      }
-      // store data
-      if (apiKey) {
-        const { apiKey, secretKey, passphase } = exParams;
-        const exCipherData = {
-          apiKey,
-          secretKey,
-          passphase,
+        // request ex data
+        const exchangeInfo = DATASOURCEMAP[exchangeName];
+        const constructorF = exchangeInfo.constructorF;
+        const ex = new constructorF(exParams);
+        await ex.getInfo();
+        // compute changes from last time => pnl
+        let storageRes = await chrome.storage.local.get(exchangeName);
+        const lastData = storageRes[exchangeName];
+        let pnl = null;
+        if (lastData) {
+          const lastTotalBal = JSON.parse(lastData).totalBalance;
+          pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
+        }
+        const exData = {
+          totalBalance: ex.totalAccountBalance,
+          tokenListMap: ex.totalAccountTokenMap,
+          apiKey: exParams.apiKey,
+          date: getCurrentDate(),
+          timestamp: +new Date(),
+          version: ExchangeStoreVersion,
         };
-        const encryptedKey = encrypt(
-          JSON.stringify(exCipherData),
-          USERPASSWORD
-        );
-        await chrome.storage.local.set({
-          [exchangeName]: JSON.stringify(exData),
-          [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
-        });
-        EXCHANGEINFO[exchangeName] = exParams;
-        port.postMessage({ resType: type, res: true });
-      } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
-        await chrome.storage.local.set({
-          [exchangeName]: JSON.stringify(exData),
-        });
-        port.postMessage({ resType: type, res: true });
-      } else {
-        await chrome.storage.local.set({
-          [exchangeName]: JSON.stringify(exData),
-        });
-        EXCHANGEINFO[exchangeName] = exParams;
-        port.postMessage({ resType: type, res: true });
+        if (pnl !== null && pnl !== undefined) {
+          exData.pnl = pnl;
+        }
+        // store data
+        if (apiKey) {
+          const { apiKey, secretKey, passphase } = exParams;
+          const exCipherData = {
+            apiKey,
+            secretKey,
+            passphase,
+          };
+          const encryptedKey = encrypt(
+            JSON.stringify(exCipherData),
+            USERPASSWORD
+          );
+          await chrome.storage.local.set({
+            [exchangeName]: JSON.stringify(exData),
+            [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
+          });
+          EXCHANGEINFO[exchangeName] = exParams;
+          port.postMessage({ resType: type, res: true });
+        } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
+          await chrome.storage.local.set({
+            [exchangeName]: JSON.stringify(exData),
+          });
+          port.postMessage({ resType: type, res: true });
+        } else {
+          await chrome.storage.local.set({
+            [exchangeName]: JSON.stringify(exData),
+          });
+          EXCHANGEINFO[exchangeName] = exParams;
+          port.postMessage({ resType: type, res: true });
+        }
+      } catch (error) {
+        console.log('exData', error,error.message, error.message.indexOf('AuthenticationError'))
+        if(error.message.indexOf('AuthenticationError')> -1) {
+          port.postMessage({ resType: type, res: false, msg: 'AuthenticationError' });
+        } else if (error.message.indexOf('TypeError: Failed to fetch')> -1) {
+          port.postMessage({ resType: type, res: false, msg: 'TypeError: Failed to fetch' });
+        }
       }
       break;
     default:
