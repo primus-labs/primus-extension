@@ -1,11 +1,14 @@
-import React, { useState, useMemo } from 'react';
-import { useSelector } from 'react-redux'
+import React, { useState, useMemo , useEffect, useCallback} from 'react';
+import { useSelector, useDispatch } from 'react-redux'
 import { formatD, formatUD,sub,getCurrentDate } from '@/utils/utils'
 import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem'
 // import PInput from '@/components/PInput'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
+import type { Dispatch } from 'react'
+import { setSysConfigAction } from '@/store/actions'
+
 interface TokenTableProps {
   list: TokenMap[] | DataSourceItemType[];
   type?: string;
@@ -13,7 +16,37 @@ interface TokenTableProps {
 
 const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
   // console.log('TokenTable-list', list);
-  const tokenLogoPrefix = useSelector((state: UserState) => state.sysConfig.TOKEN_LOGO_PREFIX)
+  const sysConfig = useSelector((state: UserState) => state.sysConfig)
+  const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
+  const tokenLogoPrefix = useMemo(() => {
+    console.log('11223344', sysConfig)
+    return sysConfig.TOKEN_LOGO_PREFIX
+  }, [sysConfig])
+  const dispatch: Dispatch<any> = useDispatch()
+  const getSysConfig = useCallback(async () => {
+    const padoServicePortListener = async function (message: any) {
+      if (message.resMethodName === 'getSysConfig') {
+        console.log("page_get:getSysConfig:", message.res);
+        const configMap = message.res.reduce((prev: any, curr: any) => {
+          const { configName, configValue } = curr
+          prev[configName] = configValue
+          return prev
+        }, {})
+        dispatch(setSysConfigAction(configMap))
+      }
+    }
+    padoServicePort.onMessage.addListener(padoServicePortListener)
+    padoServicePort.postMessage({
+      fullScreenType: 'padoService',
+      reqMethodName: 'getSysConfig',
+    })
+    console.log("page_send:getSysConfig request",padoServicePort);
+  }, [dispatch, padoServicePort])
+  useEffect(() => {
+    if(!sysConfig.TOKEN_LOGO_PREFIX) {
+      getSysConfig()
+    }
+  }, [sysConfig])
   const [filterToken, setFilterToken] = useState<string>()
   const activeList = useMemo(() => {
     if (filterToken) {
