@@ -1,11 +1,20 @@
 import BigNumber from 'bignumber.js';
 import { add, gt } from '@/utils/utils';
 import Exchange from './exchange';
+import CcxtBinance from './ccxtbinance';
 const BIGZERO = new BigNumber(0);
 
 class Binance extends Exchange {
   constructor(exchangeInfo) {
     super('binance', exchangeInfo);
+  }
+
+  initCctx() {
+    this.exchange = new CcxtBinance({
+      apiKey: this.apiKey,
+      secret: this.secretKey,
+      password: this.passphase,
+    });
   }
 
   async getFundingAccountTokenAmountMap() {

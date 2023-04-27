@@ -3236,10 +3236,10 @@ catering@^2.1.0, catering@^2.1.1:
   resolved "https://registry.yarnpkg.com/catering/-/catering-2.1.1.tgz#66acba06ed5ee28d5286133982a927de9a04b510"
   integrity sha512-K7Qy8O9p76sL3/3m7/zLKbRkyOlSZAgzEaLhyj2mXS8PsCud2Eo4hAb8aLtZqHh0QGqLcb9dlJSu6lHRVENm1w==
 
-ccxt@^3.0.18:
-  version "3.0.18"
-  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-3.0.18.tgz#f78dd15071ba792e026d1c99ca3d8bf0897bfd54"
-  integrity sha512-/SnYxs8gWNqdQjN17ckgSTmQcmC7g/3dBxPbM2Bymx/L+b7ZMpDVYQA95mTNf2teOKIt9Ea/5GDBEMQFADVNAw==
+ccxt@^3.0.78:
+  version "3.0.78"
+  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-3.0.78.tgz#9a97e926df5bd2ff1822f8e8245f21bb93f4e981"
+  integrity sha512-ECk8mpNZqOYEkuEArFYZudi1CZxIrzHYjeUQ36y1WIMyVl/Dm8VPrbvttfYEH8phiAi8cpggUojdKkBAbwBvxA==
   dependencies:
     ws "^8.8.1"
 
