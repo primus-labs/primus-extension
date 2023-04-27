@@ -123,6 +123,8 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           port.postMessage({ resType: type, res: false, msg: 'AuthenticationError' });
         } else if (error.message.indexOf('TypeError: Failed to fetch')> -1) {
           port.postMessage({ resType: type, res: false, msg: 'TypeError: Failed to fetch' });
+        } else {
+          port.postMessage({ resType: type, res: false, msg: 'UnhnowError' });
         }
       }
       break;

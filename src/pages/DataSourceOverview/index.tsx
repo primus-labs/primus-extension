@@ -12,7 +12,6 @@ import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesD
 import ConnectDataSourceDialog from '@/components/DataSourceOverview/ConnectDataSourceDialog';
 import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
-import RequestLoadingDialog from '@/components/DataSourceOverview/RequestLoadingDialog';
 import AssetsOverview from '@/components/AssetsOverview/AssetsOverview';
 import SocialOverview from '@/components/AssetsOverview/SocialOverview';
 import { getMutipleStorageSyncData } from '@/utils/utils';
@@ -49,6 +48,11 @@ type PortMsg = {
   resMethodName: string;
   res: any;
 };
+type ActiveRequestType = {
+  type: string;
+  title: string;
+  desc: string;
+}
 const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
   binance,
   twitter,
@@ -64,6 +68,9 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
   const [filterWord, setFilterWord] = useState<string>();
   const [exSources, refreshExSources] = useExSources();
   const [socialSources, refreshSocialSources] = useSocialSources();
+  const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
+  const [countdown, setCountdown] = useState<number>(6)
+  const [countdownTimer, setCountdownTimer] = useState<any>()
   const dataSourceList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources, ...socialSources });
   }, [exSources, socialSources]);
@@ -121,6 +128,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
   };
   const handleCloseMask = () => {
     setStep(0);
+    clearCountdownTimer()
   };
   const onSubmitDataSourcesDialog = async (item: DataFieldItem) => {
     if (item.type === 'Assets') {
@@ -139,11 +147,25 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
   const onSubmitDataSourcesExplainDialog = () => {
     setStep(1);
   };
+  const clearCountdownTimer = () => {
+    countdownTimer && clearInterval(countdownTimer)
+  }
   const onSubmitConnectDataSourceDialogDialog = useCallback(
     async (form: GetDataFormProps) => {
       const lowerCaseSourceName = form?.name?.toLowerCase();
       // setLoading(true)
       setStep(2.5);
+      clearCountdownTimer()
+      setCountdownTimer(() => {
+        return setInterval(() => {
+          setCountdown((t) => t-1)
+        }, 1000)
+      })
+      setActiveRequest({
+        type: 'loading',
+        title: 'Data being requested',
+        desc:'It may take a few minutes.'
+      })
       const reqType = `set-${lowerCaseSourceName}`;
       const msg: any = {
         fullScreenType: 'networkreq',
@@ -156,20 +178,30 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
       console.log(`page_send:${reqType} request`);
       const padoServicePortListener = async function (message: any) {
         console.log(`page_get:${reqType}:`, message.res);
-        // if (message.resType === `${reqType}` && message.res) {
-        //   setStep(3);
-        //   // setLoading(false);
-        //   (refreshExSources as () => void)()
-        // }
         if (message.resType === `${reqType}`) {
+          clearCountdownTimer();
           if (message.res) {
             setStep(3);
             (refreshExSources as () => void)();
           } else {
             if(message.msg === 'AuthenticationError'){
-              setStep(2.6);
+              setActiveRequest({
+                type: 'error',
+                title: 'Invalid input',
+                desc:'Please check your API Key or Secret Key.'
+              })
             } else if(message.msg === 'TypeError: Failed to fetch') {
-              setStep(2.7);
+              setActiveRequest({
+                type: 'warn',
+                title: 'Your connection are lost',
+                desc:'Please check your internet connection and try again'
+              })
+            } else {
+              setActiveRequest({
+                type: 'warn',
+                title: 'Oops...',
+                desc:'Something went wrong. Please try again later.'
+              })
             }
           }
         }
@@ -187,7 +219,22 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
   const onClearFilter = () => {
     setFilterWord('');
   };
-
+  useEffect(() => {
+    return () => {
+      clearCountdownTimer()
+    }
+  }, [])
+  useEffect(() => {
+    if(countdown === 0 ){
+      clearCountdownTimer()
+      step === 2.5 && activeRequest?.type === 'loading' && setActiveRequest({
+        type: 'warn',
+        title: 'Request timed out',
+        desc:'Something went wrong. Please try again later.'
+      })
+    }
+    countdown < 0  && clearCountdownTimer()
+  }, [countdown])
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
@@ -247,31 +294,11 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
       {step === 2.5 && (
         <AddSourceSucDialog
           onClose={handleCloseMask}
-          onSubmit={onSubmitAddSourceSucDialog}
+          onSubmit={() => activeRequest?.type === 'loading'?onSubmitAddSourceSucDialog():setStep(2)}
           activeSource={activeSource}
-          type="loading"
-          title="Data being requested"
-          desc="It may take a few minutes."
-        />
-      )}
-      {step === 2.6 && (
-        <AddSourceSucDialog
-          onClose={handleCloseMask}
-          onSubmit={() => setStep(2)}
-          activeSource={activeSource}
-          type="error"
-          title="Invalid input"
-          desc="Please check your API Key or Secret Key."
-        />
-      )}
-      {step === 2.7 && (
-        <AddSourceSucDialog
-          onClose={handleCloseMask}
-          onSubmit={() => setStep(0)}
-          activeSource={activeSource}
-          type="warn"
-          title="Your connection are lost"
-          desc="Please check your internet connection and try again"
+          type={activeRequest?.type}
+          title={activeRequest?.title}
+          desc={activeRequest?.desc}
         />
       )}
       {step === 3 && (

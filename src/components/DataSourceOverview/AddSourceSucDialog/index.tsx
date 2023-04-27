@@ -12,12 +12,12 @@ interface AddSourceSucDialogProps {
   onClose: () => void;
   activeSource?: DataFieldItem;
   onSubmit: () => void;
-  desc: string;
+  desc?: string;
   title?:string;
   type?:string;
 }
 
-const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({ onClose, activeSource, onSubmit, title='Congratulations',desc,type='suc' }) => {
+const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({ onClose, activeSource, onSubmit, title='Congratulations',desc='',type='suc' }) => {
   const icon = activeSource?.icon
   const handleClickNext = () => {
     onSubmit()
