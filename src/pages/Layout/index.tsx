@@ -10,7 +10,7 @@ import rem from '@/utils/rem.js';
 import { setSysConfigAction } from '@/store/actions'
 import useUpdateAllSources from '@/hooks/useUpdateAllSources'
 import type { UserState } from '@/store/reducers'
-
+import {postMsg} from '@/utils/utils'
 
 
 import './index.sass'
@@ -50,7 +50,7 @@ const Layout = () => {
       }
     }
     padoServicePort.onMessage.addListener(padoServicePortListener)
-    padoServicePort.postMessage({
+    postMsg(padoServicePort, {
       fullScreenType: 'padoService',
       reqMethodName: 'getSysConfig',
     })
@@ -72,7 +72,7 @@ const Layout = () => {
       reqMethodName: 'queryUserPassword',
       params: {}
     }
-    padoServicePort.postMessage(msg)
+    postMsg(padoServicePort, msg)
   }
   useEffect(() => {
     rem();

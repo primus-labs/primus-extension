@@ -8,6 +8,7 @@ import type { UserState } from '@/store/reducers'
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
 import type { Dispatch } from 'react'
 import { setSysConfigAction } from '@/store/actions'
+import {postMsg} from '@/utils/utils'
 
 interface TokenTableProps {
   list: TokenMap[] | DataSourceItemType[];
@@ -36,7 +37,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
       }
     }
     padoServicePort.onMessage.addListener(padoServicePortListener)
-    padoServicePort.postMessage({
+    postMsg(padoServicePort, {
       fullScreenType: 'padoService',
       reqMethodName: 'getSysConfig',
     })

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import { add, gt, div } from '@/utils/utils';
+import { add, gt, div, postMsg } from '@/utils/utils';
 import type {
   TokenMap,
   AssetsMap,
@@ -107,7 +107,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
         type: 'get',
         key: storageKey,
       };
-      padoServicePort.postMessage(msg);
+      postMsg(padoServicePort, msg)
       const padoServicePortListener = async function (message: any) {
         // console.log(`page_get:storeg-${storageKey}:`, message.res);
         if (message.resType === `get` && message.key === storageKey) {

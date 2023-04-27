@@ -5,7 +5,7 @@ import {
   refreshAuthData,
 } from '@/services/user';
 import { getSysConfig } from '@/services/config';
-import { getCurrentDate, getSingleStorageSyncData } from '@/utils/utils';
+import { getCurrentDate, getSingleStorageSyncData, postMsg } from '@/utils/utils';
 import { decrypt } from '@/utils/crypto';
 import { SocailStoreVersion } from '@/utils/constants';
 import {default as processExReq, clear} from './exData';
@@ -121,7 +121,7 @@ const processAlgorithmReq = async (message, port) => {
       break;
     case 'stop':
       await chrome.offscreen.closeDocument();
-      fullscreenPort.postMessage({ resType: 'algorithm', resMethodName: 'stop', res: {retcode:0} });
+      postMsg(fullscreenPort, { resType: 'algorithm', resMethodName: 'stop', res: {retcode:0} })
       break;
     default:
       break;
@@ -141,14 +141,14 @@ const processpadoServiceReq = async (message, port) => {
   switch (reqMethodName) {
     case 'getAllOAuthSources':
       if (rc === 0) {
-        port.postMessage({ resMethodName: reqMethodName, res: result });
+        postMsg(port,{ resMethodName: reqMethodName, res: result })
       }
       break;
     case 'checkIsLogin':
       if (rc === 0) {
         if (params.data_type === 'LOGIN') {
           await chrome.storage.local.set({ userInfo: JSON.stringify(result) }); // TODO
-          port.postMessage({ resMethodName: reqMethodName, res: true });
+          postMsg(port,{ resMethodName: reqMethodName, res: true })
         } else if (params.data_type === 'DATASOURCE') {
           const lowerCaseSourceName = params.source.toLowerCase();
           const socialSourceData = {
@@ -160,7 +160,7 @@ const processpadoServiceReq = async (message, port) => {
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           }); // TODO
-          port.postMessage({
+          postMsg(port,{
             resMethodName: reqMethodName,
             res: true,
             params: {
@@ -170,10 +170,10 @@ const processpadoServiceReq = async (message, port) => {
               //   [lowerCaseSourceName]: socialSourceData,
               // },
             },
-          });
+          })
         }
       } else {
-        port.postMessage({ resMethodName: reqMethodName, res: false });
+        postMsg(port,{ resMethodName: reqMethodName, res: false })
       }
       break;
     case 'bindUserAddress':
@@ -186,14 +186,14 @@ const processpadoServiceReq = async (message, port) => {
           },
         };
         await processWalletReq(msg, port);
-        port.postMessage({ resMethodName: reqMethodName, res: true });
+        postMsg(port,{ resMethodName: reqMethodName, res: true })
       } else {
-        port.postMessage({ resMethodName: reqMethodName, res: false });
+        postMsg(port,{ resMethodName: reqMethodName, res: false })
       }
       break;
     case 'getSysConfig':
       if (rc === 0) {
-        port.postMessage({ resMethodName: reqMethodName, res: result });
+        postMsg(port,{ resMethodName: reqMethodName, res: result })
       }
       break;
     case 'refreshAuthData':
@@ -208,26 +208,26 @@ const processpadoServiceReq = async (message, port) => {
         await chrome.storage.local.set({
           [lowerCaseSourceName]: JSON.stringify(socialSourceData),
         });
-        port.postMessage({
+        postMsg(port,{
           resMethodName: reqMethodName,
           res: true,
           params: {
             mc,
             source: params.source,
           },
-        });
+        })
       } else if (rc === 1 && mc === 'UNAUTHORIZED_401') {
         //Token expiration
-        port.postMessage({
+        postMsg(port,{
           resMethodName: reqMethodName,
           res: false,
           params: {
             mc,
             source: params.source,
           },
-        });
+        })
       } else {
-        port.postMessage({ resMethodName: reqMethodName, res: false });
+        postMsg(port,{ resMethodName: reqMethodName, res: false })
       }
       break;
     default:
@@ -248,11 +248,11 @@ const processStorageReq = async (message, port) => {
         const valStr = res[key];
         const val = JSON.parse(decrypt(valStr, USERPASSWORD));
         // const { apiKey, secretKey, passphase } = val
-        port.postMessage({
+        postMsg(port,{
           resType: 'get',
           key: key,
           value: val,
-        });
+        })
       }
       break;
     case 'remove':
@@ -279,9 +279,9 @@ const processWalletReq = async (message, port) => {
             web3EthAccount = new Web3EthAccounts();
             web3EthAccount.decrypt(keyStore, password);
             USERPASSWORD = password;
-            port.postMessage({ resMethodName: reqMethodName, res: true });
+            postMsg(port,{ resMethodName: reqMethodName, res: true })
           } catch {
-            port.postMessage({ resMethodName: reqMethodName, res: false });
+            postMsg(port,{ resMethodName: reqMethodName, res: false })
           }
         }
       });
@@ -312,7 +312,7 @@ const processWalletReq = async (message, port) => {
       web3EthAccount = null;
       break;
     case 'queryUserPassword':
-      port.postMessage({ resMethodName: reqMethodName, res: !!USERPASSWORD });
+      postMsg(port,{ resMethodName: reqMethodName, res: !!USERPASSWORD })
       break;
     case 'create':
       try {
@@ -330,9 +330,9 @@ const processWalletReq = async (message, port) => {
           };
           await processStorageReq(transferMsg, port);
         }
-        port.postMessage({ resMethodName: reqMethodName, res: acc.address });
+        postMsg(port,{ resMethodName: reqMethodName, res: acc.address })
       } catch {
-        port.postMessage({ resMethodName: reqMethodName, res: '' });
+        postMsg(port,{ resMethodName: reqMethodName, res: '' })
       }
       break;
     default:
@@ -350,6 +350,6 @@ const onDisconnectFullScreen = (port) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('background onMessage message', message);
   if (message.resType === 'algorithm' && fullscreenPort) {
-      fullscreenPort.postMessage(message);
+      postMsg(fullscreenPort,message)
   }
 });

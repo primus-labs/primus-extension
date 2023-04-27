@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { DATASOURCEMAP } from '@/utils/constants';
 import { getMutipleStorageSyncData } from '@/utils/utils';
 import type { UserState } from '@/store/reducers';
-
+import {postMsg} from '@/utils/utils'
 type ExKeysStorages = {
   [propName: string]: any;
 };
@@ -50,7 +50,7 @@ const useUpdateAssetSources = (flag = false) => {
         type: reqType,
         params: {},
       };
-      padoServicePort.postMessage(msg);
+      postMsg(padoServicePort,msg)
       console.log(`page_send:${reqType} request`);
     })
  

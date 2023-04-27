@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid';
 import type { UserState } from '@/store/reducers'
 import { setSocialDataAction } from '@/store/actions';
-
+import {postMsg} from '@/utils/utils'
 const useAuthorization = () => {
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [authWindowId, setAuthWindowId] = useState<number>()
@@ -15,7 +15,7 @@ const useAuthorization = () => {
       setAuthWindowId(newWindowId)
       // console.log('create', newWindowId)
       const fetchIsAuthDialog = (state: string, source: string) => {
-        padoServicePort.postMessage({
+        postMsg(padoServicePort, {
           fullScreenType: 'padoService',
           reqMethodName: 'checkIsLogin',
           params: {

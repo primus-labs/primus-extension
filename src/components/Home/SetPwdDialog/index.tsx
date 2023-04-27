@@ -6,6 +6,7 @@ import PInput from '@/components/PInput/index'
 import PMask from '@/components/PMask'
 import { useSelector } from 'react-redux'
 import type { UserState } from '@/store/reducers'
+import {postMsg} from '@/utils/utils'
 
 interface SetPwdDialogProps {
   onClose: () => void;
@@ -80,7 +81,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
           }
         }
         padoServicePort.onMessage.addListener(padoServicePortListener)
-        padoServicePort.postMessage({
+        postMsg(padoServicePort, {
           fullScreenType: 'padoService',
           reqMethodName: 'bindUserAddress',
           params: {
@@ -117,7 +118,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
       reqMethodName: 'create',
       params: {}
     }
-    padoServicePort.postMessage(msg)
+    postMsg(padoServicePort, msg)
   }
   const handleChangePwd = (val: string) => {
     setPwd(val)

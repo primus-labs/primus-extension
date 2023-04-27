@@ -83,3 +83,11 @@ export  function formatD (totalBalance: string, decimal: number = 2)  {
 export  function formatUD (totalBalance: string)  {
   return `$${formatD(totalBalance)}`
 }
+
+export function postMsg (port:chrome.runtime.Port, msg:any) {
+  try {
+    port.postMessage(msg);
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}

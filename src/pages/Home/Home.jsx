@@ -7,7 +7,7 @@ import SetPwdDialog from '@/components/Home/SetPwdDialog';
 import SetSucDialog from '@/components/Home/SetSucDialog';
 import AsideAnimation from '@/components/AsideAnimation';
 import './Home.sass';
-import { getMutipleStorageSyncData } from '@/utils/utils';
+import { getMutipleStorageSyncData, postMsg } from '@/utils/utils';
 import iconETH from '@/assets/img/iconETH.svg';
 import iconBinance from '@/assets/img/iconBinance.svg';
 import iconNetwork3 from '@/assets/img/iconNetwork3.svg';
@@ -98,7 +98,7 @@ const Home = () => {
         reqMethodName: 'queryUserPassword',
         params: {}
       }
-      padoServicePort.postMessage(msg)
+      postMsg(padoServicePort, msg)
       return true;
     }
     // If privateKey is cached,,it represents that the user has created account without password => step3

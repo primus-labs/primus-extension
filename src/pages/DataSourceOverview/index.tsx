@@ -23,7 +23,7 @@ import useAuthorization from '@/hooks/useAuthorization';
 import useExSources from '@/hooks/useExSources';
 import useSocialSources from '@/hooks/useSocialSources';
 import type { UserState } from '@/store/reducers';
-
+import {postMsg} from '@/utils/utils'
 
 
 export type DataSourceStorages = {
@@ -171,7 +171,7 @@ const DataSourceOverview = () => {
           ...form,
         },
       };
-      padoServicePort.postMessage(msg);
+      postMsg(padoServicePort, msg)
       console.log(`page_send:${reqType} request`);
       const padoServicePortListener = async function (message: any) {
         console.log(`page_get:${reqType}:`, message.res);

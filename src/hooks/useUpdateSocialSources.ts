@@ -1,10 +1,9 @@
 import React, {useEffect,useState, useCallback, useMemo} from 'react'
 import {useSelector} from 'react-redux'
 import { DATASOURCEMAP } from '@/utils/constants'
-import { getMutipleStorageSyncData } from '@/utils/utils'
+import { getMutipleStorageSyncData, postMsg } from '@/utils/utils'
 import type { UserState } from '@/store/reducers'
 import useAuthorization from '@/hooks/useAuthorization'
-
 type ExKeysStorages = {
   [propName: string]: any;
 }
@@ -51,7 +50,7 @@ const useUpdateSocialSources = () => {
           source: item.toUpperCase()
         }
       }
-      padoServicePort.postMessage(msg)
+      postMsg(padoServicePort,msg)
       console.log(`page_send:refreshAuthData request`);
     })
 

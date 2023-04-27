@@ -1,6 +1,6 @@
 import { encrypt, decrypt } from '@/utils/crypto';
 import { DATASOURCEMAP } from '@/utils/constants';
-import { getCurrentDate, sub, gt } from '@/utils/utils';
+import { getCurrentDate, sub, gt,postMsg } from '@/utils/utils';
 import { ExchangeStoreVersion } from '@/utils/constants';
 
 let EXCHANGEINFO = {
@@ -104,27 +104,27 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
             [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
           });
           EXCHANGEINFO[exchangeName] = exParams;
-          port.postMessage({ resType: type, res: true });
+          postMsg(port,{ resType: type, res: true })
         } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
           await chrome.storage.local.set({
             [exchangeName]: JSON.stringify(exData),
           });
-          port.postMessage({ resType: type, res: true });
+          postMsg(port,{ resType: type, res: true })
         } else {
           await chrome.storage.local.set({
             [exchangeName]: JSON.stringify(exData),
           });
           EXCHANGEINFO[exchangeName] = exParams;
-          port.postMessage({ resType: type, res: true });
+          postMsg(port,{ resType: type, res: true })
         }
       } catch (error) {
         console.log('exData', error,error.message, error.message.indexOf('AuthenticationError'))
         if(error.message.indexOf('AuthenticationError')> -1) {
-          port.postMessage({ resType: type, res: false, msg: 'AuthenticationError' });
+          postMsg(port,{ resType: type, res: false, msg: 'AuthenticationError' })
         } else if (error.message.indexOf('TypeError: Failed to fetch')> -1) {
-          port.postMessage({ resType: type, res: false, msg: 'TypeError: Failed to fetch' });
+          postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })
         } else {
-          port.postMessage({ resType: type, res: false, msg: 'UnhnowError' });
+          postMsg(port,{ resType: type, res: false, msg: 'UnhnowError' })
         }
       }
       break;

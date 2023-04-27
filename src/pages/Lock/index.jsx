@@ -8,6 +8,7 @@ import BackgroundAnimation from '@/components/BackgroundAnimation';
 import AsideAnimation from '@/components/AsideAnimation';
 import './index.sass';
 import { useSelector } from 'react-redux'
+import {postMsg} from '@/utils/utils'
 
 const Lock = () => {
   const padoServicePort = useSelector((state) => state.padoServicePort)
@@ -36,7 +37,7 @@ const Lock = () => {
           password: curPwd
         }
       }
-      padoServicePort.postMessage(msg)
+      postMsg(padoServicePort,msg)
     }
   };
   const handleChangePwd = (val) => {
@@ -51,7 +52,7 @@ const Lock = () => {
       reqMethodName: 'clearUserPassword',
       params: {}
     }
-    padoServicePort.postMessage(msg)
+    postMsg(padoServicePort,msg)
   }
 
   useEffect(() => {

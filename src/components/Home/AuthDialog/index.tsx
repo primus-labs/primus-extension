@@ -8,6 +8,7 @@ import rightArrow from '@/assets/img/rightArrow.svg';
 import './index.sass'
 import { useSelector } from 'react-redux'
 import type { UserState } from '@/store/reducers'
+import {postMsg} from '@/utils/utils'
 
 interface authDialogProps {
   onClose: () => void;
@@ -24,10 +25,11 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
     // onSubmit()// TODO
   }
   const fetchAllOAuthSources = () => {
-    padoServicePort.postMessage({
+    const msg = {
       fullScreenType: 'padoService',
       reqMethodName: 'getAllOAuthSources',
-    })
+    }
+    postMsg(padoServicePort, msg)
     console.log("page_send:getAllOAuthSources request");
   }
   const getAllOAuthSources = async () => {
@@ -41,7 +43,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
     fetchAllOAuthSources()
   }
   const fetchIsAuthDialog = (state: string, source: string) => {
-    padoServicePort.postMessage({
+    const msg = {
       fullScreenType: 'padoService',
       reqMethodName: 'checkIsLogin',
       params: {
@@ -49,7 +51,8 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
         source,
         data_type: 'LOGIN'
       }
-    })
+    }
+    postMsg(padoServicePort, msg)
     console.log("page_send:checkIsLogin request");
   }
   const createAuthWindowCallBack: (state: string, source: string, window?: chrome.windows.Window | undefined) => void = (state, source, res) => {
