@@ -77,8 +77,11 @@
       //   width: 2px
       //   height: 63px
       //   background: rgba(0,0,0,0.1)
-      &:last-child::after
-        display: none
+      &:last-child
+        .inner
+          min-width: 135px
+        &::after
+          display: none
       &:nth-child(n+2)
         align-items: center
       &:nth-child(n+3)
