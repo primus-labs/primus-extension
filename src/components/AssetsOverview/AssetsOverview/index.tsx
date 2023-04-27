@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import './index.sass';
 import type {
   AssetsMap,
@@ -17,7 +17,7 @@ interface AssetsOverviewProps {
   onClearFilter: () => void;
 }
 
-const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFilter }) => {
+const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onClearFilter }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>();
   const [exDatasMap, refreshExSources] = useExSources();
 
@@ -133,16 +133,16 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
     return Object.values(activeAssetsMap as AssetsMap);
   }, [activeAssetsMap]);
 
-  const handleSelectSource = (sourceName: string | undefined) => {
+  const handleSelectSource = useCallback((sourceName: string | undefined) => {
     setActiveSourceName(sourceName);
-  };
-  const getChartData = () => {
+  },[]);
+  const getChartData = useMemo(() => {
     const chartData = list.map(({ name, totalBalance }) => ({
       name,
       value: new BigNumber(totalBalance as string).toFixed(2),
     }));
     return chartData;
-  };
+  },[list]);
   return (
     <div className="assetsOverview">
       <section className="statisticsWrapper">
@@ -158,7 +158,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
                 <div className="label">PnL</div>
                 <div className="value">
                   <span>{formatTotalPnl}</span>
-                  <div className="percent raise fall">
+                  <div className={formatTotalPnlPercent.indexOf('+')>-1? 'percent raise': 'percent fall'}>
                     {formatTotalPnlPercent}
                   </div>
                 </div>
@@ -173,7 +173,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
         <div className="card cardR">
           <header>Distribution</header>
           <div className="cardCon">
-            <PieChart list={getChartData()} />
+            <PieChart list={getChartData} />
           </div>
         </div>
       </section>
@@ -186,6 +186,6 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
       <TokenTable list={activeSourceTokenList} />
     </div>
   );
-};
+});
 
 export default AssetsOverview;

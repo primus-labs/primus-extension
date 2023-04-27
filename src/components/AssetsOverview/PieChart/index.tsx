@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect, useState } from 'react';
+import React, { useRef, useCallback, useEffect, useState,memo } from 'react';
 // import the core library.
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
@@ -30,7 +30,7 @@ type ChartDataType = {
 interface PPieChartProps {
   list: ChartDataType[]
 }
-const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
+const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
   console.log('PPieChart', list)
   const [options, setOptions] = useState({})
   const getOption = useCallback((name?: string) => {
@@ -191,6 +191,6 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
       className="pPie"
     />
   );
-};
+});
 
 export default PPieChart;

@@ -69,7 +69,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
   const [exSources, refreshExSources] = useExSources();
   const [socialSources, refreshSocialSources] = useSocialSources();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-  const [countdown, setCountdown] = useState<number>(6)
+  const [countdown, setCountdown] = useState<number>(20)
   const [countdownTimer, setCountdownTimer] = useState<any>()
   const dataSourceList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources, ...socialSources });

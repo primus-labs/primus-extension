@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
 import { formatUD } from '@/utils/utils'
 import './index.sass';
@@ -11,7 +11,7 @@ interface SourcesStatisticsBarProps {
   onClearFilter: () => void
 }
 
-const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Assets', list, filterSource, onSelect,onClearFilter }) => {
+const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type = 'Assets', list, filterSource, onSelect,onClearFilter }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const handleClickSource = (sourceName: string) => {
     // Click to activate and then click to deactivate
@@ -64,6 +64,6 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = ({ type = 'Ass
       </ul>
     </section>
   );
-};
+});
 
 export default SourcesStatisticsBar;
