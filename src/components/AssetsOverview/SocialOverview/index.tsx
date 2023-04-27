@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import '../AssetsOverview/index.sass';
 import type { AssetsMap, DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
@@ -7,17 +7,13 @@ import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
 import { add, mul } from '@/utils/utils'
 import PieChart from '../PieChart'
-import useSocialSources from '@/hooks/useSocialSources';
 interface AssetsOverviewProps {
   filterSource: string | undefined;
   onClearFilter: () => void;
+  list: DataSourceItemList;
 }
 
-const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFilter }) => {
-  const [socialDatasMap, refreshSocialSources] = useSocialSources()
-  const list = useMemo(() => {
-    return socialDatasMap ? Object.values(socialDatasMap) : []
-  }, [socialDatasMap])
+const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFilter, list }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const totalFollowers = useMemo(() => {
     const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
@@ -54,10 +50,11 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
   const handleSelectSource = (sourceName: string | undefined) => {
     setActiveSourceName(sourceName)
   }
-  const getChartData = () => {
+  const getChartData = useMemo(() => {
     const chartData = list.map(({ name, followers }) => ({ name, value: new BigNumber(followers as number).toFixed(0) }))
     return chartData
-  }
+  }, [list])
+
   return (
     <div className="assetsOverview">
       <section className="statisticsWrapper">
@@ -89,7 +86,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
         <div className="card cardR">
           <header>Distribution</header>
           <div className="cardCon">
-            <PieChart list={getChartData()} />
+            <PieChart list={getChartData} />
           </div>
         </div>
       </section>

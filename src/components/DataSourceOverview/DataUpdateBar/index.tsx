@@ -5,9 +5,10 @@ import useUpdateAllSources from '@/hooks/useUpdateAllSources'
 
 import './index.sass'
 interface DataUpdateBarProps {
-  type?: string
+  type?: string;
+  onUpdate: () => void
 }
-const DataUpdateBar: React.FC<DataUpdateBarProps> = memo(({ type = 'All' }) => {
+const DataUpdateBar: React.FC<DataUpdateBarProps> = memo(({ type = 'All', onUpdate }) => {
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSources()
   const [fetchSocialDatasLoading, fetchSocialDatas] = useUpdateSocialSources()
   const [fetchAllDatasLoading, fetchAllDatas] = useUpdateAllSources()
@@ -31,7 +32,8 @@ const DataUpdateBar: React.FC<DataUpdateBarProps> = memo(({ type = 'All' }) => {
   }, [fetchExDatas, fetchSocialDatas, fetchAllDatas, type])
   const handleClickUpdate = async () => {
     if (!updating) {
-      updateF()
+      await updateF()
+      onUpdate()
     }
   }
   return (

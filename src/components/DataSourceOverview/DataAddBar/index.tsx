@@ -1,8 +1,4 @@
-import React, { useState, useMemo, useCallback, memo } from 'react';
-import useUpdateAssetSources from '@/hooks/useUpdateAssetSources'
-import useUpdateSocialSources from '@/hooks/useUpdateSocialSources'
-import useUpdateAllSources from '@/hooks/useUpdateAllSources'
-
+import React, { memo } from 'react';
 import './index.sass'
 interface DataAddBarProps {
   onClick: () => void

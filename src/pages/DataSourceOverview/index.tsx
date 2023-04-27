@@ -14,27 +14,17 @@ import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDa
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import AssetsOverview from '@/components/AssetsOverview/AssetsOverview';
 import SocialOverview from '@/components/AssetsOverview/SocialOverview';
-import { getMutipleStorageSyncData } from '@/utils/utils';
-import { DATASOURCEMAP } from '@/utils/constants';
-import type { ExchangeMeta } from '@/utils/constants';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
 import './index.sass';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import useAuthorization from '@/hooks/useAuthorization';
-import useAllSources from '@/hooks/useAllSources';
 import useExSources from '@/hooks/useExSources';
 import useSocialSources from '@/hooks/useSocialSources';
 import type { UserState } from '@/store/reducers';
 
-interface DataSourceOverviewProps {
-  binance?: {
-    totalBalance: any;
-    tokenListMap: any;
-  };
-  twitter: object;
-}
+
 
 export type DataSourceStorages = {
   binance?: any;
@@ -53,10 +43,7 @@ type ActiveRequestType = {
   title: string;
   desc: string;
 }
-const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
-  binance,
-  twitter,
-}) => {
+const DataSourceOverview = () => {
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -71,6 +58,12 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [countdown, setCountdown] = useState<number>(20)
   const [countdownTimer, setCountdownTimer] = useState<any>()
+  const exList: DataSourceItemList = useMemo(() => {
+    return Object.values({ ...exSources});
+  }, [exSources]);
+  const socialList: DataSourceItemList = useMemo(() => {
+    return Object.values({ ...socialSources});
+  }, [socialSources]);
   const dataSourceList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources, ...socialSources });
   }, [exSources, socialSources]);
@@ -115,7 +108,11 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
   const handleChangeInput = (val: string) => {
     setFilterWord(val);
   };
-
+  const onUpdate = () => {
+    // fetch datas from storage TODO by type
+    (refreshExSources as () => void)();
+    (refreshSocialSources as () => void)();
+  }
   const handleChangeSelect = (val: string) => {
     setActiveSourceType(val);
   };
@@ -261,12 +258,14 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
           <AssetsOverview
             filterSource={filterWord}
             onClearFilter={onClearFilter}
+            list={exList}
           />
         )}
         {activeSourceType === 'Social' && (
           <SocialOverview
             filterSource={filterWord}
             onClearFilter={onClearFilter}
+            list={socialList}
           />
         )}
       </main>
@@ -309,7 +308,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({
           desc="Data Connected!"
         />
       )}
-      {activeSourceType !== 'All' && <DataUpdateBar type={activeSourceType} />}
+      {activeSourceType !== 'All' && <DataUpdateBar type={activeSourceType} onUpdate={onUpdate}/>}
       {activeSourceType === 'All' && <DataAddBar onClick={handleAdd} />}
     </div>
   );

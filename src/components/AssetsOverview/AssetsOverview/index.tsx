@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, memo } from 'react';
+import React, { useState, useMemo, useCallback, memo, useEffect } from 'react';
 import './index.sass';
 import type {
   AssetsMap,
@@ -10,20 +10,15 @@ import TokenTable from '@/components/TokenTable';
 import BigNumber from 'bignumber.js';
 import { add, mul, gt, sub, div } from '@/utils/utils';
 import PieChart from '../PieChart';
-import useExSources from '@/hooks/useExSources';
 
 interface AssetsOverviewProps {
   filterSource: string | undefined;
   onClearFilter: () => void;
+  list: DataSourceItemList;
 }
 
-const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onClearFilter }) => {
+const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onClearFilter, list }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>();
-  const [exDatasMap, refreshExSources] = useExSources();
-
-  const list = useMemo(() => {
-    return exDatasMap ? Object.values(exDatasMap) : [];
-  }, [exDatasMap]);
   const totalAssetsBalance = useMemo(() => {
     const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (
       prev,
