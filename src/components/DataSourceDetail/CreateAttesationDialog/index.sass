@@ -52,9 +52,11 @@
         .iconCheckedWrapper
           width: $sIconSize
           height: $sIconSize
-          background-image: url("../../../assets/img/iconCheckbox.svg")
+          background-image: url("../../../assets/img/iconCheckboxDefault.svg")
           background-size: 100% 100%
           cursor: pointer
+          &:hover
+            background-image: url("../../../assets/img/iconCheckbox.svg")
           &.checked
             background-image: url("../../../assets/img/iconCheckboxActive.svg")
           &.disabled
