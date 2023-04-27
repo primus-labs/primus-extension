@@ -14,6 +14,7 @@ interface PInputProps {
   copiable?: boolean;
   visible?: boolean;
   onSearch?: (val: string) => void;
+  value?: string;
 }
 
 const PInput: React.FC<PInputProps> = ({
@@ -23,10 +24,12 @@ const PInput: React.FC<PInputProps> = ({
   copiable = false,
   visible = false,
   onSearch,
+  value
 }) => {
   const inputEl = useRef<any>(null);
   const [copied, setCopied] = useState<boolean>(false)
   const [open, setOpen] = useState<boolean>(false)
+  const [val,setVal] = useState<string>()
   const activeType = useMemo(() => {
     if (visible) {
       return open ? 'text' : 'password'
@@ -36,6 +39,7 @@ const PInput: React.FC<PInputProps> = ({
   }, [open, visible, type])
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const formatVal = e.target.value.trim();
+    setVal(formatVal)
     onChange(formatVal);
   };
   const handleCopy = () => {
@@ -54,6 +58,11 @@ const PInput: React.FC<PInputProps> = ({
       onSearch && onSearch(formatVal)
     }
   }
+  useEffect(() => {
+    if(value !== null && value !== undefined)  {
+      setVal(value)
+    }
+  },[value])
   return (
     <div className="pInputWrapper">
       <input
@@ -63,6 +72,7 @@ const PInput: React.FC<PInputProps> = ({
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        value={val}
       />
       {copiable &&
         <img className="suffixIcon" src={copied ? iconCompleted : iconCopy} alt="" onClick={handleCopy} />}

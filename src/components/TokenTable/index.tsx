@@ -99,7 +99,8 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
           {(activeList as TokenMap[]).map(item => {
             return <li className="tokenItem tr" key={item.symbol}>
               <div className="token">
-                <img src={`${tokenLogoPrefix}icon${item.symbol}.png`} alt="" />
+                {tokenLogoPrefix && <img src={`${tokenLogoPrefix}icon${item.symbol}.png`} alt="" />}
+                
                 <span>{item.symbol}</span>
               </div>
               <div className="price">{formatUD(item.price)}</div>

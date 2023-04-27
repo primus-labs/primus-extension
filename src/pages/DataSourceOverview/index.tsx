@@ -3,7 +3,7 @@ import type { Dispatch } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs'
-import PInput from '@/components/PInput'
+import PControledInput from '@/components/PControledInput'
 import PSelect from '@/components/PSelect'
 import DataSourceList from '@/components/DataSourceOverview/DataSourceList'
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog'
@@ -174,7 +174,7 @@ const DataSourceOverview: React.FC<DataSourceOverviewProps> = ({  binance, twitt
         <div className="filterWrapper">
           <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} />
           <div className="pSearch">
-            <PInput onChange={handleChangeInput} type="text" placeholder="Search" value={filterWord}/>
+            <PControledInput onChange={handleChangeInput} type="text" placeholder="Search" value={filterWord}/>
           </div>
         </div>
         {activeSourceType === 'All' && <DataSourceList onAdd={handleAdd} list={activeDataSourceList} onCheck={handleCheckDataSourceDetail} />}
