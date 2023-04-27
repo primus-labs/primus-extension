@@ -1,12 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux'
-import { formatD, formatUD } from '@/utils/utils'
+import { formatD, formatUD,sub,getCurrentDate } from '@/utils/utils'
 import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem'
 // import PInput from '@/components/PInput'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
-import { getCurrentDate } from '@/utils/utils'
 interface TokenTableProps {
   list: TokenMap[] | DataSourceItemType[];
   type?: string;
@@ -24,18 +23,22 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
           const anchorName = item.symbol
           const lowerCaseName = anchorName.toLowerCase()
           return lowerCaseName.startsWith(lowerFilterWord as string)
-        })
+        }).sort((a,b) => sub(Number(b.value),Number(a.value)).toNumber())
       } else {
         return (list as DataSourceItemType[]).filter(item => {
           const anchorName = item.name
           const lowerCaseName = anchorName.toLowerCase()
           return lowerCaseName.startsWith(lowerFilterWord as string)
-        })
+        }).sort((a,b) => sub(Number(b.followers),Number(a.followers)).toNumber())
       }
-
     } else {
-      return list
+      if (type === 'Assets') {
+        return (list as TokenMap[]).sort((a,b) => sub(Number(b.value),Number(a.value)).toNumber())
+      } else {
+        return (list as DataSourceItemType[]).sort((a,b) => sub(Number(b.followers),Number(a.followers)).toNumber())
+      }
     }
+
   }, [list, filterToken, type])
 
   // const handleChangeInput = (val: string) => {

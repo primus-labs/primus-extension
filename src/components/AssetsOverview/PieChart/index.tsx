@@ -34,7 +34,7 @@ const PPieChart: React.FC<PPieChartProps> = ({ list }) => {
   console.log('PPieChart', list)
   const [options, setOptions] = useState({})
   const getOption = useCallback((name?: string) => {
-    const chartData = list.sort((a,b) => sub(Number(a.value),Number(b.value)).toNumber()).map((i,k) => {
+    const chartData = list.sort((a,b) => sub(Number(b.value),Number(a.value)).toNumber()).map((i,k) => {
       return {
         ...i,
         itemStyle: {
