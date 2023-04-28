@@ -10,7 +10,7 @@ import { decrypt } from '@/utils/crypto';
 import { SocailStoreVersion } from '@/utils/constants';
 import {default as processExReq, clear} from './exData';
 const Web3EthAccounts = require('web3-eth-accounts');
-
+console.log('Background initialization')
 let fullscreenPort = null;
 let web3EthAccount = new Web3EthAccounts();
 const padoServices = {

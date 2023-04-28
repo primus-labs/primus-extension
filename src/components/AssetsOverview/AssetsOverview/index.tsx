@@ -18,6 +18,7 @@ interface AssetsOverviewProps {
 }
 
 const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onClearFilter, list }) => {
+  console.log('AssetsOverview-list', list)
   const [activeSourceName, setActiveSourceName] = useState<string>();
   const totalAssetsBalance = useMemo(() => {
     const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (
@@ -32,17 +33,21 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onCle
   }, [list]);
 
   const totalPnl = useMemo(() => {
-    const reduceF: (prev: BigNumber, curr: DataSourceItemType) => BigNumber = (
+    const reduceF: (prev: BigNumber | null, curr: DataSourceItemType) => BigNumber | null = (
       prev,
       curr
     ) => {
       const { pnl } = curr;
       if (pnl !== null && pnl !== undefined) {
-        return add(prev.toNumber(), Number(pnl));
+        let formatPrev = prev
+        if (prev === null) {
+          formatPrev = new BigNumber(0)
+        }
+        return add((formatPrev as BigNumber).toNumber(), Number(pnl));
       }
       return prev;
     };
-    const bal = list.reduce(reduceF, new BigNumber(0));
+    const bal = list.reduce(reduceF, null);
     return bal;
   }, [list]);
 

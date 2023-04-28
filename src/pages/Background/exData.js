@@ -54,6 +54,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           );
           if (cipherData) {
             try {
+              console.log('Ready to decrypt:', USERPASSWORD, EXCHANGEINFO)
               const apiKeyInfo = JSON.parse(
                 decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
               );

@@ -220,7 +220,6 @@ const DataSourceOverview = () => {
   const onClearFilter = () => {
     setFilterWord('');
   };
-  
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
