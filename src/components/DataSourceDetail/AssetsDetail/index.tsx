@@ -15,9 +15,11 @@ import iconAvatar from '@/assets/img/iconAvatar.svg';
 import iconClock from '@/assets/img/iconClock.svg';
 import './index.sass';
 import useExSource from '@/hooks/useExSource';
+import useUpdateAssetSource from '@/hooks/useUpdateAssetSources'
 import Binance from '@/services/exchange/binance';
 import { useSelector } from 'react-redux'
 import type { UserState } from '@/store/reducers'
+import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar'
 export type DataSourceType = {
   date: string;
   tokenListMap: AssetsMap;
@@ -34,6 +36,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   assetsProveFlag,
   userProveFlag,
 }) => {
+  const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource()
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -125,17 +128,29 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     const p = await new Binance({}).getTokenPrice('BTC');
     setBtcPrice(p);
   };
+  const handleBack = () => {
+    navigate(-1);
+  };
+  const onUpdate = () => {
+    (getDataSource as (name: string) => void)(sourceName);
+  }
   useEffect(() => {
     getApiKey(sourceName);
-    (getDataSource as (name: string) => void)(sourceName);
-  }, [sourceName, getDataSource, getApiKey]);
+  }, [sourceName, getApiKey]);
 
   useEffect(() => {
     getBTCPrice();
   }, []);
-  const handleBack = () => {
-    navigate(-1);
-  };
+  const fetchExData = () => {
+    !fetchExDatasLoading && (fetchExDatas as (name:string) => void)(sourceName)
+  }
+  useEffect(() => {
+    sourceName && fetchExData()
+  }, [sourceName])
+  
+  useEffect(() => {
+    !fetchExDatasLoading && onUpdate()
+  }, [fetchExDatasLoading])
   return (
     <div className="assetsDetail">
       <div className="iconBackWrapper" onClick={handleBack}></div>
@@ -207,6 +222,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
         })}
       </section>
       <TokenTable list={totalAssetsList} />
+      <DataUpdateBar type='Assets' onUpdate={onUpdate} sourceName={sourceName}/>
     </div>
   );
 };

@@ -90,7 +90,7 @@ const Home = () => {
             navigate('/datas');
           }
         }
-        padoServicePort.onMessage.removeListener(padoServicePortListener)
+        // padoServicePort.onMessage.removeListener(padoServicePortListener)
       }
       padoServicePort.onMessage.addListener(padoServicePortListener)
       const msg = {

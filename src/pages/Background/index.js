@@ -244,6 +244,7 @@ const processStorageReq = async (message, port) => {
       break;
     case 'get':
       const res = await chrome.storage.local.get(key);
+      // TODO perf fetch from background first
       if(!USERPASSWORD) {
         postMsg(port,{
           resType: 'lock',
@@ -251,7 +252,7 @@ const processStorageReq = async (message, port) => {
       }
       if (key.endsWith('cipher')) {
         const valStr = res[key];
-        console.log('Ready to decrypt:', USERPASSWORD, key, valStr)
+        console.log('Ready to decrypt - storage:', USERPASSWORD, key)
         const val = JSON.parse(decrypt(valStr, USERPASSWORD));
         // const { apiKey, secretKey, passphase } = val
         postMsg(port,{

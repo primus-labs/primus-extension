@@ -31,8 +31,8 @@ const useUpdateAssetSources = (flag = false) => {
       return false;
     }
   }, [queryObj]);
-  const fetchExDatas = useCallback(async () => {
-    const sourceNameList = Object.keys(DATASOURCEMAP).filter(
+  const fetchExDatas = useCallback(async (name?:string) => {
+    const sourceNameList = name? [name]: Object.keys(DATASOURCEMAP).filter(
       (i) => DATASOURCEMAP[i].type === 'Assets'
     );
     const exCipherKeys = sourceNameList.map(i => `${i}cipher`)
