@@ -89,10 +89,10 @@ type NumeralParams = {
   transferUnit?: boolean;
 }
 export function formatNumeral (num: string | number, params?: NumeralParams) {
-  const {decimalPlaces = 2, withThousandSepartor = true, transferUnit = true} = params ?? {
+  const {decimalPlaces = 2, withThousandSepartor = true, transferUnit = false} = params ?? {
     decimalPlaces: 2,
     withThousandSepartor: true,
-    transferUni: true
+    transferUnit: false
   }
   num = new BigNumber(num).toFixed(6) // fix: < 0.0000001 numeral error
   let formatReg = '0'
