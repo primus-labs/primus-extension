@@ -8,6 +8,7 @@ const ZERO = 0;
 const USDT = 'USDT';
 const USD = 'USD';
 const DAI = 'DAI';
+const BTC = 'BTC'
 
 class Exchange {
   constructor(exName, exchangeInfo) {
@@ -91,6 +92,7 @@ class Exchange {
       .filter((i) => i !== USDT)
       .filter((i) => i !== USD)
       .filter((i) => i !== DAI)
+      .concat(BTC)
       .map((j) => (`${j}/${USDT}`));
     let res;
     //let errorSymbol;
