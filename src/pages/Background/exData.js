@@ -121,6 +121,8 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
         console.log('exData', error,error.message, error.message.indexOf('AuthenticationError'))
         if(error.message.indexOf('AuthenticationError')> -1) {
           postMsg(port,{ resType: type, res: false, msg: 'AuthenticationError' })
+        } else if (error.message.indexOf('RequestTimeout')> -1) {
+          postMsg(port,{ resType: type, res: false, msg: 'RequestTimeout' }) // cctx-10s
         } else if (error.message.indexOf('TypeError: Failed to fetch')> -1) {
           postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })
         } else {

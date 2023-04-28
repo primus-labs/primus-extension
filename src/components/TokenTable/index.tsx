@@ -20,7 +20,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
   const sysConfig = useSelector((state: UserState) => state.sysConfig)
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const tokenLogoPrefix = useMemo(() => {
-    console.log('11223344', sysConfig)
+    console.log('TokenTable-sysConfig', sysConfig)
     return sysConfig.TOKEN_LOGO_PREFIX
   }, [sysConfig])
   const dispatch: Dispatch<any> = useDispatch()

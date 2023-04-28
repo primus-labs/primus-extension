@@ -56,8 +56,6 @@ const DataSourceOverview = () => {
   const [exSources, refreshExSources] = useExSources();
   const [socialSources, refreshSocialSources] = useSocialSources();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-  const [countdown, setCountdown] = useState<number>(20)
-  const [countdownTimer, setCountdownTimer] = useState<any>()
   const exList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources});
   }, [exSources]);
@@ -125,7 +123,6 @@ const DataSourceOverview = () => {
   };
   const handleCloseMask = () => {
     setStep(0);
-    clearCountdownTimer()
   };
   const onSubmitDataSourcesDialog = async (item: DataFieldItem) => {
     if (item.type === 'Assets') {
@@ -144,20 +141,11 @@ const DataSourceOverview = () => {
   const onSubmitDataSourcesExplainDialog = () => {
     setStep(1);
   };
-  const clearCountdownTimer = () => {
-    countdownTimer && clearInterval(countdownTimer)
-  }
   const onSubmitConnectDataSourceDialogDialog = useCallback(
     async (form: GetDataFormProps) => {
       const lowerCaseSourceName = form?.name?.toLowerCase();
       // setLoading(true)
       setStep(2.5);
-      clearCountdownTimer()
-      setCountdownTimer(() => {
-        return setInterval(() => {
-          setCountdown((t) => t-1)
-        }, 1000)
-      })
       setActiveRequest({
         type: 'loading',
         title: 'Data being requested',
@@ -176,7 +164,6 @@ const DataSourceOverview = () => {
       const padoServicePortListener = async function (message: any) {
         console.log(`page_get:${reqType}:`, message.res);
         if (message.resType === `${reqType}`) {
-          clearCountdownTimer();
           if (message.res) {
             setStep(3);
             (refreshExSources as () => void)();
@@ -193,7 +180,13 @@ const DataSourceOverview = () => {
                 title: 'Your connection are lost',
                 desc:'Please check your internet connection and try again'
               })
-            } else {
+            } else if(message.msg === 'RequestTimeout') {
+              setActiveRequest({
+                type: 'warn',
+                title: 'Request timed out',
+                desc:'Please check your internet connection and try again'
+              })
+            } else{
               setActiveRequest({
                 type: 'warn',
                 title: 'Oops...',
@@ -226,22 +219,7 @@ const DataSourceOverview = () => {
   const onClearFilter = () => {
     setFilterWord('');
   };
-  useEffect(() => {
-    return () => {
-      clearCountdownTimer()
-    }
-  }, [])
-  useEffect(() => {
-    if(countdown === 0 ){
-      clearCountdownTimer()
-      step === 2.5 && activeRequest?.type === 'loading' && setActiveRequest({
-        type: 'warn',
-        title: 'Request timed out',
-        desc:'Something went wrong. Please try again later.'
-      })
-    }
-    countdown < 0  && clearCountdownTimer()
-  }, [countdown])
+  
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
