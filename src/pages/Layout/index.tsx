@@ -27,7 +27,7 @@ type ObjectType = {
 }
 const Layout = () => {
   const dispatch: Dispatch<any> = useDispatch()
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const refreshDataFlag = searchParams.get('refreshData')
 
@@ -57,13 +57,21 @@ const Layout = () => {
     console.log("page_send:getSysConfig request");
   }, [dispatch, padoServicePort])
   const initPage = async () => {
+    const padoServicePortListener2 = async function (message: any) {
+      if (message.resType === 'lock') {
+        navigate('/lock')
+      }
+    }
+    padoServicePort.onMessage.addListener(padoServicePortListener2)
     const padoServicePortListener = async function (message: any) {
       if (message.resMethodName === 'queryUserPassword') {
         console.log("page_get:queryUserPassword:", message.res);
         if (message.res) {
           (updateF as () => void)();
         }
+      } else {
       }
+      
       padoServicePort.onMessage.removeListener(padoServicePortListener)
     }
     padoServicePort.onMessage.addListener(padoServicePortListener)

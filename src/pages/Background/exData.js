@@ -52,6 +52,11 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           const cipherData = await chrome.storage.local.get(
             exchangeName + 'cipher'
           );
+          if(!USERPASSWORD) {
+            postMsg(port,{
+              resType: 'lock',
+            })
+          }
           if (cipherData) {
             try {
               console.log('Ready to decrypt:', USERPASSWORD, EXCHANGEINFO)
