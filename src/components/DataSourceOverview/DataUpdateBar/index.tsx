@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, memo } from 'react';
+import React, { useEffect, useMemo, useCallback, memo } from 'react';
 import useUpdateAssetSources from '@/hooks/useUpdateAssetSources'
 import useUpdateSocialSources from '@/hooks/useUpdateSocialSources'
 import useUpdateAllSources from '@/hooks/useUpdateAllSources'
@@ -33,9 +33,13 @@ const DataUpdateBar: React.FC<DataUpdateBarProps> = memo(({ type = 'All', onUpda
   const handleClickUpdate = async () => {
     if (!updating) {
       await updateF()
-      onUpdate()
     }
   }
+  useEffect(() => {
+    // Notify when update is complete
+    !updating && onUpdate()
+    // TODO avoid first request
+  }, [updating])
   return (
     <div className="dataUpdateBar">
       <button className="updateBtn" onClick={handleClickUpdate}>
