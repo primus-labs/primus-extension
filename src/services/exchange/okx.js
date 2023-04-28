@@ -1,8 +1,17 @@
 import Exchange from './exchange';
+import CcxtOkx from './ccxtokx';
 
 class OKX extends Exchange {
   constructor(exchangeInfo) {
     super('okx', exchangeInfo);
+  }
+
+  initCctx() {
+    this.exchange = new CcxtOkx({
+      apiKey: this.apiKey,
+      secret: this.secretKey,
+      password: this.passphase,
+    });
   }
 
   async getFundingAccountTokenAmountMap() {
