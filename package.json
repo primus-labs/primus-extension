@@ -29,6 +29,7 @@
     "ethereumjs-util": "^7.1.5",
     "metamask-extension-provider": "^3.0.0",
     "net": "^1.0.2",
+    "numeral": "^2.0.6",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "react": "^18.2.0",

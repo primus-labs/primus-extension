@@ -8,7 +8,7 @@ import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSou
 import SourcesStatisticsBar from '../SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
 import BigNumber from 'bignumber.js';
-import { add, mul, gt, sub, div } from '@/utils/utils';
+import { add, mul, gte, sub, div,formatNumeral } from '@/utils/utils';
 import PieChart from '../PieChart';
 
 interface AssetsOverviewProps {
@@ -31,6 +31,9 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onCle
     const bal = list.reduce(reduceF, new BigNumber(0));
     return `${bal.toFixed(2)}`;
   }, [list]);
+  const formatTotalBal = useMemo( () => {
+    return totalAssetsBalance ? `$${formatNumeral(totalAssetsBalance)}` : '--'
+  }, [totalAssetsBalance])
 
   const totalPnl = useMemo(() => {
     const reduceF: (prev: BigNumber | null, curr: DataSourceItemType) => BigNumber | null = (
@@ -53,9 +56,9 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onCle
 
   const formatTotalPnl = useMemo(() => {
     return totalPnl
-      ? gt(Number(totalPnl), 0)
-        ? `+$${new BigNumber(Number(totalPnl)).toFixed(4)}`
-        : `-$${new BigNumber(Number(totalPnl)).abs().toFixed(4)}`
+      ? gte(Number(totalPnl), 0)
+        ? `+$${formatNumeral(totalPnl.toFixed(), {decimalPlaces:4})}`
+        : `-$${formatNumeral(totalPnl.abs().toFixed(), {decimalPlaces:4})}`
       : '--';
   }, [totalPnl]);
   const formatTotalPnlPercent = useMemo(() => {
@@ -65,7 +68,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onCle
       const lastVN = lastV.toNumber();
       const p = div(sub(currVN, lastVN).toNumber(), lastVN);
       const formatNum = mul(p.toNumber(), 100);
-      const formatTxt = gt(Number(formatNum), 0)
+      const formatTxt = gte(Number(formatNum), 0)
         ? `+${new BigNumber(Number(formatNum)).toFixed(2)}%`
         : `-${new BigNumber(Number(formatNum)).abs().toFixed(2)}%`;
       return formatTxt;
@@ -151,7 +154,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onCle
           <div className="cardCon">
             <div className="descItem mainDescItem">
               <div className="label">Total Balance</div>
-              <div className="value">${totalAssetsBalance}</div>
+              <div className="value">{formatTotalBal}</div>
             </div>
             <div className="descItemsWrapper">
               <div className="descItem">

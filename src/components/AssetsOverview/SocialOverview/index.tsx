@@ -5,7 +5,7 @@ import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSou
 import SourcesStatisticsBar from '../SourcesStatisticsBar'
 import TokenTable from '@/components/TokenTable'
 import BigNumber from 'bignumber.js'
-import { add, mul } from '@/utils/utils'
+import { add, mul, formatNumeral } from '@/utils/utils'
 import PieChart from '../PieChart'
 interface AssetsOverviewProps {
   filterSource: string | undefined;
@@ -63,18 +63,20 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
           <div className="cardCon">
             <div className="descItem mainDescItem">
               <div className="label">Total Follower</div>
-              <div className="value">{totalFollowers}</div>
+              <div className="value">{formatNumeral((totalFollowers as string), {transferUnit:false,decimalPlaces:0}) }</div>
             </div>
             <div className="descItemsWrapper">
               <div className="descItem">
                 <div className="label">Total Posts</div>
                 <div className="value">
-                  {totalPosts}
+                  {formatNumeral((totalPosts as string), {transferUnit:false,decimalPlaces:0}) }
                 </div>
               </div>
               <div className="descItem">
                 <div className="label">Total Likes</div>
-                <div className="value">{totalFollowings}</div>
+                <div className="value">
+                  {formatNumeral((totalFollowings as string), {transferUnit:false,decimalPlaces:0}) }
+                </div>
               </div>
               <div className="descItem">
                 <div className="label">Verified Acct</div>

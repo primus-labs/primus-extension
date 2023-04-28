@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo, useMemo } from 'react';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
-import { formatUD, sub } from '@/utils/utils'
+import { formatNumeral, sub } from '@/utils/utils'
 import './index.sass';
 
 interface SourcesStatisticsBarProps {
@@ -60,7 +60,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type =
             <div className="label">Data on {item.name}</div>
             <div className="value">
               <img src={item.icon} alt="" />
-              <span>{type === 'Social' ? item.followers : formatUD(item.totalBalance as string)}</span>
+              <span>{type === 'Social' ? formatNumeral((item.followers as string), {transferUnit:false,decimalPlaces:0}) : '$' + formatNumeral(item.totalBalance as string)}</span>
             </div>
             {type === 'Social' && <div className="tip">Followers</div>}
           </li>

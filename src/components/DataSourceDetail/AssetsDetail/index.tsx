@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import { add, gt, div, postMsg } from '@/utils/utils';
+import { add, gte, div, postMsg } from '@/utils/utils';
 import type {
   TokenMap,
   AssetsMap,
@@ -46,7 +46,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     if (typeof dataSource === 'object') {
       const originPnl = dataSource?.pnl;
       return originPnl
-        ? gt(Number(originPnl), 0)
+        ? gte(Number(originPnl), 0)
           ? `+$${new BigNumber(Number(originPnl)).toFixed(4)}`
           : `-$${new BigNumber(Number(originPnl)).abs().toFixed(4)}`
         : '--';

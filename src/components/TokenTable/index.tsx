@@ -1,6 +1,6 @@
 import React, { useState, useMemo , useEffect, useCallback} from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { formatD, formatUD,sub,getCurrentDate } from '@/utils/utils'
+import { formatD, formatUD,sub,getCurrentDate, postMsg,formatNumeral } from '@/utils/utils'
 import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem'
 // import PInput from '@/components/PInput'
 import './index.sass';
@@ -8,7 +8,6 @@ import type { UserState } from '@/store/reducers'
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
 import type { Dispatch } from 'react'
 import { setSysConfigAction } from '@/store/actions'
-import {postMsg} from '@/utils/utils'
 
 interface TokenTableProps {
   list: TokenMap[] | DataSourceItemType[];
@@ -104,9 +103,9 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
                 
                 <span>{item.symbol}</span>
               </div>
-              <div className="price">{formatUD(item.price)}</div>
-              <div className="amount">{formatD(item.amount, 6)}</div>
-              <div className="value">{formatUD(item.value)}</div>
+              <div className="price">{'$'+formatNumeral(item.price)}</div>
+              <div className="amount">{formatNumeral(item.amount, 6)}</div>
+              <div className="value">{'$'+formatNumeral(item.value)}</div>
             </li>
           })}
         </ul> :
@@ -128,8 +127,8 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
               <div className="userName">{item.userName}</div>
               <div className="verified">{item.verified ? 'Y' : 'N'}</div>
               <div className="createdTime">{getCurrentDate(item.createdTime)}</div>
-              <div className="followers">{item.followers}</div>
-              <div className="posts">{item.posts}</div>
+              <div className="followers">{formatNumeral((item.followers as string), {transferUnit:false,decimalPlaces:0}) }</div>
+              <div className="posts">{formatNumeral((item.posts as string), {transferUnit:false,decimalPlaces:0}) }</div>
             </li>
           })}
         </ul>

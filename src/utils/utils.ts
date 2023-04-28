@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-
+import numeral from 'numeral'
 export function gt(a: number,b: number) {
   return new BigNumber(a).gt(new BigNumber(b))
 }
@@ -83,6 +83,31 @@ export  function formatD (totalBalance: string, decimal: number = 2)  {
 export  function formatUD (totalBalance: string)  {
   return `$${formatD(totalBalance)}`
 }
+type NumeralParams = {
+  decimalPlaces?: number;
+  withThousandSepartor?: boolean;
+  transferUnit?: boolean;
+}
+export function formatNumeral (num: string | number, params?: NumeralParams) {
+  const {decimalPlaces = 2, withThousandSepartor = true, transferUnit = true} = params ?? {
+    decimalPlaces: 2,
+    withThousandSepartor: true,
+    transferUni: true
+  }
+  num = new BigNumber(num).toFixed(6) // fix: < 0.0000001 numeral error
+  let formatReg = '0'
+  if (withThousandSepartor) {
+    formatReg = '0,0'
+  }
+  if (decimalPlaces) {
+    formatReg += `.${'0'.repeat(decimalPlaces)}`
+  }
+  if (transferUnit) {
+    formatReg += `a`
+  }
+  return numeral(num).format(formatReg).toUpperCase()
+}
+
 
 export function postMsg (port:chrome.runtime.Port, msg:any) {
   try {

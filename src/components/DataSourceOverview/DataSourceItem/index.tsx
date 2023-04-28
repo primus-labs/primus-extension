@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import BigNumber from 'bignumber.js'
-import { gt } from '@/utils/utils';
+import { gte , formatNumeral} from '@/utils/utils';
 import type { ExchangeMeta } from '@/utils/constants';
 
 import iconSuc from '@/assets/img/iconSuc.svg'
@@ -44,11 +44,14 @@ interface DataSourceItemProps {
 }
 
 const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }) => {
-  const { icon, name, type, date, totalBalance, pnl, } = source;
+  const { icon, name, type, date, totalBalance, pnl,followers,posts,followings } = source;
   const formatSource = {
     ...source,
-    totalBalance: totalBalance ? `$${new BigNumber(totalBalance).toFixed(2)}` : '-',
-    pnlAmount: pnl ? ((gt(Number(pnl), 0) ? `+$${new BigNumber(Number(pnl)).toFixed(4)}` : `-$${new BigNumber(Number(pnl)).abs().toFixed(4)}`)) : '--'
+    totalBalance: totalBalance ? `$${formatNumeral(totalBalance)}` : '--',
+    pnlAmount: pnl ? ((gte(Number(pnl), 0) ? `+$${formatNumeral(pnl, {decimalPlaces:4})}` : `-$${formatNumeral(new BigNumber(Number(pnl)).abs().toFixed(), {decimalPlaces:4})}`)) : '--',
+    followers: followers && `${formatNumeral(followers, {transferUnit:false,decimalPlaces:0})}`,
+    posts: posts && `${formatNumeral(posts, {transferUnit:false,decimalPlaces:0})}`,
+    followings: followings && `${formatNumeral(followings, {transferUnit:false,decimalPlaces:0})}`
   }
   const descArr: SourceDescItem[] = useMemo(() => {
     const descTypeMap = {
