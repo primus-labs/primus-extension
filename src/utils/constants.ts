@@ -40,7 +40,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     constructorF: KuCoin,
   },
   coinbase: {
-    name: 'coinbase',
+    name: 'Coinbase',
     type: 'Assets',
     icon: iconDataSourceCoinbase,
     requirePassphase: false,
@@ -57,7 +57,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
 export const CHARTCOLORS = [
   '#00CDFF',
   '#00F0DC',
-  '#00D2E1',
+  '#00D7C8',
   '#2864E1',
   '#335BEB',
   '#8741E1',

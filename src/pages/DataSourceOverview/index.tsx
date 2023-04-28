@@ -213,6 +213,16 @@ const DataSourceOverview = () => {
     setActiveSource(undefined);
     setStep(0);
   };
+  const onSubmitActiveRequestDialog = () => {
+    if(activeRequest?.type === 'loading') {
+      onSubmitAddSourceSucDialog()
+      return
+    } else if (activeRequest?.type === 'error') {
+      setStep(2)
+    } else {
+      setStep(0)
+    }
+  }
   const onClearFilter = () => {
     setFilterWord('');
   };
@@ -293,7 +303,7 @@ const DataSourceOverview = () => {
       {step === 2.5 && (
         <AddSourceSucDialog
           onClose={handleCloseMask}
-          onSubmit={() => activeRequest?.type === 'loading'?onSubmitAddSourceSucDialog():setStep(2)}
+          onSubmit={onSubmitActiveRequestDialog}
           activeSource={activeSource}
           type={activeRequest?.type}
           title={activeRequest?.title}

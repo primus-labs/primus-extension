@@ -150,7 +150,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
           itemStyle: {
             borderRadius: 0,
             borderColor: 'rgba(255, 255, 255, 0.6)',
-            borderWidth: 2
+            borderWidth: 3
           },
           label: {
             show: false,

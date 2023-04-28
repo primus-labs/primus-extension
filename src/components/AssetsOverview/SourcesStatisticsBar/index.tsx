@@ -1,6 +1,6 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useMemo } from 'react';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
-import { formatUD } from '@/utils/utils'
+import { formatUD, sub } from '@/utils/utils'
 import './index.sass';
 
 interface SourcesStatisticsBarProps {
@@ -13,6 +13,10 @@ interface SourcesStatisticsBarProps {
 
 const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type = 'Assets', list, filterSource, onSelect,onClearFilter }) => {
   const [activeSourceName, setActiveSourceName] = useState<string>()
+  const activeList = useMemo(() => {
+    const activeL = list.sort((a,b) => sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber())
+    return activeL
+  },[list])
   const handleClickSource = (sourceName: string) => {
     // Click to activate and then click to deactivate
     // const targetName = sourceName === activeSourceName ? undefined : sourceName
@@ -47,7 +51,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type =
     <section className="sourcesStatisticsBar">
       <header>Sources</header>
       <ul className="sources">
-        {list.map(item => {
+        {activeList.map(item => {
           return <li className={
             ((!!activeSourceName  && activeSourceName=== item.name) || !activeSourceName)? 
             (type === 'Social' ? "source social" : "source"): 
