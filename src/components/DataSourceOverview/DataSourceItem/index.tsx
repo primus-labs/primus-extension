@@ -48,7 +48,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }
   const formatSource = {
     ...source,
     totalBalance: totalBalance ? `$${new BigNumber(totalBalance).toFixed(2)}` : '-',
-    pnlAmount: pnl ? ((gt(Number(pnl), 0) ? `+$${new BigNumber(Number(pnl)).toFixed(2)}` : `-$${new BigNumber(Number(pnl)).abs().toFixed(2)}`)) : '--'
+    pnlAmount: pnl ? ((gt(Number(pnl), 0) ? `+$${new BigNumber(Number(pnl)).toFixed(4)}` : `-$${new BigNumber(Number(pnl)).abs().toFixed(4)}`)) : '--'
   }
   const descArr: SourceDescItem[] = useMemo(() => {
     const descTypeMap = {

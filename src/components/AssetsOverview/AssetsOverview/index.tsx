@@ -54,8 +54,8 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onCle
   const formatTotalPnl = useMemo(() => {
     return totalPnl
       ? gt(Number(totalPnl), 0)
-        ? `+$${new BigNumber(Number(totalPnl)).toFixed(2)}`
-        : `-$${new BigNumber(Number(totalPnl)).abs().toFixed(2)}`
+        ? `+$${new BigNumber(Number(totalPnl)).toFixed(4)}`
+        : `-$${new BigNumber(Number(totalPnl)).abs().toFixed(4)}`
       : '--';
   }, [totalPnl]);
   const formatTotalPnlPercent = useMemo(() => {

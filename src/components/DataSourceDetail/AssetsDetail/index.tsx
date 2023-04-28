@@ -47,8 +47,8 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
       const originPnl = dataSource?.pnl;
       return originPnl
         ? gt(Number(originPnl), 0)
-          ? `+$${new BigNumber(Number(originPnl)).toFixed(2)}`
-          : `-$${new BigNumber(Number(originPnl)).abs().toFixed(2)}`
+          ? `+$${new BigNumber(Number(originPnl)).toFixed(4)}`
+          : `-$${new BigNumber(Number(originPnl)).abs().toFixed(4)}`
         : '--';
     } else {
       return '--';
