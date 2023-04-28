@@ -23,7 +23,7 @@ import useAuthorization from '@/hooks/useAuthorization';
 import useExSources from '@/hooks/useExSources';
 import useSocialSources from '@/hooks/useSocialSources';
 import type { UserState } from '@/store/reducers';
-import {postMsg} from '@/utils/utils'
+import { postMsg, sub } from '@/utils/utils'
 
 
 export type DataSourceStorages = {
@@ -90,14 +90,15 @@ const DataSourceOverview = () => {
     return deaultList;
   }, [exSources, socialSources]);
   const activeDataSourceList = useMemo(() => {
+    const orderedDataSourceList = dataSourceList.sort((a,b) => sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber())
     if (filterWord) {
-      return dataSourceList.filter((item) => {
+      return orderedDataSourceList.filter((item) => {
         const lowerCaseName = item.name.toLowerCase();
         const lowerFilterWord = filterWord?.toLowerCase();
         return lowerCaseName.startsWith(lowerFilterWord as string);
       });
     } else {
-      return dataSourceList;
+      return orderedDataSourceList;
     }
   }, [dataSourceList, filterWord]);
 
