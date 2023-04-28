@@ -50,7 +50,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
         }
         return rule
       })
-      console.log(pwd, currentRules)
+      // console.log(pwd, currentRules)
       return currentRules
     } else {
       return initalRules

@@ -31,7 +31,7 @@ interface PPieChartProps {
   list: ChartDataType[]
 }
 const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
-  console.log('PPieChart', list)
+  // console.log('PPieChart', list)
   const [options, setOptions] = useState({})
   const getOption = useCallback((name?: string) => {
     const chartData = list.sort((a,b) => sub(Number(b.value),Number(a.value)).toNumber()).map((i,k) => {
@@ -48,7 +48,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
       return { ...prev, [name]: true }
     }, {})
     const legendData = name ? list.map(i => i.name === name ? ({ name: i.name, textStyle: { backgroundColor: 'rgba(0, 0, 0, 0.05)', borderRadius: 8 } }) : ({ name: i.name })) : Object.keys(allSelected)
-    console.log('legendData', name, legendData)
+    // console.log('legendData', name, legendData)
     const reduceF = (prev: BigNumber, curr: ChartDataType) => {
       const { value } = curr
       return add(prev.toNumber(), (Number(value)))
@@ -177,7 +177,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
 
   const onEvents = {
     'legendselectchanged': (params: any) => {
-      console.log('legendselectchanged', params, options);
+      // console.log('legendselectchanged', params, options);
       setOptions(getOption(params.name))
     }
   }

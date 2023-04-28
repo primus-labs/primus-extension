@@ -236,7 +236,7 @@ const processpadoServiceReq = async (message, port) => {
 };
 
 const processStorageReq = async (message, port) => {
-  console.log('processStorageReq message', message);
+  // console.log('processStorageReq message', message);
   const { type, key, value } = message;
   switch (type) {
     case 'set':
