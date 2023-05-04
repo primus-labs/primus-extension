@@ -34,6 +34,13 @@
       gap: $xxsGap
       h6
         @extend .mSBlackRegularFont
+    .errorTip
+      align-self: flex-start
+      margin-top: 8px
+      @extend .xsSBlackRegularFont
+      line-height: 22px
+      color: #e12828
+      
     .tipWrapper
       @extend .frcs
       gap: $xsGap
@@ -51,7 +58,7 @@
     height: 58px
 @media (max-width: 1680px)
   .connectDataSourceDialog
-    padding: 48px 42px 32px
+    padding: 48px 42px 30px
     main
       .scrollList
         padding-bottom: 16px
@@ -90,8 +97,11 @@
               width: 16px
         .firstFormItem
           margin-top: 12px
+        .errorTip
+          font-size: 12px
+          line-height: 15px
         .tipWrapper
-          margin-top: 4px
+          margin-top: 10px
           font-size: 12px 
           line-height: 17px
 

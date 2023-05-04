@@ -33,7 +33,7 @@ export function clear() {
 const processNetworkReq = async (message, port, USERPASSWORD) => {
   var {
     type,
-    params: { apiKey, secretKey, passphase, name, exData },
+    params: { apiKey, secretKey, passphase, name, exData, label },
   } = message;
   const exchangeName = type.split('-')[1];
   switch (type) {
@@ -89,6 +89,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           date: getCurrentDate(),
           timestamp: +new Date(),
           version: ExchangeStoreVersion,
+          label: exParams.label,
         };
         console.log(`$$$$$background--${name}exData`, ex)
         if (pnl !== null && pnl !== undefined) {
@@ -101,6 +102,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
             apiKey,
             secretKey,
             passphase,
+            label
           };
           const encryptedKey = encrypt(
             JSON.stringify(exCipherData),

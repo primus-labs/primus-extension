@@ -27,11 +27,24 @@ $tagHeight: 30px
       @extend .frsc
       gap: $xsGap
     .TLeft
+      align-items: flex-start
       img
         width: 44px
-      h6
-        @extend .xlLBlackBoldFont
-        font-family: 'Inter-SemiBold'
+      .TLeftCon
+        @extend .fcss
+        gap:$xxsGap
+        >h6
+          @extend .xlLBlackBoldFont
+          font-family: 'Inter-SemiBold'
+        .desc
+          font-size: 12px
+          line-height: 15px
+          color: $colSBlack
+          font-family: 'Inter-Regular'
+          .value
+            color: $colMBlack
+            font-family: 'Inter-SemiBold'
+
     .TRight
       .dateWrapper,.tag
         height: $tagHeight
@@ -92,11 +105,22 @@ $tagHeight: 30px
     padding: 26px 26px 24px
     .dataSourceItemT
       .TLeft
-        padding: 2px 0
+        padding: 0
         img
-          width: 40px
-        h6
-          font-size: 28px
+          width: 44px
+        .TLeftCon
+          padding-top: 2px
+          >h6
+            font-size: 28px
+            line-height: 24px
+          .desc
+            font-size: 12px
+            line-height: 15px
+            color: $colSBlack
+            font-family: 'Inter-Regular'
+            .value
+              color: $colMBlack
+              font-family: 'Inter-SemiBold'
       .TRight
         .dateWrapper
           padding: 0 17px 0 4px

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import BigNumber from 'bignumber.js'
-import { gte , formatNumeral} from '@/utils/utils';
+import BigNumber from 'bignumber.js';
+import { gte, formatNumeral } from '@/utils/utils';
 import type { ExchangeMeta } from '@/utils/constants';
 
-import iconSuc from '@/assets/img/iconSuc.svg'
+import iconSuc from '@/assets/img/iconSuc.svg';
 import './index.sass';
 
 export type TokenMap = {
@@ -11,29 +11,32 @@ export type TokenMap = {
   price: string;
   amount: string;
   value: string;
-}
+};
 export type AssetsMap = {
-  [propName: string]: TokenMap
-}
+  [propName: string]: TokenMap;
+};
 export type DataSourceData = {
   tokenListMap?: AssetsMap;
-  totalBalance?: string,// TODO format amount
-  assetsNo?: number,
+  totalBalance?: string;
+  assetsNo?: number;
+  label?: string;
 };
 export type SocialDataSourceData = {
   followers?: number | string;
-  posts?: number | string;// TODO format amount
+  posts?: number | string; // TODO format amount
   followings?: number | string;
   verified?: boolean;
   userName?: string;
   createdTime?: string;
 };
 export type DataSourceItemType = {
-  date: string,
-  pnlAmount?: string,
-  pnlPercent?: string,
+  date: string;
+  pnlAmount?: string;
+  pnlPercent?: string;
   pnl?: string; // TODO format amount
-} & ExchangeMeta & DataSourceData & SocialDataSourceData;
+} & ExchangeMeta &
+  DataSourceData &
+  SocialDataSourceData;
 type SourceDescItem = {
   name: string;
   sourceKey: string;
@@ -43,16 +46,43 @@ interface DataSourceItemProps {
   onCheck: (item: DataSourceItemType) => void;
 }
 
-const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }) => {
-  const { icon, name, type, date, totalBalance, pnl,followers,posts,followings } = source;
+const DataSourceItem: React.FC<DataSourceItemProps> = ({
+  item: source,
+  onCheck,
+}) => {
+  const {
+    icon,
+    name,
+    type,
+    date,
+    totalBalance,
+    pnl,
+    followers,
+    posts,
+    followings,
+    label,
+    userName,
+  } = source;
   const formatSource = {
     ...source,
     totalBalance: totalBalance ? `$${formatNumeral(totalBalance)}` : '--',
-    pnlAmount: pnl ? ((gte(Number(pnl), 0) ? `+$${formatNumeral(pnl, {decimalPlaces:4})}` : `-$${formatNumeral(new BigNumber(Number(pnl)).abs().toFixed(), {decimalPlaces:4})}`)) : '--',
-    followers: followers && `${formatNumeral(followers, {transferUnit:false,decimalPlaces:0})}`,
-    posts: posts && `${formatNumeral(posts, {transferUnit:false,decimalPlaces:0})}`,
-    followings: followings && `${formatNumeral(followings, {transferUnit:false,decimalPlaces:0})}`
-  }
+    pnlAmount: pnl
+      ? gte(Number(pnl), 0)
+        ? `+$${formatNumeral(pnl, { decimalPlaces: 4 })}`
+        : `-$${formatNumeral(new BigNumber(Number(pnl)).abs().toFixed(), {
+            decimalPlaces: 4,
+          })}`
+      : '--',
+    followers:
+      followers &&
+      `${formatNumeral(followers, { transferUnit: false, decimalPlaces: 0 })}`,
+    posts:
+      posts &&
+      `${formatNumeral(posts, { transferUnit: false, decimalPlaces: 0 })}`,
+    followings:
+      followings &&
+      `${formatNumeral(followings, { transferUnit: false, decimalPlaces: 0 })}`,
+  };
   const descArr: SourceDescItem[] = useMemo(() => {
     const descTypeMap = {
       Social: [
@@ -82,36 +112,49 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ item: source, onCheck }
           name: 'Assets No.',
           sourceKey: 'assetsNo',
         },
-      ]
+      ],
     };
-    return descTypeMap[type]
+    return descTypeMap[type];
   }, [type]);
   const handleClick = () => {
     if (type === 'Social') {
-      return
+      return;
     }
-    onCheck(source)
-  }
+    onCheck(source);
+  };
   const activeClassName = useMemo(() => {
-    let defalutClass = "dataSourceItem"
-    if(type === 'Social') {
-      defalutClass += ' deactive'
+    let defalutClass = 'dataSourceItem';
+    if (type === 'Social') {
+      defalutClass += ' deactive';
     }
-    return defalutClass
-  }, [type])
+    return defalutClass;
+  }, [type]);
   return (
     <div className={activeClassName} onClick={handleClick}>
       <div className="dataSourceItemT">
         <div className="TLeft">
           <img src={icon} alt="" />
-          <h6>{name}</h6>
+          <div className="TLeftCon">
+            <h6>{name}</h6>
+            {type === 'Social' ? (
+              <div className="desc">
+                <span className="label">Name:&nbsp;</span>
+                <span className="value">{userName ?? '--'}</span>
+              </div>
+            ) : (
+              <div className="desc">
+                <span className="label">Label:&nbsp;</span>
+                <span className="value">{label ?? '--'}</span>
+              </div>
+            )}
+          </div>
         </div>
         <div className="TRight titleWrapper">
           <div className="dateWrapper">
             <img src={iconSuc} alt="" />
             <span>{date}</span>
           </div>
-          <div className={type === 'Social' ? "tag social" : "tag"}>{type}</div>
+          <div className={type === 'Social' ? 'tag social' : 'tag'}>{type}</div>
         </div>
       </div>
       <div className="dataSourceItemC">
