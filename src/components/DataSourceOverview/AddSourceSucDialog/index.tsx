@@ -34,9 +34,9 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({ onClose, active
           <h1>{title}</h1>
           <h2>{desc}</h2>
         </main>
-        <button className="nextBtn" onClick={handleClickNext}>
+        {type !== 'loading' && <button className="nextBtn" onClick={handleClickNext}>
           <span>OK</span>
-        </button>
+        </button>}
       </div>
     </PMask>
   );
