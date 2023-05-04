@@ -116,7 +116,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
             <div className="verified">Verified</div>
             <div className="createTime">Created Time</div>
             <div className="followers">Followers</div>
-            <div className="post">Post</div>
+            <div className="post">Posts</div>
           </li>
           {(activeList as DataSourceItemType[]).map(item => {
             return <li className="tokenItem tr" key={item.name}>

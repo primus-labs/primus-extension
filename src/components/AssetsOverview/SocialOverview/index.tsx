@@ -62,20 +62,20 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
           <header>Overview</header>
           <div className="cardCon">
             <div className="descItem mainDescItem">
-              <div className="label">Total Follower</div>
+              <div className="label">Total Followers</div>
               <div className="value">{formatNumeral((totalFollowers as string), {transferUnit:false,decimalPlaces:0}) }</div>
             </div>
             <div className="descItemsWrapper">
               <div className="descItem">
-                <div className="label">Total Posts</div>
+                <div className="label">Total Following</div>
                 <div className="value">
-                  {formatNumeral((totalPosts as string), {transferUnit:false,decimalPlaces:0}) }
+                  {formatNumeral((totalFollowings as string), {transferUnit:false,decimalPlaces:0}) }
                 </div>
               </div>
               <div className="descItem">
-                <div className="label">Total Likes</div>
+                <div className="label">Total Posts</div>
                 <div className="value">
-                  {formatNumeral((totalFollowings as string), {transferUnit:false,decimalPlaces:0}) }
+                  {formatNumeral((totalPosts as string), {transferUnit:false,decimalPlaces:0}) }
                 </div>
               </div>
               <div className="descItem">
