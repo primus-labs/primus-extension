@@ -111,7 +111,7 @@ class Exchange {
     ]);
     LPSymbols.forEach((lpsymbol) => {
       const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
-      if (res[lpsymbol]) {
+      if (res[lpsymbol] && res[lpsymbol].last) {
         const { last } = res[lpsymbol];
         this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
       } else {

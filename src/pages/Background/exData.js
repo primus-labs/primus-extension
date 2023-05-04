@@ -90,6 +90,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           timestamp: +new Date(),
           version: ExchangeStoreVersion,
         };
+        console.log(`$$$$$background--${name}exData`, ex)
         if (pnl !== null && pnl !== undefined) {
           exData.pnl = pnl;
         }
