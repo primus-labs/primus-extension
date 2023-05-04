@@ -26,6 +26,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
   const [apiKey, setApiKey] = useState<string>()
   const [secretKey, setSecretKey] = useState<string>()
   const [passphase, setPassphase] = useState<string>()
+  const [label,setLabel] = useState<string>()
   const handleClickNext = () => {
     if (loading) {
       return
@@ -37,7 +38,8 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
       name: name.toLowerCase(),
       apiKey,
       secretKey,
-      passphase
+      passphase,
+      label
     }
     requirePassphase && (form.passphase = passphase)
     onSubmit(form)
@@ -51,6 +53,9 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
   }
   const handleChangePassphase = (val: string) => {
     setPassphase(val)
+  }
+  const handleChangeLabel = (val: string) => {
+    setLabel(val)
   }
 
   return (
@@ -68,7 +73,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
               !loading && <>
                 <h2>Please configure with your READ-ONLY API keys. PADO never accesses to your API keys or your data.</h2>
                 <Bridge endIcon={icon} />
-                <div className="formItem">
+                <div className="formItem firstFormItem">
                   <h6>API Key</h6>
                   <PInput key="apiKey" type="text" placeholder="Please enter your API Key" onChange={handleChangeApiKey}  />
                 </div>
@@ -76,10 +81,14 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({ onClose, onSubmit
                   <h6>Secret Key</h6>
                   <PInput key="secretKey" type="password" placeholder="Please enter your Secret Key" onChange={handleChangeSecretKey} visible />
                 </div>
-                {requirePassphase && <div className="formItem lastFormItem">
+                {requirePassphase && <div className="formItem">
                   <h6>Passphase</h6>
                   <PInput key="passPhase" type="password" placeholder="Please enter your Passphase" onChange={handleChangePassphase} visible />
                 </div>}
+                <div className="formItem lastFormItem">
+                  <h6>Label API Key (Optional)</h6>
+                  <PInput key="label"  placeholder="Please enter your Label API Key" onChange={handleChangeLabel}  />
+                </div>
                 <div className="tipWrapper">
                   <span>How to get API Key&Secret key?</span>
                   <a href="https://padolabs.org/" target="_blank">Click here</a>
