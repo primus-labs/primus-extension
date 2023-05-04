@@ -128,7 +128,10 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
         if(error.message.indexOf('AuthenticationError')> -1) {
           postMsg(port,{ resType: type, res: false, msg: 'AuthenticationError' })
         } else if (error.message.indexOf('RequestTimeout')> -1) {
-          postMsg(port,{ resType: type, res: false, msg: 'RequestTimeout' }) // cctx-10s
+          // postMsg(port,{ resType: type, res: false, msg: 'RequestTimeout' }) // cctx-10s
+          postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })
+        } else if (error.message.indexOf('NetworkError')> -1) {
+          postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })
         } else if (error.message.indexOf('TypeError: Failed to fetch')> -1) {
           postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })
         } else {
