@@ -3,6 +3,13 @@ import { add, gt } from '@/utils/utils';
 import Exchange from './exchange';
 import CcxtBinance from './ccxtbinance';
 const BIGZERO = new BigNumber(0);
+const ONE = 1;
+const ZERO = 0;
+const USDT = 'USDT';
+const USD = 'USD';
+const DAI = 'DAI';
+const BUSD = 'BUSD';
+const BTC = 'BTC'
 
 class Binance extends Exchange {
   constructor(exchangeInfo) {
@@ -56,5 +63,51 @@ class Binance extends Exchange {
     // );
     return this.tradingAccountTokenAmountMap;
   }
+
+  async getTokenPriceMap() {
+    await this.getTotalHoldingTokenSymbolList();
+    // transfrom 'X' to 'XUSDT' when you query X's price;
+    // ex: ETH => ETHUSDT,// binance=>'ETHUSDT',others:'ETH-USDT'
+    // price unit: USD
+    // coninbase need filter USD
+    let LPSymbols = this.totalHoldingTokenSymbolList
+      .filter((i) => i !== USDT)
+      .filter((i) => i !== USD)
+      .filter((i) => i !== DAI)
+      .filter((i) => i !== BUSD)
+      .concat(BTC)
+      .map((j) => (`${j}/${USDT}`));
+    let res;
+    //let errorSymbol;
+    try {
+      res = await this.exchange.fetchTickers();
+    } catch (e) {
+      console.log('fetchTickers error:', this.exName, e);
+      return;
+    }
+    //console.log('fetchTickers res:', this.exName, res);
+
+    this.tokenPriceMap = new Map([
+      [USDT, ONE],
+      [USD, ONE],
+      [DAI, ONE]
+    ]);
+    LPSymbols.forEach((lpsymbol) => {
+      const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
+      const BUSDLpsymbol = lpsymbol.replace(`${USDT}`, BUSD);
+      if (res[lpsymbol] && res[lpsymbol].last) {
+        const { last } = res[lpsymbol];
+        this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
+      } else if (res[BUSDLpsymbol] && res[BUSDLpsymbol].last) {
+        const { last } = res[BUSDLpsymbol];
+        this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
+      } else {
+        this.tokenPriceMap.set(tokenSymbol, ZERO+'');
+      }
+    });
+    console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap,res);
+    return this.tokenPriceMap;
+  }
+
 }
 export default Binance;
