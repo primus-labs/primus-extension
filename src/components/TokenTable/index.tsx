@@ -103,8 +103,8 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
                 
                 <span>{item.symbol}</span>
               </div>
-              <div className="price">{'$'+formatNumeral(item.price)}</div>
-              <div className="amount">{formatNumeral(item.amount)}</div>
+              <div className="price">{'$'+ (item.price === '0' ? '--': formatNumeral(item.price))}</div>
+              <div className="amount">{formatNumeral(item.amount, {decimalPlaces: 6})}</div>
               <div className="value">{'$'+formatNumeral(item.value)}</div>
             </li>
           })}

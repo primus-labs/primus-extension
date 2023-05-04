@@ -115,7 +115,7 @@ class Exchange {
         const { last } = res[lpsymbol];
         this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
       } else {
-        this.tokenPriceMap.set(tokenSymbol, ZERO);
+        this.tokenPriceMap.set(tokenSymbol, ZERO+'');
       }
     });
     console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap);
@@ -184,7 +184,7 @@ class Exchange {
         // console.log(`binance-getTokenPrice-${symbol}`, last);
         return new BigNumber(last).toFixed();
       }catch{
-        return ZERO
+        return ZERO + ''
       }
     
   }
