@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getSingleStorageSyncData } from '@/utils/utils'
 import { DATASOURCEMAP } from '@/utils/constants'
 import PTabs from '@/components/PTabs'
@@ -39,6 +39,7 @@ const proveToolList = [
 
 ]
 const DataSourceDetail = () => {
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const sourceName = (searchParams.get('name') as string).toLowerCase()
   const [activeSource, getDataSource] = useExSource()
@@ -48,8 +49,10 @@ const DataSourceDetail = () => {
   const [upChainFlag, setUpChainFlag] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<DataSourceType>()
   const [activeOperateItem, setActiveOperateItem] = useState<string>('')
-  const handleChangeTab = () => {
-  }
+  const [activeSourceType, setActiveSourceType] = useState<string>('All');
+  const handleChangeTab = (val:string) => {
+    navigate('/datas')
+  };
   const handleCloseMask = () => {
     setStep(0)
   }
@@ -91,7 +94,7 @@ const DataSourceDetail = () => {
   return (
     <div className="pageDataSourceDetail">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab} />
+        <PTabs onChange={handleChangeTab}/>
         <AssetsDetail onProve={handleProve} assetsProveFlag={assetsProveFlag} userProveFlag={userProveFlag}/>
       </main>
       {step === 1 && <CreateAttesationDialog type={activeOperateItem} onClose={handleCloseMask} dataSource={activeSource as DataSourceType} onSubmit={handleSubmitCreateAttesationDialog} />}

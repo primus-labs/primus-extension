@@ -10,14 +10,15 @@ interface PSelectProps {
   options: OptionItem[]
   onChange: (val: string) => void;
   placeholder?: string;
+  val: string;
 }
 
-const PSelect: React.FC<PSelectProps> = ({ onChange, options, placeholder = '' }) => {
-  const [activeOption, setActiveOption] = useState<OptionItem>();
+const PSelect: React.FC<PSelectProps> = ({ onChange, options, placeholder = '', val }) => {
+  // const [activeOption, setActiveOption] = useState<OptionItem>();
   const [optionsVisible, setOptionsVisible] = useState(false);
   const selectInputEl = useRef(null);
   const handleChange = (item: OptionItem) => {
-    setActiveOption(item)
+    // setActiveOption(item)
     onChange(item.value);
   };
   const handleClickSelect = () => {
@@ -35,9 +36,10 @@ const PSelect: React.FC<PSelectProps> = ({ onChange, options, placeholder = '' }
       dE.removeEventListener('click', dEClickHandler);
     };
   }, []);
-  useEffect(() => {
-    setActiveOption(options[0])
-  }, [options])
+  // useEffect(() => {
+    // setActiveOption(options[0])
+    
+  // }, [])
   return (
     <div className="pSelect">
       <div
@@ -45,7 +47,8 @@ const PSelect: React.FC<PSelectProps> = ({ onChange, options, placeholder = '' }
         className="selectInput"
         onClick={handleClickSelect}
       >
-        {activeOption?.text}
+        {/* {activeOption?.text} */}
+        {val}
       </div>
       {optionsVisible && (
         <ul className="selectOptions">

@@ -115,7 +115,11 @@ const DataSourceOverview = () => {
   const handleChangeSelect = (val: string) => {
     setActiveSourceType(val);
   };
-  const handleChangeTab = () => {};
+  const handleChangeTab = (val:string) => {
+    if (val === 'Data') {
+      setActiveSourceType('All')
+    }
+  };
   const handleCheckDataSourceDetail = ({ type, name }: DataSourceItemType) => {
     navigate(`/dataDetail?type=${type}&name=${name}`);
   };
@@ -225,7 +229,7 @@ const DataSourceOverview = () => {
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <div className="filterWrapper">
-          <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} />
+          <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} val={activeSourceType}/>
           <div className="pSearch">
             <PControledInput
               onChange={handleChangeInput}
