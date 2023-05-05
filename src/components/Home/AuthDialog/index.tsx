@@ -86,7 +86,11 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
     chrome.windows.onRemoved.addListener(removeWindowCallBack)
     padoServicePort.onMessage.addListener(padoServicePortListener)
   }
-  const handleClickOAuthSource = (source: string) => {
+  const handleClickOAuthSource = (item:AuthSourcesItem) => {
+    const source = item.name 
+    if (item.enabled !== '0') {
+      return
+    }
     setActiveSource(source)
     // If the authorization window is open,focus on it
     if (authWindowId) {
@@ -135,10 +139,10 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
           <ul className="licensorList">
             {oAuthSources.map((item: AuthSourcesItem) => {
               return (<li key={item.id} className={
-                    item.name==='GOOGLE'?
+                    item.enabled==='0'?
                     "licensorItem":
                       "licensorItem disabled"
-                  } onClick={() => { handleClickOAuthSource(item.name) }}>
+                  } onClick={() => { handleClickOAuthSource(item) }}>
                 <img src={item.logoUrl} alt={item.name} />
               </li>)
             })}

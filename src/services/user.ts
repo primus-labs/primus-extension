@@ -16,6 +16,7 @@ export type AuthSourcesItem = {
   id: string;
   logoUrl: string;
   name: string;
+  enabled: string;
 }
 export type AuthSourcesItems = AuthSourcesItem[]
 type GetAllOAuthSourcesRes = {
