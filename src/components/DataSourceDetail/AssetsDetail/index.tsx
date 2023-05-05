@@ -156,17 +156,17 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
       <div className="iconBackWrapper" onClick={handleBack}></div>
       <header>
         <img src={iconAvatar} alt="" className="avatar" />
+        {typeof dataSource === 'object' && <h3>{dataSource?.label}</h3>}
         {typeof dataSource === 'object' && (
           <div className="descItems">
             <div className="descItem">
               <img src={dataSource?.icon} alt="" className="sourceIcon" />
               <div className="value">{dataSource?.name}</div>
             </div>
-            <div className="descItem">
+            {/* <div className="descItem">
               <div className="label">API Key: </div>
               <div className="value">{formatApiKey || 'ApiKey'}</div>
-              {/* <img src={iconClock} alt="" className="clockIcon" /> */}
-            </div>
+            </div> */}
             <div className="descItem">
               <div className="label">Date: </div>
               <div className="value">{dataSource?.date}</div>

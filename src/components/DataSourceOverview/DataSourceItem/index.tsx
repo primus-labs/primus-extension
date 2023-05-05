@@ -136,15 +136,16 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
           <img src={icon} alt="" />
           <div className="TLeftCon">
             <h6>{name}</h6>
-            {type === 'Social' ? (
+            {type === 'Social' && (
               <div className="desc">
                 <span className="label">Name:&nbsp;</span>
                 <span className="value">{userName ?? '--'}</span>
               </div>
-            ) : (
+            )}
+            {type === 'Assets' && label && (
               <div className="desc">
                 <span className="label">Label:&nbsp;</span>
-                <span className="value">{label ?? '--'}</span>
+                <span className="value">{label}</span>
               </div>
             )}
           </div>

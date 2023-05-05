@@ -9,6 +9,7 @@ type ExInfo = {
   totalBalance: string;
   tokenListMap: AssetsMap;
   pnl?:string;
+  label?:string;
 }
 export type DataSourceStorages = {
   binance?: any,
