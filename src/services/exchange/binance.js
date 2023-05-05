@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { add, gt } from '@/utils/utils';
-import { USDT,BUSD,TUSD,BTC,STABLETOKENLIST } from '@/utils/constants';
+import { USDT,BUSD,TUSD,BTC,LDO,STABLETOKENLIST } from '@/utils/constants';
 import Exchange from './exchange';
 import CcxtBinance from './ccxtbinance';
 const BIGZERO = new BigNumber(0);
@@ -40,24 +40,27 @@ class Binance extends Exchange {
     res.info.balances.forEach(({ asset, free, locked }) => {
       // Tip: trading account balance = free + locked
       const amt = add(free, locked).toFixed();
-      gt(amt, BIGZERO) && this.tradingAccountTokenAmountMap.set(asset, amt);
-    });
-
-    this.tradingAccountTokenAmountMap.forEach((amt, symbol) => {
-      if (symbol.startsWith('LD')) {
-        const tokensymbol = symbol.replace('LD', '');
-        const symbolAmount = this.tradingAccountTokenAmountMap.get(symbol) || BIGZERO;
-        const tokenSymbolAmount = this.tradingAccountTokenAmountMap.get(tokensymbol) || BIGZERO;
-        const tokenValue = add(symbolAmount,tokenSymbolAmount).toFixed();
-        this.tradingAccountTokenAmountMap.set(tokensymbol, tokenValue);
-        this.tradingAccountTokenAmountMap.delete(symbol);
-      }
+      gt(amt, BIGZERO) && (!asset.startsWith('LD') || asset === LDO) && this.tradingAccountTokenAmountMap.set(asset, amt);
     });
     // console.log(
     //   'tradingAccountTokenAmountMap',
     //   this.tradingAccountTokenAmountMap
     // );
     return this.tradingAccountTokenAmountMap;
+  }
+
+  async getSpotAccountTokenAmountMap() {
+    const res = await this.exchange.fetchBalance({ type: 'savings' });
+    res.info.positionAmountVos.forEach(({ asset, amount }) => {
+      // Tip: trading account balance = free + locked
+      const amt = new BigNumber(amount).toFixed();
+      gt(amt, BIGZERO) && this.spotAccountTokenAmountMap.set(asset, amt);
+    });
+    // console.log(
+    //   'spotAccountTokenAmountMap',
+    //   this.spotAccountTokenAmountMap
+    // );
+    return this.spotAccountTokenAmountMap;
   }
 
   async getTokenPriceMap() {

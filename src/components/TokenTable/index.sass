@@ -57,36 +57,79 @@ $col-fall: #27C265
         .post
           min-width: 90px
     li.tokenItem
-      gap: 189px
-      @extend .frbc
-      @extend .sFont
-      font-family: 'Inter-Medium'
-      color: $colLBlack
+      .innerWrapper,.detailWrapper .descItem
+        @extend .frbc
+      .innerWrapper >div,.detailWrapper .descItem >div
+          width: 133.25px
+          text-align: right
+      .innerWrapper
+        margin:  0 -50px
+        // gap: 189px
+        @extend .frbc
+        @extend .sFont
+        font-family: 'Inter-Medium'
+        color: $colLBlack
+        
+        .token
+          @extend .frsc
+          gap: $xxsGap
+          text-align: left
+          >img
+            width: $xsIconSize
+            border-radius: 50%
       &.th
         border-bottom: 1px solid rgba(0, 0, 0, 0.1)
         margin-bottom: 3px
-        padding: 16px 0 15px
-        color: $colSBlack
-        &:hover
-          background: transparent
+        .innerWrapper
+          padding: 16px 50px 15px
+          color: $colSBlack
       &.tr
-        margin: 10px -50px 0
-        padding: 11px 50px
-        color: $colLBlack
+        margin-top: 10px
+        position: relative
+        &.expand
+          height: 121px
         &:hover
-          background: rgba(0, 0, 0, 0.05)
-      >div
-        width: 133.25px
-        text-align: right
-      .token
-        @extend .frsc
-        gap: $xxsGap
-        text-align: left
-        >img
-          width: $xsIconSize
-          border-radius: 50%
-        // >span
-        //   line-height: 22px
+          .innerWrapper
+            background: rgba(0, 0, 0, 0.05)
+        .innerWrapper
+          padding: 11px 50px
+        .arrowWrapper
+          position: absolute
+          content: ''
+          top: 15px
+          transform: rotate(-90deg)
+          right: -24px
+          width: 12px
+          height: 12px
+          background: url('../../assets/img/iconArrowLeft.svg')
+          background-size: 100% 100%
+          cursor: pointer
+          &:hover
+            background-image: url('../../assets/img/iconArrowLeftActive.svg')
+        .detailWrapper
+          position: absolute
+          content: ''
+          top: 42px
+          left: 0
+          height: 61px
+          padding: 6px 0 8px
+          width: 100%
+          .descItem
+            width: 100%
+            display: flex
+            gap: 140px
+            @extend .xsSBlackRegularFont
+            color: $colLBlack
+            margin-bottom: 13px
+            text-align: right
+            &:last-child
+              margin-bottom: 0
+            >.token
+              display: flex
+              justify-content: flex-end
+              .label
+                width:51px
+                text-align: left
 @media (max-width: 1680px)
   .tokenListWrapper
     padding: 0 44px
@@ -98,12 +141,16 @@ $col-fall: #27C265
     ul.tokens
       padding-bottom: 36px
       li.tokenItem
-        gap: 140px
+        .innerWrapper >div,.detailWrapper .descItem >div  
+            width: 132px
+        .innerWrapper
+          // gap: 138.66px
+          margin: 0 -44px
         &.th
           margin-bottom: 20px
-          padding: 12px 0 11px
         &.tr
-          margin: 4px -44px 0
-          padding: 11px 44px
-        >div
-          width: 132px
+          margin-top: 4px
+          .innerWrapper
+            padding: 12px 44px 11px
+          
+        

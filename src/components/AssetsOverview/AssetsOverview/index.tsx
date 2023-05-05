@@ -135,6 +135,26 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onCle
   const activeSourceTokenList = useMemo(() => {
     return Object.values(activeAssetsMap as AssetsMap);
   }, [activeAssetsMap]);
+  const flexibleAccountTokenMap = useMemo(() => {
+    if (activeSourceName) {
+      const activeS: DataSourceItemType = list.find(
+        (item) => item.name === activeSourceName
+      ) as DataSourceItemType;
+      return activeS.flexibleAccountTokenMap;
+    } else {
+      return undefined;
+    }
+  }, [list, activeSourceName]);
+  const spotAccountTokenMap = useMemo(() => {
+    if (activeSourceName) {
+      const activeS: DataSourceItemType = list.find(
+        (item) => item.name === activeSourceName
+      ) as DataSourceItemType;
+      return activeS.spotAccountTokenMap;
+    } else {
+      return undefined;
+    }
+  }, [list, activeSourceName]);
 
   const handleSelectSource = useCallback((sourceName: string | undefined) => {
     setActiveSourceName(sourceName);
@@ -186,7 +206,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(({ filterSource,onCle
         filterSource={filterSource}
         onClearFilter={onClearFilter}
       />
-      <TokenTable list={activeSourceTokenList} />
+      <TokenTable list={activeSourceTokenList} flexibleAccountTokenMap={flexibleAccountTokenMap} spotAccountTokenMap={spotAccountTokenMap} name={activeSourceName?.toLowerCase()}/>
     </div>
   );
 });

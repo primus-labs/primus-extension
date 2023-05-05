@@ -12,10 +12,14 @@ import { setSysConfigAction } from '@/store/actions'
 interface TokenTableProps {
   list: TokenMap[] | DataSourceItemType[];
   type?: string;
+  flexibleAccountTokenMap?: any;
+  spotAccountTokenMap?: any;
+  name?:string;
 }
 
-const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
-  // console.log('TokenTable-list', list);
+const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleAccountTokenMap,spotAccountTokenMap , name}) => {
+  console.log('TokenTable-list', list,name);
+  const [activeItem,setActiveItem] = useState<string>()
   const sysConfig = useSelector((state: UserState) => state.sysConfig)
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const tokenLogoPrefix = useMemo(() => {
@@ -79,6 +83,10 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
   // const handleSearch = (val: string) => {
   //   setFilterToken(val)
   // }
+  const handleCheckDetail = (symbol:string) => {
+    const activeS = symbol === activeItem? undefined: symbol
+    setActiveItem(activeS)
+  }
 
   return (
     <section className="tokenListWrapper">
@@ -91,21 +99,43 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets' }) => {
       {type === 'Assets' ?
         <ul className="tokens">
           <li className="tokenItem th" key="th">
-            <div className="token">Token</div>
-            <div className="price">Price</div>
-            <div className="amount">Amount</div>
-            <div className="value">USD Value</div>
+            <div className="innerWrapper">
+              <div className="token">Token</div>
+              <div className="price">Price</div>
+              <div className="amount">Amount</div>
+              <div className="value">USD Value</div>
+            </div>
           </li>
           {(activeList as TokenMap[]).map(item => {
-            return <li className="tokenItem tr" key={item.symbol}>
-              <div className="token">
-                {tokenLogoPrefix && <img src={`${tokenLogoPrefix}icon${item.symbol}.png`} alt="" />}
-                
-                <span>{item.symbol}</span>
+            return <li className={activeItem === item.symbol? 'tokenItem tr expand':"tokenItem tr"  }key={item.symbol}>
+              <div className="innerWrapper">
+                <div className="token">
+                  {tokenLogoPrefix && <img src={`${tokenLogoPrefix}icon${item.symbol}.png`} alt="" />}
+                  <span>{item.symbol}</span>
+                </div>
+                <div className="price">{'$'+ (item.price === '0' ? '--': formatNumeral(item.price))}</div>
+                <div className="amount">{formatNumeral(item.amount, {decimalPlaces: 6})}</div>
+                <div className="value">{'$'+formatNumeral(item.value)}</div>
               </div>
-              <div className="price">{'$'+ (item.price === '0' ? '--': formatNumeral(item.price))}</div>
-              <div className="amount">{formatNumeral(item.amount, {decimalPlaces: 6})}</div>
-              <div className="value">{'$'+formatNumeral(item.value)}</div>
+              {name === 'binance' && <div className="arrowWrapper" onClick={() => handleCheckDetail(item.symbol)}></div>}
+              {activeItem === item.symbol && <div className="detailWrapper">
+                <div className="descItem">
+                  <div className="token">
+                    <div className="label">Spot</div>
+                  </div>
+                  <div className="price"></div>
+                  <div className="amount">{formatNumeral(spotAccountTokenMap[item.symbol]?.amount || '0', {decimalPlaces: 6})}</div>
+                  <div className="value">{'$'+formatNumeral(spotAccountTokenMap[item.symbol]?.value  || '0')}</div>
+                </div>
+                <div className="descItem">
+                  <div className="token">
+                    <div className="label">Flexible</div>
+                  </div>
+                  <div className="price"></div>
+                  <div className="amount">{formatNumeral(flexibleAccountTokenMap[item.symbol]?.amount || '0', {decimalPlaces: 6})}</div>
+                  <div className="value">{'$'+formatNumeral(flexibleAccountTokenMap[item.symbol]?.value  || '0') }</div>
+                </div>
+              </div>}
             </li>
           })}
         </ul> :

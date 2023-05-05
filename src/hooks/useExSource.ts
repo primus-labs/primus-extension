@@ -10,6 +10,8 @@ type ExInfo = {
   tokenListMap: AssetsMap;
   pnl?:string;
   label?:string;
+  flexibleAccountTokenMap: AssetsMap;
+  spotAccountTokenMap: AssetsMap;
 }
 export type DataSourceStorages = {
   binance?: any,

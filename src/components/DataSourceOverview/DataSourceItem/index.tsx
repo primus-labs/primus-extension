@@ -20,6 +20,8 @@ export type DataSourceData = {
   totalBalance?: string;
   assetsNo?: number;
   label?: string;
+  flexibleAccountTokenMap?: any;
+  spotAccountTokenMap?: any;
 };
 export type SocialDataSourceData = {
   followers?: number | string;

@@ -18,6 +18,10 @@ class Exchange {
     this.initCctx();
     this.fundingAccountTokenAmountMap = new Map();
     this.tradingAccountTokenAmountMap = new Map();
+    this.spotAccountTokenAmountMap = new Map();
+    this.flexibleAccountTokenAmountMap = new Map();
+    this.spotAccountTokenMap = {};
+    this.flexibleAccountTokenMap = {};
     this.totalHoldingTokenSymbolList = [];
     this.totalAccountTokenAmountMap = new Map();
     this.tokenPriceMap = new Map();
@@ -37,6 +41,9 @@ class Exchange {
   async getTradingAccountTokenAmountMap() {
     return this.tradingAccountTokenAmountMap;
   }
+  async getSpotAccountTokenAmountMap() {
+    return this.spotAccountTokenAmountMap;
+  }
   async getTotalHoldingTokenSymbolList() {
     if (this.totalHoldingTokenSymbolList.length > 0) {
       return this.totalHoldingTokenSymbolList;
@@ -45,10 +52,12 @@ class Exchange {
       await Promise.all([
         this.getFundingAccountTokenAmountMap(),
         this.getTradingAccountTokenAmountMap(),
+        this.getSpotAccountTokenAmountMap()
       ]);
       const duplicateSymbolArr = [
         ...this.fundingAccountTokenAmountMap.keys(),
         ...this.tradingAccountTokenAmountMap.keys(),
+        ...this.spotAccountTokenAmountMap.keys(),
       ];
       this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
       // console.log(
@@ -63,7 +72,7 @@ class Exchange {
   }
   async getTotalAccountTokenAmountMap() {
     await this.getTotalHoldingTokenSymbolList();
-    this.totalAccountTokenAmountMap = this.totalHoldingTokenSymbolList.reduce(
+    this.flexibleAccountTokenAmountMap = this.totalHoldingTokenSymbolList.reduce(
       (prev, curr) => {
         const amountInFundingAccount =
           this.fundingAccountTokenAmountMap.get(curr) || 0;
@@ -76,6 +85,24 @@ class Exchange {
       },
       new Map()
     );
+    if(this.spotAccountTokenAmountMap.size > 0) {
+      this.totalAccountTokenAmountMap = this.totalHoldingTokenSymbolList.reduce(
+        (prev, curr) => {
+          const amountInFlexibleAccount =
+            this.flexibleAccountTokenAmountMap.get(curr) || 0;
+          const amountInSpotAccount =
+            this.spotAccountTokenAmountMap.get(curr) || 0;
+          return prev.set(
+            curr,
+            add(amountInFlexibleAccount, amountInSpotAccount).toFixed()
+          );
+        },
+        new Map()
+      );
+    } else {
+      this.totalAccountTokenAmountMap = this.flexibleAccountTokenAmountMap
+    }
+    
     // console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
     return this.totalAccountTokenAmountMap;
   }
@@ -114,15 +141,10 @@ class Exchange {
     console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap);
     return this.tokenPriceMap;
   }
-  async getTotalAccountTokenMap() {
-    await this.getTotalHoldingTokenSymbolList();
-    await Promise.all([
-      this.getTokenPriceMap(),
-      this.getTotalAccountTokenAmountMap(),
-    ]);
-    this.totalAccountTokenMap = this.totalHoldingTokenSymbolList.reduce(
+  getTokenMap(amountMap) {
+    const obj = this.totalHoldingTokenSymbolList.reduce(
       (prev, curr) => {
-        const amount = this.totalAccountTokenAmountMap.get(curr);
+        const amount = amountMap.get(curr) || (ZERO + '');
         const price = this.tokenPriceMap.get(curr) || (ZERO + '');
         const value = mul(amount, price).toFixed();
         prev[curr] = {
@@ -135,6 +157,22 @@ class Exchange {
       },
       {}
     );
+    return obj
+  }
+
+  async getTotalAccountTokenMap() {
+    await this.getTotalHoldingTokenSymbolList();
+    await Promise.all([
+      this.getTokenPriceMap(),
+      this.getTotalAccountTokenAmountMap(),
+    ]);
+    this.flexibleAccountTokenMap = this.getTokenMap(this.flexibleAccountTokenAmountMap)
+    if(this.spotAccountTokenAmountMap.size > 0) {
+      this.spotAccountTokenMap = this.getTokenMap(this.spotAccountTokenAmountMap)
+      this.totalAccountTokenMap = this.getTokenMap(this.totalAccountTokenAmountMap)
+    } else {
+      this.totalAccountTokenMap = this.flexibleAccountTokenMap
+    }
     // console.log('totalAccountTokenMap', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;
   }

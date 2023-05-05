@@ -59,7 +59,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           }
           if (cipherData) {
             try {
-              console.log('Ready to decrypt:', USERPASSWORD, EXCHANGEINFO)
+              console.log('Ready to decrypt:', USERPASSWORD)
               const apiKeyInfo = JSON.parse(
                 decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
               );
@@ -90,6 +90,8 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           timestamp: +new Date(),
           version: ExchangeStoreVersion,
           label: exParams.label,
+          flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
+          spotAccountTokenMap: ex.spotAccountTokenMap,
         };
         console.log(`$$$$$background--${name}exData`, ex)
         if (pnl !== null && pnl !== undefined) {

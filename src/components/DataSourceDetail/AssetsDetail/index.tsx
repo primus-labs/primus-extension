@@ -93,6 +93,23 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
       return [];
     }
   }, [dataSource]);
+  const flexibleAccountTokenMap = useMemo(() => {
+    if (typeof dataSource === 'object') {
+      const obj = dataSource.flexibleAccountTokenMap;
+      return obj;
+    } else {
+      return undefined;
+    }
+  }, [dataSource]);
+  const spotAccountTokenMap = useMemo(() => {
+    if (typeof dataSource === 'object') {
+      const obj = dataSource.spotAccountTokenMap;
+      return obj;
+    } else {
+      return undefined;
+    }
+  }, [dataSource]);
+  
   const formatApiKey = useMemo(() => {
     if (apiKey) {
       return apiKey.substring(0, 8);
@@ -221,7 +238,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
           );
         })}
       </section>
-      <TokenTable list={totalAssetsList} />
+      <TokenTable list={totalAssetsList} flexibleAccountTokenMap={flexibleAccountTokenMap} spotAccountTokenMap={spotAccountTokenMap} name={sourceName}/>
       <DataUpdateBar type='Assets' onUpdate={onUpdate} sourceName={sourceName}/>
     </div>
   );

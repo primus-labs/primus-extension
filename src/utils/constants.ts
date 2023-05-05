@@ -79,4 +79,5 @@ export const DAI = 'DAI';
 export const BUSD = 'BUSD';
 export const TUSD = 'TUSD';
 export const BTC = 'BTC';
+export const LDO = 'LDO';
 export const STABLETOKENLIST = [USDT,USD,USDC,DAI,BUSD,TUSD]
