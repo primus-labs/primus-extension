@@ -1,14 +1,11 @@
 import ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { add, mul, gt, div } from '@/utils/utils';
+import { USDT,BTC,STABLETOKENLIST } from '@/utils/constants';
 const BIGZERO = new BigNumber(0);
 const BIGONE = new BigNumber(1);
 const ONE = 1;
 const ZERO = 0;
-const USDT = 'USDT';
-const USD = 'USD';
-const DAI = 'DAI';
-const BTC = 'BTC'
 
 class Exchange {
   constructor(exName, exchangeInfo) {
@@ -17,7 +14,7 @@ class Exchange {
     this.secretKey = secretKey;
     this.passphase = passphase;
     this.exchange = null;
-    this.exName = exName; //ysm
+    this.exName = exName;
     this.initCctx();
     this.fundingAccountTokenAmountMap = new Map();
     this.tradingAccountTokenAmountMap = new Map();
@@ -89,9 +86,7 @@ class Exchange {
     // price unit: USD
     // coninbase need filter USD
     let LPSymbols = this.totalHoldingTokenSymbolList
-      .filter((i) => i !== USDT)
-      .filter((i) => i !== USD)
-      .filter((i) => i !== DAI)
+      .filter((i) => !STABLETOKENLIST.includes(i))
       .concat(BTC)
       .map((j) => (`${j}/${USDT}`));
     let res;
@@ -103,12 +98,10 @@ class Exchange {
       return;
     }
     //console.log('fetchTickers res:', this.exName, res);
-
-    this.tokenPriceMap = new Map([
-      [USDT, ONE],
-      [USD, ONE],
-      [DAI, ONE]
-    ]);
+    this.tokenPriceMap = STABLETOKENLIST.reduce((prev, curr) => {
+      prev.set(curr, ONE+'')
+      return prev
+    }, new Map())
     LPSymbols.forEach((lpsymbol) => {
       const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
       if (res[lpsymbol] && res[lpsymbol].last) {
@@ -130,7 +123,7 @@ class Exchange {
     this.totalAccountTokenMap = this.totalHoldingTokenSymbolList.reduce(
       (prev, curr) => {
         const amount = this.totalAccountTokenAmountMap.get(curr);
-        const price = this.tokenPriceMap.get(curr);
+        const price = this.tokenPriceMap.get(curr) || (ZERO + '');
         const value = mul(amount, price).toFixed();
         prev[curr] = {
           symbol: curr,
@@ -172,9 +165,6 @@ class Exchange {
     const price = this.tokenPriceMap.get(symbol);
     if (price) {
       return price;
-    }
-    if ([USD, USDT].includes(symbol)) {
-      return ONE;
     }
     const LPSymbol =
       this.exName === 'binance' ? `${symbol}${USDT}` : `${symbol}-${USDT}`;

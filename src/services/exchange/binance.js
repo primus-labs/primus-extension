@@ -1,15 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { add, gt } from '@/utils/utils';
+import { USDT,BUSD,TUSD,BTC,STABLETOKENLIST } from '@/utils/constants';
 import Exchange from './exchange';
 import CcxtBinance from './ccxtbinance';
 const BIGZERO = new BigNumber(0);
 const ONE = 1;
 const ZERO = 0;
-const USDT = 'USDT';
-const USD = 'USD';
-const DAI = 'DAI';
-const BUSD = 'BUSD';
-const BTC = 'BTC'
 
 class Binance extends Exchange {
   constructor(exchangeInfo) {
@@ -71,10 +67,7 @@ class Binance extends Exchange {
     // price unit: USD
     // coninbase need filter USD
     let LPSymbols = this.totalHoldingTokenSymbolList
-      .filter((i) => i !== USDT)
-      .filter((i) => i !== USD)
-      .filter((i) => i !== DAI)
-      .filter((i) => i !== BUSD)
+      .filter((i) => !STABLETOKENLIST.includes(i))
       .concat(BTC)
       .map((j) => (`${j}/${USDT}`));
     let res;
@@ -86,20 +79,16 @@ class Binance extends Exchange {
       return;
     }
     //console.log('fetchTickers res:', this.exName, res);
-
-    this.tokenPriceMap = new Map([
-      [USDT, ONE],
-      [USD, ONE],
-      [DAI, ONE]
-    ]);
+    this.tokenPriceMap = STABLETOKENLIST.reduce((prev, curr) => {
+      prev.set(curr, ONE+'')
+      return prev
+    }, new Map())
     LPSymbols.forEach((lpsymbol) => {
       const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
       const BUSDLpsymbol = lpsymbol.replace(`${USDT}`, BUSD);
-      if (res[lpsymbol] && res[lpsymbol].last) {
-        const { last } = res[lpsymbol];
-        this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
-      } else if (res[BUSDLpsymbol] && res[BUSDLpsymbol].last) {
-        const { last } = res[BUSDLpsymbol];
+      const TUSDLpsymbol = lpsymbol.replace(`${USDT}`, TUSD);
+      const last = res[lpsymbol]?.last || res[BUSDLpsymbol]?.last || res[TUSDLpsymbol]?.last
+      if (last) {
         this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
       } else {
         this.tokenPriceMap.set(tokenSymbol, ZERO+'');
