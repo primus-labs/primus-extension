@@ -29,11 +29,14 @@ $tabLineHeight: 22px
     @extend .frcc
     gap: $xxsGap
     @extend .mSBlackSemiBoldFont
-    &.focusTab
-      color: #000000
     &.activeTab
       background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
       color: #000000
+    &.disabled
+      cursor: not-allowed
+    &:not(.disabled):hover
+      color: #000000
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
 @media (max-width: 1680px)
   .pTabs
     padding: 6px

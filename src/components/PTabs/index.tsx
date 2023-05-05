@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { ChangeEvent } from 'react';
 import iconData from '@/assets/img/iconData.svg';
 import iconDataHover from '@/assets/img/iconDataHover.svg';
@@ -13,6 +13,7 @@ type TabItem = {
   icon: any;
   activeIcon: any;
   text: string;
+  disabled?:boolean
 };
 
 const PTabs: React.FC<PInputProps> = ({ onChange }) => {
@@ -26,31 +27,49 @@ const PTabs: React.FC<PInputProps> = ({ onChange }) => {
       icon: iconEvents,
       activeIcon: iconEventsHover,
       text: 'Events',
+      disabled: true
     },
   ]);
   const [activeTab, setActiveTab] = useState<string>('Data');
   const [focusTab, setFocusTab] = useState<string>();
 
-  const handleClickTab = (text: string) => {
-    setActiveTab(text);
-    onChange(text)
+  const handleClickTab = (item: TabItem) => {
+    if(!item.disabled) {
+      setActiveTab(item.text);
+      onChange(item.text)
+    }
   };
-  const handleMouseEnter = (text: string) => {
-    setFocusTab(text);
+  const handleMouseEnter = (item: TabItem) => {
+    // if(!item.disabled) {
+      setFocusTab(item.text);
+    // }
   };
   const handleMouseLeave = () => {
     setFocusTab('');
   };
+  const tabClassCb = useCallback((item: TabItem) => {
+    let cN = 'tab'
+    if (activeTab === item.text) {
+      cN += ' activeTab'
+    }
+    if (focusTab === item.text) {
+      cN += ' focusTab'
+    }
+    if (item.disabled) {
+      cN += ' disabled'
+    }
+    return cN
+  },[focusTab, activeTab])
 
   return (
     <div className="pTabs">
       {tabs.map((item) => {
         return (
           <div
-            className={activeTab === item.text ? 'tab activeTab' : focusTab === item.text ? 'tab focusTab' : 'tab'}
+            className={tabClassCb(item)}
             key={item.text}
-            onClick={() => handleClickTab(item.text)}
-            onMouseEnter={() => handleMouseEnter(item.text)}
+            onClick={() => handleClickTab(item)}
+            onMouseEnter={() => handleMouseEnter(item)}
             onMouseLeave={handleMouseLeave}
           >
             <img
