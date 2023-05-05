@@ -48,12 +48,13 @@ export default class CcxtBinance extends binance {
         else if (type === 'savings') {
             method = 'sapiGetLendingUnionAccount';
         }
-        else if (type === 'savingsFixed') {
-            method = 'sapiGetLendingProjectPositionList';
-        }
         else if (type === 'funding') {
             method = 'sapiPostAssetGetFundingAsset';
-        } else if (type === 'bswap') {
+        }
+        else if (type === 'staking') {
+            method = 'sapiGetStakingPosition';
+        }
+        else if (type === 'bswap') {
             method = 'sapiGetBswapLiquidity';
         }
         const requestParams = this.omit(query, ['type', 'symbols']);

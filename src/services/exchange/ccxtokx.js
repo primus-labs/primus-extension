@@ -24,7 +24,7 @@ export default class CcxtOkx extends okx {
         else if (marketType === 'savings') {
             method = 'privateGetFinanceSavingsBalance';
         }
-        else if (marketType === 'savingsFixed') {
+        else if (marketType === 'staking') {
             method = 'privateGetFinanceStakingDefiOrdersActive';
         }
         else {
