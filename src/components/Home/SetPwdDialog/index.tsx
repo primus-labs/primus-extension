@@ -57,6 +57,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
     }
   }, [pwd])
   const handleClickNext = async () => {
+    debugger
     // TODO validate form again
     if (!pwd || !confirm || errorTipVisible) {
       return
@@ -165,7 +166,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
             </ul>
           </div>
           <h6 className="reconfirmLabel">Reconfirm</h6>
-          <PInput type="password" placeholder="Please confirm your password" onChange={handleChangeConfirm} visible/>
+          <PInput type="password" placeholder="Please confirm your password" onChange={handleChangeConfirm} onSearch={handleClickNext} visible/>
           {errorTipVisible && <p className="errorTip">Entered passwords differ!</p>}
         </main>
         <button className="nextBtn" onClick={handleClickNext}>
