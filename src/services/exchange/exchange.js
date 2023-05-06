@@ -18,7 +18,7 @@ class Exchange {
     this.initCctx();
     this.fundingAccountTokenAmountMap = new Map();
     this.tradingAccountTokenAmountMap = new Map();
-    this.spotAccountTokenAmountMap = new Map();
+    this.spotAccountTokenAmountMap = new Map(); // spotAccount = fundingAccount + tradingAccount
     this.flexibleAccountTokenAmountMap = new Map();
     this.spotAccountTokenMap = {};
     this.flexibleAccountTokenMap = {};
@@ -41,8 +41,8 @@ class Exchange {
   async getTradingAccountTokenAmountMap() {
     return this.tradingAccountTokenAmountMap;
   }
-  async getSpotAccountTokenAmountMap() {
-    return this.spotAccountTokenAmountMap;
+  async getFlexibleAccountTokenAmountMap() {
+    return this.flexibleAccountTokenAmountMap;
   }
   async getTotalHoldingTokenSymbolList() {
     if (this.totalHoldingTokenSymbolList.length > 0) {
@@ -52,12 +52,12 @@ class Exchange {
       await Promise.all([
         this.getFundingAccountTokenAmountMap(),
         this.getTradingAccountTokenAmountMap(),
-        this.getSpotAccountTokenAmountMap()
+        this.getFlexibleAccountTokenAmountMap()
       ]);
       const duplicateSymbolArr = [
         ...this.fundingAccountTokenAmountMap.keys(),
         ...this.tradingAccountTokenAmountMap.keys(),
-        ...this.spotAccountTokenAmountMap.keys(),
+        ...this.flexibleAccountTokenAmountMap.keys(),
       ];
       this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
       // console.log(
@@ -72,7 +72,7 @@ class Exchange {
   }
   async getTotalAccountTokenAmountMap() {
     await this.getTotalHoldingTokenSymbolList();
-    this.flexibleAccountTokenAmountMap = this.totalHoldingTokenSymbolList.reduce(
+    this.spotAccountTokenAmountMap = this.totalHoldingTokenSymbolList.reduce(
       (prev, curr) => {
         const amountInFundingAccount =
           this.fundingAccountTokenAmountMap.get(curr) || 0;
@@ -85,7 +85,7 @@ class Exchange {
       },
       new Map()
     );
-    if(this.spotAccountTokenAmountMap.size > 0) {
+    if(this.flexibleAccountTokenAmountMap.size > 0) {
       this.totalAccountTokenAmountMap = this.totalHoldingTokenSymbolList.reduce(
         (prev, curr) => {
           const amountInFlexibleAccount =
@@ -100,7 +100,7 @@ class Exchange {
         new Map()
       );
     } else {
-      this.totalAccountTokenAmountMap = this.flexibleAccountTokenAmountMap
+      this.totalAccountTokenAmountMap = this.spotAccountTokenAmountMap
     }
     
     // console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
@@ -166,12 +166,12 @@ class Exchange {
       this.getTokenPriceMap(),
       this.getTotalAccountTokenAmountMap(),
     ]);
-    this.flexibleAccountTokenMap = this.getTokenMap(this.flexibleAccountTokenAmountMap)
-    if(this.spotAccountTokenAmountMap.size > 0) {
-      this.spotAccountTokenMap = this.getTokenMap(this.spotAccountTokenAmountMap)
+    this.spotAccountTokenMap = this.getTokenMap(this.spotAccountTokenAmountMap)
+    if(this.flexibleAccountTokenAmountMap.size > 0) {
+      this.flexibleAccountTokenMap = this.getTokenMap(this.flexibleAccountTokenAmountMap)
       this.totalAccountTokenMap = this.getTokenMap(this.totalAccountTokenAmountMap)
     } else {
-      this.totalAccountTokenMap = this.flexibleAccountTokenMap
+      this.totalAccountTokenMap = this.spotAccountTokenMap
     }
     // console.log('totalAccountTokenMap', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;

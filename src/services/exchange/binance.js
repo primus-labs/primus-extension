@@ -49,18 +49,18 @@ class Binance extends Exchange {
     return this.tradingAccountTokenAmountMap;
   }
 
-  async getSpotAccountTokenAmountMap() {
+  async getFlexibleAccountTokenAmountMap() {
     const res = await this.exchange.fetchBalance({ type: 'savings' });
     res.info.positionAmountVos.forEach(({ asset, amount }) => {
       // Tip: trading account balance = free + locked
       const amt = new BigNumber(amount).toFixed();
-      gt(amt, BIGZERO) && this.spotAccountTokenAmountMap.set(asset, amt);
+      gt(amt, BIGZERO) && this.flexibleAccountTokenAmountMap.set(asset, amt);
     });
     // console.log(
-    //   'spotAccountTokenAmountMap',
-    //   this.spotAccountTokenAmountMap
+    //   'flexibleAccountTokenAmountMap',
+    //   this.flexibleAccountTokenAmountMap
     // );
-    return this.spotAccountTokenAmountMap;
+    return this.flexibleAccountTokenAmountMap;
   }
 
   async getTokenPriceMap() {
