@@ -35,7 +35,7 @@ const navs = [
   },
  ]
 const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleAccountTokenMap,spotAccountTokenMap , name}) => {
-  console.log('TokenTable-list', list,name,spotAccountTokenMap,flexibleAccountTokenMap);
+  // console.log('TokenTable-list', list,name,spotAccountTokenMap,flexibleAccountTokenMap);
   const [filterAccount, setFilterAccount] = useState<string | undefined>()
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false)
   const [activeItem,setActiveItem] = useState<string>()
