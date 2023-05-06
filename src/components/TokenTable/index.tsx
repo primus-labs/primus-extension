@@ -35,8 +35,8 @@ const navs = [
   },
  ]
 const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleAccountTokenMap,spotAccountTokenMap , name}) => {
-  // console.log('TokenTable-list', list,name);
-  const [filter, setFilter] = useState<string | undefined>()
+  console.log('TokenTable-list', list,name,spotAccountTokenMap,flexibleAccountTokenMap);
+  const [filterAccount, setFilterAccount] = useState<string | undefined>()
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false)
   const [activeItem,setActiveItem] = useState<string>()
   const sysConfig = useSelector((state: UserState) => state.sysConfig)
@@ -71,17 +71,28 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
     }
   }, [sysConfig])
   const [filterToken, setFilterToken] = useState<string>()
+  const currentList = useMemo(() => {
+    if (filterAccount === undefined || filterAccount === 'All') {
+      return list
+    }
+    if (filterAccount === 'Spot') {
+      return Object.values(spotAccountTokenMap)
+    }
+    if (filterAccount === 'Flexible') {
+      return Object.values(flexibleAccountTokenMap)
+    }
+  }, [list, flexibleAccountTokenMap, spotAccountTokenMap , filterAccount])
   const activeList = useMemo(() => {
     if (filterToken) {
       const lowerFilterWord = filterToken?.toLowerCase()
       if (type === 'Assets') {
-        return (list as TokenMap[]).filter(item => {
+        return (currentList as TokenMap[]).filter(item => {
           const anchorName = item.symbol
           const lowerCaseName = anchorName.toLowerCase()
           return lowerCaseName.startsWith(lowerFilterWord as string)
         }).sort((a,b) => sub(Number(b.value),Number(a.value)).toNumber())
       } else {
-        return (list as DataSourceItemType[]).filter(item => {
+        return (currentList as DataSourceItemType[]).filter(item => {
           const anchorName = item.name
           const lowerCaseName = anchorName.toLowerCase()
           return lowerCaseName.startsWith(lowerFilterWord as string)
@@ -89,13 +100,13 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
       }
     } else {
       if (type === 'Assets') {
-        return (list as TokenMap[]).sort((a,b) => sub(Number(b.value),Number(a.value)).toNumber())
+        return (currentList as TokenMap[]).sort((a,b) => sub(Number(b.value),Number(a.value)).toNumber())
       } else {
-        return (list as DataSourceItemType[]).sort((a,b) => sub(Number(b.followers),Number(a.followers)).toNumber())
+        return (currentList as DataSourceItemType[]).sort((a,b) => sub(Number(b.followers),Number(a.followers)).toNumber())
       }
     }
 
-  }, [list, filterToken, type])
+  }, [currentList, filterToken, type])
 
   // const handleChangeInput = (val: string) => {
   // }
@@ -121,8 +132,8 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
     }
     return cN
   }, [name,activeItem,spotAccountTokenMap,flexibleAccountTokenMap])
-  const handleChangeFilter = (filter: string | undefined) => {
-    setFilter(filter)
+  const handleChangeFilter = (filterAccount: string | undefined) => {
+    setFilterAccount(filterAccount)
   }
   return (
     <section className="tokenListWrapper">
@@ -141,7 +152,6 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
               <div className="amount">Amount</div>
               <div className="value">USD Value</div>
             </div>
-            {/* <div className="filterIconWrapper" onClick={() => {setDorpdownVisible(i => !i)}}></div> */}
             <div className="accountFilterWrapper"><PFilter onChange={handleChangeFilter}/></div>
           </li>
           {(activeList as TokenMap[]).map(item => {
@@ -155,8 +165,8 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
                 <div className="amount">{formatNumeral(item.amount, {decimalPlaces: 6})}</div>
                 <div className="value">{'$'+formatNumeral(item.value)}</div>
               </div>
-              {name === 'binance' && <div className="arrowWrapper" onClick={() => handleCheckDetail(item.symbol)}></div>}
-              {activeItem === item.symbol && <div className="detailWrapper">
+              {name === 'binance' && filterAccount === 'All' && <div className="arrowWrapper" onClick={() => handleCheckDetail(item.symbol)}></div>}
+              {activeItem === item.symbol && filterAccount === 'All' && <div className="detailWrapper">
                 {spotAccountTokenMap[item.symbol]?.amount > 0 && <div className="descItem">
                   <div className="token">
                     <div className="label">Spot</div>

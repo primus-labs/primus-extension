@@ -144,15 +144,17 @@ class Exchange {
   getTokenMap(amountMap) {
     const obj = this.totalHoldingTokenSymbolList.reduce(
       (prev, curr) => {
-        const amount = amountMap.get(curr) || (ZERO + '');
-        const price = this.tokenPriceMap.get(curr) || (ZERO + '');
-        const value = mul(amount, price).toFixed();
-        prev[curr] = {
-          symbol: curr,
-          amount,
-          price,
-          value,
-        };
+        const amount = amountMap.get(curr);
+        if (amount) {
+          const price = this.tokenPriceMap.get(curr) || (ZERO + '');
+          const value = mul(amount, price).toFixed();
+          prev[curr] = {
+            symbol: curr,
+            amount,
+            price,
+            value,
+          };
+        }
         return prev;
       },
       {}
