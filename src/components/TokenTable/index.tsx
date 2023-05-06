@@ -122,10 +122,10 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
     if (name === 'binance' ) {
       cN += ' new'
       if (activeItem === item.symbol) {
-        if (spotAccountTokenMap[item.symbol]?.amount > 0 ) {
+        if (spotAccountTokenMap[item.symbol]?.amount > 0  || flexibleAccountTokenMap[item.symbol]?.amount > 0 ) {
           cN += ' expand'
         }
-        if (flexibleAccountTokenMap[item.symbol]?.amount > 0 ) {
+        if (spotAccountTokenMap[item.symbol]?.amount > 0  && flexibleAccountTokenMap[item.symbol]?.amount > 0  ) {
           cN += ' expandPlus'
         }
       }
@@ -134,6 +134,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
   }, [name,activeItem,spotAccountTokenMap,flexibleAccountTokenMap])
   const handleChangeFilter = (filterAccount: string | undefined) => {
     setFilterAccount(filterAccount)
+    setActiveItem(undefined)
   }
   return (
     <section className="tokenListWrapper">
@@ -152,7 +153,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
               <div className="amount">Amount</div>
               <div className="value">USD Value</div>
             </div>
-            <div className="accountFilterWrapper"><PFilter onChange={handleChangeFilter}/></div>
+            {name === 'binance' && <div className="accountFilterWrapper"><PFilter onChange={handleChangeFilter}/></div>}
           </li>
           {(activeList as TokenMap[]).map(item => {
             return <li className={liClassName(item)} key={item.symbol}>

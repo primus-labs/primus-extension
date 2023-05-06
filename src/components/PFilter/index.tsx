@@ -30,7 +30,7 @@ const list = [
   },
 ];
 const PFilter: React.FC<TokenTableProps> = ({onChange}) => {
-  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(true);
+  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [activeItem, setActiveItem] = useState<string>();
   const handleChange = (label: string | undefined) => {
     label && setActiveItem(label)
