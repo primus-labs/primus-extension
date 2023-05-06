@@ -18,7 +18,7 @@ interface TokenTableProps {
 }
 
 const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleAccountTokenMap,spotAccountTokenMap , name}) => {
-  console.log('TokenTable-list', list,name);
+  // console.log('TokenTable-list', list,name);
   const [activeItem,setActiveItem] = useState<string>()
   const sysConfig = useSelector((state: UserState) => state.sysConfig)
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
@@ -119,37 +119,40 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
               </div>
               {name === 'binance' && <div className="arrowWrapper" onClick={() => handleCheckDetail(item.symbol)}></div>}
               {activeItem === item.symbol && <div className="detailWrapper">
-                <div className="descItem">
+                {spotAccountTokenMap[item.symbol]?.amount > 0 && <div className="descItem">
                   <div className="token">
                     <div className="label">Spot</div>
                   </div>
                   <div className="price"></div>
                   <div className="amount">{formatNumeral(spotAccountTokenMap[item.symbol]?.amount || '0', {decimalPlaces: 6})}</div>
                   <div className="value">{'$'+formatNumeral(spotAccountTokenMap[item.symbol]?.value  || '0')}</div>
-                </div>
-                <div className="descItem">
+                </div>}
+                {flexibleAccountTokenMap[item.symbol]?.amount > 0 && <div className="descItem">
                   <div className="token">
                     <div className="label">Flexible</div>
                   </div>
                   <div className="price"></div>
                   <div className="amount">{formatNumeral(flexibleAccountTokenMap[item.symbol]?.amount || '0', {decimalPlaces: 6})}</div>
                   <div className="value">{'$'+formatNumeral(flexibleAccountTokenMap[item.symbol]?.value  || '0') }</div>
-                </div>
+                </div>}
               </div>}
             </li>
           })}
         </ul> :
         <ul className="tokens social">
           <li className="tokenItem th" key="th">
-            <div className="token">Social</div>
-            <div className="userName">User Name</div>
-            <div className="verified">Verified</div>
-            <div className="createTime">Created Time</div>
-            <div className="followers">Followers</div>
-            <div className="post">Posts</div>
+            <div className="innerWrapper">
+              <div className="token">Social</div>
+              <div className="userName">User Name</div>
+              <div className="verified">Verified</div>
+              <div className="createTime">Created Time</div>
+              <div className="followers">Followers</div>
+              <div className="post">Posts</div>
+              </div>  
           </li>
           {(activeList as DataSourceItemType[]).map(item => {
             return <li className="tokenItem tr" key={item.name}>
+               <div className="innerWrapper">
               <div className="token">
                 <img src={item.icon} alt="" />
                 <span>{item.name}</span>
@@ -159,6 +162,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
               <div className="createdTime">{getCurrentDate(item.createdTime)}</div>
               <div className="followers">{formatNumeral((item.followers as string), {transferUnit:false,decimalPlaces:0}) }</div>
               <div className="posts">{formatNumeral((item.posts as string), {transferUnit:false,decimalPlaces:0}) }</div>
+              </div>
             </li>
           })}
         </ul>
