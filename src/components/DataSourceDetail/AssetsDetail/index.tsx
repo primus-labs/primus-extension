@@ -12,7 +12,6 @@ import TokenTable from '@/components/TokenTable';
 import iconArrowLeft from '@/assets/img/iconArrowLeftActive.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconAvatar from '@/assets/img/iconAvatar.svg';
-import iconClock from '@/assets/img/iconClock.svg';
 import './index.sass';
 import useExSource from '@/hooks/useExSource';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources'
@@ -187,7 +186,6 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
             <div className="descItem">
               <div className="label">Date: &nbsp;</div>
               <div className="value">{dataSource?.date}</div>
-              {/* <img src={iconClock} alt="" className="clockIcon" /> */}
             </div>
           </div>
         )}
