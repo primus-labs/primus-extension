@@ -30,7 +30,7 @@ const list = [
   },
 ];
 const PFilter: React.FC<TokenTableProps> = ({ onChange }) => {
-  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
+  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(true);
   const [activeItem, setActiveItem] = useState<string>();
   const handleChange = (label: string | undefined) => {
     label && setActiveItem(label);
@@ -57,7 +57,7 @@ const PFilter: React.FC<TokenTableProps> = ({ onChange }) => {
     };
   }, []);
   return (
-    <section className="pFilter" ref={willCloseEl}>
+    <section className="pFilter" ref={willCloseEl} onMouseEnter={handleEnterAvatar}  onMouseLeave={handleLeaveAvatar}>
       <div
         className={
           activeItem ? 'filterIconWrapper active' : 'filterIconWrapper'
@@ -66,7 +66,7 @@ const PFilter: React.FC<TokenTableProps> = ({ onChange }) => {
           setDorpdownVisible((i) => !i);
         }}
         ref={iconEl}
-        onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}
+        onMouseEnter={handleEnterAvatar}
       ></div>
       <PfilterContent onChange={handleChange} visible={dorpdownVisible} />
     </section>

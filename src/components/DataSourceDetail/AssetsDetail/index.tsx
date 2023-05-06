@@ -9,7 +9,7 @@ import type {
 import { getSingleStorageSyncData } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/utils/constants';
 import TokenTable from '@/components/TokenTable';
-import iconArrowRight from '@/assets/img/iconArrowRight.svg';
+import iconArrowLeft from '@/assets/img/iconArrowLeftActive.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconAvatar from '@/assets/img/iconAvatar.svg';
 import iconClock from '@/assets/img/iconClock.svg';
@@ -232,7 +232,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
                 {item === 'Assets' && assetsProveFlag && (
                   <img className="iconSuc" src={iconSuc} alt="" />
                 )}
-                <img className="iconArrow" src={iconArrowRight} alt="" />
+                <img className="iconArrow" src={iconArrowLeft} alt="" />
               </div>
             </div>
           );
