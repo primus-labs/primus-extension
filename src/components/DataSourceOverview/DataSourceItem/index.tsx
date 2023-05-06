@@ -134,7 +134,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
   return (
     <div className={activeClassName} onClick={handleClick}>
       <div className="dataSourceItemT">
-        <div className="TLeft">
+        <div className={(type === 'Assets' && label) ?'TLeft':"TLeft noLabel"}>
           <img src={icon} alt="" />
           <div className="TLeftCon">
             <h6>{name}</h6>

@@ -71,8 +71,9 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
       <div className="padoDialog connectDataSourceDialog">
         <main>
           <div
-            className={requirePassphase ? 'scrollList scroll' : 'scrollList'}
+            className="scrollList scroll"
           >
+            <Bridge endIcon={icon} />
             <h1>Connect Data Source</h1>
             {/* {loading && <div className="loadingSection">
               <PLoading />
@@ -85,7 +86,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
                   Please configure with your READ-ONLY API keys. PADO never
                   accesses to your API keys or your data.
                 </h2>
-                <Bridge endIcon={icon} />
+                
                 <div className="formItem firstFormItem">
                   <h6>API Key</h6>
                   <PInput

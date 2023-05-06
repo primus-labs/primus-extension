@@ -67,7 +67,7 @@ export function formatDate(timestamp: number) {
   Y = date.getFullYear(),
   M = date.toLocaleString('en', {month:'short'}),
   D = (date.getDate()+'').padStart(2, '0');
-  return `${M} ${D},${Y}`;
+  return `${M} ${D}, ${Y}`;
 }
 
 export function getCurrentDate(timestamp?: any) {
