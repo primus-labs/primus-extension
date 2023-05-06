@@ -79,7 +79,7 @@ const Lock = () => {
                 <span>Unlock</span>
                 </button>
               {/* <p className="forgetPwd">Forgot password?</p> */}
-              <p className="help">Need help? Contact PADO support</p>
+              {/* <p className="help">Need help? Contact PADO support</p> */}
             </footer>
           </article>
         </main>
