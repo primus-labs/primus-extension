@@ -1,0 +1,19 @@
+.pFilter
+  position: relative
+  z-index: 1
+  .filterIconWrapper
+    position: absolute
+    content: ''
+    top: -24px
+    right: 0
+    width: 14px
+    height: 14px
+    background: url('../../assets/img/iconFilter.svg')
+    background-size: 100% 100%
+    cursor: pointer
+    &:hover
+      background-image: url('../../assets/img/iconFilterActive.svg')
+    &.active
+      background-image: url('../../assets/img/iconFiltered.svg')
+      &:hover
+        background-image: url('../../assets/img/iconFilteredActive.svg')

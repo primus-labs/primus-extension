@@ -1,0 +1,46 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
+
+.pFilterContent
+  padding: 8px
+  background: #fff
+  border-radius: 12px
+  display: none
+  &.visible
+    display: block
+  .formItems
+    @extend .fcss
+    gap: 6px
+    .formItem
+      width: 91px
+      line-height: 22px
+      border-radius: 4px
+      @extend .frsc
+      gap: 11px
+      padding: 0 8px
+      &:hover
+        background: rgba(0, 0, 0, 0.05)
+      .iconCheckedWrapper
+        width: 12px
+        height: 12px
+        background-image: url("../../../assets/img/iconCheckboxDefault.svg")
+        background-size: 100% 100%
+        cursor: pointer
+        &:hover
+          background-image: url("../../../assets/img/iconCheckbox.svg")
+        &.checked
+          background-image: url("../../../assets/img/iconCheckboxActive.svg")
+        &.disabled
+          background-image: url("../../../assets/img/iconCheckboxDisabled.svg")
+      .checkbox
+        display: none
+      .descItem
+        flex: 1
+        @extend .frbc
+        .label
+          font-size: 12px
+          line-height: 22px
+          font-family: 'Inter-Regular'
+          color: #000
+        

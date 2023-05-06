@@ -6,6 +6,7 @@ import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
+import PFilter from '@/components/PFilter'
 import type { Dispatch } from 'react'
 import { setSysConfigAction } from '@/store/actions'
 
@@ -16,9 +17,27 @@ interface TokenTableProps {
   spotAccountTokenMap?: any;
   name?:string;
 }
-
+const navs = [
+  {
+    label: 'All',
+    disabled: false,
+    defaultValue: true
+  },
+  {
+    label: 'Spot',
+    disabled: false,
+    defaultValue: true
+  },
+  {
+    label: 'Flexible',
+    disabled: false,
+    defaultValue: true
+  },
+ ]
 const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleAccountTokenMap,spotAccountTokenMap , name}) => {
   // console.log('TokenTable-list', list,name);
+  const [filter, setFilter] = useState<string | undefined>()
+  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false)
   const [activeItem,setActiveItem] = useState<string>()
   const sysConfig = useSelector((state: UserState) => state.sysConfig)
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
@@ -87,7 +106,24 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
     const activeS = symbol === activeItem? undefined: symbol
     setActiveItem(activeS)
   }
-
+  const liClassName = useCallback((item:TokenMap) => {
+    let cN = 'tokenItem tr'
+    if (name === 'binance' ) {
+      cN += ' new'
+      if (activeItem === item.symbol) {
+        if (spotAccountTokenMap[item.symbol]?.amount > 0 ) {
+          cN += ' expand'
+        }
+        if (flexibleAccountTokenMap[item.symbol]?.amount > 0 ) {
+          cN += ' expandPlus'
+        }
+      }
+    }
+    return cN
+  }, [name,activeItem,spotAccountTokenMap,flexibleAccountTokenMap])
+  const handleChangeFilter = (filter: string | undefined) => {
+    setFilter(filter)
+  }
   return (
     <section className="tokenListWrapper">
       <header>
@@ -98,16 +134,18 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
       </header>
       {type === 'Assets' ?
         <ul className="tokens">
-          <li className="tokenItem th" key="th">
+          <li className={name === 'binance' ? "tokenItem th new": "tokenItem th"} key="th">
             <div className="innerWrapper">
               <div className="token">Token</div>
               <div className="price">Price</div>
               <div className="amount">Amount</div>
               <div className="value">USD Value</div>
             </div>
+            {/* <div className="filterIconWrapper" onClick={() => {setDorpdownVisible(i => !i)}}></div> */}
+            <div className="accountFilterWrapper"><PFilter onChange={handleChangeFilter}/></div>
           </li>
           {(activeList as TokenMap[]).map(item => {
-            return <li className={activeItem === item.symbol? 'tokenItem tr expand':"tokenItem tr"  }key={item.symbol}>
+            return <li className={liClassName(item)} key={item.symbol}>
               <div className="innerWrapper">
                 <div className="token">
                   {tokenLogoPrefix && <img src={`${tokenLogoPrefix}icon${item.symbol}.png`} alt="" />}

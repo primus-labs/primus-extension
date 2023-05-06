@@ -57,6 +57,7 @@ $col-fall: #27C265
         .post
           min-width: 90px
     li.tokenItem
+      position: relative
       .innerWrapper,.detailWrapper .descItem
         @extend .frbc
       .innerWrapper >div,.detailWrapper .descItem >div
@@ -69,7 +70,6 @@ $col-fall: #27C265
         @extend .sFont
         font-family: 'Inter-Medium'
         color: $colLBlack
-        
         .token
           @extend .frsc
           gap: $xxsGap
@@ -86,8 +86,6 @@ $col-fall: #27C265
       &.tr
         margin-top: 10px
         position: relative
-        &.expand
-          height: 121px
         &:hover
           .innerWrapper
             background: rgba(0, 0, 0, 0.05)
@@ -98,7 +96,7 @@ $col-fall: #27C265
           content: ''
           top: 15px
           transform: rotate(-90deg)
-          right: -24px
+          right: 0
           width: 12px
           height: 12px
           background: url('../../assets/img/iconArrowLeft.svg')
@@ -111,8 +109,7 @@ $col-fall: #27C265
           content: ''
           top: 42px
           left: 0
-          height: 61px
-          padding: 6px 0 8px
+          padding: 6px 45px 8px 0
           width: 100%
           .descItem
             width: 100%
@@ -120,16 +117,30 @@ $col-fall: #27C265
             gap: 140px
             @extend .xsSBlackRegularFont
             color: $colLBlack
-            margin-bottom: 13px
+            margin-top: 13px
             text-align: right
-            &:last-child
-              margin-bottom: 0
+            &:first-child
+              margin-top: 0
             >.token
               display: flex
               justify-content: flex-end
               .label
                 width:51px
                 text-align: left
+      &.new 
+        .innerWrapper
+          padding: 11px 95px 11px 50px
+        .accountFilterWrapper
+          position: absolute
+          content: ''
+          top: 38px
+          right: 0
+          
+      &.expand
+        height: 74px
+      &.expandPlus
+        height: 104px
+      
 @media (max-width: 1680px)
   .tokenListWrapper
     padding: 0 44px
@@ -150,9 +161,10 @@ $col-fall: #27C265
           margin-bottom: 20px
         &.tr
           margin-top: 4px
-          &.expand
-            height: 104px
+        &.new
           .innerWrapper
-            padding: 12px 44px 11px
+            padding: 12px 89px 12px 44px
+        .innerWrapper
+          padding: 12px 44px 11px
           
         
