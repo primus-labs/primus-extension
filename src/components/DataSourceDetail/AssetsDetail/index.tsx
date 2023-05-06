@@ -185,7 +185,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
               <div className="value">{formatApiKey || 'ApiKey'}</div>
             </div> */}
             <div className="descItem">
-              <div className="label">Date: </div>
+              <div className="label">Date: &nbsp;</div>
               <div className="value">{dataSource?.date}</div>
               {/* <img src={iconClock} alt="" className="clockIcon" /> */}
             </div>
