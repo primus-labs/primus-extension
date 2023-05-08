@@ -32,7 +32,9 @@
         justify-item: end
         align-self: end
       &.social
-        margin-bottom: 15px
+        // margin-bottom: 15px
+        .value
+          padding-top: 2px
       &.disabled
         .label
           opacity: 0.4
@@ -68,6 +70,8 @@
     ul.sources
       padding: 20px 0 34px 0
       column-gap: 24px
+      &.social
+        padding: 20px 0 37px 0
       li.source
         width: 222px
         margin-bottom: 0
@@ -82,8 +86,11 @@
             line-height: 22px
             align-items: flex-start
           .tip
-            margin-top: -22px
-            font-family: 'Inter-Regular'
+            font-size: 12px
+            line-height: 15px
+            font-family: 'Inter-Medium'
+            color: rgba(0,0,0,0.7)
+            margin-top: -23px
         .label
           font-size: 14px
           line-height: 17px

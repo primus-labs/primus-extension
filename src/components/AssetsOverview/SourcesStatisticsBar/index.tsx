@@ -50,7 +50,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type =
   return (
     <section className="sourcesStatisticsBar">
       <header>Sources</header>
-      <ul className="sources">
+      <ul className={(type === 'Social' ? "sources social" : "sources")}>
         {activeList.map(item => {
           return <li className={
             ((!!activeSourceName  && activeSourceName=== item.name) || !activeSourceName)? 

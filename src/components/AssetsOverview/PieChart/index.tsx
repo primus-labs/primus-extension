@@ -149,7 +149,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
           // avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 0,
-            borderColor: '#faffff',
+            borderColor: '#f0fbfb',
             borderWidth: 3
           },
           label: {
