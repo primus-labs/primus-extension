@@ -4,6 +4,7 @@
 .createAttesationDialog
   padding: 64px 50px 50px
   main
+    width: 100%
     @extend .fcbc
     gap: 62px
     .scrollList
@@ -24,8 +25,8 @@
     h1
       @extend .xlLBlackBoldFont
     .descItems
-      @extend .frsc
-      gap: $mIconSize
+      width: 100%
+      @extend .frbc
       .descItem
         @extend .frsc
         gap: $xsGap
@@ -33,7 +34,7 @@
           @extend .xsSBlackRegularFont
         .value
           @extend .xsFont
-          font-family: 'Inter-SemiBold'
+          font-family: 'Inter-Medium'
           color: rgba(0,0,0,0.8)
           @extend .frsc
           gap: $xxsGap
@@ -89,8 +90,6 @@
           font-size: 30px
           line-height: 36px
         .descItems
-          gap: 43px
-          gap: 39px // TODO
           .descItem
             gap: $xxsGap
             .value
