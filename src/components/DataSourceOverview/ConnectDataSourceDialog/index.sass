@@ -2,6 +2,19 @@
 .connectDataSourceDialog
   padding: 64px 50px 50px
   @extend .fcbc
+  position: relative
+  .iconBack
+    position: absolute
+    content: ''
+    top: 35px
+    left: 32px
+    width: $mIconSize
+    height: $mIconSize
+    background: url('../../../assets/img/iconArrowLeft.svg')
+    background-size: 100% 100%
+    cursor: pointer
+    &:hover
+      background-image: url('../../../assets/img/iconArrowLeftActive.svg')
   main
     .scrollList
       padding-bottom: 103px
@@ -59,6 +72,9 @@
 @media (max-width: 1680px)
   .connectDataSourceDialog
     padding: 32px 42px
+    .iconBack
+      top: 52px
+      left: 32px
     main
       .scrollList
         padding-bottom: 16px

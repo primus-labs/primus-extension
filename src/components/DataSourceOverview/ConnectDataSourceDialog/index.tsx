@@ -17,6 +17,7 @@ interface ConnectDataDialogProps {
   activeSource?: DataFieldItem;
   onSubmit: (form: GetDataFormProps) => void;
   loading?: boolean;
+  onCancel: () => void;
 }
 
 const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
@@ -24,6 +25,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
   onSubmit,
   activeSource,
   loading = false,
+  onCancel
 }) => {
   const requirePassphase = activeSource?.requirePassphase;
   const icon = activeSource?.icon;
@@ -69,6 +71,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog connectDataSourceDialog">
+        <div className="iconBack" onClick={onCancel}></div>
         <main>
           <div
             className="scrollList scroll"

@@ -292,6 +292,7 @@ const DataSourceOverview = () => {
           onClose={handleCloseMask}
           onSubmit={onSubmitConnectDataSourceDialogDialog}
           activeSource={activeSource}
+          onCancel={() => {setStep(1)}}
         />
       )}
       {step === 2.5 && (
