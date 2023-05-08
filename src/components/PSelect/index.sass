@@ -31,7 +31,7 @@ $sSelectInput: 48px
     padding: $selectOptionsPadding*$N
     padding: $selectOptionsPadding*$N
     gap: $xxsGap*$N
-    margin-top: $selectOptionsMarginTop*$N
+    // margin-top: $selectOptionsMarginTop*$N
     .selectOption
       line-height: $selectOptionHeight*$N
       padding-left: $selectOptionPaddingX*$N
@@ -60,10 +60,13 @@ $sSelectInput: 48px
       transform: translateY(-50%)  rotate(-90deg)
       background: url('../../assets/img/iconArrowLeft.svg') no-repeat
       background-size: 100% 100%
-  .selectOptions
+  .selectOptionswrapper
     position: absolute
     width: 100%
     z-index: 1
+    padding-top: 8px
+  .selectOptions
+    
     display: flex
     flex-direction: column
     background: #fff
@@ -81,15 +84,3 @@ $sSelectInput: 48px
     height: $sPSelectHeight
     .selectInput
       line-height: $sSelectInput
-// @media (max-width: 1680px)
-//   .pSelect
-//     @include pSelectMixin($mN)
-// @media (max-width: 1440px)
-//   .pSelect
-//     @include pSelectMixin($sN)
-//     .selectOptions
-//       .selectOption
-//         font-size: 14px
-// @media (max-width: 1366px)
-//   .pSelect
-//     @include pSelectMixin($xsN)
