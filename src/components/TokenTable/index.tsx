@@ -167,7 +167,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
                 <div className="value">{'$'+formatNumeral(item.value)}</div>
               </div>
               {name === 'binance' && filterAccount === 'All' && <div className="arrowWrapper" onClick={() => handleCheckDetail(item.symbol)}></div>}
-              {activeItem === item.symbol && filterAccount === 'All' && <div className="detailWrapper">
+              {(spotAccountTokenMap?.[item.symbol] || flexibleAccountTokenMap?.[item.symbol] ) && activeItem === item.symbol && filterAccount === 'All' && <div className="detailWrapper">
                 {spotAccountTokenMap[item.symbol]?.amount > 0 && <div className="descItem">
                   <div className="token">
                     <div className="label">Spot</div>

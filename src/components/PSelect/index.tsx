@@ -15,7 +15,7 @@ interface PSelectProps {
 
 const PSelect: React.FC<PSelectProps> = ({ onChange, options, placeholder = '', val }) => {
   // const [activeOption, setActiveOption] = useState<OptionItem>();
-  const [optionsVisible, setOptionsVisible] = useState(true);
+  const [optionsVisible, setOptionsVisible] = useState(false);
   const selectInputEl = useRef(null);
   const handleChange = (item: OptionItem) => {
     // setActiveOption(item)
