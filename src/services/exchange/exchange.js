@@ -196,7 +196,7 @@ class Exchange {
       await this.getTotalAccountBalance();
       return this.exchange;
     } catch (error) {
-      console.log('exchange getInfo error', error);
+      console.log('exchange getInfo error:', error);
       throw new Error(error)
     }
   }
