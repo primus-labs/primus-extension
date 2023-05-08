@@ -195,13 +195,13 @@ const DataSourceOverview = () => {
               setActiveRequest({
                 type: 'warn',
                 title: 'Your connection are lost',
-                desc:'Please check your internet connection and try again'
+                desc:'Please check your internet connection and try again later.'
               })
             } else if(message.msg === 'RequestTimeout') {
               setActiveRequest({
                 type: 'warn',
                 title: 'Request timed out',
-                desc:'Please check your internet connection and try again'
+                desc:'This request takes too long to process, it is timed out by the data source server.'
               })
             } else{
               setActiveRequest({
