@@ -140,7 +140,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
             <h6>{name}</h6>
             {type === 'Social' && (
               <div className="desc">
-                <span className="label">Name:&nbsp;</span>
+                <span className="label">User:&nbsp;</span>
                 <span className="value">{userName ?? '--'}</span>
               </div>
             )}
