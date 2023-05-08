@@ -133,6 +133,10 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
         console.log('exData', error,error.message, error.message.indexOf('AuthenticationError'))
         if(error.message.indexOf('AuthenticationError')> -1) {
           postMsg(port,{ resType: type, res: false, msg: 'AuthenticationError' })
+        } else if(error.message.indexOf('ExchangeNotAvailable')> -1) {
+          postMsg(port,{ resType: type, res: false, msg: 'ExchangeNotAvailable' })
+        } else if(error.message.indexOf('InvalidNonce')> -1) {
+          postMsg(port,{ resType: type, res: false, msg: 'InvalidNonce' })
         } else if (error.message.indexOf('RequestTimeout')> -1) {
           // postMsg(port,{ resType: type, res: false, msg: 'RequestTimeout' }) // cctx-10s
           postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })

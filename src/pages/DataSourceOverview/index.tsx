@@ -179,6 +179,18 @@ const DataSourceOverview = () => {
                 title: 'Invalid input',
                 desc:'Please check your API Key or Secret Key.'
               })
+            } else if(message.msg === 'ExchangeNotAvailable'){
+              setActiveRequest({
+                type: 'warn',
+                title: 'Service unavailable',
+                desc:'The network is unstable or the access may be restricted. Please adjust and try again later.'
+              })
+            } else if(message.msg === 'InvalidNonce'){
+              setActiveRequest({
+                type: 'warn',
+                title: 'Something went wrong',
+                desc:'Looks like your time or internet settings may be incorrect. Please check and try again later.'
+              })
             } else if(message.msg === 'TypeError: Failed to fetch') {
               setActiveRequest({
                 type: 'warn',
