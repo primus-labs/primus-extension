@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { AuthSourcesItem, AuthSourcesItems } from '@/services/user';
-import PHeader from '@/components/PHeader'
+import PHeader from '@/components/Layout/PHeader'
 
 import PMask from '@/components/PMask'
 import rightArrow from '@/assets/img/rightArrow.svg';

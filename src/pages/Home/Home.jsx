@@ -5,7 +5,7 @@ import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChain
 import AuthDialog from '@/components/Home/AuthDialog';
 import SetPwdDialog from '@/components/Home/SetPwdDialog';
 import SetSucDialog from '@/components/Home/SetSucDialog';
-import AsideAnimation from '@/components/AsideAnimation';
+import AsideAnimation from '@/components/Layout/AsideAnimation';
 import './Home.sass';
 import { getMutipleStorageSyncData, postMsg } from '@/utils/utils';
 import iconETH from '@/assets/img/iconETH.svg';

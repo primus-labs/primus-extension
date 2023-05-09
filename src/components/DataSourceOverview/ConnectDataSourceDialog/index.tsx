@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PInput from '@/components/PInput/index';
-import Bridge from '@/components/Bridge/index';
+import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import './index.sass';
 // import PLoading from '@/components/PLoading'

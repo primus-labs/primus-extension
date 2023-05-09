@@ -3,7 +3,7 @@ import './index.sass'
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconError from '@/assets/img/iconError.svg';
 import iconInfoColorful from '@/assets/img/iconInfoColorful.svg';
-import Bridge from '@/components/Bridge/index'
+import Bridge from '@/components/DataSourceOverview/Bridge/index'
 import PMask from '@/components/PMask'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
 import PLoading from '@/components/PLoading'

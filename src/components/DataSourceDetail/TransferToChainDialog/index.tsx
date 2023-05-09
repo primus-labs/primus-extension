@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import AuthInfoHeader from '@/components/AuthInfoHeader';
+import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
 import rightArrow from '@/assets/img/rightArrow.svg';
 import iconChecked from '@/assets/img/iconChecked.svg';

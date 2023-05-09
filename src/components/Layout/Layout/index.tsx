@@ -3,9 +3,9 @@ import type { Dispatch } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import PHeader from '@/components/PHeader';
-import PageHeader from '@/components/PageHeader';
-import BackgroundAnimation from '@/components/BackgroundAnimation'
+import PHeader from '@/components/Layout/PHeader';
+import PageHeader from '@/components/Layout/PageHeader';
+import BackgroundAnimation from '@/components/Layout/BackgroundAnimation'
 import rem from '@/utils/rem.js';
 import { setSysConfigAction } from '@/store/actions'
 import useUpdateAllSources from '@/hooks/useUpdateAllSources'

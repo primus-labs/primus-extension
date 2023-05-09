@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getSingleStorageSyncData } from '@/utils/utils';
 import PMask from '@/components/PMask'
-import PHeader from '@/components/PHeader'
+import PHeader from '@/components/Layout/PHeader'
 import iconETH from '@/assets/img/iconETH.svg';
 import iconChecked from '@/assets/img/iconChecked.svg';
 

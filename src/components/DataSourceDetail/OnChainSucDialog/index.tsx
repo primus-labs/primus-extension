@@ -1,10 +1,9 @@
 import React from 'react';
 import './index.sass'
 import iconSuc from '@/assets/img/iconSuc.svg';
-import Bridge from '@/components/Bridge/index'
 import PMask from '@/components/PMask'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
-import AuthInfoHeader from '@/components/AuthInfoHeader'
+import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader'
 
 interface AddSourceSucDialogProps {
   onClose: () => void;
