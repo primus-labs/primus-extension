@@ -121,7 +121,7 @@ const Layout = () => {
       initPage()
       addDisconnectListener()
     }
-    console.log('updated port in page layout', padoServicePort.name, userPassword)
+    console.log('updated port in page layout', padoServicePort.name)
   }, [padoServicePort]);
   
   return (

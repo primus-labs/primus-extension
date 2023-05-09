@@ -142,12 +142,12 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
                   <h6>Label API Key (Optional)</h6>
                   <PInput
                     key="label"
-                    placeholder="Please enter your API key label"
+                    placeholder="Please enter your API Key Label"
                     onChange={handleChangeLabel}
                   />
                 </div>
                 {/* {submitted && !label && (
-                  <p className="errorTip">Please enter your API key label</p>
+                  <p className="errorTip">Please enter your API Key Label</p>
                 )} */}
                 <div className="tipWrapper">
                   <span>How to get API Key & Secret key?</span>
