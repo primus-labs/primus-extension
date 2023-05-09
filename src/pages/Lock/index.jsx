@@ -5,16 +5,21 @@ import rem from '@/utils/rem.js';
 import PInput from '@/components/PInput/index'
 import AsideAnimation from '@/components/Layout/AsideAnimation';
 import './index.sass';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import {postMsg} from '@/utils/utils'
 
 const Lock = () => {
+  const dispatch = useDispatch()
   const padoServicePort = useSelector((state) => state.padoServicePort)
   const navigate = useNavigate()
   const [pwd, setPwd] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const handleClickStart = (val) => {
     const curPwd = pwd ?? val
+    dispatch({
+      type: 'setUserPassword',
+      payload: curPwd
+    })
     if (![undefined, null].includes(curPwd)) {
       const padoServicePortListener = function (message) {
         if (message.resMethodName === 'decrypt') {
@@ -45,6 +50,10 @@ const Lock = () => {
     handleClickStart(val)
   }
   const handleClearUserPwd = () => {
+    dispatch({
+      type:'setUserPassword',
+      payload: undefined
+    })
     const msg = {
       fullScreenType: 'wallet',
       reqMethodName: 'clearUserPassword',

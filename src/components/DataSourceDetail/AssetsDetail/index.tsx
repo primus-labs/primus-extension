@@ -42,7 +42,6 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   const sourceName = (searchParams.get('name') as string).toLowerCase();
   const [dataSource, getDataSource] = useExSource();
   const [btcPrice, setBtcPrice] = useState<string>();
-  const [apiKey, setApiKey] = useState<string>();
   const [proofList, setProofList] = useState(['Assets', 'Active User']);
   const pnl = useMemo(() => {
     if (typeof dataSource === 'object') {
@@ -109,37 +108,11 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     }
   }, [dataSource]);
   
-  const formatApiKey = useMemo(() => {
-    if (apiKey) {
-      return apiKey.substring(0, 8);
-    }
-    return '';
-  }, [apiKey]);
   const handleProve = (item: string) => {
     // 'Assets', 'Active User'
     onProve(item);
   };
 
-  const getApiKey = useCallback(
-    async (sourceName: string) => {
-      const storageKey = sourceName + 'cipher';
-      const msg: any = {
-        fullScreenType: 'storage',
-        type: 'get',
-        key: storageKey,
-      };
-      postMsg(padoServicePort, msg)
-      const padoServicePortListener = async function (message: any) {
-        // console.log(`page_get:storeg-${storageKey}:`, message.res);
-        if (message.resType === `get` && message.key === storageKey) {
-          const { apiKey } = message.value;
-          setApiKey(apiKey);
-        }
-      };
-      padoServicePort.onMessage.addListener(padoServicePortListener);
-    },
-    [padoServicePort]
-  );
   const getBTCPrice = async () => {
     const p = await new Binance({}).getTokenPrice('BTC');
     setBtcPrice(p);
@@ -150,9 +123,6 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   const onUpdate = () => {
     (getDataSource as (name: string) => void)(sourceName);
   }
-  useEffect(() => {
-    getApiKey(sourceName);
-  }, [sourceName, getApiKey]);
 
   useEffect(() => {
     getBTCPrice();

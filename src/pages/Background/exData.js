@@ -94,7 +94,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
           spotAccountTokenMap: ex.spotAccountTokenMap,
         };
-        console.log(`$$$$$background--${exchangeName}exData`, ex)
+        console.log(`background--${exchangeName}exData`, ex)
         if (pnl !== null && pnl !== undefined) {
           exData.pnl = pnl;
         }

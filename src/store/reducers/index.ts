@@ -25,24 +25,29 @@ export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
   exDatas: ExDatas,
-  socialDatas: SocialDatas
+  socialDatas: SocialDatas,
+  userPassword: string
 }
 
 // initial state
 const initState = {
-  padoServicePort:chrome.runtime.connect({ name: 'fullscreen'}),
+  padoServicePort:chrome.runtime.connect({ name: 'fullscreen'+new Date()}),
   sysConfig: {
 
   },
   exDatas: {},
-  socialDatas: {}
+  socialDatas: {},
+  userPassword: undefined
 };
 
 // reducer
 const reducer:any = function (state = initState, action: any) {
   switch (action.type) {
     case 'setPort':
-      return { ...state, padoServicePort: chrome.runtime.connect({ name: 'fullscreen' }) };
+      const newPort = chrome.runtime.connect({ name: 'fullscreen'+new Date() })
+      return { ...state, padoServicePort: newPort };
+    case 'setUserPassword':
+      return { ...state, userPassword: action.payload };
     case SETEXCHAGEDATA:
       return { ...state, exDatas: {...state.exDatas, ...action.payload}};
     case SETSOCIALDATA:

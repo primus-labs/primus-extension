@@ -13,6 +13,10 @@ import store from '@/store/index'
 const router = createHashRouter(routes);
 const container = document.getElementById('app-container');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
+
+
+console.log('Page initialization')
+
 root.render(<>
   <Provider store={store}>
     <RouterProvider router={router} />

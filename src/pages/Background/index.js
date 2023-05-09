@@ -40,17 +40,17 @@ const showIndex = (info, tab) => {
 
 // listen msg from extension tab page
 chrome.runtime.onConnect.addListener((port) => {
-  console.log('port', port);
+  // console.log('port', port);
   fullscreenPort = port;
-  switch (port.name) {
-    case 'fullscreen':
+  // switch (port.name) {
+  //   case 'fullscreen':
       console.log('fullscreen connectted port=', port);
       port.onMessage.addListener(processFullscreenReq);
       port.onDisconnect.addListener(onDisconnectFullScreen);
-      break;
-    default:
-      break;
-  }
+  //     break;
+  //   default:
+  //     break;
+  // }
 });
 
 const processFullscreenReq = (message, port) => {
@@ -242,7 +242,7 @@ const processStorageReq = async (message, port) => {
     case 'set':
       await chrome.storage.local.set({ [key]: value });
       break;
-    case 'get':
+    case 'get': // TODO no use
       const res = await chrome.storage.local.get(key);
       // TODO perf fetch from background first
       // console.log('Ready to decrypt - storage:', USERPASSWORD, key)
@@ -272,7 +272,7 @@ const processStorageReq = async (message, port) => {
 };
 
 const processWalletReq = async (message, port) => {
-  console.log('processWalletReq message', message);
+  // console.log('processWalletReq message', message);
   const {
     reqMethodName,
     params: { password },
@@ -320,7 +320,12 @@ const processWalletReq = async (message, port) => {
       web3EthAccount = null;
       break;
     case 'queryUserPassword':
+      console.log('background receive queryUserPassword');
       postMsg(port,{ resMethodName: reqMethodName, res: !!USERPASSWORD })
+      break;
+    case 'resetUserPassword':
+      console.log('background receive resetUserPassword')
+      USERPASSWORD = password
       break;
     case 'create':
       try {

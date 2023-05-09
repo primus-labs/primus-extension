@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import type { Dispatch } from 'react'
+
+
 // import { countAdd, countMinus } from '../../store/reducers/app'
 import './index.sass'
 import iconETH from '@/assets/img/iconETH.svg';
@@ -15,6 +19,7 @@ interface SetPwdDialogProps {
 }
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
+  const dispatch: Dispatch<any> = useDispatch()
   const { onClose, onSubmit, onCancel } = props
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [accountAddr, setAccountAddr] = useState<any>()
@@ -57,7 +62,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
     }
   }, [pwd])
   const handleClickNext = async () => {
-    debugger
     // TODO validate form again
     if (!pwd || !confirm || errorTipVisible) {
       return
@@ -96,6 +100,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
               'user-id': userId
             }
           }
+        })
+        dispatch({
+          type: 'setUserPassword',
+          payload: pwd
         })
       }
     })

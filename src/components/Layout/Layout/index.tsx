@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import type { Dispatch } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -32,6 +32,7 @@ const Layout = () => {
   const refreshDataFlag = searchParams.get('refreshData')
 
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
+  const userPassword = useSelector((state: UserState) => state.userPassword)
   const location = useLocation()
   const pathname = location.pathname
   const [updating, updateF] = useUpdateAllSources(true)
@@ -57,6 +58,17 @@ const Layout = () => {
     console.log("page_send:getSysConfig request");
   }, [dispatch, padoServicePort])
   const initPage = async () => {
+    if (userPassword) {
+      const msg2 = {
+        fullScreenType: 'wallet',
+        reqMethodName: 'resetUserPassword',
+        params: {
+          password: userPassword
+        }
+      }
+      postMsg(padoServicePort, msg2);
+    }
+
     const padoServicePortListener2 = async function (message: any) {
       if (message.resType === 'lock') {
         navigate('/lock')
@@ -68,10 +80,10 @@ const Layout = () => {
         console.log("page_get:queryUserPassword:", message.res);
         if (message.res) {
           (updateF as () => void)();
+          // TODO setUserPassword
         }
       } else {
       }
-      
       padoServicePort.onMessage.removeListener(padoServicePortListener)
     }
     padoServicePort.onMessage.addListener(padoServicePortListener)
@@ -100,6 +112,7 @@ const Layout = () => {
       dispatch({
         type: 'setPort'
       })
+      
     };
     padoServicePort.onDisconnect.addListener(onDisconnectFullScreen);
   }
@@ -108,8 +121,9 @@ const Layout = () => {
       initPage()
       addDisconnectListener()
     }
-    
+    console.log('updated port in page layout', padoServicePort.name, userPassword)
   }, [padoServicePort]);
+  
   return (
     <div className="pageApp">
       <BackgroundAnimation />
