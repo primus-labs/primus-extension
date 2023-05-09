@@ -22,7 +22,7 @@ const SetSucDialog: React.FC<SetSucDialogProps> = ({ onClose, onSubmit }) => {
   const initPage = async () => {
     const keyStoreStr = await getSingleStorageSyncData('keyStore');
     const parseKeyStore = JSON.parse(keyStoreStr as string)
-    setAccountAddr(parseKeyStore.address)
+    setAccountAddr('0x'+parseKeyStore.address)
     const userInfo: any = await getSingleStorageSyncData('userInfo');
     if (userInfo) {
       const em = JSON.parse(userInfo).email

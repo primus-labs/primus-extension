@@ -42,6 +42,7 @@ const showIndex = (info, tab) => {
 chrome.runtime.onConnect.addListener((port) => {
   // console.log('port', port);
   fullscreenPort = port;
+  if (port.name.startsWith('fullscreen')){
   // switch (port.name) {
   //   case 'fullscreen':
       console.log('fullscreen connectted port=', port);
@@ -51,6 +52,7 @@ chrome.runtime.onConnect.addListener((port) => {
   //   default:
   //     break;
   // }
+  }
 });
 
 const processFullscreenReq = (message, port) => {

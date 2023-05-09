@@ -116,7 +116,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
       if (message.resMethodName === 'create') {
         console.log("page_get:create:", message.res);
         if (message.res) {
-          setAccountAddr(message.res)
+          const lowercaseAddr = message.res.toLowerCase()
+          setAccountAddr(lowercaseAddr)
         }
       }
     }

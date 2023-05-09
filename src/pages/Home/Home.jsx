@@ -85,7 +85,6 @@ const Home = () => {
         if (message.resMethodName === 'queryUserPassword') {
           console.log("page_get:queryUserPassword:", message.res);
           if(!message.res) {
-            console.log('lock in home')
             navigate('/lock')
           } else {
             navigate('/datas');
