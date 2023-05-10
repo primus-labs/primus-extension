@@ -60,7 +60,7 @@ const PFilter: React.FC<TokenTableProps> = ({ onChange }) => {
     <section className="pFilter" ref={willCloseEl} onMouseEnter={handleEnterAvatar}  onMouseLeave={handleLeaveAvatar}>
       <div
         className={
-          activeItem ? 'filterIconWrapper active' : 'filterIconWrapper'
+          activeItem !== undefined && activeItem !== 'All' ? 'filterIconWrapper active' : 'filterIconWrapper'
         }
         onClick={() => {
           setDorpdownVisible((i) => !i);
