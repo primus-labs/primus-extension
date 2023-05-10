@@ -65,7 +65,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
     if (document.documentElement.getBoundingClientRect().width < 1680) {
       innerRadius = 53.5
       outerRadius = 82.5
-      cLeft = 15
+      cLeft = 14
       legendItemLabelWidth = 76
       legendItemValueWidth = 81
       legendItemValueFontSize = 20
