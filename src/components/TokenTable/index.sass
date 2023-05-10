@@ -42,20 +42,21 @@ $col-fall: #27C265
     &.social
       li.tokenItem
         gap: 0
-        .token
-          min-width: 120px
-        .userName,.createTime
-          min-width: 130px
-          max-width: 133px
-          text-overflow: ellipsis
-          overflow: hidden
-          white-space: nowrap
-        .verified
-          min-width: 55px
-        .followers
-          min-width: 110px
-        .post
-          min-width: 90px
+        .innerWrapper
+          .token
+            width: 120px
+          .userName,.createTime
+            // width: 130px
+            width: 133px
+            text-overflow: ellipsis
+            overflow: hidden
+            white-space: nowrap
+          .verified
+            width: 55px
+          .followers
+            width: 110px
+          .posts
+            width: 90px
     li.tokenItem
       position: relative
       .innerWrapper,.detailWrapper .descItem
@@ -156,6 +157,7 @@ $col-fall: #27C265
         .innerWrapper
           // gap: 138.66px
           margin: 0 -44px
+        
         &.th
           margin-bottom: 12px
           .innerWrapper
@@ -170,6 +172,6 @@ $col-fall: #27C265
           &.new
             .innerWrapper
               padding: 11px 89px 11px 44px
-        
+      
           
         

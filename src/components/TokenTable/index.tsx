@@ -196,7 +196,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
               <div className="verified">Verified</div>
               <div className="createTime">Created Time</div>
               <div className="followers">Followers</div>
-              <div className="post">Posts</div>
+              <div className="posts">Posts</div>
               </div>  
           </li>
           {(activeList as DataSourceItemType[]).map(item => {
@@ -208,7 +208,7 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
               </div>
               <div className="userName">{item.userName}</div>
               <div className="verified">{item.verified ? 'Y' : 'N'}</div>
-              <div className="createdTime">{getCurrentDate(item.createdTime)}</div>
+              <div className="createTime">{getCurrentDate(item.createdTime)}</div>
               <div className="followers">{formatNumeral((item.followers as string), {transferUnit:false,decimalPlaces:0}) }</div>
               <div className="posts">{formatNumeral((item.posts as string), {transferUnit:false,decimalPlaces:0}) }</div>
               </div>
