@@ -322,7 +322,7 @@ const processWalletReq = async (message, port) => {
       web3EthAccount = null;
       break;
     case 'queryUserPassword':
-      console.log('background receive queryUserPassword');
+      // console.log('background receive queryUserPassword');
       postMsg(port,{ resMethodName: reqMethodName, res: !!USERPASSWORD })
       break;
     case 'resetUserPassword':
