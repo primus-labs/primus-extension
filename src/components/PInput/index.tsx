@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo,useEffect } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import iconCopy from '@/assets/img/iconCopy.svg';
 import iconCompleted from '@/assets/img/iconCompleted.svg';

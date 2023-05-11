@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import type { ChangeEvent } from 'react';
 import iconData from '@/assets/img/iconData.svg';
 import iconDataHover from '@/assets/img/iconDataHover.svg';
 import iconEvents from '@/assets/img/iconEvents.svg';

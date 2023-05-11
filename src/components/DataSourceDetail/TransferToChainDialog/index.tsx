@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
 import rightArrow from '@/assets/img/rightArrow.svg';
-import iconChecked from '@/assets/img/iconChecked.svg';
 import './index.sass';
 
 type ToolItem = {
@@ -13,7 +12,6 @@ interface TransferToChainDialogProps {
   onClose: () => void;
   onSubmit: () => void;
   onCancel: () => void;
-  // userInfo: object
   title: string;
   desc: string;
   list: ToolItem[];

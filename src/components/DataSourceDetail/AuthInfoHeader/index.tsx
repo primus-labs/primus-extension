@@ -35,7 +35,6 @@ const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = true, onBack,
       <div className="content">
         {avatar ? <img className="avatar" src={avatar} alt="back" /> : <i className="avatarAlternate"></i>}
         <span className="email">{email}</span>
-        {/* TODO */}
         {checked && <img className="checked" src={iconChecked} alt="back" />}
       </div>
     </header>

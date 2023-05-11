@@ -1,34 +1,11 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import type { ChangeEvent, MouseEvent } from 'react';
-import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem';
-// import PInput from '@/components/PInput'
+import React, { useState, useRef, useEffect } from 'react';
+import type { MouseEvent } from 'react';
 import './index.sass';
 import PfilterContent from './PfilterContent';
 interface TokenTableProps {
-  // list: TokenMap[] | DataSourceItemType[];
-  // type?: string;
-  // flexibleAccountTokenMap?: any;
-  // spotAccountTokenMap?: any;
-  // name?:string;
   onChange: (label: string | undefined) => void;
 }
-const list = [
-  {
-    label: 'All',
-    disabled: false,
-    defaultValue: true,
-  },
-  {
-    label: 'Spot',
-    disabled: false,
-    defaultValue: false,
-  },
-  {
-    label: 'Flexible',
-    disabled: false,
-    defaultValue: false,
-  },
-];
+
 const PFilter: React.FC<TokenTableProps> = ({ onChange }) => {
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [activeItem, setActiveItem] = useState<string>();

@@ -1,8 +1,7 @@
 import React, { useState, useMemo , useEffect, useCallback} from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { formatD, formatUD,sub,getCurrentDate, postMsg,formatNumeral } from '@/utils/utils'
+import { sub,getCurrentDate, postMsg,formatNumeral } from '@/utils/utils'
 import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem'
-// import PInput from '@/components/PInput'
 import './index.sass';
 import type { UserState } from '@/store/reducers'
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
@@ -17,27 +16,10 @@ interface TokenTableProps {
   spotAccountTokenMap?: any;
   name?:string;
 }
-const navs = [
-  {
-    label: 'All',
-    disabled: false,
-    defaultValue: true
-  },
-  {
-    label: 'Spot',
-    disabled: false,
-    defaultValue: true
-  },
-  {
-    label: 'Flexible',
-    disabled: false,
-    defaultValue: true
-  },
- ]
+
 const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleAccountTokenMap,spotAccountTokenMap , name}) => {
   // console.log('TokenTable-list', list,name,spotAccountTokenMap,flexibleAccountTokenMap);
   const [filterAccount, setFilterAccount] = useState<string | undefined>()
-  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false)
   const [activeItem,setActiveItem] = useState<string>()
   const sysConfig = useSelector((state: UserState) => state.sysConfig)
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
@@ -108,11 +90,6 @@ const TokenTable: React.FC<TokenTableProps> = ({ list, type = 'Assets',flexibleA
 
   }, [currentList, filterToken, type])
 
-  // const handleChangeInput = (val: string) => {
-  // }
-  // const handleSearch = (val: string) => {
-  //   setFilterToken(val)
-  // }
   const handleCheckDetail = (symbol:string) => {
     const activeS = symbol === activeItem? undefined: symbol
     setActiveItem(activeS)

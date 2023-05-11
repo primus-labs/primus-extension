@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect, useState,memo } from 'react';
+import React, { useCallback, useEffect, useState, memo } from 'react';
 // import the core library.
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
@@ -137,12 +137,6 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
           left: cLeft,
           width: outerRadius * 2,
           height: outerRadius * 2,
-          // radius: [60, 92],
-          // top: 'middle',
-          // left: 28,
-          // width: 184,
-          // height: 184,
-          // selectedOffset: 50,
           startAngle: 135,
           minAngle: 5,
           legendHoverLink: true,

@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import PTabs from '@/components/PTabs'
 import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail'
 import type { DataSourceType } from '@/components/DataSourceDetail/AssetsDetail'
-import PMask from '@/components/PMask'
 import CreateAttesationDialog from '@/components/DataSourceDetail/CreateAttesationDialog'
 
 import OnChainSucDialog from '@/components/DataSourceDetail/OnChainSucDialog'
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog'
-import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
-import type { ExchangeMeta } from '@/utils/constants'
 import './index.sass';
 import iconTool1 from '@/assets/img/iconTool1.svg'
 import iconArbitrum from '@/assets/img/iconArbitrum.svg'

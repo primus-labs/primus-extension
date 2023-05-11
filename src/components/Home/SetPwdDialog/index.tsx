@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react'
-
-
-// import { countAdd, countMinus } from '../../store/reducers/app'
 import './index.sass'
 import iconETH from '@/assets/img/iconETH.svg';
 import PInput from '@/components/PInput/index'
@@ -62,7 +59,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
     }
   }, [pwd])
   const handleClickNext = async () => {
-    // TODO validate form again
     if (!pwd || !confirm || errorTipVisible) {
       return
     }

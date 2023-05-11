@@ -6,7 +6,6 @@ import {
 } from '@/services/user';
 import { getSysConfig } from '@/services/config';
 import { getCurrentDate, postMsg } from '@/utils/utils';
-import { decrypt } from '@/utils/crypto';
 import { SocailStoreVersion } from '@/utils/constants';
 import {default as processExReq, clear} from './exData';
 const Web3EthAccounts = require('web3-eth-accounts');
@@ -40,18 +39,11 @@ const showIndex = (info, tab) => {
 
 // listen msg from extension tab page
 chrome.runtime.onConnect.addListener((port) => {
-  // console.log('port', port);
   fullscreenPort = port;
   if (port.name.startsWith('fullscreen')){
-  // switch (port.name) {
-  //   case 'fullscreen':
       console.log('fullscreen connectted port=', port);
       port.onMessage.addListener(processFullscreenReq);
       port.onDisconnect.addListener(onDisconnectFullScreen);
-  //     break;
-  //   default:
-  //     break;
-  // }
   }
 });
 
@@ -245,27 +237,6 @@ const processStorageReq = async (message, port) => {
   switch (type) {
     case 'set':
       await chrome.storage.local.set({ [key]: value });
-      break;
-    case 'get': // TODO no use
-      const res = await chrome.storage.local.get(key);
-      // TODO perf fetch from background first
-      // console.log('Ready to decrypt - storage:', USERPASSWORD, key)
-      if(!USERPASSWORD) {
-        postMsg(port,{
-          resType: 'lock',
-        })
-      }
-      if (key.endsWith('cipher')) {
-        const valStr = res[key];
-        
-        const val = JSON.parse(decrypt(valStr, USERPASSWORD));
-        // const { apiKey, secretKey, passphase } = val
-        postMsg(port,{
-          resType: 'get',
-          key: key,
-          value: val,
-        })
-      }
       break;
     case 'remove':
       await chrome.storage.local.remove(key);

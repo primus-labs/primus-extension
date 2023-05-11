@@ -80,7 +80,6 @@ const Layout = () => {
         console.log("page_get:queryUserPassword:", message.res);
         if (message.res) {
           (updateF as () => void)();
-          // TODO setUserPassword
         }
       } else {
       }

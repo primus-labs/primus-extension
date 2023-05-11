@@ -31,6 +31,7 @@ export  function formatAddress (str:string) {
   return `${startS}...${endS}`
 }
 
+// TODO nouse
 export function getMutipleStorageSyncData (storageKeys: string[]):object {
   // Immediately return a promise and start asynchronous work
   return new Promise((resolve, reject) => {
@@ -46,6 +47,7 @@ export function getMutipleStorageSyncData (storageKeys: string[]):object {
   });
 }
 
+// TODO nouse
 export function getSingleStorageSyncData (storageKey: string) {
   // Immediately return a promise and start asynchronous work
   return new Promise((resolve, reject) => {

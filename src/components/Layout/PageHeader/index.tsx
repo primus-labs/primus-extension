@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 
 import logo from '@/assets/img/logo.svg';
 import PAvatar from '@/components/PAvatar'
-import iconLogout from '@/assets/img/iconLogout.svg';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconLock from '@/assets/img/iconLock.svg';
 import './index.sass'
@@ -16,10 +15,6 @@ type NavItem = {
 const PHeader = () => {
   const navigate = useNavigate()
   const [navs, setNavs] = useState<NavItem[]>([
-    // {
-    //   icon: iconLogout,
-    //   text: 'Logout',
-    // },
     {
       icon: iconMy,
       text: 'My',

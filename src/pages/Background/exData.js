@@ -1,6 +1,6 @@
 import { encrypt, decrypt } from '@/utils/crypto';
 import { DATASOURCEMAP } from '@/utils/constants';
-import { getCurrentDate, sub, gt,postMsg } from '@/utils/utils';
+import { getCurrentDate, sub, postMsg } from '@/utils/utils';
 import { ExchangeStoreVersion } from '@/utils/constants';
 
 let EXCHANGEINFO = {

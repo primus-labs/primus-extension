@@ -1,17 +1,9 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import type { ChangeEvent, MouseEvent } from 'react';
-import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem';
-// import PInput from '@/components/PInput'
+import React, { useState, useRef, useEffect } from 'react';
+import type { ChangeEvent } from 'react';
 import './index.sass';
 
 interface TokenTableProps {
-  // list: TokenMap[] | DataSourceItemType[];
-  // type?: string;
-  // flexibleAccountTokenMap?: any;
-  // spotAccountTokenMap?: any;
-  // name?:string;
   onChange: (label: string | undefined) => void;
-  // onClose?: () => void;
   visible: boolean;
 }
 const list = [

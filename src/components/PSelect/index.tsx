@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { ChangeEvent, MouseEvent, PointerEvent } from 'react';
+import type { MouseEvent } from 'react';
 import './index.sass';
 
 type OptionItem = {
@@ -42,10 +42,7 @@ const PSelect: React.FC<PSelectProps> = ({ onChange, options, placeholder = '', 
       dE.removeEventListener('click', dEClickHandler);
     };
   }, []);
-  // useEffect(() => {
-    // setActiveOption(options[0])
-    
-  // }, [])
+
   return (
     <div className="pSelect">
       <div
@@ -54,7 +51,6 @@ const PSelect: React.FC<PSelectProps> = ({ onChange, options, placeholder = '', 
         onMouseEnter={handleEnterAvatar}
         onMouseLeave={handleLeaveAvatar}
       >
-        {/* {activeOption?.text} */}
         {val}
       </div>
       {optionsVisible && (

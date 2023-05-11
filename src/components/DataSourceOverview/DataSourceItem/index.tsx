@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { gte, formatNumeral } from '@/utils/utils';
 import type { ExchangeMeta } from '@/utils/constants';
@@ -25,7 +25,7 @@ export type DataSourceData = {
 };
 export type SocialDataSourceData = {
   followers?: number | string;
-  posts?: number | string; // TODO format amount
+  posts?: number | string;
   followings?: number | string;
   verified?: boolean;
   userName?: string;
@@ -35,7 +35,7 @@ export type DataSourceItemType = {
   date: string;
   pnlAmount?: string;
   pnlPercent?: string;
-  pnl?: string; // TODO format amount
+  pnl?: string;
 } & ExchangeMeta &
   DataSourceData &
   SocialDataSourceData;

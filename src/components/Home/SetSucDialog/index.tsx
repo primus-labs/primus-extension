@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PMask from '@/components/PMask'
 import PHeader from '@/components/Layout/PHeader'
-import iconETH from '@/assets/img/iconETH.svg';
 import iconChecked from '@/assets/img/iconChecked.svg';
 
 import iconSuc from '@/assets/img/iconSuc.svg';

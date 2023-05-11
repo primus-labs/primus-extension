@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React from 'react';
 import iconAdd from '@/assets/img/iconAdd.svg'
 import './index.sass';
 

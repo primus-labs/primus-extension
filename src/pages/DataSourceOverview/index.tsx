@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Dispatch } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs';
 import PControledInput from '@/components/PControledInput';
@@ -34,10 +33,6 @@ export type DataSourceStorages = {
   coinbase?: any;
   [propName: string]: any;
 };
-type PortMsg = {
-  resMethodName: string;
-  res: any;
-};
 type ActiveRequestType = {
   type: string;
   title: string;
@@ -50,7 +45,6 @@ const DataSourceOverview = () => {
   const authorize = useAuthorization();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  // const [loading, setLoading] = useState(false)
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
   const [filterWord, setFilterWord] = useState<string>();
   const [exSources, refreshExSources] = useExSources();
@@ -149,7 +143,6 @@ const DataSourceOverview = () => {
   const onSubmitConnectDataSourceDialogDialog = useCallback(
     async (form: GetDataFormProps) => {
       const lowerCaseSourceName = form?.name?.toLowerCase();
-      // setLoading(true)
       setStep(2.5);
       setActiveRequest({
         type: 'loading',

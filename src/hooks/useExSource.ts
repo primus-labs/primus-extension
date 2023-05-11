@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react'
+import React, {useState, useCallback} from 'react'
 import { DATASOURCEMAP } from '@/utils/constants'
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem'
 import type { ExchangeMeta } from '@/utils/constants'
@@ -41,9 +41,6 @@ const useExSource = () => {
       setAssetDataSourceMap(undefined)
     }
   },[])
-  // useEffect(() => {
-  //   getExDatas()
-  // },[name, getExDatas])
   return [assetDataSourceMap, getExDatas]
 }
 

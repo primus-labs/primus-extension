@@ -3,7 +3,6 @@ import PInput from '@/components/PInput/index';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import './index.sass';
-// import PLoading from '@/components/PLoading'
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 
 export type GetDataFormProps = {
@@ -146,9 +145,6 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
                     onChange={handleChangeLabel}
                   />
                 </div>
-                {/* {submitted && !label && (
-                  <p className="errorTip">Please enter your API Key Label</p>
-                )} */}
                 <div className="tipWrapper">
                   <span>How to get API Key & Secret key?</span>
                   <a href="https://padolabs.org/" target="_blank">

@@ -1,12 +1,10 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import { add, gte, div, postMsg, formatNumeral } from '@/utils/utils';
+import { gte, div, formatNumeral } from '@/utils/utils';
 import type {
-  TokenMap,
   AssetsMap,
 } from '@/components/DataSourceOverview/DataSourceItem';
-import { DATASOURCEMAP } from '@/utils/constants';
 import TokenTable from '@/components/TokenTable';
 import iconArrowLeft from '@/assets/img/iconArrowLeftActive.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
@@ -15,13 +13,11 @@ import './index.sass';
 import useExSource from '@/hooks/useExSource';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources'
 import Binance from '@/services/exchange/binance';
-import { useSelector } from 'react-redux'
-import type { UserState } from '@/store/reducers'
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar'
 export type DataSourceType = {
   date: string;
   tokenListMap: AssetsMap;
-  totalBalance: string; // TODO format amount
+  totalBalance: string;
   [propName: string]: any;
 };
 interface AssetsDetailProps {
@@ -35,7 +31,6 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   userProveFlag,
 }) => {
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource()
-  const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const sourceName = (searchParams.get('name') as string).toLowerCase();
@@ -164,7 +159,6 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
           <div className="inner">
             <div className="label">Est Total Value</div>
             <div className="value">${formatNumeral(totalAssetsBalance)}</div>
-            {/* TODO  */}
             <div className="btcValue">≈ {formatNumeral(eqBtcNum, {decimalPlaces: 6})} BTC</div>
           </div>
         </div>

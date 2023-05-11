@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, memo, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import './index.sass';
 import type {
   AssetsMap,

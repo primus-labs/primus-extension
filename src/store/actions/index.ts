@@ -72,7 +72,6 @@ export const setExDataAsync = (message: ExchangeNetworkReq) => {
   };
 };
 
-// TODO
 export const initSocialDataAsync = () => {
   return async (dispatch: any) => {
     const sourceNameList = Object.keys(DATASOURCEMAP).filter(i => DATASOURCEMAP[i].type === 'Social')
