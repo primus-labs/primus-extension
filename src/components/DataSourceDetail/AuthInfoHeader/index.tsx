@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import iconChecked from '@/assets/img/iconChecked.svg';
-import { getSingleStorageSyncData } from '@/utils/utils'
 import './index.sass'
 
 interface AuthInfoHeaderProps {
@@ -17,7 +16,8 @@ const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = true, onBack,
     onBack && onBack()
   }
   const getUserInfo = async () => {
-    const userInfo: any = await getSingleStorageSyncData('userInfo');
+    const res: any = await chrome.storage.local.get(['userInfo']);
+    const userInfo = res.userInfo
     if (userInfo) {
       const parseUserInfo = JSON.parse(userInfo)
       const { email: em, picture } = parseUserInfo

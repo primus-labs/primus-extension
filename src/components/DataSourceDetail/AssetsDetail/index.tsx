@@ -6,7 +6,6 @@ import type {
   TokenMap,
   AssetsMap,
 } from '@/components/DataSourceOverview/DataSourceItem';
-import { getSingleStorageSyncData } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/utils/constants';
 import TokenTable from '@/components/TokenTable';
 import iconArrowLeft from '@/assets/img/iconArrowLeftActive.svg';

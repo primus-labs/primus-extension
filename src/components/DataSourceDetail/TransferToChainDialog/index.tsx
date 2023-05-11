@@ -3,7 +3,6 @@ import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
 import rightArrow from '@/assets/img/rightArrow.svg';
 import iconChecked from '@/assets/img/iconChecked.svg';
-import { div, getSingleStorageSyncData } from '@/utils/utils';
 import './index.sass';
 
 type ToolItem = {

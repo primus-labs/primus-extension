@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import { DATASOURCEMAP } from '@/utils/constants';
-import { getMutipleStorageSyncData } from '@/utils/utils';
 import type { UserState } from '@/store/reducers';
 import {postMsg} from '@/utils/utils'
 type ExKeysStorages = {
@@ -36,8 +35,7 @@ const useUpdateAssetSources = (flag = false) => {
       (i) => DATASOURCEMAP[i].type === 'Assets'
     );
     const exCipherKeys = sourceNameList.map(i => `${i}cipher`)
-    let res: ExKeysStorages = await getMutipleStorageSyncData(exCipherKeys);
-   
+    let res: ExKeysStorages = await chrome.storage.local.get(exCipherKeys)
     const list = Object.keys(res).map(i => {
       const exName = i.split('cipher')[0]
       setQueryObj((obj) => ({ ...obj, [exName]: undefined }));

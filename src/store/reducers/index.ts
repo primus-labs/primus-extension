@@ -1,8 +1,4 @@
-// import {
-//   getSingleStorageSyncData,
-//   getMutipleStorageSyncData,
-// } from '@/utils/utils';
-// import { SETKEYSTORE, SETUSERINFO, SETALLSTORAGE } from '../actions';
+
 import { SETEXCHAGEDATA, SETSYSCONFIG, SETSOCIALDATA } from '../actions';
 import type  {AssetsMap} from '@/components/DataSourceOverview/DataSourceItem'
 
@@ -33,7 +29,7 @@ export type UserState = {
 const initState = {
   padoServicePort:chrome.runtime.connect({ name: 'fullscreen'+new Date()}),
   sysConfig: {
-
+    
   },
   exDatas: {},
   socialDatas: {},

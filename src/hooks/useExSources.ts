@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import { DATASOURCEMAP } from '@/utils/constants'
-import { getMutipleStorageSyncData } from '@/utils/utils'
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem'
 import type { ExchangeMeta } from '@/utils/constants'
 
@@ -26,8 +25,7 @@ const useExSources = () => {
   const [assetsDataSourceMap, setAssetsDataSourceMap] = useState<ExDataMap>()
   const getExDatas = useCallback(async () => {
     const sourceNameList = Object.keys(DATASOURCEMAP).filter(i => DATASOURCEMAP[i].type === 'Assets')
-    let res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
-    
+    let res: DataSourceStorages = await chrome.storage.local.get(sourceNameList);
     const reduceF = (prev: ExDataMap, curr: string) => {
       const sourceData = JSON.parse(res[curr])
       prev[curr] = {

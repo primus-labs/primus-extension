@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { getSingleStorageSyncData } from '@/utils/utils'
-import { DATASOURCEMAP } from '@/utils/constants'
+
 import PTabs from '@/components/PTabs'
 import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail'
 import type { DataSourceType } from '@/components/DataSourceDetail/AssetsDetail'

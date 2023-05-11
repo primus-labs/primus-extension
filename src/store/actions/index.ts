@@ -1,9 +1,8 @@
-// import { getSysConfig } from './../../services/config';
-// import { getSingleStorageSyncData, getMutipleStorageSyncData } from '@/utils/utils'
+
 import { DATASOURCEMAP } from '@/utils/constants';
 import type { ExchangeMeta } from '@/utils/constants';
 import type {DataSourceStorages} from '@/pages/DataSourceOverview'
-import { getCurrentDate,getMutipleStorageSyncData } from '@/utils/utils';
+import { getCurrentDate } from '@/utils/utils';
 // export const SETKEYSTORE = 'SETKEYSTORE';
 // export const SETUSERINFO = 'SETUSERINFO';
 // export const SETALLSTORAGE = 'SETALLSTORAGE';
@@ -27,45 +26,6 @@ export const setSocialDataAction = (values: object) => ({
 })
 
 
-// export const  getKeyStore = (data: string) => ({
-//   type: SETKEYSTORE,
-//   payload: data
-// })
-// export const  getUserInfo = (data: object) => ({
-//   type: SETUSERINFO,
-//   payload: data
-// })
-// export const  getAllStorage = (values: object) => {
-//   return ({
-//     type: SETALLSTORAGE,
-//     payload: values
-//   })
-// }
-
-// export const  getkeyStoreAsync = () => {
-//   return async (dispatch) => {
-//     const keyStore = await getSingleStorageSyncData('keyStore');
-//     dispatch(getKeyStore(keyStore))
-//   }
-// }
-// export const  getUserInfoAsync = () => {
-//   return async (dispatch) => {
-//     let userInfo = await getSingleStorageSyncData('userInfo');
-//     if(userInfo) {
-//       userInfo = JSON.parse(userInfo)
-//     }
-//     dispatch(getUserInfo(userInfo))
-//   }
-// }
-// export const  getAllStorageAsync = () => {
-//   return async (dispatch) => {
-//     let {userInfo, keyStore} = await getMutipleStorageSyncData(['userInfo','keyStore']);
-//     if(userInfo) {
-//       userInfo = JSON.parse(userInfo)
-//     }
-//     dispatch(getAllStorage({userInfo, keyStore}))
-//   }
-// }
 export const setExchangeData = (values: object) => ({
       type: 'SETEXCHAGEDATA',
       payload: values,
@@ -74,7 +34,7 @@ export const setExchangeData = (values: object) => ({
 export const initExDataAsync = () => {
   return async (dispatch: any) => {
     const sourceNameList = Object.keys(DATASOURCEMAP).filter(i => DATASOURCEMAP[i].type === 'Assets')
-    const res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
+    const res: DataSourceStorages = await chrome.storage.local.get(sourceNameList);
     const existExNames = sourceNameList.filter(item => res[item as keyof typeof res])
     const reduceF = (prev: any, curr: string) => {
       const exData = JSON.parse(res[curr])
@@ -116,7 +76,7 @@ export const setExDataAsync = (message: ExchangeNetworkReq) => {
 export const initSocialDataAsync = () => {
   return async (dispatch: any) => {
     const sourceNameList = Object.keys(DATASOURCEMAP).filter(i => DATASOURCEMAP[i].type === 'Social')
-    const res: DataSourceStorages = await getMutipleStorageSyncData(sourceNameList);
+    const res: DataSourceStorages = await chrome.storage.local.get(sourceNameList);
     const existExNames = sourceNameList.filter(item => res[item as keyof typeof res])
     const reduceF = (prev: any, curr: string) => {
       const exData = JSON.parse(res[curr])

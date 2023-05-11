@@ -111,6 +111,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
             JSON.stringify(exCipherData),
             USERPASSWORD
           );
+          // TODO get storage from store first,then store new info of new apikey
           await chrome.storage.local.set({
             [exchangeName]: JSON.stringify(exData),
             [exchangeName + 'cipher']: JSON.stringify(encryptedKey),

@@ -5,7 +5,7 @@ import {
   refreshAuthData,
 } from '@/services/user';
 import { getSysConfig } from '@/services/config';
-import { getCurrentDate, getSingleStorageSyncData, postMsg } from '@/utils/utils';
+import { getCurrentDate, postMsg } from '@/utils/utils';
 import { decrypt } from '@/utils/crypto';
 import { SocailStoreVersion } from '@/utils/constants';
 import {default as processExReq, clear} from './exData';
@@ -149,7 +149,9 @@ const processpadoServiceReq = async (message, port) => {
     case 'checkIsLogin':
       if (rc === 0) {
         if (params.data_type === 'LOGIN') {
-          await chrome.storage.local.set({ userInfo: JSON.stringify(result) }); // TODO
+          await chrome.storage.local.set({ userInfo: JSON.stringify(result) });
+          // TODO store userInfo 
+          // store datasourceInfo if authorize source is data source
           postMsg(port,{ resMethodName: reqMethodName, res: true })
         } else if (params.data_type === 'DATASOURCE') {
           const lowerCaseSourceName = params.source.toLowerCase();
@@ -161,7 +163,7 @@ const processpadoServiceReq = async (message, port) => {
           socialSourceData.version = SocailStoreVersion;
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-          }); // TODO
+          }); // TODO store datasourceInfo
           postMsg(port,{
             resMethodName: reqMethodName,
             res: true,
@@ -297,7 +299,8 @@ const processWalletReq = async (message, port) => {
       });
       break;
     case 'encrypt':
-      let privateKey = await getSingleStorageSyncData('privateKey');
+      const pKRes = await chrome.storage.local.get(['privateKey'])
+      let privateKey = pKRes.privateKey;
       const orignAccount = web3EthAccount.privateKeyToAccount(privateKey);
       const encryptAccount = orignAccount.encrypt(password);
       USERPASSWORD = password;
@@ -331,7 +334,8 @@ const processWalletReq = async (message, port) => {
       break;
     case 'create':
       try {
-        let privateKey = await getSingleStorageSyncData('privateKey');
+        const pKRes = await chrome.storage.local.get(['privateKey'])
+        let privateKey = pKRes.privateKey
         let acc;
         if (privateKey) {
           acc = web3EthAccount.privateKeyToAccount(privateKey);

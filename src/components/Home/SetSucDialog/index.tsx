@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { getSingleStorageSyncData } from '@/utils/utils';
 import PMask from '@/components/PMask'
 import PHeader from '@/components/Layout/PHeader'
 import iconETH from '@/assets/img/iconETH.svg';
@@ -20,10 +19,11 @@ const SetSucDialog: React.FC<SetSucDialogProps> = ({ onClose, onSubmit }) => {
     onSubmit()
   }
   const initPage = async () => {
-    const keyStoreStr = await getSingleStorageSyncData('keyStore');
+    const res = await chrome.storage.local.get(['keyStore','userInfo'])
+    const keyStoreStr = res.keyStore;
     const parseKeyStore = JSON.parse(keyStoreStr as string)
     setAccountAddr('0x'+parseKeyStore.address)
-    const userInfo: any = await getSingleStorageSyncData('userInfo');
+    const userInfo: any = res.userInfo
     if (userInfo) {
       const em = JSON.parse(userInfo).email
       setEmail(em)

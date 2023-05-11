@@ -1,7 +1,7 @@
 import React, {useEffect,useState, useCallback, useMemo} from 'react'
 import {useSelector} from 'react-redux'
 import { DATASOURCEMAP } from '@/utils/constants'
-import { getMutipleStorageSyncData, postMsg } from '@/utils/utils'
+import {  postMsg } from '@/utils/utils'
 import type { UserState } from '@/store/reducers'
 import useAuthorization from '@/hooks/useAuthorization'
 type ExKeysStorages = {
@@ -28,8 +28,7 @@ const useUpdateSocialSources = () => {
     const sourceNameList = Object.keys(DATASOURCEMAP).filter(
       (i) => DATASOURCEMAP[i].type === 'Social'
     );
-    let res: ExKeysStorages = await getMutipleStorageSyncData(sourceNameList);
-   
+    let res: ExKeysStorages = await chrome.storage.local.get(sourceNameList)
     let list:string[] = []
     Object.keys(res).forEach(i => {
       const {timestamp} = JSON.parse(res[i])

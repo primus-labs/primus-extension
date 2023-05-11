@@ -7,7 +7,7 @@ import SetPwdDialog from '@/components/Home/SetPwdDialog';
 import SetSucDialog from '@/components/Home/SetSucDialog';
 import AsideAnimation from '@/components/Layout/AsideAnimation';
 import './Home.sass';
-import { getMutipleStorageSyncData, postMsg } from '@/utils/utils';
+import { postMsg } from '@/utils/utils';
 import iconETH from '@/assets/img/iconETH.svg';
 import iconBinance from '@/assets/img/iconBinance.svg';
 import iconNetwork3 from '@/assets/img/iconNetwork3.svg';
@@ -74,11 +74,12 @@ const Home = () => {
   };
   const checkActiveStep = async () => {
     // It can be called like this:
-    let { userInfo, privateKey, keyStore } = await getMutipleStorageSyncData([
+    let { userInfo, privateKey, keyStore } = await chrome.storage.local.get([
       'userInfo',
       'privateKey',
       'keyStore',
     ]);
+    
     // If keyStore is cached,,it represents that the user has already bound a wallet => data page
     if (keyStore) {
       const padoServicePortListener = async function (message) {
