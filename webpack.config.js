@@ -217,7 +217,7 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/services/algorithms/client_plugin_sim.data',
+          from: 'src/services/algorithms/client_plugin.data',
           to: path.join(__dirname, 'build'),
           force: true,
         },
@@ -226,7 +226,7 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/services/algorithms/client_plugin_sim.wasm',
+          from: 'src/services/algorithms/client_plugin.wasm',
           to: path.join(__dirname, 'build'),
           force: true,
         },
@@ -235,7 +235,7 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/services/algorithms/client_plugin_sim.worker.js',
+          from: 'src/services/algorithms/client_plugin.worker.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
@@ -244,7 +244,7 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/services/algorithms/client_plugin_sim.js',
+          from: 'src/services/algorithms/client_plugin.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
