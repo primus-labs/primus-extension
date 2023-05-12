@@ -20,8 +20,8 @@ const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = true, onBack,
     const userInfo = res.userInfo
     if (userInfo) {
       const parseUserInfo = JSON.parse(userInfo)
-      const { email: em, picture } = parseUserInfo
-      setEmail(em)
+      const { email: em, picture, userName } = parseUserInfo
+      setEmail(em ?? '@'+userName)
       setAvatar(picture);
     }
   }

@@ -141,10 +141,31 @@ const processpadoServiceReq = async (message, port) => {
     case 'checkIsLogin':
       if (rc === 0) {
         if (params.data_type === 'LOGIN') {
-          await chrome.storage.local.set({ userInfo: JSON.stringify(result) });
-          // TODO store userInfo 
+          const {dataInfo, userInfo} = result
+          if (userInfo) {
+            await chrome.storage.local.set({ userInfo: JSON.stringify(userInfo) });
+          }
           // store datasourceInfo if authorize source is data source
-          postMsg(port,{ resMethodName: reqMethodName, res: true })
+          if (dataInfo) {
+            const lowerCaseSourceName = params.source.toLowerCase();
+            const socialSourceData = {
+              ...dataInfo,
+              date: getCurrentDate(),
+              timestamp: + new Date(),
+              version: SocailStoreVersion
+            };
+            await chrome.storage.local.set({
+              [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+            });
+          }
+          const resMsg = { resMethodName: reqMethodName, res: true }
+          if (dataInfo) {
+            resMsg.params = {
+              data_type: params.data_type,
+              source: params.source
+            }
+          }
+          postMsg(port, resMsg)
         } else if (params.data_type === 'DATASOURCE') {
           const lowerCaseSourceName = params.source.toLowerCase();
           const socialSourceData = {
