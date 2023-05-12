@@ -159,6 +159,7 @@ const DataSourceOverview = () => {
       };
       postMsg(padoServicePort, msg)
       console.log(`page_send:${reqType} request`);
+      debugger
       const padoServicePortListener = async function (message: any) {
         console.log(`page_get:${reqType}:`, message.res);
         if (message.resType === `${reqType}`) {

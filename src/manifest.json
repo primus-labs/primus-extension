@@ -23,6 +23,10 @@
     "https://www.okx.com/",
     "https://api.binance.com/",
     "https://api.kucoin.com/",
-    "https://api.coinbase.com/"
+    "https://api.coinbase.com/",
+    "https://api.huobi.pro/",
+    "https://api.hbdm.com/",
+    "https://api.bitget.com/",
+    "https://api.bybit.com"
   ]
 }
