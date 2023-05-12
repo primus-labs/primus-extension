@@ -10,7 +10,7 @@ class Bitget extends Exchange {
 
   async getTradingAccountTokenAmountMap() {
     const res = await this.exchange.fetchBalance();
-    res.info.forEach(({ coinName, available, lock, freeze }) => {
+    res.info.data.forEach(({ coinName, available, lock, freeze }) => {
         // Tip: spot account balance = available + lock + freeze
         const amt = add(add(available, lock), freeze).toFixed();
         gt(amt, BIGZERO) && this.tradingAccountTokenAmountMap.set(coinName, amt);
