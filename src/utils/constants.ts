@@ -13,7 +13,7 @@ import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
 import Coinbase from '@/services/exchange/coinbase';
 import Huobi from '@/services/exchange/huobi';
-import Gate from '@/services/exchange/huobi';
+import Gate from '@/services/exchange/gate';
 import Bitget from '@/services/exchange/bitget';
 import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';

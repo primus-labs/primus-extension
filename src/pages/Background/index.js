@@ -20,7 +20,7 @@ const padoServices = {
   refreshAuthData,
 };
 
-let USERPASSWORD = 'pado2023.';
+let USERPASSWORD = '';
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
