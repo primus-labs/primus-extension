@@ -24,8 +24,5 @@ class CoinBase extends Exchange {
     return this.fundingAccountTokenAmountMap;
   }
 
-  async getTradingAccountTokenAmountMap() {
-    return this.tradingAccountTokenAmountMap;
-  }
 }
 export default CoinBase;

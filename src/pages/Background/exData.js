@@ -41,6 +41,11 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
     case 'set-okx':
     case 'set-kucoin':
     case 'set-coinbase':
+    case 'set-huobi':
+    case 'set-bitget':
+    case 'set-bybit':
+    case 'set-gate':
+    case 'set-mexc':
       try{
         // get ex constructor params
         let exParams = {};
