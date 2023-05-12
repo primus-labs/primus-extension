@@ -16,14 +16,15 @@
   .iconBackWrapper
     width: $mIconSize
     height: $mIconSize
-    background-image: url("../../../assets/img/iconArrowLeft.svg")
+    background-image: url('../../../assets/img/iconArrowLeft2.svg')
+    opacity: 0.4
     background-size: 100% 100%
     position: absolute
     top: 20px
     left: calc($mIconSize/-2)
     cursor: pointer
     &:hover
-      background-image: url("../../../assets/img/iconArrowLeftActive.svg")
+      opacity: 0.8
   >header
     width: 100%
     padding: 74px 0 49px 0
@@ -121,10 +122,10 @@
         >img
           width: $sIconSize
         .iconArrow
-          opacity: 0.6
+          opacity: 0.4
           transform: rotate(180deg)
           &:hover
-            opacity: 1
+            opacity: 0.8
 @media (max-width: 1680px)
   .assetsDetail
     width: $sCenterWidth

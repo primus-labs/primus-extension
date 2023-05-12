@@ -24,15 +24,17 @@
       .iconCheckedWrapper
         width: 14px
         height: 14px
-        background-image: url("../../../assets/img/iconCheckboxDefault.svg")
+        background-image: url("../../../assets/img/iconCheckbox.svg")
+        opacity: 0.2
         background-size: 100% 100%
         cursor: pointer
         &:hover
-          background-image: url("../../../assets/img/iconCheckbox.svg")
+          opacity: 1
         &.checked
           background-image: url("../../../assets/img/iconCheckboxActive.svg")
+          opacity: 1
         &.disabled
-          background-image: url("../../../assets/img/iconCheckboxDisabled.svg")
+          opacity: 0.4
       .checkbox
         display: none
       .descItem

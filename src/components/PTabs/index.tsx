@@ -1,7 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import iconData from '@/assets/img/iconData.svg';
 import iconDataHover from '@/assets/img/iconDataHover.svg';
-import iconEvents from '@/assets/img/iconEvents.svg';
 import iconEventsHover from '@/assets/img/iconEventsHover.svg';
 import './index.sass';
 
@@ -9,7 +7,6 @@ interface PInputProps {
   onChange: (val: string) => void;
 }
 type TabItem = {
-  icon: any;
   activeIcon: any;
   text: string;
   disabled?:boolean
@@ -18,12 +15,10 @@ type TabItem = {
 const PTabs: React.FC<PInputProps> = ({ onChange }) => {
   const [tabs, setTabs] = useState<TabItem[]>([
     {
-      icon: iconData,
       activeIcon: iconDataHover,
       text: 'Data',
     },
     {
-      icon: iconEvents,
       activeIcon: iconEventsHover,
       text: 'Events',
       disabled: true
@@ -72,7 +67,7 @@ const PTabs: React.FC<PInputProps> = ({ onChange }) => {
             onMouseLeave={handleMouseLeave}
           >
             <img
-              src={activeTab === item.text || focusTab === item.text ? item.activeIcon : item.icon}
+              src={item.activeIcon}
               alt=""
             />
             <span>{item.text}</span>

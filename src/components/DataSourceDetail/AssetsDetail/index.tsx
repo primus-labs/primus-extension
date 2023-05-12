@@ -6,9 +6,9 @@ import type {
   AssetsMap,
 } from '@/components/DataSourceOverview/DataSourceItem';
 import TokenTable from '@/components/TokenTable';
-import iconArrowLeft from '@/assets/img/iconArrowLeftActive.svg';
+import iconArrowLeft from '@/assets/img/iconArrowLeft2.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
-import iconAvatar from '@/assets/img/iconAvatar.svg';
+import iconAvatar from '@/assets/img/iconAvatar.png';
 import './index.sass';
 import useExSource from '@/hooks/useExSource';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources'

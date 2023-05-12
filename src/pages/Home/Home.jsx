@@ -9,11 +9,11 @@ import AsideAnimation from '@/components/Layout/AsideAnimation';
 import './Home.sass';
 import { postMsg } from '@/utils/utils';
 import iconETH from '@/assets/img/iconETH.svg';
-import iconBinance from '@/assets/img/iconBinance.svg';
-import iconNetwork3 from '@/assets/img/iconNetwork3.svg';
+import iconBinance from '@/assets/img/iconBinance.png';
+import iconNetwork3 from '@/assets/img/iconNetwork3.png';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
-import iconNetwork5 from '@/assets/img/iconNetwork5.svg';
-import iconNetwork6 from '@/assets/img/iconNetwork6.svg';
+import iconNetwork5 from '@/assets/img/iconNetwork5.png';
+import iconNetwork6 from '@/assets/img/iconNetwork6.png';
 
 const networkList = [
   {

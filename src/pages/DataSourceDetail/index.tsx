@@ -12,7 +12,7 @@ import './index.sass';
 import iconTool1 from '@/assets/img/iconTool1.svg'
 import iconArbitrum from '@/assets/img/iconArbitrum.svg'
 import iconOptimism from '@/assets/img/iconOptimism.svg'
-import iconMina from '@/assets/img/iconMina.svg'
+import iconMina from '@/assets/img/iconMina.png'
 import useExSource from '@/hooks/useExSource';
 import type { ExDataType } from '@/hooks/useExSource';
 const proveToolList = [

@@ -21,18 +21,21 @@ var alias = {
 // load the secrets
 var secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
 
-var fileExtensions = [
+var imgFileExtensions = [
+  'svg',
+  'png',
   'jpg',
   'jpeg',
-  'png',
-  'gif',
+  'gif'
+];
+var fontFileExtensions = [
   'eot',
   'otf',
-  'svg',
   'ttf',
   'woff',
   'woff2',
 ];
+
 
 if (fileSystem.existsSync(secretsPath)) {
   alias['secrets'] = secretsPath;
@@ -91,13 +94,29 @@ var options = {
         ],
       },
       {
-        test: new RegExp('.(' + fileExtensions.join('|') + ')$'),
+        test: new RegExp('.(' + imgFileExtensions.join('|') + ')$'),
         type: 'asset/resource',
         exclude: /node_modules/,
         // loader: 'file-loader',
         // options: {
         //   name: '[name].[ext]',
         // },
+        parser: {
+          dataUrlCondition: {
+            maxSize: 50 * 1024, // Images smaller than 50kb will be processed by base64
+          },
+        },
+        generator: {
+          filename: "static/imgs/[hash:8][ext][query]",
+        },
+      },
+      {
+        test: new RegExp('.(' + fontFileExtensions.join('|') + ')$'),
+        type: 'asset/resource',
+        exclude: /node_modules/,
+        generator: {
+          filename: "static/fonts/[hash:8][ext][query]",
+        },
       },
       {
         test: /\.html$/,
@@ -142,7 +161,7 @@ var options = {
   },
   resolve: {
     alias: alias,
-    extensions: fileExtensions
+    extensions: imgFileExtensions
       .map((extension) => '.' + extension)
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
     fallback: {
