@@ -27,6 +27,8 @@
     "https://api.huobi.pro/",
     "https://api.hbdm.com/",
     "https://api.bitget.com/",
-    "https://api.bybit.com"
+    "https://api.bybit.com",
+    "https://api.mexc.com/",
+    "https://contract.mexc.com/"
   ]
 }

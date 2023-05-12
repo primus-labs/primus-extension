@@ -16,7 +16,7 @@ import Huobi from '@/services/exchange/huobi';
 import Gate from '@/services/exchange/huobi';
 import Bitget from '@/services/exchange/bitget';
 import Bybit from '@/services/exchange/bybit';
-import Mexc from '@/services/exchange/huobi';
+import Mexc from '@/services/exchange/mexc';
 
 export type ExchangeMeta = {
   name: string,
@@ -35,12 +35,12 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceBinance,
     constructorF: Binance,
   },
-  okx: {
-    name: 'OKX',
+  coinbase: {
+    name: 'Coinbase',
     type: 'Assets',
-    icon: iconDataSourceOKX,
-    requirePassphase: true,
-    constructorF: OKX,
+    icon: iconDataSourceCoinbase,
+    requirePassphase: false,
+    constructorF: Coinbase,
   },
   kucoin: {
     name: 'KuCoin',
@@ -49,19 +49,19 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: true,
     constructorF: KuCoin,
   },
-  coinbase: {
-    name: 'Coinbase',
+  bybit: {
+    name: 'Bybit',
     type: 'Assets',
-    icon: iconDataSourceCoinbase,
+    icon: iconDataSourceBybit,
     requirePassphase: false,
-    constructorF: Coinbase,
+    constructorF: Bybit,
   },
-  huobi: {
-    name: 'Huobi',
+  okx: {
+    name: 'OKX',
     type: 'Assets',
-    icon: iconDataSourceHuobi,
-    requirePassphase: false,
-    constructorF: Huobi,
+    icon: iconDataSourceOKX,
+    requirePassphase: true,
+    constructorF: OKX,
   },
   gate: {
     name: 'Gate',
@@ -70,19 +70,21 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Gate,
   },
+  
+  
+  huobi: {
+    name: 'Huobi',
+    type: 'Assets',
+    icon: iconDataSourceHuobi,
+    requirePassphase: false,
+    constructorF: Huobi,
+  },
   bitget: {
     name: 'Bitget',
     type: 'Assets',
     icon: iconDataSourceBitget,
     requirePassphase: true,
     constructorF: Bitget,
-  },
-  bybit: {
-    name: 'Bybit',
-    type: 'Assets',
-    icon: iconDataSourceBybit,
-    requirePassphase: false,
-    constructorF: Bybit,
   },
   mexc: {
     name: 'MEXC',
