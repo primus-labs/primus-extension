@@ -8,19 +8,18 @@ class Houbi extends Exchange {
     super('huobi', exchangeInfo);
   }
 
-  async getFundingAccountTokenAmountMap() {
-    const res = await this.exchange.fetchBalance();
+  async getTradingAccountTokenAmountMap() {
+    const res = await this.exchange.fetchBalance({type: 'spot'});
     Object.keys(res.total).forEach((symbolItem) => {
-      const total = res[symbolItem]
+      const total = res.total[symbolItem]
       const amt = new BigNumber(total);
       gt(amt, BIGZERO) &&
-        this.fundingAccountTokenAmountMap.set(symbolItem, amt);
+        this.tradingAccountTokenAmountMap.set(symbolItem, amt);
     });
-    // console.log(
-    //   'huobi---------fundingAccountTokenAmountMap',
-    //   this.fundingAccountTokenAmountMap
-    // );
-    return this.fundingAccountTokenAmountMap;
+    console.log(
+      'huobi---------tradingAccountTokenAmountMap',
+      this.tradingAccountTokenAmountMap
+    );
   }
 
 }
