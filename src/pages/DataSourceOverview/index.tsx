@@ -22,8 +22,7 @@ import useAuthorization from '@/hooks/useAuthorization';
 import useExSources from '@/hooks/useExSources';
 import useSocialSources from '@/hooks/useSocialSources';
 import type { UserState } from '@/store/reducers';
-import { postMsg, sub } from '@/utils/utils'
-
+import { postMsg, sub } from '@/utils/utils';
 
 export type DataSourceStorages = {
   binance?: any;
@@ -37,7 +36,7 @@ type ActiveRequestType = {
   type: string;
   title: string;
   desc: string;
-}
+};
 const DataSourceOverview = () => {
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
@@ -51,10 +50,10 @@ const DataSourceOverview = () => {
   const [socialSources, refreshSocialSources] = useSocialSources();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const exList: DataSourceItemList = useMemo(() => {
-    return Object.values({ ...exSources});
+    return Object.values({ ...exSources });
   }, [exSources]);
   const socialList: DataSourceItemList = useMemo(() => {
-    return Object.values({ ...socialSources});
+    return Object.values({ ...socialSources });
   }, [socialSources]);
   const dataSourceList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources, ...socialSources });
@@ -84,7 +83,9 @@ const DataSourceOverview = () => {
     return deaultList;
   }, [exSources, socialSources]);
   const activeDataSourceList = useMemo(() => {
-    const orderedDataSourceList = dataSourceList.sort((a,b) => sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber())
+    const orderedDataSourceList = dataSourceList.sort((a, b) =>
+      sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
+    );
     if (filterWord) {
       return orderedDataSourceList.filter((item) => {
         const lowerCaseName = item.name.toLowerCase();
@@ -105,13 +106,13 @@ const DataSourceOverview = () => {
     // fetch datas from storage TODO by type
     (refreshExSources as () => void)();
     (refreshSocialSources as () => void)();
-  }
+  };
   const handleChangeSelect = (val: string) => {
     setActiveSourceType(val);
   };
-  const handleChangeTab = (val:string) => {
+  const handleChangeTab = (val: string) => {
     if (val === 'Data') {
-      setActiveSourceType('All')
+      setActiveSourceType('All');
     }
   };
   const handleCheckDataSourceDetail = ({ type, name }: DataSourceItemType) => {
@@ -147,8 +148,8 @@ const DataSourceOverview = () => {
       setActiveRequest({
         type: 'loading',
         title: 'Data being requested',
-        desc:'It may take a few minutes.'
-      })
+        desc: 'It may take a few minutes.',
+      });
       const reqType = `set-${lowerCaseSourceName}`;
       const msg: any = {
         fullScreenType: 'networkreq',
@@ -157,7 +158,7 @@ const DataSourceOverview = () => {
           ...form,
         },
       };
-      postMsg(padoServicePort, msg)
+      postMsg(padoServicePort, msg);
       console.log(`page_send:${reqType} request`);
       const padoServicePortListener = async function (message: any) {
         console.log(`page_get:${reqType}:`, message.res);
@@ -166,42 +167,42 @@ const DataSourceOverview = () => {
             setStep(3);
             (refreshExSources as () => void)();
           } else {
-            if(message.msg === 'AuthenticationError'){
+            if (message.msg === 'AuthenticationError') {
               setActiveRequest({
                 type: 'error',
                 title: 'Invalid input',
-                desc:'Please check your API Key or Secret Key.'
-              })
-            } else if(message.msg === 'ExchangeNotAvailable'){
+                desc: 'Please check your API Key or Secret Key.',
+              });
+            } else if (message.msg === 'ExchangeNotAvailable') {
               setActiveRequest({
                 type: 'warn',
                 title: 'Service unavailable',
-                desc:'The network is unstable or the access may be restricted. Please adjust and try again later.'
-              })
-            } else if(message.msg === 'InvalidNonce'){
+                desc: 'The network is unstable or the access may be restricted. Please adjust and try again later.',
+              });
+            } else if (message.msg === 'InvalidNonce') {
               setActiveRequest({
                 type: 'warn',
                 title: 'Something went wrong',
-                desc:'Looks like your time or internet settings may be incorrect. Please check and try again later.'
-              })
-            } else if(message.msg === 'TypeError: Failed to fetch') {
+                desc: 'Looks like your time or internet settings may be incorrect. Please check and try again later.',
+              });
+            } else if (message.msg === 'TypeError: Failed to fetch') {
               setActiveRequest({
                 type: 'warn',
                 title: 'Your connection are lost',
-                desc:'Please check your internet connection and try again later.'
-              })
-            } else if(message.msg === 'RequestTimeout') {
+                desc: 'Please check your internet connection and try again later.',
+              });
+            } else if (message.msg === 'RequestTimeout') {
               setActiveRequest({
                 type: 'warn',
                 title: 'Request timed out',
-                desc:'This request takes too long to process, it is timed out by the data source server.'
-              })
-            } else{
+                desc: 'This request takes too long to process, it is timed out by the data source server.',
+              });
+            } else {
               setActiveRequest({
                 type: 'warn',
                 title: 'Oops...',
-                desc:'Something went wrong. Please try again later.'
-              })
+                desc: 'Something went wrong. Please try again later.',
+              });
             }
           }
         }
@@ -217,15 +218,15 @@ const DataSourceOverview = () => {
     setStep(0);
   };
   const onSubmitActiveRequestDialog = () => {
-    if(activeRequest?.type === 'loading') {
-      onSubmitAddSourceSucDialog()
-      return
+    if (activeRequest?.type === 'loading') {
+      onSubmitAddSourceSucDialog();
+      return;
     } else if (activeRequest?.type === 'error') {
-      setStep(2)
+      setStep(2);
     } else {
-      setStep(0)
+      setStep(0);
     }
-  }
+  };
   const onClearFilter = () => {
     setFilterWord('');
   };
@@ -234,7 +235,11 @@ const DataSourceOverview = () => {
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <div className="filterWrapper">
-          <PSelect options={dataSourceTypeList} onChange={handleChangeSelect} val={activeSourceType}/>
+          <PSelect
+            options={dataSourceTypeList}
+            onChange={handleChangeSelect}
+            val={activeSourceType}
+          />
           <div className="pSearch">
             <PControledInput
               onChange={handleChangeInput}
@@ -285,7 +290,9 @@ const DataSourceOverview = () => {
           onClose={handleCloseMask}
           onSubmit={onSubmitConnectDataSourceDialogDialog}
           activeSource={activeSource}
-          onCancel={() => {setStep(1)}}
+          onCancel={() => {
+            setStep(1);
+          }}
         />
       )}
       {step === 2.5 && (
@@ -306,7 +313,9 @@ const DataSourceOverview = () => {
           desc="Data Connected!"
         />
       )}
-      {activeSourceType !== 'All' && <DataUpdateBar type={activeSourceType} onUpdate={onUpdate}/>}
+      {activeSourceType !== 'All' && (
+        <DataUpdateBar type={activeSourceType} onUpdate={onUpdate} />
+      )}
       {activeSourceType === 'All' && <DataAddBar onClick={handleAdd} />}
     </div>
   );

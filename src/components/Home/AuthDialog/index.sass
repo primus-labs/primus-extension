@@ -43,6 +43,24 @@
             opacity: 0.4
   button.nextBtn
     height: $dialogLBtnHeight
+    position: relative
+    .tipWrapper
+      position: absolute
+      content: ''
+      top: -49px
+      left: 50%
+      transform: translateX(-50%)
+      width: 100%
+      text-align: center
+      .errorTip
+        width: fit-content
+        margin: 0 auto
+        padding: 0 12px
+        @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
+        font-size: 12px
+        line-height: 25px
+        font-family: 'Inter-Regualr'
+        color: rgba(0,0,0,0.4)
     &.authDialogNextBtn
       cursor: not-allowed
 @media (max-width: 1680px)
@@ -56,7 +74,7 @@
         padding-top: 81px
         padding-bottom: 59px
       ul.licensorList
-        gap: 32px
+        gap: $mGap
         li.licensorItem
           width: 66px
           height: 66px
