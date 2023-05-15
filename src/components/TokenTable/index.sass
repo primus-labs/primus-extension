@@ -141,7 +141,22 @@ $col-fall: #27C265
         height: 74px
       &.expandPlus
         height: 104px
-      
+    li.emptyContent
+      padding: 26px 0 32px 0
+      text-align: center
+      @extend .fcsc
+      >img
+        width: 28px
+      >h1
+        padding: 8px 0 4px 0
+        @extend .mFont
+        font-family: 'Inter-SemiBold'
+        color: $colLBlack 
+      >h2
+        font-size: 12px
+        line-height: 20px
+        font-family: 'Inter-Regular'
+        color: $colSBlack
 @media (max-width: 1680px)
   .tokenListWrapper
     padding: 0 44px
@@ -151,7 +166,7 @@ $col-fall: #27C265
       line-height: 24px
       font-family: 'Inter-SemiBold'
     ul.tokens
-      padding-bottom: 36px
+      padding-bottom: 38px
       li.tokenItem
         .innerWrapper >div,.detailWrapper .descItem >div  
             width: 148px
