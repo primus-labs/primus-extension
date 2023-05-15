@@ -24,7 +24,7 @@ class Exchange {
     this.flexibleAccountTokenMap = {};
     this.totalHoldingTokenSymbolList = [];
     this.totalAccountTokenAmountMap = new Map();
-    this.tokenPriceMap = new Map();
+    this.tokenPriceMap = {};
     this.totalAccountTokenMap = {};
     this.totalAccountBalance = BIGZERO;
   }
@@ -48,6 +48,7 @@ class Exchange {
     if (this.totalHoldingTokenSymbolList.length > 0) {
       return this.totalHoldingTokenSymbolList;
     }
+    
     // try {
       await Promise.all([
         this.getFundingAccountTokenAmountMap(),
@@ -60,10 +61,10 @@ class Exchange {
         ...this.flexibleAccountTokenAmountMap.keys(),
       ];
       this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
-      // console.log(
-      //   'totalHoldingTokenSymbolList',
-      //   this.totalHoldingTokenSymbolList
-      // );
+      console.log(
+        'totalHoldingTokenSymbolList',
+        this.totalHoldingTokenSymbolList
+      );
       return this.totalHoldingTokenSymbolList;
     // }  catch (error) {
     //   console.log('exchange getTotalHoldingTokenSymbolList error', error);
@@ -103,7 +104,7 @@ class Exchange {
       this.totalAccountTokenAmountMap = this.spotAccountTokenAmountMap
     }
     
-    // console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
+    console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
     return this.totalAccountTokenAmountMap;
   }
   async getTokenPriceMap() {
@@ -126,16 +127,16 @@ class Exchange {
     }
     //console.log('fetchTickers res:', this.exName, res);
     this.tokenPriceMap = STABLETOKENLIST.reduce((prev, curr) => {
-      prev.set(curr, ONE+'')
+      prev[curr] = ONE+''
       return prev
-    }, new Map())
+    }, {})
     LPSymbols.forEach((lpsymbol) => {
       const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
       if (res[lpsymbol] && res[lpsymbol].last) {
         const { last } = res[lpsymbol];
-        this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
+        this.tokenPriceMap[tokenSymbol] = new BigNumber(last).toFixed()
       } else {
-        this.tokenPriceMap.set(tokenSymbol, ZERO+'');
+        this.tokenPriceMap[tokenSymbol] = ZERO+''
       }
     });
     console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap);
@@ -146,7 +147,7 @@ class Exchange {
       (prev, curr) => {
         const amount = amountMap.get(curr);
         if (amount) {
-          const price = this.tokenPriceMap.get(curr) || (ZERO + '');
+          const price = this.tokenPriceMap[curr] || (ZERO + '');
           const value = mul(amount, price).toFixed();
           prev[curr] = {
             symbol: curr,
@@ -202,7 +203,7 @@ class Exchange {
   }
   async getTokenPrice(symbol) {
     // binance=>'ETHUSDT',others:'ETH-USDT'
-    const price = this.tokenPriceMap.get(symbol);
+    const price = this.tokenPriceMap[symbol];
     if (price) {
       return price;
     }

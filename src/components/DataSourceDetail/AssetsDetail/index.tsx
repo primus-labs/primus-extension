@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { gte, div, formatNumeral } from '@/utils/utils';
+import { BTC } from '@/utils/constants';
+
 import type {
   AssetsMap,
 } from '@/components/DataSourceOverview/DataSourceItem';
@@ -35,8 +37,17 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   const navigate = useNavigate();
   const sourceName = (searchParams.get('name') as string).toLowerCase();
   const [dataSource, getDataSource] = useExSource();
-  const [btcPrice, setBtcPrice] = useState<string>();
   const [proofList, setProofList] = useState(['Assets', 'Active User']);
+  const btcPrice = useMemo(() => {
+    if (typeof dataSource === 'object') {
+      const originP = dataSource?.tokenPriceMap[BTC];
+      return originP
+        ? originP
+        : null;
+    } else {
+      return null;
+    }
+  }, [dataSource])
   const pnl = useMemo(() => {
     if (typeof dataSource === 'object') {
       const originPnl = dataSource?.pnl;
@@ -65,7 +76,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
       const eqBtcNum = div(Number(totalBal), Number(btcPrice));
       return `${eqBtcNum.toFixed(6)}`;
     } else {
-      return '0.00';
+      return '--';
     }
   }, [dataSource, btcPrice]);
 
@@ -107,10 +118,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     onProve(item);
   };
 
-  const getBTCPrice = async () => {
-    const p = await new Binance({}).getTokenPrice('BTC');
-    setBtcPrice(p);
-  };
+  
   const handleBack = () => {
     navigate(-1);
   };
@@ -118,9 +126,6 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     (getDataSource as (name: string) => void)(sourceName);
   }
 
-  useEffect(() => {
-    getBTCPrice();
-  }, []);
   const fetchExData = () => {
     !fetchExDatasLoading && (fetchExDatas as (name:string) => void)(sourceName)
   }

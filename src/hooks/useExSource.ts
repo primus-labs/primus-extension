@@ -12,6 +12,7 @@ type ExInfo = {
   label?:string;
   flexibleAccountTokenMap: AssetsMap;
   spotAccountTokenMap: AssetsMap;
+  tokenPriceMap: any
 }
 export type DataSourceStorages = {
   binance?: any,

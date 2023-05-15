@@ -83,18 +83,18 @@ class Binance extends Exchange {
     }
     //console.log('fetchTickers res:', this.exName, res);
     this.tokenPriceMap = STABLETOKENLIST.reduce((prev, curr) => {
-      prev.set(curr, ONE+'')
+      prev[curr] = ONE+''
       return prev
-    }, new Map())
+    }, {})
     LPSymbols.forEach((lpsymbol) => {
       const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
       const BUSDLpsymbol = lpsymbol.replace(`${USDT}`, BUSD);
       const TUSDLpsymbol = lpsymbol.replace(`${USDT}`, TUSD);
       const last = res[lpsymbol]?.last || res[BUSDLpsymbol]?.last || res[TUSDLpsymbol]?.last
       if (last) {
-        this.tokenPriceMap.set(tokenSymbol, new BigNumber(last).toFixed());
+        this.tokenPriceMap[tokenSymbol] = new BigNumber(last).toFixed()
       } else {
-        this.tokenPriceMap.set(tokenSymbol, ZERO+'');
+        this.tokenPriceMap[tokenSymbol] = ZERO+''
       }
     });
     console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap,res);

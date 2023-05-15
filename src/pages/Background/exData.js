@@ -46,6 +46,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
     case 'set-bybit':
     case 'set-gate':
     case 'set-mexc':
+      console.log('exData type:', type)
       try{
         // get ex constructor params
         let exParams = {};
@@ -65,7 +66,6 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           }
           if (cipherData) {
             try {
-              
               const apiKeyInfo = JSON.parse(
                 decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
               );
@@ -75,6 +75,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
             }
           }
         }
+        
         // request ex data
         const exchangeInfo = DATASOURCEMAP[exchangeName];
         const constructorF = exchangeInfo.constructorF;
@@ -98,6 +99,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           label: exParams.label,
           flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
           spotAccountTokenMap: ex.spotAccountTokenMap,
+          tokenPriceMap: ex.tokenPriceMap
         };
         console.log(`background--${exchangeName}exData`, ex)
         if (pnl !== null && pnl !== undefined) {
