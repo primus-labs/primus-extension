@@ -34,6 +34,7 @@ class Exchange {
       secret: this.secretKey,
       password: this.passphase,
     });
+    console.log('exchange111')
   }
   async getFundingAccountTokenAmountMap() {
     return this.fundingAccountTokenAmountMap;
@@ -55,6 +56,7 @@ class Exchange {
         this.getTradingAccountTokenAmountMap(),
         this.getFlexibleAccountTokenAmountMap()
       ]);
+      console.log('exchange222')
       const duplicateSymbolArr = [
         ...this.fundingAccountTokenAmountMap.keys(),
         ...this.tradingAccountTokenAmountMap.keys(),

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import logo from '@/assets/img/logo.svg';
-import PAvatar from '@/components/PAvatar'
+import PAvatar from '@/components/PAvatar';
+import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconLock from '@/assets/img/iconLock.svg';
-import './index.sass'
+import './index.sass';
 
 type NavItem = {
   icon: any;
@@ -13,7 +14,7 @@ type NavItem = {
 };
 
 const PHeader = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [navs, setNavs] = useState<NavItem[]>([
     {
       icon: iconMy,
@@ -23,17 +24,17 @@ const PHeader = () => {
       icon: iconLock,
       text: 'Lock Account',
     },
-  ])
-  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false)
+  ]);
+  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const handleClickAvatar = () => {
-    setDorpdownVisible(visible => !visible)
-  }
+    setDorpdownVisible((visible) => !visible);
+  };
   const handleEnterAvatar = () => {
-    setDorpdownVisible(true)
-  }
+    setDorpdownVisible(true);
+  };
   const handleLeaveAvatar = () => {
-    setDorpdownVisible(false)
-  }
+    setDorpdownVisible(false);
+  };
   const handleClickDropdownItem = (text: string) => {
     switch (text) {
       case 'Logout':
@@ -43,31 +44,49 @@ const PHeader = () => {
         // navigate('/my')
         break;
       case 'Lock Account':
-        navigate('/lock')
+        navigate('/lock');
         break;
     }
-  }
+  };
   return (
     <header className="pageHeader">
       <img src={logo} className="pLogo" alt="logo" />
+      <DataSourceSearch />
       <div className="rightHeader">
-        <div className="rightHeaderInner" onClick={handleClickAvatar} onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
+        <div
+          className="rightHeaderInner"
+          onClick={handleClickAvatar}
+          onMouseEnter={handleEnterAvatar}
+          onMouseLeave={handleLeaveAvatar}
+        >
           <PAvatar />
         </div>
-        {dorpdownVisible &&
-          <div className="dropdownWrapper" onMouseEnter={handleEnterAvatar} onMouseLeave={handleLeaveAvatar}>
+        {dorpdownVisible && (
+          <div
+            className="dropdownWrapper"
+            onMouseEnter={handleEnterAvatar}
+            onMouseLeave={handleLeaveAvatar}
+          >
             <ul className="dropdown">
-              {navs.map(item => {
-                return (<li key={item.text} className="dropdownItemWrapper" onClick={() => { handleClickDropdownItem(item.text) }}>
-                  <div className="dropdownItem">
-                    <img src={item.icon} alt="" />
-                    <span>{item.text}</span>
-                  </div>
-                </li>)
+              {navs.map((item) => {
+                return (
+                  <li
+                    key={item.text}
+                    className="dropdownItemWrapper"
+                    onClick={() => {
+                      handleClickDropdownItem(item.text);
+                    }}
+                  >
+                    <div className="dropdownItem">
+                      <img src={item.icon} alt="" />
+                      <span>{item.text}</span>
+                    </div>
+                  </li>
+                );
               })}
             </ul>
           </div>
-        }
+        )}
       </div>
     </header>
   );
