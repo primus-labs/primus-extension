@@ -1,9 +1,7 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs';
-import PControledInput from '@/components/PControledInput';
-import PSelect from '@/components/PSelect';
 import DataSourceList from '@/components/DataSourceOverview/DataSourceList';
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog';
 import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSourcesExplainDialog';
@@ -20,12 +18,11 @@ import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import useAuthorization from '@/hooks/useAuthorization';
-import useExSources from '@/hooks/useExSources';
-import useSocialSources from '@/hooks/useSocialSources';
 import type { UserState } from '@/store/reducers';
 import { postMsg, sub } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react'
+import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions'
 
 export type DataSourceStorages = {
   binance?: any;
@@ -49,16 +46,19 @@ const DataSourceOverview = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
-  // const [filterWord, setFilterWord] = useState<string>();
-  // const [activeSourceType, setActiveSourceType] = useState<string>('All');
-  const [exSources, refreshExSources] = useExSources();
+  const exSources = useSelector(
+    (state: UserState) => state.exSources
+  );
+  const socialSources = useSelector(
+    (state: UserState) => state.socialSources
+  );
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
   const filterWord = useSelector(
     (state: UserState) => state.filterWord
   );
-  const [socialSources, refreshSocialSources] = useSocialSources();
+
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const exList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources });
@@ -110,17 +110,19 @@ const DataSourceOverview = () => {
 
 
 
-  const handleChangeInput = (val: string) => {
-    setFilterWord(val);
-  };
+  // const handleChangeInput = (val: string) => {
+  //   setFilterWord(val);
+  // };
   const onUpdate = () => {
     // fetch datas from storage TODO by type
-    (refreshExSources as () => void)();
-    (refreshSocialSources as () => void)();
+    // (refreshExSources as () => void)();
+    dispatch(setExSourcesAsync());
+    dispatch(setSocialSourcesAsync());
+    // (refreshSocialSources as () => void)();
   };
-  const handleChangeSelect = (val: string) => {
-    setActiveSourceType(val);
-  };
+  // const handleChangeSelect = (val: string) => {
+  //   setActiveSourceType(val);
+  // };
   const handleChangeTab = (val: string) => {
     if (val === 'Data') {
       // setActiveSourceType('All');
@@ -146,7 +148,8 @@ const DataSourceOverview = () => {
     } else if (item.type === 'Social') {
       authorize(item.name.toUpperCase(), () => {
         setStep(0);
-        (refreshSocialSources as () => void)();
+        // (refreshSocialSources as () => void)();
+        dispatch(setSocialSourcesAsync());
       });
     }
   };
@@ -180,7 +183,8 @@ const DataSourceOverview = () => {
         if (message.resType === `${reqType}`) {
           if (message.res) {
             setStep(3);
-            (refreshExSources as () => void)();
+            // (refreshExSources as () => void)();
+            dispatch(setExSourcesAsync());
           } else {
             if (message.msg === 'AuthenticationError') {
               setActiveRequest({
@@ -225,7 +229,7 @@ const DataSourceOverview = () => {
       };
       padoServicePort.onMessage.addListener(padoServicePortListener);
     },
-    [padoServicePort, refreshExSources]
+    [padoServicePort, dispatch]
   );
 
   const onSubmitAddSourceSucDialog = () => {
@@ -243,8 +247,13 @@ const DataSourceOverview = () => {
     }
   };
   const onClearFilter = () => {
-    setFilterWord('');
+    // setFilterWord('');
+    dispatch({
+      type: 'setFilterWord',
+      payload: ''
+    })
   };
+
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">

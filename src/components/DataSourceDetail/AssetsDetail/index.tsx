@@ -14,7 +14,6 @@ import iconAvatar from '@/assets/img/iconAvatar.png';
 import './index.sass';
 import useExSource from '@/hooks/useExSource';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources'
-import Binance from '@/services/exchange/binance';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar'
 export type DataSourceType = {
   date: string;
@@ -52,7 +51,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     if (typeof dataSource === 'object') {
       const originPnl = dataSource?.pnl;
       const originPnlToFixed6 = originPnl && new BigNumber(Number(originPnl)).abs().toFixed()
-      const formatPnl = originPnlToFixed6 && formatNumeral(originPnlToFixed6, {decimalPlaces: 4})
+      const formatPnl = originPnlToFixed6 && formatNumeral(originPnlToFixed6, { decimalPlaces: 4 })
       return originPnl
         ? gte(Number(originPnl), 0)
           ? `+$${formatPnl}`
@@ -112,13 +111,13 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
       return undefined;
     }
   }, [dataSource]);
-  
+
   const handleProve = (item: string) => {
     // 'Assets', 'Active User'
     onProve(item);
   };
 
-  
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -127,12 +126,12 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   }
 
   const fetchExData = () => {
-    !fetchExDatasLoading && (fetchExDatas as (name:string) => void)(sourceName)
+    !fetchExDatasLoading && (fetchExDatas as (name: string) => void)(sourceName)
   }
   useEffect(() => {
     sourceName && fetchExData()
   }, [sourceName])
-  
+
   useEffect(() => {
     !fetchExDatasLoading && onUpdate()
   }, [fetchExDatasLoading])
@@ -164,7 +163,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
           <div className="inner">
             <div className="label">Est Total Value</div>
             <div className="value">${formatNumeral(totalAssetsBalance)}</div>
-            <div className="btcValue">≈ {formatNumeral(eqBtcNum, {decimalPlaces: 6})} BTC</div>
+            <div className="btcValue">≈ {formatNumeral(eqBtcNum, { decimalPlaces: 6 })} BTC</div>
           </div>
         </div>
         <div className="separtor"></div>
@@ -204,8 +203,8 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
           );
         })}
       </section>
-      <TokenTable list={totalAssetsList} flexibleAccountTokenMap={flexibleAccountTokenMap} spotAccountTokenMap={spotAccountTokenMap} name={sourceName}/>
-      <DataUpdateBar type='Assets' onUpdate={onUpdate} sourceName={sourceName}/>
+      <TokenTable list={totalAssetsList} flexibleAccountTokenMap={flexibleAccountTokenMap} spotAccountTokenMap={spotAccountTokenMap} name={sourceName} />
+      <DataUpdateBar type='Assets' onUpdate={onUpdate} sourceName={sourceName} />
     </div>
   );
 };

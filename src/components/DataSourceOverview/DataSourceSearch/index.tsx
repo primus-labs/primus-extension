@@ -1,8 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import PControledInput from '@/components/PControledInput';
 import PSelect from '@/components/PSelect';
-import useExSources from '@/hooks/useExSources';
-import useSocialSources from '@/hooks/useSocialSources';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
 import { useDispatch } from 'react-redux';
@@ -11,8 +9,12 @@ import './index.sass';
 interface TokenTableProps { }
 
 const DataSourceSearch: React.FC<TokenTableProps> = ({ }) => {
-  const [exSources, refreshExSources] = useExSources();
-  const [socialSources, refreshSocialSources] = useSocialSources();
+  const exSources = useSelector(
+    (state: UserState) => state.exSources
+  );
+  const socialSources = useSelector(
+    (state: UserState) => state.socialSources
+  );
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );

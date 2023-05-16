@@ -16,6 +16,7 @@ import { setSysConfigAction } from '@/store/actions';
 import useUpdateAllSources from '@/hooks/useUpdateAllSources';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
+import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions'
 
 import './index.sass';
 type SysConfigItem = {
@@ -105,6 +106,8 @@ const Layout = () => {
   };
   useEffect(() => {
     rem();
+    dispatch(setExSourcesAsync())
+    dispatch(setSocialSourcesAsync())
   }, []);
 
   useEffect(() => {

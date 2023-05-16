@@ -24,7 +24,9 @@ export type UserState = {
   socialDatas: SocialDatas,
   userPassword: string,
   activeSourceType: string,
-  filterWord: string
+  filterWord: string,
+  exSources: ExDatas,
+  socialSources: SocialDatas,
 }
 
 // initial state
@@ -37,7 +39,9 @@ const initState = {
   socialDatas: {},
   userPassword: undefined,
   activeSourceType: 'All',
-  filterWord: undefined
+  filterWord: undefined,
+  exSources: {},
+  socialSources: {},
 };
 
 // reducer
@@ -52,6 +56,10 @@ const reducer:any = function (state = initState, action: any) {
       return { ...state, activeSourceType: action.payload };
     case 'setFilterWord':
       return { ...state, filterWord: action.payload };
+    case 'setExSources':
+      return { ...state, exSources: action.payload};
+    case 'setSocialSources':
+      return { ...state, socialSources: action.payload};
     case SETEXCHAGEDATA:
       return { ...state, exDatas: {...state.exDatas, ...action.payload}};
     case SETSOCIALDATA:
