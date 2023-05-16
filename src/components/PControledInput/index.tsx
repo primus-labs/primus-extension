@@ -64,7 +64,7 @@ const PInput: React.FC<PInputProps> = ({
     }
   },[value])
   return (
-    <div className="pInputWrapper">
+    <div className="pInputWrapper pControledInput">
       <input
         ref={inputEl}
         type={activeType}

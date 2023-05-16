@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import PControledInput from '@/components/PControledInput';
 import PSelect from '@/components/PSelect';
 import { useSelector } from 'react-redux';
@@ -22,8 +22,6 @@ const DataSourceSearch: React.FC<TokenTableProps> = ({ }) => {
     (state: UserState) => state.filterWord
   );
   const dispatch: Dispatch<any> = useDispatch()
-  // const [activeSourceType, setActiveSourceType] = useState<string>('All');
-  // const [filterWord, setFilterWord] = useState<string>();
   const dataSourceTypeList = useMemo(() => {
     let deaultList = [
       {
@@ -49,14 +47,12 @@ const DataSourceSearch: React.FC<TokenTableProps> = ({ }) => {
     return deaultList;
   }, [exSources, socialSources]);
   const handleChangeSelect = (val: string) => {
-    // setActiveSourceType(val);
     dispatch({
       type: 'setActiveSourceType',
       payload: val
     })
   };
   const handleChangeInput = (val: string) => {
-    // setFilterWord(val);
     dispatch({
       type: 'setFilterWord',
       payload: val
