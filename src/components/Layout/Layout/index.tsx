@@ -106,9 +106,15 @@ const Layout = () => {
   };
   useEffect(() => {
     rem();
-    dispatch(setExSourcesAsync())
-    dispatch(setSocialSourcesAsync())
   }, []);
+  useEffect(() => {
+    if (!updating) {
+      dispatch(setExSourcesAsync())
+      dispatch(setSocialSourcesAsync())
+    }
+
+  }, [updating, dispatch]);
+
 
   useEffect(() => {
     getSysConfig();

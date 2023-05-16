@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-
 import PTabs from '@/components/PTabs'
 import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail'
 import type { DataSourceType } from '@/components/DataSourceDetail/AssetsDetail'
 import CreateAttesationDialog from '@/components/DataSourceDetail/CreateAttesationDialog'
-
 import OnChainSucDialog from '@/components/DataSourceDetail/OnChainSucDialog'
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog'
 import './index.sass';
@@ -13,8 +11,10 @@ import iconTool1 from '@/assets/img/iconTool1.svg'
 import iconArbitrum from '@/assets/img/iconArbitrum.svg'
 import iconOptimism from '@/assets/img/iconOptimism.svg'
 import iconMina from '@/assets/img/iconMina.png'
-import useExSource from '@/hooks/useExSource';
 import type { ExDataType } from '@/hooks/useExSource';
+import { useSelector } from 'react-redux';
+import type { UserState } from '@/store/reducers';
+
 const proveToolList = [
   {
     icon: iconTool1,
@@ -38,15 +38,18 @@ const DataSourceDetail = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const sourceName = (searchParams.get('name') as string).toLowerCase()
-  const [activeSource, getDataSource] = useExSource()
+  const exSources = useSelector(
+    (state: UserState) => state.exSources
+  );
+  const activeSource = useMemo(() => {
+    return exSources[sourceName] ?? {}
+  }, [exSources, sourceName])
   const [step, setStep] = useState(0)
   const [assetsProveFlag, setAssetsProveFlag] = useState<boolean>(false)
   const [userProveFlag, setUserProveFlag] = useState<boolean>(false)
   const [upChainFlag, setUpChainFlag] = useState<boolean>(false)
-  const [dataSource, setDataSource] = useState<DataSourceType>()
   const [activeOperateItem, setActiveOperateItem] = useState<string>('')
-  const [activeSourceType, setActiveSourceType] = useState<string>('All');
-  const handleChangeTab = (val:string) => {
+  const handleChangeTab = (val: string) => {
     navigate('/datas')
   };
   const handleCloseMask = () => {
@@ -55,7 +58,7 @@ const DataSourceDetail = () => {
 
   const handleProve = (name: string) => {
     setActiveOperateItem(name)
-    if(name === 'Assets') {
+    if (name === 'Assets') {
       setStep(assetsProveFlag ? 3 : 1)
     } else {
       setStep(userProveFlag ? 3 : 1)
@@ -64,7 +67,7 @@ const DataSourceDetail = () => {
   const handleSubmitCreateAttesationDialog = (proofs: string[]) => {
     // TODO prove
     setStep(2)
-    if(activeOperateItem === 'Assets') {
+    if (activeOperateItem === 'Assets') {
       setAssetsProveFlag(true)
     } else {
       setUserProveFlag(true)
@@ -83,15 +86,12 @@ const DataSourceDetail = () => {
   const handleCancelTransferToChain = () => {
     setStep(2)
   }
-  useEffect(() => {
-    (getDataSource as (name: string) => void)(sourceName);
-  }, [sourceName, getDataSource])
 
   return (
     <div className="pageDataSourceDetail">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab}/>
-        <AssetsDetail onProve={handleProve} assetsProveFlag={assetsProveFlag} userProveFlag={userProveFlag}/>
+        <PTabs onChange={handleChangeTab} />
+        <AssetsDetail onProve={handleProve} assetsProveFlag={assetsProveFlag} userProveFlag={userProveFlag} />
       </main>
       {step === 1 && <CreateAttesationDialog type={activeOperateItem} onClose={handleCloseMask} dataSource={activeSource as DataSourceType} onSubmit={handleSubmitCreateAttesationDialog} />}
       {step === 2 && <OnChainSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource as ExDataType} desc="Your attestation is successfully granted!" />}

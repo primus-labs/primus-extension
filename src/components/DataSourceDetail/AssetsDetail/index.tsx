@@ -1,9 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { gte, div, formatNumeral } from '@/utils/utils';
 import { BTC } from '@/utils/constants';
-
 import type {
   AssetsMap,
 } from '@/components/DataSourceOverview/DataSourceItem';
@@ -12,9 +11,35 @@ import iconArrowLeft from '@/assets/img/iconArrowLeft2.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconAvatar from '@/assets/img/iconAvatar.png';
 import './index.sass';
-import useExSource from '@/hooks/useExSource';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources'
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar'
+import { useDispatch, useSelector } from 'react-redux';
+import type { Dispatch } from 'react'
+import { setExSourcesAsync } from '@/store/actions'
+import type { UserState } from '@/store/reducers';
+import type { ExchangeMeta } from '@/utils/constants'
+
+type ExInfo = {
+  date: string;
+  apiKey: string;
+  totalBalance: string;
+  tokenListMap: AssetsMap;
+  pnl?: string;
+  label?: string;
+  flexibleAccountTokenMap: AssetsMap;
+  spotAccountTokenMap: AssetsMap;
+  tokenPriceMap: any
+}
+export type DataSourceStorages = {
+  binance?: any,
+  okx?: any,
+  kucoin?: any,
+  twitter?: any,
+  coinbase?: any,
+  [propName: string]: any
+}
+export type ExDataType = ExInfo & ExchangeMeta
+
 export type DataSourceType = {
   date: string;
   tokenListMap: AssetsMap;
@@ -26,17 +51,24 @@ interface AssetsDetailProps {
   assetsProveFlag: boolean;
   userProveFlag: boolean;
 }
+const proofList = ['Assets', 'Active User']
 const AssetsDetail: React.FC<AssetsDetailProps> = ({
   onProve,
   assetsProveFlag,
   userProveFlag,
 }) => {
+  const dispatch: Dispatch<any> = useDispatch()
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource()
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const sourceName = (searchParams.get('name') as string).toLowerCase();
-  const [dataSource, getDataSource] = useExSource();
-  const [proofList, setProofList] = useState(['Assets', 'Active User']);
+  const exSources = useSelector(
+    (state: UserState) => state.exSources
+  );
+  const dataSource = useMemo(() => {
+    return exSources[sourceName] as ExDataType
+  }, [exSources, sourceName])
+
   const btcPrice = useMemo(() => {
     if (typeof dataSource === 'object') {
       const originP = dataSource?.tokenPriceMap[BTC];
@@ -122,7 +154,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     navigate(-1);
   };
   const onUpdate = () => {
-    (getDataSource as (name: string) => void)(sourceName);
+    dispatch(setExSourcesAsync());
   }
 
   const fetchExData = () => {
@@ -147,10 +179,6 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
               <img src={dataSource?.icon} alt="" className="sourceIcon" />
               <div className="value">{dataSource?.name}</div>
             </div>
-            {/* <div className="descItem">
-              <div className="label">API Key: </div>
-              <div className="value">{formatApiKey || 'ApiKey'}</div>
-            </div> */}
             <div className="descItem">
               <div className="label">Date: &nbsp;</div>
               <div className="value">{dataSource?.date}</div>

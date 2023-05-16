@@ -1,7 +1,7 @@
 
 import { SETEXCHAGEDATA, SETSYSCONFIG, SETSOCIALDATA } from '../actions';
 import type  {AssetsMap} from '@/components/DataSourceOverview/DataSourceItem'
-
+import type {ExchangeMeta} from '@/utils/constants'
 export type ExInfo = {
   date: string;
   apiKey: string;
@@ -12,7 +12,7 @@ type SysConfigInfo = {
   [propName: string]: any
 }
 type ExDatas = {
-  [propName: string]: ExInfo
+  [propName: string]: ExInfo & ExchangeMeta
 }
 type SocialDatas = {
   [propName: string]: any

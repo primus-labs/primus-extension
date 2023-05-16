@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs';
@@ -69,30 +69,6 @@ const DataSourceOverview = () => {
   const dataSourceList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources, ...socialSources });
   }, [exSources, socialSources]);
-  const dataSourceTypeList = useMemo(() => {
-    let deaultList = [
-      {
-        value: 'All',
-        text: 'All',
-      },
-    ];
-    if (typeof exSources === 'object' && Object.values(exSources).length > 0) {
-      deaultList.push({
-        value: 'Assets',
-        text: 'Assets',
-      });
-    }
-    if (
-      typeof socialSources === 'object' &&
-      Object.values(socialSources).length > 0
-    ) {
-      deaultList.push({
-        value: 'Social',
-        text: 'Social',
-      });
-    }
-    return deaultList;
-  }, [exSources, socialSources]);
   const activeDataSourceList = useMemo(() => {
     const orderedDataSourceList = dataSourceList.sort((a, b) =>
       sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
@@ -107,25 +83,13 @@ const DataSourceOverview = () => {
       return orderedDataSourceList;
     }
   }, [dataSourceList, filterWord]);
-
-
-
-  // const handleChangeInput = (val: string) => {
-  //   setFilterWord(val);
-  // };
   const onUpdate = () => {
     // fetch datas from storage TODO by type
-    // (refreshExSources as () => void)();
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
-    // (refreshSocialSources as () => void)();
   };
-  // const handleChangeSelect = (val: string) => {
-  //   setActiveSourceType(val);
-  // };
   const handleChangeTab = (val: string) => {
     if (val === 'Data') {
-      // setActiveSourceType('All');
       dispatch({
         type: 'setActiveSourceType',
         payload: 'All'
@@ -148,7 +112,6 @@ const DataSourceOverview = () => {
     } else if (item.type === 'Social') {
       authorize(item.name.toUpperCase(), () => {
         setStep(0);
-        // (refreshSocialSources as () => void)();
         dispatch(setSocialSourcesAsync());
       });
     }
@@ -183,7 +146,6 @@ const DataSourceOverview = () => {
         if (message.resType === `${reqType}`) {
           if (message.res) {
             setStep(3);
-            // (refreshExSources as () => void)();
             dispatch(setExSourcesAsync());
           } else {
             if (message.msg === 'AuthenticationError') {
@@ -247,7 +209,6 @@ const DataSourceOverview = () => {
     }
   };
   const onClearFilter = () => {
-    // setFilterWord('');
     dispatch({
       type: 'setFilterWord',
       payload: ''
@@ -259,21 +220,6 @@ const DataSourceOverview = () => {
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <DataSourceSearch />
-        {/* <div className="filterWrapper">
-          <PSelect
-            options={dataSourceTypeList}
-            onChange={handleChangeSelect}
-            val={activeSourceType}
-          />
-          <div className="pSearch">
-            <PControledInput
-              onChange={handleChangeInput}
-              type="text"
-              placeholder="Search"
-              value={filterWord}
-            />
-          </div>
-        </div> */}
         {activeSourceType === 'All' && (
           <DataSourceList
             onAdd={handleAdd}
