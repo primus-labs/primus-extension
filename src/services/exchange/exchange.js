@@ -1,7 +1,7 @@
 import ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { add, mul, gt, div } from '@/utils/utils';
-import { USDT,BTC,STABLETOKENLIST } from '@/utils/constants';
+import { USDT, BTC, STABLETOKENLIST } from '@/utils/constants';
 const BIGZERO = new BigNumber(0);
 const BIGONE = new BigNumber(1);
 const ONE = 1;
@@ -22,7 +22,7 @@ class Exchange {
     this.flexibleAccountTokenAmountMap = new Map();
     this.spotAccountTokenMap = {};
     this.flexibleAccountTokenMap = {};
-    this.totalHoldingTokenSymbolList = [];
+    this.totalHoldingTokenSymbolList = null;
     this.totalAccountTokenAmountMap = new Map();
     this.tokenPriceMap = {};
     this.totalAccountTokenMap = {};
@@ -34,7 +34,7 @@ class Exchange {
       secret: this.secretKey,
       password: this.passphase,
     });
-    console.log('exchange111')
+    console.log('exchange111');
   }
   async getFundingAccountTokenAmountMap() {
     return this.fundingAccountTokenAmountMap;
@@ -46,32 +46,30 @@ class Exchange {
     return this.flexibleAccountTokenAmountMap;
   }
   async getTotalHoldingTokenSymbolList() {
-    if (this.totalHoldingTokenSymbolList.length > 0) {
+    if (this.totalHoldingTokenSymbolList !== null) {
       return this.totalHoldingTokenSymbolList;
     }
-    
     // try {
-      await Promise.all([
-        this.getFundingAccountTokenAmountMap(),
-        this.getTradingAccountTokenAmountMap(),
-        this.getFlexibleAccountTokenAmountMap()
-      ]);
-      console.log('exchange222')
-      const duplicateSymbolArr = [
-        ...this.fundingAccountTokenAmountMap.keys(),
-        ...this.tradingAccountTokenAmountMap.keys(),
-        ...this.flexibleAccountTokenAmountMap.keys(),
-      ];
-      this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
-      console.log(
-        'totalHoldingTokenSymbolList',
-        this.totalHoldingTokenSymbolList
-      );
-      return this.totalHoldingTokenSymbolList;
+    await Promise.all([
+      this.getFundingAccountTokenAmountMap(),
+      this.getTradingAccountTokenAmountMap(),
+      this.getFlexibleAccountTokenAmountMap(),
+    ]);
+    console.log('exchange222');
+    const duplicateSymbolArr = [
+      ...this.fundingAccountTokenAmountMap.keys(),
+      ...this.tradingAccountTokenAmountMap.keys(),
+      ...this.flexibleAccountTokenAmountMap.keys(),
+    ];
+    this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
+    console.log(
+      'totalHoldingTokenSymbolList',
+      this.totalHoldingTokenSymbolList
+    );
+    return this.totalHoldingTokenSymbolList;
     // }  catch (error) {
     //   console.log('exchange getTotalHoldingTokenSymbolList error', error);
     // }
-    
   }
   async getTotalAccountTokenAmountMap() {
     await this.getTotalHoldingTokenSymbolList();
@@ -88,7 +86,7 @@ class Exchange {
       },
       new Map()
     );
-    if(this.flexibleAccountTokenAmountMap.size > 0) {
+    if (this.flexibleAccountTokenAmountMap.size > 0) {
       this.totalAccountTokenAmountMap = this.totalHoldingTokenSymbolList.reduce(
         (prev, curr) => {
           const amountInFlexibleAccount =
@@ -103,9 +101,9 @@ class Exchange {
         new Map()
       );
     } else {
-      this.totalAccountTokenAmountMap = this.spotAccountTokenAmountMap
+      this.totalAccountTokenAmountMap = this.spotAccountTokenAmountMap;
     }
-    
+
     console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
     return this.totalAccountTokenAmountMap;
   }
@@ -118,7 +116,7 @@ class Exchange {
     let LPSymbols = this.totalHoldingTokenSymbolList
       .filter((i) => !STABLETOKENLIST.includes(i))
       .concat(BTC)
-      .map((j) => (`${j}/${USDT}`));
+      .map((j) => `${j}/${USDT}`);
     let res;
     //let errorSymbol;
     try {
@@ -129,40 +127,37 @@ class Exchange {
     }
     //console.log('fetchTickers res:', this.exName, res);
     this.tokenPriceMap = STABLETOKENLIST.reduce((prev, curr) => {
-      prev[curr] = ONE+''
-      return prev
-    }, {})
+      prev[curr] = ONE + '';
+      return prev;
+    }, {});
     LPSymbols.forEach((lpsymbol) => {
       const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
       if (res[lpsymbol] && res[lpsymbol].last) {
         const { last } = res[lpsymbol];
-        this.tokenPriceMap[tokenSymbol] = new BigNumber(last).toFixed()
+        this.tokenPriceMap[tokenSymbol] = new BigNumber(last).toFixed();
       } else {
-        this.tokenPriceMap[tokenSymbol] = ZERO+''
+        this.tokenPriceMap[tokenSymbol] = ZERO + '';
       }
     });
     console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap);
     return this.tokenPriceMap;
   }
   getTokenMap(amountMap) {
-    const obj = this.totalHoldingTokenSymbolList.reduce(
-      (prev, curr) => {
-        const amount = amountMap.get(curr);
-        if (amount) {
-          const price = this.tokenPriceMap[curr] || (ZERO + '');
-          const value = mul(amount, price).toFixed();
-          prev[curr] = {
-            symbol: curr,
-            amount,
-            price,
-            value,
-          };
-        }
-        return prev;
-      },
-      {}
-    );
-    return obj
+    const obj = this.totalHoldingTokenSymbolList.reduce((prev, curr) => {
+      const amount = amountMap.get(curr);
+      if (amount) {
+        const price = this.tokenPriceMap[curr] || ZERO + '';
+        const value = mul(amount, price).toFixed();
+        prev[curr] = {
+          symbol: curr,
+          amount,
+          price,
+          value,
+        };
+      }
+      return prev;
+    }, {});
+    return obj;
   }
 
   async getTotalAccountTokenMap() {
@@ -171,12 +166,16 @@ class Exchange {
       this.getTokenPriceMap(),
       this.getTotalAccountTokenAmountMap(),
     ]);
-    this.spotAccountTokenMap = this.getTokenMap(this.spotAccountTokenAmountMap)
-    if(this.flexibleAccountTokenAmountMap.size > 0) {
-      this.flexibleAccountTokenMap = this.getTokenMap(this.flexibleAccountTokenAmountMap)
-      this.totalAccountTokenMap = this.getTokenMap(this.totalAccountTokenAmountMap)
+    this.spotAccountTokenMap = this.getTokenMap(this.spotAccountTokenAmountMap);
+    if (this.flexibleAccountTokenAmountMap.size > 0) {
+      this.flexibleAccountTokenMap = this.getTokenMap(
+        this.flexibleAccountTokenAmountMap
+      );
+      this.totalAccountTokenMap = this.getTokenMap(
+        this.totalAccountTokenAmountMap
+      );
     } else {
-      this.totalAccountTokenMap = this.spotAccountTokenMap
+      this.totalAccountTokenMap = this.spotAccountTokenMap;
     }
     // console.log('totalAccountTokenMap', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;
@@ -200,7 +199,7 @@ class Exchange {
       return this.exchange;
     } catch (error) {
       console.log('exchange getInfo error:', error);
-      throw new Error(error)
+      throw new Error(error);
     }
   }
   async getTokenPrice(symbol) {
@@ -211,15 +210,14 @@ class Exchange {
     }
     const LPSymbol =
       this.exName === 'binance' ? `${symbol}${USDT}` : `${symbol}-${USDT}`;
-      try{
-        const res = await this.exchange.fetchTickers([LPSymbol]);
-        const { last } = res[`${symbol}/${USDT}`];
-        // console.log(`binance-getTokenPrice-${symbol}`, last);
-        return new BigNumber(last).toFixed();
-      }catch{
-        return ZERO + ''
-      }
-    
+    try {
+      const res = await this.exchange.fetchTickers([LPSymbol]);
+      const { last } = res[`${symbol}/${USDT}`];
+      // console.log(`binance-getTokenPrice-${symbol}`, last);
+      return new BigNumber(last).toFixed();
+    } catch {
+      return ZERO + '';
+    }
   }
 }
 export default Exchange;
