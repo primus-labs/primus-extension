@@ -22,7 +22,9 @@ export type UserState = {
   sysConfig: SysConfigInfo;
   exDatas: ExDatas,
   socialDatas: SocialDatas,
-  userPassword: string
+  userPassword: string,
+  activeSourceType: string,
+  filterWord: string
 }
 
 // initial state
@@ -33,7 +35,9 @@ const initState = {
   },
   exDatas: {},
   socialDatas: {},
-  userPassword: undefined
+  userPassword: undefined,
+  activeSourceType: 'All',
+  filterWord: undefined
 };
 
 // reducer
@@ -44,6 +48,10 @@ const reducer:any = function (state = initState, action: any) {
       return { ...state, padoServicePort: newPort };
     case 'setUserPassword':
       return { ...state, userPassword: action.payload };
+    case 'setActiveSourceType':
+      return { ...state, activeSourceType: action.payload };
+    case 'setFilterWord':
+      return { ...state, filterWord: action.payload };
     case SETEXCHAGEDATA:
       return { ...state, exDatas: {...state.exDatas, ...action.payload}};
     case SETSOCIALDATA:

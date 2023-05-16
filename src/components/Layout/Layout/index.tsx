@@ -131,16 +131,27 @@ const Layout = () => {
     }
     console.log('updated port in page layout', padoServicePort.name);
   }, [padoServicePort]);
-
+  const activeSourceType = useSelector(
+    (state: UserState) => state.activeSourceType
+  );
   useEffect(() => {
-    // const pageAppEl = document.getElementsByClassName('pageApp')[0];
-    // const pageLayerEl = document.getElementsByClassName('pageLayer')[0];
-    // const appContentEl = document.getElementsByClassName('appContent')[0];
-    // const dataSourceListEl =
-    //   document.getElementsByClassName('dataSourceList')[0];
+    if (activeSourceType !== 'All') {
+      setIsScroll(false);
+      if (document.documentElement.scrollTop > 0) {
+        document.documentElement.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      }
+    }
+  }, [activeSourceType])
+  useEffect(() => {
     window.onscroll = () => {
+      console.log(pathname)
+      if (activeSourceType !== 'All') {
+        return
+      }
       var topScroll = document.documentElement.scrollTop || window.pageYOffset;
-      console.log('topScroll', topScroll);
       if (topScroll >= 83) {
         setIsScroll(true);
       } else {
@@ -148,9 +159,9 @@ const Layout = () => {
       }
     };
     return () => {
-      window.onscroll = () => {};
+      window.onscroll = () => { };
     };
-  }, []);
+  }, [activeSourceType]);
 
   return (
     <div className="pageApp">

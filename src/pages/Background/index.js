@@ -7,9 +7,9 @@ import {
 import { getSysConfig } from '@/services/config';
 import { getCurrentDate, postMsg } from '@/utils/utils';
 import { SocailStoreVersion } from '@/utils/constants';
-import {default as processExReq, clear} from './exData';
+import { default as processExReq, clear } from './exData';
 const Web3EthAccounts = require('web3-eth-accounts');
-console.log('Background initialization')
+console.log('Background initialization');
 let fullscreenPort = null;
 let web3EthAccount = new Web3EthAccounts();
 const padoServices = {
@@ -20,7 +20,7 @@ const padoServices = {
   refreshAuthData,
 };
 
-let USERPASSWORD = '';
+let USERPASSWORD = 'pado2023.';
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -40,10 +40,10 @@ const showIndex = (info, tab) => {
 // listen msg from extension tab page
 chrome.runtime.onConnect.addListener((port) => {
   fullscreenPort = port;
-  if (port.name.startsWith('fullscreen')){
-      console.log('fullscreen connectted port=', port);
-      port.onMessage.addListener(processFullscreenReq);
-      port.onDisconnect.addListener(onDisconnectFullScreen);
+  if (port.name.startsWith('fullscreen')) {
+    console.log('fullscreen connectted port=', port);
+    port.onMessage.addListener(processFullscreenReq);
+    port.onDisconnect.addListener(onDisconnectFullScreen);
   }
 });
 
@@ -70,7 +70,7 @@ const processFullscreenReq = (message, port) => {
 };
 
 async function hasOffscreenDocument(path) {
-  // Check all windows controlled by the service worker to see if one 
+  // Check all windows controlled by the service worker to see if one
   // of them is the offscreen document with the given path
   const offscreenUrl = chrome.runtime.getURL(path);
   console.log(offscreenUrl);
@@ -91,7 +91,7 @@ const processAlgorithmReq = async (message, port) => {
   const { reqMethodName, params = {} } = message;
   switch (reqMethodName) {
     case 'start':
-      const offscreenDocumentPath = 'offscreen.html'
+      const offscreenDocumentPath = 'offscreen.html';
       if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
         console.log('create offscreen document...........');
         await chrome.offscreen.createDocument({
@@ -105,17 +105,33 @@ const processAlgorithmReq = async (message, port) => {
       }
       break;
     case 'init':
-      chrome.runtime.sendMessage({type: 'algorithm', method:'init', params:params});
+      chrome.runtime.sendMessage({
+        type: 'algorithm',
+        method: 'init',
+        params: params,
+      });
       break;
     case 'getAttestation':
-      chrome.runtime.sendMessage({type: 'algorithm', method:'getAttestation', params:params});
+      chrome.runtime.sendMessage({
+        type: 'algorithm',
+        method: 'getAttestation',
+        params: params,
+      });
       break;
     case 'getAttestationResult':
-      chrome.runtime.sendMessage({type: 'algorithm', method:'getAttestationResult', params:params});
+      chrome.runtime.sendMessage({
+        type: 'algorithm',
+        method: 'getAttestationResult',
+        params: params,
+      });
       break;
     case 'stop':
       await chrome.offscreen.closeDocument();
-      postMsg(fullscreenPort, { resType: 'algorithm', resMethodName: 'stop', res: {retcode:0} })
+      postMsg(fullscreenPort, {
+        resType: 'algorithm',
+        resMethodName: 'stop',
+        res: { retcode: 0 },
+      });
       break;
     default:
       break;
@@ -135,15 +151,17 @@ const processpadoServiceReq = async (message, port) => {
   switch (reqMethodName) {
     case 'getAllOAuthSources':
       if (rc === 0) {
-        postMsg(port,{ resMethodName: reqMethodName, res: result })
+        postMsg(port, { resMethodName: reqMethodName, res: result });
       }
       break;
     case 'checkIsLogin':
       if (rc === 0) {
         if (params.data_type === 'LOGIN') {
-          const {dataInfo, userInfo} = result
+          const { dataInfo, userInfo } = result;
           if (userInfo) {
-            await chrome.storage.local.set({ userInfo: JSON.stringify(userInfo) });
+            await chrome.storage.local.set({
+              userInfo: JSON.stringify(userInfo),
+            });
           }
           // store datasourceInfo if authorize source is data source
           if (dataInfo) {
@@ -151,33 +169,33 @@ const processpadoServiceReq = async (message, port) => {
             const socialSourceData = {
               ...dataInfo,
               date: getCurrentDate(),
-              timestamp: + new Date(),
-              version: SocailStoreVersion
+              timestamp: +new Date(),
+              version: SocailStoreVersion,
             };
             await chrome.storage.local.set({
               [lowerCaseSourceName]: JSON.stringify(socialSourceData),
             });
           }
-          const resMsg = { resMethodName: reqMethodName, res: true }
+          const resMsg = { resMethodName: reqMethodName, res: true };
           if (dataInfo) {
             resMsg.params = {
               data_type: params.data_type,
-              source: params.source
-            }
+              source: params.source,
+            };
           }
-          postMsg(port, resMsg)
+          postMsg(port, resMsg);
         } else if (params.data_type === 'DATASOURCE') {
           const lowerCaseSourceName = params.source.toLowerCase();
           const socialSourceData = {
             ...result,
             date: getCurrentDate(),
-            timestamp: + new Date()
+            timestamp: +new Date(),
           };
           socialSourceData.version = SocailStoreVersion;
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           }); // TODO store datasourceInfo
-          postMsg(port,{
+          postMsg(port, {
             resMethodName: reqMethodName,
             res: true,
             params: {
@@ -187,10 +205,10 @@ const processpadoServiceReq = async (message, port) => {
               //   [lowerCaseSourceName]: socialSourceData,
               // },
             },
-          })
+          });
         }
       } else {
-        postMsg(port,{ resMethodName: reqMethodName, res: false })
+        postMsg(port, { resMethodName: reqMethodName, res: false });
       }
       break;
     case 'bindUserAddress':
@@ -203,14 +221,14 @@ const processpadoServiceReq = async (message, port) => {
           },
         };
         await processWalletReq(msg, port);
-        postMsg(port,{ resMethodName: reqMethodName, res: true })
+        postMsg(port, { resMethodName: reqMethodName, res: true });
       } else {
-        postMsg(port,{ resMethodName: reqMethodName, res: false })
+        postMsg(port, { resMethodName: reqMethodName, res: false });
       }
       break;
     case 'getSysConfig':
       if (rc === 0) {
-        postMsg(port,{ resMethodName: reqMethodName, res: result })
+        postMsg(port, { resMethodName: reqMethodName, res: result });
       }
       break;
     case 'refreshAuthData':
@@ -219,32 +237,32 @@ const processpadoServiceReq = async (message, port) => {
         const socialSourceData = {
           ...result,
           date: getCurrentDate(),
-          timestamp: + new Date()
+          timestamp: +new Date(),
         };
         socialSourceData.version = SocailStoreVersion;
         await chrome.storage.local.set({
           [lowerCaseSourceName]: JSON.stringify(socialSourceData),
         });
-        postMsg(port,{
+        postMsg(port, {
           resMethodName: reqMethodName,
           res: true,
           params: {
             mc,
             source: params.source,
           },
-        })
+        });
       } else if (rc === 1 && mc === 'UNAUTHORIZED_401') {
         //Token expiration
-        postMsg(port,{
+        postMsg(port, {
           resMethodName: reqMethodName,
           res: false,
           params: {
             mc,
             source: params.source,
           },
-        })
+        });
       } else {
-        postMsg(port,{ resMethodName: reqMethodName, res: false })
+        postMsg(port, { resMethodName: reqMethodName, res: false });
       }
       break;
     default:
@@ -283,15 +301,15 @@ const processWalletReq = async (message, port) => {
             web3EthAccount = new Web3EthAccounts();
             web3EthAccount.decrypt(keyStore, password);
             USERPASSWORD = password;
-            postMsg(port,{ resMethodName: reqMethodName, res: true })
+            postMsg(port, { resMethodName: reqMethodName, res: true });
           } catch {
-            postMsg(port,{ resMethodName: reqMethodName, res: false })
+            postMsg(port, { resMethodName: reqMethodName, res: false });
           }
         }
       });
       break;
     case 'encrypt':
-      const pKRes = await chrome.storage.local.get(['privateKey'])
+      const pKRes = await chrome.storage.local.get(['privateKey']);
       let privateKey = pKRes.privateKey;
       const orignAccount = web3EthAccount.privateKeyToAccount(privateKey);
       const encryptAccount = orignAccount.encrypt(password);
@@ -318,16 +336,16 @@ const processWalletReq = async (message, port) => {
       break;
     case 'queryUserPassword':
       // console.log('background receive queryUserPassword');
-      postMsg(port,{ resMethodName: reqMethodName, res: !!USERPASSWORD })
+      postMsg(port, { resMethodName: reqMethodName, res: !!USERPASSWORD });
       break;
     case 'resetUserPassword':
-      console.log('background receive resetUserPassword')
-      USERPASSWORD = password
+      console.log('background receive resetUserPassword');
+      USERPASSWORD = password;
       break;
     case 'create':
       try {
-        const pKRes = await chrome.storage.local.get(['privateKey'])
-        let privateKey = pKRes.privateKey
+        const pKRes = await chrome.storage.local.get(['privateKey']);
+        let privateKey = pKRes.privateKey;
         let acc;
         if (privateKey) {
           acc = web3EthAccount.privateKeyToAccount(privateKey);
@@ -341,9 +359,9 @@ const processWalletReq = async (message, port) => {
           };
           await processStorageReq(transferMsg, port);
         }
-        postMsg(port,{ resMethodName: reqMethodName, res: acc.address })
+        postMsg(port, { resMethodName: reqMethodName, res: acc.address });
       } catch {
-        postMsg(port,{ resMethodName: reqMethodName, res: '' })
+        postMsg(port, { resMethodName: reqMethodName, res: '' });
       }
       break;
     default:
@@ -361,6 +379,6 @@ const onDisconnectFullScreen = (port) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('background onMessage message', message);
   if (message.resType === 'algorithm' && fullscreenPort) {
-      postMsg(fullscreenPort,message)
+    postMsg(fullscreenPort, message);
   }
 });

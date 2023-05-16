@@ -13,7 +13,7 @@ interface DataSourceItemProps {
 }
 
 const DataSourceList: React.FC<DataSourceItemProps> = ({ onAdd, onCheck, list = [] }) => {
-  console.log('DataSourceList====', list)
+  // console.log('DataSourceList====', list)
   const handleAdd = () => {
     onAdd()
   }
@@ -21,7 +21,7 @@ const DataSourceList: React.FC<DataSourceItemProps> = ({ onAdd, onCheck, list = 
     <div className="dataSourceList">
       {list.length < 1 && <EmptyDataSourceItem onAdd={handleAdd} />}
       {list.map(item => {
-        return (<DataSourceItem key={item.name} item={item} onCheck={onCheck}  />)
+        return (<DataSourceItem key={item.name} item={item} onCheck={onCheck} />)
       })}
     </div>
   );

@@ -18,11 +18,14 @@ import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSou
 import './index.sass';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
+import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import useAuthorization from '@/hooks/useAuthorization';
 import useExSources from '@/hooks/useExSources';
 import useSocialSources from '@/hooks/useSocialSources';
 import type { UserState } from '@/store/reducers';
 import { postMsg, sub } from '@/utils/utils';
+import { useDispatch } from 'react-redux';
+import type { Dispatch } from 'react'
 
 export type DataSourceStorages = {
   binance?: any;
@@ -38,6 +41,7 @@ type ActiveRequestType = {
   desc: string;
 };
 const DataSourceOverview = () => {
+  const dispatch: Dispatch<any> = useDispatch()
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -45,8 +49,15 @@ const DataSourceOverview = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
-  const [filterWord, setFilterWord] = useState<string>();
+  // const [filterWord, setFilterWord] = useState<string>();
+  // const [activeSourceType, setActiveSourceType] = useState<string>('All');
   const [exSources, refreshExSources] = useExSources();
+  const activeSourceType = useSelector(
+    (state: UserState) => state.activeSourceType
+  );
+  const filterWord = useSelector(
+    (state: UserState) => state.filterWord
+  );
   const [socialSources, refreshSocialSources] = useSocialSources();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const exList: DataSourceItemList = useMemo(() => {
@@ -97,7 +108,7 @@ const DataSourceOverview = () => {
     }
   }, [dataSourceList, filterWord]);
 
-  const [activeSourceType, setActiveSourceType] = useState<string>('All');
+
 
   const handleChangeInput = (val: string) => {
     setFilterWord(val);
@@ -112,7 +123,11 @@ const DataSourceOverview = () => {
   };
   const handleChangeTab = (val: string) => {
     if (val === 'Data') {
-      setActiveSourceType('All');
+      // setActiveSourceType('All');
+      dispatch({
+        type: 'setActiveSourceType',
+        payload: 'All'
+      })
     }
   };
   const handleCheckDataSourceDetail = ({ type, name }: DataSourceItemType) => {
@@ -234,7 +249,8 @@ const DataSourceOverview = () => {
     <div className="pageDataSourceOverview">
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
-        <div className="filterWrapper">
+        <DataSourceSearch />
+        {/* <div className="filterWrapper">
           <PSelect
             options={dataSourceTypeList}
             onChange={handleChangeSelect}
@@ -248,7 +264,7 @@ const DataSourceOverview = () => {
               value={filterWord}
             />
           </div>
-        </div>
+        </div> */}
         {activeSourceType === 'All' && (
           <DataSourceList
             onAdd={handleAdd}
