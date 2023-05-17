@@ -12,15 +12,22 @@ interface SourcesStatisticsBarProps {
 }
 
 const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type = 'Assets', list, filterSource, onSelect,onClearFilter }) => {
+  console.log('SourcesStatisticsBar', list)
   const [activeSourceName, setActiveSourceName] = useState<string>()
   const activeList = useMemo(() => {
-    const activeL = list.sort((a,b) => sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber())
+    let activeL = list
+    if (type === 'Assets') {
+      activeL = list.sort((a,b) => sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber())
+    } else if (type === 'Social') {
+      activeL = list.sort((a,b) => sub(Number(b.followers), Number(a.followers)).toNumber())
+    }
     return activeL
-  },[list])
+  },[list, type])
+  useEffect(() => {
+    console.log('activeList', activeList)
+  }, [activeList])
   const handleClickSource = (sourceName: string) => {
     // Click to activate and then click to deactivate
-    // const targetName = sourceName === activeSourceName ? undefined : sourceName
-    // setActiveSourceName(targetName)
     if(sourceName === activeSourceName) {
       setActiveSourceName(undefined)
       onClearFilter()
@@ -29,7 +36,6 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type =
     }
   }
   const sourceCoreDataFn = (item:any) => {
-    const sourceLowerName = item.name.toLowerCase()
     let formatNum;
     if (type === 'Social') {
       // if (sourceLowerName === 'discord') {
@@ -65,23 +71,32 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type =
       }
     }
   }, [filterSource])
+  const liClassNameFn = (name: string) => {
+    let activeClassName = "source"
+    if(type === 'Social'){
+      activeClassName += " social" 
+    }
+    if (!!activeSourceName  && activeSourceName !== name ) {
+      activeClassName += " disabled"
+    }
+    return activeClassName
+  }
   return (
     <section className="sourcesStatisticsBar">
       <header>Sources</header>
       <ul className={(type === 'Social' ? "sources social" : "sources")}>
         {activeList.map(item => {
-          return <li className={
-            ((!!activeSourceName  && activeSourceName=== item.name) || !activeSourceName)? 
-            (type === 'Social' ? "source social" : "source"): 
-            (type === 'Social' ? "source social disabled" : "source disabled")} 
-            key={item.name} onClick={() => handleClickSource(item.name)}>
-            <div className="label">Data on {item.name}</div>
-            <div className="value">
-              <img src={item.icon} alt="" />
-              <span>{sourceCoreDataFn(item)}</span>
-            </div>
-            {type === 'Social' && <div className="tip">{item.followers === null? 'Following': 'Followers'}</div>}
-          </li>
+          return <li 
+                      className={liClassNameFn(item.name)} 
+                      key={item.name}
+                      onClick={() => handleClickSource(item.name)}>
+                      <div className="label">Data on {item.name}</div>
+                      <div className="value">
+                        <img src={item.icon} alt="" />
+                        <span>{sourceCoreDataFn(item)}</span>
+                      </div>
+                      {type === 'Social' && <div className="tip">{item.followers === null? 'Following': 'Followers'}</div>}
+                  </li>
         })}
       </ul>
     </section>

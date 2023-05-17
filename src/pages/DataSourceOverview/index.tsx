@@ -67,12 +67,18 @@ const DataSourceOverview = () => {
     return Object.values({ ...socialSources });
   }, [socialSources]);
   const dataSourceList: DataSourceItemList = useMemo(() => {
-    return Object.values({ ...exSources, ...socialSources });
+    const exList = Object.values(exSources)
+    const socialList = Object.values(socialSources)
+    const orderedExList = exList.sort((a, b) =>
+      sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
+    )
+    const orderedSocialList = socialList.sort((a, b) =>
+      sub(Number(b.followers), Number(a.followers)).toNumber()
+    )
+    return [...orderedExList,...orderedSocialList];
   }, [exSources, socialSources]);
   const activeDataSourceList = useMemo(() => {
-    const orderedDataSourceList = dataSourceList.sort((a, b) =>
-      sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
-    );
+    const orderedDataSourceList = dataSourceList
     if (filterWord) {
       return orderedDataSourceList.filter((item) => {
         const lowerCaseName = item.name.toLowerCase();

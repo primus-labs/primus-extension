@@ -64,7 +64,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
     setActiveSourceName(sourceName)
   }
   const getChartData = useMemo(() => {
-    const chartData = list.map(({ name, followers }) => ({ name, value: followers? new BigNumber(followers as number).toFixed(0): 0 }))
+    const chartData = list.map(({ name, followers }) => ({ name, value: followers? new BigNumber(followers as number).toFixed(0): '0' }))
     return chartData
   }, [list])
 
