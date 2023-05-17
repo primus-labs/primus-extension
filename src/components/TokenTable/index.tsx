@@ -136,6 +136,35 @@ const TokenTable: React.FC<TokenTableProps> = ({
     },
     [name, activeItem, spotAccountTokenMap, flexibleAccountTokenMap]
   );
+  const accTagsFn = (item: DataSourceItemType) => {
+    let lowerCaseName = item.name.toLowerCase();
+    let formatTxt;
+    switch (lowerCaseName) {
+      case 'twitter':
+        formatTxt = item.verified ? 'Verified' : 'Not Verified'
+        break;
+      case 'discord':
+        formatTxt = item.remarks?.flags
+        break;
+      default:
+        formatTxt = '-'
+        break;
+    }
+    return formatTxt
+  }
+  const formatTxtFn = (item: DataSourceItemType, key: string) => {
+    let formatTxt;
+    const val = item[key as keyof DataSourceItemType]
+    if (val === null) {
+      formatTxt = '-'
+    } else {
+      formatTxt = formatNumeral(val, {
+        transferUnit: false,
+        decimalPlaces: 0,
+      })
+    }
+    return formatTxt
+  }
   const handleChangeFilter = (filterAccount: string | undefined) => {
     setFilterAccount(filterAccount);
     setActiveItem(undefined);
@@ -268,10 +297,11 @@ const TokenTable: React.FC<TokenTableProps> = ({
             <div className="innerWrapper">
               <div className="token">Social</div>
               <div className="userName">User Name</div>
-              <div className="verified">Verified</div>
               <div className="createTime">Created Time</div>
               <div className="followers">Followers</div>
+              <div className="following">Following</div>
               <div className="posts">Posts</div>
+              <div className="verified">Acc. Tags</div>
             </div>
           </li>
           {(activeList as DataSourceItemType[]).map((item) => {
@@ -283,22 +313,20 @@ const TokenTable: React.FC<TokenTableProps> = ({
                     <span>{item.name}</span>
                   </div>
                   <div className="userName">{item.userName ?? item.screenName}</div>
-                  <div className="verified">{item.verified ? 'Y' : 'N'}</div>
+                  
                   <div className="createTime">
                     {getCurrentDate(item.createdTime)}
                   </div>
                   <div className="followers">
-                    {formatNumeral(item.followers as string, {
-                      transferUnit: false,
-                      decimalPlaces: 0,
-                    })}
+                    {formatTxtFn(item, 'followers')}
+                  </div>
+                  <div className="following">
+                    {formatTxtFn(item, 'followings')}
                   </div>
                   <div className="posts">
-                    {formatNumeral(item.posts as string, {
-                      transferUnit: false,
-                      decimalPlaces: 0,
-                    })}
+                    {formatTxtFn(item, 'posts')}
                   </div>
+                  <div className="verified">{accTagsFn(item)}</div>
                 </div>
               </li>
             );

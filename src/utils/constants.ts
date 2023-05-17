@@ -10,6 +10,7 @@ import iconDataSourceBybit from '@/assets/img/iconDataSourceBybit.svg';
 import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.svg';
 import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.png';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
+import iconDataSourceYoutube from '@/assets/img/icondataSourceYoutube.svg'
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -107,6 +108,11 @@ export const DATASOURCEMAP: DataSourceMapType = {
     name: 'Discord',
     type: 'Social',
     icon: iconDataSourceDiscord,
+  },
+  youtube: {
+    name: 'Youtube',
+    type: 'Social',
+    icon: iconDataSourceYoutube,
   }
 };
 

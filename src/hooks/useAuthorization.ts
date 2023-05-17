@@ -71,6 +71,7 @@ const useAuthorization = () => {
     const windowScreen: Screen = window.screen
     var left = Math.round((windowScreen.width / 2) - (width / 2));
     var top = Math.round((windowScreen.height / 2) - (height / 2));
+    console.log('authUrl', `https://18.179.8.186:8081/public/render/${source}?state=${state}`)
     const windowOptions: chrome.windows.CreateData = {
       url: `https://18.179.8.186:8081/public/render/${source}?state=${state}`,
       type: 'popup',

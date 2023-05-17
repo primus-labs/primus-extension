@@ -47,6 +47,19 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
     const bal = list.reduce(reduceF, 0)
     return bal
   }, [list])
+
+  
+  const activeSourceTokenList = useMemo(() => {
+    if (activeSourceName) {
+      const activeS: DataSourceItemType[] = list.filter(
+        (item) => item.name === activeSourceName
+      ) as DataSourceItemType[];
+      return activeS;
+    } else {
+      return list;
+    }
+  }, [list, activeSourceName]);
+
   const handleSelectSource = (sourceName: string | undefined) => {
     setActiveSourceName(sourceName)
   }
@@ -79,7 +92,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
                 </div>
               </div>
               <div className="descItem">
-                <div className="label">Verified Acct</div>
+                <div className="label">Acct. Tags</div>
                 <div className="value">{totalVerifiedAcct}</div>
               </div>
             </div>
@@ -93,7 +106,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
         </div>
       </section>
       <SourcesStatisticsBar list={list} onSelect={handleSelectSource} filterSource={filterSource} type="Social" onClearFilter={onClearFilter}/>
-      <TokenTable list={list} type="Social" />
+      <TokenTable list={activeSourceTokenList} type="Social" name={activeSourceName?.toLowerCase()}/>
     </div>
   );
 };

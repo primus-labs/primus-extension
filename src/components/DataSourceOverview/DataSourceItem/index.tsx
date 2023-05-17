@@ -31,6 +31,7 @@ export type SocialDataSourceData = {
   userName?: string;
   createdTime?: string;
   screenName?: string;
+  remarks?: any
 };
 export type DataSourceItemType = {
   date: string;

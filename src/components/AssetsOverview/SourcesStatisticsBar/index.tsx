@@ -28,6 +28,24 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type =
       setActiveSourceName(sourceName)
     }
   }
+  const sourceCoreDataFn = (item:any) => {
+    const sourceLowerName = item.name.toLowerCase()
+    let formatNum;
+    if (type === 'Social') {
+      // if (sourceLowerName === 'discord') {
+      //   formatNum = formatNumeral((item.followings as string), {transferUnit:false,decimalPlaces:0}) 
+      // } else {
+        if (item.followers === null) {
+          formatNum = formatNumeral((item.followings as string), {transferUnit:false,decimalPlaces:0}) 
+        } else {
+          formatNum = formatNumeral((item.followers as string), {transferUnit:false,decimalPlaces:0}) 
+        }
+      // }
+    } else {
+      formatNum = '$' + formatNumeral(item.totalBalance as string)
+    }
+    return formatNum
+  }
   useEffect(() => {
     onSelect(activeSourceName)
   }, [activeSourceName])
@@ -60,9 +78,9 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type =
             <div className="label">Data on {item.name}</div>
             <div className="value">
               <img src={item.icon} alt="" />
-              <span>{type === 'Social' ? formatNumeral((item.followers as string), {transferUnit:false,decimalPlaces:0}) : '$' + formatNumeral(item.totalBalance as string)}</span>
+              <span>{sourceCoreDataFn(item)}</span>
             </div>
-            {type === 'Social' && <div className="tip">Followers</div>}
+            {type === 'Social' && <div className="tip">{item.followers === null? 'Following': 'Followers'}</div>}
           </li>
         })}
       </ul>
