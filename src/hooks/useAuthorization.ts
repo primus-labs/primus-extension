@@ -47,12 +47,7 @@ const useAuthorization = () => {
               )
               timer && clearInterval(timer)
               onSubmit && onSubmit()
-            //   await dispatch(
-            //     setSocialDataAction(message.params?.result)
-            //   );
             }
-
-            
           }
         }
       }

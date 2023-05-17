@@ -143,7 +143,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
             {type === 'Social' && (
               <div className="desc">
                 <span className="label">User:&nbsp;</span>
-                <span className="value">{userName ?? screenName ?? '--'}</span>
+                <span className="value">{userName ?? screenName}</span>
               </div>
             )}
             {type === 'Assets' && label && (
@@ -168,7 +168,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
             <div key={item.name} className="descItem">
               <div className="descT">{item.name}</div>
               <div className="descC">
-                {formatSource[item.sourceKey as keyof typeof source]}
+                {formatSource[item.sourceKey as keyof typeof source] ?? '-'}
               </div>
             </div>
           );

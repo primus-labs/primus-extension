@@ -161,6 +161,7 @@ const processpadoServiceReq = async (message, port) => {
           if (userInfo) {
             const formatUserInfo = {...userInfo}
             const lowerCaseSourceName = params.source.toLowerCase();
+            formatUserInfo.authSource = lowerCaseSourceName
             switch (lowerCaseSourceName) {
               case 'google':
                 formatUserInfo.formatUser = userInfo.email
@@ -204,16 +205,17 @@ const processpadoServiceReq = async (message, port) => {
           }
           postMsg(port, resMsg);
         } else if (params.data_type === 'DATASOURCE') {
+          const { dataInfo, userInfo } = result;
           const lowerCaseSourceName = params.source.toLowerCase();
           const socialSourceData = {
-            ...result,
+            ...dataInfo,
             date: getCurrentDate(),
             timestamp: +new Date(),
+            version: SocailStoreVersion
           };
-          socialSourceData.version = SocailStoreVersion;
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-          }); // TODO store datasourceInfo
+          });
           postMsg(port, {
             resMethodName: reqMethodName,
             res: true,
