@@ -20,8 +20,8 @@ const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = true, onBack,
     const userInfo = res.userInfo
     if (userInfo) {
       const parseUserInfo = JSON.parse(userInfo)
-      const { email: em, picture, nickName } = parseUserInfo
-      setEmail(em ?? '@'+nickName)
+      const { picture, formatUser } = parseUserInfo
+      setEmail(formatUser)
       setAvatar(picture);
     }
   }
@@ -33,9 +33,9 @@ const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = ({ checked = true, onBack,
       {backable && <div className="iconBack" onClick={handleClickBack}></div>}
       
       <div className="content">
-        {avatar ? <img className="avatar" src={avatar} alt="back" /> : <i className="avatarAlternate"></i>}
+        {avatar ? <img className="avatar" src={avatar} alt="" /> : <i className="avatarAlternate"></i>}
         <span className="email">{email}</span>
-        {checked && <img className="checked" src={iconChecked} alt="back" />}
+        {checked && <img className="checked" src={iconChecked} alt="" />}
       </div>
     </header>
   );

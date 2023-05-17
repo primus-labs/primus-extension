@@ -159,7 +159,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
                     handleClickOAuthSource(item);
                   }}
                 >
-                  <img src={item.logoUrl} alt={item.name} />
+                  <img src={item.logoUrl} alt="" />
                 </li>
               );
             })}
@@ -172,7 +172,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
             </div>
           )}
           <span>Next</span>
-          <img src={rightArrow} alt="right arrow" />
+          <img src={rightArrow} alt="" />
         </button>
       </div>
     </PMask>

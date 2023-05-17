@@ -24,7 +24,7 @@ const SetSucDialog: React.FC<SetSucDialogProps> = ({ onClose, onSubmit }) => {
     setAccountAddr('0x'+parseKeyStore.address)
     const userInfo: any = res.userInfo
     if (userInfo) {
-      const em = JSON.parse(userInfo).email ?? '@'+JSON.parse(userInfo).nickName
+      const em = JSON.parse(userInfo).formatUser
       setEmail(em)
     }
   }

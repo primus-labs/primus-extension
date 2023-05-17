@@ -13,7 +13,7 @@ const PHeader: React.FC<PMaskProps> = (props) => {
   }
   return (
     <div className="pMask bgLayer">
-      <img className="closeBtn" src={iconClose} alt="close" onClick={handleClickClose} />
+      <img className="closeBtn" src={iconClose} alt="" onClick={handleClickClose} />
       {props.children}
     </div>
   );

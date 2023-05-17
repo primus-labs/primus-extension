@@ -11,15 +11,15 @@ const BackgroundAnimation = (props) => {
       <div className="backingBoard">
       </div>
       <div className="shapeInnerWrapper2">
-        <div className="layer2"><img src={bgLayer2}  alt="shapeImg"/></div>
+        <div className="layer2"><img src={bgLayer2}  alt=""/></div>
       </div>
       <div className="shapeInnerWrapper">
-      <div className="layer1"><img src={bgLayer1}  alt="shapeImg"/></div>
+      <div className="layer1"><img src={bgLayer1}  alt=""/></div>
         <div className="layer3">
-          <img src={bgLayer3}  alt="shapeImg"/>
+          <img src={bgLayer3}  alt=""/>
           {/* <div className="imgBox"></div> */}
         </div>
-        <div className="layer4"><img src={bgLayer4}  alt="shapeImg"/></div>
+        <div className="layer4"><img src={bgLayer4}  alt=""/></div>
       </div>
     </div>
   );

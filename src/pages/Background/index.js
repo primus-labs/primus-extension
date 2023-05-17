@@ -159,8 +159,27 @@ const processpadoServiceReq = async (message, port) => {
         if (params.data_type === 'LOGIN') {
           const { dataInfo, userInfo } = result;
           if (userInfo) {
+            const formatUserInfo = {...userInfo}
+            const lowerCaseSourceName = params.source.toLowerCase();
+            switch (lowerCaseSourceName) {
+              case 'google':
+                formatUserInfo.formatUser = userInfo.email
+                break;
+              case 'twitter':
+                formatUserInfo.formatUser = '@'+userInfo.nickName
+                break;
+              case 'github':
+                formatUserInfo.formatUser = userInfo.userName
+                break;
+              case 'discord':
+                formatUserInfo.formatUser = userInfo.nickName
+                break;
+              default:
+                formatUserInfo.formatUser = userInfo.userName
+                break;
+            }
             await chrome.storage.local.set({
-              userInfo: JSON.stringify(userInfo),
+              userInfo: JSON.stringify(formatUserInfo),
             });
           }
           // store datasourceInfo if authorize source is data source

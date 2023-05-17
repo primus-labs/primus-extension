@@ -24,7 +24,7 @@ const BackgroundAnimation = () => {
   }
   return (
     <aside onMouseMove={handleMousemove} onMouseLeave={handleMouseLeave}>
-      <img ref={illustrationEl} src={illustration} className="illustration" alt="illustration" />
+      <img ref={illustrationEl} src={illustration} className="illustration" alt="" />
     </aside>
   );
 };

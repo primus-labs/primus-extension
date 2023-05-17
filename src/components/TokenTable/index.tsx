@@ -282,7 +282,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
                     <img src={item.icon} alt="" />
                     <span>{item.name}</span>
                   </div>
-                  <div className="userName">{item.userName}</div>
+                  <div className="userName">{item.userName ?? item.screenName}</div>
                   <div className="verified">{item.verified ? 'Y' : 'N'}</div>
                   <div className="createTime">
                     {getCurrentDate(item.createdTime)}

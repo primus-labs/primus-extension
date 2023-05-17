@@ -80,7 +80,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
             }
             onClick={() => handleClickNetwork(activeTool)}
           >
-            <img src={activeTool?.icon} alt="ETH" />
+            <img src={activeTool?.icon} alt="" />
           </div>
           <div className="dividerWrapper">
             <i></i>
@@ -112,7 +112,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
             </div>
           }
           <span>Next</span>
-          {showButtonSuffixIcon && <img src={rightArrow} alt="right arrow" />}
+          {showButtonSuffixIcon && <img src={rightArrow} alt="" />}
         </button>
       </div>
     </PMask>

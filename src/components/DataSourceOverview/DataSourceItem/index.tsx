@@ -30,6 +30,7 @@ export type SocialDataSourceData = {
   verified?: boolean;
   userName?: string;
   createdTime?: string;
+  screenName?: string;
 };
 export type DataSourceItemType = {
   date: string;
@@ -64,6 +65,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
     followings,
     label,
     userName,
+    screenName
   } = source;
   const formatSource = {
     ...source,
@@ -141,7 +143,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
             {type === 'Social' && (
               <div className="desc">
                 <span className="label">User:&nbsp;</span>
-                <span className="value">{userName ?? '--'}</span>
+                <span className="value">{userName ?? screenName ?? '--'}</span>
               </div>
             )}
             {type === 'Assets' && label && (

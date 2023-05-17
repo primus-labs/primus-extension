@@ -50,7 +50,7 @@ const PHeader = () => {
   };
   return (
     <header className="pageHeader">
-      <img src={logo} className="pLogo" alt="logo" />
+      <img src={logo} className="pLogo" alt="" />
       <DataSourceSearch />
       <div className="rightHeader">
         <div

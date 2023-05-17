@@ -8,6 +8,8 @@ import iconDataSourceGate from '@/assets/img/iconDataSourceGate.svg';
 import iconDataSourceBitget from '@/assets/img/iconDataSourceBitget.svg';
 import iconDataSourceBybit from '@/assets/img/iconDataSourceBybit.svg';
 import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.svg';
+import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.png';
+import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -70,8 +72,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Gate,
   },
-  
-  
   huobi: {
     name: 'Huobi',
     type: 'Assets',
@@ -98,7 +98,16 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceTwitter,
   },
-  
+  github: {
+    name: 'Github',
+    type: 'Social',
+    icon: iconDataSourceGithub,
+  },
+  discord: {
+    name: 'Discord',
+    type: 'Social',
+    icon: iconDataSourceDiscord,
+  }
 };
 
 export const CHARTCOLORS = [
