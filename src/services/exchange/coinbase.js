@@ -8,20 +8,20 @@ class CoinBase extends Exchange {
     super('coinbase', exchangeInfo);
   }
 
-  async getFundingAccountTokenAmountMap() {
+  async getTradingAccountTokenAmountMap() {
     const res = await this.exchange.fetchBalance();
     // console.log('res', res);
     res.info.data.forEach(({ currency, balance }) => {
       // Tip: funding account balance = free + locked + freeze
       const amt = new BigNumber(balance.amount);
       gt(amt, BIGZERO) &&
-        this.fundingAccountTokenAmountMap.set(balance.currency, balance.amount);
+        this.tradingAccountTokenAmountMap.set(balance.currency, balance.amount);
     });
     // console.log(
-    //   'fundingAccountTokenAmountMap',
-    //   this.fundingAccountTokenAmountMap
+    //   'tradingAccountTokenAmountMap',
+    //   this.tradingAccountTokenAmountMap
     // );
-    return this.fundingAccountTokenAmountMap;
+    return this.tradingAccountTokenAmountMap;
   }
 
 }
