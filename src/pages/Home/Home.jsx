@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
 import AuthDialog from '@/components/Home/AuthDialog';
 import SetPwdDialog from '@/components/Home/SetPwdDialog';
@@ -14,6 +14,7 @@ import iconNetwork3 from '@/assets/img/iconNetwork3.png';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.png';
 import iconNetwork6 from '@/assets/img/iconNetwork6.png';
+import { setSocialSourcesAsync } from '@/store/actions'
 
 const networkList = [
   {
@@ -42,6 +43,7 @@ const networkList = [
   },
 ];
 const Home = () => {
+  const dispatch = useDispatch();
   const padoServicePort = useSelector((state) => state.padoServicePort)
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
@@ -55,6 +57,7 @@ const Home = () => {
     setStep(0);
   };
   const handleSubmitAuth = () => {
+    dispatch(setSocialSourcesAsync())
     setStep(2);
   };
   const handleSubmitCreateAccount = () => {

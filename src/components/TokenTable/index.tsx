@@ -313,7 +313,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
                     <span>{item.name}</span>
                   </div>
                   <div className="userName">{item.userName ?? item.screenName}</div>
-                  
+
                   <div className="createTime">
                     {getCurrentDate(item.createdTime)}
                   </div>
