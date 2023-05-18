@@ -39,7 +39,6 @@ const useUpdateSocialSources = () => {
         list.push(i)
       }
     })
-    console.log('updateSocial', res)
     list.forEach(async (item ) => {
       const uniqueId = JSON.parse(res[item]).uniqueId
       const msg: any = {

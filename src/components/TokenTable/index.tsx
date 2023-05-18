@@ -144,7 +144,10 @@ const TokenTable: React.FC<TokenTableProps> = ({
         formatTxt = item.verified ? 'Verified' : 'Not Verified'
         break;
       case 'discord':
-        formatTxt = item.remarks?.flags
+        const flagArr = item.remarks?.flags.split(',')
+        const flagArrLen = flagArr.length
+        const activeFlag = flagArr[flagArrLen-1] === 'Bot'? flagArr[flagArrLen-2]:flagArr[flagArrLen-1]
+        formatTxt = activeFlag
         break;
       default:
         formatTxt = '-'

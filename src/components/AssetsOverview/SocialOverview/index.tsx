@@ -41,8 +41,14 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
   }, [list])
   const totalVerifiedAcct = useMemo(() => {
     const reduceF: (prev: number, curr: DataSourceItemType) => number = (prev: number, curr: DataSourceItemType) => {
-      const { verified } = curr
-      return verified ? prev + 1 : prev
+      const { name, verified, remarks } = curr
+      let activeNum = verified ? 1 : 0
+      const lowerCaseSourceName = name.toLowerCase()
+      if (lowerCaseSourceName === 'discord') {
+        const flagArr = remarks?.flags.split(',') ?? []
+        activeNum = flagArr.length
+      }
+      return prev + activeNum
     }
     const bal = list.reduce(reduceF, 0)
     return bal
