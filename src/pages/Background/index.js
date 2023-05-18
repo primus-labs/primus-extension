@@ -255,12 +255,13 @@ const processpadoServiceReq = async (message, port) => {
     case 'refreshAuthData':
       if (rc === 0) {
         const lowerCaseSourceName = params.source.toLowerCase();
+        const { dataInfo, userInfo } = result;
         const socialSourceData = {
-          ...result,
+          ...dataInfo,
           date: getCurrentDate(),
           timestamp: +new Date(),
+          version: SocailStoreVersion
         };
-        socialSourceData.version = SocailStoreVersion;
         await chrome.storage.local.set({
           [lowerCaseSourceName]: JSON.stringify(socialSourceData),
         });

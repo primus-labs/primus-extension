@@ -34,11 +34,12 @@ const useUpdateSocialSources = () => {
       const {timestamp} = JSON.parse(res[i])
       const now = + new Date()
       // refresh data more than an hour since the last time it was obtained
-      if(i === 'twitter' && (now - timestamp) > 1000*60*60) {
+      if(i !== 'twitter' || (i === 'twitter' && (now - timestamp) > 1000*60*60)) {
         setQueryObj((obj) => ({ ...obj, [i]: undefined }));
         list.push(i)
       }
     })
+    console.log('updateSocial', res)
     list.forEach(async (item ) => {
       const uniqueId = JSON.parse(res[item]).uniqueId
       const msg: any = {
