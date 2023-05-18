@@ -1,0 +1,26 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pTable.sass'
+
+.tokenListWrapper.social
+  ul.tokens
+    &.social
+      li.tokenItem
+        gap: 0
+        .innerWrapper
+          .token
+            width: 120px
+          .userName,.createTime
+            width: 133px
+            text-overflow: ellipsis
+            overflow: hidden
+            white-space: nowrap
+          .verified
+            width: 120px
+          .followers,.following
+            width: 110px
+          .posts
+            width: 90px
+
+

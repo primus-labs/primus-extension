@@ -1,12 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import '../AssetsOverview/index.sass';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem'
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList'
 import SourcesStatisticsBar from '../SourcesStatisticsBar'
-import TokenTable from '@/components/TokenTable'
+import SocialSourcesTable from '@/components/AssetsOverview/SocialSourcesTable'
 import BigNumber from 'bignumber.js'
 import { add, formatNumeral } from '@/utils/utils'
 import PieChart from '../PieChart'
+import '../AssetsOverview/index.sass';
+
 interface AssetsOverviewProps {
   filterSource: string | undefined;
   onClearFilter: () => void;
@@ -112,7 +113,7 @@ const SocialOverview: React.FC<AssetsOverviewProps> = ({ filterSource,onClearFil
         </div>
       </section>
       <SourcesStatisticsBar list={list} onSelect={handleSelectSource} filterSource={filterSource} type="Social" onClearFilter={onClearFilter}/>
-      <TokenTable list={activeSourceTokenList} type="Social" name={activeSourceName?.toLowerCase()}/>
+      <SocialSourcesTable list={activeSourceTokenList}/>
     </div>
   );
 };

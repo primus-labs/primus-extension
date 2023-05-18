@@ -1,97 +1,18 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFlex.sass'
 @import '@/assets/css/pFont.sass'
+@import '@/assets/css/pTable.sass'
 
-$col-raise: #E12828
-$col-fall: #27C265
-
-.tokenListWrapper
-  width: 100%
-  @include backdropMixin
-  padding: 0 50px
-  header
-    @extend .lLBlackBoldFont
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1)
-    padding: 32px 0 16px 0
-    @extend .frbc
-    .pSearch
-      width: 427px
-      position: relative
-      &:before
-        position: absolute
-        z-index: 1
-        content: ''
-        top: 50%
-        left: 24px
-        transform: translateY(-50%)
-        width: $sIconSize
-        height: $sIconSize
-        background: url('../../assets/img/iconSearch.svg')
-        background-size: 100% 100%
-      .pInputWrapper
-        background-color: rgba(0, 0, 0, 0.05)
-        border-radius: $sBorderRadius
-        height: 44px
-        .pInput
-          padding-left: 60px
-          @extend .sSBlackRegularFont
-          font-family: 'Inter-Medium'
-          height: 44px
+.tokenListWrapper.assets
   ul.tokens
-    padding-bottom: 62px
-    &.social
-      li.tokenItem
-        gap: 0
-        .innerWrapper
-          .token
-            width: 120px
-          .userName,.createTime
-            // width: 130px
-            width: 133px
-            text-overflow: ellipsis
-            overflow: hidden
-            white-space: nowrap
-          .verified
-            width: 120px
-          .followers
-            width: 110px
-          .posts
-            width: 90px
     li.tokenItem
       position: relative
-      .innerWrapper,.detailWrapper .descItem
+      .detailWrapper .descItem
         @extend .frbc
       .innerWrapper >div,.detailWrapper .descItem >div
-          width: 133.25px
-          text-align: right
-      .innerWrapper
-        margin:  0 -50px
-        // gap: 189px
-        @extend .frbc
-        @extend .sFont
-        font-family: 'Inter-Medium'
-        color: $colLBlack
-        .token
-          @extend .frsc
-          gap: $xxsGap
-          text-align: left
-          >img
-            width: $xsIconSize
-            border-radius: 50%
-      &.th
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1)
-        margin-bottom: 3px
-        .innerWrapper
-          padding: 16px 50px 15px
-          color: $colSBlack
+        width: 133.25px
+        text-align: right
       &.tr
-        margin-top: 10px
-        position: relative
-        &:hover
-          .innerWrapper
-            background: rgba(0, 0, 0, 0.05)
-        .innerWrapper
-          padding: 11px 50px
         .arrowWrapper
           position: absolute
           content: ''
@@ -100,7 +21,7 @@ $col-fall: #27C265
           right: 0
           width: 12px
           height: 12px
-          background-image: url('../../assets/img/iconArrowLeft2.svg')
+          background-image: url('@/assets/img/iconArrowLeft2.svg')
           opacity: 0.4
           background-size: 100% 100%
           cursor: pointer
@@ -128,63 +49,30 @@ $col-fall: #27C265
               .label
                 width:51px
                 text-align: left
-      &.new 
+      &.new
         .innerWrapper
           padding: 11px 95px 11px 50px
         .accountFilterWrapper
           position: absolute
           content: ''
           top: 0
-          right: 0
-          
+          right: 0  
       &.expand
         height: 74px
       &.expandPlus
         height: 104px
-    li.emptyContent
-      padding: 26px 0 32px 0
-      text-align: center
-      @extend .fcsc
-      >img
-        width: 28px
-      >h1
-        padding: 8px 0 4px 0
-        @extend .mFont
-        font-family: 'Inter-SemiBold'
-        color: $colLBlack 
-      >h2
-        font-size: 12px
-        line-height: 20px
-        font-family: 'Inter-Regular'
-        color: $colSBlack
+
 @media (max-width: 1680px)
   .tokenListWrapper
-    padding: 0 44px
-    header
-      padding: 25px 0 16px 0
-      font-size: 20px
-      line-height: 24px
-      font-family: 'Inter-SemiBold'
     ul.tokens
-      padding-bottom: 38px
       li.tokenItem
         .innerWrapper >div,.detailWrapper .descItem >div  
             width: 148px
-        .innerWrapper
-          // gap: 138.66px
-          margin: 0 -44px
-        
         &.th
-          margin-bottom: 12px
-          .innerWrapper
-            padding: 12px 44px 11px
           &.new
             .innerWrapper
               padding: 12px 89px 11px 44px
         &.tr
-          margin-top: 4px
-          .innerWrapper
-            padding: 12px 44px 11px
           &.new
             .innerWrapper
               padding: 11px 89px 11px 44px

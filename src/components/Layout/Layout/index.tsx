@@ -157,7 +157,8 @@ const Layout = () => {
   useEffect(() => {
     window.onscroll = () => {
       console.log(pathname)
-      if (activeSourceType !== 'All') {
+      if (activeSourceType !== 'All' || pathname !== '/datas') {
+        setIsScroll(false)
         return
       }
       var topScroll = document.documentElement.scrollTop || window.pageYOffset;
