@@ -143,3 +143,21 @@ export const TUSD = 'TUSD';
 export const BTC = 'BTC';
 export const LDO = 'LDO';
 export const STABLETOKENLIST = [USDT,USD,USDC,DAI,BUSD,TUSD]
+
+export const EASInfo = {
+  Ethereum : {
+    rpcUrl: 'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+    easContact: '0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587',
+    schemaUid: '',
+  },
+  ArbitrumOne: {
+    rpcUrl: 'https://arb1.arbitrum.io/rpc',
+    easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
+    schemaUid: '',
+  },
+  Sepolia : {
+    rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+    easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
+    schemaUid: '0x72785c9098718a320672387465aba432ea1f2a40e7c2acc67f61ee5d8e7f5b09',
+  },
+};
