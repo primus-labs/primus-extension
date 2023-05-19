@@ -49,16 +49,21 @@ const Layout = () => {
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
       if (message.resMethodName === 'getSysConfig') {
-        console.log('page_get:getSysConfig:', message.res);
-        const configMap = message.res.reduce(
-          (prev: ObjectType, curr: SysConfigItem) => {
-            const { configName, configValue } = curr;
-            prev[configName] = configValue;
-            return prev;
-          },
-          {}
-        );
-        dispatch(setSysConfigAction(configMap));
+        const { res } = message
+        console.log('page_get:getSysConfig:', res);
+        if (res) {
+          const configMap = res.reduce(
+            (prev: ObjectType, curr: SysConfigItem) => {
+              const { configName, configValue } = curr;
+              prev[configName] = configValue;
+              return prev;
+            },
+            {}
+          );
+          dispatch(setSysConfigAction(configMap));
+        } else {
+          alert('getSysConfig network error')
+        }
       }
     };
     padoServicePort.onMessage.addListener(padoServicePortListener);

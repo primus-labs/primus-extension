@@ -40,9 +40,14 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
   };
   const getAllOAuthSources = async () => {
     const padoServicePortListener = async function (message: any) {
+      const { res } = message
       if (message.resMethodName === 'getAllOAuthSources') {
-        console.log('page_get:getAllOAuthSources:', message.res);
-        setOAuthSources(message.res);
+        if (res) {
+          setOAuthSources(res);
+        } else {
+          alert('getAllOAuthSources network error')
+        }
+        console.log('page_get:getAllOAuthSources:', res);
       }
     };
     padoServicePort.onMessage.addListener(padoServicePortListener);

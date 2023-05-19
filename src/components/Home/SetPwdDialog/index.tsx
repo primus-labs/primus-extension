@@ -73,11 +73,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
         const userId = JSON.parse(storedData['userInfo']).id
         const padoServicePortListener = function (message: any) {
           if (message.resMethodName === 'bindUserAddress') {
-            console.log("page_get:bindUserAddress:", message.res);
-            if (message.res) {
+            const { res } = message
+            console.log("page_get:bindUserAddress:", res);
+            if (res) {
               onSubmit()
             } else {
               // loading
+              alert('BindUserAddress network error')
             }
           }
         }

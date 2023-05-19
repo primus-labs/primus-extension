@@ -39,13 +39,18 @@ const TokenTable: React.FC<TokenTableProps> = ({
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: any) {
       if (message.resMethodName === 'getSysConfig') {
+        const { res } = message
         console.log('page_get:getSysConfig:', message.res);
-        const configMap = message.res.reduce((prev: any, curr: any) => {
-          const { configName, configValue } = curr;
-          prev[configName] = configValue;
-          return prev;
-        }, {});
-        dispatch(setSysConfigAction(configMap));
+        if (res) {
+          const configMap = message.res.reduce((prev: any, curr: any) => {
+            const { configName, configValue } = curr;
+            prev[configName] = configValue;
+            return prev;
+          }, {});
+          dispatch(setSysConfigAction(configMap));
+        } else {
+          alert('getSysConfig network error')
+        }
       }
     };
     padoServicePort.onMessage.addListener(padoServicePortListener);
@@ -64,12 +69,13 @@ const TokenTable: React.FC<TokenTableProps> = ({
     if (filterAccount === undefined || filterAccount === 'All') {
       return list;
     }
-    if (filterAccount === 'Spot') {
+    if (filterAccount === 'Spot' && typeof spotAccountTokenMap === 'object') {
       return Object.values(spotAccountTokenMap);
     }
-    if (filterAccount === 'Flexible') {
+    if (filterAccount === 'Flexible' && typeof flexibleAccountTokenMap === 'object') {
       return Object.values(flexibleAccountTokenMap);
     }
+    return list
   }, [list, flexibleAccountTokenMap, spotAccountTokenMap, filterAccount]);
   const activeList = useMemo(() => {
     return (currentList as TokenMap[]).sort((a, b) =>
