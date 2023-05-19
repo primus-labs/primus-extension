@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import type { Dispatch } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -49,7 +49,7 @@ const Layout = () => {
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
       if (message.resMethodName === 'getSysConfig') {
-        const { res } = message
+        const { res } = message;
         console.log('page_get:getSysConfig:', res);
         if (res) {
           const configMap = res.reduce(
@@ -62,7 +62,7 @@ const Layout = () => {
           );
           dispatch(setSysConfigAction(configMap));
         } else {
-          alert('getSysConfig network error')
+          alert('getSysConfig network error');
         }
       }
     };
@@ -164,7 +164,7 @@ const Layout = () => {
         return;
       }
       var topScroll = document.documentElement.scrollTop || window.pageYOffset;
-      if (topScroll >= 83) {
+      if (topScroll >= 1) {
         setIsScroll(true);
       } else {
         setIsScroll(false);
@@ -174,7 +174,13 @@ const Layout = () => {
       window.onscroll = () => {};
     };
   }, [activeSourceType, pathname]);
-
+  const pageHeaderWrapperClassName = useMemo(() => {
+    let activeClassName = 'pageHeaderWrapper';
+    if (isScroll) {
+      activeClassName += ' scroll animate__animated animate__slideInDown';
+    }
+    return activeClassName;
+  }, [isScroll]);
   return (
     <div className="pageApp">
       <BackgroundAnimation />
@@ -183,15 +189,11 @@ const Layout = () => {
           <header className="appHeader">
             <PHeader />
           </header>
-        ) : (
-          <div
-            className={
-              isScroll ? 'pageHeaderWrapper scroll' : 'pageHeaderWrapper'
-            }
-          >
+        ) : 
+          <div className={pageHeaderWrapperClassName}>
             <PageHeader />
           </div>
-        )}
+        }
         <Outlet />
       </div>
     </div>
