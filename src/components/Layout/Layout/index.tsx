@@ -159,7 +159,6 @@ const Layout = () => {
   }, [activeSourceType]);
   useEffect(() => {
     window.onscroll = () => {
-      console.log(pathname);
       if (activeSourceType !== 'All' || pathname !== '/datas') {
         setIsScroll(false);
         return;
