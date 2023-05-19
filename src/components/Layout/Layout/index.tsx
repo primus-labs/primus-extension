@@ -16,7 +16,7 @@ import { setSysConfigAction } from '@/store/actions';
 import useUpdateAllSources from '@/hooks/useUpdateAllSources';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
-import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions'
+import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
 
 import './index.sass';
 type SysConfigItem = {
@@ -109,12 +109,10 @@ const Layout = () => {
   }, []);
   useEffect(() => {
     if (!updating) {
-      dispatch(setExSourcesAsync())
-      dispatch(setSocialSourcesAsync())
+      dispatch(setExSourcesAsync());
+      dispatch(setSocialSourcesAsync());
     }
-
   }, [updating, dispatch]);
-
 
   useEffect(() => {
     getSysConfig();
@@ -149,17 +147,17 @@ const Layout = () => {
       if (document.documentElement.scrollTop > 0) {
         document.documentElement.scrollTo({
           top: 0,
-          behavior: 'smooth'
-        })
+          behavior: 'smooth',
+        });
       }
     }
-  }, [activeSourceType])
+  }, [activeSourceType]);
   useEffect(() => {
     window.onscroll = () => {
-      console.log(pathname)
+      console.log(pathname);
       if (activeSourceType !== 'All' || pathname !== '/datas') {
-        setIsScroll(false)
-        return
+        setIsScroll(false);
+        return;
       }
       var topScroll = document.documentElement.scrollTop || window.pageYOffset;
       if (topScroll >= 83) {
@@ -169,9 +167,9 @@ const Layout = () => {
       }
     };
     return () => {
-      window.onscroll = () => { };
+      window.onscroll = () => {};
     };
-  }, [activeSourceType]);
+  }, [activeSourceType, pathname]);
 
   return (
     <div className="pageApp">
