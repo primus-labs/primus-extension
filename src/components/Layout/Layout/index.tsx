@@ -152,7 +152,7 @@ const Layout = () => {
       if (document.documentElement.scrollTop > 0) {
         document.documentElement.scrollTo({
           top: 0,
-          behavior: 'smooth',
+          // behavior: 'smooth',
         });
       }
     }
@@ -189,11 +189,11 @@ const Layout = () => {
           <header className="appHeader">
             <PHeader />
           </header>
-        ) : 
+        ) : (
           <div className={pageHeaderWrapperClassName}>
             <PageHeader />
           </div>
-        }
+        )}
         <Outlet />
       </div>
     </div>
