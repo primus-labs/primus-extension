@@ -4,6 +4,7 @@ import DataSourceOverview from '@/pages/DataSourceOverview/index.tsx';
 import DataSourceDetail from '@/pages/DataSourceDetail/index.tsx';
 import Lock from '@/pages/Lock/index.jsx';
 import Layout from '@/components/Layout/Layout/index.tsx';
+import Cred from '@/pages/Cred/index.tsx';
 const router = [
   {
     path: "/",
@@ -24,6 +25,10 @@ const router = [
       {
         path: "lock",
         element: <Lock/>,
+      },
+      {
+        path: "cred",
+        element: <Cred/>,
       },
     ]
   },

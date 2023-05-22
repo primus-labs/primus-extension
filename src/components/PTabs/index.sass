@@ -29,11 +29,19 @@ $tabLineHeight: 22px
     @extend .frcc
     gap: $xxsGap
     @extend .mSBlackSemiBoldFont
+    img
+      opacity: 0.6
+    &:hover
+      img
+        opacity: 1
     &.activeTab
       background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
       color: #000000
     &.disabled
       cursor: not-allowed
+      &:hover
+        img
+          opacity: 0.6
     &:not(.disabled):hover
       color: #000000
       background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
@@ -47,8 +55,5 @@ $tabLineHeight: 22px
       font-size: 16px
       line-height: 22px
       gap: 8px
-      &:hover
-        img
-          opacity: 0.6
       img
         width: 18px
