@@ -29,6 +29,7 @@
     "echarts-for-react": "^3.0.2",
     "ethereumjs-util": "^7.1.5",
     "metamask-extension-provider": "^3.0.0",
+    "mini-css-extract-plugin": "^2.7.6",
     "net": "^1.0.2",
     "numeral": "^2.0.6",
     "path-browserify": "^1.0.1",

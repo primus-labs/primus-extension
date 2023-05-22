@@ -9,6 +9,7 @@ var { CleanWebpackPlugin } = require('clean-webpack-plugin');
 var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 var ReactRefreshTypeScript = require('react-refresh-typescript');
 var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 var alias = {
@@ -66,9 +67,10 @@ var options = {
         test: /\.css$/,
         // in the `src` directory
         use: [
-          {
-            loader: 'style-loader',
-          },
+          MiniCssExtractPlugin.loader,
+          // {
+          //   loader: 'style-loader',
+          // },
           {
             loader: 'css-loader',
           },
@@ -79,9 +81,10 @@ var options = {
         test: /\.s[ac]ss$/,
         // in the `src` directory
         use: [
-          {
-            loader: 'style-loader',
-          },
+          MiniCssExtractPlugin.loader,
+          // {
+          //   loader: 'style-loader',
+          // },
           {
             loader: 'css-loader',
           },
@@ -95,15 +98,11 @@ var options = {
       },
       {
         test: new RegExp('.(' + imgFileExtensions.join('|') + ')$'),
-        type: 'asset/resource',
+        type: 'asset',
         exclude: /node_modules/,
-        // loader: 'file-loader',
-        // options: {
-        //   name: '[name].[ext]',
-        // },
         parser: {
           dataUrlCondition: {
-            maxSize: 50 * 1024, // Images smaller than 50kb will be processed by base64
+            maxSize: 10 * 1024, // Images smaller than 10kb will be processed by base64
           },
         },
         generator: {
@@ -310,6 +309,10 @@ var options = {
         default:
           throw new Error(`Not found ${mod}`);
       }
+    }),
+    new MiniCssExtractPlugin({
+      // 定义输出文件名和目录
+      filename: "static/css/main.css",
     }),
   ].filter(Boolean),
   infrastructureLogging: {
