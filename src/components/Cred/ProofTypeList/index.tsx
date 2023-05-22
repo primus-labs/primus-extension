@@ -2,6 +2,7 @@ import React from 'react'
 import iconAssetProof from '@/assets/img/iconAssetsProof.svg'
 import iconTokenHoldings from '@/assets/img/iconTokenHoldings.svg'
 import iconQualifications from '@/assets/img/iconQualifications.svg'
+import './index.sass'
 type CredTypeItemType = {
   icon: any,
   title: string;
@@ -29,9 +30,9 @@ interface CredTypeListProps {
 }
 const ProofTypeList: React.FC<CredTypeListProps> = ({onChange}) => {
  return (<section className="credTypeListWrapper">
-    <ul>
+    <ul className="credTypeList">
       {credTypeList.map(item => <li className="credTypeItem" onClick={() => {onChange(item.title)}}>
-        <img src={item.icon} alt="" />
+        <img className="icon" src={item.icon} alt="" />
         <div className="con">
           <h5 className="title">{item.title}</h5>
           <h6 className="desc">{item.desc}</h6> 

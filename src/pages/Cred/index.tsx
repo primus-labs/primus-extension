@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs';
 import './index.sass';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
-
+import ProofTypeList from '@/components/Cred/ProofTypeList';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
@@ -33,8 +33,7 @@ const Cred = () => {
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <DataSourceSearch />
-        {/* <ProofTypeList onChange={handleChangeProofType} /> */}
-        cred
+        <ProofTypeList onChange={handleChangeProofType} />
       </main>
     </div>
   );
