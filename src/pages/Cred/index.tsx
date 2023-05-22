@@ -5,6 +5,7 @@ import PTabs from '@/components/PTabs';
 import './index.sass';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import ProofTypeList from '@/components/Cred/ProofTypeList';
+import CredList from '@/components/Cred/CredList';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
@@ -34,6 +35,7 @@ const Cred = () => {
         <PTabs onChange={handleChangeTab} />
         <DataSourceSearch />
         <ProofTypeList onChange={handleChangeProofType} />
+        <CredList/>
       </main>
     </div>
   );
