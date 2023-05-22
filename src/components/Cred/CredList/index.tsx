@@ -39,7 +39,7 @@ const credList: CredTypeItemType[] = [
     provided: [iconTool1, iconArbitrum, iconOptimism],
   },
   {
-    type: 'Assets Proof',
+    type: 'Token Holdings',
     icon: iconDataSourceBinance,
     name: 'Binance',
     id: '111',

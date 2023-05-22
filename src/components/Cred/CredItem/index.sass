@@ -7,6 +7,7 @@
   background: rgba(255, 255, 255, 0.3)
   box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.05) // TODO mw
   border-radius: $sBorderRadius
+  position: relative
   .main,.extra
     padding: 14px 18px
   .main
@@ -14,8 +15,11 @@
     gap: $xsGap
     background: linear-gradient(281.12deg, rgba(255, 255, 255, 0.2) -2.79%, rgba(171, 255, 225, 0.16) 58.73%, rgba(120, 222, 255, 0.16) 92.14%)
     box-shadow: inset -3px -3px 4px rgba(233, 233, 233, 0.3), inset 3px 3px 4px rgba(255, 255, 255, 0.6)
+    // transform: rotate(-180deg)
     backdrop-filter: blur(10px)
     border-radius: $sBorderRadius
+    &.tokenHolding
+      background: linear-gradient(281.12deg, rgba(120, 222, 255, 0.16) -2.79%, rgba(171, 255, 225, 0.16) 58.73%, rgba(255, 255, 255, 0.2) 92.14%)
     h1
       padding-bottom: 2px
       font-size: 18px
@@ -46,9 +50,15 @@
       .providedChains,.operations
         @extend .frsc
         gap: $xxsGap
-        >img
+        img
           width: 18px
           cursor: pointer
+        .iconOtherWrapper
+          padding-left: 7px
+          margin-left: -7px
+          @extend .frcc
+        
+
   .extra
     @extend .fcss
     gap: $xsGap
@@ -71,6 +81,32 @@
         .desc
           font-family: 'Inter-Regular'
           color: $colSBlack
+        .con
+          >img
+            width: 14px
+            margin-right: $xxsGap
 
-
-    
+  .dropdown
+    position: absolute
+    z-index: 9999
+    right: 40px
+    top: 108px
+    padding: 12px
+    background: #FFFFFF
+    box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
+    border-radius: 12px
+    @extend .fcss
+    gap: 8px
+    .dropdownItem
+      @extend .frsc
+      cursor: pointer
+      width: 107px
+      height: 28px
+      border-radius: 4px
+      padding-left: 20px
+      font-size: 14px
+      line-height: 17px
+      font-family: 'Inter-Medium'
+      color: $colLBlack
+      &:hover
+        background: rgba(0, 0, 0, 0.05)
