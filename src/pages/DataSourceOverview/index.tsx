@@ -23,6 +23,7 @@ import { postMsg, sub } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react'
 import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions'
+import { ONCHAINLIST } from '@/utils/constants';
 
 export type DataSourceStorages = {
   binance?: any;

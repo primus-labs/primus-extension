@@ -7,33 +7,12 @@ import CreateAttesationDialog from '@/components/DataSourceDetail/CreateAttesati
 import OnChainSucDialog from '@/components/DataSourceDetail/OnChainSucDialog'
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog'
 import './index.sass';
-import iconTool1 from '@/assets/img/iconTool1.svg'
-import iconArbitrum from '@/assets/img/iconArbitrum.svg'
-import iconOptimism from '@/assets/img/iconOptimism.svg'
-import iconMina from '@/assets/img/iconMina.png'
+
 import type { ExDataType } from '@/hooks/useExSource';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
+import {ONCHAINLIST} from '@/utils/constants'
 
-const proveToolList = [
-  {
-    icon: iconTool1,
-    title: 'Tower'
-  },
-  {
-    icon: iconArbitrum,
-    title: 'Arbitrum'
-  },
-  {
-    icon: iconOptimism,
-    title: 'Optimism'
-  },
-  {
-    icon: iconMina,
-    title: 'Mina'
-  },
-
-]
 const DataSourceDetail = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -91,22 +70,49 @@ const DataSourceDetail = () => {
     <div className="pageDataSourceDetail">
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
-        <AssetsDetail onProve={handleProve} assetsProveFlag={assetsProveFlag} userProveFlag={userProveFlag} />
+        <AssetsDetail
+          onProve={handleProve}
+          assetsProveFlag={assetsProveFlag}
+          userProveFlag={userProveFlag}
+        />
       </main>
-      {step === 1 && <CreateAttesationDialog type={activeOperateItem} onClose={handleCloseMask} dataSource={activeSource as DataSourceType} onSubmit={handleSubmitCreateAttesationDialog} />}
-      {step === 2 && <OnChainSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog} activeSource={activeSource as ExDataType} desc="Your attestation is successfully granted!" />}
-      {step === 3 && <TransferToChainDialog
-        onClose={handleCloseMask}
-        onSubmit={handleSubmitTransferToChain}
-        onCancel={handleCancelTransferToChain}
-        title='Provide Attestation'
-        desc='Send your proof to one of the following chain. Provide an on-chain attestation for dApps.'
-        list={proveToolList}
-        tip="Please select one chain to provide attestation"
-        checked={false}
-        backable={false}
-      />}
-      {step === 4 && <OnChainSucDialog onClose={handleCloseMask} onSubmit={onSubmitAddSourceSucDialog2} activeSource={activeSource as ExDataType} desc="Your attestation is recorded on-chain!" />}
+      {step === 1 && (
+        <CreateAttesationDialog
+          type={activeOperateItem}
+          onClose={handleCloseMask}
+          dataSource={activeSource as DataSourceType}
+          onSubmit={handleSubmitCreateAttesationDialog}
+        />
+      )}
+      {step === 2 && (
+        <OnChainSucDialog
+          onClose={handleCloseMask}
+          onSubmit={onSubmitAddSourceSucDialog}
+          activeSource={activeSource as ExDataType}
+          desc="Your attestation is successfully granted!"
+        />
+      )}
+      {step === 3 && (
+        <TransferToChainDialog
+          onClose={handleCloseMask}
+          onSubmit={handleSubmitTransferToChain}
+          onCancel={handleCancelTransferToChain}
+          title="Provide Attestation"
+          desc="Send your proof to one of the following chain. Provide an on-chain attestation for dApps."
+          list={ONCHAINLIST}
+          tip="Please select one chain to provide attestation"
+          checked={false}
+          backable={false}
+        />
+      )}
+      {step === 4 && (
+        <OnChainSucDialog
+          onClose={handleCloseMask}
+          onSubmit={onSubmitAddSourceSucDialog2}
+          activeSource={activeSource as ExDataType}
+          desc="Your attestation is recorded on-chain!"
+        />
+      )}
     </div>
   );
 };

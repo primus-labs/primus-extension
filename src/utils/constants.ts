@@ -1,3 +1,8 @@
+import iconTool1 from '@/assets/img/iconTool1.svg';
+import iconPolygon from '@/assets/img/iconPolygon.svg';
+import iconArbitrum from '@/assets/img/iconArbitrum.svg';
+import iconOptimism from '@/assets/img/iconOptimism.svg';
+import iconMina from '@/assets/img/iconMina.png';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
 import iconDataSourceOKX from '@/assets/img/iconDataSourceOKX.svg';
@@ -10,7 +15,7 @@ import iconDataSourceBybit from '@/assets/img/iconDataSourceBybit.svg';
 import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.svg';
 import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.png';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
-import iconDataSourceYoutube from '@/assets/img/icondataSourceYoutube.svg'
+import iconDataSourceYoutube from '@/assets/img/icondataSourceYoutube.svg';
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -22,14 +27,14 @@ import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
 
 export type ExchangeMeta = {
-  name: string,
-  type: 'Social' | 'Assets',
-  icon: any,
-  requirePassphase?: boolean,
-  constructorF?: any,
+  name: string;
+  type: 'Social' | 'Assets';
+  icon: any;
+  requirePassphase?: boolean;
+  constructorF?: any;
 };
 export type DataSourceMapType = {
-  [propName: string]: ExchangeMeta
+  [propName: string]: ExchangeMeta;
 };
 export const DATASOURCEMAP: DataSourceMapType = {
   binance: {
@@ -113,7 +118,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     name: 'Youtube',
     type: 'Social',
     icon: iconDataSourceYoutube,
-  }
+  },
 };
 
 export const CHARTCOLORS = [
@@ -128,7 +133,7 @@ export const CHARTCOLORS = [
   '#6FD85D',
   '#BFD85D',
   '#EDC45A',
-  '#ED8F5A'
+  '#ED8F5A',
 ];
 
 export const ExchangeStoreVersion = '1.0.0';
@@ -142,10 +147,10 @@ export const BUSD = 'BUSD';
 export const TUSD = 'TUSD';
 export const BTC = 'BTC';
 export const LDO = 'LDO';
-export const STABLETOKENLIST = [USDT,USD,USDC,DAI,BUSD,TUSD]
+export const STABLETOKENLIST = [USDT, USD, USDC, DAI, BUSD, TUSD];
 
 export const EASInfo = {
-  Ethereum : {
+  Ethereum: {
     rpcUrl: 'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
     easContact: '0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587',
     schemaUid: '',
@@ -155,9 +160,33 @@ export const EASInfo = {
     easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
     schemaUid: '',
   },
-  Sepolia : {
+  Sepolia: {
     rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
     easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
-    schemaUid: '0x72785c9098718a320672387465aba432ea1f2a40e7c2acc67f61ee5d8e7f5b09',
+    schemaUid:
+      '0x72785c9098718a320672387465aba432ea1f2a40e7c2acc67f61ee5d8e7f5b09',
   },
 };
+
+export const ONCHAINLIST = [
+  {
+    icon: iconTool1,
+    title: 'Tower',
+  },
+  {
+    icon: iconPolygon,
+    title: 'Tower2',
+  },
+  {
+    icon: iconArbitrum,
+    title: 'Arbitrum',
+  },
+  {
+    icon: iconOptimism,
+    title: 'Optimism',
+  },
+  {
+    icon: iconMina,
+    title: 'Mina',
+  },
+];

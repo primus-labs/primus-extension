@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
+import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
+
 import rightArrow from '@/assets/img/rightArrow.svg';
 import './index.sass';
 
@@ -18,7 +20,8 @@ interface TransferToChainDialogProps {
   showButtonSuffixIcon?: boolean;
   tip: string;
   checked?: boolean;
-  backable?:boolean;
+  backable?: boolean;
+  headerType?: string;
 }
 
 const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
@@ -32,7 +35,8 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
     showButtonSuffixIcon = false,
     tip,
     checked = true,
-    backable = true
+    backable = true,
+    headerType = 'dataSource',
   } = props;
   const [activeTool, setActiveTool] = useState<ToolItem>();
   const [activeName, setActiveName] = useState<string>();
@@ -66,9 +70,22 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
 
   return (
     <PMask onClose={onClose}>
-      <div className="padoDialog TransferToChainDialog">
+      <div
+        className={
+          headerType === 'attestation'
+            ? 'padoDialog TransferToChainDialog'
+            : 'padoDialog TransferToChainDialog attestationUpChainDialog'
+        }
+      >
         <main>
-          <AuthInfoHeader onBack={handleClickBack} checked={checked} backable={backable}/>
+          {headerType === 'dataSource' && (
+            <AuthInfoHeader
+              onBack={handleClickBack}
+              checked={checked}
+              backable={backable}
+            />
+          )}
+          {headerType === 'attestation' && <AddressInfoHeader />}
           <h1>{title}</h1>
           <h2>{desc}</h2>
           <h6>Continue with</h6>
@@ -106,11 +123,11 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
           </ul>
         </main>
         <button className="nextBtn" onClick={handleClickNext}>
-          {errorTip && 
+          {errorTip && (
             <div className="tipWrapper">
               <div className="errorTip">{errorTip}</div>
             </div>
-          }
+          )}
           <span>Next</span>
           {showButtonSuffixIcon && <img src={rightArrow} alt="" />}
         </button>

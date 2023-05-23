@@ -7,15 +7,17 @@ import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import ProofTypeList from '@/components/Cred/ProofTypeList';
 import AttestationDialog from '@/components/Cred/AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
+import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
 
 import CredList from '@/components/Cred/CredList';
+import type {CredTypeItemType} from '@/components/Cred/CredItem';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type {ActiveRequestType} from '@/pages/DataSourceOverview'
-
+import {ONCHAINLIST} from '@/utils/constants'
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const [step, setStep] = useState(0);
@@ -65,13 +67,22 @@ const Cred = () => {
       return;
     } 
   };
+  const handleUpChain = (item: CredTypeItemType) => {
+    setStep(3);
+  };
+  const handleSubmitTransferToChain = () => {
+    setStep(4);
+  };
+  const handleCancelTransferToChain = () => {
+    
+  };
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <DataSourceSearch />
         <ProofTypeList onChange={handleChangeProofType} />
-        <CredList />
+        <CredList onUpChain={handleUpChain} />
         {step === 1 && (
           <AttestationDialog
             type={activeAttestationType}
@@ -87,6 +98,20 @@ const Cred = () => {
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
+            headerType="attestation"
+          />
+        )}
+        {step === 3 && (
+          <TransferToChainDialog
+            onClose={handleCloseMask}
+            onSubmit={handleSubmitTransferToChain}
+            onCancel={handleCancelTransferToChain}
+            title="Provide Attestation"
+            desc="Send your proof to one of the following chain. Provide an on-chain attestation for dApps."
+            list={ONCHAINLIST}
+            tip="Please select one chain to provide attestation"
+            checked={false}
+            backable={false}
             headerType="attestation"
           />
         )}

@@ -19,28 +19,32 @@ export type CredTypeItemType = {
 
 interface CredTypeListProps {
   item: CredTypeItemType;
+  onUpChain: (item: CredTypeItemType) => void;
 }
-const CredItem: React.FC<CredTypeListProps> = ({ item }) => {
+const CredItem: React.FC<CredTypeListProps> = ({ item, onUpChain }) => {
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [expand, setExpand] = useState(false);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
-  const [activeItem,setActiveItem] = useState<string>()
+  const [activeItem, setActiveItem] = useState<string>();
   const [navs, setNavs] = useState(['Update', 'Delete']);
   const handleClick = () => {
     setExpand((flag) => !flag);
   };
   const handleClickOther = () => {};
   const handleClickDropdownItem = (item: string) => {
-    setActiveItem(item)
+    setActiveItem(item);
   };
   const handleEnterAvatar = () => {
     setDorpdownVisible(true);
   };
   const handleLeaveAvatar = () => {
     setDorpdownVisible(false);
+  };
+  const handleUpChain = () => {
+    onUpChain(item);
   };
   useEffect(() => {
     if (item.expand) {
@@ -80,7 +84,7 @@ const CredItem: React.FC<CredTypeListProps> = ({ item }) => {
             ))}
           </div>
           <div className="operations">
-            <img src={iconUpChain} alt="" />
+            <img src={iconUpChain} alt="" onClick={handleUpChain} />
             <img src={iconQRCode} alt="" />
             <div
               className="iconOtherWrapper"

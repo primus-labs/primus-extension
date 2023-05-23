@@ -50,17 +50,21 @@ const credList: CredTypeItemType[] = [
 ];
 interface CredTypeListProps {
   onChange?: (item: CredTypeItemType) => void;
+  onUpChain: (item: CredTypeItemType) => void;
 }
-const ProofTypeList: React.FC<CredTypeListProps> = ({ onChange }) => {
+const ProofTypeList: React.FC<CredTypeListProps> = ({
+  onChange,
+  onUpChain,
+}) => {
   const activeList = useMemo(() => {
-    if(credList.length <= 3) {
-      return credList.map(i => {
-        i.expand = true
-        return i
-      })
+    if (credList.length <= 3) {
+      return credList.map((i) => {
+        i.expand = true;
+        return i;
+      });
     }
-    return credList
-  }, [credList])
+    return credList;
+  }, [credList]);
   return (
     <section className="credListWrapper">
       <header className="credListHeader">
@@ -79,7 +83,7 @@ const ProofTypeList: React.FC<CredTypeListProps> = ({ onChange }) => {
       </header>
       {credList.length > 0 && (
         <ul className="credList">
-          {activeList.map((item,index) => (
+          {activeList.map((item, index) => (
             <li
               className="credTypeItemWrapper"
               onClick={() => {
@@ -87,7 +91,7 @@ const ProofTypeList: React.FC<CredTypeListProps> = ({ onChange }) => {
               }}
               key={index}
             >
-              <CredItem item={item} />
+              <CredItem item={item} onUpChain={onUpChain} />
             </li>
           ))}
         </ul>
