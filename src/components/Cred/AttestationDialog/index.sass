@@ -1,0 +1,247 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pDialog.sass'
+
+.attestationDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  main
+    width: 100%
+    @extend .fcss
+    gap: $xlGap
+    h1
+      @extend .frsc
+      gap: $xxsGap
+      align-self: center
+      @extend .xlLBlackBoldFont
+      img
+        width: 32px
+        cursor: pointer
+    h2
+      @extend .sSBlackRegularFont
+      line-height: 26px
+    .scrollList
+      width: calc( 100% + 38px )
+      height: 332px
+      overflow-y: auto
+      overflow-x: hidden
+      &::-webkit-scrollbar
+        width: 6px
+        height: 300px
+      &::-webkit-scrollbar-thumb
+        background: rgba(0, 0, 0, 0.2)
+        border-radius: $xxLBorderRadius
+      .contItem
+          @extend .fcss
+          gap: $xxsGap
+          padding-top: 18px
+          &.contItemAssets
+            gap: 14px
+          .label
+            font-size: 18px
+            line-height: 26px
+            font-family: 'Inter-SemiBold'
+            color: $colLBlack
+          .value
+            @extend .frsc
+            gap: $xxsGap
+            .desc
+              font-size: 16px
+              line-height: 34px
+              font-family: 'Inter-Medium'
+              color: $colSBlack
+            
+            .con
+              padding: 7px 22px
+              @extend .frcc
+              font-size: 16px
+              line-height: 19px
+              font-family: 'Inter-SemiBold'
+              color: $colMBlack
+            .pSelectWrapper
+              .pSelect
+                width: 115px
+                height: 34px
+                .selectInput
+                  line-height: 34px
+                  background: rgba(0, 0, 0, 0.05)
+                  backdrop-filter: blur(16px)
+                  border-radius: 8px
+                  padding: 0 10.5px 0 11.5px
+                  &:before
+                    right: 0
+                  >img
+                    width: 18px
+                    margin-right: 8px
+                .selectOptionswrapper
+                  padding-top: 6px
+                  max-height: 146px
+                  overflow-y: auto
+                  box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
+                  border-radius: 12px
+                  width: calc( 100% - 5px )
+                  &::-webkit-scrollbar
+                    width: 2px
+                    height: 110px
+                    position: relative
+                    left: 5px
+                  &::-webkit-scrollbar-thumb
+                    background: rgba(0, 0, 0, 0.2)
+                    border-radius: $xxLBorderRadius
+                    position: relative
+                    left: -15px
+                  .selectOptions
+                    box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
+                    border-radius: 12px
+                    gap: 0
+                    .selectOption
+                      height: 26px
+                      border-radius: 8px
+                      font-size: 12px
+                      line-height: 15px
+                      font-family: 'Inter-Medium'
+                      color: $colLBlack
+                      @extend .frsc
+                      gap: $xxsGap
+                      padding-left: 6px
+                      &:hover
+                        background: rgba(0, 0, 0, 0.05)
+                      >img
+                        width: 14px
+
+                
+      ul.dataList
+        width: 100%
+        display: flex
+        flex-wrap: wrap
+        gap: $sGap
+        li
+          cursor: pointer
+          width: 156px
+          height: 150px
+          padding: 28px 12px
+          background: rgba(0, 0, 0, 0.05)
+          backdrop-filter: blur(18.1333px)
+          border-radius: 12px
+          @extend .fccc
+          gap: 6px
+          &:hover
+            padding: 14px 2px
+            background: #FFFFFF
+            border: 2PX solid transparent
+            background-clip: padding-box, border-box
+            background-origin: padding-box, border-box
+            background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+            position: relative
+          &.active
+            padding: 14px 2px
+            background: #FFFFFF
+            border: 2PX solid transparent
+            background-clip: padding-box, border-box
+            background-origin: padding-box, border-box
+            background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+            position: relative
+            &:after
+              position: absolute
+              content: ''
+              right: 6px
+              bottom: 6px
+              width: 24px
+              height: 24px
+              background: url('../../../assets/img/iconSuc.svg')
+              background-size: 100% 100%
+          img
+            width: 48px
+          .desc
+            font-size: 14px
+            line-height: 16px
+            font-family: 'Inter-Bold'
+            color: $colLBlack
+            padding: 13px 0 1px
+            max-width: 132px
+            // text-align: center
+            text-overflow: ellipsis
+            overflow: hidden
+            white-space: nowrap
+            position: relative
+          .desc[title]:hover:after
+            position: absolute
+            content: attr(title)
+            z-index: 99999
+            padding: 6px 12px
+            left: -16px
+            top: -44px
+              // white-space: nowrap
+            background: $colSBlack
+            backdrop-filter: blur(16px)
+            border-radius: 12px
+            color: #fff
+            font-size: 14px
+            line-height: 16px
+          h6
+            font-family: 'Inter-Medium'
+            font-size: 12px
+            line-height: 16px
+            color: $colLBlack
+  button.nextBtn
+    height: 58px !important
+    position: relative
+    .tipWrapper
+      position: absolute
+      content: ''
+      top: -49px
+      left: 50%
+      transform: translateX(-50%)
+      width: 100%
+      text-align: center
+      .errorTip
+        width: fit-content
+        margin: 0 auto
+        padding: 0 12px
+        @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
+        font-size: 12px
+        line-height: 25px
+        font-family: 'Inter-Regualr'
+        color: rgba(0,0,0,0.4)
+@media (max-width: 1680px)
+  .attestationDialog
+    padding: 48px 42px 32px
+    main
+      gap: 0
+      h1
+        font-size: 30px
+        line-height: 36px
+        font-family:'Inter-SemiBold'
+      h2
+        font-size: 12px
+        line-height: 18px
+        font-family: 'Inter-Regular'
+        color: $colSBlack
+        padding-top: 12px
+      .scrollList
+        width: calc( 100% + 34px )
+        height: 328px
+        &::-webkit-scrollbar
+          height: 250px
+        ul.dataList
+          column-gap: 21px
+          row-gap: 14px
+          li
+            cursor: pointer
+            width: 88px
+            height: 85px
+            padding: 18px 2px
+            &.active
+              padding: 16px 0px
+              &:after
+                right: 6px
+                bottom: 6px
+                width: 12px
+                height: 12px
+            img
+              width: 28px
+            .desc
+              padding: 11px 0 1px
+              font-family:'Inter-SemiBold'
+    button.nextBtn
+      height: 48px !important
+      font-family: 'Inter-SemiBold' !important

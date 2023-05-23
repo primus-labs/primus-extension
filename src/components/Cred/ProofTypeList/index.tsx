@@ -7,6 +7,7 @@ type CredTypeItemType = {
   icon: any,
   title: string;
   desc: string;
+  disabled?: boolean
 }
 const credTypeList:CredTypeItemType[] = [
   {
@@ -23,15 +24,22 @@ const credTypeList:CredTypeItemType[] = [
     icon: iconQualifications,
     title: 'Qualifications',
     desc: 'Proof user level or verification status.',
+    disabled: true
   },
 ]
 interface CredTypeListProps {
   onChange: (title: string) => void
 }
 const ProofTypeList: React.FC<CredTypeListProps> = ({onChange}) => {
+  const handleChange = (item:CredTypeItemType) => {
+    if (item.disabled) {
+      return
+    }
+    onChange(item.title)
+  }
  return (<section className="credTypeListWrapper">
     <ul className="credTypeList">
-      {credTypeList.map(item => <li className="credTypeItem" onClick={() => {onChange(item.title)}}>
+      {credTypeList.map(item => <li className={item.disabled?"credTypeItem disabled": "credTypeItem"} onClick={() => {handleChange(item)}}>
         <img className="icon" src={item.icon} alt="" />
         <div className="con">
           <h5 className="title">{item.title}</h5>
