@@ -177,7 +177,7 @@ const Layout = () => {
   const pageHeaderWrapperClassName = useMemo(() => {
     let activeClassName = 'pageHeaderWrapper';
     if (isScroll) {
-      activeClassName += ' scroll animate__animated animate__slideInDown';
+      activeClassName += ' scroll';
     }
     return activeClassName;
   }, [isScroll]);
