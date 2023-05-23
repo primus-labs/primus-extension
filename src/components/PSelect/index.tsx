@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { MouseEvent } from 'react';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
-
+import iconArrowBottom from '@/assets/img/iconArrowLeft2.svg';
+import iconClear from '@/assets/img/iconClear.svg';
 import './index.sass';
 
 type OptionItem = {
@@ -32,9 +33,9 @@ const PSelect: React.FC<PSelectProps> = ({
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
   const selectInputEl = useRef(null);
-  const handleChange = (item: OptionItem) => {
+  const handleChange = (item: OptionItem | undefined) => {
     // setActiveOption(item)
-    onChange(item.value);
+    onChange(item?.value ?? '');
   };
   const handleClickSelect = () => {
     setOptionsVisible((visible) => !visible);
@@ -66,8 +67,21 @@ const PSelect: React.FC<PSelectProps> = ({
         onMouseEnter={handleEnterAvatar}
         onMouseLeave={handleLeaveAvatar}
       >
-        {showIcon && <img src={`${tokenLogoPrefix}icon${val}.png`} alt="" />}
-        <span>{val}</span>
+        {val && showIcon && (
+          <img src={`${tokenLogoPrefix}icon${val}.png`} alt="" />
+        )}
+        {val && <span>{val}</span>}
+        {!val && <span>Select</span>}
+        {val && showIcon ? (
+          <img
+            className="suffix"
+            src={iconClear}
+            alt=""
+            onClick={() => handleChange(undefined)}
+          />
+        ) : (
+          <img className="suffix arrow" src={iconArrowBottom} alt="" />
+        )}
       </div>
       {optionsVisible && (
         <div

@@ -66,18 +66,19 @@
                   background: rgba(0, 0, 0, 0.05)
                   backdrop-filter: blur(16px)
                   border-radius: 8px
-                  padding: 0 10.5px 0 11.5px
-                  &:before
-                    right: 0
+                  padding: 0 12px 0 11.5px
+                  @extend .frsc
+                  gap: $xxsGap
+                  .suffix
+                    right: 12px
                   >img
                     width: 18px
-                    margin-right: 8px
                 .selectOptionswrapper
                   padding-top: 6px
                   max-height: 146px
                   overflow-y: auto
                   box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
-                  border-radius: 12px
+                  border-radius: $sBorderRadius
                   width: calc( 100% - 5px )
                   &::-webkit-scrollbar
                     width: 2px
@@ -91,7 +92,7 @@
                     left: -15px
                   .selectOptions
                     box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
-                    border-radius: 12px
+                    border-radius: $sBorderRadius
                     gap: 0
                     .selectOption
                       height: 26px
@@ -107,7 +108,20 @@
                         background: rgba(0, 0, 0, 0.05)
                       >img
                         width: 14px
-
+          .emptyContent
+            width: 416px
+            padding-top: 40px 
+            @extend .fcsc
+            gap: 12px
+            >img
+              width: 60px
+            >h2
+              width: 289px
+              text-align: center
+              font-size: 12px
+              line-height: 18px
+              font-family: 'Inter-Regular'
+              color: $colSBlack
                 
       ul.dataList
         width: 100%
@@ -121,10 +135,10 @@
           padding: 28px 12px
           background: rgba(0, 0, 0, 0.05)
           backdrop-filter: blur(18.1333px)
-          border-radius: 12px
+          border-radius: $sBorderRadius
           @extend .fccc
           gap: 6px
-          &:hover
+          &.excitable,&:not(.disabled):hover
             padding: 14px 2px
             background: #FFFFFF
             border: 2PX solid transparent
@@ -132,6 +146,8 @@
             background-origin: padding-box, border-box
             background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
             position: relative
+          &.disabled
+            cursor: not-allowed
           &.active
             padding: 14px 2px
             background: #FFFFFF
@@ -173,7 +189,7 @@
               // white-space: nowrap
             background: $colSBlack
             backdrop-filter: blur(16px)
-            border-radius: 12px
+            border-radius: $sBorderRadius
             color: #fff
             font-size: 14px
             line-height: 16px
@@ -185,6 +201,10 @@
   button.nextBtn
     height: 58px !important
     position: relative
+    &.gray
+      background: rgba(0, 0, 0, 0.05)
+      &:hover
+       background: rgba(0, 0, 0, 0.05) 
     .tipWrapper
       position: absolute
       content: ''

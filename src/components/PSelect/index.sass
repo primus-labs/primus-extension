@@ -51,23 +51,24 @@ $sSelectInput: 48px
     position: relative
     cursor: pointer
     &:hover
-      &::before
+      .suffix
         opacity: 0.8
-    &:before
+    .suffix
       position: absolute
       content: ''
       top: 50%
-      transform: translateY(-50%)  rotate(-90deg)
-      background-image: url('../../assets/img/iconArrowLeft2.svg')
+      right: 26px
+      transform: translateY(-50%)
       opacity: 0.4
-      background-size: 100% 100%
+      width: 24px
+    .arrow
+      transform: translateY(-50%)  rotate(-90deg)
   .selectOptionswrapper
     position: absolute
     width: 100%
     z-index: 1
     padding-top: 8px
   .selectOptions
-    
     display: flex
     flex-direction: column
     background: #fff

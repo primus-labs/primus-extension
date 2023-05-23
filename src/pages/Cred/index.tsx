@@ -17,7 +17,7 @@ import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesD
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const [step, setStep] = useState(0);
-  const [activeAttestationType, setActiveAttestationType] = useState<string>();
+  const [activeAttestationType, setActiveAttestationType] = useState<string>('');
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );

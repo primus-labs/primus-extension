@@ -48,7 +48,7 @@ const CredItem: React.FC<CredTypeListProps> = ({ item }) => {
     }
   }, [item]);
   return (
-    <div className="credItem">
+    <div className={expand ? 'credItem expand' : 'credItem'}>
       <div
         className={item.type === 'Assets Proof' ? 'main' : 'main tokenHolding'}
         onClick={handleClick}
@@ -103,7 +103,9 @@ const CredItem: React.FC<CredTypeListProps> = ({ item }) => {
               <li
                 key={item}
                 className="dropdownItem"
-                onClick={() => {handleClickDropdownItem(item)}}
+                onClick={() => {
+                  handleClickDropdownItem(item);
+                }}
               >
                 {item}
               </li>

@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import PMask from '@/components/PMask'
 import { DATASOURCEMAP } from '@/utils/constants';
 import type { ExchangeMeta } from '@/utils/constants';
 import type {DataFieldItem} from '@/components/DataSourceOverview/DataSourcesDialog'
 import PSelect from '@/components/PSelect';
+import iconInfoGray from '@/assets/img/iconInfoGray.svg';
+
 
 import type { UserState } from '@/store/reducers';
 
@@ -36,6 +39,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState<DataFieldItem>();
   const [activeToken, setActiveToken] = useState<string>('');
   const [errorTip, setErrorTip] = useState<string>();
@@ -56,7 +60,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
         name,
         icon,
         type,
-        requirePassphase
+        requirePassphase,
       };
       return infoObj;
     });
@@ -87,21 +91,69 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
     }));
     return formatList;
   }, [exSources, activeItem, tokenLogoPrefix]);
+  const activeSourceList = useMemo(() => {
+    if (activeToken) {
+      const reduceF = (prev: string[], curr: any) => {
+        const { tokenListMap, name } = curr;
+        const curTokenList = Object.keys(tokenListMap);
+        if (curTokenList.includes(activeToken)) {
+          prev.push(name);
+        }
+        return prev;
+      };
+      const alist = Object.values(exSources).reduce(reduceF, []);
+      return alist;
+    } else {
+      return [];
+    }
+  }, [exSources, activeToken]);
   const handleChangeSelect = (val: string) => {
-    setActiveToken(val)
+    if (!val) {
+      setActiveItem(undefined);
+    }
+    setActiveToken(val);
   };
 
   const handleClickNext = () => {
-    if (!activeItem) {
+    if (list.length === 0) {
+      onSubmit(undefined);
+      navigate('/datas')
+    }
+    if (list.length > 0 && !activeItem) {
       setErrorTip('Please select one data source');
       return;
+    } else {
+      onSubmit(activeItem);
     }
-    onSubmit(activeItem);
   };
 
   const handleClickData = (item: DataFieldItem) => {
-    setActiveItem(item);
+    if (
+      (activeSourceList.length > 0 &&
+        activeSourceList.includes(item.name) &&
+        !activeItem) ||
+      activeSourceList.length === 0
+    ) {
+      setActiveItem(item);
+    }
   };
+  const liClassName = useCallback(
+    (item: DataFieldItem) => {
+      let defaultClassName = 'networkItem';
+      if (activeSourceList.length > 0) {
+        if (activeSourceList.includes(item.name) && !activeItem) {
+          defaultClassName += ' excitable';
+        } else {
+          defaultClassName += ' disabled';
+        }
+      }
+      if (activeItem?.name === item.name) {
+        defaultClassName += ' active';
+      }
+      return defaultClassName;
+    },
+    [activeItem, activeSourceList]
+  );
 
   return (
     <PMask onClose={onClose}>
@@ -129,37 +181,53 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
             </div>
             <div className="contItem contItemAssets">
               <div className="label">Source of assets:</div>
-              <ul className="dataList">
-                {list.map((item) => {
-                  return (
-                    <li
-                      className={
-                        activeItem?.name === item.name
-                          ? 'networkItem active'
-                          : 'networkItem'
-                      }
-                      key={item.name}
-                      onClick={() => {
-                        handleClickData(item);
-                      }}
-                    >
-                      <img src={item.icon} alt="" />
-                      <h6>{item.name}</h6>
-                    </li>
-                  );
-                })}
-              </ul>
+              {list.length > 0 && (
+                <ul className="dataList">
+                  {list.map((item) => {
+                    return (
+                      <li
+                        className={liClassName(item)}
+                        key={item.name}
+                        onClick={() => {
+                          handleClickData(item);
+                        }}
+                      >
+                        <img src={item.icon} alt="" />
+                        <h6>{item.name}</h6>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {list.length === 0 && (
+                <div className="emptyContent">
+                  <img src={iconInfoGray} alt="" />
+                  <h2>
+                    You haven’t connected any data sources yet. Please go to the
+                    Data page to add some.
+                  </h2>
+                </div>
+              )}
             </div>
           </div>
         </main>
-        <button className="nextBtn" onClick={handleClickNext}>
-          {errorTip && (
-            <div className="tipWrapper">
-              <div className="errorTip">{errorTip}</div>
-            </div>
-          )}
-          <span>Next</span>
-        </button>
+        {list.length === 0 ? (
+          <button className="nextBtn gray" onClick={handleClickNext}>
+            <span>OK</span>
+          </button>
+        ) : (
+          <button
+            className='nextBtn'
+            onClick={handleClickNext}
+          >
+            {errorTip && (
+              <div className="tipWrapper">
+                <div className="errorTip">{errorTip}</div>
+              </div>
+            )}
+            <span>Next</span>
+          </button>
+        )}
       </div>
     </PMask>
   );
