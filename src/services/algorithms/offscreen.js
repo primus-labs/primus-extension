@@ -19,10 +19,10 @@ function init() {
     console.log('init res', res);
     return res;
 }
-function getAttestation() {
+function getAttestation(req_obj) {
     console.log("\ngetAttestation");
     // make a request json
-    var req_obj = {
+    /*var req_obj = {
         requestid: "1", // unique
         version: "1.0.0",
         proxyUrl: "ws://127.0.0.1:9000",
@@ -60,7 +60,7 @@ function getAttestation() {
                 falseHash: "0x092c22fe27704e9b0c9b58550e78cb53b621930844a8008fc8a644aaccb0fa43"
             }
         }
-    }
+    }*/
     var json_str = JSON.stringify(req_obj);
     const Module_getAttestation = Module.cwrap('getAttestation', 'string', ['string']);
     const res = Module_getAttestation(json_str);
@@ -89,7 +89,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const res = init();
         chrome.runtime.sendMessage({ resType: 'algorithm', resMethodName: 'init', res: res });
     } else if (message.type === 'algorithm' && message.method === 'getAttestation') {
-        const res = getAttestation();
+        const res = getAttestation(message.params);
         chrome.runtime.sendMessage({ resType: 'algorithm', resMethodName: 'getAttestation', res: res });
     } else if (message.type === 'algorithm' && message.method === 'getAttestationResult') {
         const res = getAttestationResult();

@@ -30,6 +30,59 @@ let EXCHANGEINFO = {
 export function clear() {
   EXCHANGEINFO = {};
 }
+
+export async function sign(exchangeName, data, port, USERPASSWORD) {
+  const message = {
+    type: `sign-${exchangeName}`,
+    params: {}
+  };
+  const exchange = await getExchange(message, port, USERPASSWORD);
+  const res = exchange.ex.exchange.sign(data.path, data.api, data.method, data.params, data.headers, data.body);
+  EXCHANGEINFO[exchangeName] = exchange.exParams;
+  return res;
+}
+
+const getExchange = async (message, port, USERPASSWORD) => {
+  var {
+    type,
+    params: { apiKey},
+  } = message;
+  const exchangeName = type.split('-')[1];
+  console.log('getExchange exData type:', type);
+  // get ex constructor params
+  let exParams = {};
+  if (apiKey) {
+    exParams = message.params;
+  } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
+    exParams = EXCHANGEINFO[exchangeName];
+  } else {
+    const cipherData = await chrome.storage.local.get(
+      exchangeName + 'cipher'
+    );
+    if(!USERPASSWORD) {
+      postMsg(port,{
+        resType: 'lock',
+      })
+    }
+    if (cipherData) {
+      try {
+        const apiKeyInfo = JSON.parse(
+          decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
+        );
+        exParams = { ...apiKeyInfo };
+      } catch (err) {
+        console.log('decrypt', err);
+      }
+    }
+  }
+
+  // request ex data
+  const exchangeInfo = DATASOURCEMAP[exchangeName];
+  const constructorF = exchangeInfo.constructorF;
+  const ex = new constructorF(exParams);
+  return {ex: ex, exParams: exParams };
+}
+
 const processNetworkReq = async (message, port, USERPASSWORD) => {
   var {
     type,
@@ -46,40 +99,11 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
     case 'set-bybit':
     case 'set-gate':
     case 'set-mexc':
-      console.log('exData type:', type)
+      console.log('exData type:', type);
       try{
-        // get ex constructor params
-        let exParams = {};
-        if (apiKey) {
-          exParams = message.params;
-        } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
-          exParams = EXCHANGEINFO[exchangeName];
-        } else {
-          const cipherData = await chrome.storage.local.get(
-            exchangeName + 'cipher'
-          );
-          // console.log('Ready to decrypt:', USERPASSWORD)
-          if(!USERPASSWORD) {
-            postMsg(port,{
-              resType: 'lock',
-            })
-          }
-          if (cipherData) {
-            try {
-              const apiKeyInfo = JSON.parse(
-                decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
-              );
-              exParams = { ...apiKeyInfo };
-            } catch (err) {
-              console.log('decrypt', err);
-            }
-          }
-        }
-        
-        // request ex data
-        const exchangeInfo = DATASOURCEMAP[exchangeName];
-        const constructorF = exchangeInfo.constructorF;
-        const ex = new constructorF(exParams);
+        const exchange = await getExchange(message, port, USERPASSWORD);
+        const ex = exchange.ex;
+        const exParams =exchange.exParams;
         await ex.getInfo();
         // compute changes from last time => pnl
         let storageRes = await chrome.storage.local.get(exchangeName);
