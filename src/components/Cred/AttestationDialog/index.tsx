@@ -17,7 +17,7 @@ import './index.sass';
 interface AttestationDialogProps {
   type: string;
   onClose: () => void;
-  onSubmit: (item: DataFieldItem) => void;
+  onSubmit: (item: DataFieldItem, token: string) => void;
   onCheck?: () => void;
   // onCancel: () => void
 }
@@ -26,12 +26,12 @@ const proofDescMap = {
   'Assets Proof': {
     title: 'Assets Proof',
     desc: 'Proof you have a certain amount of assets, which may come from bank deposits or from an crypto exchange balance. PADO uses TLS-MPC to validate your data authenticity.',
-    content: 'Assets balance greater than:',
+    content: 'Assets balance greater than',
   },
   'Token Holdings': {
     title: 'Token Holdings',
     desc: 'Proof that you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
-    content: 'Hold this kind of Token:',
+    content: 'Hold this kind of Token',
   },
 };
 const AttestationDialog: React.FC<AttestationDialogProps> = ({
@@ -116,15 +116,20 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
 
   const handleClickNext = () => {
     if (list.length === 0) {
-      onSubmit(undefined);
       navigate('/datas')
     }
-    if (list.length > 0 && !activeItem) {
-      setErrorTip('Please select one data source');
-      return;
-    } else {
-      onSubmit(activeItem);
+    if (list.length > 0) {
+      if (!activeItem) {
+        setErrorTip('Please select one data source');
+        return;
+      } else if (type === 'Token Holdings' && !activeToken) {
+        setErrorTip('Please select one token');
+        return;
+      } else {
+        onSubmit(activeItem as DataFieldItem, activeToken);
+      }
     }
+    
   };
 
   const handleClickData = (item: DataFieldItem) => {
@@ -163,7 +168,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
           <h2>{activeProof.desc}</h2>
           <div className="scrollList">
             <div className="contItem">
-              <div className="label">Proof content:</div>
+              <div className="label">Proof content</div>
               <div className="value">
                 <div className="desc">{activeProof.content}</div>
                 {type === 'Assets Proof' && <div className="con">$1,000</div>}
@@ -180,7 +185,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
               </div>
             </div>
             <div className="contItem contItemAssets">
-              <div className="label">Source of assets:</div>
+              <div className="label">Source of assets</div>
               {list.length > 0 && (
                 <ul className="dataList">
                   {list.map((item) => {

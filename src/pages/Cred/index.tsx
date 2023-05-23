@@ -6,13 +6,15 @@ import './index.sass';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import ProofTypeList from '@/components/Cred/ProofTypeList';
 import AttestationDialog from '@/components/Cred/AttestationDialog';
+import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
+
 import CredList from '@/components/Cred/CredList';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
-
+import type {ActiveRequestType} from '@/pages/DataSourceOverview'
 
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
@@ -22,6 +24,8 @@ const Cred = () => {
     (state: UserState) => state.padoServicePort
   );
   const navigate = useNavigate();
+  const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
+
 
   const handleChangeTab = (val: string) => {
     if (val === 'Data') {
@@ -35,21 +39,31 @@ const Cred = () => {
     setStep(1)
     setActiveAttestationType(title)
   };
-const handleCloseMask = () => {
-  setStep(0);
-};
+  const handleCloseMask = () => {
+    setStep(0);
+  };
   
-  const onSubmitAttestationDialog = async (item: DataFieldItem) => {
-    setStep(1.5);
-    // if (item.type === 'Assets') {
-    //   setActiveSource(item);
-    //   setStep(2);
-    // } else if (item.type === 'Social') {
-    //   authorize(item.name.toUpperCase(), () => {
-    //     setStep(0);
-    //     dispatch(setSocialSourcesAsync());
-    //   });
-    // }
+  const onSubmitAttestationDialog = async (item: DataFieldItem, token: string) => {
+    setStep(2);
+    setActiveRequest({
+      type: 'loading',
+      title: 'Attestation is processing',
+      desc: 'It may take a few minutes.',
+    });
+    setTimeout(() => {
+      setActiveRequest({
+        type: 'suc',
+        title: 'Congratulations',
+        desc: 'Your attestation is recorded on-chain!',
+      });
+    }, 2000)
+  };
+  const onSubmitActiveRequestDialog = () => {
+    if (activeRequest?.type === 'suc') {
+      setStep(0);
+      // refresh attestation list
+      return;
+    } 
   };
   return (
     <div className="pageDataSourceOverview">
@@ -63,6 +77,17 @@ const handleCloseMask = () => {
             type={activeAttestationType}
             onClose={handleCloseMask}
             onSubmit={onSubmitAttestationDialog}
+          />
+        )}
+
+        {step === 2 && (
+          <AddSourceSucDialog
+            onClose={handleCloseMask}
+            onSubmit={onSubmitActiveRequestDialog}
+            type={activeRequest?.type}
+            title={activeRequest?.title}
+            desc={activeRequest?.desc}
+            headerType="attestation"
           />
         )}
       </main>

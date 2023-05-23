@@ -32,7 +32,7 @@ export type DataSourceStorages = {
   coinbase?: any;
   [propName: string]: any;
 };
-type ActiveRequestType = {
+export type ActiveRequestType = {
   type: string;
   title: string;
   desc: string;
@@ -58,7 +58,6 @@ const DataSourceOverview = () => {
   const filterWord = useSelector(
     (state: UserState) => state.filterWord
   );
-
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const exList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources });

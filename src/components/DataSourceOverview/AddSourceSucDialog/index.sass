@@ -2,6 +2,7 @@
 .addDataSourceSucDialog
   padding: 64px 50px 50px
   @extend .fcbc
+  
   main
     @extend .fcsc
     img.sucImg
@@ -30,6 +31,13 @@
 @media (max-width: 1680px)
   .addDataSourceSucDialog
     padding: 48px 42px 32px
+    &.attestSucDialog
+      padding: 43px 42px 32px
+      main
+        img.sucImg
+          margin-top: 68px
+        .pLoading
+          margin-top: 57px
     main
       img.sucImg
         margin-top: 72px
