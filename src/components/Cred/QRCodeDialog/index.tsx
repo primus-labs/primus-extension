@@ -22,9 +22,16 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = ({ onClose, onSubmit }) => {
   };
   useEffect(() => {
     const jsonStr = JSON.stringify({
-      userId: '0xxxxxx',
-      userId2: '0xxxxxx',
-      padoSign: 'Oxxxxx',
+      attester: '0x7ab44DE0156925fe0c24482a2cDe48C465e47573',
+      schemaData: {
+        source: 'binance',
+        useridhash: '0xaaaa...',
+        receipt: "0x7ab44de0156925fe0c24482a2cde48c465e47573",
+        getdatatime: '1684916453',
+        baseValue: '1000',
+        balanceGreaterThanBaseValue: true,
+      },
+      signature: '0xaa...',
     });
     setJsonStr(jsonStr);
   }, [])
