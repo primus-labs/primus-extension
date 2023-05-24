@@ -16,17 +16,22 @@ export type CredTypeItemType = {
   date: string;
   provided: any[];
   expand?: boolean;
+  holdingToken?: string
 };
 
 interface CredTypeListProps {
   item: CredTypeItemType;
   onUpChain: (item: CredTypeItemType) => void;
   onViewQrcode: (item: CredTypeItemType) => void;
+  onUpdate: (item: CredTypeItemType) => void;
+  onDelete: (item: CredTypeItemType) => void;
 }
 const CredItem: React.FC<CredTypeListProps> = ({
   item,
   onUpChain,
   onViewQrcode,
+  onUpdate,
+  onDelete
 }) => {
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [expand, setExpand] = useState(false);
@@ -35,12 +40,22 @@ const CredItem: React.FC<CredTypeListProps> = ({
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
   const [activeItem, setActiveItem] = useState<string>();
-  const [navs, setNavs] = useState(['Update', 'Delete']);
+  const otherOperations = useMemo(() => {
+    if (item.provided.length > 0) {
+      return ['Delete'];
+    }
+    return ['Update', 'Delete'];
+  }, [item]);
   const handleClick = () => {
     setExpand((flag) => !flag);
   };
-  const handleClickDropdownItem = (item: string) => {
-    setActiveItem(item);
+  const handleClickDropdownItem = (operation: string) => {
+    // setActiveItem(operation);
+    if (operation === 'Update') {
+      onUpdate(item);
+    } else if (operation === 'Delete') {
+      onDelete(item);
+    }
   };
   const handleEnterAvatar = () => {
     setDorpdownVisible(true);
@@ -64,6 +79,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
       setExpand(true);
     }
   }, [item]);
+  
   return (
     <div className={expand ? 'credItem expand' : 'credItem'}>
       <div
@@ -116,7 +132,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
           onMouseEnter={handleEnterAvatar}
           onMouseLeave={handleLeaveAvatar}
         >
-          {navs.map((item) => {
+          {otherOperations.map((item) => {
             return (
               <li
                 key={item}

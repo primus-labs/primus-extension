@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './index.sass';
 import iconExport from '@/assets/img/iconExport.svg';
 import PMask from '@/components/PMask';
@@ -13,17 +13,21 @@ interface QRCodeDialogProps {
 }
 
 const QRCodeDialog: React.FC<QRCodeDialogProps> = ({ onClose, onSubmit }) => {
+  const [jsonStr, setJsonStr] = useState<string>('')
   const handleClickNext = () => {
     onSubmit();
   };
   const handleExport = () => {
+    exportJson(jsonStr, 'credential');
+  };
+  useEffect(() => {
     const jsonStr = JSON.stringify({
       userId: '0xxxxxx',
       userId2: '0xxxxxx',
       padoSign: 'Oxxxxx',
     });
-    exportJson(jsonStr, 'credential');
-  };
+    setJsonStr(jsonStr);
+  }, [])
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog qrcodeDialog">
@@ -31,7 +35,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = ({ onClose, onSubmit }) => {
           <AddressInfoHeader />
           <h1>Present your credential</h1>
           <h2>Scan this QR code to use or download your credential.</h2>
-          <QRCodeSVG value="https://padolabs.org/" size={220} />
+          <QRCodeSVG value={jsonStr} size={220} />
           <div className="exportWrapper" onClick={handleExport}>
             <img className="exportIcon" src={iconExport} alt="" />
             <p>Export your credential</p>

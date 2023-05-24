@@ -8,22 +8,69 @@ import ProofTypeList from '@/components/Cred/ProofTypeList';
 import AttestationDialog from '@/components/Cred/AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
-import ConnectWalletDialog from '@/components/Cred/ConnectWalletDialog'
+import ConnectWalletDialog from '@/components/Cred/ConnectWalletDialog';
 import CredList from '@/components/Cred/CredList';
 import QRCodeDialog from '@/components/Cred/QRCodeDialog';
-import type {CredTypeItemType} from '@/components/Cred/CredItem';
+import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
-import type {ActiveRequestType} from '@/pages/DataSourceOverview'
-import {ONCHAINLIST} from '@/utils/constants'
+import type { ActiveRequestType } from '@/pages/DataSourceOverview';
+import { ONCHAINLIST } from '@/utils/constants';
+import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
+import iconTool1 from '@/assets/img/iconTool1.svg';
+import iconArbitrum from '@/assets/img/iconArbitrum.svg';
+import iconOptimism from '@/assets/img/iconOptimism.svg';
+import iconMina from '@/assets/img/iconMina.png';
+
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
+  const [credList, setCredList] = useState([
+    {
+      type: 'Assets Proof',
+      icon: iconDataSourceBinance,
+      name: 'Binance',
+      id: '111',
+      label: '111',
+      date: 'May 02, 2023',
+      provided: [],
+    },
+    {
+      type: 'Assets Proof',
+      icon: iconDataSourceBinance,
+      name: 'Binance',
+      id: '222',
+      label: '111',
+      date: 'May 02, 2023',
+      provided: [iconTool1],
+    },
+    {
+      type: 'Assets Proof',
+      icon: iconDataSourceBinance,
+      name: 'OKX',
+      id: '333',
+      label: '111',
+      date: 'May 02, 2023',
+      provided: [iconTool1, iconArbitrum, iconOptimism],
+    },
+    {
+      type: 'Token Holdings',
+      icon: iconDataSourceBinance,
+      name: 'Coinbase',
+      id: '444',
+      label: '111',
+      date: 'May 02, 2023',
+      provided: [iconTool1, iconArbitrum, iconOptimism],
+      holdingToken: 'BNB',
+    },
+  ]);
   const [step, setStep] = useState(0);
   const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
-  const [activeAttestationType, setActiveAttestationType] = useState<string>('');
+  const [activeAttestationType, setActiveAttestationType] =
+    useState<string>('');
+  const [activeCred, setActiveCred] = useState<CredTypeItemType>();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -38,14 +85,19 @@ const Cred = () => {
     }
   };
   const handleChangeProofType = (title: string) => {
-    setStep(1)
-    setActiveAttestationType(title)
+    setStep(1);
+    setActiveAttestationType(title);
   };
   const handleCloseMask = () => {
     setStep(0);
   };
-  
-  const onSubmitAttestationDialog = async (item: DataFieldItem, token: string) => {
+
+  const onSubmitAttestationDialog = async (
+    item: DataFieldItem,
+    token: string,
+    activeCred?: CredTypeItemType
+  ) => {
+    // if activeCred is update,not add
     setStep(2);
     setActiveRequest({
       type: 'loading',
@@ -58,14 +110,14 @@ const Cred = () => {
         title: 'Congratulations',
         desc: 'Your proof is created!',
       });
-    }, 2000)
+    }, 2000);
   };
   const onSubmitActiveRequestDialog = () => {
     if (activeRequest?.type === 'suc') {
       setStep(0);
       // refresh attestation list
       return;
-    } 
+    }
   };
   const handleUpChain = (item: CredTypeItemType) => {
     setStep(3);
@@ -73,12 +125,10 @@ const Cred = () => {
   const handleSubmitTransferToChain = () => {
     setStep(4);
   };
-  const handleCancelTransferToChain = () => {
-    
-  };
+  const handleCancelTransferToChain = () => {};
   const handleBackConnectWallet = () => {
-    setStep(3)
-  }
+    setStep(3);
+  };
   const handleSubmitConnectWallet = () => {
     setActiveRequest({
       type: 'loading',
@@ -92,15 +142,25 @@ const Cred = () => {
         desc: 'Your attestation is recorded on-chain!',
       });
     }, 2000);
-    setStep(5)
-  }
+    setStep(5);
+  };
   const handleViewQrcode = () => {
-    setQrcodeVisible(true)
-  }
+    setQrcodeVisible(true);
+  };
   const handleCloseQrcode = () => {
     setQrcodeVisible(false);
-    handleCloseMask()
-  }
+    handleCloseMask();
+  };
+  const handleDeleteCred = (item: CredTypeItemType) => {
+    let newList = [...credList];
+    newList = newList.filter((i) => i.id !== item.id);
+    setCredList(newList);
+  };
+  const handleUpdateCred = (item: CredTypeItemType) => {
+    setActiveAttestationType(item.type);
+    setActiveCred(item);
+    setStep(1);
+  };
 
   return (
     <div className="pageDataSourceOverview">
@@ -108,15 +168,21 @@ const Cred = () => {
         <PTabs onChange={handleChangeTab} />
         <DataSourceSearch />
         <ProofTypeList onChange={handleChangeProofType} />
-        <CredList onUpChain={handleUpChain} onViewQrcode={handleViewQrcode} />
+        <CredList
+          list={credList}
+          onUpChain={handleUpChain}
+          onViewQrcode={handleViewQrcode}
+          onDelete={handleDeleteCred}
+          onUpdate={handleUpdateCred}
+        />
         {step === 1 && (
           <AttestationDialog
             type={activeAttestationType}
             onClose={handleCloseMask}
             onSubmit={onSubmitAttestationDialog}
+            activeCred={activeCred}
           />
         )}
-
         {step === 2 && (
           <AddSourceSucDialog
             onClose={handleCloseMask}
@@ -161,7 +227,9 @@ const Cred = () => {
         {qrcodeVisible && (
           <QRCodeDialog
             onClose={handleCloseQrcode}
-            onSubmit={() => {setQrcodeVisible(false)}}
+            onSubmit={() => {
+              setQrcodeVisible(false);
+            }}
           />
         )}
       </main>

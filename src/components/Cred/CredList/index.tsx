@@ -1,72 +1,36 @@
-import React, {useMemo} from 'react';
+import React, { useMemo, useState } from 'react';
 import emptyBox from '@/assets/img/emptyBox.svg';
-import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconTool1 from '@/assets/img/iconTool1.svg';
-import iconArbitrum from '@/assets/img/iconArbitrum.svg';
-import iconOptimism from '@/assets/img/iconOptimism.svg';
-import iconMina from '@/assets/img/iconMina.png';
-
 import CredItem from '../CredItem';
 import type { CredTypeItemType } from '../CredItem';
 import './index.sass';
 
-const credList: CredTypeItemType[] = [
-  {
-    type: 'Assets Proof',
-    icon: iconDataSourceBinance,
-    name: 'Binance',
-    id: '111',
-    label: '111',
-    date: 'May 02, 2023',
-    provided: [iconTool1, iconArbitrum, iconOptimism],
-  },
-  {
-    type: 'Assets Proof',
-    icon: iconDataSourceBinance,
-    name: 'Binance',
-    id: '111',
-    label: '111',
-    date: 'May 02, 2023',
-    provided: [iconTool1, iconArbitrum, iconOptimism],
-  },
-  {
-    type: 'Assets Proof',
-    icon: iconDataSourceBinance,
-    name: 'Binance',
-    id: '111',
-    label: '111',
-    date: 'May 02, 2023',
-    provided: [iconTool1, iconArbitrum, iconOptimism],
-  },
-  {
-    type: 'Token Holdings',
-    icon: iconDataSourceBinance,
-    name: 'Binance',
-    id: '111',
-    label: '111',
-    date: 'May 02, 2023',
-    provided: [iconTool1, iconArbitrum, iconOptimism],
-  },
-];
 interface CredTypeListProps {
   onChange?: (item: CredTypeItemType) => void;
   onUpChain: (item: CredTypeItemType) => void;
   onViewQrcode: (item: CredTypeItemType) => void;
+  onUpdate: (item: CredTypeItemType) => void;
+  onDelete: (item: CredTypeItemType) => void;
+  list: CredTypeItemType[]
 }
 const ProofTypeList: React.FC<CredTypeListProps> = ({
   onChange,
   onUpChain,
   onViewQrcode,
+  onUpdate,
+  onDelete,
+  list,
 }) => {
+  
   const activeList = useMemo(() => {
-    if (credList.length <= 3) {
-      return credList.map((i) => {
+    if (list.length <= 3) {
+      return list.map((i) => {
         i.expand = true;
         return i;
       });
     }
-    return credList;
-  }, [credList]);
+    return list;
+  }, [list]);
+  
   return (
     <section className="credListWrapper">
       <header className="credListHeader">
@@ -83,7 +47,7 @@ const ProofTypeList: React.FC<CredTypeListProps> = ({
           </div>
         </div>
       </header>
-      {credList.length > 0 && (
+      {list.length > 0 && (
         <ul className="credList">
           {activeList.map((item, index) => (
             <li
@@ -93,12 +57,18 @@ const ProofTypeList: React.FC<CredTypeListProps> = ({
               }}
               key={index}
             >
-              <CredItem item={item} onUpChain={onUpChain} onViewQrcode={onViewQrcode} />
+              <CredItem
+                item={item}
+                onUpChain={onUpChain}
+                onViewQrcode={onViewQrcode}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
+              />
             </li>
           ))}
         </ul>
       )}
-      {credList.length === 0 && (
+      {list.length === 0 && (
         <div className="empty">
           <img src={emptyBox} alt="" />
           <p>You don’t have any credentials yet.</p>
