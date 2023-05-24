@@ -8,7 +8,7 @@ import ProofTypeList from '@/components/Cred/ProofTypeList';
 import AttestationDialog from '@/components/Cred/AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
-
+import ConnectWalletDialog from '@/components/Cred/ConnectWalletDialog'
 import CredList from '@/components/Cred/CredList';
 import type {CredTypeItemType} from '@/components/Cred/CredItem';
 import type { UserState } from '@/store/reducers';
@@ -20,7 +20,7 @@ import type {ActiveRequestType} from '@/pages/DataSourceOverview'
 import {ONCHAINLIST} from '@/utils/constants'
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(4);
   const [activeAttestationType, setActiveAttestationType] = useState<string>('');
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
@@ -56,7 +56,7 @@ const Cred = () => {
       setActiveRequest({
         type: 'suc',
         title: 'Congratulations',
-        desc: 'Your attestation is recorded on-chain!',
+        desc: 'Your proof is created!',
       });
     }, 2000)
   };
@@ -76,6 +76,24 @@ const Cred = () => {
   const handleCancelTransferToChain = () => {
     
   };
+  const handleBackConnectWallet = () => {
+    setStep(3)
+  }
+  const handleSubmitConnectWallet = () => {
+    setActiveRequest({
+      type: 'loading',
+      title: 'Processing',
+      desc: 'Please complete the transaction in your wallet.',
+    });
+    setTimeout(() => {
+      setActiveRequest({
+        type: 'suc',
+        title: 'Congratulations',
+        desc: 'Your attestation is recorded on-chain!',
+      });
+    }, 2000);
+    setStep(5)
+  }
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
@@ -112,6 +130,23 @@ const Cred = () => {
             tip="Please select one chain to provide attestation"
             checked={false}
             backable={false}
+            headerType="attestation"
+          />
+        )}
+        {step === 4 && (
+          <ConnectWalletDialog
+            onClose={handleCloseMask}
+            onSubmit={handleSubmitConnectWallet}
+            onBack={handleBackConnectWallet}
+          />
+        )}
+        {step === 5 && (
+          <AddSourceSucDialog
+            onClose={handleCloseMask}
+            onSubmit={onSubmitActiveRequestDialog}
+            type={activeRequest?.type}
+            title={activeRequest?.title}
+            desc={activeRequest?.desc}
             headerType="attestation"
           />
         )}

@@ -1,0 +1,78 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pDialog.sass'
+
+.dataSourcesDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  position: relative
+  main
+    width: 100%
+    @extend .fcss
+    gap: $xlGap
+    h1
+      @extend .frsc
+      gap: $xxsGap
+      align-self: center
+      @extend .xlLBlackBoldFont
+      img
+        width: 32px
+        cursor: pointer
+    h2
+      @extend .sSBlackRegularFont
+      line-height: 26px
+    .scrollList
+      width: calc( 100% + 38px )
+      height: 332px
+      overflow-y: auto
+      overflow-x: hidden
+      &::-webkit-scrollbar
+        width: 6px
+        height: 300px
+      &::-webkit-scrollbar-thumb
+        background: rgba(0, 0, 0, 0.2)
+        border-radius: $xxLBorderRadius
+      
+  button.nextBtn
+    height: 58px !important
+@media (max-width: 1680px)
+  .dataSourcesDialog
+    padding: 48px 42px 32px
+    main
+      gap: 24px
+      h1
+        font-size: 30px
+        line-height: 36px
+        font-family:'Inter-SemiBold'
+        img
+          width: 30px
+      h2
+        font-size: 14px
+        line-height: 20px
+      .scrollList
+        margin-top: 12px
+        width: calc( 100% + 34px )
+        height: 270px
+        &::-webkit-scrollbar
+          height: 250px
+    button.nextBtn
+      height: 48px !important
+      font-family: 'Inter-SemiBold' !important
+  .connectWalletDialog
+    padding: 43px 42px 32px
+    main
+      gap: 0
+      .addressInfoHeader
+        align-self: center
+      h1
+        padding-top:  27px
+      .scrollList
+        margin-top: 48px
+        ul.dataList
+          li
+            &.disabled
+              cursor: not-allowed
+              opacity: 0.4
+            .desc
+              padding: 8px 0 1px
+    button
+      position: relative

@@ -2,6 +2,11 @@ import iconTool1 from '@/assets/img/iconTool1.svg';
 import iconPolygon from '@/assets/img/iconPolygon.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
+import iconWalletCoinbaseWallet from '@/assets/img/iconWalletCoinbaseWallet.svg';
+import iconWalletTrustWallet from '@/assets/img/iconWalletTrustWallet.svg';
+import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
+import iconWalletWalletConnect from '@/assets/img/iconWalletWalletConnect.svg';
+import iconWalletTokenPocket from '@/assets/img/iconWalletTokenPocket.svg';
 import iconMina from '@/assets/img/iconMina.png';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
@@ -15,7 +20,7 @@ import iconDataSourceBybit from '@/assets/img/iconDataSourceBybit.svg';
 import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.svg';
 import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.png';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
-import iconDataSourceYoutube from '@/assets/img/icondataSourceYoutube.svg';
+import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -188,5 +193,37 @@ export const ONCHAINLIST = [
   {
     icon: iconMina,
     title: 'Mina',
+  },
+];
+
+export type WALLETITEMTYPE = {
+  icon: any;
+  name: string;
+  disabled?: boolean;
+};
+export const WALLETLIST: WALLETITEMTYPE[] = [
+  {
+    icon: iconWalletMetamask,
+    name: 'Metamask',
+  },
+  {
+    icon: iconWalletWalletConnect,
+    name: 'WalletConnect',
+    disabled: true,
+  },
+  {
+    icon: iconWalletTokenPocket,
+    name: 'TokenPocket',
+    disabled: true,
+  },
+  {
+    icon: iconWalletCoinbaseWallet,
+    name: 'CoinbaseWallet',
+    disabled: true,
+  },
+  {
+    icon: iconWalletTrustWallet,
+    name: 'TrustWallet',
+    disabled: true,
   },
 ];
