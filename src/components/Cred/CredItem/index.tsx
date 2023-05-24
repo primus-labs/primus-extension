@@ -79,8 +79,8 @@ const CredItem: React.FC<CredTypeListProps> = ({ item, onUpChain }) => {
         </div>
         <footer>
           <div className="providedChains">
-            {item.provided.map((i) => (
-              <img src={i} />
+            {item.provided.map((i, k) => (
+              <img src={i} key={k} />
             ))}
           </div>
           <div className="operations">
