@@ -10,6 +10,7 @@ import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDial
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
 import ConnectWalletDialog from '@/components/Cred/ConnectWalletDialog'
 import CredList from '@/components/Cred/CredList';
+import QRCodeDialog from '@/components/Cred/QRCodeDialog';
 import type {CredTypeItemType} from '@/components/Cred/CredItem';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
@@ -20,15 +21,14 @@ import type {ActiveRequestType} from '@/pages/DataSourceOverview'
 import {ONCHAINLIST} from '@/utils/constants'
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(0);
+  const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
   const [activeAttestationType, setActiveAttestationType] = useState<string>('');
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
   const navigate = useNavigate();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-
-
   const handleChangeTab = (val: string) => {
     if (val === 'Data') {
       dispatch({
@@ -94,13 +94,21 @@ const Cred = () => {
     }, 2000);
     setStep(5)
   }
+  const handleViewQrcode = () => {
+    setQrcodeVisible(true)
+  }
+  const handleCloseQrcode = () => {
+    setQrcodeVisible(false);
+    handleCloseMask()
+  }
+
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <DataSourceSearch />
         <ProofTypeList onChange={handleChangeProofType} />
-        <CredList onUpChain={handleUpChain} />
+        <CredList onUpChain={handleUpChain} onViewQrcode={handleViewQrcode} />
         {step === 1 && (
           <AttestationDialog
             type={activeAttestationType}
@@ -148,6 +156,12 @@ const Cred = () => {
             title={activeRequest?.title}
             desc={activeRequest?.desc}
             headerType="attestation"
+          />
+        )}
+        {qrcodeVisible && (
+          <QRCodeDialog
+            onClose={handleCloseQrcode}
+            onSubmit={() => {setQrcodeVisible(false)}}
           />
         )}
       </main>

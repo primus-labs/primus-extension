@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import type { SyntheticBaseEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { UserState } from '@/store/reducers';
 import iconExpand from '@/assets/img/iconExpand.svg';
@@ -20,8 +21,13 @@ export type CredTypeItemType = {
 interface CredTypeListProps {
   item: CredTypeItemType;
   onUpChain: (item: CredTypeItemType) => void;
+  onViewQrcode: (item: CredTypeItemType) => void;
 }
-const CredItem: React.FC<CredTypeListProps> = ({ item, onUpChain }) => {
+const CredItem: React.FC<CredTypeListProps> = ({
+  item,
+  onUpChain,
+  onViewQrcode,
+}) => {
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [expand, setExpand] = useState(false);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -33,7 +39,6 @@ const CredItem: React.FC<CredTypeListProps> = ({ item, onUpChain }) => {
   const handleClick = () => {
     setExpand((flag) => !flag);
   };
-  const handleClickOther = () => {};
   const handleClickDropdownItem = (item: string) => {
     setActiveItem(item);
   };
@@ -43,8 +48,16 @@ const CredItem: React.FC<CredTypeListProps> = ({ item, onUpChain }) => {
   const handleLeaveAvatar = () => {
     setDorpdownVisible(false);
   };
-  const handleUpChain = () => {
+  const handleUpChain = (e: SyntheticBaseEvent) => {
+    e.stopPropagation();
     onUpChain(item);
+  };
+  const handleViewQrcode = (e: SyntheticBaseEvent) => {
+    e.stopPropagation();
+    onViewQrcode(item);
+  };
+  const handleClickOther = (e: SyntheticBaseEvent) => {
+    e.stopPropagation();
   };
   useEffect(() => {
     if (item.expand) {
@@ -80,14 +93,15 @@ const CredItem: React.FC<CredTypeListProps> = ({ item, onUpChain }) => {
         <footer>
           <div className="providedChains">
             {item.provided.map((i, k) => (
-              <img src={i} key={k} />
+              <img src={i} key={k} alt="" />
             ))}
           </div>
           <div className="operations">
             <img src={iconUpChain} alt="" onClick={handleUpChain} />
-            <img src={iconQRCode} alt="" />
+            <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
             <div
               className="iconOtherWrapper"
+              onClick={handleClickOther}
               onMouseEnter={handleEnterAvatar}
               onMouseLeave={handleLeaveAvatar}
             >

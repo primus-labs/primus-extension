@@ -51,10 +51,12 @@ const credList: CredTypeItemType[] = [
 interface CredTypeListProps {
   onChange?: (item: CredTypeItemType) => void;
   onUpChain: (item: CredTypeItemType) => void;
+  onViewQrcode: (item: CredTypeItemType) => void;
 }
 const ProofTypeList: React.FC<CredTypeListProps> = ({
   onChange,
   onUpChain,
+  onViewQrcode,
 }) => {
   const activeList = useMemo(() => {
     if (credList.length <= 3) {
@@ -91,7 +93,7 @@ const ProofTypeList: React.FC<CredTypeListProps> = ({
               }}
               key={index}
             >
-              <CredItem item={item} onUpChain={onUpChain} />
+              <CredItem item={item} onUpChain={onUpChain} onViewQrcode={onViewQrcode} />
             </li>
           ))}
         </ul>
