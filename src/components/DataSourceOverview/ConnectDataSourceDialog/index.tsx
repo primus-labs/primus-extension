@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PInput from '@/components/PInput/index';
+import PControledInput from '@/components/PControledInput';
+
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import './index.sass';
@@ -10,6 +12,7 @@ export type GetDataFormProps = {
   apiKey: string;
   secretKey: string;
   passphase?: string;
+  label?: string;
 };
 interface ConnectDataDialogProps {
   onClose: () => void;
@@ -17,6 +20,7 @@ interface ConnectDataDialogProps {
   onSubmit: (form: GetDataFormProps) => void;
   loading?: boolean;
   onCancel: () => void;
+  activeSourceKeys?: GetDataFormProps;
 }
 
 const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
@@ -24,7 +28,8 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
   onSubmit,
   activeSource,
   loading = false,
-  onCancel
+  onCancel,
+  activeSourceKeys,
 }) => {
   const requirePassphase = activeSource?.requirePassphase;
   const icon = activeSource?.icon;
@@ -35,14 +40,14 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
   const [label, setLabel] = useState<string>();
   const [submitted, setSubmitted] = useState<boolean>(false);
   const handleClickNext = () => {
-    setSubmitted(true)
+    setSubmitted(true);
     if (loading) {
       return;
     }
     if (!apiKey || !secretKey || (requirePassphase && !passphase)) {
       return;
     }
-    setSubmitted(false)
+    setSubmitted(false);
     const form = {
       name: name.toLowerCase(),
       apiKey,
@@ -66,83 +71,83 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
   const handleChangeLabel = (val: string) => {
     setLabel(val);
   };
-
+  useEffect(() => {
+    if (activeSourceKeys) {
+      const { apiKey, secretKey, passphase, label } = activeSourceKeys;
+      setApiKey(apiKey)
+      setSecretKey(secretKey);
+      passphase && setPassphase(passphase);
+      label && setLabel(label)
+    }
+    
+  }, [activeSourceKeys])
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog connectDataSourceDialog">
         <div className="iconBack" onClick={onCancel}></div>
         <main>
-          <div
-            className="scrollList scroll"
-          >
+          <div className="scrollList scroll">
             <Bridge endIcon={icon} />
             <h1>Connect Data Source</h1>
-            {/* {loading && <div className="loadingSection">
-              <PLoading />
-              <h1 className="title">Data being requested</h1>
-              <h2 className="desc">It may take a few minutes</h2>
-            </div >} */}
             {!loading && (
               <>
                 <h2>
                   Please configure with your READ-ONLY API keys. PADO never
                   accesses to your API keys or your data.
                 </h2>
-                
+
                 <div className="formItem firstFormItem">
                   <h6>API Key</h6>
-                  <PInput
+                  <PControledInput
                     key="apiKey"
                     type="text"
                     placeholder="Please enter your API Key"
                     onChange={handleChangeApiKey}
+                    value={apiKey}
                   />
                 </div>
                 {submitted && !apiKey && (
-                      <p className="errorTip">
-                        Please enter your API Key
-                      </p>
-                    )}
+                  <p className="errorTip">Please enter your API Key</p>
+                )}
                 <div className="formItem">
                   <h6>Secret Key</h6>
-                  <PInput
+                  <PControledInput
                     key="secretKey"
                     type="password"
                     placeholder="Please enter your Secret Key"
                     onChange={handleChangeSecretKey}
+                    value={secretKey}
                     visible
                   />
                 </div>
                 {submitted && !secretKey && (
-                      <p className="errorTip">
-                        Please enter your Secret Key
-                      </p>
-                    )}
+                  <p className="errorTip">Please enter your Secret Key</p>
+                )}
                 {requirePassphase && (
                   <>
                     <div className="formItem">
                       <h6>Passphase</h6>
-                      <PInput
+                      <PControledInput
                         key="passPhase"
                         type="password"
                         placeholder="Please enter your Passphase"
                         onChange={handleChangePassphase}
+                        value={passphase}
                         visible
                       />
                     </div>
                     {submitted && !passphase && (
-                      <p className="errorTip">
-                        Please enter your Passphase
-                      </p>
+                      <p className="errorTip">Please enter your Passphase</p>
                     )}
                   </>
                 )}
                 <div className="formItem lastFormItem">
                   <h6>Label API Key (Optional)</h6>
-                  <PInput
+                  <PControledInput
                     key="label"
                     placeholder="Please enter your API Key Label"
                     onChange={handleChangeLabel}
+                    value={label}
                   />
                 </div>
                 <div className="tipWrapper">

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs';
@@ -47,6 +47,7 @@ const DataSourceOverview = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
+  const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
   const exSources = useSelector(
     (state: UserState) => state.exSources
   );
@@ -130,6 +131,8 @@ const DataSourceOverview = () => {
   };
   const onSubmitConnectDataSourceDialogDialog = useCallback(
     async (form: GetDataFormProps) => {
+      console.log('submit--form', form)
+      setActiveSourceKeys(form);
       const lowerCaseSourceName = form?.name?.toLowerCase();
       setStep(2.5);
       setActiveRequest({
@@ -208,10 +211,8 @@ const DataSourceOverview = () => {
     if (activeRequest?.type === 'loading') {
       onSubmitAddSourceSucDialog();
       return;
-    } else if (activeRequest?.type === 'error') {
-      setStep(2);
     } else {
-      setStep(0);
+      setStep(2);
     }
   };
   const onClearFilter = () => {
@@ -220,6 +221,9 @@ const DataSourceOverview = () => {
       payload: ''
     })
   };
+  useEffect(() => {
+    step === 1 && setActiveSourceKeys(undefined)
+  }, [step])
 
   return (
     <div className="pageDataSourceOverview">
@@ -270,6 +274,7 @@ const DataSourceOverview = () => {
           onCancel={() => {
             setStep(1);
           }}
+          activeSourceKeys={activeSourceKeys}
         />
       )}
       {step === 2.5 && (
