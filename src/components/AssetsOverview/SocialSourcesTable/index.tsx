@@ -76,10 +76,12 @@ const TokenTable: React.FC<TokenTableProps> = ({
                   <img src={item.icon} alt="" />
                   <span>{item.name}</span>
                 </div>
-                <div className="userName">{item.userName ?? item.screenName}</div>
+                <div className="userName">
+                  {item.userName ?? item.screenName}
+                </div>
 
                 <div className="createTime">
-                  {getCurrentDate(item.createdTime)}
+                  {item.createdTime?getCurrentDate(item.createdTime): '-'}
                 </div>
                 <div className="followers">
                   {formatTxtFn(item, 'followers')}
@@ -87,9 +89,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
                 <div className="following">
                   {formatTxtFn(item, 'followings')}
                 </div>
-                <div className="posts">
-                  {formatTxtFn(item, 'posts')}
-                </div>
+                <div className="posts">{formatTxtFn(item, 'posts')}</div>
                 <div className="verified">{accTagsFn(item)}</div>
               </div>
             </li>
