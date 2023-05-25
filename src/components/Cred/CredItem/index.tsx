@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type { SyntheticBaseEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import {getCurrentDate} from '@/utils/utils'
 import type { UserState } from '@/store/reducers';
 import iconExpand from '@/assets/img/iconExpand.svg';
 import iconUpChain from '@/assets/img/iconUpChain.svg';
@@ -10,13 +11,26 @@ import './index.sass';
 export type CredTypeItemType = {
   type: string;
   icon: any;
-  name: string;
-  id: string;
+  // name: string;
+  // id: string;
   label: string;
-  date: string;
+  // date: string;
   provided: any[];
   expand?: boolean;
-  holdingToken?: string
+  holdingToken?: string;
+
+  requestid: string;
+  version: string;
+  source: string;
+  useridhash: string;
+  address: string;
+  getdatatime: string;
+  baseValue: string;
+  balanceGreaterBaseValue: string; // or bool statusNormal
+  signature: string; // includes v，r，s
+  data: string; // trueHash or falseHash
+
+  exUserid: string;
 };
 
 interface CredTypeListProps {
@@ -92,19 +106,19 @@ const CredItem: React.FC<CredTypeListProps> = ({
             <div className="label">Source: &nbsp;</div>
             <div className="value">
               <img src={item?.icon} alt="" className="sourceIcon" />
-              <span>{item?.name}</span>
+              <span>{item?.source}</span>
             </div>
           </div>
           {(item.id || item.label) && (
             <div className="descItem">
               <div className="label">ID: &nbsp;</div>
-              <div className="value">{item?.id ?? item.label}</div>
+              <div className="value">{item?.exUserid ?? item.label}</div>
             </div>
           )}
         </div>
         <div className="descItem">
           <div className="label">Date: &nbsp;</div>
-          <div className="value">{item?.date}</div>
+          <div className="value">{getCurrentDate(Number(item?.getdatatime))}</div>
         </div>
         <footer>
           <div className="providedChains">

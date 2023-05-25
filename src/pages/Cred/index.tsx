@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs';
@@ -67,6 +67,7 @@ const Cred = () => {
     },
   ]);
   const [step, setStep] = useState(0);
+  const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
   const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
   const [activeAttestationType, setActiveAttestationType] =
     useState<string>('');
@@ -98,19 +99,27 @@ const Cred = () => {
     activeCred?: CredTypeItemType
   ) => {
     // if activeCred is update,not add
+    const msg = {
+      fullScreenType: 'algorithm',
+      reqMethodName: 'getAttestation',
+      params: {},
+    };
+    postMsg(padoServicePort, msg);
+    console.log(`page_send:getAttestation:`);
+
     setStep(2);
     setActiveRequest({
       type: 'loading',
       title: 'Attestation is processing',
       desc: 'It may take a few minutes.',
     });
-    setTimeout(() => {
-      setActiveRequest({
-        type: 'suc',
-        title: 'Congratulations',
-        desc: 'Your proof is created!',
-      });
-    }, 2000);
+    // setTimeout(() => {
+    //   setActiveRequest({
+    //     type: 'suc',
+    //     title: 'Congratulations',
+    //     desc: 'Your proof is created!',
+    //   });
+    // }, 2000);
   };
   const onSubmitActiveRequestDialog = () => {
     if (activeRequest?.type === 'suc') {
@@ -161,6 +170,102 @@ const Cred = () => {
     setActiveCred(item);
     setStep(1);
   };
+  const initAlgorithm = () => {
+    postMsg(padoServicePort, {});
+    const msg: any = {
+      fullScreenType: 'algorithm',
+      reqMethodName: 'start',
+      params: {},
+    };
+    postMsg(padoServicePort, msg);
+    console.log(`page_send:start request`);
+    const padoServicePortListener = async function (message: any) {
+      const { resType, resMethodName, res } = message;
+      if (resType === 'algorithm') {
+        console.log(`page_get:${resMethodName}:`, res);
+        if (resMethodName === `start`) {
+          console.log(`page_get:start:`, message.res);
+          const msg = {
+            fullScreenType: 'algorithm',
+            reqMethodName: 'init',
+            params: {},
+          };
+          postMsg(padoServicePort, msg);
+          console.log(`page_send:init request`);
+        }
+        if (resMethodName === `init`) {
+          if (res) {
+            // algorithm is ready
+          }
+        }
+        if (resMethodName === `getAttestation`) {
+          // if (res) {
+          // TODO wheather wait getAttestation msg back
+          const fetchAttestationResult = () => {
+            const msg = {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'getAttestationResult',
+              params: {},
+            };
+            postMsg(padoServicePort, msg);
+            console.log('page_send:getAttestationResult request');
+          };
+          const fetchTimer = setInterval(() => {
+            fetchAttestationResult();
+          }, 2000);
+          // debugger;
+          setFetchAttestationTimer(fetchTimer);
+          // }
+        }
+        if (resMethodName === `getAttestationResult`) {
+          if (res) {
+            const storageRes = await chrome.storage.local.get(['credentials']);
+            const credentialsStr = storageRes.credentials;
+            const credentialArr = credentialsStr?JSON.parse(credentialsStr): [];
+            credentialArr.push(res)
+            // debugger
+            chrome.storage.local.set({
+              credentials: JSON.stringify(credentialArr),
+            });
+            setCredList(credentialArr);
+            setActiveRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'Your proof is created!',
+            });
+            // TODO attest suc
+            // clearInterval(timer);
+            // clearInterval(fetchAttestationTimer);
+          }
+        }
+      }
+    };
+    padoServicePort.onMessage.addListener(padoServicePortListener);
+  };
+  useEffect(() => {
+    initAlgorithm();
+  }, []);
+  useEffect(() => {
+    return () => {
+      fetchAttestationTimer && clearInterval(fetchAttestationTimer);
+    };
+  }, [fetchAttestationTimer]);
+  useEffect(() => {
+    if (fetchAttestationTimer && activeRequest?.type === 'suc') {
+      // debugger
+      clearInterval(fetchAttestationTimer);
+    }
+  }, [fetchAttestationTimer, activeRequest]);
+  const initCredList = async() => {
+    const storageRes = await chrome.storage.local.get(['credentials']);
+    const credentialsStr = storageRes.credentials;
+    const credentialArr = credentialsStr ? JSON.parse(credentialsStr) : [];
+    setCredList(credentialArr);
+  }
+  useEffect(() => {
+    chrome.storage.local.remove(['credentials']);//TODO
+    initCredList()
+  }, [])
 
   return (
     <div className="pageDataSourceOverview">

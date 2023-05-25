@@ -10,6 +10,7 @@ import PSelect from '@/components/PSelect';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
 import type { UserState } from '@/store/reducers';
+import { postMsg } from '@/utils/utils';
 
 import './index.sass';
 
@@ -43,6 +44,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   onSubmit,
   activeCred,
 }) => {
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
+  );
   const navigate = useNavigate();
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
   const [activeToken, setActiveToken] = useState<string>('');
@@ -138,7 +142,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   const handleClickData = (item: DataFieldItem) => {
     if (activeCred && activeSource) {
       if (activeSource?.name !== item.name) {
-        return
+        return;
       }
     }
     if (
@@ -180,12 +184,12 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       );
       setActiveSource(sourceInfo);
       if (type === 'Assets Proof') {
-        
       } else if (type === 'Token Holdings') {
         activeCred.holdingToken && setActiveToken(activeCred.holdingToken);
       }
     }
   }, [activeCred, type, connectedSourceList]);
+  
 
   return (
     <PMask onClose={onClose}>
