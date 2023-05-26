@@ -7,7 +7,12 @@ import {
 import { getSysConfig } from '@/services/config';
 import { getCurrentDate, postMsg } from '@/utils/utils';
 import { SocailStoreVersion } from '@/utils/constants';
-import { default as processExReq, clear, sign } from './exData';
+import {
+  default as processExReq,
+  clear,
+  sign,
+  assembleAlgorithmParams,
+} from './exData';
 
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
@@ -21,7 +26,7 @@ const padoServices = {
   refreshAuthData,
 };
 
-let USERPASSWORD = 'pado2023.';
+let USERPASSWORD = '';
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -113,83 +118,91 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestation':
-      debugger
-      params = {
-        requestid: '1', // unique
-        version: '1.0.0',
-        source: 'okx',
-        baseName: 'www.okx.com', // host, such as "api.binance.com"
-        baseUrl: '104.18.2.151:443', // client <----> http-server
-        padoUrl: '127.0.0.1:8081', // client <----> pado-server
-        proxyUrl: '127.0.0.1:9000',
-        // if cipher non-exist or empty use default. options:
-        //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
-        cipher: '',
-        getdatatime: (+new Date()).toString(),
-        exchange: {
-          apikey: 'xxx',
-          apisecret: 'xxx',
-          apipassword: 'xxx',
-        },
-        sigFormat: 'EAS-Ethereum',
-        schemaType: 'exchange-balance',
-        schema: [
-          { name: 'source', type: 'string' },
-          { name: 'useridhash', type: 'string' },
-          { name: 'address', type: 'string' },
-          { name: 'getdatatime', type: 'string' },
-          { name: 'baseValue', type: 'string' },
-          { name: 'balanceGreaterBaseValue', type: 'string' },
-        ],
-        user: {
-          userid: '0123456789',
-          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
-          token: 'xxx',
-        },
-        baseValue: '1000',
-        ext: {
-          parseSchema: 'OKX_ACCOUNT_BALANCE', // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-          extRequests: {
-            orders: ['account-balance'],
-            'account-balance': {
-              //decrypt: "true",
-              url: 'https://www.okx.com/api/v5/account/balance',
-              method: 'GET',
-              headers: {
-                'OK-ACCESS-KEY': '8a236275-eedc-46d9-a592-485fb38d1dfe',
-                'OK-ACCESS-PASSPHRASE': 'Padopado@2022',
-                'OK-ACCESS-SIGN':
-                  'LGCcfSvL00ejKcXLQ7KUCVS68AeUX8RN9htSzBcvxDM=',
-                'OK-ACCESS-TIMESTAMP': '2023-05-19T07:21:26.379Z',
-              }, // "key":"value"
-              body: {}, // "key":"value"
-            },
-          },
-          signHash: {
-            trueHash:
-              '0x78dcd376165ff92037130b1a73f49b9ebc2d1dc3e0bac9b9e29c4991ebdd84ef',
-            falseHash:
-              '0x092c22fe27704e9b0c9b58550e78cb53b621930844a8008fc8a644aaccb0fa43',
-          },
-        },
-      };
-      const data = {
-        path: 'account/balance',
-        api: 'private',
-        method: 'GET',
-        params: {},
-      };
-      const signres = await sign('okx', data, port, USERPASSWORD);
-      console.log('********signres=', signres);
-      params.ext.extRequests['account-balance'].headers['OK-ACCESS-SIGN'] =
-        signres.headers['OK-ACCESS-SIGN'];
-      params.ext.extRequests['account-balance'].headers['OK-ACCESS-TIMESTAMP'] =
-        signres.headers['OK-ACCESS-TIMESTAMP'];
-      console.log('********params=', params);
+      const attestationParams = await assembleAlgorithmParams(
+        params,
+        USERPASSWORD,
+        port
+      );
+
+      await chrome.storage.local.set({
+        activeRequestAttestation: JSON.stringify(attestationParams),
+      });
+      // params = {
+      //   requestid: '1', // unique
+      //   version: '1.0.0',
+      //   source: 'okx',
+      //   baseName: 'www.okx.com', // host, such as "api.binance.com"
+      //   baseUrl: '104.18.2.151:443', // client <----> http-server
+      //   padoUrl: '127.0.0.1:8081', // client <----> pado-server
+      //   proxyUrl: '127.0.0.1:9000',
+      //   // if cipher non-exist or empty use default. options:
+      //   //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
+      //   cipher: '',
+      //   getdatatime: (+new Date()).toString(),
+      //   exchange: {
+      //     apikey: 'xxx',
+      //     apisecret: 'xxx',
+      //     apipassword: 'xxx',
+      //   },
+      //   sigFormat: 'EAS-Ethereum',
+      //   schemaType: 'exchange-balance',
+      //   schema: [
+      //     { name: 'source', type: 'string' },
+      //     { name: 'useridhash', type: 'string' },
+      //     { name: 'address', type: 'string' },
+      //     { name: 'getdatatime', type: 'string' },
+      //     { name: 'baseValue', type: 'string' },
+      //     { name: 'balanceGreaterBaseValue', type: 'string' },
+      //   ],
+      //   user: {
+      //     userid: '0123456789',
+      //     address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
+      //     token: 'xxx',
+      //   },
+      //   baseValue: '1000',
+      //   ext: {
+      //     parseSchema: 'OKX_ACCOUNT_BALANCE', // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
+      //     extRequests: {
+      //       orders: ['account-balance'],
+      //       'account-balance': {
+      //         //decrypt: "true",
+      //         url: 'https://www.okx.com/api/v5/account/balance',
+      //         method: 'GET',
+      //         headers: {
+      //           'OK-ACCESS-KEY': '8a236275-eedc-46d9-a592-485fb38d1dfe',
+      //           'OK-ACCESS-PASSPHRASE': 'Padopado@2022',
+      //           'OK-ACCESS-SIGN':
+      //             'LGCcfSvL00ejKcXLQ7KUCVS68AeUX8RN9htSzBcvxDM=',
+      //           'OK-ACCESS-TIMESTAMP': '2023-05-19T07:21:26.379Z',
+      //         }, // "key":"value"
+      //         body: {}, // "key":"value"
+      //       },
+      //     },
+      //     signHash: {
+      //       trueHash:
+      //         '0x78dcd376165ff92037130b1a73f49b9ebc2d1dc3e0bac9b9e29c4991ebdd84ef',
+      //       falseHash:
+      //         '0x092c22fe27704e9b0c9b58550e78cb53b621930844a8008fc8a644aaccb0fa43',
+      //     },
+      //   },
+      // };
+      // const data = {
+      //   path: 'account/balance',
+      //   api: 'private',
+      //   method: 'GET',
+      //   params: {},
+      // };
+      // const signres = await sign('okx', data, USERPASSWORD, port);
+      // console.log('********signres=', signres);
+      // params.ext.extRequests['account-balance'].headers['OK-ACCESS-SIGN'] =
+      //   signres.headers['OK-ACCESS-SIGN'];
+      // params.ext.extRequests['account-balance'].headers['OK-ACCESS-TIMESTAMP'] =
+      //   signres.headers['OK-ACCESS-TIMESTAMP'];
+      // console.log('********params=', params);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
-        params: params,
+        params: attestationParams,
       });
       break;
     case 'getAttestationResult':
@@ -199,29 +212,42 @@ const processAlgorithmReq = async (message, port) => {
       //   params: params,
       // });
       // TODO for test
+      const storageRes = await chrome.storage.local.get([
+        'activeRequestAttestation',
+      ]);
+      const parsedActiveRequestAttestation = JSON.parse(
+        storageRes.activeRequestAttestation
+      );
+      console.log('attestation', parsedActiveRequestAttestation);
       const result = {
-        requestid: (+new Date()).toString(),
-        version: '1.0.0',
-        source: 'okx',
-        useridhash: '0x123',
-        address: '0x23',
-        getdatatime: (+new Date()).toString(),
-        baseValue: '1000',
-        balanceGreaterBaseValue: 'true', // or bool statusNormal
-        signature: '0x123', // includes v，r，s
-        data: '0x123', // trueHash or falseHash
-
-        exUserid: 'userid',
-        label: 'exLabel',
-        provided: [],
-        type: 'Assets Proof',
+        ...parsedActiveRequestAttestation,
+        useridhash: 'userIDHash', // TODO
+        balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
+        signature: '0x123', // includes v，r，s // TODO
+        data: '0x123', // trueHash or falseHash // TODO
+        provided: [], // TODO
       };
+      // const result = {
+      //   requestid: (+new Date()).toString(),
+      //   version: '1.0.0',
+      //   source: 'okx',
+      //   useridhash: 'userIDHash', // TODO
+      //   address: '0x23',
+      //   getdatatime: (+new Date()).toString(),
+      //   baseValue: '1000',
+      //   balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
+      //   signature: '0x123', // includes v，r，s // TODO
+      //   data: '0x123', // trueHash or falseHash // TODO
+      //   exUserId: 'userid', // TODO
+      //   label: 'exLabel', // TODO
+      //   provided: [], // TODO
+      //   type: 'Assets Proof',
+      // };
       const msg = {
         resType: 'algorithm',
         resMethodName: 'getAttestationResult',
         res: result,
       };
-      // debugger
       postMsg(fullscreenPort, msg);
       break;
     case 'stop':
@@ -261,24 +287,24 @@ const processpadoServiceReq = async (message, port) => {
           if (params.data_type === 'LOGIN') {
             const { dataInfo, userInfo } = result;
             if (userInfo) {
-              const formatUserInfo = {...userInfo}
+              const formatUserInfo = { ...userInfo };
               const lowerCaseSourceName = params.source.toLowerCase();
-              formatUserInfo.authSource = lowerCaseSourceName
+              formatUserInfo.authSource = lowerCaseSourceName;
               switch (lowerCaseSourceName) {
                 case 'google':
-                  formatUserInfo.formatUser = userInfo.email
+                  formatUserInfo.formatUser = userInfo.email;
                   break;
                 case 'twitter':
-                  formatUserInfo.formatUser = '@'+userInfo.nickName
+                  formatUserInfo.formatUser = '@' + userInfo.nickName;
                   break;
                 case 'github':
-                  formatUserInfo.formatUser = userInfo.userName
+                  formatUserInfo.formatUser = userInfo.userName;
                   break;
                 case 'discord':
-                  formatUserInfo.formatUser = userInfo.nickName
+                  formatUserInfo.formatUser = userInfo.nickName;
                   break;
                 default:
-                  formatUserInfo.formatUser = userInfo.userName
+                  formatUserInfo.formatUser = userInfo.userName;
                   break;
               }
               await chrome.storage.local.set({
@@ -313,7 +339,7 @@ const processpadoServiceReq = async (message, port) => {
               ...dataInfo,
               date: getCurrentDate(),
               timestamp: +new Date(),
-              version: SocailStoreVersion
+              version: SocailStoreVersion,
             };
             await chrome.storage.local.set({
               [lowerCaseSourceName]: JSON.stringify(socialSourceData),
@@ -364,7 +390,7 @@ const processpadoServiceReq = async (message, port) => {
             ...dataInfo,
             date: getCurrentDate(),
             timestamp: +new Date(),
-            version: SocailStoreVersion
+            version: SocailStoreVersion,
           };
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
@@ -398,7 +424,6 @@ const processpadoServiceReq = async (message, port) => {
     console.log('processpadoServiceReq error:');
     throw new Error(e);
   }
-  
 };
 
 const processStorageReq = async (message, port) => {

@@ -7,7 +7,9 @@ export type ExInfo = {
   apiKey: string;
   totalBalance: string;
   tokenListMap: AssetsMap;
-}
+  exUserId?: string;
+  label?: string;
+};
 type SysConfigInfo = {
   [propName: string]: any
 }
@@ -20,21 +22,20 @@ type SocialDatas = {
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
-  exDatas: ExDatas,
-  socialDatas: SocialDatas,
-  userPassword: string,
-  activeSourceType: string,
-  filterWord: string,
-  exSources: ExDatas,
-  socialSources: SocialDatas,
-}
+  exDatas: ExDatas;
+  socialDatas: SocialDatas;
+  userPassword: string;
+  activeSourceType: string;
+  filterWord: string;
+  exSources: ExDatas;
+  socialSources: SocialDatas;
+  baseValueArr: string[];
+};
 
 // initial state
 const initState = {
-  padoServicePort:chrome.runtime.connect({ name: 'fullscreen'+new Date()}),
-  sysConfig: {
-    
-  },
+  padoServicePort: chrome.runtime.connect({ name: 'fullscreen' + new Date() }),
+  sysConfig: {},
   exDatas: {},
   socialDatas: {},
   userPassword: undefined,
@@ -42,6 +43,7 @@ const initState = {
   filterWord: undefined,
   exSources: {},
   socialSources: {},
+  baseValueArr: ['1000'],
 };
 
 // reducer

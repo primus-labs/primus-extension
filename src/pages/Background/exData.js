@@ -37,167 +37,28 @@ export function clear() {
   EXCHANGEINFO = {};
 }
 
-export async function sign(exchangeName, data, port, USERPASSWORD) {
+export async function sign(exchangeName, data, USERPASSWORD, port) {
   const message = {
     type: `sign-${exchangeName}`,
-    params: {}
+    params: {},
   };
-  const exchange = await getExchange(message, port, USERPASSWORD);
-  const res = exchange.ex.exchange.sign(data.path, data.api, data.method, data.params, data.headers, data.body);
+  const exchange = await getExchange(message, USERPASSWORD, port);
+  const res = exchange.ex.exchange.sign(
+    data.path,
+    data.api,
+    data.method,
+    data.params,
+    data.headers,
+    data.body
+  );
   EXCHANGEINFO[exchangeName] = exchange.exParams;
   return res;
 }
-export async function assembleAlgorithmParams(form) {
-  const { source, type, baseValue, token: holdingToken } = form;
-  // const activeForm = { ...form }
-  // delete activeForm.type
-  const { baseName, baseUrl } = DATASOURCEMAP[source];
-  const { keyStore, userInfo } = await chrome.storage.local.get([
-    'keyStore',
-    'userInfo',
-  ]);
-  const { address } = JSON.parse(keyStore);
-  const { id, token: loginToken } = JSON.parse(userInfo);
-  const user = {
-    userid: id,
-    address: '0x' + address,
-    token: loginToken,
-  };
 
-  const params = {
-    source,
-    requestid: (+new Date()).toString(),
-    version: padoExtensionVersion,
-    baseName, // host, such as "api.binance.com"
-    baseUrl, // client <----> http-server
-    padoUrl: PADOURL, // client <----> pado-server
-    proxyUrl: PROXYURL,
-    // if cipher non-exist or empty use default. options:
-    //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
-    cipher: '', // TODO
-    getdatatime: (+new Date()).toString(),
-    exchange: {
-      apikey: 'xxx',
-      apisecret: 'xxx',
-      apipassword: 'xxx',
-    },
-    sigFormat: 'EAS-Ethereum', // TODO
-    schemaType: 'exchange-balance', // TODO
-    schema: [
-      // TODO
-      { name: 'source', type: 'string' },
-      { name: 'useridhash', type: 'string' },
-      { name: 'address', type: 'string' },
-      { name: 'getdatatime', type: 'string' },
-      { name: 'baseValue', type: 'string' },
-      { name: 'balanceGreaterBaseValue', type: 'string' },
-    ],
-    user,
-    // ext,
-
-    // holdingToken
-  };
-  
-  if (type === 'Assets Proof') {
-    params.baseValue = baseValue;
-  } else if (type === 'Token Holdings') {
-    params.holdingToken = holdingToken;
-  }
-  // const ext = {};
-  // const parseSchema
-  // parmas.ext = ext
-  // if (type === 'Assets Proof') {
-  //   params.baseValue = baseValue;
-  //   const sourceUpperCaseName = source.toUpperCase()
-  //   parseSchema = `${sourceUpperCaseName}_ACCOUNT_BALANCE`
-  // } else if (type === 'Token Holdings') {
-  //   params.holdingToken = holdingToken;
-  // }
-  // // TODO
-  
-  // const ext = {
-  //   parseSchema: 'OKX_ACCOUNT_BALANCE', // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-  //   extRequests: {
-  //     orders: ['account-balance'],
-  //     'account-balance': {
-  //       //decrypt: "true",
-  //       url: 'https://www.okx.com/api/v5/account/balance',
-  //       method: 'GET',
-  //       headers: {
-  //         'OK-ACCESS-KEY': '8a236275-eedc-46d9-a592-485fb38d1dfe',
-  //         'OK-ACCESS-PASSPHRASE': 'Padopado@2022',
-  //         'OK-ACCESS-SIGN': 'LGCcfSvL00ejKcXLQ7KUCVS68AeUX8RN9htSzBcvxDM=',
-  //         'OK-ACCESS-TIMESTAMP': '2023-05-19T07:21:26.379Z',
-  //       }, // "key":"value"
-  //       body: {}, // "key":"value"
-  //     },
-  //   },
-  // };
-  // params = {
-  //   requestid: '1', // unique
-  //   version: '1.0.0',
-  //   source: 'okx',
-  //   baseName: 'www.okx.com', // host, such as "api.binance.com"
-  //   baseUrl: '104.18.2.151:443', // client <----> http-server
-  //   padoUrl: '127.0.0.1:8081', // client <----> pado-server
-  //   proxyUrl: '127.0.0.1:9000',
-  //   // if cipher non-exist or empty use default. options:
-  //   //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
-  //   cipher: '',
-  //   getdatatime: (+new Date()).toString(),
-  //   exchange: {
-  //     apikey: 'xxx',
-  //     apisecret: 'xxx',
-  //     apipassword: 'xxx',
-  //   },
-  //   sigFormat: 'EAS-Ethereum',
-  //   schemaType: 'exchange-balance',
-  //   schema: [
-  //     { name: 'source', type: 'string' },
-  //     { name: 'useridhash', type: 'string' },
-  //     { name: 'address', type: 'string' },
-  //     { name: 'getdatatime', type: 'string' },
-  //     { name: 'baseValue', type: 'string' },
-  //     { name: 'balanceGreaterBaseValue', type: 'string' },
-  //   ],
-  //   user: {
-  //     userid: '0123456789',
-  //     address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
-  //     token: 'xxx',
-  //   },
-  //   baseValue: '1000',
-  //   ext: {
-  //     parseSchema: 'OKX_ACCOUNT_BALANCE', // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-  //     extRequests: {
-  //       orders: ['account-balance'],
-  //       'account-balance': {
-  //         //decrypt: "true",
-  //         url: 'https://www.okx.com/api/v5/account/balance',
-  //         method: 'GET',
-  //         headers: {
-  //           'OK-ACCESS-KEY': '8a236275-eedc-46d9-a592-485fb38d1dfe',
-  //           'OK-ACCESS-PASSPHRASE': 'Padopado@2022',
-  //           'OK-ACCESS-SIGN': 'LGCcfSvL00ejKcXLQ7KUCVS68AeUX8RN9htSzBcvxDM=',
-  //           'OK-ACCESS-TIMESTAMP': '2023-05-19T07:21:26.379Z',
-  //         }, // "key":"value"
-  //         body: {}, // "key":"value"
-  //       },
-  //     },
-  //     signHash: {
-  //       trueHash:
-  //         '0x78dcd376165ff92037130b1a73f49b9ebc2d1dc3e0bac9b9e29c4991ebdd84ef',
-  //       falseHash:
-  //         '0x092c22fe27704e9b0c9b58550e78cb53b621930844a8008fc8a644aaccb0fa43',
-  //     },
-  //   },
-  // };
-  return {};
-}
-
-const getExchange = async (message, port, USERPASSWORD) => {
+const getExchange = async (message, USERPASSWORD, port) => {
   var {
     type,
-    params: { apiKey},
+    params: { apiKey },
   } = message;
   const exchangeName = type.split('-')[1];
   console.log('getExchange exData type:', type);
@@ -208,13 +69,11 @@ const getExchange = async (message, port, USERPASSWORD) => {
   } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
     exParams = EXCHANGEINFO[exchangeName];
   } else {
-    const cipherData = await chrome.storage.local.get(
-      exchangeName + 'cipher'
-    );
-    if(!USERPASSWORD) {
-      postMsg(port,{
+    const cipherData = await chrome.storage.local.get(exchangeName + 'cipher');
+    if (!USERPASSWORD) {
+      postMsg(port, {
         resType: 'lock',
-      })
+      });
     }
     if (cipherData) {
       try {
@@ -232,8 +91,8 @@ const getExchange = async (message, port, USERPASSWORD) => {
   const exchangeInfo = DATASOURCEMAP[exchangeName];
   const constructorF = exchangeInfo.constructorF;
   const ex = new constructorF(exParams);
-  return {ex: ex, exParams: exParams };
-}
+  return { ex: ex, exParams: exParams };
+};
 
 const processNetworkReq = async (message, port, USERPASSWORD) => {
   var {
@@ -338,3 +197,119 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
   }
 };
 export default processNetworkReq;
+
+export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
+  const { source, type, baseValue, token: holdingToken,label, exUserId } = form;
+  const { baseName, baseUrl } = DATASOURCEMAP[source];
+  const user = await assembleUserInfoParams();
+  const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(
+    source,
+    USERPASSWORD,
+    port
+  );
+  const timeStampStr = (+new Date()).toString();
+  const params = {
+    type,
+    label,
+    exUserId,
+    source,
+    requestid: timeStampStr,
+    version: padoExtensionVersion,
+    baseName, // host, such as "api.binance.com"
+    baseUrl, // client <----> http-server
+    padoUrl: PADOURL, // client <----> pado-server
+    proxyUrl: PROXYURL,
+    // if cipher non-exist or empty use default. options:
+    //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
+    cipher: '', // TODO
+    getdatatime: timeStampStr,
+    exchange: {
+      apikey: 'xxx',
+      apisecret: 'xxx',
+      apipassword: 'xxx',
+    },
+    sigFormat: 'EAS-Ethereum', // TODO
+    schemaType: 'exchange-balance', // TODO
+    schema: [
+      // TODO
+      { name: 'source', type: 'string' },
+      { name: 'useridhash', type: 'string' },
+      { name: 'address', type: 'string' },
+      { name: 'getdatatime', type: 'string' },
+      { name: 'baseValue', type: 'string' },
+      { name: 'balanceGreaterBaseValue', type: 'string' },
+    ],
+    user,
+
+    // holdingToken // TODO
+  };
+  let parseSchema;
+  const sourceUpperCaseName = source.toUpperCase();
+  if (type === 'Assets Proof') {
+    params.baseValue = baseValue;
+    parseSchema = `${sourceUpperCaseName}_ACCOUNT_BALANCE`;
+  } else if (type === 'Token Holdings') {
+    params.holdingToken = holdingToken;
+    parseSchema = `${sourceUpperCaseName}_ASSET_BALANCES`;
+  }
+  let extRequestsOrder = 'account-balance';
+  const ext = {
+    parseSchema: parseSchema, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
+    extRequests: {
+      orders: [extRequestsOrder], // TODO
+      [extRequestsOrder]: extRequestsOrderInfo,
+    },
+  };
+  params.ext = ext;
+
+  return params;
+}
+async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
+  const sourceLowerCaseName = source.toLowerCase();
+  let extRequestsOrderInfo = {};
+  switch (sourceLowerCaseName) {
+    case 'binance':
+      break;
+    case 'okx':
+      const data = {
+        path: 'account/balance',
+        api: 'private',
+        method: 'GET',
+        params: {},
+      };
+      const signres = await sign('okx', data, USERPASSWORD, port);
+      extRequestsOrderInfo = { ...signres };
+      // extRequestsOrderInfo = {
+      //   url: accountBalanceUrl,
+      //   method: 'GET',
+      //   headers: {
+      //     'OK-ACCESS-KEY': signHeader['OK-ACCESS-KEY'],
+      //     'OK-ACCESS-PASSPHRASE': 'Padopado@2022',
+      //     'OK-ACCESS-SIGN': signres.headers['OK-ACCESS-SIGN'],
+      //     'OK-ACCESS-TIMESTAMP': signres.headers['OK-ACCESS-TIMESTAMP'],
+      //   },
+      //   body: {},
+      // };
+      break;
+    case 'kucoin':
+      break;
+    default:
+      break;
+  }
+  return extRequestsOrderInfo;
+}
+async function assembleUserInfoParams() {
+  const { keyStore, userInfo } = await chrome.storage.local.get([
+    'keyStore',
+    'userInfo',
+  ]);
+  const { address } = JSON.parse(keyStore);
+  const { id, token: loginToken } = JSON.parse(userInfo);
+  const user = {
+    userid: id,
+    address: '0x' + address,
+    token: loginToken,
+  };
+  return user;
+}
+

@@ -15,12 +15,13 @@ import type { UserState } from '@/store/reducers';
 
 import './index.sass';
 
-const BASEVALUE = '1000';
 export type AttestionForm = {
   token?: string;
   baseValue?: string;
   source: string;
   type: string;
+  exUserId?: string;
+  label?: string;
 };
 interface AttestationDialogProps {
   type: string;
@@ -29,6 +30,12 @@ interface AttestationDialogProps {
   onCheck?: () => void;
   activeCred?: CredTypeItemType;
 }
+type ConnectSourceType = {
+  name: string;
+  icon: any;
+  exUserId?: string;
+  label?: string;
+};
 
 const attestationDescMap = {
   'Assets Proof': {
@@ -48,32 +55,31 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   onSubmit,
   activeCred,
 }) => {
-  const padoServicePort = useSelector(
-    (state: UserState) => state.padoServicePort
-  );
   const navigate = useNavigate();
-  const [activeSource, setActiveSource] = useState<DataFieldItem>();
+  const [activeSource, setActiveSource] = useState<ConnectSourceType>();
   const [activeToken, setActiveToken] = useState<string>('');
   const [activeBaseValue, setActiveBaseValue] = useState<string>('');
   const [errorTip, setErrorTip] = useState<string>();
   const exSources = useSelector((state: UserState) => state.exSources);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
+  const baseValueArr = useSelector((state: UserState) => state.baseValueArr);
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
   const activeAttestationTypeInfo = useMemo(() => {
     return attestationDescMap[type as keyof typeof attestationDescMap];
   }, [type]);
-  const connectedSourceList: DataFieldItem[] = useMemo(() => {
+  const connectedSourceList: ConnectSourceType[] = useMemo(() => {
     return Object.keys(exSources).map((key) => {
       const sourceInfo: ExchangeMeta =
         DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
-      const { name, icon, type, requirePassphase } = sourceInfo;
-      const infoObj: DataFieldItem = {
+      const { name, icon } = sourceInfo;
+      const { exUserId, label } = exSources[key];
+      const infoObj: ConnectSourceType = {
         name,
         icon,
-        type,
-        requirePassphase,
+        exUserId,
+        label,
       };
       return infoObj;
     });
@@ -139,7 +145,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       }
       const form: AttestionForm = {
         source: activeSource.name.toLowerCase(),
-        type
+        type,
+        exUserId: activeSource?.userId,
+        label: activeSource?.label,
       };
       if (type === 'Token Holdings') {
         if (!activeToken) {
@@ -161,7 +169,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
     }
   };
 
-  const handleClickData = (item: DataFieldItem) => {
+  const handleClickData = (item: ConnectSourceType) => {
     if (activeCred && activeSource) {
       if (activeSource?.name !== item.name) {
         return;
@@ -177,7 +185,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
     }
   };
   const liClassNameCallback = useCallback(
-    (item: DataFieldItem) => {
+    (item: ConnectSourceType) => {
       let defaultClassName = 'networkItem';
       if (activeCred && activeSource) {
         if (activeSource?.name !== item.name) {
@@ -212,8 +220,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
     }
   }, [activeCred, type, connectedSourceList]);
   useEffect(() => {
-    setActiveBaseValue(BASEVALUE);
-  }, []);
+    setActiveBaseValue(baseValueArr[0]);
+  }, [baseValueArr]);
 
   return (
     <PMask onClose={onClose}>

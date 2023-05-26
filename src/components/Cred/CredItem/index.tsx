@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import type { SyntheticBaseEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DATASOURCEMAP } from '@/utils/constants';
+import { DATASOURCEMAP, PADOADDRESS } from '@/utils/constants';
 
-import {getCurrentDate} from '@/utils/utils'
+import { getCurrentDate, formatNumeral, formatAddress } from '@/utils/utils';
 import type { UserState } from '@/store/reducers';
 import iconExpand from '@/assets/img/iconExpand.svg';
 import iconUpChain from '@/assets/img/iconUpChain.svg';
@@ -32,7 +32,12 @@ export type CredTypeItemType = {
   signature: string; // includes v，r，s
   data: string; // trueHash or falseHash
 
-  exUserid: string;
+  exUserId: string;
+  user: {
+    userid: string;
+    address: string;
+    token: string;
+  }
 };
 
 interface CredTypeListProps {
@@ -120,10 +125,10 @@ const CredItem: React.FC<CredTypeListProps> = ({
               <span>{item?.source}</span>
             </div>
           </div>
-          {(item.exUserid || item.label) && (
+          {(item.exUserId || item.label) && (
             <div className="descItem">
               <div className="label">ID: &nbsp;</div>
-              <div className="value">{item?.exUserid ?? item.label}</div>
+              <div className="value">{item?.exUserId ?? item.label}</div>
             </div>
           )}
         </div>
@@ -181,12 +186,20 @@ const CredItem: React.FC<CredTypeListProps> = ({
             {item.type === 'Assets Proof' ? (
               <div className="value">
                 <div className="desc">Assets balance greater than</div>
-                <div className="con">$1,000</div>
+                <div className="con">
+                  $
+                  {item.baseValue
+                    ? formatNumeral(item.baseValue, {
+                        decimalPlaces: 0,
+                      })
+                    : ''}
+                </div>
               </div>
             ) : (
               <div className="value">
                 <div className="desc">Hold this kind of Token:</div>
-                <div className="con">
+                  <div className="con">
+                    {/* TODO */}
                   {tokenLogoPrefix && (
                     <img src={`${tokenLogoPrefix}iconBTC.png`} alt="" />
                   )}
@@ -197,13 +210,13 @@ const CredItem: React.FC<CredTypeListProps> = ({
           </div>
           <div className="descItem arow">
             <div className="label">Recipient Add</div>
-            <div className="value">0x009d...02fa</div>
+            <div className="value">{formatAddress(item.user.address)}</div>
           </div>
           <div className="descItem">
             <div className="label">Attested By</div>
             <div className="value">
               <div className="desc">PADO</div>
-              <div className="con">0x1234...opiu</div>
+              <div className="con">{formatAddress(PADOADDRESS)}</div>
             </div>
           </div>
         </div>

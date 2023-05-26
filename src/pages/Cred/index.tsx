@@ -115,13 +115,6 @@ const Cred = () => {
       title: 'Attestation is processing',
       desc: 'It may take a few minutes.',
     });
-    // setTimeout(() => {
-    //   setActiveRequest({
-    //     type: 'suc',
-    //     title: 'Congratulations',
-    //     desc: 'Your proof is created!',
-    //   });
-    // }, 2000);
   };
   const onSubmitActiveRequestDialog = () => {
     if (activeRequest?.type === 'suc') {
@@ -256,7 +249,6 @@ const Cred = () => {
   }, [fetchAttestationTimer]);
   useEffect(() => {
     if (fetchAttestationTimer && activeRequest?.type === 'suc') {
-      // debugger
       clearInterval(fetchAttestationTimer);
     }
   }, [fetchAttestationTimer, activeRequest]);

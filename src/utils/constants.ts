@@ -39,6 +39,9 @@ export type ExchangeMeta = {
   constructorF?: any;
   baseName?: string;
   baseUrl?: string;
+  accountBalanceUrl?: string;
+  userId?: string;
+  label?: string;
 };
 export type DataSourceMapType = {
   [propName: string]: ExchangeMeta;
@@ -51,6 +54,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     constructorF: Binance,
     baseName: 'api.binance.com',
     baseUrl: '',
+    accountBalanceUrl: 'https://api.binance.com/api/v3/account',
   },
   coinbase: {
     name: 'Coinbase',
@@ -60,6 +64,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     constructorF: Coinbase,
     baseName: 'api.coinbase.com',
     baseUrl: '',
+    accountBalanceUrl: 'https://api.binance.com/api/v3/account',
   },
   kucoin: {
     name: 'KuCoin',
@@ -87,6 +92,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     constructorF: OKX,
     baseName: 'www.okx.com',
     baseUrl: '104.18.2.151:443',
+    accountBalanceUrl: 'https://www.okx.com/api/v5/account/balance',
   },
   gate: {
     name: 'Gate',
@@ -251,3 +257,4 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
 
 export const PADOURL = '127.0.0.1:8081'
 export const PROXYURL = '127.0.0.1:9000'
+export const PADOADDRESS = '0x12342398493849abcd';
