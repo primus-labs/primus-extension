@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import type { SyntheticBaseEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { DATASOURCEMAP } from '@/utils/constants';
+
 import {getCurrentDate} from '@/utils/utils'
 import type { UserState } from '@/store/reducers';
 import iconExpand from '@/assets/img/iconExpand.svg';
@@ -47,13 +49,13 @@ const CredItem: React.FC<CredTypeListProps> = ({
   onUpdate,
   onDelete
 }) => {
+  console.log('credItem',item)
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [expand, setExpand] = useState(false);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
-  const [activeItem, setActiveItem] = useState<string>();
   const otherOperations = useMemo(() => {
     if (item.provided.length > 0) {
       return ['Delete'];
@@ -93,6 +95,15 @@ const CredItem: React.FC<CredTypeListProps> = ({
       setExpand(true);
     }
   }, [item]);
+  const iconCallback = useCallback((item: CredTypeItemType) => {
+    const sourceName = item?.source;
+    if (sourceName) { 
+      const sourceLowerCaseName = item.source.toLowerCase();
+      return DATASOURCEMAP[sourceLowerCaseName].icon;
+    } 
+    return null
+    
+  }, []);
   
   return (
     <div className={expand ? 'credItem expand' : 'credItem'}>
@@ -105,11 +116,11 @@ const CredItem: React.FC<CredTypeListProps> = ({
           <div className="descItem">
             <div className="label">Source: &nbsp;</div>
             <div className="value">
-              <img src={item?.icon} alt="" className="sourceIcon" />
+              <img src={iconCallback(item)} alt="" className="sourceIcon" />
               <span>{item?.source}</span>
             </div>
           </div>
-          {(item.id || item.label) && (
+          {(item.exUserid || item.label) && (
             <div className="descItem">
               <div className="label">ID: &nbsp;</div>
               <div className="value">{item?.exUserid ?? item.label}</div>
@@ -118,7 +129,9 @@ const CredItem: React.FC<CredTypeListProps> = ({
         </div>
         <div className="descItem">
           <div className="label">Date: &nbsp;</div>
-          <div className="value">{getCurrentDate(Number(item?.getdatatime))}</div>
+          <div className="value">
+            {getCurrentDate(Number(item?.getdatatime))}
+          </div>
         </div>
         <footer>
           <div className="providedChains">

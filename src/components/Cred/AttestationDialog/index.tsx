@@ -4,24 +4,28 @@ import { useNavigate } from 'react-router-dom';
 import PMask from '@/components/PMask';
 import { DATASOURCEMAP } from '@/utils/constants';
 import type { ExchangeMeta } from '@/utils/constants';
+import { formatNumeral } from '@/utils/utils';
+
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import PSelect from '@/components/PSelect';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
 import type { UserState } from '@/store/reducers';
-import { postMsg } from '@/utils/utils';
 
 import './index.sass';
 
+const BASEVALUE = '1000';
+export type AttestionForm = {
+  token?: string;
+  baseValue?: string;
+  source: string;
+  type: string;
+};
 interface AttestationDialogProps {
   type: string;
   onClose: () => void;
-  onSubmit: (
-    item: DataFieldItem,
-    token: string,
-    activeCred?: CredTypeItemType
-  ) => void;
+  onSubmit: (form: AttestionForm, activeCred?: CredTypeItemType) => void;
   onCheck?: () => void;
   activeCred?: CredTypeItemType;
 }
@@ -50,6 +54,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   const navigate = useNavigate();
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
   const [activeToken, setActiveToken] = useState<string>('');
+  const [activeBaseValue, setActiveBaseValue] = useState<string>('');
   const [errorTip, setErrorTip] = useState<string>();
   const exSources = useSelector((state: UserState) => state.exSources);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -126,16 +131,33 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
     if (connectedSourceList.length === 0) {
       navigate('/datas');
     }
+
     if (connectedSourceList.length > 0) {
       if (!activeSource) {
         setErrorTip('Please select one data source');
         return;
-      } else if (type === 'Token Holdings' && !activeToken) {
-        setErrorTip('Please select one token');
-        return;
-      } else {
-        onSubmit(activeSource as DataFieldItem, activeToken, activeCred);
       }
+      const form: AttestionForm = {
+        source: activeSource.name.toLowerCase(),
+        type
+      };
+      if (type === 'Token Holdings') {
+        if (!activeToken) {
+          setErrorTip('Please select one token');
+          return;
+        } else {
+          form.token = activeToken;
+        }
+      }
+      if (type === 'Assets Proof') {
+        if (!activeBaseValue) {
+          setErrorTip('Please select one baseValue');
+          return;
+        } else {
+          form.baseValue = activeBaseValue;
+        }
+      }
+      onSubmit(form, activeCred);
     }
   };
 
@@ -180,7 +202,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   useEffect(() => {
     if (activeCred) {
       const sourceInfo = connectedSourceList.find(
-        (i) => i.name === activeCred.name
+        (i) => i.name === activeCred.source.toLowerCase()
       );
       setActiveSource(sourceInfo);
       if (type === 'Assets Proof') {
@@ -189,7 +211,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       }
     }
   }, [activeCred, type, connectedSourceList]);
-  
+  useEffect(() => {
+    setActiveBaseValue(BASEVALUE);
+  }, []);
 
   return (
     <PMask onClose={onClose}>
@@ -202,7 +226,16 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
               <div className="label">Proof content</div>
               <div className="value">
                 <div className="desc">{activeAttestationTypeInfo.content}</div>
-                {type === 'Assets Proof' && <div className="con">$1,000</div>}
+                {type === 'Assets Proof' && (
+                  <div className="con">
+                    $
+                    {activeBaseValue
+                      ? formatNumeral(activeBaseValue, {
+                          decimalPlaces: 0,
+                        })
+                      : ''}
+                  </div>
+                )}
                 {type === 'Token Holdings' && (
                   <div className="pSelectWrapper">
                     <PSelect

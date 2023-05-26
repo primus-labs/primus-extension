@@ -113,6 +113,7 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestation':
+      debugger
       params = {
         requestid: '1', // unique
         version: '1.0.0',
@@ -201,7 +202,7 @@ const processAlgorithmReq = async (message, port) => {
       const result = {
         requestid: (+new Date()).toString(),
         version: '1.0.0',
-        source: 'OKX',
+        source: 'okx',
         useridhash: '0x123',
         address: '0x23',
         getdatatime: (+new Date()).toString(),

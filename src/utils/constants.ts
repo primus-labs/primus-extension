@@ -37,6 +37,8 @@ export type ExchangeMeta = {
   icon: any;
   requirePassphase?: boolean;
   constructorF?: any;
+  baseName?: string;
+  baseUrl?: string;
 };
 export type DataSourceMapType = {
   [propName: string]: ExchangeMeta;
@@ -47,6 +49,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceBinance,
     constructorF: Binance,
+    baseName: 'api.binance.com',
+    baseUrl: '',
   },
   coinbase: {
     name: 'Coinbase',
@@ -54,6 +58,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceCoinbase,
     requirePassphase: false,
     constructorF: Coinbase,
+    baseName: 'api.coinbase.com',
+    baseUrl: '',
   },
   kucoin: {
     name: 'KuCoin',
@@ -61,6 +67,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceKucoin,
     requirePassphase: true,
     constructorF: KuCoin,
+    baseName: 'api.kucoin.com',
+    baseUrl: '',
   },
   bybit: {
     name: 'Bybit',
@@ -68,6 +76,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceBybit,
     requirePassphase: false,
     constructorF: Bybit,
+    baseName: 'api.bybit.com',
+    baseUrl: '',
   },
   okx: {
     name: 'OKX',
@@ -75,6 +85,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceOKX,
     requirePassphase: true,
     constructorF: OKX,
+    baseName: 'www.okx.com',
+    baseUrl: '104.18.2.151:443',
   },
   gate: {
     name: 'Gate',
@@ -82,6 +94,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceGate,
     requirePassphase: false,
     constructorF: Gate,
+    baseName: 'api.gateio.ws',
+    baseUrl: '',
   },
   huobi: {
     name: 'Huobi',
@@ -89,6 +103,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceHuobi,
     requirePassphase: false,
     constructorF: Huobi,
+    baseName: 'api.huobi.pro',
+    baseUrl: '',
   },
   bitget: {
     name: 'Bitget',
@@ -96,6 +112,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceBitget,
     requirePassphase: true,
     constructorF: Bitget,
+    baseName: 'api.bitget.com',
+    baseUrl: '',
   },
   mexc: {
     name: 'MEXC',
@@ -103,6 +121,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceMEXC,
     requirePassphase: false,
     constructorF: Mexc,
+    baseName: 'api.mexc.com',
+    baseUrl: '',
   },
   twitter: {
     name: 'Twitter',
@@ -143,6 +163,7 @@ export const CHARTCOLORS = [
 
 export const ExchangeStoreVersion = '1.0.0';
 export const SocailStoreVersion = '1.0.0';
+export const padoExtensionVersion = '1.0.0';
 
 export const USDT = 'USDT';
 export const USD = 'USD';
@@ -227,3 +248,6 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
     disabled: true,
   },
 ];
+
+export const PADOURL = '127.0.0.1:8081'
+export const PROXYURL = '127.0.0.1:9000'

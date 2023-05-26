@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { ActiveRequestType } from '@/pages/DataSourceOverview';
+import type {AttestionForm} from '@/components/Cred/AttestationDialog'
 import { ONCHAINLIST } from '@/utils/constants';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconTool1 from '@/assets/img/iconTool1.svg';
@@ -94,15 +95,16 @@ const Cred = () => {
   };
 
   const onSubmitAttestationDialog = async (
-    item: DataFieldItem,
-    token: string,
+    form: AttestionForm,
     activeCred?: CredTypeItemType
   ) => {
     // if activeCred is update,not add
     const msg = {
       fullScreenType: 'algorithm',
       reqMethodName: 'getAttestation',
-      params: {},
+      params: {
+        ...form
+      },
     };
     postMsg(padoServicePort, msg);
     console.log(`page_send:getAttestation:`);
@@ -221,8 +223,10 @@ const Cred = () => {
           if (res) {
             const storageRes = await chrome.storage.local.get(['credentials']);
             const credentialsStr = storageRes.credentials;
-            const credentialArr = credentialsStr?JSON.parse(credentialsStr): [];
-            credentialArr.push(res)
+            const credentialArr = credentialsStr
+              ? JSON.parse(credentialsStr)
+              : [];
+            credentialArr.push(res);
             // debugger
             chrome.storage.local.set({
               credentials: JSON.stringify(credentialArr),
@@ -256,16 +260,16 @@ const Cred = () => {
       clearInterval(fetchAttestationTimer);
     }
   }, [fetchAttestationTimer, activeRequest]);
-  const initCredList = async() => {
+  const initCredList = async () => {
     const storageRes = await chrome.storage.local.get(['credentials']);
     const credentialsStr = storageRes.credentials;
     const credentialArr = credentialsStr ? JSON.parse(credentialsStr) : [];
     setCredList(credentialArr);
-  }
+  };
   useEffect(() => {
-    chrome.storage.local.remove(['credentials']);//TODO
-    initCredList()
-  }, [])
+    // chrome.storage.local.remove(['credentials']);//TODO
+    initCredList();
+  }, []);
 
   return (
     <div className="pageDataSourceOverview">
