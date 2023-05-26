@@ -92,6 +92,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     constructorF: OKX,
     baseName: 'www.okx.com',
     baseUrl: '104.18.2.151:443',
+
     accountBalanceUrl: 'https://www.okx.com/api/v5/account/balance',
   },
   gate: {

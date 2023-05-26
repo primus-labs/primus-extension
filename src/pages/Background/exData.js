@@ -8,7 +8,6 @@ import {
 } from '@/utils/constants';
 import { getCurrentDate, sub, postMsg } from '@/utils/utils';
 
-
 let EXCHANGEINFO = {
   binance: {
     name: 'binance',
@@ -111,10 +110,10 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
     case 'set-gate':
     case 'set-mexc':
       console.log('exData type:', type);
-      try{
+      try {
         const exchange = await getExchange(message, port, USERPASSWORD);
         const ex = exchange.ex;
-        const exParams =exchange.exParams;
+        const exParams = exchange.exParams;
         await ex.getInfo();
         // compute changes from last time => pnl
         let storageRes = await chrome.storage.local.get(exchangeName);
@@ -134,9 +133,9 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           label: exParams.label,
           flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
           spotAccountTokenMap: ex.spotAccountTokenMap,
-          tokenPriceMap: ex.tokenPriceMap
+          tokenPriceMap: ex.tokenPriceMap,
         };
-        console.log(`background--${exchangeName}exData`, ex)
+        console.log(`background--${exchangeName}exData`, ex);
         if (pnl !== null && pnl !== undefined) {
           exData.pnl = pnl;
         }
@@ -147,7 +146,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
             apiKey,
             secretKey,
             passphase,
-            label
+            label,
           };
           const encryptedKey = encrypt(
             JSON.stringify(exCipherData),
@@ -159,36 +158,61 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
             [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
           });
           EXCHANGEINFO[exchangeName] = exParams;
-          postMsg(port,{ resType: type, res: true })
+          postMsg(port, { resType: type, res: true });
         } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
           await chrome.storage.local.set({
             [exchangeName]: JSON.stringify(exData),
           });
-          postMsg(port,{ resType: type, res: true })
+          postMsg(port, { resType: type, res: true });
         } else {
           await chrome.storage.local.set({
             [exchangeName]: JSON.stringify(exData),
           });
           EXCHANGEINFO[exchangeName] = exParams;
-          postMsg(port,{ resType: type, res: true })
+          postMsg(port, { resType: type, res: true });
         }
       } catch (error) {
-        console.log('exData', error,error.message, error.message.indexOf('AuthenticationError'))
-        if(error.message.indexOf('AuthenticationError')> -1) {
-          postMsg(port,{ resType: type, res: false, msg: 'AuthenticationError' })
-        } else if(error.message.indexOf('ExchangeNotAvailable')> -1) {
-          postMsg(port,{ resType: type, res: false, msg: 'ExchangeNotAvailable' })
-        } else if(error.message.indexOf('InvalidNonce')> -1) {
-          postMsg(port,{ resType: type, res: false, msg: 'InvalidNonce' })
-        } else if (error.message.indexOf('RequestTimeout')> -1) {
+        console.log(
+          'exData',
+          error,
+          error.message,
+          error.message.indexOf('AuthenticationError')
+        );
+        if (error.message.indexOf('AuthenticationError') > -1) {
+          postMsg(port, {
+            resType: type,
+            res: false,
+            msg: 'AuthenticationError',
+          });
+        } else if (error.message.indexOf('ExchangeNotAvailable') > -1) {
+          postMsg(port, {
+            resType: type,
+            res: false,
+            msg: 'ExchangeNotAvailable',
+          });
+        } else if (error.message.indexOf('InvalidNonce') > -1) {
+          postMsg(port, { resType: type, res: false, msg: 'InvalidNonce' });
+        } else if (error.message.indexOf('RequestTimeout') > -1) {
           // postMsg(port,{ resType: type, res: false, msg: 'RequestTimeout' }) // cctx-10s
-          postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })
-        } else if (error.message.indexOf('NetworkError')> -1) {
-          postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })
-        } else if (error.message.indexOf('TypeError: Failed to fetch')> -1) {
-          postMsg(port,{ resType: type, res: false, msg: 'TypeError: Failed to fetch' })
+          postMsg(port, {
+            resType: type,
+            res: false,
+            msg: 'TypeError: Failed to fetch',
+          });
+        } else if (error.message.indexOf('NetworkError') > -1) {
+          postMsg(port, {
+            resType: type,
+            res: false,
+            msg: 'TypeError: Failed to fetch',
+          });
+        } else if (error.message.indexOf('TypeError: Failed to fetch') > -1) {
+          postMsg(port, {
+            resType: type,
+            res: false,
+            msg: 'TypeError: Failed to fetch',
+          });
         } else {
-          postMsg(port,{ resType: type, res: false, msg: 'UnhnowError' })
+          postMsg(port, { resType: type, res: false, msg: 'UnhnowError' });
         }
       }
       break;
@@ -199,7 +223,14 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
 export default processNetworkReq;
 
 export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
-  const { source, type, baseValue, token: holdingToken,label, exUserId } = form;
+  const {
+    source,
+    type,
+    baseValue,
+    token: holdingToken,
+    label,
+    exUserId,
+  } = form;
   const { baseName, baseUrl } = DATASOURCEMAP[source];
   const user = await assembleUserInfoParams();
   const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(
@@ -267,17 +298,38 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
   const sourceLowerCaseName = source.toLowerCase();
   let extRequestsOrderInfo = {};
+  let data = {};
+  let signres = null;
   switch (sourceLowerCaseName) {
     case 'binance':
+      data = {
+        path: 'account',
+        api: 'private',
+        method: 'GET',
+        params: {},
+      };
+      signres = await sign('binance', data, USERPASSWORD, port);
+      extRequestsOrderInfo = { ...signres };
+      break;
+    case 'coinbase':
+      data = {
+        path: 'accounts',
+        api: ['v2', 'private'],
+        method: 'GET',
+        params: {},
+      };
+      signres = await sign('coinbase', data, USERPASSWORD, port);
+      extRequestsOrderInfo = { ...signres };
       break;
     case 'okx':
-      const data = {
+      data = {
         path: 'account/balance',
         api: 'private',
         method: 'GET',
         params: {},
       };
-      const signres = await sign('okx', data, USERPASSWORD, port);
+      signres = await sign('okx', data, USERPASSWORD, port);
+
       extRequestsOrderInfo = { ...signres };
       // extRequestsOrderInfo = {
       //   url: accountBalanceUrl,
@@ -312,4 +364,3 @@ async function assembleUserInfoParams() {
   };
   return user;
 }
-
