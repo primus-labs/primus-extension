@@ -119,6 +119,7 @@ export async function attestByDelegation(params) {
     let signer = provider.getSigner();
     eas.connect(signer);
     try {
+        const schemauid = EASInfo[networkName].schemaUid;
         tx = await eas.attestByDelegation({
             schema: schemauid,
             data: {

@@ -17,57 +17,24 @@ import { postMsg } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
+import type { WALLETITEMTYPE } from '@/utils/constants';
+
 import type { ActiveRequestType } from '@/pages/DataSourceOverview';
-import type {AttestionForm} from '@/components/Cred/AttestationDialog'
-import { ONCHAINLIST } from '@/utils/constants';
+import type { AttestionForm } from '@/components/Cred/AttestationDialog';
+import { ONCHAINLIST, PADOADDRESS } from '@/utils/constants';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconTool1 from '@/assets/img/iconTool1.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
 import iconMina from '@/assets/img/iconMina.png';
-
+import { connectWallet } from '@/services/wallets/metamask';
+import { attestByDelegation } from '@/services/chains/eas.js';
+import request from '../../utils/request';
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
-  const [credList, setCredList] = useState([
-    {
-      type: 'Assets Proof',
-      icon: iconDataSourceBinance,
-      name: 'Binance',
-      id: '111',
-      label: '111',
-      date: 'May 02, 2023',
-      provided: [],
-    },
-    {
-      type: 'Assets Proof',
-      icon: iconDataSourceBinance,
-      name: 'Binance',
-      id: '222',
-      label: '111',
-      date: 'May 02, 2023',
-      provided: [iconTool1],
-    },
-    {
-      type: 'Assets Proof',
-      icon: iconDataSourceBinance,
-      name: 'OKX',
-      id: '333',
-      label: '111',
-      date: 'May 02, 2023',
-      provided: [iconTool1, iconArbitrum, iconOptimism],
-    },
-    {
-      type: 'Token Holdings',
-      icon: iconDataSourceBinance,
-      name: 'Coinbase',
-      id: '444',
-      label: '111',
-      date: 'May 02, 2023',
-      provided: [iconTool1, iconArbitrum, iconOptimism],
-      holdingToken: 'BNB',
-    },
-  ]);
+  const [credList, setCredList] = useState<CredTypeItemType[]>([]);
   const [step, setStep] = useState(0);
+  const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
   const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
   const [activeAttestationType, setActiveAttestationType] =
@@ -103,7 +70,7 @@ const Cred = () => {
       fullScreenType: 'algorithm',
       reqMethodName: 'getAttestation',
       params: {
-        ...form
+        ...form,
       },
     };
     postMsg(padoServicePort, msg);
@@ -124,28 +91,67 @@ const Cred = () => {
     }
   };
   const handleUpChain = (item: CredTypeItemType) => {
+    setActiveCred(item);
     setStep(3);
   };
-  const handleSubmitTransferToChain = () => {
+  const handleSubmitTransferToChain = (networkName: string) => {
+    // TODO
+    setActiveNetworkName(networkName);
     setStep(4);
   };
   const handleCancelTransferToChain = () => {};
   const handleBackConnectWallet = () => {
     setStep(3);
   };
-  const handleSubmitConnectWallet = () => {
+  const handleSubmitConnectWallet = async (wallet: WALLETITEMTYPE) => {
+    // TODO
     setActiveRequest({
       type: 'loading',
       title: 'Processing',
       desc: 'Please complete the transaction in your wallet.',
     });
-    setTimeout(() => {
-      setActiveRequest({
-        type: 'suc',
-        title: 'Congratulations',
-        desc: 'Your attestation is recorded on-chain!',
-      });
-    }, 2000);
+    const [accounts, chainId, provider] = await connectWallet();
+    if (provider && provider.on) {
+      const handleConnect = () => {
+        console.log('metamask connected 2');
+      };
+      provider.on('connect', handleConnect);
+    }
+    const { keyStore } = await chrome.storage.local.get(['keyStore']);
+    const { address } = JSON.parse(keyStore);
+    const upChainParams = {
+      networkName: activeNetworkName,
+      metamaskprovider: provider,
+      receipt: '0x' + address,
+      attesteraddr: PADOADDRESS,
+      data: activeCred?.encodedData,
+      signature: activeCred?.signature,
+    };
+    const upChainRes = await attestByDelegation(upChainParams);
+    const storageRes = await chrome.storage.local.get(['credentials']);
+    const credentialsStr = storageRes.credentials;
+    const credentialArr = credentialsStr ? JSON.parse(credentialsStr) : [];
+    const activeIndex = credentialArr.findIndex(
+      (i: CredTypeItemType) => i.requestid === activeCred?.requestid
+    );
+    const newCred = credentialArr[activeIndex];
+    const newProvided = newCred.provided ?? [];
+    const currentChainObj = ONCHAINLIST.find(
+      (i) => activeNetworkName === i.title
+    );
+    newProvided.push(currentChainObj);
+    newCred.provided = newProvided;
+    credentialArr.splice(activeIndex, 1, newCred);
+    chrome.storage.local.set({
+      credentials: JSON.stringify(credentialArr),
+    });
+    initCredList();
+    setActiveRequest({
+      type: 'suc',
+      title: 'Congratulations',
+      desc: 'Your attestation is recorded on-chain!',
+    });
+
     setStep(5);
   };
   const handleViewQrcode = () => {
@@ -155,10 +161,11 @@ const Cred = () => {
     setQrcodeVisible(false);
     handleCloseMask();
   };
-  const handleDeleteCred = (item: CredTypeItemType) => {
+  const handleDeleteCred = async (item: CredTypeItemType) => {
     let newList = [...credList];
-    newList = newList.filter((i) => i.id !== item.id);
+    newList = newList.filter((i) => i.requestid !== item.requestid);
     setCredList(newList);
+    await chrome.storage.local.set({ credentials: JSON.stringify(newList) });
   };
   const handleUpdateCred = (item: CredTypeItemType) => {
     setActiveAttestationType(item.type);
@@ -208,7 +215,6 @@ const Cred = () => {
           const fetchTimer = setInterval(() => {
             fetchAttestationResult();
           }, 2000);
-          // debugger;
           setFetchAttestationTimer(fetchTimer);
           // }
         }
@@ -220,7 +226,6 @@ const Cred = () => {
               ? JSON.parse(credentialsStr)
               : [];
             credentialArr.push(res);
-            // debugger
             chrome.storage.local.set({
               credentials: JSON.stringify(credentialArr),
             });
@@ -259,7 +264,7 @@ const Cred = () => {
     setCredList(credentialArr);
   };
   useEffect(() => {
-    // chrome.storage.local.remove(['credentials']);//TODO
+    // chrome.storage.local.remove(['credentials']); //TODO
     initCredList();
   }, []);
 

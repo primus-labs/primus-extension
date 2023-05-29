@@ -12,7 +12,7 @@ type ToolItem = {
 };
 interface TransferToChainDialogProps {
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (name: string) => void;
   onCancel: () => void;
   title: string;
   desc: string;
@@ -46,7 +46,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
       setErrorTip(tip);
       return;
     }
-    onSubmit();
+    onSubmit(activeName);
   };
   const handleClickBack = () => {
     onCancel();

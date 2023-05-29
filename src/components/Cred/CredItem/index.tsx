@@ -12,12 +12,11 @@ import './index.sass';
 
 export type CredTypeItemType = {
   type: string;
-  icon: any;
   // name: string;
   // id: string;
   label: string;
   // date: string;
-  provided: any[];
+  provided?: any[];
   expand?: boolean;
   holdingToken?: string;
 
@@ -30,14 +29,14 @@ export type CredTypeItemType = {
   baseValue: string;
   balanceGreaterBaseValue: string; // or bool statusNormal
   signature: string; // includes v，r，s
-  data: string; // trueHash or falseHash
+  encodedData: string; // trueHash or falseHash
 
   exUserId: string;
   user: {
     userid: string;
     address: string;
     token: string;
-  }
+  };
 };
 
 interface CredTypeListProps {
@@ -62,7 +61,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
   const otherOperations = useMemo(() => {
-    if (item.provided.length > 0) {
+    if (item?.provided?.length && item?.provided?.length > 0) {
       return ['Delete'];
     }
     return ['Update', 'Delete'];
@@ -140,8 +139,8 @@ const CredItem: React.FC<CredTypeListProps> = ({
         </div>
         <footer>
           <div className="providedChains">
-            {item.provided.map((i, k) => (
-              <img src={i} key={k} alt="" />
+            {item.provided?.map((i, k) => (
+              <img src={i.icon} key={k} alt="" />
             ))}
           </div>
           <div className="operations">
@@ -198,8 +197,8 @@ const CredItem: React.FC<CredTypeListProps> = ({
             ) : (
               <div className="value">
                 <div className="desc">Hold this kind of Token:</div>
-                  <div className="con">
-                    {/* TODO */}
+                <div className="con">
+                  {/* TODO */}
                   {tokenLogoPrefix && (
                     <img src={`${tokenLogoPrefix}iconBTC.png`} alt="" />
                   )}

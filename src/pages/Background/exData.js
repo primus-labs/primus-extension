@@ -6,7 +6,10 @@ import {
   PADOURL,
   PROXYURL,
 } from '@/utils/constants';
-import { getCurrentDate, sub, postMsg } from '@/utils/utils';
+import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
+
+
+
 
 let EXCHANGEINFO = {
   binance: {
@@ -238,7 +241,15 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     USERPASSWORD,
     port
   );
+  
+  const { userInfo } = await chrome.storage.local.get([
+    'userInfo',
+  ]);
+  const { id: authUserId } = JSON.parse(userInfo);
+  const useridhash = strToHex(authUserId);
+  
   const timeStampStr = (+new Date()).toString();
+
   const params = {
     type,
     label,
@@ -273,6 +284,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     user,
 
     // holdingToken // TODO
+    useridhash,
   };
   let parseSchema;
   const sourceUpperCaseName = source.toUpperCase();
@@ -344,6 +356,14 @@ async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
       // };
       break;
     case 'kucoin':
+      data = {
+        path: 'accounts',
+        api: ['v2', 'private'],
+        method: 'GET',
+        params: {},
+      };
+      signres = await sign('kucoin', data, USERPASSWORD, port);
+      extRequestsOrderInfo = { ...signres };
       break;
     default:
       break;
@@ -364,3 +384,4 @@ async function assembleUserInfoParams() {
   };
   return user;
 }
+

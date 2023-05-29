@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
+var ethereumjsUtil = require('ethereumjs-util');
+
 export function gt(a: number, b: number) {
   return new BigNumber(a).gt(new BigNumber(b));
 }
@@ -133,4 +135,12 @@ export function exportJson(jsonStr: string, fileName: string) {
   aLink.click();
   document.body.removeChild(aLink);
   window.URL.revokeObjectURL(url);
+}
+
+export function strToHex(str: string) {
+  const value = Buffer.from(str, 'utf-8');
+  const returnValue = ethereumjsUtil.bufferToHex(
+    ethereumjsUtil.keccak256(value)
+  );
+  return returnValue;
 }

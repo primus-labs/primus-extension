@@ -146,7 +146,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       const form: AttestionForm = {
         source: activeSource.name.toLowerCase(),
         type,
-        exUserId: activeSource?.userId,
+        exUserId: activeSource?.exUserId,
         label: activeSource?.label,
       };
       if (type === 'Token Holdings') {

@@ -212,21 +212,50 @@ const processAlgorithmReq = async (message, port) => {
       //   params: params,
       // });
       // TODO for test
-      const storageRes = await chrome.storage.local.get([
+      const { activeRequestAttestation } = await chrome.storage.local.get([
         'activeRequestAttestation',
       ]);
       const parsedActiveRequestAttestation = JSON.parse(
-        storageRes.activeRequestAttestation
+        activeRequestAttestation
       );
       console.log('attestation', parsedActiveRequestAttestation);
-      const result = {
-        ...parsedActiveRequestAttestation,
-        useridhash: 'userIDHash', // TODO
-        balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
-        signature: '0x123', // includes v，r，s // TODO
-        data: '0x123', // trueHash or falseHash // TODO
-        provided: [], // TODO
+      const returnResult = {
+        content: {
+          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
+          balanceGreaterBaseValue: 'true',
+          baseValue: '1000',
+          encodedData:
+            '000000000000036f6b780000000000000000000000000000000000000000000000000000000000',
+          getdatatime: '1685328626630',
+          requestid: '1',
+          signature:
+            '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a',
+          source: 'okx',
+          useridhash:
+            '0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF',
+          version: '1.0.0',
+        },
+        retcode: '0',
+        retdesc: 'success',
       };
+      let msg = {
+        resType: 'algorithm',
+        resMethodName: 'getAttestationResult',
+      };
+      if (returnResult.retcode === '0') {
+        msg.res = {
+          ...parsedActiveRequestAttestation,
+          ...returnResult.content,
+          // balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
+          // signature:
+          //   '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a', // includes v，r，s // TODO
+          // data: '0x123', // trueHash or falseHash // TODO
+        };
+      } else {
+        msg.res = false;
+      }
+      postMsg(fullscreenPort, msg);
+      
       // const result = {
       //   requestid: (+new Date()).toString(),
       //   version: '1.0.0',
@@ -243,12 +272,7 @@ const processAlgorithmReq = async (message, port) => {
       //   provided: [], // TODO
       //   type: 'Assets Proof',
       // };
-      const msg = {
-        resType: 'algorithm',
-        resMethodName: 'getAttestationResult',
-        res: result,
-      };
-      postMsg(fullscreenPort, msg);
+      
       break;
     case 'stop':
       await chrome.offscreen.closeDocument();

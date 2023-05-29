@@ -11,8 +11,8 @@ export const connectWallet = async () => {
         }),
         provider.request({ method: 'eth_chainId' }),
     ]);
-    subscribeToEvents(provider);
-    return [accounts, chainId];
+    subscribeToEvents();
+    return [accounts, chainId, provider];
 }
 
 export const getProvider = () => {
@@ -20,7 +20,7 @@ export const getProvider = () => {
 }
 
 
-const subscribeToEvents = (provider) => {
+const subscribeToEvents = () => {
     if (provider && provider.on) {
         provider.on("chainChanged", handleChainChanged);
         provider.on("accountsChanged", handleAccountsChanged);
