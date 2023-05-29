@@ -3,6 +3,24 @@ import {ethers, utils} from 'ethers';
 import {_TypedDataEncoder} from "@ethersproject/hash";
 import { EASInfo } from "@/utils/constants";
 
+
+export async function testeas() {
+    let schemadata = {
+        source: "okx",
+        useridhash: "0x1234567890123456789012345678901234567890123456789012345678901234",
+        address: "0x7ab44DE0156925fe0c24482a2cDe48C465e47573",
+        getdatatime: 1234567890,
+        baseValue: 1234567890,
+        balanceGreaterBaseValue: true
+    };
+    let params = {
+        networkName: 'Sepolia',
+        schemadata: schemadata,
+        attesteraddr: '0x024e45D7F868C41F3723B13fD7Ae03AA5A181362'
+    };
+    const res = await getHash(params);
+    console.log('res', res);
+}
 /*
 params = {
     networkName: networkName,
@@ -48,12 +66,14 @@ export async function getHash(params) {
         {name: "baseValue", type: "uint64", value: schemadata.baseValue},
         {name: "balanceGreaterBaseValue", type: "bool", value: schemadata.balanceGreaterBaseValue}
     ]);
+
     const domain = delegated.getDomainTypedData();
     const types = {
         Attest: ATTEST_TYPE
     };
-
+    eas.connect(provider);
     const nonce = await eas.getNonce(attesteraddr);
+    console.log('nonce', nonce);
     const value = {
         schema: schemauid,
         recipient: schemadata.address,
