@@ -22,15 +22,9 @@ import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ActiveRequestType } from '@/pages/DataSourceOverview';
 import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 
-import { ONCHAINLIST, PADOADDRESS } from '@/config/envConstants';
-import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconTool1 from '@/assets/img/iconTool1.svg';
-import iconArbitrum from '@/assets/img/iconArbitrum.svg';
-import iconOptimism from '@/assets/img/iconOptimism.svg';
-import iconMina from '@/assets/img/iconMina.png';
+import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
-import request from '../../utils/request';
 
 type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
@@ -114,7 +108,9 @@ const Cred = () => {
       title: 'Processing',
       desc: 'Please complete the transaction in your wallet.',
     });
-    const [accounts, chainId, provider] = await connectWallet();
+    
+    const targetNetwork = EASInfo[activeNetworkName as keyof typeof EASInfo];
+    const [accounts, chainId, provider] = await connectWallet(targetNetwork);
     // if (provider && provider.on) {
     //   const handleConnect = () => {
     //     console.log('metamask connected 2');

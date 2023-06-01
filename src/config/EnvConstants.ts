@@ -6,7 +6,7 @@ import iconOptimism from '@/assets/img/iconOptimism.svg';
 type ENVTYPE = 'development' | 'production';
 
 const CURENV = process.env.NODE_ENV as ENVTYPE;
-console.log('CURENV', CURENV);
+// console.log('CURENV', CURENV);
 const PADOURLMAP = {
   development: '127.0.0.1:8081',
   production: '127.0.0.1:8081',
@@ -21,7 +21,7 @@ export const PROXYURL = PROXYURLMAP[CURENV];
 
 const PADOADDRESSMAP = {
   development: '0xAaceaBC4104a687CaA43a950d8b9cA6F69EcE24F',
-  production: '0xAaceaBC4104a687CaA43a950d8b9cA6F69EcE24F',
+  production: '0x547E9fc83bE78bD656A20952EBE3bEBcc2ef8BD0',
 };
 export const PADOADDRESS = PADOADDRESSMAP[CURENV];
 
@@ -34,6 +34,20 @@ const EASINFOMAP = {
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       schemaUid:
         '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
+      chainId: '0xaa36a7', // numToHex
+      chainName: 'Sepolia',
+      rpcUrls: [
+        'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      ],
+      blockExploreUrls: [],
+    },
+    Polygon: {
+      icon: iconPolygon,
+      title: 'Polygon',
+      disabled: true,
+      rpcUrl: '',
+      easContact: '',
+      schemaUid: '',
     },
   },
   production: {
@@ -51,31 +65,40 @@ const EASINFOMAP = {
       easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
       schemaUid: '',
     },
+    Polygon: {
+      icon: iconPolygon,
+      title: 'Polygon',
+      disabled: true,
+      rpcUrl: '',
+      easContact: '',
+      schemaUid: '',
+    },
   },
 };
-export const EASInfo = EASINFOMAP[CURENV]
+export const EASInfo = EASINFOMAP[CURENV];
 
+export const ONCHAINLIST = Object.values(EASInfo);
+console.log('ONCHAINLIST', ONCHAINLIST);
 
-export const ONCHAINLIST = Object.values(EASInfo)
 // [
-  // {
-  //   icon: iconTool1,
-  //   title: 'Tower',
-  // },
-  // {
-  //   icon: iconPolygon,
-  //   title: 'polygon',
-  // },
-  // {
-  //   icon: iconArbitrum,
-  //   title: 'Arbitrum',
-  // },
-  // {
-  //   icon: iconOptimism,
-  //   title: 'Optimism',
-  // },
-  // {
-  //   icon: iconMina,
-  //   title: 'mina',
-  // },
+// {
+//   icon: iconTool1,
+//   title: 'Tower',
+// },
+// {
+//   icon: iconPolygon,
+//   title: 'polygon',
+// },
+// {
+//   icon: iconArbitrum,
+//   title: 'Arbitrum',
+// },
+// {
+//   icon: iconOptimism,
+//   title: 'Optimism',
+// },
+// {
+//   icon: iconMina,
+//   title: 'mina',
+// },
 // ];

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
-import type { SyntheticBaseEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/constants';
 import { PADOADDRESS } from '@/config/envConstants';
@@ -84,15 +84,15 @@ const CredItem: React.FC<CredTypeListProps> = ({
   const handleLeaveAvatar = () => {
     setDorpdownVisible(false);
   };
-  const handleUpChain = (e: SyntheticBaseEvent) => {
+  const handleUpChain = (e: SyntheticEvent) => {
     e.stopPropagation();
     onUpChain(item);
   };
-  const handleViewQrcode = (e: SyntheticBaseEvent) => {
+  const handleViewQrcode = (e: SyntheticEvent) => {
     e.stopPropagation();
     onViewQrcode(item);
   };
-  const handleClickOther = (e: SyntheticBaseEvent) => {
+  const handleClickOther = (e: SyntheticEvent) => {
     e.stopPropagation();
   };
   useEffect(() => {

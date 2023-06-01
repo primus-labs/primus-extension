@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
@@ -9,6 +9,7 @@ import './index.sass';
 type ToolItem = {
   icon: any;
   title: any;
+  disabled?: boolean;
 };
 interface TransferToChainDialogProps {
   onClose: () => void;
@@ -38,7 +39,6 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
     backable = true,
     headerType = 'dataSource',
   } = props;
-  const [activeTool, setActiveTool] = useState<ToolItem>();
   const [activeName, setActiveName] = useState<string>();
   const [errorTip, setErrorTip] = useState<string>();
   const handleClickNext = () => {
@@ -52,6 +52,9 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
     onCancel();
   };
   const handleClickNetwork = (item: ToolItem | undefined) => {
+    if (item?.disabled) {
+      return
+    }
     if (item?.title === activeName) {
       setActiveName(undefined);
     } else {
@@ -61,13 +64,25 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
   };
 
   const activeList = useMemo(() => {
-    return list.filter((item) => item.title !== activeTool?.title);
-  }, [list, activeTool]);
+    return list.filter((item,idx) => idx !== 0);
+  }, [list]);
   useEffect(() => {
-    setActiveTool(list[0]);
+    // setActiveTool(list[0]);
     // setActiveName(list[0].title)
   }, [list]);
-
+  const liClassName = useCallback(
+    (item: ToolItem) => {
+      let liCN = 'networkItem';
+      if (item?.title === activeName) {
+        liCN += ' active';
+      }
+      if (item?.disabled) {
+        liCN += ' disabled';
+      }
+      return liCN;
+    },
+    [activeName]
+  );
   return (
     <PMask onClose={onClose}>
       <div
@@ -90,14 +105,10 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
           <h2>{desc}</h2>
           <h6>Continue with</h6>
           <div
-            className={
-              activeTool?.title === activeName
-                ? 'activeNetwork networkItem active'
-                : 'activeNetwork networkItem'
-            }
-            onClick={() => handleClickNetwork(activeTool)}
+            className={liClassName(list[0])}
+            onClick={() => handleClickNetwork(list[0])}
           >
-            <img src={activeTool?.icon} alt="" />
+            <img src={list[0]?.icon} alt="" />
           </div>
           <div className="dividerWrapper">
             <i></i>
@@ -108,11 +119,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
             {activeList.map((item) => {
               return (
                 <li
-                  className={
-                    item.title === activeName
-                      ? 'networkItem active'
-                      : 'networkItem'
-                  }
+                  className={liClassName(item)}
                   key={item.title}
                   onClick={() => handleClickNetwork(item)}
                 >
