@@ -283,18 +283,18 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     // holdingToken // TODO
     useridhash,
   };
-  let parseSchema;
+  let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
   if (type === 'Assets Proof') {
     params.baseValue = baseValue;
-    parseSchema = `${sourceUpperCaseName}_ACCOUNT_BALANCE`;
+    calculationType = `${sourceUpperCaseName}_ACCOUNT_BALANCE`;
   } else if (type === 'Token Holdings') {
     params.holdingToken = holdingToken;
-    parseSchema = `${sourceUpperCaseName}_ASSET_BALANCES`; // TODO
+    calculationType = `${sourceUpperCaseName}_ASSET_BALANCES`; // TODO
   }
   let extRequestsOrder = 'account-balance';
   const ext = {
-    parseSchema: parseSchema, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
+    calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
     extRequests: {
       orders: [extRequestsOrder], // TODO
       [extRequestsOrder]: extRequestsOrderInfo,
@@ -338,6 +338,8 @@ async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
         params: {},
       };
       signres = await sign('okx', data, USERPASSWORD, port);
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag="totalEq": ":end_tag="';
+      signres.decryptFlag = "false";
 
       extRequestsOrderInfo = { ...signres };
       // extRequestsOrderInfo = {

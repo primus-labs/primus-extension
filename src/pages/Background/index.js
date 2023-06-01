@@ -127,6 +127,8 @@ const processAlgorithmReq = async (message, port) => {
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(attestationParams),
       });
+
+      console.log('attestationParams=', attestationParams);
       // params = {
       //   requestid: '1', // unique
       //   version: '1.0.0',
