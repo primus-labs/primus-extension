@@ -2,7 +2,7 @@ import {EAS, Delegated, ATTEST_TYPE, SchemaEncoder, SchemaRegistry} from "@ether
 import {ethers, utils} from 'ethers';
 //const { keccak256, toUtf8Bytes, splitSignature } = utils;
 import {_TypedDataEncoder} from "@ethersproject/hash";
-import { EASInfo } from "@/utils/constants";
+import { EASInfo } from "@/config/envConstants";
 //var ethereumjsUtil = require('ethereumjs-util');
 
 

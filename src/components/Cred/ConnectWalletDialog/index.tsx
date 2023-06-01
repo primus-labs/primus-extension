@@ -3,8 +3,8 @@ import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import PBack from '@/components/PBack';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
-import { WALLETLIST } from '@/utils/constants';
-import type { WALLETITEMTYPE } from '@/utils/constants';
+import { WALLETLIST } from '@/config/constants';
+import type { WALLETITEMTYPE } from '@/config/constants';
 import './index.sass';
 
 export type DataFieldItem = {

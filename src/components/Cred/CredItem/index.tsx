@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import type { SyntheticBaseEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DATASOURCEMAP, PADOADDRESS } from '@/utils/constants';
+import { DATASOURCEMAP } from '@/config/constants';
+import { PADOADDRESS } from '@/config/envConstants';
 
 import { getCurrentDate, formatNumeral, formatAddress } from '@/utils/utils';
 import type { UserState } from '@/store/reducers';

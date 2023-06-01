@@ -7,7 +7,7 @@ import * as echarts from 'echarts/core';
 import { PieChart } from 'echarts/charts';
 import BigNumber from 'bignumber.js';
 import { add, mul, div, gt, sub } from '@/utils/utils';
-import { CHARTCOLORS } from '@/utils/constants';
+import { CHARTCOLORS } from '@/config/constants';
 // import components, all suffixed with Component
 import {
   TooltipComponent,

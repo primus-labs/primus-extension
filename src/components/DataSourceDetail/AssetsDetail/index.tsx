@@ -2,22 +2,20 @@ import React, { useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { gte, div, formatNumeral } from '@/utils/utils';
-import { BTC } from '@/utils/constants';
-import type {
-  AssetsMap,
-} from '@/components/DataSourceOverview/DataSourceItem';
+import { BTC } from '@/config/constants';
+import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 import TokenTable from '@/components/TokenTable';
 import iconArrowLeft from '@/assets/img/iconArrowLeft2.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconAvatar from '@/assets/img/iconAvatar.png';
 import './index.sass';
-import useUpdateAssetSource from '@/hooks/useUpdateAssetSources'
-import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar'
+import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
+import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
 import { useDispatch, useSelector } from 'react-redux';
-import type { Dispatch } from 'react'
-import { setExSourcesAsync } from '@/store/actions'
+import type { Dispatch } from 'react';
+import { setExSourcesAsync } from '@/store/actions';
 import type { UserState } from '@/store/reducers';
-import type { ExchangeMeta } from '@/utils/constants'
+import type { ExchangeMeta } from '@/config/constants';
 
 type ExInfo = {
   date: string;
@@ -28,17 +26,17 @@ type ExInfo = {
   label?: string;
   flexibleAccountTokenMap: AssetsMap;
   spotAccountTokenMap: AssetsMap;
-  tokenPriceMap: any
-}
+  tokenPriceMap: any;
+};
 export type DataSourceStorages = {
-  binance?: any,
-  okx?: any,
-  kucoin?: any,
-  twitter?: any,
-  coinbase?: any,
-  [propName: string]: any
-}
-export type ExDataType = ExInfo & ExchangeMeta
+  binance?: any;
+  okx?: any;
+  kucoin?: any;
+  twitter?: any;
+  coinbase?: any;
+  [propName: string]: any;
+};
+export type ExDataType = ExInfo & ExchangeMeta;
 
 export type DataSourceType = {
   date: string;
@@ -51,39 +49,38 @@ interface AssetsDetailProps {
   assetsProveFlag: boolean;
   userProveFlag: boolean;
 }
-const proofList = ['Assets', 'Active User']
+const proofList = ['Assets', 'Active User'];
 const AssetsDetail: React.FC<AssetsDetailProps> = ({
   onProve,
   assetsProveFlag,
   userProveFlag,
 }) => {
-  const dispatch: Dispatch<any> = useDispatch()
-  const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource()
+  const dispatch: Dispatch<any> = useDispatch();
+  const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const sourceName = (searchParams.get('name') as string).toLowerCase();
-  const exSources = useSelector(
-    (state: UserState) => state.exSources
-  );
+  const exSources = useSelector((state: UserState) => state.exSources);
   const dataSource = useMemo(() => {
-    return exSources[sourceName] as ExDataType
-  }, [exSources, sourceName])
+    return exSources[sourceName] as ExDataType;
+  }, [exSources, sourceName]);
 
   const btcPrice = useMemo(() => {
     if (typeof dataSource === 'object') {
       const originP = dataSource?.tokenPriceMap[BTC];
-      return originP
-        ? originP
-        : null;
+      return originP ? originP : null;
     } else {
       return null;
     }
-  }, [dataSource])
+  }, [dataSource]);
   const pnl = useMemo(() => {
     if (typeof dataSource === 'object') {
       const originPnl = dataSource?.pnl;
-      const originPnlToFixed6 = originPnl && new BigNumber(Number(originPnl)).abs().toFixed()
-      const formatPnl = originPnlToFixed6 && formatNumeral(originPnlToFixed6, { decimalPlaces: 4 })
+      const originPnlToFixed6 =
+        originPnl && new BigNumber(Number(originPnl)).abs().toFixed();
+      const formatPnl =
+        originPnlToFixed6 &&
+        formatNumeral(originPnlToFixed6, { decimalPlaces: 4 });
       return originPnl
         ? gte(Number(originPnl), 0)
           ? `+$${formatPnl}`
@@ -149,24 +146,24 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     onProve(item);
   };
 
-
   const handleBack = () => {
     navigate(-1);
   };
   const onUpdate = () => {
     dispatch(setExSourcesAsync());
-  }
+  };
 
   const fetchExData = () => {
-    !fetchExDatasLoading && (fetchExDatas as (name: string) => void)(sourceName)
-  }
+    !fetchExDatasLoading &&
+      (fetchExDatas as (name: string) => void)(sourceName);
+  };
   useEffect(() => {
-    sourceName && fetchExData()
-  }, [sourceName])
+    sourceName && fetchExData();
+  }, [sourceName]);
 
   useEffect(() => {
-    !fetchExDatasLoading && onUpdate()
-  }, [fetchExDatasLoading])
+    !fetchExDatasLoading && onUpdate();
+  }, [fetchExDatasLoading]);
   return (
     <div className="assetsDetail">
       <div className="iconBackWrapper" onClick={handleBack}></div>
@@ -191,7 +188,9 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
           <div className="inner">
             <div className="label">Est Total Value</div>
             <div className="value">${formatNumeral(totalAssetsBalance)}</div>
-            <div className="btcValue">≈ {formatNumeral(eqBtcNum, { decimalPlaces: 6 })} BTC</div>
+            <div className="btcValue">
+              ≈ {formatNumeral(eqBtcNum, { decimalPlaces: 6 })} BTC
+            </div>
           </div>
         </div>
         <div className="separtor"></div>
@@ -231,8 +230,17 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
           );
         })}
       </section>
-      <TokenTable list={totalAssetsList} flexibleAccountTokenMap={flexibleAccountTokenMap} spotAccountTokenMap={spotAccountTokenMap} name={sourceName} />
-      <DataUpdateBar type='Assets' onUpdate={onUpdate} sourceName={sourceName} />
+      <TokenTable
+        list={totalAssetsList}
+        flexibleAccountTokenMap={flexibleAccountTokenMap}
+        spotAccountTokenMap={spotAccountTokenMap}
+        name={sourceName}
+      />
+      <DataUpdateBar
+        type="Assets"
+        onUpdate={onUpdate}
+        sourceName={sourceName}
+      />
     </div>
   );
 };

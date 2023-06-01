@@ -1,7 +1,7 @@
 import ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { add, mul, gt, div } from '@/utils/utils';
-import { USDT, BTC, STABLETOKENLIST } from '@/utils/constants';
+import { USDT, BTC, STABLETOKENLIST } from '@/config/constants';
 const BIGZERO = new BigNumber(0);
 const BIGONE = new BigNumber(1);
 const ONE = 1;

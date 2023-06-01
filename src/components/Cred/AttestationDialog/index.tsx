@@ -2,8 +2,8 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PMask from '@/components/PMask';
-import { DATASOURCEMAP } from '@/utils/constants';
-import type { ExchangeMeta } from '@/utils/constants';
+import { DATASOURCEMAP } from '@/config/constants';
+import type { ExchangeMeta } from '@/config/constants';
 import { formatNumeral } from '@/utils/utils';
 
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';

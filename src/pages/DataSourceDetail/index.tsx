@@ -11,7 +11,7 @@ import './index.sass';
 import type { ExDataType } from '@/hooks/useExSource';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
-import {ONCHAINLIST} from '@/utils/constants'
+import {ONCHAINLIST} from '@/config/envConstants'
 
 const DataSourceDetail = () => {
   const navigate = useNavigate()

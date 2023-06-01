@@ -6,7 +6,7 @@ import {
 } from '@/services/user';
 import { getSysConfig } from '@/services/config';
 import { getCurrentDate, postMsg } from '@/utils/utils';
-import { SocailStoreVersion } from '@/utils/constants';
+import { SocailStoreVersion } from '@/config/constants';
 import {
   default as processExReq,
   clear,

@@ -3,13 +3,9 @@ import {
   DATASOURCEMAP,
   padoExtensionVersion,
   ExchangeStoreVersion,
-  PADOURL,
-  PROXYURL,
-} from '@/utils/constants';
+} from '@/config/constants';
+import { PADOURL, PROXYURL } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
-
-
-
 
 let EXCHANGEINFO = {
   binance: {
@@ -242,13 +238,11 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     USERPASSWORD,
     port
   );
-  
-  const { userInfo } = await chrome.storage.local.get([
-    'userInfo',
-  ]);
+
+  const { userInfo } = await chrome.storage.local.get(['userInfo']);
   const { id: authUserId } = JSON.parse(userInfo);
   const useridhash = strToHex(authUserId);
-  
+
   const timeStampStr = (+new Date()).toString();
 
   const params = {
@@ -387,4 +381,3 @@ async function assembleUserInfoParams() {
   };
   return user;
 }
-

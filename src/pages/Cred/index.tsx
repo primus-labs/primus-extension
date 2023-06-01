@@ -17,11 +17,12 @@ import { postMsg } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
-import type { WALLETITEMTYPE } from '@/utils/constants';
+import type { WALLETITEMTYPE } from '@/config/constants';
 
 import type { ActiveRequestType } from '@/pages/DataSourceOverview';
 import type { AttestionForm } from '@/components/Cred/AttestationDialog';
-import { ONCHAINLIST, PADOADDRESS } from '@/utils/constants';
+
+import { ONCHAINLIST, PADOADDRESS } from '@/config/envConstants';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconTool1 from '@/assets/img/iconTool1.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
@@ -37,7 +38,7 @@ type CREDENTIALSOBJ = {
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
-  const credList:CredTypeItemType[] = useMemo(() => {
+  const credList: CredTypeItemType[] = useMemo(() => {
     return Object.values(credentialsObj);
   }, [credentialsObj]);
   const [step, setStep] = useState(0);
@@ -52,8 +53,7 @@ const Cred = () => {
   );
   const navigate = useNavigate();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-  const handleChangeTab = (val: string) => {
-  };
+  const handleChangeTab = (val: string) => {};
   const initCredList = useCallback(async () => {
     const cObj = await getCredentialsObjFromStorage();
     setCredentialsObj(cObj);
@@ -79,7 +79,7 @@ const Cred = () => {
       },
     };
     postMsg(padoServicePort, msg);
-    console.log(`page_send:getAttestation:` , form);
+    console.log(`page_send:getAttestation:`, form);
     setStep(2);
     setActiveRequest({
       type: 'loading',
@@ -100,7 +100,6 @@ const Cred = () => {
   }, []);
   const handleSubmitTransferToChain = (networkName: string) => {
     // TODO
-    debugger
     setActiveNetworkName(networkName);
     setStep(4);
   };
@@ -134,19 +133,21 @@ const Cred = () => {
     };
     const upChainRes = await attestByDelegation(upChainParams);
     // TODO
-    const cObj = await getCredentialsObjFromStorage()
-    const curRequestid = activeCred?.requestid as string
+    const cObj = await getCredentialsObjFromStorage();
+    const curRequestid = activeCred?.requestid as string;
     const curCredential = credentialsObj[curRequestid];
     const newProvided = curCredential.provided ?? [];
     const currentChainObj = ONCHAINLIST.find(
       (i) => activeNetworkName === i.title
     );
-    const existIndex = newProvided.findIndex(i => i.title === activeNetworkName)
+    const existIndex = newProvided.findIndex(
+      (i) => i.title === activeNetworkName
+    );
     existIndex < 0 && newProvided.push(currentChainObj);
-    
+
     cObj[curRequestid] = Object.assign(curCredential, {
       provided: newProvided,
-    }); 
+    });
     await chrome.storage.local.set({
       credentials: JSON.stringify(cObj),
     });
@@ -161,7 +162,7 @@ const Cred = () => {
   };
   const handleViewQrcode = useCallback(() => {
     setQrcodeVisible(true);
-  },[]);
+  }, []);
   const handleCloseQrcode = () => {
     setQrcodeVisible(false);
     handleCloseMask();
@@ -234,8 +235,9 @@ const Cred = () => {
             const { activeRequestAttestation } = await chrome.storage.local.get(
               ['activeRequestAttestation']
             );
-            const parsedActiveRequestAttestation =
-              activeRequestAttestation ? JSON.parse(activeRequestAttestation) : {};
+            const parsedActiveRequestAttestation = activeRequestAttestation
+              ? JSON.parse(activeRequestAttestation)
+              : {};
             console.log('attestation', parsedActiveRequestAttestation);
             const activeRequestId = parsedActiveRequestAttestation.requestid;
 
@@ -247,9 +249,8 @@ const Cred = () => {
               //   '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a', // includes v，r，s // TODO
               // data: '0x123', // trueHash or falseHash // TODO
             };
-            const { credentials: credentialsStr } = await chrome.storage.local.get([
-              'credentials',
-            ]);
+            const { credentials: credentialsStr } =
+              await chrome.storage.local.get(['credentials']);
             const credentialsObj = credentialsStr
               ? JSON.parse(credentialsStr)
               : {};
@@ -294,7 +295,7 @@ const Cred = () => {
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     return credentialObj;
   };
-  
+
   useEffect(() => {
     // chrome.storage.local.remove(['credentials']); //TODO DELETE
     initCredList();

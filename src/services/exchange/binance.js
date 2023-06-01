@@ -1,6 +1,13 @@
 import BigNumber from 'bignumber.js';
 import { add, gt } from '@/utils/utils';
-import { USDT,BUSD,TUSD,BTC,LDO,STABLETOKENLIST } from '@/utils/constants';
+import {
+  USDT,
+  BUSD,
+  TUSD,
+  BTC,
+  LDO,
+  STABLETOKENLIST,
+} from '@/config/constants';
 import Exchange from './exchange';
 import CcxtBinance from './ccxtbinance';
 const BIGZERO = new BigNumber(0);
@@ -40,7 +47,9 @@ class Binance extends Exchange {
     res.info.balances.forEach(({ asset, free, locked }) => {
       // Tip: trading account balance = free + locked
       const amt = add(free, locked).toFixed();
-      gt(amt, BIGZERO) && (!asset.startsWith('LD') || asset === LDO) && this.tradingAccountTokenAmountMap.set(asset, amt);
+      gt(amt, BIGZERO) &&
+        (!asset.startsWith('LD') || asset === LDO) &&
+        this.tradingAccountTokenAmountMap.set(asset, amt);
     });
     // console.log(
     //   'tradingAccountTokenAmountMap',
@@ -72,7 +81,7 @@ class Binance extends Exchange {
     let LPSymbols = this.totalHoldingTokenSymbolList
       .filter((i) => !STABLETOKENLIST.includes(i))
       .concat(BTC)
-      .map((j) => (`${j}/${USDT}`));
+      .map((j) => `${j}/${USDT}`);
     let res;
     //let errorSymbol;
     try {
@@ -83,23 +92,25 @@ class Binance extends Exchange {
     }
     //console.log('fetchTickers res:', this.exName, res);
     this.tokenPriceMap = STABLETOKENLIST.reduce((prev, curr) => {
-      prev[curr] = ONE+''
-      return prev
-    }, {})
+      prev[curr] = ONE + '';
+      return prev;
+    }, {});
     LPSymbols.forEach((lpsymbol) => {
       const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
       const BUSDLpsymbol = lpsymbol.replace(`${USDT}`, BUSD);
       const TUSDLpsymbol = lpsymbol.replace(`${USDT}`, TUSD);
-      const last = res[lpsymbol]?.last || res[BUSDLpsymbol]?.last || res[TUSDLpsymbol]?.last
+      const last =
+        res[lpsymbol]?.last ||
+        res[BUSDLpsymbol]?.last ||
+        res[TUSDLpsymbol]?.last;
       if (last) {
-        this.tokenPriceMap[tokenSymbol] = new BigNumber(last).toFixed()
+        this.tokenPriceMap[tokenSymbol] = new BigNumber(last).toFixed();
       } else {
-        this.tokenPriceMap[tokenSymbol] = ZERO+''
+        this.tokenPriceMap[tokenSymbol] = ZERO + '';
       }
     });
-    console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap,res);
+    console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap, res);
     return this.tokenPriceMap;
   }
-
 }
 export default Binance;

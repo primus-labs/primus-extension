@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { gte, formatNumeral } from '@/utils/utils';
-import type { ExchangeMeta } from '@/utils/constants';
+import type { ExchangeMeta } from '@/config/constants';
 
 import iconSuc from '@/assets/img/iconSuc.svg';
 import './index.sass';
@@ -31,7 +31,7 @@ export type SocialDataSourceData = {
   userName?: string;
   createdTime?: string;
   screenName?: string;
-  remarks?: any
+  remarks?: any;
 };
 export type DataSourceItemType = {
   date: string;
@@ -66,7 +66,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
     followings,
     label,
     userName,
-    screenName
+    screenName,
   } = source;
   const formatSource = {
     ...source,
@@ -137,7 +137,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({
   return (
     <div className={activeClassName} onClick={handleClick}>
       <div className="dataSourceItemT">
-        <div className={(type === 'Assets' && label) ?'TLeft':"TLeft noLabel"}>
+        <div className={type === 'Assets' && label ? 'TLeft' : 'TLeft noLabel'}>
           <img src={icon} alt="" />
           <div className="TLeftCon">
             <h6>{name}</h6>
