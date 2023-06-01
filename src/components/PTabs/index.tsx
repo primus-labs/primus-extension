@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import iconDataHover from '@/assets/img/iconDataHover.svg';
 import iconEventsHover from '@/assets/img/iconEventsHover.svg';
@@ -7,6 +7,7 @@ import './index.sass';
 
 interface PInputProps {
   onChange: (val: string) => void;
+  value?: string;
 }
 type TabItem = {
   activeIcon: any;
@@ -32,7 +33,7 @@ const tabs: TabItem[] = [
     path: '/cred',
   },
 ];
-const PTabs: React.FC<PInputProps> = ({ onChange }) => {
+const PTabs: React.FC<PInputProps> = ({ onChange, value }) => {
   const [activeTab, setActiveTab] = useState<string>('Data');
   const [focusTab, setFocusTab] = useState<string>();
   const navigate = useNavigate();
@@ -68,6 +69,9 @@ const PTabs: React.FC<PInputProps> = ({ onChange }) => {
     },
     [focusTab, activeTab]
   );
+  useEffect(() => {
+    value && setActiveTab(value)
+  }, [value])
 
   return (
     <div className="pTabs">

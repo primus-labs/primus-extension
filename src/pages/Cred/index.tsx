@@ -46,12 +46,6 @@ const Cred = () => {
   const navigate = useNavigate();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const handleChangeTab = (val: string) => {
-    if (val === 'Data') {
-      dispatch({
-        type: 'setActiveSourceType',
-        payload: 'All',
-      });
-    }
   };
   const handleChangeProofType = (title: string) => {
     setStep(1);
@@ -271,7 +265,7 @@ const Cred = () => {
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab} />
+        <PTabs onChange={handleChangeTab} value="Cred" />
         <DataSourceSearch />
         <ProofTypeList onChange={handleChangeProofType} />
         <CredList
