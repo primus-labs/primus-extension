@@ -7,11 +7,12 @@ import { EASInfo } from "@/utils/constants";
 export async function testeas() {
     let schemadata = {
         source: "okx",
-        useridhash: "0x1234567890123456789012345678901234567890123456789012345678901234",
-        address: "0x7ab44DE0156925fe0c24482a2cDe48C465e47573",
-        getdatatime: 1234567890,
+        sourceUseridHash: "0x1234567890123456789012345678901234567890123456789012345678901234",
+        authUseridHash: "",
+        receipt: "0x7ab44DE0156925fe0c24482a2cDe48C465e47573",
+        getDataTime: 1234567890,
         baseValue: 1234567890,
-        balanceGreaterBaseValue: true
+        balanceGreaterThanBaseValue: true
     };
     let params = {
         networkName: 'Sepolia',
@@ -26,11 +27,12 @@ params = {
     networkName: networkName,
     schemadata: {
         string source,
-        string(bytes32) useridhash,
-        string(address) address,
-        string(uint64) getdatatime,
-        string(uint64) baseValue,
-        string(bool) balanceGreaterBaseValue
+        bytes32 sourceUseridHash,
+        bytes32 authUseridHash,
+        address receipt,
+        uint64 getDataTime,
+        uint64 baseValue,
+        bool balanceGreaterThanBaseValue
     }
     attesteraddr: addr
 }
@@ -57,14 +59,15 @@ export async function getHash(params) {
         chainId: network.chainId,
     };
     let delegated = new Delegated(EAS_CONFIG);
-    const schemaEncoder = new SchemaEncoder("string source, bytes32 useridhash, address address, uint64 getdatatime, uint64 baseValue, bool balanceGreaterBaseValue");
+    const schemaEncoder = new SchemaEncoder("string source,bytes32 sourceUseridHash,bytes32 authUseridHash,address receipt,uint64 getDataTime,uint64 baseValue,bool balanceGreaterThanBaseValue");
     let encodedData = schemaEncoder.encodeData([
         {name: "source", type: "string", value: schemadata.source},
-        {name: "useridhash", type: "bytes32", value: schemadata.useridhash},
-        {name: "address", type: "address", value: schemadata.address},
-        {name: "getdatatime", type: "uint64", value: schemadata.getdatatime},
+        {name: "sourceUseridHash", type: "bytes32", value: schemadata.sourceUseridHash},
+        {name: "authUseridHash", type: "bytes32", value: schemadata.authUseridHash},
+        {name: "receipt", type: "address", value: schemadata.receipt},
+        {name: "getDataTime", type: "uint64", value: schemadata.getDataTime},
         {name: "baseValue", type: "uint64", value: schemadata.baseValue},
-        {name: "balanceGreaterBaseValue", type: "bool", value: schemadata.balanceGreaterBaseValue}
+        {name: "balanceGreaterThanBaseValue", type: "bool", value: schemadata.balanceGreaterThanBaseValue}
     ]);
 
     const domain = delegated.getDomainTypedData();
@@ -76,7 +79,7 @@ export async function getHash(params) {
     console.log('nonce', nonce);
     const value = {
         schema: schemauid,
-        recipient: schemadata.address,
+        recipient: schemadata.receipt,
         expirationTime: 0,
         revocable: true,
         data: encodedData,
