@@ -22,6 +22,7 @@ export type AttestionForm = {
   type: string;
   exUserId?: string;
   label?: string;
+  requestid?: string;
 };
 interface AttestationDialogProps {
   type: string;
@@ -149,6 +150,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
         exUserId: activeSource?.exUserId,
         label: activeSource?.label,
       };
+      if (activeCred?.requestid) {
+        form.requestid = activeCred?.requestid;
+      }
+
       if (type === 'Token Holdings') {
         if (!activeToken) {
           setErrorTip('Please select one token');
@@ -210,7 +215,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   useEffect(() => {
     if (activeCred) {
       const sourceInfo = connectedSourceList.find(
-        (i) => i.name === activeCred.source.toLowerCase()
+        (i) => i.name.toLowerCase() === activeCred.source.toLowerCase()
       );
       setActiveSource(sourceInfo);
       if (type === 'Assets Proof') {

@@ -30,12 +30,16 @@ import iconMina from '@/assets/img/iconMina.png';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
 import request from '../../utils/request';
+
+type CREDENTIALSOBJ = {
+  [propName: string]: CredTypeItemType;
+};
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
-  const [credList, setCredList] = useState<CredTypeItemType[]>([]);
-  const cachedCredList = useMemo(() => {
-    return credList;
-  }, [credList]);
+  const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
+  const credList:CredTypeItemType[] = useMemo(() => {
+    return Object.values(credentialsObj);
+  }, [credentialsObj]);
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
@@ -50,6 +54,10 @@ const Cred = () => {
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const handleChangeTab = (val: string) => {
   };
+  const initCredList = useCallback(async () => {
+    const cObj = await getCredentialsObjFromStorage();
+    setCredentialsObj(cObj);
+  }, []);
   const handleChangeProofType = (title: string) => {
     setStep(1);
     setActiveAttestationType(title);
@@ -159,12 +167,15 @@ const Cred = () => {
   };
   const handleDeleteCred = useCallback(
     async (item: CredTypeItemType) => {
-      let newList = [...credList];
-      newList = newList.filter((i) => i.requestid !== item.requestid);
-      setCredList(newList);
-      await chrome.storage.local.set({ credentials: JSON.stringify(newList) });
+      const curRequestid = item.requestid;
+      const cObj = await getCredentialsObjFromStorage();
+      delete cObj[curRequestid];
+      chrome.storage.local.set({
+        credentials: JSON.stringify(cObj),
+      });
+      await initCredList();
     },
-    [credList]
+    [initCredList]
   );
   const handleUpdateCred = useCallback((item: CredTypeItemType) => {
     setActiveAttestationType(item.type);
@@ -219,7 +230,35 @@ const Cred = () => {
         }
         if (resMethodName === `getAttestationResult`) {
           if (res) {
-            initCredList()
+            const { activeRequestAttestation } = await chrome.storage.local.get(
+              ['activeRequestAttestation']
+            );
+            const parsedActiveRequestAttestation =
+              activeRequestAttestation ? JSON.parse(activeRequestAttestation) : {};
+            console.log('attestation', parsedActiveRequestAttestation);
+            const activeRequestId = parsedActiveRequestAttestation.requestid;
+
+            const fullAttestation = {
+              ...res,
+              ...parsedActiveRequestAttestation,
+              // balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
+              // signature:
+              //   '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a', // includes v，r，s // TODO
+              // data: '0x123', // trueHash or falseHash // TODO
+            };
+            const { credentials: credentialsStr } = await chrome.storage.local.get([
+              'credentials',
+            ]);
+            const credentialsObj = credentialsStr
+              ? JSON.parse(credentialsStr)
+              : {};
+            credentialsObj[activeRequestId] = fullAttestation;
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(credentialsObj),
+            });
+            await chrome.storage.local.remove(['activeRequestAttestation']);
+
+            initCredList();
             setActiveRequest({
               type: 'suc',
               title: 'Congratulations',
@@ -247,15 +286,16 @@ const Cred = () => {
       clearInterval(fetchAttestationTimer);
     }
   }, [fetchAttestationTimer, activeRequest]);
-  const initCredList = async () => {
-    const storageRes = await chrome.storage.local.get(['credentials']);
-    const credentialsStr = storageRes.credentials;
+  const getCredentialsObjFromStorage = async (): Promise<CREDENTIALSOBJ> => {
+    const { credentials: credentialsStr } = await chrome.storage.local.get([
+      'credentials',
+    ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-    const credentialArr = Object.values(credentialObj);
-    setCredList(credentialArr as CredTypeItemType[]);
+    return credentialObj;
   };
+  
   useEffect(() => {
-    // chrome.storage.local.remove(['credentials']); //TODO
+    // chrome.storage.local.remove(['credentials']); //TODO DELETE
     initCredList();
   }, []);
 
@@ -266,7 +306,7 @@ const Cred = () => {
         <DataSourceSearch />
         <ProofTypeList onChange={handleChangeProofType} />
         <CredList
-          list={cachedCredList}
+          list={credList}
           onUpChain={handleUpChain}
           onViewQrcode={handleViewQrcode}
           onDelete={handleDeleteCred}

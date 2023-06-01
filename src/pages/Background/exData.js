@@ -233,6 +233,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     token: holdingToken,
     label,
     exUserId,
+    requestid: prevRequestid,
   } = form;
   const { baseName, baseUrl } = DATASOURCEMAP[source];
   const user = await assembleUserInfoParams();
@@ -255,12 +256,12 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     label,
     exUserId,
     source,
-    requestid: timeStampStr,
+    requestid: prevRequestid || timeStampStr,
     version: padoExtensionVersion,
     baseName, // host, such as "api.binance.com"
     baseUrl, // client <----> http-server
-    padoUrl: PADOURL, // client <----> pado-server
-    proxyUrl: PROXYURL,
+    padoUrl: PADOURL, // client <----> pado-server // TODO
+    proxyUrl: PROXYURL, // TODO
     // if cipher non-exist or empty use default. options:
     //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
     cipher: '', // TODO
@@ -271,15 +272,17 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
       apipassword: 'xxx',
     },
     sigFormat: 'EAS-Ethereum', // TODO
-    schemaType: 'exchange-balance', // TODO
+    // schemaType: 'exchange-balance', // TODO
+    schemaType: type, // TODO
     schema: [
       // TODO
       { name: 'source', type: 'string' },
-      { name: 'useridhash', type: 'string' },
-      { name: 'address', type: 'string' },
-      { name: 'getdatatime', type: 'string' },
+      { name: 'sourceUseridHash', type: 'string' },
+      { name: 'authUseridHash', type: 'string' },
+      { name: 'receipt', type: 'string' },
+      { name: 'getDataTime', type: 'string' },
       { name: 'baseValue', type: 'string' },
-      { name: 'balanceGreaterBaseValue', type: 'string' },
+      { name: 'balanceGreaterThanBaseValue', type: 'string' },
     ],
     user,
 
@@ -293,7 +296,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     parseSchema = `${sourceUpperCaseName}_ACCOUNT_BALANCE`;
   } else if (type === 'Token Holdings') {
     params.holdingToken = holdingToken;
-    parseSchema = `${sourceUpperCaseName}_ASSET_BALANCES`;
+    parseSchema = `${sourceUpperCaseName}_ASSET_BALANCES`; // TODO
   }
   let extRequestsOrder = 'account-balance';
   const ext = {

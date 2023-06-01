@@ -212,13 +212,6 @@ const processAlgorithmReq = async (message, port) => {
       //   params: params,
       // });
       // TODO for test
-      const { activeRequestAttestation } = await chrome.storage.local.get([
-        'activeRequestAttestation',
-      ]);
-      const parsedActiveRequestAttestation = JSON.parse(
-        activeRequestAttestation
-      );
-      console.log('attestation', parsedActiveRequestAttestation);
       const returnResult = {
         content: {
           address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
@@ -243,32 +236,7 @@ const processAlgorithmReq = async (message, port) => {
         resMethodName: 'getAttestationResult',
       };
       if (returnResult.retcode === '0') {
-        const activeRequestId = parsedActiveRequestAttestation.requestid;
-        if (activeRequestId !== returnResult.content.requestid) {
-          
-          // msg.res = false;// TODO
-        }
-        
-        msg.res = {
-          ...parsedActiveRequestAttestation,
-          ...returnResult.content,
-          // balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
-          // signature:
-          //   '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a', // includes v，r，s // TODO
-          // data: '0x123', // trueHash or falseHash // TODO
-        };
-        // debugger;
-        const { credentials: credentialsStr } = await chrome.storage.local.get([
-          'credentials',
-        ]);
-        const credentialsObj = credentialsStr
-          ? JSON.parse(credentialsStr)
-          : {};
-        credentialsObj[activeRequestId] = msg.res;
-        await chrome.storage.local.set({
-          credentials: JSON.stringify(credentialsObj),
-        });
-        await chrome.storage.local.remove(['activeRequestAttestation']);
+        msg.res = returnResult.content;
       } else {
         msg.res = false;
       }
