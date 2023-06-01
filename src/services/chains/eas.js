@@ -1,17 +1,25 @@
 import {EAS, Delegated, ATTEST_TYPE, SchemaEncoder, SchemaRegistry} from "@ethereum-attestation-service/eas-sdk";
 import {ethers, utils} from 'ethers';
+//const { keccak256, toUtf8Bytes, splitSignature } = utils;
 import {_TypedDataEncoder} from "@ethersproject/hash";
 import { EASInfo } from "@/utils/constants";
+//var ethereumjsUtil = require('ethereumjs-util');
 
 
 export async function testeas() {
+    //const testkeyhash = keccak256(toUtf8Bytes(""));
+    //console.log("testkeyhash=", testkeyhash);
+
+    //const testhash2 = ethereumjsUtil.keccak256(Buffer.from("", 'utf-8'));
+    //console.log("testhash2=", ethereumjsUtil.bufferToHex(testhash2));
+
     let schemadata = {
         source: "okx",
-        sourceUseridHash: "0x1234567890123456789012345678901234567890123456789012345678901234",
-        authUseridHash: "",
+        sourceUseridHash: "",
+        authUseridHash: "0x1234567890123456789012345678901234567890123456789012345678901234",
         receipt: "0x7ab44DE0156925fe0c24482a2cDe48C465e47573",
         getDataTime: 1234567890,
-        baseValue: 1234567890,
+        baseValue: 1000,
         balanceGreaterThanBaseValue: true
     };
     let params = {
