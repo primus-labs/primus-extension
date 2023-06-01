@@ -100,6 +100,7 @@ const Cred = () => {
   }, []);
   const handleSubmitTransferToChain = (networkName: string) => {
     // TODO
+    debugger
     setActiveNetworkName(networkName);
     setStep(4);
   };
@@ -132,22 +133,22 @@ const Cred = () => {
       signature: activeCred?.signature,
     };
     const upChainRes = await attestByDelegation(upChainParams);
-    const storageRes = await chrome.storage.local.get(['credentials']);
-    const credentialsStr = storageRes.credentials;
-    const credentialArr = credentialsStr ? JSON.parse(credentialsStr) : [];
-    const activeIndex = credentialArr.findIndex(
-      (i: CredTypeItemType) => i.requestid === activeCred?.requestid
-    );
-    const newCred = credentialArr[activeIndex];
-    const newProvided = newCred.provided ?? [];
+    // TODO
+    const cObj = await getCredentialsObjFromStorage()
+    const curRequestid = activeCred?.requestid as string
+    const curCredential = credentialsObj[curRequestid];
+    const newProvided = curCredential.provided ?? [];
     const currentChainObj = ONCHAINLIST.find(
       (i) => activeNetworkName === i.title
     );
-    newProvided.push(currentChainObj);
-    newCred.provided = newProvided;
-    credentialArr.splice(activeIndex, 1, newCred);
-    chrome.storage.local.set({
-      credentials: JSON.stringify(credentialArr),
+    const existIndex = newProvided.findIndex(i => i.title === activeNetworkName)
+    existIndex < 0 && newProvided.push(currentChainObj);
+    
+    cObj[curRequestid] = Object.assign(curCredential, {
+      provided: newProvided,
+    }); 
+    await chrome.storage.local.set({
+      credentials: JSON.stringify(cObj),
     });
     initCredList();
     setActiveRequest({
