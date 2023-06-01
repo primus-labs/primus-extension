@@ -243,6 +243,12 @@ const processAlgorithmReq = async (message, port) => {
         resMethodName: 'getAttestationResult',
       };
       if (returnResult.retcode === '0') {
+        const activeRequestId = parsedActiveRequestAttestation.requestid;
+        if (activeRequestId !== returnResult.content.requestid) {
+          
+          // msg.res = false;// TODO
+        }
+        
         msg.res = {
           ...parsedActiveRequestAttestation,
           ...returnResult.content,
@@ -251,11 +257,23 @@ const processAlgorithmReq = async (message, port) => {
           //   '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a', // includes v，r，s // TODO
           // data: '0x123', // trueHash or falseHash // TODO
         };
+        // debugger;
+        const { credentials: credentialsStr } = await chrome.storage.local.get([
+          'credentials',
+        ]);
+        const credentialsObj = credentialsStr
+          ? JSON.parse(credentialsStr)
+          : {};
+        credentialsObj[activeRequestId] = msg.res;
+        await chrome.storage.local.set({
+          credentials: JSON.stringify(credentialsObj),
+        });
+        await chrome.storage.local.remove(['activeRequestAttestation']);
       } else {
         msg.res = false;
       }
       postMsg(fullscreenPort, msg);
-      
+
       // const result = {
       //   requestid: (+new Date()).toString(),
       //   version: '1.0.0',
@@ -272,7 +290,7 @@ const processAlgorithmReq = async (message, port) => {
       //   provided: [], // TODO
       //   type: 'Assets Proof',
       // };
-      
+
       break;
     case 'stop':
       await chrome.offscreen.closeDocument();

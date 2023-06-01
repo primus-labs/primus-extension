@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import type { SyntheticBaseEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { DATASOURCEMAP, PADOADDRESS } from '@/utils/constants';
@@ -51,9 +51,9 @@ const CredItem: React.FC<CredTypeListProps> = ({
   onUpChain,
   onViewQrcode,
   onUpdate,
-  onDelete
+  onDelete,
 }) => {
-  console.log('credItem',item)
+  // console.log('credItem',item)
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [expand, setExpand] = useState(false);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -101,14 +101,13 @@ const CredItem: React.FC<CredTypeListProps> = ({
   }, [item]);
   const iconCallback = useCallback((item: CredTypeItemType) => {
     const sourceName = item?.source;
-    if (sourceName) { 
+    if (sourceName) {
       const sourceLowerCaseName = item.source.toLowerCase();
       return DATASOURCEMAP[sourceLowerCaseName].icon;
-    } 
-    return null
-    
+    }
+    return null;
   }, []);
-  
+
   return (
     <div className={expand ? 'credItem expand' : 'credItem'}>
       <div
@@ -224,4 +223,4 @@ const CredItem: React.FC<CredTypeListProps> = ({
   );
 };
 
-export default CredItem;
+export default memo(CredItem);

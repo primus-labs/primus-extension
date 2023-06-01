@@ -33,6 +33,9 @@ import request from '../../utils/request';
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const [credList, setCredList] = useState<CredTypeItemType[]>([]);
+  const cachedCredList = useMemo(() => {
+    return credList;
+  }, [credList]);
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
@@ -68,8 +71,7 @@ const Cred = () => {
       },
     };
     postMsg(padoServicePort, msg);
-    console.log(`page_send:getAttestation:`);
-
+    console.log(`page_send:getAttestation:` , form);
     setStep(2);
     setActiveRequest({
       type: 'loading',
@@ -84,10 +86,10 @@ const Cred = () => {
       return;
     }
   };
-  const handleUpChain = (item: CredTypeItemType) => {
+  const handleUpChain = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
     setStep(3);
-  };
+  }, []);
   const handleSubmitTransferToChain = (networkName: string) => {
     // TODO
     setActiveNetworkName(networkName);
@@ -105,12 +107,12 @@ const Cred = () => {
       desc: 'Please complete the transaction in your wallet.',
     });
     const [accounts, chainId, provider] = await connectWallet();
-    if (provider && provider.on) {
-      const handleConnect = () => {
-        console.log('metamask connected 2');
-      };
-      provider.on('connect', handleConnect);
-    }
+    // if (provider && provider.on) {
+    //   const handleConnect = () => {
+    //     console.log('metamask connected 2');
+    //   };
+    //   provider.on('connect', handleConnect);
+    // }
     const { keyStore } = await chrome.storage.local.get(['keyStore']);
     const { address } = JSON.parse(keyStore);
     const upChainParams = {
@@ -148,24 +150,27 @@ const Cred = () => {
 
     setStep(5);
   };
-  const handleViewQrcode = () => {
+  const handleViewQrcode = useCallback(() => {
     setQrcodeVisible(true);
-  };
+  },[]);
   const handleCloseQrcode = () => {
     setQrcodeVisible(false);
     handleCloseMask();
   };
-  const handleDeleteCred = async (item: CredTypeItemType) => {
-    let newList = [...credList];
-    newList = newList.filter((i) => i.requestid !== item.requestid);
-    setCredList(newList);
-    await chrome.storage.local.set({ credentials: JSON.stringify(newList) });
-  };
-  const handleUpdateCred = (item: CredTypeItemType) => {
+  const handleDeleteCred = useCallback(
+    async (item: CredTypeItemType) => {
+      let newList = [...credList];
+      newList = newList.filter((i) => i.requestid !== item.requestid);
+      setCredList(newList);
+      await chrome.storage.local.set({ credentials: JSON.stringify(newList) });
+    },
+    [credList]
+  );
+  const handleUpdateCred = useCallback((item: CredTypeItemType) => {
     setActiveAttestationType(item.type);
     setActiveCred(item);
     setStep(1);
-  };
+  }, []);
   const initAlgorithm = () => {
     postMsg(padoServicePort, {});
     const msg: any = {
@@ -214,16 +219,7 @@ const Cred = () => {
         }
         if (resMethodName === `getAttestationResult`) {
           if (res) {
-            const storageRes = await chrome.storage.local.get(['credentials']);
-            const credentialsStr = storageRes.credentials;
-            const credentialArr = credentialsStr
-              ? JSON.parse(credentialsStr)
-              : [];
-            credentialArr.push(res);
-            chrome.storage.local.set({
-              credentials: JSON.stringify(credentialArr),
-            });
-            setCredList(credentialArr);
+            initCredList()
             setActiveRequest({
               type: 'suc',
               title: 'Congratulations',
@@ -254,8 +250,9 @@ const Cred = () => {
   const initCredList = async () => {
     const storageRes = await chrome.storage.local.get(['credentials']);
     const credentialsStr = storageRes.credentials;
-    const credentialArr = credentialsStr ? JSON.parse(credentialsStr) : [];
-    setCredList(credentialArr);
+    const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
+    const credentialArr = Object.values(credentialObj);
+    setCredList(credentialArr as CredTypeItemType[]);
   };
   useEffect(() => {
     // chrome.storage.local.remove(['credentials']); //TODO
@@ -269,7 +266,7 @@ const Cred = () => {
         <DataSourceSearch />
         <ProofTypeList onChange={handleChangeProofType} />
         <CredList
-          list={credList}
+          list={cachedCredList}
           onUpChain={handleUpChain}
           onViewQrcode={handleViewQrcode}
           onDelete={handleDeleteCred}

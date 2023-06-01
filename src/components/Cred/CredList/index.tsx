@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, memo } from 'react';
 import emptyBox from '@/assets/img/emptyBox.svg';
 import CredItem from '../CredItem';
 import type { CredTypeItemType } from '../CredItem';
 import './index.sass';
 
-interface CredTypeListProps {
+interface CredListProps {
   onChange?: (item: CredTypeItemType) => void;
   onUpChain: (item: CredTypeItemType) => void;
   onViewQrcode: (item: CredTypeItemType) => void;
@@ -12,7 +12,7 @@ interface CredTypeListProps {
   onDelete: (item: CredTypeItemType) => void;
   list: CredTypeItemType[]
 }
-const ProofTypeList: React.FC<CredTypeListProps> = ({
+const CredList: React.FC<CredListProps> = ({
   onChange,
   onUpChain,
   onViewQrcode,
@@ -20,7 +20,6 @@ const ProofTypeList: React.FC<CredTypeListProps> = ({
   onDelete,
   list,
 }) => {
-  
   const activeList = useMemo(() => {
     if (list.length <= 3) {
       return list.map((i) => {
@@ -78,4 +77,4 @@ const ProofTypeList: React.FC<CredTypeListProps> = ({
   );
 };
 
-export default ProofTypeList;
+export default memo(CredList);
