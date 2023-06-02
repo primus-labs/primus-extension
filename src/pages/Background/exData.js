@@ -110,11 +110,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
     case 'set-mexc':
       console.log('exData type:', type);
       try {
-        const exchange = await getExchange(
-          message,
-          USERPASSWORD,
-          port,
-        );
+        const exchange = await getExchange(message, USERPASSWORD, port);
         const ex = exchange.ex;
         const exParams = exchange.exParams;
         await ex.getInfo();
@@ -291,7 +287,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const sourceUpperCaseName = source.toUpperCase();
   if (type === 'Assets Proof') {
     params.baseValue = baseValue;
-    calculationType = `${sourceUpperCaseName}_ACCOUNT_BALANCE`;
+    calculationType = `SUM_OF_ALL`;
   } else if (type === 'Token Holdings') {
     params.holdingToken = holdingToken;
     calculationType = `${sourceUpperCaseName}_ASSET_BALANCES`; // TODO
@@ -342,8 +338,8 @@ async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
         params: {},
       };
       signres = await sign('okx', data, USERPASSWORD, port);
-      signres.parseSchema = 'A_PURE_NUMBER:beg_tag="totalEq": ":end_tag="';
-      signres.decryptFlag = "false";
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag="totalEq":":end_tag="';
+      signres.decryptFlag = 'false';
 
       extRequestsOrderInfo = { ...signres };
       // extRequestsOrderInfo = {

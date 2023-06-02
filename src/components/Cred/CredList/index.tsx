@@ -29,6 +29,10 @@ const CredList: React.FC<CredListProps> = ({
     }
     return list;
   }, [list]);
+  const onChainCredentialsLen = useMemo(() => {
+    const onChainCredList = list.filter((i) => i.provided && i.provided.length > 0);
+    return onChainCredList.length
+  }, [list])
   
   return (
     <section className="credListWrapper">
@@ -36,12 +40,12 @@ const CredList: React.FC<CredListProps> = ({
         <h2 className="title">Credentials</h2>
         <div className="statisticsWrapper">
           <div className="statisticsItem">
-            <div className="value">3</div>
+            <div className="value">{list.length}</div>
             <div className="label">Attested</div>
           </div>
           <div className="separtor"></div>
           <div className="statisticsItem">
-            <div className="value">3</div>
+            <div className="value">{onChainCredentialsLen}</div>
             <div className="label">Provided</div>
           </div>
         </div>

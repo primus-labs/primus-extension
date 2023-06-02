@@ -119,7 +119,9 @@ params = {
 return eas attestaion id
 */
 export async function attestByDelegation(params) {
-    let {networkName, data, attesteraddr, receipt, signature, metamaskprovider} = params;
+    let { networkName, data, attesteraddr, receipt, signature, metamaskprovider } = params;
+    const splitsignature = utils.splitSignature(signature);
+    const formatSignature = { v: splitsignature.v, r: splitsignature.r, s: splitsignature.s };
     console.log('eas attestByDelegation params', params);
     const easContractAddress = EASInfo[networkName].easContact;
     const eas = new EAS(easContractAddress);
@@ -132,15 +134,15 @@ export async function attestByDelegation(params) {
     try {
         const schemauid = EASInfo[networkName].schemaUid;
         tx = await eas.attestByDelegation({
-            schema: schemauid,
-            data: {
-                recipient: receipt,
-                data: data,
-                expirationTime: 0,
-                revocable: true,
-            },
-            attester: attesteraddr,
-            signature: signature
+          schema: schemauid,
+          data: {
+            recipient: receipt,
+            data: data,
+            expirationTime: 0,
+            revocable: true,
+          },
+          attester: attesteraddr,
+          signature: formatSignature,
         });
     } catch (er) {
         console.log("attest failed", er);

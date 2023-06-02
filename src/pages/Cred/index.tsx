@@ -108,7 +108,7 @@ const Cred = () => {
       title: 'Processing',
       desc: 'Please complete the transaction in your wallet.',
     });
-    
+
     const targetNetwork = EASInfo[activeNetworkName as keyof typeof EASInfo];
     const [accounts, chainId, provider] = await connectWallet(targetNetwork);
     // if (provider && provider.on) {
@@ -209,59 +209,61 @@ const Cred = () => {
           }
         }
         if (resMethodName === `getAttestation`) {
-          // if (res) {
-          // TODO wheather wait getAttestation msg back
-          const fetchAttestationResult = () => {
-            const msg = {
-              fullScreenType: 'algorithm',
-              reqMethodName: 'getAttestationResult',
-              params: {},
+          if (res) {
+            // TODO wheather wait getAttestation msg back
+            const fetchAttestationResult = () => {
+              const msg = {
+                fullScreenType: 'algorithm',
+                reqMethodName: 'getAttestationResult',
+                params: {},
+              };
+              postMsg(padoServicePort, msg);
+              console.log('page_send:getAttestationResult request');
             };
-            postMsg(padoServicePort, msg);
-            console.log('page_send:getAttestationResult request');
-          };
-          const fetchTimer = setInterval(() => {
-            fetchAttestationResult();
-          }, 2000);
-          setFetchAttestationTimer(fetchTimer);
-          // }
+            const fetchTimer = setInterval(() => {
+              fetchAttestationResult();
+            }, 5000);
+            setFetchAttestationTimer(fetchTimer);
+          }
         }
         if (resMethodName === `getAttestationResult`) {
           if (res) {
-            const { activeRequestAttestation } = await chrome.storage.local.get(
-              ['activeRequestAttestation']
-            );
-            const parsedActiveRequestAttestation = activeRequestAttestation
-              ? JSON.parse(activeRequestAttestation)
-              : {};
-            console.log('attestation', parsedActiveRequestAttestation);
-            const activeRequestId = parsedActiveRequestAttestation.requestid;
+            const parseRes = JSON.parse(res)
+            if (parseRes.retcode === '0') {
+              const { activeRequestAttestation } =
+                await chrome.storage.local.get(['activeRequestAttestation']);
+              const parsedActiveRequestAttestation = activeRequestAttestation
+                ? JSON.parse(activeRequestAttestation)
+                : {};
+              console.log('attestation', parsedActiveRequestAttestation);
+              const activeRequestId = parsedActiveRequestAttestation.requestid;
 
-            const fullAttestation = {
-              ...res,
-              ...parsedActiveRequestAttestation,
-              // balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
-              // signature:
-              //   '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a', // includes v，r，s // TODO
-              // data: '0x123', // trueHash or falseHash // TODO
-            };
-            const { credentials: credentialsStr } =
-              await chrome.storage.local.get(['credentials']);
-            const credentialsObj = credentialsStr
-              ? JSON.parse(credentialsStr)
-              : {};
-            credentialsObj[activeRequestId] = fullAttestation;
-            await chrome.storage.local.set({
-              credentials: JSON.stringify(credentialsObj),
-            });
-            await chrome.storage.local.remove(['activeRequestAttestation']);
+              const fullAttestation = {
+                ...parseRes.content,
+                ...parsedActiveRequestAttestation,
+                // balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
+                // signature:
+                //   '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a', // includes v，r，s // TODO
+                // data: '0x123', // trueHash or falseHash // TODO
+              };
+              const { credentials: credentialsStr } =
+                await chrome.storage.local.get(['credentials']);
+              const credentialsObj = credentialsStr
+                ? JSON.parse(credentialsStr)
+                : {};
+              credentialsObj[activeRequestId] = fullAttestation;
+              await chrome.storage.local.set({
+                credentials: JSON.stringify(credentialsObj),
+              });
+              await chrome.storage.local.remove(['activeRequestAttestation']);
 
-            initCredList();
-            setActiveRequest({
-              type: 'suc',
-              title: 'Congratulations',
-              desc: 'Your proof is created!',
-            });
+              initCredList();
+              setActiveRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your proof is created!',
+              });
+            }
             // TODO attest suc
             // clearInterval(timer);
             // clearInterval(fetchAttestationTimer);
