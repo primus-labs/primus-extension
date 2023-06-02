@@ -69,27 +69,33 @@ const Lock = () => {
 
   return (
     <div className="pageIndex pageLock">
-        <main className="appContent">
-          <AsideAnimation />
-          <article>
-            <header className="articleHeader">
-              <h1>WELCOME BACK！</h1>
-              <p>Manage and share your web data simply and safely.</p>
-            </header>
-            <main className="articleMain formItem" >
-              <h6>Password</h6>
-              <PInput type="password" placeholder="Please enter your password" onChange={handleChangePwd} onSearch={handleSubmitPwd} visible/>
-              {errorMsg && <div className="errorTip">{errorMsg}</div>}
-            </main>
-            <footer className="articleFooter">
-              <button className="unLockBtn" onClick={handleClickStart}>
-                <span>Unlock</span>
-                </button>
-              {/* <p className="forgetPwd">Forgot password?</p> */}
-              {/* <p className="help">Need help? Contact PADO support</p> */}
-            </footer>
-          </article>
-        </main>
+      <main className="appContent">
+        <AsideAnimation />
+        <article>
+          <header className="articleHeader">
+            <h1>WELCOME BACK！</h1>
+            <p>Manage and share your data simply and safely.</p>
+          </header>
+          <main className="articleMain formItem">
+            <h6>Password</h6>
+            <PInput
+              type="password"
+              placeholder="Please enter your password"
+              onChange={handleChangePwd}
+              onSearch={handleSubmitPwd}
+              visible
+            />
+            {errorMsg && <div className="errorTip">{errorMsg}</div>}
+          </main>
+          <footer className="articleFooter">
+            <button className="unLockBtn" onClick={handleClickStart}>
+              <span>Unlock</span>
+            </button>
+            {/* <p className="forgetPwd">Forgot password?</p> */}
+            {/* <p className="help">Need help? Contact PADO support</p> */}
+          </footer>
+        </article>
+      </main>
     </div>
   );
 };

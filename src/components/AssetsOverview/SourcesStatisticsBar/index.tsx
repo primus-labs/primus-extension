@@ -90,7 +90,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(({ type =
                       className={liClassNameFn(item.name)} 
                       key={item.name}
                       onClick={() => handleClickSource(item.name)}>
-                      <div className="label">Data on {item.name}</div>
+                      <div className="label">from {item.name}</div>
                       <div className="value">
                         <img src={item.icon} alt="" />
                         <span>{sourceCoreDataFn(item)}</span>

@@ -80,9 +80,9 @@ const DataSourcesDialog: React.FC<DataSourcesDialogProps> = ({
                   >
                     <img src={item.icon} alt="" />
                     <div className="desc" title={item.desc}>
-                      {item.desc}
+                      {item.name}
                     </div>
-                    <h6>{item.name}</h6>
+                    <h6>{item.desc}</h6>
                   </li>
                 );
               })}
