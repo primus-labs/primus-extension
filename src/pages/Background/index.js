@@ -207,41 +207,41 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestationResult':
-      // chrome.runtime.sendMessage({
-      //   type: 'algorithm',
-      //   method: 'getAttestationResult',
-      //   params: params,
-      // });
-      // TODO for test
-      const returnResult = {
-        content: {
-          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
-          balanceGreaterBaseValue: 'true',
-          baseValue: '1000',
-          encodedData:
-            '000000000000036f6b780000000000000000000000000000000000000000000000000000000000',
-          getdatatime: '1685328626630',
-          requestid: '1',
-          signature:
-            '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a',
-          source: 'okx',
-          useridhash:
-            '0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF',
-          version: '1.0.0',
-        },
-        retcode: '0',
-        retdesc: 'success',
-      };
-      let msg = {
-        resType: 'algorithm',
-        resMethodName: 'getAttestationResult',
-      };
-      if (returnResult.retcode === '0') {
-        msg.res = returnResult.content;
-      } else {
-        msg.res = false;
-      }
-      postMsg(fullscreenPort, msg);
+      chrome.runtime.sendMessage({
+        type: 'algorithm',
+        method: 'getAttestationResult',
+        params: params,
+      });
+      // // TODO for test
+      // const returnResult = {
+      //   content: {
+      //     address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
+      //     balanceGreaterBaseValue: 'true',
+      //     baseValue: '1000',
+      //     encodedData:
+      //       '000000000000036f6b780000000000000000000000000000000000000000000000000000000000',
+      //     getdatatime: '1685328626630',
+      //     requestid: '1',
+      //     signature:
+      //       '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a',
+      //     source: 'okx',
+      //     useridhash:
+      //       '0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF',
+      //     version: '1.0.0',
+      //   },
+      //   retcode: '0',
+      //   retdesc: 'success',
+      // };
+      // let msg = {
+      //   resType: 'algorithm',
+      //   resMethodName: 'getAttestationResult',
+      // };
+      // if (returnResult.retcode === '0') {
+      //   msg.res = returnResult.content;
+      // } else {
+      //   msg.res = false;
+      // }
+      // postMsg(fullscreenPort, msg);
 
       // const result = {
       //   requestid: (+new Date()).toString(),

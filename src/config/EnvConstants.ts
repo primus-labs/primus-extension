@@ -8,19 +8,19 @@ type ENVTYPE = 'development' | 'production';
 const CURENV = process.env.NODE_ENV as ENVTYPE;
 // console.log('CURENV', CURENV);
 const PADOURLMAP = {
-  development: '127.0.0.1:8081',
+  development: '18.179.8.186:8888',
   production: '127.0.0.1:8081',
 };
 export const PADOURL = PADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
-  development: '127.0.0.1:9000',
+  development: '18.179.8.186:9000',
   production: '127.0.0.1:9000',
 };
 export const PROXYURL = PROXYURLMAP[CURENV];
 
 const PADOADDRESSMAP = {
-  development: '0xAaceaBC4104a687CaA43a950d8b9cA6F69EcE24F',
+  development: '0xe02bd7a6c8aa401189aebb5bad755c2610940a73',
   production: '0x547E9fc83bE78bD656A20952EBE3bEBcc2ef8BD0',
 };
 export const PADOADDRESS = PADOADDRESSMAP[CURENV];
