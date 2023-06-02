@@ -39,7 +39,7 @@ const EASINFOMAP = {
       rpcUrls: [
         'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
-      blockExploreUrls: [],
+      blockExploreUrls: ['https://sepolia.etherscan.io'],
     },
     Polygon: {
       icon: iconPolygon,
@@ -57,6 +57,12 @@ const EASINFOMAP = {
       rpcUrl: 'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       easContact: '0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587',
       schemaUid: '',
+      chainId: '0x1', // numToHex
+      chainName: 'Ethereum',
+      rpcUrls: [
+        'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      ],
+      blockExploreUrls: ['https://etherscan.io/'],
     },
     ArbitrumOne: {
       icon: iconArbitrum,
@@ -64,6 +70,10 @@ const EASINFOMAP = {
       rpcUrl: 'https://arb1.arbitrum.io/rpc',
       easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
       schemaUid: '',
+      chainId: '0xa4b1', // numToHex
+      chainName: 'ArbitrumOne',
+      rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+      blockExploreUrls: ['https://arbiscan.io'],
     },
     Polygon: {
       icon: iconPolygon,

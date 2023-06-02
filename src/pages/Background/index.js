@@ -10,7 +10,6 @@ import { SocailStoreVersion } from '@/config/constants';
 import {
   default as processExReq,
   clear,
-  sign,
   assembleAlgorithmParams,
 } from './exData';
 

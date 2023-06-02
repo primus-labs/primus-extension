@@ -110,7 +110,11 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
     case 'set-mexc':
       console.log('exData type:', type);
       try {
-        const exchange = await getExchange(message, port, USERPASSWORD);
+        const exchange = await getExchange(
+          message,
+          USERPASSWORD,
+          port,
+        );
         const ex = exchange.ex;
         const exParams = exchange.exParams;
         await ex.getInfo();

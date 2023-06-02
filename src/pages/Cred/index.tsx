@@ -123,7 +123,7 @@ const Cred = () => {
       networkName: activeNetworkName,
       metamaskprovider: provider,
       receipt: '0x' + address,
-      attesteraddr: PADOADDRESS,
+      attesteraddr: PADOADDRESS, // TODO
       data: activeCred?.encodedData,
       signature: activeCred?.signature,
     };
