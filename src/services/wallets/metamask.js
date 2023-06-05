@@ -4,16 +4,24 @@ var provider;
 
 export const connectWallet = async (targetNetwork) => {
   console.log('connect metamask');
-  provider = createMetaMaskProvider();
-  const [accounts, chainId] = await Promise.all([
-    provider.request({
-      method: 'eth_requestAccounts',
-    }),
-    provider.request({ method: 'eth_chainId' }),
-  ]);
-  await switchChain(chainId, targetNetwork);
-  subscribeToEvents();
-  return [accounts, chainId, provider];
+  try {
+    provider = createMetaMaskProvider();
+    const [accounts, chainId] = await Promise.all([
+      provider.request({
+        method: 'eth_requestAccounts',
+      }),
+      provider.request({ method: 'eth_chainId' }),
+    ]);
+    await switchChain(chainId, targetNetwork);
+    subscribeToEvents();
+    return [accounts, chainId, provider];
+  } catch (e) {
+    console.log('connect wallet error: ', e)
+    if (e.code === 4001) {
+      // User rejected the request.
+      return [undefined, undefined, undefined, e];
+    }
+  }
 };
 const switchChain = async (connectedChainId, targetNetwork) => {
   const { chainId, chainName, rpcUrls, blockExploreUrls } = targetNetwork;

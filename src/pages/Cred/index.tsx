@@ -48,6 +48,8 @@ const Cred = () => {
   );
   const navigate = useNavigate();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
+  const [activeSendToChainRequest, setActiveSendToChainRequest] =
+    useState<ActiveRequestType>();
   const handleChangeTab = (val: string) => {};
   const initCredList = useCallback(async () => {
     const cObj = await getCredentialsObjFromStorage();
@@ -93,6 +95,17 @@ const Cred = () => {
       return;
     }
   };
+  const onSubmitActiveSendToChainRequestDialog = () => {
+    if (
+      activeSendToChainRequest?.type === 'suc' ||
+      activeSendToChainRequest?.type === 'error' ||
+      activeSendToChainRequest?.type === 'warn'
+    ) {
+      setStep(0);
+      // refresh attestation list
+      return;
+    }
+  };
   const handleUpChain = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
     setStep(3);
@@ -108,59 +121,67 @@ const Cred = () => {
   };
   const handleSubmitConnectWallet = async (wallet: WALLETITEMTYPE) => {
     // TODO
-    setActiveRequest({
+    setStep(5);
+    setActiveSendToChainRequest({
       type: 'loading',
       title: 'Processing',
       desc: 'Please complete the transaction in your wallet.',
     });
 
     const targetNetwork = EASInfo[activeNetworkName as keyof typeof EASInfo];
-    const [accounts, chainId, provider] = await connectWallet(targetNetwork);
-    // if (provider && provider.on) {
-    //   const handleConnect = () => {
-    //     console.log('metamask connected 2');
-    //   };
-    //   provider.on('connect', handleConnect);
-    // }
-    const { keyStore } = await chrome.storage.local.get(['keyStore']);
-    const { address } = JSON.parse(keyStore);
-    const upChainParams = {
-      networkName: activeNetworkName,
-      metamaskprovider: provider,
-      receipt: '0x' + address,
-      attesteraddr: PADOADDRESS, // TODO
-      data: activeCred?.encodedData,
-      signature: activeCred?.signature,
-    };
-    const upChainRes = await attestByDelegation(upChainParams);
-    // TODO
-    const cObj = await getCredentialsObjFromStorage();
-    const curRequestid = activeCred?.requestid as string;
-    const curCredential = credentialsObj[curRequestid];
-    const newProvided = curCredential.provided ?? [];
-    const currentChainObj: any = ONCHAINLIST.find(
-      (i) => activeNetworkName === i.title
-    );
-    currentChainObj.attestationUID = upChainRes;
-    const existIndex = newProvided.findIndex(
-      (i) => i.title === activeNetworkName
-    );
-    existIndex < 0 && newProvided.push(currentChainObj);
+    try {
+      const [accounts, chainId, provider] = await connectWallet(targetNetwork);
+      const { keyStore } = await chrome.storage.local.get(['keyStore']);
+      const { address } = JSON.parse(keyStore);
+      const upChainParams = {
+        networkName: activeNetworkName,
+        metamaskprovider: provider,
+        receipt: '0x' + address,
+        attesteraddr: PADOADDRESS, // TODO
+        data: activeCred?.encodedData,
+        signature: activeCred?.signature,
+      };
+      const upChainRes = await attestByDelegation(upChainParams);
+      if (upChainRes) {
+        const cObj = await getCredentialsObjFromStorage();
+        const curRequestid = activeCred?.requestid as string;
+        const curCredential = credentialsObj[curRequestid];
+        const newProvided = curCredential.provided ?? [];
+        const currentChainObj: any = ONCHAINLIST.find(
+          (i) => activeNetworkName === i.title
+        );
+        currentChainObj.attestationUID = upChainRes;
+        const existIndex = newProvided.findIndex(
+          (i) => i.title === activeNetworkName
+        );
+        existIndex < 0 && newProvided.push(currentChainObj);
 
-    cObj[curRequestid] = Object.assign(curCredential, {
-      provided: newProvided,
-    });
-    await chrome.storage.local.set({
-      credentials: JSON.stringify(cObj),
-    });
-    initCredList();
-    setActiveRequest({
-      type: 'suc',
-      title: 'Congratulations',
-      desc: 'Your attestation is recorded on-chain!',
-    });
-
-    setStep(5);
+        cObj[curRequestid] = Object.assign(curCredential, {
+          provided: newProvided,
+        });
+        await chrome.storage.local.set({
+          credentials: JSON.stringify(cObj),
+        });
+        initCredList();
+        setActiveSendToChainRequest({
+          type: 'suc',
+          title: 'Congratulations',
+          desc: 'Your attestation is recorded on-chain!',
+        });
+      } else {
+        setActiveSendToChainRequest({
+          type: 'error',
+          title: 'Failed',
+          desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+        });
+      }
+    } catch (e) {
+      setActiveSendToChainRequest({
+        type: 'error',
+        title: 'Failed',
+        desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+      });
+    }
   };
   const handleViewQrcode = useCallback(() => {
     setQrcodeVisible(true);
@@ -238,15 +259,15 @@ const Cred = () => {
                 title: 'Something went wrong',
                 desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
               });
-            }, 1000*60);
+            }, 1000 * 60);
             setFetchTimeoutTimer(fTimeoutTimer);
           }
         }
         if (resMethodName === `getAttestationResult`) {
           if (res) {
-            const {retcode, content} = JSON.parse(res);
+            const { retcode, content } = JSON.parse(res);
             if (retcode === '0') {
-              clearFetchAtteatationTimer()
+              clearFetchAtteatationTimer();
               // TODO balanceGreaterThanBaseValue
               if (
                 content.balanceGreaterBaseValue === 'true' ||
@@ -292,7 +313,8 @@ const Cred = () => {
                   desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
                 });
               }
-            } else  if (retcode === '1') { // TODO
+            } else if (retcode === '1') {
+              // TODO
               setActiveRequest({
                 type: 'warn',
                 title: 'Something went wrong',
@@ -327,7 +349,7 @@ const Cred = () => {
       clearFetchTimeoutTimer();
     };
   }, [clearFetchTimeoutTimer]);
-  
+
   useEffect(() => {
     if (
       fetchAttestationTimer &&
@@ -406,10 +428,10 @@ const Cred = () => {
         {step === 5 && (
           <AddSourceSucDialog
             onClose={handleCloseMask}
-            onSubmit={onSubmitActiveRequestDialog}
-            type={activeRequest?.type}
-            title={activeRequest?.title}
-            desc={activeRequest?.desc}
+            onSubmit={onSubmitActiveSendToChainRequestDialog}
+            type={activeSendToChainRequest?.type}
+            title={activeSendToChainRequest?.title}
+            desc={activeSendToChainRequest?.desc}
             headerType="attestation"
           />
         )}
