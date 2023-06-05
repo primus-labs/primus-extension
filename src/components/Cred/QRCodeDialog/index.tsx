@@ -6,14 +6,22 @@ import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesD
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import { QRCodeSVG } from 'qrcode.react';
 import { exportJson } from '@/utils/utils';
+import { PADOADDRESS } from '@/config/envConstants';
+import type { CredTypeItemType } from '@/components/Cred/CredItem';
+
 
 interface QRCodeDialogProps {
   onClose: () => void;
   onSubmit: () => void;
+  activeCred?: CredTypeItemType;
 }
 
-const QRCodeDialog: React.FC<QRCodeDialogProps> = ({ onClose, onSubmit }) => {
-  const [jsonStr, setJsonStr] = useState<string>('')
+const QRCodeDialog: React.FC<QRCodeDialogProps> = ({
+  onClose,
+  onSubmit,
+  activeCred,
+}) => {
+  const [jsonStr, setJsonStr] = useState<string>('');
   const handleClickNext = () => {
     onSubmit();
   };
@@ -21,20 +29,36 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = ({ onClose, onSubmit }) => {
     exportJson(jsonStr, 'credential');
   };
   useEffect(() => {
-    const jsonStr = JSON.stringify({
-      attester: '0x7ab44DE0156925fe0c24482a2cDe48C465e47573',
-      schemaData: {
-        source: 'binance',
-        useridhash: '0xaaaa...',
-        receipt: "0x7ab44de0156925fe0c24482a2cde48c465e47573",
-        getdatatime: '1684916453',
-        baseValue: '1000',
-        balanceGreaterThanBaseValue: true,
-      },
-      signature: '0xaa...',
-    });
-    setJsonStr(jsonStr);
-  }, [])
+    if (activeCred) {
+      const {
+        source,
+        authUseridHash,
+        address,
+        getDataTime,
+        getdatatime,
+        baseValue,
+        balanceGreaterBaseValue,
+        signature,
+      } = activeCred;
+      const jsonStr = JSON.stringify({
+        attester: PADOADDRESS,
+        schemaData: {
+          source,
+          // useridhash,
+          // sourceUseridHash: '',
+          authUseridHash,
+          receipt: address,
+          // getdatatime,
+          getDataTime,
+          baseValue,
+          balanceGreaterThanBaseValue: balanceGreaterBaseValue,
+        },
+        signature,
+      });
+      setJsonStr(jsonStr);
+    }
+    
+  }, [activeCred]);
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog qrcodeDialog">

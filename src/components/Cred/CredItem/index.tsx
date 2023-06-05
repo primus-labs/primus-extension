@@ -24,7 +24,7 @@ export type CredTypeItemType = {
   requestid: string;
   version: string;
   source: string;
-  useridhash: string;
+  authUseridHash: string;
   address: string;
   getdatatime: string;
   baseValue: string;

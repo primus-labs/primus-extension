@@ -309,7 +309,7 @@ const Cred = () => {
     initAlgorithm();
   }, []);
   const clearFetchTimeoutTimer = useCallback(() => {
-    fetchTimeoutTimer && clearInterval(fetchTimeoutTimer);
+    fetchTimeoutTimer && clearTimeout(fetchTimeoutTimer);
   }, [fetchTimeoutTimer]);
   const clearFetchAtteatationTimer = useCallback(() => {
     if (fetchAttestationTimer) {
@@ -415,6 +415,7 @@ const Cred = () => {
         )}
         {qrcodeVisible && (
           <QRCodeDialog
+            activeCred={activeCred}
             onClose={handleCloseQrcode}
             onSubmit={() => {
               setQrcodeVisible(false);

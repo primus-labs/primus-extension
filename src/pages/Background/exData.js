@@ -241,7 +241,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   const { id: authUserId } = JSON.parse(userInfo);
-  const useridhash = strToHex(authUserId);
+  const authUseridHash = strToHex(authUserId);
 
   const timeStampStr = (+new Date()).toString();
 
@@ -281,7 +281,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     user,
 
     // holdingToken // TODO
-    useridhash,
+    authUseridHash,
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
