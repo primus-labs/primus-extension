@@ -38,6 +38,7 @@ const Cred = () => {
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
+  const [fetchTimeoutTimer, setFetchTimeoutTimer] = useState<any>();
   const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
   const [activeAttestationType, setActiveAttestationType] =
     useState<string>('');
@@ -82,7 +83,11 @@ const Cred = () => {
     });
   };
   const onSubmitActiveRequestDialog = () => {
-    if (activeRequest?.type === 'suc') {
+    if (
+      activeRequest?.type === 'suc' ||
+      activeRequest?.type === 'error' ||
+      activeRequest?.type === 'warn'
+    ) {
       setStep(0);
       // refresh attestation list
       return;
@@ -225,49 +230,75 @@ const Cred = () => {
               fetchAttestationResult();
             }, 5000);
             setFetchAttestationTimer(fetchTimer);
+            const fTimeoutTimer = setTimeout(() => {
+              console.log('60s timeout', fetchTimer);
+              fetchTimer && clearInterval(fetchTimer);
+              setActiveRequest({
+                type: 'warn',
+                title: 'Something went wrong',
+                desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+              });
+            }, 1000*60);
+            setFetchTimeoutTimer(fTimeoutTimer);
           }
         }
         if (resMethodName === `getAttestationResult`) {
           if (res) {
-            const parseRes = JSON.parse(res)
-            if (parseRes.retcode === '0') {
-              const { activeRequestAttestation } =
-                await chrome.storage.local.get(['activeRequestAttestation']);
-              const parsedActiveRequestAttestation = activeRequestAttestation
-                ? JSON.parse(activeRequestAttestation)
-                : {};
-              console.log('attestation', parsedActiveRequestAttestation);
-              const activeRequestId = parsedActiveRequestAttestation.requestid;
+            const {retcode, content} = JSON.parse(res);
+            if (retcode === '0') {
+              clearFetchAtteatationTimer()
+              // TODO balanceGreaterThanBaseValue
+              if (
+                content.balanceGreaterBaseValue === 'true' ||
+                content.balanceGreaterThanBaseValue === 'true'
+              ) {
+                const { activeRequestAttestation } =
+                  await chrome.storage.local.get(['activeRequestAttestation']);
+                const parsedActiveRequestAttestation = activeRequestAttestation
+                  ? JSON.parse(activeRequestAttestation)
+                  : {};
+                console.log('attestation', parsedActiveRequestAttestation);
+                const activeRequestId =
+                  parsedActiveRequestAttestation.requestid;
 
-              const fullAttestation = {
-                ...parseRes.content,
-                ...parsedActiveRequestAttestation,
-                // balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
-                // signature:
-                //   '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a', // includes v，r，s // TODO
-                // data: '0x123', // trueHash or falseHash // TODO
-              };
-              const { credentials: credentialsStr } =
-                await chrome.storage.local.get(['credentials']);
-              const credentialsObj = credentialsStr
-                ? JSON.parse(credentialsStr)
-                : {};
-              credentialsObj[activeRequestId] = fullAttestation;
-              await chrome.storage.local.set({
-                credentials: JSON.stringify(credentialsObj),
-              });
-              await chrome.storage.local.remove(['activeRequestAttestation']);
+                const fullAttestation = {
+                  ...content,
+                  ...parsedActiveRequestAttestation,
+                };
+                const { credentials: credentialsStr } =
+                  await chrome.storage.local.get(['credentials']);
+                const credentialsObj = credentialsStr
+                  ? JSON.parse(credentialsStr)
+                  : {};
+                credentialsObj[activeRequestId] = fullAttestation;
+                await chrome.storage.local.set({
+                  credentials: JSON.stringify(credentialsObj),
+                });
+                await chrome.storage.local.remove(['activeRequestAttestation']);
 
-              initCredList();
+                initCredList();
+                setActiveRequest({
+                  type: 'suc',
+                  title: 'Congratulations',
+                  desc: 'Your proof is created!',
+                });
+              } else if (
+                content.balanceGreaterBaseValue === 'false' ||
+                content.balanceGreaterThanBaseValue === 'false'
+              ) {
+                setActiveRequest({
+                  type: 'error',
+                  title: 'Failed',
+                  desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+                });
+              }
+            } else  if (retcode === '1') { // TODO
               setActiveRequest({
-                type: 'suc',
-                title: 'Congratulations',
-                desc: 'Your proof is created!',
+                type: 'warn',
+                title: 'Something went wrong',
+                desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
               });
             }
-            // TODO attest suc
-            // clearInterval(timer);
-            // clearInterval(fetchAttestationTimer);
           }
         }
       }
@@ -277,13 +308,33 @@ const Cred = () => {
   useEffect(() => {
     initAlgorithm();
   }, []);
+  const clearFetchTimeoutTimer = useCallback(() => {
+    fetchTimeoutTimer && clearInterval(fetchTimeoutTimer);
+  }, [fetchTimeoutTimer]);
+  const clearFetchAtteatationTimer = useCallback(() => {
+    if (fetchAttestationTimer) {
+      clearInterval(fetchAttestationTimer);
+      clearFetchTimeoutTimer();
+    }
+  }, [fetchAttestationTimer, clearFetchTimeoutTimer]);
   useEffect(() => {
     return () => {
-      fetchAttestationTimer && clearInterval(fetchAttestationTimer);
+      clearFetchAtteatationTimer();
     };
-  }, [fetchAttestationTimer]);
+  }, [clearFetchAtteatationTimer]);
   useEffect(() => {
-    if (fetchAttestationTimer && activeRequest?.type === 'suc') {
+    return () => {
+      clearFetchTimeoutTimer();
+    };
+  }, [clearFetchTimeoutTimer]);
+  
+  useEffect(() => {
+    if (
+      fetchAttestationTimer &&
+      (activeRequest?.type === 'suc' ||
+        activeRequest?.type === 'error' ||
+        activeRequest?.type === 'warn')
+    ) {
       clearInterval(fetchAttestationTimer);
     }
   }, [fetchAttestationTimer, activeRequest]);
