@@ -49,7 +49,17 @@ interface AssetsDetailProps {
   assetsProveFlag: boolean;
   userProveFlag: boolean;
 }
-const proofList = ['Assets', 'Active User'];
+const proofObjList = [
+  {
+    name: 'Assets',
+    type: 'Assets Proof',
+  },
+  {
+    name: 'Qualification',
+    type: 'Qualification',
+    disabled: true,
+  },
+];
 const AssetsDetail: React.FC<AssetsDetailProps> = ({
   onProve,
   assetsProveFlag,
@@ -142,7 +152,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   }, [dataSource]);
 
   const handleProve = (item: string) => {
-    // 'Assets', 'Active User'
+    // 'Assets Proof', 'Qualification'
     onProve(item);
   };
 
@@ -157,6 +167,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     !fetchExDatasLoading &&
       (fetchExDatas as (name: string) => void)(sourceName);
   };
+  
   useEffect(() => {
     sourceName && fetchExData();
   }, [sourceName]);
@@ -164,6 +175,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   useEffect(() => {
     !fetchExDatasLoading && onUpdate();
   }, [fetchExDatasLoading]);
+  
   return (
     <div className="assetsDetail">
       <div className="iconBackWrapper" onClick={handleBack}></div>
@@ -209,19 +221,19 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
         </div>
       </section>
       <section className="proofsBar">
-        {proofList.map((item) => {
+        {proofObjList.map((item) => {
           return (
             <div
-              key={item}
-              className="proofCard"
-              onClick={() => handleProve(item)}
+              key={item.name}
+              className={item.disabled ? 'proofCard disabled' : 'proofCard'}
+              onClick={() => handleProve(item.type)}
             >
               <div className="cardC">
-                <div className="label">{item} Proof</div>
-                {item === 'Active User' && userProveFlag && (
+                <div className="label">{item.name} Proof</div>
+                {item.name === 'Qualification' && userProveFlag && (
                   <img className="iconSuc" src={iconSuc} alt="" />
                 )}
-                {item === 'Assets' && assetsProveFlag && (
+                {item.name === 'Assets' && assetsProveFlag && (
                   <img className="iconSuc" src={iconSuc} alt="" />
                 )}
                 <img className="iconArrow" src={iconArrowLeft} alt="" />

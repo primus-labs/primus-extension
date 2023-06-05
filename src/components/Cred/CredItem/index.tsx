@@ -26,7 +26,7 @@ export type CredTypeItemType = {
   source: string;
   authUseridHash: string;
   address: string;
-  getdatatime: string;
+  getDataTime: string;
   baseValue: string;
   balanceGreaterBaseValue: string; // or bool statusNormal
   signature: string; // includes v，r，s
@@ -108,6 +108,14 @@ const CredItem: React.FC<CredTypeListProps> = ({
     }
     return null;
   }, []);
+  const nameCallback = useCallback((item: CredTypeItemType) => {
+    const sourceName = item?.source;
+    if (sourceName) {
+      const sourceLowerCaseName = item.source.toLowerCase();
+      return DATASOURCEMAP[sourceLowerCaseName].name;
+    }
+    return null;
+  }, []);
 
   return (
     <div className={expand ? 'credItem expand' : 'credItem'}>
@@ -121,7 +129,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
             <div className="label">Source: &nbsp;</div>
             <div className="value">
               <img src={iconCallback(item)} alt="" className="sourceIcon" />
-              <span>{item?.source}</span>
+              <span>{nameCallback(item)}</span>
             </div>
           </div>
           {(item.exUserId || item.label) && (
@@ -134,7 +142,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
         <div className="descItem">
           <div className="label">Date: &nbsp;</div>
           <div className="value">
-            {getCurrentDate(Number(item?.getdatatime))}
+            {getCurrentDate(Number(item?.getDataTime))}
           </div>
         </div>
         <footer>

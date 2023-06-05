@@ -30,6 +30,7 @@ interface AttestationDialogProps {
   onSubmit: (form: AttestionForm, activeCred?: CredTypeItemType) => void;
   onCheck?: () => void;
   activeCred?: CredTypeItemType;
+  activeSourceName?: string;
 }
 type ConnectSourceType = {
   name: string;
@@ -55,6 +56,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   onClose,
   onSubmit,
   activeCred,
+  activeSourceName,
 }) => {
   const navigate = useNavigate();
   const [activeSource, setActiveSource] = useState<ConnectSourceType>();
@@ -150,9 +152,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
         exUserId: activeSource?.exUserId,
         label: activeSource?.label,
       };
-      if (activeCred?.requestid) {
-        form.requestid = activeCred?.requestid;
-      }
 
       if (type === 'Token Holdings') {
         if (!activeToken) {
@@ -170,12 +169,17 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
           form.baseValue = activeBaseValue;
         }
       }
-      onSubmit(form, activeCred);
+      if (activeCred?.requestid) {
+        form.requestid = activeCred?.requestid;
+        onSubmit(form, activeCred);
+      } else {
+        onSubmit(form);
+      }
     }
   };
 
   const handleClickData = (item: ConnectSourceType) => {
-    if (activeCred && activeSource) {
+    if ((activeCred || activeSourceName) && activeSource) {
       if (activeSource?.name !== item.name) {
         return;
       }
@@ -192,7 +196,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   const liClassNameCallback = useCallback(
     (item: ConnectSourceType) => {
       let defaultClassName = 'networkItem';
-      if (activeCred && activeSource) {
+      if ((activeCred || activeSourceName) && activeSource) {
         if (activeSource?.name !== item.name) {
           defaultClassName += ' disabled';
         }
@@ -210,7 +214,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       }
       return defaultClassName;
     },
-    [activeSource, activeSourceList, activeCred]
+    [activeSource, activeSourceList, activeCred, activeSourceName]
   );
   useEffect(() => {
     if (activeCred) {
@@ -224,6 +228,14 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       }
     }
   }, [activeCred, type, connectedSourceList]);
+  useEffect(() => {
+    if (activeSourceName) {
+      const sourceInfo = connectedSourceList.find(
+        (i) => i.name.toLowerCase() === activeSourceName.toLowerCase()
+      );
+      setActiveSource(sourceInfo);
+    }
+  }, [activeSourceName, connectedSourceList]);
   useEffect(() => {
     setActiveBaseValue(baseValueArr[0]);
   }, [baseValueArr]);

@@ -113,12 +113,16 @@
       @extend .frcc
       height: 152px
       transition: all 0.5s
-      &:hover
+      &.disabled
+        cursor: not-allowed
+      &:not(.disabled):hover
         transform: translateY(-20px)
+        cursor: pointer
       .cardC
         @extend .lLBlackBoldFont
         @extend .frsc
         gap: $xsGap
+        
         >img
           width: $sIconSize
         .iconArrow
@@ -157,8 +161,7 @@
     .proofsBar
       .proofCard
         height: 130px
-        &:hover
-          transform: translateY(-14px)
+        
         .cardC
           font-size: 22px
           line-height: 27px

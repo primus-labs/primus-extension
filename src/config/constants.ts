@@ -214,3 +214,6 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
     disabled: true,
   },
 ];
+
+export const ATTESTATIONTIMEOUT = 120*1000
+export const ATTESTATIONPOLLINGTIME = 5*1000;
