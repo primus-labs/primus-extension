@@ -133,9 +133,10 @@ const Cred = () => {
     const curRequestid = activeCred?.requestid as string;
     const curCredential = credentialsObj[curRequestid];
     const newProvided = curCredential.provided ?? [];
-    const currentChainObj = ONCHAINLIST.find(
+    const currentChainObj: any = ONCHAINLIST.find(
       (i) => activeNetworkName === i.title
     );
+    currentChainObj.attestationUID = upChainRes;
     const existIndex = newProvided.findIndex(
       (i) => i.title === activeNetworkName
     );

@@ -140,7 +140,12 @@ const CredItem: React.FC<CredTypeListProps> = ({
         <footer>
           <div className="providedChains">
             {item.provided?.map((i, k) => (
-              <img src={i.icon} key={k} alt="" />
+              <a
+                href={`https://sepolia.easscan.org/attestation/view/${i.attestationUID}`}
+                target="_blank"
+              >
+                <img src={i.icon} key={k} alt="" />
+              </a>
             ))}
           </div>
           <div className="operations">
