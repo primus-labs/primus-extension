@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid';
 import type { UserState } from '@/store/reducers'
-import {postMsg} from '@/utils/utils'
+import { postMsg, getAuthUrl } from '@/utils/utils';
 const useAuthorization = () => {
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort)
   const [authWindowId, setAuthWindowId] = useState<number>()
@@ -71,17 +71,20 @@ const useAuthorization = () => {
     const windowScreen: Screen = window.screen
     var left = Math.round((windowScreen.width / 2) - (width / 2));
     var top = Math.round((windowScreen.height / 2) - (height / 2));
-    console.log('authUrl', `https://18.179.8.186:8081/public/render/${source}?state=${state}`)
+    const authUrl = getAuthUrl({
+      source,
+      state,
+    });
     const windowOptions: chrome.windows.CreateData = {
-      url: `https://18.179.8.186:8081/public/render/${source}?state=${state}`,
+      url: authUrl,
       type: 'popup',
       focused: true,
       // setSelfAsOpener: false,
       top,
       left,
       width,
-      height
-    }
+      height,
+    };
     chrome.windows.create(windowOptions, (window) => { createAuthWindowCallBack(state, source, window,onSubmit) })
   }, [authWindowId, createAuthWindowCallBack])
 

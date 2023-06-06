@@ -8,7 +8,7 @@ import rightArrow from '@/assets/img/rightArrow.svg';
 import './index.sass';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
-import { postMsg } from '@/utils/utils';
+import { getAuthUrl, postMsg } from '@/utils/utils';
 
 interface authDialogProps {
   onClose: () => void;
@@ -120,8 +120,12 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
     const windowScreen: Screen = window.screen;
     var left = Math.round(windowScreen.width / 2 - width / 2);
     var top = Math.round(windowScreen.height / 2 - height / 2);
+    const authUrl = getAuthUrl({
+      source,
+      state
+    })
     const windowOptions: chrome.windows.CreateData = {
-      url: `https://18.179.8.186:8081/public/render/${source}?state=${state}`,
+      url: authUrl,
       type: 'popup',
       focused: true,
       // setSelfAsOpener: false,

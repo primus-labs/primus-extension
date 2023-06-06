@@ -1,3 +1,4 @@
+import {PADOSERVERURL} from '@/config/envConstants'
 type FetchParams = {
   method: string
   url: string;
@@ -7,7 +8,7 @@ type FetchParams = {
 
 const request = async(fetchParams: FetchParams) => {
   let {method, url, data= {}, config} = fetchParams
-  const baseUrl = "http://18.179.8.186:8080"
+  const baseUrl = PADOSERVERURL;
   method = method.toUpperCase();
   url = baseUrl + url;
 

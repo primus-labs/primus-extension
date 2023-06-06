@@ -27,6 +27,13 @@ const PADOADDRESSMAP = {
 };
 export const PADOADDRESS = PADOADDRESSMAP[CURENV];
 
+const PADOSERVERURLMAP = {
+  development: 'http://18.179.8.186:8080',
+  production: 'http://18.179.8.186:8080',
+};
+export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
+export const PADOSERVERURLHTTPS = 'https://18.179.8.186:8081';
+
 const EASINFOMAP = {
   development: {
     Sepolia: {

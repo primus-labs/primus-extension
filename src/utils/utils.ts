@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
 var ethereumjsUtil = require('ethereumjs-util');
+import {PADOSERVERURLHTTPS} from '@/config/envConstants'
 
 export function gt(a: number, b: number) {
   return new BigNumber(a).gt(new BigNumber(b));
@@ -143,4 +144,13 @@ export function strToHex(str: string) {
     ethereumjsUtil.keccak256(value)
   );
   return returnValue;
+}
+
+type AuthParams = {
+  source: string;
+  state: string;
+}
+export function getAuthUrl(authParams: AuthParams) {
+  const { source, state } = authParams;
+  return `${PADOSERVERURLHTTPS}/public/render/${source}?state=${state}`;
 }
