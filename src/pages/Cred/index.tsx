@@ -26,6 +26,7 @@ import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
+import { ActiveRequestType } from '../DataSourceOverview/index';
 
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
@@ -184,7 +185,8 @@ const Cred = () => {
       });
     }
   };
-  const handleViewQrcode = useCallback(() => {
+  const handleViewQrcode = useCallback((item: CredTypeItemType) => {
+    setActiveCred(item);
     setQrcodeVisible(true);
   }, []);
   const handleCloseQrcode = () => {
@@ -246,6 +248,9 @@ const Cred = () => {
           const fTimeoutTimer = setTimeout(() => {
             console.log('60s timeout', fetchTimer);
             // close offscreen.html
+            if (activeRequest?.type === 'suc') {
+              return;
+            }
             const msg = {
               fullScreenType: 'algorithm',
               reqMethodName: 'stop',
@@ -266,7 +271,7 @@ const Cred = () => {
         if (res) {
           const { retcode, content } = JSON.parse(res);
           if (retcode === '0') {
-            clearFetchAtteatationTimer();
+            clearFetchAttestationTimer();
             // TODO balanceGreaterThanBaseValue
             if (content.balanceGreaterThanBaseValue === 'true') {
               const { activeRequestAttestation } =
@@ -342,7 +347,7 @@ const Cred = () => {
   const clearFetchTimeoutTimer = useCallback(() => {
     fetchTimeoutTimer && clearTimeout(fetchTimeoutTimer);
   }, [fetchTimeoutTimer]);
-  const clearFetchAtteatationTimer = useCallback(() => {
+  const clearFetchAttestationTimer = useCallback(() => {
     if (fetchAttestationTimer) {
       clearInterval(fetchAttestationTimer);
       clearFetchTimeoutTimer();
@@ -363,9 +368,9 @@ const Cred = () => {
   }, []);
   useEffect(() => {
     return () => {
-      clearFetchAtteatationTimer();
+      clearFetchAttestationTimer();
     };
-  }, [clearFetchAtteatationTimer]);
+  }, [clearFetchAttestationTimer]);
   useEffect(() => {
     return () => {
       clearFetchTimeoutTimer();
@@ -374,14 +379,13 @@ const Cred = () => {
 
   useEffect(() => {
     if (
-      fetchAttestationTimer &&
-      (activeRequest?.type === 'suc' ||
-        activeRequest?.type === 'error' ||
-        activeRequest?.type === 'warn')
+      activeRequest?.type === 'suc' ||
+      activeRequest?.type === 'error' ||
+      activeRequest?.type === 'warn'
     ) {
-      clearInterval(fetchAttestationTimer);
+      clearFetchAttestationTimer();
     }
-  }, [fetchAttestationTimer, activeRequest]);
+  }, [clearFetchAttestationTimer, activeRequest]);
 
   useEffect(() => {
     // chrome.storage.local.remove(['credentials']); //TODO DELETE

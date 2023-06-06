@@ -9,7 +9,6 @@ import { exportJson } from '@/utils/utils';
 import { PADOADDRESS } from '@/config/envConstants';
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
 
-
 interface QRCodeDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -55,7 +54,6 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = ({
       });
       setJsonStr(jsonStr);
     }
-    
   }, [activeCred]);
   return (
     <PMask onClose={onClose}>

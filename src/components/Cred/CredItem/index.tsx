@@ -54,7 +54,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
   onUpdate,
   onDelete,
 }) => {
-  // console.log('credItem',item)
+  console.log('credItem', item);
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [expand, setExpand] = useState(false);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -222,7 +222,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
           </div>
           <div className="descItem arow">
             <div className="label">Recipient Add</div>
-            <div className="value">{formatAddress(item.user.address)}</div>
+            <div className="value">{formatAddress(item.address)}</div>
           </div>
           <div className="descItem">
             <div className="label">Attested By</div>
