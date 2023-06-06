@@ -140,53 +140,6 @@ const processAlgorithmReq = async (message, port) => {
         method: 'getAttestationResult',
         params: params,
       });
-      // // TODO for test
-      // const returnResult = {
-      //   content: {
-      //     address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
-      //     balanceGreaterBaseValue: 'true',
-      //     baseValue: '1000',
-      //     encodedData:
-      //       '000000000000036f6b780000000000000000000000000000000000000000000000000000000000',
-      //     getdatatime: '1685328626630',
-      //     requestid: '1',
-      //     signature:
-      //       '0xe20047bae74674c117d36af76ea5745c4711824c713cac065996ddad8eef6f9a',
-      //     source: 'okx',
-      //     useridhash:
-      //       '0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF',
-      //     version: '1.0.0',
-      //   },
-      //   retcode: '0',
-      //   retdesc: 'success',
-      // };
-      // let msg = {
-      //   resType: 'algorithm',
-      //   resMethodName: 'getAttestationResult',
-      // };
-      // if (returnResult.retcode === '0') {
-      //   msg.res = returnResult.content;
-      // } else {
-      //   msg.res = false;
-      // }
-      // postMsg(fullscreenPort, msg);
-
-      // const result = {
-      //   requestid: (+new Date()).toString(),
-      //   version: '1.0.0',
-      //   source: 'okx',
-      //   useridhash: 'userIDHash', // TODO
-      //   address: '0x23',
-      //   getdatatime: (+new Date()).toString(),
-      //   baseValue: '1000',
-      //   balanceGreaterBaseValue: 'true', // or bool statusNormal // TODO
-      //   signature: '0x123', // includes v，r，s // TODO
-      //   data: '0x123', // trueHash or falseHash // TODO
-      //   exUserId: 'userid', // TODO
-      //   label: 'exLabel', // TODO
-      //   provided: [], // TODO
-      //   type: 'Assets Proof',
-      // };
 
       break;
     case 'stop':

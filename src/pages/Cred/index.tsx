@@ -27,7 +27,6 @@ import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
 
-
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
 };
@@ -269,10 +268,7 @@ const Cred = () => {
           if (retcode === '0') {
             clearFetchAtteatationTimer();
             // TODO balanceGreaterThanBaseValue
-            if (
-              content.balanceGreaterBaseValue === 'true' ||
-              content.balanceGreaterThanBaseValue === 'true'
-            ) {
+            if (content.balanceGreaterThanBaseValue === 'true') {
               const { activeRequestAttestation } =
                 await chrome.storage.local.get(['activeRequestAttestation']);
               const parsedActiveRequestAttestation = activeRequestAttestation
@@ -302,10 +298,7 @@ const Cred = () => {
                 title: 'Congratulations',
                 desc: 'Your proof is created!',
               });
-            } else if (
-              content.balanceGreaterBaseValue === 'false' ||
-              content.balanceGreaterThanBaseValue === 'false'
-            ) {
+            } else if (content.balanceGreaterThanBaseValue === 'false') {
               setActiveRequest({
                 type: 'error',
                 title: 'Failed',
@@ -345,7 +338,7 @@ const Cred = () => {
     console.log(`page_send:start request`);
     padoServicePort.onMessage.addListener(padoServicePortListener);
   };
-  
+
   const clearFetchTimeoutTimer = useCallback(() => {
     fetchTimeoutTimer && clearTimeout(fetchTimeoutTimer);
   }, [fetchTimeoutTimer]);
@@ -366,7 +359,7 @@ const Cred = () => {
     initAlgorithm();
     return () => {
       padoServicePort.onMessage.removeListener(padoServicePortListener);
-    }
+    };
   }, []);
   useEffect(() => {
     return () => {
@@ -389,13 +382,11 @@ const Cred = () => {
       clearInterval(fetchAttestationTimer);
     }
   }, [fetchAttestationTimer, activeRequest]);
-  
 
   useEffect(() => {
     // chrome.storage.local.remove(['credentials']); //TODO DELETE
     initCredList();
   }, []);
-  
 
   return (
     <div className="pageDataSourceOverview">

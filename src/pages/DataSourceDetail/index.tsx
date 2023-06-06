@@ -204,10 +204,7 @@ const DataSourceDetail = () => {
           if (retcode === '0') {
             clearFetchAtteatationTimer();
             // TODO balanceGreaterThanBaseValue
-            if (
-              content.balanceGreaterBaseValue === 'true' ||
-              content.balanceGreaterThanBaseValue === 'true'
-            ) {
+            if (content.balanceGreaterThanBaseValue === 'true') {
               const { activeRequestAttestation } =
                 await chrome.storage.local.get(['activeRequestAttestation']);
               const parsedActiveRequestAttestation = activeRequestAttestation
@@ -237,10 +234,7 @@ const DataSourceDetail = () => {
                 title: 'Congratulations',
                 desc: 'Your proof is created!',
               });
-            } else if (
-              content.balanceGreaterBaseValue === 'false' ||
-              content.balanceGreaterThanBaseValue === 'false'
-            ) {
+            } else if (content.balanceGreaterThanBaseValue === 'false') {
               setActiveRequest({
                 type: 'error',
                 title: 'Failed',

@@ -36,7 +36,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = ({
         address,
         getDataTime,
         baseValue,
-        balanceGreaterBaseValue,
+        balanceGreaterThanBaseValue,
         signature,
       } = activeCred;
       const jsonStr = JSON.stringify({
@@ -49,7 +49,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = ({
           receipt: address,
           getDataTime,
           baseValue,
-          balanceGreaterThanBaseValue: balanceGreaterBaseValue,
+          balanceGreaterThanBaseValue,
         },
         signature,
       });

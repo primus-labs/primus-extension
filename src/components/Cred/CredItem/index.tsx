@@ -28,7 +28,7 @@ export type CredTypeItemType = {
   address: string;
   getDataTime: string;
   baseValue: string;
-  balanceGreaterBaseValue: string; // or bool statusNormal
+  balanceGreaterThanBaseValue: string; // or bool statusNormal
   signature: string; // includes v，r，s
   encodedData: string; // trueHash or falseHash
 
