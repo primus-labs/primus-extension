@@ -20,6 +20,8 @@ export const connectWallet = async (targetNetwork) => {
     if (e.code === 4001) {
       // User rejected the request.
       return [undefined, undefined, undefined, e];
+    } else {
+      return []
     }
   }
 };

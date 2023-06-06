@@ -5,7 +5,8 @@ import iconOptimism from '@/assets/img/iconOptimism.svg';
 
 type ENVTYPE = 'development' | 'production';
 
-const CURENV = process.env.NODE_ENV as ENVTYPE;
+// const CURENV = process.env.NODE_ENV as ENVTYPE;
+const CURENV = 'development';
 // console.log('CURENV', CURENV);
 const PADOURLMAP = {
   development: '18.179.8.186:8888',

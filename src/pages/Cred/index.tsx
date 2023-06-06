@@ -26,7 +26,6 @@ import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
-import { ActiveRequestType } from '../DataSourceOverview/index';
 
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
