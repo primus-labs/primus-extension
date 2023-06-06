@@ -245,6 +245,13 @@ const Cred = () => {
           setFetchAttestationTimer(fetchTimer);
           const fTimeoutTimer = setTimeout(() => {
             console.log('60s timeout', fetchTimer);
+            // close offscreen.html
+            const msg = {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'stop',
+              params: {},
+            };
+            postMsg(padoServicePort, msg);
             fetchTimer && clearInterval(fetchTimer);
             setActiveRequest({
               type: 'warn',
@@ -304,7 +311,7 @@ const Cred = () => {
                 desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
               });
             }
-          } else if (retcode === '1') {
+          } else if (retcode === '2') {
             // TODO
             setActiveRequest({
               type: 'warn',
@@ -312,6 +319,17 @@ const Cred = () => {
               desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
             });
           }
+        }
+      }
+      if (resMethodName === `stop`) {
+        if (res.retcode === '0') {
+          const msg: any = {
+            fullScreenType: 'algorithm',
+            reqMethodName: 'start',
+            params: {},
+          };
+          postMsg(padoServicePort, msg);
+          console.log(`page_send:start request`);
         }
       }
     }
