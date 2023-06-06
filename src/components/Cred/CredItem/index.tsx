@@ -54,7 +54,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
   onUpdate,
   onDelete,
 }) => {
-  console.log('credItem', item);
+  // console.log('credItem', item);
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [expand, setExpand] = useState(false);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -151,8 +151,10 @@ const CredItem: React.FC<CredTypeListProps> = ({
               <a
                 href={`https://sepolia.easscan.org/attestation/view/${i.attestationUID}`}
                 target="_blank"
+                rel="noreferrer"
+                key={k}
               >
-                <img src={i.icon} key={k} alt="" />
+                <img src={i.icon} alt="" />
               </a>
             ))}
           </div>

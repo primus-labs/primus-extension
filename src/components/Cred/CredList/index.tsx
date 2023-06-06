@@ -58,7 +58,7 @@ const CredList: React.FC<CredListProps> = ({
               onClick={() => {
                 onChange && onChange(item);
               }}
-              key={index}
+              key={item.requestid}
             >
               <CredItem
                 item={item}

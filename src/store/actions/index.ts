@@ -17,6 +17,10 @@ export type ExDataMap = {
   [propName: string]: ExInfo & ExchangeMeta;
 };
 
+export const setCredentialsAction = (values: any) => ({
+  type: 'setCredentials',
+  payload: values,
+});
 export const setProofTypesAction = (values: any) => ({
   type: 'setProofTypes',
   payload: values,
@@ -91,5 +95,14 @@ export const setProofTypesAsync = () => {
     } catch (e) {
       alert('getProofTypes network error');
     }
+  };
+};
+export const setCredentialsAsync = () => {
+  return async (dispatch: any) => {
+    const { credentials: credentialsStr } = await chrome.storage.local.get([
+      'credentials',
+    ]);
+    const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
+    dispatch(setCredentialsAction(credentialObj));
   };
 };

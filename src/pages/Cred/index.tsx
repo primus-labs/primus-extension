@@ -26,16 +26,14 @@ import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
-
+import {setCredentialsAsync} from '@/store/actions'
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
 };
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
-  const credList: CredTypeItemType[] = useMemo(() => {
-    return Object.values(credentialsObj);
-  }, [credentialsObj]);
+  
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
@@ -51,11 +49,31 @@ const Cred = () => {
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [activeSendToChainRequest, setActiveSendToChainRequest] =
     useState<ActiveRequestType>();
+  const activeSourceType = useSelector(
+    (state: UserState) => state.activeSourceType
+  );
+  const filterWord = useSelector((state: UserState) => state.filterWord);
+  const credList: CredTypeItemType[] = useMemo(() => {
+    return Object.values(credentialsObj);
+  }, [credentialsObj]);
+  const filteredCredList: CredTypeItemType[] = useMemo(() => {
+    let activeList = credList;
+    if (activeSourceType && activeSourceType!== 'All') {
+      activeList = activeList.filter((i) => i.type === activeSourceType);
+    }
+    if (filterWord) {
+      activeList = activeList.filter((i) =>
+        i.source.toLowerCase().startsWith(filterWord)
+      );
+    }
+    return activeList
+  }, [credList, activeSourceType, filterWord]);
   const handleChangeTab = (val: string) => {};
   const initCredList = useCallback(async () => {
     const cObj = await getCredentialsObjFromStorage();
+    dispatch(setCredentialsAsync());
     setCredentialsObj(cObj);
-  }, []);
+  }, [dispatch]);
   const handleChangeProofType = (title: string) => {
     setStep(1);
     setActiveAttestationType(title);
@@ -390,6 +408,18 @@ const Cred = () => {
     // chrome.storage.local.remove(['credentials']); //TODO DELETE
     initCredList();
   }, []);
+  useEffect(() => {
+    dispatch({
+      type: 'setActiveSourceType',
+      payload: 'All',
+    });
+    return () => {
+      dispatch({
+        type: 'setActiveSourceType',
+        payload: 'All',
+      });
+    }
+  }, [])
 
   return (
     <div className="pageDataSourceOverview">
@@ -398,7 +428,7 @@ const Cred = () => {
         <DataSourceSearch />
         <ProofTypeList onChange={handleChangeProofType} />
         <CredList
-          list={credList}
+          list={filteredCredList}
           onUpChain={handleUpChain}
           onViewQrcode={handleViewQrcode}
           onDelete={handleDeleteCred}

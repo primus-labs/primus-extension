@@ -1,6 +1,7 @@
 import { SETSYSCONFIG } from '../actions';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 import type { ExchangeMeta } from '@/config/constants';
+import type {CredTypeItemType} from '@/components/Cred/CredItem'
 export type ExInfo = {
   date: string;
   apiKey: string;
@@ -18,6 +19,7 @@ type ExDatas = {
 type SocialDatas = {
   [propName: string]: any;
 };
+
 type ISACTIVE = 0 | 1
 export type PROOFTYPEITEM = {
   id: string;
@@ -31,6 +33,9 @@ export type PROOFTYPEITEM = {
   display: ISACTIVE;
   enabled: ISACTIVE;
 };
+type CREDENTIALS = {
+  [propName: string]: CredTypeItemType;
+};
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -41,7 +46,8 @@ export type UserState = {
   filterWord: string;
   exSources: ExDatas;
   socialSources: SocialDatas;
-  proofTypes: PROOFTYPEITEM[]
+  proofTypes: PROOFTYPEITEM[];
+  credentials: CREDENTIALS;
 };
 
 // initial state
@@ -55,7 +61,8 @@ const initState = {
   filterWord: undefined,
   exSources: {},
   socialSources: {},
-  proofTypes: []
+  proofTypes: [],
+  credentials: {}
 };
 
 // reducer
@@ -78,6 +85,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, socialSources: action.payload };
     case 'setProofTypes':
       return { ...state, proofTypes: action.payload };
+    case 'setCredentials':
+      return { ...state, credentials: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     default:

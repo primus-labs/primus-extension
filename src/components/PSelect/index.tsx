@@ -26,6 +26,7 @@ const PSelect: React.FC<PSelectProps> = ({
   val,
   showIcon,
 }) => {
+  console.log('options', options);
   // const [activeOption, setActiveOption] = useState<OptionItem>();
   const [optionsVisible, setOptionsVisible] = useState(false);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
