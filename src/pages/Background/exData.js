@@ -312,12 +312,13 @@ async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
   switch (sourceLowerCaseName) {
     case 'binance':
       data = {
-        path: 'account',
-        api: 'private',
-        method: 'GET',
+        path: 'asset/getUserAsset',
+        api: 'sapiV3',
+        method: 'POST',
         params: {},
       };
       signres = await sign('binance', data, USERPASSWORD, port);
+      console.log('signres=', signres);
       extRequestsOrderInfo = { ...signres };
       break;
     case 'coinbase':
