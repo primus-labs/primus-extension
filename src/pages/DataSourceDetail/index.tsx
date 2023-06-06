@@ -5,7 +5,6 @@ import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail';
 import { ATTESTATIONTIMEOUT, ATTESTATIONPOLLINGTIME } from '@/config/constants';
 import './index.sass';
 
-import type { ExDataType } from '@/hooks/useExSource';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
 import { ONCHAINLIST } from '@/config/envConstants';

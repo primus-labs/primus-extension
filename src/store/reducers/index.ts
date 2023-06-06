@@ -1,4 +1,4 @@
-import { SETEXCHAGEDATA, SETSYSCONFIG, SETSOCIALDATA } from '../actions';
+import { SETSYSCONFIG } from '../actions';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 import type { ExchangeMeta } from '@/config/constants';
 export type ExInfo = {
@@ -78,13 +78,6 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, socialSources: action.payload };
     case 'setProofTypes':
       return { ...state, proofTypes: action.payload };
-    case SETEXCHAGEDATA:
-      return { ...state, exDatas: { ...state.exDatas, ...action.payload } };
-    case SETSOCIALDATA:
-      return {
-        ...state,
-        socialDatas: { ...state.socialDatas, ...action.payload },
-      };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     default:
