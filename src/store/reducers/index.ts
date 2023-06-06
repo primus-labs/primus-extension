@@ -18,6 +18,19 @@ type ExDatas = {
 type SocialDatas = {
   [propName: string]: any;
 };
+type ISACTIVE = 0 | 1
+export type PROOFTYPEITEM = {
+  id: string;
+  credIdentifier: string;
+  credTitle: string;
+  credIntroduce: string;
+  credLogoUrl: string;
+  credDetails: string;
+  credProofContent: string;
+  credProofConditions: string;
+  display: ISACTIVE;
+  enabled: ISACTIVE;
+};
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -28,7 +41,7 @@ export type UserState = {
   filterWord: string;
   exSources: ExDatas;
   socialSources: SocialDatas;
-  baseValueArr: string[];
+  proofTypes: PROOFTYPEITEM[]
 };
 
 // initial state
@@ -42,7 +55,7 @@ const initState = {
   filterWord: undefined,
   exSources: {},
   socialSources: {},
-  baseValueArr: ['1000'],
+  proofTypes: []
 };
 
 // reducer
@@ -63,6 +76,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, exSources: action.payload };
     case 'setSocialSources':
       return { ...state, socialSources: action.payload };
+    case 'setProofTypes':
+      return { ...state, proofTypes: action.payload };
     case SETEXCHAGEDATA:
       return { ...state, exDatas: { ...state.exDatas, ...action.payload } };
     case SETSOCIALDATA:

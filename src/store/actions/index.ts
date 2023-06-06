@@ -3,6 +3,8 @@ import { DATASOURCEMAP } from '@/config/constants';
 import type { ExchangeMeta } from '@/config/constants';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getCurrentDate } from '@/utils/utils';
+import { getProofTypes } from '@/services/api/config';
+import type {PROOFTYPEITEM} from '@/store/reducers'
 // export const SETKEYSTORE = 'SETKEYSTORE';
 // export const SETUSERINFO = 'SETUSERINFO';
 // export const SETALLSTORAGE = 'SETALLSTORAGE';
@@ -27,6 +29,10 @@ type ExchangeNetworkReq = {
   secretKey: string;
   passphase?: string;
 };
+export const setProofTypesAction = (values: any) => ({
+  type: 'setProofTypes',
+  payload: values,
+});
 export const setSocialSourcesAction = (values: object) => ({
   type: 'setSocialSources',
   payload: values,
@@ -176,5 +182,23 @@ export const getSocialDataAsync = (message: ExchangeNetworkReq) => {
     //     },
     //   })
     // );
+  };
+};
+
+export const setProofTypesAsync = () => {
+  return async (dispatch: any) => {
+    try {
+      const { rc, result } = await getProofTypes();
+      if (rc === 0) {
+        const filteredTypes = result.filter(
+          (i: PROOFTYPEITEM) => i.display === 0
+        );
+        dispatch(setProofTypesAction(filteredTypes));
+      } else {
+        alert('getProofTypes network error');
+      }
+    } catch (e) {
+      alert('getProofTypes network error');
+    }
   };
 };

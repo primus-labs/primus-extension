@@ -3,8 +3,8 @@ import {
   checkIsLogin,
   bindUserAddress,
   refreshAuthData,
-} from '@/services/user';
-import { getSysConfig } from '@/services/config';
+} from '@/services/api/user';
+import { getSysConfig } from '@/services/api/config';
 import { getCurrentDate, postMsg } from '@/utils/utils';
 import { SocailStoreVersion } from '@/config/constants';
 import {

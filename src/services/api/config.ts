@@ -6,3 +6,10 @@ export const getSysConfig = () => {
     url: '/public/system/config',
   });
 };
+
+export const getProofTypes = () => {
+  return request({
+    method: 'get',
+    url: '/public/cred/types',
+  });
+};

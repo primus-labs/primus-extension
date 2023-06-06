@@ -27,6 +27,7 @@ import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
 
+
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
 };

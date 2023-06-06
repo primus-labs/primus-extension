@@ -16,7 +16,11 @@ import { setSysConfigAction } from '@/store/actions';
 import useUpdateAllSources from '@/hooks/useUpdateAllSources';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
-import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
+import {
+  setExSourcesAsync,
+  setSocialSourcesAsync,
+  setProofTypesAsync,
+} from '@/store/actions';
 
 import './index.sass';
 type SysConfigItem = {
@@ -181,6 +185,9 @@ const Layout = () => {
     }
     return activeClassName;
   }, [isScroll]);
+  useEffect(() => {
+    dispatch(setProofTypesAsync());
+  }, [dispatch]);
   return (
     <div className="pageApp">
       <BackgroundAnimation />

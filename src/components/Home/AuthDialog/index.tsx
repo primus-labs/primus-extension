@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import type { AuthSourcesItem, AuthSourcesItems } from '@/services/user';
+import type { AuthSourcesItem, AuthSourcesItems } from '@/services/api/user';
 import PHeader from '@/components/Layout/PHeader';
 
 import PMask from '@/components/PMask';
@@ -40,12 +40,12 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
   };
   const getAllOAuthSources = async () => {
     const padoServicePortListener = async function (message: any) {
-      const { res } = message
+      const { res } = message;
       if (message.resMethodName === 'getAllOAuthSources') {
         if (res) {
           setOAuthSources(res);
         } else {
-          alert('getAllOAuthSources network error')
+          alert('getAllOAuthSources network error');
         }
         console.log('page_get:getAllOAuthSources:', res);
       }
@@ -122,8 +122,8 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
     var top = Math.round(windowScreen.height / 2 - height / 2);
     const authUrl = getAuthUrl({
       source,
-      state
-    })
+      state,
+    });
     const windowOptions: chrome.windows.CreateData = {
       url: authUrl,
       type: 'popup',

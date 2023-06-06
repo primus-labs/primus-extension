@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import type { Dispatch } from 'react';
 import PMask from '@/components/PMask';
 import { DATASOURCEMAP } from '@/config/constants';
 import type { ExchangeMeta } from '@/config/constants';
@@ -11,7 +12,7 @@ import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import PSelect from '@/components/PSelect';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
-import type { UserState } from '@/store/reducers';
+import type { UserState, PROOFTYPEITEM } from '@/store/reducers';
 
 import './index.sass';
 
@@ -39,18 +40,6 @@ type ConnectSourceType = {
   label?: string;
 };
 
-const attestationDescMap = {
-  'Assets Proof': {
-    title: 'Assets Proof',
-    desc: 'Proof you have a certain amount of assets, which may come from bank deposits or from an crypto exchange balance. PADO uses TLS-MPC to validate your data authenticity.',
-    content: 'Assets balance greater than',
-  },
-  'Token Holdings': {
-    title: 'Token Holdings',
-    desc: 'Proof that you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
-    content: 'Hold this kind of Token',
-  },
-};
 const AttestationDialog: React.FC<AttestationDialogProps> = ({
   type,
   onClose,
@@ -65,13 +54,14 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   const [errorTip, setErrorTip] = useState<string>();
   const exSources = useSelector((state: UserState) => state.exSources);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
-  const baseValueArr = useSelector((state: UserState) => state.baseValueArr);
+  const proofTypes = useSelector((state: UserState) => state.proofTypes);
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
   const activeAttestationTypeInfo = useMemo(() => {
-    return attestationDescMap[type as keyof typeof attestationDescMap];
-  }, [type]);
+    const obj = proofTypes.find((i) => i.credTitle === type);
+    return obj as PROOFTYPEITEM;
+  }, [type, proofTypes]);
   const connectedSourceList: ConnectSourceType[] = useMemo(() => {
     return Object.keys(exSources).map((key) => {
       const sourceInfo: ExchangeMeta =
@@ -237,20 +227,27 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
     }
   }, [activeSourceName, connectedSourceList]);
   useEffect(() => {
-    setActiveBaseValue(baseValueArr[0]);
-  }, [baseValueArr]);
+    if (activeAttestationTypeInfo.credTitle === 'Assets Proof') {
+      const baseValArr = JSON.parse(
+        activeAttestationTypeInfo.credProofConditions
+      );
+      if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
+    }
+  }, [activeAttestationTypeInfo]);
 
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog attestationDialog">
         <main>
-          <h1>{activeAttestationTypeInfo.title}</h1>
-          <h2>{activeAttestationTypeInfo.desc}</h2>
+          <h1>{activeAttestationTypeInfo.credTitle}</h1>
+          <h2>{activeAttestationTypeInfo.credDetails}</h2>
           <div className="scrollList">
             <div className="contItem">
               <div className="label">Proof content</div>
               <div className="value">
-                <div className="desc">{activeAttestationTypeInfo.content}</div>
+                <div className="desc">
+                  {activeAttestationTypeInfo.credProofContent}
+                </div>
                 {type === 'Assets Proof' && (
                   <div className="con">
                     $
