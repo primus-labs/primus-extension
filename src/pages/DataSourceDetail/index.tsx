@@ -64,7 +64,7 @@ const DataSourceDetail = () => {
   const clearFetchTimeoutTimer = useCallback(() => {
     fetchTimeoutTimer && clearTimeout(fetchTimeoutTimer);
   }, [fetchTimeoutTimer]);
-  const clearFetchAtteatationTimer = useCallback(() => {
+  const clearFetchAttestationTimer = useCallback(() => {
     if (fetchAttestationTimer) {
       clearInterval(fetchAttestationTimer);
       clearFetchTimeoutTimer();
@@ -78,9 +78,9 @@ const DataSourceDetail = () => {
   }, []);
   useEffect(() => {
     return () => {
-      clearFetchAtteatationTimer();
+      clearFetchAttestationTimer();
     };
-  }, [clearFetchAtteatationTimer]);
+  }, [clearFetchAttestationTimer]);
   useEffect(() => {
     return () => {
       clearFetchTimeoutTimer();
@@ -89,14 +89,13 @@ const DataSourceDetail = () => {
 
   useEffect(() => {
     if (
-      fetchAttestationTimer &&
-      (activeRequest?.type === 'suc' ||
-        activeRequest?.type === 'error' ||
-        activeRequest?.type === 'warn')
+      activeRequest?.type === 'suc' ||
+      activeRequest?.type === 'error' ||
+      activeRequest?.type === 'warn'
     ) {
-      clearInterval(fetchAttestationTimer);
+      clearFetchAttestationTimer();
     }
-  }, [fetchAttestationTimer, activeRequest]);
+  }, [clearFetchAttestationTimer, activeRequest]);
 
   const onSubmitAttestationDialog = async (
     form: AttestionForm,
@@ -201,7 +200,7 @@ const DataSourceDetail = () => {
         if (res) {
           const { retcode, content } = JSON.parse(res);
           if (retcode === '0') {
-            clearFetchAtteatationTimer();
+            clearFetchAttestationTimer();
             // TODO balanceGreaterThanBaseValue
             if (content.balanceGreaterThanBaseValue === 'true') {
               const { activeRequestAttestation } =
@@ -251,7 +250,7 @@ const DataSourceDetail = () => {
         }
       }
       if (resMethodName === `stop`) {
-        if (res.retcode === '0') {
+        if (res.retcode === 0) {
           const msg: any = {
             fullScreenType: 'algorithm',
             reqMethodName: 'start',

@@ -321,7 +321,7 @@ const Cred = () => {
         }
       }
       if (resMethodName === `stop`) {
-        if (res.retcode === '0') {
+        if (res.retcode === 0) {
           const msg: any = {
             fullScreenType: 'algorithm',
             reqMethodName: 'start',
