@@ -48,36 +48,26 @@ const useUpdateAssetSources = (flag = false) => {
         postMsg(padoServicePort, msg);
         console.log(`page_send:${reqType} request`);
       });
-
-      // const padoServicePortListener = async function (message: any) {
-      //   const {resType, res} = message
-      //   if (resType?.startsWith(`set-`)  && res) {
-      //     console.log(`page_get:${resType}:`, message.res);
-      //     const name = resType.split('-')[1]
-      //     setQueryObj(obj => ({...obj,[name]: true}))
-      //   }
-      //   // padoServicePort.onMessage.removeListener(padoServicePortListener);
-      // };
-      // padoServicePort.onMessage.addListener(padoServicePortListener);
+      
     },
     [padoServicePort]
   );
+  const padoServicePortListener = function (message: any) {
+    const { resType, res } = message;
+    if (resType?.startsWith(`set-`)) {
+      console.log(`page_get:${resType}:`, message.res);
+      const name = resType.split('-')[1];
+      setQueryObj((obj) => ({ ...obj, [name]: true }));
+    }
+    // TODO request fail
+    // padoServicePort.onMessage.removeListener(padoServicePortListener);
+  };
   useEffect(() => {
-    // if (flag) {
-    const padoServicePortListener = async function (message: any) {
-      const { resType, res } = message;
-      if (resType?.startsWith(`set-`)) {
-        console.log(`page_get:${resType}:`, message.res);
-        const name = resType.split('-')[1];
-        setQueryObj((obj) => ({ ...obj, [name]: true }));
-      }
-      // TODO request fail
-      // padoServicePort.onMessage.removeListener(padoServicePortListener);
-    };
     padoServicePort.onMessage.addListener(padoServicePortListener);
-    // }
+    return () => {
+      padoServicePort.onMessage.removeListener(padoServicePortListener);
+    }
   }, [padoServicePort.onMessage]);
-
   return [loading, fetchExDatas];
 };
 

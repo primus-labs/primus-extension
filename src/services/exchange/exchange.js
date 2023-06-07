@@ -18,6 +18,7 @@ class Exchange {
     this.initCctx();
     this.fundingAccountTokenAmountMap = new Map();
     this.tradingAccountTokenAmountMap = new Map();
+    this.tradingAccountTokenAmountObj = {};
     this.spotAccountTokenAmountMap = new Map(); // spotAccount = fundingAccount + tradingAccount
     this.flexibleAccountTokenAmountMap = new Map();
     this.spotAccountTokenMap = {};

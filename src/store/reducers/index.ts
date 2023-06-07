@@ -9,6 +9,9 @@ export type ExInfo = {
   tokenListMap: AssetsMap;
   exUserId?: string;
   label?: string;
+  tradingAccountTokenAmountObj: object;
+  spotAccountTokenMap: AssetsMap;
+  tokenPriceMap: object;
 };
 type SysConfigInfo = {
   [propName: string]: any;

@@ -31,6 +31,7 @@ class OKX extends Exchange {
     const res = await this.exchange.fetchBalance({ type: 'trading' });
     res.info.data[0].details.forEach(({ ccy, eq }) => {
       this.tradingAccountTokenAmountMap.set(ccy, eq);
+      this.tradingAccountTokenAmountObj[ccy] = eq;
     });
     // console.log(
     //   'okx tradingAccountTokenAmountMap',

@@ -2,7 +2,11 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import PTabs from '@/components/PTabs';
 import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail';
-import { ATTESTATIONTIMEOUT, ATTESTATIONPOLLINGTIME } from '@/config/constants';
+import {
+  ATTESTATIONTIMEOUT,
+  ATTESTATIONPOLLINGTIME,
+  BIGZERO,
+} from '@/config/constants';
 import './index.sass';
 
 import { useSelector } from 'react-redux';
@@ -14,6 +18,8 @@ import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import { postMsg } from '@/utils/utils';
 import type { ActiveRequestType } from '@/pages/DataSourceOverview';
+import { add, mul, gt } from '@/utils/utils';
+import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 
 type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
@@ -96,11 +102,48 @@ const DataSourceDetail = () => {
       clearFetchAttestationTimer();
     }
   }, [clearFetchAttestationTimer, activeRequest]);
-
+  const validateBaseInfo = (form: AttestionForm) => {
+    const { source, baseValue } = form;
+    const priceObj = exSources[source].tokenPriceMap;
+    let totalAccBal;
+    if (source === 'okx') {
+      const targetObj = exSources[source].tradingAccountTokenAmountObj;
+      totalAccBal = Object.keys(targetObj).reduce((prev, curr) => {
+        const num = targetObj[curr as keyof typeof targetObj];
+        const price = priceObj[curr as keyof typeof priceObj];
+        const curValue = mul(num, price).toFixed();
+        prev = add(Number(prev), Number(curValue));
+        return prev;
+      }, BIGZERO);
+    } else {
+      const targetMap: AssetsMap = exSources[source].spotAccountTokenMap;
+      totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
+        const obj = targetMap[curr as keyof typeof targetMap];
+        const curValue = obj.value;
+        prev = add(Number(prev), Number(curValue));
+        return prev;
+      }, BIGZERO);
+    }
+    const totalBalance = totalAccBal.toFixed();
+    if (gt(Number(baseValue), Number(totalBalance))) {
+      setStep(2);
+      setActiveRequest({
+        type: 'error',
+        title: 'Failed',
+        desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+      });
+      return false;
+    }
+    return true;
+  };
   const onSubmitAttestationDialog = async (
     form: AttestionForm,
     activeCred?: CredTypeItemType
   ) => {
+    // fetch balance first
+    if (!validateBaseInfo(form)) {
+      return;
+    }
     // if activeCred is update,not add
     const msg = {
       fullScreenType: 'algorithm',

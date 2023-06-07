@@ -133,6 +133,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
           spotAccountTokenMap: ex.spotAccountTokenMap,
           tokenPriceMap: ex.tokenPriceMap,
+          tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
         };
         console.log(`background--${exchangeName}exData`, ex);
         if (pnl !== null && pnl !== undefined) {

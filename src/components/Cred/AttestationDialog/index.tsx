@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import type { Dispatch } from 'react';
 import PMask from '@/components/PMask';
 import { DATASOURCEMAP } from '@/config/constants';
 import type { ExchangeMeta } from '@/config/constants';
@@ -13,6 +12,9 @@ import PSelect from '@/components/PSelect';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
 import type { UserState, PROOFTYPEITEM } from '@/store/reducers';
+import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
+import { setExSourcesAsync } from '@/store/actions';
+import type { Dispatch } from 'react';
 
 import './index.sass';
 
@@ -47,6 +49,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   activeCred,
   activeSourceName,
 }) => {
+  const dispatch: Dispatch<any> = useDispatch();
+
+  const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
   const navigate = useNavigate();
   const [activeSource, setActiveSource] = useState<ConnectSourceType>();
   const [activeToken, setActiveToken] = useState<string>('');
@@ -234,7 +239,15 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
     }
   }, [activeAttestationTypeInfo]);
-
+  useEffect(() => {
+    if (activeSource) {
+      const sourceLowerCaseName = activeSource.name.toLowerCase();
+      (fetchExDatas as (name: string) => void)(sourceLowerCaseName);
+    }
+  }, [activeSource, fetchExDatas]);
+  useEffect(() => {
+    !fetchExDatasLoading && dispatch(setExSourcesAsync());
+  }, [fetchExDatasLoading, dispatch]);
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog attestationDialog">

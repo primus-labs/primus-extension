@@ -30,6 +30,7 @@ import Gate from '@/services/exchange/gate';
 import Bitget from '@/services/exchange/bitget';
 import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
+import BigNumber from 'bignumber.js';
 
 export type ExchangeMeta = {
   name: string;
@@ -216,4 +217,8 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
 ];
 
 export const ATTESTATIONTIMEOUT = 60*1000
-export const ATTESTATIONPOLLINGTIME = 5*1000;
+export const ATTESTATIONPOLLINGTIME = 5 * 1000;
+
+
+
+export const BIGZERO = new BigNumber(0);

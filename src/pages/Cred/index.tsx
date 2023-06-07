@@ -18,7 +18,11 @@ import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { WALLETITEMTYPE } from '@/config/constants';
-import { ATTESTATIONTIMEOUT, ATTESTATIONPOLLINGTIME } from '@/config/constants';
+import {
+  ATTESTATIONTIMEOUT,
+  ATTESTATIONPOLLINGTIME,
+  BIGZERO,
+} from '@/config/constants';
 
 import type { ActiveRequestType } from '@/pages/DataSourceOverview';
 import type { AttestionForm } from '@/components/Cred/AttestationDialog';
@@ -27,13 +31,15 @@ import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
+import { add, mul, gt } from '@/utils/utils';
+import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
+
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
 };
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
-
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
@@ -45,6 +51,7 @@ const Cred = () => {
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
+  const exSources = useSelector((state: UserState) => state.exSources);
   const navigate = useNavigate();
 
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
@@ -83,11 +90,48 @@ const Cred = () => {
   const handleCloseMask = () => {
     setStep(0);
   };
-
+  const validateBaseInfo = (form: AttestionForm) => {
+    const { source, baseValue } = form;
+    const priceObj = exSources[source].tokenPriceMap;
+    let totalAccBal;
+    if (source === 'okx') {
+      const targetObj = exSources[source].tradingAccountTokenAmountObj;
+      totalAccBal = Object.keys(targetObj).reduce((prev, curr) => {
+        const num = targetObj[curr as keyof typeof targetObj];
+        const price = priceObj[curr as keyof typeof priceObj];
+        const curValue = mul(num, price).toFixed();
+        prev = add(Number(prev), Number(curValue));
+        return prev;
+      }, BIGZERO);
+    } else {
+      const targetMap: AssetsMap = exSources[source].spotAccountTokenMap;
+      totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
+        const obj = targetMap[curr as keyof typeof targetMap];
+        const curValue = obj.value;
+        prev = add(Number(prev), Number(curValue));
+        return prev;
+      }, BIGZERO);
+    }
+    const totalBalance = totalAccBal.toFixed();
+    if (gt(Number(baseValue), Number(totalBalance))) {
+      setStep(2);
+      setActiveRequest({
+        type: 'error',
+        title: 'Failed',
+        desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+      });
+      return false;
+    }
+    return true;
+  };
   const onSubmitAttestationDialog = async (
     form: AttestionForm,
     activeCred?: CredTypeItemType
   ) => {
+    // fetch balance first
+    if (!validateBaseInfo(form)) {
+      return;
+    }
     // if activeCred is update,not add
     const msg = {
       fullScreenType: 'algorithm',
@@ -158,7 +202,7 @@ const Cred = () => {
         networkName: activeNetworkName,
         metamaskprovider: provider,
         receipt: '0x' + address,
-        attesteraddr: PADOADDRESS, // TODO
+        attesteraddr: PADOADDRESS,
         data: activeCred?.encodedData,
         signature: activeCred?.signature,
       };
@@ -291,7 +335,6 @@ const Cred = () => {
           const { retcode, content } = JSON.parse(res);
           if (retcode === '0') {
             clearFetchAttestationTimer();
-            // TODO balanceGreaterThanBaseValue
             if (content.balanceGreaterThanBaseValue === 'true') {
               const { activeRequestAttestation } =
                 await chrome.storage.local.get(['activeRequestAttestation']);
@@ -330,7 +373,6 @@ const Cred = () => {
               });
             }
           } else if (retcode === '2') {
-            // TODO
             setActiveRequest({
               type: 'warn',
               title: 'Something went wrong',
