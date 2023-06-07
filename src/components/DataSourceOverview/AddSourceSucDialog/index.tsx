@@ -1,12 +1,13 @@
 import React from 'react';
-import './index.sass'
+import './index.sass';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconError from '@/assets/img/iconError.svg';
+import iconLoading from '@/assets/img/iconLoading.svg';
 import iconInfoColorful from '@/assets/img/iconInfoColorful.svg';
-import Bridge from '@/components/DataSourceOverview/Bridge/index'
-import PMask from '@/components/PMask'
-import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog'
-import PLoading from '@/components/PLoading'
+import Bridge from '@/components/DataSourceOverview/Bridge/index';
+import PMask from '@/components/PMask';
+import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
+import PLoading from '@/components/PLoading';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 
 interface AddSourceSucDialogProps {
@@ -14,7 +15,7 @@ interface AddSourceSucDialogProps {
   activeSource?: DataFieldItem;
   onSubmit: () => void;
   desc?: string;
-  title?:string;
+  title?: string;
   type?: string;
   headerType?: string;
 }
@@ -51,7 +52,9 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({
           {type === 'warn' && (
             <img className="sucImg" src={iconInfoColorful} alt="" />
           )}
-          {type === 'loading' && <PLoading />}
+          {type === 'loading' && (
+            <img className="loadingImg" src={iconLoading} alt="" />
+          )}
           <h1>{title}</h1>
           <h2>{desc}</h2>
         </main>

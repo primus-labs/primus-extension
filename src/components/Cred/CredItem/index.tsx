@@ -10,6 +10,7 @@ import iconExpand from '@/assets/img/iconExpand.svg';
 import iconUpChain from '@/assets/img/iconUpChain.svg';
 import iconQRCode from '@/assets/img/iconQRCode.svg';
 import './index.sass';
+import { div } from '../../../utils/utils';
 
 export type CredTypeItemType = {
   type: string;
@@ -123,54 +124,56 @@ const CredItem: React.FC<CredTypeListProps> = ({
         className={item.type === 'Assets Proof' ? 'main' : 'main tokenHolding'}
         onClick={handleClick}
       >
-        <h1>{item.type}</h1>
-        <div className="sourceInfo">
-          <div className="descItem">
-            <div className="label">Source: &nbsp;</div>
-            <div className="value">
-              <img src={iconCallback(item)} alt="" className="sourceIcon" />
-              <span>{nameCallback(item)}</span>
-            </div>
-          </div>
-          {(item.exUserId || item.label) && (
+        <div className="mainContent">
+          <h1>{item.type}</h1>
+          <div className="sourceInfo">
             <div className="descItem">
-              <div className="label">ID: &nbsp;</div>
-              <div className="value">{item?.exUserId ?? item.label}</div>
+              <div className="label">Source: &nbsp;</div>
+              <div className="value">
+                <img src={iconCallback(item)} alt="" className="sourceIcon" />
+                <span>{nameCallback(item)}</span>
+              </div>
             </div>
-          )}
-        </div>
-        <div className="descItem">
-          <div className="label">Date: &nbsp;</div>
-          <div className="value">
-            {getCurrentDate(Number(item?.getDataTime))}
+            {(item.exUserId || item.label) && (
+              <div className="descItem">
+                <div className="label">ID: &nbsp;</div>
+                <div className="value">{item?.exUserId ?? item.label}</div>
+              </div>
+            )}
           </div>
-        </div>
-        <footer>
-          <div className="providedChains">
-            {item.provided?.map((i, k) => (
-              <a
-                href={`https://sepolia.easscan.org/attestation/view/${i.attestationUID}`}
-                target="_blank"
-                rel="noreferrer"
-                key={k}
+          <div className="descItem">
+            <div className="label">Date: &nbsp;</div>
+            <div className="value">
+              {getCurrentDate(Number(item?.getDataTime))}
+            </div>
+          </div>
+          <footer>
+            <div className="providedChains">
+              {item.provided?.map((i, k) => (
+                <a
+                  href={`https://sepolia.easscan.org/attestation/view/${i.attestationUID}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  key={k}
+                >
+                  <img src={i.icon} alt="" />
+                </a>
+              ))}
+            </div>
+            <div className="operations">
+              <img src={iconUpChain} alt="" onClick={handleUpChain} />
+              <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
+              <div
+                className="iconOtherWrapper"
+                onClick={handleClickOther}
+                onMouseEnter={handleEnterAvatar}
+                onMouseLeave={handleLeaveAvatar}
               >
-                <img src={i.icon} alt="" />
-              </a>
-            ))}
-          </div>
-          <div className="operations">
-            <img src={iconUpChain} alt="" onClick={handleUpChain} />
-            <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
-            <div
-              className="iconOtherWrapper"
-              onClick={handleClickOther}
-              onMouseEnter={handleEnterAvatar}
-              onMouseLeave={handleLeaveAvatar}
-            >
-              <img src={iconExpand} className="iconOther" alt="" />
+                <img src={iconExpand} className="iconOther" alt="" />
+              </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        </div>
       </div>
       {dorpdownVisible && (
         <ul

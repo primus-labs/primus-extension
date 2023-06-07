@@ -26,14 +26,14 @@ import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegation } from '@/services/chains/eas.js';
-import {setCredentialsAsync} from '@/store/actions'
+import { setCredentialsAsync } from '@/store/actions';
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
 };
 const Cred = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
-  
+
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
@@ -46,9 +46,11 @@ const Cred = () => {
     (state: UserState) => state.padoServicePort
   );
   const navigate = useNavigate();
+
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [activeSendToChainRequest, setActiveSendToChainRequest] =
     useState<ActiveRequestType>();
+
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
@@ -58,7 +60,7 @@ const Cred = () => {
   }, [credentialsObj]);
   const filteredCredList: CredTypeItemType[] = useMemo(() => {
     let activeList = credList;
-    if (activeSourceType && activeSourceType!== 'All') {
+    if (activeSourceType && activeSourceType !== 'All') {
       activeList = activeList.filter((i) => i.type === activeSourceType);
     }
     if (filterWord) {
@@ -66,7 +68,7 @@ const Cred = () => {
         i.source.toLowerCase().startsWith(filterWord)
       );
     }
-    return activeList
+    return activeList;
   }, [credList, activeSourceType, filterWord]);
   const handleChangeTab = (val: string) => {};
   const initCredList = useCallback(async () => {
@@ -418,8 +420,8 @@ const Cred = () => {
         type: 'setActiveSourceType',
         payload: 'All',
       });
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <div className="pageDataSourceOverview">

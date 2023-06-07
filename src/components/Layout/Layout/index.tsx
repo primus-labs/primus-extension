@@ -19,8 +19,10 @@ import { postMsg } from '@/utils/utils';
 import {
   setExSourcesAsync,
   setSocialSourcesAsync,
-  setProofTypesAsync,
+  setProofTypesAction,
+  setCredentialsAsync,
 } from '@/store/actions';
+import type { PROOFTYPEITEM } from '@/store/reducers';
 
 import './index.sass';
 type SysConfigItem = {
@@ -40,7 +42,6 @@ const Layout = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refreshDataFlag = searchParams.get('refreshData');
-
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -77,6 +78,27 @@ const Layout = () => {
     });
     console.log('page_send:getSysConfig request');
   }, [dispatch, padoServicePort]);
+  const getProofTypesConfig = useCallback(async () => {
+    const padoServicePortListener = async function (message: GetSysConfigMsg) {
+      if (message.resMethodName === 'getProofTypes') {
+        const { res } = message;
+        console.log('page_get:getProofTypes:', res);
+        if (res) {
+          const filteredTypes = res.filter((i: any) => i?.display === 0);
+          dispatch(setProofTypesAction(filteredTypes));
+        } else {
+          alert('getProofTypes network error');
+        }
+      }
+    };
+    padoServicePort.onMessage.addListener(padoServicePortListener);
+    postMsg(padoServicePort, {
+      fullScreenType: 'padoService',
+      reqMethodName: 'getProofTypes',
+    });
+    console.log('page_send:getProofTypes request');
+  }, [dispatch, padoServicePort]);
+
   const initPage = async () => {
     if (userPassword) {
       const msg2 = {
@@ -185,9 +207,13 @@ const Layout = () => {
     }
     return activeClassName;
   }, [isScroll]);
+  // useEffect(() => {
+  //   getProofTypesConfig();
+  // }, [getProofTypesConfig]);
   useEffect(() => {
-    dispatch(setProofTypesAsync());
-  }, [dispatch]);
+    setCredentialsAsync();
+  }, []);
+
   return (
     <div className="pageApp">
       <BackgroundAnimation />

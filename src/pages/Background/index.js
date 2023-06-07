@@ -4,7 +4,7 @@ import {
   bindUserAddress,
   refreshAuthData,
 } from '@/services/api/user';
-import { getSysConfig } from '@/services/api/config';
+import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { getCurrentDate, postMsg } from '@/utils/utils';
 import { SocailStoreVersion } from '@/config/constants';
 import {
@@ -23,6 +23,7 @@ const padoServices = {
   bindUserAddress,
   getSysConfig,
   refreshAuthData,
+  getProofTypes,
 };
 
 let USERPASSWORD = '';
@@ -309,11 +310,18 @@ const processpadoServiceReq = async (message, port) => {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }
         break;
+      case 'getProofTypes':
+        if (rc === 0) {
+          postMsg(port, { resMethodName: reqMethodName, res: result });
+        } else {
+          postMsg(port, { resMethodName: reqMethodName, res: false });
+        }
+        break;
       default:
         break;
     }
   } catch (e) {
-    console.log('processpadoServiceReq error:');
+    console.log('processpadoServiceReq error:', reqMethodName);
     throw new Error(e);
   }
 };
@@ -425,7 +433,7 @@ const onDisconnectFullScreen = (port) => {
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('background onMessage message', message);
+  console.log('background onMessage message', message, fullscreenPort);
   if (message.resType === 'algorithm' && fullscreenPort) {
     postMsg(fullscreenPort, message);
   }

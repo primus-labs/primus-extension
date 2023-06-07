@@ -3,7 +3,7 @@ import { DATASOURCEMAP } from '@/config/constants';
 import type { ExchangeMeta } from '@/config/constants';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
-import type {PROOFTYPEITEM} from '@/store/reducers'
+import type { PROOFTYPEITEM } from '@/store/reducers';
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
 type ExInfo = {
@@ -80,23 +80,6 @@ export const setSysConfigAction = (data: object) => ({
   payload: data,
 });
 
-export const setProofTypesAsync = () => {
-  return async (dispatch: any) => {
-    try {
-      const { rc, result } = await getProofTypes();
-      if (rc === 0) {
-        const filteredTypes = result.filter(
-          (i: PROOFTYPEITEM) => i.display === 0
-        );
-        dispatch(setProofTypesAction(filteredTypes));
-      } else {
-        alert('getProofTypes network error');
-      }
-    } catch (e) {
-      alert('getProofTypes network error');
-    }
-  };
-};
 export const setCredentialsAsync = () => {
   return async (dispatch: any) => {
     const { credentials: credentialsStr } = await chrome.storage.local.get([

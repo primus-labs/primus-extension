@@ -1,13 +1,18 @@
 @import '@/assets/css/pDialog.sass'
+@keyframes roll
+  to
+    transform: rotateZ(360deg)
+    
 .addDataSourceSucDialog
   padding: 64px 50px 50px
   @extend .fcbc
-  
   main
     @extend .fcsc
-    img.sucImg
+    img.sucImg,img.loadingImg
       margin-top: 128px
       width: 128px
+    img.loadingImg
+      animation: roll 2s linear infinite
     .pLoading
       margin-top: 128px
       width: 128px
@@ -34,12 +39,12 @@
     &.attestSucDialog
       padding: 43px 42px 32px
       main
-        img.sucImg
+        img.sucImg, img.loadingImg
           margin-top: 68px
         .pLoading
           margin-top: 57px
     main
-      img.sucImg
+      img.sucImg,img.loadingImg
         margin-top: 72px
         width: 80px
       .pLoading
