@@ -89,3 +89,21 @@ export const setCredentialsAsync = () => {
     dispatch(setCredentialsAction(credentialObj));
   };
 };
+
+export const setProofTypesAsync = () => {
+  return async (dispatch: any) => {
+    try {
+      const { rc, result } = await getProofTypes();
+      if (rc === 0) {
+        const filteredTypes = result.filter(
+          (i: PROOFTYPEITEM) => i.display === 0
+        );
+        dispatch(setProofTypesAction(filteredTypes));
+      } else {
+        alert('getProofTypes network error');
+      }
+    } catch (e) {
+      alert('getProofTypes network error');
+    }
+  };
+};

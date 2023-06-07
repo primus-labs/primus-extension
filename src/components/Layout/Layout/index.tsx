@@ -20,7 +20,7 @@ import {
   setExSourcesAsync,
   setSocialSourcesAsync,
   setProofTypesAction,
-  setCredentialsAsync,
+  setProofTypesAsync,
 } from '@/store/actions';
 import type { PROOFTYPEITEM } from '@/store/reducers';
 
@@ -211,8 +211,8 @@ const Layout = () => {
   //   getProofTypesConfig();
   // }, [getProofTypesConfig]);
   useEffect(() => {
-    setCredentialsAsync();
-  }, []);
+    dispatch(setProofTypesAsync());
+  }, [dispatch]);
 
   return (
     <div className="pageApp">

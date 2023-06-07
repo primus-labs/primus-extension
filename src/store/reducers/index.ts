@@ -1,7 +1,7 @@
 import { SETSYSCONFIG } from '../actions';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 import type { ExchangeMeta } from '@/config/constants';
-import type {CredTypeItemType} from '@/components/Cred/CredItem'
+import type { CredTypeItemType } from '@/components/Cred/CredItem';
 export type ExInfo = {
   date: string;
   apiKey: string;
@@ -20,7 +20,7 @@ type SocialDatas = {
   [propName: string]: any;
 };
 
-type ISACTIVE = 0 | 1
+type ISACTIVE = 0 | 1;
 export type PROOFTYPEITEM = {
   id: string;
   credIdentifier: string;
@@ -61,8 +61,50 @@ const initState = {
   filterWord: undefined,
   exSources: {},
   socialSources: {},
-  proofTypes: [],
-  credentials: {}
+  proofTypes: [
+    {
+      id: '1',
+      credIdentifier: 'ASSETS_PROOF',
+      credTitle: 'Assets Proof',
+      credIntroduce: 'Proof of deposits, investment portfolios, etc.',
+      credLogoUrl:
+        'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconAssetsProof.svg',
+      credDetails:
+        'Proof you have a certain amount of assets, which may come from bank deposits or from an crypto exchange balance. PADO uses TLS-MPC to validate your data authenticity.',
+      credProofContent: 'Assets balance greater than',
+      credProofConditions: '["1000"]',
+      display: 0,
+      enabled: 0,
+    },
+    {
+      id: '2',
+      credIdentifier: 'TOKEN_HOLDINGS',
+      credTitle: 'Token Holdings',
+      credIntroduce: 'Proof ownership of a specific amount of a kind of Token.',
+      credLogoUrl:
+        'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconTokenHoldings.svg',
+      credDetails:
+        'Proof that you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
+      credProofContent: 'Hold this kind of Token',
+      credProofConditions: '["USDT","LAT"]',
+      display: 0,
+      enabled: 0,
+    },
+    {
+      id: '3',
+      credIdentifier: 'QUALIFICATIONS',
+      credTitle: 'Qualifications',
+      credIntroduce: 'Proof user level or verification status.',
+      credLogoUrl:
+        'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconQualifications.svg',
+      credDetails: 'xxx',
+      credProofContent: 'xxx',
+      credProofConditions: 'xxx',
+      display: 0,
+      enabled: 1,
+    },
+  ],
+  credentials: {},
 };
 
 // reducer
