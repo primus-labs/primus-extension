@@ -237,14 +237,14 @@ const Cred = () => {
         setActiveSendToChainRequest({
           type: 'error',
           title: 'Failed',
-          desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+          desc: 'Your wallet did not connect or refused to authorize. Please try again later.',
         });
       }
     } catch (e) {
       setActiveSendToChainRequest({
         type: 'error',
         title: 'Failed',
-        desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+        desc: 'Your wallet did not connect or refused to authorize. Please try again later.',
       });
     }
   };

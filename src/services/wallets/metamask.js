@@ -23,6 +23,7 @@ export const connectWallet = async (targetNetwork) => {
     } else {
       return []
     }
+    throw new Error(e);
   }
 };
 const switchChain = async (connectedChainId, targetNetwork) => {
