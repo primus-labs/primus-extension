@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useMemo } from 'react';
 import './index.sass';
 import iconExport from '@/assets/img/iconExport.svg';
 import PMask from '@/components/PMask';
@@ -51,7 +51,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = ({
           balanceGreaterThanBaseValue,
         },
         signature,
-      });
+      }, null, '\t');
       setJsonStr(jsonStr);
     }
   }, [activeCred]);
