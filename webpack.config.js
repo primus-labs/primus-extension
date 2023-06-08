@@ -9,7 +9,7 @@ var { CleanWebpackPlugin } = require('clean-webpack-plugin');
 var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 var ReactRefreshTypeScript = require('react-refresh-typescript');
 var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 var alias = {
@@ -22,21 +22,8 @@ var alias = {
 // load the secrets
 var secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
 
-var imgFileExtensions = [
-  'svg',
-  'png',
-  'jpg',
-  'jpeg',
-  'gif'
-];
-var fontFileExtensions = [
-  'eot',
-  'otf',
-  'ttf',
-  'woff',
-  'woff2',
-];
-
+var imgFileExtensions = ['svg', 'png', 'jpg', 'jpeg', 'gif'];
+var fontFileExtensions = ['eot', 'otf', 'ttf', 'woff', 'woff2'];
 
 if (fileSystem.existsSync(secretsPath)) {
   alias['secrets'] = secretsPath;
@@ -52,7 +39,7 @@ var options = {
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
   },
   chromeExtensionBoilerplate: {
-    // notHotReload: ['background'],
+    notHotReload: ['background'],
   },
   output: {
     filename: '[name].bundle.js',
@@ -106,7 +93,7 @@ var options = {
           },
         },
         generator: {
-          filename: "static/imgs/[hash:8][ext][query]",
+          filename: 'static/imgs/[hash:8][ext][query]',
         },
       },
       {
@@ -114,7 +101,7 @@ var options = {
         type: 'asset/resource',
         exclude: /node_modules/,
         generator: {
-          filename: "static/fonts/[hash:8][ext][query]",
+          filename: 'static/fonts/[hash:8][ext][query]',
         },
       },
       {
@@ -312,7 +299,7 @@ var options = {
     }),
     new MiniCssExtractPlugin({
       // 定义输出文件名和目录
-      filename: "static/css/main.css",
+      filename: 'static/css/main.css',
     }),
   ].filter(Boolean),
   infrastructureLogging: {
