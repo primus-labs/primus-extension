@@ -1,0 +1,73 @@
+@import '@/assets/css/pDialog.sass'
+@keyframes roll
+  to
+    transform: rotateZ(360deg)
+    
+.addDataSourceSucDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  main
+    @extend .fcsc
+    img.sucImg,img.loadingImg
+      margin-top: 128px
+      width: 128px
+    img.loadingImg
+      animation: roll 2s linear infinite
+    .pLoading
+      margin-top: 128px
+      width: 128px
+      height: 128px
+      .loader
+        width: 96px
+        height: 96px
+        &::before
+          width: calc(100% - 21px)
+          height: calc(100% - 21px)
+    h1
+      @extend .xlLBlackBoldFont
+      padding-top: 32px
+      padding-bottom: 12px
+      
+    h2
+      @extend .sSBlackRegularFont
+      line-height: 26px
+      text-align: center
+      width: 387px
+  button.nextBtn
+    height: 58px !important
+@media (max-width: 1680px)
+  .addDataSourceSucDialog
+    padding: 48px 42px 32px
+    &.attestSucDialog
+      padding: 43px 42px 32px
+      main
+        img.sucImg, img.loadingImg
+          margin-top: 68px
+        .pLoading
+          margin-top: 57px
+    main
+      img.sucImg,img.loadingImg
+        margin-top: 72px
+        width: 80px
+      .pLoading
+        margin-top: 61px
+        width: 80px
+        height: 80px
+        .loader
+          width: 66.67px
+          height: 66.67px
+          &::before
+            width: calc(100% - 13px)
+            height: calc(100% - 13px)
+      h1
+        font-size: 26px
+        line-height: 31px
+        font-family: 'Inter-SemiBold'
+        padding-top: 24px
+        padding-bottom: 8px
+      h2
+        font-size: 14px
+        line-height: 26px
+    button.nextBtn
+      height: 48px !important
+      font-family: 'Inter-SemiBold'

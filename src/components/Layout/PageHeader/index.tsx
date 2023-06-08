@@ -5,6 +5,7 @@ import logo from '@/assets/img/logo.svg';
 import PAvatar from '@/components/PAvatar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import iconMy from '@/assets/img/iconMy.svg';
+import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
 import './index.sass';
 
@@ -13,18 +14,23 @@ type NavItem = {
   text: string;
 };
 
+const navs: NavItem[] = [
+  {
+    icon: iconMy,
+    text: 'My',
+  },
+  // {
+  //   icon: iconSetting,
+  //   text: 'Setting',
+  // },
+  {
+    icon: iconLock,
+    text: 'Lock Account',
+  },
+];
 const PHeader = () => {
   const navigate = useNavigate();
-  const [navs, setNavs] = useState<NavItem[]>([
-    {
-      icon: iconMy,
-      text: 'My',
-    },
-    {
-      icon: iconLock,
-      text: 'Lock Account',
-    },
-  ]);
+
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const handleClickAvatar = () => {
     setDorpdownVisible((visible) => !visible);

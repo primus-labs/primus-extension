@@ -116,8 +116,8 @@ const Cred = () => {
     if (gt(Number(baseValue), Number(totalBalance))) {
       setStep(2);
       setActiveRequest({
-        type: 'error',
-        title: 'Failed',
+        type: 'warn',
+        title: 'Not met the requirements',
         desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
       });
       return false;
@@ -367,8 +367,8 @@ const Cred = () => {
               });
             } else if (content.balanceGreaterThanBaseValue === 'false') {
               setActiveRequest({
-                type: 'error',
-                title: 'Failed',
+                type: 'warn',
+                title: 'Not met the requirements',
                 desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
               });
             }
