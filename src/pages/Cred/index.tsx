@@ -175,10 +175,12 @@ const Cred = () => {
     setActiveCred(item);
     setStep(3);
   }, []);
-  const handleSubmitTransferToChain = (networkName: string) => {
+  const handleSubmitTransferToChain = (networkName?: string) => {
     // TODO
-    setActiveNetworkName(networkName);
-    setStep(4);
+    if (networkName) {
+      setActiveNetworkName(networkName);
+      setStep(4);
+    }
   };
   const handleCancelTransferToChain = () => {};
   const handleBackConnectWallet = () => {

@@ -150,7 +150,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
                     value={label}
                   />
                 </div>
-                <div className="tipWrapper">
+                <div className="ctipWrapper">
                   <span>How to get API Key & Secret key?</span>
                   <a href="https://padolabs.org/" target="_blank">
                     Click here

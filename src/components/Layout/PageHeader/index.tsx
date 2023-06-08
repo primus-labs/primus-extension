@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import logo from '@/assets/img/logo.svg';
 import PAvatar from '@/components/PAvatar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
+import SettingDialog from '@/components/Setting/SettingDialog';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
@@ -30,8 +31,9 @@ const navs: NavItem[] = [
 ];
 const PHeader = () => {
   const navigate = useNavigate();
-
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
+  const [settingDialogVisible, setSettingDialogVisible] =
+    useState<boolean>(false);
   const handleClickAvatar = () => {
     setDorpdownVisible((visible) => !visible);
   };
@@ -52,48 +54,57 @@ const PHeader = () => {
       case 'Lock Account':
         navigate('/lock');
         break;
+      case 'Setting':
+        setSettingDialogVisible(true);
+        break;
     }
+  };
+  const onCloseSettingDialog = () => {
+    setSettingDialogVisible(false);
   };
   return (
     <header className="pageHeader">
-      <img src={logo} className="pLogo" alt="" />
-      <DataSourceSearch />
-      <div className="rightHeader">
-        <div
-          className="rightHeaderInner"
-          onClick={handleClickAvatar}
-          onMouseEnter={handleEnterAvatar}
-          onMouseLeave={handleLeaveAvatar}
-        >
-          <PAvatar />
-        </div>
-        {dorpdownVisible && (
+      <div className="pageHeaderInner">
+        <img src={logo} className="pLogo" alt="" />
+        <DataSourceSearch />
+        <div className="rightHeader">
           <div
-            className="dropdownWrapper"
+            className="rightHeaderInner"
+            onClick={handleClickAvatar}
             onMouseEnter={handleEnterAvatar}
             onMouseLeave={handleLeaveAvatar}
           >
-            <ul className="dropdown">
-              {navs.map((item) => {
-                return (
-                  <li
-                    key={item.text}
-                    className="dropdownItemWrapper"
-                    onClick={() => {
-                      handleClickDropdownItem(item.text);
-                    }}
-                  >
-                    <div className="dropdownItem">
-                      <img src={item.icon} alt="" />
-                      <span>{item.text}</span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+            <PAvatar />
           </div>
-        )}
+          {dorpdownVisible && (
+            <div
+              className="dropdownWrapper"
+              onMouseEnter={handleEnterAvatar}
+              onMouseLeave={handleLeaveAvatar}
+            >
+              <ul className="dropdown">
+                {navs.map((item) => {
+                  return (
+                    <li
+                      key={item.text}
+                      className="dropdownItemWrapper"
+                      onClick={() => {
+                        handleClickDropdownItem(item.text);
+                      }}
+                    >
+                      <div className="dropdownItem">
+                        <img src={item.icon} alt="" />
+                        <span>{item.text}</span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
+      {settingDialogVisible && <SettingDialog onClose={onCloseSettingDialog} />}
     </header>
   );
 };

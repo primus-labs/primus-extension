@@ -38,9 +38,11 @@ $lastDropdownItemBorderRadius: 8px
 
 
 .pageHeader
-  @include pageHeaderMixin(1)
-  padding: 0 50px
-  @extend .frbc
+  .pageHeaderInner
+    width: 100%
+    @include pageHeaderMixin(1)
+    padding: 0 50px
+    @extend .frbc
   .rightHeader
     position: relative
     .rightHeaderInner
@@ -98,7 +100,8 @@ $lastDropdownItemBorderRadius: 8px
 
 @media (max-width: 1680px)
   .pageHeader
-    padding: 0 52px
+    .pageHeaderInner
+      padding: 0 52px
     .pLogo
       width: 143px
       margin: -3.5px
