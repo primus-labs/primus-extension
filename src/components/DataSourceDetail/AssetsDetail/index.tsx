@@ -26,7 +26,8 @@ type ExInfo = {
   label?: string;
   flexibleAccountTokenMap: AssetsMap;
   spotAccountTokenMap: AssetsMap;
-  tokenPriceMap: any;
+  tokenPriceMap: object;
+  tradingAccountTokenAmountObj: object;
 };
 export type DataSourceStorages = {
   binance?: any;
@@ -77,7 +78,8 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
 
   const btcPrice = useMemo(() => {
     if (typeof dataSource === 'object') {
-      const originP = dataSource?.tokenPriceMap[BTC];
+      const originP =
+        dataSource?.tokenPriceMap[BTC as keyof typeof dataSource.tokenPriceMap];
       return originP ? originP : null;
     } else {
       return null;

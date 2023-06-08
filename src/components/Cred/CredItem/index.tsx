@@ -9,8 +9,9 @@ import type { UserState } from '@/store/reducers';
 import iconExpand from '@/assets/img/iconExpand.svg';
 import iconUpChain from '@/assets/img/iconUpChain.svg';
 import iconQRCode from '@/assets/img/iconQRCode.svg';
+import iconSuc2 from '@/assets/img/iconSuc2.svg';
+import iconGreater from '@/assets/img/iconGreater.svg';
 import './index.sass';
-import { div } from '../../../utils/utils';
 
 export type CredTypeItemType = {
   type: string;
@@ -110,7 +111,14 @@ const CredItem: React.FC<CredTypeListProps> = ({
     return null;
   }, []);
   const nameCallback = useCallback((item: CredTypeItemType) => {
+    if (item.exUserId) {
+      return `ID: ${item.exUserId}`;
+    }
+    if (item.label) {
+      return `Label: ${item.label}`;
+    }
     const sourceName = item?.source;
+
     if (sourceName) {
       const sourceLowerCaseName = item.source.toLowerCase();
       return DATASOURCEMAP[sourceLowerCaseName].name;
@@ -125,26 +133,19 @@ const CredItem: React.FC<CredTypeListProps> = ({
         onClick={handleClick}
       >
         <div className="mainContent">
-          <h1>{item.type}</h1>
-          <div className="sourceInfo">
-            <div className="descItem">
-              <div className="label">Source: &nbsp;</div>
-              <div className="value">
+          <div className="con">
+            <h1 className="conl">{item.type}</h1>
+            <div className="conr">
+              <div className="conrItem">
+                <div className="value">{nameCallback(item)}</div>
                 <img src={iconCallback(item)} alt="" className="sourceIcon" />
-                <span>{nameCallback(item)}</span>
               </div>
-            </div>
-            {(item.exUserId || item.label) && (
-              <div className="descItem">
-                <div className="label">ID: &nbsp;</div>
-                <div className="value">{item?.exUserId ?? item.label}</div>
+              <div className="conrItem">
+                <div className="value">
+                  {getCurrentDate(Number(item?.getDataTime))}
+                </div>
+                <img src={iconSuc2} alt="" className="sourceIcon" />
               </div>
-            )}
-          </div>
-          <div className="descItem">
-            <div className="label">Date: &nbsp;</div>
-            <div className="value">
-              {getCurrentDate(Number(item?.getDataTime))}
             </div>
           </div>
           <footer>
@@ -202,9 +203,10 @@ const CredItem: React.FC<CredTypeListProps> = ({
             <div className="label">Proof Content</div>
             {item.type === 'Assets Proof' ? (
               <div className="value">
-                <div className="desc">Assets balance greater than</div>
+                <div className="desc">Balance of assets</div>
                 <div className="con">
-                  $
+                  {/* <i className="greaterSymbol">&gt;</i> */}
+                  <img src={iconGreater} className="iconGreater" alt="" />$
                   {item.baseValue
                     ? formatNumeral(item.baseValue, {
                         decimalPlaces: 0,
@@ -226,7 +228,7 @@ const CredItem: React.FC<CredTypeListProps> = ({
             )}
           </div>
           <div className="descItem arow">
-            <div className="label">Recipient Add</div>
+            <div className="label">Recipient Address</div>
             <div className="value">{formatAddress(item.address)}</div>
           </div>
           <div className="descItem">

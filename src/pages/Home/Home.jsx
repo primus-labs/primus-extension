@@ -14,7 +14,7 @@ import iconNetwork3 from '@/assets/img/iconNetwork3.png';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.png';
 import iconNetwork6 from '@/assets/img/iconNetwork6.png';
-import { setSocialSourcesAsync } from '@/store/actions'
+import { setSocialSourcesAsync } from '@/store/actions';
 
 const networkList = [
   {
@@ -44,7 +44,7 @@ const networkList = [
 ];
 const Home = () => {
   const dispatch = useDispatch();
-  const padoServicePort = useSelector((state) => state.padoServicePort)
+  const padoServicePort = useSelector((state) => state.padoServicePort);
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const handleClickStart = async () => {
@@ -57,7 +57,7 @@ const Home = () => {
     setStep(0);
   };
   const handleSubmitAuth = () => {
-    dispatch(setSocialSourcesAsync())
+    dispatch(setSocialSourcesAsync());
     setStep(2);
   };
   const handleSubmitCreateAccount = () => {
@@ -82,27 +82,27 @@ const Home = () => {
       'privateKey',
       'keyStore',
     ]);
-    
+
     // If keyStore is cached,,it represents that the user has already bound a wallet => data page
     if (keyStore) {
       const padoServicePortListener = async function (message) {
         if (message.resMethodName === 'queryUserPassword') {
-          console.log("page_get:queryUserPassword:", message.res);
-          if(!message.res) {
-            navigate('/lock')
+          console.log('page_get:queryUserPassword:', message.res);
+          if (!message.res) {
+            navigate('/lock');
           } else {
             navigate('/datas');
           }
         }
         // padoServicePort.onMessage.removeListener(padoServicePortListener)
-      }
-      padoServicePort.onMessage.addListener(padoServicePortListener)
+      };
+      padoServicePort.onMessage.addListener(padoServicePortListener);
       const msg = {
         fullScreenType: 'wallet',
         reqMethodName: 'queryUserPassword',
-        params: {}
-      }
-      postMsg(padoServicePort, msg)
+        params: {},
+      };
+      postMsg(padoServicePort, msg);
       return true;
     }
     // If privateKey is cached,,it represents that the user has created account without password => step3
@@ -118,11 +118,11 @@ const Home = () => {
 
     return false;
   };
-  
+
   useEffect(() => {
     checkActiveStep();
   }, []);
-  
+
   return (
     <div className="pageIndex pageHome">
       <main className="appContent">
@@ -147,10 +147,13 @@ const Home = () => {
           onSubmit={handleSubmitCreateAccount}
           onCancel={handleCancelCreateAccount}
           title="Create account"
-          desc="Create an on-chain address to easily manage your data. The address will bind to your sign up account."
+          desc="Create an EVM compatible on-chain address to easily manage your data. The address will bind to your sign up account."
           list={networkList}
           showButtonSuffixIcon={true}
           tip="Please select one chain to create"
+          listTitle="Compatible with"
+          listSeparator="and"
+          requireItem={false}
         />
       )}
       {step === 3 && (

@@ -229,6 +229,7 @@ const DataSourceDetail = () => {
               params: {},
             };
             postMsg(padoServicePort, msg);
+            console.log(`page_send:stop request`);
             fetchTimer && clearInterval(fetchTimer);
             setActiveRequest({
               type: 'warn',

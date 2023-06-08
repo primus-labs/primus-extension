@@ -10,11 +10,11 @@ import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesD
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import PSelect from '@/components/PSelect';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
-
 import type { UserState, PROOFTYPEITEM } from '@/store/reducers';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
 import { setExSourcesAsync } from '@/store/actions';
 import type { Dispatch } from 'react';
+import iconGreater from '@/assets/img/iconGreater.svg';
 
 import './index.sass';
 
@@ -50,7 +50,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   activeSourceName,
 }) => {
   const dispatch: Dispatch<any> = useDispatch();
-
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
   const navigate = useNavigate();
   const [activeSource, setActiveSource] = useState<ConnectSourceType>();
@@ -260,6 +259,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
               <div className="value">
                 <div className="desc">
                   {activeAttestationTypeInfo.credProofContent}
+                  {type === 'Assets Proof' && (
+                    <img src={iconGreater} className="iconGreater" alt="" />
+                  )}
                 </div>
                 {type === 'Assets Proof' && (
                   <div className="con">

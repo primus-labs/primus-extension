@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react'
 import './index.sass'
-import iconETH from '@/assets/img/iconETH.svg';
+import iconAddress from '@/assets/img/iconAddress.svg';
 import PInput from '@/components/PInput/index'
 import PMask from '@/components/PMask'
 import { useSelector } from 'react-redux'
@@ -152,29 +152,50 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = (props) => {
             <div className="headerContent">
               {/* TODO */}
               <div className="networkItem">
-                <img className="iconNetwork" src={iconETH} alt="" />
+                <img className="iconNetwork" src={iconAddress} alt="" />
               </div>
               <p className="address">{accountAddr}</p>
             </div>
           </header>
           <h1>Set Password</h1>
-          <h2>Enter an secure password to protect local data and private key.</h2>
+          <h2>
+            Enter an secure password to protect local data and private key.
+          </h2>
           <h6>Setting</h6>
-          <PInput type="password" placeholder="Please enter your password" onChange={handleChangePwd} visible/>
+          <PInput
+            type="password"
+            placeholder="Please enter your password"
+            onChange={handleChangePwd}
+            visible
+          />
           <div className="validateWrapper">
-            <div className="descTitle">The following combinations are recommended：</div>
+            <div className="descTitle">
+              The following combinations are recommended：
+            </div>
             <ul className="descItems">
-              {pwdRules.map(i => {
-                return <li key={i.desc} className={i.legal ? 'descItem checked' : 'descItem'} >
-                  {i.desc}
-                </li>
-              })
-              }
+              {pwdRules.map((i) => {
+                return (
+                  <li
+                    key={i.desc}
+                    className={i.legal ? 'descItem checked' : 'descItem'}
+                  >
+                    {i.desc}
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <h6 className="reconfirmLabel">Reconfirm</h6>
-          <PInput type="password" placeholder="Please confirm your password" onChange={handleChangeConfirm} onSearch={handleClickNext} visible/>
-          {errorTipVisible && <p className="errorTip">Entered passwords differ!</p>}
+          <PInput
+            type="password"
+            placeholder="Please confirm your password"
+            onChange={handleChangeConfirm}
+            onSearch={handleClickNext}
+            visible
+          />
+          {errorTipVisible && (
+            <p className="errorTip">Entered passwords differ!</p>
+          )}
         </main>
         <button className="nextBtn" onClick={handleClickNext}>
           <span>OK</span>

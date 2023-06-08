@@ -73,8 +73,8 @@ const initState = {
       credLogoUrl:
         'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconAssetsProof.svg',
       credDetails:
-        'Proof you have a certain amount of assets, which may come from bank deposits or from an crypto exchange balance. PADO uses TLS-MPC to validate your data authenticity.',
-      credProofContent: 'Assets balance greater than',
+        'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
+      credProofContent: 'Balance of assets',
       credProofConditions: '["1000"]',
       display: 0,
       enabled: 0,

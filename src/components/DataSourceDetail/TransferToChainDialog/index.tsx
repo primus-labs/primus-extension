@@ -13,7 +13,7 @@ type ToolItem = {
 };
 interface TransferToChainDialogProps {
   onClose: () => void;
-  onSubmit: (name: string) => void;
+  onSubmit: (name?: string) => void;
   onCancel: () => void;
   title: string;
   desc: string;
@@ -23,6 +23,9 @@ interface TransferToChainDialogProps {
   checked?: boolean;
   backable?: boolean;
   headerType?: string;
+  listTitle?: string;
+  listSeparator?: string;
+  requireItem?: boolean;
 }
 
 const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
@@ -38,22 +41,32 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
     checked = true,
     backable = true,
     headerType = 'dataSource',
+    listTitle = 'Continue with',
+    listSeparator = 'or',
+    requireItem = true,
   } = props;
   const [activeName, setActiveName] = useState<string>();
   const [errorTip, setErrorTip] = useState<string>();
   const handleClickNext = () => {
-    if (!activeName) {
-      setErrorTip(tip);
-      return;
+    if (requireItem) {
+      if (!activeName) {
+        setErrorTip(tip);
+        return;
+      }
+      onSubmit(activeName);
+    } else {
+      onSubmit();
     }
-    onSubmit(activeName);
   };
   const handleClickBack = () => {
     onCancel();
   };
   const handleClickNetwork = (item: ToolItem | undefined) => {
+    if (!requireItem) {
+      return;
+    }
     if (item?.disabled) {
-      return
+      return;
     }
     if (item?.title === activeName) {
       setActiveName(undefined);
@@ -64,7 +77,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
   };
 
   const activeList = useMemo(() => {
-    return list.filter((item,idx) => idx !== 0);
+    return list.filter((item, idx) => idx !== 0);
   }, [list]);
   useEffect(() => {
     // setActiveTool(list[0]);
@@ -73,10 +86,14 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
   const liClassName = useCallback(
     (item: ToolItem) => {
       let liCN = 'networkItem';
+      if (!requireItem) {
+        liCN += ' forbid';
+      }
       if (item?.title === activeName) {
         liCN += ' active';
       }
       if (item?.disabled) {
+        liCN += ' forbid';
         liCN += ' disabled';
       }
       return liCN;
@@ -103,7 +120,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
           {headerType === 'attestation' && <AddressInfoHeader />}
           <h1>{title}</h1>
           <h2>{desc}</h2>
-          <h6>Continue with</h6>
+          <h6>{listTitle}</h6>
           <div
             className={liClassName(list[0])}
             onClick={() => handleClickNetwork(list[0])}
@@ -112,7 +129,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = (props) => {
           </div>
           <div className="dividerWrapper">
             <i></i>
-            <div className="divider">or</div>
+            <div className="divider">{listSeparator}</div>
             <i></i>
           </div>
           <ul className="networkList">
