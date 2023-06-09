@@ -1,0 +1,138 @@
+@import '@/assets/css/pDialog.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pVars.sass'
+.tipFont
+  @extend .xsSBlackRegularFont
+  line-height: 22px
+.setPasswordWrapper
+  width: 100%
+  @extend .fcbc
+  main
+    width: 100%
+    @extend .fcss
+    .setPwdDialogHeader
+      width: 100%
+      @extend .frcc
+      position: relative
+      .headerContent
+        background: rgba(0, 0, 0, 0.05)
+        border-radius: 100px
+        padding: 8px 12px
+        @extend .frcc
+        gap: $xxsGap
+        .networkItem
+          width: 48px
+          height: 48px
+          border-radius: 50%
+          background: #fff
+          @extend .frcc
+          img.iconNetwork
+            width: 32.25px
+        p.address
+          width: 278px
+          font-size: 16px
+          line-height: 24px
+          font-family: 'Inter-Regular'
+          color: $colMBlack
+          word-break: break-all
+    h1
+      @extend .xlLBlackBoldFont
+      padding-top: 45px
+      padding-bottom: 18px
+      align-self: center
+    h2
+      @extend .xsSBlackRegularFont
+      align-self: center
+    h6
+      @extend .mSBlackRegularFont
+      padding: 32px 0 8px
+    .validateWrapper
+      padding-top: 12px
+      .descTitle
+        @extend .tipFont
+        padding-bottom: 6px
+      ul.descItems
+        @extend .fcss
+      .descItem
+        @extend .tipFont
+        line-height: 28px
+        padding-left: 24px
+        position: relative
+        &.checked
+          color: #000
+          font-family: 'Inter-Bold'
+          &::before
+            background: url(../../../assets/img/iconChecked.svg)
+            background-size: 100% 100%
+            width: 18px
+            height: 18px
+            position: absolute
+            content: ''
+            top: 50%
+            left: 0
+            transform: translateY(-50%)
+    .errorTip
+      padding-top: 8px
+      @extend .tipFont
+      color: $colError
+@media (max-width: 1680px)
+  .setPasswordWrapper
+    main
+      .setPwdDialogHeader
+        .headerContent
+          padding: 4px 17px 4px 8px
+          .networkItem
+            width: 38px
+            height: 38px
+            img.iconNetwork
+              width: 20px
+          p.address
+            width: 164px
+            font-size: 12px
+            line-height: 16px
+      h1
+        font-size: 26px
+        line-height: 31px
+        font-family: 'Inter-SemiBold'
+        padding-top: 29px
+        padding-bottom: 12px
+      h2
+        font-size: 12px
+        line-height: 20px
+      h6
+        font-size: 14px
+        line-height: 17px
+        font-family: 'Inter-Regular'
+        padding: 22px 0 6px 0
+      .reconfirmLabel
+        padding-top: 12px
+      .pInputWrapper
+        height: 52px
+        .pInput
+          font-size: 16px
+          line-height: 19px
+          font-family: 'Inter-Medium'
+          padding-left: 20px
+        .suffixIcon
+          width: 16px
+      .validateWrapper
+        .descTitle
+          font-size: 12px
+          line-height: 16px
+          padding-bottom: 2px
+        ul.descItems
+          .descItem
+            font-size: 12px
+            line-height: 16px
+            padding-left: 20px
+            &.checked
+              color: #000
+              font-family: 'Inter-Medium'
+              &::before
+                width: 16px
+                height: 16px
+      .errorTip
+        padding-top: 4px
+        font-size: 12px
+        line-height: 18px

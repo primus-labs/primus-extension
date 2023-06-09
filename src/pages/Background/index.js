@@ -348,21 +348,19 @@ const processWalletReq = async (message, port) => {
     params: { password },
   } = message;
   let transferMsg;
+  const { keyStore } = await chrome.storage.local.get(['keyStore']);
   switch (reqMethodName) {
     case 'decrypt':
-      chrome.storage.local.get(['keyStore'], (storedData) => {
-        const keyStore = storedData['keyStore'];
-        if (keyStore) {
-          try {
-            web3EthAccount = new Web3EthAccounts();
-            web3EthAccount.decrypt(keyStore, password);
-            USERPASSWORD = password;
-            postMsg(port, { resMethodName: reqMethodName, res: true });
-          } catch {
-            postMsg(port, { resMethodName: reqMethodName, res: false });
-          }
+      if (keyStore) {
+        try {
+          web3EthAccount = new Web3EthAccounts();
+          web3EthAccount.decrypt(keyStore, password);
+          USERPASSWORD = password;
+          postMsg(port, { resMethodName: reqMethodName, res: true });
+        } catch {
+          postMsg(port, { resMethodName: reqMethodName, res: false });
         }
-      });
+      }
       break;
     case 'encrypt':
       const pKRes = await chrome.storage.local.get(['privateKey']);
@@ -419,6 +417,35 @@ const processWalletReq = async (message, port) => {
       } catch {
         postMsg(port, { resMethodName: reqMethodName, res: '' });
       }
+      break;
+    case 'resetPassword':
+      // decrypt by old password
+      if (USERPASSWORD) {
+        try {
+          if (keyStore) {
+            web3EthAccount = new Web3EthAccounts();
+            const { privateKey } = web3EthAccount.decrypt(
+              keyStore,
+              USERPASSWORD
+            );
+            if (privateKey) {
+              // encrypt by new password
+              const orignAccount =
+                web3EthAccount.privateKeyToAccount(privateKey);
+              const encryptAccount = orignAccount.encrypt(password);
+              USERPASSWORD = password;
+              await chrome.storage.local.set({
+                keyStore: JSON.stringify(encryptAccount),
+              });
+            }
+          }
+
+          postMsg(port, { resMethodName: reqMethodName, res: true });
+        } catch {
+          postMsg(port, { resMethodName: reqMethodName, res: false });
+        }
+      }
+      // refresh exchange cipher
       break;
     default:
       break;

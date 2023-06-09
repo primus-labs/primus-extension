@@ -385,3 +385,10 @@ async function assembleUserInfoParams() {
   };
   return user;
 }
+
+export const resetExchangesCipher = async (oldPwd, newPwd) => {
+  const sourceNameList = Object.keys(DATASOURCEMAP);
+  const exCipherKeys = sourceNameList.map((i) => `${i}cipher`);
+  let res = await chrome.storage.local.get(exCipherKeys);
+  
+};

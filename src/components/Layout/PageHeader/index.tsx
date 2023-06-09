@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router';
 import logo from '@/assets/img/logo.svg';
 import PAvatar from '@/components/PAvatar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
-import SettingDialog from '@/components/Setting/SettingDialog';
+import Setting from '@/components/Setting/Setting';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
+import ResetPassword from '@/components/Setting/ResetPassword';
+import SettingDialog from '@/components/Setting/SettingDialog';
+
 import './index.sass';
 
 type NavItem = {
@@ -16,14 +19,14 @@ type NavItem = {
 };
 
 const navs: NavItem[] = [
-  {
-    icon: iconMy,
-    text: 'My',
-  },
   // {
-  //   icon: iconSetting,
-  //   text: 'Setting',
+  //   icon: iconMy,
+  //   text: 'My',
   // },
+  {
+    icon: iconSetting,
+    text: 'Setting',
+  },
   {
     icon: iconLock,
     text: 'Lock Account',
@@ -34,6 +37,8 @@ const PHeader = () => {
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
     useState<boolean>(false);
+  // const [resetPwdDialogVisible, setResetPwdDialogVisible] =
+  //   useState<boolean>(false);
   const handleClickAvatar = () => {
     setDorpdownVisible((visible) => !visible);
   };
@@ -43,6 +48,7 @@ const PHeader = () => {
   const handleLeaveAvatar = () => {
     setDorpdownVisible(false);
   };
+  
   const handleClickDropdownItem = (text: string) => {
     switch (text) {
       case 'Logout':
@@ -104,7 +110,7 @@ const PHeader = () => {
           )}
         </div>
       </div>
-      {settingDialogVisible && <SettingDialog onClose={onCloseSettingDialog} />}
+      {<Setting visible={settingDialogVisible} />}
     </header>
   );
 };
