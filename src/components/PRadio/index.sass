@@ -1,0 +1,44 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+.hoverRadio
+  background: #FFFFFF
+  border: 2PX solid transparent
+  background-clip: padding-box, border-box
+  background-origin: padding-box, border-box
+  background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+.pRadio
+  display: flex
+  .radioOptions
+    @extend .frsc
+    height: 47px
+    gap:18px
+    .radioOption
+      @extend .frcc
+      width: 47px
+      height: 47px
+      padding: 2px
+      background: rgba(0, 0, 0, 0.05)
+      backdrop-filter: blur(16px)
+      border-radius: 8px
+      font-size: 14px
+      line-height: 17px
+      font-family:'Inter-Medium'
+      color: $colMBlack
+      cursor: pointer
+      &:hover
+        @extend .hoverRadio
+      &.active
+        @extend .hoverRadio
+        position: relative
+        &:after
+          position: absolute
+          content: ''
+          right: 3px
+          bottom: 3px
+          width: 8.17px
+          height: 8.17px
+          background: url('@/assets/img/iconSuc.svg')
+          background-size: 100% 100%
+
+      
+        

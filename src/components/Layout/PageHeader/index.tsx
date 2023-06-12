@@ -110,7 +110,7 @@ const PHeader = () => {
           )}
         </div>
       </div>
-      {<Setting visible={settingDialogVisible} />}
+      {<Setting visible={settingDialogVisible} onClose={ () => {setSettingDialogVisible(false)}} />}
     </header>
   );
 };

@@ -1,19 +1,17 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import './index.sass';
-import PMask from '@/components/PMask';
-import { formatAddress } from '@/utils/utils';
-
-import iconArrow from '@/assets/img/iconArrowLeft2.svg';
 import SettingDialog from '@/components/Setting/SettingDialog';
-import ResetPassword from '@/components/Setting/ResetPassword';
-import ExportWallet from '@/components/Setting/ExportWallet';
+import ResetPasswordDialog from '@/components/Setting/ResetPasswordDialog';
+import ExportWalletDialog from '@/components/Setting/ExportWalletDialog';
+import ManageDataDialog from '@/components/Setting/ManageDataDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
 interface SettingProps {
   visible: boolean;
+  onClose: () => void;
 }
 
-const Setting: React.FC<SettingProps> = ({ visible }) => {
+const Setting: React.FC<SettingProps> = ({ visible, onClose }) => {
   // const [settingDialogVisible, setSettingDialogVisible] =
   //   useState<boolean>(false);
   const [resetPwdDialogVisible, setResetPwdDialogVisible] =
@@ -22,7 +20,11 @@ const Setting: React.FC<SettingProps> = ({ visible }) => {
     useState<boolean>(false);
   const [exportAddressDialogVisible, setExportAddressDialogVisible] =
     useState<boolean>(false);
-  const onCloseSettingDialog = () => {};
+  const [manageDataDialogVisible, setManageDataDialogVisible] =
+    useState<boolean>(false);
+  const onCloseSettingDialog = () => {
+    onClose();
+  };
   const onChange = (settingType: string) => {
     switch (settingType) {
       case 'Change Password':
@@ -32,6 +34,7 @@ const Setting: React.FC<SettingProps> = ({ visible }) => {
         setExportAddressDialogVisible(true);
         break;
       case 'Manage your data':
+        setManageDataDialogVisible(true);
         break;
       case 'Privacy Policy':
         break;
@@ -55,7 +58,7 @@ const Setting: React.FC<SettingProps> = ({ visible }) => {
         <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />
       )}
       {resetPwdDialogVisible && (
-        <ResetPassword
+        <ResetPasswordDialog
           onClose={() => {
             setResetPwdDialogVisible(false);
           }}
@@ -75,12 +78,22 @@ const Setting: React.FC<SettingProps> = ({ visible }) => {
         />
       )}
       {exportAddressDialogVisible && (
-        <ExportWallet
+        <ExportWalletDialog
           onClose={() => {
             setExportAddressDialogVisible(false);
           }}
           onSubmit={() => {
             setExportAddressDialogVisible(false);
+          }}
+        />
+      )}
+      {manageDataDialogVisible && (
+        <ManageDataDialog
+          onClose={() => {
+            setManageDataDialogVisible(false);
+          }}
+          onSubmit={() => {
+            setManageDataDialogVisible(false);
           }}
         />
       )}

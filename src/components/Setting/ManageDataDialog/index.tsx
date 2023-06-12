@@ -3,20 +3,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PMask from '@/components/PMask';
 import { DATASOURCEMAP } from '@/config/constants';
-import type { ExchangeMeta } from '@/types/config';
+import type { ExchangeMeta } from '@/config/constants';
 import { formatNumeral } from '@/utils/utils';
 
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
-import PSelect from '@/components/PSelect';
-import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import type { UserState, PROOFTYPEITEM } from '@/store/reducers';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
 import { setExSourcesAsync } from '@/store/actions';
 import type { Dispatch } from 'react';
 import iconGreater from '@/assets/img/iconGreater.svg';
-import type { ConnectSourceType } from '@/types/dataSource';
-
+import PRadio from '@/components/PRadio';
+import ConnectedDataSourceList from '@/components/Cred/ConnectedDataSourceList';
 
 import './index.sass';
 
@@ -30,21 +28,42 @@ export type AttestionForm = {
   requestid?: string;
 };
 interface AttestationDialogProps {
-  type: string;
   onClose: () => void;
-  onSubmit: (form: AttestionForm, activeCred?: CredTypeItemType) => void;
+  onSubmit: () => void;
+  type?: string;
   onCheck?: () => void;
   activeCred?: CredTypeItemType;
   activeSourceName?: string;
 }
+type ConnectSourceType = {
+  name: string;
+  icon: any;
+  exUserId?: string;
+  label?: string;
+};
 
-const AttestationDialog: React.FC<AttestationDialogProps> = ({
+const updateFrequencyList = [
+  {
+    text: '1min',
+    value: '1',
+  },
+  {
+    text: '3min',
+    value: '3',
+  },
+  {
+    text: '5min',
+    value: '5',
+  },
+];
+const ManageDataDialog: React.FC<AttestationDialogProps> = ({
   type,
   onClose,
   onSubmit,
   activeCred,
   activeSourceName,
 }) => {
+  const [updateFrequency, setUpdateFrequency] = useState<string>('3');
   const dispatch: Dispatch<any> = useDispatch();
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
   const navigate = useNavigate();
@@ -77,32 +96,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       return infoObj;
     });
   }, [exSources]);
-  const tokenList = useMemo(() => {
-    let list = [];
-    if (!activeSource?.name) {
-      const reduceF = (prev: string[], curr: any) => {
-        const { tokenListMap } = curr;
-        const curTokenList = Object.keys(tokenListMap);
-        prev.concat([...curTokenList]);
-        curTokenList.forEach((token) => {
-          if (!prev.includes(token)) {
-            prev.push(token);
-          }
-        });
-        return prev;
-      };
-      list = Object.values(exSources).reduce(reduceF, []);
-    } else {
-      const sourceLowerCaseName = activeSource.name.toLowerCase();
-      list = Object.keys(exSources[sourceLowerCaseName].tokenListMap);
-    }
-    const formatList = list.map((i) => ({
-      text: i,
-      value: i,
-      icon: `${tokenLogoPrefix}icon${i}.png`,
-    }));
-    return formatList;
-  }, [exSources, activeSource, tokenLogoPrefix]);
+  
   const activeSourceList = useMemo(() => {
     if (activeToken) {
       const reduceF = (prev: string[], curr: any) => {
@@ -119,12 +113,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       return [];
     }
   }, [exSources, activeToken]);
-  const handleChangeSelect = (val: string) => {
-    if (!val) {
-      setActiveSource(undefined);
-    }
-    setActiveToken(val);
-  };
+  
 
   const handleClickNext = () => {
     if (connectedSourceList.length === 0) {
@@ -167,45 +156,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       }
     }
   };
-
-  const handleClickData = (item: ConnectSourceType) => {
-    if ((activeCred || activeSourceName) && activeSource) {
-      if (activeSource?.name !== item.name) {
-        return;
-      }
-    }
-    if (
-      (activeSourceList.length > 0 &&
-        activeSourceList.includes(item.name) &&
-        !activeSource) ||
-      activeSourceList.length === 0
-    ) {
-      setActiveSource(item);
-    }
-  };
-  const liClassNameCallback = useCallback(
-    (item: ConnectSourceType) => {
-      let defaultClassName = 'networkItem';
-      if ((activeCred || activeSourceName) && activeSource) {
-        if (activeSource?.name !== item.name) {
-          defaultClassName += ' disabled';
-        }
-      } else {
-        if (activeSourceList.length > 0) {
-          if (activeSourceList.includes(item.name) && !activeSource) {
-            defaultClassName += ' excitable';
-          } else {
-            defaultClassName += ' disabled';
-          }
-        }
-      }
-      if (activeSource?.name === item.name) {
-        defaultClassName += ' active';
-      }
-      return defaultClassName;
-    },
-    [activeSource, activeSourceList, activeCred, activeSourceName]
-  );
   useEffect(() => {
     if (activeCred) {
       const sourceInfo = connectedSourceList.find(
@@ -226,14 +176,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
       setActiveSource(sourceInfo);
     }
   }, [activeSourceName, connectedSourceList]);
-  useEffect(() => {
-    if (activeAttestationTypeInfo.credTitle === 'Assets Proof') {
-      const baseValArr = JSON.parse(
-        activeAttestationTypeInfo.credProofConditions
-      );
-      if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
-    }
-  }, [activeAttestationTypeInfo]);
+  
   useEffect(() => {
     if (activeSource) {
       const sourceLowerCaseName = activeSource.name.toLowerCase();
@@ -243,73 +186,35 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   useEffect(() => {
     !fetchExDatasLoading && dispatch(setExSourcesAsync());
   }, [fetchExDatasLoading, dispatch]);
+  const onChangeUpdateFrequency = () => {
+
+  }
   return (
     <PMask onClose={onClose}>
-      <div className="padoDialog attestationDialog">
+      <div className="padoDialog manageDataDialog">
         <main>
-          <h1>{activeAttestationTypeInfo.credTitle}</h1>
-          <h2>{activeAttestationTypeInfo.credDetails}</h2>
+          <h1>Manage Your Data</h1>
           <div className="scrollList">
             <div className="contItem">
-              <div className="label">Proof content</div>
+              <div className="label">Update frequency</div>
               <div className="value">
                 <div className="desc">
-                  {activeAttestationTypeInfo.credProofContent}
-                  {type === 'Assets Proof' && (
-                    <img src={iconGreater} className="iconGreater" alt="" />
-                  )}
+                  Choose a time frequency to updating your data:
                 </div>
-                {type === 'Assets Proof' && (
-                  <div className="con">
-                    $
-                    {activeBaseValue
-                      ? formatNumeral(activeBaseValue, {
-                          decimalPlaces: 0,
-                        })
-                      : ''}
-                  </div>
-                )}
-                {type === 'Token Holdings' && (
-                  <div className="pSelectWrapper">
-                    <PSelect
-                      showIcon={true}
-                      options={tokenList}
-                      onChange={handleChangeSelect}
-                      val={activeToken}
-                    />
-                  </div>
-                )}
+                <div className="con">
+                  <PRadio
+                    val={updateFrequency}
+                    onChange={setUpdateFrequency}
+                    options={updateFrequencyList}
+                  />
+                </div>
               </div>
             </div>
             <div className="contItem contItemAssets">
-              <div className="label">Source of assets</div>
-              {connectedSourceList.length > 0 && (
-                <ul className="dataList">
-                  {connectedSourceList.map((item) => {
-                    return (
-                      <li
-                        className={liClassNameCallback(item)}
-                        key={item.name}
-                        onClick={() => {
-                          handleClickData(item);
-                        }}
-                      >
-                        <img src={item.icon} alt="" />
-                        <h6>{item.name}</h6>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-              {connectedSourceList.length === 0 && (
-                <div className="emptyContent">
-                  <img src={iconInfoGray} alt="" />
-                  <h2>
-                    You haven’t connected any data sources yet. Please go to the
-                    Data page to add some.
-                  </h2>
-                </div>
-              )}
+              <div className="label">Data Connected</div>
+              <div className="value">
+<ConnectedDataSourceList/>
+              </div>
             </div>
           </div>
         </main>
@@ -332,4 +237,4 @@ const AttestationDialog: React.FC<AttestationDialogProps> = ({
   );
 };
 
-export default AttestationDialog;
+export default ManageDataDialog;

@@ -1,0 +1,92 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pDialog.sass'
+
+.manageDataDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  main
+    width: 100%
+    @extend .fcss
+    gap: $xlGap
+    h1
+      @extend .frsc
+      gap: $xxsGap
+      align-self: center
+      @extend .xlLBlackBoldFont
+   
+    .scrollList
+      // width: calc( 100% + 38px )
+      // height: 332px
+      // overflow-y: auto
+      // overflow-x: hidden
+      // &::-webkit-scrollbar
+      //   width: 6px
+      //   height: 300px
+      // &::-webkit-scrollbar-thumb
+      //   background: rgba(0, 0, 0, 0.2)
+      //   border-radius: $xxLBorderRadius
+      .contItem
+        @extend .fcss
+        gap: 14px
+        padding-top: 32px
+        .label
+          font-size: 18px
+          line-height: 26px
+          font-family: 'Inter-SemiBold'
+          color: $colLBlack
+        .value
+          width: 100%
+          @extend .frbc
+          gap: $xxsGap
+          .desc
+            font-size: 16px
+            line-height: 22px
+            font-family: 'Inter-Medium'
+            color: $colSBlack
+            width: 221px
+            word-wrap: break-word
+          
+                
+  button.nextBtn
+    height: 58px !important
+    position: relative
+    &.gray
+      background: rgba(0, 0, 0, 0.05)
+      &:hover
+       background: rgba(0, 0, 0, 0.05) 
+    .tipWrapper
+      position: absolute
+      content: ''
+      top: -49px
+      left: 50%
+      transform: translateX(-50%)
+      width: 100%
+      text-align: center
+      .errorTip
+        width: fit-content
+        margin: 0 auto
+        padding: 0 12px
+        @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
+        font-size: 12px
+        line-height: 25px
+        font-family: 'Inter-Regualr'
+        color: rgba(0,0,0,0.4)
+@media (max-width: 1680px)
+  .manageDataDialog
+    padding: 48px 42px 32px
+    main
+      gap: 0
+      h1
+        font-size: 32px
+        line-height: 39px
+        font-family:'Inter-SemiBold'
+     
+      // .scrollList
+      //   width: calc( 100% + 34px )
+      //   height: 328px
+      //   &::-webkit-scrollbar
+      //     height: 250px
+        
+    button.nextBtn
+      height: 48px !important
+      font-family: 'Inter-SemiBold' !important
