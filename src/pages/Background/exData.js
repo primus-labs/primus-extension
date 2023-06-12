@@ -289,11 +289,20 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   if (type === 'Assets Proof') {
     params.baseValue = baseValue;
     calculationType = `SUM_OF_ALL`;
+    if (source === 'binance') {
+      calculationType = 'KEY_VALUES_SUM_X_A';
+    }
   } else if (type === 'Token Holdings') {
     params.holdingToken = holdingToken;
     calculationType = `${sourceUpperCaseName}_ASSET_BALANCES`; // TODO
   }
-  let extRequestsOrder = 'account-balance';
+
+  let extRequestsOrder;
+  if (source === 'binance') {
+    extRequestsOrder = 'asset-balances';
+  } else {
+    extRequestsOrder = 'account-balance';
+  }
   const ext = {
     calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
     extRequests: {
@@ -316,10 +325,13 @@ async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
         path: 'asset/getUserAsset',
         api: 'sapiV3',
         method: 'POST',
-        params: {},
+        params: {recvWindow: 60 * 1000},
       };
       signres = await sign('binance', data, USERPASSWORD, port);
-      console.log('signres=', signres);
+      signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:KVVVV:"asset":"(.*?)"[\\s\\S]*?"free":"(.*?)"[\\s\\S]*?"locked":"(.*?)"[\\s\\S]*?"freeze":"(.*?)"[\\s\\S]*?"withdrawing":"(.*?)"';
+      signres.decryptFlag = 'false';
+      //signres.url = 'https://localhost/simulate/sapi/v3/asset/getUserAsset';
+      console.log('binance signres=', signres);
       extRequestsOrderInfo = { ...signres };
       break;
     case 'coinbase':

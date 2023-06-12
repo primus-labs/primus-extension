@@ -10,14 +10,14 @@ const CURENV = 'development';
 // console.log('CURENV', CURENV);
 const PADOURLMAP = {
   development: '18.179.8.186:8889',
-  // development: '192.168.31.30:8081',
+  //development: '127.0.0.1:8081',
   production: '127.0.0.1:8081',
 };
 export const PADOURL = PADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
-  development: '18.179.8.186:9000',
-  // development: '192.168.31.30:9000',
+  development: '18.179.8.186:9001',
+  //development: '127.0.0.1:9000',
   production: '127.0.0.1:9000',
 };
 export const PROXYURL = PROXYURLMAP[CURENV];
