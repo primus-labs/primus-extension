@@ -9,7 +9,6 @@ const PAvatar = () => {
   }, [address])
   const getUserInfo = () => {
     chrome.storage.local.get(['userInfo', 'keyStore'], ({ userInfo, keyStore }) => {
-      console.log(JSON.parse(userInfo), JSON.parse(keyStore))
       if (userInfo) {
         const parseUserInfo = JSON.parse(userInfo);
         const { picture } = parseUserInfo

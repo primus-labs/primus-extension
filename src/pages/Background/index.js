@@ -27,7 +27,7 @@ const padoServices = {
   getProofTypes,
 };
 
-let USERPASSWORD = '';
+let USERPASSWORD = 'pado2023.';
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -355,9 +355,13 @@ const processWalletReq = async (message, port) => {
       if (keyStore) {
         try {
           web3EthAccount = new Web3EthAccounts();
-          web3EthAccount.decrypt(keyStore, password);
-          USERPASSWORD = password;
-          postMsg(port, { resMethodName: reqMethodName, res: true });
+          const pwd = password || USERPASSWORD;
+          const plaintextKeyStore = web3EthAccount.decrypt(keyStore, pwd);
+          USERPASSWORD = pwd;
+          postMsg(port, {
+            resMethodName: reqMethodName,
+            res: plaintextKeyStore,
+          });
         } catch {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }

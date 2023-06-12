@@ -1,0 +1,95 @@
+@import '@/assets/css/pDialog.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pVars.sass'
+
+.padoDialog.exportWalletDialog
+  padding: 64px 50px 50px
+  main
+    width: 100%
+    h1
+      text-align: center
+      font-size: 30px
+      line-height: 36px
+      font-family: "Inter-SemiBold"
+      color: $colLBlack
+      padding: 0
+    .infoWrapper
+      width: 100%
+      padding-top: 48px
+      @extend .fcss
+      gap: 32px
+      .infoItem
+        width: 100%
+        @extend .fcss
+        gap: 12px
+        &:first-child
+          .value
+            padding-right: 18px
+        &:last-child
+          gap: 14px
+        &.privateKey
+          .value
+            padding: 14px 18px 13px 24px
+            background: rgba(0, 0, 0, 0.05)
+            backdrop-filter: blur(16px)
+            border-radius: 12px
+            .left
+              line-height: 24px
+              color: $colLBlack
+              width: 332px
+
+        .label
+          font-size: 18px
+          line-height: 26px
+          font-family: "Inter-SemiBold"
+          color: $colLBlack
+        .value
+          width: 100%
+          @extend .frbc
+          .left 
+            font-size: 16px
+            line-height: 22px
+            font-family: "Inter-Medium"
+            color: $colSBlack
+            width: 354px
+            word-wrap: break-word
+          img.right
+            width: 22px
+            cursor: pointer
+            opacity: 0.4
+            &:hover
+              opacity: 0.8
+          .pInputWrapper
+            height: 52px
+            padding-right: 21px
+            .pInput
+              padding-left: 22px
+              font-size: 16px
+              font-family: 'Inter-Medium'
+            .suffixIcon
+              width: 18px
+        .tip
+          @extend .frbc
+          gap: 14px
+          >img
+            width: 28px
+          .txt
+            font-size: 12px
+            line-height: 16px
+            font-family: "Inter-Regular"
+            color: $colSBlack
+
+
+      
+
+  
+@media (max-width: 1680px)
+  .padoDialog.exportWalletDialog
+    padding: 64px 42px 32px
+    button.nextBtn
+      height: 48px
+      font-family: 'Inter-SemiBold'
+
+
+    

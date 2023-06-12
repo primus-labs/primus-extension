@@ -6,7 +6,7 @@ import { formatAddress } from '@/utils/utils';
 import iconArrow from '@/assets/img/iconArrowLeft2.svg';
 import SettingDialog from '@/components/Setting/SettingDialog';
 import ResetPassword from '@/components/Setting/ResetPassword';
-import ExportAddress from '@/components/Setting/ExportAddress';
+import ExportWallet from '@/components/Setting/ExportWallet';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
 interface SettingProps {
@@ -75,7 +75,7 @@ const Setting: React.FC<SettingProps> = ({ visible }) => {
         />
       )}
       {exportAddressDialogVisible && (
-        <ExportAddress
+        <ExportWallet
           onClose={() => {
             setExportAddressDialogVisible(false);
           }}
