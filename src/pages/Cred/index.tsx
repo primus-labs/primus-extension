@@ -29,7 +29,7 @@ import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
-import { attestByDelegation } from '@/services/chains/eas.js';
+import { attestByDelegation, attestByDelegationProxy } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
@@ -208,7 +208,7 @@ const Cred = () => {
         data: activeCred?.encodedData,
         signature: activeCred?.signature,
       };
-      const upChainRes = await attestByDelegation(upChainParams);
+      const upChainRes = await attestByDelegationProxy(upChainParams);
       if (upChainRes) {
         const cObj = await getCredentialsObjFromStorage();
         const curRequestid = activeCred?.requestid as string;

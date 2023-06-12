@@ -1,4 +1,5 @@
 import {EAS, Delegated, ATTEST_TYPE, SchemaEncoder, SchemaRegistry} from "@ethereum-attestation-service/eas-sdk";
+import { EIP712Proxy } from "@ethereum-attestation-service/eas-sdk/dist/eip712-proxy"
 import {ethers, utils} from 'ethers';
 //const { keccak256, toUtf8Bytes, splitSignature } = utils;
 import {_TypedDataEncoder} from "@ethersproject/hash";
@@ -150,6 +151,41 @@ export async function attestByDelegation(params) {
     }
     const newAttestationUID = await tx.wait();
     console.log('newAttestationUID', newAttestationUID)
+    return newAttestationUID;
+}
+
+export async function attestByDelegationProxy(params) {
+    let { networkName, data, attesteraddr, receipt, signature, metamaskprovider } = params;
+    const splitsignature = utils.splitSignature(signature);
+    const formatSignature = { v: splitsignature.v, r: splitsignature.r, s: splitsignature.s };
+    console.log('eas attestByDelegationProxy params', params);
+    const easProxyContractAddress = EASInfo[networkName].easProxyContrac;
+    const easProxy = new EIP712Proxy(easProxyContractAddress);
+    let tx;
+    let provider = new ethers.providers.Web3Provider(metamaskprovider);
+    await provider.send("eth_requestAccounts", []);
+    let signer = provider.getSigner();
+    easProxy.connect(signer);
+    try {
+        const schemauid = EASInfo[networkName].schemaUid;
+        tx = await easProxy.attestByDelegationProxy({
+          schema: schemauid,
+          data: {
+            recipient: receipt,
+            data: data,
+            expirationTime: 0,
+            revocable: true,
+          },
+          attester: attesteraddr,
+          signature: formatSignature,
+          deadline: 0,
+        });
+    } catch (er) {
+        console.log("eas attestByDelegationProxy attest failed", er);
+        return;
+    }
+    const newAttestationUID = await tx.wait();
+    console.log('eas attestByDelegationProxy newAttestationUID', newAttestationUID)
     return newAttestationUID;
 }
 
