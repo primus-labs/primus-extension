@@ -386,9 +386,25 @@ async function assembleUserInfoParams() {
   return user;
 }
 
-export const resetExchangesCipher = async (oldPwd, newPwd) => {
+export const resetExchangesCipher = async (USERPASSWORD, newPwd) => {
   const sourceNameList = Object.keys(DATASOURCEMAP);
   const exCipherKeys = sourceNameList.map((i) => `${i}cipher`);
   let res = await chrome.storage.local.get(exCipherKeys);
-  
+  const cipherNameArr = Object.keys(res);
+  cipherNameArr.forEach(async (cipherName) => {
+    // decrypt
+    const cipherData = res[cipherName];
+    if (cipherData) {
+      try {
+        const apiKeyInfo = JSON.parse(decrypt(cipherData, USERPASSWORD));
+        // encrypt
+        const encryptedKey = encrypt(JSON.stringify(apiKeyInfo), newPwd);
+        await chrome.storage.local.set({
+          [cipherName]: JSON.stringify(encryptedKey),
+        });
+      } catch (err) {
+        console.log('resetExchangesCipher error:', err);
+      }
+    }
+  });
 };

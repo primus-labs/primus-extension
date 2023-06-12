@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
-import type { Dispatch } from 'react';
 import './index.sass';
 import PMask from '@/components/PMask';
 import SetPassword from '@/components/Setting/SetPassword';
@@ -10,40 +8,38 @@ import { postMsg } from '@/utils/utils';
 
 interface SetPwdDialogProps {
   onClose: () => void;
-  onSubmit: (pwd: string) => void;
+  onSubmit: () => void;
 }
 
-const SetPwdDialog: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
-  const dispatch: Dispatch<any> = useDispatch();
-
+const ResetPassword: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
+  
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
 
-  const initAccount = () => {
+  const handleSubmit = (newPwd: string) => {
     const padoServicePortListener = function (message: any) {
       if (message.resMethodName === 'resetPassword') {
         console.log('page_get:resetPassword:', message.res);
         if (message.res) {
+          onSubmit();
+        } else {
+          alert('Password reset failed');
         }
+        padoServicePort.onMessage.removeListener(padoServicePortListener);
       }
     };
     padoServicePort.onMessage.addListener(padoServicePortListener);
-
     const msg = {
       fullScreenType: 'wallet',
       reqMethodName: 'resetPassword',
       params: {
-        // TODO
+        password: newPwd,
       },
     };
     postMsg(padoServicePort, msg);
     console.log('page_send:resetPassword');
   };
-
-  useEffect(() => {
-    // initAccount();
-  }, []);
 
   return (
     <PMask onClose={onClose}>
@@ -51,11 +47,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
         <SetPassword
           title="Change Password"
           desc="Enter a new password to setup. You will need to log in again when settings are finished."
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
         />
       </div>
     </PMask>
   );
 };
 
-export default SetPwdDialog;
+export default ResetPassword;

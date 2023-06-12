@@ -11,6 +11,7 @@ import {
   default as processExReq,
   clear,
   assembleAlgorithmParams,
+  resetExchangesCipher,
 } from './exData';
 
 const Web3EthAccounts = require('web3-eth-accounts');
@@ -439,7 +440,7 @@ const processWalletReq = async (message, port) => {
               });
             }
           }
-
+          await resetExchangesCipher(USERPASSWORD,password);
           postMsg(port, { resMethodName: reqMethodName, res: true });
         } catch {
           postMsg(port, { resMethodName: reqMethodName, res: false });

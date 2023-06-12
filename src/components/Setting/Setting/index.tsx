@@ -6,6 +6,9 @@ import { formatAddress } from '@/utils/utils';
 import iconArrow from '@/assets/img/iconArrowLeft2.svg';
 import SettingDialog from '@/components/Setting/SettingDialog';
 import ResetPassword from '@/components/Setting/ResetPassword';
+import ExportAddress from '@/components/Setting/ExportAddress';
+import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
+
 interface SettingProps {
   visible: boolean;
 }
@@ -15,6 +18,10 @@ const Setting: React.FC<SettingProps> = ({ visible }) => {
   //   useState<boolean>(false);
   const [resetPwdDialogVisible, setResetPwdDialogVisible] =
     useState<boolean>(false);
+  const [resetPwdSucDialogVisible, setResetPwdSucDialogVisible] =
+    useState<boolean>(false);
+  const [exportAddressDialogVisible, setExportAddressDialogVisible] =
+    useState<boolean>(false);
   const onCloseSettingDialog = () => {};
   const onChange = (settingType: string) => {
     switch (settingType) {
@@ -22,6 +29,7 @@ const Setting: React.FC<SettingProps> = ({ visible }) => {
         setResetPwdDialogVisible(true);
         break;
       case 'Back up on-chain address':
+        setExportAddressDialogVisible(true);
         break;
       case 'Manage your data':
         break;
@@ -33,16 +41,48 @@ const Setting: React.FC<SettingProps> = ({ visible }) => {
         break;
     }
   };
-  useEffect(() => {
-    console.log('1', resetPwdDialogVisible);
-  }, [resetPwdDialogVisible]);
+  const onSubmitResetPwdDialog = () => {
+    setResetPwdDialogVisible(false);
+    setResetPwdSucDialogVisible(true);
+  };
+  const onSubmitResetPwdSucDialog = () => {
+    setResetPwdSucDialogVisible(false);
+  };
+
   return (
     <>
       {visible && (
         <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />
       )}
       {resetPwdDialogVisible && (
-        <ResetPassword onClose={() => {}} onSubmit={() => {}} />
+        <ResetPassword
+          onClose={() => {
+            setResetPwdDialogVisible(false);
+          }}
+          onSubmit={onSubmitResetPwdDialog}
+        />
+      )}
+      {resetPwdSucDialogVisible && (
+        <AddSourceSucDialog
+          headerType="setting"
+          type="suc"
+          title="Congratulations"
+          desc="Your password has been setup."
+          onClose={() => {
+            setResetPwdSucDialogVisible(false);
+          }}
+          onSubmit={onSubmitResetPwdSucDialog}
+        />
+      )}
+      {exportAddressDialogVisible && (
+        <ExportAddress
+          onClose={() => {
+            setExportAddressDialogVisible(false);
+          }}
+          onSubmit={() => {
+            setExportAddressDialogVisible(false);
+          }}
+        />
       )}
     </>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import './index.sass';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconError from '@/assets/img/iconError.svg';
@@ -9,7 +9,7 @@ import PMask from '@/components/PMask';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import PLoading from '@/components/PLoading';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
-
+import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 interface AddSourceSucDialogProps {
   onClose: () => void;
   activeSource?: DataFieldItem;
@@ -33,16 +33,23 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = ({
   const handleClickNext = () => {
     onSubmit();
   };
+  const dialogClassName = useMemo(() => {
+    let defaultCN = 'padoDialog addDataSourceSucDialog';
+    if (headerType === 'attestation') {
+      defaultCN += ' attestSucDialog';
+    }
+    if (headerType === 'setting') {
+      defaultCN += ' setSucDialog';
+    }
+    return defaultCN;
+  }, [headerType]);
   return (
     <PMask onClose={onClose}>
-      <div
-        className={
-          headerType === 'attestation'
-            ? 'padoDialog addDataSourceSucDialog'
-            : 'padoDialog addDataSourceSucDialog attestSucDialog'
-        }
-      >
+      <div className={dialogClassName}>
         <main>
+          {headerType === 'setting' && (
+            <AuthInfoHeader checked={false} backable={false} />
+          )}
           {headerType === 'dataSource' && <Bridge endIcon={icon} />}
           {headerType === 'attestation' && <AddressInfoHeader />}
           {type === 'suc' && <img className="sucImg" src={iconSuc} alt="" />}
