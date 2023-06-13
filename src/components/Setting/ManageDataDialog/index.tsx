@@ -8,6 +8,7 @@ import ConnectedDataSourceList from '@/components/Cred/ConnectedDataSourceList';
 import IconClear from '@/components/Icons/IconClear';
 import IconDownload from '@/components/Icons/IconDownload';
 import Reconfirm from '@/components/Setting/ReConfirm';
+import PBack from '@/components/PBack';
 
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { Dispatch } from 'react';
@@ -19,6 +20,7 @@ import './index.sass';
 interface ManageDataDialogProps {
   onClose: () => void;
   onSubmit: () => void;
+  onBack: () => void;
 }
 
 const updateFrequencyList = [
@@ -39,6 +41,7 @@ const updateFrequencyList = [
 const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
   onClose,
   onSubmit,
+  onBack,
 }) => {
   const [reconfirmVisible, setReconfirmVisible] = useState<boolean>(false);
   const [activeSourceNames, setActiveSourceNames] = useState<string[]>([]);
@@ -85,7 +88,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
     const formatDate = new Date().toLocaleString();
     exportJson(jsonStr, `Data File${formatDate}`);
   }, [activeSourceNames, exSources]);
-  
+
   const onCancelReconfirm = useCallback(() => {
     setReconfirmVisible(false);
   }, []);
@@ -109,9 +112,14 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
     });
     setReconfirmVisible(false);
   }, [activeSourceNames, dispatch]);
+  const onSubmitDialog = () => {
+    // TODO
+    onSubmit();
+  };
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog manageDataDialog">
+        <PBack onBack={onBack} />
         <main>
           <h1>Manage Your Data</h1>
           <div className="scrollList">
@@ -141,17 +149,23 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
                     <IconClear />
                   </div>
                 </div>
-                <ConnectedDataSourceList mutiple onChange={onChangeDataSource} />
+                <ConnectedDataSourceList
+                  mutiple
+                  onChange={onChangeDataSource}
+                />
               </div>
             </div>
           </div>
         </main>
-        <button className="nextBtn" onClick={onSubmit}>
+        <button className="nextBtn" onClick={onSubmitDialog}>
           <span>OK</span>
         </button>
 
         {reconfirmVisible && (
-          <Reconfirm onCancel={onCancelReconfirm} onConfirm={onConfirmReconfirm} />
+          <Reconfirm
+            onCancel={onCancelReconfirm}
+            onConfirm={onConfirmReconfirm}
+          />
         )}
       </div>
     </PMask>

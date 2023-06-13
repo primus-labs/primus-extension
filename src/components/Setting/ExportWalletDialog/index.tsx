@@ -3,18 +3,24 @@ import './index.sass';
 import PMask from '@/components/PMask';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
-import iconCopy from '@/assets/img/iconCopy.svg';
 import iconInfoRed from '@/assets/img/iconInfoRed.svg';
 import PControledInput from '@/components/PControledInput';
 import PCopy from '@/components/PCopy';
+import PBack from '@/components/PBack'
 import { postMsg } from '@/utils/utils';
 
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
+  onBack: () => void;
 }
 
-const ExportWallet: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
+const ExportWallet: React.FC<SetPwdDialogProps> = ({
+  onClose,
+  onSubmit,
+  onBack,
+}) => {
+  const [errorTipVisible, setErrorTipVisible] = useState<boolean>();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -61,6 +67,10 @@ const ExportWallet: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
   };
   const handleClickNext = () => {
     if (step === 1) {
+      if (!passphase) {
+        setErrorTipVisible(true)
+        return
+      }
       decryptingKeyStore();
     } else if (step === 2) {
       onSubmit();
@@ -69,10 +79,14 @@ const ExportWallet: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
   useEffect(() => {
     getUserInfo();
   }, []);
+  useEffect(() => {
+    passphase && setErrorTipVisible(false);
+  },[passphase])
 
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog exportWalletDialog">
+        <PBack onBack={onBack} />
         <main>
           <h1>Back up on-chain address</h1>
           <div className="infoWrapper">
@@ -97,6 +111,9 @@ const ExportWallet: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
                     visible
                   />
                 </div>
+                {errorTipVisible && (
+                  <p className="errorTip">Please enter your password</p>
+                )}
               </div>
             )}
             {step === 2 && (

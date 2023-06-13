@@ -9,14 +9,14 @@
     width: 100%
     h1
       text-align: center
-      font-size: 30px
-      line-height: 36px
+      font-size: 26px
+      line-height: 31px
       font-family: "Inter-SemiBold"
       color: $colLBlack
       padding: 0
     .infoWrapper
       width: 100%
-      padding-top: 48px
+      padding-top: 68px
       @extend .fcss
       gap: 32px
       .infoItem
@@ -69,6 +69,12 @@
               font-family: 'Inter-Medium'
             .suffixIcon
               width: 18px
+        .errorTip
+          margin-top: -8px
+          font-size: 12px
+          line-height: 18px
+          font-family: 'Inter-Regular'
+          color: $colError
         .tip
           @extend .frbc
           gap: 14px
@@ -86,7 +92,7 @@
   
 @media (max-width: 1680px)
   .padoDialog.exportWalletDialog
-    padding: 64px 42px 32px
+    padding: 48px 42px 32px
     button.nextBtn
       height: 48px
       font-family: 'Inter-SemiBold'

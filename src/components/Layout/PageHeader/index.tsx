@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
 import logo from '@/assets/img/logo.svg';
@@ -8,8 +8,6 @@ import Setting from '@/components/Setting/Setting';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
-import ResetPassword from '@/components/Setting/ResetPassword';
-import SettingDialog from '@/components/Setting/SettingDialog';
 
 import './index.sass';
 
@@ -37,8 +35,6 @@ const PHeader = () => {
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
     useState<boolean>(false);
-  // const [resetPwdDialogVisible, setResetPwdDialogVisible] =
-  //   useState<boolean>(false);
   const handleClickAvatar = () => {
     setDorpdownVisible((visible) => !visible);
   };
@@ -65,9 +61,9 @@ const PHeader = () => {
         break;
     }
   };
-  const onCloseSettingDialog = () => {
+  const onCloseSettingDialog = useCallback(() => {
     setSettingDialogVisible(false);
-  };
+  }, []);
   return (
     <header className="pageHeader">
       <div className="pageHeaderInner">
@@ -110,7 +106,7 @@ const PHeader = () => {
           )}
         </div>
       </div>
-      {<Setting visible={settingDialogVisible} onClose={ () => {setSettingDialogVisible(false)}} />}
+      {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
     </header>
   );
 };

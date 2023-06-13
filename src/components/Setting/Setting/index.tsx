@@ -1,4 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import './index.sass';
 import SettingDialog from '@/components/Setting/SettingDialog';
 import ResetPasswordDialog from '@/components/Setting/ResetPasswordDialog';
@@ -7,13 +9,11 @@ import ManageDataDialog from '@/components/Setting/ManageDataDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
 interface SettingProps {
-  visible: boolean;
   onClose: () => void;
 }
 
-const Setting: React.FC<SettingProps> = ({ visible, onClose }) => {
-  // const [settingDialogVisible, setSettingDialogVisible] =
-  //   useState<boolean>(false);
+const Setting: React.FC<SettingProps> = ({ onClose }) => {
+  const navigate = useNavigate();
   const [resetPwdDialogVisible, setResetPwdDialogVisible] =
     useState<boolean>(false);
   const [resetPwdSucDialogVisible, setResetPwdSucDialogVisible] =
@@ -21,11 +21,11 @@ const Setting: React.FC<SettingProps> = ({ visible, onClose }) => {
   const [exportAddressDialogVisible, setExportAddressDialogVisible] =
     useState<boolean>(false);
   const [manageDataDialogVisible, setManageDataDialogVisible] =
-    useState<boolean>(true);
-  const onCloseSettingDialog = () => {
+    useState<boolean>(false);
+  const onCloseSettingDialog = useCallback(() => {
     onClose();
-  };
-  const onChange = (settingType: string) => {
+  }, [onClose]);
+  const onChange = useCallback((settingType: string) => {
     switch (settingType) {
       case 'Change Password':
         setResetPwdDialogVisible(true);
@@ -43,26 +43,42 @@ const Setting: React.FC<SettingProps> = ({ visible, onClose }) => {
       default:
         break;
     }
-  };
-  const onSubmitResetPwdDialog = () => {
+  }, []);
+  const onSubmitResetPwdDialog = useCallback(() => {
     setResetPwdDialogVisible(false);
     setResetPwdSucDialogVisible(true);
-  };
-  const onSubmitResetPwdSucDialog = () => {
-    setResetPwdSucDialogVisible(false);
-  };
+  }, []);
+  const onSubmitResetPwdSucDialog = useCallback(() => {
+    navigate('/lock');
+  }, [navigate]);
+  const onCloseDialog = useCallback(() => {
+    onClose();
+  }, [onClose]);
+  const onBackResetPasswordDialog = useCallback(() => {
+    setResetPwdDialogVisible(false);
+  }, []);
 
+  const onBackExportWalletDialog = useCallback(() => {
+    setExportAddressDialogVisible(false);
+  }, []);
+  const onSubmitExportWalletDialog = useCallback(() => {
+    setExportAddressDialogVisible(false);
+  }, []);
+  const onBackManageDataDialog = useCallback(() => {
+    setManageDataDialogVisible(false);
+  }, []);
+  const onSubmitManageDataDialog = useCallback(() => {
+    setManageDataDialogVisible(false);
+  }, []);
   return (
     <>
-      {visible && (
-        <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />
-      )}
+      <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />
+
       {resetPwdDialogVisible && (
         <ResetPasswordDialog
-          onClose={() => {
-            setResetPwdDialogVisible(false);
-          }}
+          onClose={onCloseDialog}
           onSubmit={onSubmitResetPwdDialog}
+          onBack={onBackResetPasswordDialog}
         />
       )}
       {resetPwdSucDialogVisible && (
@@ -71,30 +87,22 @@ const Setting: React.FC<SettingProps> = ({ visible, onClose }) => {
           type="suc"
           title="Congratulations"
           desc="Your password has been setup."
-          onClose={() => {
-            setResetPwdSucDialogVisible(false);
-          }}
+          onClose={onSubmitResetPwdSucDialog}
           onSubmit={onSubmitResetPwdSucDialog}
         />
       )}
       {exportAddressDialogVisible && (
         <ExportWalletDialog
-          onClose={() => {
-            setExportAddressDialogVisible(false);
-          }}
-          onSubmit={() => {
-            setExportAddressDialogVisible(false);
-          }}
+          onBack={onBackExportWalletDialog}
+          onClose={onCloseDialog}
+          onSubmit={onSubmitExportWalletDialog}
         />
       )}
       {manageDataDialogVisible && (
         <ManageDataDialog
-          onClose={() => {
-            setManageDataDialogVisible(false);
-          }}
-          onSubmit={() => {
-            setManageDataDialogVisible(false);
-          }}
+          onClose={onCloseDialog}
+          onBack={onBackManageDataDialog}
+          onSubmit={onSubmitManageDataDialog}
         />
       )}
     </>

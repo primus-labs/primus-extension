@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './index.sass';
 import PMask from '@/components/PMask';
 import SetPassword from '@/components/Setting/SetPassword';
+import PBack from '@/components/PBack';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
@@ -9,10 +10,15 @@ import { postMsg } from '@/utils/utils';
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
+  onBack: () => void
 }
 
-const ResetPassword: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
-  
+const ResetPassword: React.FC<SetPwdDialogProps> = ({
+  onClose,
+  onSubmit,
+  onBack,
+}) => {
+  console.log('ResetPassword');
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -44,10 +50,12 @@ const ResetPassword: React.FC<SetPwdDialogProps> = ({ onClose, onSubmit }) => {
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog resetPwdDialog">
+        <PBack onBack={onBack} />
         <SetPassword
           title="Change Password"
           desc="Enter a new password to setup. You will need to log in again when settings are finished."
           onSubmit={handleSubmit}
+          btnText="Next"
         />
       </div>
     </PMask>

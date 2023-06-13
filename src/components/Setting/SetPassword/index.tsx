@@ -6,12 +6,14 @@ interface SetPwdProps {
   onSubmit: (pwd: string) => void;
   title?: string;
   desc?: string;
+  btnText?: string;
 }
 
 const SetPassword: React.FC<SetPwdProps> = ({
   onSubmit,
   title = 'Set Password',
   desc = 'Enter an secure password to protect local data and private key.',
+  btnText = 'OK'
 }) => {
   const [pwd, setPwd] = useState<string>();
   const [confirm, setConfirm] = useState<string>();
@@ -74,50 +76,50 @@ const SetPassword: React.FC<SetPwdProps> = ({
   }, [pwd, confirm]);
 
   return (
-      <div className="setPasswordWrapper">
-        <main>
-          <h1>{title}</h1>
-          <h2>{desc}</h2>
-          <h6>Setting</h6>
-          <PInput
-            type="password"
-            placeholder="Please enter your password"
-            onChange={handleChangePwd}
-            visible
-          />
-          <div className="validateWrapper">
-            <div className="descTitle">
-              The following combinations are recommended：
-            </div>
-            <ul className="descItems">
-              {pwdRules.map((i) => {
-                return (
-                  <li
-                    key={i.desc}
-                    className={i.legal ? 'descItem checked' : 'descItem'}
-                  >
-                    {i.desc}
-                  </li>
-                );
-              })}
-            </ul>
+    <div className="setPasswordWrapper">
+      <main>
+        <h1>{title}</h1>
+        <h2>{desc}</h2>
+        <h6>Setting</h6>
+        <PInput
+          type="password"
+          placeholder="Please enter your password"
+          onChange={handleChangePwd}
+          visible
+        />
+        <div className="validateWrapper">
+          <div className="descTitle">
+            The following combinations are recommended：
           </div>
-          <h6 className="reconfirmLabel">Reconfirm</h6>
-          <PInput
-            type="password"
-            placeholder="Please confirm your password"
-            onChange={handleChangeConfirm}
-            onSearch={handleClickNext}
-            visible
-          />
-          {errorTipVisible && (
-            <p className="errorTip">Entered passwords differ!</p>
-          )}
-        </main>
-        <button className="nextBtn" onClick={handleClickNext}>
-          <span>OK</span>
-        </button>
-      </div>
+          <ul className="descItems">
+            {pwdRules.map((i) => {
+              return (
+                <li
+                  key={i.desc}
+                  className={i.legal ? 'descItem checked' : 'descItem'}
+                >
+                  {i.desc}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <h6 className="reconfirmLabel">Reconfirm</h6>
+        <PInput
+          type="password"
+          placeholder="Please confirm your password"
+          onChange={handleChangeConfirm}
+          onSearch={handleClickNext}
+          visible
+        />
+        {errorTipVisible && (
+          <p className="errorTip">Entered passwords differ!</p>
+        )}
+      </main>
+      <button className="nextBtn" onClick={handleClickNext}>
+        <span>{btnText}</span>
+      </button>
+    </div>
   );
 };
 
