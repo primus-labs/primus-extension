@@ -27,7 +27,7 @@ const padoServices = {
   getProofTypes,
 };
 
-let USERPASSWORD = 'pado2023.';
+let USERPASSWORD = '';
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -444,7 +444,7 @@ const processWalletReq = async (message, port) => {
               });
             }
           }
-          await resetExchangesCipher(USERPASSWORD,password);
+          await resetExchangesCipher(USERPASSWORD, password);
           postMsg(port, { resMethodName: reqMethodName, res: true });
         } catch {
           postMsg(port, { resMethodName: reqMethodName, res: false });

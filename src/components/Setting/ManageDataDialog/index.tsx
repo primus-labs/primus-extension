@@ -1,46 +1,25 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import PMask from '@/components/PMask';
-import { DATASOURCEMAP } from '@/config/constants';
-import type { ExchangeMeta } from '@/config/constants';
-import { formatNumeral } from '@/utils/utils';
-
-import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
-import type { CredTypeItemType } from '@/components/Cred/CredItem';
-import type { UserState, PROOFTYPEITEM } from '@/store/reducers';
-import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
+import { exportJson } from '@/utils/utils';
 import { setExSourcesAsync } from '@/store/actions';
-import type { Dispatch } from 'react';
-import iconGreater from '@/assets/img/iconGreater.svg';
 import PRadio from '@/components/PRadio';
 import ConnectedDataSourceList from '@/components/Cred/ConnectedDataSourceList';
+import IconClear from '@/components/Icons/IconClear';
+import IconDownload from '@/components/Icons/IconDownload';
+import Reconfirm from '@/components/Setting/ReConfirm';
+
+import type { ConnectSourceType } from '@/types/dataSource';
+import type { Dispatch } from 'react';
+import type { UserState } from '@/store/reducers';
+import type { ExDatas } from '@/types/store';
 
 import './index.sass';
 
-export type AttestionForm = {
-  token?: string;
-  baseValue?: string;
-  source: string;
-  type: string;
-  exUserId?: string;
-  label?: string;
-  requestid?: string;
-};
-interface AttestationDialogProps {
+interface ManageDataDialogProps {
   onClose: () => void;
   onSubmit: () => void;
-  type?: string;
-  onCheck?: () => void;
-  activeCred?: CredTypeItemType;
-  activeSourceName?: string;
 }
-type ConnectSourceType = {
-  name: string;
-  icon: any;
-  exUserId?: string;
-  label?: string;
-};
 
 const updateFrequencyList = [
   {
@@ -56,139 +35,80 @@ const updateFrequencyList = [
     value: '5',
   },
 ];
-const ManageDataDialog: React.FC<AttestationDialogProps> = ({
-  type,
+
+const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
   onClose,
   onSubmit,
-  activeCred,
-  activeSourceName,
 }) => {
+  const [reconfirmVisible, setReconfirmVisible] = useState<boolean>(false);
+  const [activeSourceNames, setActiveSourceNames] = useState<string[]>([]);
   const [updateFrequency, setUpdateFrequency] = useState<string>('3');
   const dispatch: Dispatch<any> = useDispatch();
-  const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
-  const navigate = useNavigate();
-  const [activeSource, setActiveSource] = useState<ConnectSourceType>();
-  const [activeToken, setActiveToken] = useState<string>('');
-  const [activeBaseValue, setActiveBaseValue] = useState<string>('');
-  const [errorTip, setErrorTip] = useState<string>();
   const exSources = useSelector((state: UserState) => state.exSources);
-  const sysConfig = useSelector((state: UserState) => state.sysConfig);
-  const proofTypes = useSelector((state: UserState) => state.proofTypes);
-  const tokenLogoPrefix = useMemo(() => {
-    return sysConfig.TOKEN_LOGO_PREFIX;
-  }, [sysConfig]);
-  const activeAttestationTypeInfo = useMemo(() => {
-    const obj = proofTypes.find((i) => i.credTitle === type);
-    return obj as PROOFTYPEITEM;
-  }, [type, proofTypes]);
-  const connectedSourceList: ConnectSourceType[] = useMemo(() => {
-    return Object.keys(exSources).map((key) => {
-      const sourceInfo: ExchangeMeta =
-        DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
-      const { name, icon } = sourceInfo;
-      const { exUserId, label } = exSources[key];
-      const infoObj: ConnectSourceType = {
-        name,
-        icon,
-        exUserId,
-        label,
-      };
-      return infoObj;
-    });
-  }, [exSources]);
-  
-  const activeSourceList = useMemo(() => {
-    if (activeToken) {
-      const reduceF = (prev: string[], curr: any) => {
-        const { tokenListMap, name } = curr;
-        const curTokenList = Object.keys(tokenListMap);
-        if (curTokenList.includes(activeToken)) {
-          prev.push(name);
-        }
-        return prev;
-      };
-      const alist = Object.values(exSources).reduce(reduceF, []);
-      return alist;
-    } else {
-      return [];
-    }
-  }, [exSources, activeToken]);
-  
 
-  const handleClickNext = () => {
-    if (connectedSourceList.length === 0) {
-      navigate('/datas');
+  const onChangeDataSource = useCallback(
+    (sources: ConnectSourceType | ConnectSourceType[] | undefined) => {
+      const sourceNameArr = (sources as ConnectSourceType[]).map((i) =>
+        i.name.toLowerCase()
+      );
+      setActiveSourceNames(sourceNameArr);
+    },
+    []
+  );
+  const onClear = async () => {
+    if (activeSourceNames.length < 1) {
+      alert('Please select at least one data source');
+      return;
     }
-
-    if (connectedSourceList.length > 0) {
-      if (!activeSource) {
-        setErrorTip('Please select one data source');
-        return;
-      }
-      const form: AttestionForm = {
-        source: activeSource.name.toLowerCase(),
-        type,
-        exUserId: activeSource?.exUserId,
-        label: activeSource?.label,
-      };
-
-      if (type === 'Token Holdings') {
-        if (!activeToken) {
-          setErrorTip('Please select one token');
-          return;
-        } else {
-          form.token = activeToken;
-        }
-      }
-      if (type === 'Assets Proof') {
-        if (!activeBaseValue) {
-          setErrorTip('Please select one baseValue');
-          return;
-        } else {
-          form.baseValue = activeBaseValue;
-        }
-      }
-      if (activeCred?.requestid) {
-        form.requestid = activeCred?.requestid;
-        onSubmit(form, activeCred);
-      } else {
-        onSubmit(form);
-      }
-    }
+    setReconfirmVisible(true);
   };
-  useEffect(() => {
-    if (activeCred) {
-      const sourceInfo = connectedSourceList.find(
-        (i) => i.name.toLowerCase() === activeCred.source.toLowerCase()
-      );
-      setActiveSource(sourceInfo);
-      if (type === 'Assets Proof') {
-      } else if (type === 'Token Holdings') {
-        activeCred.holdingToken && setActiveToken(activeCred.holdingToken);
-      }
+  const onDownload = useCallback(async () => {
+    if (activeSourceNames.length < 1) {
+      alert('Please select at least one data source');
+      return;
     }
-  }, [activeCred, type, connectedSourceList]);
-  useEffect(() => {
-    if (activeSourceName) {
-      const sourceInfo = connectedSourceList.find(
-        (i) => i.name.toLowerCase() === activeSourceName.toLowerCase()
-      );
-      setActiveSource(sourceInfo);
-    }
-  }, [activeSourceName, connectedSourceList]);
+    let checkedExSources: ExDatas = {};
+    activeSourceNames.forEach((key) => {
+      const { name, totalBalance, tokenListMap, apiKey, date } = exSources[key];
+      checkedExSources[key] = {
+        name,
+        totalBalance,
+        tokenListMap,
+        apiKey,
+        date,
+      };
+    });
+    const cipherNameArr = activeSourceNames.map((i) => `${i}cipher`);
+    const ciphers = await chrome.storage.local.get(cipherNameArr);
+    const exportObj = { ...ciphers, ...checkedExSources };
+    const jsonStr = JSON.stringify(exportObj, null, '\t');
+    const formatDate = new Date().toLocaleString();
+    exportJson(jsonStr, `Data File${formatDate}`);
+  }, [activeSourceNames, exSources]);
   
-  useEffect(() => {
-    if (activeSource) {
-      const sourceLowerCaseName = activeSource.name.toLowerCase();
-      (fetchExDatas as (name: string) => void)(sourceLowerCaseName);
-    }
-  }, [activeSource, fetchExDatas]);
-  useEffect(() => {
-    !fetchExDatasLoading && dispatch(setExSourcesAsync());
-  }, [fetchExDatasLoading, dispatch]);
-  const onChangeUpdateFrequency = () => {
-
-  }
+  const onCancelReconfirm = useCallback(() => {
+    setReconfirmVisible(false);
+  }, []);
+  const onConfirmReconfirm = useCallback(async () => {
+    const cipherNameArr = activeSourceNames.map((i) => `${i}cipher`);
+    const removeStorageKeyArr = [...activeSourceNames, ...cipherNameArr];
+    await chrome.storage.local.remove(removeStorageKeyArr);
+    dispatch(setExSourcesAsync());
+    const { credentials: credentialsStr } = await chrome.storage.local.get([
+      'credentials',
+    ]);
+    const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
+    let newCredentialObj = { ...credentialObj };
+    Object.keys(credentialObj).forEach((key) => {
+      if (activeSourceNames.includes(credentialObj[key].source)) {
+        delete newCredentialObj[key];
+      }
+    });
+    await chrome.storage.local.set({
+      credentials: JSON.stringify(newCredentialObj),
+    });
+    setReconfirmVisible(false);
+  }, [activeSourceNames, dispatch]);
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog manageDataDialog">
@@ -213,24 +133,25 @@ const ManageDataDialog: React.FC<AttestationDialogProps> = ({
             <div className="contItem contItemAssets">
               <div className="label">Data Connected</div>
               <div className="value">
-<ConnectedDataSourceList/>
+                <div className="operations">
+                  <div className="operationItem" onClick={onDownload}>
+                    <IconDownload />
+                  </div>
+                  <div className="operationItem" onClick={onClear}>
+                    <IconClear />
+                  </div>
+                </div>
+                <ConnectedDataSourceList mutiple onChange={onChangeDataSource} />
               </div>
             </div>
           </div>
         </main>
-        {connectedSourceList.length === 0 ? (
-          <button className="nextBtn gray" onClick={handleClickNext}>
-            <span>OK</span>
-          </button>
-        ) : (
-          <button className="nextBtn" onClick={handleClickNext}>
-            {errorTip && (
-              <div className="tipWrapper">
-                <div className="errorTip">{errorTip}</div>
-              </div>
-            )}
-            <span>Next</span>
-          </button>
+        <button className="nextBtn" onClick={onSubmit}>
+          <span>OK</span>
+        </button>
+
+        {reconfirmVisible && (
+          <Reconfirm onCancel={onCancelReconfirm} onConfirm={onConfirmReconfirm} />
         )}
       </div>
     </PMask>

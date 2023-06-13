@@ -4,6 +4,7 @@
 .manageDataDialog
   padding: 64px 50px 50px
   @extend .fcbc
+  position: relative
   main
     width: 100%
     @extend .fcss
@@ -38,6 +39,7 @@
           width: 100%
           @extend .frbc
           gap: $xxsGap
+          position: relative
           .desc
             font-size: 16px
             line-height: 22px
@@ -45,7 +47,17 @@
             color: $colSBlack
             width: 221px
             word-wrap: break-word
-          
+          .con
+            padding-right: 35px
+          .operations
+            position: absolute
+            content: ''
+            right: 35px
+            top: -38px
+            @extend .frsc
+            gap: 12px
+            .operationItem
+              display: flex
                 
   button.nextBtn
     height: 58px !important

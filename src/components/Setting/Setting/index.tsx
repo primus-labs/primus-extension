@@ -21,7 +21,7 @@ const Setting: React.FC<SettingProps> = ({ visible, onClose }) => {
   const [exportAddressDialogVisible, setExportAddressDialogVisible] =
     useState<boolean>(false);
   const [manageDataDialogVisible, setManageDataDialogVisible] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const onCloseSettingDialog = () => {
     onClose();
   };
@@ -38,7 +38,7 @@ const Setting: React.FC<SettingProps> = ({ visible, onClose }) => {
         break;
       case 'Privacy Policy':
         break;
-      case 'Back up on-chain addressPADO Support':
+      case 'PADO Support':
         break;
       default:
         break;

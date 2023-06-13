@@ -12,30 +12,30 @@ const moduleObj = [
   [
     {
       moduleType: 'wallet',
-      settingType: 'Change Password'
+      settingType: 'Change Password',
     },
     {
       moduleType: 'wallet',
-      settingType: 'Back up on-chain address'
-    }
+      settingType: 'Back up on-chain address',
+    },
   ],
   [
     {
       moduleType: 'data',
-      settingType: 'Manage your data'
-    }
+      settingType: 'Manage your data',
+    },
   ],
   [
     {
       moduleType: 'pado',
-      settingType: 'Privacy Policy'
+      settingType: 'Privacy Policy',
     },
     {
       moduleType: 'pado',
-      settingType: 'Back up on-chain addressPADO Support'
-    }
-  ]
-]
+      settingType: 'PADO Support',
+    },
+  ],
+];
 const SettingDialog: React.FC<AddSourceSucDialogProps> = ({
   onClose,
   onChange,

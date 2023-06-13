@@ -1,24 +1,23 @@
-import React, { FC, useMemo, useCallback, useState } from 'react';
-import type { ConnectSourceType } from '@/types/dataSource'
+import React, { FC, useMemo, useCallback, useState, useEffect } from 'react';
+import type { ConnectSourceType } from '@/types/dataSource';
 import { useSelector, useDispatch } from 'react-redux';
 import type { UserState } from '@/types/store';
 import type { ExchangeMeta } from '@/types/config';
 import { DATASOURCEMAP } from '@/config/constants';
-import type {CredTypeItemType} from '@/types/cred'
+import type { CredTypeItemType } from '@/types/cred';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
-import './index.sass'
+import './index.sass';
 interface ConnectDataSourceListProps {
-  activeCred?: CredTypeItemType;
-  activeSourceName?: string;
   mutiple?: boolean;
+  onChange: (source: ConnectSourceType | ConnectSourceType[] | undefined) => void;
 }
 const ConnectDataSourceList: FC<ConnectDataSourceListProps> = ({
-  activeCred,
-  activeSourceName,
   mutiple = false,
+  onChange,
 }) => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const [activeSource, setActiveSource] = useState<ConnectSourceType>();
+  const [activeSources, setActiveSources] = useState<ConnectSourceType[]>([]);
   const connectedSourceList: ConnectSourceType[] = useMemo(() => {
     return Object.keys(exSources).map((key) => {
       const sourceInfo: ExchangeMeta =
@@ -34,47 +33,50 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = ({
       return infoObj;
     });
   }, [exSources]);
-  const activeSourceList: ConnectSourceType[] = [];
   const liClassNameCallback = useCallback(
     (item: ConnectSourceType) => {
       let defaultClassName = 'networkItem';
-      if ((activeCred || activeSourceName) && activeSource) {
-        if (activeSource?.name !== item.name) {
-          defaultClassName += ' disabled';
-        }
-      } else {
-        if (activeSourceList.length > 0) {
-          if (activeSourceList.includes(item.name) && !activeSource) {
-            defaultClassName += ' excitable';
-          } else {
-            defaultClassName += ' disabled';
-          }
-        }
-      }
-      if (activeSource?.name === item.name) {
+      if (!mutiple && activeSource?.name === item.name) {
         defaultClassName += ' active';
+      }
+      if (mutiple) {
+        const flag = activeSources.find((i) => i.name === item.name);
+        if (flag) {
+          defaultClassName += ' active';
+        }
       }
       return defaultClassName;
     },
-    [activeSource, activeSourceList, activeCred, activeSourceName]
+    [activeSource, activeSources, mutiple]
   );
   const handleClickData = (item: ConnectSourceType) => {
-    if ((activeCred || activeSourceName) && activeSource) {
-      if (activeSource?.name !== item.name) {
-        return;
+    if (!mutiple) {
+      if (activeSource?.name === item.name) {
+        setActiveSource(undefined);
+      } else {
+        setActiveSource(item);
       }
     }
-    if (
-      (activeSourceList.length > 0 &&
-        activeSourceList.includes(item.name) &&
-        !activeSource) ||
-      activeSourceList.length === 0
-    ) {
-      setActiveSource(item);
+    if (mutiple) {
+      const existIndex = activeSources.findIndex((i) => i.name === item.name);
+      let newActiveSources = [...activeSources];
+      if (existIndex > -1) {
+        newActiveSources.splice(existIndex, 1);
+      } else {
+        newActiveSources.push(item);
+      }
+      setActiveSources([...newActiveSources]);
     }
   };
+  useEffect(() => {
+    if (mutiple) {
+      onChange(activeSources);
+    } else {
+      onChange(activeSource);
+    }
+  }, [activeSource, mutiple, activeSources, onChange]);
   return (
-    <div className="connectedDataSourceList">
+    <div className="connectedDataSourceList scroll">
       {connectedSourceList.length > 0 && (
         <ul className="dataList">
           {connectedSourceList.map((item) => {

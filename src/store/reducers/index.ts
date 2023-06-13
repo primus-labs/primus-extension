@@ -2,6 +2,7 @@ import { SETSYSCONFIG } from '../actions';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 import type { ExchangeMeta } from '@/config/constants';
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
+import type {ExDatas} from '@/types/store'
 export type ExInfo = {
   date: string;
   apiKey: string;
@@ -16,9 +17,7 @@ export type ExInfo = {
 type SysConfigInfo = {
   [propName: string]: any;
 };
-type ExDatas = {
-  [propName: string]: ExInfo & ExchangeMeta;
-};
+
 type SocialDatas = {
   [propName: string]: any;
 };

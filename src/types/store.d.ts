@@ -1,3 +1,7 @@
+export type ExDatas = {
+  [propName: string]: ExInfo & ExchangeMeta;
+};
+
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
