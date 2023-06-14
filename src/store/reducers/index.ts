@@ -2,7 +2,9 @@ import { SETSYSCONFIG } from '../actions';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 import type { ExchangeMeta } from '@/config/constants';
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
-import type {ExDatas} from '@/types/store'
+import type { ExDatas } from '@/types/store';
+import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+
 export type ExInfo = {
   date: string;
   apiKey: string;
@@ -48,6 +50,7 @@ export type UserState = {
   filterWord: string;
   exSources: ExDatas;
   socialSources: SocialDatas;
+  sourceUpdateFrequency: string;
   proofTypes: PROOFTYPEITEM[];
   credentials: CREDENTIALS;
 };
@@ -63,6 +66,7 @@ const initState = {
   filterWord: undefined,
   exSources: {},
   socialSources: {},
+  sourceUpdateFrequency: DEFAULTDATASOURCEPOLLINGTIMENUM,
   proofTypes: [
     {
       id: '1',
@@ -131,6 +135,9 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, proofTypes: action.payload };
     case 'setCredentials':
       return { ...state, credentials: action.payload };
+    case 'setSourceUpdateFrequency':
+      console.log('setSourceUpdateFrequency', action.payload);
+      return { ...state, sourceUpdateFrequency: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     default:

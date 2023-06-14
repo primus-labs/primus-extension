@@ -20,17 +20,18 @@ const Lock = () => {
       setErrorMsg('Please enter your password');
       return;
     }
-    dispatch({
-      type: 'setUserPassword',
-      payload: curPwd,
-    });
+
     if (![undefined, null].includes(curPwd)) {
       const padoServicePortListener = function (message) {
         if (message.resMethodName === 'decrypt') {
           console.log('page_get:decrypt:', message.res);
           if (message.res) {
             // encrypt successfully
-            navigate('/?refreshData=true');
+            dispatch({
+              type: 'setUserPassword',
+              payload: curPwd,
+            });
+            navigate('/');
           } else {
             setErrorMsg('Incorrect password');
           }

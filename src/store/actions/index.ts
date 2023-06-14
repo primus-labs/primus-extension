@@ -4,6 +4,7 @@ import type { ExchangeMeta } from '@/config/constants';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
 import type { PROOFTYPEITEM } from '@/store/reducers';
+import {DEFAULTDATASOURCEPOLLINGTIMENUM} from '@/config/constants'
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
 type ExInfo = {
@@ -33,6 +34,32 @@ export const setExSourcesData = (values: object) => ({
   type: 'setExSources',
   payload: values,
 });
+export const setSourceUpdateFrequencyAction = (values: string) => ({
+  type: 'setSourceUpdateFrequency',
+  payload: values,
+});
+export const setSourceUpdateFrequencyActionAsync = (value: string) => {
+  return async (dispatch: any) => {
+    await chrome.storage.local.set({
+      dataSourcesUpdateFrequency: value,
+    });
+    dispatch(setSourceUpdateFrequencyAction(value));
+  }
+};
+export const initSourceUpdateFrequencyActionAsync = () => {
+  return async (dispatch: any) => {
+    let { dataSourcesUpdateFrequency } = await chrome.storage.local.get([
+      'dataSourcesUpdateFrequency',
+    ]);
+    if (dataSourcesUpdateFrequency) {
+      dispatch(setSourceUpdateFrequencyAction(dataSourcesUpdateFrequency));
+    } else {
+      dispatch(
+        setSourceUpdateFrequencyActionAsync(DEFAULTDATASOURCEPOLLINGTIMENUM)
+      );
+    }
+  };
+};
 export const setExSourcesAsync = () => {
   return async (dispatch: any) => {
     const sourceNameList = Object.keys(DATASOURCEMAP).filter(

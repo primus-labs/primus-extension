@@ -18,18 +18,17 @@ import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { WALLETITEMTYPE } from '@/config/constants';
-import {
-  ATTESTATIONTIMEOUT,
-  ATTESTATIONPOLLINGTIME,
-  BIGZERO,
-} from '@/config/constants';
+import { ONEMINUTE, ATTESTATIONPOLLINGTIME, BIGZERO } from '@/config/constants';
 
 import type { ActiveRequestType } from '@/pages/DataSourceOverview';
 import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
-import { attestByDelegation, attestByDelegationProxy } from '@/services/chains/eas.js';
+import {
+  attestByDelegation,
+  attestByDelegationProxy,
+} from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
@@ -328,7 +327,7 @@ const Cred = () => {
               title: 'Something went wrong',
               desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
             });
-          }, ATTESTATIONTIMEOUT);
+          }, ONEMINUTE);
           setFetchTimeoutTimer(fTimeoutTimer);
         }
       }

@@ -183,7 +183,6 @@ export const BTC = 'BTC';
 export const LDO = 'LDO';
 export const STABLETOKENLIST = [USDT, USD, USDC, DAI, BUSD, TUSD];
 
-
 export type WALLETITEMTYPE = {
   icon: any;
   name: string;
@@ -215,10 +214,8 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
     disabled: true,
   },
 ];
-
-export const ATTESTATIONTIMEOUT = 60*1000
-export const ATTESTATIONPOLLINGTIME = 5 * 1000;
-
-
-
+export const ONESECOND = 1000;
+export const ONEMINUTE = 60 * ONESECOND;
+export const ATTESTATIONPOLLINGTIME = 5 * ONESECOND;
+export const DEFAULTDATASOURCEPOLLINGTIMENUM = '1';
 export const BIGZERO = new BigNumber(0);

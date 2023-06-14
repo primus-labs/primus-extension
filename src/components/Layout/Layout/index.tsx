@@ -1,28 +1,28 @@
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import type { Dispatch } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import { ONEMINUTE } from '@/config/constants';
 import {
   Outlet,
   useLocation,
   useNavigate,
-  useSearchParams,
 } from 'react-router-dom';
 import PHeader from '@/components/Layout/PHeader';
 import PageHeader from '@/components/Layout/PageHeader';
 import BackgroundAnimation from '@/components/Layout/BackgroundAnimation';
 import rem from '@/utils/rem.js';
-import { setSysConfigAction } from '@/store/actions';
+import {
+  setSysConfigAction,
+  initSourceUpdateFrequencyActionAsync,
+} from '@/store/actions';
 import useUpdateAllSources from '@/hooks/useUpdateAllSources';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
 import {
   setExSourcesAsync,
   setSocialSourcesAsync,
-  setProofTypesAction,
   setProofTypesAsync,
 } from '@/store/actions';
-import type { PROOFTYPEITEM } from '@/store/reducers';
 
 import './index.sass';
 type SysConfigItem = {
@@ -37,19 +37,32 @@ type ObjectType = {
   [propName: string]: any;
 };
 const Layout = () => {
+  const [pollingSourcesTimer, setPollingSourcesTimer] = useState<any>();
   const [isScroll, setIsScroll] = useState(false);
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const refreshDataFlag = searchParams.get('refreshData');
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
   const userPassword = useSelector((state: UserState) => state.userPassword);
+  const sourceUpdateFrequency = useSelector(
+    (state: UserState) => state.sourceUpdateFrequency
+  );
   const location = useLocation();
   const pathname = location.pathname;
   const [updating, updateF] = useUpdateAllSources(true);
-
+  const activeSourceType = useSelector(
+    (state: UserState) => state.activeSourceType
+  );
+  const exSources = useSelector((state: UserState) => state.exSources);
+  const socialSources = useSelector((state: UserState) => state.socialSources);
+  const hasDataSources = useMemo(() => {
+    const allDataSources = [
+      ...Object.values(exSources),
+      ...Object.values(socialSources),
+    ];
+    return allDataSources.length > 0;
+  }, [exSources, socialSources]);
   // console.log('Layout', location.pathname)
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
@@ -78,63 +91,72 @@ const Layout = () => {
     });
     console.log('page_send:getSysConfig request');
   }, [dispatch, padoServicePort]);
-  const getProofTypesConfig = useCallback(async () => {
-    const padoServicePortListener = async function (message: GetSysConfigMsg) {
-      if (message.resMethodName === 'getProofTypes') {
-        const { res } = message;
-        console.log('page_get:getProofTypes:', res);
-        if (res) {
-          const filteredTypes = res.filter((i: any) => i?.display === 0);
-          dispatch(setProofTypesAction(filteredTypes));
-        } else {
-          alert('getProofTypes network error');
-        }
+  // const getProofTypesConfig = useCallback(async () => {
+  //   const padoServicePortListener = async function (message: GetSysConfigMsg) {
+  //     if (message.resMethodName === 'getProofTypes') {
+  //       const { res } = message;
+  //       console.log('page_get:getProofTypes:', res);
+  //       if (res) {
+  //         const filteredTypes = res.filter((i: any) => i?.display === 0);
+  //         dispatch(setProofTypesAction(filteredTypes));
+  //       } else {
+  //         alert('getProofTypes network error');
+  //       }
+  //     }
+  //   };
+  //   padoServicePort.onMessage.addListener(padoServicePortListener);
+  //   postMsg(padoServicePort, {
+  //     fullScreenType: 'padoService',
+  //     reqMethodName: 'getProofTypes',
+  //   });
+  //   console.log('page_send:getProofTypes request');
+  // }, [dispatch, padoServicePort]);
+  const pollingDataSources = useCallback(() => {
+    // console.log(
+    //   '111111pollingDataSources',
+    //   sourceUpdateFrequency,
+    //   pollingSourcesTimer
+    // );
+    if (pollingSourcesTimer) {
+      clearInterval(pollingSourcesTimer);
+    }
+    const timer = setInterval(() => {
+      (updateF as () => void)();
+    }, Number(sourceUpdateFrequency) * ONEMINUTE);
+    setPollingSourcesTimer(timer);
+    (updateF as () => void)();
+  // }, [pollingSourcesTimer, sourceUpdateFrequency, updateF]);
+  }, [sourceUpdateFrequency, updateF]);
+  useEffect(() => {
+    console.log('pollingSourcesTimer', pollingSourcesTimer);
+  }, [pollingSourcesTimer]);
+  const initPage = useCallback(async () => {
+    if (padoServicePort) {
+      if (userPassword) {
+        const msg2 = {
+          fullScreenType: 'wallet',
+          reqMethodName: 'resetUserPassword',
+          params: {
+            password: userPassword,
+          },
+        };
+        postMsg(padoServicePort, msg2);
       }
-    };
-    padoServicePort.onMessage.addListener(padoServicePortListener);
-    postMsg(padoServicePort, {
-      fullScreenType: 'padoService',
-      reqMethodName: 'getProofTypes',
-    });
-    console.log('page_send:getProofTypes request');
-  }, [dispatch, padoServicePort]);
 
-  const initPage = async () => {
-    if (userPassword) {
-      const msg2 = {
-        fullScreenType: 'wallet',
-        reqMethodName: 'resetUserPassword',
-        params: {
-          password: userPassword,
-        },
+      const padoServicePortListener2 = async function (message: any) {
+        if (message.resType === 'lock') {
+          navigate('/lock');
+        }
       };
-      postMsg(padoServicePort, msg2);
+      padoServicePort.onMessage.addListener(padoServicePortListener2);
     }
 
-    const padoServicePortListener2 = async function (message: any) {
-      if (message.resType === 'lock') {
-        navigate('/lock');
-      }
-    };
-    padoServicePort.onMessage.addListener(padoServicePortListener2);
-    const padoServicePortListener = async function (message: any) {
-      if (message.resMethodName === 'queryUserPassword') {
-        console.log('page_get:queryUserPassword:', message.res);
-        if (message.res) {
-          (updateF as () => void)();
-        }
-      } else {
-      }
-      padoServicePort.onMessage.removeListener(padoServicePortListener);
-    };
-    padoServicePort.onMessage.addListener(padoServicePortListener);
-    const msg = {
-      fullScreenType: 'wallet',
-      reqMethodName: 'queryUserPassword',
-      params: {},
-    };
-    postMsg(padoServicePort, msg);
-  };
+  }, [padoServicePort, userPassword]);
+  useEffect(() => {
+    if (userPassword && hasDataSources) {
+      pollingDataSources();
+    }
+  }, [userPassword, hasDataSources, pollingDataSources]);
   useEffect(() => {
     rem();
   }, []);
@@ -148,12 +170,7 @@ const Layout = () => {
   useEffect(() => {
     getSysConfig();
   }, [getSysConfig]);
-  useEffect(() => {
-    if (refreshDataFlag) {
-      (updateF as () => void)();
-    }
-  }, [refreshDataFlag, updateF]);
-  const addDisconnectListener = () => {
+  const addDisconnectListener = useCallback(() => {
     const onDisconnectFullScreen = (port: chrome.runtime.Port) => {
       console.log('onDisconnectFullScreen port in page', port);
       dispatch({
@@ -161,17 +178,15 @@ const Layout = () => {
       });
     };
     padoServicePort.onDisconnect.addListener(onDisconnectFullScreen);
-  };
+  }, [dispatch, padoServicePort.onDisconnect]);
   useEffect(() => {
-    if (padoServicePort) {
-      initPage();
-      addDisconnectListener();
-    }
+    initPage();
+    addDisconnectListener();
+  }, [initPage, addDisconnectListener]);
+  useEffect(() => {
     console.log('updated port in page layout', padoServicePort.name);
   }, [padoServicePort]);
-  const activeSourceType = useSelector(
-    (state: UserState) => state.activeSourceType
-  );
+
   useEffect(() => {
     if (activeSourceType !== 'All') {
       setIsScroll(false);
@@ -207,13 +222,21 @@ const Layout = () => {
     }
     return activeClassName;
   }, [isScroll]);
-  // useEffect(() => {
-  //   getProofTypesConfig();
-  // }, [getProofTypesConfig]);
   useEffect(() => {
     dispatch(setProofTypesAsync());
   }, [dispatch]);
 
+  useEffect(() => {
+    return () => {
+      pollingSourcesTimer && clearInterval(pollingSourcesTimer);
+    };
+  }, [pollingSourcesTimer]);
+  useEffect(() => {
+    dispatch(initSourceUpdateFrequencyActionAsync());
+  }, [dispatch]);
+ useEffect(() => {
+   chrome.storage.local.remove(['dataSourcesUpdateFrequency']);
+ }, []);
   return (
     <div className="pageApp">
       <BackgroundAnimation />

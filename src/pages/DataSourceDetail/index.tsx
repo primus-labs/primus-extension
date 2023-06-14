@@ -2,11 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import PTabs from '@/components/PTabs';
 import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail';
-import {
-  ATTESTATIONTIMEOUT,
-  ATTESTATIONPOLLINGTIME,
-  BIGZERO,
-} from '@/config/constants';
+import { ONEMINUTE, ATTESTATIONPOLLINGTIME, BIGZERO } from '@/config/constants';
 import './index.sass';
 
 import { useSelector } from 'react-redux';
@@ -236,7 +232,7 @@ const DataSourceDetail = () => {
               title: 'Something went wrong',
               desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
             });
-          }, ATTESTATIONTIMEOUT);
+          }, ONEMINUTE);
           setFetchTimeoutTimer(fTimeoutTimer);
         }
       }

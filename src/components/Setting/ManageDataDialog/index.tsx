@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PMask from '@/components/PMask';
 import { exportJson } from '@/utils/utils';
@@ -9,7 +9,7 @@ import IconClear from '@/components/Icons/IconClear';
 import IconDownload from '@/components/Icons/IconDownload';
 import Reconfirm from '@/components/Setting/ReConfirm';
 import PBack from '@/components/PBack';
-
+import { setSourceUpdateFrequencyActionAsync } from '@/store/actions';
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/store/reducers';
@@ -48,7 +48,12 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
   const [updateFrequency, setUpdateFrequency] = useState<string>('3');
   const dispatch: Dispatch<any> = useDispatch();
   const exSources = useSelector((state: UserState) => state.exSources);
-
+  const sourceUpdateFrequency = useSelector(
+    (state: UserState) => state.sourceUpdateFrequency
+  );
+  useEffect(() => {
+    setUpdateFrequency(sourceUpdateFrequency);
+  }, []);
   const onChangeDataSource = useCallback(
     (sources: ConnectSourceType | ConnectSourceType[] | undefined) => {
       const sourceNameArr = (sources as ConnectSourceType[]).map((i) =>
@@ -112,8 +117,8 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
     });
     setReconfirmVisible(false);
   }, [activeSourceNames, dispatch]);
-  const onSubmitDialog = () => {
-    // TODO
+  const onSubmitDialog = async () => {
+    await dispatch(setSourceUpdateFrequencyActionAsync(updateFrequency));
     onSubmit();
   };
   return (
