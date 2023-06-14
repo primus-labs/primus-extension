@@ -24,3 +24,16 @@ $LogoTextLineHeight: 18px
       line-height: 15px
       color: rgba(0,0,0,0.6)
 
+.appHeader
+  padding: 0 50px
+  height: $pageHeaderHeight
+  @extend .frsc
+@media (max-width: 1680px)
+  .appHeader
+    height: 93px
+@media (max-width: 1440px)
+  .appHeader
+    height: 79.5px
+@media (max-width: 1366px)
+  .appHeader
+    height: 75px

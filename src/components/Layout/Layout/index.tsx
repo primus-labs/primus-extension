@@ -1,9 +1,8 @@
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
-import PHeader from '@/components/Layout/PHeader';
-import PageHeader from '@/components/Layout/PageHeader';
+import ActiveHeader from '@/components/Layout/ActiveHeader';
 import BackgroundAnimation from '@/components/Layout/BackgroundAnimation';
 import rem from '@/utils/rem.js';
 import {
@@ -20,27 +19,14 @@ import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 import './index.sass';
 
 const Layout = () => {
-  const [isScroll, setIsScroll] = useState(false);
-
+  // console.log('222222Layout')
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
   const userPassword = useSelector((state: UserState) => state.userPassword);
-  const activeSourceType = useSelector(
-    (state: UserState) => state.activeSourceType
-  );
-  const pageHeaderWrapperClassName = useMemo(() => {
-    let activeClassName = 'pageHeaderWrapper';
-    if (isScroll) {
-      activeClassName += ' scroll';
-    }
-    return activeClassName;
-  }, [isScroll]);
 
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-  const pathname = location.pathname;
   const [startPollingSources] = usePollingUpdateAllSources();
 
   const getSysConfig = useCallback(async () => {
@@ -114,59 +100,21 @@ const Layout = () => {
   }, [initPage, addDisconnectListener]);
   useEffect(() => {
     console.log('updated port in page layout', padoServicePort.name);
-  }, [padoServicePort]);
+  }, []);
 
   useEffect(() => {
-    if (activeSourceType !== 'All') {
-      setIsScroll(false);
-      if (document.documentElement.scrollTop > 0) {
-        document.documentElement.scrollTo({
-          top: 0,
-          // behavior: 'smooth',
-        });
-      }
-    }
-  }, [activeSourceType]);
-  useEffect(() => {
-    window.onscroll = () => {
-      if (activeSourceType !== 'All' || pathname !== '/datas') {
-        setIsScroll(false);
-        return;
-      }
-      var topScroll = document.documentElement.scrollTop || window.pageYOffset;
-      if (topScroll >= 1) {
-        setIsScroll(true);
-      } else {
-        setIsScroll(false);
-      }
-    };
-    return () => {
-      window.onscroll = () => {};
-    };
-  }, [activeSourceType, pathname]);
-  useEffect(() => {
     dispatch(setProofTypesAsync());
-  }, [dispatch]);
-  useEffect(() => {
     dispatch(initSourceUpdateFrequencyActionAsync());
   }, [dispatch]);
   useEffect(() => {
     startPollingSources();
-  }, [startPollingSources]);
+  }, []);
 
   return (
     <div className="pageApp">
       <BackgroundAnimation />
       <div className="pageLayer">
-        {['/', '/lock'].includes(pathname) ? (
-          <header className="appHeader">
-            <PHeader />
-          </header>
-        ) : (
-          <div className={pageHeaderWrapperClassName}>
-            <PageHeader />
-          </div>
-        )}
+        <ActiveHeader/>
         <Outlet />
       </div>
     </div>

@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import React, { useState, useCallback, useMemo, useEffect,memo } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 
 import logo from '@/assets/img/logo.svg';
 import PAvatar from '@/components/PAvatar';
@@ -10,6 +10,9 @@ import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
 
 import './index.sass';
+
+import { useSelector } from 'react-redux';
+import type { UserState } from '@/types/store';
 
 type NavItem = {
   icon: any;
@@ -30,7 +33,10 @@ const navs: NavItem[] = [
     text: 'Lock Account',
   },
 ];
-const PHeader = () => {
+const PageHeader = memo(() => {
+  // console.log('222222PageHeader');
+  const [isScroll, setIsScroll] = useState(false);
+
   const navigate = useNavigate();
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
@@ -44,7 +50,7 @@ const PHeader = () => {
   const handleLeaveAvatar = () => {
     setDorpdownVisible(false);
   };
-  
+
   const handleClickDropdownItem = (text: string) => {
     switch (text) {
       case 'Logout':
@@ -64,51 +70,95 @@ const PHeader = () => {
   const onCloseSettingDialog = useCallback(() => {
     setSettingDialogVisible(false);
   }, []);
+
+  const location = useLocation();
+  const pathname = location.pathname;
+  const activeSourceType = useSelector(
+    (state: UserState) => state.activeSourceType
+  );
+  const pageHeaderWrapperClassName = useMemo(() => {
+    let activeClassName = 'pageHeaderWrapper aaa';
+    if (isScroll) {
+      activeClassName += ' scroll';
+    }
+    return activeClassName;
+  }, [isScroll]);
+  useEffect(() => {
+    if (activeSourceType !== 'All') {
+      setIsScroll(false);
+      if (document.documentElement.scrollTop > 0) {
+        document.documentElement.scrollTo({
+          top: 0,
+          // behavior: 'smooth',
+        });
+      }
+    }
+  }, [activeSourceType]);
+  useEffect(() => {
+    window.onscroll = () => {
+      if (activeSourceType !== 'All' || pathname !== '/datas') {
+        setIsScroll(false);
+        return;
+      }
+      var topScroll = document.documentElement.scrollTop || window.pageYOffset;
+      if (topScroll >= 1) {
+        setIsScroll(true);
+      } else {
+        setIsScroll(false);
+      }
+    };
+    return () => {
+      window.onscroll = () => {};
+    };
+  }, [activeSourceType, pathname]);
+
   return (
-    <header className="pageHeader">
-      <div className="pageHeaderInner">
-        <img src={logo} className="pLogo" alt="" />
-        <DataSourceSearch />
-        <div className="rightHeader">
-          <div
-            className="rightHeaderInner"
-            onClick={handleClickAvatar}
-            onMouseEnter={handleEnterAvatar}
-            onMouseLeave={handleLeaveAvatar}
-          >
-            <PAvatar />
-          </div>
-          {dorpdownVisible && (
+    <div className={pageHeaderWrapperClassName}>
+      <header className="pageHeader">
+        <div className="pageHeaderInner">
+          <img src={logo} className="pLogo" alt="" />
+          <DataSourceSearch />
+          <div className="rightHeader">
             <div
-              className="dropdownWrapper"
+              className="rightHeaderInner"
+              onClick={handleClickAvatar}
               onMouseEnter={handleEnterAvatar}
               onMouseLeave={handleLeaveAvatar}
             >
-              <ul className="dropdown">
-                {navs.map((item) => {
-                  return (
-                    <li
-                      key={item.text}
-                      className="dropdownItemWrapper"
-                      onClick={() => {
-                        handleClickDropdownItem(item.text);
-                      }}
-                    >
-                      <div className="dropdownItem">
-                        <img src={item.icon} alt="" />
-                        <span>{item.text}</span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
+              <PAvatar />
             </div>
-          )}
+            {dorpdownVisible && (
+              <div
+                className="dropdownWrapper"
+                onMouseEnter={handleEnterAvatar}
+                onMouseLeave={handleLeaveAvatar}
+              >
+                <ul className="dropdown">
+                  {navs.map((item) => {
+                    return (
+                      <li
+                        key={item.text}
+                        className="dropdownItemWrapper"
+                        onClick={() => {
+                          handleClickDropdownItem(item.text);
+                        }}
+                      >
+                        <div className="dropdownItem">
+                          <img src={item.icon} alt="" />
+                          <span>{item.text}</span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-      {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
-    </header>
+        {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
+      </header>
+    </div>
   );
-};
+});
 
-export default PHeader;
+export default PageHeader;
