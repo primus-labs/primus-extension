@@ -235,7 +235,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const { baseName, baseUrl } = DATASOURCEMAP[source];
   const user = await assembleUserInfoParams();
   const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(
-    source,
+    form,
     USERPASSWORD,
     port
   );
@@ -293,6 +293,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
       calculationType = 'KEY_VALUES_SUM_X_A';
     }
   } else if (type === 'Token Holdings') {
+    params.baseValue = "0";
     params.holdingToken = holdingToken;
     calculationType = `${sourceUpperCaseName}_ASSET_BALANCES`; // TODO
   }
@@ -314,8 +315,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
   return params;
 }
-async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
-  const sourceLowerCaseName = source.toLowerCase();
+async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
+  const sourceLowerCaseName = form.source.toLowerCase();
   let extRequestsOrderInfo = {};
   let data = {};
   let signres = null;
@@ -327,6 +328,9 @@ async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
         method: 'POST',
         params: {recvWindow: 60 * 1000},
       };
+      if (form.type === 'Token Holdings') {
+        data.params.asset = form.token;
+      }
       signres = await sign('binance', data, USERPASSWORD, port);
       signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:KVVVV:"asset":"(.*?)"[\\s\\S]*?"free":"(.*?)"[\\s\\S]*?"locked":"(.*?)"[\\s\\S]*?"freeze":"(.*?)"[\\s\\S]*?"withdrawing":"(.*?)"';
       signres.decryptFlag = 'false';
@@ -351,6 +355,9 @@ async function assembleAccountBalanceRequestParams(source, USERPASSWORD, port) {
         method: 'GET',
         params: {},
       };
+      if (form.type === 'Token Holdings') {
+        data.params.ccy = form.token;
+      }
       signres = await sign('okx', data, USERPASSWORD, port);
       signres.parseSchema = 'A_PURE_NUMBER:beg_tag="totalEq":":end_tag="';
       signres.decryptFlag = 'false';
