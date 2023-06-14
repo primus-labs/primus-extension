@@ -217,5 +217,5 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
 export const ONESECOND = 1000;
 export const ONEMINUTE = 60 * ONESECOND;
 export const ATTESTATIONPOLLINGTIME = 5 * ONESECOND;
-export const DEFAULTDATASOURCEPOLLINGTIMENUM = '1';
+export const DEFAULTDATASOURCEPOLLINGTIMENUM = '3';
 export const BIGZERO = new BigNumber(0);

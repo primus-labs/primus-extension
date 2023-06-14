@@ -48,7 +48,6 @@ const useUpdateAssetSources = (flag = false) => {
         postMsg(padoServicePort, msg);
         console.log(`page_send:${reqType} request`);
       });
-      
     },
     [padoServicePort]
   );
@@ -66,7 +65,7 @@ const useUpdateAssetSources = (flag = false) => {
     padoServicePort.onMessage.addListener(padoServicePortListener);
     return () => {
       padoServicePort.onMessage.removeListener(padoServicePortListener);
-    }
+    };
   }, [padoServicePort.onMessage]);
   return [loading, fetchExDatas];
 };

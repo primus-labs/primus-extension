@@ -450,7 +450,6 @@ const Cred = () => {
   }, [clearFetchAttestationTimer, activeRequest]);
 
   useEffect(() => {
-    // chrome.storage.local.remove(['credentials']); //TODO DELETE
     initCredList();
   }, []);
   useEffect(() => {

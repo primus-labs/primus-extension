@@ -118,9 +118,12 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
     setReconfirmVisible(false);
   }, [activeSourceNames, dispatch]);
   const onSubmitDialog = async () => {
-    await dispatch(setSourceUpdateFrequencyActionAsync(updateFrequency));
+    if (sourceUpdateFrequency !== updateFrequency) {
+      await dispatch(setSourceUpdateFrequencyActionAsync(updateFrequency));
+    }
     onSubmit();
   };
+
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog manageDataDialog">
