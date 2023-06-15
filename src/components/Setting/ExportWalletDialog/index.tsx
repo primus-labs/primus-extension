@@ -91,7 +91,7 @@ const ExportWallet: React.FC<SetPwdDialogProps> = ({
         <main>
           <h1>Back up on-chain address</h1>
           <div className="infoWrapper">
-            <div className="infoItem">
+            <div className="infoItem gray">
               <div className="label">On-chain address</div>
               <div className="value">
                 <div className="left">{formatAddr}</div>
@@ -119,10 +119,10 @@ const ExportWallet: React.FC<SetPwdDialogProps> = ({
             )}
             {step === 2 && (
               <>
-                <div className="infoItem privateKey">
+                <div className="infoItem gray privateKey">
                   <div className="label">Private key</div>
                   <div className="value">
-                    <div className="left privateKey">{privateKey}</div>
+                    <div className="left">{privateKey}</div>
                     <PCopy text={privateKey} />
                   </div>
                   <div className="tip">

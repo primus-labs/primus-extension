@@ -154,7 +154,7 @@ const DataSourceDetail = () => {
     setActiveRequest({
       type: 'loading',
       title: 'Attestation is processing',
-      desc: 'It may take a few minutes.',
+      desc: 'It may take a few seconds.',
     });
   };
   const onSubmitActiveRequestDialog = () => {

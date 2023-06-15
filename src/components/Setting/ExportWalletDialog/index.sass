@@ -16,7 +16,7 @@
       padding: 0
     .infoWrapper
       width: 100%
-      padding-top: 68px
+      padding-top: 48px
       @extend .fcss
       gap: 32px
       .infoItem
@@ -25,19 +25,29 @@
         gap: 12px
         &:first-child
           .value
-            padding-right: 18px
+            font-size: 16px
+            line-height: 22px
+            font-family: 'Inter-Regular'
         &:last-child
           gap: 14px
-        &.privateKey
+        &.gray
           .value
-            padding: 14px 18px 13px 24px
+            width: 100%
+            min-height: 79px
             background: rgba(0, 0, 0, 0.05)
             backdrop-filter: blur(16px)
             border-radius: 12px
+            padding: 0 22px
+            .left
+              width: 332px
+              
+
+
+        &.privateKey
+          .value
             .left
               line-height: 24px
               color: $colLBlack
-              width: 332px
 
         .label
           font-size: 18px
@@ -50,7 +60,7 @@
           .left 
             font-size: 16px
             line-height: 22px
-            font-family: "Inter-Medium"
+            font-family: "Inter-Regular"
             color: $colSBlack
             width: 354px
             word-wrap: break-word
@@ -62,11 +72,11 @@
               opacity: 0.8
           .pInputWrapper
             height: 52px
-            padding-right: 21px
+            padding-right: 22px
             .pInput
               padding-left: 22px
               font-size: 16px
-              font-family: 'Inter-Medium'
+              font-family: 'Inter-Regular'
             .suffixIcon
               width: 18px
         .errorTip
@@ -76,10 +86,11 @@
           font-family: 'Inter-Regular'
           color: $colError
         .tip
-          @extend .frbc
+          @extend .frbs
           gap: 14px
           >img
-            width: 28px
+            width: 20px
+            margin-top: 3px
           .txt
             font-size: 12px
             line-height: 16px

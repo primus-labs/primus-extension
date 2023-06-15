@@ -11,7 +11,8 @@ import iconUpChain from '@/assets/img/iconUpChain.svg';
 import iconQRCode from '@/assets/img/iconQRCode.svg';
 import iconSuc2 from '@/assets/img/iconSuc2.svg';
 import iconGreater from '@/assets/img/iconGreater.svg';
-import iconMedal from '@/assets/img/iconMedal.svg';
+import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
+import iconMedalToken from '@/assets/img/iconMedalToken.svg';
 import './index.sass';
 
 export type CredTypeItemType = {
@@ -136,7 +137,12 @@ const CredItem: React.FC<CredTypeListProps> = ({
         <div className="mainContent">
           <div className="con">
             <div className="conl">
-              <img src={iconMedal} alt="" />
+              <img src={iconMedalAssets} alt="" />
+              {item.type === 'Assets Proof' ? (
+                <img src={iconMedalAssets} alt="" />
+              ) : (
+                <img src={iconMedalToken} alt="" />
+              )}
               {item.type === 'Assets Proof' ? 'Assets' : item.type}
             </div>
             <div className="conr">

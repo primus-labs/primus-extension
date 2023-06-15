@@ -74,13 +74,12 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
   useEffect(() => {
     if (activeSourceKeys) {
       const { apiKey, secretKey, passphase, label } = activeSourceKeys;
-      setApiKey(apiKey)
+      setApiKey(apiKey);
       setSecretKey(secretKey);
       passphase && setPassphase(passphase);
-      label && setLabel(label)
+      label && setLabel(label);
     }
-    
-  }, [activeSourceKeys])
+  }, [activeSourceKeys]);
   return (
     <PMask onClose={onClose}>
       <div className="padoDialog connectDataSourceDialog">
@@ -126,18 +125,18 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = ({
                 {requirePassphase && (
                   <>
                     <div className="formItem">
-                      <h6>Passphase</h6>
+                      <h6>Passphrase</h6>
                       <PControledInput
                         key="passPhase"
                         type="password"
-                        placeholder="Please enter your Passphase"
+                        placeholder="Please enter your Passphrase"
                         onChange={handleChangePassphase}
                         value={passphase}
                         visible
                       />
                     </div>
                     {submitted && !passphase && (
-                      <p className="errorTip">Please enter your Passphase</p>
+                      <p className="errorTip">Please enter your Passphrase</p>
                     )}
                   </>
                 )}

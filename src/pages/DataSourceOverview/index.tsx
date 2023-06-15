@@ -21,9 +21,8 @@ import useAuthorization from '@/hooks/useAuthorization';
 import type { UserState } from '@/store/reducers';
 import { postMsg, sub } from '@/utils/utils';
 import { useDispatch } from 'react-redux';
-import type { Dispatch } from 'react'
-import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions'
-
+import type { Dispatch } from 'react';
+import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
 
 export type DataSourceStorages = {
   binance?: any;
@@ -39,7 +38,7 @@ export type ActiveRequestType = {
   desc: string;
 };
 const DataSourceOverview = () => {
-  const dispatch: Dispatch<any> = useDispatch()
+  const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -48,18 +47,12 @@ const DataSourceOverview = () => {
   const [step, setStep] = useState(0);
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
   const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
-  const exSources = useSelector(
-    (state: UserState) => state.exSources
-  );
-  const socialSources = useSelector(
-    (state: UserState) => state.socialSources
-  );
+  const exSources = useSelector((state: UserState) => state.exSources);
+  const socialSources = useSelector((state: UserState) => state.socialSources);
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
-  const filterWord = useSelector(
-    (state: UserState) => state.filterWord
-  );
+  const filterWord = useSelector((state: UserState) => state.filterWord);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const exList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources });
@@ -68,18 +61,18 @@ const DataSourceOverview = () => {
     return Object.values({ ...socialSources });
   }, [socialSources]);
   const dataSourceList: DataSourceItemList = useMemo(() => {
-    const exList = Object.values(exSources)
-    const socialList = Object.values(socialSources)
+    const exList = Object.values(exSources);
+    const socialList = Object.values(socialSources);
     const orderedExList = exList.sort((a, b) =>
       sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
-    )
+    );
     const orderedSocialList = socialList.sort((a, b) =>
       sub(Number(b.followers), Number(a.followers)).toNumber()
-    )
-    return [...orderedExList,...orderedSocialList];
+    );
+    return [...orderedExList, ...orderedSocialList];
   }, [exSources, socialSources]);
   const activeDataSourceList = useMemo(() => {
-    const orderedDataSourceList = dataSourceList
+    const orderedDataSourceList = dataSourceList;
     if (filterWord) {
       return orderedDataSourceList.filter((item) => {
         const lowerCaseName = item.name.toLowerCase();
@@ -99,8 +92,8 @@ const DataSourceOverview = () => {
     if (val === 'Data') {
       dispatch({
         type: 'setActiveSourceType',
-        payload: 'All'
-      })
+        payload: 'All',
+      });
     }
   };
   const handleCheckDataSourceDetail = ({ type, name }: DataSourceItemType) => {
@@ -131,14 +124,14 @@ const DataSourceOverview = () => {
   };
   const onSubmitConnectDataSourceDialogDialog = useCallback(
     async (form: GetDataFormProps) => {
-      console.log('submit--form', form)
+      console.log('submit--form', form);
       setActiveSourceKeys(form);
       const lowerCaseSourceName = form?.name?.toLowerCase();
       setStep(2.5);
       setActiveRequest({
         type: 'loading',
         title: 'Data being requested',
-        desc: 'It may take a few minutes.',
+        desc: 'It may take a few seconds.',
       });
       const reqType = `set-${lowerCaseSourceName}`;
       const msg: any = {
@@ -218,12 +211,12 @@ const DataSourceOverview = () => {
   const onClearFilter = () => {
     dispatch({
       type: 'setFilterWord',
-      payload: ''
-    })
+      payload: '',
+    });
   };
   useEffect(() => {
-    step === 1 && setActiveSourceKeys(undefined)
-  }, [step])
+    step === 1 && setActiveSourceKeys(undefined);
+  }, [step]);
 
   return (
     <div className="pageDataSourceOverview">
