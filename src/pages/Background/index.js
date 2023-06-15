@@ -365,6 +365,8 @@ const processWalletReq = async (message, port) => {
         } catch {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }
+      } else {
+        postMsg(port, { resMethodName: reqMethodName, res: false });
       }
       break;
     case 'encrypt':

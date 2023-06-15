@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import rem from '@/utils/rem.js';
 import PInput from '@/components/PInput/index';
 import AsideAnimation from '@/components/Layout/AsideAnimation';
 import './index.sass';
@@ -14,35 +13,36 @@ const Lock = () => {
   const navigate = useNavigate();
   const [pwd, setPwd] = useState();
   const [errorMsg, setErrorMsg] = useState();
+  const padoServicePortListener = function (message) {
+    if (message.resMethodName === 'decrypt') {
+      console.log('page_get:decrypt:', 'lock', message.res);
+      if (message.res) {
+        // encrypt successfully
+        dispatch({
+          type: 'setUserPassword',
+          payload: pwd,
+        });
+        navigate('/');
+      } else {
+        setErrorMsg('Incorrect password');
+      }
+      padoServicePort.onMessage.removeListener(padoServicePortListener);
+    }
+  };
+
   const handleClickStart = () => {
-    const curPwd = pwd;
-    if (!curPwd) {
+    if (!pwd) {
       setErrorMsg('Please enter your password');
       return;
     }
 
-    if (![undefined, null].includes(curPwd)) {
-      const padoServicePortListener = function (message) {
-        if (message.resMethodName === 'decrypt') {
-          console.log('page_get:decrypt:', message.res);
-          if (message.res) {
-            // encrypt successfully
-            dispatch({
-              type: 'setUserPassword',
-              payload: curPwd,
-            });
-            navigate('/');
-          } else {
-            setErrorMsg('Incorrect password');
-          }
-        }
-      };
+    if (![undefined, null].includes(pwd)) {
       padoServicePort.onMessage.addListener(padoServicePortListener);
       const msg = {
         fullScreenType: 'wallet',
         reqMethodName: `decrypt`,
         params: {
-          password: curPwd,
+          password: pwd,
         },
       };
       postMsg(padoServicePort, msg);
@@ -71,7 +71,6 @@ const Lock = () => {
   };
 
   useEffect(() => {
-    rem();
     handleClearUserPwd();
   }, []);
 

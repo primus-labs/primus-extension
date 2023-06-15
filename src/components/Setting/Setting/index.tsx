@@ -96,7 +96,7 @@ const Setting: React.FC<SettingProps> = ({ onClose }) => {
         <ExportWalletDialog
           onBack={onBackExportWalletDialog}
           onClose={onCloseDialog}
-          onSubmit={onSubmitExportWalletDialog}
+          onSubmit={onCloseDialog}
         />
       )}
       {manageDataDialogVisible && (
