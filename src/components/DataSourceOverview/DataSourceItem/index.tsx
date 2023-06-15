@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { gte, formatNumeral } from '@/utils/utils';
 import type { ExchangeMeta } from '@/config/constants';
-
+import type {SocialDataSourceData} from '@/types/dataSource'
 import iconSuc from '@/assets/img/iconSuc.svg';
 import './index.sass';
 
@@ -22,16 +22,6 @@ export type DataSourceData = {
   label?: string;
   flexibleAccountTokenMap?: any;
   spotAccountTokenMap?: any;
-};
-export type SocialDataSourceData = {
-  followers?: number | string;
-  posts?: number | string;
-  followings?: number | string;
-  verified?: boolean;
-  userName?: string;
-  createdTime?: string;
-  screenName?: string;
-  remarks?: any;
 };
 export type DataSourceItemType = {
   date: string;

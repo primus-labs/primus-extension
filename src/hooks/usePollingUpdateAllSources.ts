@@ -65,6 +65,13 @@ const usePollingUpdateAllSources = () => {
     }
   }, [flag, userPassword, hasDataSources, pollingDataSources]);
   useEffect(() => {
+    if (!hasDataSources) {
+      if (pollingSourcesTimer) {
+        clearInterval(pollingSourcesTimer);
+      }
+    }
+  }, [hasDataSources]);
+  useEffect(() => {
     if (!updating) {
       dispatch(setExSourcesAsync());
       dispatch(setSocialSourcesAsync());

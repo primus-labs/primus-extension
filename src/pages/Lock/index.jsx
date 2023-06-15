@@ -13,12 +13,12 @@ const Lock = () => {
   const navigate = useNavigate();
   const [pwd, setPwd] = useState();
   const [errorMsg, setErrorMsg] = useState();
-  const padoServicePortListener = function (message) {
+  const padoServicePortListener = async function (message) {
     if (message.resMethodName === 'decrypt') {
       console.log('page_get:decrypt:', 'lock', message.res);
       if (message.res) {
         // encrypt successfully
-        dispatch({
+        await dispatch({
           type: 'setUserPassword',
           payload: pwd,
         });
@@ -57,8 +57,8 @@ const Lock = () => {
   const handleSubmitPwd = () => {
     handleClickStart();
   };
-  const handleClearUserPwd = () => {
-    dispatch({
+  const handleClearUserPwd = async() => {
+    await dispatch({
       type: 'setUserPassword',
       payload: undefined,
     });

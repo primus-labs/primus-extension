@@ -397,7 +397,7 @@ const processWalletReq = async (message, port) => {
       break;
     case 'queryUserPassword':
       // console.log('background receive queryUserPassword');
-      postMsg(port, { resMethodName: reqMethodName, res: !!USERPASSWORD });
+      postMsg(port, { resMethodName: reqMethodName, res: USERPASSWORD });
       break;
     case 'resetUserPassword':
       console.log('background receive resetUserPassword');

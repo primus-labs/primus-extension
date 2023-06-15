@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+
 import './index.sass';
 import PMask from '@/components/PMask';
 import SetPassword from '@/components/Setting/SetPassword';
@@ -6,7 +8,7 @@ import PBack from '@/components/PBack';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
 import { postMsg } from '@/utils/utils';
-
+import type {Dispatch} from 'react'
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -18,16 +20,22 @@ const ResetPassword: React.FC<SetPwdDialogProps> = ({
   onSubmit,
   onBack,
 }) => {
-  console.log('ResetPassword');
+  // console.log('ResetPassword');
+  const dispatch: Dispatch<any> = useDispatch();
+
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
 
   const handleSubmit = (newPwd: string) => {
-    const padoServicePortListener = function (message: any) {
+    const padoServicePortListener = async function (message: any) {
       if (message.resMethodName === 'resetPassword') {
         console.log('page_get:resetPassword:', message.res);
         if (message.res) {
+          await dispatch({
+            type: 'setUserPassword',
+            payload: newPwd,
+          });
           onSubmit();
         } else {
           alert('Password reset failed');

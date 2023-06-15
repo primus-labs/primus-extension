@@ -75,6 +75,27 @@ const Layout = () => {
         }
       };
       padoServicePort.onMessage.addListener(padoServicePortListener2);
+
+      const padoServicePortListener3 = async function (message: any) {
+        if (message.resMethodName === 'queryUserPassword') {
+          console.log('page_get:queryUserPassword:', message.res);
+          if (message.res) {
+            await dispatch({
+              type: 'setUserPassword',
+              payload: message.res,
+            });
+          }
+        } else {
+        }
+        padoServicePort.onMessage.removeListener(padoServicePortListener3);
+      };
+      padoServicePort.onMessage.addListener(padoServicePortListener3);
+      const msg = {
+        fullScreenType: 'wallet',
+        reqMethodName: 'queryUserPassword',
+        params: {},
+      };
+      postMsg(padoServicePort, msg);
     }
   }, [padoServicePort, userPassword]);
 
@@ -114,7 +135,7 @@ const Layout = () => {
     <div className="pageApp">
       <BackgroundAnimation />
       <div className="pageLayer">
-        <ActiveHeader/>
+        <ActiveHeader />
         <Outlet />
       </div>
     </div>

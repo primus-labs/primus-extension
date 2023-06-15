@@ -61,13 +61,7 @@ const Setting: React.FC<SettingProps> = ({ onClose }) => {
   const onBackExportWalletDialog = useCallback(() => {
     setExportAddressDialogVisible(false);
   }, []);
-  const onSubmitExportWalletDialog = useCallback(() => {
-    setExportAddressDialogVisible(false);
-  }, []);
   const onBackManageDataDialog = useCallback(() => {
-    setManageDataDialogVisible(false);
-  }, []);
-  const onSubmitManageDataDialog = useCallback(() => {
     setManageDataDialogVisible(false);
   }, []);
 
@@ -103,7 +97,7 @@ const Setting: React.FC<SettingProps> = ({ onClose }) => {
         <ManageDataDialog
           onClose={onCloseDialog}
           onBack={onBackManageDataDialog}
-          onSubmit={onSubmitManageDataDialog}
+          onSubmit={onCloseDialog}
         />
       )}
     </>

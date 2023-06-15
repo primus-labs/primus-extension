@@ -15,24 +15,43 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = ({
   mutiple = false,
   onChange,
 }) => {
-  const exSources = useSelector((state: UserState) => state.exSources);
   const [activeSource, setActiveSource] = useState<ConnectSourceType>();
   const [activeSources, setActiveSources] = useState<ConnectSourceType[]>([]);
+
+  const exSources = useSelector((state: UserState) => state.exSources);
+  const socialSources = useSelector((state: UserState) => state.socialSources);
+  
   const connectedSourceList: ConnectSourceType[] = useMemo(() => {
-    return Object.keys(exSources).map((key) => {
+    const exArr = Object.keys(exSources).map((key) => {
       const sourceInfo: ExchangeMeta =
         DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
-      const { name, icon } = sourceInfo;
+      const { name, icon,type } = sourceInfo;
       const { exUserId, label } = exSources[key];
       const infoObj: ConnectSourceType = {
         name,
         icon,
         exUserId,
         label,
+        type,
       };
       return infoObj;
     });
-  }, [exSources]);
+    const socialArr = Object.keys(socialSources).map((key) => {
+      const sourceInfo: ExchangeMeta =
+        DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
+      const { name, icon,type } = sourceInfo;
+      const { exUserId, label } = socialSources[key];
+      const infoObj: ConnectSourceType = {
+        name,
+        icon,
+        exUserId,
+        label,
+        type,
+      };
+      return infoObj;
+    });
+    return [...exArr,...socialArr];
+  }, [exSources, socialSources]);
   const liClassNameCallback = useCallback(
     (item: ConnectSourceType) => {
       let defaultClassName = 'networkItem';
@@ -49,6 +68,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = ({
     },
     [activeSource, activeSources, mutiple]
   );
+
   const handleClickData = (item: ConnectSourceType) => {
     if (!mutiple) {
       if (activeSource?.name === item.name) {
@@ -68,6 +88,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = ({
       setActiveSources([...newActiveSources]);
     }
   };
+
   useEffect(() => {
     if (mutiple) {
       onChange(activeSources);
@@ -75,6 +96,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = ({
       onChange(activeSource);
     }
   }, [activeSource, mutiple, activeSources, onChange]);
+
   return (
     <div className="connectedDataSourceList scroll">
       {connectedSourceList.length > 0 && (

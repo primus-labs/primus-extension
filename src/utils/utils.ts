@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
 var ethereumjsUtil = require('ethereumjs-util');
-import {PADOSERVERURLHTTPS} from '@/config/envConstants'
+import { PADOSERVERURLHTTPS } from '@/config/envConstants';
 
 export function gt(a: number, b: number) {
   return new BigNumber(a).gt(new BigNumber(b));
@@ -66,6 +66,7 @@ export function getSingleStorageSyncData(storageKey: string) {
   });
 }
 
+// "Jun 15, 2023"
 // transform date from timestamp to string such as 12 Mar, 2023
 export function formatDate(timestamp: number) {
   var date = new Date(timestamp),
@@ -73,6 +74,17 @@ export function formatDate(timestamp: number) {
     M = date.toLocaleString('en', { month: 'short' }),
     D = (date.getDate() + '').padStart(2, '0');
   return `${M} ${D}, ${Y}`;
+}
+
+// "Jun 15 10:29, 2023"
+export function formatTime(timestamp: number) {
+  var date = new Date(timestamp),
+    Y = date.getFullYear(),
+    M = date.toLocaleString('en', { month: 'short' }),
+    D = (date.getDate() + '').padStart(2, '0'),
+    h = (date.getHours() + '').padStart(2, '0'),
+    m = (date.getMinutes() + '').padStart(2, '0');
+  return `${M} ${D} ${h}:${m}, ${Y}`;
 }
 
 export function getCurrentDate(timestamp?: any) {
@@ -149,7 +161,7 @@ export function strToHex(str: string) {
 type AuthParams = {
   source: string;
   state: string;
-}
+};
 export function getAuthUrl(authParams: AuthParams) {
   const { source, state } = authParams;
   return `${PADOSERVERURLHTTPS}/public/render/${source}?state=${state}`;
