@@ -13,6 +13,7 @@ import iconSuc2 from '@/assets/img/iconSuc2.svg';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
 import iconMedalToken from '@/assets/img/iconMedalToken.svg';
+import type {PROOFTYPEITEM} from '@/types/cred'
 import './index.sass';
 
 export type CredTypeItemType = {
@@ -59,9 +60,12 @@ const CredItem: React.FC<CredTypeListProps> = ({
   onDelete,
 }) => {
   // console.log('credItem', item);
+
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [expand, setExpand] = useState(false);
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
+  const proofTypes = useSelector((state: UserState) => state.proofTypes);
+
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
@@ -71,6 +75,14 @@ const CredItem: React.FC<CredTypeListProps> = ({
     }
     return ['Update', 'Delete'];
   }, [item]);
+  const briefTypeName = useMemo(() => {
+    const obj = proofTypes.find(
+      (i: PROOFTYPEITEM) => i.credTitle === item.type
+    );
+    return obj?.simplifiedName;
+  }, [proofTypes, item.type]);
+
+
   const handleClick = () => {
     setExpand((flag) => !flag);
   };
@@ -137,13 +149,12 @@ const CredItem: React.FC<CredTypeListProps> = ({
         <div className="mainContent">
           <div className="con">
             <div className="conl">
-              <img src={iconMedalAssets} alt="" />
               {item.type === 'Assets Proof' ? (
                 <img src={iconMedalAssets} alt="" />
               ) : (
                 <img src={iconMedalToken} alt="" />
               )}
-              {item.type === 'Assets Proof' ? 'Assets' : item.type}
+              {briefTypeName}
             </div>
             <div className="conr">
               <div className="conrItem">
@@ -230,9 +241,13 @@ const CredItem: React.FC<CredTypeListProps> = ({
                 <div className="con">
                   {/* TODO */}
                   {tokenLogoPrefix && (
-                    <img src={`${tokenLogoPrefix}iconBTC.png`} alt="" />
+                    <img
+                      src={`${tokenLogoPrefix}icon${item.holdingToken}.png`}
+                        alt=""
+                        className="tokenImg"
+                    />
                   )}
-                  <span>BTC</span>
+                  <span>{item.holdingToken}</span>
                 </div>
               </div>
             )}

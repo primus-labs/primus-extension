@@ -3,7 +3,8 @@ import { DATASOURCEMAP } from '@/config/constants';
 import type { ExchangeMeta } from '@/config/constants';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
-import type { PROOFTYPEITEM } from '@/store/reducers';
+import type { PROOFTYPEITEM } from '@/types/cred';
+
 import {DEFAULTDATASOURCEPOLLINGTIMENUM} from '@/config/constants'
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 

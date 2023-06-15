@@ -3,7 +3,8 @@ import React from 'react'
 // import iconTokenHoldings from '@/assets/img/iconTokenHoldings.svg'
 // import iconQualifications from '@/assets/img/iconQualifications.svg'
 import { useSelector } from 'react-redux';
-import type { UserState, PROOFTYPEITEM } from '@/store/reducers';
+import type { UserState,  } from '@/store/reducers';
+import type {PROOFTYPEITEM} from '@/types/cred'
 import './index.sass'
 
 interface CredTypeListProps {

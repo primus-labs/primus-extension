@@ -10,12 +10,14 @@ import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesD
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import PSelect from '@/components/PSelect';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
-import type { UserState, PROOFTYPEITEM } from '@/store/reducers';
+import type { UserState } from '@/store/reducers';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
 import { setExSourcesAsync } from '@/store/actions';
 import type { Dispatch } from 'react';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import type { ConnectSourceType } from '@/types/dataSource';
+import type { PROOFTYPEITEM } from '@/types/cred';
+
 
 
 import './index.sass';

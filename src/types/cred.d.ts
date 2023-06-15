@@ -1,3 +1,4 @@
+type ISACTIVE = 0 | 1;
 export type CredTypeItemType = {
   type: string;
   // name: string;
@@ -25,4 +26,17 @@ export type CredTypeItemType = {
     address: string;
     token: string;
   };
+};
+export type PROOFTYPEITEM = {
+  simplifiedName: string;
+  id: string;
+  credIdentifier: string;
+  credTitle: string;
+  credIntroduce: string;
+  credLogoUrl: string;
+  credDetails: string;
+  credProofContent: string;
+  credProofConditions: string;
+  display: ISACTIVE;
+  enabled: ISACTIVE;
 };

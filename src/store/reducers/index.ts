@@ -4,6 +4,7 @@ import type { ExchangeMeta } from '@/config/constants';
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import type { ExDatas } from '@/types/store';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import type { PROOFTYPEITEM } from '@/types/cred';
 
 export type ExInfo = {
   date: string;
@@ -24,19 +25,8 @@ type SocialDatas = {
   [propName: string]: any;
 };
 
-type ISACTIVE = 0 | 1;
-export type PROOFTYPEITEM = {
-  id: string;
-  credIdentifier: string;
-  credTitle: string;
-  credIntroduce: string;
-  credLogoUrl: string;
-  credDetails: string;
-  credProofContent: string;
-  credProofConditions: string;
-  display: ISACTIVE;
-  enabled: ISACTIVE;
-};
+
+
 type CREDENTIALS = {
   [propName: string]: CredTypeItemType;
 };
@@ -81,6 +71,7 @@ const initState = {
       credProofConditions: '["1000"]',
       display: 0,
       enabled: 0,
+      simplifiedName: 'Asset',
     },
     {
       id: '2',
@@ -95,6 +86,7 @@ const initState = {
       credProofConditions: '["USDT","LAT"]',
       display: 0,
       enabled: 0,
+      simplifiedName: 'Token',
     },
     {
       id: '3',
@@ -108,6 +100,7 @@ const initState = {
       credProofConditions: 'xxx',
       display: 0,
       enabled: 1,
+      simplifiedName: 'Qualification',
     },
   ],
   credentials: {},

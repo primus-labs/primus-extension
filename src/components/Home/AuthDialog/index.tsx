@@ -75,7 +75,7 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
         if (res) {
           setOAuthSources(res);
         } else {
-          alert('getAllOAuthSources network error');
+          // alert('getAllOAuthSources network error');
         }
         console.log('page_get:getAllOAuthSources:', res);
       }
