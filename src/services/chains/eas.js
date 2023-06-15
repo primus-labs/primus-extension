@@ -155,7 +155,7 @@ export async function attestByDelegation(params) {
 }
 
 export async function attestByDelegationProxy(params) {
-    let { networkName, data, attesteraddr, receipt, signature, metamaskprovider } = params;
+    let { networkName, data, attesteraddr, receipt, signature, metamaskprovider, type } = params;
     const splitsignature = utils.splitSignature(signature);
     const formatSignature = { v: splitsignature.v, r: splitsignature.r, s: splitsignature.s };
     console.log('eas attestByDelegationProxy params', params);
@@ -167,7 +167,13 @@ export async function attestByDelegationProxy(params) {
     let signer = provider.getSigner();
     easProxy.connect(signer);
     try {
-        const schemauid = EASInfo[networkName].schemaUid;
+        let schemauid;
+        if (type === 'Assets Proof') {
+            schemauid = EASInfo[networkName].schemaUid;
+        } else {
+            schemauid = EASInfo[networkName].schemaUidTokenHoldings;
+        }
+        console.log('attestByDelegationProxy schemauid=', schemauid);
         tx = await easProxy.attestByDelegationProxy({
           schema: schemauid,
           data: {

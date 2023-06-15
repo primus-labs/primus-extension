@@ -295,7 +295,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   } else if (type === 'Token Holdings') {
     params.baseValue = '0';
     params.holdingToken = holdingToken;
-    calculationType = `${sourceUpperCaseName}_ASSET_BALANCES`; // TODO
+    calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
   }
 
   let extRequestsOrder;
@@ -347,6 +347,9 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
         params: {},
       };
       signres = await sign('coinbase', data, USERPASSWORD, port);
+      if (form.type === 'Token Holdings') {
+        signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
+      }
       extRequestsOrderInfo = { ...signres };
       break;
     case 'okx':
@@ -361,6 +364,9 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
       }
       signres = await sign('okx', data, USERPASSWORD, port);
       signres.parseSchema = 'A_PURE_NUMBER:beg_tag="totalEq":":end_tag="';
+      if (form.type === 'Token Holdings') {
+        signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:KV:"ccy":"(.*?)"[\\s\\S]*?"eq":"(.*?)"';
+      }
       signres.decryptFlag = 'false';
 
       extRequestsOrderInfo = { ...signres };

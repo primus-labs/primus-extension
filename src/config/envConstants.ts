@@ -47,6 +47,8 @@ const EASINFOMAP = {
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       schemaUid:
         '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
+      schemaUidTokenHoldings:
+        '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
       chainId: '0xaa36a7', // numToHex
       chainName: 'Sepolia',
       rpcUrls: [
@@ -62,6 +64,8 @@ const EASINFOMAP = {
       easContact: '',
       easProxyContrac: '',
       schemaUid: '',
+      schemaUidTokenHoldings:
+        '',
     },
   },
   test: {
@@ -73,6 +77,8 @@ const EASINFOMAP = {
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       schemaUid:
         '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
+      schemaUidTokenHoldings:
+        '',
       chainId: '0xaa36a7', // numToHex
       chainName: 'Sepolia',
       rpcUrls: [
@@ -88,6 +94,8 @@ const EASINFOMAP = {
       easContact: '',
       easProxyContrac: '',
       schemaUid: '',
+      schemaUidTokenHoldings:
+        '',
     },
   },
   production: {
@@ -98,6 +106,8 @@ const EASINFOMAP = {
       easContact: '0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587',
       easProxyContrac: '',
       schemaUid: '',
+      schemaUidTokenHoldings:
+        '',
       chainId: '0x1', // numToHex
       chainName: 'Ethereum',
       rpcUrls: [
@@ -112,6 +122,8 @@ const EASINFOMAP = {
       easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
       easProxyContrac: '',
       schemaUid: '',
+      schemaUidTokenHoldings:
+        '',
       chainId: '0xa4b1', // numToHex
       chainName: 'ArbitrumOne',
       rpcUrls: ['https://arb1.arbitrum.io/rpc'],
@@ -125,6 +137,8 @@ const EASINFOMAP = {
       easContact: '',
       easProxyContrac: '',
       schemaUid: '',
+      schemaUidTokenHoldings:
+        '',
     },
   },
 };

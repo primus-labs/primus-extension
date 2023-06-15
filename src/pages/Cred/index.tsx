@@ -206,6 +206,7 @@ const Cred = () => {
         attesteraddr: PADOADDRESS,
         data: activeCred?.encodedData,
         signature: activeCred?.signature,
+        type: activeCred?.type,
       };
       const upChainRes = await attestByDelegationProxy(upChainParams);
       if (upChainRes) {
