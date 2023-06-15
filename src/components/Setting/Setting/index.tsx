@@ -70,6 +70,7 @@ const Setting: React.FC<SettingProps> = ({ onClose }) => {
   const onSubmitManageDataDialog = useCallback(() => {
     setManageDataDialogVisible(false);
   }, []);
+
   return (
     <>
       <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />

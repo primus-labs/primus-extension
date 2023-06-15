@@ -293,7 +293,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
       calculationType = 'KEY_VALUES_SUM_X_A';
     }
   } else if (type === 'Token Holdings') {
-    params.baseValue = "0";
+    params.baseValue = '0';
     params.holdingToken = holdingToken;
     calculationType = `${sourceUpperCaseName}_ASSET_BALANCES`; // TODO
   }
@@ -326,13 +326,14 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
         path: 'asset/getUserAsset',
         api: 'sapiV3',
         method: 'POST',
-        params: {recvWindow: 60 * 1000},
+        params: { recvWindow: 60 * 1000 },
       };
       if (form.type === 'Token Holdings') {
         data.params.asset = form.token;
       }
       signres = await sign('binance', data, USERPASSWORD, port);
-      signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:KVVVV:"asset":"(.*?)"[\\s\\S]*?"free":"(.*?)"[\\s\\S]*?"locked":"(.*?)"[\\s\\S]*?"freeze":"(.*?)"[\\s\\S]*?"withdrawing":"(.*?)"';
+      signres.parseSchema =
+        'MAP_A_PURE_NUMBER_REGEX:KVVVV:"asset":"(.*?)"[\\s\\S]*?"free":"(.*?)"[\\s\\S]*?"locked":"(.*?)"[\\s\\S]*?"freeze":"(.*?)"[\\s\\S]*?"withdrawing":"(.*?)"';
       signres.decryptFlag = 'false';
       //signres.url = 'https://localhost/simulate/sapi/v3/asset/getUserAsset';
       console.log('binance signres=', signres);
@@ -410,7 +411,7 @@ export const resetExchangesCipher = async (USERPASSWORD, newPwd) => {
   const exCipherKeys = sourceNameList.map((i) => `${i}cipher`);
   let res = await chrome.storage.local.get(exCipherKeys);
   const cipherNameArr = Object.keys(res);
-  cipherNameArr.forEach(async (cipherName) => {
+  for (let cipherName of cipherNameArr) {
     // decrypt
     const cipherData = res[cipherName];
     if (cipherData) {
@@ -422,8 +423,25 @@ export const resetExchangesCipher = async (USERPASSWORD, newPwd) => {
           [cipherName]: JSON.stringify(encryptedKey),
         });
       } catch (err) {
+        throw Error(err);
         console.log('resetExchangesCipher error:', err);
       }
     }
-  });
+  }
+  // cipherNameArr.forEach(async (cipherName) => {
+  //   // decrypt
+  //   const cipherData = res[cipherName];
+  //   if (cipherData) {
+  //     try {
+  //       const apiKeyInfo = JSON.parse(decrypt(cipherData, USERPASSWORD));
+  //       // encrypt
+  //       const encryptedKey = encrypt(JSON.stringify(apiKeyInfo), newPwd);
+  //       await chrome.storage.local.set({
+  //         [cipherName]: JSON.stringify(encryptedKey),
+  //       });
+  //     } catch (err) {
+  //       console.log('resetExchangesCipher error:', err);
+  //     }
+  //   }
+  // });
 };

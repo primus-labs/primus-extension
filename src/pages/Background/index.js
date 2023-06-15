@@ -438,13 +438,14 @@ const processWalletReq = async (message, port) => {
               const orignAccount =
                 web3EthAccount.privateKeyToAccount(privateKey);
               const encryptAccount = orignAccount.encrypt(password);
-              USERPASSWORD = password;
+
               await chrome.storage.local.set({
                 keyStore: JSON.stringify(encryptAccount),
               });
             }
           }
           await resetExchangesCipher(USERPASSWORD, password);
+          USERPASSWORD = password;
           postMsg(port, { resMethodName: reqMethodName, res: true });
         } catch {
           postMsg(port, { resMethodName: reqMethodName, res: false });
