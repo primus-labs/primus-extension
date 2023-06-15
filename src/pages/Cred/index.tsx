@@ -32,11 +32,14 @@ import {
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
-
+import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
+import CredTypesDialog from '@/components/Cred/CredTypesDialog';
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
 };
 const Cred = () => {
+  const [credTypesDialogVisible, setCredTypesDialogVisible] =
+    useState<boolean>();
   const dispatch: Dispatch<any> = useDispatch();
   const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
   const [step, setStep] = useState(0);
@@ -82,10 +85,11 @@ const Cred = () => {
     dispatch(setCredentialsAsync());
     setCredentialsObj(cObj);
   }, [dispatch]);
-  const handleChangeProofType = (title: string) => {
+  const handleChangeProofType = useCallback((title: string) => {
+    setCredTypesDialogVisible(false)
     setStep(1);
     setActiveAttestationType(title);
-  };
+  },[]);
   const handleCloseMask = () => {
     setStep(0);
   };
@@ -423,6 +427,13 @@ const Cred = () => {
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     return credentialObj;
   };
+  const handleAdd = useCallback(() => {
+    setCredTypesDialogVisible(true)
+  },[])
+  const onSubmitCredTypesDialog = (type: string) => {
+    
+  }
+
   useEffect(() => {
     initAlgorithm();
     return () => {
@@ -471,7 +482,7 @@ const Cred = () => {
       <main className="appContent">
         <PTabs onChange={handleChangeTab} value="Cred" />
         <DataSourceSearch />
-        <ProofTypeList onChange={handleChangeProofType} />
+        {/* <ProofTypeList onChange={handleChangeProofType} /> */}
         <CredList
           list={filteredCredList}
           onUpChain={handleUpChain}
@@ -538,6 +549,15 @@ const Cred = () => {
           />
         )}
       </main>
+      <DataAddBar onClick={handleAdd} />
+      {credTypesDialogVisible && (
+        <CredTypesDialog
+          onClose={() => {
+            setCredTypesDialogVisible(false);
+          }}
+          onSubmit={handleChangeProofType}
+        />
+      )}
     </div>
   );
 };

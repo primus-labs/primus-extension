@@ -1,0 +1,121 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pDialog.sass'
+
+.padoDialog.credTypesDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  main
+    width: 100%
+    @extend .fcss
+    gap: $xlGap
+    h1
+      @extend .frsc
+      gap: $xxsGap
+      align-self: center
+      @extend .xlLBlackBoldFont
+      img
+        width: 32px
+        cursor: pointer
+    h2
+      @extend .sSBlackRegularFont
+      line-height: 26px
+    .scrollList
+      padding-top: 24px
+      ul.credTypeList
+        @extend .fcss
+        gap: 24px
+        li
+          @extend .frsc
+          gap: 24px
+          cursor: pointer
+          width: 100%
+          height: 80px
+          padding: 0 28px 0 32px
+          background: rgba(0, 0, 0, 0.05)
+          border-radius: 12px
+          &:not(.disabled):hover
+            padding: 0 26px 0 30px
+            background: #FFFFFF
+            border: 2PX solid transparent
+            background-clip: padding-box, border-box
+            background-origin: padding-box, border-box
+            background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+            position: relative
+          &.disabled
+            cursor: not-allowed
+          &.active
+            padding: 0 26px 0 30px
+            background: #FFFFFF
+            border: 2PX solid transparent
+            background-clip: padding-box, border-box
+            background-origin: padding-box, border-box
+            background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+            position: relative
+            &:after
+              position: absolute
+              content: ''
+              top: 50%
+              right: 32px
+              width: 24px
+              height: 24px
+              background: url('@/assets/img/iconSuc.svg')
+              background-size: 100% 100%
+          img.icon
+            width: 36px
+          .con
+            @extend .fcss
+            gap: 6px
+            .title
+              font-size: 16px
+              line-height: 19px
+              font-family: 'Inter-SemiBold'
+              color: $colLBlack
+            .desc
+              font-size: 12px
+              line-height: 15px
+              font-family: 'Inter-Regular'
+              color: $colSBlack
+           
+  button.nextBtn
+    height: 58px !important
+    position: relative
+    &.gray
+      background: rgba(0, 0, 0, 0.05)
+      &:hover
+       background: rgba(0, 0, 0, 0.05) 
+    .tipWrapper
+      position: absolute
+      content: ''
+      top: -49px
+      left: 50%
+      transform: translateX(-50%)
+      width: 100%
+      text-align: center
+      .errorTip
+        width: fit-content
+        margin: 0 auto
+        padding: 0 12px
+        @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
+        font-size: 12px
+        line-height: 25px
+        font-family: 'Inter-Regualr'
+        color: rgba(0,0,0,0.4)
+@media (max-width: 1680px)
+  .padoDialog.credTypesDialog
+    padding: 48px 42px 32px
+    main
+      gap: 0
+      h1
+        font-size: 30px
+        line-height: 36px
+        font-family:'Inter-SemiBold'
+      h2
+        font-size: 14px
+        line-height: 20px
+        font-family: 'Inter-Regular'
+        color: $colSBlack
+        padding-top: 24px
+      
+    button.nextBtn
+      height: 48px !important
+      font-family: 'Inter-SemiBold' !important
