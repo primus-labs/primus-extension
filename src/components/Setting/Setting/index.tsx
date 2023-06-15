@@ -36,10 +36,10 @@ const Setting: React.FC<SettingProps> = ({ onClose }) => {
       case 'Manage your data':
         setManageDataDialogVisible(true);
         break;
-      case 'Privacy Policy':
-        break;
-      case 'PADO Support':
-        break;
+      // case 'Privacy Policy':
+      //   break;
+      // case 'PADO Support':
+      //   break;
       default:
         break;
     }

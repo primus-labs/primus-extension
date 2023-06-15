@@ -1,4 +1,4 @@
-import React, { useMemo, useState, memo } from 'react';
+import React, { useMemo, memo } from 'react';
 import emptyBox from '@/assets/img/emptyBox.svg';
 import CredItem from '../CredItem';
 import type { CredTypeItemType } from '../CredItem';
@@ -20,15 +20,7 @@ const CredList: React.FC<CredListProps> = ({
   onDelete,
   list,
 }) => {
-  const activeList = useMemo(() => {
-    if (list.length <= 3) {
-      return list.map((i) => {
-        i.expand = true;
-        return i;
-      });
-    }
-    return list;
-  }, [list]);
+  
   const onChainCredentialsLen = useMemo(() => {
     const onChainCredList = list.filter((i) => i.provided && i.provided.length > 0);
     return onChainCredList.length
@@ -52,7 +44,7 @@ const CredList: React.FC<CredListProps> = ({
       </header>
       {list.length > 0 && (
         <ul className="credList">
-          {activeList.map((item, index) => (
+          {list.map((item, index) => (
             <li
               className="credTypeItemWrapper"
               onClick={() => {

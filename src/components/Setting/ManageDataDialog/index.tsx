@@ -46,6 +46,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
   onSubmit,
   onBack,
 }) => {
+  const [errorTip, setErrorTip] = useState<string>();
   const [reconfirmVisible, setReconfirmVisible] = useState<boolean>(false);
   const [activeSourceList, setActiveSourceList] = useState<ConnectSourceType[]>(
     []
@@ -81,19 +82,22 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
   const onChangeDataSource = useCallback(
     (sources: ConnectSourceType | ConnectSourceType[] | undefined) => {
       setActiveSourceList(sources as ConnectSourceType[]);
+      (sources as ConnectSourceType[]).length > 0 && setErrorTip('');
     },
     []
   );
   const onClear = async () => {
     if (activeSourceNameArr.length < 1) {
-      alert('Please select at least one data source');
+      // alert('Please select at least one data source');
+      setErrorTip('Please select at least one data source');
       return;
     }
     setReconfirmVisible(true);
   };
   const onDownload = useCallback(async () => {
     if (activeSourceNameArr.length < 1) {
-      alert('Please select at least one data source');
+      // alert('Please select at least one data source');
+      setErrorTip('Please select at least one data source');
       return;
     }
     let checkedExSources: ExDatas = {};
@@ -241,6 +245,11 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = ({
           </div>
         </main>
         <button className="nextBtn" onClick={onSubmitDialog}>
+          {errorTip && (
+            <div className="tipWrapper">
+              <div className="errorTip">{errorTip}</div>
+            </div>
+          )}
           <span>OK</span>
         </button>
 

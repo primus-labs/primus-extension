@@ -29,10 +29,12 @@ const moduleObj = [
     {
       moduleType: 'pado',
       settingType: 'Privacy Policy',
+      link: 'http://18.179.8.186/docs/Privacy-Policy',
     },
     {
       moduleType: 'pado',
       settingType: 'PADO Support',
+      link: 'http://18.179.8.186/docs/welcome',
     },
   ],
 ];
@@ -66,8 +68,12 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = ({
     getUserInfo();
   }, []);
   const onClickSettingItem = (settingItem: any) => {
-    const { settingType } = settingItem;
-    onChange(settingType);
+    const { settingType, link } = settingItem;
+    if (link) {
+      window.open(link);
+    } else {
+      onChange(settingType);
+    }
   };
 
   return (
