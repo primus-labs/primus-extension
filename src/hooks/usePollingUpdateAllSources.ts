@@ -43,7 +43,7 @@ const usePollingUpdateAllSources = () => {
       (updateF as () => void)();
     }, Number(sourceUpdateFrequency) * ONEMINUTE);
     setPollingSourcesTimer(timer);
-    (updateF as () => void)();
+    // (updateF as () => void)();
     // }, [pollingSourcesTimer, sourceUpdateFrequency, updateF]);
   }, [sourceUpdateFrequency, updateF]);
 
