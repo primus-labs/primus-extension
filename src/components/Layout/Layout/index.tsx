@@ -9,6 +9,8 @@ import {
   setSysConfigAction,
   initSourceUpdateFrequencyActionAsync,
   setProofTypesAsync,
+  setExSourcesAsync,
+  setSocialSourcesAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import { postMsg } from '@/utils/utils';
@@ -130,6 +132,11 @@ const Layout = () => {
   useEffect(() => {
     startPollingSources();
   }, []);
+
+  useEffect(() => {
+    dispatch(setExSourcesAsync());
+    dispatch(setSocialSourcesAsync());
+  }, [dispatch]);
 
   return (
     <div className="pageApp">

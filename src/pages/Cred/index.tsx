@@ -153,7 +153,7 @@ const Cred = () => {
         desc: 'It may take a few seconds.',
       });
     },
-    []
+    [padoServicePort, validateBaseInfo]
   );
   const onSubmitActiveRequestDialog = () => {
     if (
