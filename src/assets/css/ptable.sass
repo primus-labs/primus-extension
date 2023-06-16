@@ -13,30 +13,39 @@
     @extend .frbc
   ul.tokens
     padding-bottom: 62px
+    li.tokenItem.th
+      .innerWrapper
+        font-size: 16px
+        line-height: 19px
     li.tokenItem
       .innerWrapper
         @extend .frbc
-      .innerWrapper >div
-        text-align: right
       .innerWrapper
-        margin:  0 -50px
+        margin: 0 -50px
         @extend .frbc
         @extend .sFont
+        font-size: 14px
+        line-height: 17px
         font-family: 'Inter-Medium'
         color: $colLBlack
+        >div
+          text-align: right
         .token
           @extend .frsc
           gap: $xxsGap
           text-align: left
           >img
-            width: $xsIconSize
+            width: 18px
             border-radius: 50%
+
       &.th
         border-bottom: 1px solid rgba(0, 0, 0, 0.1)
         margin-bottom: 3px
         .innerWrapper
           padding: 16px 50px 15px
           color: $colSBlack
+          font-size: 16px
+          line-height: 19px
       &.tr
         margin-top: 10px
         position: relative
@@ -55,7 +64,7 @@
         padding: 8px 0 4px 0
         @extend .mFont
         font-family: 'Inter-SemiBold'
-        color: $colLBlack 
+        color: $colLBlack
       >h2
         font-size: 12px
         line-height: 20px
@@ -77,11 +86,8 @@
         &.th
           margin-bottom: 12px
           .innerWrapper
-            padding: 12px 44px 11px
+            padding: 12px 44px
         &.tr
-          margin-top: 4px
+          margin-top: 2px
           .innerWrapper
-            padding: 12px 44px 11px
-      
-          
-        
+            padding: 11px 44px 11px

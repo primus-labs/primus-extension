@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useSearchParams } from 'react-router-dom';
 import PTabs from '@/components/PTabs';
 import './index.sass';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
@@ -36,6 +36,8 @@ export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
 };
 const Cred = () => {
+  const [searchParams] = useSearchParams();
+  const createFlag = searchParams.get('createFlag');
   const [credTypesDialogVisible, setCredTypesDialogVisible] =
     useState<boolean>();
   const dispatch: Dispatch<any> = useDispatch();
@@ -471,6 +473,9 @@ const Cred = () => {
       });
     };
   }, []);
+  useEffect(() => {
+    createFlag && handleAdd()
+  }, [createFlag]);
 
   return (
     <div className="pageDataSourceOverview">

@@ -99,37 +99,25 @@
       .btcValue
         @extend .sSBlackRegularFont
         color: $colLBlack
-  .proofsBar
-    width: 100%
-    cursor: pointer
-    @extend .frbc
-    gap: $lGap
-    .proofCard
-      flex: 1
-      @include backdropMixin
-      display: flex
-      justify-content: center
-      align-items: center
-      @extend .frcc
-      height: 152px
-      transition: all 0.5s
-      &.disabled
-        cursor: not-allowed
-      &:not(.disabled):hover
-        transform: translateY(-20px)
-        cursor: pointer
-      .cardC
-        @extend .lLBlackBoldFont
-        @extend .frsc
-        gap: $xsGap
-        
-        >img
-          width: $sIconSize
-        .iconArrow
-          opacity: 0.4
-          transform: rotate(180deg)
-          &:hover
-            opacity: 0.8
+  .tokenTableHeaderRight
+    @extend .frcc
+    gap: 6px
+    width: 143px
+    height: 30px
+    border: 1px solid $colLBlack
+    border-radius: 8px
+    font-size: 12px
+    line-height: 18px
+    font-family: 'Inter-Medium'
+    color: $colLBlack
+    opacity: 0.4
+    &:hover
+      opacity: 0.8
+    >img
+      width: 16px
+    
+    
+
 @media (max-width: 1680px)
   .assetsDetail
     width: $sCenterWidth
@@ -158,11 +146,4 @@
         .btcValue
           font-size: 14px
           line-height: 17px
-    .proofsBar
-      .proofCard
-        height: 130px
-        
-        .cardC
-          font-size: 22px
-          line-height: 27px
-          font-family: 'Inter-SemiBold'
+    

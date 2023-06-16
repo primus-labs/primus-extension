@@ -5,7 +5,7 @@ import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem';
 import type { UserState } from '@/store/reducers';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
 import PFilter from '@/components/PFilter';
-import type { Dispatch } from 'react';
+import type { Dispatch, ReactNode } from 'react';
 import { setSysConfigAction } from '@/store/actions';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import './index.sass';
@@ -16,6 +16,7 @@ interface TokenTableProps {
   flexibleAccountTokenMap?: any;
   spotAccountTokenMap?: any;
   name?: string;
+  headerRightContent?: ReactNode
 }
 
 const TokenTable: React.FC<TokenTableProps> = ({
@@ -23,6 +24,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
   flexibleAccountTokenMap,
   spotAccountTokenMap,
   name,
+  headerRightContent,
 }) => {
   // console.log('TokenTable-list', list,name,spotAccountTokenMap,flexibleAccountTokenMap);
   const [filterAccount, setFilterAccount] = useState<string | undefined>();
@@ -39,7 +41,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: any) {
       if (message.resMethodName === 'getSysConfig') {
-        const { res } = message
+        const { res } = message;
         console.log('page_get:getSysConfig:', message.res);
         if (res) {
           const configMap = message.res.reduce((prev: any, curr: any) => {
@@ -49,7 +51,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
           }, {});
           dispatch(setSysConfigAction(configMap));
         } else {
-          alert('getSysConfig network error')
+          alert('getSysConfig network error');
         }
       }
     };
@@ -72,10 +74,13 @@ const TokenTable: React.FC<TokenTableProps> = ({
     if (filterAccount === 'Spot' && typeof spotAccountTokenMap === 'object') {
       return Object.values(spotAccountTokenMap);
     }
-    if (filterAccount === 'Flexible' && typeof flexibleAccountTokenMap === 'object') {
+    if (
+      filterAccount === 'Flexible' &&
+      typeof flexibleAccountTokenMap === 'object'
+    ) {
       return Object.values(flexibleAccountTokenMap);
     }
-    return list
+    return list;
   }, [list, flexibleAccountTokenMap, spotAccountTokenMap, filterAccount]);
   const activeList = useMemo(() => {
     return (currentList as TokenMap[]).sort((a, b) =>
@@ -111,7 +116,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
     },
     [name, activeItem, spotAccountTokenMap, flexibleAccountTokenMap]
   );
-  
+
   const handleChangeFilter = (filterAccount: string | undefined) => {
     setFilterAccount(filterAccount);
     setActiveItem(undefined);
@@ -120,6 +125,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
     <section className="tokenListWrapper assets">
       <header>
         <span>Profile</span>
+        {headerRightContent}
       </header>
       <ul className="tokens">
         <li
@@ -161,9 +167,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
                   <div className="amount">
                     {formatNumeral(item.amount, { decimalPlaces: 6 })}
                   </div>
-                  <div className="value">
-                    {'$' + formatNumeral(item.value)}
-                  </div>
+                  <div className="value">{'$' + formatNumeral(item.value)}</div>
                 </div>
                 {name === 'binance' && filterAccount === 'All' && (
                   <div
@@ -228,7 +232,8 @@ const TokenTable: React.FC<TokenTableProps> = ({
             <img src={iconInfoGray} alt="" />
             <h1>No results</h1>
             <h2>
-              You don’t have any assets in {filterAccount === 'Flexible' ? 'flexible' : 'spot'} account.
+              You don’t have any assets in{' '}
+              {filterAccount === 'Flexible' ? 'flexible' : 'spot'} account.
             </h2>
           </li>
         )}

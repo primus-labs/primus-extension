@@ -41,6 +41,7 @@
     "redux": "^4.2.1",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.2",
+    "sass-convert": "^0.5.2",
     "scrypt-js": "^3.0.1",
     "stream-browserify": "^3.0.0",
     "util": "^0.12.5",

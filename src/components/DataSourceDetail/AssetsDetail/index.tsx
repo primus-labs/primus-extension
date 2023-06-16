@@ -16,6 +16,7 @@ import type { Dispatch } from 'react';
 import { setExSourcesAsync } from '@/store/actions';
 import type { UserState } from '@/store/reducers';
 import type { ExchangeMeta } from '@/config/constants';
+import iconCredCreate from '@/assets/img/iconCredCreate.svg';
 
 type ExInfo = {
   date: string;
@@ -177,6 +178,15 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   useEffect(() => {
     !fetchExDatasLoading && onUpdate();
   }, [fetchExDatasLoading]);
+  const navToCred = () => {
+    navigate('/cred?createFlag=true')
+  }
+  const headerRightContent = (
+    <button className="tokenTableHeaderRight" onClick={navToCred}>
+        <img src={iconCredCreate} alt="" />
+        <span>Create Credential</span>
+    </button>
+  );
   
   return (
     <div className="assetsDetail">
@@ -222,33 +232,12 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
           </div>
         </div>
       </section>
-      <section className="proofsBar">
-        {proofObjList.map((item) => {
-          return (
-            <div
-              key={item.name}
-              className={item.disabled ? 'proofCard disabled' : 'proofCard'}
-              onClick={() => handleProve(item.type)}
-            >
-              <div className="cardC">
-                <div className="label">{item.name} Proof</div>
-                {item.name === 'Qualification' && userProveFlag && (
-                  <img className="iconSuc" src={iconSuc} alt="" />
-                )}
-                {item.name === 'Assets' && assetsProveFlag && (
-                  <img className="iconSuc" src={iconSuc} alt="" />
-                )}
-                <img className="iconArrow" src={iconArrowLeft} alt="" />
-              </div>
-            </div>
-          );
-        })}
-      </section>
       <TokenTable
         list={totalAssetsList}
         flexibleAccountTokenMap={flexibleAccountTokenMap}
         spotAccountTokenMap={spotAccountTokenMap}
         name={sourceName}
+        headerRightContent={headerRightContent}
       />
       <DataUpdateBar
         type="Assets"
