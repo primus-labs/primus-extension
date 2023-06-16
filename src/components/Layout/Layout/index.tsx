@@ -8,10 +8,10 @@ import rem from '@/utils/rem.js';
 import {
   setSysConfigAction,
   initSourceUpdateFrequencyActionAsync,
+  setProofTypesAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import { postMsg } from '@/utils/utils';
-import { setProofTypesAsync } from '@/store/actions';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';

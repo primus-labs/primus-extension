@@ -24,9 +24,7 @@ import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
-import {
-  attestByDelegationProxy,
-} from '@/services/chains/eas.js';
+import { attestByDelegationProxy } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
@@ -85,72 +83,78 @@ const Cred = () => {
     setCredentialsObj(cObj);
   }, [dispatch]);
   const handleChangeProofType = useCallback((title: string) => {
-    setCredTypesDialogVisible(false)
+    setCredTypesDialogVisible(false);
     setStep(1);
     setActiveAttestationType(title);
-  },[]);
+  }, []);
   const handleCloseMask = () => {
     setStep(0);
   };
-  const validateBaseInfo = (form: AttestionForm) => {
-    const { source, baseValue } = form;
-    const priceObj = exSources[source].tokenPriceMap;
-    let totalAccBal;
-    if (source === 'okx') {
-      const targetObj = exSources[source].tradingAccountTokenAmountObj;
-      totalAccBal = Object.keys(targetObj).reduce((prev, curr) => {
-        const num = targetObj[curr as keyof typeof targetObj];
-        const price = priceObj[curr as keyof typeof priceObj];
-        const curValue = mul(num, price).toFixed();
-        prev = add(Number(prev), Number(curValue));
-        return prev;
-      }, BIGZERO);
-    } else {
-      const targetMap: AssetsMap = exSources[source].spotAccountTokenMap;
-      totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
-        const obj = targetMap[curr as keyof typeof targetMap];
-        const curValue = obj.value;
-        prev = add(Number(prev), Number(curValue));
-        return prev;
-      }, BIGZERO);
-    }
-    const totalBalance = totalAccBal.toFixed();
-    if (gt(Number(baseValue), Number(totalBalance))) {
+  const validateBaseInfo = useCallback(
+    (form: AttestionForm) => {
+      const { source, baseValue } = form;
+      const priceObj = exSources[source]?.tokenPriceMap;
+      let totalAccBal;
+      if (!priceObj) {
+        return true;
+      }
+      if (source === 'okx') {
+        const targetObj = exSources[source].tradingAccountTokenAmountObj;
+        totalAccBal = Object.keys(targetObj).reduce((prev, curr) => {
+          const num = targetObj[curr as keyof typeof targetObj];
+          const price = priceObj[curr as keyof typeof priceObj];
+          const curValue = mul(num, price).toFixed();
+          prev = add(Number(prev), Number(curValue));
+          return prev;
+        }, BIGZERO);
+      } else {
+        const targetMap: AssetsMap = exSources[source].spotAccountTokenMap;
+        totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
+          const obj = targetMap[curr as keyof typeof targetMap];
+          const curValue = obj.value;
+          prev = add(Number(prev), Number(curValue));
+          return prev;
+        }, BIGZERO);
+      }
+      const totalBalance = totalAccBal.toFixed();
+      if (gt(Number(baseValue), Number(totalBalance))) {
+        setStep(2);
+        setActiveRequest({
+          type: 'warn',
+          title: 'Not met the requirements',
+          desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+        });
+        return false;
+      }
+      return true;
+    },
+    [exSources]
+  );
+  const onSubmitAttestationDialog = useCallback(
+    async (form: AttestionForm, activeCred?: CredTypeItemType) => {
+      // fetch balance first
+      if (!validateBaseInfo(form)) {
+        return;
+      }
+      // if activeCred is update,not add
+      const msg = {
+        fullScreenType: 'algorithm',
+        reqMethodName: 'getAttestation',
+        params: {
+          ...form,
+        },
+      };
+      postMsg(padoServicePort, msg);
+      console.log(`page_send:getAttestation:`, form);
       setStep(2);
       setActiveRequest({
-        type: 'warn',
-        title: 'Not met the requirements',
-        desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+        type: 'loading',
+        title: 'Attestation is processing',
+        desc: 'It may take a few seconds.',
       });
-      return false;
-    }
-    return true;
-  };
-  const onSubmitAttestationDialog = useCallback(async (
-    form: AttestionForm,
-    activeCred?: CredTypeItemType
-  ) => {
-    // fetch balance first
-    if (!validateBaseInfo(form)) {
-      return;
-    }
-    // if activeCred is update,not add
-    const msg = {
-      fullScreenType: 'algorithm',
-      reqMethodName: 'getAttestation',
-      params: {
-        ...form,
-      },
-    };
-    postMsg(padoServicePort, msg);
-    console.log(`page_send:getAttestation:`, form);
-    setStep(2);
-    setActiveRequest({
-      type: 'loading',
-      title: 'Attestation is processing',
-      desc: 'It may take a few seconds.',
-    });
-  },[]);
+    },
+    []
+  );
   const onSubmitActiveRequestDialog = () => {
     if (
       activeRequest?.type === 'suc' ||
@@ -427,9 +431,9 @@ const Cred = () => {
     return credentialObj;
   };
   const handleAdd = useCallback(() => {
-    setActiveCred(undefined)
-    setCredTypesDialogVisible(true)
-  },[])
+    setActiveCred(undefined);
+    setCredTypesDialogVisible(true);
+  }, []);
 
   useEffect(() => {
     initAlgorithm();
@@ -474,7 +478,7 @@ const Cred = () => {
     };
   }, []);
   useEffect(() => {
-    createFlag && handleAdd()
+    createFlag && handleAdd();
   }, [createFlag]);
 
   return (
