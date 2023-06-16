@@ -1,7 +1,7 @@
 import { encrypt, decrypt } from '@/utils/crypto';
 import {
   DATASOURCEMAP,
-  padoExtensionVersion,
+  CredVersion,
   ExchangeStoreVersion,
 } from '@/config/constants';
 import { PADOURL, PROXYURL } from '@/config/envConstants';
@@ -252,7 +252,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     source,
     requestid: prevRequestid || timeStampStr,
-    version: padoExtensionVersion,
+    version: CredVersion,
     baseName, // host, such as "api.binance.com"
     baseUrl, // client <----> http-server
     padoUrl: PADOURL, // client <----> pado-server // TODO

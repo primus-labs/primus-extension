@@ -3,6 +3,7 @@ import './index.sass';
 import PMask from '@/components/PMask';
 import { formatAddress } from '@/utils/utils';
 import iconArrow from '@/assets/img/iconArrowLeft2.svg';
+import { padoExtensionVersion } from '@/config/constants';
 interface AddSourceSucDialogProps {
   onClose: () => void;
   onChange: (type: string) => void;
@@ -113,7 +114,7 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = ({
             })}
           </div>
         </main>
-        <footer>Version 0.01</footer>
+        <footer>Version {padoExtensionVersion}</footer>
       </div>
     </PMask>
   );
