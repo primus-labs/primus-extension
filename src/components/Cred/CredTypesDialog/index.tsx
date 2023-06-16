@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useCallback, memo } from 'react';
+import { useSelector } from 'react-redux';
 import PMask from '@/components/PMask';
 import type { UserState } from '@/store/reducers';
-import type { Dispatch } from 'react';
 import './index.sass';
 import type { PROOFTYPEITEM } from '@/types/cred';
 
@@ -11,7 +10,7 @@ interface CredTypesDialogProps {
   onSubmit: (type: string) => void;
 }
 
-const CredTypesDialog: React.FC<CredTypesDialogProps> = ({
+const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(({
   onClose,
   onSubmit,
 }) => {
@@ -86,6 +85,6 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = ({
       </div>
     </PMask>
   );
-};
+});
 
 export default CredTypesDialog;

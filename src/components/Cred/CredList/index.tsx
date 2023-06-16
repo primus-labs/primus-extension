@@ -1,6 +1,8 @@
 import React, { useMemo, memo } from 'react';
 import emptyBox from '@/assets/img/emptyBox.svg';
 import CredItem from '../CredItem';
+import EmptyDataSourceItem from '@/components/DataSourceOverview/EmptyDataSourceItem';
+
 import type { CredTypeItemType } from '../CredItem';
 import './index.sass';
 
@@ -10,7 +12,8 @@ interface CredListProps {
   onViewQrcode: (item: CredTypeItemType) => void;
   onUpdate: (item: CredTypeItemType) => void;
   onDelete: (item: CredTypeItemType) => void;
-  list: CredTypeItemType[]
+  list: CredTypeItemType[];
+  onAdd: () => void;
 }
 const CredList: React.FC<CredListProps> = ({
   onChange,
@@ -19,29 +22,14 @@ const CredList: React.FC<CredListProps> = ({
   onUpdate,
   onDelete,
   list,
+  onAdd,
 }) => {
-  
-  const onChainCredentialsLen = useMemo(() => {
-    const onChainCredList = list.filter((i) => i.provided && i.provided.length > 0);
-    return onChainCredList.length
-  }, [list])
-  
+  const handleAdd = () => {
+    onAdd();
+  };
   return (
     <section className="credListWrapper">
-      <header className="credListHeader">
-        <h2 className="title">Credentials</h2>
-        <div className="statisticsWrapper">
-          <div className="statisticsItem">
-            <div className="value">{list.length}</div>
-            <div className="label">Attested</div>
-          </div>
-          <div className="separtor"></div>
-          <div className="statisticsItem">
-            <div className="value">{onChainCredentialsLen}</div>
-            <div className="label">Provided</div>
-          </div>
-        </div>
-      </header>
+      {list.length < 1 && <EmptyDataSourceItem onAdd={handleAdd} />}
       {list.length > 0 && (
         <ul className="credList">
           {list.map((item, index) => (
@@ -62,12 +50,6 @@ const CredList: React.FC<CredListProps> = ({
             </li>
           ))}
         </ul>
-      )}
-      {list.length === 0 && (
-        <div className="empty">
-          <img src={emptyBox} alt="" />
-          <p>You don’t have any credentials yet.</p>
-        </div>
       )}
     </section>
   );

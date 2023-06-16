@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router';
 import PTabs from '@/components/PTabs';
 import './index.sass';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
-import ProofTypeList from '@/components/Cred/ProofTypeList';
 import AttestationDialog from '@/components/Cred/AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
@@ -26,7 +25,6 @@ import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import {
-  attestByDelegation,
   attestByDelegationProxy,
 } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
@@ -54,7 +52,6 @@ const Cred = () => {
     (state: UserState) => state.padoServicePort
   );
   const exSources = useSelector((state: UserState) => state.exSources);
-  const navigate = useNavigate();
 
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [activeSendToChainRequest, setActiveSendToChainRequest] =
@@ -127,7 +124,7 @@ const Cred = () => {
     }
     return true;
   };
-  const onSubmitAttestationDialog = async (
+  const onSubmitAttestationDialog = useCallback(async (
     form: AttestionForm,
     activeCred?: CredTypeItemType
   ) => {
@@ -151,7 +148,7 @@ const Cred = () => {
       title: 'Attestation is processing',
       desc: 'It may take a few seconds.',
     });
-  };
+  },[]);
   const onSubmitActiveRequestDialog = () => {
     if (
       activeRequest?.type === 'suc' ||
@@ -428,11 +425,9 @@ const Cred = () => {
     return credentialObj;
   };
   const handleAdd = useCallback(() => {
+    setActiveCred(undefined)
     setCredTypesDialogVisible(true)
   },[])
-  const onSubmitCredTypesDialog = (type: string) => {
-    
-  }
 
   useEffect(() => {
     initAlgorithm();
@@ -482,13 +477,13 @@ const Cred = () => {
       <main className="appContent">
         <PTabs onChange={handleChangeTab} value="Cred" />
         <DataSourceSearch />
-        {/* <ProofTypeList onChange={handleChangeProofType} /> */}
         <CredList
           list={filteredCredList}
           onUpChain={handleUpChain}
           onViewQrcode={handleViewQrcode}
           onDelete={handleDeleteCred}
           onUpdate={handleUpdateCred}
+          onAdd={handleAdd}
         />
         {step === 1 && (
           <AttestationDialog
@@ -549,7 +544,7 @@ const Cred = () => {
           />
         )}
       </main>
-      <DataAddBar onClick={handleAdd} />
+      {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
       {credTypesDialogVisible && (
         <CredTypesDialog
           onClose={() => {

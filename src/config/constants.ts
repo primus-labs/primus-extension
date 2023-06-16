@@ -219,3 +219,80 @@ export const ONEMINUTE = 60 * ONESECOND;
 export const ATTESTATIONPOLLINGTIME = 5 * ONESECOND;
 export const DEFAULTDATASOURCEPOLLINGTIMENUM = '3';
 export const BIGZERO = new BigNumber(0);
+
+export const DEFAULTCREDTYPELIST = [
+  {
+    id: '1',
+    credIdentifier: 'ASSETS_PROOF',
+    credTitle: 'Assets Proof',
+    credIntroduce: 'Proving deposit amount',
+    credLogoUrl:
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconAssetsProof.svg',
+    credDetails:
+      'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
+    credProofContent: 'Balance of assets',
+    credProofConditions: '["1000"]',
+    display: 0,
+    enabled: 0,
+    simplifiedName: 'Asset',
+  },
+  {
+    id: '2',
+    credIdentifier: 'TOKEN_HOLDINGS',
+    credTitle: 'Token Holdings',
+    credIntroduce: 'Proving ownership of a kind of Token',
+    credLogoUrl:
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconTokenHoldings.svg',
+    credDetails:
+      'Proof that you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
+    credProofContent: 'Hold this kind of Token',
+    credProofConditions: '["USDT","LAT"]',
+    display: 0,
+    enabled: 0,
+    simplifiedName: 'Token',
+  },
+  {
+    id: '3',
+    credIdentifier: 'QUALIFICATIONS',
+    credTitle: 'Qualifications',
+    credIntroduce: 'Proving identity or membership',
+    credLogoUrl:
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconQualifications.svg',
+    credDetails: 'xxx',
+    credProofContent: 'xxx',
+    credProofConditions: 'xxx',
+    display: 0,
+    enabled: 1,
+    simplifiedName: 'Qualification',
+  },
+];
+export const DEFAULTAUTHSOURCELIST = [
+  {
+    id: '1',
+    logoUrl:
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconGoogle.svg',
+    name: 'GOOGLE',
+    enabled: '0',
+  },
+  {
+    id: '2',
+    logoUrl:
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconTwitter.svg',
+    name: 'TWITTER',
+    enabled: '0',
+  },
+  {
+    id: '3',
+    logoUrl:
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconGithub.png',
+    name: 'GITHUB',
+    enabled: '0',
+  },
+  {
+    id: '4',
+    logoUrl:
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconDiscord.svg',
+    name: 'DISCORD',
+    enabled: '0',
+  },
+];

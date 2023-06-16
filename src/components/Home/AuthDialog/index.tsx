@@ -9,6 +9,7 @@ import './index.sass';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/store/reducers';
 import { getAuthUrl, postMsg } from '@/utils/utils';
+import {DEFAULTAUTHSOURCELIST} from '@/config/constants'
 
 interface authDialogProps {
   onClose: () => void;
@@ -20,36 +21,9 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
     (state: UserState) => state.padoServicePort
   );
 
-  const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>([
-    {
-      id: '1',
-      logoUrl:
-        'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconGoogle.svg',
-      name: 'GOOGLE',
-      enabled: '0',
-    },
-    {
-      id: '2',
-      logoUrl:
-        'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconTwitter.svg',
-      name: 'TWITTER',
-      enabled: '0',
-    },
-    {
-      id: '3',
-      logoUrl:
-        'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconGithub.png',
-      name: 'GITHUB',
-      enabled: '0',
-    },
-    {
-      id: '4',
-      logoUrl:
-        'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconDiscord.svg',
-      name: 'DISCORD',
-      enabled: '0',
-    },
-  ]);
+  const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>(
+    DEFAULTAUTHSOURCELIST
+  );
   const [activeSource, setActiveSource] = useState<string>();
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
