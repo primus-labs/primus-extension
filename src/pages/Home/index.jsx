@@ -16,7 +16,7 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 
 console.log('Page initialization')
 
-// TODO React.strict
+// TODO 
 root.render(<>
   <Provider store={store}>
     <RouterProvider router={router} />

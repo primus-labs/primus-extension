@@ -128,10 +128,10 @@ export const setProofTypesAsync = () => {
         );
         dispatch(setProofTypesAction(filteredTypes));
       } else {
-        alert('getProofTypes network error');
+        // alert('getProofTypes network error');
       }
     } catch (e) {
-      alert('getProofTypes network error');
+      // alert('getProofTypes network error');
     }
   };
 };

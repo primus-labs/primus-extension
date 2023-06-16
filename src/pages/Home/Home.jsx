@@ -87,14 +87,14 @@ const Home = () => {
     if (keyStore) {
       const padoServicePortListener = async function (message) {
         if (message.resMethodName === 'queryUserPassword') {
-          console.log('page_get:queryUserPassword:', message.res);
+          console.log('page_get:queryUserPassword(Home):', message.res);
           if (!message.res) {
             navigate('/lock');
           } else {
             navigate('/datas');
           }
         }
-        // padoServicePort.onMessage.removeListener(padoServicePortListener)
+        padoServicePort.onMessage.removeListener(padoServicePortListener)
       };
       padoServicePort.onMessage.addListener(padoServicePortListener);
       const msg = {

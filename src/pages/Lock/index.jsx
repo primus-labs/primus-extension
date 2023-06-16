@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import PInput from '@/components/PInput/index';
@@ -7,7 +7,7 @@ import './index.sass';
 import { useSelector, useDispatch } from 'react-redux';
 import { postMsg } from '@/utils/utils';
 
-const Lock = () => {
+const Lock = memo(() => {
   const dispatch = useDispatch();
   const padoServicePort = useSelector((state) => state.padoServicePort);
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ const Lock = () => {
   const handleSubmitPwd = () => {
     handleClickStart();
   };
-  const handleClearUserPwd = async() => {
+  const handleClearUserPwd = useCallback(async () => {
     await dispatch({
       type: 'setUserPassword',
       payload: undefined,
@@ -68,11 +68,11 @@ const Lock = () => {
       params: {},
     };
     postMsg(padoServicePort, msg);
-  };
+  }, [dispatch, padoServicePort]);
 
   useEffect(() => {
     handleClearUserPwd();
-  }, []);
+  }, [handleClearUserPwd]);
 
   return (
     <div className="pageIndex pageLock">
@@ -105,6 +105,6 @@ const Lock = () => {
       </main>
     </div>
   );
-};
+});
 
 export default Lock;

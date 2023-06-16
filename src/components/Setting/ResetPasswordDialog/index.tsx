@@ -32,10 +32,6 @@ const ResetPassword: React.FC<SetPwdDialogProps> = ({
       if (message.resMethodName === 'resetPassword') {
         console.log('page_get:resetPassword:', message.res);
         if (message.res) {
-          await dispatch({
-            type: 'setUserPassword',
-            payload: newPwd,
-          });
           onSubmit();
         } else {
           alert('Password reset failed');
