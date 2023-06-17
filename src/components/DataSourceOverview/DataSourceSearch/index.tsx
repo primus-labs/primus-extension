@@ -1,15 +1,17 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import PControledInput from '@/components/PControledInput';
 import PSelect from '@/components/PSelect';
-import { useSelector } from 'react-redux';
-import type { UserState } from '@/store/reducers';
-import { useDispatch } from 'react-redux';
-import type { Dispatch } from 'react';
-import './index.sass';
-interface TokenTableProps {}
 
-const DataSourceSearch: React.FC<TokenTableProps> = ({}) => {
+import type { UserState } from '@/store/reducers';
+
+import type { Dispatch } from 'react';
+
+import './index.sass';
+
+const DataSourceSearch = memo(() => {
   const location = useLocation();
   const pathname = location.pathname;
   const exSources = useSelector((state: UserState) => state.exSources);
@@ -20,7 +22,7 @@ const DataSourceSearch: React.FC<TokenTableProps> = ({}) => {
   const filterWord = useSelector((state: UserState) => state.filterWord);
   const credentials = useSelector((state: UserState) => state.credentials);
   const dispatch: Dispatch<any> = useDispatch();
-  const dataSourceTypeList = useMemo( () => {
+  const dataSourceTypeList = useMemo(() => {
     let defaultList = [
       {
         value: 'All',
@@ -56,7 +58,6 @@ const DataSourceSearch: React.FC<TokenTableProps> = ({}) => {
           text: 'Qualifications',
         });
       }
-      
     } else {
       if (
         typeof exSources === 'object' &&
@@ -108,6 +109,6 @@ const DataSourceSearch: React.FC<TokenTableProps> = ({}) => {
       </div>
     </div>
   );
-};
+});
 
 export default DataSourceSearch;

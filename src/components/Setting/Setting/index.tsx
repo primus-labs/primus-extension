@@ -1,18 +1,18 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback,memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import './index.sass';
 import SettingDialog from '@/components/Setting/SettingDialog';
 import ResetPasswordDialog from '@/components/Setting/ResetPasswordDialog';
 import ExportWalletDialog from '@/components/Setting/ExportWalletDialog';
 import ManageDataDialog from '@/components/Setting/ManageDataDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
+import './index.sass';
 
 interface SettingProps {
   onClose: () => void;
 }
 
-const Setting: React.FC<SettingProps> = ({ onClose }) => {
+const Setting: React.FC<SettingProps> = memo(({ onClose }) => {
   const navigate = useNavigate();
   const [resetPwdDialogVisible, setResetPwdDialogVisible] =
     useState<boolean>(false);
@@ -102,6 +102,6 @@ const Setting: React.FC<SettingProps> = ({ onClose }) => {
       )}
     </>
   );
-};
+});
 
 export default Setting;

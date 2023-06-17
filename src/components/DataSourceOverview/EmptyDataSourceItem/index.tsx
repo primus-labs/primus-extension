@@ -1,14 +1,14 @@
-import React from 'react';
-import iconAdd from '@/assets/img/iconAdd.svg'
+import React, { memo } from 'react';
+import iconAdd from '@/assets/img/iconAdd.svg';
 import './index.sass';
 
 interface DataSourceItemProps {
-  onAdd: () => void
+  onAdd: () => void;
 }
-const DataSourceItem: React.FC<DataSourceItemProps> = ({ onAdd }) => {
+const DataSourceItem: React.FC<DataSourceItemProps> = memo(({ onAdd }) => {
   const handleClickAdd = () => {
-    onAdd()
-  }
+    onAdd();
+  };
   return (
     <div className="emptyDataSourceItem" onClick={handleClickAdd}>
       <div className="emptyDataSourceItemC">
@@ -17,6 +17,6 @@ const DataSourceItem: React.FC<DataSourceItemProps> = ({ onAdd }) => {
       </div>
     </div>
   );
-};
+});
 
 export default DataSourceItem;

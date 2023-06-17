@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import type { ChangeEvent } from 'react';
 import './index.sass';
 
@@ -23,30 +23,34 @@ const list = [
     defaultValue: false,
   },
 ];
-const PFilterContent: React.FC<TokenTableProps> = ({onChange, visible}) => {
-  const willCloseEl = useRef(null)
-  const [activeItem, setActiveItem] = useState<string | undefined>('All');
-  
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, label: string) => {
-    // console.log(e, label)
-    const curChecked = e.target.checked;
-    if (curChecked) {
-      const activeI = activeItem === label ? undefined : label;
-      setActiveItem(activeI);
-    } else {
-      setActiveItem(undefined);
-    }
-  };
-  useEffect(() => {
-    onChange(activeItem)
-  }, [activeItem])
-  
-  // useEffect(() => {
-  //   setActiveItem('All');
-  // }, [])
-  
-  return (
-    <section className={visible? "pFilterContent visible":"pFilterContent"} ref={willCloseEl}>
+const PFilterContent: React.FC<TokenTableProps> = memo(
+  ({ onChange, visible }) => {
+    const willCloseEl = useRef(null);
+    const [activeItem, setActiveItem] = useState<string | undefined>('All');
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>, label: string) => {
+      // console.log(e, label)
+      const curChecked = e.target.checked;
+      if (curChecked) {
+        const activeI = activeItem === label ? undefined : label;
+        setActiveItem(activeI);
+      } else {
+        setActiveItem(undefined);
+      }
+    };
+    useEffect(() => {
+      onChange(activeItem);
+    }, [activeItem]);
+
+    // useEffect(() => {
+    //   setActiveItem('All');
+    // }, [])
+
+    return (
+      <section
+        className={visible ? 'pFilterContent visible' : 'pFilterContent'}
+        ref={willCloseEl}
+      >
         <ul className="formItems">
           {list &&
             list.map((item) => {
@@ -76,8 +80,9 @@ const PFilterContent: React.FC<TokenTableProps> = ({onChange, visible}) => {
               );
             })}
         </ul>
-    </section>
-  );
-};
+      </section>
+    );
+  }
+);
 
 export default PFilterContent;

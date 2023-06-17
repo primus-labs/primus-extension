@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import iconCopy from '@/assets/img/iconCopy.svg';
 import iconCompleted from '@/assets/img/iconCompleted.svg';
 import './index.sass';
-import { div } from '@/utils/utils';
 
 interface PCopyProps {
   text: string;
 }
 
-const PCopy: React.FC<PCopyProps> = ({ text }) => {
+const PCopy: React.FC<PCopyProps> = memo(({ text }) => {
   const [copied, setCopied] = useState<boolean>(false);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -27,6 +27,6 @@ const PCopy: React.FC<PCopyProps> = ({ text }) => {
       />
     </div>
   );
-};
+});
 
 export default PCopy;

@@ -1,22 +1,23 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, memo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
-import { gte, div, formatNumeral } from '@/utils/utils';
-import { BTC } from '@/config/constants';
+
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 import TokenTable from '@/components/TokenTable';
-import iconArrowLeft from '@/assets/img/iconArrowLeft2.svg';
-import iconSuc from '@/assets/img/iconSuc.svg';
 import iconAvatar from '@/assets/img/iconAvatar.png';
+import iconCredCreate from '@/assets/img/iconCredCreate.svg';
 import './index.sass';
+
+import { setExSourcesAsync } from '@/store/actions';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
-import { useDispatch, useSelector } from 'react-redux';
+import { gte, div, formatNumeral } from '@/utils/utils';
+import { BTC } from '@/config/constants';
+
 import type { Dispatch } from 'react';
-import { setExSourcesAsync } from '@/store/actions';
 import type { UserState } from '@/store/reducers';
 import type { ExchangeMeta } from '@/config/constants';
-import iconCredCreate from '@/assets/img/iconCredCreate.svg';
 
 type ExInfo = {
   date: string;
@@ -46,37 +47,19 @@ export type DataSourceType = {
   totalBalance: string;
   [propName: string]: any;
 };
-interface AssetsDetailProps {
-  onProve: (name: string) => void;
-  assetsProveFlag: boolean;
-  userProveFlag: boolean;
-}
-const proofObjList = [
-  {
-    name: 'Assets',
-    type: 'Assets Proof',
-  },
-  {
-    name: 'Qualification',
-    type: 'Qualification',
-    disabled: true,
-  },
-];
-const AssetsDetail: React.FC<AssetsDetailProps> = ({
-  onProve,
-  assetsProveFlag,
-  userProveFlag,
-}) => {
+
+const AssetsDetail = memo(() => {
+  const exSources = useSelector((state: UserState) => state.exSources);
+
   const dispatch: Dispatch<any> = useDispatch();
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const sourceName = (searchParams.get('name') as string).toLowerCase();
-  const exSources = useSelector((state: UserState) => state.exSources);
+
   const dataSource = useMemo(() => {
     return exSources[sourceName] as ExDataType;
   }, [exSources, sourceName]);
-
   const btcPrice = useMemo(() => {
     if (typeof dataSource === 'object') {
       const originP =
@@ -154,23 +137,29 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
     }
   }, [dataSource]);
 
-  const handleProve = (item: string) => {
-    // 'Assets Proof', 'Qualification'
-    onProve(item);
-  };
-
   const handleBack = () => {
     navigate(-1);
   };
   const onUpdate = () => {
     dispatch(setExSourcesAsync());
   };
-
   const fetchExData = () => {
     !fetchExDatasLoading &&
       (fetchExDatas as (name: string) => void)(sourceName);
   };
-  
+
+  const navToCred = useCallback(() => {
+    navigate('/cred?createFlag=true');
+  }, [navigate]);
+  const headerRightContent = useMemo(() => {
+    return (
+      <button className="tokenTableHeaderRight" onClick={navToCred}>
+        <img src={iconCredCreate} alt="" />
+        <span>Create Credential</span>
+      </button>
+    );
+  }, [navToCred]);
+
   useEffect(() => {
     sourceName && fetchExData();
   }, [sourceName]);
@@ -178,16 +167,7 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
   useEffect(() => {
     !fetchExDatasLoading && onUpdate();
   }, [fetchExDatasLoading]);
-  const navToCred = () => {
-    navigate('/cred?createFlag=true')
-  }
-  const headerRightContent = (
-    <button className="tokenTableHeaderRight" onClick={navToCred}>
-        <img src={iconCredCreate} alt="" />
-        <span>Create Credential</span>
-    </button>
-  );
-  
+
   return (
     <div className="assetsDetail">
       <div className="iconBackWrapper" onClick={handleBack}></div>
@@ -246,6 +226,6 @@ const AssetsDetail: React.FC<AssetsDetailProps> = ({
       />
     </div>
   );
-};
+});
 
 export default AssetsDetail;

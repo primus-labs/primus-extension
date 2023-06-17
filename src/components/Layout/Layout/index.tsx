@@ -21,7 +21,7 @@ import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 import './index.sass';
 
 const Layout = () => {
-  // console.log('222222Layout')
+  console.log('222222Layout');
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -99,7 +99,7 @@ const Layout = () => {
       };
       postMsg(padoServicePort, msg);
     }
-  }, [padoServicePort, userPassword]);
+  }, [padoServicePort, userPassword, dispatch, navigate]);
 
   const addDisconnectListener = useCallback(() => {
     const onDisconnectFullScreen = (port: chrome.runtime.Port) => {
@@ -123,20 +123,18 @@ const Layout = () => {
   }, [initPage, addDisconnectListener]);
   useEffect(() => {
     console.log('updated port in page layout', padoServicePort.name);
-  }, []);
-
-  useEffect(() => {
-    dispatch(setProofTypesAsync());
-    dispatch(initSourceUpdateFrequencyActionAsync());
-  }, [dispatch]);
-  useEffect(() => {
-    startPollingSources();
-  }, []);
+  }, [padoServicePort]);
 
   useEffect(() => {
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
+    dispatch(setProofTypesAsync());
+    dispatch(initSourceUpdateFrequencyActionAsync());
   }, [dispatch]);
+
+  useEffect(() => {
+    startPollingSources();
+  }, [startPollingSources]);
 
   return (
     <div className="pageApp">

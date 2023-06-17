@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router';
+
 import iconDataHover from '@/assets/img/iconDataHover.svg';
 import iconEventsHover from '@/assets/img/iconEventsHover.svg';
 import iconCredHover from '@/assets/img/iconCredHover.svg';
@@ -33,9 +34,10 @@ const tabs: TabItem[] = [
     path: '/cred',
   },
 ];
-const PTabs: React.FC<PInputProps> = ({ onChange, value }) => {
+const PTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
   const [activeTab, setActiveTab] = useState<string>('Data');
   const [focusTab, setFocusTab] = useState<string>();
+
   const navigate = useNavigate();
 
   const handleClickTab = (item: TabItem) => {
@@ -69,9 +71,10 @@ const PTabs: React.FC<PInputProps> = ({ onChange, value }) => {
     },
     [focusTab, activeTab]
   );
+
   useEffect(() => {
-    value && setActiveTab(value)
-  }, [value])
+    value && setActiveTab(value);
+  }, [value]);
 
   return (
     <div className="pTabs">
@@ -91,6 +94,6 @@ const PTabs: React.FC<PInputProps> = ({ onChange, value }) => {
       })}
     </div>
   );
-};
+});
 
 export default PTabs;

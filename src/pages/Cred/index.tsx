@@ -1,6 +1,8 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
 import PTabs from '@/components/PTabs';
 import './index.sass';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
@@ -10,35 +12,32 @@ import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChain
 import ConnectWalletDialog from '@/components/Cred/ConnectWalletDialog';
 import CredList from '@/components/Cred/CredList';
 import QRCodeDialog from '@/components/Cred/QRCodeDialog';
-import type { CredTypeItemType } from '@/components/Cred/CredItem';
-import type { UserState } from '@/store/reducers';
+import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
+import CredTypesDialog from '@/components/Cred/CredTypesDialog';
+
 import { postMsg } from '@/utils/utils';
-import { useDispatch } from 'react-redux';
-import type { Dispatch } from 'react';
-import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
-import type { WALLETITEMTYPE } from '@/config/constants';
 import { ONEMINUTE, ATTESTATIONPOLLINGTIME, BIGZERO } from '@/config/constants';
-
-import type { ActiveRequestType } from '@/pages/DataSourceOverview';
-import type { AttestionForm } from '@/components/Cred/AttestationDialog';
-
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegationProxy } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
+
+import type { CredTypeItemType } from '@/components/Cred/CredItem';
+import type { UserState } from '@/store/reducers';
+import type { Dispatch } from 'react';
+import type { WALLETITEMTYPE } from '@/config/constants';
+import type { ActiveRequestType } from '@/pages/DataSourceOverview';
+import type { AttestionForm } from '@/components/Cred/AttestationDialog';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
-import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
-import CredTypesDialog from '@/components/Cred/CredTypesDialog';
+
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;
 };
-const Cred = () => {
-  const [searchParams] = useSearchParams();
-  const createFlag = searchParams.get('createFlag');
+
+const Cred = memo(() => {
   const [credTypesDialogVisible, setCredTypesDialogVisible] =
     useState<boolean>();
-  const dispatch: Dispatch<any> = useDispatch();
   const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
@@ -48,19 +47,23 @@ const Cred = () => {
   const [activeAttestationType, setActiveAttestationType] =
     useState<string>('');
   const [activeCred, setActiveCred] = useState<CredTypeItemType>();
-  const padoServicePort = useSelector(
-    (state: UserState) => state.padoServicePort
-  );
-  const exSources = useSelector((state: UserState) => state.exSources);
-
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [activeSendToChainRequest, setActiveSendToChainRequest] =
     useState<ActiveRequestType>();
 
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
+  );
+  const exSources = useSelector((state: UserState) => state.exSources);
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
   const filterWord = useSelector((state: UserState) => state.filterWord);
+
+  const [searchParams] = useSearchParams();
+  const createFlag = searchParams.get('createFlag');
+  const dispatch: Dispatch<any> = useDispatch();
+
   const credList: CredTypeItemType[] = useMemo(() => {
     return Object.values(credentialsObj);
   }, [credentialsObj]);
@@ -76,7 +79,8 @@ const Cred = () => {
     }
     return activeList;
   }, [credList, activeSourceType, filterWord]);
-  const handleChangeTab = (val: string) => {};
+
+  const handleChangeTab = useCallback((val: string) => {}, []);
   const initCredList = useCallback(async () => {
     const cObj = await getCredentialsObjFromStorage();
     dispatch(setCredentialsAsync());
@@ -87,9 +91,9 @@ const Cred = () => {
     setStep(1);
     setActiveAttestationType(title);
   }, []);
-  const handleCloseMask = () => {
+  const handleCloseMask = useCallback(() => {
     setStep(0);
-  };
+  }, []);
   const validateBaseInfo = useCallback(
     (form: AttestionForm) => {
       const { source, baseValue } = form;
@@ -155,7 +159,7 @@ const Cred = () => {
     },
     [padoServicePort, validateBaseInfo]
   );
-  const onSubmitActiveRequestDialog = () => {
+  const onSubmitActiveRequestDialog = useCallback(() => {
     if (
       activeRequest?.type === 'suc' ||
       activeRequest?.type === 'error' ||
@@ -165,8 +169,8 @@ const Cred = () => {
       // refresh attestation list
       return;
     }
-  };
-  const onSubmitActiveSendToChainRequestDialog = () => {
+  }, [activeRequest?.type]);
+  const onSubmitActiveSendToChainRequestDialog = useCallback(() => {
     if (
       activeSendToChainRequest?.type === 'suc' ||
       activeSendToChainRequest?.type === 'error' ||
@@ -176,95 +180,100 @@ const Cred = () => {
       // refresh attestation list
       return;
     }
-  };
+  }, [activeSendToChainRequest?.type]);
   const handleUpChain = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
     setStep(3);
   }, []);
-  const handleSubmitTransferToChain = (networkName?: string) => {
+  const handleSubmitTransferToChain = useCallback((networkName?: string) => {
     // TODO
     if (networkName) {
       setActiveNetworkName(networkName);
       setStep(4);
     }
-  };
-  const handleCancelTransferToChain = () => {};
-  const handleBackConnectWallet = () => {
+  }, []);
+  const handleCancelTransferToChain = useCallback(() => {}, []);
+  const handleBackConnectWallet = useCallback(() => {
     setStep(3);
-  };
-  const handleSubmitConnectWallet = async (wallet: WALLETITEMTYPE) => {
-    // TODO
-    setStep(5);
-    setActiveSendToChainRequest({
-      type: 'loading',
-      title: 'Processing',
-      desc: 'Please complete the transaction in your wallet.',
-    });
+  }, []);
+  const handleSubmitConnectWallet = useCallback(
+    async (wallet: WALLETITEMTYPE) => {
+      // TODO
+      setStep(5);
+      setActiveSendToChainRequest({
+        type: 'loading',
+        title: 'Processing',
+        desc: 'Please complete the transaction in your wallet.',
+      });
 
-    const targetNetwork = EASInfo[activeNetworkName as keyof typeof EASInfo];
-    try {
-      const [accounts, chainId, provider] = await connectWallet(targetNetwork);
-      const { keyStore } = await chrome.storage.local.get(['keyStore']);
-      const { address } = JSON.parse(keyStore);
-      const upChainParams = {
-        networkName: activeNetworkName,
-        metamaskprovider: provider,
-        receipt: '0x' + address,
-        attesteraddr: PADOADDRESS,
-        data: activeCred?.encodedData,
-        signature: activeCred?.signature,
-        type: activeCred?.type,
-      };
-      const upChainRes = await attestByDelegationProxy(upChainParams);
-      if (upChainRes) {
-        const cObj = await getCredentialsObjFromStorage();
-        const curRequestid = activeCred?.requestid as string;
-        const curCredential = credentialsObj[curRequestid];
-        const newProvided = curCredential.provided ?? [];
-        const currentChainObj: any = ONCHAINLIST.find(
-          (i) => activeNetworkName === i.title
+      const targetNetwork = EASInfo[activeNetworkName as keyof typeof EASInfo];
+      try {
+        const [accounts, chainId, provider] = await connectWallet(
+          targetNetwork
         );
-        currentChainObj.attestationUID = upChainRes;
-        const existIndex = newProvided.findIndex(
-          (i) => i.title === activeNetworkName
-        );
-        existIndex < 0 && newProvided.push(currentChainObj);
+        const { keyStore } = await chrome.storage.local.get(['keyStore']);
+        const { address } = JSON.parse(keyStore);
+        const upChainParams = {
+          networkName: activeNetworkName,
+          metamaskprovider: provider,
+          receipt: '0x' + address,
+          attesteraddr: PADOADDRESS,
+          data: activeCred?.encodedData,
+          signature: activeCred?.signature,
+          type: activeCred?.type,
+        };
+        const upChainRes = await attestByDelegationProxy(upChainParams);
+        if (upChainRes) {
+          const cObj = await getCredentialsObjFromStorage();
+          const curRequestid = activeCred?.requestid as string;
+          const curCredential = credentialsObj[curRequestid];
+          const newProvided = curCredential.provided ?? [];
+          const currentChainObj: any = ONCHAINLIST.find(
+            (i) => activeNetworkName === i.title
+          );
+          currentChainObj.attestationUID = upChainRes;
+          const existIndex = newProvided.findIndex(
+            (i) => i.title === activeNetworkName
+          );
+          existIndex < 0 && newProvided.push(currentChainObj);
 
-        cObj[curRequestid] = Object.assign(curCredential, {
-          provided: newProvided,
-        });
-        await chrome.storage.local.set({
-          credentials: JSON.stringify(cObj),
-        });
-        initCredList();
-        setActiveSendToChainRequest({
-          type: 'suc',
-          title: 'Congratulations',
-          desc: 'Your attestation is recorded on-chain!',
-        });
-      } else {
+          cObj[curRequestid] = Object.assign(curCredential, {
+            provided: newProvided,
+          });
+          await chrome.storage.local.set({
+            credentials: JSON.stringify(cObj),
+          });
+          initCredList();
+          setActiveSendToChainRequest({
+            type: 'suc',
+            title: 'Congratulations',
+            desc: 'Your attestation is recorded on-chain!',
+          });
+        } else {
+          setActiveSendToChainRequest({
+            type: 'error',
+            title: 'Failed',
+            desc: 'Your wallet did not connect or refused to authorize. Please try again later.',
+          });
+        }
+      } catch (e) {
         setActiveSendToChainRequest({
           type: 'error',
           title: 'Failed',
           desc: 'Your wallet did not connect or refused to authorize. Please try again later.',
         });
       }
-    } catch (e) {
-      setActiveSendToChainRequest({
-        type: 'error',
-        title: 'Failed',
-        desc: 'Your wallet did not connect or refused to authorize. Please try again later.',
-      });
-    }
-  };
+    },
+    [activeCred, activeNetworkName, credentialsObj, initCredList]
+  );
   const handleViewQrcode = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
     setQrcodeVisible(true);
   }, []);
-  const handleCloseQrcode = () => {
+  const handleCloseQrcode = useCallback(() => {
     setQrcodeVisible(false);
     handleCloseMask();
-  };
+  }, [handleCloseMask]);
   const handleDeleteCred = useCallback(
     async (item: CredTypeItemType) => {
       const curRequestid = item.requestid;
@@ -282,6 +291,20 @@ const Cred = () => {
     setActiveCred(item);
     setStep(1);
   }, []);
+  const clearFetchTimeoutTimer = useCallback(() => {
+    fetchTimeoutTimer && clearTimeout(fetchTimeoutTimer);
+  }, [fetchTimeoutTimer]);
+  const clearFetchAttestationTimer = useCallback(() => {
+    if (fetchAttestationTimer) {
+      clearInterval(fetchAttestationTimer);
+      clearFetchTimeoutTimer();
+    }
+  }, [fetchAttestationTimer, clearFetchTimeoutTimer]);
+  const handleAdd = useCallback(() => {
+    setActiveCred(undefined);
+    setCredTypesDialogVisible(true);
+  }, []);
+
   const padoServicePortListener = async function (message: any) {
     const { resType, resMethodName, res } = message;
     if (resType === 'algorithm') {
@@ -414,15 +437,6 @@ const Cred = () => {
     padoServicePort.onMessage.addListener(padoServicePortListener);
   };
 
-  const clearFetchTimeoutTimer = useCallback(() => {
-    fetchTimeoutTimer && clearTimeout(fetchTimeoutTimer);
-  }, [fetchTimeoutTimer]);
-  const clearFetchAttestationTimer = useCallback(() => {
-    if (fetchAttestationTimer) {
-      clearInterval(fetchAttestationTimer);
-      clearFetchTimeoutTimer();
-    }
-  }, [fetchAttestationTimer, clearFetchTimeoutTimer]);
   const getCredentialsObjFromStorage = async (): Promise<CREDENTIALSOBJ> => {
     const { credentials: credentialsStr } = await chrome.storage.local.get([
       'credentials',
@@ -430,10 +444,6 @@ const Cred = () => {
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     return credentialObj;
   };
-  const handleAdd = useCallback(() => {
-    setActiveCred(undefined);
-    setCredTypesDialogVisible(true);
-  }, []);
 
   useEffect(() => {
     initAlgorithm();
@@ -451,7 +461,6 @@ const Cred = () => {
       clearFetchTimeoutTimer();
     };
   }, [clearFetchTimeoutTimer]);
-
   useEffect(() => {
     if (
       activeRequest?.type === 'suc' ||
@@ -564,6 +573,6 @@ const Cred = () => {
       )}
     </div>
   );
-};
+});
 
 export default Cred;

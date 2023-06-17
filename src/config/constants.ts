@@ -31,6 +31,12 @@ import Bitget from '@/services/exchange/bitget';
 import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
 import BigNumber from 'bignumber.js';
+import iconETH from '@/assets/img/iconETH.svg';
+import iconBinance from '@/assets/img/iconBinance.png';
+import iconNetwork3 from '@/assets/img/iconNetwork3.png';
+import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
+import iconNetwork5 from '@/assets/img/iconNetwork5.png';
+import iconNetwork6 from '@/assets/img/iconNetwork6.png';
 
 export type ExchangeMeta = {
   name: string;
@@ -295,5 +301,32 @@ export const DEFAULTAUTHSOURCELIST = [
       'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconDiscord.svg',
     name: 'DISCORD',
     enabled: '0',
+  },
+];
+
+export const CHAINNETWORKLIST = [
+  {
+    icon: iconETH,
+    title: 'ETH',
+  },
+  {
+    icon: iconBinance,
+    title: 'Binance',
+  },
+  {
+    icon: iconNetwork3,
+    title: '3',
+  },
+  {
+    icon: iconNetwork4,
+    title: '4',
+  },
+  {
+    icon: iconNetwork5,
+    title: '5',
+  },
+  {
+    icon: iconNetwork6,
+    title: '6',
   },
 ];

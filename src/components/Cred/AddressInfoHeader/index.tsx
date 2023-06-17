@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import iconAddress from '@/assets/img/iconAddress.svg';
-import './index.sass'
+import './index.sass';
 
-interface AuthInfoHeaderProps {
-}
-
-const AddressInfoHeader: React.FC<AuthInfoHeaderProps> = () => {
+const AddressInfoHeader = memo(() => {
   const [accountAddr, setAccountAddr] = useState<any>();
+
   const initPage = async () => {
     const res = await chrome.storage.local.get(['keyStore']);
     const keyStoreStr = res.keyStore;
     const parseKeyStore = JSON.parse(keyStoreStr as string);
     setAccountAddr('0x' + parseKeyStore.address);
-    
   };
+
   useEffect(() => {
     initPage();
   }, []);
@@ -27,6 +25,6 @@ const AddressInfoHeader: React.FC<AuthInfoHeaderProps> = () => {
       </div>
     </header>
   );
-};
+});
 
 export default AddressInfoHeader;

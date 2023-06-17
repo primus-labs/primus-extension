@@ -5,9 +5,6 @@ import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
 // Import charts, all with Chart suffix
 import { PieChart } from 'echarts/charts';
-import BigNumber from 'bignumber.js';
-import { add, mul, div, gt, sub } from '@/utils/utils';
-import { CHARTCOLORS } from '@/config/constants';
 // import components, all suffixed with Component
 import {
   TooltipComponent,
@@ -17,7 +14,13 @@ import {
 } from 'echarts/components';
 // Import renderer, note that introducing the CanvasRenderer or SVGRenderer is a required step
 import { CanvasRenderer } from 'echarts/renderers';
+import BigNumber from 'bignumber.js';
+
+import { add, mul, div, gt, sub } from '@/utils/utils';
+import { CHARTCOLORS } from '@/config/constants';
+
 import './index.sass';
+
 // Register the required components
 echarts.use([TooltipComponent, PieChart, LegendComponent, CanvasRenderer]);
 
@@ -31,6 +34,7 @@ interface PPieChartProps {
 const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
   // console.log('PPieChart', list)
   const [options, setOptions] = useState({});
+
   const getOption = useCallback(
     (name?: string) => {
       const chartData = list
@@ -189,6 +193,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
     },
     [list]
   );
+
   useEffect(() => {
     setOptions(getOption());
   }, [list, getOption]);

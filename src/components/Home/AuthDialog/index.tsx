@@ -1,25 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,memo } from 'react';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import type { AuthSourcesItem, AuthSourcesItems } from '@/services/api/user';
-import PHeader from '@/components/Layout/PHeader';
 
+import PHeader from '@/components/Layout/PHeader';
 import PMask from '@/components/PMask';
 import rightArrow from '@/assets/img/rightArrow.svg';
-import './index.sass';
-import { useSelector } from 'react-redux';
+
+import type { AuthSourcesItem, AuthSourcesItems } from '@/services/api/user';
 import type { UserState } from '@/store/reducers';
 import { getAuthUrl, postMsg } from '@/utils/utils';
-import {DEFAULTAUTHSOURCELIST} from '@/config/constants'
+import { DEFAULTAUTHSOURCELIST } from '@/config/constants';
+
+import './index.sass';
 
 interface authDialogProps {
   onClose: () => void;
   onSubmit: () => void;
 }
 
-const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
-  const padoServicePort = useSelector(
-    (state: UserState) => state.padoServicePort
-  );
+const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
 
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>(
     DEFAULTAUTHSOURCELIST
@@ -28,6 +27,11 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
   const [errorTip, setErrorTip] = useState<string>();
+
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
+  );
+
   const handleClickNext = () => {
     if (!activeSource) {
       setErrorTip('Please select one Auth to sign up');
@@ -190,6 +194,6 @@ const AuthDialog: React.FC<authDialogProps> = ({ onClose, onSubmit }) => {
       </div>
     </PMask>
   );
-};
+});
 
 export default AuthDialog;

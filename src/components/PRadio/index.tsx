@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import './index.sass';
 
 type OptionItem = {
@@ -12,12 +12,14 @@ interface PSelectProps {
   val: string;
 }
 
-const PRadio: React.FC<PSelectProps> = ({ onChange, options, val }) => {
+const PRadio: React.FC<PSelectProps> = memo(({ onChange, options, val }) => {
   const [activeValue, setActiveValue] = useState<string>();
+
   const handleChange = (item: OptionItem | undefined) => {
-    setActiveValue(item?.value)
-    onChange(item?.value ?? '')
+    setActiveValue(item?.value);
+    onChange(item?.value ?? '');
   };
+
   const liClassName = useCallback(
     (item: OptionItem) => {
       let defaultCN = 'radioOption';
@@ -30,9 +32,9 @@ const PRadio: React.FC<PSelectProps> = ({ onChange, options, val }) => {
   );
   useEffect(() => {
     if (val) {
-      setActiveValue(val)
+      setActiveValue(val);
     }
-  }, [val])
+  }, [val]);
   return (
     <div className="pRadio">
       <ul className="radioOptions">
@@ -50,6 +52,6 @@ const PRadio: React.FC<PSelectProps> = ({ onChange, options, val }) => {
       </ul>
     </div>
   );
-};
+});
 
 export default PRadio;

@@ -1,22 +1,19 @@
-import React from 'react';
-import './index.sass'
+import React, { memo } from 'react';
+import './index.sass';
 import iconClose from '@/assets/img/iconClose.svg';
 
 interface PMaskProps {
   onClose: () => void;
-  children?: any
+  children?: any;
 }
 
-const PHeader: React.FC<PMaskProps> = (props) => {
-  const handleClickClose = () => {
-    props.onClose()
-  }
+const PMask: React.FC<PMaskProps> = memo(({ onClose, children }) => {
   return (
     <div className="pMask bgLayer">
-      <img className="closeBtn" src={iconClose} alt="" onClick={handleClickClose} />
-      {props.children}
+      <img className="closeBtn" src={iconClose} alt="" onClick={onClose} />
+      {children}
     </div>
   );
-};
+});
 
-export default PHeader;
+export default PMask;

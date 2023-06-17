@@ -1,28 +1,30 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
+
 import PTabs from '@/components/PTabs';
 import DataSourceList from '@/components/DataSourceOverview/DataSourceList';
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog';
 import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSourcesExplainDialog';
-import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import ConnectDataSourceDialog from '@/components/DataSourceOverview/ConnectDataSourceDialog';
-import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import AssetsOverview from '@/components/AssetsOverview/AssetsOverview';
 import SocialOverview from '@/components/AssetsOverview/SocialOverview';
-import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
-import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
-import './index.sass';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import useAuthorization from '@/hooks/useAuthorization';
-import type { UserState } from '@/store/reducers';
 import { postMsg, sub } from '@/utils/utils';
-import { useDispatch } from 'react-redux';
-import type { Dispatch } from 'react';
 import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
+
+import type { Dispatch } from 'react';
+import type { UserState } from '@/store/reducers';
+import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
+import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog';
+import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
+import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
+
+import './index.sass';
 
 export type DataSourceStorages = {
   binance?: any;
@@ -37,23 +39,26 @@ export type ActiveRequestType = {
   title: string;
   desc: string;
 };
-const DataSourceOverview = () => {
-  const dispatch: Dispatch<any> = useDispatch();
-  const padoServicePort = useSelector(
-    (state: UserState) => state.padoServicePort
-  );
-  const authorize = useAuthorization();
-  const navigate = useNavigate();
+const DataSourceOverview = memo(() => {
   const [step, setStep] = useState(0);
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
   const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
+  const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
+
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
+  );
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
   const filterWord = useSelector((state: UserState) => state.filterWord);
-  const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
+
+  const dispatch: Dispatch<any> = useDispatch();
+  const authorize = useAuthorization();
+  const navigate = useNavigate();
+
   const exList: DataSourceItemList = useMemo(() => {
     return Object.values({ ...exSources });
   }, [exSources]);
@@ -83,45 +88,7 @@ const DataSourceOverview = () => {
       return orderedDataSourceList;
     }
   }, [dataSourceList, filterWord]);
-  const onUpdate = () => {
-    // fetch datas from storage TODO by type
-    dispatch(setExSourcesAsync());
-    dispatch(setSocialSourcesAsync());
-  };
-  const handleChangeTab = (val: string) => {
-    if (val === 'Data') {
-      dispatch({
-        type: 'setActiveSourceType',
-        payload: 'All',
-      });
-    }
-  };
-  const handleCheckDataSourceDetail = ({ type, name }: DataSourceItemType) => {
-    navigate(`/dataDetail?type=${type}&name=${name}`);
-  };
-  const handleAdd = () => {
-    setStep(1);
-  };
-  const handleCloseMask = () => {
-    setStep(0);
-  };
-  const onSubmitDataSourcesDialog = async (item: DataFieldItem) => {
-    if (item.type === 'Assets') {
-      setActiveSource(item);
-      setStep(2);
-    } else if (item.type === 'Social') {
-      authorize(item.name.toUpperCase(), () => {
-        setStep(0);
-        dispatch(setSocialSourcesAsync());
-      });
-    }
-  };
-  const onCheckDataSourcesDialog = () => {
-    setStep(1.5);
-  };
-  const onSubmitDataSourcesExplainDialog = () => {
-    setStep(1);
-  };
+
   const onSubmitConnectDataSourceDialogDialog = useCallback(
     async (form: GetDataFormProps) => {
       console.log('submit--form', form);
@@ -195,25 +162,74 @@ const DataSourceOverview = () => {
     },
     [padoServicePort, dispatch]
   );
-
-  const onSubmitAddSourceSucDialog = () => {
+  const handleChangeTab = useCallback(
+    (val: string) => {
+      if (val === 'Data') {
+        dispatch({
+          type: 'setActiveSourceType',
+          payload: 'All',
+        });
+      }
+    },
+    [dispatch]
+  );
+  const handleAdd = useCallback(() => {
+    setStep(1);
+  }, []);
+  const handleCheckDataSourceDetail = useCallback(
+    ({ type, name }: DataSourceItemType) => {
+      navigate(`/dataDetail?type=${type}&name=${name}`);
+    },
+    [navigate]
+  );
+  const onClearFilter = useCallback(() => {
+    dispatch({
+      type: 'setFilterWord',
+      payload: '',
+    });
+  }, [dispatch]);
+  const handleCloseMask = useCallback(() => {
+    setStep(0);
+  }, []);
+  const onSubmitDataSourcesDialog = useCallback(
+    async (item: DataFieldItem) => {
+      if (item.type === 'Assets') {
+        setActiveSource(item);
+        setStep(2);
+      } else if (item.type === 'Social') {
+        authorize(item.name.toUpperCase(), () => {
+          setStep(0);
+          dispatch(setSocialSourcesAsync());
+        });
+      }
+    },
+    [authorize, dispatch]
+  );
+  const onCheckDataSourcesDialog = useCallback(() => {
+    setStep(1.5);
+  }, []);
+  const onSubmitDataSourcesExplainDialog = useCallback(() => {
+    setStep(1);
+  }, []);
+  const onUpdate = useCallback(() => {
+    // fetch datas from storage TODO by type
+    dispatch(setExSourcesAsync());
+    dispatch(setSocialSourcesAsync());
+  }, [dispatch]);
+  const onSubmitAddSourceSucDialog = useCallback(() => {
     setActiveSource(undefined);
     setStep(0);
-  };
-  const onSubmitActiveRequestDialog = () => {
+  },[]);
+  const onSubmitActiveRequestDialog = useCallback(() => {
     if (activeRequest?.type === 'loading') {
       onSubmitAddSourceSucDialog();
       return;
     } else {
       setStep(2);
     }
-  };
-  const onClearFilter = () => {
-    dispatch({
-      type: 'setFilterWord',
-      payload: '',
-    });
-  };
+  }, [activeRequest?.type, onSubmitAddSourceSucDialog]);
+  
+
   useEffect(() => {
     step === 1 && setActiveSourceKeys(undefined);
   }, [step]);
@@ -294,6 +310,6 @@ const DataSourceOverview = () => {
       {activeSourceType === 'All' && <DataAddBar onClick={handleAdd} />}
     </div>
   );
-};
+});
 
 export default DataSourceOverview;

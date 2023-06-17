@@ -1,20 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
+import PfilterContent from './PfilterContent';
 import type { MouseEvent } from 'react';
 import './index.sass';
-import PfilterContent from './PfilterContent';
+
 interface TokenTableProps {
   onChange: (label: string | undefined) => void;
 }
 
-const PFilter: React.FC<TokenTableProps> = ({ onChange }) => {
+const PFilter: React.FC<TokenTableProps> = memo(({ onChange }) => {
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [activeItem, setActiveItem] = useState<string>();
-  const handleChange = (label: string | undefined) => {
-    label && setActiveItem(label);
-    onChange(label);
-  };
+
   const willCloseEl = useRef(null);
   const iconEl = useRef(null);
+
+  const handleChange = useCallback(
+    (label: string | undefined) => {
+      label && setActiveItem(label);
+      onChange(label);
+    },
+    [onChange]
+  );
+  
   const handleEnterAvatar = () => {
     setDorpdownVisible(true)
   }
@@ -48,6 +55,6 @@ const PFilter: React.FC<TokenTableProps> = ({ onChange }) => {
       <PfilterContent onChange={handleChange} visible={dorpdownVisible} />
     </section>
   );
-};
+});
 
 export default PFilter;

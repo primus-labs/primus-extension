@@ -1,25 +1,30 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { formatAddress } from '@/utils/utils'
+import React, { useEffect, useState, useMemo, memo } from 'react';
+import { formatAddress } from '@/utils/utils';
 import './index.sass';
-const PAvatar = () => {
+const PAvatar = memo(() => {
   const [avatar, setAvatar] = useState<any>();
   const [address, setAddress] = useState<string>();
+
   const formatAddr = useMemo(() => {
-    return address ? formatAddress('0x'+address) : ''
-  }, [address])
+    return address ? formatAddress('0x' + address) : '';
+  }, [address]);
+
   const getUserInfo = () => {
-    chrome.storage.local.get(['userInfo', 'keyStore'], ({ userInfo, keyStore }) => {
-      if (userInfo) {
-        const parseUserInfo = JSON.parse(userInfo);
-        const { picture } = parseUserInfo
-        setAvatar(picture);
+    chrome.storage.local.get(
+      ['userInfo', 'keyStore'],
+      ({ userInfo, keyStore }) => {
+        if (userInfo) {
+          const parseUserInfo = JSON.parse(userInfo);
+          const { picture } = parseUserInfo;
+          setAvatar(picture);
+        }
+        if (keyStore) {
+          const parseKeystore = JSON.parse(keyStore);
+          const { address } = parseKeystore;
+          setAddress(address);
+        }
       }
-      if (keyStore) {
-        const parseKeystore = JSON.parse(keyStore);
-        const { address } = parseKeystore;
-        setAddress(address);
-      }
-    });
+    );
   };
 
   useEffect(() => {
@@ -35,6 +40,6 @@ const PAvatar = () => {
       <div className="address">{formatAddr}</div>
     </div>
   );
-};
+});
 
 export default PAvatar;

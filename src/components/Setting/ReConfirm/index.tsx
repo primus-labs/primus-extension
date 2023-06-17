@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { memo } from 'react';
 import './index.sass';
 import iconInfoColorful from '@/assets/img/iconInfoColorful.svg';
 interface SettingProps {
@@ -6,7 +6,7 @@ interface SettingProps {
   onConfirm: () => void;
 }
 
-const Reconfirm: React.FC<SettingProps> = ({ onCancel, onConfirm }) => {
+const Reconfirm: React.FC<SettingProps> = memo(({ onCancel, onConfirm }) => {
   return (
     <div className="reconfirm">
       <main className="reconfirmMain">
@@ -22,6 +22,6 @@ const Reconfirm: React.FC<SettingProps> = ({ onCancel, onConfirm }) => {
       </footer>
     </div>
   );
-};
+});
 
 export default Reconfirm;

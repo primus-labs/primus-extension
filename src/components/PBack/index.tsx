@@ -1,13 +1,10 @@
-import React from 'react';
+import React, { memo } from 'react';
 import './index.sass';
 interface PBackProps {
   onBack: () => void;
 }
-const PBack:React.FC<PBackProps> = ({ onBack }) => {
-  const handleClickBack = () => {
-    onBack();
-  };
-  return <div className="iconBack" onClick={handleClickBack}></div>;
-};
+const PBack: React.FC<PBackProps> = memo(({ onBack }) => {
+  return <div className="iconBack" onClick={onBack}></div>;
+});
 
 export default PBack;

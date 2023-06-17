@@ -1,8 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
+
 import PMask from '@/components/PMask';
-import { DATASOURCEMAP } from '@/config/constants';
-import type { ExchangeMeta } from '@/config/constants';
 import iconInfo from '@/assets/img/iconInfo.svg';
+
+import { DATASOURCEMAP } from '@/config/constants';
+
+import type { ExchangeMeta } from '@/config/constants';
+
 import './index.sass';
 
 export type DataFieldItem = {
@@ -18,83 +22,82 @@ interface DataSourcesDialogProps {
   onCheck: () => void;
   // onCancel: () => void
 }
-const DataSourcesDialog: React.FC<DataSourcesDialogProps> = ({
-  onClose,
-  onSubmit,
-  onCheck,
-}) => {
-  const [activeItem, setActiveItem] = useState<DataFieldItem>();
-  const list: DataFieldItem[] = useMemo(() => {
-    return Object.keys(DATASOURCEMAP).map((key) => {
-      const sourceInfo: ExchangeMeta =
-        DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
-      const { name, icon, type, requirePassphase } = sourceInfo;
-      const infoObj: DataFieldItem = {
-        name,
-        icon,
-        type,
-        desc: `${type} Data`, // TODO tooltip style
-        requirePassphase,
-      };
-      return infoObj;
-    });
-  }, []);
+const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
+  ({ onClose, onSubmit, onCheck }) => {
+    const [activeItem, setActiveItem] = useState<DataFieldItem>();
 
-  const handleClickNext = () => {
-    if (!activeItem) {
-      return;
-    }
-    onSubmit(activeItem);
-  };
+    const list: DataFieldItem[] = useMemo(() => {
+      return Object.keys(DATASOURCEMAP).map((key) => {
+        const sourceInfo: ExchangeMeta =
+          DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
+        const { name, icon, type, requirePassphase } = sourceInfo;
+        const infoObj: DataFieldItem = {
+          name,
+          icon,
+          type,
+          desc: `${type} Data`, // TODO tooltip style
+          requirePassphase,
+        };
+        return infoObj;
+      });
+    }, []);
 
-  const handleClickData = (item: DataFieldItem) => {
-    setActiveItem(item);
-  };
+    const handleClickNext = () => {
+      if (!activeItem) {
+        return;
+      }
+      onSubmit(activeItem);
+    };
 
-  return (
-    <PMask onClose={onClose}>
-      <div className="padoDialog dataSourcesDialog">
-        <main>
-          <h1>
-            <span>Data Sources</span>
-            <img src={iconInfo} alt="" onClick={onCheck} />
-          </h1>
-          <h2>
-            Select a platform to connect, and let PADO validate your data
-            authenticity.
-          </h2>
-          <div className="scrollList">
-            <ul className="dataList">
-              {list.map((item) => {
-                return (
-                  <li
-                    className={
-                      activeItem?.name === item.name
-                        ? 'networkItem active'
-                        : 'networkItem'
-                    }
-                    key={item.name}
-                    onClick={() => {
-                      handleClickData(item);
-                    }}
-                  >
-                    <img src={item.icon} alt="" />
-                    <div className="desc" title={item.desc}>
-                      {item.name}
-                    </div>
-                    <h6>{item.desc}</h6>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </main>
-        <button className="nextBtn" onClick={handleClickNext}>
-          Select
-        </button>
-      </div>
-    </PMask>
-  );
-};
+    const handleClickData = (item: DataFieldItem) => {
+      setActiveItem(item);
+    };
+
+    return (
+      <PMask onClose={onClose}>
+        <div className="padoDialog dataSourcesDialog">
+          <main>
+            <h1>
+              <span>Data Sources</span>
+              <img src={iconInfo} alt="" onClick={onCheck} />
+            </h1>
+            <h2>
+              Select a platform to connect, and let PADO validate your data
+              authenticity.
+            </h2>
+            <div className="scrollList">
+              <ul className="dataList">
+                {list.map((item) => {
+                  return (
+                    <li
+                      className={
+                        activeItem?.name === item.name
+                          ? 'networkItem active'
+                          : 'networkItem'
+                      }
+                      key={item.name}
+                      onClick={() => {
+                        handleClickData(item);
+                      }}
+                    >
+                      <img src={item.icon} alt="" />
+                      <div className="desc" title={item.desc}>
+                        {item.name}
+                      </div>
+                      <h6>{item.desc}</h6>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </main>
+          <button className="nextBtn" onClick={handleClickNext}>
+            Select
+          </button>
+        </div>
+      </PMask>
+    );
+  }
+);
 
 export default DataSourcesDialog;

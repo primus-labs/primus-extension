@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo, useCallback } from 'react';
 import { sub, getCurrentDate, formatNumeral } from '@/utils/utils';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
 import './index.sass';
@@ -7,10 +7,8 @@ interface TokenTableProps {
   list: DataSourceItemType[];
 }
 
-const TokenTable: React.FC<TokenTableProps> = ({
-  list
-}) => {
-  console.log('SocialSources-list', list,);
+const TokenTable: React.FC<TokenTableProps> = memo(({ list }) => {
+  // console.log('SocialSources-list', list,);
   const currentList = useMemo(() => {
     return list;
   }, [list]);
@@ -19,38 +17,43 @@ const TokenTable: React.FC<TokenTableProps> = ({
       sub(Number(b.followers), Number(a.followers)).toNumber()
     );
   }, [currentList]);
-  const accTagsFn = (item: DataSourceItemType) => {
+
+  const accTagsFn = useCallback((item: DataSourceItemType) => {
     let lowerCaseName = item.name.toLowerCase();
     let formatTxt;
     switch (lowerCaseName) {
       case 'twitter':
-        formatTxt = item.verified ? 'Verified' : 'Not Verified'
+        formatTxt = item.verified ? 'Verified' : 'Not Verified';
         break;
       case 'discord':
-        const flagArr = item.remarks?.flags.split(',')
-        const flagArrLen = flagArr.length
-        const activeFlag = flagArr[flagArrLen-1] === 'Bot'? flagArr[flagArrLen-2]:flagArr[flagArrLen-1]
-        formatTxt = activeFlag
+        const flagArr = item.remarks?.flags.split(',');
+        const flagArrLen = flagArr.length;
+        const activeFlag =
+          flagArr[flagArrLen - 1] === 'Bot'
+            ? flagArr[flagArrLen - 2]
+            : flagArr[flagArrLen - 1];
+        formatTxt = activeFlag;
         break;
       default:
-        formatTxt = '-'
+        formatTxt = '-';
         break;
     }
-    return formatTxt
-  }
-  const formatTxtFn = (item: DataSourceItemType, key: string) => {
+    return formatTxt;
+  }, []);
+  const formatTxtFn = useCallback((item: DataSourceItemType, key: string) => {
     let formatTxt;
-    const val = item[key as keyof DataSourceItemType]
+    const val = item[key as keyof DataSourceItemType];
     if (val === null) {
-      formatTxt = '-'
+      formatTxt = '-';
     } else {
       formatTxt = formatNumeral(val, {
         transferUnit: false,
         decimalPlaces: 0,
-      })
+      });
     }
-    return formatTxt
-  }
+    return formatTxt;
+  }, []);
+
   return (
     <section className="tokenListWrapper social">
       <header>
@@ -81,7 +84,7 @@ const TokenTable: React.FC<TokenTableProps> = ({
                 </div>
 
                 <div className="createTime">
-                  {item.createdTime?getCurrentDate(item.createdTime): '-'}
+                  {item.createdTime ? getCurrentDate(item.createdTime) : '-'}
                 </div>
                 <div className="followers">
                   {formatTxtFn(item, 'followers')}
@@ -98,6 +101,6 @@ const TokenTable: React.FC<TokenTableProps> = ({
       </ul>
     </section>
   );
-};
+});
 
 export default TokenTable;
