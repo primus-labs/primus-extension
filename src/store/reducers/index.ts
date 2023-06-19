@@ -33,8 +33,6 @@ type CREDENTIALS = {
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
-  exDatas: ExDatas;
-  socialDatas: SocialDatas;
   userPassword: string;
   activeSourceType: string;
   filterWord: string;
@@ -49,8 +47,6 @@ export type UserState = {
 const initState = {
   padoServicePort: chrome.runtime.connect({ name: 'fullscreen' + new Date() }),
   sysConfig: {},
-  exDatas: {},
-  socialDatas: {},
   userPassword: undefined,
   activeSourceType: 'All',
   filterWord: undefined,
@@ -84,7 +80,6 @@ const reducer: any = function (state = initState, action: any) {
     case 'setCredentials':
       return { ...state, credentials: action.payload };
     case 'setSourceUpdateFrequency':
-      console.log('setSourceUpdateFrequency', action.payload);
       return { ...state, sourceUpdateFrequency: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };

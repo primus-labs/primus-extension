@@ -48,7 +48,7 @@ const ExportWallet: React.FC<SetPwdDialogProps> = memo(
     const padoServicePortListener = useCallback(
       function (message: any) {
         if (message.resMethodName === 'decrypt') {
-          console.log('page_get:decrypt:', 'exportWallet', message.res);
+          console.log('page_get:decrypt:', 'exportWallet');
           if (message.res) {
             const { privateKey } = message.res;
             setPrivateKey(privateKey);

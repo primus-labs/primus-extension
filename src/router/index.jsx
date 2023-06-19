@@ -16,11 +16,11 @@ const router = [
       },
       {
         path: "datas",
-        element: <DataSourceOverview></DataSourceOverview>,
+        element: <DataSourceOverview/>,
       },
       {
         path: "dataDetail",
-        element: <DataSourceDetail></DataSourceDetail>,
+        element: <DataSourceDetail/>,
       },
       {
         path: "lock",

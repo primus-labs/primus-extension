@@ -15,7 +15,7 @@ const Lock = memo(() => {
   const [errorMsg, setErrorMsg] = useState();
   const padoServicePortListener = async function (message) {
     if (message.resMethodName === 'decrypt') {
-      console.log('page_get:decrypt:', 'lock', message.res);
+      console.log('page_get:decrypt:', 'lock');
       if (message.res) {
         // encrypt successfully
         await dispatch({

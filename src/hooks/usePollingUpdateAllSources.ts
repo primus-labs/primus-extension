@@ -47,15 +47,15 @@ const usePollingUpdateAllSources = () => {
     // }, [pollingSourcesTimer, sourceUpdateFrequency, updateF]);
   }, [sourceUpdateFrequency, updateF]);
 
-  const open = () => {
+  const open = useCallback(() => {
     setFlag(true);
-  };
-  const close = () => {
+  },[]);
+  const close = useCallback(() => {
     setFlag(false);
     if (pollingSourcesTimer) {
       clearInterval(pollingSourcesTimer);
     }
-  };
+  }, [pollingSourcesTimer]);
 
   useEffect(() => {
     if (flag) {
