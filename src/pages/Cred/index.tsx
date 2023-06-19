@@ -16,7 +16,7 @@ import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import CredTypesDialog from '@/components/Cred/CredTypesDialog';
 
 import { postMsg } from '@/utils/utils';
-import { ONEMINUTE, ATTESTATIONPOLLINGTIME, BIGZERO } from '@/config/constants';
+import { ATTESTATIONPOLLINGTIMEOUT, ATTESTATIONPOLLINGTIME, BIGZERO } from '@/config/constants';
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegationProxy } from '@/services/chains/eas.js';
@@ -366,7 +366,7 @@ const Cred = memo(() => {
               title: 'Something went wrong',
               desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
             });
-          }, ONEMINUTE);
+          }, ATTESTATIONPOLLINGTIMEOUT);
           setFetchTimeoutTimer(fTimeoutTimer);
         }
       }
