@@ -59,6 +59,7 @@ const Cred = memo(() => {
     (state: UserState) => state.activeSourceType
   );
   const filterWord = useSelector((state: UserState) => state.filterWord);
+  const proofTypes = useSelector((state: UserState) => state.proofTypes);
 
   const [searchParams] = useSearchParams();
   const createFlag = searchParams.get('createFlag');
@@ -70,7 +71,12 @@ const Cred = memo(() => {
   const filteredCredList: CredTypeItemType[] = useMemo(() => {
     let activeList = credList;
     if (activeSourceType && activeSourceType !== 'All') {
-      activeList = activeList.filter((i) => i.type === activeSourceType);
+      activeList = activeList.filter((i) => {
+        const curProofTypeItem = proofTypes.find(
+          (j) => j.credTitle === i.type
+        );
+        return curProofTypeItem?.simplifiedName === activeSourceType;
+      });
     }
     if (filterWord) {
       activeList = activeList.filter((i) =>
@@ -78,7 +84,7 @@ const Cred = memo(() => {
       );
     }
     return activeList;
-  }, [credList, activeSourceType, filterWord]);
+  }, [credList, activeSourceType, filterWord, proofTypes]);
 
   const handleChangeTab = useCallback((val: string) => {}, []);
   const initCredList = useCallback(async () => {

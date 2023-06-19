@@ -42,14 +42,14 @@ const DataSourceSearch = memo(() => {
       );
       if (assetsProofList.length > 0) {
         defaultList.push({
-          value: 'Assets Proof',
-          text: 'Assets Proof',
+          value: 'Asset',
+          text: 'Asset',
         });
       }
       if (tokenHoldingsList.length > 0) {
         defaultList.push({
-          value: 'Token Holdings',
-          text: 'Token Holdings',
+          value: 'Token',
+          text: 'Token',
         });
       }
       if (qualificationsList.length > 0) {
