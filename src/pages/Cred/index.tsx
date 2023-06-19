@@ -36,6 +36,7 @@ export type CREDENTIALSOBJ = {
 };
 
 const Cred = memo(() => {
+  const [submitAddress, setSubmitAddress] = useState<string>();
   const [credTypesDialogVisible, setCredTypesDialogVisible] =
     useState<boolean>();
   const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
@@ -72,9 +73,7 @@ const Cred = memo(() => {
     let activeList = credList;
     if (activeSourceType && activeSourceType !== 'All') {
       activeList = activeList.filter((i) => {
-        const curProofTypeItem = proofTypes.find(
-          (j) => j.credTitle === i.type
-        );
+        const curProofTypeItem = proofTypes.find((j) => j.credTitle === i.type);
         return curProofTypeItem?.simplifiedName === activeSourceType;
       });
     }
@@ -190,6 +189,7 @@ const Cred = memo(() => {
   const handleUpChain = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
     setStep(3);
+    setSubmitAddress(undefined)
   }, []);
   const handleSubmitTransferToChain = useCallback((networkName?: string) => {
     // TODO
@@ -217,6 +217,7 @@ const Cred = memo(() => {
         const [accounts, chainId, provider] = await connectWallet(
           targetNetwork
         );
+        setSubmitAddress(accounts[0]);
         const { keyStore } = await chrome.storage.local.get(['keyStore']);
         const { address } = JSON.parse(keyStore);
         const upChainParams = {
@@ -238,6 +239,7 @@ const Cred = memo(() => {
             (i) => activeNetworkName === i.title
           );
           currentChainObj.attestationUID = upChainRes;
+          currentChainObj.submitAddress = submitAddress;
           const existIndex = newProvided.findIndex(
             (i) => i.title === activeNetworkName
           );

@@ -9,7 +9,7 @@ import IconDownload from '@/components/Icons/IconDownload';
 import Reconfirm from '@/components/Setting/ReConfirm';
 import PBack from '@/components/PBack';
 
-import { exportJson, formatTime } from '@/utils/utils';
+import { exportJson, formatFullTime } from '@/utils/utils';
 import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
 import { setSourceUpdateFrequencyActionAsync } from '@/store/actions';
 import { add } from '@/utils/utils';
@@ -112,7 +112,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           totalBalance,
           tokenListMap,
           apiKey,
-          updateTime: formatTime(timestamp),
+          updateTime: formatFullTime(timestamp),
         };
         checkedExSourcesTotalBal = add(totalBalance, checkedExSourcesTotalBal);
       });
@@ -138,7 +138,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           posts,
           verified,
           createdTime,
-          updateTime: formatTime(timestamp),
+          updateTime: formatFullTime(timestamp),
           userName,
           screenName,
         };

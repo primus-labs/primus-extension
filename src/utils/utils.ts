@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
-var ethereumjsUtil = require('ethereumjs-util');
 import { PADOSERVERURLHTTPS } from '@/config/envConstants';
+
+var ethereumjsUtil = require('ethereumjs-util');
 
 export function gt(a: number, b: number) {
   return new BigNumber(a).gt(new BigNumber(b));
@@ -76,8 +77,17 @@ export function formatDate(timestamp: number) {
   return `${M} ${D}, ${Y}`;
 }
 
-// "Jun 15 10:29, 2023"
+// "10:29:00"
 export function formatTime(timestamp: number) {
+  var date = new Date(timestamp),
+    h = (date.getHours() + '').padStart(2, '0'),
+    m = (date.getMinutes() + '').padStart(2, '0'),
+    s = (date.getSeconds() + '').padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+
+// "Jun 15 10:29, 2023"
+export function formatFullTime(timestamp: number) {
   var date = new Date(timestamp),
     Y = date.getFullYear(),
     M = date.toLocaleString('en', { month: 'short' }),

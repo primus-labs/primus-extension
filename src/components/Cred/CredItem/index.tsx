@@ -4,7 +4,12 @@ import { useSelector } from 'react-redux';
 
 import { DATASOURCEMAP } from '@/config/constants';
 import { PADOADDRESS } from '@/config/envConstants';
-import { getCurrentDate, formatNumeral, formatAddress } from '@/utils/utils';
+import {
+  getCurrentDate,
+  formatNumeral,
+  formatAddress,
+  formatTime,
+} from '@/utils/utils';
 
 import iconExpand from '@/assets/img/iconExpand.svg';
 import iconUpChain from '@/assets/img/iconUpChain.svg';
@@ -18,6 +23,7 @@ import type { PROOFTYPEITEM } from '@/types/cred';
 import type { UserState } from '@/store/reducers';
 
 import './index.sass';
+
 
 export type CredTypeItemType = {
   type: string;
@@ -255,12 +261,17 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="label">Recipient Address</div>
               <div className="value">{formatAddress(item.address)}</div>
             </div>
+            
             <div className="descItem">
               <div className="label">Attested By</div>
               <div className="value">
                 <div className="desc">PADO</div>
                 <div className="con">{formatAddress(PADOADDRESS)}</div>
               </div>
+            </div>
+            <div className="descItem arow">
+              <div className="label">Attested Time</div>
+              <div className="value">{ formatTime(Number(item?.getDataTime))}</div>
             </div>
           </div>
         )}
