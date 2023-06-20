@@ -16,7 +16,11 @@ import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import CredTypesDialog from '@/components/Cred/CredTypesDialog';
 
 import { postMsg } from '@/utils/utils';
-import { ATTESTATIONPOLLINGTIMEOUT, ATTESTATIONPOLLINGTIME, BIGZERO } from '@/config/constants';
+import {
+  ATTESTATIONPOLLINGTIMEOUT,
+  ATTESTATIONPOLLINGTIME,
+  BIGZERO,
+} from '@/config/constants';
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegationProxy } from '@/services/chains/eas.js';
@@ -189,7 +193,7 @@ const Cred = memo(() => {
   const handleUpChain = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
     setStep(3);
-    setSubmitAddress(undefined)
+    setSubmitAddress(undefined);
   }, []);
   const handleSubmitTransferToChain = useCallback((networkName?: string) => {
     // TODO
@@ -309,9 +313,15 @@ const Cred = memo(() => {
     }
   }, [fetchAttestationTimer, clearFetchTimeoutTimer]);
   const handleAdd = useCallback(() => {
+    if (activeRequest?.type === 'loading') {
+      alert(
+        'There is already a credential being processed. Please try again later.'
+      );
+      return;
+    }
     setActiveCred(undefined);
     setCredTypesDialogVisible(true);
-  }, []);
+  }, [activeRequest?.type]);
 
   const padoServicePortListener = async function (message: any) {
     const { resType, resMethodName, res } = message;
@@ -413,6 +423,12 @@ const Cred = memo(() => {
               });
             }
           } else if (retcode === '2') {
+            const msg = {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'stop',
+              params: {},
+            };
+            postMsg(padoServicePort, msg);
             setActiveRequest({
               type: 'warn',
               title: 'Something went wrong',
