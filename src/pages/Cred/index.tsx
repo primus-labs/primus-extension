@@ -225,7 +225,7 @@ const Cred = memo(() => {
         const [accounts, chainId, provider] = await connectWallet(
           targetNetwork
         );
-        setSubmitAddress(accounts[0]);
+        setSubmitAddress((accounts as string[])[0]);
         const { keyStore } = await chrome.storage.local.get(['keyStore']);
         const { address } = JSON.parse(keyStore);
         const upChainParams = {
