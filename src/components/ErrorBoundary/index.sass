@@ -1,0 +1,22 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+
+.ErrorBoundary
+  width: 100vw
+  height: 100vh
+  @extend .fccc
+  gap: 50px
+  p
+    @extend .xxlLBlackBoldFont
+    font-family: 'Inter-Black' 
+  button.refreshBtn
+    width: 343px
+    height: 80px
+    border-radius: $xxLBorderRadius
+    @extend .frcc
+    background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+    @extend .lLBlackSemiBoldFont
+    &:hover,&:active
+      border: 0
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)

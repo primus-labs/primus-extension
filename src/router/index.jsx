@@ -4,11 +4,13 @@ import DataSourceOverview from '@/pages/DataSourceOverview/index.tsx';
 import DataSourceDetail from '@/pages/DataSourceDetail/index.tsx';
 import Lock from '@/pages/Lock/index.jsx';
 import Layout from '@/components/Layout/Layout/index.tsx';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import Cred from '@/pages/Cred/index.tsx';
 const router = [
   {
     path: "/",
-    element: <Layout/>,
+    element: <Layout />,
+    errorElement:<ErrorBoundary />,
     children: [
       {
         index: true,
