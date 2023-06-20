@@ -1,9 +1,12 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/constants';
 import { postMsg } from '@/utils/utils';
+import { setSocialSourcesAsync } from '@/store/actions';
 import type { UserState } from '@/store/reducers';
+import type { Dispatch } from 'react';
 import useAuthorization from '@/hooks/useAuthorization';
+
 type ExKeysStorages = {
   [propName: string]: any;
 };
@@ -11,6 +14,7 @@ type queryObjType = {
   [propName: string]: any;
 };
 const useUpdateSocialSources = () => {
+  const dispatch: Dispatch<any> = useDispatch();
   const authorize = useAuthorization();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
@@ -75,6 +79,12 @@ const useUpdateSocialSources = () => {
     };
     padoServicePort.onMessage.addListener(padoServicePortListener);
   }, [padoServicePort, authorize]);
+
+  useEffect(() => {
+    if (!loading) {
+      dispatch(setSocialSourcesAsync());
+    }
+  }, [loading, dispatch]);
 
   return [loading, fetchSocialDatas];
 };

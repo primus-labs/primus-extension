@@ -1,17 +1,14 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
 import useUpdateAllSources from '@/hooks/useUpdateAllSources';
-import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
+import { useInterval } from '@/hooks/useInterval';
 import { ONEMINUTE } from '@/config/constants';
 
-import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 
 const usePollingUpdateAllSources = () => {
-  const [flag, setFlag] = useState<boolean>(false);
-  const [pollingSourcesTimer, setPollingSourcesTimer] = useState<any>();
-
+  // console.log('222222usePollingUpdateAllSources');
   const userPassword = useSelector((state: UserState) => state.userPassword);
   const sourceUpdateFrequency = useSelector(
     (state: UserState) => state.sourceUpdateFrequency
@@ -26,69 +23,20 @@ const usePollingUpdateAllSources = () => {
     ];
     return allDataSources.length > 0;
   }, [exSources, socialSources]);
+  const switchFlag = useMemo(() => {
+    return !!userPassword && hasDataSources
+  }, [userPassword, hasDataSources]);
+  const delay = useMemo(() => {
+    if (sourceUpdateFrequency) {
+      return (Number(sourceUpdateFrequency) * ONEMINUTE);
+    } else {
+      return null;
+    }
+  }, [sourceUpdateFrequency]);
 
-  const dispatch: Dispatch<any> = useDispatch();
   const [updating, updateF] = useUpdateAllSources(true);
-
-  const pollingDataSources = useCallback(() => {
-    // console.log(
-    //   '222222pollingDataSources',
-    //   sourceUpdateFrequency,
-    //   pollingSourcesTimer
-    // );
-    if (pollingSourcesTimer) {
-      clearInterval(pollingSourcesTimer);
-    }
-    const timer = setInterval(() => {
-      (updateF as () => void)();
-    }, Number(sourceUpdateFrequency) * ONEMINUTE);
-    setPollingSourcesTimer(timer);
-    // (updateF as () => void)();
-    // }, [pollingSourcesTimer, sourceUpdateFrequency, updateF]);
-  }, [sourceUpdateFrequency, updateF]);
-
-  const open = useCallback(() => {
-    setFlag(true);
-  },[]);
-  const close = useCallback(() => {
-    setFlag(false);
-    if (pollingSourcesTimer) {
-      clearInterval(pollingSourcesTimer);
-    }
-  }, [pollingSourcesTimer]);
-
-  useEffect(() => {
-    if (flag) {
-      if (userPassword && hasDataSources) {
-        pollingDataSources();
-      }
-    }
-  }, [flag, userPassword, hasDataSources, pollingDataSources]);
-  useEffect(() => {
-    if (!hasDataSources) {
-      if (pollingSourcesTimer) {
-        clearInterval(pollingSourcesTimer);
-      }
-    }
-  }, [hasDataSources]);
-  useEffect(() => {
-    if (!updating) {
-      dispatch(setExSourcesAsync());
-      dispatch(setSocialSourcesAsync());
-    }
-  }, [updating, dispatch]);
-  // useEffect(() => {
-  //   console.log('pollingSourcesTimer', pollingSourcesTimer);
-  // }, [pollingSourcesTimer]);
-  useEffect(() => {
-    return () => {
-      if (pollingSourcesTimer) {
-        clearInterval(pollingSourcesTimer);
-      }
-    };
-  }, []);
-
-  return [open, close];
+  
+  useInterval(updateF as () => void, delay, switchFlag, true);
 };
 
 export default usePollingUpdateAllSources;

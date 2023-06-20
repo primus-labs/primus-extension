@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/constants';
+import { setExSourcesAsync } from '@/store/actions';
+
 import type { UserState } from '@/store/reducers';
+import type { Dispatch } from 'react';
 import { postMsg } from '@/utils/utils';
 type ExKeysStorages = {
   [propName: string]: any;
@@ -10,6 +13,7 @@ type queryObjType = {
   [propName: string]: any;
 };
 const useUpdateAssetSources = (flag = false) => {
+  const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -67,6 +71,11 @@ const useUpdateAssetSources = (flag = false) => {
       padoServicePort.onMessage.removeListener(padoServicePortListener);
     };
   }, [padoServicePort.onMessage]);
+  useEffect(() => {
+    if (!loading) {
+      dispatch(setExSourcesAsync());
+    }
+  }, [loading, dispatch]);
   return [loading, fetchExDatas];
 };
 

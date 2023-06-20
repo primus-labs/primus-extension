@@ -29,7 +29,7 @@ const Layout = () => {
 
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
-  const [startPollingSources] = usePollingUpdateAllSources();
+  usePollingUpdateAllSources();
 
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
@@ -131,10 +131,6 @@ const Layout = () => {
     dispatch(setProofTypesAsync());
     dispatch(initSourceUpdateFrequencyActionAsync());
   }, [dispatch]);
-
-  useEffect(() => {
-    startPollingSources();
-  }, [startPollingSources]);
 
   return (
     <div className="pageApp">
