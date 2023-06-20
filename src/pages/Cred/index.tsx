@@ -71,7 +71,11 @@ const Cred = memo(() => {
   const dispatch: Dispatch<any> = useDispatch();
 
   const credList: CredTypeItemType[] = useMemo(() => {
-    return Object.values(credentialsObj);
+    let credArr = Object.values(credentialsObj);
+    credArr = credArr.sort(
+      (a, b) => Number(a.getDataTime) - Number(b.getDataTime)
+    );
+    return credArr;
   }, [credentialsObj]);
   const filteredCredList: CredTypeItemType[] = useMemo(() => {
     let activeList = credList;
@@ -391,9 +395,16 @@ const Cred = memo(() => {
               const parsedActiveRequestAttestation = activeRequestAttestation
                 ? JSON.parse(activeRequestAttestation)
                 : {};
-              console.log('attestation', parsedActiveRequestAttestation);
+              
+              // console.log(
+              //   'attestation',
+              //   parsedActiveRequestAttestation,
+              //   content
+              // );
               const activeRequestId = parsedActiveRequestAttestation.requestid;
-
+              if (activeRequestId !== content?.requestid) {
+                return;
+              }
               const fullAttestation = {
                 ...content,
                 ...parsedActiveRequestAttestation,
@@ -493,7 +504,7 @@ const Cred = memo(() => {
     ) {
       clearFetchAttestationTimer();
     }
-  }, [clearFetchAttestationTimer, activeRequest]);
+  }, [clearFetchAttestationTimer, activeRequest?.type]);
 
   useEffect(() => {
     initCredList();

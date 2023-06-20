@@ -24,7 +24,6 @@ import type { UserState } from '@/store/reducers';
 
 import './index.sass';
 
-
 export type CredTypeItemType = {
   type: string;
   // name: string;
@@ -261,7 +260,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="label">Recipient Address</div>
               <div className="value">{formatAddress(item.address)}</div>
             </div>
-            
+
             <div className="descItem">
               <div className="label">Attested By</div>
               <div className="value">
@@ -271,7 +270,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
             </div>
             <div className="descItem arow">
               <div className="label">Attested Time</div>
-              <div className="value">{ formatTime(Number(item?.getDataTime))}</div>
+              <div className="value">
+                {formatTime(Number(item?.getDataTime))}
+              </div>
             </div>
           </div>
         )}

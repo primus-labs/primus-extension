@@ -149,7 +149,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
                     <h6>Label API Key (Optional)</h6>
                     <PControledInput
                       key="label"
-                      placeholder="Please enter your API Key Label"
+                      placeholder="Please set your API Key Label"
                       onChange={handleChangeLabel}
                       value={label}
                     />
