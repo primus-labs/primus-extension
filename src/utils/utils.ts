@@ -69,12 +69,12 @@ export function getSingleStorageSyncData(storageKey: string) {
 
 // "Jun 15, 2023"
 // transform date from timestamp to string such as 12 Mar, 2023
-export function formatDate(timestamp: number) {
+export function formatDate(timestamp: number, separator =',') {
   var date = new Date(timestamp),
     Y = date.getFullYear(),
     M = date.toLocaleString('en', { month: 'short' }),
     D = (date.getDate() + '').padStart(2, '0');
-  return `${M} ${D}, ${Y}`;
+  return `${M} ${D}${separator} ${Y}`;
 }
 
 // "10:29:00"
@@ -86,20 +86,20 @@ export function formatTime(timestamp: number) {
   return `${h}:${m}:${s}`;
 }
 
-// "Jun 15 10:29, 2023"
+// "2023/06/21 10:29"
 export function formatFullTime(timestamp: number) {
   var date = new Date(timestamp),
     Y = date.getFullYear(),
-    M = date.toLocaleString('en', { month: 'short' }),
+    M = (date.getMonth() + '').padStart(2, '0'),
     D = (date.getDate() + '').padStart(2, '0'),
     h = (date.getHours() + '').padStart(2, '0'),
     m = (date.getMinutes() + '').padStart(2, '0');
-  return `${M} ${D} ${h}:${m}, ${Y}`;
+  return `${Y}/${M}/${D} ${h}:${m}`;
 }
 
-export function getCurrentDate(timestamp?: any) {
+export function getCurrentDate(timestamp?: any, separator = ',') {
   const time = timestamp ? +new Date(timestamp) : +new Date();
-  return formatDate(time);
+  return formatDate(time, separator);
 }
 
 //format deciamls
@@ -145,19 +145,6 @@ export function postMsg(port: chrome.runtime.Port, msg: any) {
   } catch (error: any) {
     throw new Error(error);
   }
-}
-
-export function exportJson(jsonStr: string, fileName: string) {
-  const blob = new Blob([jsonStr], { type: 'application/json' });
-  var url = window.URL.createObjectURL(blob);
-  var aLink = document.createElement('a');
-  aLink.style.display = 'none';
-  aLink.href = url;
-  aLink.setAttribute('download', fileName);
-  document.body.appendChild(aLink);
-  aLink.click();
-  document.body.removeChild(aLink);
-  window.URL.revokeObjectURL(url);
 }
 
 export function strToHex(str: string) {

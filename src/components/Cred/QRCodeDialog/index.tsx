@@ -6,7 +6,7 @@ import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import iconExport from '@/assets/img/iconExport.svg';
 import './index.sass';
 
-import { exportJson } from '@/utils/utils';
+import { exportJson } from '@/utils/exportFile';
 import { PADOADDRESS } from '@/config/envConstants';
 
 import type { CredTypeItemType } from '@/components/Cred/CredItem';

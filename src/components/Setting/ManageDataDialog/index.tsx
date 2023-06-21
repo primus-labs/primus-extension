@@ -9,16 +9,20 @@ import IconDownload from '@/components/Icons/IconDownload';
 import Reconfirm from '@/components/Setting/ReConfirm';
 import PBack from '@/components/PBack';
 
-import { exportJson, formatFullTime } from '@/utils/utils';
+import { BIGZERO, DATASOURCEMAP } from '@/config/constants';
+import { formatFullTime, getCurrentDate, sub } from '@/utils/utils';
 import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
 import { setSourceUpdateFrequencyActionAsync } from '@/store/actions';
 import { add } from '@/utils/utils';
+import { exportCsv } from '@/utils/exportFile';
 
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/store/reducers';
 import type { ExDatas } from '@/types/store';
-import type { SocialDatas } from '@/types/dataSource';
+// import type { SocialDatas } from '@/types/dataSource';
+import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
+import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 
 import './index.sass';
 
@@ -95,75 +99,219 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       }
       setReconfirmVisible(true);
     };
-    const onDownload = useCallback(async () => {
-      if (activeSourceNameArr.length < 1) {
-        // alert('Please select at least one data source');
-        setErrorTip('Please select at least one data source');
-        return;
+    const getUserInfo = async () => {
+      const { userInfo, keyStore } = await chrome.storage.local.get([
+        'userInfo',
+        'keyStore',
+      ]);
+      let obj: any = {};
+      if (userInfo) {
+        const parseUserInfo = JSON.parse(userInfo);
+        const { id, authSource } = parseUserInfo;
+        obj.id = id;
+        obj.authSource = DATASOURCEMAP[authSource].name;
       }
-      let checkedExSources: ExDatas = {};
-      let checkedExSourcesTotalBal: any = '0';
-      activeExSourceNameArr.forEach((key) => {
-        const { name, type, totalBalance, tokenListMap, apiKey, timestamp } =
-          exSources[key];
-        checkedExSources[key] = {
-          name,
-          type,
-          totalBalance,
-          tokenListMap,
-          apiKey,
-          updateTime: formatFullTime(timestamp),
-        };
-        checkedExSourcesTotalBal = add(totalBalance, checkedExSourcesTotalBal);
-      });
-      let checkedSocialSources: SocialDatas = {};
-      activeSocialSourceNameArr.forEach((key) => {
+      if (keyStore) {
+        const parseKeystore = JSON.parse(keyStore);
+        const { address } = parseKeystore;
+        obj.address = '0x' + address;
+      }
+      return obj;
+    };
+    // {item.createdTime ? getCurrentDate(item.createdTime) : '-'}
+    const accTagsFn = useCallback((item: DataSourceItemType) => {
+      let lowerCaseName = item.name.toLowerCase();
+      let formatTxt;
+      switch (lowerCaseName) {
+        case 'twitter':
+          formatTxt = item.verified ? 'Verified' : 'Not Verified';
+          break;
+        case 'discord':
+          const flagArr = item.remarks?.flags.split(',');
+          const flagArrLen = flagArr.length;
+          const activeFlag =
+            flagArr[flagArrLen - 1] === 'Bot'
+              ? flagArr[flagArrLen - 2]
+              : flagArr[flagArrLen - 1];
+          formatTxt = activeFlag;
+          break;
+        default:
+          formatTxt = '-';
+          break;
+      }
+      return formatTxt;
+    }, []);
+    const assembleAssetsExcelParams = useCallback(async () => {
+      let checkedExSourcesTotalBal: any = BIGZERO;
+      const ciphers = await chrome.storage.local.get(
+        activeExSourceCipherNameArr
+      );
+      debugger;
+      let assetsRows = [];
+
+      activeExSourceNameArr
+        .sort((a, b) =>
+          sub(
+            Number(exSources[b].totalBalance),
+            Number(exSources[a].totalBalance)
+          ).toNumber()
+        )
+        .forEach((key, idx) => {
+          let { name, totalBalance, tokenListMap, label } = exSources[key];
+          checkedExSourcesTotalBal = add(
+            totalBalance,
+            checkedExSourcesTotalBal
+          );
+          const tokensRows = Object.values(tokenListMap as AssetsMap)
+            .sort((a, b) => sub(Number(b.value), Number(a.value)).toNumber())
+            .reduce((prev: any[], token) => {
+              let { symbol, amount, price, value } = token;
+              prev.push({
+                empty: '',
+                empty2: '',
+                symbol,
+                amount: amount + '\t',
+                price: price + '\t',
+                value: value + '\t',
+              });
+              return prev;
+            }, []);
+
+          let curSourceRows = [
+            {
+              empty: '',
+              label: 'Source' + (idx + 1),
+              value: name,
+            },
+            {
+              empty: '',
+              label: 'Label',
+              value: label,
+            },
+            {
+              empty: '',
+              label: 'ApiCiphertext',
+              value: ciphers[`${key}cipher`] + '\t',
+            },
+            {
+              empty: '',
+            },
+            {
+              empty: '',
+              label: 'Balance(USD)',
+              value: totalBalance + '\t',
+            },
+            {
+              empty: '',
+              TokenListMap: 'TokenListMap',
+              symbol: 'TokenName',
+              amount: 'Amount',
+              price: 'Price(USD)',
+              value: 'Value(USD)',
+            },
+            ...tokensRows,
+          ];
+          assetsRows.push(...curSourceRows);
+        });
+      assetsRows.unshift(
+        {
+          label: 'DataType',
+          value: 'Assets',
+        },
+        {
+          empty: '',
+          label: 'TotalBalance(USD)',
+          value: checkedExSourcesTotalBal.toFixed(),
+        }
+      );
+      return assetsRows;
+    }, [activeExSourceCipherNameArr, exSources, activeExSourceNameArr]);
+    const assembleSocialExcelParams = useCallback(async () => {
+      const socialRows: object[] = [
+        {
+          label: 'DataType',
+          value: 'Social',
+        },
+      ];
+      activeSocialSourceNameArr.forEach((key, idx) => {
         const {
           name,
-          type,
           followers,
           followings,
           posts,
-          verified,
-          timestamp,
           createdTime,
           userName,
           screenName,
         } = socialSources[key];
-        checkedSocialSources[key] = {
-          name,
-          type,
-          followers,
-          followings,
-          posts,
-          verified,
-          createdTime,
-          updateTime: formatFullTime(timestamp),
-          userName,
-          screenName,
-        };
+        const curSourceRows = [
+          {
+            empty: '',
+            label: 'Source' + (idx + 1),
+            value: name,
+          },
+          {
+            empty: '',
+            ProfileDetail: 'ProfileDetail',
+            userName: 'UserName',
+            createdTime: 'CreatedTime',
+            followers: 'Followers',
+            following: 'Following',
+            posts: 'Posts',
+            accountTags: 'AccountTags',
+          },
+          {
+            empty: '',
+            empty2: '',
+            userName: userName || screenName,
+            createdTime: createdTime ? getCurrentDate(createdTime, ' ') : '-',
+            followers: followers || '-',
+            following: followings,
+            posts: posts || '-',
+            accountTags: accTagsFn(socialSources[key]),
+          },
+        ];
+        socialRows.push(...curSourceRows);
       });
-      const ciphers = await chrome.storage.local.get(
-        activeExSourceCipherNameArr
-      );
-      const exportObj = {
-        ...ciphers,
-        ...checkedExSources,
-        ...checkedSocialSources,
-        totalBalance: checkedExSourcesTotalBal.toFixed(),
-      };
-      // TODO social data
-      const jsonStr = JSON.stringify(exportObj, null, '\t');
+      return socialRows;
+    }, [accTagsFn, activeSocialSourceNameArr, socialSources]);
+    const assembleExcelParams = useCallback(async () => {
+      let { id, address, authSource } = await getUserInfo();
+      const basicRows = [
+        {
+          label: 'AccountID',
+          value: id + '\t',
+        },
+        {
+          label: 'OAuthMethod',
+          value: `${authSource}Account`,
+        },
+        {
+          label: 'OnchainAddress',
+          value: address,
+        },
+        {
+          label: 'UpdateTime',
+          value: formatFullTime(+new Date()) + '\t',
+        },
+      ];
+      const assetsRows: object[] = await assembleAssetsExcelParams();
+      const socialRows: object[] = await assembleSocialExcelParams();
+      const allRows = [...basicRows, ...assetsRows, ...socialRows];
+      let cvsArr: string[] = allRows.map((i) => {
+        return Object.values(i).join() + '\n';
+      });
+      // TODO
+      return cvsArr;
+    }, [assembleAssetsExcelParams, assembleSocialExcelParams]);
+    const onDownload = useCallback(async () => {
+      if (activeSourceNameArr.length < 1) {
+        setErrorTip('Please select at least one data source');
+        return;
+      }
       const formatDate = new Date().toLocaleString();
-      exportJson(jsonStr, `Data File${formatDate}`);
-    }, [
-      exSources,
-      socialSources,
-      activeExSourceNameArr,
-      activeSocialSourceNameArr,
-      activeExSourceCipherNameArr,
-      activeSourceNameArr.length,
-    ]);
+      let cvsArr: string[] = await assembleExcelParams();
+      exportCsv(cvsArr, `Data File${formatDate}`);
+    }, [assembleExcelParams, activeSourceNameArr.length]);
 
     const onCancelReconfirm = useCallback(() => {
       setReconfirmVisible(false);

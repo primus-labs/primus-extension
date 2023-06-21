@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 
-import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
+
 import TokenTable from '@/components/TokenTable';
 import iconAvatar from '@/assets/img/iconAvatar.png';
 import iconCredCreate from '@/assets/img/iconCredCreate.svg';
@@ -18,6 +18,7 @@ import { BTC } from '@/config/constants';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/store/reducers';
 import type { ExchangeMeta } from '@/config/constants';
+import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 
 type ExInfo = {
   date: string;
