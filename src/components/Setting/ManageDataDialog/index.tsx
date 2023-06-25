@@ -176,6 +176,8 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
               return prev;
             }, []);
 
+          let curCipher = ciphers[`${key}cipher`];
+          curCipher = JSON.stringify(JSON.parse(curCipher)).replace(/\"/g, "'");  
           let curSourceRows = [
             {
               empty: '',
@@ -190,7 +192,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
             {
               empty: '',
               label: 'ApiCiphertext',
-              value: ciphers[`${key}cipher`] + '\t',
+              value: curCipher + '\t',
             },
             {
               empty: '',
