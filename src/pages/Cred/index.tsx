@@ -16,6 +16,8 @@ import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import CredTypesDialog from '@/components/Cred/CredTypesDialog';
 
 import { postMsg } from '@/utils/utils';
+import { useTimeout } from '@/hooks/useTimeout';
+import { useInterval } from '@/hooks/useInterval';
 import {
   ATTESTATIONPOLLINGTIMEOUT,
   ATTESTATIONPOLLINGTIME,
@@ -46,8 +48,6 @@ const Cred = memo(() => {
   const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
-  const [fetchAttestationTimer, setFetchAttestationTimer] = useState<any>();
-  const [fetchTimeoutTimer, setFetchTimeoutTimer] = useState<any>();
   const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
   const [activeAttestationType, setActiveAttestationType] =
     useState<string>('');
@@ -55,6 +55,8 @@ const Cred = memo(() => {
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [activeSendToChainRequest, setActiveSendToChainRequest] =
     useState<ActiveRequestType>();
+  const [timeoutSwitch, setTimeoutSwitch] = useState<boolean>(false);
+  const [intervalSwitch, setIntervalSwitch] = useState<boolean>(false);
 
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
@@ -66,6 +68,35 @@ const Cred = memo(() => {
   const filterWord = useSelector((state: UserState) => state.filterWord);
   const proofTypes = useSelector((state: UserState) => state.proofTypes);
 
+  const timeoutFn = useCallback(() => {
+    console.log('120s timeout');
+    if (activeRequest?.type === 'suc') {
+      return;
+    }
+    setActiveRequest({
+      type: 'warn',
+      title: 'Something went wrong',
+      desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+    });
+    const msg = {
+      fullScreenType: 'algorithm',
+      reqMethodName: 'stop',
+      params: {},
+    };
+    console.log('after timeout port', padoServicePort);
+    postMsg(padoServicePort, msg);
+  }, [padoServicePort, activeRequest?.type]);
+  const intervalFn = useCallback(() => {
+    const msg = {
+      fullScreenType: 'algorithm',
+      reqMethodName: 'getAttestationResult',
+      params: {},
+    };
+    postMsg(padoServicePort, msg);
+    console.log('page_send:getAttestationResult request');
+  }, [padoServicePort]);
+  useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
+  useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
   const [searchParams] = useSearchParams();
   const createFlag = searchParams.get('createFlag');
   const dispatch: Dispatch<any> = useDispatch();
@@ -307,15 +338,12 @@ const Cred = memo(() => {
     setActiveCred(item);
     setStep(1);
   }, []);
-  const clearFetchTimeoutTimer = useCallback(() => {
-    fetchTimeoutTimer && clearTimeout(fetchTimeoutTimer);
-  }, [fetchTimeoutTimer]);
   const clearFetchAttestationTimer = useCallback(() => {
-    if (fetchAttestationTimer) {
-      clearInterval(fetchAttestationTimer);
-      clearFetchTimeoutTimer();
-    }
-  }, [fetchAttestationTimer, clearFetchTimeoutTimer]);
+    setIntervalSwitch(false);
+  }, []);
+  useEffect(() => {
+    !intervalSwitch && setTimeoutSwitch(false);
+  }, [intervalSwitch]);
   const handleAdd = useCallback(() => {
     if (activeRequest?.type === 'loading') {
       alert(
@@ -327,141 +355,119 @@ const Cred = memo(() => {
     setCredTypesDialogVisible(true);
   }, [activeRequest?.type]);
 
-  const padoServicePortListener = async function (message: any) {
-    const { resType, resMethodName, res } = message;
-    if (resType === 'algorithm') {
-      console.log(`page_get:${resMethodName}:`, res);
-      if (resMethodName === `start`) {
-        console.log(`page_get:start:`, message.res);
-        const msg = {
-          fullScreenType: 'algorithm',
-          reqMethodName: 'init',
-          params: {},
-        };
-        postMsg(padoServicePort, msg);
-        console.log(`page_send:init request`);
-      }
-      if (resMethodName === `init`) {
-        if (res) {
-          // algorithm is ready
-        }
-      }
-      if (resMethodName === `getAttestation`) {
-        if (res) {
-          // TODO wheather wait getAttestation msg back
-          const fetchAttestationResult = () => {
-            const msg = {
-              fullScreenType: 'algorithm',
-              reqMethodName: 'getAttestationResult',
-              params: {},
-            };
-            postMsg(padoServicePort, msg);
-            console.log('page_send:getAttestationResult request');
-          };
-          const fetchTimer = setInterval(() => {
-            fetchAttestationResult();
-          }, ATTESTATIONPOLLINGTIME);
-          setFetchAttestationTimer(fetchTimer);
-          const fTimeoutTimer = setTimeout(() => {
-            console.log('60s timeout', fetchTimer);
-            // close offscreen.html
-            if (activeRequest?.type === 'suc') {
-              return;
-            }
-            const msg = {
-              fullScreenType: 'algorithm',
-              reqMethodName: 'stop',
-              params: {},
-            };
-            postMsg(padoServicePort, msg);
-            fetchTimer && clearInterval(fetchTimer);
-            setActiveRequest({
-              type: 'warn',
-              title: 'Something went wrong',
-              desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
-            });
-          }, ATTESTATIONPOLLINGTIMEOUT);
-          setFetchTimeoutTimer(fTimeoutTimer);
-        }
-      }
-      if (resMethodName === `getAttestationResult`) {
-        if (res) {
-          const { retcode, content } = JSON.parse(res);
-          if (retcode === '0') {
-            clearFetchAttestationTimer();
-            if (content.balanceGreaterThanBaseValue === 'true') {
-              const { activeRequestAttestation } =
-                await chrome.storage.local.get(['activeRequestAttestation']);
-              const parsedActiveRequestAttestation = activeRequestAttestation
-                ? JSON.parse(activeRequestAttestation)
-                : {};
-              
-              // console.log(
-              //   'attestation',
-              //   parsedActiveRequestAttestation,
-              //   content
-              // );
-              const activeRequestId = parsedActiveRequestAttestation.requestid;
-              if (activeRequestId !== content?.requestid) {
-                return;
-              }
-              const fullAttestation = {
-                ...content,
-                ...parsedActiveRequestAttestation,
-              };
-              const { credentials: credentialsStr } =
-                await chrome.storage.local.get(['credentials']);
-              const credentialsObj = credentialsStr
-                ? JSON.parse(credentialsStr)
-                : {};
-              credentialsObj[activeRequestId] = fullAttestation;
-              await chrome.storage.local.set({
-                credentials: JSON.stringify(credentialsObj),
-              });
-              await chrome.storage.local.remove(['activeRequestAttestation']);
-
-              initCredList();
-              setActiveRequest({
-                type: 'suc',
-                title: 'Congratulations',
-                desc: 'Your proof is created!',
-              });
-            } else if (content.balanceGreaterThanBaseValue === 'false') {
-              setActiveRequest({
-                type: 'warn',
-                title: 'Not met the requirements',
-                desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
-              });
-            }
-          } else if (retcode === '2') {
-            const msg = {
-              fullScreenType: 'algorithm',
-              reqMethodName: 'stop',
-              params: {},
-            };
-            postMsg(padoServicePort, msg);
-            setActiveRequest({
-              type: 'warn',
-              title: 'Something went wrong',
-              desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
-            });
-          }
-        }
-      }
-      if (resMethodName === `stop`) {
-        if (res.retcode === 0) {
-          const msg: any = {
+  const padoServicePortListener = useCallback(
+    async function (message: any) {
+      const { resType, resMethodName, res } = message;
+      if (resType === 'algorithm') {
+        console.log(`page_get:${resMethodName}:`, res);
+        if (resMethodName === `start`) {
+          console.log(`page_get:start:`, message.res);
+          const msg = {
             fullScreenType: 'algorithm',
-            reqMethodName: 'start',
+            reqMethodName: 'init',
             params: {},
           };
           postMsg(padoServicePort, msg);
-          console.log(`page_send:start request`);
+          console.log(`page_send:init request`);
+        }
+        if (resMethodName === `init`) {
+          if (res) {
+            // algorithm is ready
+          }
+        }
+        if (resMethodName === `getAttestation`) {
+          if (res) {
+            // TODO wheather wait getAttestation msg back
+            setTimeoutSwitch(true);
+            setIntervalSwitch(true);
+          }
+        }
+        if (resMethodName === `getAttestationResult`) {
+          if (res) {
+            const { retcode, content } = JSON.parse(res);
+            if (retcode === '0') {
+              clearFetchAttestationTimer();
+
+              if (content.balanceGreaterThanBaseValue === 'true') {
+                const { activeRequestAttestation } =
+                  await chrome.storage.local.get(['activeRequestAttestation']);
+                const parsedActiveRequestAttestation = activeRequestAttestation
+                  ? JSON.parse(activeRequestAttestation)
+                  : {};
+
+                // console.log(
+                //   'attestation',
+                //   parsedActiveRequestAttestation,
+                //   content
+                // );
+                const activeRequestId =
+                  parsedActiveRequestAttestation.requestid;
+                if (activeRequestId !== content?.requestid) {
+                  return;
+                }
+                const fullAttestation = {
+                  ...content,
+                  ...parsedActiveRequestAttestation,
+                };
+                const { credentials: credentialsStr } =
+                  await chrome.storage.local.get(['credentials']);
+                const credentialsObj = credentialsStr
+                  ? JSON.parse(credentialsStr)
+                  : {};
+                credentialsObj[activeRequestId] = fullAttestation;
+                await chrome.storage.local.set({
+                  credentials: JSON.stringify(credentialsObj),
+                });
+                await chrome.storage.local.remove(['activeRequestAttestation']);
+
+                initCredList();
+                setActiveRequest({
+                  type: 'suc',
+                  title: 'Congratulations',
+                  desc: 'Your proof is created!',
+                });
+              } else if (content.balanceGreaterThanBaseValue === 'false') {
+                setActiveRequest({
+                  type: 'warn',
+                  title: 'Not met the requirements',
+                  desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+                });
+              }
+            } else if (retcode === '2') {
+              const msg = {
+                fullScreenType: 'algorithm',
+                reqMethodName: 'stop',
+                params: {},
+              };
+              postMsg(padoServicePort, msg);
+              setActiveRequest({
+                type: 'warn',
+                title: 'Something went wrong',
+                desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+              });
+            }
+          }
+        }
+        if (resMethodName === `stop`) {
+          if (res.retcode === 0) {
+            const msg: any = {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'start',
+              params: {},
+            };
+            postMsg(padoServicePort, msg);
+            console.log(`page_send:start request`);
+          }
         }
       }
-    }
-  };
-  const initAlgorithm = () => {
+    },
+    [
+      padoServicePort,
+      clearFetchAttestationTimer,
+      initCredList,
+    ]
+  );
+  const initAlgorithm = useCallback(() => {
     const msg: any = {
       fullScreenType: 'algorithm',
       reqMethodName: 'start',
@@ -469,8 +475,7 @@ const Cred = memo(() => {
     };
     postMsg(padoServicePort, msg);
     console.log(`page_send:start request`);
-    padoServicePort.onMessage.addListener(padoServicePortListener);
-  };
+  }, [padoServicePort]);
 
   const getCredentialsObjFromStorage = async (): Promise<CREDENTIALSOBJ> => {
     const { credentials: credentialsStr } = await chrome.storage.local.get([
@@ -482,20 +487,16 @@ const Cred = memo(() => {
 
   useEffect(() => {
     initAlgorithm();
-    return () => {
-      padoServicePort.onMessage.removeListener(padoServicePortListener);
-    };
-  }, []);
+  }, [initAlgorithm]);
   useEffect(() => {
-    return () => {
-      clearFetchAttestationTimer();
-    };
-  }, [clearFetchAttestationTimer]);
-  useEffect(() => {
-    return () => {
-      clearFetchTimeoutTimer();
-    };
-  }, [clearFetchTimeoutTimer]);
+    if (padoServicePort) {
+      padoServicePort.onMessage.addListener(padoServicePortListener);
+      return () => {
+        padoServicePort.onMessage.removeListener(padoServicePortListener);
+      };
+    }
+  }, [padoServicePort, padoServicePortListener]);
+  
   useEffect(() => {
     if (
       activeRequest?.type === 'suc' ||

@@ -35,10 +35,10 @@ const switchChain = async (connectedChainId, targetNetwork) => {
     blockExploreUrls,
   };
   if (connectedChainId === obj.chainId) {
-    console.log(`当前链已经是:${obj.chainName}`);
+    console.log(`The current chain is already:${obj.chainName}`);
     return;
   } else {
-    console.log(`正在切换链为:${obj.chainName}`);
+    console.log(`Switching chain to:${obj.chainName}`);
   }
   try {
     // switch network

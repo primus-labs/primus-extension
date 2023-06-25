@@ -146,7 +146,6 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       const ciphers = await chrome.storage.local.get(
         activeExSourceCipherNameArr
       );
-      debugger;
       let assetsRows = [];
 
       activeExSourceNameArr
