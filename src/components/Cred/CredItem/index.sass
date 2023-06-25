@@ -79,17 +79,38 @@
           img
             width: 18px
             cursor: pointer
-            
-        .iconOtherWrapper
-          padding-bottom: 12px
-          margin-bottom: -12px
-          @extend .frcc
       .operations
         img
           width: 24px
           opacity: 0.4
           &:hover
             opacity: 0.8
+        .iconOtherWrapper
+          padding-bottom: 12px
+          margin-bottom: -12px
+          @extend .frcc
+        .iconWrapper
+          @extend .frcc
+          position: relative
+          &:hover
+            .descTip
+              display: flex
+          .descTip
+            display: none
+            position: absolute
+            top: -19px
+            content: ''
+            left: 50%
+            transform: translateX(-50%)
+            // padding: 0 8px
+            @extend .frcc
+            font-size: 12px
+            font-family: 'Inter-Regular'
+            color: #fff
+            background-color: rgba(0,0,0,0.4)
+            width: 115px
+            border-radius: 8px
+
 
   .extra
     padding: 10px 24px 14px 

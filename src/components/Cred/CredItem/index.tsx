@@ -14,6 +14,7 @@ import {
 import iconExpand from '@/assets/img/iconExpand.svg';
 import iconUpChain from '@/assets/img/iconUpChain.svg';
 import iconQRCode from '@/assets/img/iconQRCode.svg';
+import iconBind from '@/assets/img/iconBind.svg';
 import iconSuc2 from '@/assets/img/iconSuc2.svg';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
@@ -23,6 +24,7 @@ import type { PROOFTYPEITEM } from '@/types/cred';
 import type { UserState } from '@/store/reducers';
 
 import './index.sass';
+import { div } from '../../../utils/utils';
 
 export type CredTypeItemType = {
   type: string;
@@ -113,6 +115,14 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     const handleClickOther = (e: SyntheticEvent) => {
       e.stopPropagation();
     };
+    const handleClickBind = () => {};
+    // const handleEnterBind = () => {
+    //   setDorpdownVisible(true);
+    // };
+    // const handleLeaveBind = () => {
+    //   setDorpdownVisible(false);
+    // };
+
     useEffect(() => {
       if (item.expand) {
         setExpand(true);
@@ -189,6 +199,12 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="operations">
                 <img src={iconUpChain} alt="" onClick={handleUpChain} />
                 <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
+                <div className="iconWrapper" onClick={handleClickBind}>
+                  {/* onMouseEnter={handleEnterBind}
+                  onMouseLeave={handleLeaveBind} */}
+                  <div className="descTip">Bind to Polygon ID</div>
+                  <img src={iconBind} className="iconBind" alt="" />
+                </div>
                 <div
                   className="iconOtherWrapper"
                   onClick={handleClickOther}
