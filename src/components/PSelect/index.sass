@@ -50,10 +50,12 @@ $sSelectInput: 48px
     color: rgba(0, 0, 0, 0.6)
     position: relative
     cursor: pointer
+    .placeholder
+      color: rgba(0, 0, 0, 0.4)
     &:hover
-      .suffix
+      .suffixIcon
         opacity: 0.8
-    .suffix
+    .suffixIcon
       position: absolute
       content: ''
       top: 50%
@@ -66,7 +68,7 @@ $sSelectInput: 48px
   .selectOptionswrapper
     position: absolute
     width: 100%
-    z-index: 3
+    z-index: 2
     padding-top: 8px
   .selectOptions
     display: flex

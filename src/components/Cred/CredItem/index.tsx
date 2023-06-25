@@ -204,6 +204,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         {dorpdownVisible && (
           <ul
             className="dropdown"
+            onClick={handleEnterAvatar}
             onMouseEnter={handleEnterAvatar}
             onMouseLeave={handleLeaveAvatar}
           >

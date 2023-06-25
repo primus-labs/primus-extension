@@ -63,29 +63,34 @@ const PSelect: React.FC<PSelectProps> = memo(
       <div className="pSelect">
         <div
           ref={selectInputEl}
-          className="selectInput"
+          className={showIcon ? 'selectInput hasIcon' : 'selectInput'}
           onMouseEnter={handleEnterAvatar}
           onMouseLeave={handleLeaveAvatar}
         >
           {val && showIcon && (
-            <img src={`${tokenLogoPrefix}icon${val}.png`} alt="" />
+            <img
+              className="prefixIcon"
+              src={`${tokenLogoPrefix}icon${val}.png`}
+              alt=""
+            />
           )}
           {val && <span>{val}</span>}
-          {!val && <span>Select</span>}
+          {!val && <span className="placeholder">Select</span>}
           {val && showIcon ? (
             <img
-              className="suffix"
+              className="suffixIcon"
               src={iconClear}
               alt=""
               onClick={() => handleChange(undefined)}
             />
           ) : (
-            <img className="suffix arrow" src={iconArrowBottom} alt="" />
+            <img className="suffixIcon arrow" src={iconArrowBottom} alt="" />
           )}
         </div>
         {optionsVisible && (
           <div
             className="selectOptionswrapper"
+            onClick={handleEnterAvatar}
             onMouseEnter={handleEnterAvatar}
             onMouseLeave={handleLeaveAvatar}
           >

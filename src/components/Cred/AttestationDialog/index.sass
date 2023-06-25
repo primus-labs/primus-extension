@@ -68,50 +68,56 @@
                 width: 115px
                 height: 34px
                 .selectInput
-                  line-height: 34px
+                  font-size: 14px
+                  color: rgba(0,0,0,0.4)
                   background: rgba(0, 0, 0, 0.05)
                   backdrop-filter: blur(16px)
                   border-radius: 8px
-                  padding: 0 12px 0 11.5px
+                  padding: 0 15px
                   @extend .frsc
                   gap: $xxsGap
-                  .suffix
-                    right: 12px
-                  >img
-                    width: 18px
+                  &.hasIcon
+                    padding: 0 13px
+                  .suffixIcon
+                    right: 13px
+                    width: 24px
+                  .prefixIcon
+                    width: 14px
                 .selectOptionswrapper
                   padding-top: 6px
-                  max-height: 146px
+                  max-height: 150px
                   overflow-y: auto
                   box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
                   border-radius: $sBorderRadius
-                  width: calc( 100% - 5px )
+                  // width: calc( 100% - 5px )
                   &::-webkit-scrollbar
                     width: 2px
                     height: 110px
                     position: relative
-                    left: 5px
+                    right: 5px
                   &::-webkit-scrollbar-thumb
                     background: rgba(0, 0, 0, 0.2)
                     border-radius: $xxLBorderRadius
                     position: relative
                     left: -15px
                   .selectOptions
+                    box-shadow: 0px 9px 28px 8px rgba(0, 0, 0, 0.05), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 3px 6px -4px rgba(0, 0, 0, 0.12)
                     box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
                     border-radius: $sBorderRadius
-                    gap: 0
+                    gap: 6px
                     .selectOption
-                      height: 32px
+                      height: 30px
                       border-radius: 8px
-                      font-size: 12px
-                      line-height: 15px
+                      font-size: 14px
+                      // line-height: 15px
                       font-family: 'Inter-Medium'
-                      color: $colLBlack
+                      color: $colSBlack
                       @extend .frsc
                       gap: $xxsGap
                       padding-left: 6px
                       &:hover
                         background: rgba(0, 0, 0, 0.05)
+                        color: $colLBlack
                       >img
                         width: 14px
           .emptyContent
@@ -214,7 +220,7 @@
     .tipWrapper
       position: absolute
       content: ''
-      top: -49px
+      top: -40px
       left: 50%
       transform: translateX(-50%)
       width: 100%
