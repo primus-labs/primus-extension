@@ -113,7 +113,6 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     };
     const handleViewQrcode = (e: SyntheticEvent) => {
       e.stopPropagation();
-      debugger;
       onViewQrcode(item);
     };
     const handleClickOther = (e: SyntheticEvent) => {

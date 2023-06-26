@@ -6,7 +6,7 @@ type UseTimeout = (
   switchFlag: boolean,
   immediate: boolean
 ) => void;
-export const useTimeout: UseTimeout = function useTimeout(
+const useTimeout: UseTimeout = function useTimeout(
   callback,
   delay,
   switchFlag = true,
@@ -30,3 +30,4 @@ export const useTimeout: UseTimeout = function useTimeout(
     }
   }, [delay, switchFlag, immediate]);
 };
+export default useTimeout

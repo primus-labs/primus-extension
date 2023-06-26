@@ -71,7 +71,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
       <PMask onClose={onClose}>
         <div
           className={
-            activeCred?.did
+            isPolygonId
               ? 'padoDialog qrcodeDialog scanDialog polygonIdScanDialog'
               : 'padoDialog qrcodeDialog scanDialog'
           }
@@ -79,13 +79,17 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
           <main>
             {/* <PolygonIdAddressInfoHeader address="did:polygonid:polygon:mumbai:2qGU9NsbhEkTki4yC7vmkpQsr9RvGQEVfnwkktJR6L" /> */}
             {isPolygonId ? (
-              <AddressInfoHeader />
-            ) : (
               <PolygonIdAddressInfoHeader address="" />
+            ) : (
+              <AddressInfoHeader />
             )}
             <QRCodeMain
               title="Present Your Credential"
-              desc={isPolygonId? "Use your Polygon ID wallet to scan this QR code to import your credential. This process will verify your identity and authorize you to use the credential.":"Scan this QR code to use or download your credential."}
+              desc={
+                isPolygonId
+                  ? 'Use your Polygon ID wallet to scan this QR code to import your credential. This process will verify your identity and authorize you to use the credential.'
+                  : 'Scan this QR code to use or download your credential.'
+              }
               qrcodeValue={jsonStr}
             />
             <div className="exportWrapper" onClick={handleExport}>

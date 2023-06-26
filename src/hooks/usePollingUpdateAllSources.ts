@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import useUpdateAllSources from '@/hooks/useUpdateAllSources';
-import { useInterval } from '@/hooks/useInterval';
+import useInterval from '@/hooks/useInterval';
 import { ONEMINUTE } from '@/config/constants';
 
 import type { UserState } from '@/types/store';

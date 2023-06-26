@@ -6,7 +6,7 @@ type UseInterval = (
   switchFlag: boolean,
   immediate: boolean
 ) => void;
-export const useInterval: UseInterval = function useInterval(
+const useInterval: UseInterval = function useInterval(
   callback,
   delay,
   switchFlag = true,
@@ -30,3 +30,4 @@ export const useInterval: UseInterval = function useInterval(
     }
   }, [delay, switchFlag, immediate]);
 };
+export default useInterval;

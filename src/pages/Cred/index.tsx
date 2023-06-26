@@ -17,8 +17,8 @@ import CredTypesDialog from '@/components/Cred/CredTypesDialog';
 import BindPolygonIDDialog from '@/components/Cred/BindPolygonIDDialog';
 
 import { postMsg } from '@/utils/utils';
-import { useTimeout } from '@/hooks/useTimeout';
-import { useInterval } from '@/hooks/useInterval';
+import useTimeout from '@/hooks/useTimeout';
+import useInterval from '@/hooks/useInterval';
 import {
   ATTESTATIONPOLLINGTIMEOUT,
   ATTESTATIONPOLLINGTIME,
