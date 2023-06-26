@@ -34,6 +34,9 @@ const PSelect: React.FC<PSelectProps> = memo(
     }, [sysConfig]);
 
     const selectInputEl = useRef(null);
+    const prefixIconEl = useRef(null);
+    const suffixIconEl = useRef(null);
+    const valEl = useRef(null);
 
     const handleChange = (item: OptionItem | undefined) => {
       // setActiveOption(item)
@@ -49,7 +52,12 @@ const PSelect: React.FC<PSelectProps> = memo(
     useEffect(() => {
       const dE = document.documentElement;
       const dEClickHandler: any = (ev: MouseEvent<HTMLElement>) => {
-        if (ev.target !== selectInputEl.current) {
+        if (
+          ev.target !== selectInputEl.current &&
+          ev.target !== prefixIconEl.current &&
+          ev.target !== suffixIconEl.current &&
+          ev.target !== valEl.current
+        ) {
           setOptionsVisible(false);
         }
       };
@@ -64,27 +72,38 @@ const PSelect: React.FC<PSelectProps> = memo(
         <div
           ref={selectInputEl}
           className={showIcon ? 'selectInput hasIcon' : 'selectInput'}
+          onClick={handleEnterAvatar}
           onMouseEnter={handleEnterAvatar}
           onMouseLeave={handleLeaveAvatar}
         >
           {val && showIcon && (
             <img
+              ref={prefixIconEl}
               className="prefixIcon"
               src={`${tokenLogoPrefix}icon${val}.png`}
               alt=""
             />
           )}
-          {val && <span>{val}</span>}
-          {!val && <span className="placeholder">Select</span>}
+
+          <span ref={valEl} className={val ? '' : 'placeholder'}>
+            {val ? val : 'Select'}
+          </span>
+
           {val && showIcon ? (
             <img
+              ref={suffixIconEl}
               className="suffixIcon"
               src={iconClear}
               alt=""
               onClick={() => handleChange(undefined)}
             />
           ) : (
-            <img className="suffixIcon arrow" src={iconArrowBottom} alt="" />
+            <img
+              ref={suffixIconEl}
+              className="suffixIcon arrow"
+              src={iconArrowBottom}
+              alt=""
+            />
           )}
         </div>
         {optionsVisible && (
