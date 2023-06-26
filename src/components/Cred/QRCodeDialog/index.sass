@@ -1,23 +1,10 @@
 @import '@/assets/css/pDialog.sass'
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pDialog.sass'
+@import '@/components/Cred/QrCodeDialog/qrCode.sass'
 
-.qrcodeDialog
-  padding: 64px 50px 50px
-  @extend .fcbc
+.qrcodeDialog.scanDialog
   main
-    width: 100%
-    @extend .fcsc
-    h1
-      @extend .frsc
-      gap: $xxsGap
-      align-self: center
-      @extend .xlLBlackBoldFont
-    h2
-      @extend .sSBlackRegularFont
-      line-height: 26px
-    svg
-      margin-top: 31px
     .exportWrapper
       @extend .frcc
       gap: $xsGap
@@ -32,26 +19,9 @@
         opacity: 0.8
       >img.iconExport
         width: 20px
-      
-  button.nextBtn
-    height: 58px !important
-    position: relative
-@media (max-width: 1680px)
-  .qrcodeDialog
-    padding: 43px 42px 32px
+    
+
+  &.polygonIdScanDialog
     main
-      h1
-        font-size: 26px
-        line-height: 31px
-        font-family:'Inter-SemiBold'
-        color:$colLBlack
-        padding-top: 27px
-      h2
-        font-size: 12px
-        line-height: 18px
-        font-family: 'Inter-Regular'
-        color: $colSBlack
-        padding-top: 12px
-    button.nextBtn
-      height: 48px !important
-      font-family: 'Inter-SemiBold' !important
+      .qrcodeMain
+        margin-top: 32px

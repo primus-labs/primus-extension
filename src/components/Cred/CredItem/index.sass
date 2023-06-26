@@ -105,11 +105,15 @@
             // padding: 0 8px
             @extend .frcc
             font-size: 12px
+            line-height: 16px
             font-family: 'Inter-Regular'
             color: #fff
             background-color: rgba(0,0,0,0.4)
-            width: 115px
+            width: 104px
             border-radius: 8px
+            >span
+              transform: scale(0.8333,0.8333)
+
 
 
   .extra
@@ -125,6 +129,10 @@
         @extend .frbc
         .value
           width: auto
+          @extend .frcc
+          gap: 4px
+          >img
+            wifth: 12px
       .label,.value
         font-size: 12px
         line-height: 15px

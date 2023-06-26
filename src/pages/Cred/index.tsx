@@ -14,6 +14,7 @@ import CredList from '@/components/Cred/CredList';
 import QRCodeDialog from '@/components/Cred/QRCodeDialog';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import CredTypesDialog from '@/components/Cred/CredTypesDialog';
+import BindPolygonIDDialog from '@/components/Cred/BindPolygonIDDialog';
 
 import { postMsg } from '@/utils/utils';
 import { useTimeout } from '@/hooks/useTimeout';
@@ -42,6 +43,7 @@ export type CREDENTIALSOBJ = {
 };
 
 const Cred = memo(() => {
+  const [bindPolygonidVisible, setBindPolygonidVisible] = useState<boolean>(false);
   const [submitAddress, setSubmitAddress] = useState<string>();
   const [credTypesDialogVisible, setCredTypesDialogVisible] =
     useState<boolean>();
@@ -317,8 +319,17 @@ const Cred = memo(() => {
     setActiveCred(item);
     setQrcodeVisible(true);
   }, []);
+  const handleBindPolygonID = useCallback((item: CredTypeItemType) => {
+    setActiveCred(item);
+    setBindPolygonidVisible(true);
+    //TODO
+  }, []);
   const handleCloseQrcode = useCallback(() => {
     setQrcodeVisible(false);
+    handleCloseMask();
+  }, [handleCloseMask]);
+  const handleCloseBindPolygonid = useCallback(() => {
+    setBindPolygonidVisible(false);
     handleCloseMask();
   }, [handleCloseMask]);
   const handleDeleteCred = useCallback(
@@ -461,11 +472,7 @@ const Cred = memo(() => {
         }
       }
     },
-    [
-      padoServicePort,
-      clearFetchAttestationTimer,
-      initCredList,
-    ]
+    [padoServicePort, clearFetchAttestationTimer, initCredList]
   );
   const initAlgorithm = useCallback(() => {
     const msg: any = {
@@ -496,7 +503,7 @@ const Cred = memo(() => {
       };
     }
   }, [padoServicePort, padoServicePortListener]);
-  
+
   useEffect(() => {
     if (
       activeRequest?.type === 'suc' ||
@@ -535,6 +542,7 @@ const Cred = memo(() => {
           list={filteredCredList}
           onUpChain={handleUpChain}
           onViewQrcode={handleViewQrcode}
+          onBindPolygonID={handleBindPolygonID}
           onDelete={handleDeleteCred}
           onUpdate={handleUpdateCred}
           onAdd={handleAdd}
@@ -568,7 +576,10 @@ const Cred = memo(() => {
             tip="Please select one chain to provide attestation"
             checked={false}
             backable={false}
-            headerType="attestation"
+            headerType={
+              activeCred?.did ? 'polygonIdAttestation' : 'attestation'
+            }
+            address={activeCred?.did}
           />
         )}
         {step === 4 && (
@@ -594,6 +605,15 @@ const Cred = memo(() => {
             onClose={handleCloseQrcode}
             onSubmit={() => {
               setQrcodeVisible(false);
+            }}
+          />
+        )}
+        {bindPolygonidVisible && (
+          <BindPolygonIDDialog
+            activeCred={activeCred}
+            onClose={handleCloseBindPolygonid}
+            onSubmit={() => {
+              setBindPolygonidVisible(false);
             }}
           />
         )}

@@ -25,6 +25,7 @@ import type { UserState } from '@/store/reducers';
 
 import './index.sass';
 import { div } from '../../../utils/utils';
+import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 
 export type CredTypeItemType = {
   type: string;
@@ -53,17 +54,19 @@ export type CredTypeItemType = {
     address: string;
     token: string;
   };
+  did?: string;
 };
 
 interface CredTypeListProps {
   item: CredTypeItemType;
   onUpChain: (item: CredTypeItemType) => void;
   onViewQrcode: (item: CredTypeItemType) => void;
+  onBindPolygonID: (item: CredTypeItemType) => void;
   onUpdate: (item: CredTypeItemType) => void;
   onDelete: (item: CredTypeItemType) => void;
 }
 const CredItem: React.FC<CredTypeListProps> = memo(
-  ({ item, onUpChain, onViewQrcode, onUpdate, onDelete }) => {
+  ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
     // console.log('credItem', item);
 
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
@@ -110,12 +113,16 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     };
     const handleViewQrcode = (e: SyntheticEvent) => {
       e.stopPropagation();
+      debugger;
       onViewQrcode(item);
     };
     const handleClickOther = (e: SyntheticEvent) => {
       e.stopPropagation();
     };
-    const handleClickBind = () => {};
+    const handleClickBind = (e: SyntheticEvent) => {
+      e.stopPropagation();
+      onBindPolygonID(item);
+    };
     // const handleEnterBind = () => {
     //   setDorpdownVisible(true);
     // };
@@ -197,13 +204,23 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 ))}
               </div>
               <div className="operations">
-                <img src={iconUpChain} alt="" onClick={handleUpChain} />
+                <div className="iconWrapper">
+                  <div className="descTip">
+                    <span>Provide on-chain</span>
+                  </div>
+                  <img src={iconUpChain} alt="" onClick={handleUpChain} />
+                </div>
                 <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
-                <div className="iconWrapper" onClick={handleClickBind}>
-                  {/* onMouseEnter={handleEnterBind}
-                  onMouseLeave={handleLeaveBind} */}
-                  <div className="descTip">Bind to Polygon ID</div>
-                  <img src={iconBind} className="iconBind" alt="" />
+                <div className="iconWrapper">
+                  <div className="descTip">
+                    <span>Bind to Polygon ID</span>
+                  </div>
+                  <img
+                    src={iconBind}
+                    className="iconBind"
+                    alt=""
+                    onClick={handleClickBind}
+                  />
                 </div>
                 <div
                   className="iconOtherWrapper"
@@ -273,11 +290,24 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 </div>
               )}
             </div>
-            <div className="descItem arow">
-              <div className="label">Recipient Address</div>
-              <div className="value">{formatAddress(item.address)}</div>
-            </div>
-
+            {item.did ? (
+              <div className="descItem arow">
+                <div className="label">Recipient Account</div>
+                <div className="value">
+                  <img
+                    src={iconPolygonID}
+                    alt=""
+                  />
+                  {/* TODO */}
+                  <span>{formatAddress(item.did)}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="descItem arow">
+                <div className="label">Recipient Address</div>
+                <div className="value">{formatAddress(item.address)}</div>
+              </div>
+            )}
             <div className="descItem">
               <div className="label">Attested By</div>
               <div className="value">

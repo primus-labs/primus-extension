@@ -1,8 +1,9 @@
-import React, { useState, useEffect, memo } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import React, { useState, useEffect, memo, useMemo } from 'react';
 
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
+import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
+import QRCodeMain from '@/components/Cred/QRCodeMain';
 import iconExport from '@/assets/img/iconExport.svg';
 import './index.sass';
 
@@ -20,7 +21,12 @@ interface QRCodeDialogProps {
 const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
   ({ onClose, onSubmit, activeCred }) => {
     const [jsonStr, setJsonStr] = useState<string>('');
-
+    const isPolygonId = useMemo(() => {
+      if (activeCred?.did) {
+        return true;
+      }
+      return false;
+    }, activeCred);
     const handleClickNext = () => {
       onSubmit();
     };
@@ -28,6 +34,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
       exportJson(jsonStr, 'credential');
     };
     useEffect(() => {
+      // TODO
       if (activeCred) {
         const {
           source,
@@ -62,12 +69,25 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
 
     return (
       <PMask onClose={onClose}>
-        <div className="padoDialog qrcodeDialog">
+        <div
+          className={
+            activeCred?.did
+              ? 'padoDialog qrcodeDialog scanDialog polygonIdScanDialog'
+              : 'padoDialog qrcodeDialog scanDialog'
+          }
+        >
           <main>
-            <AddressInfoHeader />
-            <h1>Present your credential</h1>
-            <h2>Scan this QR code to use or download your credential.</h2>
-            <QRCodeSVG value={jsonStr} size={220} />
+            {/* <PolygonIdAddressInfoHeader address="did:polygonid:polygon:mumbai:2qGU9NsbhEkTki4yC7vmkpQsr9RvGQEVfnwkktJR6L" /> */}
+            {isPolygonId ? (
+              <AddressInfoHeader />
+            ) : (
+              <PolygonIdAddressInfoHeader address="" />
+            )}
+            <QRCodeMain
+              title="Present Your Credential"
+              desc={isPolygonId? "Use your Polygon ID wallet to scan this QR code to import your credential. This process will verify your identity and authorize you to use the credential.":"Scan this QR code to use or download your credential."}
+              qrcodeValue={jsonStr}
+            />
             <div className="exportWrapper" onClick={handleExport}>
               <img className="exportIcon" src={iconExport} alt="" />
               <p>Export your credential</p>

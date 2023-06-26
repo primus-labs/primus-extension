@@ -10,13 +10,23 @@ interface CredListProps {
   onChange?: (item: CredTypeItemType) => void;
   onUpChain: (item: CredTypeItemType) => void;
   onViewQrcode: (item: CredTypeItemType) => void;
+  onBindPolygonID: (item: CredTypeItemType) => void;
   onUpdate: (item: CredTypeItemType) => void;
   onDelete: (item: CredTypeItemType) => void;
   list: CredTypeItemType[];
   onAdd: () => void;
 }
 const CredList: React.FC<CredListProps> = memo(
-  ({ onChange, onUpChain, onViewQrcode, onUpdate, onDelete, list, onAdd }) => {
+  ({
+    onChange,
+    onUpChain,
+    onViewQrcode,
+    onBindPolygonID,
+    onUpdate,
+    onDelete,
+    list,
+    onAdd,
+  }) => {
     return (
       <section className="credListWrapper">
         {list.length < 1 && <EmptyDataSourceItem onAdd={onAdd} />}
@@ -34,6 +44,7 @@ const CredList: React.FC<CredListProps> = memo(
                   item={item}
                   onUpChain={onUpChain}
                   onViewQrcode={onViewQrcode}
+                  onBindPolygonID={onBindPolygonID}
                   onDelete={onDelete}
                   onUpdate={onUpdate}
                 />

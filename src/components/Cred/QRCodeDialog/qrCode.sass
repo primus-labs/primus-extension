@@ -1,0 +1,21 @@
+@import '@/assets/css/pDialog.sass'
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pDialog.sass'
+
+.qrcodeDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  main
+    width: 100%
+    @extend .fcsc
+    .qrcodeMain
+      margin-top: 27px
+  button.nextBtn
+    height: 58px !important
+    position: relative
+@media (max-width: 1680px)
+  .qrcodeDialog
+    padding: 43px 42px 32px
+    button.nextBtn
+      height: 48px !important
+      font-family: 'Inter-SemiBold' !important

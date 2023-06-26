@@ -1,5 +1,5 @@
 import iconTool1 from '@/assets/img/iconTool1.svg';
-import iconPolygon from '@/assets/img/iconPolygon.svg';
+import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
 import iconWalletCoinbaseWallet from '@/assets/img/iconWalletCoinbaseWallet.svg';

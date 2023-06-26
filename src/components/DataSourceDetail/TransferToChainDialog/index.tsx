@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo, useCallback, memo } from 'react';
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
+import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
 import rightArrow from '@/assets/img/rightArrow.svg';
 
 import './index.sass';
@@ -27,6 +28,7 @@ interface TransferToChainDialogProps {
   listTitle?: string;
   listSeparator?: string;
   requireItem?: boolean;
+  address?: string;
 }
 
 const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
@@ -45,6 +47,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
     listTitle = 'Continue with',
     listSeparator = 'or',
     requireItem = true,
+    address
   }) => {
     const [activeName, setActiveName] = useState<string>();
     const [errorTip, setErrorTip] = useState<string>();
@@ -104,16 +107,19 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
     // setActiveTool(list[0]);
     // setActiveName(list[0].title)
     // }, [list]);
-
+    const wrapperClassName = useMemo(() => {
+      let defaultCN = 'padoDialog TransferToChainDialog';
+      if (headerType === 'attestation') {
+        defaultCN += ' attestationUpChainDialog';
+      }
+      if (headerType === 'attestation') {
+        defaultCN += ' polygonIdAttestationUpChainDialog';
+      }
+      return defaultCN
+    }, [headerType]);
     return (
       <PMask onClose={onClose}>
-        <div
-          className={
-            headerType === 'attestation'
-              ? 'padoDialog TransferToChainDialog'
-              : 'padoDialog TransferToChainDialog attestationUpChainDialog'
-          }
-        >
+        <div className={wrapperClassName}>
           <main>
             {headerType === 'dataSource' && (
               <AuthInfoHeader
@@ -123,6 +129,9 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
               />
             )}
             {headerType === 'attestation' && <AddressInfoHeader />}
+            {headerType === 'polygonIdAttestation' && (
+              <PolygonIdAddressInfoHeader address={address as string} />
+            )}
             <h1>{title}</h1>
             <h2>{desc}</h2>
             <h6>{listTitle}</h6>

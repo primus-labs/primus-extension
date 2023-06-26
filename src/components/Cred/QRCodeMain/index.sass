@@ -1,0 +1,36 @@
+@import '@/assets/css/pDialog.sass'
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pDialog.sass'
+
+.qrcodeMain
+  width: 100%
+  @extend .fccc
+  h1
+    @extend .frsc
+    gap: $xxsGap
+    @extend .xlLBlackBoldFont
+    text-align: center
+  h2
+    @extend .sSBlackRegularFont
+    // align-self: center
+    line-height: 26px
+    padding-top: 15px
+    width: 379px
+    text-align: center
+  .pQRCodeWrapper
+    margin-top: 31px
+@media (max-width: 1680px)
+  .qrcodeMain
+    h1
+      font-size: 26px
+      line-height: 31px
+      font-family:'Inter-SemiBold'
+      color:$colLBlack
+      // padding-top: 27px
+    h2
+      font-size: 12px
+      line-height: 18px
+      font-family: 'Inter-Regular'
+      color: $colSBlack
+      padding-top: 12px
+    

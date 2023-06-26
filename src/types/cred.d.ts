@@ -26,7 +26,7 @@ export type CredTypeItemType = {
     address: string;
     token: string;
   };
-  
+  did?: string;
 };
 export type PROOFTYPEITEM = {
   simplifiedName: string;
