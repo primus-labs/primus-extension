@@ -36,33 +36,38 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
     useEffect(() => {
       // TODO
       if (activeCred) {
-        const {
-          source,
-          authUseridHash,
-          address,
-          getDataTime,
-          baseValue,
-          balanceGreaterThanBaseValue,
-          signature,
-        } = activeCred;
-        const jsonStr = JSON.stringify(
-          {
-            attester: PADOADDRESS,
-            schemaData: {
-              source,
-              // useridhash,
-              // sourceUseridHash: '',
-              authUseridHash,
-              receipt: address,
-              getDataTime,
-              baseValue,
-              balanceGreaterThanBaseValue,
-            },
+        let jsonStr: any;
+        if (activeCred?.did) {
+          jsonStr = JSON.stringify(activeCred?.claimQrCode,null, '\t');
+        } else {
+          const {
+            source,
+            authUseridHash,
+            address,
+            getDataTime,
+            baseValue,
+            balanceGreaterThanBaseValue,
             signature,
-          },
-          null,
-          '\t'
-        );
+          } = activeCred;
+          jsonStr = JSON.stringify(
+            {
+              attester: PADOADDRESS,
+              schemaData: {
+                source,
+                // useridhash,
+                // sourceUseridHash: '',
+                authUseridHash,
+                receipt: address,
+                getDataTime,
+                baseValue,
+                balanceGreaterThanBaseValue,
+              },
+              signature,
+            },
+            null,
+            '\t'
+          );
+        }
         setJsonStr(jsonStr);
       }
     }, [activeCred]);
@@ -77,9 +82,8 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
           }
         >
           <main>
-            {/* <PolygonIdAddressInfoHeader address="did:polygonid:polygon:mumbai:2qGU9NsbhEkTki4yC7vmkpQsr9RvGQEVfnwkktJR6L" /> */}
             {isPolygonId ? (
-              <PolygonIdAddressInfoHeader address="" />
+              <PolygonIdAddressInfoHeader address={activeCred?.did as string} />
             ) : (
               <AddressInfoHeader />
             )}

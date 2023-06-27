@@ -27,6 +27,7 @@ export type CredTypeItemType = {
     token: string;
   };
   did?: string;
+  polygonIdCredQrCode?: string;
 };
 export type PROOFTYPEITEM = {
   simplifiedName: string;

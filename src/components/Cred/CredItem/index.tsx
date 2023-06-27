@@ -55,6 +55,8 @@ export type CredTypeItemType = {
     token: string;
   };
   did?: string;
+  claimId?: string;
+  claimQrCode?: object;
 };
 
 interface CredTypeListProps {
@@ -311,7 +313,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="label">Attested By</div>
               <div className="value">
                 <div className="desc">PADO</div>
-                <div className="con">{formatAddress(PADOADDRESS)}</div>
+                <div className="con">{formatAddress(PADOADDRESS, 13)}</div>
               </div>
             </div>
             <div className="descItem arow">

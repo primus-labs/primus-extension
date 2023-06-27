@@ -4,7 +4,7 @@ type GETCONNECTPOLYGONIDQRCODEParams = {
 };
 type GETCONNECTPOLYGONIDRESULTParams = {
   sessionId: string;
-  type: 'connection' | 'claim';
+  type: string;// 'connection' | 'claim'
 };
 
 export const getConnectPolygonIdQrcode = (
@@ -35,7 +35,7 @@ export const attestForPolygonId = (
 ) => {
   return request({
     method: 'post',
-    url: `/polygon/claim`,
+    url: `/polygon/claim?sessionId=${data.sessionId}`,
     data,
     config,
   });

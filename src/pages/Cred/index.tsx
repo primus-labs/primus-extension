@@ -448,6 +448,10 @@ const Cred = memo(() => {
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     return credentialObj;
   };
+  const handleSubmitBindPolygonid = useCallback(async () => {
+    await initCredList();
+    setBindPolygonidVisible(false);
+  }, []);
 
   useEffect(() => {
     if (
@@ -524,7 +528,7 @@ const Cred = memo(() => {
             headerType={
               activeCred?.did ? 'polygonIdAttestation' : 'attestation'
             }
-            address={activeCred?.did}
+            address={activeCred?.did as string}
           />
         )}
         {step === 4 && (
@@ -557,9 +561,7 @@ const Cred = memo(() => {
           <BindPolygonIDDialog
             activeCred={activeCred}
             onClose={handleCloseBindPolygonid}
-            onSubmit={() => {
-              setBindPolygonidVisible(false);
-            }}
+            onSubmit={handleSubmitBindPolygonid}
           />
         )}
       </main>
