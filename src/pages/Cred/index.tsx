@@ -19,6 +19,7 @@ import BindPolygonIDDialog from '@/components/Cred/BindPolygonIDDialog';
 import { postMsg } from '@/utils/utils';
 import useTimeout from '@/hooks/useTimeout';
 import useInterval from '@/hooks/useInterval';
+import useAlgorithm from '@/hooks/useAlgorithm';
 import {
   ATTESTATIONPOLLINGTIMEOUT,
   ATTESTATIONPOLLINGTIME,
@@ -43,7 +44,8 @@ export type CREDENTIALSOBJ = {
 };
 
 const Cred = memo(() => {
-  const [bindPolygonidVisible, setBindPolygonidVisible] = useState<boolean>(false);
+  const [bindPolygonidVisible, setBindPolygonidVisible] =
+    useState<boolean>(false);
   const [submitAddress, setSubmitAddress] = useState<string>();
   const [credTypesDialogVisible, setCredTypesDialogVisible] =
     useState<boolean>();
@@ -366,123 +368,78 @@ const Cred = memo(() => {
     setCredTypesDialogVisible(true);
   }, [activeRequest?.type]);
 
-  const padoServicePortListener = useCallback(
-    async function (message: any) {
-      const { resType, resMethodName, res } = message;
-      if (resType === 'algorithm') {
-        console.log(`page_get:${resMethodName}:`, res);
-        if (resMethodName === `start`) {
-          console.log(`page_get:start:`, message.res);
-          const msg = {
-            fullScreenType: 'algorithm',
-            reqMethodName: 'init',
-            params: {},
+  const getAttestationCallback = useCallback(() => {
+    setTimeoutSwitch(true);
+    setIntervalSwitch(true);
+  }, []);
+  const getAttestationResultCallback = useCallback(
+    async (res: any) => {
+      const { retcode, content } = JSON.parse(res);
+      if (retcode === '0') {
+        clearFetchAttestationTimer();
+
+        if (content.balanceGreaterThanBaseValue === 'true') {
+          const { activeRequestAttestation } = await chrome.storage.local.get([
+            'activeRequestAttestation',
+          ]);
+          const parsedActiveRequestAttestation = activeRequestAttestation
+            ? JSON.parse(activeRequestAttestation)
+            : {};
+
+          // console.log(
+          //   'attestation',
+          //   parsedActiveRequestAttestation,
+          //   content
+          // );
+          const activeRequestId = parsedActiveRequestAttestation.requestid;
+          if (activeRequestId !== content?.requestid) {
+            return;
+          }
+          const fullAttestation = {
+            ...content,
+            ...parsedActiveRequestAttestation,
           };
-          postMsg(padoServicePort, msg);
-          console.log(`page_send:init request`);
-        }
-        if (resMethodName === `init`) {
-          if (res) {
-            // algorithm is ready
-          }
-        }
-        if (resMethodName === `getAttestation`) {
-          if (res) {
-            // TODO wheather wait getAttestation msg back
-            setTimeoutSwitch(true);
-            setIntervalSwitch(true);
-          }
-        }
-        if (resMethodName === `getAttestationResult`) {
-          if (res) {
-            const { retcode, content } = JSON.parse(res);
-            if (retcode === '0') {
-              clearFetchAttestationTimer();
+          const { credentials: credentialsStr } =
+            await chrome.storage.local.get(['credentials']);
+          const credentialsObj = credentialsStr
+            ? JSON.parse(credentialsStr)
+            : {};
+          credentialsObj[activeRequestId] = fullAttestation;
+          await chrome.storage.local.set({
+            credentials: JSON.stringify(credentialsObj),
+          });
+          await chrome.storage.local.remove(['activeRequestAttestation']);
 
-              if (content.balanceGreaterThanBaseValue === 'true') {
-                const { activeRequestAttestation } =
-                  await chrome.storage.local.get(['activeRequestAttestation']);
-                const parsedActiveRequestAttestation = activeRequestAttestation
-                  ? JSON.parse(activeRequestAttestation)
-                  : {};
-
-                // console.log(
-                //   'attestation',
-                //   parsedActiveRequestAttestation,
-                //   content
-                // );
-                const activeRequestId =
-                  parsedActiveRequestAttestation.requestid;
-                if (activeRequestId !== content?.requestid) {
-                  return;
-                }
-                const fullAttestation = {
-                  ...content,
-                  ...parsedActiveRequestAttestation,
-                };
-                const { credentials: credentialsStr } =
-                  await chrome.storage.local.get(['credentials']);
-                const credentialsObj = credentialsStr
-                  ? JSON.parse(credentialsStr)
-                  : {};
-                credentialsObj[activeRequestId] = fullAttestation;
-                await chrome.storage.local.set({
-                  credentials: JSON.stringify(credentialsObj),
-                });
-                await chrome.storage.local.remove(['activeRequestAttestation']);
-
-                initCredList();
-                setActiveRequest({
-                  type: 'suc',
-                  title: 'Congratulations',
-                  desc: 'Your proof is created!',
-                });
-              } else if (content.balanceGreaterThanBaseValue === 'false') {
-                setActiveRequest({
-                  type: 'warn',
-                  title: 'Not met the requirements',
-                  desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
-                });
-              }
-            } else if (retcode === '2') {
-              const msg = {
-                fullScreenType: 'algorithm',
-                reqMethodName: 'stop',
-                params: {},
-              };
-              postMsg(padoServicePort, msg);
-              setActiveRequest({
-                type: 'warn',
-                title: 'Something went wrong',
-                desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
-              });
-            }
-          }
+          initCredList();
+          setActiveRequest({
+            type: 'suc',
+            title: 'Congratulations',
+            desc: 'Your proof is created!',
+          });
+        } else if (content.balanceGreaterThanBaseValue === 'false') {
+          setActiveRequest({
+            type: 'warn',
+            title: 'Not met the requirements',
+            desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+          });
         }
-        if (resMethodName === `stop`) {
-          if (res.retcode === 0) {
-            const msg: any = {
-              fullScreenType: 'algorithm',
-              reqMethodName: 'start',
-              params: {},
-            };
-            postMsg(padoServicePort, msg);
-            console.log(`page_send:start request`);
-          }
-        }
+      } else if (retcode === '2') {
+        const msg = {
+          fullScreenType: 'algorithm',
+          reqMethodName: 'stop',
+          params: {},
+        };
+        postMsg(padoServicePort, msg);
+        setActiveRequest({
+          type: 'warn',
+          title: 'Something went wrong',
+          desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+        });
       }
     },
-    [padoServicePort, clearFetchAttestationTimer, initCredList]
+    [clearFetchAttestationTimer, padoServicePort, initCredList]
   );
-  const initAlgorithm = useCallback(() => {
-    const msg: any = {
-      fullScreenType: 'algorithm',
-      reqMethodName: 'start',
-      params: {},
-    };
-    postMsg(padoServicePort, msg);
-    console.log(`page_send:start request`);
-  }, [padoServicePort]);
+  useAlgorithm(getAttestationCallback, getAttestationResultCallback);
 
   const getCredentialsObjFromStorage = async (): Promise<CREDENTIALSOBJ> => {
     const { credentials: credentialsStr } = await chrome.storage.local.get([
@@ -491,18 +448,6 @@ const Cred = memo(() => {
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     return credentialObj;
   };
-
-  useEffect(() => {
-    initAlgorithm();
-  }, [initAlgorithm]);
-  useEffect(() => {
-    if (padoServicePort) {
-      padoServicePort.onMessage.addListener(padoServicePortListener);
-      return () => {
-        padoServicePort.onMessage.removeListener(padoServicePortListener);
-      };
-    }
-  }, [padoServicePort, padoServicePortListener]);
 
   useEffect(() => {
     if (
