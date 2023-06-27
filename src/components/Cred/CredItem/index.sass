@@ -92,9 +92,15 @@
         .iconWrapper
           @extend .frcc
           position: relative
-          &:hover
+          &:not(.disabled):hover
             .descTip
               display: flex
+          &.disabled
+            cursor: not-allowed
+            >img
+              cursor: not-allowed
+              &:hover
+                opacity: 0.4
           .descTip
             display: none
             position: absolute

@@ -212,7 +212,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   <img src={iconUpChain} alt="" onClick={handleUpChain} />
                 </div>
                 <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
-                <div className="iconWrapper">
+                <div className={item.did ? "iconWrapper disabled" : "iconWrapper"}>
                   <div className="descTip">
                     <span>Bind to Polygon ID</span>
                   </div>
