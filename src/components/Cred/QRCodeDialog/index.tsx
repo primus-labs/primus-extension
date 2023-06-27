@@ -26,7 +26,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
         return true;
       }
       return false;
-    }, activeCred);
+    }, [activeCred]);
     const handleClickNext = () => {
       onSubmit();
     };
