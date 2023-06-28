@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useMemo } from 'react';
+import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
 
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
@@ -9,6 +9,7 @@ import './index.sass';
 
 import { exportJson } from '@/utils/exportFile';
 import { PADOADDRESS } from '@/config/envConstants';
+import { getPolygonIdAttestation } from '@/services/api/cred';
 
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
 
@@ -21,6 +22,7 @@ interface QRCodeDialogProps {
 const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
   ({ onClose, onSubmit, activeCred }) => {
     const [jsonStr, setJsonStr] = useState<string>('');
+    const [qrCodeVal, setQrCodeVal] = useState<string>('');
     const isPolygonId = useMemo(() => {
       if (activeCred?.did) {
         return true;
@@ -33,12 +35,36 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
     const handleExport = () => {
       exportJson(jsonStr, 'credential');
     };
+    const getPolygonIdExportContent = useCallback(async () => {
+      try {
+        const { userInfo } = await chrome.storage.local.get(['userInfo']);
+        const { id, token } = JSON.parse(userInfo);
+        const requestConfigParams = {
+          extraHeader: {
+            'user-id': id,
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const params = {
+          claimId: activeCred?.claimId as string,
+        };
+        const res = await getPolygonIdAttestation(params, requestConfigParams);
+
+        if (res) {
+          const str = JSON.stringify(res, null, '\t');
+          setJsonStr(str);
+        }
+      } catch {
+        alert('getPolygonIdAttestation network error');
+      }
+    }, [activeCred?.claimId]);
     useEffect(() => {
       // TODO
       if (activeCred) {
         let jsonStr: any;
-        if (activeCred?.did) {
-          jsonStr = JSON.stringify(activeCred?.claimQrCode,null, '\t');
+        if (isPolygonId) {
+          jsonStr = JSON.stringify(activeCred?.claimQrCode, null, '\t');
+          getPolygonIdExportContent();
         } else {
           const {
             source,
@@ -67,10 +93,11 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
             null,
             '\t'
           );
+          setJsonStr(jsonStr);
         }
-        setJsonStr(jsonStr);
+        setQrCodeVal(jsonStr);
       }
-    }, [activeCred]);
+    }, [activeCred, isPolygonId, getPolygonIdExportContent]);
 
     return (
       <PMask onClose={onClose}>
@@ -94,7 +121,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
                   ? 'Use your Polygon ID wallet to scan this QR code to import your credential. This process will verify your identity and authorize you to use the credential.'
                   : 'Scan this QR code to use or download your credential.'
               }
-              qrcodeValue={jsonStr}
+              qrcodeValue={qrCodeVal}
             />
             <div className="exportWrapper" onClick={handleExport}>
               <img className="exportIcon" src={iconExport} alt="" />
