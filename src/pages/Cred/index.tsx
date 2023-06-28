@@ -209,6 +209,10 @@ const Cred = memo(() => {
     },
     [padoServicePort, validateBaseInfo]
   );
+  const onCancelAttestationDialog = useCallback(() => {
+    setStep(0)
+    setCredTypesDialogVisible(true);
+  },[])
   const onSubmitActiveRequestDialog = useCallback(() => {
     if (
       activeRequest?.type === 'suc' ||
@@ -503,6 +507,7 @@ const Cred = memo(() => {
             onClose={handleCloseMask}
             onSubmit={onSubmitAttestationDialog}
             activeCred={activeCred}
+            onBack={onCancelAttestationDialog}
           />
         )}
         {step === 2 && (

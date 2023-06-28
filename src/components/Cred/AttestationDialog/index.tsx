@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
 import PSelect from '@/components/PSelect';
 import { DATASOURCEMAP } from '@/config/constants';
@@ -36,10 +37,11 @@ interface AttestationDialogProps {
   onCheck?: () => void;
   activeCred?: CredTypeItemType;
   activeSourceName?: string;
+  onBack?: () => void;
 }
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
-  ({ type, onClose, onSubmit, activeCred, activeSourceName }) => {
+  ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -245,6 +247,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog attestationDialog">
+          {!!onBack && <PBack onBack={onBack} />}
           <main>
             <h1>{activeAttestationTypeInfo.credTitle}</h1>
             <h2>{activeAttestationTypeInfo.credDetails}</h2>
