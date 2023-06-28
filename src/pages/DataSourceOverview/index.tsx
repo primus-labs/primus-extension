@@ -219,7 +219,7 @@ const DataSourceOverview = memo(() => {
   const onSubmitAddSourceSucDialog = useCallback(() => {
     setActiveSource(undefined);
     setStep(0);
-  },[]);
+  }, []);
   const onSubmitActiveRequestDialog = useCallback(() => {
     if (activeRequest?.type === 'loading') {
       onSubmitAddSourceSucDialog();
@@ -228,7 +228,6 @@ const DataSourceOverview = memo(() => {
       setStep(2);
     }
   }, [activeRequest?.type, onSubmitAddSourceSucDialog]);
-  
 
   useEffect(() => {
     step === 1 && setActiveSourceKeys(undefined);
@@ -307,7 +306,9 @@ const DataSourceOverview = memo(() => {
       {activeSourceType !== 'All' && (
         <DataUpdateBar type={activeSourceType} onUpdate={onUpdate} />
       )}
-      {activeSourceType === 'All' && <DataAddBar onClick={handleAdd} />}
+      {activeSourceType === 'All' && dataSourceList.length > 0 && (
+        <DataAddBar onClick={handleAdd} />
+      )}
     </div>
   );
 });
