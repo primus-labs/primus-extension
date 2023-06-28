@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useCallback, useState, useMemo } from 'react';
-
+import { useSelector } from 'react-redux';
 import PMask from '@/components/PMask';
 import QRCodeMain from '@/components/Cred/QRCodeMain';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
@@ -14,10 +14,10 @@ import useUuid from '@/hooks/useUuid';
 import useInterval from '@/hooks/useInterval';
 
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
-
+import type { UserState } from '@/types/store';
 interface BindPolygonIDDialogProps {
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (uuid: string, did: string) => void;
   activeCred?: CredTypeItemType;
 }
 type requestConfigParamsType = {
@@ -29,11 +29,12 @@ type requestConfigParamsType = {
 const POLLINGTIME = 3000;
 const BindPolygonIDDialog: React.FC<BindPolygonIDDialogProps> = memo(
   ({ onClose, onSubmit, activeCred }) => {
-    const [did, setDid] = useState<string>()
     const [qrcodeVal, setQrcodeVal] = useState<string>('');
     const [connectFlag, setConnectFlag] = useState<boolean>(false);
     const [requestConfigParams, setRequestConfigParams] =
       useState<requestConfigParamsType>();
+    const userInfo = useSelector((state: UserState) => state.userInfo);
+
     const switchFlag = useMemo(() => {
       if (connectFlag) {
         return false;
@@ -44,22 +45,16 @@ const BindPolygonIDDialog: React.FC<BindPolygonIDDialogProps> = memo(
 
     const [uuid, setUuid] = useUuid();
 
-    
-
     // console.log('ppid');
     const getUserInfo = useCallback(async () => {
-      const { userInfo } = await chrome.storage.local.get(['userInfo']);
-      const { id, token } = JSON.parse(userInfo);
+      const { id, token } = userInfo;
       setRequestConfigParams({
         extraHeader: {
           'user-id': id,
           Authorization: `Bearer ${token}`,
         },
       });
-    }, []);
-    const handleClickNext = () => {
-      onSubmit();
-    };
+    }, [userInfo]);
     const fetchConnectQrcodeValue = useCallback(async () => {
       const params = {
         sessionId: uuid as string,
@@ -86,81 +81,44 @@ const BindPolygonIDDialog: React.FC<BindPolygonIDDialogProps> = memo(
           requestConfigParams
         );
         if (res.rc === 0) {
-          // res.result
-          setDid(res.result.walletDid);
-          // await chrome.storage.local.set({
-          //   polygonIdConnectResult: JSON.stringify(res.result),
-          // });
+          const pdid = res.result.walletDid;
           setConnectFlag(true);
+          onSubmit(uuid as string, pdid as string);
         }
       } catch {
         // alert('getConnectPolygonIdResult network error');
       }
-    }, [requestConfigParams, uuid]);
+    }, [requestConfigParams, uuid, onSubmit]);
     useInterval(fetchConnectResult, POLLINGTIME, switchFlag, false);
-    const fetchAttestForPolygonId = useCallback(async () => {
-      const params = {
-        sessionId: uuid as string,
-        id: did,
-        birthday: 19960424,
-        documentType: 2,
-      };
-      try {
-        const res = await attestForPolygonId(params, requestConfigParams);
-        if (res?.getDataTime) {
-          const newRequestId = res.getDataTime;
-          const fullAttestation = {
-            ...activeCred,
-            did,
-            ...res,
-            requestid: newRequestId,
-          };
-
-          const { credentials: credentialsStr } =
-            await chrome.storage.local.get(['credentials']);
-          const credentialsObj = credentialsStr
-            ? JSON.parse(credentialsStr)
-            : {};
-          credentialsObj[newRequestId] = fullAttestation;
-          await chrome.storage.local.set({
-            credentials: JSON.stringify(credentialsObj),
-          });
-          onSubmit();
-        }
-      } catch {
-        alert('attestForPolygonId network error');
-      }
-    }, [uuid, requestConfigParams, did,onSubmit]);
 
     useEffect(() => {
       requestConfigParams?.extraHeader && uuid && fetchConnectQrcodeValue();
     }, [requestConfigParams, uuid, fetchConnectQrcodeValue]);
-    useEffect(() => {
-      if (connectFlag) {
-        fetchAttestForPolygonId();
-      }
-    }, [connectFlag, fetchAttestForPolygonId]);
+    // useEffect(() => {
+    //   if (connectFlag) {
+    //     fetchAttestForPolygonId();
+    //   }
+    // }, [connectFlag, fetchAttestForPolygonId]);
     useEffect(() => {
       getUserInfo();
       (setUuid as () => void)();
     }, []);
 
     return (
-      <PMask onClose={onClose}>
-        <div className="padoDialog qrcodeDialog bindPolygonidDialog">
-          <main>
-            <AddressInfoHeader />
-            <QRCodeMain
-              title="Bind your Polygon DID"
-              desc="Use your Polygon ID wallet to scan this QR code and bind your Polygon DID with this credential."
-              qrcodeValue={qrcodeVal}
-            />
-          </main>
-          <button className="nextBtn" onClick={handleClickNext}>
-            <span>OK</span>
-          </button>
-        </div>
-      </PMask>
+      <>
+        <PMask onClose={onClose}>
+          <div className="padoDialog qrcodeDialog bindPolygonidDialog">
+            <main>
+              <AddressInfoHeader />
+              <QRCodeMain
+                title="Bind your Polygon DID"
+                desc="Use your Polygon ID wallet to scan this QR code and bind your Polygon DID with this credential."
+                qrcodeValue={qrcodeVal}
+              />
+            </main>
+          </div>
+        </PMask>
+      </>
     );
   }
 );

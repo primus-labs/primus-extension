@@ -5,6 +5,7 @@ import PMask from '@/components/PMask';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
+import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader'
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconError from '@/assets/img/iconError.svg';
 import iconLoading from '@/assets/img/iconLoading.svg';
@@ -19,6 +20,7 @@ interface AddSourceSucDialogProps {
   title?: string;
   type?: string;
   headerType?: string;
+  address?: string;
 }
 
 const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
@@ -30,6 +32,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     desc = '',
     type = 'suc',
     headerType = 'dataSource',
+    address,
   }) => {
     const icon = activeSource?.icon;
 
@@ -53,6 +56,9 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
             )}
             {headerType === 'dataSource' && <Bridge endIcon={icon} />}
             {headerType === 'attestation' && <AddressInfoHeader />}
+            {headerType === 'polygonIdAttestation' && (
+              <PolygonIdAddressInfoHeader address={address as string} />
+            )}
             {type === 'suc' && <img className="sucImg" src={iconSuc} alt="" />}
             {type === 'error' && (
               <img className="sucImg" src={iconError} alt="" />

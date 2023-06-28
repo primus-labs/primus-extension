@@ -5,6 +5,7 @@ import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import type { ExDatas } from '@/types/store';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM, DEFAULTCREDTYPELIST } from '@/config/constants';
 import type { PROOFTYPEITEM } from '@/types/cred';
+import type {UserInfoType} from '@/types/user'
 
 export type ExInfo = {
   date: string;
@@ -41,6 +42,7 @@ export type UserState = {
   sourceUpdateFrequency: string;
   proofTypes: PROOFTYPEITEM[];
   credentials: CREDENTIALS;
+  userInfo: UserInfoType;
 };
 
 // initial state
@@ -55,6 +57,7 @@ const initState = {
   sourceUpdateFrequency: DEFAULTDATASOURCEPOLLINGTIMENUM,
   proofTypes: DEFAULTCREDTYPELIST,
   credentials: {},
+  userInfo: {}
 };
 
 // reducer
@@ -81,6 +84,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, credentials: action.payload };
     case 'setSourceUpdateFrequency':
       return { ...state, sourceUpdateFrequency: action.payload };
+    case 'setUserInfo':
+      return { ...state, userInfo: action.payload};
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     default:

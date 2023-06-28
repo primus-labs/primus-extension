@@ -5,7 +5,7 @@ import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
 import type { PROOFTYPEITEM } from '@/types/cred';
 
-import {DEFAULTDATASOURCEPOLLINGTIMENUM} from '@/config/constants'
+import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
 type ExInfo = {
@@ -39,13 +39,34 @@ export const setSourceUpdateFrequencyAction = (values: string) => ({
   type: 'setSourceUpdateFrequency',
   payload: values,
 });
+export const setUserInfoAction = (values: string) => ({
+  type: 'setUserInfo',
+  payload: values,
+});
+export const setUserInfoActionAsync = (value: string) => {
+  return async (dispatch: any) => {
+    await chrome.storage.local.set({
+      userInfo: value,
+    });
+    dispatch(setUserInfoAction(value));
+  };
+};
+export const initUserInfoActionAsync = () => {
+  return async (dispatch: any) => {
+    const { userInfo } = await chrome.storage.local.get(['userInfo']);
+    const userInfoObj = JSON.parse(userInfo);
+
+    dispatch(setUserInfoAction(userInfoObj));
+  };
+};
+
 export const setSourceUpdateFrequencyActionAsync = (value: string) => {
   return async (dispatch: any) => {
     await chrome.storage.local.set({
       dataSourcesUpdateFrequency: value,
     });
     dispatch(setSourceUpdateFrequencyAction(value));
-  }
+  };
 };
 export const initSourceUpdateFrequencyActionAsync = () => {
   return async (dispatch: any) => {

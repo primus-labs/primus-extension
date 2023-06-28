@@ -15,4 +15,5 @@ export type UserState = {
   sourceUpdateFrequency: string;
   proofTypes: PROOFTYPEITEM[];
   credentials: CREDENTIALS;
+  userInfo: UserInfoType;
 };

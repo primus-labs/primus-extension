@@ -122,6 +122,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     };
     const handleClickBind = (e: SyntheticEvent) => {
       e.stopPropagation();
+      if (item.did) {
+        return;
+      }
       onBindPolygonID(item);
     };
     // const handleEnterBind = () => {
@@ -212,7 +215,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   <img src={iconUpChain} alt="" onClick={handleUpChain} />
                 </div>
                 <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
-                <div className={item.did ? "iconWrapper disabled" : "iconWrapper"}>
+                <div
+                  className={item.did ? 'iconWrapper disabled' : 'iconWrapper'}
+                >
                   <div className="descTip">
                     <span>Bind to Polygon ID</span>
                   </div>
@@ -295,10 +300,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="descItem arow">
                 <div className="label">Recipient Account</div>
                 <div className="value">
-                  <img
-                    src={iconPolygonID}
-                    alt=""
-                  />
+                  <img src={iconPolygonID} alt="" />
                   {/* TODO */}
                   <span>{formatAddress(item.did)}</span>
                 </div>

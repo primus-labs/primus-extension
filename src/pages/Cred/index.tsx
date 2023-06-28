@@ -14,7 +14,7 @@ import CredList from '@/components/Cred/CredList';
 import QRCodeDialog from '@/components/Cred/QRCodeDialog';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import CredTypesDialog from '@/components/Cred/CredTypesDialog';
-import BindPolygonIDDialog from '@/components/Cred/BindPolygonIDDialog';
+import BindPolygonID from '@/components/Cred/BindPolygonID';
 
 import { postMsg } from '@/utils/utils';
 import useTimeout from '@/hooks/useTimeout';
@@ -30,6 +30,7 @@ import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegationProxy } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
+import { attestForPolygonId } from '@/services/api/cred';
 
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
 import type { UserState } from '@/store/reducers';
@@ -71,6 +72,7 @@ const Cred = memo(() => {
   );
   const filterWord = useSelector((state: UserState) => state.filterWord);
   const proofTypes = useSelector((state: UserState) => state.proofTypes);
+  const userInfo = useSelector((state: UserState) => state.userInfo);
 
   const timeoutFn = useCallback(() => {
     console.log('120s timeout');
@@ -332,8 +334,7 @@ const Cred = memo(() => {
   }, [handleCloseMask]);
   const handleCloseBindPolygonid = useCallback(() => {
     setBindPolygonidVisible(false);
-    handleCloseMask();
-  }, [handleCloseMask]);
+  }, []);
   const handleDeleteCred = useCallback(
     async (item: CredTypeItemType) => {
       const curRequestid = item.requestid;
@@ -449,9 +450,9 @@ const Cred = memo(() => {
     return credentialObj;
   };
   const handleSubmitBindPolygonid = useCallback(async () => {
-    await initCredList();
     setBindPolygonidVisible(false);
-  }, []);
+    await initCredList();
+  }, [initCredList]);
 
   useEffect(() => {
     if (
@@ -557,13 +558,13 @@ const Cred = memo(() => {
             }}
           />
         )}
-        {bindPolygonidVisible && (
-          <BindPolygonIDDialog
-            activeCred={activeCred}
-            onClose={handleCloseBindPolygonid}
-            onSubmit={handleSubmitBindPolygonid}
-          />
-        )}
+
+        <BindPolygonID
+          visible={bindPolygonidVisible}
+          activeCred={activeCred}
+          onClose={handleCloseBindPolygonid}
+          onSubmit={handleSubmitBindPolygonid}
+        />
       </main>
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
       {credTypesDialogVisible && (

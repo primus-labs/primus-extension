@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
-
+import {useSelector} from 'react-redux'
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
@@ -12,6 +12,7 @@ import { PADOADDRESS } from '@/config/envConstants';
 import { getPolygonIdAttestation } from '@/services/api/cred';
 
 import type { CredTypeItemType } from '@/components/Cred/CredItem';
+import type {UserState} from '@/types/store'
 
 interface QRCodeDialogProps {
   onClose: () => void;
@@ -23,6 +24,8 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
   ({ onClose, onSubmit, activeCred }) => {
     const [jsonStr, setJsonStr] = useState<string>('');
     const [qrCodeVal, setQrCodeVal] = useState<string>('');
+    const userInfo = useSelector((state: UserState) => state.userInfo);
+
     const isPolygonId = useMemo(() => {
       if (activeCred?.did) {
         return true;
@@ -37,8 +40,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
     };
     const getPolygonIdExportContent = useCallback(async () => {
       try {
-        const { userInfo } = await chrome.storage.local.get(['userInfo']);
-        const { id, token } = JSON.parse(userInfo);
+        const { id, token } = userInfo;
         const requestConfigParams = {
           extraHeader: {
             'user-id': id,
