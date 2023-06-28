@@ -210,9 +210,9 @@ const Cred = memo(() => {
     [padoServicePort, validateBaseInfo]
   );
   const onCancelAttestationDialog = useCallback(() => {
-    setStep(0)
+    setStep(0);
     setCredTypesDialogVisible(true);
-  },[])
+  }, []);
   const onSubmitActiveRequestDialog = useCallback(() => {
     if (
       activeRequest?.type === 'suc' ||
@@ -409,6 +409,7 @@ const Cred = memo(() => {
           const credentialsObj = credentialsStr
             ? JSON.parse(credentialsStr)
             : {};
+
           credentialsObj[activeRequestId] = fullAttestation;
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),

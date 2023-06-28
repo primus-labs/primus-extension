@@ -53,7 +53,6 @@ const useAuthorization = () => {
         if (message.resMethodName === 'checkIsLogin') {
           console.log('page_get:checkIsLogin:', message.res);
           if (message.res) {
-            // debugger;
             // if (message.params?.data_type === 'DATASOURCE') {
               // console.log('remove', newWindowId)
               newWindowId &&

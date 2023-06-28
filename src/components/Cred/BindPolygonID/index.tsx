@@ -16,12 +16,7 @@ interface BindPolygonIDProps {
   onSubmit: () => void;
   activeCred?: CredTypeItemType;
 }
-type requestConfigParamsType = {
-  extraHeader?: {
-    'user-id': string;
-    Authorization: string;
-  };
-};
+
 const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
   ({ visible, onClose, onSubmit, activeCred }) => {
     const [did, setDid] = useState<string>();
@@ -32,12 +27,6 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
     const handleSubmitBindPolygonid = useCallback(
       async (uuid: string, didp: string) => {
         setDid(didp);
-        const params = {
-          sessionId: uuid,
-          id: didp,
-          birthday: 19960424, // TODO
-          documentType: 2,
-        };
         try {
           const { id, token } = userInfo;
           const requestConfigParams = {
@@ -46,6 +35,35 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               Authorization: `Bearer ${token}`,
             },
           };
+          const {
+            type,
+            signature,
+            source,
+            getDataTime,
+            address,
+            baseValue,
+            balanceGreaterThanBaseValue,
+            exUserId,
+            holdingToken,
+          } = activeCred as CredTypeItemType;
+          const params:any = {
+            sessionId: uuid,
+            credType: type,
+            signature,
+            credentialSubject: {
+              id: didp,
+              source,
+              sourceUserId: exUserId,
+              authUserId: id,
+              getDataTime,
+              receipt: address,
+              baseValue,
+              balanceGreaterThanBaseValue,
+            },
+          };
+          if (type === 'Token Holdings') { 
+            params.credentialSubject.asset = holdingToken;
+          }
           const res = await attestForPolygonId(params, requestConfigParams);
           if (res?.getDataTime) {
             const newRequestId = res.getDataTime;
