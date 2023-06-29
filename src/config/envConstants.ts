@@ -59,12 +59,18 @@ const EASINFOMAP = {
     Polygon: {
       icon: iconPolygon,
       title: 'Polygon',
-      disabled: false,
-      rpcUrl: '',
-      easContact: '',
-      easProxyContrac: '',
-      schemaUid: '',
+      rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
+      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
+      schemaUid:
+        '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
       schemaUidTokenHoldings: '',
+      chainId: '0xaa36a7', // numToHex
+      chainName: 'Sepolia',
+      rpcUrls: [
+        'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      ],
+      blockExploreUrls: ['https://sepolia.etherscan.io'],
     },
   },
   test: {
@@ -87,12 +93,18 @@ const EASINFOMAP = {
     Polygon: {
       icon: iconPolygon,
       title: 'Polygon',
-      disabled: false,
-      rpcUrl: '',
-      easContact: '',
-      easProxyContrac: '',
-      schemaUid: '',
+      rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
+      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
+      schemaUid:
+        '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
       schemaUidTokenHoldings: '',
+      chainId: '0xaa36a7', // numToHex
+      chainName: 'Sepolia',
+      rpcUrls: [
+        'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      ],
+      blockExploreUrls: ['https://sepolia.etherscan.io'],
     },
   },
   production: {

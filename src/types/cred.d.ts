@@ -28,6 +28,7 @@ export type CredTypeItemType = {
   };
   did?: string;
   polygonIdCredQrCode?: string;
+  issuer?: string;
 };
 export type PROOFTYPEITEM = {
   simplifiedName: string;

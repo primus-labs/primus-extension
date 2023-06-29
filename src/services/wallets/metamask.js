@@ -16,12 +16,12 @@ export const connectWallet = async (targetNetwork) => {
     subscribeToEvents();
     return [accounts, chainId, provider];
   } catch (e) {
-    console.log('connect wallet error: ', e)
+    console.log('connect wallet error: ', e);
     if (e.code === 4001) {
       // User rejected the request.
       return [undefined, undefined, undefined, e];
     } else {
-      return []
+      return [];
     }
     throw new Error(e);
   }
@@ -34,6 +34,7 @@ const switchChain = async (connectedChainId, targetNetwork) => {
     rpcUrls,
     blockExploreUrls,
   };
+
   if (connectedChainId === obj.chainId) {
     console.log(`The current chain is already:${obj.chainName}`);
     return;

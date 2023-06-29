@@ -72,6 +72,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               did: didp,
               ...res,
               requestid: newRequestId,
+              issuer: res.claimQrCode.from,
             };
 
             const { credentials: credentialsStr } =

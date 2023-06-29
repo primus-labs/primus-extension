@@ -57,6 +57,7 @@ export type CredTypeItemType = {
   did?: string;
   claimId?: string;
   claimQrCode?: object;
+  issuer?: string;
 };
 
 interface CredTypeListProps {
@@ -300,9 +301,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="descItem arow">
                 <div className="label">Recipient Account</div>
                 <div className="value">
-                  <img src={iconPolygonID} alt="" />
-                  {/* TODO */}
-                  <span>{formatAddress(item.did)}</span>
+                    <img src={iconPolygonID} alt="" />
+                    <span>{formatAddress(item.did, 13)}</span>
                 </div>
               </div>
             ) : (
@@ -315,7 +315,16 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="label">Attested By</div>
               <div className="value">
                 <div className="desc">PADO</div>
-                <div className="con">{formatAddress(PADOADDRESS, 13)}</div>
+                {item.did ? (
+                  <div className="con">
+                    <img src={iconPolygonID} alt="" className="tokenImg" />
+                    <span>
+                      {formatAddress((item?.issuer || '') as string, 13)}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="con">{formatAddress(PADOADDRESS)}</div>
+                )}
               </div>
             </div>
             <div className="descItem arow">

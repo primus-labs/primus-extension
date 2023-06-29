@@ -163,7 +163,9 @@ export async function attestByDelegationProxy(params) {
     const easProxy = new EIP712Proxy(easProxyContractAddress);
     let tx;
     let provider = new ethers.providers.Web3Provider(metamaskprovider);
+    
     await provider.send("eth_requestAccounts", []);
+    
     let signer = provider.getSigner();
     easProxy.connect(signer);
     try {
