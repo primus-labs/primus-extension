@@ -1,12 +1,17 @@
-export type ExDatas = {
-  [propName: string]: ExInfo & ExchangeMeta;
-};
+import type { UserInfoType } from './user';
+import type { PROOFTYPEITEM, CREDENTIALS } from './cred';
+import type { ExDatas, SocialDatas } from './dataSource';
+import type { SysConfigInfo } from './config';
+
+
+
+
+
+
 
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
-  exDatas: ExDatas;
-  socialDatas: SocialDatas;
   userPassword: string;
   activeSourceType: string;
   filterWord: string;

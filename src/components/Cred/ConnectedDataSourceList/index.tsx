@@ -52,11 +52,10 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         const sourceInfo: ExchangeMeta =
           DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
         const { name, icon, type } = sourceInfo;
-        const { exUserId, label } = socialSources[key];
+        const {  label } = socialSources[key];
         const infoObj: ConnectSourceType = {
           name,
           icon,
-          exUserId,
           label,
           type,
         };

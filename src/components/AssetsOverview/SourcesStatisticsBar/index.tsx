@@ -1,11 +1,18 @@
 import React, { useState, useEffect, memo, useMemo } from 'react';
 import { formatNumeral, sub } from '@/utils/utils';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
+import type {
+  SocialDataList,
+  SocialData,
+  ExDataList,
+  SourceDataList,
+} from '@/types/dataSource';
+
 import './index.sass';
 
 interface SourcesStatisticsBarProps {
   type?: string;
-  list: DataSourceItemList;
+  list: SourceDataList;
   filterSource: string | undefined;
   onSelect: (sourceName: string | undefined) => void;
   onClearFilter: () => void;
@@ -19,11 +26,11 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
     const activeList = useMemo(() => {
       let activeL = list;
       if (type === 'Assets') {
-        activeL = list.sort((a, b) =>
+        activeL = (list as ExDataList).sort((a, b) =>
           sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
         );
       } else if (type === 'Social') {
-        activeL = list.sort((a, b) =>
+        activeL = (list as SocialDataList).sort((a, b) =>
           sub(Number(b.followers), Number(a.followers)).toNumber()
         );
       }
@@ -117,7 +124,9 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
                 </div>
                 {type === 'Social' && (
                   <div className="tip">
-                    {item.followers === null ? 'Following' : 'Followers'}
+                    {((item as SocialData).followers) === null
+                      ? 'Following'
+                      : 'Followers'}
                   </div>
                 )}
               </li>

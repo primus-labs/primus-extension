@@ -27,8 +27,12 @@ export type CredTypeItemType = {
     token: string;
   };
   did?: string;
-  polygonIdCredQrCode?: string;
+  claimId?: string;
+  claimQrCode?: object;
   issuer?: string;
+};
+export type CREDENTIALS = {
+  [propName: string]: CredTypeItemType;
 };
 export type PROOFTYPEITEM = {
   simplifiedName: string;

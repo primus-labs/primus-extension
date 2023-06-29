@@ -16,7 +16,7 @@ import { gte, div, formatNumeral } from '@/utils/utils';
 import { BTC } from '@/config/constants';
 
 import type { Dispatch } from 'react';
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import type { ExchangeMeta } from '@/config/constants';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
 

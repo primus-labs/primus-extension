@@ -10,3 +10,7 @@ export type ExchangeMeta = {
   userId?: string;
   label?: string;
 };
+
+type SysConfigInfo = {
+  [propName: string]: any;
+};

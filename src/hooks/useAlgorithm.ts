@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import { postMsg } from '@/utils/utils';
 import { useSelector } from 'react-redux';
 
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 
 type UseAlgorithm = (
   getAttestationCallback: () => void,

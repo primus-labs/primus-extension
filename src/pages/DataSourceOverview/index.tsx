@@ -18,12 +18,17 @@ import { postMsg, sub } from '@/utils/utils';
 import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
 
 import type { Dispatch } from 'react';
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
-
+import type {
+  SocialDataList,
+  ExDataList,
+  SourceDataList,
+  SourceData,
+} from '@/types/dataSource';
 import './index.sass';
 
 export type DataSourceStorages = {
@@ -59,13 +64,16 @@ const DataSourceOverview = memo(() => {
   const authorize = useAuthorization();
   const navigate = useNavigate();
 
-  const exList: DataSourceItemList = useMemo(() => {
+  // const exList: DataSourceItemList = useMemo(() => {
+  const exList: ExDataList = useMemo(() => {
     return Object.values({ ...exSources });
   }, [exSources]);
-  const socialList: DataSourceItemList = useMemo(() => {
+  // const socialList: DataSourceItemList = useMemo(() => {
+  const socialList: SocialDataList = useMemo(() => {
     return Object.values({ ...socialSources });
   }, [socialSources]);
-  const dataSourceList: DataSourceItemList = useMemo(() => {
+  // const dataSourceList: DataSourceItemList = useMemo(() => {
+  const dataSourceList: SourceDataList = useMemo(() => {
     const exList = Object.values(exSources);
     const socialList = Object.values(socialSources);
     const orderedExList = exList.sort((a, b) =>
@@ -177,7 +185,7 @@ const DataSourceOverview = memo(() => {
     setStep(1);
   }, []);
   const handleCheckDataSourceDetail = useCallback(
-    ({ type, name }: DataSourceItemType) => {
+    ({ type, name }: SourceData) => {
       navigate(`/dataDetail?type=${type}&name=${name}`);
     },
     [navigate]

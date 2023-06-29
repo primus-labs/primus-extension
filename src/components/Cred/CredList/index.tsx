@@ -2,7 +2,7 @@ import React, { useMemo, memo } from 'react';
 import CredItem from '../CredItem';
 import EmptyDataSourceItem from '@/components/DataSourceOverview/EmptyDataSourceItem';
 
-import type { CredTypeItemType } from '../CredItem';
+import type { CredTypeItemType } from '@/types/cred';
 
 import './index.sass';
 

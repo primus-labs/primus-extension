@@ -8,7 +8,7 @@ import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import { sub, postMsg, formatNumeral } from '@/utils/utils';
 
 import type { TokenMap } from '@/components/DataSourceOverview/DataSourceItem';
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
 

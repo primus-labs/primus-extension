@@ -8,7 +8,7 @@ import './index.sass';
 
 import { attestForPolygonId } from '@/services/api/cred';
 
-import type { CredTypeItemType } from '@/components/Cred/CredItem';
+import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 interface BindPolygonIDProps {
   visible: boolean;

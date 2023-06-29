@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PControledInput from '@/components/PControledInput';
 import PSelect from '@/components/PSelect';
 
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 
 import type { Dispatch } from 'react';
 

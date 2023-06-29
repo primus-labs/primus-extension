@@ -18,8 +18,7 @@ import { exportCsv } from '@/utils/exportFile';
 
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { Dispatch } from 'react';
-import type { UserState } from '@/store/reducers';
-import type { ExDatas } from '@/types/store';
+import type { UserState } from '@/types/store';
 // import type { SocialDatas } from '@/types/dataSource';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
@@ -119,7 +118,8 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       return obj;
     };
     // {item.createdTime ? getCurrentDate(item.createdTime) : '-'}
-    const accTagsFn = useCallback((item: DataSourceItemType) => {
+    // const accTagsFn = useCallback((item: DataSourceItemType) => {//TOOD
+    const accTagsFn = useCallback((item: any) => {
       let lowerCaseName = item.name.toLowerCase();
       let formatTxt;
       switch (lowerCaseName) {
@@ -158,7 +158,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
         .forEach((key, idx) => {
           let { name, totalBalance, tokenListMap, label } = exSources[key];
           checkedExSourcesTotalBal = add(
-            totalBalance,
+            Number(totalBalance),
             checkedExSourcesTotalBal
           );
           const tokensRows = Object.values(tokenListMap as AssetsMap)

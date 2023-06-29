@@ -12,9 +12,9 @@ import { setExSourcesAsync } from '@/store/actions';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
-import type { CredTypeItemType } from '@/components/Cred/CredItem';
+import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/config';
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { PROOFTYPEITEM } from '@/types/cred';

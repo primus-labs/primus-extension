@@ -21,44 +21,13 @@ import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
 import iconMedalToken from '@/assets/img/iconMedalToken.svg';
 
 import type { PROOFTYPEITEM } from '@/types/cred';
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 
 import './index.sass';
 import { div } from '../../../utils/utils';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
+import type { CredTypeItemType } from '@/types/cred';
 
-export type CredTypeItemType = {
-  type: string;
-  // name: string;
-  // id: string;
-  label: string;
-  // date: string;
-  provided?: any[];
-  expand?: boolean;
-  holdingToken?: string;
-
-  requestid: string;
-  version: string;
-  source: string;
-  authUseridHash: string;
-  address: string;
-  getDataTime: string;
-  baseValue: string;
-  balanceGreaterThanBaseValue: string; // or bool statusNormal
-  signature: string; // includes v，r，s
-  encodedData: string; // trueHash or falseHash
-
-  exUserId: string;
-  user: {
-    userid: string;
-    address: string;
-    token: string;
-  };
-  did?: string;
-  claimId?: string;
-  claimQrCode?: object;
-  issuer?: string;
-};
 
 interface CredTypeListProps {
   item: CredTypeItemType;

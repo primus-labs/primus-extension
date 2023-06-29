@@ -5,7 +5,7 @@ import iconArrowBottom from '@/assets/img/iconArrowLeft2.svg';
 import iconClear from '@/assets/img/iconClear.svg';
 
 import type { MouseEvent } from 'react';
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 
 import './index.sass';
 

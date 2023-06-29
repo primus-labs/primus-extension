@@ -1,11 +1,11 @@
 import { SETSYSCONFIG } from '../actions';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
-import type { ExchangeMeta } from '@/config/constants';
-import type { CredTypeItemType } from '@/components/Cred/CredItem';
-import type { ExDatas } from '@/types/store';
+// import type { ExchangeMeta } from '@/config/constants';
+// import type { CredTypeItemType } from '@/types/cred';
+// import type { ExDatas } from '@/types/store';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM, DEFAULTCREDTYPELIST } from '@/config/constants';
-import type { PROOFTYPEITEM } from '@/types/cred';
-import type {UserInfoType} from '@/types/user'
+// import type { PROOFTYPEITEM } from '@/types/cred';
+// import type {UserInfoType} from '@/types/user'
 
 export type ExInfo = {
   date: string;
@@ -18,32 +18,19 @@ export type ExInfo = {
   spotAccountTokenMap: AssetsMap;
   tokenPriceMap: object;
 };
-type SysConfigInfo = {
-  [propName: string]: any;
-};
+// type SysConfigInfo = {
+//   [propName: string]: any;
+// };
 
-type SocialDatas = {
-  [propName: string]: any;
-};
+// type SocialDatas = {
+//   [propName: string]: any;
+// };
 
 
 
-type CREDENTIALS = {
-  [propName: string]: CredTypeItemType;
-};
-export type UserState = {
-  padoServicePort: chrome.runtime.Port;
-  sysConfig: SysConfigInfo;
-  userPassword: string;
-  activeSourceType: string;
-  filterWord: string;
-  exSources: ExDatas;
-  socialSources: SocialDatas;
-  sourceUpdateFrequency: string;
-  proofTypes: PROOFTYPEITEM[];
-  credentials: CREDENTIALS;
-  userInfo: UserInfoType;
-};
+// type CREDENTIALS = {
+//   [propName: string]: CredTypeItemType;
+// };
 
 // initial state
 const initState = {

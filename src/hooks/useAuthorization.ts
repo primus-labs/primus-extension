@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import { postMsg, getAuthUrl } from '@/utils/utils';
 
 type CreateAuthWindowCallBack = (

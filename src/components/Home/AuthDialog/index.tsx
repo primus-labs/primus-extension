@@ -6,7 +6,7 @@ import PMask from '@/components/PMask';
 import rightArrow from '@/assets/img/rightArrow.svg';
 
 import type { AuthSourcesItem, AuthSourcesItems } from '@/services/api/user';
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import { postMsg } from '@/utils/utils';
 import { DEFAULTAUTHSOURCELIST } from '@/config/constants';
 import useAuthorization from '@/hooks/useAuthorization';

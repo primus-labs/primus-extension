@@ -11,7 +11,7 @@ import { exportJson } from '@/utils/exportFile';
 import { PADOADDRESS } from '@/config/envConstants';
 import { getPolygonIdAttestation } from '@/services/api/cred';
 
-import type { CredTypeItemType } from '@/components/Cred/CredItem';
+import type { CredTypeItemType } from '@/types/cred';
 import type {UserState} from '@/types/store'
 
 interface QRCodeDialogProps {

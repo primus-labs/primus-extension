@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/constants';
 import { setExSourcesAsync } from '@/store/actions';
 
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import { postMsg } from '@/utils/utils';
 type ExKeysStorages = {

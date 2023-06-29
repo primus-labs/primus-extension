@@ -7,7 +7,7 @@ import PBack from '@/components/PBack';
 
 import { postMsg } from '@/utils/utils';
 
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 
 import './index.sass';
 

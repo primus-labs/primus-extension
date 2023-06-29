@@ -32,8 +32,8 @@ import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
 import { attestForPolygonId } from '@/services/api/cred';
 
-import type { CredTypeItemType } from '@/components/Cred/CredItem';
-import type { UserState } from '@/store/reducers';
+import type { CredTypeItemType } from '@/types/cred';
+import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ActiveRequestType } from '@/pages/DataSourceOverview';

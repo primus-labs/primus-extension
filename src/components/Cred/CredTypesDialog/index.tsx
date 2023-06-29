@@ -5,7 +5,7 @@ import PMask from '@/components/PMask';
 
 import './index.sass';
 
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import type { PROOFTYPEITEM } from '@/types/cred';
 
 interface CredTypesDialogProps {

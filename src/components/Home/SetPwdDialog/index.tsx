@@ -5,7 +5,7 @@ import PInput from '@/components/PInput/index';
 import PMask from '@/components/PMask';
 import iconAddress from '@/assets/img/iconAddress.svg';
 
-import type { UserState } from '@/store/reducers';
+import type { UserState } from '@/types/store';
 import { postMsg } from '@/utils/utils';
 
 import type { Dispatch } from 'react';

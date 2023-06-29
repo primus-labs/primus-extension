@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import { gte, formatNumeral } from '@/utils/utils';
 import type { ExchangeMeta } from '@/config/constants';
-import type { SocialDataSourceData } from '@/types/dataSource';
+import type { SocialDataSourceData, SourceData,ExData,SocialData } from '@/types/dataSource';
 
 import './index.sass';
 
@@ -38,8 +38,8 @@ type SourceDescItem = {
   sourceKey: string;
 };
 interface DataSourceItemProps {
-  item: DataSourceItemType;
-  onCheck: (item: DataSourceItemType) => void;
+  item: SourceData;
+  onCheck: (item: SourceData) => void;
 }
 
 const DataSourceItem: React.FC<DataSourceItemProps> = memo(
@@ -57,7 +57,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
       label,
       userName,
       screenName,
-    } = source;
+    } = source as (ExData & SocialData);
     const formatSource = {
       ...source,
       totalBalance: totalBalance ? `$${formatNumeral(totalBalance)}` : '--',

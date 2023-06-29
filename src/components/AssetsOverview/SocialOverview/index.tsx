@@ -9,13 +9,14 @@ import { add, formatNumeral } from '@/utils/utils';
 
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
-
+import type { SocialDataList, SocialData } from '@/types/dataSource';
 import '../AssetsOverview/index.sass';
 
 interface AssetsOverviewProps {
   filterSource: string | undefined;
   onClearFilter: () => void;
-  list: DataSourceItemList;
+  // list: DataSourceItemList;
+  list: SocialDataList;
 }
 
 const SocialOverview: React.FC<AssetsOverviewProps> = memo(
@@ -23,10 +24,10 @@ const SocialOverview: React.FC<AssetsOverviewProps> = memo(
     const [activeSourceName, setActiveSourceName] = useState<string>();
 
     const totalFollowers = useMemo(() => {
-      const reduceF: (
-        prev: BigNumber,
-        curr: DataSourceItemType
-      ) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
+      const reduceF: (prev: BigNumber, curr: SocialData) => BigNumber = (
+        prev,
+        curr
+      ) => {
         const { followers } = curr;
         return add(prev.toNumber(), Number(followers));
       };
@@ -34,10 +35,10 @@ const SocialOverview: React.FC<AssetsOverviewProps> = memo(
       return `${bal.toFixed()}`;
     }, [list]);
     const totalFollowings = useMemo(() => {
-      const reduceF: (
-        prev: BigNumber,
-        curr: DataSourceItemType
-      ) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
+      const reduceF: (prev: BigNumber, curr: SocialData) => BigNumber = (
+        prev,
+        curr
+      ) => {
         const { followings } = curr;
         return add(prev.toNumber(), Number(followings));
       };
@@ -45,10 +46,10 @@ const SocialOverview: React.FC<AssetsOverviewProps> = memo(
       return `${bal.toFixed()}`;
     }, [list]);
     const totalPosts = useMemo(() => {
-      const reduceF: (
-        prev: BigNumber,
-        curr: DataSourceItemType
-      ) => BigNumber = (prev: BigNumber, curr: DataSourceItemType) => {
+      const reduceF: (prev: BigNumber, curr: SocialData) => BigNumber = (
+        prev,
+        curr
+      ) => {
         const { posts } = curr;
         return add(prev.toNumber(), Number(posts));
       };
@@ -56,9 +57,9 @@ const SocialOverview: React.FC<AssetsOverviewProps> = memo(
       return `${bal.toFixed()}`;
     }, [list]);
     const totalVerifiedAcct = useMemo(() => {
-      const reduceF: (prev: number, curr: DataSourceItemType) => number = (
-        prev: number,
-        curr: DataSourceItemType
+      const reduceF: (prev: number, curr: SocialData) => number = (
+        prev,
+        curr
       ) => {
         const { name, verified, remarks } = curr;
         let activeNum = verified ? 1 : 0;

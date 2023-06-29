@@ -1,10 +1,12 @@
 import React, { useMemo, memo, useCallback } from 'react';
 import { sub, getCurrentDate, formatNumeral } from '@/utils/utils';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
+import type { SocialDataList, SocialData } from '@/types/dataSource';
+
 import './index.sass';
 
 interface TokenTableProps {
-  list: DataSourceItemType[];
+  list: SocialDataList;
 }
 
 const TokenTable: React.FC<TokenTableProps> = memo(({ list }) => {

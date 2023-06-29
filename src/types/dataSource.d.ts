@@ -6,6 +6,17 @@ export type ConnectSourceType = {
   type?: string;
 };
 
+export type TokenMap = {
+  symbol: string;
+  price: string;
+  amount: string;
+  value: string;
+};
+
+export type AssetsMap = {
+  [propName: string]: TokenMap;
+};
+
 export type SocialDataSourceData = {
   followers?: number | string;
   posts?: number | string;
@@ -16,7 +27,46 @@ export type SocialDataSourceData = {
   screenName?: string;
   remarks?: any;
 };
-
-export type SocialDatas = {
-  [propName: string]: SocialDataSourceData & ExchangeMeta;
+export type ExchangeMeta = {
+  name: string;
+  type: 'Social' | 'Assets';
+  icon: any;
+  requirePassphase?: boolean;
+  constructorF?: any;
+  baseName?: string;
+  baseUrl?: string;
+  accountBalanceUrl?: string; // TODO
+  userId?: string;
+  label?: string;
 };
+
+type ExInfo = {
+  date: string;
+  apiKey: string;
+  totalBalance: string;
+  tokenListMap: AssetsMap;
+  pnl?: string;
+  label?: string;
+  flexibleAccountTokenMap: AssetsMap;
+  spotAccountTokenMap: AssetsMap;
+  tokenPriceMap: object;
+  tradingAccountTokenAmountObj: object;
+  exUserId?: string;
+  pnlAmount?: string;
+  pnlPercent?: string;
+};
+
+export type ExData = ExInfo & ExchangeMeta;
+export type ExDatas = {
+  [propName: string]: ExData;
+};
+export type ExDataList = ExData[];
+
+export type SocialData = SocialDataSourceData & ExchangeMeta;
+export type SocialDatas = {
+  [propName: string]: SocialData;
+};
+export type SocialDataList = SocialData[];
+
+export type SourceData = ExData | SocialData;
+export type SourceDataList = (ExData | SocialData)[];

@@ -12,5 +12,5 @@ export type UserInfoType = {
   uniqueId: string; //	User unique id	string
   updatedTime: string;
   userName: string;
-  userInfo: UserInfoType;
+  // userInfo: UserInfoType;
 };
