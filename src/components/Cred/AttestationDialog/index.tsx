@@ -121,11 +121,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [exSources, activeToken]);
 
     const handleChangeSelect = useCallback((val: string) => {
-      // if (!val) {
-      //   setActiveSource(undefined);
-      // }
+      if (!val) {
+        setActiveSource(undefined);
+      }
       setActiveToken(val);
-      setActiveSource(undefined);
+      // setActiveSource(undefined);
     }, []);
     const handleClickNext = () => {
       if (connectedSourceList.length === 0) {
