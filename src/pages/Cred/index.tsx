@@ -4,7 +4,6 @@ import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import PTabs from '@/components/PTabs';
-import './index.sass';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import AttestationDialog from '@/components/Cred/AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
@@ -30,15 +29,15 @@ import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegationProxy } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
-import { attestForPolygonId } from '@/services/api/cred';
 
-import type { CredTypeItemType } from '@/types/cred';
-import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
-import type { WALLETITEMTYPE } from '@/config/constants';
-import type { ActiveRequestType } from '@/pages/DataSourceOverview';
-import type { AttestionForm } from '@/components/Cred/AttestationDialog';
-import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
+import type { CredTypeItemType, AttestionForm } from '@/types/cred';
+import type { UserState } from '@/types/store';
+import type { WALLETITEMTYPE } from '@/types/config';
+import type { AssetsMap } from '@/types/dataSource';
+import type { ActiveRequestType } from '@/types/config';
+
+import './index.sass';
 
 export type CREDENTIALSOBJ = {
   [propName: string]: CredTypeItemType;

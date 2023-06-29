@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, memo } from 'react';
+import React, { FC, memo } from 'react';
 
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import './index.sass';

@@ -19,15 +19,12 @@ import iconSuc2 from '@/assets/img/iconSuc2.svg';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
 import iconMedalToken from '@/assets/img/iconMedalToken.svg';
+import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 
-import type { PROOFTYPEITEM } from '@/types/cred';
+import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 
 import './index.sass';
-import { div } from '../../../utils/utils';
-import iconPolygonID from '@/assets/img/iconPolygonID.svg';
-import type { CredTypeItemType } from '@/types/cred';
-
 
 interface CredTypeListProps {
   item: CredTypeItemType;
@@ -270,8 +267,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="descItem arow">
                 <div className="label">Recipient Account</div>
                 <div className="value">
-                    <img src={iconPolygonID} alt="" />
-                    <span>{formatAddress(item.did, 13)}</span>
+                  <img src={iconPolygonID} alt="" />
+                  <span>{formatAddress(item.did, 13)}</span>
                 </div>
               </div>
             ) : (

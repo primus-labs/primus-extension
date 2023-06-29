@@ -49,3 +49,12 @@ export type PROOFTYPEITEM = {
   display: ISACTIVE;
   enabled: ISACTIVE;
 };
+export type AttestionForm = {
+  token?: string;
+  baseValue?: string;
+  source: string;
+  type: string;
+  exUserId?: string;
+  label?: string;
+  requestid?: string;
+};

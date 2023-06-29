@@ -1,11 +1,11 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
 import PInput from '@/components/PInput/index';
 import AsideAnimation from '@/components/Layout/AsideAnimation';
-import './index.sass';
-import { useSelector, useDispatch } from 'react-redux';
 import { postMsg } from '@/utils/utils';
+import './index.sass';
 
 const Lock = memo(() => {
   const dispatch = useDispatch();

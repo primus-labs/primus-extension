@@ -8,7 +8,6 @@ import './index.sass';
 import {
   getConnectPolygonIdQrcode,
   getConnectPolygonIdResult,
-  attestForPolygonId,
 } from '@/services/api/cred';
 import useUuid from '@/hooks/useUuid';
 import useInterval from '@/hooks/useInterval';

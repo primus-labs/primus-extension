@@ -3,11 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 
-
 import TokenTable from '@/components/TokenTable';
 import iconAvatar from '@/assets/img/iconAvatar.png';
 import iconCredCreate from '@/assets/img/iconCredCreate.svg';
-import './index.sass';
 
 import { setExSourcesAsync } from '@/store/actions';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
@@ -17,37 +15,9 @@ import { BTC } from '@/config/constants';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
-import type { ExchangeMeta } from '@/config/constants';
-import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
+import type { ExData } from '@/types/dataSource';
 
-type ExInfo = {
-  date: string;
-  apiKey: string;
-  totalBalance: string;
-  tokenListMap: AssetsMap;
-  pnl?: string;
-  label?: string;
-  flexibleAccountTokenMap: AssetsMap;
-  spotAccountTokenMap: AssetsMap;
-  tokenPriceMap: object;
-  tradingAccountTokenAmountObj: object;
-};
-export type DataSourceStorages = {
-  binance?: any;
-  okx?: any;
-  kucoin?: any;
-  twitter?: any;
-  coinbase?: any;
-  [propName: string]: any;
-};
-export type ExDataType = ExInfo & ExchangeMeta;
-
-export type DataSourceType = {
-  date: string;
-  tokenListMap: AssetsMap;
-  totalBalance: string;
-  [propName: string]: any;
-};
+import './index.sass';
 
 const AssetsDetail = memo(() => {
   const exSources = useSelector((state: UserState) => state.exSources);
@@ -59,7 +29,7 @@ const AssetsDetail = memo(() => {
   const sourceName = (searchParams.get('name') as string).toLowerCase();
 
   const dataSource = useMemo(() => {
-    return exSources[sourceName] as ExDataType;
+    return exSources[sourceName] as ExData;
   }, [exSources, sourceName]);
   const btcPrice = useMemo(() => {
     if (typeof dataSource === 'object') {
