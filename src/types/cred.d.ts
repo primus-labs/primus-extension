@@ -29,6 +29,7 @@ export type CredTypeItemType = {
   did?: string;
   claimId?: string;
   claimQrCode?: object;
+  claimSignatureInfo?: object;
   issuer?: string;
   schemaName?: string;
 };

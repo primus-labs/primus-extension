@@ -3,12 +3,6 @@ import type { PROOFTYPEITEM, CREDENTIALS } from './cred';
 import type { ExDatas, SocialDatas } from './dataSource';
 import type { SysConfigInfo } from './config';
 
-
-
-
-
-
-
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;

@@ -4,12 +4,11 @@ import { useSelector } from 'react-redux';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import BindPolygonIDDialog from '@/components/Cred/BindPolygonIDDialog';
 
-import './index.sass';
-
 import { attestForPolygonId } from '@/services/api/cred';
 
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
+import './index.sass';
 interface BindPolygonIDProps {
   visible: boolean;
   onClose: () => void;
@@ -26,6 +25,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
     const userInfo = useSelector((state: UserState) => state.userInfo);
     const handleSubmitBindPolygonid = useCallback(
       async (uuid: string, didp: string) => {
+        console.log('handleSubmitBindPolygonid');
         setDid(didp);
         try {
           const { id, token } = userInfo;
@@ -66,7 +66,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
           }
           const res = await attestForPolygonId(params, requestConfigParams);
           if (res?.getDataTime) {
-            const newRequestId = res.getDataTime;
+            const newRequestId = uuid;
 
             const fullAttestation = {
               ...activeCred,
@@ -76,6 +76,8 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               issuer: res.claimQrCode.from,
               schemaName: 'PolygonID',
               provided: [],
+              signature: res.claimSignatureInfo.signature,
+              encodedData: res.claimSignatureInfo.encodedData,
             };
 
             const { credentials: credentialsStr } =

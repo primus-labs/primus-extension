@@ -81,6 +81,7 @@ const BindPolygonIDDialog: React.FC<BindPolygonIDDialogProps> = memo(
           requestConfigParams
         );
         if (res.rc === 0) {
+          console.log('polygonID connected!');
           const pdid = res.result.walletDid;
           setConnectFlag(true);
           onSubmit(uuid as string, pdid as string);
