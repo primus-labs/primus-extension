@@ -46,7 +46,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             exUserId,
             holdingToken,
           } = activeCred as CredTypeItemType;
-          const params:any = {
+          const params: any = {
             sessionId: uuid,
             credType: type,
             signature,
@@ -56,23 +56,26 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               sourceUserId: exUserId,
               authUserId: id,
               getDataTime,
-              receipt: address,
+              recipient: address,
               baseValue,
               balanceGreaterThanBaseValue,
             },
           };
-          if (type === 'Token Holdings') { 
+          if (type === 'Token Holdings') {
             params.credentialSubject.asset = holdingToken;
           }
           const res = await attestForPolygonId(params, requestConfigParams);
           if (res?.getDataTime) {
             const newRequestId = res.getDataTime;
+
             const fullAttestation = {
               ...activeCred,
               did: didp,
               ...res,
               requestid: newRequestId,
               issuer: res.claimQrCode.from,
+              schemaName: 'PolygonID',
+              provided: [],
             };
 
             const { credentials: credentialsStr } =

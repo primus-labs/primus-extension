@@ -45,10 +45,20 @@ const EASINFOMAP = {
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
-      schemaUid:
-        '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
-      schemaUidTokenHoldings:
-        '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
+      schemas: {
+        EAS: {
+          schemaUid:
+            '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
+          schemaUidTokenHoldings:
+            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
+        },
+        PolygonID: {
+          schemaUid:
+            '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
+          schemaUidTokenHoldings:
+            '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
+        },
+      },
       chainId: '0xaa36a7', // numToHex
       chainName: 'Sepolia',
       rpcUrls: [
@@ -59,12 +69,14 @@ const EASINFOMAP = {
     Polygon: {
       icon: iconPolygon,
       title: 'Polygon',
+      disabled: true,
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       schemaUid:
-        '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
-      schemaUidTokenHoldings: '',
+        '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
+      schemaUidTokenHoldings:
+        '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
       chainId: '0xaa36a7', // numToHex
       chainName: 'Sepolia',
       rpcUrls: [
@@ -93,12 +105,14 @@ const EASINFOMAP = {
     Polygon: {
       icon: iconPolygon,
       title: 'Polygon',
+      disabled: true,
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       schemaUid:
-        '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
-      schemaUidTokenHoldings: '',
+        '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
+      schemaUidTokenHoldings:
+        '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
       chainId: '0xaa36a7', // numToHex
       chainName: 'Sepolia',
       rpcUrls: [

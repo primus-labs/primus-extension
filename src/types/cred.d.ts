@@ -30,6 +30,7 @@ export type CredTypeItemType = {
   claimId?: string;
   claimQrCode?: object;
   issuer?: string;
+  schemaName?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

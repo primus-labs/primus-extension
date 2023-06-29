@@ -277,6 +277,7 @@ const Cred = memo(() => {
           data: activeCred?.encodedData,
           signature: activeCred?.signature,
           type: activeCred?.type,
+          schemaName: activeCred?.schemaName ?? 'EAS',
         };
         const upChainRes = await attestByDelegationProxy(upChainParams);
         if (upChainRes) {
