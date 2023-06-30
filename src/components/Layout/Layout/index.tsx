@@ -132,7 +132,6 @@ const Layout = () => {
     dispatch(setProofTypesAsync());
     dispatch(initSourceUpdateFrequencyActionAsync());
     dispatch(initUserInfoActionAsync());
-
   }, [dispatch]);
 
   return (

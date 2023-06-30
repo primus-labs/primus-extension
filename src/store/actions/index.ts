@@ -54,9 +54,10 @@ export const setUserInfoActionAsync = (value: string) => {
 export const initUserInfoActionAsync = () => {
   return async (dispatch: any) => {
     const { userInfo } = await chrome.storage.local.get(['userInfo']);
-    const userInfoObj = JSON.parse(userInfo);
-
-    dispatch(setUserInfoAction(userInfoObj));
+    if (userInfo) {
+      const userInfoObj = JSON.parse(userInfo);
+      dispatch(setUserInfoAction(userInfoObj));
+    }
   };
 };
 

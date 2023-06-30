@@ -1,5 +1,5 @@
-import React, { useState, useEffect,memo } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect, memo, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import PHeader from '@/components/Layout/PHeader';
 import PMask from '@/components/PMask';
@@ -7,9 +7,12 @@ import rightArrow from '@/assets/img/rightArrow.svg';
 
 import type { AuthSourcesItem, AuthSourcesItems } from '@/services/api/user';
 import type { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
+
 import { postMsg } from '@/utils/utils';
 import { DEFAULTAUTHSOURCELIST } from '@/config/constants';
 import useAuthorization from '@/hooks/useAuthorization';
+import { initUserInfoActionAsync } from '@/store/actions';
 
 import './index.sass';
 
@@ -19,7 +22,6 @@ interface authDialogProps {
 }
 
 const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
-
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>(
     DEFAULTAUTHSOURCELIST
   );
@@ -29,6 +31,8 @@ const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
+  const dispatch: Dispatch<any> = useDispatch();
+
   const authorize = useAuthorization();
 
   const handleClickNext = () => {
@@ -60,7 +64,10 @@ const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
     padoServicePort.onMessage.addListener(padoServicePortListener);
     fetchAllOAuthSources();
   };
-  
+  const handleSubmit = useCallback(async () => {
+    await dispatch(initUserInfoActionAsync());
+    onSubmit();
+  }, [onSubmit, dispatch]);
   const handleClickOAuthSource = (item: AuthSourcesItem) => {
     const source = item.name;
     if (item.enabled !== '0') {
@@ -68,15 +75,14 @@ const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
     }
     setActiveSource(source);
     setErrorTip(undefined);
-    const upperCaseSourceName = source.toUpperCase()
-    const dataType = 'LOGIN'
-    authorize(upperCaseSourceName, onSubmit, dataType);
+    const upperCaseSourceName = source.toUpperCase();
+    const dataType = 'LOGIN';
+    authorize(upperCaseSourceName, handleSubmit, dataType);
   };
 
   useEffect(() => {
     padoServicePort && getAllOAuthSources();
   }, [padoServicePort]);
-  
 
   return (
     <PMask onClose={onClose}>
