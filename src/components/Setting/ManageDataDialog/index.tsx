@@ -108,7 +108,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
         const parseUserInfo = JSON.parse(userInfo);
         const { id, authSource } = parseUserInfo;
         obj.id = id;
-        obj.authSource = DATASOURCEMAP[authSource].name;
+        obj.authSource = DATASOURCEMAP[authSource]?.name ?? authSource;
       }
       if (keyStore) {
         const parseKeystore = JSON.parse(keyStore);
@@ -177,7 +177,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
             }, []);
 
           let curCipher = ciphers[`${key}cipher`];
-          curCipher = JSON.stringify(JSON.parse(curCipher)).replace(/\"/g, "'");  
+          curCipher = JSON.stringify(JSON.parse(curCipher)).replace(/\"/g, "'");
           let curSourceRows = [
             {
               empty: '',
