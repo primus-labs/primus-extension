@@ -15,7 +15,8 @@ const QRCodeMain: React.FC<QRCodeMainProps> = memo(
       <div className="qrcodeMain">
         <h1>{title}</h1>
         <h2>{desc}</h2>
-        <PQRCode value={qrcodeValue} />
+        {qrcodeValue ? <PQRCode value={qrcodeValue} /> : <div style={{ "height": "220px" }}></div>}
+
       </div>
     );
   }

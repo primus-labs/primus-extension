@@ -177,7 +177,8 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
             }, []);
 
           let curCipher = ciphers[`${key}cipher`];
-          curCipher = curCipher.replace(/"/g, "'");
+          // curCipher = curCipher.replace(/"/g, "'");
+          // curCipher = '\"' + curCipher + '\"'
           // curCipher = curCipher.replace(/,/g, "，");
           let curSourceRows = [
             {
@@ -296,8 +297,13 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       const assetsRows: object[] = await assembleAssetsExcelParams();
       const socialRows: object[] = await assembleSocialExcelParams();
       const allRows = [...basicRows, ...assetsRows, ...socialRows];
-      let cvsArr: string[] = allRows.map((i) => {
-        return Object.values(i).join() + '\n';
+      let cvsArr: string[] = allRows.map((i: any) => {
+        const separtor = ';';
+        // if (i.label === 'ApiCiphertext') {
+        //   const specialStr = `${i.empty}${separtor}${i.label}${separtor}${i.value}\n`;
+        //   return specialStr;
+        // }
+        return Object.values(i).join(separtor) + '\n';
       });
       // TODO
       return cvsArr;
