@@ -266,9 +266,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
             {item.did ? (
               <div className="descItem arow">
                 <div className="label">Recipient Account</div>
-                <div className="value">
+                <div className="value didWrapper">
                   <img src={iconPolygonID} alt="" />
-                  <span>{formatAddress(item.did, 13)}</span>
+                  <span>{formatAddress(item.did.toLowerCase(), 13)}</span>
                 </div>
               </div>
             ) : (
@@ -282,10 +282,13 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="value">
                 <div className="desc">PADO</div>
                 {item.did ? (
-                  <div className="con">
-                    <img src={iconPolygonID} alt="" className="iconPolygonID"/>
+                  <div className="con didWrapper">
+                    <img src={iconPolygonID} alt="" className="iconPolygonID" />
                     <span>
-                      {formatAddress((item?.issuer || '') as string, 13)}
+                      {formatAddress(
+                        (item?.issuer?.toLowerCase() || '') as string,
+                        13
+                      )}
                     </span>
                   </div>
                 ) : (

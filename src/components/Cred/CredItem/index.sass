@@ -137,6 +137,9 @@
           width: auto
           @extend .frcc
           gap: 4px
+          &.didWrapper
+            @extend .frbc
+            width: 135px
           >img
             width: 12px
       .label,.value
@@ -154,6 +157,9 @@
           @extend .frsc
           gap: 8px
           height: 15px
+          &.didWrapper
+            @extend .frbc
+            width: 135px
           >img
             width: 14px
             margin-right: $xxsGap
@@ -168,7 +174,7 @@
             width: 15px
             margin-right: 0
             opacity: 0.8
-
+      
   .dropdown
     position: absolute
     z-index: 9999

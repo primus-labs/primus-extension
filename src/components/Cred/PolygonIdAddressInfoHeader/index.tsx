@@ -14,7 +14,7 @@ const PolygonIdAddressInfoHeader: FC<PolygonIdAddressInfoHeaderProps> = memo(({a
         <div className="iconAddressWrapper">
           <img className="avatar" src={iconPolygonID} alt="" />
         </div>
-        <p className="address">{address}</p>
+        <p className="address">{address.toLocaleLowerCase()}</p>
       </div>
     </header>
   );
