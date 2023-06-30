@@ -44,8 +44,9 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
       if (headerType === 'setting') {
         defaultCN += ' setSucDialog';
       }
+      defaultCN += ` ${type}`;
       return defaultCN;
-    }, [headerType]);
+    }, [headerType, type]);
 
     return (
       <PMask onClose={onClose}>

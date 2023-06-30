@@ -8,6 +8,8 @@ import { attestForPolygonId } from '@/services/api/cred';
 
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
+import type { ActiveRequestType } from '@/types/config';
+
 import './index.sass';
 interface BindPolygonIDProps {
   visible: boolean;
@@ -18,6 +20,11 @@ interface BindPolygonIDProps {
 
 const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
   ({ visible, onClose, onSubmit, activeCred }) => {
+    const [activeRequest, setActiveRequest] = useState<ActiveRequestType>({
+      type: 'loading',
+      title: 'A new attestation is processing',
+      desc: 'It may take a few seconds.',
+    });
     const [did, setDid] = useState<string>();
     const connectFlag = useMemo(() => {
       return !!did;
@@ -89,7 +96,11 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             await chrome.storage.local.set({
               credentials: JSON.stringify(credentialsObj),
             });
-            onSubmit();
+            setActiveRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'A new attestation with Polygon DID is successfully granted!',
+            });
           } else {
             alert('attestForPolygonId network error');
           }
@@ -97,7 +108,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
           alert('attestForPolygonId network error');
         }
       },
-      [activeCred, onSubmit, userInfo]
+      [activeCred, userInfo]
     );
     useEffect(() => {
       if (visible) {
@@ -118,9 +129,9 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
           <AddSourceSucDialog
             onClose={onClose}
             onSubmit={onSubmit}
-            type="warn"
-            title="A new attestation is processing"
-            desc="It may take a few seconds."
+            type={activeRequest.type}
+            title={activeRequest.title}
+            desc={activeRequest.desc}
             headerType="polygonIdAttestation"
             address={did as string}
           />

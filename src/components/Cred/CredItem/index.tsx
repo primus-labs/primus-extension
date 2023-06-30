@@ -283,7 +283,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 <div className="desc">PADO</div>
                 {item.did ? (
                   <div className="con">
-                    <img src={iconPolygonID} alt="" className="tokenImg" />
+                    <img src={iconPolygonID} alt="" className="iconPolygonID"/>
                     <span>
                       {formatAddress((item?.issuer || '') as string, 13)}
                     </span>
