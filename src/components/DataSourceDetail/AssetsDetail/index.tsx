@@ -120,8 +120,8 @@ const AssetsDetail = memo(() => {
   };
 
   const navToCred = useCallback(() => {
-    navigate('/cred?createFlag=true');
-  }, [navigate]);
+    navigate(`/cred?createFlag=${sourceName}`);
+  }, [navigate, sourceName]);
   const headerRightContent = useMemo(() => {
     return (
       <button className="tokenTableHeaderRight" onClick={navToCred}>

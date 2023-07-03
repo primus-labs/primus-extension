@@ -36,12 +36,12 @@ interface AttestationDialogProps {
   onSubmit: (form: AttestionForm, activeCred?: CredTypeItemType) => void;
   onCheck?: () => void;
   activeCred?: CredTypeItemType;
-  
+  activeSourceName?: string;
   onBack?: () => void;
 }
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
-  ({ type, onClose, onSubmit, activeCred, onBack }) => {
+  ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -169,9 +169,18 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     };
     const handleClickData = (item: ConnectSourceType) => {
+      if ((activeCred || activeSourceName) && activeSource) {
+        if (activeSource?.name !== item.name) {
+          return;
+        }
+      }
+
+      if (activeSource?.name === item.name) {
+        setActiveSource(undefined);
+        return;
+      }
       if (
-        (activeSourceList.length > 0 &&
-          activeSourceList.includes(item.name)) ||
+        (activeSourceList.length > 0 && activeSourceList.includes(item.name)) ||
         activeSourceList.length === 0
       ) {
         setActiveSource(item);
@@ -180,18 +189,23 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const liClassNameCallback = useCallback(
       (item: ConnectSourceType) => {
         let defaultClassName = 'networkItem';
-        if ((activeCred ) && activeSource) {
+        if ((activeCred || activeSourceName) && activeSource) {
           if (activeSource?.name !== item.name) {
             defaultClassName += ' disabled';
           }
         } else {
           if (activeSourceList.length > 0) {
-            if (activeSourceList.includes(item.name) && !activeSource) {
-              defaultClassName += ' excitable';
-            }
+            // if (activeSourceList.includes(item.name)) {
+            //   defaultClassName += ' excitable';
+            // }
             if (!activeSourceList.includes(item.name)) {
               defaultClassName += ' disabled';
             }
+          }
+        }
+        if (activeSourceList.length > 0) {
+          if (activeSourceList.includes(item.name)) {
+            defaultClassName += ' excitable';
           }
         }
         if (activeSource?.name === item.name) {
@@ -199,9 +213,17 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
         return defaultClassName;
       },
-      [activeSource, activeSourceList, activeCred]
+      [activeSource, activeSourceList, activeCred, activeSourceName]
     );
 
+    useEffect(() => {
+      if (activeSourceName) {
+        const sourceInfo = connectedSourceList.find(
+          (i) => i.name.toLowerCase() === activeSourceName.toLowerCase()
+        );
+        setActiveSource(sourceInfo);
+      }
+    }, [activeSourceName, connectedSourceList]);
     useEffect(() => {
       if (activeCred) {
         const sourceInfo = connectedSourceList.find(
@@ -214,7 +236,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
       }
     }, [activeCred, type, connectedSourceList]);
-    
+
     useEffect(() => {
       if (activeAttestationTypeInfo.credTitle === 'Assets Proof') {
         const baseValArr = JSON.parse(

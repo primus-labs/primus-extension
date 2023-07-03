@@ -61,7 +61,10 @@ const Cred = memo(() => {
     useState<ActiveRequestType>();
   const [timeoutSwitch, setTimeoutSwitch] = useState<boolean>(false);
   const [intervalSwitch, setIntervalSwitch] = useState<boolean>(false);
-
+  const [searchParams] = useSearchParams();
+  // const sourceName = (searchParams.get('name') as string)?.toLowerCase();
+  const createFlag = searchParams.get('createFlag')?.toLowerCase();
+  const [activeSourceName, setActiveSourceName] = useState<string>();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -102,8 +105,7 @@ const Cred = memo(() => {
   }, [padoServicePort]);
   useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
-  const [searchParams] = useSearchParams();
-  const createFlag = searchParams.get('createFlag');
+
   const dispatch: Dispatch<any> = useDispatch();
 
   const credList: CredTypeItemType[] = useMemo(() => {
@@ -485,7 +487,10 @@ const Cred = memo(() => {
     };
   }, []);
   useEffect(() => {
-    createFlag && handleAdd();
+    if (createFlag) {
+      setActiveSourceName(createFlag);
+      handleAdd();
+    }
   }, [createFlag]);
 
   return (
@@ -509,6 +514,7 @@ const Cred = memo(() => {
             onSubmit={onSubmitAttestationDialog}
             activeCred={activeCred}
             onBack={onCancelAttestationDialog}
+            activeSourceName={activeSourceName}
           />
         )}
         {step === 2 && (
@@ -572,7 +578,14 @@ const Cred = memo(() => {
           onSubmit={handleSubmitBindPolygonid}
         />
       </main>
-      {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
+      {credList.length > 0 && (
+        <DataAddBar
+          onClick={() => {
+            setActiveSourceName(undefined);
+            handleAdd();
+          }}
+        />
+      )}
       {credTypesDialogVisible && (
         <CredTypesDialog
           onClose={() => {
