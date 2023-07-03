@@ -1,11 +1,8 @@
-import React, { useState, useMemo, memo } from 'react';
+import React, { useState, memo } from 'react';
 
+import SourceGroups from '../SourceGroups';
 import PMask from '@/components/PMask';
 import iconInfo from '@/assets/img/iconInfo.svg';
-
-import { DATASOURCEMAP } from '@/config/constants';
-
-import type { ExchangeMeta } from '@/config/constants';
 
 import './index.sass';
 
@@ -25,22 +22,6 @@ interface DataSourcesDialogProps {
 const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
   ({ onClose, onSubmit, onCheck }) => {
     const [activeItem, setActiveItem] = useState<DataFieldItem>();
-
-    const list: DataFieldItem[] = useMemo(() => {
-      return Object.keys(DATASOURCEMAP).map((key) => {
-        const sourceInfo: ExchangeMeta =
-          DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
-        const { name, icon, type, requirePassphase } = sourceInfo;
-        const infoObj: DataFieldItem = {
-          name,
-          icon,
-          type,
-          desc: `${type} Data`, // TODO tooltip style
-          requirePassphase,
-        };
-        return infoObj;
-      });
-    }, []);
 
     const handleClickNext = () => {
       if (!activeItem) {
@@ -65,31 +46,7 @@ const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
               Select a platform to connect, and let PADO validate your data
               authenticity.
             </h2>
-            <div className="scrollList">
-              <ul className="dataList">
-                {list.map((item) => {
-                  return (
-                    <li
-                      className={
-                        activeItem?.name === item.name
-                          ? 'networkItem active'
-                          : 'networkItem'
-                      }
-                      key={item.name}
-                      onClick={() => {
-                        handleClickData(item);
-                      }}
-                    >
-                      <img src={item.icon} alt="" />
-                      <div className="desc" title={item.desc}>
-                        {item.name}
-                      </div>
-                      <h6>{item.desc}</h6>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            <SourceGroups onChange={handleClickData} />
           </main>
           <button className="nextBtn" onClick={handleClickNext}>
             Select

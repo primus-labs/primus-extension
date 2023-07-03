@@ -12,12 +12,16 @@ import type {
   DataSourceItemType,
 } from '@/components/DataSourceOverview/DataSourceItem';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
-
+import type {
+  SourceDataList,
+  ExDataList,
+  ExData
+} from '@/types/dataSource';
 import './index.sass';
 interface AssetsOverviewProps {
   filterSource: string | undefined;
   onClearFilter: () => void;
-  list: DataSourceItemList;
+  list: ExDataList;
 }
 
 const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
@@ -26,10 +30,10 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     const [activeSourceName, setActiveSourceName] = useState<string>();
 
     const totalAssetsBalance = useMemo(() => {
-      const reduceF: (
-        prev: BigNumber,
-        curr: DataSourceItemType
-      ) => BigNumber = (prev, curr) => {
+      const reduceF: (prev: BigNumber, curr: ExData) => BigNumber = (
+        prev,
+        curr
+      ) => {
         const { totalBalance } = curr;
         return add(prev.toNumber(), Number(totalBalance));
       };

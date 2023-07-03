@@ -21,6 +21,7 @@ import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.svg';
 import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.png';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
 import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
+import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -40,7 +41,7 @@ import iconNetwork6 from '@/assets/img/iconNetwork6.png';
 
 export type ExchangeMeta = {
   name: string;
-  type: 'Social' | 'Assets';
+  type: 'Social' | 'Assets' | 'eKYC';
   icon: any;
   requirePassphase?: boolean;
   constructorF?: any;
@@ -49,6 +50,7 @@ export type ExchangeMeta = {
   accountBalanceUrl?: string; // TODO
   userId?: string;
   label?: string;
+  desc?: string;
 };
 export type DataSourceMapType = {
   [propName: string]: ExchangeMeta;
@@ -157,6 +159,12 @@ export const DATASOURCEMAP: DataSourceMapType = {
     name: 'Youtube',
     type: 'Social',
     icon: iconDataSourceYoutube,
+  },
+  zan: {
+    name: 'ZAN',
+    type: 'eKYC',
+    icon: iconDataSourceZan,
+    desc: 'by Antchain',
   },
 };
 

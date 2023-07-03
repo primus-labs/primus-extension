@@ -4,6 +4,7 @@ export type ConnectSourceType = {
   exUserId?: string;
   label?: string;
   type?: string;
+  desc?: string;
 };
 
 export type TokenMap = {
@@ -38,6 +39,7 @@ export type ExchangeMeta = {
   accountBalanceUrl?: string; // TODO
   userId?: string;
   label?: string;
+  desc?: string;
 };
 
 type ExInfo = {

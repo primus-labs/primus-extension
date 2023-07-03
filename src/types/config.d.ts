@@ -1,6 +1,6 @@
 export type ExchangeMeta = {
   name: string;
-  type: 'Social' | 'Assets';
+  type: 'Social' | 'Assets' | 'eKYC';
   icon: any;
   requirePassphase?: boolean;
   constructorF?: any;
@@ -9,6 +9,7 @@ export type ExchangeMeta = {
   accountBalanceUrl?: string; // TODO
   userId?: string;
   label?: string;
+  desc?: string;
 };
 
 type SysConfigInfo = {
