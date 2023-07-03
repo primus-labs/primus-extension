@@ -11,12 +11,7 @@ import type {
   AssetsMap,
   DataSourceItemType,
 } from '@/components/DataSourceOverview/DataSourceItem';
-import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
-import type {
-  SourceDataList,
-  ExDataList,
-  ExData
-} from '@/types/dataSource';
+import type { ExDataList, ExData } from '@/types/dataSource';
 import './index.sass';
 interface AssetsOverviewProps {
   filterSource: string | undefined;

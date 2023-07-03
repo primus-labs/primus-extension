@@ -7,13 +7,7 @@ import PieChart from '../PieChart';
 
 import { add, formatNumeral } from '@/utils/utils';
 
-import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
-import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
-import type {
-  SocialDataList,
-  SocialData,
-  SourceDataList,
-} from '@/types/dataSource';
+import type { SocialDataList, SocialData } from '@/types/dataSource';
 import '../AssetsOverview/index.sass';
 
 interface AssetsOverviewProps {

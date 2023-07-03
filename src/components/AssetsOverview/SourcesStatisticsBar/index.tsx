@@ -1,6 +1,5 @@
 import React, { useState, useEffect, memo, useMemo } from 'react';
 import { formatNumeral, sub } from '@/utils/utils';
-import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
 import type {
   SocialDataList,
   SocialData,
@@ -124,7 +123,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
                 </div>
                 {type === 'Social' && (
                   <div className="tip">
-                    {((item as SocialData).followers) === null
+                    {(item as SocialData).followers === null
                       ? 'Following'
                       : 'Followers'}
                   </div>

@@ -1,20 +1,15 @@
 import React, {
   FC,
-  useMemo,
   useCallback,
   useState,
   useEffect,
   memo,
 } from 'react';
-import { useSelector } from 'react-redux';
 
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import './index.sass';
 
-import { DATASOURCEMAP } from '@/config/constants';
-
 import type { ConnectSourceType } from '@/types/dataSource';
-import type { UserState } from '@/types/store';
 import type { ExchangeMeta } from '@/types/config';
 
 interface ConnectDataSourceListProps {
@@ -71,6 +66,11 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
     //     onChange(activeSource);
     //   }
     // }, [activeSource, mutiple, activeSources, onChange]);
+    useEffect(() => {
+      if (activeSource) {
+        onChange(activeSource);
+      }
+    }, [activeSource, onChange]);
 
     return (
       <div className="scroll sourceGroup">
