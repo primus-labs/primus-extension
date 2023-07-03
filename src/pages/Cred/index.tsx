@@ -49,7 +49,7 @@ const Cred = memo(() => {
   const [submitAddress, setSubmitAddress] = useState<string>();
   const [credTypesDialogVisible, setCredTypesDialogVisible] =
     useState<boolean>();
-  const [credentialsObj, setCredentialsObj] = useState<CREDENTIALSOBJ>({});
+  
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
@@ -74,7 +74,7 @@ const Cred = memo(() => {
   );
   const filterWord = useSelector((state: UserState) => state.filterWord);
   const proofTypes = useSelector((state: UserState) => state.proofTypes);
-  const userInfo = useSelector((state: UserState) => state.userInfo);
+  const credentialsFromStore = useSelector((state: UserState) => state.credentials);
 
   const timeoutFn = useCallback(() => {
     console.log('120s timeout');
@@ -109,12 +109,12 @@ const Cred = memo(() => {
   const dispatch: Dispatch<any> = useDispatch();
 
   const credList: CredTypeItemType[] = useMemo(() => {
-    let credArr = Object.values(credentialsObj);
+    let credArr = Object.values(credentialsFromStore);
     credArr = credArr.sort(
       (a, b) => Number(a.getDataTime) - Number(b.getDataTime)
     );
     return credArr;
-  }, [credentialsObj]);
+  }, [credentialsFromStore]);
   const filteredCredList: CredTypeItemType[] = useMemo(() => {
     let activeList = credList;
     if (activeSourceType && activeSourceType !== 'All') {
@@ -133,9 +133,7 @@ const Cred = memo(() => {
 
   const handleChangeTab = useCallback((val: string) => {}, []);
   const initCredList = useCallback(async () => {
-    const cObj = await getCredentialsObjFromStorage();
-    dispatch(setCredentialsAsync());
-    setCredentialsObj(cObj);
+    await dispatch(setCredentialsAsync());
   }, [dispatch]);
   const handleChangeProofType = useCallback((title: string) => {
     setCredTypesDialogVisible(false);
@@ -282,9 +280,9 @@ const Cred = memo(() => {
         };
         const upChainRes = await attestByDelegationProxy(upChainParams);
         if (upChainRes) {
-          const cObj = await getCredentialsObjFromStorage();
+          const cObj = { ...credentialsFromStore };
           const curRequestid = activeCred?.requestid as string;
-          const curCredential = credentialsObj[curRequestid];
+          const curCredential = cObj[curRequestid];
           const newProvided = curCredential.provided ?? [];
           const currentChainObj: any = ONCHAINLIST.find(
             (i) => activeNetworkName === i.title
@@ -302,7 +300,7 @@ const Cred = memo(() => {
           await chrome.storage.local.set({
             credentials: JSON.stringify(cObj),
           });
-          initCredList();
+          await initCredList();
           setActiveSendToChainRequest({
             type: 'suc',
             title: 'Congratulations',
@@ -323,7 +321,13 @@ const Cred = memo(() => {
         });
       }
     },
-    [activeCred, activeNetworkName, credentialsObj, initCredList]
+    [
+      activeCred,
+      activeNetworkName,
+      credentialsFromStore,
+      initCredList,
+      submitAddress,
+    ]
   );
   const handleViewQrcode = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
@@ -344,14 +348,14 @@ const Cred = memo(() => {
   const handleDeleteCred = useCallback(
     async (item: CredTypeItemType) => {
       const curRequestid = item.requestid;
-      const cObj = await getCredentialsObjFromStorage();
+      const cObj = { ...credentialsFromStore };
       delete cObj[curRequestid];
       chrome.storage.local.set({
         credentials: JSON.stringify(cObj),
       });
       await initCredList();
     },
-    [initCredList]
+    [initCredList, credentialsFromStore]
   );
   const handleUpdateCred = useCallback((item: CredTypeItemType) => {
     setActiveAttestationType(item.type);
@@ -406,19 +410,15 @@ const Cred = memo(() => {
             ...content,
             ...parsedActiveRequestAttestation,
           };
-          const { credentials: credentialsStr } =
-            await chrome.storage.local.get(['credentials']);
-          const credentialsObj = credentialsStr
-            ? JSON.parse(credentialsStr)
-            : {};
 
+          const credentialsObj = { ...credentialsFromStore };
           credentialsObj[activeRequestId] = fullAttestation;
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),
           });
           await chrome.storage.local.remove(['activeRequestAttestation']);
 
-          initCredList();
+          await initCredList();
           setActiveRequest({
             type: 'suc',
             title: 'Congratulations',
@@ -445,17 +445,16 @@ const Cred = memo(() => {
         });
       }
     },
-    [clearFetchAttestationTimer, padoServicePort, initCredList]
+    [
+      clearFetchAttestationTimer,
+      padoServicePort,
+      initCredList,
+      credentialsFromStore,
+    ]
   );
   useAlgorithm(getAttestationCallback, getAttestationResultCallback);
 
-  const getCredentialsObjFromStorage = async (): Promise<CREDENTIALSOBJ> => {
-    const { credentials: credentialsStr } = await chrome.storage.local.get([
-      'credentials',
-    ]);
-    const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-    return credentialObj;
-  };
+  
   const handleSubmitBindPolygonid = useCallback(async () => {
     setBindPolygonidVisible(false);
     await initCredList();

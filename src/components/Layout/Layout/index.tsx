@@ -12,6 +12,7 @@ import {
   setExSourcesAsync,
   setSocialSourcesAsync,
   initUserInfoActionAsync,
+  setCredentialsAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import { postMsg } from '@/utils/utils';
@@ -132,6 +133,7 @@ const Layout = () => {
     dispatch(setProofTypesAsync());
     dispatch(initSourceUpdateFrequencyActionAsync());
     dispatch(initUserInfoActionAsync());
+    dispatch(setCredentialsAsync());
   }, [dispatch]);
 
   return (

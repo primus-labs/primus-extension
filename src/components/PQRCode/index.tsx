@@ -1,6 +1,7 @@
 import React, { memo, FC } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 
+
 import './index.sass';
 
 interface PQRCodeProps {

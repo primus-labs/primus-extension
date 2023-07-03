@@ -1,36 +1,5 @@
 import { SETSYSCONFIG } from '../actions';
-import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
-// import type { ExchangeMeta } from '@/config/constants';
-// import type { CredTypeItemType } from '@/types/cred';
-// import type { ExDatas } from '@/types/store';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM, DEFAULTCREDTYPELIST } from '@/config/constants';
-// import type { PROOFTYPEITEM } from '@/types/cred';
-// import type {UserInfoType} from '@/types/user'
-
-export type ExInfo = {
-  date: string;
-  apiKey: string;
-  totalBalance: string;
-  tokenListMap: AssetsMap;
-  exUserId?: string;
-  label?: string;
-  tradingAccountTokenAmountObj: object;
-  spotAccountTokenMap: AssetsMap;
-  tokenPriceMap: object;
-};
-// type SysConfigInfo = {
-//   [propName: string]: any;
-// };
-
-// type SocialDatas = {
-//   [propName: string]: any;
-// };
-
-
-
-// type CREDENTIALS = {
-//   [propName: string]: CredTypeItemType;
-// };
 
 // initial state
 const initState = {
