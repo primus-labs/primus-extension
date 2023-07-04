@@ -286,7 +286,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
-  if (type === 'Assets Proof') {
+  if (type === 'ASSETS_PROOF') {
     params.baseValue = baseValue;
     calculationType = `SUM_OF_ALL`;
     if (source === 'binance') {

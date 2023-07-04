@@ -32,6 +32,7 @@ export type CredTypeItemType = {
   claimSignatureInfo?: object;
   issuer?: string;
   schemaName?: string;
+  credIdentifier: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

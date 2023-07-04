@@ -19,6 +19,7 @@ import iconSuc2 from '@/assets/img/iconSuc2.svg';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
 import iconMedalToken from '@/assets/img/iconMedalToken.svg';
+import iconMedalIdentification from '@/assets/img/iconMedalIdentification.png';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 
 import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
@@ -36,7 +37,7 @@ interface CredTypeListProps {
 }
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
-    // console.log('credItem', item);
+    console.log('credItem', item);
 
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
     const [expand, setExpand] = useState(false);
@@ -54,10 +55,25 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     }, [item]);
     const briefTypeName = useMemo(() => {
       const obj = proofTypes.find(
-        (i: PROOFTYPEITEM) => i.credTitle === item.type
+        (i: PROOFTYPEITEM) => i.credIdentifier === item.type
       );
       return obj?.simplifiedName;
     }, [proofTypes, item.type]);
+    const credIcon = useMemo(() => {
+      let imgNode = iconMedalAssets;
+      switch (item.type) {
+        case 'ASSETS_PROOF':
+          imgNode = iconMedalAssets;
+          break;
+        case 'TOKEN_HOLDINGS':
+          imgNode = iconMedalToken;
+          break;
+        case 'IDENTIFICATION_PROOF':
+          imgNode = iconMedalIdentification;
+          break;
+      }
+      return imgNode;
+    }, [item.type]);
 
     const handleClick = () => {
       setExpand((flag) => !flag);
@@ -134,18 +150,14 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       <div className={expand ? 'credItem expand' : 'credItem'}>
         <div
           className={
-            item.type === 'Assets Proof' ? 'main' : 'main tokenHolding'
+            item.type === 'ASSETS_PROOF' ? 'main' : 'main tokenHolding'
           }
           onClick={handleClick}
         >
           <div className="mainContent">
             <div className="con">
               <div className="conl">
-                {item.type === 'Assets Proof' ? (
-                  <img src={iconMedalAssets} alt="" />
-                ) : (
-                  <img src={iconMedalToken} alt="" />
-                )}
+                <img src={credIcon} alt="" />
                 {briefTypeName}
               </div>
               <div className="conr">
@@ -233,7 +245,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
           <div className="extra">
             <div className="descItem">
               <div className="label">Proof Content</div>
-              {item.type === 'Assets Proof' ? (
+              {item.type === 'ASSETS_PROOF' ? (
                 <div className="value">
                   <div className="desc">Balance of assets</div>
                   <div className="con">

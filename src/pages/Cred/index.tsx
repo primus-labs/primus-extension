@@ -358,7 +358,7 @@ const Cred = memo(() => {
     [initCredList, credentialsFromStore]
   );
   const handleUpdateCred = useCallback((item: CredTypeItemType) => {
-    setActiveAttestationType(item.type);
+    setActiveAttestationType(item.credIdentifier);
     setActiveCred(item);
     setStep(1);
   }, []);

@@ -243,45 +243,47 @@ export const DEFAULTCREDTYPELIST = [
     credTitle: 'Assets Proof',
     credIntroduce: 'Proving deposit amount',
     credLogoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconAssetsProof.svg',
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredAsset.svg',
     credDetails:
       'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
     credProofContent: 'Balance of assets',
     credProofConditions: '["1000"]',
+    simplifiedName: 'Asset',
     display: 0,
     enabled: 0,
-    simplifiedName: 'Asset',
   },
   {
     id: '2',
     credIdentifier: 'TOKEN_HOLDINGS',
-    credTitle: 'Token Holdings',
+    credTitle: 'Token Holdings Proof',
     credIntroduce: 'Proving ownership of a kind of Token',
     credLogoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconTokenHoldings.svg',
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredToken.svg',
     credDetails:
       'Proof that you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
     credProofContent: 'Hold this kind of Token',
     credProofConditions: '["USDT","LAT"]',
+    simplifiedName: 'Token',
     display: 0,
     enabled: 0,
-    simplifiedName: 'Token',
   },
   {
     id: '3',
-    credIdentifier: 'QUALIFICATIONS',
-    credTitle: 'Qualifications',
+    credIdentifier: 'IDENTIFICATION_PROOF',
+    credTitle: 'Identification Proof',
     credIntroduce: 'Proving identity or membership',
     credLogoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconQualifications.svg',
-    credDetails: 'xxx',
-    credProofContent: 'xxx',
-    credProofConditions: 'xxx',
-    display: 0,
-    enabled: 1,
+      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredCred.svg',
+    credDetails:
+      'Proving you have completed the identity verification process. PADO verifies the authenticity of the verification result.',
+    credProofContent: 'Identity verification',
+    credProofConditions: 'Confirmed',
     simplifiedName: 'Qualification',
+    display: 0,
+    enabled: 0,
   },
 ];
+
 export const DEFAULTAUTHSOURCELIST = [
   {
     id: '1',

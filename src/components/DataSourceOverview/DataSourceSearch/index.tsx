@@ -32,7 +32,7 @@ const DataSourceSearch = memo(() => {
     if (pathname === '/cred') {
       const credentialList = Object.values(credentials);
       const assetsProofList = credentialList.filter(
-        (i) => i.type === 'Assets Proof'
+        (i) => i.type === 'ASSETS_PROOF'
       );
       const tokenHoldingsList = credentialList.filter(
         (i) => i.type === 'Token Holdings'

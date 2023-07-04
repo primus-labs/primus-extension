@@ -21,11 +21,11 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
 
     const handleChange = (item: PROOFTYPEITEM) => {
-      if (item.enabled === 1) {
-        return;
-      }
+      // if (item.enabled === 1) {
+      //   return;
+      // }
       setErrorTip('');
-      setActiveType(item.credTitle);
+      setActiveType(item.credIdentifier);
     };
     const handleClickNext = () => {
       if (activeType) {
@@ -40,7 +40,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         if (item.enabled === 1) {
           defaultCN += ' disabled';
         }
-        if (item.credTitle === activeType) {
+        if (item.credIdentifier === activeType) {
           defaultCN += ' active';
         }
         return defaultCN;

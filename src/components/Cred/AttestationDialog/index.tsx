@@ -48,6 +48,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const [errorTip, setErrorTip] = useState<string>();
 
     const exSources = useSelector((state: UserState) => state.exSources);
+    const kycSources = useSelector((state: UserState) => state.kycSources);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
 
@@ -59,10 +60,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const activeAttestationTypeInfo = useMemo(() => {
-      const obj = proofTypes.find((i) => i.credTitle === type);
+      const obj = proofTypes.find((i) => i.credIdentifier === type);
       return obj as PROOFTYPEITEM;
     }, [type, proofTypes]);
-    const connectedSourceList: ConnectSourceType[] = useMemo(() => {
+    const connectedExSourceList: ConnectSourceType[] = useMemo(() => {
       return Object.keys(exSources).map((key) => {
         const sourceInfo: ExchangeMeta =
           DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
@@ -77,6 +78,28 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return infoObj;
       });
     }, [exSources]);
+    const connectedKYCSourceList: ConnectSourceType[] = useMemo(() => {
+      return Object.keys(kycSources).map((key) => {
+        const sourceInfo: ExchangeMeta =
+          DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
+        const { name, icon } = sourceInfo;
+        const { exUserId, label } = kycSources[key];
+        const infoObj: ConnectSourceType = {
+          name,
+          icon,
+          exUserId,
+          label,
+        };
+        return infoObj;
+      });
+    }, [kycSources]);
+    const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
+      if (type === 'IDENTIFICATION_PROOF') {
+        return connectedKYCSourceList;
+      } else {
+        return connectedExSourceList;
+      }
+    }, [connectedExSourceList, connectedKYCSourceList, type]);
     const tokenList = useMemo(() => {
       let list = [];
       if (!activeSource?.name) {
@@ -128,11 +151,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       // setActiveSource(undefined);
     }, []);
     const handleClickNext = () => {
-      if (connectedSourceList.length === 0) {
+      if (activeConnectedSourceList.length === 0) {
         navigate('/datas');
       }
 
-      if (connectedSourceList.length > 0) {
+      if (activeConnectedSourceList.length > 0) {
         if (!activeSource) {
           setErrorTip('Please select one data source');
           return;
@@ -144,7 +167,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           label: activeSource?.label,
         };
 
-        if (type === 'Token Holdings') {
+        if (type === 'TOKEN_HOLDINGS') {
           if (!activeToken) {
             setErrorTip('Please select one token');
             return;
@@ -152,7 +175,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             form.token = activeToken;
           }
         }
-        if (type === 'Assets Proof') {
+        if (type === 'ASSETS_PROOF') {
           if (!activeBaseValue) {
             setErrorTip('Please select one baseValue');
             return;
@@ -218,27 +241,27 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
 
     useEffect(() => {
       if (activeSourceName) {
-        const sourceInfo = connectedSourceList.find(
+        const sourceInfo = activeConnectedSourceList.find(
           (i) => i.name.toLowerCase() === activeSourceName.toLowerCase()
         );
         setActiveSource(sourceInfo);
       }
-    }, [activeSourceName, connectedSourceList]);
+    }, [activeSourceName, activeConnectedSourceList]);
     useEffect(() => {
       if (activeCred) {
-        const sourceInfo = connectedSourceList.find(
+        const sourceInfo = activeConnectedSourceList.find(
           (i) => i.name.toLowerCase() === activeCred.source.toLowerCase()
         );
         setActiveSource(sourceInfo);
-        if (type === 'Assets Proof') {
-        } else if (type === 'Token Holdings') {
+        if (type === 'ASSETS_PROOF') {
+        } else if (type === 'TOKEN_HOLDINGS') {
           activeCred.holdingToken && setActiveToken(activeCred.holdingToken);
         }
       }
-    }, [activeCred, type, connectedSourceList]);
+    }, [activeCred, type, activeConnectedSourceList]);
 
     useEffect(() => {
-      if (activeAttestationTypeInfo.credTitle === 'Assets Proof') {
+      if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
         const baseValArr = JSON.parse(
           activeAttestationTypeInfo.credProofConditions
         );
@@ -268,11 +291,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 <div className="value">
                   <div className="desc">
                     {activeAttestationTypeInfo.credProofContent}
-                    {type === 'Assets Proof' && (
+                    {type === 'ASSETS_PROOF' && (
                       <img src={iconGreater} className="iconGreater" alt="" />
                     )}
                   </div>
-                  {type === 'Assets Proof' && (
+                  {type === 'ASSETS_PROOF' && (
                     <div className="con">
                       $
                       {activeBaseValue
@@ -282,7 +305,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                         : ''}
                     </div>
                   )}
-                  {type === 'Token Holdings' && (
+                  {type === 'TOKEN_HOLDINGS' && (
                     <div className="pSelectWrapper">
                       <PSelect
                         showIcon={true}
@@ -292,13 +315,18 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                       />
                     </div>
                   )}
+                  {type === 'IDENTIFICATION_PROOF' && (
+                    <div className="con">
+                      {activeAttestationTypeInfo.credProofConditions}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="contItem contItemAssets">
                 <div className="label">Source of assets</div>
-                {connectedSourceList.length > 0 && (
+                {activeConnectedSourceList.length > 0 && (
                   <ul className="dataList">
-                    {connectedSourceList.map((item) => {
+                    {activeConnectedSourceList.map((item) => {
                       return (
                         <li
                           className={liClassNameCallback(item)}
@@ -314,7 +342,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                     })}
                   </ul>
                 )}
-                {connectedSourceList.length === 0 && (
+                {activeConnectedSourceList.length === 0 && (
                   <div className="emptyContent">
                     <img src={iconInfoGray} alt="" />
                     <h2>
@@ -326,7 +354,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
               </div>
             </div>
           </main>
-          {connectedSourceList.length === 0 ? (
+          {activeConnectedSourceList.length === 0 ? (
             <button className="nextBtn gray" onClick={handleClickNext}>
               <span>OK</span>
             </button>
