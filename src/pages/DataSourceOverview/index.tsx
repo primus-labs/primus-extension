@@ -13,6 +13,7 @@ import SocialOverview from '@/components/AssetsOverview/SocialOverview';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
+import KYCVerify from '@/components/DataSourceOverview/KYCVerify';
 import useAuthorization from '@/hooks/useAuthorization';
 import { postMsg, sub } from '@/utils/utils';
 import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
@@ -49,9 +50,10 @@ const DataSourceOverview = memo(() => {
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
   const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-
+  const [KYCDialogVisible,setKYCDialogVisible] = useState<boolean>(true)
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
+  const kycSources = useSelector((state: UserState) => state.kycSources);
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -72,6 +74,9 @@ const DataSourceOverview = memo(() => {
   const socialList: SocialDataList = useMemo(() => {
     return Object.values({ ...socialSources });
   }, [socialSources]);
+  const kycList = useMemo(() => {
+    return Object.values({ ...kycSources });
+  }, [kycSources]);
   // const dataSourceList: DataSourceItemList = useMemo(() => {
   const dataSourceList: SourceDataList = useMemo(() => {
     const exList = Object.values(exSources);
@@ -82,8 +87,8 @@ const DataSourceOverview = memo(() => {
     const orderedSocialList = socialList.sort((a, b) =>
       sub(Number(b.followers), Number(a.followers)).toNumber()
     );
-    return [...orderedExList, ...orderedSocialList];
-  }, [exSources, socialSources]);
+    return [...orderedExList, ...orderedSocialList, ...kycList];
+  }, [exSources, socialSources, kycList]);
   const activeDataSourceList = useMemo(() => {
     const orderedDataSourceList = dataSourceList;
     if (filterWord) {
@@ -209,6 +214,11 @@ const DataSourceOverview = memo(() => {
           setStep(0);
           dispatch(setSocialSourcesAsync());
         });
+      } else if (item.type === 'eKYC') {
+        // TODO
+        setActiveSource(item);
+        setStep(0);
+        setKYCDialogVisible(true);
       }
     },
     [authorize, dispatch]
@@ -281,7 +291,15 @@ const DataSourceOverview = memo(() => {
           onSubmit={onSubmitDataSourcesExplainDialog}
         />
       )}
-
+      {KYCDialogVisible && (
+        <KYCVerify
+          onClose={handleCloseMask}
+          onCancel={() => {
+            setStep(1);
+          }}
+          activeSource={activeSource}
+        />
+      )}
       {step === 2 && (
         <ConnectDataSourceDialog
           onClose={handleCloseMask}

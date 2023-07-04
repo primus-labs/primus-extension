@@ -11,6 +11,7 @@ export type UserState = {
   filterWord: string;
   exSources: ExDatas;
   socialSources: SocialDatas;
+  kycSources: any;
   sourceUpdateFrequency: string;
   proofTypes: PROOFTYPEITEM[];
   credentials: CREDENTIALS;

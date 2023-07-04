@@ -1,5 +1,8 @@
 import { SETSYSCONFIG } from '../actions';
-import { DEFAULTDATASOURCEPOLLINGTIMENUM, DEFAULTCREDTYPELIST } from '@/config/constants';
+import {
+  DEFAULTDATASOURCEPOLLINGTIMENUM,
+  DEFAULTCREDTYPELIST,
+} from '@/config/constants';
 
 // initial state
 const initState = {
@@ -10,10 +13,11 @@ const initState = {
   filterWord: undefined,
   exSources: {},
   socialSources: {},
+  kycSources: {},
   sourceUpdateFrequency: DEFAULTDATASOURCEPOLLINGTIMENUM,
   proofTypes: DEFAULTCREDTYPELIST,
   credentials: {},
-  userInfo: {}
+  userInfo: {},
 };
 
 // reducer
@@ -34,6 +38,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, exSources: action.payload };
     case 'setSocialSources':
       return { ...state, socialSources: action.payload };
+    case 'setKYCs':
+      return { ...state, kycSources: action.payload };
     case 'setProofTypes':
       return { ...state, proofTypes: action.payload };
     case 'setCredentials':
@@ -41,7 +47,7 @@ const reducer: any = function (state = initState, action: any) {
     case 'setSourceUpdateFrequency':
       return { ...state, sourceUpdateFrequency: action.payload };
     case 'setUserInfo':
-      return { ...state, userInfo: action.payload};
+      return { ...state, userInfo: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     default:

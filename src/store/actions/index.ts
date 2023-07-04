@@ -35,6 +35,10 @@ export const setExSourcesData = (values: object) => ({
   type: 'setExSources',
   payload: values,
 });
+export const setKYCsAction = (values: object) => ({
+  type: 'setKYCs',
+  payload: values,
+});
 export const setSourceUpdateFrequencyAction = (values: string) => ({
   type: 'setSourceUpdateFrequency',
   payload: values,
@@ -69,6 +73,7 @@ export const setSourceUpdateFrequencyActionAsync = (value: string) => {
     dispatch(setSourceUpdateFrequencyAction(value));
   };
 };
+
 export const initSourceUpdateFrequencyActionAsync = () => {
   return async (dispatch: any) => {
     let { dataSourcesUpdateFrequency } = await chrome.storage.local.get([
@@ -122,6 +127,26 @@ export const setSocialSourcesAsync = () => {
     };
     const datasMap = Object.keys(res).reduce(reduceF, {});
     dispatch(setSocialSourcesAction(datasMap));
+  };
+};
+export const setKYCsAsync = () => {
+  return async (dispatch: any) => {
+    const sourceNameList = Object.keys(DATASOURCEMAP).filter(
+      (i) => DATASOURCEMAP[i].type === 'eKYC'
+    );
+    const res: DataSourceStorages = await chrome.storage.local.get(
+      sourceNameList
+    );
+    const reduceF = (prev: any, curr: string) => {
+      const sourceData = JSON.parse(res[curr]);
+      prev[curr] = {
+        ...DATASOURCEMAP[curr],
+        ...sourceData,
+      };
+      return prev;
+    };
+    const datasMap = Object.keys(res).reduce(reduceF, {});
+    dispatch(setKYCsAction(datasMap));
   };
 };
 
