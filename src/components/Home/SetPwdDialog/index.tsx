@@ -5,10 +5,12 @@ import PInput from '@/components/PInput/index';
 import PMask from '@/components/PMask';
 import iconAddress from '@/assets/img/iconAddress.svg';
 
-import type { UserState } from '@/types/store';
 import { postMsg } from '@/utils/utils';
+import { initWalletAddressActionAsync } from '@/store/actions';
 
 import type { Dispatch } from 'react';
+import type { UserState } from '@/types/store';
+
 
 import './index.sass';
 interface SetPwdDialogProps {
@@ -73,11 +75,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       chrome.storage.local.get(['userInfo'], (storedData) => {
         if (storedData['userInfo']) {
           const userId = JSON.parse(storedData['userInfo']).id;
-          const padoServicePortListener = function (message: any) {
+          const padoServicePortListener = async function (message: any) {
             if (message.resMethodName === 'bindUserAddress') {
               const { res } = message;
               console.log('page_get:bindUserAddress:', res);
               if (res) {
+                await dispatch(initWalletAddressActionAsync())
                 onSubmit();
               } else {
                 // loading
@@ -129,6 +132,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           if (message.res) {
             const lowercaseAddr = message.res.toLowerCase();
             setAccountAddr(lowercaseAddr);
+            
           }
         }
       };

@@ -50,7 +50,7 @@ const DataSourceOverview = memo(() => {
   const [activeSource, setActiveSource] = useState<DataFieldItem>();
   const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-  const [KYCDialogVisible,setKYCDialogVisible] = useState<boolean>(true)
+  const [KYCDialogVisible, setKYCDialogVisible] = useState<boolean>(false);
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
@@ -293,8 +293,12 @@ const DataSourceOverview = memo(() => {
       )}
       {KYCDialogVisible && (
         <KYCVerify
-          onClose={handleCloseMask}
+          onClose={() => {
+            setKYCDialogVisible(false);
+            handleCloseMask();
+          }}
           onCancel={() => {
+            setKYCDialogVisible(false);
             setStep(1);
           }}
           activeSource={activeSource}

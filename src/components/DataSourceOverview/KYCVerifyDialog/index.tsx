@@ -1,14 +1,12 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
-
+import React, { memo } from 'react';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import QRCodeMain from '@/components/Cred/QRCodeMain';
 import PBack from '@/components/PBack';
+
 import './index.sass';
 
-import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { ExchangeMeta } from '@/types/dataSource';
-
 
 export type GetDataFormProps = {
   name: string;
@@ -20,52 +18,13 @@ export type GetDataFormProps = {
 interface KYCVerifyDialogProps {
   onClose: () => void;
   activeSource?: ExchangeMeta;
-  onSubmit: () => void;
-  // loading?: boolean;
   onCancel: () => void;
-  // activeSourceKeys?: GetDataFormProps;
+  qrCodeVal: string;
 }
 
 const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
-  ({
-    onClose,
-    onSubmit,
-    activeSource,
-    // loading = false,
-    onCancel,
-    // activeSourceKeys,
-  }) => {
-    // const requirePassphase = activeSource?.requirePassphase;
+  ({ onClose, activeSource, onCancel, qrCodeVal }) => {
     const icon = activeSource?.icon;
-    // const name = activeSource?.name ?? '';
-
-    // const [apiKey, setApiKey] = useState<string>();
-    // const [secretKey, setSecretKey] = useState<string>();
-    // const [passphase, setPassphase] = useState<string>();
-    // const [label, setLabel] = useState<string>();
-    // const [submitted, setSubmitted] = useState<boolean>(false);
-    const [qrCodeVal, setQrCodeVal] = useState<string>('');
-    
-
-    const handleClickNext = () => {
-      // setSubmitted(true);
-      // if (loading) {
-      //   return;
-      // }
-      // if (!apiKey || !secretKey || (requirePassphase && !passphase)) {
-      //   return;
-      // }
-      // setSubmitted(false);
-      // const form = {
-      //   name: name.toLowerCase(),
-      //   apiKey,
-      //   secretKey,
-      //   passphase,
-      //   label,
-      // };
-      // requirePassphase && (form.passphase = passphase);
-      onSubmit();
-    };
 
     return (
       <PMask onClose={onClose}>
@@ -94,9 +53,6 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
               </ul>
             </div>
           </main>
-          <button className="nextBtn" onClick={handleClickNext}>
-            Next
-          </button>
         </div>
       </PMask>
     );

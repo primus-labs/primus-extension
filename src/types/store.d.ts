@@ -16,4 +16,5 @@ export type UserState = {
   proofTypes: PROOFTYPEITEM[];
   credentials: CREDENTIALS;
   userInfo: UserInfoType;
+  walletAddress: string;
 };

@@ -13,6 +13,7 @@ import {
   setSocialSourcesAsync,
   initUserInfoActionAsync,
   setCredentialsAsync,
+  initWalletAddressActionAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import { postMsg } from '@/utils/utils';
@@ -134,6 +135,7 @@ const Layout = () => {
     dispatch(initSourceUpdateFrequencyActionAsync());
     dispatch(initUserInfoActionAsync());
     dispatch(setCredentialsAsync());
+    dispatch(initWalletAddressActionAsync());
   }, [dispatch]);
 
   return (

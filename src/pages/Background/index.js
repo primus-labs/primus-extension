@@ -375,13 +375,9 @@ const processWalletReq = async (message, port) => {
       const orignAccount = web3EthAccount.privateKeyToAccount(privateKey);
       const encryptAccount = orignAccount.encrypt(password);
       USERPASSWORD = password;
-      transferMsg = {
-        fullScreenType: 'storage',
-        type: 'set',
-        key: 'keyStore',
-        value: JSON.stringify(encryptAccount),
-      };
-      await processStorageReq(transferMsg, port);
+      await chrome.storage.local.set({
+        keyStore: JSON.stringify(encryptAccount),
+      });
 
       const transferRemoveMsg = {
         fullScreenType: 'storage',

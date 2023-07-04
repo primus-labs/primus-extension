@@ -43,24 +43,37 @@ export const setSourceUpdateFrequencyAction = (values: string) => ({
   type: 'setSourceUpdateFrequency',
   payload: values,
 });
-export const setUserInfoAction = (values: string) => ({
+export const setUserInfoAction = (values: object) => ({
   type: 'setUserInfo',
   payload: values,
 });
-export const setUserInfoActionAsync = (value: string) => {
-  return async (dispatch: any) => {
-    await chrome.storage.local.set({
-      userInfo: value,
-    });
-    dispatch(setUserInfoAction(value));
-  };
-};
+export const setWalletAddressAction = (values: string) => ({
+  type: 'setWalletAddress',
+  payload: values,
+});
+// export const setUserInfoActionAsync = (value: string) => {
+//   return async (dispatch: any) => {
+//     await chrome.storage.local.set({
+//       userInfo: value,
+//     });
+//     dispatch(setUserInfoAction(value));
+//   };
+// };
 export const initUserInfoActionAsync = () => {
   return async (dispatch: any) => {
     const { userInfo } = await chrome.storage.local.get(['userInfo']);
     if (userInfo) {
       const userInfoObj = JSON.parse(userInfo);
       dispatch(setUserInfoAction(userInfoObj));
+    }
+  };
+};
+export const initWalletAddressActionAsync = () => {
+  return async (dispatch: any) => {
+    const { keyStore } = await chrome.storage.local.get(['keyStore']);
+    if (keyStore) {
+      const { address } = JSON.parse(keyStore);
+      dispatch(setWalletAddressAction('0x' + address));
     }
   };
 };

@@ -54,3 +54,23 @@ export const getPolygonIdAttestation = (
     config,
   });
 };
+
+export const attestForAnt = (
+  data: object,
+  config: any
+) => {
+  return request({
+    method: 'post',
+    url: `/kyc/ant/proof/issue`,
+    data,
+    config,
+  });
+};
+export const validateAttestationForAnt = (data: object, config: any) => {
+  return request({
+    method: 'post',
+    url: `/kyc/ant/proof/verify`,
+    data,
+    config,
+  });
+};
