@@ -19,7 +19,7 @@ import iconSuc2 from '@/assets/img/iconSuc2.svg';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
 import iconMedalToken from '@/assets/img/iconMedalToken.svg';
-import iconMedalIdentification from '@/assets/img/iconMedalIdentification.png';
+import iconMedalIdentification from '@/assets/img/iconMedalIdentification.svg';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 
 import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
