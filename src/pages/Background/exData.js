@@ -297,7 +297,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     if (source === 'binance') {
       calculationType = 'KEY_VALUES_SUM_X_A';
     }
-  } else if (type === 'Token Holdings') {
+  } else if (type === 'TOKEN_HOLDINGS') {
     params.baseValue = '0';
     params.holdingToken = holdingToken;
     calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
@@ -333,7 +333,7 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
         method: 'POST',
         params: { recvWindow: 60 * 1000 },
       };
-      if (form.type === 'Token Holdings') {
+      if (form.type === 'TOKEN_HOLDINGS') {
         data.params.asset = form.token;
       }
       signres = await sign('binance', data, USERPASSWORD, port);
@@ -352,7 +352,7 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
         params: {},
       };
       signres = await sign('coinbase', data, USERPASSWORD, port);
-      if (form.type === 'Token Holdings') {
+      if (form.type === 'TOKEN_HOLDINGS') {
         signres.parseSchema =
           'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
       }
@@ -365,12 +365,12 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
         method: 'GET',
         params: {},
       };
-      if (form.type === 'Token Holdings') {
+      if (form.type === 'TOKEN_HOLDINGS') {
         data.params.ccy = form.token;
       }
       signres = await sign('okx', data, USERPASSWORD, port);
       signres.parseSchema = 'A_PURE_NUMBER:beg_tag="totalEq":":end_tag="';
-      if (form.type === 'Token Holdings') {
+      if (form.type === 'TOKEN_HOLDINGS') {
         signres.parseSchema =
           'MAP_A_PURE_NUMBER_REGEX:KV:"ccy":"(.*?)"[\\s\\S]*?"eq":"(.*?)"';
       }

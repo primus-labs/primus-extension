@@ -35,10 +35,10 @@ const DataSourceSearch = memo(() => {
         (i) => i.type === 'ASSETS_PROOF'
       );
       const tokenHoldingsList = credentialList.filter(
-        (i) => i.type === 'Token Holdings'
+        (i) => i.type === 'TOKEN_HOLDINGS'
       );
       const qualificationsList = credentialList.filter(
-        (i) => i.type === 'Qualifications'
+        (i) => i.type === 'IDENTIFICATION_PROOF'
       );
       if (assetsProofList.length > 0) {
         defaultList.push({

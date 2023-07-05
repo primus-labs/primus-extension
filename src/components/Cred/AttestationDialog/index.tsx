@@ -43,7 +43,6 @@ interface AttestationDialogProps {
   activeCred?: CredTypeItemType;
   activeSourceName?: string;
   onBack?: () => void;
-  credential?: string;
 }
 type TokenItem = {
   text: string;
@@ -59,7 +58,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     activeCred,
     activeSourceName,
     onBack,
-    credential,
   }) => {
     console.log('AttestationDialog', type);
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
@@ -176,7 +174,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       setActiveToken(val);
       // setActiveSource(undefined);
     }, []);
-    const handleClickNext = () => {
+    const handleClickNext = async() => {
       if (activeConnectedSourceList.length === 0) {
         navigate('/datas');
       }
@@ -211,7 +209,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
 
         if (type === 'IDENTIFICATION_PROOF') {
-          form.credential = credential;
+          // credential?: string;
+          const sourceLowerCaseName = activeSource.name.toLowerCase()
+          const res = await chrome.storage.local.get([sourceLowerCaseName]);
+          form.credential = JSON.parse(res[sourceLowerCaseName]).credential;
           form.userIdentity = walletAddress;
           form.verifyIdentity = walletAddress;
           form.proofType = type;
@@ -286,8 +287,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           (i) => i.name.toLowerCase() === activeCred.source.toLowerCase()
         );
         setActiveSource(sourceInfo);
-        if (type === 'ASSETS_PROOF') {
-        } else if (type === 'TOKEN_HOLDINGS') {
+        if (type === 'TOKEN_HOLDINGS') {
           activeCred.holdingToken && setActiveToken(activeCred.holdingToken);
         }
       }

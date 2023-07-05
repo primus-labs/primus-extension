@@ -220,7 +220,7 @@ export async function attestByDelegationProxy(params) {
     const activeSchemaInfo = EASInfo[networkName].schemas[schemaName];
     if (type === 'ASSETS_PROOF') {
       schemauid = activeSchemaInfo.schemaUid;
-    } else {
+    } else if (type === 'TOKEN_HOLDINGS') {
       schemauid = activeSchemaInfo.schemaUidTokenHoldings;
     }
     console.log('attestByDelegationProxy schemauid=', schemauid);

@@ -68,7 +68,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               balanceGreaterThanBaseValue,
             },
           };
-          if (type === 'Token Holdings') {
+          if (type === 'TOKEN_HOLDINGS') {
             params.credentialSubject.asset = holdingToken;
           }
           const res = await attestForPolygonId(params, requestConfigParams);

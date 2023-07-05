@@ -53,12 +53,18 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       }
       return ['Update', 'Delete'];
     }, [item]);
-    const briefTypeName = useMemo(() => {
+    const activeTypeConfig = useMemo(() => {
       const obj = proofTypes.find(
         (i: PROOFTYPEITEM) => i.credIdentifier === item.type
       );
-      return obj?.simplifiedName;
+      return obj;
     }, [proofTypes, item.type]);
+    const briefTypeName = useMemo(() => {
+      return activeTypeConfig?.simplifiedName;
+    }, [activeTypeConfig]);
+    const credProofContent = useMemo(() => {
+      return activeTypeConfig?.credProofContent;
+    }, [activeTypeConfig]);
     const credIcon = useMemo(() => {
       let imgNode = iconMedalAssets;
       switch (item.type) {
@@ -150,7 +156,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       <div className={expand ? 'credItem expand' : 'credItem'}>
         <div
           className={
-            item.type === 'ASSETS_PROOF' ? 'main' : 'main tokenHolding'
+            item.type === 'TOKEN_HOLDINGS' ?  'main tokenHolding':'main' 
           }
           onClick={handleClick}
         >
@@ -245,9 +251,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
           <div className="extra">
             <div className="descItem">
               <div className="label">Proof Content</div>
-              {item.type === 'ASSETS_PROOF' ? (
+              {item.type === 'ASSETS_PROOF' && (
                 <div className="value">
-                  <div className="desc">Balance of assets</div>
+                  <div className="desc">{credProofContent}</div>
                   <div className="con">
                     {/* <i className="greaterSymbol">&gt;</i> */}
                     <img src={iconGreater} className="iconGreater" alt="" />$
@@ -258,11 +264,11 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                       : ''}
                   </div>
                 </div>
-              ) : (
+              )}
+              {item.type === 'TOKEN_HOLDINGS' && (
                 <div className="value">
-                  <div className="desc">Hold this kind of Token:</div>
+                  <div className="desc">{credProofContent}</div>
                   <div className="con">
-                    {/* TODO */}
                     {tokenLogoPrefix && (
                       <img
                         src={`${tokenLogoPrefix}icon${item.holdingToken}.png`}
@@ -272,6 +278,12 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                     )}
                     <span>{item.holdingToken}</span>
                   </div>
+                </div>
+              )}
+              {item.type === 'IDENTIFICATION_PROOF' && (
+                <div className="value">
+                  <div className="desc">{credProofContent}</div>
+                  <div className="con">Confirmed</div>
                 </div>
               )}
             </div>
