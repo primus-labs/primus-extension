@@ -10,6 +10,10 @@ import {
 } from '@/services/api/dataSource';
 import { setKYCsAsync } from '@/store/actions';
 import useInterval from '@/hooks/useInterval';
+import { getCurrentDate } from '@/utils/utils';
+import { KYCStoreVersion } from '@/config/constants';
+
+
 
 import './index.sass';
 
@@ -77,7 +81,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
           requestConfigParams
         );
         if (rc === 0) {
-          const { status } = result;
+          const { status,credentialInfo,orderId,credentialType } = result;
           switch (status) {
             case 'INIT':
               break;
@@ -99,15 +103,21 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 title: 'Congratulations',
                 desc: 'Your eKYC verification result has been generated.',
               });
-              // await chrome.storage.local.set({
-              //   [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-              // });
-              // dispatch(setKYCsAsync());
-              // onSubmit();
-              // TODO
-              // const pdid = result.walletDid;
-              // setConnectFlag(true);
-              // onSubmit(uuid as string, pdid as string);
+              const lowerCaseSourceName = activeSource?.name.toLowerCase() as string;
+              const kycSourceData = {
+                credential: credentialInfo.credential,
+                transactionHash: credentialInfo.transactionHash,
+                // credentialType,
+                // orderId,
+                date: getCurrentDate(),
+                timestamp: +new Date(),
+                version: KYCStoreVersion,
+              };
+              await chrome.storage.local.set({
+                [lowerCaseSourceName]: JSON.stringify(kycSourceData),
+              });
+              dispatch(setKYCsAsync());
+              
               break;
           }
         }

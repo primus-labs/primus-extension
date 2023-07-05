@@ -54,6 +54,7 @@ const DataSourceOverview = memo(() => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
+  
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -302,6 +303,10 @@ const DataSourceOverview = memo(() => {
             setStep(1);
           }}
           activeSource={activeSource}
+          onSubmit={() => {
+            setKYCDialogVisible(false);
+            handleCloseMask();
+          }}
         />
       )}
       {step === 2 && (

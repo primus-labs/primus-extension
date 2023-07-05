@@ -29,6 +29,11 @@ export type AttestionForm = {
   exUserId?: string;
   label?: string;
   requestid?: string;
+
+  credential?: string;
+  userIdentity?: string;
+  verifyIdentity?: string;
+  proofType?: string;
 };
 interface AttestationDialogProps {
   type: string;
@@ -38,10 +43,25 @@ interface AttestationDialogProps {
   activeCred?: CredTypeItemType;
   activeSourceName?: string;
   onBack?: () => void;
+  credential?: string;
 }
+type TokenItem = {
+  text: string;
+  value: string;
+  icon: string;
+};
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
-  ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
+  ({
+    type,
+    onClose,
+    onSubmit,
+    activeCred,
+    activeSourceName,
+    onBack,
+    credential,
+  }) => {
+    console.log('AttestationDialog', type);
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -51,6 +71,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const kycSources = useSelector((state: UserState) => state.kycSources);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
+    const walletAddress = useSelector(
+      (state: UserState) => state.walletAddress
+    );
 
     const dispatch: Dispatch<any> = useDispatch();
     const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
@@ -101,7 +124,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [connectedExSourceList, connectedKYCSourceList, type]);
     const tokenList = useMemo(() => {
-      let list = [];
+      let list: string[] = [];
+      if (type === 'IDENTIFICATION_PROOF') {
+        return list;
+      }
       if (!activeSource?.name) {
         const reduceF = (prev: string[], curr: any) => {
           const { tokenListMap } = curr;
@@ -125,7 +151,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         icon: `${tokenLogoPrefix}icon${i}.png`,
       }));
       return formatList;
-    }, [exSources, activeSource, tokenLogoPrefix]);
+    }, [exSources, activeSource, tokenLogoPrefix, type]);
     const activeSourceList = useMemo(() => {
       if (activeToken) {
         const reduceF = (prev: string[], curr: any) => {
@@ -182,6 +208,13 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           } else {
             form.baseValue = activeBaseValue;
           }
+        }
+
+        if (type === 'IDENTIFICATION_PROOF') {
+          form.credential = credential;
+          form.userIdentity = walletAddress;
+          form.verifyIdentity = walletAddress;
+          form.proofType = type;
         }
         if (activeCred?.requestid) {
           form.requestid = activeCred?.requestid;
@@ -316,7 +349,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                     </div>
                   )}
                   {type === 'IDENTIFICATION_PROOF' && (
-                    <div className="con">
+                    <div className="con identification">
                       {activeAttestationTypeInfo.credProofConditions}
                     </div>
                   )}

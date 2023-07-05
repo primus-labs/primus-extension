@@ -11,6 +11,7 @@ import {
   setProofTypesAsync,
   setExSourcesAsync,
   setSocialSourcesAsync,
+  setKYCsAsync,
   initUserInfoActionAsync,
   setCredentialsAsync,
   initWalletAddressActionAsync,
@@ -131,6 +132,7 @@ const Layout = () => {
   useEffect(() => {
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
+    dispatch(setKYCsAsync());
     dispatch(setProofTypesAsync());
     dispatch(initSourceUpdateFrequencyActionAsync());
     dispatch(initUserInfoActionAsync());

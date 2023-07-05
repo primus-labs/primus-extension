@@ -4,7 +4,13 @@ import BigNumber from 'bignumber.js';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import { gte, formatNumeral } from '@/utils/utils';
 import type { ExchangeMeta } from '@/config/constants';
-import type { SocialDataSourceData, SourceData,ExData,SocialData } from '@/types/dataSource';
+import type {
+  SocialDataSourceData,
+  SourceData,
+  ExData,
+  SocialData,
+  KYCData,
+} from '@/types/dataSource';
 
 import './index.sass';
 
@@ -57,7 +63,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
       label,
       userName,
       screenName,
-    } = source as (ExData & SocialData);
+    } = source as ExData & SocialData & KYCData;
     const formatSource = {
       ...source,
       totalBalance: totalBalance ? `$${formatNumeral(totalBalance)}` : '--',
@@ -114,6 +120,20 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
             sourceKey: 'assetsNo',
           },
         ],
+        eKYC: [
+          {
+            name: 'Name',
+            sourceKey: 'name',
+          },
+          {
+            name: 'Country',
+            sourceKey: 'type',
+          },
+          {
+            name: 'Document Type',
+            sourceKey: 'type',
+          },
+        ],
       };
       return descTypeMap[type];
     }, [type]);
@@ -129,6 +149,11 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
         defalutClass += ' deactive';
       }
       return defalutClass;
+    }, [type]);
+    const tagClassName = useMemo(() => {
+      let defaultCN = 'tag';
+      defaultCN += ` ${type}`;
+      return defaultCN;
     }, [type]);
 
     return (
@@ -159,9 +184,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
               <img src={iconSuc} alt="" />
               <span>{date}</span>
             </div>
-            <div className={type === 'Social' ? 'tag social' : 'tag'}>
-              {type}
-            </div>
+            <div className={tagClassName}>{type}</div>
           </div>
         </div>
         <div className="dataSourceItemC">

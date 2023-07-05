@@ -55,8 +55,14 @@ export const getPolygonIdAttestation = (
   });
 };
 
+export type ATTESTFORANTPARAMS = {
+  credential: string;
+  userIdentity: string;
+  verifyIdentity: string;
+  proofType: string;
+};
 export const attestForAnt = (
-  data: object,
+  data: ATTESTFORANTPARAMS,
   config: any
 ) => {
   return request({

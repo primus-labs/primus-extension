@@ -29,6 +29,8 @@ import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegationProxy } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
+import { attestForAnt, validateAttestationForAnt } from '@/services/api/cred';
+import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 
 import type { Dispatch } from 'react';
 import type { CredTypeItemType, AttestionForm } from '@/types/cred';
@@ -44,12 +46,13 @@ export type CREDENTIALSOBJ = {
 };
 
 const Cred = memo(() => {
+  const [activeKYCApplication, setActiveKYCApplication] = useState<object>();
   const [bindPolygonidVisible, setBindPolygonidVisible] =
     useState<boolean>(false);
   const [submitAddress, setSubmitAddress] = useState<string>();
   const [credTypesDialogVisible, setCredTypesDialogVisible] =
     useState<boolean>();
-  
+
   const [step, setStep] = useState(0);
   const [activeNetworkName, setActiveNetworkName] = useState<string>();
   const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
@@ -74,7 +77,10 @@ const Cred = memo(() => {
   );
   const filterWord = useSelector((state: UserState) => state.filterWord);
   const proofTypes = useSelector((state: UserState) => state.proofTypes);
-  const credentialsFromStore = useSelector((state: UserState) => state.credentials);
+  const credentialsFromStore = useSelector(
+    (state: UserState) => state.credentials
+  );
+  const walletAddress = useSelector((state: UserState) => state.walletAddress);
 
   const timeoutFn = useCallback(() => {
     console.log('120s timeout');
@@ -183,28 +189,106 @@ const Cred = memo(() => {
     },
     [exSources]
   );
+  const userInfo = useSelector((state: UserState) => state.userInfo);
+  const requestConfigParams = useMemo(() => {
+    const { token } = userInfo;
+    const requestConfigParams = {
+      extraHeader: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return requestConfigParams;
+  }, [userInfo]);
+  const fetchAttestForAnt = useCallback(async (form: AttestionForm) => {
+    setStep(2);
+    setActiveRequest({
+      type: 'loading',
+      title: 'Attestation is processing',
+      desc: 'It may take a few seconds.',
+    });
+    const { credential, userIdentity, verifyIdentity, proofType } = form;
+    const params = {
+      credential,
+      userIdentity,
+      verifyIdentity,
+      proofType,
+    };
+    try {
+      const { rc, result } = await attestForAnt(
+        params as ATTESTFORANTPARAMS,
+        requestConfigParams
+      );
+      if (rc === 0) {
+        // setActiveKYCApplication(result)
+        const { salt, rootHash, proof } = result;
+        const params2 = {
+          proof,
+          salt,
+          rootHash,
+          userIdentity: walletAddress,
+        };
+        const { rc: rc2, result: result2 } = await validateAttestationForAnt(
+          params2,
+          requestConfigParams
+        );
+        if (rc2 === 0) {
+          // TODO
+          // const activeRequestId = parsedActiveRequestAttestation.requestid;
+          // if (activeRequestId !== content?.requestid) {
+          //   return;
+          // }
+          // const fullAttestation = {
+          //   ...content,
+          //   ...parsedActiveRequestAttestation,
+          // };
+          // const credentialsObj = { ...credentialsFromStore };
+          // const activeRequestId = +new Date()
+          // // credentialsObj[activeRequestId] = fullAttestation;
+          // credentialsObj[activeRequestId] = {};
+          // await chrome.storage.local.set({
+          //   credentials: JSON.stringify(credentialsObj),
+          // });
+          // await chrome.storage.local.remove(['activeRequestAttestation']);
+          // await initCredList();
+          // setActiveRequest({
+          //   type: 'suc',
+          //   title: 'Congratulations',
+          //   desc: 'Your proof is created!',
+          // });
+        }
+      }
+    } catch {
+      alert('attestForAnt network error');
+    }
+  }, []);
   const onSubmitAttestationDialog = useCallback(
     async (form: AttestionForm, activeCred?: CredTypeItemType) => {
-      // fetch balance first
-      if (!validateBaseInfo(form)) {
-        return;
+      if (form.type === 'ASSETS_PROOF') {
+        // fetch balance first
+        if (!validateBaseInfo(form)) {
+          return;
+        }
       }
-      // if activeCred is update,not add
-      const msg = {
-        fullScreenType: 'algorithm',
-        reqMethodName: 'getAttestation',
-        params: {
-          ...form,
-        },
-      };
-      postMsg(padoServicePort, msg);
-      console.log(`page_send:getAttestation:`, form);
-      setStep(2);
-      setActiveRequest({
-        type: 'loading',
-        title: 'Attestation is processing',
-        desc: 'It may take a few seconds.',
-      });
+      if (form.type === 'IDENTIFICATION_PROOF') {
+        fetchAttestForAnt(form);
+      } else {
+        // if activeCred is update,not add
+        const msg = {
+          fullScreenType: 'algorithm',
+          reqMethodName: 'getAttestation',
+          params: {
+            ...form,
+          },
+        };
+        postMsg(padoServicePort, msg);
+        console.log(`page_send:getAttestation:`, form);
+        setStep(2);
+        setActiveRequest({
+          type: 'loading',
+          title: 'Attestation is processing',
+          desc: 'It may take a few seconds.',
+        });
+      }
     },
     [padoServicePort, validateBaseInfo]
   );
@@ -454,7 +538,6 @@ const Cred = memo(() => {
   );
   useAlgorithm(getAttestationCallback, getAttestationResultCallback);
 
-  
   const handleSubmitBindPolygonid = useCallback(async () => {
     setBindPolygonidVisible(false);
     await initCredList();
@@ -514,6 +597,7 @@ const Cred = memo(() => {
             activeCred={activeCred}
             onBack={onCancelAttestationDialog}
             activeSourceName={activeSourceName}
+            credential={activeCred?.credential}
           />
         )}
         {step === 2 && (

@@ -245,7 +245,12 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const authUseridHash = strToHex(authUserId);
 
   const timeStampStr = (+new Date()).toString();
-
+  const schemaTypeMap = {
+    ASSETS_PROOF: 'Assets Proof',
+    TOKEN_HOLDINGS: 'Token Holdings',
+    IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
+  };
+  const schemaType = schemaTypeMap[type];
   const params = {
     type,
     label,
@@ -268,7 +273,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     },
     sigFormat: 'EAS-Ethereum', // TODO
     // schemaType: 'exchange-balance', // TODO
-    schemaType: type, // TODO
+    schemaType,
     schema: [
       // TODO
       { name: 'source', type: 'string' },
@@ -348,7 +353,8 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
       };
       signres = await sign('coinbase', data, USERPASSWORD, port);
       if (form.type === 'Token Holdings') {
-        signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
+        signres.parseSchema =
+          'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
       }
       extRequestsOrderInfo = { ...signres };
       break;
@@ -365,7 +371,8 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
       signres = await sign('okx', data, USERPASSWORD, port);
       signres.parseSchema = 'A_PURE_NUMBER:beg_tag="totalEq":":end_tag="';
       if (form.type === 'Token Holdings') {
-        signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:KV:"ccy":"(.*?)"[\\s\\S]*?"eq":"(.*?)"';
+        signres.parseSchema =
+          'MAP_A_PURE_NUMBER_REGEX:KV:"ccy":"(.*?)"[\\s\\S]*?"eq":"(.*?)"';
       }
       signres.decryptFlag = 'false';
 

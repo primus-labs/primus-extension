@@ -30,7 +30,7 @@ export type SocialDataSourceData = {
 };
 export type ExchangeMeta = {
   name: string;
-  type: 'Social' | 'Assets';
+  type: 'Social' | 'Assets' | 'eKYC';
   icon: any;
   requirePassphase?: boolean;
   constructorF?: any;
@@ -70,5 +70,20 @@ export type SocialDatas = {
 };
 export type SocialDataList = SocialData[];
 
-export type SourceData = ExData | SocialData;
-export type SourceDataList = (ExData | SocialData)[];
+export type KYCDataSourceData = {
+  credential: string;
+  transactionHash: string;
+  // credentialType;
+  // orderId;
+  date: string;
+  timestamp: number;
+  version: string;
+};
+export type KYCData = KYCDataSourceData & ExchangeMeta;
+export type KYCDatas = {
+  [propName: string]: KYCData;
+};
+export type KYCDataList = KYCData[];
+
+export type SourceData = ExData | SocialData | KYCData;
+export type SourceDataList = (ExData | SocialData | KYCData)[];
