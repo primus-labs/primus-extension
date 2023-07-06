@@ -1,0 +1,93 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
+
+.tokenListWrapper
+  width: 100%
+  @include backdropMixin
+  padding: 0 50px
+  header
+    @extend .lLBlackBoldFont
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+    padding: 32px 0 16px 0
+    @extend .frbc
+  ul.tokens
+    padding-bottom: 62px
+    li.tokenItem.th
+      .innerWrapper
+        font-size: 16px
+        line-height: 19px
+    li.tokenItem
+      .innerWrapper
+        @extend .frbc
+      .innerWrapper
+        margin: 0 -50px
+        @extend .frbc
+        @extend .sFont
+        font-size: 14px
+        line-height: 17px
+        font-family: 'Inter-Medium'
+        color: $colLBlack
+        >div
+          text-align: right
+        .token
+          @extend .frsc
+          gap: $xxsGap
+          text-align: left
+          >img
+            width: 18px
+            border-radius: 50%
+
+      &.th
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+        margin-bottom: 3px
+        .innerWrapper
+          padding: 16px 50px 15px
+          color: $colSBlack
+          font-size: 16px
+          line-height: 19px
+      &.tr
+        margin-top: 10px
+        position: relative
+        &:hover
+          .innerWrapper
+            background: rgba(0, 0, 0, 0.05)
+        .innerWrapper
+          padding: 11px 50px
+    li.emptyContent
+      padding: 26px 0 32px 0
+      text-align: center
+      @extend .fcsc
+      >img
+        width: 28px
+      >h1
+        padding: 8px 0 4px 0
+        @extend .mFont
+        font-family: 'Inter-SemiBold'
+        color: $colLBlack
+      >h2
+        font-size: 12px
+        line-height: 20px
+        font-family: 'Inter-Regular'
+        color: $colSBlack
+@media (max-width: 1680px)
+  .tokenListWrapper
+    padding: 0 44px
+    header
+      padding: 25px 0 16px 0
+      font-size: 20px
+      line-height: 24px
+      font-family: 'Inter-SemiBold'
+    ul.tokens
+      padding-bottom: 38px
+      li.tokenItem
+        .innerWrapper
+          margin: 0 -44px
+        &.th
+          margin-bottom: 12px
+          .innerWrapper
+            padding: 12px 44px
+        &.tr
+          margin-top: 2px
+          .innerWrapper
+            padding: 11px 44px 11px
