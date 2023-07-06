@@ -13,8 +13,6 @@ import useInterval from '@/hooks/useInterval';
 import { getCurrentDate } from '@/utils/utils';
 import { KYCStoreVersion } from '@/config/constants';
 
-
-
 import './index.sass';
 
 import type { ExchangeMeta } from '@/types/dataSource';
@@ -54,17 +52,18 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     );
     const userInfo = useSelector((state: UserState) => state.userInfo);
     const requestConfigParams = useMemo(() => {
-      const { token } = userInfo;
-      const requestConfigParams = {
+      const { id, token } = userInfo;
+      const requestConfigP = {
         extraHeader: {
+          'user-id': id,
           Authorization: `Bearer ${token}`,
         },
       };
-      return requestConfigParams;
+      return requestConfigP;
     }, [userInfo]);
-   
+
     const dispatch: Dispatch<any> = useDispatch();
-    
+
     const [qrCodeVal, setQrCodeVal] = useState<string>('');
 
     const onSubmitActiveRequestDialog = useCallback(() => {
@@ -81,7 +80,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
           requestConfigParams
         );
         if (rc === 0) {
-          const { status,credentialInfo,orderId,credentialType } = result;
+          const { status, credentialInfo, orderId, credentialType } = result;
           switch (status) {
             case 'INIT':
               break;
@@ -94,6 +93,11 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
               });
               break;
             case 'COMMIT':
+              setActiveRequest({
+                type: 'loading',
+                title: 'Committing',
+                desc: 'You are currently performing on your phone.',
+              });
               break;
             case 'SUCCESS':
               console.log('ant connected!');
@@ -103,7 +107,8 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 title: 'Congratulations',
                 desc: 'Your eKYC verification result has been generated.',
               });
-              const lowerCaseSourceName = activeSource?.name.toLowerCase() as string;
+              const lowerCaseSourceName =
+                activeSource?.name.toLowerCase() as string;
               const kycSourceData = {
                 credential: credentialInfo.credential,
                 transactionHash: credentialInfo.transactionHash,
@@ -117,7 +122,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 [lowerCaseSourceName]: JSON.stringify(kycSourceData),
               });
               dispatch(setKYCsAsync());
-              
+
               break;
           }
         }

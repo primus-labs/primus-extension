@@ -222,6 +222,8 @@ export async function attestByDelegationProxy(params) {
       schemauid = activeSchemaInfo.schemaUid;
     } else if (type === 'TOKEN_HOLDINGS') {
       schemauid = activeSchemaInfo.schemaUidTokenHoldings;
+    } else if (type === 'IDENTIFICATION_PROOF') {
+      schemauid = activeSchemaInfo.schemaUidIdentification;
     }
     console.log('attestByDelegationProxy schemauid=', schemauid);
     tx = await easProxy.attestByDelegationProxy({

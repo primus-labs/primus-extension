@@ -12,7 +12,7 @@ export type CredTypeItemType = {
   requestid: string;
   version: string;
   source: string;
-  authUseridHash: string;
+  authUseridHash?: string;
   address: string;
   getDataTime: string;
   baseValue?: string;
@@ -20,7 +20,7 @@ export type CredTypeItemType = {
   signature: string; // includes v，r，s
   encodedData: string; // trueHash or falseHash
 
-  exUserId: string;
+  exUserId?: string;
   user: {
     userid: string;
     address: string;
@@ -32,7 +32,7 @@ export type CredTypeItemType = {
   claimSignatureInfo?: object;
   issuer?: string;
   schemaName?: string;
-  credIdentifier: string;
+  credIdentifier?: string;
   credential?: string;
 };
 export type CREDENTIALS = {
