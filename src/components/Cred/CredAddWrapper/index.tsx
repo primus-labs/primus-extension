@@ -45,18 +45,20 @@ interface CredAddWrapperType {
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
-    const [step, setStep] = useState(0);
+    console.log('CredAddWrapper');
+    const [step, setStep] = useState(-1);
     const [activeAttestationType, setActiveAttestationType] =
       useState<string>('');
     // const [activeCred, setActiveCred] = useState<CredTypeItemType>();
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-
+    const [activeSourceName, setActiveSourceName] = useState<string>();
+    
     const [timeoutSwitch, setTimeoutSwitch] = useState<boolean>(false);
     const [intervalSwitch, setIntervalSwitch] = useState<boolean>(false);
     const [searchParams] = useSearchParams();
     // const sourceName = (searchParams.get('name') as string)?.toLowerCase();
     const createFlag = searchParams.get('createFlag')?.toLowerCase();
-    const [activeSourceName, setActiveSourceName] = useState<string>();
+    
     const padoServicePort = useSelector(
       (state: UserState) => state.padoServicePort
     );
@@ -111,7 +113,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const handleCloseMask = useCallback(() => {
       setStep(-1);
       onClose();
-    }, []);
+    }, [onClose]);
     const validateBaseInfo = useCallback(
       (form: AttestionForm) => {
         const { source, baseValue } = form;
@@ -395,37 +397,29 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       }
     }, [clearFetchAttestationTimer, activeRequest?.type]);
 
+    
     useEffect(() => {
-      initCredList();
-    }, []);
-    useEffect(() => {
-      dispatch({
-        type: 'setActiveSourceType',
-        payload: 'All',
-      });
-      return () => {
-        dispatch({
-          type: 'setActiveSourceType',
-          payload: 'All',
-        });
-      };
-    }, []);
-    useEffect(() => {
-      if (createFlag) {
-        setActiveSourceName(createFlag);
-        handleAdd();
+      if (visible) {
+        setStep(-1)
+        setActiveAttestationType('')
+        setActiveSourceName(undefined)
+       
+        if (activeCred) {
+          setStep(1);
+          setActiveAttestationType(activeCred?.type);
+          setActiveSourceName(activeCred?.source);
+        } else {
+          setActiveSourceName(undefined);
+          if (createFlag) {
+            setActiveSourceName(createFlag);
+          }
+          handleAdd();
+        }
       }
-    }, [createFlag, handleAdd]);
-    useEffect(() => {
-      if (activeCred) {
-        setStep(1);
-        setActiveAttestationType(activeCred?.type);
-        setActiveSourceName(activeCred?.source);
-      }
-    }, [activeCred]);
+    }, [visible, createFlag, activeCred]);
 
     return (
-      <div className={visible ? 'credListWrapper' : 'credListWrapper hidden'}>
+      <div className={visible ? 'credAddWrapper' : 'credAddWrapper hidden'}>
         {visible && step === 0 && (
           <CredTypesDialog
             onClose={handleCloseMask}

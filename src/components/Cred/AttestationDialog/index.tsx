@@ -59,7 +59,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     activeSourceName,
     onBack,
   }) => {
-    console.log('AttestationDialog', type);
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -232,7 +231,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
       }
 
-      if (activeSource?.name === item.name) {
+      if (!activeCred && activeSource?.name === item.name) {
         setActiveSource(undefined);
         return;
       }

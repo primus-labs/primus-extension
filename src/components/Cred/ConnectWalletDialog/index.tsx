@@ -5,11 +5,10 @@ import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import PBack from '@/components/PBack';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 
-import './index.sass';
-
 import { WALLETLIST } from '@/config/constants';
 
 import type { WALLETITEMTYPE } from '@/config/constants';
+import './index.sass';
 
 export type DataFieldItem = {
   icon: any;

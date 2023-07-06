@@ -2,23 +2,114 @@
 @import '@/assets/css/pDialog.sass'
 @import '@/components/DataSourceOverview/DataSourcesDialog/index.sass'
 
-@media (max-width: 1680px)
-  .connectWalletDialog
-    padding: 43px 42px 32px
-    main
-      gap: 0
-      .addressInfoHeader
-        align-self: center
-      h1
-        padding-top:  27px
-      .scrollList
-        margin-top: 48px
-        ul.dataList
-          li
-            &.disabled
-              cursor: not-allowed
-              opacity: 0.4
-            .desc
-              padding: 8px 0 1px
-    button
+.connectWalletDialog
+  padding: 43px 42px 32px
+  main
+    gap: 0
+    .addressInfoHeader
+      align-self: center
+    h1
+      padding-top:  27px
+    .scrollList
+      margin-top: 48px
+      ul.dataList
+        li
+          &.disabled
+            cursor: not-allowed
+            opacity: 0.4
+          .desc
+            padding: 8px 0 1px
+  button
+    position: relative
+
+
+ul.dataList
+  width: 100%
+  display: flex
+  flex-wrap: wrap
+  gap: $sGap
+  li
+    cursor: pointer
+    width: 156px
+    height: 150px
+    padding: 28px 12px
+    background: rgba(0, 0, 0, 0.05)
+    backdrop-filter: blur(18.1333px)
+    border-radius: 12px
+    @extend .fccc
+    &:not(.disabled):hover
+      padding: 14px 2px
+      background: #FFFFFF
+      border: 2PX solid transparent
+      background-clip: padding-box, border-box
+      background-origin: padding-box, border-box
+      background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
       position: relative
+    &.active
+      padding: 14px 2px
+      background: #FFFFFF
+      border: 2PX solid transparent
+      background-clip: padding-box, border-box
+      background-origin: padding-box, border-box
+      background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+      position: relative
+      &:after
+        position: absolute
+        content: ''
+        right: 6px
+        bottom: 6px
+        width: 24px
+        height: 24px
+        background: url('../../../assets/img/iconSuc.svg')
+        background-size: 100% 100%
+    img
+      width: 48px
+    .desc
+      font-size: 14px
+      line-height: 16px
+      font-family: 'Inter-Bold'
+      color: $colLBlack
+      padding: 13px 0 1px
+      max-width: 132px
+      // text-align: center
+      text-overflow: ellipsis
+      overflow: hidden
+      white-space: nowrap
+      position: relative
+    .desc[title]:hover:after
+      position: absolute
+      content: attr(title)
+      z-index: 99999
+      padding: 6px 12px
+      left: -16px
+      top: -44px
+        // white-space: nowrap
+      background: $colSBlack
+      backdrop-filter: blur(16px)
+      border-radius: 12px
+      color: #fff
+      font-size: 14px
+      line-height: 16px
+    h6
+      font-family: 'Inter-Regular'
+      font-size: 12px
+      line-height: 16px
+    color: $colSBlack
+@media (max-width: 1680px)
+  ul.dataList
+    gap: 7px
+    li
+      cursor: pointer
+      width: 134px
+      height: 128px
+      padding: 18px 2px
+      &.active
+        padding: 16px 0px
+        &:after
+          right: 5px
+          bottom: 5px
+          width: 20px
+          height: 20px
+      .desc
+        padding: 11px 0 1px
+        font-family:'Inter-SemiBold'

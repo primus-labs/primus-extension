@@ -11,6 +11,12 @@ import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 
 import './index.sass';
+
+const schemaTypeMap = {
+  ASSETS_PROOF: 'Assets Proof',
+  TOKEN_HOLDINGS: 'Token Holdings',
+  IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
+};
 interface BindPolygonIDProps {
   visible: boolean;
   onClose: () => void;
@@ -53,9 +59,10 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             exUserId,
             holdingToken,
           } = activeCred as CredTypeItemType;
+
           const params: any = {
             sessionId: uuid,
-            credType: type,
+            credType: schemaTypeMap[type as keyof typeof schemaTypeMap],
             signature,
             credentialSubject: {
               id: didp,
