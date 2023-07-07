@@ -138,7 +138,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
       return descTypeMap[type];
     }, [type]);
     const handleClick = () => {
-      if (type === 'Social') {
+      if (type === 'Social' || type === 'eKYC') {
         return;
       }
       onCheck(source);

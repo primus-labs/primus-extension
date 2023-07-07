@@ -278,7 +278,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           proofType,
         };
         try {
-          const { rc, result,msg } = await attestForAnt(
+          const { rc, result, msg } = await attestForAnt(
             params as ATTESTFORANTPARAMS,
             requestConfigParams
           );
@@ -295,7 +295,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             const {
               rc: rc2,
               result: result2,
-              msg:msg2,
+              msg: msg2,
             } = await validateAttestationForAnt(params2, requestConfigParams);
             if (rc2 === 0) {
               const credentialsObj = { ...credentialsFromStore };
@@ -381,7 +381,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         padoServicePort,
         validateBaseInfo,
         fetchAttestForAnt,
-        // activeCred?.did,
+        activeCred?.did,
         fetchAttestForPolygonID,
       ]
     );
@@ -412,6 +412,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         alert(
           'There is already a credential being processed. Please try again later.'
         );
+        onClose();
         return;
       }
       // setActiveCred(undefined);
@@ -513,10 +514,20 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           handleAdd();
         }
       }
-    }, [visible, createFlag, activeCred, handleAdd]);
+    }, [visible, createFlag, activeCred]);
+    useEffect(() => {
+      if (
+        activeRequest?.type === 'suc' ||
+        activeRequest?.type === 'error' ||
+        activeRequest?.type === 'warn' ||
+        !activeRequest?.type
+      ) {
+        onClose();
+      }
+    }, [activeRequest?.type, onClose]);
 
     return (
-      <div className={visible ? 'credAddWrapper' : 'credAddWrapper hidden'}>
+      <div className={'credAddWrapper'}>
         {visible && step === 0 && (
           <CredTypesDialog
             onClose={handleCloseMask}

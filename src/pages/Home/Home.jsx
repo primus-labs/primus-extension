@@ -104,7 +104,7 @@ const Home = memo(() => {
         <AsideAnimation />
         <article>
           <section className="descWrapper">
-            <h1>WELCOME to zkDATA ATTESTATION SERVICE</h1>
+            <h1>WELCOME TO PADO ATTESTATION SERVICE</h1>
             <p>Manage and share your data simply and safely.</p>
           </section>
           <button className="startBtn" onClick={handleClickStart}>
