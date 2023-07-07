@@ -123,7 +123,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const tokenList = useMemo(() => {
       let list: string[] = [];
       if (type === 'IDENTIFICATION_PROOF') {
-        return list;
+        return [];
       }
       if (!activeSource?.name) {
         const reduceF = (prev: string[], curr: any) => {

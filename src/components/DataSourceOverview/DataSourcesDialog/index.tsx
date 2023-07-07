@@ -3,7 +3,7 @@ import React, { useState, memo } from 'react';
 import SourceGroups from '../SourceGroups';
 import PMask from '@/components/PMask';
 import iconInfo from '@/assets/img/iconInfo.svg';
-
+import type { ExchangeMeta } from '@/types/dataSource';
 import './index.sass';
 
 export type DataFieldItem = {
@@ -15,13 +15,13 @@ export type DataFieldItem = {
 };
 interface DataSourcesDialogProps {
   onClose: () => void;
-  onSubmit: (item: DataFieldItem) => void;
+  onSubmit: (item: ExchangeMeta) => void;
   onCheck: () => void;
   // onCancel: () => void
 }
 const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
   ({ onClose, onSubmit, onCheck }) => {
-    const [activeItem, setActiveItem] = useState<DataFieldItem>();
+    const [activeItem, setActiveItem] = useState<ExchangeMeta>();
 
     const handleClickNext = () => {
       if (!activeItem) {
@@ -30,7 +30,7 @@ const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
       onSubmit(activeItem);
     };
 
-    const handleClickData = (item: DataFieldItem) => {
+    const handleClickData = (item: ExchangeMeta) => {
       setActiveItem(item);
     };
 

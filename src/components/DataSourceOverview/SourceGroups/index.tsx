@@ -1,7 +1,7 @@
 import React, { FC, memo, useState, useMemo } from 'react';
 
-import SourceGroup from '../SourceGroup';
-import SourceGroupTypes from '../SourceGroupTypes';
+import SourceGroup from './SourceGroup';
+import SourceGroupTypes from './SourceGroupTypes';
 import { DATASOURCEMAP } from '@/config/constants';
 
 import type { ExchangeMeta } from '@/types/config';

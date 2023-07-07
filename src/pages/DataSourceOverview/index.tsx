@@ -27,8 +27,10 @@ import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSou
 import type {
   SocialDataList,
   ExDataList,
+  KYCDataList,
   SourceDataList,
   SourceData,
+  ExchangeMeta,
 } from '@/types/dataSource';
 import './index.sass';
 
@@ -47,7 +49,7 @@ export type ActiveRequestType = {
 };
 const DataSourceOverview = memo(() => {
   const [step, setStep] = useState(0);
-  const [activeSource, setActiveSource] = useState<DataFieldItem>();
+  const [activeSource, setActiveSource] = useState<ExchangeMeta>();
   const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [KYCDialogVisible, setKYCDialogVisible] = useState<boolean>(false);
@@ -75,7 +77,7 @@ const DataSourceOverview = memo(() => {
   const socialList: SocialDataList = useMemo(() => {
     return Object.values({ ...socialSources });
   }, [socialSources]);
-  const kycList = useMemo(() => {
+  const kycList: KYCDataList = useMemo(() => {
     return Object.values({ ...kycSources });
   }, [kycSources]);
   // const dataSourceList: DataSourceItemList = useMemo(() => {
@@ -206,7 +208,7 @@ const DataSourceOverview = memo(() => {
     setStep(0);
   }, []);
   const onSubmitDataSourcesDialog = useCallback(
-    async (item: DataFieldItem) => {
+    async (item: ExchangeMeta) => {
       if (item.type === 'Assets') {
         setActiveSource(item);
         setStep(2);

@@ -5,7 +5,7 @@ import PMask from '@/components/PMask';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
-import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader'
+import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconError from '@/assets/img/iconError.svg';
 import iconLoading from '@/assets/img/iconLoading.svg';
@@ -21,6 +21,7 @@ interface AddSourceSucDialogProps {
   type?: string;
   headerType?: string;
   address?: string;
+  footerButton?: any;
 }
 
 const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
@@ -33,7 +34,13 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     type = 'suc',
     headerType = 'dataSource',
     address,
+    footerButton,
   }) => {
+    footerButton = footerButton ?? (
+      <button className="nextBtn" onClick={onSubmit}>
+        <span>OK</span>
+      </button>
+    );
     const icon = activeSource?.icon;
 
     const dialogClassName = useMemo(() => {
@@ -73,11 +80,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
             <h1>{title}</h1>
             <h2>{desc}</h2>
           </main>
-          {type !== 'loading' && (
-            <button className="nextBtn" onClick={onSubmit}>
-              <span>OK</span>
-            </button>
-          )}
+          {type !== 'loading' && footerButton}
         </div>
       </PMask>
     );

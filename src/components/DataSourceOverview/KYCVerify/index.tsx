@@ -2,7 +2,7 @@ import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 
-import KYCVerifyDialog from '@/components/DataSourceOverview/KYCVerifyDialog';
+import KYCVerifyDialog from './KYCVerifyDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import {
   getConnectAntQrcode,
@@ -12,9 +12,10 @@ import { setKYCsAsync } from '@/store/actions';
 import useInterval from '@/hooks/useInterval';
 import { getCurrentDate } from '@/utils/utils';
 import { KYCStoreVersion } from '@/config/constants';
+import { exportJson } from '@/utils/exportFile';
 
+import iconExport2 from '@/assets/img/iconExport2.svg'
 import './index.sass';
-
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 import type { Dispatch } from 'react';
@@ -43,9 +44,10 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       title: 'Processing',
       desc: 'You are currently performing on your phone.',
     });
-    const [step, setStep] = useState<number>(1);
+    const [step, setStep] = useState<number>(2);
     const [switchFlag, setSwitchFlag] = useState<boolean>(false);
     const [orderId, setOrderId] = useState<string>('');
+    const [KYCRes, setKYCRes] = useState<string>('');
 
     const walletAddress = useSelector(
       (state: UserState) => state.walletAddress
@@ -67,8 +69,9 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     const [qrCodeVal, setQrCodeVal] = useState<string>('');
 
     const onSubmitActiveRequestDialog = useCallback(() => {
-      onSubmit();
-    }, [onSubmit]);
+      const jsonStr = JSON.stringify(KYCRes);
+      exportJson(jsonStr, 'eKYC verification result');
+    }, [KYCRes]);
 
     const fetchConnectResult = useCallback(async () => {
       const params = {
@@ -156,6 +159,15 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     useEffect(() => {
       fetchConnectQrcodeValue();
     }, [fetchConnectQrcodeValue]);
+
+    const footerButton = (
+      <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
+        <img src={iconExport2} alt="" className="iconPrefix" />
+        <span>Authorize to import </span>
+      </button>
+    );
+    
+    
     return (
       <>
         {step === 1 && (
@@ -174,6 +186,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
+            footerButton={footerButton}
           />
         )}
       </>
