@@ -7,7 +7,7 @@ import {
 import { PADOURL, PROXYURL } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
 
-let EXCHANGEINFO = {
+export let EXCHANGEINFO = {
   binance: {
     name: 'binance',
     apiKey: '',

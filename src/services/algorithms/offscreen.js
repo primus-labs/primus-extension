@@ -1,3 +1,5 @@
+//import ccxt from 'ccxt';
+
 Module = {};
 Module.onRuntimeInitialized = async () => {
     console.log("off screen Module Initialized OK");
@@ -90,9 +92,155 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.runtime.sendMessage({ resType: 'algorithm', resMethodName: 'init', res: res });
     } else if (message.type === 'algorithm' && message.method === 'getAttestation') {
         const res = getAttestation(message.params);
+        EXCHANGEINFO = message.exInfo;
+
+
+        /*const test = {
+            "method": "getSign",
+            "params": {
+                "source": "binance",
+                "schemaType": "Assets Proof"
+            }
+        };
+        test.params.source = message.params.source;
+        test.params.schemaType = message.params.schemaType;
+        if (test.params.schemaType === 'Token Holdings') {
+            test.params.holdingToken = message.params.holdingToken;
+        }
+        call(JSON.stringify(test));*/
         chrome.runtime.sendMessage({ resType: 'algorithm', resMethodName: 'getAttestation', res: res });
     } else if (message.type === 'algorithm' && message.method === 'getAttestationResult') {
         const res = getAttestationResult();
         chrome.runtime.sendMessage({ resType: 'algorithm', resMethodName: 'getAttestationResult', res: res });
     }
 });
+
+let EXCHANGEINFO = {};
+
+/*
+params str:
+{
+    "method": "getSign",
+    "params": {
+        "source": "binance",// or "okx"
+        "schemaType": "Assets Proof", // or "Token Holdings"
+        "holdingToken": "BTC" // Token Holdings must have the field 
+    }
+}
+
+return:
+binance:
+{
+    "url": "https://api.binance.com/sapi/v3/asset/getUserAsset",
+    "method": "POST",
+    "body": "timestamp=1688711841427&recvWindow=60000&signature=7da7ada2683d52532681cc5d420fd0ec678eb99935c5f6cd7168aa1313ba9ad3",
+    "headers": {
+        "X-MBX-APIKEY": "tPekpYpExdV5pzzc9ZyLApIXQkYMiLWiygjKBAQzUCiy3G2fVtNGxGTJ4NtfZq31",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+}
+okx:
+{
+    "url": "https://www.okx.com/api/v5/account/balance?ccy=USDT",
+    "method": "GET",
+    "headers": {
+        "OK-ACCESS-KEY": "8a236275-eedc-46d9-a592-485fb38d1dfe",
+        "OK-ACCESS-PASSPHRASE": "Padopado@2022",
+        "OK-ACCESS-TIMESTAMP": "2023-07-07T06:52:21.505Z",
+        "OK-ACCESS-SIGN": "4yO+12YDmxSf1eRQTRiufQrGW39og0hvvFl/g83g7w4="
+    }
+}
+*/
+function call(str) {
+    console.log("offscreen call str=", str);
+    const jsonParams = JSON.parse(str);
+    console.log("offscreen call source info=", EXCHANGEINFO[jsonParams.params.source]);
+    if (jsonParams.method === "getSign") {
+        const source = jsonParams.params.source;
+        const apiKey = EXCHANGEINFO[source].apiKey;
+        const secretKey = EXCHANGEINFO[source].secretKey;
+        const passphase = EXCHANGEINFO[source].passphase;
+        const exchange = new ccxt[source]({
+            apiKey: apiKey,
+            secret: secretKey,
+            password: passphase,
+        });
+        console.log('offscreen call exchange=', exchange);
+        let res;
+        let signParams;
+        switch(source) {
+            case 'binance':
+                signParams = {recvWindow: 60 * 1000};
+                if (jsonParams.params.schemaType === 'Token Holdings') {
+                    signParams.asset = jsonParams.params.holdingToken;
+                }
+                res = exchange.sign('asset/getUserAsset', 'sapiV3', 'POST', signParams);
+                console.log('offscreen call binance res=', res);
+                return JSON.stringify(res);
+            case 'okx':
+                signParams = {};
+                if (jsonParams.params.schemaType === 'Token Holdings') {
+                    signParams.ccy = jsonParams.params.holdingToken;
+                }
+                res = exchange.sign('account/balance', 'private', 'GET', signParams);
+                console.log('offscreen call okx res=', res);
+                return JSON.stringify(res);
+        }
+    }
+    return null;
+}
+
+/*const extend = (...args) => Object.assign({}, ...args);
+const isNumber = Number.isFinite;
+const isString = (s) => (typeof s === 'string');
+const asInteger = (x) => ((isNumber(x) || (isString(x) && x.length !== 0)) ? Math.trunc(Number(x)) : NaN);
+const safeInteger = (o, k, $default) => {
+    const n = asInteger(prop(o, k));
+    return isNumber(n) ? n : $default;
+};
+
+function sign(path, api = 'public', method = 'GET', params = {}, headers = undefined, body = undefined) {
+    if ((api === 'private') || (api === 'eapiPrivate') || (api === 'sapi' && path !== 'system/status') || (api === 'sapiV2') || (api === 'sapiV3') || (api === 'sapiV4') || (api === 'wapi' && path !== 'systemStatus') || (api === 'dapiPrivate') || (api === 'dapiPrivateV2') || (api === 'fapiPrivate') || (api === 'fapiPrivateV2')) {
+        let query = undefined;
+        let extendedParams = extend({
+            'timestamp': Date.now,
+        }, params);
+        const recvWindow = safeInteger(params, 'recvWindow');
+        if (recvWindow !== undefined) {
+            extendedParams['recvWindow'] = recvWindow;
+        }
+        if ((api === 'sapi') && (path === 'asset/dust')) {
+            query = this.urlencodeWithArrayRepeat(extendedParams);
+        }
+        else if ((path === 'batchOrders') || (path.indexOf('sub-account') >= 0) || (path === 'capital/withdraw/apply') || (path.indexOf('staking') >= 0)) {
+            query = this.rawencode(extendedParams);
+        }
+        else {
+            query = this.urlencode(extendedParams);
+        }
+        let signature = undefined;
+        if (this.secret.indexOf('PRIVATE KEY') > -1) {
+            signature = this.encodeURIComponent(rsa(query, this.secret, sha256));
+        }
+        else {
+            signature = this.hmac(this.encode(query), this.encode(this.secret), sha256);
+        }
+        query += '&' + 'signature=' + signature;
+        headers = {
+            'X-MBX-APIKEY': this.apiKey,
+        };
+        if ((method === 'GET') || (method === 'DELETE') || (api === 'wapi')) {
+            url += '?' + query;
+        }
+        else {
+            body = query;
+            headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        }
+    }
+    else {
+        if (Object.keys(params).length) {
+            url += '?' + this.urlencode(params);
+        }
+    }
+    return { 'url': url, 'method': method, 'body': body, 'headers': headers };
+}*/

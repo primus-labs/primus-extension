@@ -12,6 +12,7 @@ import {
   clear,
   assembleAlgorithmParams,
   resetExchangesCipher,
+  EXCHANGEINFO,
 } from './exData';
 
 const Web3EthAccounts = require('web3-eth-accounts');
@@ -134,6 +135,7 @@ const processAlgorithmReq = async (message, port) => {
         type: 'algorithm',
         method: 'getAttestation',
         params: attestationParams,
+        exInfo: EXCHANGEINFO,
       });
       break;
     case 'getAttestationResult':

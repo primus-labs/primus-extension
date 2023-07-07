@@ -222,6 +222,15 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
+          from: 'src/services/algorithms/ccxt.browser.min.js',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
           from: 'src/services/algorithms/client_plugin.data',
           to: path.join(__dirname, 'build'),
           force: true,
