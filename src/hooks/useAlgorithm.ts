@@ -51,14 +51,12 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
             // TODO wheather wait getAttestation msg back
             const handler = () => savedCallback.current();
             handler();
-            // TODO
           }
         }
         if (resMethodName === `getAttestationResult`) {
           if (res) {
             const handler = () => savedGetAttestationResultCallback.current(res);
             handler();
-            // TODO
           }
         }
         if (resMethodName === `stop`) {

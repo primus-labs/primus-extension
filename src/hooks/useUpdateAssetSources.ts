@@ -13,6 +13,7 @@ type queryObjType = {
   [propName: string]: any;
 };
 const useUpdateAssetSources = (flag = false) => {
+  console.log('222222useUpdateAssetSources');
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort

@@ -61,7 +61,6 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
       }
     }, [activeCred?.claimId]);
     useEffect(() => {
-      // TODO
       if (activeCred) {
         let jsonStr: any;
         if (isPolygonId) {

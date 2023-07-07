@@ -7,15 +7,12 @@ import PMask from '@/components/PMask';
 import PSelect from '@/components/PSelect';
 import { DATASOURCEMAP } from '@/config/constants';
 import { formatNumeral } from '@/utils/utils';
-import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
-import { setExSourcesAsync } from '@/store/actions';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
 import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/config';
 import type { UserState } from '@/types/store';
-import type { Dispatch } from 'react';
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { PROOFTYPEITEM } from '@/types/cred';
 
@@ -38,27 +35,14 @@ export type AttestionForm = {
 interface AttestationDialogProps {
   type: string;
   onClose: () => void;
-  onSubmit: (form: AttestionForm, activeCred?: CredTypeItemType) => void;
+  onSubmit: (form: AttestionForm) => void;
   onCheck?: () => void;
   activeCred?: CredTypeItemType;
   activeSourceName?: string;
   onBack?: () => void;
 }
-type TokenItem = {
-  text: string;
-  value: string;
-  icon: string;
-};
-
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
-  ({
-    type,
-    onClose,
-    onSubmit,
-    activeCred,
-    activeSourceName,
-    onBack,
-  }) => {
+  ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -72,8 +56,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       (state: UserState) => state.walletAddress
     );
 
-    const dispatch: Dispatch<any> = useDispatch();
-    const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
     const navigate = useNavigate();
 
     const tokenLogoPrefix = useMemo(() => {
@@ -173,7 +155,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       setActiveToken(val);
       // setActiveSource(undefined);
     }, []);
-    const handleClickNext = async() => {
+    const handleClickNext = async () => {
       if (activeConnectedSourceList.length === 0) {
         navigate('/datas');
       }
@@ -209,7 +191,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
 
         if (type === 'IDENTIFICATION_PROOF') {
           // credential?: string;
-          const sourceLowerCaseName = activeSource.name.toLowerCase()
+          const sourceLowerCaseName = activeSource.name.toLowerCase();
           const res = await chrome.storage.local.get([sourceLowerCaseName]);
           form.credential = JSON.parse(res[sourceLowerCaseName]).credential;
           form.userIdentity = walletAddress;
@@ -218,7 +200,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
         if (activeCred?.requestid) {
           form.requestid = activeCred?.requestid;
-          onSubmit(form, activeCred);
+          onSubmit(form);
         } else {
           onSubmit(form);
         }
@@ -300,15 +282,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
       }
     }, [activeAttestationTypeInfo]);
-    useEffect(() => {
-      if (activeSource) {
-        const sourceLowerCaseName = activeSource.name.toLowerCase();
-        (fetchExDatas as (name: string) => void)(sourceLowerCaseName);
-      }
-    }, [activeSource, fetchExDatas]);
-    useEffect(() => {
-      !fetchExDatasLoading && dispatch(setExSourcesAsync());
-    }, [fetchExDatasLoading, dispatch]);
+  
 
     return (
       <PMask onClose={onClose}>

@@ -4,11 +4,11 @@ type GETCONNECTPOLYGONIDQRCODEParams = {
 };
 type GETCONNECTPOLYGONIDRESULTParams = {
   sessionId: string;
-  type: string;// 'connection' | 'claim'
+  type: string; // 'connection' | 'claim'
 };
 type GETPOLYGONIDATTESTATIONParams = {
   claimId: string;
-}
+};
 
 export const getConnectPolygonIdQrcode = (
   data: GETCONNECTPOLYGONIDQRCODEParams,
@@ -60,11 +60,9 @@ export type ATTESTFORANTPARAMS = {
   userIdentity: string;
   verifyIdentity: string;
   proofType: string;
+  source: string;
 };
-export const attestForAnt = (
-  data: ATTESTFORANTPARAMS,
-  config: any
-) => {
+export const attestForAnt = (data: ATTESTFORANTPARAMS, config: any) => {
   return request({
     method: 'post',
     url: `/kyc/ant/proof/issue`,

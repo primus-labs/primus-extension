@@ -8,7 +8,6 @@ import { ONEMINUTE } from '@/config/constants';
 import type { UserState } from '@/types/store';
 
 const usePollingUpdateAllSources = () => {
-  // console.log('222222usePollingUpdateAllSources');
   const userPassword = useSelector((state: UserState) => state.userPassword);
   const sourceUpdateFrequency = useSelector(
     (state: UserState) => state.sourceUpdateFrequency

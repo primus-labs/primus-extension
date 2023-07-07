@@ -44,7 +44,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       title: 'Processing',
       desc: 'You are currently performing on your phone.',
     });
-    const [step, setStep] = useState<number>(2);
+    const [step, setStep] = useState<number>(1);
     const [switchFlag, setSwitchFlag] = useState<boolean>(false);
     const [orderId, setOrderId] = useState<string>('');
     const [KYCRes, setKYCRes] = useState<string>('');
@@ -69,7 +69,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     const [qrCodeVal, setQrCodeVal] = useState<string>('');
 
     const onSubmitActiveRequestDialog = useCallback(() => {
-      const jsonStr = JSON.stringify(KYCRes);
+      const jsonStr = JSON.stringify(KYCRes, null, '\t');
       exportJson(jsonStr, 'eKYC verification result');
     }, [KYCRes]);
 
@@ -105,6 +105,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             case 'SUCCESS':
               console.log('ant connected!');
               setSwitchFlag(false);
+              setKYCRes(result);
               setActiveRequest({
                 type: 'suc',
                 title: 'Congratulations',
@@ -128,11 +129,22 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
 
               break;
           }
+        } else {
+          setActiveRequest({
+            type: 'error',
+            title: 'Failed',
+            desc: 'Your eKYC verification failed.',
+          });
         }
       } catch {
+        setActiveRequest({
+          type: 'error',
+          title: 'Failed',
+          desc: 'Your eKYC verification failed.',
+        });
         alert('getConnectAntResult network error');
       }
-    }, [requestConfigParams, orderId]);
+    }, [requestConfigParams, orderId, dispatch, activeSource?.name]);
     useInterval(fetchConnectResult, POLLINGTIME, switchFlag, false);
     const fetchConnectQrcodeValue = useCallback(async () => {
       const params = {

@@ -11,7 +11,12 @@ import PBack from '@/components/PBack';
 
 import { BIGZERO, DATASOURCEMAP } from '@/config/constants';
 import { formatFullTime, getCurrentDate, sub } from '@/utils/utils';
-import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
+import {
+  setExSourcesAsync,
+  setSocialSourcesAsync,
+  setKYCsAsync,
+  setCredentialsAsync,
+} from '@/store/actions';
 import { setSourceUpdateFrequencyActionAsync } from '@/store/actions';
 import { add } from '@/utils/utils';
 import { exportCsv } from '@/utils/exportFile';
@@ -75,6 +80,11 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       const arr = activeExSourceNameArr.map((i) => `${i}cipher`);
       return arr;
     }, [activeExSourceNameArr]);
+    const activeKYCSourceNameArr = useMemo(() => {
+      const sourceArr = activeSourceList.filter((i) => i.type === 'eKYC');
+      const arr = sourceArr.map((i) => i.name.toLowerCase());
+      return arr;
+    }, [activeSourceList]);
     const activeSocialSourceNameArr = useMemo(() => {
       const sourceArr = activeSourceList.filter((i) => i.type === 'Social');
       const arr = sourceArr.map((i) => i.name.toLowerCase());
@@ -325,20 +335,27 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       const removeStorageKeyArr = [
         ...activeSourceNameArr,
         ...activeExSourceCipherNameArr,
+        ...activeKYCSourceNameArr,
       ];
       await chrome.storage.local.remove(removeStorageKeyArr);
-      dispatch(setExSourcesAsync());
-      dispatch(setSocialSourcesAsync());
+      
       const { credentials: credentialsStr } = await chrome.storage.local.get([
         'credentials',
       ]);
       const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
       let newCredentialObj = { ...credentialObj };
       Object.keys(credentialObj).forEach((key) => {
-        if (activeExSourceNameArr.includes(credentialObj[key].source)) {
+        if (
+          activeExSourceNameArr.includes(credentialObj[key].source) ||
+          activeKYCSourceNameArr.includes(credentialObj[key].source)
+        ) {
           delete newCredentialObj[key];
         }
       });
+      dispatch(setExSourcesAsync());
+      dispatch(setSocialSourcesAsync());
+      dispatch(setKYCsAsync());
+      dispatch(setCredentialsAsync());
       await chrome.storage.local.set({
         credentials: JSON.stringify(newCredentialObj),
       });
@@ -348,6 +365,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       activeSourceNameArr,
       activeExSourceNameArr,
       activeExSourceCipherNameArr,
+      activeKYCSourceNameArr,
     ]);
     const onSubmitDialog = async () => {
       if (sourceUpdateFrequency !== updateFrequency) {

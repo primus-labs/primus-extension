@@ -78,7 +78,6 @@ const CredOverview = memo(() => {
   const handleBindPolygonID = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
     setBindPolygonidVisible(true);
-    //TODO
   }, []);
   const handleCloseQrcode = useCallback(() => {
     setQrcodeVisible(false);

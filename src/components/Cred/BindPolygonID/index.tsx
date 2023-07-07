@@ -109,9 +109,19 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               desc: 'A new attestation with Polygon DID is successfully granted!',
             });
           } else {
+            setActiveRequest({
+              type: 'error',
+              title: 'Failed',
+              desc: 'Failed to grant new authentication to Polygon DID!',
+            });
             alert('attestForPolygonId network error');
           }
         } catch {
+          setActiveRequest({
+            type: 'error',
+            title: 'Failed',
+            desc: 'Failed to grant new authentication to Polygon DID!',
+          });
           alert('attestForPolygonId network error');
         }
       },

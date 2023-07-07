@@ -32,6 +32,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
     const socialSources = useSelector(
       (state: UserState) => state.socialSources
     );
+    const kycSources = useSelector((state: UserState) => state.kycSources);
 
     const connectedSourceList: ConnectSourceType[] = useMemo(() => {
       const exArr = Object.keys(exSources).map((key) => {
@@ -52,7 +53,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         const sourceInfo: ExchangeMeta =
           DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
         const { name, icon, type } = sourceInfo;
-        const {  label } = socialSources[key];
+        const { label } = socialSources[key];
         const infoObj: ConnectSourceType = {
           name,
           icon,
@@ -61,8 +62,22 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         };
         return infoObj;
       });
-      return [...exArr, ...socialArr];
-    }, [exSources, socialSources]);
+
+      const kycArr = Object.keys(kycSources).map((key) => {
+        const sourceInfo: ExchangeMeta =
+          DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
+        const { name, icon, type } = sourceInfo;
+        const { label } = kycSources[key];
+        const infoObj: ConnectSourceType = {
+          name,
+          icon,
+          label,
+          type,
+        };
+        return infoObj;
+      });
+      return [...exArr, ...socialArr, ...kycArr];
+    }, [exSources, socialSources, kycSources]);
     const liClassNameCallback = useCallback(
       (item: ConnectSourceType) => {
         let defaultClassName = 'networkItem';

@@ -69,7 +69,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     }, [activeSendToChainRequest?.type, onSubmit]);
 
     const handleSubmitTransferToChain = useCallback((networkName?: string) => {
-      // TODO
       if (networkName) {
         setActiveNetworkName(networkName);
         setStep(4);
@@ -81,8 +80,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     }, []);
     const handleSubmitConnectWallet = useCallback(
       async (wallet: WALLETITEMTYPE) => {
-        // TODO
-
         setActiveSendToChainRequest({
           type: 'loading',
           title: 'Processing',

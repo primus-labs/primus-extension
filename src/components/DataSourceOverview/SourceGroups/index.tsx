@@ -26,7 +26,6 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
         name,
         icon,
         type,
-        // desc: `${type} Data`, // TODO tooltip style
         desc,
         requirePassphase,
       };

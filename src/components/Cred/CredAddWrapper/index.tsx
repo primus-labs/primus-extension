@@ -26,9 +26,13 @@ import {
 
 import { setCredentialsAsync } from '@/store/actions';
 import { add, mul, gt } from '@/utils/utils';
-import { attestForAnt, validateAttestationForAnt } from '@/services/api/cred';
-import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
+import {
+  attestForAnt,
+  validateAttestationForAnt,
+  attestForPolygonId,
+} from '@/services/api/cred';
 
+import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 import type { Dispatch } from 'react';
 import type { CredTypeItemType, AttestionForm } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -36,7 +40,11 @@ import type { AssetsMap } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 import './index.sass';
-
+const schemaTypeMap = {
+  ASSETS_PROOF: 'Assets Proof',
+  TOKEN_HOLDINGS: 'Token Holdings',
+  IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
+};
 interface CredAddWrapperType {
   visible?: boolean;
   activeCred?: CredTypeItemType;
@@ -49,7 +57,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const [step, setStep] = useState(-1);
     const [activeAttestationType, setActiveAttestationType] =
       useState<string>('');
-    // const [activeCred, setActiveCred] = useState<CredTypeItemType>();
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
     const [activeSourceName, setActiveSourceName] = useState<string>();
 
@@ -63,7 +70,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       (state: UserState) => state.padoServicePort
     );
     const exSources = useSelector((state: UserState) => state.exSources);
-
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
@@ -156,115 +162,228 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     );
     const userInfo = useSelector((state: UserState) => state.userInfo);
     const requestConfigParams = useMemo(() => {
-      const { token } = userInfo;
+      const { id, token } = userInfo;
       const requestConfigParams = {
         extraHeader: {
+          'user-id': id,
           Authorization: `Bearer ${token}`,
         },
       };
       return requestConfigParams;
     }, [userInfo]);
-    const fetchAttestForAnt = useCallback(async (form: AttestionForm) => {
-      setStep(2);
-      setActiveRequest({
-        type: 'loading',
-        title: 'Attestation is processing',
-        desc: 'It may take a few seconds.',
-      });
-      const {
-        credential,
-        userIdentity,
-        verifyIdentity,
-        proofType,
-        source,
-        type,
-        exUserId,
-        label,
-      } = form;
-      const params = {
-        credential,
-        userIdentity,
-        verifyIdentity,
-        proofType,
-      };
+    const fetchAttestForPolygonID = useCallback(async () => {
       try {
-        const { rc, result } = await attestForAnt(
-          params as ATTESTFORANTPARAMS,
-          requestConfigParams
-        );
-        if (rc === 0) {
-          // setActiveKYCApplication(result)
-          const { salt, rootHash, proof } = result;
-          const params2 = {
-            proof,
-            salt,
-            rootHash,
-            userIdentity: walletAddress,
+        const { id, token } = userInfo;
+        const requestConfigParams = {
+          extraHeader: {
+            'user-id': id,
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const {
+          type,
+          signature,
+          source,
+          getDataTime,
+          address,
+          baseValue,
+          balanceGreaterThanBaseValue,
+          exUserId,
+          holdingToken,
+          requestid, // last sessionId
+          did,
+        } = activeCred as CredTypeItemType;
+
+        const params: any = {
+          sessionId: requestid,
+          credType: schemaTypeMap[type as keyof typeof schemaTypeMap],
+          signature,
+          credentialSubject: {
+            id: did,
+            source,
+            sourceUserId: exUserId,
+            authUserId: id,
+            getDataTime,
+            recipient: address,
+            baseValue,
+            balanceGreaterThanBaseValue,
+          },
+        };
+        if (type === 'TOKEN_HOLDINGS') {
+          params.credentialSubject.asset = holdingToken;
+        }
+        const res = await attestForPolygonId(params, requestConfigParams);
+        if (res?.getDataTime) {
+          const newRequestId = requestid;
+          const fullAttestation = {
+            ...activeCred,
+            did,
+            ...res,
+            requestid: newRequestId,
+            issuer: res.claimQrCode.from,
+            schemaName: 'PolygonID',
+            provided: [],
+            signature: res.claimSignatureInfo.signature,
+            encodedData: res.claimSignatureInfo.encodedData,
           };
-          const { rc: rc2, result: result2 } = await validateAttestationForAnt(
-            params2,
-            requestConfigParams
-          );
-          if (rc2 === 0) {
-            const credentialsObj = { ...credentialsFromStore };
-            const activeRequestId = +new Date();
-            // // credentialsObj[activeRequestId] = fullAttestation;
-            credentialsObj[activeRequestId] = {
-              type,
-              requestid: activeRequestId + '',
-              source,
-              sourceUseridHash: '',
-              address: walletAddress,
-              version: '1.0.0',
-              label,
-              credential,
-              ...result2,
-            };
-            await chrome.storage.local.set({
-              credentials: JSON.stringify(credentialsObj),
-            });
-            await initCredList();
-            setActiveRequest({
-              type: 'suc',
-              title: 'Congratulations',
-              desc: 'Your proof is created!',
-            });
-          }
+
+          const { credentials: credentialsStr } =
+            await chrome.storage.local.get(['credentials']);
+          const credentialsObj = credentialsStr
+            ? JSON.parse(credentialsStr)
+            : {};
+          credentialsObj[newRequestId] = fullAttestation;
+          await chrome.storage.local.set({
+            credentials: JSON.stringify(credentialsObj),
+          });
+          await initCredList();
+          setActiveRequest({
+            type: 'suc',
+            title: 'Congratulations',
+            desc: 'A new attestation with Polygon DID is successfully granted!',
+          });
+        } else {
+          setActiveRequest({
+            type: 'error',
+            title: 'Failed',
+            desc: 'Failed to grant new authentication to Polygon DID!',
+          });
+          alert('attestForPolygonId network error');
         }
       } catch {
-        alert('attestForAnt network error');
+        setActiveRequest({
+          type: 'error',
+          title: 'Failed',
+          desc: 'Failed to grant new authentication to Polygon DID!',
+        });
+        alert('attestForPolygonId network error');
       }
-    }, []);
-    const onSubmitAttestationDialog = useCallback(
-      async (form: AttestionForm, curCred?: CredTypeItemType) => {
-        if (form.type === 'ASSETS_PROOF') {
-          // fetch balance first
-          if (!validateBaseInfo(form)) {
-            return;
+    }, [activeCred, userInfo, initCredList]);
+    const fetchAttestForAnt = useCallback(
+      async (form: AttestionForm) => {
+        const {
+          credential,
+          userIdentity,
+          verifyIdentity,
+          proofType,
+          source,
+          type,
+          exUserId,
+          label,
+        } = form;
+        const params = {
+          credential,
+          userIdentity,
+          verifyIdentity,
+          proofType,
+        };
+        try {
+          const { rc, result,msg } = await attestForAnt(
+            params as ATTESTFORANTPARAMS,
+            requestConfigParams
+          );
+          if (rc === 0) {
+            // setActiveKYCApplication(result)
+            const { salt, rootHash, proof } = result;
+            const params2 = {
+              proof,
+              salt,
+              rootHash,
+              userIdentity: walletAddress,
+              source,
+            };
+            const {
+              rc: rc2,
+              result: result2,
+              msg:msg2,
+            } = await validateAttestationForAnt(params2, requestConfigParams);
+            if (rc2 === 0) {
+              const credentialsObj = { ...credentialsFromStore };
+              const activeRequestId = activeCred?.requestid ?? +new Date();
+              // // credentialsObj[activeRequestId] = fullAttestation;
+              credentialsObj[activeRequestId] = {
+                type,
+                requestid: activeRequestId + '',
+                source,
+                sourceUseridHash: '',
+                address: walletAddress,
+                version: '1.0.0',
+                label,
+                credential,
+                ...result2,
+              };
+              await chrome.storage.local.set({
+                credentials: JSON.stringify(credentialsObj),
+              });
+              await initCredList();
+              setActiveRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your proof is created!',
+              });
+            } else {
+              setActiveRequest(undefined);
+              alert(msg2);
+            }
+          } else {
+            setActiveRequest(undefined);
+            setStep(-1);
+            alert(msg);
           }
-        }
-        if (form.type === 'IDENTIFICATION_PROOF') {
-          fetchAttestForAnt(form);
-        } else {
-          // if curCred is update,not add
-          const msg = {
-            fullScreenType: 'algorithm',
-            reqMethodName: 'getAttestation',
-            params: {
-              ...form,
-            },
-          };
-          postMsg(padoServicePort, msg);
-          console.log(`page_send:getAttestation:`, form);
-          setStep(2);
-          setActiveRequest({
-            type: 'loading',
-            title: 'Attestation is processing',
-            desc: 'It may take a few seconds.',
-          });
+        } catch {
+          setStep(-1);
+          setActiveRequest(undefined);
+          alert('attestForAnt network error');
         }
       },
-      [padoServicePort, validateBaseInfo, fetchAttestForAnt]
+      [
+        credentialsFromStore,
+        requestConfigParams,
+        initCredList,
+        walletAddress,
+        activeCred?.requestid,
+      ]
+    );
+    const onSubmitAttestationDialog = useCallback(
+      async (form: AttestionForm) => {
+        setStep(2);
+        setActiveRequest({
+          type: 'loading',
+          title: 'Attestation is processing',
+          desc: 'It may take a few seconds.',
+        });
+        if (activeCred?.did) {
+          fetchAttestForPolygonID();
+        } else {
+          if (form.type === 'IDENTIFICATION_PROOF') {
+            fetchAttestForAnt(form);
+          } else {
+            if (form.type === 'ASSETS_PROOF') {
+              // fetch balance first
+              if (!validateBaseInfo(form)) {
+                return;
+              }
+            }
+            // if curCred is update,not add
+            const msg = {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'getAttestation',
+              params: {
+                ...form,
+              },
+            };
+            postMsg(padoServicePort, msg);
+            console.log(`page_send:getAttestation:`, form);
+          }
+        }
+      },
+      [
+        padoServicePort,
+        validateBaseInfo,
+        fetchAttestForAnt,
+        // activeCred?.did,
+        fetchAttestForPolygonID,
+      ]
     );
     const onBackAttestationDialog = useCallback(() => {
       setStep(0);
@@ -276,11 +395,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         activeRequest?.type === 'warn'
       ) {
         setStep(-1);
-        // refresh attestation list
+        initCredList();
         onSubmit();
         return;
       }
-    }, [activeRequest?.type]);
+    }, [activeRequest?.type, initCredList, onSubmit]);
 
     const clearFetchAttestationTimer = useCallback(() => {
       setIntervalSwitch(false);
@@ -315,11 +434,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             const parsedActiveRequestAttestation = activeRequestAttestation
               ? JSON.parse(activeRequestAttestation)
               : {};
-            // console.log(
-            //   'attestation',
-            //   parsedActiveRequestAttestation,
-            //   content
-            // );
             const activeRequestId = parsedActiveRequestAttestation.requestid;
             if (activeRequestId !== content?.requestid) {
               return;
@@ -387,7 +501,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setStep(-1);
         setActiveAttestationType('');
         setActiveSourceName(undefined);
-
         if (activeCred) {
           setStep(1);
           setActiveAttestationType(activeCred?.type);
@@ -400,7 +513,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           handleAdd();
         }
       }
-    }, [visible, createFlag, activeCred]);
+    }, [visible, createFlag, activeCred, handleAdd]);
 
     return (
       <div className={visible ? 'credAddWrapper' : 'credAddWrapper hidden'}>

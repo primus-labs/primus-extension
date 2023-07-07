@@ -3,7 +3,8 @@ import useUpdateAssetSources from '@/hooks/useUpdateAssetSources'
 import useUpdateSocialSources from '@/hooks/useUpdateSocialSources'
 
 type ReturnPromiseType = ()=>Promise<void>
-const useUpdateAllSources = (flag=false) => {
+const useUpdateAllSources = (flag = false) => {
+  console.log('222222useUpdateAllSources');
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSources(flag)
   const [fetchSocialDatasLoading, fetchSocialDatas] = useUpdateSocialSources()
   const updating = useMemo(() => {

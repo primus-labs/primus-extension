@@ -33,7 +33,7 @@ const Layout = () => {
 
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
-  usePollingUpdateAllSources();
+  // usePollingUpdateAllSources();
 
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
