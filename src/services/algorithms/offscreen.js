@@ -187,7 +187,7 @@ function call(str) {
                 return JSON.stringify(res);
         }
     }
-    return null;
+    return "{}";
 }
 
 /*const extend = (...args) => Object.assign({}, ...args);
