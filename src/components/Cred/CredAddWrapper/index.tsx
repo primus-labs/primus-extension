@@ -517,9 +517,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [visible, createFlag, activeCred]);
     useEffect(() => {
       if (
-        activeRequest?.type === 'suc' ||
-        activeRequest?.type === 'error' ||
-        activeRequest?.type === 'warn' ||
         !activeRequest?.type
       ) {
         onClose();
