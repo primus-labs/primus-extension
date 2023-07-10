@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 
 import CredList from '@/components/Cred/CredList';
 import QRCodeDialog from '@/components/Cred/QRCodeDialog';
@@ -24,10 +25,10 @@ const CredOverview = memo(() => {
     useState<boolean>(false);
   const [bindPolygonidVisible, setBindPolygonidVisible] =
     useState<boolean>(false);
-  
   const [qrcodeVisible, setQrcodeVisible] = useState<boolean>(false);
-
   const [activeCred, setActiveCred] = useState<CredTypeItemType>();
+  const [searchParams] = useSearchParams();
+  const createFlag = searchParams.get('createFlag')?.toLowerCase();
   
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
@@ -135,6 +136,12 @@ const CredOverview = memo(() => {
   const handleCloseSendToChainDialog = useCallback(() => {
     setSendToChainDialogVisible(false);
   }, []);
+
+  useEffect(() => {
+        if (createFlag) {
+          setAddDialogVisible(true);
+        }
+  }, [createFlag]);
   return (
     <div className="credOverview">
       <CredList
