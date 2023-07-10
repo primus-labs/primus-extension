@@ -8,14 +8,14 @@ type ENVTYPE = 'development' | 'test' | 'production';
 // const CURENV = process.env.NODE_ENV as ENVTYPE;
 const CURENV = 'development';
 const PADOURLMAP = {
-  development: '18.179.8.186:8889',
+  development: '18.179.8.186:8888',
   test: '18.179.8.186:8888',
   production: '127.0.0.1:8081',
 };
 export const PADOURL = PADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
-  development: '18.179.8.186:9001',
+  development: '18.179.8.186:9000',
   test: '18.179.8.186:9000',
   production: '127.0.0.1:9000',
 };
@@ -88,6 +88,37 @@ const EASINFOMAP = {
       ],
       blockExploreUrls: ['https://sepolia.etherscan.io'],
     },
+    BNB: {
+      icon: iconTool1,
+      title: 'BNB Smart Chain Testnet',
+      rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
+      easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
+      easProxyContrac: '0x0B96629D683bD184Fe183EDB74CF5a4c42375070',
+      schemas: {
+        EAS: {
+          schemaUid:
+            '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
+          schemaUidTokenHoldings:
+            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
+          schemaUidIdentification:
+            '',
+        },
+        PolygonID: {
+          schemaUid:
+            '',
+          schemaUidTokenHoldings:
+            '',
+          schemaUidIdentification:
+            '',
+        },
+      },
+      chainId: '0x61', // numToHex
+      chainName: 'BNB Smart Chain Testnet',
+      rpcUrls: [
+        'https://data-seed-prebsc-1-s3.binance.org:8545/',
+      ],
+      blockExploreUrls: ['https://testnet.bscscan.com/'],
+    },
   },
   test: {
     Sepolia: {
@@ -138,6 +169,37 @@ const EASINFOMAP = {
         'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
       blockExploreUrls: ['https://sepolia.etherscan.io'],
+    },
+    BNB: {
+      icon: iconTool1,
+      title: 'BNB Smart Chain Testnet',
+      rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
+      easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
+      easProxyContrac: '0x0B96629D683bD184Fe183EDB74CF5a4c42375070',
+      schemas: {
+        EAS: {
+          schemaUid:
+            '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
+          schemaUidTokenHoldings:
+            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
+          schemaUidIdentification:
+            '',
+        },
+        PolygonID: {
+          schemaUid:
+            '',
+          schemaUidTokenHoldings:
+            '',
+          schemaUidIdentification:
+            '',
+        },
+      },
+      chainId: '0x61', // numToHex
+      chainName: 'BNB Smart Chain Testnet',
+      rpcUrls: [
+        'https://data-seed-prebsc-1-s3.binance.org:8545/',
+      ],
+      blockExploreUrls: ['https://testnet.bscscan.com/'],
     },
   },
   production: {
