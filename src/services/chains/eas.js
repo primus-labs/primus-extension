@@ -249,3 +249,11 @@ export async function attestByDelegationProxy(params) {
   );
   return newAttestationUID;
 }
+
+export function getAttestInfoByEncodeDdata(encodeD) {
+  const schemaEncoder = new SchemaEncoder(
+    'string source,bytes32 sourceUseridHash,bytes32 authUseridHash,address receipt,uint64 getDataTime,uint64 baseValue,bool balanceGreaterThanBaseValue'
+  );
+  let encodedData = schemaEncoder.decodeData(encodeD);
+  return encodedData;
+}

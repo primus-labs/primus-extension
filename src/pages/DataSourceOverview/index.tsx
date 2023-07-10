@@ -23,7 +23,7 @@ import type { UserState } from '@/types/store';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { GetDataFormProps } from '@/components/DataSourceOverview/ConnectDataSourceDialog';
 import type { DataSourceItemList } from '@/components/DataSourceOverview/DataSourceList';
-import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
+import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type {
   SocialDataList,
   ExDataList,

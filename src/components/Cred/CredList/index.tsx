@@ -1,6 +1,6 @@
 import React, { useMemo, memo } from 'react';
-import CredItem from '../CredItem';
-import EmptyDataSourceItem from '@/components/DataSourceOverview/EmptyDataSourceItem';
+import CredItem from './CredItem';
+import EmptyDataSourceItem from '@/components/DataSourceOverview/DataSourceList/EmptyDataSourceItem';
 
 import type { CredTypeItemType } from '@/types/cred';
 

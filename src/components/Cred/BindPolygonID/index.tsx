@@ -2,7 +2,7 @@ import React, { memo, useEffect, useCallback, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
-import BindPolygonIDDialog from '@/components/Cred/BindPolygonIDDialog';
+import BindPolygonIDDialog from './BindPolygonIDDialog';
 
 import { attestForPolygonId } from '@/services/api/cred';
 

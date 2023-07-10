@@ -10,9 +10,9 @@ import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import AttestationDialog from '@/components/Cred/AttestationDialog';
+import AttestationDialog from './AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
-import CredTypesDialog from '@/components/Cred/CredTypesDialog';
+import CredTypesDialog from './CredTypesDialog';
 
 import { postMsg } from '@/utils/utils';
 import useTimeout from '@/hooks/useTimeout';

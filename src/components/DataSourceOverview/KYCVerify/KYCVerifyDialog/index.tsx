@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
-import QRCodeMain from '@/components/Cred/QRCodeMain';
+import QRCodeMain from '@/components/Cred/QRCodeDialog/QRCodeMain';
 import PBack from '@/components/PBack';
 
 import './index.sass';

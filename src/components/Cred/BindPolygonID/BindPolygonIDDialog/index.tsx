@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useCallback, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import PMask from '@/components/PMask';
-import QRCodeMain from '@/components/Cred/QRCodeMain';
+import QRCodeMain from '@/components/Cred/QRCodeDialog/QRCodeMain';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import './index.sass';
 

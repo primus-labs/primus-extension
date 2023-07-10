@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
-import ConnectWalletDialog from '@/components/Cred/ConnectWalletDialog';
+import ConnectWalletDialog from './ConnectWalletDialog';
 
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';

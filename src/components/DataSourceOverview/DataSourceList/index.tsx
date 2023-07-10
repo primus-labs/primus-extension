@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 
-import DataSourceItem from '@/components/DataSourceOverview/DataSourceItem';
-import EmptyDataSourceItem from '@/components/DataSourceOverview/EmptyDataSourceItem';
+import DataSourceItem from './DataSourceItem';
+import EmptyDataSourceItem from './EmptyDataSourceItem';
 
-import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
+import type { DataSourceItemType } from './DataSourceItem';
 import type {
   // SocialDataList,
   // ExDataList,

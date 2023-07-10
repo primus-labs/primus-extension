@@ -3,7 +3,7 @@ import {useSelector} from 'react-redux'
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
-import QRCodeMain from '@/components/Cred/QRCodeMain';
+import QRCodeMain from '@/components/Cred/QRCodeDialog/QRCodeMain';
 import iconExport from '@/assets/img/iconExport.svg';
 import './index.sass';
 

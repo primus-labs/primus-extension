@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import PMask from '@/components/PMask';
 import PRadio from '@/components/PRadio';
-import ConnectedDataSourceList from '@/components/Cred/ConnectedDataSourceList';
+import ConnectedDataSourceList from '@/components/ConnectedDataSourceList';
 import IconClear from '@/components/Icons/IconClear';
 import IconDownload from '@/components/Icons/IconDownload';
 import Reconfirm from '@/components/Setting/ReConfirm';
@@ -25,8 +25,10 @@ import type { ConnectSourceType } from '@/types/dataSource';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 // import type { SocialDatas } from '@/types/dataSource';
-import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceItem';
-import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
+import type {
+  DataSourceItemType,
+  AssetsMap,
+} from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 
 import './index.sass';
 

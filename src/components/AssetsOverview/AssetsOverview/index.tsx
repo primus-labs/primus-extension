@@ -10,7 +10,7 @@ import { add, mul, gte, sub, div, formatNumeral } from '@/utils/utils';
 import type {
   AssetsMap,
   DataSourceItemType,
-} from '@/components/DataSourceOverview/DataSourceItem';
+} from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { ExDataList, ExData } from '@/types/dataSource';
 import './index.sass';
 interface AssetsOverviewProps {

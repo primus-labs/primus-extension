@@ -1,4 +1,4 @@
-import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceItem';
+import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import { DATASOURCEMAP } from '@/config/constants';
 import type { ExchangeMeta } from '@/config/constants';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
