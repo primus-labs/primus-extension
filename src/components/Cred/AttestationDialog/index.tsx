@@ -207,6 +207,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     };
     const handleClickData = (item: ConnectSourceType) => {
+      if (activeSourceName) {
+        return;
+      }
       if ((activeCred || activeSourceName) && activeSource) {
         if (activeSource?.name !== item.name) {
           return;
@@ -282,7 +285,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
       }
     }, [activeAttestationTypeInfo]);
-  
 
     return (
       <PMask onClose={onClose}>

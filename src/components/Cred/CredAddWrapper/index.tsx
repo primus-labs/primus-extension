@@ -48,11 +48,12 @@ const schemaTypeMap = {
 interface CredAddWrapperType {
   visible?: boolean;
   activeCred?: CredTypeItemType;
+  activeSource?: string;
   onSubmit: () => void;
   onClose: () => void;
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
-  ({ visible = true, activeCred, onClose, onSubmit }) => {
+  ({ visible = true, activeCred, activeSource,onClose, onSubmit }) => {
     console.log('CredAddWrapper');
     const [step, setStep] = useState(-1);
     const [activeAttestationType, setActiveAttestationType] =
@@ -62,9 +63,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
 
     const [timeoutSwitch, setTimeoutSwitch] = useState<boolean>(false);
     const [intervalSwitch, setIntervalSwitch] = useState<boolean>(false);
-    const [searchParams] = useSearchParams();
-    // const sourceName = (searchParams.get('name') as string)?.toLowerCase();
-    const createFlag = searchParams.get('createFlag')?.toLowerCase();
+    
 
     const padoServicePort = useSelector(
       (state: UserState) => state.padoServicePort
@@ -508,17 +507,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           setActiveSourceName(activeCred?.source);
         } else {
           setActiveSourceName(undefined);
-          if (createFlag) {
-            setActiveSourceName(createFlag);
+          if (activeSource) {
+            setActiveSourceName(activeSource);
           }
           handleAdd();
         }
       }
-    }, [visible, createFlag, activeCred]);
+    }, [visible, activeSource, activeCred]);
     useEffect(() => {
-      if (
-        !activeRequest?.type
-      ) {
+      if (!activeRequest?.type) {
         onClose();
       }
     }, [activeRequest?.type, onClose]);

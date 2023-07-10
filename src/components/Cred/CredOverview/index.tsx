@@ -19,7 +19,8 @@ import './index.sass';
 
 const CredOverview = memo(() => {
   console.log('CredOverview');
-  ;
+
+  const [activeSourceName, setActiveSourceName] = useState<string>();
   const [addDialogVisible, setAddDialogVisible] = useState<boolean>(false);
   const [sendToChainDialogVisible, setSendToChainDialogVisible] =
     useState<boolean>(false);
@@ -29,7 +30,7 @@ const CredOverview = memo(() => {
   const [activeCred, setActiveCred] = useState<CredTypeItemType>();
   const [searchParams] = useSearchParams();
   const createFlag = searchParams.get('createFlag')?.toLowerCase();
-  
+
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
@@ -70,7 +71,7 @@ const CredOverview = memo(() => {
 
   const handleUpChain = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
-    setSendToChainDialogVisible(true)
+    setSendToChainDialogVisible(true);
   }, []);
   const handleViewQrcode = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
@@ -129,8 +130,8 @@ const CredOverview = memo(() => {
     };
   }, [dispatch]);
 
-  
   const handleCloseAddDialog = useCallback(() => {
+    setActiveSourceName(undefined);
     setAddDialogVisible(false);
   }, []);
   const handleCloseSendToChainDialog = useCallback(() => {
@@ -138,9 +139,13 @@ const CredOverview = memo(() => {
   }, []);
 
   useEffect(() => {
-        if (createFlag) {
-          setAddDialogVisible(true);
-        }
+    if (createFlag) {
+      setActiveSourceName(createFlag);
+      setAddDialogVisible(true);
+    } else {
+      setActiveSourceName(undefined);
+      setAddDialogVisible(false);
+    }
   }, [createFlag]);
   return (
     <div className="credOverview">
@@ -156,6 +161,7 @@ const CredOverview = memo(() => {
       <CredAddWrapper
         visible={addDialogVisible}
         activeCred={activeCred}
+        activeSource={activeSourceName}
         onClose={handleCloseAddDialog}
         onSubmit={handleCloseAddDialog}
       />
