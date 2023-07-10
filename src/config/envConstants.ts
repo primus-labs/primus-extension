@@ -101,7 +101,7 @@ const EASINFOMAP = {
           schemaUidTokenHoldings:
             '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
           schemaUidIdentification:
-            '',
+            '0xe2b389fef1bd8887415ac6079090e2ed6377eca6235cb5c5f691ba71cd2ca456',
         },
         PolygonID: {
           schemaUid:
@@ -183,7 +183,7 @@ const EASINFOMAP = {
           schemaUidTokenHoldings:
             '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
           schemaUidIdentification:
-            '',
+            '0xe2b389fef1bd8887415ac6079090e2ed6377eca6235cb5c5f691ba71cd2ca456',
         },
         PolygonID: {
           schemaUid:
