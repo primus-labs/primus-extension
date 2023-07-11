@@ -261,7 +261,7 @@ export const DEFAULTCREDTYPELIST = [
     credLogoUrl:
       'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredToken.svg',
     credDetails:
-      'Proof that you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
+      'Proving you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
     credProofContent: 'Hold this kind of Token',
     credProofConditions: '["USDT","LAT"]',
     simplifiedName: 'Token',
@@ -279,7 +279,7 @@ export const DEFAULTCREDTYPELIST = [
       'Proving you have completed the identity verification process. PADO verifies the authenticity of the verification result.',
     credProofContent: 'Identity verification',
     credProofConditions: 'Confirmed',
-    simplifiedName: 'Qualification',
+    simplifiedName: 'Identity',
     display: 0,
     enabled: 0,
   },
