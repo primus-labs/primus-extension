@@ -1,0 +1,40 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
+
+.rewardItem
+  width: 272px
+  height: 322px
+  padding: 24px 36px
+  border-radius: 12px
+  background: rgba(255, 255, 255, 0.60)
+  box-shadow: -2px -2px 4px 0px rgba(233, 233, 233, 0.10) inset, 2px 2px 4px 0px rgba(255, 255, 255, 0.30) inset
+  backdrop-filter: blur(16px)
+  @extend .fcss
+  >img
+    width: 100%
+  >.title
+    font-size:14px
+    line-height: 17px
+    font-family: 'Inter-Medium'
+    color: $colLBlack
+    padding-top: 20px
+  >.desc
+    @extend .frss
+    padding-top: 12px
+    >img
+      width: 12px
+      &.suffix
+        opacity: 0.6
+        &:hover
+          opacity: 0.8
+    >span
+      font-size:12px
+      line-height: 15px
+      font-family: 'Inter-Regular'
+      color: $colSBlack
+      padding: 0 8px 0 4px 
+    
+
+  
+  

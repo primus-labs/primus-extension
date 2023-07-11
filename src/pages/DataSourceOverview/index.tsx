@@ -69,18 +69,17 @@ const DataSourceOverview = memo(() => {
   const authorize = useAuthorization();
   const navigate = useNavigate();
 
-  // const exList: DataSourceItemList = useMemo(() => {
+  
   const exList: ExDataList = useMemo(() => {
     return Object.values({ ...exSources });
   }, [exSources]);
-  // const socialList: DataSourceItemList = useMemo(() => {
   const socialList: SocialDataList = useMemo(() => {
     return Object.values({ ...socialSources });
   }, [socialSources]);
   const kycList: KYCDataList = useMemo(() => {
     return Object.values({ ...kycSources });
   }, [kycSources]);
-  // const dataSourceList: DataSourceItemList = useMemo(() => {
+  
   const dataSourceList: SourceDataList = useMemo(() => {
     const exList = Object.values(exSources);
     const socialList = Object.values(socialSources);

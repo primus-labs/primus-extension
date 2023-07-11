@@ -6,6 +6,8 @@ import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesD
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
+import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
+
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconError from '@/assets/img/iconError.svg';
 import iconLoading from '@/assets/img/iconLoading.svg';
@@ -66,6 +68,9 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
             {headerType === 'attestation' && <AddressInfoHeader />}
             {headerType === 'polygonIdAttestation' && (
               <PolygonIdAddressInfoHeader address={address as string} />
+            )}
+            {headerType === 'claim' && (
+              <ClaimDialogHeaderDialog />
             )}
             {type === 'suc' && <img className="sucImg" src={iconSuc} alt="" />}
             {type === 'error' && (

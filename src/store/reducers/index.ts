@@ -18,7 +18,8 @@ const initState = {
   proofTypes: DEFAULTCREDTYPELIST,
   credentials: {},
   userInfo: {},
-  walletAddress: ''
+  walletAddress: '',
+  rewards: {}
 };
 
 // reducer
@@ -51,6 +52,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, userInfo: action.payload };
     case 'setWalletAddress':
       return { ...state, walletAddress: action.payload };
+    case 'setRewards':
+      return { ...state, rewards: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     default:
