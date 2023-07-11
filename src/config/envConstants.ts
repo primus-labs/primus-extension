@@ -169,6 +169,7 @@ const EASINFOMAP = {
     BNB: {
       icon: iconTool1,
       title: 'BNB Smart Chain Testnet',
+      disabled: true,
       rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
       easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
       easProxyContrac: '0x2884E43B48c2Cc623A19c0c3d260DD8f398fd5F3',
