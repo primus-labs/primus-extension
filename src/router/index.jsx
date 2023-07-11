@@ -6,6 +6,7 @@ import Lock from '@/pages/Lock/index.jsx';
 import Layout from '@/components/Layout/Layout/index.tsx';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import Cred from '@/pages/Cred/index.tsx';
+import Events from '@/pages/Events';
 import TransactionDetail from '@/pages/Transaction/TransactionDetail'
 const router = [
   {
@@ -32,6 +33,10 @@ const router = [
       {
         path: 'cred',
         element: <Cred />,
+      },
+      {
+        path: 'events',
+        element: <Events />,
       },
     ],
   },

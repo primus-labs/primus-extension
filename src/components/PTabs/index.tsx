@@ -26,7 +26,7 @@ const tabs: TabItem[] = [
   {
     activeIcon: iconEventsHover,
     text: 'Events',
-    disabled: true,
+    path: '/events',
   },
   {
     activeIcon: iconCredHover,
