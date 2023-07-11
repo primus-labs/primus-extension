@@ -33,7 +33,7 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
           <main>
             <Bridge endIcon={icon} />
             <QRCodeMain
-              title="Let’s get you verified"
+              title="Get you verified"
               desc="You can scan this QR code to complete a verification process through your smart phone. Provided by ZAN."
               qrcodeValue={qrCodeVal}
               qrcodeSize={159}

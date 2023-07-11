@@ -21,7 +21,7 @@ import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.svg';
 import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.png';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
 import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
-import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
+import iconDataSourceZan from '@/assets/img/iconDataSourceZan2.svg';
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
