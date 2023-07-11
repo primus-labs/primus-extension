@@ -290,7 +290,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               rootHash,
               userIdentity: walletAddress,
               source,
-              sigFormat: 'EAS-BNB'
+              // sigFormat: 'EAS-BNB'
             };
             const {
               rc: rc2,

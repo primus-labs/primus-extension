@@ -142,7 +142,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
           title: 'Failed',
           desc: 'Your eKYC verification failed.',
         });
-        alert('getConnectAntResult network error');
+        console.log('getConnectAntResult network error');
       }
     }, [requestConfigParams, orderId, dispatch, activeSource?.name]);
     useInterval(fetchConnectResult, POLLINGTIME, switchFlag, false);
