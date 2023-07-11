@@ -8,7 +8,7 @@ const Events = memo(() => {
   return (
     <div className="pageDataSourceOverview pagepageTransactionDetailCred">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab} value="Cred" />
+        <PTabs onChange={handleChangeTab} value="Events" />
       </main>
       <EventsOverview />
     </div>
