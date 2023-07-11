@@ -6,7 +6,8 @@ import {
   SchemaRegistry,
 } from '@ethereum-attestation-service/eas-sdk';
 import { EIP712Proxy } from '@ethereum-attestation-service/eas-sdk/dist/eip712-proxy';
-import { ethers, utils } from 'ethers';
+import { ethers, utils, BigNumber as BN } from 'ethers';
+
 //const { keccak256, toUtf8Bytes, splitSignature } = utils;
 import { _TypedDataEncoder } from '@ethersproject/hash';
 import { EASInfo } from '@/config/envConstants';
@@ -226,18 +227,23 @@ export async function attestByDelegationProxy(params) {
       schemauid = activeSchemaInfo.schemaUidIdentification;
     }
     console.log('attestByDelegationProxy schemauid=', schemauid);
-    tx = await easProxy.attestByDelegationProxy({
-      schema: schemauid,
-      data: {
-        recipient: receipt,
-        data: data,
-        expirationTime: 0,
-        revocable: true,
+    tx = await easProxy.attestByDelegationProxy(
+      {
+        schema: schemauid,
+        data: {
+          recipient: receipt,
+          data: data,
+          expirationTime: 0,
+          revocable: true,
+        },
+        attester: attesteraddr,
+        signature: formatSignature,
+        deadline: 0,
+        // }, { gasPrice: BigNumber.from('20000000000'), gasLimit: BigNumber.from('1000000') });
       },
-      attester: attesteraddr,
-      signature: formatSignature,
-      deadline: 0,
-    });
+      { gasPrice: BN.from('20000000000'), gasLimit: BN.from('1000000') }
+    );
+    
   } catch (er) {
     console.log('eas attestByDelegationProxy attest failed', er);
     return;
@@ -250,10 +256,8 @@ export async function attestByDelegationProxy(params) {
   return newAttestationUID;
 }
 
-export function getAttestInfoByEncodeDdata(encodeD) {
-  const schemaEncoder = new SchemaEncoder(
-    'string source,bytes32 sourceUseridHash,bytes32 authUseridHash,address receipt,uint64 getDataTime,uint64 baseValue,bool balanceGreaterThanBaseValue'
-  );
+export function getAttestInfoByEncodeDdata(schemaStr, encodeD) {
+  const schemaEncoder = new SchemaEncoder(schemaStr);
   let encodedData = schemaEncoder.decodeData(encodeD);
   return encodedData;
 }

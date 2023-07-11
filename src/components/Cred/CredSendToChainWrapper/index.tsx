@@ -89,6 +89,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         const targetNetwork =
           EASInfo[activeNetworkName as keyof typeof EASInfo];
         try {
+          debugger
           const [accounts, chainId, provider] = await connectWallet(
             targetNetwork
           );

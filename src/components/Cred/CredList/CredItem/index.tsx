@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import type { SyntheticEvent } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import { DATASOURCEMAP } from '@/config/constants';
 import { PADOADDRESS } from '@/config/envConstants';
@@ -21,7 +23,6 @@ import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
 import iconMedalToken from '@/assets/img/iconMedalToken.svg';
 import iconMedalIdentification from '@/assets/img/iconMedalIdentification.svg';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
-import {getAttestInfoByEncodeDdata} from '@/services/chains/eas'
 import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 
@@ -38,8 +39,7 @@ interface CredTypeListProps {
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
     console.log('credItem', item);
-    // 
-
+    //
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
     const [expand, setExpand] = useState(false);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -81,9 +81,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       }
       return imgNode;
     }, [item.type]);
+    const navigate = useNavigate();
 
     const handleClick = () => {
-      // console.log('credItemw', getAttestInfoByEncodeDdata(item.encodedData));
       setExpand((flag) => !flag);
     };
     const handleClickDropdownItem = (operation: string) => {
@@ -190,8 +190,14 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                     rel="noreferrer"
                     key={k}
                   >
-                    <img src={i.icon} alt="" />
+                  <img src={i.icon} alt="" />
                   </a>
+                  // <Link
+                  //   to={`/transactionDetail?requestid=${item.requestid}`}
+                  //   key={k}
+                  // >
+                  //   <img src={i.icon} alt="" />
+                  // </Link>
                 ))}
               </div>
               <div className="operations">

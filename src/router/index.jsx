@@ -6,35 +6,39 @@ import Lock from '@/pages/Lock/index.jsx';
 import Layout from '@/components/Layout/Layout/index.tsx';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import Cred from '@/pages/Cred/index.tsx';
+import TransactionDetail from '@/pages/Transaction/TransactionDetail'
 const router = [
   {
-    path: "/",
+    path: '/',
     element: <Layout />,
-    errorElement:<ErrorBoundary />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         index: true,
-        element: <Home/>,
+        element: <Home />,
       },
       {
-        path: "datas",
-        element: <DataSourceOverview/>,
+        path: 'datas',
+        element: <DataSourceOverview />,
       },
       {
-        path: "dataDetail",
-        element: <DataSourceDetail/>,
+        path: 'dataDetail',
+        element: <DataSourceDetail />,
       },
       {
-        path: "lock",
-        element: <Lock/>,
+        path: 'lock',
+        element: <Lock />,
       },
       {
-        path: "cred",
-        element: <Cred/>,
+        path: 'cred',
+        element: <Cred />,
       },
-    ]
+    ],
   },
-  
+  {
+    path: '/transactionDetail',
+    element: <TransactionDetail />,
+  },
 ];
 
 export default router;

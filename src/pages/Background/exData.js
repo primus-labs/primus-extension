@@ -272,6 +272,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
       apipassword: 'xxx',
     },
     sigFormat: 'EAS-Ethereum', // TODO
+    // sigFormat: 'EAS-BNB', // TODO
     // schemaType: 'exchange-balance', // TODO
     schemaType,
     schema: [

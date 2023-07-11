@@ -2,6 +2,7 @@ import iconTool1 from '@/assets/img/iconTool1.svg';
 import iconPolygon from '@/assets/img/iconPolygon.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
+import iconBinance from '@/assets/img/iconBinance.png';
 
 type ENVTYPE = 'development' | 'test' | 'production';
 
@@ -89,8 +90,8 @@ const EASINFOMAP = {
       blockExploreUrls: ['https://sepolia.etherscan.io'],
     },
     BNB: {
-      icon: iconTool1,
-      title: 'BNB Smart Chain Testnet',
+      icon: iconBinance,
+      title: 'BNB',
       rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
       easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
       easProxyContrac: '0x2884E43B48c2Cc623A19c0c3d260DD8f398fd5F3',
@@ -104,19 +105,14 @@ const EASINFOMAP = {
             '0xe2b389fef1bd8887415ac6079090e2ed6377eca6235cb5c5f691ba71cd2ca456',
         },
         PolygonID: {
-          schemaUid:
-            '',
-          schemaUidTokenHoldings:
-            '',
-          schemaUidIdentification:
-            '',
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
         },
       },
       chainId: '0x61', // numToHex
       chainName: 'BNB Smart Chain Testnet',
-      rpcUrls: [
-        'https://data-seed-prebsc-1-s3.binance.org:8545/',
-      ],
+      rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545/'],
       blockExploreUrls: ['https://testnet.bscscan.com/'],
     },
   },
@@ -186,19 +182,14 @@ const EASINFOMAP = {
             '0xe2b389fef1bd8887415ac6079090e2ed6377eca6235cb5c5f691ba71cd2ca456',
         },
         PolygonID: {
-          schemaUid:
-            '',
-          schemaUidTokenHoldings:
-            '',
-          schemaUidIdentification:
-            '',
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
         },
       },
       chainId: '0x61', // numToHex
       chainName: 'BNB Smart Chain Testnet',
-      rpcUrls: [
-        'https://data-seed-prebsc-1-s3.binance.org:8545/',
-      ],
+      rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545/'],
       blockExploreUrls: ['https://testnet.bscscan.com/'],
     },
   },
