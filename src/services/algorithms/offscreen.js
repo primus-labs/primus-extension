@@ -168,6 +168,7 @@ function call(str) {
         console.log('offscreen call exchange=', exchange);
         let res;
         let signParams;
+        let path;
         switch(source) {
             case 'binance':
                 signParams = {recvWindow: 60 * 1000};
@@ -184,6 +185,16 @@ function call(str) {
                 }
                 res = exchange.sign('account/balance', 'private', 'GET', signParams);
                 console.log('offscreen call okx res=', res);
+                return JSON.stringify(res);
+            case 'coinbase':
+                path = 'accounts';
+                signParams = {limit: 100};
+                if (jsonParams.params.schemaType === 'Token Holdings') {
+                    path = 'accounts/{account_id}';
+                    signParams = {account_id: jsonParams.params.holdingToken};
+                }
+                res = exchange.sign(path, 'private', 'GET', signParams);
+                console.log('offscreen call coinbase res=', res);
                 return JSON.stringify(res);
         }
     }

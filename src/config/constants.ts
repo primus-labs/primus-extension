@@ -72,7 +72,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Coinbase,
     baseName: 'api.coinbase.com',
-    baseUrl: '',
+    baseUrl: '104.18.5.43:443',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
   },
   kucoin: {

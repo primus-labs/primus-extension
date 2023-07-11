@@ -302,6 +302,9 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     params.baseValue = '0';
     params.holdingToken = holdingToken;
     calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
+    if (source === 'coinbase') {
+      calculationType = `SUM_OF_ALL`;
+    }
   }
 
   let extRequestsOrder;
@@ -350,13 +353,16 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
         path: 'accounts',
         api: ['v2', 'private'],
         method: 'GET',
-        params: {},
+        params: {limit: 100},
       };
-      signres = await sign('coinbase', data, USERPASSWORD, port);
       if (form.type === 'TOKEN_HOLDINGS') {
-        signres.parseSchema =
-          'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
+        data.path = 'accounts/{account_id}';
+        data.params = {account_id: form.token};
       }
+      signres = await sign('coinbase', data, USERPASSWORD, port);
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag="amount":":end_tag="';
+      signres.decryptFlag = 'false';
+      console.log('coinbase signres=', signres);
       extRequestsOrderInfo = { ...signres };
       break;
     case 'okx':
