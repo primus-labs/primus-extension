@@ -26,6 +26,7 @@ export async function mintWithSignature(params) {
   const abi = [
     'function mintWithSignature(bool, address, uint256, uint256, uint256, bytes) payable public',
     'function owner() public view virtual returns (address)',
+    'function tokenURI(uint256) public view virtual override returns (string)',
   ];
   let provider = new ethers.providers.Web3Provider(metamaskprovider);
   await provider.send('eth_requestAccounts', []);
@@ -37,7 +38,7 @@ export async function mintWithSignature(params) {
     true,
     receipt,
     0,
-    1,
+    20, //TODO=>1 !!!
     1,
     signature
   );

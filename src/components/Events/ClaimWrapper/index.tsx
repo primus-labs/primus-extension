@@ -140,11 +140,11 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           const mintRes = await mintWithSignature(upChainParams);
           
           // if (mintRes) {
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Successfully get your rewards.',
-          // });
+          setActiveRequest({
+            type: 'suc',
+            title: 'Congratulations',
+            desc: 'Successfully get your rewards.',
+          });
           // } else {
               // setActiveRequest({
               //   type: 'error',
