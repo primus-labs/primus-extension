@@ -1,6 +1,6 @@
 import React, { useMemo, memo } from 'react';
 import imgNFT from '@/assets/img/events/nft.svg';
-import iconOpensea from '@/assets/img/events/iconOpensea.svg'
+import iconOpenSea from '@/assets/img/events/iconOpenSea.svg'
 import rightArrow from '@/assets/img/rightArrow.svg'
 import type {
   SocialDataSourceData,
@@ -24,7 +24,7 @@ const RewardItem: React.FC<DataSourceItemProps> = memo(
         <img src={imgNFT} alt="" />
         <p className="title">On-boarding #001</p>
         <div className="desc">
-          <img src={iconOpensea} alt="" />
+          <img src={iconOpenSea} alt="" />
           <span>Opensea</span>
           <img className="suffix" src={rightArrow} alt="" />
         </div>
