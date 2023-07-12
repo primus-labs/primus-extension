@@ -51,6 +51,19 @@ export const setWalletAddressAction = (values: string) => ({
   type: 'setWalletAddress',
   payload: values,
 });
+export const setRewardsAction = (values: object) => ({
+  type: 'setRewards',
+  payload: values,
+});
+export const initRewardsActionAsync = () => {
+  return async (dispatch: any) => {
+    const { rewards } = await chrome.storage.local.get(['rewards']);
+    if (rewards) {
+      const rewardsObj = JSON.parse(rewards);
+      dispatch(setRewardsAction(rewardsObj));
+    }
+  };
+};
 // export const setUserInfoActionAsync = (value: string) => {
 //   return async (dispatch: any) => {
 //     await chrome.storage.local.set({

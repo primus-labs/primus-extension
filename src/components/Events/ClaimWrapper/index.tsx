@@ -138,23 +138,21 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           };
           debugger;
           const mintRes = await mintWithSignature(upChainParams);
-          
           // if (mintRes) {
+          //   let obj = {}
+          //   obj[mintRes.tokenId] = mintRes;
+          //   await chrome.storage.local.set({
+          //     rewards: JSON.stringify(obj),
+          //   });
+          // }
           setActiveRequest({
             type: 'suc',
             title: 'Congratulations',
             desc: 'Successfully get your rewards.',
           });
-          // } else {
-              // setActiveRequest({
-              //   type: 'error',
-              //   title: 'Failed',
-              //   desc: 'Your wallet did not connect or refused to authorize.Please try again later.',
-              // });
-          // }
+          
         } catch (e) {
           console.log('mintWithSignature error:', e);
-          debugger;
           setActiveRequest({
             type: 'error',
             title: 'Failed',

@@ -15,6 +15,7 @@ import {
   initUserInfoActionAsync,
   setCredentialsAsync,
   initWalletAddressActionAsync,
+  initRewardsActionAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import { postMsg } from '@/utils/utils';
@@ -138,6 +139,8 @@ const Layout = () => {
     dispatch(initUserInfoActionAsync());
     dispatch(setCredentialsAsync());
     dispatch(initWalletAddressActionAsync());
+    dispatch(initRewardsActionAsync());
+    ;
   }, [dispatch]);
 
   return (
