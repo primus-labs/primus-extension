@@ -44,6 +44,7 @@ const EASINFOMAP = {
       icon: iconTool1,
       title: 'Sepolia',
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      erc721Contract: '0x0abe45De70bBd82409D3C640b7d4c30d3B0b5b1f',
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       schemas: {
@@ -122,6 +123,7 @@ const EASINFOMAP = {
       icon: iconTool1,
       title: 'Sepolia',
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      erc721Contract: '0x0abe45De70bBd82409D3C640b7d4c30d3B0b5b1f',
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       schemas: {
