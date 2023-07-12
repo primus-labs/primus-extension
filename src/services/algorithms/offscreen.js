@@ -193,7 +193,7 @@ function call(str) {
                     path = 'accounts/{account_id}';
                     signParams = {account_id: jsonParams.params.holdingToken};
                 }
-                res = exchange.sign(path, 'private', 'GET', signParams);
+                res = exchange.sign(path, ['v2', 'private'], 'GET', signParams);
                 console.log('offscreen call coinbase res=', res);
                 return JSON.stringify(res);
         }
