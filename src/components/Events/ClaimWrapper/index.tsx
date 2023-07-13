@@ -15,12 +15,14 @@ import useAllSources from '@/hooks/useAllSources';
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { mintWithSignature } from '@/services/chains/erc721';
-import { getEventSignature } from '@/services/api/event';
+import { getEventSignature, getNFTInfo } from '@/services/api/event';
+import { initRewardsActionAsync } from '@/store/actions';
 
 import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
+import type { Dispatch } from 'react';
 
 import './index.sass';
 
@@ -33,9 +35,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit }) => {
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-    const [submitAddress, setSubmitAddress] = useState<string>();
-
-    const [sourceList, sourceMap] = useAllSources();
+    
+    const rewards = useSelector((state: UserState) => state.rewards);
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
@@ -46,12 +47,16 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       );
       return credArr;
     }, [credentialsFromStore]);
+
+    const [sourceList, sourceMap] = useAllSources();
     const hasSource = useMemo(() => {
       return sourceList.length > 0;
     }, [sourceList]);
     const hasCred = useMemo(() => {
       return credList.length > 0;
     }, [credList]);
+
+    const dispatch: Dispatch<any> = useDispatch();
 
     const onCloseClaimDialog = () => {};
     const onSubmitClaimDialog = useCallback(() => {
@@ -105,7 +110,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setStep(2);
         let eventSingnature = '';
         try {
-          const activeCred = credList[credList.length-1];
+          const activeCred = credList[credList.length - 1];
           const requestParams = {
             rawParam: activeCred,
             greaterThanBaseValue: true,
@@ -113,11 +118,10 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           };
           const { rc, result } = await getEventSignature(requestParams);
           if (rc === 0) {
-            debugger;
             eventSingnature = result.signature;
           }
         } catch {
-          debugger;
+          alert('getEventSignature network error!');
         }
 
         const activeNetworkName = 'Sepolia';
@@ -127,7 +131,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           const [accounts, chainId, provider] = await connectWallet(
             targetNetwork
           );
-          // setSubmitAddress((accounts as string[])[0]);
           const { keyStore } = await chrome.storage.local.get(['keyStore']);
           const { address } = JSON.parse(keyStore);
           const upChainParams = {
@@ -136,21 +139,19 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             receipt: '0x' + address,
             signature: '0x' + eventSingnature, // TODO
           };
-          debugger;
           const mintRes = await mintWithSignature(upChainParams);
-          // if (mintRes) {
-          //   let obj = {}
-          //   obj[mintRes.tokenId] = mintRes;
-          //   await chrome.storage.local.set({
-          //     rewards: JSON.stringify(obj),
-          //   });
-          // }
+          const nftInfo = await getNFTInfo(mintRes[1]);
+          const newRewards = { ...rewards };
+          newRewards[mintRes[0]] = nftInfo;
+          await chrome.storage.local.set({
+            rewards: JSON.stringify(newRewards),
+          });
+          await dispatch(initRewardsActionAsync());
           setActiveRequest({
             type: 'suc',
             title: 'Congratulations',
             desc: 'Successfully get your rewards.',
           });
-          
         } catch (e) {
           console.log('mintWithSignature error:', e);
           setActiveRequest({
@@ -160,7 +161,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           });
         }
       },
-      [credList]
+      [credList, rewards,dispatch]
     );
     const fetchEventSingnature = useCallback(async () => {}, []);
     return (

@@ -12,11 +12,7 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },
-  "permissions": [
-    "storage",
-    "unlimitedStorage",
-    "offscreen"
-  ],
+  "permissions": ["storage", "unlimitedStorage", "offscreen"],
   "host_permissions": [
     "http://18.179.8.186:8080/",
     "https://18.179.8.186:8081/",
@@ -30,6 +26,7 @@
     "https://api.bybit.com/",
     "https://api.mexc.com/",
     "https://contract.mexc.com/",
-    "https://api.gateio.ws/"
+    "https://api.gateio.ws/",
+    "https://xuda-note.oss-cn-shanghai.aliyuncs.com/"
   ]
 }

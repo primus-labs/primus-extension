@@ -165,3 +165,24 @@ export function getAuthUrl(authParams: AuthParams) {
   const { source, state } = authParams;
   return `${PADOSERVERURLHTTPS}/public/render/${source}?state=${state}`;
 }
+
+export async function assembleUserInfoParams() {
+  const { keyStore, userInfo } = await chrome.storage.local.get([
+    'keyStore',
+    'userInfo',
+  ]);
+  const { address } = JSON.parse(keyStore);
+  const { id, token: loginToken } = JSON.parse(userInfo);
+  const user = {
+    userid: id,
+    address: '0x' + address,
+    token: loginToken,
+  };
+  return user;
+}
+export async function getAuthUserIdHash() {
+  const { userInfo } = await chrome.storage.local.get(['userInfo']);
+  const { id: authUserId } = JSON.parse(userInfo);
+  const authUseridHash = strToHex(authUserId);
+  return authUseridHash;
+}

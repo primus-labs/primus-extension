@@ -1,33 +1,27 @@
-import React, { useMemo, memo } from 'react';
+import React, { useMemo, memo, useCallback } from 'react';
 import imgNFT from '@/assets/img/events/nft.svg';
 import iconOpenSea from '@/assets/img/events/iconOpenSea.svg'
 import rightArrow from '@/assets/img/rightArrow.svg'
-import type {
-  SocialDataSourceData,
-  SourceData,
-  ExData,
-  SocialData,
-  KYCData,
-} from '@/types/dataSource';
+import type { Reward } from '@/types/event';
 
 import './index.sass';
 
-interface DataSourceItemProps {
-  item?: SourceData;
-  onCheck?: (item: SourceData) => void;
+interface RewardItemProps {
+  item: Reward;
+  // onCheck?: (item: SourceData) => void;
 }
 
-const RewardItem: React.FC<DataSourceItemProps> = memo(
-  ({ item: source, onCheck }) => {
+const RewardItem: React.FC<RewardItemProps> = memo(
+  ({ item }) => {
     return (
       <div className="rewardItem">
-        <img src={imgNFT} alt="" />
-        <p className="title">On-boarding #001</p>
-        <div className="desc">
+        <img src={item.image} alt="" />
+        <p className="title">{item.name}</p>
+        <a href={`https://testnets.opensea.io/account`} className="desc">
           <img src={iconOpenSea} alt="" />
-          <span>Opensea</span>
+          <span>OpenSea</span>
           <img className="suffix" src={rightArrow} alt="" />
-        </div>
+        </a>
       </div>
     );
   }

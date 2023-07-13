@@ -14,7 +14,7 @@ import AttestationDialog from './AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
 
-import { postMsg } from '@/utils/utils';
+import { postMsg,strToHex } from '@/utils/utils';
 import useTimeout from '@/hooks/useTimeout';
 import useInterval from '@/hooks/useInterval';
 import useAlgorithm from '@/hooks/useAlgorithm';
@@ -25,12 +25,19 @@ import {
 } from '@/config/constants';
 
 import { setCredentialsAsync } from '@/store/actions';
-import { add, mul, gt } from '@/utils/utils';
+import {
+  add,
+  mul,
+  gt,
+  assembleUserInfoParams,
+  getAuthUserIdHash,
+} from '@/utils/utils';
 import {
   attestForAnt,
   validateAttestationForAnt,
   attestForPolygonId,
 } from '@/services/api/cred';
+
 
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 import type { Dispatch } from 'react';
@@ -301,6 +308,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               const credentialsObj = { ...credentialsFromStore };
               const activeRequestId = activeCred?.requestid ?? +new Date();
               // // credentialsObj[activeRequestId] = fullAttestation;
+              
+              const user = await assembleUserInfoParams()
+              const authUseridHash = await getAuthUserIdHash();
+
               credentialsObj[activeRequestId] = {
                 type,
                 requestid: activeRequestId + '',
@@ -311,7 +322,20 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 label,
                 credential,
                 ...result2,
+
+                sigFormat: 'EAS-Ethereum',
+                schemaType: type,
+                user,
+                dataToBeSigned: {
+                  "source": source,
+                  "type": type,
+                  "authUseridHash": authUseridHash,
+                  "recipient": walletAddress,
+                  "timestamp": (+ new Date())+'',
+                  "result": true
+                }
               };
+
               await chrome.storage.local.set({
                 credentials: JSON.stringify(credentialsObj),
               });

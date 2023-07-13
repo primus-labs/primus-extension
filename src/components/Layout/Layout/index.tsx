@@ -140,7 +140,6 @@ const Layout = () => {
     dispatch(setCredentialsAsync());
     dispatch(initWalletAddressActionAsync());
     dispatch(initRewardsActionAsync());
-    ;
   }, [dispatch]);
 
   return (

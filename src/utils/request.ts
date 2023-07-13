@@ -10,7 +10,7 @@ const request = async(fetchParams: FetchParams) => {
   let {method, url, data= {}, config} = fetchParams
   const baseUrl = PADOSERVERURL;
   method = method.toUpperCase();
-  url = baseUrl + url;
+  url = (url.startsWith('http') || url.startsWith('https'))? url: baseUrl + url;
 
   if (method === 'GET') {
       let dataStr = '';
