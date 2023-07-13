@@ -92,6 +92,14 @@ const Layout = () => {
               payload: message.res,
             });
           }
+          let { keyStore } = await chrome.storage.local.get(['keyStore']);
+          if (keyStore) {
+            if (!message.res) {
+              navigate('/lock');
+            } else {
+              navigate('/datas');
+            }
+          }
         } else {
         }
         padoServicePort.onMessage.removeListener(padoServicePortListener3);

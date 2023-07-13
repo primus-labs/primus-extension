@@ -22,7 +22,7 @@ const Lock = memo(() => {
           type: 'setUserPassword',
           payload: pwd,
         });
-        navigate('/');
+        navigate('/datas');
       } else {
         setErrorMsg('Incorrect password');
       }
