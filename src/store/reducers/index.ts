@@ -19,7 +19,8 @@ const initState = {
   credentials: {},
   userInfo: {},
   walletAddress: '',
-  rewards: {}
+  rewards: {},
+  effective: false
 };
 
 // reducer
@@ -54,6 +55,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, walletAddress: action.payload };
     case 'setRewards':
       return { ...state, rewards: action.payload };
+    case 'setEffective':
+      return { ...state, effective: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     default:

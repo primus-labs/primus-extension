@@ -24,6 +24,7 @@ import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 import './index.sass';
+import LoseEfficacyDialog from '../LoseEfficacy';
 
 const Layout = () => {
   console.log('222222Layout');
@@ -34,7 +35,7 @@ const Layout = () => {
 
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
-  // usePollingUpdateAllSources();
+  usePollingUpdateAllSources();
 
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
@@ -157,6 +158,7 @@ const Layout = () => {
         <ActiveHeader />
         <Outlet />
       </div>
+      <LoseEfficacyDialog/>
     </div>
   );
 };
