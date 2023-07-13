@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useMemo, useEffect,memo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
+import { useSelector } from 'react-redux';
 
 import logo from '@/assets/img/logo.svg';
 import PAvatar from '@/components/PAvatar';
@@ -9,10 +10,9 @@ import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
 
-import './index.sass';
-
-import { useSelector } from 'react-redux';
+import { throttle } from '@/utils/utils';
 import type { UserState } from '@/types/store';
+import './index.sass';
 
 type NavItem = {
   icon: any;
@@ -95,7 +95,7 @@ const PageHeader = memo(() => {
     }
   }, [activeSourceType]);
   useEffect(() => {
-    window.onscroll = () => {
+    const throttleFn = throttle(() => {
       if (activeSourceType !== 'All' || pathname !== '/datas') {
         setIsScroll(false);
         return;
@@ -106,9 +106,10 @@ const PageHeader = memo(() => {
       } else {
         setIsScroll(false);
       }
-    };
+    }, 500);
+    window.addEventListener('scroll', throttleFn);
     return () => {
-      window.onscroll = () => {};
+      window.removeEventListener('scroll', throttleFn);
     };
   }, [activeSourceType, pathname]);
 

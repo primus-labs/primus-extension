@@ -186,3 +186,15 @@ export async function getAuthUserIdHash() {
   const authUseridHash = strToHex(authUserId);
   return authUseridHash;
 }
+type ThrottleFn = () => void
+export function throttle(fn: ThrottleFn, delay: number) {
+  let valid = true;
+  return function () {
+    if (valid) {
+      setTimeout(() => {
+        fn();
+      }, delay);
+      valid = false;
+    }
+  };
+}

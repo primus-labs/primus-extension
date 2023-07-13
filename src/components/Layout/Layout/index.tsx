@@ -97,7 +97,7 @@ const Layout = () => {
             if (!message.res) {
               navigate('/lock');
             } else {
-              navigate('/datas');
+              // navigate('/datas');
             }
           }
         } else {

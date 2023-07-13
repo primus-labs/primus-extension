@@ -17,6 +17,7 @@ import { connectWallet } from '@/services/wallets/metamask';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
 import { initRewardsActionAsync } from '@/store/actions';
+import { getAuthUserIdHash } from '@/utils/utils';
 
 import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
@@ -35,7 +36,10 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit }) => {
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-    
+
+    const walletAddress = useSelector(
+      (state: UserState) => state.walletAddress
+    );
     const rewards = useSelector((state: UserState) => state.rewards);
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
@@ -111,11 +115,23 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         let eventSingnature = '';
         try {
           const activeCred = credList[credList.length - 1];
-          const requestParams = {
+          const requestParams: any = {
             rawParam: activeCred,
             greaterThanBaseValue: true,
             signature: activeCred.signature,
           };
+          if (activeCred.type === 'IDENTIFICATION_PROOF') {
+            const authUseridHash = await getAuthUserIdHash();
+            const { source, type } = activeCred;
+            requestParams.dataToBeSigned = {
+              source: source,
+              type: type,
+              authUseridHash: authUseridHash,
+              recipient: walletAddress,
+              timestamp: +new Date() + '',
+              result: true,
+            };
+          }
           const { rc, result } = await getEventSignature(requestParams);
           if (rc === 0) {
             eventSingnature = result.signature;
@@ -161,9 +177,9 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           });
         }
       },
-      [credList, rewards,dispatch]
+      [credList, rewards, dispatch, walletAddress]
     );
-    const fetchEventSingnature = useCallback(async () => {}, []);
+    
     return (
       <div className="claimWrapper">
         {visible && step === 1 && (

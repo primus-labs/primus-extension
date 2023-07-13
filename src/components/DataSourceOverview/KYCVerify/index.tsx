@@ -12,9 +12,8 @@ import { setKYCsAsync } from '@/store/actions';
 import useInterval from '@/hooks/useInterval';
 import { getCurrentDate } from '@/utils/utils';
 import { KYCStoreVersion } from '@/config/constants';
-import { exportJson } from '@/utils/exportFile';
 
-import iconExport2 from '@/assets/img/iconExport2.svg'
+import iconExport2 from '@/assets/img/iconExport2.svg';
 import './index.sass';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
@@ -47,7 +46,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     const [step, setStep] = useState<number>(1);
     const [switchFlag, setSwitchFlag] = useState<boolean>(false);
     const [orderId, setOrderId] = useState<string>('');
-    const [KYCRes, setKYCRes] = useState<string>('');
+    const [KYCRes, setKYCRes] = useState<any>();
 
     const walletAddress = useSelector(
       (state: UserState) => state.walletAddress
@@ -68,10 +67,14 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
 
     const [qrCodeVal, setQrCodeVal] = useState<string>('');
 
-    const onSubmitActiveRequestDialog = useCallback(() => {
-      const jsonStr = JSON.stringify(KYCRes, null, '\t');
-      exportJson(jsonStr, 'eKYC verification result');
-    }, [KYCRes]);
+    const onSubmitActiveRequestDialog = useCallback(async () => {
+      const lowerCaseSourceName = activeSource?.name.toLowerCase() as string;
+      await chrome.storage.local.set({
+        [lowerCaseSourceName]: JSON.stringify(KYCRes),
+      });
+      await dispatch(setKYCsAsync());
+      onClose();
+    }, [KYCRes, activeSource?.name, dispatch, onClose]);
 
     const fetchConnectResult = useCallback(async () => {
       const params = {
@@ -105,14 +108,13 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             case 'SUCCESS':
               console.log('ant connected!');
               setSwitchFlag(false);
-              setKYCRes(result);
+
               setActiveRequest({
                 type: 'suc',
                 title: 'Congratulations',
                 desc: 'Your eKYC verification result has been generated.',
               });
-              const lowerCaseSourceName =
-                activeSource?.name.toLowerCase() as string;
+
               const kycSourceData = {
                 credential: credentialInfo.credential,
                 transactionHash: credentialInfo.transactionHash,
@@ -122,11 +124,16 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 timestamp: +new Date(),
                 version: KYCStoreVersion,
               };
-              await chrome.storage.local.set({
-                [lowerCaseSourceName]: JSON.stringify(kycSourceData),
-              });
-              dispatch(setKYCsAsync());
+              setKYCRes(kycSourceData);
 
+              break;
+            case 'FAILED':
+              setSwitchFlag(false);
+              setActiveRequest({
+                type: 'error',
+                title: 'Failed',
+                desc: 'Your eKYC verification failed.',
+              });
               break;
           }
         } else {
@@ -144,7 +151,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
         });
         console.log('getConnectAntResult network error');
       }
-    }, [requestConfigParams, orderId, dispatch, activeSource?.name]);
+    }, [requestConfigParams, orderId]);
     useInterval(fetchConnectResult, POLLINGTIME, switchFlag, false);
     const fetchConnectQrcodeValue = useCallback(async () => {
       const params = {
@@ -172,14 +179,18 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       fetchConnectQrcodeValue();
     }, [fetchConnectQrcodeValue]);
 
-    const footerButton = (
-      <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
-        <img src={iconExport2} alt="" className="iconPrefix" />
-        <span>Authorize to import </span>
-      </button>
-    );
-    
-    
+    const footerButton =
+      activeRequest?.type === 'suc' ? (
+        <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
+          <img src={iconExport2} alt="" className="iconPrefix" />
+          <span>Authorize to import </span>
+        </button>
+      ) : (
+        <button className="nextBtn gray" onClick={onSubmitActiveRequestDialog}>
+          <span>OK </span>
+        </button>
+      );
+
     return (
       <>
         {step === 1 && (
@@ -199,6 +210,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             title={activeRequest?.title}
             desc={activeRequest?.desc}
             footerButton={footerButton}
+            closeable={activeRequest?.type !== 'suc'}
           />
         )}
       </>

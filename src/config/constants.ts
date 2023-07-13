@@ -164,7 +164,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     name: 'ZAN',
     type: 'eKYC',
     icon: iconDataSourceZan,
-    desc: 'by Antchain',
+    // desc: 'by Antchain',
   },
 };
 

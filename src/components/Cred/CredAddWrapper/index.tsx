@@ -30,7 +30,6 @@ import {
   mul,
   gt,
   assembleUserInfoParams,
-  getAuthUserIdHash,
 } from '@/utils/utils';
 import {
   attestForAnt,
@@ -310,8 +309,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               // // credentialsObj[activeRequestId] = fullAttestation;
               
               const user = await assembleUserInfoParams()
-              const authUseridHash = await getAuthUserIdHash();
-
+              
               credentialsObj[activeRequestId] = {
                 type,
                 requestid: activeRequestId + '',
@@ -326,14 +324,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 sigFormat: 'EAS-Ethereum',
                 schemaType: type,
                 user,
-                dataToBeSigned: {
-                  "source": source,
-                  "type": type,
-                  "authUseridHash": authUseridHash,
-                  "recipient": walletAddress,
-                  "timestamp": (+ new Date())+'',
-                  "result": true
-                }
               };
 
               await chrome.storage.local.set({

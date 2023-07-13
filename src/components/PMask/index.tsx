@@ -5,12 +5,13 @@ import iconClose from '@/assets/img/iconClose.svg';
 interface PMaskProps {
   onClose: () => void;
   children?: any;
+  closeable?: boolean;
 }
 
-const PMask: React.FC<PMaskProps> = memo(({ onClose, children }) => {
+const PMask: React.FC<PMaskProps> = memo(({ onClose, children, closeable =true }) => {
   return (
     <div className="pMask bgLayer">
-      <img className="closeBtn" src={iconClose} alt="" onClick={onClose} />
+      {closeable && <img className="closeBtn" src={iconClose} alt="" onClick={onClose} />}
       {children}
     </div>
   );

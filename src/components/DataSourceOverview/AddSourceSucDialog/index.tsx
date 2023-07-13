@@ -24,6 +24,7 @@ interface AddSourceSucDialogProps {
   headerType?: string;
   address?: string;
   footerButton?: any;
+  closeable?: boolean
 }
 
 const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
@@ -37,6 +38,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     headerType = 'dataSource',
     address,
     footerButton,
+    closeable = true
   }) => {
     footerButton = footerButton ?? (
       <button className="nextBtn" onClick={onSubmit}>
@@ -58,7 +60,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     }, [headerType, type]);
 
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={closeable}>
         <div className={dialogClassName}>
           <main>
             {headerType === 'setting' && (
@@ -69,9 +71,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
             {headerType === 'polygonIdAttestation' && (
               <PolygonIdAddressInfoHeader address={address as string} />
             )}
-            {headerType === 'claim' && (
-              <ClaimDialogHeaderDialog />
-            )}
+            {headerType === 'claim' && <ClaimDialogHeaderDialog />}
             {type === 'suc' && <img className="sucImg" src={iconSuc} alt="" />}
             {type === 'error' && (
               <img className="sucImg" src={iconError} alt="" />
