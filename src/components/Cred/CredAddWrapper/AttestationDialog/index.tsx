@@ -41,6 +41,8 @@ interface AttestationDialogProps {
   activeSourceName?: string;
   onBack?: () => void;
 }
+const supportAssetCredList = ['binance', 'okx'];
+const supportTokenCredList = ['binance', 'okx', 'coinbase'];
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
@@ -98,6 +100,14 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
       if (type === 'IDENTIFICATION_PROOF') {
         return connectedKYCSourceList;
+      } else if (type === 'ASSETS_PROOF') {
+        return connectedExSourceList.filter((i) =>
+          supportAssetCredList.includes(i.name.toLowerCase())
+        );
+      }else if (type === 'TOKEN_HOLDINGS') {
+        return connectedExSourceList.filter((i) =>
+          supportTokenCredList.includes(i.name.toLowerCase())
+        );
       } else {
         return connectedExSourceList;
       }
