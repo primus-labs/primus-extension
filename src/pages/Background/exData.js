@@ -59,7 +59,7 @@ const getExchange = async (message, USERPASSWORD, port) => {
     params: { apiKey },
   } = message;
   const exchangeName = type.split('-')[1];
-  console.log('getExchange exData type:', type);
+  // console.log('getExchange exData type:', type);
   // get ex constructor params
   let exParams = {};
   if (apiKey) {

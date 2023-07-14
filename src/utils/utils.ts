@@ -192,7 +192,7 @@ export function throttle(fn: ThrottleFn, delay: number) {
   return function () {
     if (valid) {
       setTimeout(() => {
-        fn();
+        fn()
       }, delay);
       valid = false;
     }

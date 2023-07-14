@@ -60,6 +60,7 @@ const Home = memo(() => {
 
     // If keyStore is cached,,it represents that the user has already bound a wallet => data page
     if (keyStore) {
+      navigate('/datas');
       // const padoServicePortListener = async function (message) {
       //   if (message.resMethodName === 'queryUserPassword') {
       //     console.log('page_get:queryUserPassword(Home):', message.res);

@@ -92,6 +92,7 @@
         .iconWrapper
           @extend .frcc
           position: relative
+          
           &:not(.disabled):hover
             .descTip
               display: flex
@@ -101,6 +102,16 @@
               cursor: not-allowed
               &:hover
                 opacity: 0.4
+          &.iconPolygonIDWrapper
+            width: 24px
+            opacity: 0.8
+            >img
+              width: 16px
+              opacity: 1
+            &:hover
+              opacity: 0.8
+              >img
+                opacity: 1
           .descTip
             display: none
             position: absolute

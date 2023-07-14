@@ -95,7 +95,7 @@ const PageHeader = memo(() => {
     }
   }, [activeSourceType]);
   useEffect(() => {
-    const throttleFn = throttle(() => {
+    const fn = () => {
       if (activeSourceType !== 'All' || pathname !== '/datas') {
         setIsScroll(false);
         return;
@@ -106,10 +106,10 @@ const PageHeader = memo(() => {
       } else {
         setIsScroll(false);
       }
-    }, 500);
-    window.addEventListener('scroll', throttleFn);
+    }
+    window.addEventListener('scroll', fn);
     return () => {
-      window.removeEventListener('scroll', throttleFn);
+      window.removeEventListener('scroll', fn);
     };
   }, [activeSourceType, pathname]);
 
