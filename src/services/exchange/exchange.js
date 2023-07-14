@@ -149,12 +149,18 @@ class Exchange {
       if (amount) {
         const price = this.tokenPriceMap[curr] || ZERO + '';
         const value = mul(amount, price).toFixed();
-        prev[curr] = {
-          symbol: curr,
-          amount,
-          price,
-          value,
-        };
+        // 
+        if (gt(value, '0.01')) {
+          prev[curr] = {
+            symbol: curr,
+            amount,
+            price,
+            value,
+          };
+        } else {
+          console.log('111222333', curr,amount,value);
+        }
+        
       }
       return prev;
     }, {});
