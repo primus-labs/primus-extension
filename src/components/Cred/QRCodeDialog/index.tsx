@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux';
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
@@ -12,7 +12,7 @@ import { PADOADDRESS } from '@/config/envConstants';
 import { getPolygonIdAttestation } from '@/services/api/cred';
 
 import type { CredTypeItemType } from '@/types/cred';
-import type {UserState} from '@/types/store'
+import type { UserState } from '@/types/store';
 
 interface QRCodeDialogProps {
   onClose: () => void;
@@ -119,7 +119,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
               title="Present Your Credential"
               desc={
                 isPolygonId
-                  ? 'Use your Polygon ID wallet to scan this QR code to import your credential. This process will verify your identity and authorize you to use the credential.'
+                  ? 'Use your Polygon ID wallet to scan and import to your wallet.'
                   : 'Scan this QR code to use or download your credential.'
               }
               qrcodeValue={qrCodeVal}

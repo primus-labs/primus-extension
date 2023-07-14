@@ -239,11 +239,9 @@ export async function attestByDelegationProxy(params) {
         attester: attesteraddr,
         signature: formatSignature,
         deadline: 0,
-        // }, { gasPrice: BigNumber.from('20000000000'), gasLimit: BigNumber.from('1000000') });
-      },
-      { gasPrice: BN.from('20000000000'), gasLimit: BN.from('1000000') }
+      }
+      // { gasPrice: BN.from('20000000000'), gasLimit: BN.from('1000000') }
     );
-    
   } catch (er) {
     console.log('eas attestByDelegationProxy attest failed', er);
     return;

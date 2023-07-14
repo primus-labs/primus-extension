@@ -92,13 +92,10 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
           <main>
             <div className="scrollList scroll">
               <Bridge endIcon={icon} />
-              <h1>Connect Data Source</h1>
+              <h1>Connect Your Data</h1>
               {!loading && (
                 <>
-                  <h2>
-                    Please configure with your READ-ONLY API keys. PADO never
-                    accesses to your API keys or your data.
-                  </h2>
+                  <h2>Please configure with your READ-ONLY API keys.</h2>
 
                   <div className="formItem firstFormItem">
                     <h6>API Key</h6>

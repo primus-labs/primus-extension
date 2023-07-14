@@ -112,7 +112,7 @@ const BindPolygonIDDialog: React.FC<BindPolygonIDDialogProps> = memo(
               <AddressInfoHeader />
               <QRCodeMain
                 title="Bind your Polygon DID"
-                desc="Use your Polygon ID wallet to scan this QR code and bind your Polygon DID with this credential."
+                desc="Use your Polygon ID wallet to scan."
                 qrcodeValue={qrcodeVal}
               />
             </main>

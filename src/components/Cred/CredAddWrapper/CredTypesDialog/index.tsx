@@ -52,10 +52,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         <div className="padoDialog credTypesDialog">
           <main>
             <h1>Create a Credential</h1>
-            <h2>
-              Select a proof type to make a credential. PADO uses TLS-MPC to
-              verify the authenticity of your data.
-            </h2>
+            <h2>PADO uses interactive ZK protocol to attesting your data.</h2>
             <div className="scrollList">
               <ul className="credTypeList">
                 {proofTypes.map((item) => (

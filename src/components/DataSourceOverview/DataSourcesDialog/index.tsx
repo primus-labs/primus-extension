@@ -42,10 +42,7 @@ const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
               <span>Data Sources</span>
               <img src={iconInfo} alt="" onClick={onCheck} />
             </h1>
-            <h2>
-              Select a platform to connect, and let PADO validate your data
-              authenticity.
-            </h2>
+            <h2>PADO validates data authenticity through MPC-TLS.</h2>
             <SourceGroups onChange={handleClickData} />
           </main>
           <button className="nextBtn" onClick={handleClickNext}>

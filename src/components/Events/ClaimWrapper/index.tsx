@@ -158,7 +158,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           const mintRes = await mintWithSignature(upChainParams);
           const nftInfo = await getNFTInfo(mintRes[1]);
           const newRewards = { ...rewards };
-          newRewards[mintRes[0]] = nftInfo;
+          newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
           await chrome.storage.local.set({
             rewards: JSON.stringify(newRewards),
           });

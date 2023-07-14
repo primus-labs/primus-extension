@@ -49,11 +49,14 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
 
     const dialogClassName = useMemo(() => {
       let defaultCN = 'padoDialog addDataSourceSucDialog';
+      if (headerType === 'dataSource') {
+        defaultCN += ' dataSourceSucDialog';
+      }
       if (headerType === 'attestation') {
         defaultCN += ' attestSucDialog';
       }
       if (headerType === 'setting') {
-        defaultCN += ' setSucDialog';
+        defaultCN += ' settingSucDialog';
       }
       defaultCN += ` ${type}`;
       return defaultCN;

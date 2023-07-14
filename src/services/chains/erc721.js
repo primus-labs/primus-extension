@@ -25,12 +25,12 @@ export async function mintWithSignature(params) {
   await provider.send('eth_requestAccounts', []);
   let signer = provider.getSigner();
   const contract = new ethers.Contract(contractAddress, abi, signer);
-//   const ownerRes = await contract.owner();
+  //   const ownerRes = await contract.owner();
   const tx = await contract.mintWithSignature(
     true,
     receipt,
     0,
-    20, //TODO=>1 !!!
+    1,
     1,
     signature
   );
@@ -38,10 +38,10 @@ export async function mintWithSignature(params) {
   await tx.wait();
   const receiptInfo = await provider.getTransactionReceipt(tx.hash);
   console.log('erc721 mintWithSignature tx=', tx, 'receipt=', receiptInfo);
-  const topics = receiptInfo.logs[0].topics
-  const topicsLen = topics.length
+  const topics = receiptInfo.logs[0].topics;
+  const topicsLen = topics.length;
   const tokenId = topics[topicsLen - 1];
   const nftInfo = await contract.tokenURI(tokenId);
-  console.log('erc721 nftInfo=', nftInfo,);
+  console.log('erc721 nftInfo=', nftInfo);
   return [Number(tokenId), nftInfo];
 }

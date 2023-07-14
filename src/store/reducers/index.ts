@@ -20,7 +20,7 @@ const initState = {
   userInfo: {},
   walletAddress: '',
   rewards: {},
-  effective: false
+  effective: true
 };
 
 // reducer

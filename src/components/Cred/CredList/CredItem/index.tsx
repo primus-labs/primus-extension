@@ -190,7 +190,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                     rel="noreferrer"
                     key={k}
                   >
-                  <img src={i.icon} alt="" />
+                    <img src={i.icon} alt="" />
                   </a>
                   // <Link
                   //   to={`/transactionDetail?requestid=${item.requestid}`}
@@ -202,18 +202,18 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               </div>
               <div className="operations">
                 <div className="iconWrapper">
-                  <div className="descTip">
+                  {/* <div className="descTip">
                     <span>Provide on-chain</span>
-                  </div>
+                  </div> */}
                   <img src={iconUpChain} alt="" onClick={handleUpChain} />
                 </div>
                 <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
                 <div
                   className={item.did ? 'iconWrapper disabled' : 'iconWrapper'}
                 >
-                  <div className="descTip">
+                  {/* <div className="descTip">
                     <span>Bind to Polygon ID</span>
-                  </div>
+                  </div> */}
                   <img
                     src={iconBind}
                     className="iconBind"

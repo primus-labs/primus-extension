@@ -31,112 +31,113 @@
         background: rgba(0, 0, 0, 0.2)
         border-radius: $xxLBorderRadius
       .contItem
-          @extend .fcss
-          gap: 14px
+        @extend .fcss
+        gap: 14px
+        padding-top: 38px
+        &.contItemAssets
           padding-top: 20px
+        .label
+          font-size: 18px
+          line-height: 26px
+          font-family: 'Inter-SemiBold'
+          color: $colLBlack
+        .value
+          @extend .frsc
+          gap: $xxsGap
+          .desc
+            font-size: 16px
+            line-height: 34px
+            font-family: 'Inter-Medium'
+            color: $colSBlack
+            .iconGreater
+              width: 20px
+              margin: 0 6px 0 14px
+              opacity: 0.6
           
-          .label
-            font-size: 18px
-            line-height: 26px
+          .con
+            padding: 7px 22px
+            background: rgba(0, 0, 0, 0.05)
+            backdrop-filter: blur(16px)
+            border-radius: 8px
+            @extend .frcc
+            font-size: 16px
+            line-height: 19px
             font-family: 'Inter-SemiBold'
-            color: $colLBlack
-          .value
-            @extend .frsc
-            gap: $xxsGap
-            .desc
-              font-size: 16px
-              line-height: 34px
-              font-family: 'Inter-Medium'
-              color: $colSBlack
-              .iconGreater
-                width: 20px
-                margin: 0 6px 0 14px
-                opacity: 0.6
-            
-            .con
-              padding: 7px 22px
-              background: rgba(0, 0, 0, 0.05)
-              backdrop-filter: blur(16px)
-              border-radius: 8px
-              @extend .frcc
-              font-size: 16px
-              line-height: 19px
-              font-family: 'Inter-SemiBold'
-              color: $colMBlack
-              &.identification
-                padding: 5px 13px
-            .pSelectWrapper
-              .pSelect
-                width: 115px
-                height: 34px
-                .selectInput
-                  font-size: 14px
-                  color: rgba(0,0,0,0.4)
-                  background: rgba(0, 0, 0, 0.05)
-                  backdrop-filter: blur(16px)
-                  border-radius: 8px
-                  padding: 0 15px
-                  @extend .frsc
-                  gap: $xxsGap
-                  &.hasIcon
-                    padding: 0 13px
-                  .suffixIcon
-                    right: 13px
-                    width: 24px
-                  .prefixIcon
-                    width: 14px
-                .selectOptionswrapper
-                  padding-top: 6px
-                  max-height: 150px
-                  overflow-y: auto
+            color: $colMBlack
+            &.identification
+              padding: 5px 13px
+          .pSelectWrapper
+            .pSelect
+              width: 115px
+              height: 34px
+              .selectInput
+                font-size: 14px
+                color: rgba(0,0,0,0.4)
+                background: rgba(0, 0, 0, 0.05)
+                backdrop-filter: blur(16px)
+                border-radius: 8px
+                padding: 0 15px
+                @extend .frsc
+                gap: $xxsGap
+                &.hasIcon
+                  padding: 0 13px
+                .suffixIcon
+                  right: 13px
+                  width: 24px
+                .prefixIcon
+                  width: 14px
+              .selectOptionswrapper
+                padding-top: 6px
+                max-height: 150px
+                overflow-y: auto
+                box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
+                border-radius: $sBorderRadius
+                // width: calc( 100% - 5px )
+                &::-webkit-scrollbar
+                  width: 2px
+                  height: 110px
+                  position: relative
+                  right: 5px
+                &::-webkit-scrollbar-thumb
+                  background: rgba(0, 0, 0, 0.2)
+                  border-radius: $xxLBorderRadius
+                  position: relative
+                  left: -15px
+                .selectOptions
+                  box-shadow: 0px 9px 28px 8px rgba(0, 0, 0, 0.05), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 3px 6px -4px rgba(0, 0, 0, 0.12)
                   box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
                   border-radius: $sBorderRadius
-                  // width: calc( 100% - 5px )
-                  &::-webkit-scrollbar
-                    width: 2px
-                    height: 110px
-                    position: relative
-                    right: 5px
-                  &::-webkit-scrollbar-thumb
-                    background: rgba(0, 0, 0, 0.2)
-                    border-radius: $xxLBorderRadius
-                    position: relative
-                    left: -15px
-                  .selectOptions
-                    box-shadow: 0px 9px 28px 8px rgba(0, 0, 0, 0.05), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 3px 6px -4px rgba(0, 0, 0, 0.12)
-                    box-shadow: 0px 19px 25px rgba(0, 0, 0, 0.1)
-                    border-radius: $sBorderRadius
-                    gap: 6px
-                    .selectOption
-                      height: 30px
-                      border-radius: 8px
-                      font-size: 14px
-                      // line-height: 15px
-                      font-family: 'Inter-Medium'
-                      color: $colSBlack
-                      @extend .frsc
-                      gap: $xxsGap
-                      padding-left: 6px
-                      &:hover
-                        background: rgba(0, 0, 0, 0.05)
-                        color: $colLBlack
-                      >img
-                        width: 14px
-          .emptyContent
-            width: 416px
-            padding-top: 40px 
-            @extend .fcsc
-            gap: 12px
-            >img
-              width: 60px
-            >h2
-              width: 289px
-              text-align: center
-              font-size: 12px
-              line-height: 18px
-              font-family: 'Inter-Regular'
-              color: $colSBlack
-                
+                  gap: 6px
+                  .selectOption
+                    height: 30px
+                    border-radius: 8px
+                    font-size: 14px
+                    // line-height: 15px
+                    font-family: 'Inter-Medium'
+                    color: $colSBlack
+                    @extend .frsc
+                    gap: $xxsGap
+                    padding-left: 6px
+                    &:hover
+                      background: rgba(0, 0, 0, 0.05)
+                      color: $colLBlack
+                    >img
+                      width: 14px
+        .emptyContent
+          width: 416px
+          padding-top: 40px 
+          @extend .fcsc
+          gap: 12px
+          >img
+            width: 60px
+          >h2
+            width: 289px
+            text-align: center
+            font-size: 12px
+            line-height: 18px
+            font-family: 'Inter-Regular'
+            color: $colSBlack
+              
       ul.dataList
         width: 100%
         display: flex
@@ -262,7 +263,7 @@
           li
             cursor: pointer
             width: 88px
-            height: 85px
+            height: 88px
             padding: 18px 2px
             &.active
               padding: 16px 0px

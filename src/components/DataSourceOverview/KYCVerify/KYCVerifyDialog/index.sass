@@ -5,31 +5,27 @@
   position: relative
   main
     .qrcodeMain
-      margin-top: 26px
+      margin-top: 24px
       h1
         font-size: 30px
         line-height: 36px
       h2
         font-size: 14px
         line-height: 20px
-        padding-top: 16px
+        padding-top: 20px
         width: 100%
-        text-align: left
+      .pQRCodeWrapper,.defaultImg
+        width: 200px
+        height: 200px
+        // background-color: #fff
       .pQRCodeWrapper
-        width: 180px
-        height: 180px
-        background-color: #fff
-        padding: 10.5px
-        margin-top: 26px
-      .defaultImg
-        width: 180px
-        height: 180px
-        background-color: #fff
-        >img
-          width: 180px
+        margin-top: 24px
+      // .defaultImg
+      //   >img
+      //     width: 100%
           // width: 159px
     .friendlyRemainer
-      padding-top: 25px
+      padding-top: 24px
       font-size: 12px
       line-height: 20px
       color: $colSBlack
@@ -44,15 +40,11 @@
           height: 4px
           border-radius: 50%
           background-color: $colSBlack
-        
-
-      
-    
   button.nextBtn
     height: 58px !important
 @media (max-width: 1680px)
   .padoDialog.kycVerifyDialog
-    padding: 48px 42px 32px
+    padding: 36px 42px 32px
     button.nextBtn
       height: 48px !important
       font-family: 'Inter-SemiBold' !important      

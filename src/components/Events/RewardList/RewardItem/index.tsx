@@ -17,7 +17,12 @@ const RewardItem: React.FC<RewardItemProps> = memo(
       <div className="rewardItem">
         <img src={item.image} alt="" />
         <p className="title">{item.name}</p>
-        <a href={`https://testnets.opensea.io/account`} className="desc">
+        <a
+          href={`https://opensea.io/assets/matic/0xD096dd142666E5f43B95FD7eA76381E2222e6bCa/${item.tokenId}`}
+          rel="noreferrer"
+          target="_blank"
+          className="desc"
+        >
           <img src={iconOpenSea} alt="" />
           <span>OpenSea</span>
           <img className="suffix" src={rightArrow} alt="" />

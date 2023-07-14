@@ -2,9 +2,11 @@ import React, { memo, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import PMask from '@/components/PMask';
-import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
+import iconInfoColorful from '@/assets/img/iconInfoColorful.svg';
+import rightArrow from '@/assets/img/rightArrow.svg';
 
 import { getServerTime } from '@/services/api/config';
+
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 
@@ -13,7 +15,10 @@ import './index.sass';
 const LoseEfficacyDialog = memo(() => {
   const dispatch: Dispatch<any> = useDispatch();
   const effective = useSelector((state: UserState) => state.effective);
-
+  
+  const onSubmit = () => {
+    window.open('https://padolabs.org/');
+  }
   const checkIsEffective = useCallback(async () => {
     try {
       const { rc, result } = await getServerTime();
@@ -32,15 +37,24 @@ const LoseEfficacyDialog = memo(() => {
   useEffect(() => {
     checkIsEffective();
   }, [checkIsEffective]);
+  
   return (
     <>
       {!effective && (
         <PMask onClose={() => {}} closeable={false}>
           <div className="padoDialog loseEfficacyDialog">
             <main>
-              <ClaimDialogHeaderDialog title="PADO Tip" />
-              <h1>The installation package has expired</h1>
+              <img className="warnImg" src={iconInfoColorful} alt="" />
+              <h1>Trial time has expired</h1>
+              <h2>
+                Please visit our website to access the latest products &
+                services from PADO Labs.
+              </h2>
             </main>
+            <button className="nextBtn" onClick={onSubmit}>
+              <span>Next</span>
+              <img className="suffix" src={rightArrow} alt="" />
+            </button>
           </div>
         </PMask>
       )}

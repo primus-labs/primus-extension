@@ -1,12 +1,12 @@
 import React, { memo } from 'react';
 
 import PQRCode from '@/components/PQRCode';
-import qrCodeDefault from '@/assets/img/qrCodeDefault.svg';
+import qrCodeDefault from '@/assets/img/loading-loop.svg';
 import './index.sass';
 
 interface QRCodeMainProps {
   title: string;
-  desc: string;
+  desc: any;
   qrcodeValue: string;
   qrcodeSize?: number;
 }

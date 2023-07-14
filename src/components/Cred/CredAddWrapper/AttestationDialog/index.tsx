@@ -43,6 +43,11 @@ interface AttestationDialogProps {
 }
 const supportAssetCredList = ['binance', 'okx'];
 const supportTokenCredList = ['binance', 'okx', 'coinbase'];
+const sourcesLabel = {
+  ASSETS_PROOF: 'Assets',
+  TOKEN_HOLDINGS: 'Tokens',
+  IDENTIFICATION_PROOF: 'Identity',
+};
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
@@ -302,7 +307,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           {!!onBack && <PBack onBack={onBack} />}
           <main>
             <h1>{activeAttestationTypeInfo.credTitle}</h1>
-            <h2>{activeAttestationTypeInfo.credDetails}</h2>
+            {/* <h2>{activeAttestationTypeInfo.credDetails}</h2> */}
             <div className="scrollList">
               <div className="contItem">
                 <div className="label">Proof content</div>
@@ -341,7 +346,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 </div>
               </div>
               <div className="contItem contItemAssets">
-                <div className="label">Source of assets</div>
+                <div className="label">Source of {sourcesLabel[type as keyof typeof sourcesLabel]}</div>
                 {activeConnectedSourceList.length > 0 && (
                   <ul className="dataList">
                     {activeConnectedSourceList.map((item) => {

@@ -168,7 +168,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         {visible && step === 3 && (
           <TransferToChainDialog
             title="Provide Attestation"
-            desc="Send your proof to one of the following chain. Provide an on-chain attestation for dApps."
+            desc="Provide your attestation for on-chain applications."
             list={ONCHAINLIST}
             tip="Please select one chain to provide attestation"
             checked={false}

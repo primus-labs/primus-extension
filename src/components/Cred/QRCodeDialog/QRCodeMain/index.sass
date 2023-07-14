@@ -1,5 +1,6 @@
-@import '@/assets/css/pDialog.sass'
+
 @import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
 @import '@/assets/css/pDialog.sass'
 
 .qrcodeMain
@@ -17,11 +18,16 @@
     padding-top: 15px
     width: 379px
     text-align: center
-  .pQRCodeWrapper
-    margin-top: 31px
+  
+  .pQRCodeWrapper,.defaultImg
+    margin-top: 24px
   .defaultImg
-    margin-top: 31px
-    width: 220px
+    width: 280px
+    height: 280px
+    background-color: #f2f2f2
+    @extend .frcc
+    >img
+      width: 80px
 @media (max-width: 1680px)
   .qrcodeMain
     h1

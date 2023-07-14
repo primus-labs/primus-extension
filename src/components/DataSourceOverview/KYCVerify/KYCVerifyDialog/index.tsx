@@ -25,7 +25,12 @@ interface KYCVerifyDialogProps {
 const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
   ({ onClose, activeSource, onCancel, qrCodeVal }) => {
     const icon = activeSource?.icon;
-
+    const descEl = (
+      <>
+        <p>Please use your smartphone to scan the QR code.</p>
+        <p> An identity verification process will be initiated by ZAN.</p>
+      </>
+    );
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog kycVerifyDialog">
@@ -34,9 +39,9 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
             <Bridge endIcon={icon} />
             <QRCodeMain
               title="Get you verified"
-              desc="You can scan this QR code to complete a verification process through your smart phone. Provided by ZAN."
+              desc={descEl}
               qrcodeValue={qrCodeVal}
-              qrcodeSize={159}
+              qrcodeSize={200}
             />
             <div className="friendlyRemainer">
               <h6>Before you start, please:</h6>
