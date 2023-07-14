@@ -53,7 +53,9 @@ const CredOverview = memo(() => {
     let activeList = credList;
     if (activeSourceType && activeSourceType !== 'All') {
       activeList = activeList.filter((i) => {
-        const curProofTypeItem = proofTypes.find((j) => j.credTitle === i.type);
+        const curProofTypeItem = proofTypes.find(
+          (j) => j.credIdentifier === i.type
+        );
         return curProofTypeItem?.simplifiedName === activeSourceType;
       });
     }

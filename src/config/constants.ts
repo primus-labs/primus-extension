@@ -242,7 +242,7 @@ export const DEFAULTCREDTYPELIST = [
     id: '1',
     credIdentifier: 'ASSETS_PROOF',
     credTitle: 'Assets Proof',
-    credIntroduce: 'Proving deposit amount',
+    credIntroduce: 'Assets balance in Binance, OKX',
     credLogoUrl:
       'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredAsset.svg',
     credDetails:
@@ -257,7 +257,7 @@ export const DEFAULTCREDTYPELIST = [
     id: '2',
     credIdentifier: 'TOKEN_HOLDINGS',
     credTitle: 'Token Holdings Proof',
-    credIntroduce: 'Proving ownership of a kind of Token',
+    credIntroduce: 'Token ownership in Binance, Coinbase, OKX',
     credLogoUrl:
       'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredToken.svg',
     credDetails:
@@ -271,14 +271,14 @@ export const DEFAULTCREDTYPELIST = [
   {
     id: '3',
     credIdentifier: 'IDENTIFICATION_PROOF',
-    credTitle: 'Identification Proof',
-    credIntroduce: 'Proving identity or membership',
+    credTitle: 'Identity Proof',
+    credIntroduce: 'Identity or membership',
     credLogoUrl:
       'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredCred.svg',
     credDetails:
       'Proving you have completed the identity verification process. PADO verifies the authenticity of the verification result.',
     credProofContent: 'Identity verification',
-    credProofConditions: 'Confirmed',
+    credProofConditions: 'Verified',
     simplifiedName: 'Identity',
     display: 0,
     enabled: 0,

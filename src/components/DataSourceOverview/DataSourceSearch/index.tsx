@@ -54,8 +54,8 @@ const DataSourceSearch = memo(() => {
       }
       if (qualificationsList.length > 0) {
         defaultList.push({
-          value: 'Qualifications',
-          text: 'Qualifications',
+          value: 'Identity',
+          text: 'Identity',
         });
       }
     } else {
