@@ -55,8 +55,13 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
 
     const [sourceList, sourceMap] = useAllSources();
     const hasSource = useMemo(() => {
-      return sourceList.length > 0;
-    }, [sourceList]);
+      const exLen =
+        (sourceMap.exSources && Object.keys(sourceMap.exSources).length) ?? 0;
+      const kycLen =
+        (sourceMap.kycSources && Object.keys(sourceMap.kycSources).length) ?? 0;
+      const totalLen = exLen + kycLen;
+      return totalLen > 0;
+    }, [sourceMap]);
     const hasCred = useMemo(() => {
       return credList.length > 0;
     }, [credList]);
@@ -68,8 +73,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       if (!hasSource) {
         setActiveRequest({
           type: 'warn',
-          title: 'No data source connected',
-          desc: 'Please go to the Data page to add.',
+          title: 'No required data',
+          desc: 'Please go to the Data page to add Assets and eKYC data.',
         });
         setStep(2);
         return;
@@ -90,7 +95,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       // });
       setStep(1.5);
     }, [hasSource, hasCred]);
-   
+
     const onSubmitActiveRequestDialog = useCallback(() => {
       if (!hasSource) {
         navigate('/datas');

@@ -35,15 +35,15 @@ const useAllSources = (flag = false) => {
     return Object.values({ ...kycSources });
   }, [kycSources]);
   const allSourceList: SourceDataList = useMemo(() => {
-    return [...exList, ...socialList, ...kycSources];
-  }, [exList, socialList, kycSources]);
+    return [...exList, ...socialList, ...kycList];
+  }, [exList, socialList, kycList]);
   const allSourceMap: any = useMemo(() => {
     return {
       exSources,
       socialSources,
-      kycList,
+      kycSources,
     };
-  }, [exSources, socialSources, kycList]);
+  }, [exSources, socialSources, kycSources]);
   return [allSourceList, allSourceMap];
 }
 

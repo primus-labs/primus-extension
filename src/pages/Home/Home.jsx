@@ -50,10 +50,7 @@ const Home = memo(() => {
   const handleSubmitSetSuc = useCallback(() => {
     navigate('/datas');
   }, [navigate]);
-  const onCloseSucDialog = useCallback(() => {
-    navigate('/datas');
-    handleCloseMask();
-  }, [navigate, handleCloseMask]);
+  
   const checkActiveStep = useCallback(async () => {
     // It can be called like this:
     let { userInfo, privateKey, keyStore } = await chrome.storage.local.get([
@@ -144,7 +141,10 @@ const Home = memo(() => {
         />
       )}
       {step === 4 && (
-        <SetSucDialog onClose={onCloseSucDialog} onSubmit={handleSubmitSetSuc} />
+        <SetSucDialog
+          onClose={handleSubmitSetSuc}
+          onSubmit={handleSubmitSetSuc}
+        />
       )}
     </div>
   );
