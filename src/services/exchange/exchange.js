@@ -149,7 +149,7 @@ class Exchange {
       if (amount) {
         const price = this.tokenPriceMap[curr] || ZERO + '';
         const value = mul(amount, price).toFixed();
-        // 
+        // hidden tokens value less than 
         if (gt(value, '0.01')) {
           prev[curr] = {
             symbol: curr,
@@ -157,10 +157,7 @@ class Exchange {
             price,
             value,
           };
-        } else {
-          console.log('111222333', curr,amount,value);
         }
-        
       }
       return prev;
     }, {});

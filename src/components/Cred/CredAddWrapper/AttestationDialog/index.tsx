@@ -48,8 +48,10 @@ const sourcesLabel = {
   TOKEN_HOLDINGS: 'Tokens',
   IDENTIFICATION_PROOF: 'Identity',
 };
+
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
+    
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -65,6 +67,36 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
 
     const navigate = useNavigate();
 
+    const emptyCon = useMemo(() => {
+      let el 
+      switch (type) {
+        case 'ASSETS_PROOF':
+          el = (
+            <>
+              <p>You haven’t connected data from Binance and OKX.</p>
+              <p>Please go to the Data page to add.</p>
+            </>
+          );
+          break;
+        case 'TOKEN_HOLDINGS':
+          el = (
+            <>
+              <p>You haven’t connected data from Binance, Coinbase, and OKX.</p>
+              <p>Please go to the Data page to add.</p>
+            </>
+          );
+          break;
+        case 'IDENTIFICATION_PROOF':
+          el = (
+            <>
+              <p>You haven’t connected any identity data.</p>
+              <p>Please go to the Data page to add.</p>
+            </>
+          );
+          break;
+      }
+      return el
+    },[type])
     const tokenLogoPrefix = useMemo(() => {
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
@@ -346,7 +378,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 </div>
               </div>
               <div className="contItem contItemAssets">
-                <div className="label">Source of {sourcesLabel[type as keyof typeof sourcesLabel]}</div>
+                <div className="label">
+                  Source of {sourcesLabel[type as keyof typeof sourcesLabel]}
+                </div>
                 {activeConnectedSourceList.length > 0 && (
                   <ul className="dataList">
                     {activeConnectedSourceList.map((item) => {
@@ -368,10 +402,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 {activeConnectedSourceList.length === 0 && (
                   <div className="emptyContent">
                     <img src={iconInfoGray} alt="" />
-                    <h2>
-                      You haven’t connected any data sources yet. Please go to
-                      the Data page to add some.
-                    </h2>
+                    <h2>{emptyCon}</h2>
                   </div>
                 )}
               </div>

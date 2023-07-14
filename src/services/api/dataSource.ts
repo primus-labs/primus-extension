@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 type GETCONNECTANTQRCODEParams = {
   userIdentity: string;
+  userPublicKey: string;
 };
 type GETCONNECTANTRESULTParams = {
   orderId: string;
@@ -13,7 +14,7 @@ export const getConnectAntQrcode = (
 ) => {
   return request({
     method: 'get',
-    url: `/kyc/ant/credential/qrcode?userIdentity=${data.userIdentity}`,
+    url: `/kyc/ant/credential/qrcode?userIdentity=${data.userIdentity}&userPublicKey=${data.userPublicKey}`,
     config,
   });
 };

@@ -12,14 +12,15 @@ import { setKYCsAsync } from '@/store/actions';
 import useInterval from '@/hooks/useInterval';
 import { getCurrentDate } from '@/utils/utils';
 import { KYCStoreVersion } from '@/config/constants';
+import { getNaclEncryptionPublicKey, naclDecrypt } from '@/utils/naclcrypto';
+import {postMsg} from '@/utils/utils'
 
-import iconExport2 from '@/assets/img/iconExport2.svg';
-import './index.sass';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
-
+import iconExport2 from '@/assets/img/iconExport2.svg';
+import './index.sass';
 const POLLINGTIME = 3000;
 
 export type GetDataFormProps = {
@@ -42,11 +43,12 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       type: 'loading',
       title: 'Processing',
       desc: 'You are currently performing on your phone.',
-    });
+    }); 
     const [step, setStep] = useState<number>(1);
     const [switchFlag, setSwitchFlag] = useState<boolean>(false);
     const [orderId, setOrderId] = useState<string>('');
     const [KYCRes, setKYCRes] = useState<any>();
+    const [privateKey, setPrivateKey] = useState<string>('');
 
     const walletAddress = useSelector(
       (state: UserState) => state.walletAddress
@@ -62,11 +64,42 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       };
       return requestConfigP;
     }, [userInfo]);
+    const padoServicePort = useSelector(
+      (state: UserState) => state.padoServicePort
+    );
 
     const dispatch: Dispatch<any> = useDispatch();
 
     const [qrCodeVal, setQrCodeVal] = useState<string>('');
 
+    const padoServicePortListener = useCallback(
+      function (message: any) {
+        if (message.resMethodName === 'decrypt') {
+          console.log('page_get:decrypt:', 'exportWallet');
+          if (message.res) {
+            const { privateKey } = message.res;
+            let formatPrivate = privateKey;
+            if (privateKey.startsWith('0x')) {
+              formatPrivate = privateKey.substr(2);
+            }
+            setPrivateKey(formatPrivate);
+          } else {
+            alert('Failed to decrypt wallet');
+          }
+          padoServicePort.onMessage.removeListener(padoServicePortListener);
+        }
+      },
+      [padoServicePort.onMessage]
+    );
+    const decryptingKeyStore = useCallback(() => {
+      
+      const msg = {
+        fullScreenType: 'wallet',
+        reqMethodName: `decrypt`,
+        params: {},
+      };
+      postMsg(padoServicePort, msg);
+    }, [padoServicePort]);
     const onSubmitActiveRequestDialog = useCallback(async () => {
       const lowerCaseSourceName = activeSource?.name.toLowerCase() as string;
       await chrome.storage.local.set({
@@ -86,7 +119,13 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
           requestConfigParams
         );
         if (rc === 0) {
-          const { status, credentialInfo, orderId, credentialType } = result;
+          const {
+            status,
+            credentialInfo,
+            orderId,
+            credentialType,
+            verifyInfo,
+          } = result;
           switch (status) {
             case 'INIT':
               break;
@@ -108,7 +147,9 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             case 'SUCCESS':
               console.log('ant connected!');
               setSwitchFlag(false);
-
+              const kycInfoJSON = naclDecrypt(verifyInfo, privateKey);
+              const kycInfo = JSON.parse(kycInfoJSON);
+              // "{"lastName":"","firstName":"","validUntil":"2025-11-30","dateOfBirth":"1988-01-01"}"
               setActiveRequest({
                 type: 'suc',
                 title: 'Congratulations',
@@ -123,6 +164,8 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 date: getCurrentDate(),
                 timestamp: +new Date(),
                 version: KYCStoreVersion,
+                ...kycInfo,
+                fullName: `${kycInfo.lastName}${kycInfo.firstName}`,
               };
               setKYCRes(kycSourceData);
 
@@ -151,11 +194,14 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
         });
         console.log('getConnectAntResult network error');
       }
-    }, [requestConfigParams, orderId]);
+    }, [requestConfigParams, orderId, privateKey]);
     useInterval(fetchConnectResult, POLLINGTIME, switchFlag, false);
     const fetchConnectQrcodeValue = useCallback(async () => {
+      
+      const userPublicKey = getNaclEncryptionPublicKey(privateKey);
       const params = {
         userIdentity: walletAddress as string,
+        userPublicKey,
       };
       try {
         const { rc, result } = await getConnectAntQrcode(
@@ -173,11 +219,20 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       } catch {
         alert('getConnectAntQrcode network error');
       }
-    }, [walletAddress, requestConfigParams]);
+    }, [walletAddress, requestConfigParams, privateKey]);
 
     useEffect(() => {
-      fetchConnectQrcodeValue();
-    }, [fetchConnectQrcodeValue]);
+      privateKey && fetchConnectQrcodeValue();
+    }, [privateKey, fetchConnectQrcodeValue]);
+    useEffect(() => {
+      decryptingKeyStore();
+    }, [decryptingKeyStore]);
+    useEffect(() => {
+      padoServicePort.onMessage.addListener(padoServicePortListener);
+      return () => {
+        padoServicePort.onMessage.removeListener(padoServicePortListener);
+      };
+    }, [padoServicePort.onMessage, padoServicePortListener]);
 
     const footerButton =
       activeRequest?.type === 'suc' ? (

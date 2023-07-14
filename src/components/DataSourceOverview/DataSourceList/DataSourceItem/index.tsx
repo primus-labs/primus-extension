@@ -123,15 +123,15 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
         eKYC: [
           {
             name: 'Name',
-            sourceKey: 'name',
+            sourceKey: 'fullName',
           },
           {
             name: 'Country',
-            sourceKey: 'type',
+            sourceKey: 'dateOfBirth',
           },
           {
             name: 'Document Type',
-            sourceKey: 'type',
+            sourceKey: 'validUntil',
           },
         ],
       };
