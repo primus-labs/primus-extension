@@ -258,7 +258,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         {expand && (
           <div className="extra">
             <div className="descItem">
-              <div className="label">Proof Content</div>
+              {/* <div className="label">Proof Content</div> */}
               {item.type === 'ASSETS_PROOF' && (
                 <div className="value">
                   <div className="desc">{credProofContent}</div>
@@ -310,9 +310,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               </div>
             )}
             <div className="descItem">
-              <div className="label">Attested By</div>
+              {/* <div className="label">Attested By</div> */}
               <div className="value">
-                <div className="desc">PADO</div>
+                <div className="desc">Attested By PADO</div>
                 {item.did ? (
                   <div className="con didWrapper">
                     <img src={iconPolygonID} alt="" className="iconPolygonID" />
