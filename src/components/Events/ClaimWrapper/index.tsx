@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import ClaimDialog from './ClaimDialog';
@@ -61,8 +62,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     }, [credList]);
 
     const dispatch: Dispatch<any> = useDispatch();
+    const navigate = useNavigate();
 
-    const onCloseClaimDialog = () => {};
     const onSubmitClaimDialog = useCallback(() => {
       if (!hasSource) {
         setActiveRequest({
@@ -70,6 +71,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           title: 'No data source connected',
           desc: 'Please go to the Data page to add.',
         });
+        setStep(2);
+        return;
       }
       if (!hasCred) {
         setActiveRequest({
@@ -77,19 +80,28 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           title: 'No proof is created',
           desc: 'Please go to the Credential page to generate.',
         });
+        setStep(2);
+        return;
       }
       // setActiveRequest({
       //   type: 'loading',
       //   title: 'Processing',
       //   desc: 'It may take a few seconds.',
       // });
-
       setStep(1.5);
     }, [hasSource, hasCred]);
-    const onCloseSucDialog = () => {};
+   
     const onSubmitActiveRequestDialog = useCallback(() => {
+      if (!hasSource) {
+        navigate('/datas');
+        return;
+      }
+      if (!hasCred) {
+        navigate('/cred');
+        return;
+      }
       onSubmit();
-    }, [onSubmit]);
+    }, [onSubmit, hasSource, hasCred, navigate]);
     useEffect(() => {
       if (visible) {
         setStep(1);
@@ -179,7 +191,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       },
       [credList, rewards, dispatch, walletAddress]
     );
-    
+
     return (
       <div className="claimWrapper">
         {visible && step === 1 && (
