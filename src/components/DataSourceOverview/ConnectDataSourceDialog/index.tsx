@@ -153,7 +153,11 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
                   </div>
                   <div className="ctipWrapper">
                     <span>How to get API Key & Secret key?</span>
-                    <a href="https://padolabs.org/" target="_blank">
+                    <a
+                      href="https://github.com/pado-labs/docs/blob/main/docs/Tutorials/Manage-your-Data.md"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Click here
                     </a>
                   </div>

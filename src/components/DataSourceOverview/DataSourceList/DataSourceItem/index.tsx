@@ -126,11 +126,11 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
             sourceKey: 'fullName',
           },
           {
-            name: 'Country',
-            sourceKey: 'dateOfBirth',
+            name: 'Document Type',
+            sourceKey: 'docName',
           },
           {
-            name: 'Document Type',
+            name: 'Date of Expiry',
             sourceKey: 'validUntil',
           },
         ],
@@ -190,7 +190,10 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
         <div className="dataSourceItemC">
           {descArr.map((item) => {
             return (
-              <div key={item.name} className="descItem">
+              <div
+                key={item.name}
+                className={type === 'eKYC' ? 'descItem eKYC' : 'descItem'}
+              >
                 <div className="descT">{item.name}</div>
                 <div className="descC">
                   {formatSource[item.sourceKey as keyof typeof source] ?? '-'}

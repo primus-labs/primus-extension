@@ -166,9 +166,9 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 version: KYCStoreVersion,
                 ...kycInfo,
                 fullName: `${kycInfo.lastName}${kycInfo.firstName}`,
+                cipher: JSON.stringify(verifyInfo),
               };
               setKYCRes(kycSourceData);
-
               break;
             case 'FAILED':
               setSwitchFlag(false);

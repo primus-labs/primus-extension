@@ -134,10 +134,19 @@ $tagHeight: 30px
           font-size: 12px
     .dataSourceItemC
       .descItem
-        padding: 22.5px 22.5px
+        // padding: 22.5px 22.5px
         .descT
           font-family: 'Inter-Regular'
         .descC
           font-size: 20px
           line-height: 24px
           font-family: 'Inter-SemiBold'
+          max-width: 130px
+          overflow: hidden
+          text-overflow: ellipsis
+          white-space: nowrap
+        &.eKYC
+          .descC
+            font-size: 18px
+            line-height: 22px
+            font-family: 'Inter-Medium'

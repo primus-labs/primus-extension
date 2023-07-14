@@ -66,6 +66,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
     const socialSources = useSelector(
       (state: UserState) => state.socialSources
     );
+    const kycSources = useSelector((state: UserState) => state.kycSources);
     const sourceUpdateFrequency = useSelector(
       (state: UserState) => state.sourceUpdateFrequency
     );
@@ -153,6 +154,53 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       }
       return formatTxt;
     }, []);
+    const assembleKYCExcelParams = useCallback(async () => {
+      const kycRows: object[] = [
+        {
+          label: 'DataType',
+          value: 'eKYC',
+        },
+      ];
+      activeKYCSourceNameArr.forEach((key, idx) => {
+        const { name, fullName, countryName, idNumber, validUntil,docName, cipher } =
+          kycSources[key];
+        const curSourceRows = [
+          {
+            empty: '',
+            label: 'Source' + (idx + 1),
+            value: name,
+          },
+
+          {
+            empty: '',
+            label: 'Ciphertext',
+            value: cipher + '\t',
+          },
+          {
+            empty: '',
+            ProfileDetail: 'ProfileDetail',
+            userName: 'Name',
+            createdTime: 'DocumentType',
+            followers: 'Country/Region',
+            following: 'DocumentNumber',
+            // posts: 'DateofBirth',
+            accountTags: 'DateofExpire',
+          },
+          {
+            empty: '',
+            empty2: '',
+            userName: fullName,
+            createdTime: docName,
+            followers: countryName,
+            following: idNumber,
+            // posts: posts || '-',
+            accountTags: validUntil,
+          },
+        ];
+        kycRows.push(...curSourceRows);
+      });
+      return kycRows;
+    }, [activeKYCSourceNameArr, kycSources]);
     const assembleAssetsExcelParams = useCallback(async () => {
       let checkedExSourcesTotalBal: any = BIGZERO;
       const ciphers = await chrome.storage.local.get(
@@ -308,7 +356,8 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       ];
       const assetsRows: object[] = await assembleAssetsExcelParams();
       const socialRows: object[] = await assembleSocialExcelParams();
-      const allRows = [...basicRows, ...assetsRows, ...socialRows];
+      const kycRows: object[] = await assembleKYCExcelParams();
+      const allRows = [...basicRows, ...assetsRows, ...socialRows, ...kycRows];
       let cvsArr: string[] = allRows.map((i: any) => {
         const separtor = ';';
         // if (i.label === 'ApiCiphertext') {
@@ -340,7 +389,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
         ...activeKYCSourceNameArr,
       ];
       await chrome.storage.local.remove(removeStorageKeyArr);
-      
+
       const { credentials: credentialsStr } = await chrome.storage.local.get([
         'credentials',
       ]);
