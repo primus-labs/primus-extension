@@ -162,7 +162,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
         },
       ];
       activeKYCSourceNameArr.forEach((key, idx) => {
-        const { name, fullName, countryName, idNumber, validUntil,docName, cipher } =
+        const { name, fullName, countryName, idNumber, validUntil,docName,dateOfBirth, cipher } =
           kycSources[key];
         const curSourceRows = [
           {
@@ -183,7 +183,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
             createdTime: 'DocumentType',
             followers: 'Country/Region',
             following: 'DocumentNumber',
-            // posts: 'DateofBirth',
+            posts: 'DateofBirth',
             accountTags: 'DateofExpire',
           },
           {
@@ -193,7 +193,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
             createdTime: docName,
             followers: countryName,
             following: idNumber,
-            // posts: posts || '-',
+            posts: dateOfBirth,
             accountTags: validUntil,
           },
         ];
