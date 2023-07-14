@@ -16,6 +16,8 @@ const DataSourceSearch = memo(() => {
   const pathname = location.pathname;
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
+  const kycSources = useSelector((state: UserState) => state.kycSources);
+
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
@@ -77,9 +79,18 @@ const DataSourceSearch = memo(() => {
           text: 'Social',
         });
       }
+      if (
+        typeof kycSources === 'object' &&
+        Object.values(kycSources).length > 0
+      ) {
+        defaultList.push({
+          value: 'eKYC',
+          text: 'eKYC',
+        });
+      }
     }
     return defaultList;
-  }, [exSources, socialSources, pathname, credentials]);
+  }, [exSources, socialSources, kycSources,pathname, credentials]);
   const handleChangeSelect = (val: string) => {
     dispatch({
       type: 'setActiveSourceType',

@@ -56,7 +56,7 @@ const DataSourceOverview = memo(() => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
-  
+
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -69,7 +69,6 @@ const DataSourceOverview = memo(() => {
   const authorize = useAuthorization();
   const navigate = useNavigate();
 
-  
   const exList: ExDataList = useMemo(() => {
     return Object.values({ ...exSources });
   }, [exSources]);
@@ -79,7 +78,7 @@ const DataSourceOverview = memo(() => {
   const kycList: KYCDataList = useMemo(() => {
     return Object.values({ ...kycSources });
   }, [kycSources]);
-  
+
   const dataSourceList: SourceDataList = useMemo(() => {
     const exList = Object.values(exSources);
     const socialList = Object.values(socialSources);
@@ -92,7 +91,12 @@ const DataSourceOverview = memo(() => {
     return [...orderedExList, ...orderedSocialList, ...kycList];
   }, [exSources, socialSources, kycList]);
   const activeDataSourceList = useMemo(() => {
-    const orderedDataSourceList = dataSourceList;
+    let orderedDataSourceList = [...dataSourceList];
+    if (activeSourceType !== 'All') {
+      orderedDataSourceList = orderedDataSourceList.filter(
+        (i) => i.type === activeSourceType
+      );
+    }
     if (filterWord) {
       return orderedDataSourceList.filter((item) => {
         const lowerCaseName = item.name.toLowerCase();
@@ -102,7 +106,7 @@ const DataSourceOverview = memo(() => {
     } else {
       return orderedDataSourceList;
     }
-  }, [dataSourceList, filterWord]);
+  }, [dataSourceList, filterWord, activeSourceType]);
 
   const onSubmitConnectDataSourceDialogDialog = useCallback(
     async (form: GetDataFormProps) => {
@@ -258,7 +262,7 @@ const DataSourceOverview = memo(() => {
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <DataSourceSearch />
-        {activeSourceType === 'All' && (
+        {(activeSourceType === 'All' || activeSourceType === 'eKYC') && (
           <DataSourceList
             onAdd={handleAdd}
             list={activeDataSourceList}
