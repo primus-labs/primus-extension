@@ -10,7 +10,7 @@ import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
 
-import { throttle } from '@/utils/utils';
+import { debounce, throttle } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import './index.sass';
 
@@ -107,9 +107,12 @@ const PageHeader = memo(() => {
         setIsScroll(false);
       }
     }
-    window.addEventListener('scroll', fn);
+    // const tFn = debounce(fn, 500);
+    const tFn = throttle(fn, 500);
+    
+    window.addEventListener('scroll', tFn);
     return () => {
-      window.removeEventListener('scroll', fn);
+      window.removeEventListener('scroll', tFn);
     };
   }, [activeSourceType, pathname]);
 

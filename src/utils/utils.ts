@@ -29,13 +29,21 @@ export function div(a: number, b: number) {
   return new BigNumber(a).div(new BigNumber(b));
 }
 
-type FormatAddressType = ((str:string,startNum?: number, endNum?: number) => string)
-export const formatAddress: FormatAddressType = function (str, startNum = 6, endNum = 4) {
+type FormatAddressType = (
+  str: string,
+  startNum?: number,
+  endNum?: number
+) => string;
+export const formatAddress: FormatAddressType = function (
+  str,
+  startNum = 6,
+  endNum = 4
+) {
   const endIdx = -1 * endNum;
   const startS = str.substr(0, startNum);
   const endS = str.substr(endIdx);
   return `${startS}...${endS}`;
-}
+};
 
 // TODO nouse
 export function getMutipleStorageSyncData(storageKeys: string[]): object {
@@ -71,7 +79,7 @@ export function getSingleStorageSyncData(storageKey: string) {
 
 // "Jun 15, 2023"
 // transform date from timestamp to string such as 12 Mar, 2023
-export function formatDate(timestamp: number, separator =',') {
+export function formatDate(timestamp: number, separator = ',') {
   var date = new Date(timestamp),
     Y = date.getFullYear(),
     M = date.toLocaleString('en', { month: 'short' }),
@@ -186,15 +194,24 @@ export async function getAuthUserIdHash() {
   const authUseridHash = strToHex(authUserId);
   return authUseridHash;
 }
-type ThrottleFn = () => void
+type ThrottleFn = () => void;
 export function throttle(fn: ThrottleFn, delay: number) {
-  let valid = true;
-  return function () {
-    if (valid) {
-      setTimeout(() => {
-        fn()
+  let timer: any = null;
+  return () => {
+    if (!timer) {
+      timer = setTimeout(() => {
+        fn();
+        timer = null;
       }, delay);
-      valid = false;
     }
+  };
+}
+export function debounce(fn: ThrottleFn, delay: number) {
+  let timer: any = null;
+  return () => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(fn, delay);
   };
 }
