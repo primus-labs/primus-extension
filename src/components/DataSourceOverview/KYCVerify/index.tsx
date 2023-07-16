@@ -49,6 +49,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     const [orderId, setOrderId] = useState<string>('');
     const [KYCRes, setKYCRes] = useState<any>();
     const [privateKey, setPrivateKey] = useState<string>('');
+    const userPassword = useSelector((state: UserState) => state.userPassword);
 
     const walletAddress = useSelector(
       (state: UserState) => state.walletAddress
@@ -92,14 +93,23 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       [padoServicePort.onMessage]
     );
     const decryptingKeyStore = useCallback(() => {
-      
+      if (userPassword) {
+        const msgPassword = {
+          fullScreenType: 'wallet',
+          reqMethodName: 'resetUserPassword',
+          params: {
+            password: userPassword,
+          },
+        };
+        postMsg(padoServicePort, msgPassword);
+      }
       const msg = {
         fullScreenType: 'wallet',
         reqMethodName: `decrypt`,
         params: {},
       };
       postMsg(padoServicePort, msg);
-    }, [padoServicePort]);
+    }, [padoServicePort, userPassword]);
     const onSubmitActiveRequestDialog = useCallback(async () => {
       const lowerCaseSourceName = activeSource?.name.toLowerCase() as string;
       await chrome.storage.local.set({

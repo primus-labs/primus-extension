@@ -12,9 +12,10 @@ export const getConnectAntQrcode = (
   data: GETCONNECTANTQRCODEParams,
   config: any
 ) => {
+  const encodePublicKey = encodeURIComponent(data.userPublicKey);
   return request({
     method: 'get',
-    url: `/kyc/ant/credential/qrcode?userIdentity=${data.userIdentity}&userPublicKey=${data.userPublicKey}`,
+    url: `/kyc/ant/credential/qrcode?userIdentity=${data.userIdentity}&userPublicKey=${encodePublicKey}`,
     config,
   });
 };
