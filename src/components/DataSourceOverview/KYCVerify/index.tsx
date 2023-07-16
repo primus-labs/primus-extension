@@ -42,7 +42,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>({
       type: 'loading',
       title: 'Processing',
-      desc: 'You are currently performing on your phone.',
+      desc: 'Please complete the operation on your phone.',
     }); 
     const [step, setStep] = useState<number>(1);
     const [switchFlag, setSwitchFlag] = useState<boolean>(false);
@@ -144,7 +144,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
               setActiveRequest({
                 type: 'loading',
                 title: 'Processing',
-                desc: 'You are currently performing on your phone.',
+                desc: 'Please complete the operation on your phone.',
               });
               break;
             case 'COMMIT':
