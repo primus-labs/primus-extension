@@ -66,6 +66,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     const credProofContent = useMemo(() => {
       return activeTypeConfig?.credProofContent;
     }, [activeTypeConfig]);
+    const credProofConditions = useMemo(() => {
+      return activeTypeConfig?.credProofConditions;
+    }, [activeTypeConfig]);
     const credIcon = useMemo(() => {
       let imgNode = iconMedalAssets;
       switch (item.type) {
@@ -300,7 +303,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               {item.type === 'IDENTIFICATION_PROOF' && (
                 <div className="value">
                   <div className="desc">{credProofContent}</div>
-                  <div className="con">Confirmed</div>
+                  <div className="con">{credProofConditions}</div>
                 </div>
               )}
             </div>
