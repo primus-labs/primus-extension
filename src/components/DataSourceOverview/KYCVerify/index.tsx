@@ -42,11 +42,7 @@ interface KYCVerifyProps {
 
 const KYCVerify: React.FC<KYCVerifyProps> = memo(
   ({ onClose, onSubmit, activeSource, onCancel, visible = true, onWakeUp }) => {
-    const [activeRequest, setActiveRequest] = useState<ActiveRequestType>({
-      type: 'loading',
-      title: 'Processing',
-      desc: 'Please complete the operation on your phone.',
-    });
+    const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
     const [step, setStep] = useState<number>(1);
     const [switchFlag, setSwitchFlag] = useState<boolean>(false);
     const [timeoutSwitch, setTimeoutSwitchFlag] = useState<boolean>(false);
@@ -121,6 +117,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
         [lowerCaseSourceName]: JSON.stringify(KYCRes),
       });
       await dispatch(setKYCsAsync());
+      setStep(1);
       onClose();
     }, [KYCRes, activeSource?.name, dispatch, onClose]);
 
@@ -143,14 +140,14 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
           } = result;
           switch (status) {
             case 'INIT':
-              break;
-            case 'VERIFY':
-              setStep(2);
               setActiveRequest({
                 type: 'loading',
                 title: 'Processing',
                 desc: 'Please complete the operation on your phone.',
               });
+              break;
+            case 'VERIFY':
+              setStep(2);
               break;
             case 'COMMIT':
               setActiveRequest({
@@ -163,6 +160,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
               console.log('ant connected!');
               setSwitchFlag(false);
               if (timeoutSwitch) {
+                setStep(2);
                 onWakeUp();
                 setTimeoutSwitchFlag(false);
               }
@@ -199,6 +197,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             case 'FAILED':
               setSwitchFlag(false);
               if (timeoutSwitch) {
+                setStep(2);
                 onWakeUp();
                 setTimeoutSwitchFlag(false);
               }
@@ -210,24 +209,26 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
               break;
           }
         } else {
-          setActiveRequest({
-            type: 'error',
-            title: 'Failed',
-            desc: 'Your eKYC verification failed.',
-          });
+          // setActiveRequest({
+          //   type: 'error',
+          //   title: 'Failed',
+          //   desc: 'Your eKYC verification failed.',
+          // });
         }
       } catch {
-        setActiveRequest({
-          type: 'error',
-          title: 'Failed',
-          desc: 'Your eKYC verification failed.',
-        });
-        console.log('getConnectAntResult network error');
+        // setActiveRequest({
+        //   type: 'error',
+        //   title: 'Failed',
+        //   desc: 'Your eKYC verification failed.',
+        // });
+        // console.log('getConnectAntResult network error');
       }
     }, [requestConfigParams, orderId, privateKey, timeoutSwitch, onWakeUp]);
     useInterval(fetchConnectResult, POLLINGTIME, switchFlag, false);
     const timeoutFn = () => {
       alert('Your eKYC verification has timed out');
+      setStep(1)
+      setActiveRequest(undefined);
       setSwitchFlag(false);
       onClose();
     };
@@ -257,8 +258,8 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     }, [walletAddress, requestConfigParams, privateKey]);
 
     useEffect(() => {
-      visible && privateKey && fetchConnectQrcodeValue();
-    }, [privateKey, fetchConnectQrcodeValue,visible]);
+      visible && privateKey && step === 1 && fetchConnectQrcodeValue();
+    }, [privateKey, fetchConnectQrcodeValue, visible, step]);
     useEffect(() => {
       decryptingKeyStore();
     }, [decryptingKeyStore]);
@@ -268,7 +269,14 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
         padoServicePort.onMessage.removeListener(padoServicePortListener);
       };
     }, [padoServicePort.onMessage, padoServicePortListener]);
-
+    useEffect(() => {
+      if (visible) {
+        setSwitchFlag(false);
+        setTimeoutSwitchFlag(false);
+        setOrderId('');
+        setKYCRes(undefined);
+      }
+    }, [visible]);
     const footerButton =
       activeRequest?.type === 'suc' ? (
         <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
@@ -285,14 +293,17 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
         setTimeoutSwitchFlag(true);
         onClose();
       } else {
+        setActiveRequest(undefined);
+        setStep(1);
         onClose();
       }
     }, [activeRequest?.type, onClose]);
+
     return (
       <>
         {visible && step === 1 && (
           <KYCVerifyDialog
-            onClose={onClose}
+            onClose={onCloseStatusDialog}
             onCancel={onCancel}
             activeSource={activeSource}
             qrCodeVal={qrCodeVal}
