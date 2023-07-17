@@ -159,11 +159,6 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             case 'SUCCESS':
               console.log('ant connected!');
               setSwitchFlag(false);
-              if (timeoutSwitch) {
-                setStep(2);
-                onWakeUp();
-                setTimeoutSwitchFlag(false);
-              }
 
               const kycInfoJSON = naclDecrypt(verifyInfo, privateKey);
               const kycInfo = JSON.parse(kycInfoJSON);
@@ -193,19 +188,24 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 cipher: JSON.stringify(verifyInfo),
               };
               setKYCRes(kycSourceData);
-              break;
-            case 'FAILED':
-              setSwitchFlag(false);
               if (timeoutSwitch) {
                 setStep(2);
                 onWakeUp();
                 setTimeoutSwitchFlag(false);
               }
+              break;
+            case 'FAILED':
+              setSwitchFlag(false);
               setActiveRequest({
                 type: 'error',
                 title: 'Failed',
                 desc: 'Your eKYC verification failed.',
               });
+              if (timeoutSwitch) {
+                setStep(2);
+                onWakeUp();
+                setTimeoutSwitchFlag(false);
+              }
               break;
           }
         } else {
@@ -227,7 +227,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     useInterval(fetchConnectResult, POLLINGTIME, switchFlag, false);
     const timeoutFn = () => {
       alert('Your eKYC verification has timed out');
-      setStep(1)
+      setStep(1);
       setActiveRequest(undefined);
       setSwitchFlag(false);
       onClose();
@@ -272,12 +272,15 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     useEffect(() => {
       if (visible) {
         setSwitchFlag(false);
-        setStep(1)
+        if (activeRequest?.type === 'loading') {
+          setStep(1);
+        }
         setTimeoutSwitchFlag(false);
         setOrderId('');
         setKYCRes(undefined);
       }
     }, [visible]);
+
     const footerButton =
       activeRequest?.type === 'suc' ? (
         <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
@@ -300,8 +303,12 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       }
     }, [activeRequest?.type, onClose]);
     const loadingTipEl = useMemo(() => {
-      return <p className="kycLoadingTip">PADO never participates in the entire process</p>;
-    },[])
+      return (
+        <p className="kycLoadingTip">
+          PADO never participates in the entire process
+        </p>
+      );
+    }, []);
     return (
       <>
         {visible && step === 1 && (
