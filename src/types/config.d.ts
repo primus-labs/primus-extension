@@ -25,5 +25,5 @@ export type WALLETITEMTYPE = {
 export type ActiveRequestType = {
   type: string;
   title: string;
-  desc: string;
+  desc: any;
 };

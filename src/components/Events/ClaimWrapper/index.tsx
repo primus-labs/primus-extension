@@ -65,6 +65,15 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const hasCred = useMemo(() => {
       return credList.length > 0;
     }, [credList]);
+    const errorDescEl = useMemo(
+      () => (
+        <>
+          <p>Your wallet did not connect or refused to authorize.</p>
+          <p>Please try again later.</p>
+        </>
+      ),
+      []
+    );
 
     const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
@@ -190,11 +199,11 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           setActiveRequest({
             type: 'error',
             title: 'Failed',
-            desc: 'Your wallet did not connect or refused to authorize.Please try again later.',
+            desc: errorDescEl,
           });
         }
       },
-      [credList, rewards, dispatch, walletAddress]
+      [credList, rewards, dispatch, walletAddress, errorDescEl]
     );
 
     return (

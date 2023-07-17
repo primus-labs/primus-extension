@@ -18,7 +18,7 @@ interface AddSourceSucDialogProps {
   onClose: () => void;
   activeSource?: DataFieldItem;
   onSubmit: () => void;
-  desc?: string;
+  desc?: any;
   title?: string;
   type?: string;
   headerType?: string;

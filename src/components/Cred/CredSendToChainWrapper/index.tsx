@@ -47,6 +47,16 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
 
     const dispatch: Dispatch<any> = useDispatch();
 
+    const errorDescEl = useMemo(
+      () => (
+        <>
+          <p>Your wallet did not connect or refused to authorize.</p>
+          <p>Please try again later.</p>
+        </>
+      ),
+      []
+    );
+
     const initCredList = useCallback(async () => {
       await dispatch(setCredentialsAsync());
     }, [dispatch]);
@@ -137,14 +147,14 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             setActiveSendToChainRequest({
               type: 'error',
               title: 'Failed',
-              desc: 'Your wallet did not connect or refused to authorize. Please try again later.',
+              desc: errorDescEl,
             });
           }
         } catch (e) {
           setActiveSendToChainRequest({
             type: 'error',
             title: 'Failed',
-            desc: 'Your wallet did not connect or refused to authorize. Please try again later.',
+            desc: errorDescEl,
           });
         }
       },
@@ -154,6 +164,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         credentialsFromStore,
         initCredList,
         submitAddress,
+        errorDescEl,
       ]
     );
     useEffect(() => {
