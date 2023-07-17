@@ -27,7 +27,7 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
     const icon = activeSource?.icon;
     const descEl = (
       <>
-        <p>Please use your smartphone to scan the QR code.</p>
+        <p>Please use your phone to scan the QR code.</p>
         <p> An identity verification process will be initiated by ZAN.</p>
       </>
     );
@@ -50,7 +50,7 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
                   <i></i>Prepare a valid government-issued ID{' '}
                 </li>
                 <li>
-                  <i></i>Check if your smart phone’s camera is working
+                  <i></i>Check if your phone’s camera is working
                 </li>
                 <li>
                   <i></i>Be prepared to take a selfie and photos of your ID

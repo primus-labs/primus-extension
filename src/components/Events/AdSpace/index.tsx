@@ -12,7 +12,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
       <div className="left">
         <img src={bannerIllstration} alt="" />
         <div className="bannerContent">
-          <h3 className="ct">Get on-boarding rewards! </h3>
+          <h3 className="ct">Get on-boarding reward! </h3>
           <div className="cn">
             <p>
               <div className="label">Issuer:&nbsp;</div>
@@ -21,7 +21,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
             <p>
               <div className="label">Requirement:&nbsp;</div>
               <div className="value">
-                Connect to any data source, generate a proof, and provide it
+                Connect any data source, generate a proof, and provide it
                 on-chain!
               </div>
             </p>

@@ -24,7 +24,8 @@ interface AddSourceSucDialogProps {
   headerType?: string;
   address?: string;
   footerButton?: any;
-  closeable?: boolean
+  closeable?: boolean;
+  tip?: any;
 }
 
 const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
@@ -38,7 +39,8 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     headerType = 'dataSource',
     address,
     footerButton,
-    closeable = true
+    closeable = true,
+    tip,
   }) => {
     footerButton = footerButton ?? (
       <button className="nextBtn" onClick={onSubmit}>
@@ -89,6 +91,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
             <h2>{desc}</h2>
           </main>
           {type !== 'loading' && footerButton}
+          {tip}
         </div>
       </PMask>
     );

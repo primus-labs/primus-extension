@@ -18,21 +18,17 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
             <ClaimDialogHeaderDialog />
           </div>
           <div className="descContent">
-            <p className="title">
-              For early users, PADO launched on-boarding NFT REWARD!{' '}
-            </p>
-            <p className="desc">
-              Anyone who meets the following conditions can immediately claim:
-            </p>
+            <p className="title">PADO NFT REWARD for early birds!</p>
+            <p className="desc">Meet the following conditions to claim:</p>
             <ul className="details">
               <li>
                 <i></i>Connected any data source before Jul 30, 2023
               </li>
               <li>
-                <i></i>Generate an credit credential
+                <i></i>Generated one credit credential
               </li>
               <li>
-                <i></i>Provide on-chain attestation
+                <i></i>Provided at least one on-chain attestation
               </li>
             </ul>
           </div>

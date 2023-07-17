@@ -272,6 +272,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     useEffect(() => {
       if (visible) {
         setSwitchFlag(false);
+        setStep(1)
         setTimeoutSwitchFlag(false);
         setOrderId('');
         setKYCRes(undefined);
@@ -298,7 +299,9 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
         onClose();
       }
     }, [activeRequest?.type, onClose]);
-
+    const loadingTipEl = useMemo(() => {
+      return <p className="kycLoadingTip">PADO never participates in the entire process</p>;
+    },[])
     return (
       <>
         {visible && step === 1 && (
@@ -319,6 +322,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             desc={activeRequest?.desc}
             footerButton={footerButton}
             closeable={activeRequest?.type !== 'suc'}
+            tip={loadingTipEl}
           />
         )}
       </>

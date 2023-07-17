@@ -7,7 +7,7 @@ interface ClaimDialogHeaderProps {
   title?: string;
 }
 const ClaimDialogHeaderDialog: FC<ClaimDialogHeaderProps> = memo(
-  ({ title = 'PADO Rewards' }) => {
+  ({ title = 'PADO Reward' }) => {
     return (
       <header className="claimDialogHeader">
         <img className="illustration" src={bannerIllstration} alt="" />
