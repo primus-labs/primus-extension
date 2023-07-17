@@ -329,7 +329,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             desc={activeRequest?.desc}
             footerButton={footerButton}
             closeable={activeRequest?.type !== 'suc'}
-            tip={loadingTipEl}
+            tip={activeRequest?.type === 'loading' && loadingTipEl}
           />
         )}
       </>

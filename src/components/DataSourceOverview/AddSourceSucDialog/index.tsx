@@ -60,6 +60,9 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
       if (headerType === 'setting') {
         defaultCN += ' settingSucDialog';
       }
+      if (headerType === 'claim') {
+        defaultCN += ' claimSucDialog';
+      }
       defaultCN += ` ${type}`;
       return defaultCN;
     }, [headerType, type]);
