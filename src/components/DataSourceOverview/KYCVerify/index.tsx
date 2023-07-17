@@ -165,7 +165,13 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 title: 'Congratulations',
                 desc: 'Your eKYC verification result has been generated.',
               });
-
+              const { countryName, docName, lastName, firstName } = kycInfo;
+              const firstNameLen = firstName.length
+              const symbolStr = '*'.repeat(firstNameLen);
+              const formatFullName =
+                countryName === 'China' && docName === 'ID Card'
+                  ? `${lastName}${symbolStr}`
+                  : `***${lastName}`;
               const kycSourceData = {
                 credential: credentialInfo.credential,
                 transactionHash: credentialInfo.transactionHash,
@@ -175,7 +181,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 timestamp: +new Date(),
                 version: KYCStoreVersion,
                 ...kycInfo,
-                fullName: `${kycInfo.lastName}${kycInfo.firstName}`,
+                fullName: formatFullName,
                 cipher: JSON.stringify(verifyInfo),
               };
               setKYCRes(kycSourceData);
