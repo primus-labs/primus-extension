@@ -153,7 +153,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
               setActiveRequest({
                 type: 'loading',
                 title: 'Committing',
-                desc: 'You are currently performing on your phone.',
+                desc: 'It may take a few seconds.',
               });
               break;
             case 'SUCCESS':

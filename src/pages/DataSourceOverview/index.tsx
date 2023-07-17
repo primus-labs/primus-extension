@@ -346,7 +346,7 @@ const DataSourceOverview = memo(() => {
           desc="Data Connected!"
         />
       )}
-      {activeSourceType !== 'All' && activeSourceType !== ' ' && (
+      {activeSourceType !== 'All' && activeSourceType !== 'Identity' && (
         <DataUpdateBar type={activeSourceType} onUpdate={onUpdate} />
       )}
       {(activeSourceType === 'All' || activeSourceType === 'Identity') &&
