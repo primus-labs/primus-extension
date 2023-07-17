@@ -198,6 +198,10 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
               break;
             case 'FAILED':
               setSwitchFlag(false);
+              if (timeoutSwitch) {
+                onWakeUp();
+                setTimeoutSwitchFlag(false);
+              }
               setActiveRequest({
                 type: 'error',
                 title: 'Failed',
