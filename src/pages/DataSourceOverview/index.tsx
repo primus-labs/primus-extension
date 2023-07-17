@@ -346,12 +346,11 @@ const DataSourceOverview = memo(() => {
           desc="Data Connected!"
         />
       )}
-      {activeSourceType !== 'All' && (
+      {activeSourceType !== 'All' && activeSourceType !== ' ' && (
         <DataUpdateBar type={activeSourceType} onUpdate={onUpdate} />
       )}
-      {activeSourceType === 'All' && dataSourceList.length > 0 && (
-        <DataAddBar onClick={handleAdd} />
-      )}
+      {(activeSourceType === 'All' || activeSourceType === 'Identity') &&
+        dataSourceList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>
   );
 });
