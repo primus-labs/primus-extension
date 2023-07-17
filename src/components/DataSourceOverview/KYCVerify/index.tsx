@@ -10,10 +10,11 @@ import {
 } from '@/services/api/dataSource';
 import { setKYCsAsync } from '@/store/actions';
 import useInterval from '@/hooks/useInterval';
+import useTimeout from '@/hooks/useTimeout';
 import { getCurrentDate } from '@/utils/utils';
 import { KYCStoreVersion } from '@/config/constants';
 import { getNaclEncryptionPublicKey, naclDecrypt } from '@/utils/naclcrypto';
-import {postMsg} from '@/utils/utils'
+import { postMsg } from '@/utils/utils';
 
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
@@ -35,17 +36,20 @@ interface KYCVerifyProps {
   activeSource?: ExchangeMeta;
   onSubmit: () => void;
   onCancel: () => void;
+  onWakeUp: () => void;
+  visible?: boolean;
 }
 
 const KYCVerify: React.FC<KYCVerifyProps> = memo(
-  ({ onClose, onSubmit, activeSource, onCancel }) => {
+  ({ onClose, onSubmit, activeSource, onCancel, visible = true, onWakeUp }) => {
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>({
       type: 'loading',
       title: 'Processing',
       desc: 'Please complete the operation on your phone.',
-    }); 
+    });
     const [step, setStep] = useState<number>(1);
     const [switchFlag, setSwitchFlag] = useState<boolean>(false);
+    const [timeoutSwitch, setTimeoutSwitchFlag] = useState<boolean>(false);
     const [orderId, setOrderId] = useState<string>('');
     const [KYCRes, setKYCRes] = useState<any>();
     const [privateKey, setPrivateKey] = useState<string>('');
@@ -102,13 +106,14 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
           },
         };
         postMsg(padoServicePort, msgPassword);
+
+        const msg = {
+          fullScreenType: 'wallet',
+          reqMethodName: `decrypt`,
+          params: {},
+        };
+        postMsg(padoServicePort, msg);
       }
-      const msg = {
-        fullScreenType: 'wallet',
-        reqMethodName: `decrypt`,
-        params: {},
-      };
-      postMsg(padoServicePort, msg);
     }, [padoServicePort, userPassword]);
     const onSubmitActiveRequestDialog = useCallback(async () => {
       const lowerCaseSourceName = activeSource?.name.toLowerCase() as string;
@@ -157,6 +162,11 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             case 'SUCCESS':
               console.log('ant connected!');
               setSwitchFlag(false);
+              if (timeoutSwitch) {
+                onWakeUp();
+                setTimeoutSwitchFlag(false);
+              }
+
               const kycInfoJSON = naclDecrypt(verifyInfo, privateKey);
               const kycInfo = JSON.parse(kycInfoJSON);
               // "{"lastName":"","firstName":"","validUntil":"2025-11-30","dateOfBirth":"1988-01-01"}"
@@ -166,7 +176,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 desc: 'Your eKYC verification result has been generated.',
               });
               const { countryName, docName, lastName, firstName } = kycInfo;
-              const firstNameLen = firstName.length
+              const firstNameLen = firstName.length;
               const symbolStr = '*'.repeat(firstNameLen);
               const formatFullName =
                 countryName === 'China' && docName === 'ID Card'
@@ -210,10 +220,15 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
         });
         console.log('getConnectAntResult network error');
       }
-    }, [requestConfigParams, orderId, privateKey]);
+    }, [requestConfigParams, orderId, privateKey, timeoutSwitch, onWakeUp]);
     useInterval(fetchConnectResult, POLLINGTIME, switchFlag, false);
+    const timeoutFn = () => {
+      alert('Your eKYC verification has timed out');
+      setSwitchFlag(false);
+      onClose();
+    };
+    useTimeout(timeoutFn, 1000 * 60 * 3, timeoutSwitch, false);
     const fetchConnectQrcodeValue = useCallback(async () => {
-      
       const userPublicKey = getNaclEncryptionPublicKey(privateKey);
       const params = {
         userIdentity: walletAddress as string,
@@ -238,8 +253,8 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     }, [walletAddress, requestConfigParams, privateKey]);
 
     useEffect(() => {
-      privateKey && fetchConnectQrcodeValue();
-    }, [privateKey, fetchConnectQrcodeValue]);
+      visible && privateKey && fetchConnectQrcodeValue();
+    }, [privateKey, fetchConnectQrcodeValue,visible]);
     useEffect(() => {
       decryptingKeyStore();
     }, [decryptingKeyStore]);
@@ -261,10 +276,17 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
           <span>OK </span>
         </button>
       );
-
+    const onCloseStatusDialog = useCallback(() => {
+      if (activeRequest?.type === 'loading') {
+        setTimeoutSwitchFlag(true);
+        onClose();
+      } else {
+        onClose();
+      }
+    }, [activeRequest?.type, onClose]);
     return (
       <>
-        {step === 1 && (
+        {visible && step === 1 && (
           <KYCVerifyDialog
             onClose={onClose}
             onCancel={onCancel}
@@ -272,9 +294,9 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             qrCodeVal={qrCodeVal}
           />
         )}
-        {step === 2 && (
+        {visible && step === 2 && (
           <AddSourceSucDialog
-            onClose={onClose}
+            onClose={onCloseStatusDialog}
             onSubmit={onSubmitActiveRequestDialog}
             activeSource={activeSource}
             type={activeRequest?.type}

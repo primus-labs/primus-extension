@@ -297,23 +297,26 @@ const DataSourceOverview = memo(() => {
           onSubmit={onSubmitDataSourcesExplainDialog}
         />
       )}
-      {KYCDialogVisible && (
-        <KYCVerify
-          onClose={() => {
-            setKYCDialogVisible(false);
-            handleCloseMask();
-          }}
-          onCancel={() => {
-            setKYCDialogVisible(false);
-            setStep(1);
-          }}
-          activeSource={activeSource}
-          onSubmit={() => {
-            setKYCDialogVisible(false);
-            handleCloseMask();
-          }}
-        />
-      )}
+
+      <KYCVerify
+        visible={KYCDialogVisible}
+        onClose={() => {
+          setKYCDialogVisible(false);
+          handleCloseMask();
+        }}
+        onCancel={() => {
+          setKYCDialogVisible(false);
+          setStep(1);
+        }}
+        activeSource={activeSource}
+        onSubmit={() => {
+          setKYCDialogVisible(false);
+          handleCloseMask();
+        }}
+        onWakeUp={() => {
+          setKYCDialogVisible(true);
+        }}
+      />
       {step === 2 && (
         <ConnectDataSourceDialog
           onClose={handleCloseMask}
