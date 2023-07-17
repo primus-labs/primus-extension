@@ -1,6 +1,6 @@
 export type ExchangeMeta = {
   name: string;
-  type: 'Social' | 'Assets' | 'eKYC';
+  type: 'Social' | 'Assets' | 'Identity';
   icon: any;
   requirePassphase?: boolean;
   constructorF?: any;

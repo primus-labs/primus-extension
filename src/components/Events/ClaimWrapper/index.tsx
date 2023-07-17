@@ -83,7 +83,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setActiveRequest({
           type: 'warn',
           title: 'No required data',
-          desc: 'Please go to the Data page to add Assets and eKYC data.',
+          desc: 'Please go to the Data page to add Assets and Identity data.',
         });
         setStep(2);
         return;

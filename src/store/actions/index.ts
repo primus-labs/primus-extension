@@ -158,7 +158,7 @@ export const setSocialSourcesAsync = () => {
 export const setKYCsAsync = () => {
   return async (dispatch: any) => {
     const sourceNameList = Object.keys(DATASOURCEMAP).filter(
-      (i) => DATASOURCEMAP[i].type === 'eKYC'
+      (i) => DATASOURCEMAP[i].type === 'Identity'
     );
     const res: DataSourceStorages = await chrome.storage.local.get(
       sourceNameList

@@ -84,13 +84,13 @@ const DataSourceSearch = memo(() => {
         Object.values(kycSources).length > 0
       ) {
         defaultList.push({
-          value: 'eKYC',
-          text: 'eKYC',
+          value: 'Identity',
+          text: 'Identity',
         });
       }
     }
     return defaultList;
-  }, [exSources, socialSources, kycSources,pathname, credentials]);
+  }, [exSources, socialSources, kycSources, pathname, credentials]);
   const handleChangeSelect = (val: string) => {
     dispatch({
       type: 'setActiveSourceType',

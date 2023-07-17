@@ -220,7 +220,7 @@ const DataSourceOverview = memo(() => {
           setStep(0);
           dispatch(setSocialSourcesAsync());
         });
-      } else if (item.type === 'eKYC') {
+      } else if (item.type === 'Identity') {
         // TODO
         setActiveSource(item);
         setStep(0);
@@ -262,7 +262,7 @@ const DataSourceOverview = memo(() => {
       <main className="appContent">
         <PTabs onChange={handleChangeTab} />
         <DataSourceSearch />
-        {(activeSourceType === 'All' || activeSourceType === 'eKYC') && (
+        {(activeSourceType === 'All' || activeSourceType === 'Identity') && (
           <DataSourceList
             onAdd={handleAdd}
             list={activeDataSourceList}

@@ -41,7 +41,7 @@ import iconNetwork6 from '@/assets/img/iconNetwork6.png';
 
 export type ExchangeMeta = {
   name: string;
-  type: 'Social' | 'Assets' | 'eKYC';
+  type: 'Social' | 'Assets' | 'Identity';
   icon: any;
   requirePassphase?: boolean;
   constructorF?: any;
@@ -162,7 +162,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
   },
   zan: {
     name: 'ZAN',
-    type: 'eKYC',
+    type: 'Identity',
     icon: iconDataSourceZan,
     // desc: 'by Antchain',
   },

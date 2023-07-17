@@ -84,7 +84,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       return arr;
     }, [activeExSourceNameArr]);
     const activeKYCSourceNameArr = useMemo(() => {
-      const sourceArr = activeSourceList.filter((i) => i.type === 'eKYC');
+      const sourceArr = activeSourceList.filter((i) => i.type === 'Identity');
       const arr = sourceArr.map((i) => i.name.toLowerCase());
       return arr;
     }, [activeSourceList]);
@@ -158,12 +158,20 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       const kycRows: object[] = [
         {
           label: 'DataType',
-          value: 'eKYC',
+          value: 'Identity',
         },
       ];
       activeKYCSourceNameArr.forEach((key, idx) => {
-        const { name, fullName, countryName, idNumber, validUntil,docName,dateOfBirth, cipher } =
-          kycSources[key];
+        const {
+          name,
+          fullName,
+          countryName,
+          idNumber,
+          validUntil,
+          docName,
+          dateOfBirth,
+          cipher,
+        } = kycSources[key];
         const curSourceRows = [
           {
             empty: '',

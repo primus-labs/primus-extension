@@ -120,7 +120,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
             sourceKey: 'assetsNo',
           },
         ],
-        eKYC: [
+        Identity: [
           {
             name: 'Name',
             sourceKey: 'fullName',
@@ -138,7 +138,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
       return descTypeMap[type];
     }, [type]);
     const handleClick = () => {
-      if (type === 'Social' || type === 'eKYC') {
+      if (type === 'Social' || type === 'Identity') {
         return;
       }
       onCheck(source);
@@ -192,7 +192,9 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
             return (
               <div
                 key={item.name}
-                className={type === 'eKYC' ? 'descItem eKYC' : 'descItem'}
+                className={
+                  type === 'Identity' ? 'descItem Identity' : 'descItem'
+                }
               >
                 <div className="descT">{item.name}</div>
                 <div className="descC">

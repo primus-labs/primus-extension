@@ -5,7 +5,7 @@ interface SourceGroupTypesProps {
   onChange: (val: string) => void;
   value?: string;
 }
-const tabList = ['Assets', 'Social', 'eKYC'];
+const tabList = ['Assets', 'Social', 'Identity'];
 
 const SourceGroupTypes: React.FC<SourceGroupTypesProps> = memo(
   ({ onChange, value }) => {
@@ -23,7 +23,7 @@ const SourceGroupTypes: React.FC<SourceGroupTypesProps> = memo(
     );
     const handleClickTab = (item: string) => {
       setActiveTab(item);
-      onChange(item)
+      onChange(item);
     };
 
     useEffect(() => {
