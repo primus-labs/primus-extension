@@ -62,7 +62,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceBinance,
     constructorF: Binance,
     baseName: 'api.binance.com',
-    baseUrl: '18.65.175.124:443',
+    baseUrl: '13.224.61.157:443',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
   },
   coinbase: {
