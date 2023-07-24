@@ -54,6 +54,20 @@ function getAttestationResult() {
     return res;
 }
 
+function startOffline(params) {
+    console.log("\nstartOffline");
+    var req_obj = {
+      method: "startOffline",
+      version: "1.0.0",
+      params: params
+    };
+    var json_str = JSON.stringify(req_obj);
+    const Module_startOffline = Module.cwrap('callAlgorithm', 'string', ['string']);
+    const res = Module_startOffline(json_str);
+    console.log('startOffline typeof res', typeof (res));
+    console.log('startOffline res:', res);
+  }
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log('offscreen onMessage message', message);
     if (message.type === 'algorithm' && message.method === 'init') {
@@ -81,6 +95,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.type === 'algorithm' && message.method === 'getAttestationResult') {
         const res = getAttestationResult();
         chrome.runtime.sendMessage({ resType: 'algorithm', resMethodName: 'getAttestationResult', res: res });
+    } else if (message.type === 'algorithm' && message.method === 'startOffline') {
+        const res = startOffline(message.params);
+        chrome.runtime.sendMessage({ resType: 'algorithm', resMethodName: 'startOffline', res: res });
     }
 });
 

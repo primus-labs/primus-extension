@@ -144,7 +144,13 @@ const processAlgorithmReq = async (message, port) => {
         method: 'getAttestationResult',
         params: params,
       });
-
+      break;
+    case 'startOffline':
+      chrome.runtime.sendMessage({
+        type: 'algorithm',
+        method: 'startOffline',
+        params: params,
+      });
       break;
     case 'stop':
       await chrome.offscreen.closeDocument();
