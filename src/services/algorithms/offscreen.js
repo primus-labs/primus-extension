@@ -10,61 +10,28 @@ function init() {
     console.log("\ninit");
 
     var req_obj = {
-        sayhello: "hello I am init from wasm client",
-    }
+        method: "init",
+        version: "1.0.0",
+        params: {}
+    };
     var json_str = JSON.stringify(req_obj);
 
-    const Module_init = Module.cwrap('init', 'boolean', ['string']);
+    const Module_init = Module.cwrap('callAlgorithm', 'string', ['string']);
     const res = Module_init(json_str);
 
     console.log('init typeof res', typeof (res));
     console.log('init res', res);
     return res;
 }
-function getAttestation(req_obj) {
+function getAttestation(params) {
     console.log("\ngetAttestation");
-    // make a request json
-    /*var req_obj = {
-        requestid: "1", // unique
+    var req_obj = {
+        method: "getAttestation",
         version: "1.0.0",
-        proxyUrl: "ws://127.0.0.1:9000",
-        source: "binance",
-        baseUrl: "127.0.0.1:8080", // client <----> http-server, such as "https://api.binance.com"
-        padoUrl: "127.0.0.1:8081", // client <----> pado-server
-        getdatatime: (+new Date()).toString(),
-        exchange: {
-            apikey: "xxx",
-            apisecret: "xxx",
-            apipassword: "xxx"
-        },
-        sigFormat: "EAS-Ethereum",
-        schemaType: "exchange-balance",
-        schema: [
-            { name: "source", type: "string" },
-            { name: "useridhash", type: "string" },
-            { name: "address", type: "string" },
-            { name: "getdatatime", type: "string" },
-            { name: "baseValue", type: "string" },
-            { name: "balanceGreaterBaseValue", type: "string" },
-        ],
-        user: {
-            userid: "0123456789",
-            address: "0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07",
-            token: "xxx"
-        },
-        baseValue: "1000",
-        ext: {
-            extRequests: {
-                // ...
-            },
-            signHash: {
-                trueHash: "0x78dcd376165ff92037130b1a73f49b9ebc2d1dc3e0bac9b9e29c4991ebdd84ef",
-                falseHash: "0x092c22fe27704e9b0c9b58550e78cb53b621930844a8008fc8a644aaccb0fa43"
-            }
-        }
-    }*/
+        params: params
+    };
     var json_str = JSON.stringify(req_obj);
-    const Module_getAttestation = Module.cwrap('getAttestation', 'string', ['string']);
+    const Module_getAttestation = Module.cwrap('callAlgorithm', 'string', ['string']);
     const res = Module_getAttestation(json_str);
     console.log('getAttestation typeof res', typeof (res));
     console.log('getAttestation res', res);
@@ -72,13 +39,15 @@ function getAttestation(req_obj) {
 }
 function getAttestationResult() {
     console.log("\ngetAttestationResult");
-
     var req_obj = {
-        requestid: "1", // unique
-        // ... maybe others
-    }
+        method: "getAttestationResult",
+        version: "1.0.0",
+        params: {
+          requestid: "1"
+        }
+    };
     var json_str = JSON.stringify(req_obj);
-    const Module_getAttestationResult = Module.cwrap('getAttestationResult', 'string', ['string']);
+    const Module_getAttestationResult = Module.cwrap('callAlgorithm', 'string', ['string']);
     const res = Module_getAttestationResult(json_str);
     console.log('getAttestationResult typeof res', typeof (res));
     console.log('getAttestationResult res', res);
@@ -200,58 +169,3 @@ function call(str) {
     }
     return "{}";
 }
-
-/*const extend = (...args) => Object.assign({}, ...args);
-const isNumber = Number.isFinite;
-const isString = (s) => (typeof s === 'string');
-const asInteger = (x) => ((isNumber(x) || (isString(x) && x.length !== 0)) ? Math.trunc(Number(x)) : NaN);
-const safeInteger = (o, k, $default) => {
-    const n = asInteger(prop(o, k));
-    return isNumber(n) ? n : $default;
-};
-
-function sign(path, api = 'public', method = 'GET', params = {}, headers = undefined, body = undefined) {
-    if ((api === 'private') || (api === 'eapiPrivate') || (api === 'sapi' && path !== 'system/status') || (api === 'sapiV2') || (api === 'sapiV3') || (api === 'sapiV4') || (api === 'wapi' && path !== 'systemStatus') || (api === 'dapiPrivate') || (api === 'dapiPrivateV2') || (api === 'fapiPrivate') || (api === 'fapiPrivateV2')) {
-        let query = undefined;
-        let extendedParams = extend({
-            'timestamp': Date.now,
-        }, params);
-        const recvWindow = safeInteger(params, 'recvWindow');
-        if (recvWindow !== undefined) {
-            extendedParams['recvWindow'] = recvWindow;
-        }
-        if ((api === 'sapi') && (path === 'asset/dust')) {
-            query = this.urlencodeWithArrayRepeat(extendedParams);
-        }
-        else if ((path === 'batchOrders') || (path.indexOf('sub-account') >= 0) || (path === 'capital/withdraw/apply') || (path.indexOf('staking') >= 0)) {
-            query = this.rawencode(extendedParams);
-        }
-        else {
-            query = this.urlencode(extendedParams);
-        }
-        let signature = undefined;
-        if (this.secret.indexOf('PRIVATE KEY') > -1) {
-            signature = this.encodeURIComponent(rsa(query, this.secret, sha256));
-        }
-        else {
-            signature = this.hmac(this.encode(query), this.encode(this.secret), sha256);
-        }
-        query += '&' + 'signature=' + signature;
-        headers = {
-            'X-MBX-APIKEY': this.apiKey,
-        };
-        if ((method === 'GET') || (method === 'DELETE') || (api === 'wapi')) {
-            url += '?' + query;
-        }
-        else {
-            body = query;
-            headers['Content-Type'] = 'application/x-www-form-urlencoded';
-        }
-    }
-    else {
-        if (Object.keys(params).length) {
-            url += '?' + this.urlencode(params);
-        }
-    }
-    return { 'url': url, 'method': method, 'body': body, 'headers': headers };
-}*/
