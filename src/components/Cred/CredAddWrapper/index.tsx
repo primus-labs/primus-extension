@@ -23,6 +23,7 @@ import {
   ATTESTATIONPOLLINGTIME,
   BIGZERO,
 } from '@/config/constants';
+import {PADOURL, PROXYURL} from '@/config/envConstants'
 
 import { setCredentialsAsync } from '@/store/actions';
 import {
@@ -534,6 +535,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         onClose();
       }
     }, [activeRequest?.type, onClose]);
+    useEffect(() => {
+      visible &&
+        postMsg(padoServicePort, {
+          fullScreenType: 'algorithm',
+          reqMethodName: 'startOffline',
+          params: {
+            offlineTimeout: 60 * 1000,
+            padoUrl: PADOURL,
+            proxyUrl: PROXYURL,
+          },
+        });
+    }, [visible, padoServicePort]);
 
     return (
       <div className={'credAddWrapper'}>

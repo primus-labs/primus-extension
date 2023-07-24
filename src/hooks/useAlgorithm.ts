@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 
 import { postMsg } from '@/utils/utils';
 import { useSelector } from 'react-redux';
-
+import { PADOURL, PROXYURL } from '@/config/envConstants';
 import type { UserState } from '@/types/store';
 
 type UseAlgorithm = (
@@ -19,7 +19,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   useEffect(() => {
     savedCallback.current = getAttestationCallback;
   });
-  const savedGetAttestationResultCallback = useRef((res:any) => {});
+  const savedGetAttestationResultCallback = useRef((res: any) => {});
   useEffect(() => {
     savedGetAttestationResultCallback.current = getAttestationResultCallback;
   });
@@ -44,6 +44,15 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         if (resMethodName === `init`) {
           if (res) {
             // algorithm is ready
+            postMsg(padoServicePort, {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'startOffline',
+              params: {
+                offlineTimeout: 60 * 1000,
+                padoUrl: PADOURL,
+                proxyUrl: PROXYURL,
+              },
+            });
           }
         }
         if (resMethodName === `getAttestation`) {
@@ -55,7 +64,8 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         }
         if (resMethodName === `getAttestationResult`) {
           if (res) {
-            const handler = () => savedGetAttestationResultCallback.current(res);
+            const handler = () =>
+              savedGetAttestationResultCallback.current(res);
             handler();
           }
         }
