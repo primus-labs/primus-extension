@@ -24,7 +24,7 @@ import {
   BIGZERO,
 } from '@/config/constants';
 import {PADOURL, PROXYURL} from '@/config/envConstants'
-
+import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import { setCredentialsAsync } from '@/store/actions';
 import {
   add,
@@ -37,6 +37,7 @@ import {
   validateAttestationForAnt,
   attestForPolygonId,
 } from '@/services/api/cred';
+
 
 
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
@@ -541,7 +542,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           fullScreenType: 'algorithm',
           reqMethodName: 'startOffline',
           params: {
-            offlineTimeout: 60 * 1000,
+            offlineTimeout: STARTOFFLINETIMEOUT,
             padoUrl: PADOURL,
             proxyUrl: PROXYURL,
           },

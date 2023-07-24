@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import { postMsg } from '@/utils/utils';
 import { useSelector } from 'react-redux';
 import { PADOURL, PROXYURL } from '@/config/envConstants';
+import {STARTOFFLINETIMEOUT} from '@/config/constants'
 import type { UserState } from '@/types/store';
 
 type UseAlgorithm = (
@@ -48,7 +49,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
               fullScreenType: 'algorithm',
               reqMethodName: 'startOffline',
               params: {
-                offlineTimeout: 60 * 1000,
+                offlineTimeout: STARTOFFLINETIMEOUT,
                 padoUrl: PADOURL,
                 proxyUrl: PROXYURL,
               },
