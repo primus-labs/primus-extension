@@ -31,12 +31,12 @@ const moduleObj = [
     {
       moduleType: 'pado',
       settingType: 'Privacy Policy',
-      link: 'http://18.179.8.186/docs/Privacy-Policy',
+      link: 'https://docs.padolabs.org/Privacy-Policy',
     },
     {
       moduleType: 'pado',
       settingType: 'PADO Support',
-      link: 'http://18.179.8.186/docs/welcome',
+      link: 'https://docs.padolabs.org/',
     },
   ],
 ];

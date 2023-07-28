@@ -46,7 +46,6 @@ export type ExchangeMeta = {
   requirePassphase?: boolean;
   constructorF?: any;
   baseName?: string;
-  baseUrl?: string;
   accountBalanceUrl?: string; // TODO
   userId?: string;
   label?: string;
@@ -62,7 +61,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceBinance,
     constructorF: Binance,
     baseName: 'api.binance.com',
-    baseUrl: '13.224.61.157:443',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
   },
   coinbase: {
@@ -72,7 +70,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Coinbase,
     baseName: 'api.coinbase.com',
-    baseUrl: '104.18.5.43:443',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
   },
   kucoin: {
@@ -82,7 +79,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: true,
     constructorF: KuCoin,
     baseName: 'api.kucoin.com',
-    baseUrl: '',
   },
   bybit: {
     name: 'Bybit',
@@ -91,7 +87,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Bybit,
     baseName: 'api.bybit.com',
-    baseUrl: '',
   },
   okx: {
     name: 'OKX',
@@ -100,7 +95,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: true,
     constructorF: OKX,
     baseName: 'www.okx.com',
-    baseUrl: '104.18.2.151:443',
 
     accountBalanceUrl: 'https://www.okx.com/api/v5/account/balance',
   },
@@ -111,7 +105,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Gate,
     baseName: 'api.gateio.ws',
-    baseUrl: '',
   },
   huobi: {
     name: 'Huobi',
@@ -120,7 +113,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Huobi,
     baseName: 'api.huobi.pro',
-    baseUrl: '',
   },
   bitget: {
     name: 'Bitget',
@@ -129,7 +121,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: true,
     constructorF: Bitget,
     baseName: 'api.bitget.com',
-    baseUrl: '',
   },
   mexc: {
     name: 'MEXC',
@@ -138,7 +129,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Mexc,
     baseName: 'api.mexc.com',
-    baseUrl: '',
   },
   twitter: {
     name: 'Twitter',

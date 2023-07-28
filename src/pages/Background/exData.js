@@ -232,7 +232,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     requestid: prevRequestid,
   } = form;
-  const { baseName, baseUrl } = DATASOURCEMAP[source];
+  const { baseName } = DATASOURCEMAP[source];
   const user = await assembleUserInfoParams();
   const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(
     form,
@@ -259,7 +259,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     requestid: prevRequestid || timeStampStr,
     version: CredVersion,
     baseName, // host, such as "api.binance.com"
-    baseUrl, // client <----> http-server
     padoUrl: PADOURL, // client <----> pado-server // TODO
     proxyUrl: PROXYURL, // TODO
     // if cipher non-exist or empty use default. options:

@@ -9,16 +9,16 @@ type ENVTYPE = 'development' | 'test' | 'production';
 // const CURENV = process.env.NODE_ENV as ENVTYPE;
 const CURENV = 'development';
 const PADOURLMAP = {
-  development: '18.179.8.186:8889',
+  development: 'wss://api.padolabs.org/algorithm',
   test: '18.179.8.186:8888',
-  production: '127.0.0.1:8081',
+  production: 'wss://api.padolabs.org/algorithm',
 };
 export const PADOURL = PADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
-  development: '18.179.8.186:9001',
+  development: 'wss://api.padolabs.org/algoproxy',
   test: '18.179.8.186:9000',
-  production: '127.0.0.1:9000',
+  production: 'wss://api.padolabs.org/algoproxy',
 };
 export const PROXYURL = PROXYURLMAP[CURENV];
 
@@ -30,13 +30,11 @@ const PADOADDRESSMAP = {
 export const PADOADDRESS = PADOADDRESSMAP[CURENV];
 
 const PADOSERVERURLMAP = {
-  development: 'http://18.179.8.186:8080',
+  development: 'https://api.padolabs.org',
   test: 'http://18.179.8.186:8080',
-  production: 'http://18.179.8.186:8080',
+  production: 'https://api.padolabs.org',
 };
 export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
-// TODO!!!
-export const PADOSERVERURLHTTPS = 'https://18.179.8.186:8081';
 
 const EASINFOMAP = {
   development: {

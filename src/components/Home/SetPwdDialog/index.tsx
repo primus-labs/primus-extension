@@ -71,6 +71,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       return pwd && confirm && pwd !== confirm;
     }, [pwd, confirm]);
 
+    const userInfo = useSelector((state: UserState) => state.userInfo);
     const fetchBindUserAddress = useCallback(() => {
       chrome.storage.local.get(['userInfo'], (storedData) => {
         if (storedData['userInfo']) {
@@ -89,6 +90,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             }
           };
           padoServicePort.onMessage.addListener(padoServicePortListener);
+          const { token } = userInfo;
           postMsg(padoServicePort, {
             fullScreenType: 'padoService',
             reqMethodName: 'bindUserAddress',
@@ -101,6 +103,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               // TODO
               extraHeader: {
                 'user-id': userId,
+                Authorization: `Bearer ${token}`,
               },
             },
           });

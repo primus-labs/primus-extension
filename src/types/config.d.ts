@@ -5,7 +5,6 @@ export type ExchangeMeta = {
   requirePassphase?: boolean;
   constructorF?: any;
   baseName?: string;
-  baseUrl?: string;
   accountBalanceUrl?: string; // TODO
   userId?: string;
   label?: string;

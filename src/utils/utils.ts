@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
-import { PADOSERVERURLHTTPS } from '@/config/envConstants';
+import { PADOSERVERURL } from '@/config/envConstants';
 
 var ethereumjsUtil = require('ethereumjs-util');
 
@@ -171,7 +171,7 @@ type AuthParams = {
 };
 export function getAuthUrl(authParams: AuthParams) {
   const { source, state } = authParams;
-  return `${PADOSERVERURLHTTPS}/public/render/${source}?state=${state}`;
+  return `${PADOSERVERURL}/public/render/${source}?state=${state}`;
 }
 
 export async function assembleUserInfoParams() {
