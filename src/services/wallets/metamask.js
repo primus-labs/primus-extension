@@ -71,6 +71,38 @@ export const getProvider = () => {
   return provider;
 };
 
+export const requestSign = async (address) => {
+  const typedData = {
+    types: {
+      EIP712Domain: [
+        {name: 'name', type: 'string'}
+      ],
+      Request: [
+        {name: 'address', type: 'string'},
+        {name: 'timestamp', type: 'string'}
+      ]
+    },
+    primaryType: 'Request',
+    domain: {
+      name: 'PADO Labs'
+    },
+    message: {
+      address: address,
+      timestamp: (+new Date()).toString()
+    }
+  };
+  try {
+    const res = await provider.request({
+      method: 'eth_signTypedData_v4',
+      params: [address, typedData]
+    });
+  } catch (e) {
+    console.log('requestSign error: ', e);
+    return "";
+  }
+  return res;
+}
+
 const subscribeToEvents = () => {
   if (provider && provider.on) {
     provider.on('chainChanged', handleChainChanged);
