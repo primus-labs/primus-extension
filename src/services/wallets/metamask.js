@@ -72,12 +72,14 @@ export const getProvider = () => {
 };
 
 export const requestSign = async (address) => {
+  const timestamp = (+new Date()).toString();
   const typedData = {
     types: {
       EIP712Domain: [
         {name: 'name', type: 'string'}
       ],
       Request: [
+        {name: 'desc', type: 'string'},
         {name: 'address', type: 'string'},
         {name: 'timestamp', type: 'string'}
       ]
@@ -87,18 +89,19 @@ export const requestSign = async (address) => {
       name: 'PADO Labs'
     },
     message: {
+      desc: 'PADO Labs',
       address: address,
-      timestamp: (+new Date()).toString()
+      timestamp: timestamp
     }
   };
+  let res = "";
   try {
-    const res = await provider.request({
+    res = await provider.request({
       method: 'eth_signTypedData_v4',
       params: [address, typedData]
     });
   } catch (e) {
     console.log('requestSign error: ', e);
-    return "";
   }
   return res;
 }
