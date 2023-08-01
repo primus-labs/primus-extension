@@ -188,7 +188,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="providedChains">
                 {item.provided?.map((i, k) => (
                   <a
-                    href={`https://sepolia.easscan.org/attestation/view/${i.attestationUID}`}
+                    href={`https://arbitrum.easscan.org/attestation/view/${i.attestationUID}`}
                     target="_blank"
                     rel="noreferrer"
                     key={k}
