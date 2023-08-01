@@ -32,6 +32,7 @@ import type {
   SourceDataList,
   SourceData,
   ExchangeMeta,
+  onChainAssetsDataList,
 } from '@/types/dataSource';
 import './index.sass';
 
@@ -59,7 +60,10 @@ const DataSourceOverview = memo(() => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
-
+  const onChainAssetsSources = useSelector(
+    (state: UserState) => state.onChainAssetsSources
+  );
+  console.log('onChainAssetsSources====', onChainAssetsSources);
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -81,6 +85,14 @@ const DataSourceOverview = memo(() => {
   const kycList: KYCDataList = useMemo(() => {
     return Object.values({ ...kycSources });
   }, [kycSources]);
+  const onChainAssetsList: any = useMemo(() => {
+    const onChainAssetsArr = Object.values({ ...onChainAssetsSources });
+    const orderedOnChainAssetsArr = onChainAssetsArr.sort((a: any, b: any) =>
+      sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
+    );
+    return orderedOnChainAssetsArr;
+  }, [onChainAssetsSources]);
+  console.log('onChainAssetsList====', onChainAssetsList);
 
   const dataSourceList: SourceDataList = useMemo(() => {
     const exList = Object.values(exSources);
@@ -91,8 +103,14 @@ const DataSourceOverview = memo(() => {
     const orderedSocialList = socialList.sort((a, b) =>
       sub(Number(b.followers), Number(a.followers)).toNumber()
     );
-    return [...orderedExList, ...orderedSocialList, ...kycList];
-  }, [exSources, socialSources, kycList]);
+
+    return [
+      ...orderedExList,
+      ...orderedSocialList,
+      ...kycList,
+      ...onChainAssetsList,
+    ];
+  }, [exSources, socialSources, kycList, onChainAssetsList]);
   const activeDataSourceList = useMemo(() => {
     let orderedDataSourceList = [...dataSourceList];
     if (activeSourceType !== 'All') {

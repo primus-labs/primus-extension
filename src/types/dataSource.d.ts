@@ -12,6 +12,7 @@ export type TokenMap = {
   price: string;
   amount: string;
   value: string;
+  logo?: any;
 };
 
 export type AssetsMap = {
@@ -86,13 +87,12 @@ export type KYCDatas = {
 };
 export type KYCDataList = KYCData[];
 
-export type SourceData = ExData | SocialData | KYCData;
-export type SourceDataList = (ExData | SocialData | KYCData)[];
 
 export type ChainAssetsMap = {
   [propName: string]: AssetsMap;
 };
 export type onChainData = {
+  name: string;
   date: string;
   label?: string;
   address: string;
@@ -101,16 +101,17 @@ export type onChainData = {
   tokenListMap: AssetsMap;
   chainAssetsMap: ChainAssetsMap;
   pnl?: string;
-
-  // flexibleAccountTokenMap: AssetsMap;
-  // spotAccountTokenMap: AssetsMap;
-  // tokenPriceMap: object;
-  // tradingAccountTokenAmountObj: object;
   // exUserId?: string;
   // pnlAmount?: string;
   // pnlPercent?: string;
 };
 export type onChainAssetsData = onChainData & ExchangeMeta;
+export type onChainAssetsDataList = onChainAssetsData[];
+
 export type onChainAssetsDatas = {
   [propName: string]: onChainAssetsData;
 };
+
+export type SourceData = ExData | SocialData | KYCData;
+export type SourceDataList = (ExData | SocialData | KYCData | onChainData)[];
+

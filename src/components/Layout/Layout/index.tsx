@@ -16,6 +16,7 @@ import {
   setCredentialsAsync,
   initWalletAddressActionAsync,
   initRewardsActionAsync,
+  setOnChainAssetsSourcesAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import { postMsg } from '@/utils/utils';
@@ -149,6 +150,8 @@ const Layout = () => {
     dispatch(setCredentialsAsync());
     dispatch(initWalletAddressActionAsync());
     dispatch(initRewardsActionAsync());
+    dispatch(setOnChainAssetsSourcesAsync());
+    // chrome.storage.local.remove(['onChainAssetsSources']);
   }, [dispatch]);
 
   return (

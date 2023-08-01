@@ -58,6 +58,9 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, rewards: action.payload };
     case 'setEffective':
       return { ...state, effective: action.payload };
+    case 'setOnChainAssetsSources':
+      debugger
+      return { ...state, onChainAssetsSources: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     default:

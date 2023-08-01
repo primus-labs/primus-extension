@@ -19,6 +19,10 @@ export type ExDataMap = {
   [propName: string]: ExInfo & ExchangeMeta;
 };
 
+export const setOnChainAssetsSources = (values: any) => ({
+  type: 'setOnChainAssetsSources',
+  payload: values,
+});
 export const setCredentialsAction = (values: any) => ({
   type: 'setCredentials',
   payload: values,
@@ -180,7 +184,16 @@ export const setSysConfigAction = (data: object) => ({
   type: SETSYSCONFIG,
   payload: data,
 });
-
+export const setOnChainAssetsSourcesAsync = () => {
+  return async (dispatch: any) => {
+    const { onChainAssetsSources: onChainAssetsSourcesStr } =
+      await chrome.storage.local.get(['onChainAssetsSources']);
+    const onChainAssetsSourcesObj = onChainAssetsSourcesStr
+      ? JSON.parse(onChainAssetsSourcesStr)
+      : {};
+    dispatch(setOnChainAssetsSources(onChainAssetsSourcesObj));
+  };
+};
 export const setCredentialsAsync = () => {
   return async (dispatch: any) => {
     const { credentials: credentialsStr } = await chrome.storage.local.get([

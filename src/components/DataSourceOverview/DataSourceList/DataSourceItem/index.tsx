@@ -10,6 +10,7 @@ import type {
   ExData,
   SocialData,
   KYCData,
+  onChainAssetsData
 } from '@/types/dataSource';
 
 import './index.sass';
@@ -38,7 +39,8 @@ export type DataSourceItemType = {
   pnl?: string;
 } & ExchangeMeta &
   DataSourceData &
-  SocialDataSourceData;
+  SocialDataSourceData &
+  onChainAssetsData;
 type SourceDescItem = {
   name: string;
   sourceKey: string;
@@ -63,7 +65,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
       label,
       userName,
       screenName,
-    } = source as ExData & SocialData & KYCData;
+    } = source as ExData & SocialData & KYCData & onChainAssetsData;
     const formatSource = {
       ...source,
       totalBalance: totalBalance ? `$${formatNumeral(totalBalance)}` : '--',

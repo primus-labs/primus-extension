@@ -17,7 +17,7 @@ export type GetDataFormProps = {
 };
 interface ConnectWalletDataDialogProps {
   onClose: () => void;
-  onSubmit: (item: WALLETITEMTYPE) => void;
+  onSubmit: (item: WALLETITEMTYPE,label?:string) => void;
   onCancel: () => void;
 }
 
@@ -28,15 +28,15 @@ const ConnectWalletDataDialog: React.FC<ConnectWalletDataDialogProps> = memo(
     const [label, setLabel] = useState<string>();
 
     const onChangeWallet = (item: WALLETITEMTYPE) => {
-      console.log('onChangeWallet', item)
-      setActiveItem(item)
-    }
+      console.log('onChangeWallet', item);
+      setActiveItem(item);
+    };
     const handleClickNext = () => {
       if (!activeItem) {
         setErrorTip('Please select one wallet');
         return;
       }
-      onSubmit(activeItem);
+      onSubmit(activeItem, label);
     };
 
     const handleChangeLabel = useCallback((val: string) => {

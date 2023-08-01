@@ -17,8 +17,8 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 console.log('Page initialization')
 
 // TODO 
-root.render(<React.StrictMode>
+root.render(<>
   <Provider store={store}>
     <RouterProvider router={router} />
   </Provider>
-</React.StrictMode>);
+</>);
