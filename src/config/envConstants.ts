@@ -251,6 +251,10 @@ const EASINFOMAP = {
       easProxyContrac: '',
       schemaUid: '',
       schemaUidTokenHoldings: '',
+      chainId: '0x89', // numToHex
+      chainName: 'Polygon Mainnet',
+      rpcUrls: ['https://polygon-rpc.com'],
+      blockExploreUrls: ['https://polygonscan.com/'],
     },
   },
 };

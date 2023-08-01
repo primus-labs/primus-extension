@@ -166,7 +166,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           alert('getEventSignature network error!');
         }
 
-        const activeNetworkName = 'Sepolia';
+        const activeNetworkName = 'Polygon';
         const targetNetwork =
           EASInfo[activeNetworkName as keyof typeof EASInfo];
         try {
