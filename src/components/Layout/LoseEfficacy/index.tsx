@@ -34,9 +34,7 @@ const LoseEfficacyDialog = memo(() => {
       alert('getServerTime network error!');
     }
   }, [dispatch]);
-  useEffect(() => {
-    checkIsEffective();
-  }, [checkIsEffective]);
+  
   
   return (
     <>

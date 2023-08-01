@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 
 import iconSuc from '@/assets/img/iconSuc.svg';
 import { gte, formatNumeral } from '@/utils/utils';
-import type { ExchangeMeta } from '@/config/constants';
+import type { ExchangeMeta } from '@/types/dataSource';
 import type {
   SocialDataSourceData,
   SourceData,

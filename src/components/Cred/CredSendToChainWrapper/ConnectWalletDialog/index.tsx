@@ -8,6 +8,7 @@ import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { WALLETLIST } from '@/config/constants';
 
 import type { WALLETITEMTYPE } from '@/config/constants';
+
 import './index.sass';
 
 export type DataFieldItem = {

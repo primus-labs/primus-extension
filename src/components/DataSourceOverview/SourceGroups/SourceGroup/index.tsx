@@ -1,32 +1,35 @@
-import React, {
-  FC,
-  useCallback,
-  useState,
-  useEffect,
-  memo,
-} from 'react';
+import React, { FC, useCallback, useState, useEffect, memo } from 'react';
 
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import './index.sass';
 
 import type { ConnectSourceType } from '@/types/dataSource';
-import type { ExchangeMeta } from '@/types/config';
+import type { ExchangeMeta } from '@/types/dataSource';
+import type { WALLETITEMTYPE } from '@/config/constants';
 
+export type ListItem = ExchangeMeta | WALLETITEMTYPE;
 interface ConnectDataSourceListProps {
   mutiple?: boolean;
-  onChange: (source: ExchangeMeta) => void;
-  list: ExchangeMeta[];
+  onChange: (source: ListItem) => void;
+  list: ListItem[];
 }
 const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
   ({ mutiple = false, onChange, list }) => {
-    const [activeSource, setActiveSource] = useState<ExchangeMeta>();
-    const [activeSources, setActiveSources] = useState<ExchangeMeta[]>([]);
+    console.log('222222', list);
+    const [activeSource, setActiveSource] = useState<ListItem>();
+    const [activeSources, setActiveSources] = useState<ListItem[]>([]);
 
     const liClassNameCallback = useCallback(
-      (item: ConnectSourceType) => {
+      (item: ListItem) => {
         let defaultClassName = 'networkItem';
-        if (!mutiple && activeSource?.name === item.name) {
+        if (item.name === 'On-chain Assets') {
+          defaultClassName += ' onChainAssets';
+        }
+        if (!mutiple && !item?.disabled && activeSource?.name === item.name) {
           defaultClassName += ' active';
+        }
+        if (item?.disabled) {
+          defaultClassName += ' disabled';
         }
         if (mutiple) {
           const flag = activeSources.find((i) => i.name === item.name);
@@ -39,7 +42,10 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
       [activeSource, activeSources, mutiple]
     );
 
-    const handleClickData = (item: ExchangeMeta) => {
+    const handleClickData = (item: ListItem) => {
+      if (item?.disabled) {
+        return;
+      }
       if (!mutiple) {
         if (activeSource?.name === item.name) {
           setActiveSource(undefined);
@@ -85,9 +91,16 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
                     handleClickData(item);
                   }}
                 >
-                  <img src={item.icon} alt="" />
+                  <img
+                    src={
+                      'iconWithCircle' in item
+                        ? item?.iconWithCircle ?? item.icon
+                        : item.icon
+                    }
+                    alt=""
+                  />
                   <h6>{item.name}</h6>
-                  <div className="extraTip">{item.desc}</div>
+                  {/* <div className="extraTip">{item?.desc}</div> */}
                 </li>
               );
             })}

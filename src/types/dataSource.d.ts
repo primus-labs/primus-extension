@@ -32,6 +32,7 @@ export type ExchangeMeta = {
   name: string;
   type: 'Social' | 'Assets' | 'Identity';
   icon: any;
+  iconWithCircle?: any;
   requirePassphase?: boolean;
   constructorF?: any;
   baseName?: string;
@@ -39,6 +40,7 @@ export type ExchangeMeta = {
   userId?: string;
   label?: string;
   desc?: string;
+  disabled?: boolean;
 };
 
 type ExInfo = {
@@ -86,3 +88,29 @@ export type KYCDataList = KYCData[];
 
 export type SourceData = ExData | SocialData | KYCData;
 export type SourceDataList = (ExData | SocialData | KYCData)[];
+
+export type ChainAssetsMap = {
+  [propName: string]: AssetsMap;
+};
+export type onChainData = {
+  date: string;
+  label?: string;
+  address: string;
+
+  totalBalance: string;
+  tokenListMap: AssetsMap;
+  chainAssetsMap: ChainAssetsMap;
+  pnl?: string;
+
+  // flexibleAccountTokenMap: AssetsMap;
+  // spotAccountTokenMap: AssetsMap;
+  // tokenPriceMap: object;
+  // tradingAccountTokenAmountObj: object;
+  // exUserId?: string;
+  // pnlAmount?: string;
+  // pnlPercent?: string;
+};
+export type onChainAssetsData = onChainData & ExchangeMeta;
+export type onChainAssetsDatas = {
+  [propName: string]: onChainAssetsData;
+};

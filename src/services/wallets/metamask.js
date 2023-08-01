@@ -12,7 +12,10 @@ export const connectWallet = async (targetNetwork) => {
       }),
       provider.request({ method: 'eth_chainId' }),
     ]);
-    await switchChain(chainId, targetNetwork);
+
+    if (targetNetwork) {
+      await switchChain(chainId, targetNetwork);
+    }
     subscribeToEvents();
     return [accounts, chainId, provider];
   } catch (e) {
@@ -71,40 +74,37 @@ export const getProvider = () => {
   return provider;
 };
 
-export const requestSign = async (address) => {
-  const timestamp = (+new Date()).toString();
+export const requestSign = async (address, timestamp) => {
   const typedData = {
     types: {
-      EIP712Domain: [
-        {name: 'name', type: 'string'}
-      ],
+      EIP712Domain: [{ name: 'name', type: 'string' }],
       Request: [
-        {name: 'desc', type: 'string'},
-        {name: 'address', type: 'string'},
-        {name: 'timestamp', type: 'string'}
-      ]
+        { name: 'desc', type: 'string' },
+        { name: 'address', type: 'string' },
+        { name: 'timestamp', type: 'string' },
+      ],
     },
     primaryType: 'Request',
     domain: {
-      name: 'PADO Labs'
+      name: 'PADO Labs',
     },
     message: {
       desc: 'PADO Labs',
-      address: address,
-      timestamp: timestamp
-    }
+      address,
+      timestamp,
+    },
   };
-  let res = "";
+  let res = '';
   try {
     res = await provider.request({
       method: 'eth_signTypedData_v4',
-      params: [address, typedData]
+      params: [address, typedData],
     });
   } catch (e) {
     console.log('requestSign error: ', e);
   }
   return res;
-}
+};
 
 const subscribeToEvents = () => {
   if (provider && provider.on) {

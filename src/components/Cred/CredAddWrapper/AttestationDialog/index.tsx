@@ -11,7 +11,7 @@ import iconGreater from '@/assets/img/iconGreater.svg';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
 import type { CredTypeItemType } from '@/types/cred';
-import type { ExchangeMeta } from '@/types/config';
+import type { ExchangeMeta } from '@/types/dataSource';
 import type { UserState } from '@/types/store';
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { PROOFTYPEITEM } from '@/types/cred';

@@ -4,12 +4,12 @@ import SourceGroup from './SourceGroup';
 import SourceGroupTypes from './SourceGroupTypes';
 import { DATASOURCEMAP } from '@/config/constants';
 
-import type { ExchangeMeta } from '@/types/config';
+import type { ExchangeMeta } from '@/types/dataSource';
 
 import './index.sass';
 
 interface SourceGroupsProps {
-  onChange: (item:ExchangeMeta) => void;
+  onChange: (item: ExchangeMeta) => void;
 }
 const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
   const [activeTab, setActiveTab] = useState<string>('Assets');
@@ -21,13 +21,15 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
     return Object.keys(DATASOURCEMAP).map((key) => {
       const sourceInfo: ExchangeMeta =
         DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
-      const { name, icon, type, requirePassphase, desc } = sourceInfo;
+      const { name, icon, type, requirePassphase, desc, iconWithCircle } =
+        sourceInfo;
       const infoObj: ExchangeMeta = {
         name,
         icon,
         type,
         desc,
         requirePassphase,
+        iconWithCircle,
       };
       return infoObj;
     });
@@ -38,12 +40,11 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
     );
     return activeList;
   }, [allSourcesList, activeTab]);
-  
 
   return (
     <div className="SourceGroups">
       <SourceGroupTypes onChange={handleChangeType} />
-      <SourceGroup onChange={onChange} list={activeSourceList} />
+      <SourceGroup onChange={(a) => {onChange(a as ExchangeMeta);}} list={activeSourceList} />
     </div>
   );
 });

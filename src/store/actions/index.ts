@@ -1,6 +1,6 @@
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import { DATASOURCEMAP } from '@/config/constants';
-import type { ExchangeMeta } from '@/config/constants';
+import type { ExchangeMeta } from '@/types/dataSource';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
 import type { PROOFTYPEITEM } from '@/types/cred';

@@ -15,7 +15,7 @@ import { DATASOURCEMAP } from '@/config/constants';
 
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { UserState } from '@/types/store';
-import type { ExchangeMeta } from '@/types/config';
+import type { ExchangeMeta } from '@/types/dataSource';
 
 interface ConnectDataSourceListProps {
   mutiple?: boolean;

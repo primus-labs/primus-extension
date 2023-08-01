@@ -1,0 +1,91 @@
+@import '@/assets/css/pDialog.sass'
+.connectWalletDataDialog
+  padding: 64px 50px 50px
+  @extend .fcbc
+  position: relative
+  main
+    width: 100%
+    
+    padding-bottom: 103px
+    @extend .fcsc
+    gap: $xlGap
+    // width: 500px
+    max-height: 628px
+    overflow-y: auto
+    overflow-x: hidden
+    width: 100%
+    padding-right: 0
+    
+    h1
+      @extend .xlLBlackBoldFont
+      align-self: center
+    h2
+      @extend .sSBlackRegularFont
+      line-height: 26px
+    .formItem
+      width: 100%
+      @extend .fcss
+      gap: $xxsGap
+      h6
+        @extend .mSBlackRegularFont
+      .sourceGroup.scroll
+        height: auto
+        ul.dataList 
+          gap: 5px
+          li
+            width: 100px
+            height: 95px
+            img
+              width: 35.821px
+            &.onChainAssets
+              h6
+                line-height: 12px
+                margin-top: -4px
+                text-align: center
+            &.active:after 
+              right: 2px
+              bottom: 2px
+            
+    
+  button.nextBtn
+    height: 58px !important
+    position: relative
+@media (max-width: 1680px)
+  .connectWalletDataDialog
+    padding: 36px 42px 32px
+    
+    main
+      padding-bottom: 16px
+      gap: 0
+      
+      h1
+        font-size: 30px
+        line-height: 36px
+        font-family:'Inter-SemiBold'
+        margin-top: 24px
+      h2
+        font-size: 14px
+        line-height: 20px
+        margin-top: 20px
+        margin-bottom: 0
+      .formItem
+        margin-top: 24px
+        gap: 6px
+        h6
+          font-size: 14px
+          line-height: 17px
+        .pInputWrapper
+          height: 49px
+          .pInput
+            padding-left: 25px
+            font-size: 16px
+            line-height: 19px
+            font-family: 'Inter-Medium'
+          .suffixIcon
+            width: 16px
+    
+    button.nextBtn
+      height: 48px !important
+      font-family: 'Inter-SemiBold' !important      
+      
+      

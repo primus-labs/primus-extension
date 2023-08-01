@@ -14,6 +14,7 @@ import iconDataSourceOKX from '@/assets/img/iconDataSourceOKX.svg';
 import iconDataSourceKucoin from '@/assets/img/iconDataSourceKucoin.svg';
 import iconDataSourceCoinbase from '@/assets/img/iconDataSourceCoinbase.svg';
 import iconDataSourceHuobi from '@/assets/img/iconDataSourceHuobi.svg';
+import iconDataSourceHuobiWithCircle from '@/assets/img/iconDataSourceHuobiWithCircle.svg';
 import iconDataSourceGate from '@/assets/img/iconDataSourceGate.svg';
 import iconDataSourceBitget from '@/assets/img/iconDataSourceBitget.svg';
 import iconDataSourceBybit from '@/assets/img/iconDataSourceBybit.svg';
@@ -22,6 +23,8 @@ import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.png';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
 import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan2.svg';
+import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
+import iconDataSourceOnChainAssetsWithCircle from '@/assets/img/iconDataSourceOnChainAssetsWithCircle.svg';
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -38,23 +41,18 @@ import iconNetwork3 from '@/assets/img/iconNetwork3.png';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.png';
 import iconNetwork6 from '@/assets/img/iconNetwork6.png';
+import type { ExchangeMeta } from '@/types/dataSource';
 
-export type ExchangeMeta = {
-  name: string;
-  type: 'Social' | 'Assets' | 'Identity';
-  icon: any;
-  requirePassphase?: boolean;
-  constructorF?: any;
-  baseName?: string;
-  accountBalanceUrl?: string; // TODO
-  userId?: string;
-  label?: string;
-  desc?: string;
-};
 export type DataSourceMapType = {
   [propName: string]: ExchangeMeta;
 };
 export const DATASOURCEMAP: DataSourceMapType = {
+  onChainAssets: {
+    name: 'On-chain Assets',
+    type: 'Assets',
+    icon: iconDataSourceOnChainAssets,
+    iconWithCircle: iconDataSourceOnChainAssetsWithCircle,
+  },
   binance: {
     name: 'Binance',
     type: 'Assets',
@@ -110,6 +108,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     name: 'Huobi',
     type: 'Assets',
     icon: iconDataSourceHuobi,
+    iconWithCircle: iconDataSourceHuobiWithCircle,
     requirePassphase: false,
     constructorF: Huobi,
     baseName: 'api.huobi.pro',
@@ -205,20 +204,21 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
     disabled: true,
   },
   {
-    icon: iconWalletTokenPocket,
-    name: 'TokenPocket',
-    disabled: true,
-  },
-  {
     icon: iconWalletCoinbaseWallet,
     name: 'CoinbaseWallet',
     disabled: true,
   },
   {
-    icon: iconWalletTrustWallet,
-    name: 'TrustWallet',
+    icon: iconWalletTokenPocket,
+    name: 'TokenPocket',
     disabled: true,
   },
+
+  // {
+  //   icon: iconWalletTrustWallet,
+  //   name: 'TrustWallet',
+  //   disabled: true,
+  // },
 ];
 export const ONESECOND = 1000;
 export const ONEMINUTE = 60 * ONESECOND;

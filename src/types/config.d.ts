@@ -1,15 +1,4 @@
-export type ExchangeMeta = {
-  name: string;
-  type: 'Social' | 'Assets' | 'Identity';
-  icon: any;
-  requirePassphase?: boolean;
-  constructorF?: any;
-  baseName?: string;
-  accountBalanceUrl?: string; // TODO
-  userId?: string;
-  label?: string;
-  desc?: string;
-};
+
 
 type SysConfigInfo = {
   [propName: string]: any;

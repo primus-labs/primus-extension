@@ -14,6 +14,7 @@ import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import KYCVerify from '@/components/DataSourceOverview/KYCVerify';
+import ConnectWalletData from '@/components/DataSourceOverview/ConnectWalletData';
 import useAuthorization from '@/hooks/useAuthorization';
 import { postMsg, sub } from '@/utils/utils';
 import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
@@ -53,6 +54,8 @@ const DataSourceOverview = memo(() => {
   const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [KYCDialogVisible, setKYCDialogVisible] = useState<boolean>(false);
+  const [connectWalletDataDialogVisible, setConnectWalletDataDialogVisible] =
+    useState<boolean>(false);
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
@@ -213,8 +216,12 @@ const DataSourceOverview = memo(() => {
   const onSubmitDataSourcesDialog = useCallback(
     async (item: ExchangeMeta) => {
       if (item.type === 'Assets') {
-        setActiveSource(item);
-        setStep(2);
+        if (item.name === 'On-chain Assets') {
+          setConnectWalletDataDialogVisible(true);
+        } else {
+          setActiveSource(item);
+          setStep(2);
+        }
       } else if (item.type === 'Social') {
         authorize(item.name.toUpperCase(), () => {
           setStep(0);
@@ -297,7 +304,21 @@ const DataSourceOverview = memo(() => {
           onSubmit={onSubmitDataSourcesExplainDialog}
         />
       )}
-
+      <ConnectWalletData
+        visible={connectWalletDataDialogVisible}
+        onClose={() => {
+          setConnectWalletDataDialogVisible(false);
+          handleCloseMask();
+        }}
+        onCancel={() => {
+          setConnectWalletDataDialogVisible(false);
+          setStep(1);
+        }}
+        onSubmit={() => {
+          setConnectWalletDataDialogVisible(false);
+          handleCloseMask();
+        }}
+      />
       <KYCVerify
         visible={KYCDialogVisible}
         onClose={() => {

@@ -18,5 +18,6 @@ export type UserState = {
   userInfo: UserInfoType;
   walletAddress: string;
   rewards: Rewards;
-  effective: boolean
+  effective: boolean;
+  onChainAssetsSources: onChainAssetsDatas;
 };

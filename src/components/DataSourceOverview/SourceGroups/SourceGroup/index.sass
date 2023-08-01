@@ -41,6 +41,7 @@
         position: relative
       &.disabled
         cursor: not-allowed
+        opacity: 0.4
       &.active
         padding: 14px 2px
         background: #FFFFFF
@@ -91,6 +92,13 @@
         font-size: 12px
         line-height: 16px
         color: $colLBlack
+      
+      &.onChainAssets
+        h6
+          line-height: 12px
+          margin-top: -4px
+          text-align: center
+            
   .emptyContent
     width: 416px
     padding-top: 40px 
@@ -115,6 +123,7 @@
         width: 88px
         height: 88px
         padding: 18px 2px 13px
+        
         &.active
           padding: 16px 0px 11px
           &:after
