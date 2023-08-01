@@ -7,7 +7,7 @@ import iconBinance from '@/assets/img/iconBinance.png';
 type ENVTYPE = 'development' | 'test' | 'production';
 
 // const CURENV = process.env.NODE_ENV as ENVTYPE;
-const CURENV = 'development';
+const CURENV = 'production';
 const PADOURLMAP = {
   development: 'wss://api.padolabs.org/algorithm',
   test: '18.179.8.186:8888',
@@ -25,7 +25,7 @@ export const PROXYURL = PROXYURLMAP[CURENV];
 const PADOADDRESSMAP = {
   development: '0xe02bd7a6c8aa401189aebb5bad755c2610940a73',
   test: '0xe02bd7a6c8aa401189aebb5bad755c2610940a73',
-  production: '0x547E9fc83bE78bD656A20952EBE3bEBcc2ef8BD0',
+  production: '0xDB736B13E2f522dBE18B2015d0291E4b193D8eF6',
 };
 export const PADOADDRESS = PADOADDRESSMAP[CURENV];
 
@@ -215,10 +215,27 @@ const EASINFOMAP = {
       icon: iconArbitrum,
       title: 'ArbitrumOne',
       rpcUrl: 'https://arb1.arbitrum.io/rpc',
+      erc721Contract: '',
       easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
-      easProxyContrac: '',
-      schemaUid: '',
-      schemaUidTokenHoldings: '',
+      easProxyContrac: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
+      schemas: {
+        EAS: {
+          schemaUid:
+            '0xcc1f2c6308ffbb7ac5b915641cbc74b6d6404bcdedaf304f9637e5ef7ecc593d',
+          schemaUidTokenHoldings:
+            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
+          schemaUidIdentification:
+            '0x871cb30613666b4349fe45b1e4af222e7da3c3f3b6487ef99b813a897470cb28',
+        },
+        PolygonID: {
+          schemaUid:
+            '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
+          schemaUidTokenHoldings:
+            '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
+          schemaUidIdentification:
+            '0xe08e249cc244e018cc56cb05938665fd16e373e77acc23d625e84cd4fe07cc48',
+        },
+      },
       chainId: '0xa4b1', // numToHex
       chainName: 'ArbitrumOne',
       rpcUrls: ['https://arb1.arbitrum.io/rpc'],
@@ -229,6 +246,7 @@ const EASINFOMAP = {
       title: 'Polygon',
       disabled: true,
       rpcUrl: '',
+      erc721Contract: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
       easContact: '',
       easProxyContrac: '',
       schemaUid: '',
