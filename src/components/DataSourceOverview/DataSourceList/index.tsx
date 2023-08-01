@@ -30,9 +30,9 @@ const DataSourceList: React.FC<DataSourceItemProps> = memo(
     return (
       <div className="dataSourceList">
         {list.length < 1 && <EmptyDataSourceItem onAdd={handleAdd} />}
-        {list.map((item) => {
+        {list.map((item,k) => {
           return (
-            <DataSourceItem key={item.name} item={item} onCheck={onCheck} />
+            <DataSourceItem key={k} item={item} onCheck={onCheck} />
           );
         })}
       </div>

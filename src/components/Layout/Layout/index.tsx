@@ -28,7 +28,7 @@ import './index.sass';
 import LoseEfficacyDialog from '../LoseEfficacy';
 
 const Layout = () => {
-  console.log('222222Layout');
+  // console.log('222222Layout');
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );

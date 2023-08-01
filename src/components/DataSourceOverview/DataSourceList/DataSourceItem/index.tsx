@@ -1,8 +1,7 @@
 import React, { useMemo, memo } from 'react';
 import BigNumber from 'bignumber.js';
-
 import iconSuc from '@/assets/img/iconSuc.svg';
-import { gte, formatNumeral } from '@/utils/utils';
+import { gte, formatNumeral, formatAddress } from '@/utils/utils';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type {
   SocialDataSourceData,
@@ -10,7 +9,7 @@ import type {
   ExData,
   SocialData,
   KYCData,
-  onChainAssetsData
+  onChainAssetsData,
 } from '@/types/dataSource';
 
 import './index.sass';
@@ -20,6 +19,8 @@ export type TokenMap = {
   price: string;
   amount: string;
   value: string;
+  logo?: string;
+  isNative?: boolean;
 };
 export type AssetsMap = {
   [propName: string]: TokenMap;
@@ -65,6 +66,8 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
       label,
       userName,
       screenName,
+      address,
+      tokenListMap,
     } = source as ExData & SocialData & KYCData & onChainAssetsData;
     const formatSource = {
       ...source,
@@ -91,7 +94,14 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
           transferUnit: false,
           decimalPlaces: 0,
         })}`,
+      assetsNo: tokenListMap ? Object.keys(tokenListMap).length : 0,
     };
+    const formatAddr = useMemo(() => {
+      if (address) {
+        return formatAddress(address, 4, 4);
+      }
+      return '';
+    }, [address]);
     const descArr: SourceDescItem[] = useMemo(() => {
       const descTypeMap = {
         Social: [
@@ -166,7 +176,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
           >
             <img src={icon} alt="" />
             <div className="TLeftCon">
-              <h6>{name}</h6>
+              <h6>{name === 'On-chain Assets' ? formatAddr : name}</h6>
               {type === 'Social' && (
                 <div className="desc">
                   <span className="label">User:&nbsp;</span>

@@ -13,6 +13,7 @@ export type TokenMap = {
   amount: string;
   value: string;
   logo?: any;
+  isNative?: boolean;
 };
 
 export type AssetsMap = {
@@ -87,7 +88,6 @@ export type KYCDatas = {
 };
 export type KYCDataList = KYCData[];
 
-
 export type ChainAssetsMap = {
   [propName: string]: AssetsMap;
 };
@@ -114,4 +114,3 @@ export type onChainAssetsDatas = {
 
 export type SourceData = ExData | SocialData | KYCData;
 export type SourceDataList = (ExData | SocialData | KYCData | onChainData)[];
-

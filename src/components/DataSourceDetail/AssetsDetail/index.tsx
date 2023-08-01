@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, memo, useCallback } from 'react';
+import React, { useMemo, useEffect, memo, useCallback, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
@@ -10,36 +10,62 @@ import iconCredCreate from '@/assets/img/iconCredCreate.svg';
 import { setExSourcesAsync } from '@/store/actions';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
-import { gte, div, formatNumeral } from '@/utils/utils';
+import { gte, div, formatNumeral, formatAddress } from '@/utils/utils';
 import { BTC } from '@/config/constants';
+import { getTokenPrice } from '@/services/api/dataSource';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
-import type { ExData } from '@/types/dataSource';
+import type { ExData, onChainAssetsData } from '@/types/dataSource';
 
 import './index.sass';
 
 const AssetsDetail = memo(() => {
+  const [btcPriceFromService, setBtcPriceFromService] = useState<string>();
   const exSources = useSelector((state: UserState) => state.exSources);
+  const onChainAssetsSources = useSelector(
+    (state: UserState) => state.onChainAssetsSources
+  );
 
   const dispatch: Dispatch<any> = useDispatch();
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const sourceName = (searchParams.get('name') as string).toLowerCase();
+  const searchAddress = searchParams.get('address') as string;
+  const searchName = searchParams.get('name') as string;
+  const sourceName = searchName.toLowerCase();
 
+  const isOnChainData = useMemo(() => {
+    return decodeURIComponent(searchName) === 'On-chain Assets';
+  }, [searchName]);
   const dataSource = useMemo(() => {
-    return exSources[sourceName] as ExData;
-  }, [exSources, sourceName]);
-  const btcPrice = useMemo(() => {
-    if (typeof dataSource === 'object') {
-      const originP =
-        dataSource?.tokenPriceMap[BTC as keyof typeof dataSource.tokenPriceMap];
-      return originP ? originP : null;
+    if (isOnChainData) {
+      return onChainAssetsSources[searchAddress] as onChainAssetsData;
     } else {
-      return null;
+      return exSources[sourceName] as ExData;
     }
-  }, [dataSource]);
+  }, [
+    exSources,
+    sourceName,
+    isOnChainData,
+    onChainAssetsSources,
+    searchAddress,
+  ]);
+  const btcPrice = useMemo(() => {
+    if (isOnChainData) {
+      return btcPriceFromService;
+    } else {
+      if (typeof dataSource === 'object') {
+        const originP =
+          dataSource?.tokenPriceMap[
+            BTC as keyof typeof dataSource.tokenPriceMap
+          ];
+        return originP ? originP : null;
+      } else {
+        return null;
+      }
+    }
+  }, [dataSource, isOnChainData, btcPriceFromService]);
   const pnl = useMemo(() => {
     if (typeof dataSource === 'object') {
       const originPnl = dataSource?.pnl;
@@ -122,14 +148,38 @@ const AssetsDetail = memo(() => {
   const navToCred = useCallback(() => {
     navigate(`/cred?createFlag=${sourceName}`);
   }, [navigate, sourceName]);
+  const fetchBTCPrice = async () => {
+    try {
+      const { BTC } = await getTokenPrice({
+        currency: 'BTC',
+        source: 'BINANCE',
+      });
+      setBtcPriceFromService(BTC);
+    } catch {
+      alert('getTokenPrice network error!');
+    }
+  };
+  useEffect(() => {
+    if (isOnChainData) {
+      fetchBTCPrice();
+    }
+  }, [isOnChainData]);
   const headerRightContent = useMemo(() => {
-    return (
+    return isOnChainData ? (
+      <></>
+    ) : (
       <button className="tokenTableHeaderRight" onClick={navToCred}>
         <img src={iconCredCreate} alt="" />
         <span>Create Credential</span>
       </button>
     );
-  }, [navToCred]);
+  }, [navToCred, isOnChainData]);
+  const formatAddr = useMemo(() => {
+    if (dataSource?.address) {
+      return formatAddress(dataSource?.address, 4, 4);
+    }
+    return '';
+  }, [dataSource?.address]);
 
   useEffect(() => {
     sourceName && fetchExData();
@@ -149,7 +199,9 @@ const AssetsDetail = memo(() => {
           <div className="descItems">
             <div className="descItem">
               <img src={dataSource?.icon} alt="" className="sourceIcon" />
-              <div className="value">{dataSource?.name}</div>
+              <div className="value">
+                {isOnChainData ? formatAddr : dataSource?.name}
+              </div>
             </div>
             <div className="descItem">
               <div className="label">Date: &nbsp;</div>

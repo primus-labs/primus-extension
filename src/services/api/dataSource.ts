@@ -11,6 +11,10 @@ type GETASSETSONCHAINSParams = {
   timestamp: string;
   address: string;
 };
+type GETTOKENPRICEParams = {
+  currency: string;
+  source: string;
+};
 
 export const getConnectAntQrcode = (
   data: GETCONNECTANTQRCODEParams,
@@ -46,5 +50,12 @@ export const getAssetsOnChains = (data: GETASSETSONCHAINSParams) => {
   return request({
     method: 'get',
     url: `/chain/token?signature=${data.signature}&timestamp=${data.timestamp}&address=${data.address}`,
+  });
+};
+
+export const getTokenPrice = (data: GETTOKENPRICEParams) => {
+  return request({
+    method: 'get',
+    url: `/public/curency/price?currency=${data.currency}&source=${data.source}`,
   });
 };

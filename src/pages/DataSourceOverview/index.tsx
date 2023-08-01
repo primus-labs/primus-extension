@@ -63,7 +63,7 @@ const DataSourceOverview = memo(() => {
   const onChainAssetsSources = useSelector(
     (state: UserState) => state.onChainAssetsSources
   );
-  console.log('onChainAssetsSources====', onChainAssetsSources);
+
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -92,7 +92,7 @@ const DataSourceOverview = memo(() => {
     );
     return orderedOnChainAssetsArr;
   }, [onChainAssetsSources]);
-  console.log('onChainAssetsList====', onChainAssetsList);
+  // console.log('onChainAssetsList====', onChainAssetsList);
 
   const dataSourceList: SourceDataList = useMemo(() => {
     const exList = Object.values(exSources);
@@ -131,7 +131,6 @@ const DataSourceOverview = memo(() => {
 
   const onSubmitConnectDataSourceDialogDialog = useCallback(
     async (form: GetDataFormProps) => {
-      console.log('submit--form', form);
       setActiveSourceKeys(form);
       const lowerCaseSourceName = form?.name?.toLowerCase();
       setStep(2.5);
@@ -217,8 +216,10 @@ const DataSourceOverview = memo(() => {
     setStep(1);
   }, []);
   const handleCheckDataSourceDetail = useCallback(
-    ({ type, name }: SourceData) => {
-      navigate(`/dataDetail?type=${type}&name=${name}`);
+    ({ type, name, address }: SourceData) => {
+      navigate(
+        `/dataDetail?type=${type}&name=${name}&address=${encodeURIComponent(address)}`
+      );
     },
     [navigate]
   );

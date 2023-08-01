@@ -8,7 +8,10 @@ import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import { sub, postMsg, formatNumeral } from '@/utils/utils';
 
 import type { UserState } from '@/types/store';
-import type { TokenMap,DataSourceItemType } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
+import type {
+  TokenMap,
+  DataSourceItemType,
+} from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
 
 import './index.sass';
@@ -30,7 +33,13 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     name,
     headerRightContent,
   }) => {
-    // console.log('TokenTable-list', list,name,spotAccountTokenMap,flexibleAccountTokenMap);
+    console.log(
+      'TokenTable-list',
+      list,
+      name,
+      spotAccountTokenMap,
+      flexibleAccountTokenMap
+    );
     const [filterAccount, setFilterAccount] = useState<string | undefined>();
     const [activeItem, setActiveItem] = useState<string>();
 
@@ -45,6 +54,9 @@ const TokenTable: React.FC<TokenTableProps> = memo(
       console.log('TokenTable-sysConfig', sysConfig);
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
+    const showFilter = useMemo(() => {
+      return name === 'binance' || name === 'on-chain assets';
+    }, [name]);
     const currentList = useMemo(() => {
       if (filterAccount === undefined || filterAccount === 'All') {
         return list;
@@ -93,7 +105,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     const liClassName = useCallback(
       (item: TokenMap) => {
         let cN = 'tokenItem tr';
-        if (name === 'binance') {
+        if (showFilter) {
           cN += ' new';
           if (activeItem === item.symbol) {
             if (
@@ -112,7 +124,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         }
         return cN;
       },
-      [name, activeItem, spotAccountTokenMap, flexibleAccountTokenMap]
+      [activeItem, spotAccountTokenMap, flexibleAccountTokenMap, showFilter]
     );
 
     const handleCheckDetail = (symbol: string) => {
@@ -125,6 +137,21 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         setActiveItem(undefined);
       },
       []
+    );
+    const onChainTokenLogoFn = useCallback(
+      (item: TokenMap) => {
+        let activeImg = null;
+        if (item?.isNative) {
+          activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
+          return <img src={activeImg} alt="" />;
+        }
+        if (item?.logo) {
+          activeImg = item.logo;
+          return <img src={activeImg} alt="" />;
+        }
+        return <div className="defaultTokenImg"></div>;
+      },
+      [tokenLogoPrefix]
     );
 
     useEffect(() => {
@@ -141,7 +168,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         </header>
         <ul className="tokens">
           <li
-            className={name === 'binance' ? 'tokenItem th new' : 'tokenItem th'}
+            className={showFilter ? 'tokenItem th new' : 'tokenItem th'}
             key="th"
           >
             <div className="innerWrapper">
@@ -150,7 +177,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
               <div className="amount">Amount</div>
               <div className="value">USD Value</div>
             </div>
-            {name === 'binance' && (
+            {showFilter && (
               <div className="accountFilterWrapper">
                 <PFilter onChange={handleChangeFilter} />
               </div>
@@ -162,7 +189,8 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                 <li className={liClassName(item)} key={item.symbol}>
                   <div className="innerWrapper">
                     <div className="token">
-                      {tokenLogoPrefix && (
+                      {name === 'on-chain assets' && onChainTokenLogoFn(item)}
+                      {name !== 'on-chain assets' && tokenLogoPrefix && (
                         <img
                           src={`${tokenLogoPrefix}icon${item.symbol}.png`}
                           alt=""
@@ -183,7 +211,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                       {'$' + formatNumeral(item.value)}
                     </div>
                   </div>
-                  {name === 'binance' && filterAccount === 'All' && (
+                  {showFilter && filterAccount === 'All' && (
                     <div
                       className="arrowWrapper"
                       onClick={() => handleCheckDetail(item.symbol)}
