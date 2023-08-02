@@ -34,7 +34,7 @@ const PFilterContent: React.FC<TokenTableProps> = memo(
 
     return (
       <section
-        className={visible ? 'pFilterContent visible' : 'pFilterContent visible'}
+        className={visible ? 'pFilterContent visible' : 'pFilterContent'}
         ref={willCloseEl}
       >
         <ul className="formItems">

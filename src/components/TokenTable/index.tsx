@@ -114,17 +114,17 @@ const TokenTable: React.FC<TokenTableProps> = memo(
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const activeShowFilter = useMemo(() => {
-      return name === 'binance' || (name === 'on-chain assets' && showFilter);
+      return name === 'binance' || showFilter;
     }, [name, showFilter]);
     const filterList = useMemo(() => {
       if (name === 'binance') {
         return accountList;
       }
-      if (name === 'on-chain assets') {
+      if (showFilter) {
         return chainList;
       }
       return accountList;
-    }, [name]);
+    }, [name, showFilter]);
     const currentList = useMemo(() => {
       if (filterAccount === undefined || filterAccount === 'All') {
         return list;
@@ -143,8 +143,10 @@ const TokenTable: React.FC<TokenTableProps> = memo(
           return Object.values(flexibleAccountTokenMap);
         }
       }
-      if (name === 'on-chain assets' && showFilter) {
-        return Object.values(allChainMap[filterAccount as keyof typeof allChainMap]);
+      if (showFilter) {
+        return Object.values(
+          allChainMap[filterAccount as keyof typeof allChainMap]
+        );
       }
       return list;
     }, [
@@ -154,7 +156,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
       filterAccount,
       name,
       allChainMap,
-      showFilter
+      showFilter,
     ]);
     const activeList = useMemo(() => {
       return (currentList as TokenMap[]).sort((a, b) =>
@@ -227,20 +229,54 @@ const TokenTable: React.FC<TokenTableProps> = memo(
       },
       []
     );
+    // const onChainTokenLogoFn = useCallback(
+    //   (item: TokenMap) => {
+    //     let activeImg = null;
+    //     if (item?.isNative) {
+    //       activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
+    //       return <img src={activeImg} alt="" />;
+    //     }
+    //     if (item?.logo) {
+    //       activeImg = item.logo;
+    //       return <img src={activeImg} alt="" />;
+    //     }
+    //     return <div className="defaultTokenImg"></div>;
+    //   },
+    //   [tokenLogoPrefix]
+    // );
+    
     const onChainTokenLogoFn = useCallback(
       (item: TokenMap) => {
         let activeImg = null;
-        if (item?.isNative) {
+        if (name) {
+          if (name === 'on-chain assets' || showFilter) {
+            if (item?.isNative) {
+              activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
+              return <img src={activeImg} alt="" />;
+            }
+            if (item?.logo) {
+              activeImg = item.logo;
+              return <img src={activeImg} alt="" />;
+            }
+            return <div className="defaultTokenImg"></div>;
+          } else {
+            activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
+            return <img src={activeImg} alt="" />;
+          }
+        } else {
+          if (item?.isNative) {
+            activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
+            return <img src={activeImg} alt="" />;
+          }
+          if (item?.logo) {
+            activeImg = item.logo;
+            return <img src={activeImg} alt="" />;
+          }
           activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
           return <img src={activeImg} alt="" />;
         }
-        if (item?.logo) {
-          activeImg = item.logo;
-          return <img src={activeImg} alt="" />;
-        }
-        return <div className="defaultTokenImg"></div>;
       },
-      [tokenLogoPrefix]
+      [tokenLogoPrefix, name, showFilter]
     );
 
     useEffect(() => {
@@ -267,7 +303,13 @@ const TokenTable: React.FC<TokenTableProps> = memo(
               <div className="value">USD Value</div>
             </div>
             {activeShowFilter && (
-              <div className="accountFilterWrapper">
+              <div
+                className={
+                  name === 'on-chain assets' || showFilter
+                    ? 'accountFilterWrapper moreWidthFilterWrapper'
+                    : 'accountFilterWrapper'
+                }
+              >
                 <PFilter onChange={handleChangeFilter} list={filterList} />
               </div>
             )}
@@ -278,13 +320,15 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                 <li className={liClassName(item)} key={item.symbol}>
                   <div className="innerWrapper">
                     <div className="token">
-                      {name === 'on-chain assets' && onChainTokenLogoFn(item)}
-                      {name !== 'on-chain assets' && tokenLogoPrefix && (
-                        <img
-                          src={`${tokenLogoPrefix}icon${item.symbol}.png`}
-                          alt=""
-                        />
-                      )}
+                      {(name === 'on-chain assets' || showFilter) &&
+                        onChainTokenLogoFn(item)}
+                      {!(name === 'on-chain assets' || showFilter) &&
+                        tokenLogoPrefix && (
+                          <img
+                            src={`${tokenLogoPrefix}icon${item.symbol}.png`}
+                            alt=""
+                          />
+                        )}
                       <span>{item.symbol}</span>
                     </div>
                     <div className="price">
@@ -300,7 +344,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                       {'$' + formatNumeral(item.value)}
                     </div>
                   </div>
-                  {activeShowFilter && filterAccount === 'All' && (
+                  {name === 'binance' && filterAccount === 'All' && (
                     <div
                       className="arrowWrapper"
                       onClick={() => handleCheckDetail(item.symbol)}

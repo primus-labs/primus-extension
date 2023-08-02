@@ -1,5 +1,5 @@
-import React, { useState, useEffect, memo, useMemo } from 'react';
-import { formatNumeral, sub } from '@/utils/utils';
+import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
+import { formatNumeral, sub, formatAddress } from '@/utils/utils';
 import type {
   SocialDataList,
   SocialData,
@@ -39,13 +39,19 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
     // useEffect(() => {
     //   console.log('activeList', activeList)
     // }, [activeList])
-    const handleClickSource = (sourceName: string) => {
+    const handleClickSource = (sourceName: string, address?: string) => {
       // Click to activate and then click to deactivate
-      if (sourceName === activeSourceName) {
+      let formatSourceName = sourceName;
+
+      if (sourceName === 'On-chain Assets') {
+        const formatAddr = formatAddress(address as string, 4, 4);
+        formatSourceName = formatAddr;
+      }
+      if (formatSourceName === activeSourceName) {
         setActiveSourceName(undefined);
         onClearFilter();
       } else {
-        setActiveSourceName(sourceName);
+        setActiveSourceName(formatSourceName as string);
       }
     };
     const sourceCoreDataFn = (item: any) => {
@@ -72,12 +78,18 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
       return formatNum;
     };
 
-    const liClassNameFn = (name: string) => {
+    const liClassNameFn = (name: string, address: string) => {
       let activeClassName = 'source';
       if (type === 'Social') {
         activeClassName += ' social';
       }
-      if (!!activeSourceName && activeSourceName !== name) {
+
+      let formatName = name;
+      if (name === 'On-chain Assets') {
+        const formatAddr = formatAddress(address as string, 4, 4);
+        formatName = formatAddr;
+      }
+      if (!!activeSourceName && activeSourceName !== formatName) {
         activeClassName += ' disabled';
       }
       return activeClassName;
@@ -85,7 +97,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
 
     useEffect(() => {
       onSelect(activeSourceName);
-    }, [activeSourceName]);
+    }, [activeSourceName, onSelect]);
     useEffect(() => {
       if (filterSource) {
         const lowerFilterWord = filterSource?.toLowerCase();
@@ -104,6 +116,13 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
         }
       }
     }, [filterSource]);
+    const fromNameFn = useCallback((item) => {
+      if (item.name === 'On-chain Assets') {
+        const formatAddr = formatAddress(item.address as string, 4, 4);
+        return formatAddr;
+      }
+      return item.name;
+    }, []);
 
     return (
       <section className="sourcesStatisticsBar">
@@ -112,11 +131,11 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
           {activeList.map((item) => {
             return (
               <li
-                className={liClassNameFn(item.name)}
+                className={liClassNameFn(item.name, item.address)}
                 key={item.name}
-                onClick={() => handleClickSource(item.name)}
+                onClick={() => handleClickSource(item.name, item.address)}
               >
-                <div className="label">from {item.name}</div>
+                <div className="label">from {fromNameFn(item)}</div>
                 <div className="value">
                   <img src={item.icon} alt="" />
                   <span>{sourceCoreDataFn(item)}</span>

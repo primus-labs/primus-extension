@@ -92,6 +92,9 @@ const DataSourceOverview = memo(() => {
     );
     return orderedOnChainAssetsArr;
   }, [onChainAssetsSources]);
+  const assetsList: ExDataList | onChainAssetsDataList= useMemo(() => {
+    return [...exList, ...onChainAssetsList];
+  }, [exList, onChainAssetsList]);
   // console.log('onChainAssetsList====', onChainAssetsList);
 
   const dataSourceList: SourceDataList = useMemo(() => {
@@ -299,7 +302,7 @@ const DataSourceOverview = memo(() => {
           <AssetsOverview
             filterSource={filterWord}
             onClearFilter={onClearFilter}
-            list={exList}
+            list={assetsList}
           />
         )}
         {activeSourceType === 'Social' && (

@@ -5,7 +5,15 @@ import SourcesStatisticsBar from '../SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
 import PieChart from '../PieChart';
 
-import { add, mul, gte, sub, div, formatNumeral } from '@/utils/utils';
+import {
+  add,
+  mul,
+  gte,
+  sub,
+  div,
+  formatNumeral,
+  formatAddress,
+} from '@/utils/utils';
 
 import type {
   AssetsMap,
@@ -87,10 +95,12 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       ) => AssetsMap = (prev, curr) => {
         const { tokenListMap } = curr;
         if (tokenListMap) {
-          Object.keys(tokenListMap).forEach((symbol) => {
+          Object.keys(tokenListMap).forEach((tokenListMapSymbol) => {
+            // const { symbol, amount } = tokenListMap[tokenListMapSymbol];
+            const symbol = tokenListMapSymbol.split('---')[0]
             if (symbol in prev) {
               const { amount: prevAmount, price } = prev[symbol];
-              const { amount } = tokenListMap[symbol];
+              const { amount } = tokenListMap[tokenListMapSymbol];
               const totalAmount = add(
                 Number(prevAmount),
                 Number(amount)
@@ -109,13 +119,12 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
               prev = {
                 ...prev,
                 [symbol]: {
-                  ...tokenListMap[symbol],
+                  ...tokenListMap[tokenListMapSymbol],
                 },
               };
             }
           });
         }
-
         return prev;
       };
       const totalTokenMap = list.reduce(reduceF, {});
@@ -124,11 +133,22 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     const totalAssetsNo = useMemo(() => {
       return Object.keys(totalAssetsMap).length;
     }, [totalAssetsMap]);
+
     const activeAssetsMap = useMemo(() => {
       if (activeSourceName) {
-        const activeS: DataSourceItemType = list.find(
-          (item) => item.name === activeSourceName
-        ) as DataSourceItemType;
+        // TODO
+        // const activeS: DataSourceItemType = list.find(
+        //   (item) => item.name === activeSourceName
+        // ) as DataSourceItemType;
+
+        const activeS: DataSourceItemType = list.find((item) => {
+          if (item.name === 'On-chain Assets') {
+            // debugger
+            const formatAddr = formatAddress(item.address as string, 4, 4);
+            return formatAddr === activeSourceName;
+          }
+          return item.name === activeSourceName;
+        }) as any;
         return activeS.tokenListMap;
       } else {
         return totalAssetsMap;
@@ -138,7 +158,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       return Object.values(activeAssetsMap as AssetsMap);
     }, [activeAssetsMap]);
     const flexibleAccountTokenMap = useMemo(() => {
-      if (activeSourceName) {
+      if (activeSourceName && !activeSourceName.includes('...')) {
         const activeS: DataSourceItemType = list.find(
           (item) => item.name === activeSourceName
         ) as DataSourceItemType;
@@ -148,7 +168,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
     }, [list, activeSourceName]);
     const spotAccountTokenMap = useMemo(() => {
-      if (activeSourceName) {
+      if (activeSourceName && !activeSourceName.includes('...')) {
         const activeS: DataSourceItemType = list.find(
           (item) => item.name === activeSourceName
         ) as DataSourceItemType;
@@ -158,10 +178,18 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
     }, [list, activeSourceName]);
     const getChartData = useMemo(() => {
-      const chartData = list.map(({ name, totalBalance }) => ({
-        name,
-        value: new BigNumber(totalBalance as string).toFixed(2),
-      }));
+      const chartData = list.map(({ name, totalBalance, address }) => {
+        let formatName = name;
+        if (name === 'On-chain Assets') {
+          const formatAddr = formatAddress(address, 4, 4);
+          formatName = formatAddr;
+        }
+        return {
+          name: formatName,
+          // name,
+          value: new BigNumber(totalBalance as string).toFixed(2),
+        };
+      });
       return chartData;
     }, [list]);
     const lowerCaseSourceName = useMemo(() => {
@@ -169,8 +197,23 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     }, [activeSourceName]);
 
     const handleSelectSource = useCallback((sourceName: string | undefined) => {
+      // TODO address
       setActiveSourceName(sourceName);
     }, []);
+    const activeAllChainMap = useMemo(() => {
+      if (activeSourceName?.includes('...')) {
+        const activeS: DataSourceItemType = list.find((item) => {
+          if (item.name === 'On-chain Assets') {
+            // debugger
+            const formatAddr = formatAddress(item.address as string, 4, 4);
+            return formatAddr === activeSourceName;
+          }
+          return item.name === activeSourceName;
+        }) as any;
+        return activeS.chainsAssetsMap;
+      }
+      return {};
+    }, [activeSourceName, list]);
 
     return (
       <div className="assetsOverview">
@@ -223,6 +266,8 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
           flexibleAccountTokenMap={flexibleAccountTokenMap}
           spotAccountTokenMap={spotAccountTokenMap}
           name={lowerCaseSourceName}
+          allChainMap={activeAllChainMap}
+          showFilter={activeSourceName?.includes('...')}
         />
       </div>
     );
