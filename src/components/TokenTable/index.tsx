@@ -9,7 +9,7 @@ import { sub, postMsg, formatNumeral, formatAddress } from '@/utils/utils';
 
 import type { UserState } from '@/types/store';
 import type {
-  TokenMap,
+ 
   DataSourceItemType,
 } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
