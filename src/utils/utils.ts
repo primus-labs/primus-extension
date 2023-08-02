@@ -328,7 +328,6 @@ export const getStatisticalData = (res: any) => {
         };
       }
     }
-    debugger;
     if (gt(curChainTotalBalance.toNumber(), 0)) {
       prevChainsAssetMap[curChainName] = {
         totalBalance: curChainTotalBalance.toFixed(),

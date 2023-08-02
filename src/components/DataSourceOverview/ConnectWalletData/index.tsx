@@ -92,22 +92,21 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
         try {
           const [accounts, chainId, provider] = await connectWallet();
           const curConnectedAddr = (accounts as string[])[0];
-          const timestamp = +new Date() + '';
+          const timestamp: string = +new Date() + '';
           const signature = await requestSign(curConnectedAddr, timestamp);
-          const { rc, result } = await getAssetsOnChains({
+          const { rc, result, msg } = await getAssetsOnChains({
             signature,
             timestamp,
             address: curConnectedAddr,
           });
           if (rc === 0) {
-            
             const res = getStatisticalData(result);
 
             const curAccOnChainAssetsItem: any = {
               address: curConnectedAddr,
               label,
               date: getCurrentDate(),
-              timestamp: +new Date(),
+              timestamp: timestamp,
               signature,
               ...res,
               ...DATASOURCEMAP['onChainAssets'],
@@ -128,6 +127,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
               ).toFixed();
 
               curAccOnChainAssetsItem.pnl = pnl;
+              curAccOnChainAssetsItem.time = pnl;
             }
             lastOnChainAssetsMap[curConnectedAddr] = curAccOnChainAssetsItem;
 
@@ -143,9 +143,9 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
             });
           } else {
             setActiveRequest({
-              type: 'suc',
-              title: 'Congratulations',
-              desc: 'Data Connected!',
+              type: 'error',
+              title: 'Failed',
+              desc: msg,
             });
           }
         } catch (e) {
