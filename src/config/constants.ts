@@ -235,7 +235,7 @@ export const DEFAULTCREDTYPELIST = [
     credTitle: 'Assets Proof',
     credIntroduce: 'Assets balance in Binance, OKX',
     credLogoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredAsset.svg',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredAsset.svg',
     credDetails:
       'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
     credProofContent: 'Balance of assets',
@@ -250,7 +250,7 @@ export const DEFAULTCREDTYPELIST = [
     credTitle: 'Token Holdings Proof',
     credIntroduce: 'Token ownership in Binance, Coinbase, OKX',
     credLogoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredToken.svg',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredToken.svg',
     credDetails:
       'Proving you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
     credProofContent: 'Hold this kind of Token',
@@ -265,7 +265,7 @@ export const DEFAULTCREDTYPELIST = [
     credTitle: 'Identity Proof',
     credIntroduce: 'Identity or membership',
     credLogoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/others/iconCredCred.svg',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredCred.svg',
     credDetails:
       'Proving you have completed the identity verification process. PADO verifies the authenticity of the verification result.',
     credProofContent: 'Identity verification',
@@ -280,28 +280,28 @@ export const DEFAULTAUTHSOURCELIST = [
   {
     id: '1',
     logoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconGoogle.svg',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconGoogle.svg',
     name: 'GOOGLE',
     enabled: '0',
   },
   {
     id: '2',
     logoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconTwitter.svg',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconTwitter.svg',
     name: 'TWITTER',
     enabled: '0',
   },
   {
     id: '3',
     logoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconGithub.png',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconGithub.png',
     name: 'GITHUB',
     enabled: '0',
   },
   {
     id: '4',
     logoUrl:
-      'https://xuda-note.oss-cn-shanghai.aliyuncs.com/note/iconDiscord.svg',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconDiscord.svg',
     name: 'DISCORD',
     enabled: '0',
   },

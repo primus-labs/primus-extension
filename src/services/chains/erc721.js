@@ -41,6 +41,7 @@ export async function mintWithSignature(params) {
   const topics = receiptInfo.logs[0].topics;
   const topicsLen = topics.length;
   const tokenId = topics[topicsLen - 1];
+  console.log('erc721 mintWithSignature tokenId=', tokenId);
   const nftInfo = await contract.tokenURI(tokenId);
   console.log('erc721 nftInfo=', nftInfo);
   return [Number(tokenId), nftInfo];
