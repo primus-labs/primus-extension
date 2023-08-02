@@ -91,14 +91,14 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     showFilter,
     allChainMap,
   }) => {
-    console.log(
-      'TokenTable-list',
-      list,
-      name,
-      spotAccountTokenMap,
-      flexibleAccountTokenMap,
-      allChainMap
-    );
+    // console.log(
+    //   'TokenTable-list',
+    //   list,
+    //   name,
+    //   spotAccountTokenMap,
+    //   flexibleAccountTokenMap,
+    //   allChainMap
+    // );
     const [filterAccount, setFilterAccount] = useState<string | undefined>();
     const [activeItem, setActiveItem] = useState<string>();
 
@@ -110,7 +110,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     );
 
     const tokenLogoPrefix = useMemo(() => {
-      console.log('TokenTable-sysConfig', sysConfig);
+      // console.log('TokenTable-sysConfig', sysConfig);
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const activeShowFilter = useMemo(() => {
@@ -331,15 +331,16 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                 <li className={liClassName(item)} key={item.symbol}>
                   <div className="innerWrapper">
                     <div className="token">
-                      {(name === 'on-chain assets' || showFilter) &&
-                        onChainTokenLogoFn(item)}
-                      {!(name === 'on-chain assets' || showFilter) &&
+                      {onChainTokenLogoFn(item)}
+                      {/* {(name === 'on-chain assets' || showFilter) &&
+                        onChainTokenLogoFn(item)} */}
+                      {/* {!(name === 'on-chain assets' || showFilter) &&
                         tokenLogoPrefix && (
                           <img
                             src={`${tokenLogoPrefix}icon${item.symbol}.png`}
                             alt=""
                           />
-                        )}
+                        )} */}
                       {/* <span>{item.symbol}</span> */}
                       <span>{tokenSymbolFn(item)}</span>
                     </div>

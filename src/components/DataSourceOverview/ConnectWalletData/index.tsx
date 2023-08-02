@@ -106,36 +106,38 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
 
             const amount = div(parseInt(balance), Math.pow(10, decimals));
             const amtNum = amount.toNumber();
-            if (gt(amtNum, 0)) {
-              const price = current_usd_price ?? 0;
+            const price = current_usd_price ?? 0;
+            if (gt(amtNum, 0) && gt(price, 0)) {
               const rawValue = mul(amtNum, price);
-              const value = rawValue.toFixed();
-              const logo = logos[0]?.uri; // TODO default img
-              const assetAddrASymbol = `${symbol}---${contract_address}`;
+              if (gt(rawValue.toNumber(), 0.01)) {
+                const value = rawValue.toFixed();
+                const logo = logos[0]?.uri; // TODO default img
+                const assetAddrASymbol = `${symbol}---${contract_address}`;
 
-              const tokenInfoObj = {
-                symbol: assetAddrASymbol,
-                amount: amount.toFixed(),
-                price,
-                value,
-                logo,
-                address: contract_address,
-              };
-
-              if (assetAddrASymbol in tokenMap) {
-                const { amount: lastAmt } = tokenMap[assetAddrASymbol];
-                const newAmt = add(lastAmt.toNumber(), amtNum);
-                const newValue = mul(newAmt.toNumber(), price).toFixed();
-                tokenMap[assetAddrASymbol] = {
-                  ...tokenMap[assetAddrASymbol],
-                  amount: newAmt.toFixed(),
-                  value: newValue,
+                const tokenInfoObj = {
+                  symbol: assetAddrASymbol,
+                  amount: amount.toFixed(),
+                  price,
+                  value,
+                  logo,
+                  address: contract_address,
                 };
-              } else {
-                tokenMap[assetAddrASymbol] = tokenInfoObj;
+
+                if (assetAddrASymbol in tokenMap) {
+                  const { amount: lastAmt } = tokenMap[assetAddrASymbol];
+                  const newAmt = add(lastAmt.toNumber(), amtNum);
+                  const newValue = mul(newAmt.toNumber(), price).toFixed();
+                  tokenMap[assetAddrASymbol] = {
+                    ...tokenMap[assetAddrASymbol],
+                    amount: newAmt.toFixed(),
+                    value: newValue,
+                  };
+                } else {
+                  tokenMap[assetAddrASymbol] = tokenInfoObj;
+                }
+                totalBalance = add(totalBalance, rawValue.toNumber());
+                prev[assetAddrASymbol] = tokenInfoObj;
               }
-              totalBalance = add(totalBalance, rawValue.toNumber());
-              prev[assetAddrASymbol] = tokenInfoObj;
             }
             return prev;
           };
@@ -143,7 +145,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
             curChainAssetMapReduceF,
             {}
           );
-          console.log('curChainAssetMap', curChainAssetMap);
+          // console.log('curChainAssetMap', curChainAssetMap);
 
           // native token
           const curChainNativeToken: any = nativeToken.find(
@@ -156,39 +158,43 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
           );
           const curChainNativeTokenAmountNum =
             curChainNativeTokenAmount.toNumber();
-
-          if (gt(curChainNativeTokenAmountNum, 0)) {
-            const price = currentUsdPrice ?? 0;
+          const price = currentUsdPrice ?? 0;
+          if (gt(curChainNativeTokenAmountNum, 0) && gt(price, 0)) {
             const rawValue = mul(curChainNativeTokenAmountNum, price);
-            const value = rawValue.toFixed();
-            const tokenInfoObj = {
-              symbol: currency,
-              amount: curChainNativeTokenAmount.toFixed(),
-              price,
-              value,
-              isNative: true,
-            };
-            if (currency in tokenMap) {
-              const { amount: lastAmt } = tokenMap[currency];
-              const newAmt = add(Number(lastAmt), curChainNativeTokenAmountNum);
-              const newValue = mul(newAmt.toNumber(), price).toFixed();
-              tokenMap[currency] = {
-                ...tokenMap[currency],
-                amount: newAmt.toFixed(),
-                value: newValue,
+            if (gt(rawValue.toNumber(), 0.01)) {
+              const value = rawValue.toFixed();
+              const tokenInfoObj = {
+                symbol: currency,
+                amount: curChainNativeTokenAmount.toFixed(),
+                price,
+                value,
+                isNative: true,
               };
-            } else {
-              tokenMap[currency] = tokenInfoObj;
-            }
-            totalBalance = add(totalBalance, rawValue.toNumber());
+              if (currency in tokenMap) {
+                const { amount: lastAmt } = tokenMap[currency];
+                const newAmt = add(
+                  Number(lastAmt),
+                  curChainNativeTokenAmountNum
+                );
+                const newValue = mul(newAmt.toNumber(), price).toFixed();
+                tokenMap[currency] = {
+                  ...tokenMap[currency],
+                  amount: newAmt.toFixed(),
+                  value: newValue,
+                };
+              } else {
+                tokenMap[currency] = tokenInfoObj;
+              }
+              totalBalance = add(totalBalance, rawValue.toNumber());
 
-            curChainAssetMap[currency] = {
-              symbol: currency,
-              amount: curChainNativeTokenAmount.toFixed(),
-              price,
-              value,
-              isNative: true,
-            };
+              curChainAssetMap[currency] = {
+                symbol: currency,
+                amount: curChainNativeTokenAmount.toFixed(),
+                price,
+                value,
+                isNative: true,
+              };
+            }
           }
           prevChainsAssetMap[curChainName] = curChainAssetMap;
         }
@@ -230,28 +236,28 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
                   chain: 'Arbitrum One',
                   chainId: 42161,
                   currency: 'ETH',
-                  balance: '0x0',
+                  balance: '0x66f47b56125c67',
                   currentUsdPrice: '1930.21000000',
                 },
                 {
                   chain: 'BSC',
                   chainId: 56,
                   currency: 'BNB',
-                  balance: '0x20a2c173354600',
+                  balance: '0x5a33caceee035',
                   currentUsdPrice: '243.70000000',
                 },
                 {
                   chain: 'Ethereum',
                   chainId: 1,
                   currency: 'ETH',
-                  balance: '0x0',
+                  balance: '0x9471eb6de535df',
                   currentUsdPrice: '1930.21000000',
                 },
                 {
                   chain: 'Polygon',
                   chainId: 137,
                   currency: 'MATIC',
-                  balance: '0x0',
+                  balance: '0x470de4df820000',
                   currentUsdPrice: '0.77950000',
                 },
                 {
@@ -273,39 +279,38 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
                 'Arbitrum One': null,
                 BSC: [
                   {
-                    balance: '350000000000000/1',
+                    balance: '55437308182660911/1',
                     contract_address:
-                      '0x0cd2b73e194274a26cb2008da153751d04f6d822',
-                    current_usd_price: 0,
-                    decimals: 9,
-                    logos: [],
-                    name: '1chef.io',
-                    symbol: 'ANGEL',
-                    total_supply: '2100000000000000',
-                    urls: [],
-                  },
-                  {
-                    balance: '68111122902548/1',
-                    contract_address:
-                      '0x2953098564ad071ed052ee0333e59d8bf66b4d02',
-                    current_usd_price: 0,
-                    decimals: 9,
-                    logos: [],
-                    name: 'RAPTOR',
-                    symbol: 'RAPTOR',
-                    total_supply: '55000000000000000',
-                    urls: [],
-                  },
-                  {
-                    balance: '120000576000000000000000/1',
-                    contract_address:
-                      '0x71753d0586ea6b979dfccbb492a45e611e0e0ad6',
-                    current_usd_price: 0,
+                      '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
+                    current_usd_price: '0.08',
                     decimals: 18,
+                    logos: [
+                      {
+                        height: 250,
+                        uri: 'https://static.chainbase.online/logo/bsc/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82.png',
+                        width: 250,
+                      },
+                    ],
+                    name: 'PancakeSwap Token',
+                    symbol: 'Cake',
+                    total_supply: '1246774215751051201610995531',
+                    urls: [
+                      {
+                        name: 'homepage',
+                        url: 'https://pancakeswap.finance/',
+                      },
+                    ],
+                  },
+                  {
+                    balance: '1000000000000/1',
+                    contract_address:
+                      '0x35122d1fe8001296f61290b8ba42ef597af31fb7',
+                    current_usd_price: 0,
+                    decimals: 6,
                     logos: [],
-                    name: 'My Get Rich Token',
-                    symbol: 'MGRT',
-                    total_supply: '100000000000000000000000000000',
+                    name: 'Wrapped ADAX',
+                    symbol: 'wADAX',
+                    total_supply: '100000000000000',
                     urls: [],
                   },
                   {
@@ -320,20 +325,56 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
                     total_supply: '2000000000000',
                     urls: [],
                   },
+                ],
+                Ethereum: [
                   {
-                    balance: '3329755127358332918113808/1',
+                    balance: '286497881386117044/1',
                     contract_address:
-                      '0xe5a94e2d7b71bbb5c1c940ce3b5f2194ce816de5',
+                      '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                    current_usd_price: '1.73',
+                    decimals: 18,
+                    logos: [
+                      {
+                        height: 250,
+                        uri: 'https://static.chainbase.online/logo/ethereum/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png',
+                        width: 250,
+                      },
+                    ],
+                    name: 'Uniswap',
+                    symbol: 'UNI',
+                    total_supply: '1000000000000000000000000000',
+                    urls: [
+                      {
+                        name: 'homepage',
+                        url: 'https://uniswap.org/',
+                      },
+                    ],
+                  },
+                  {
+                    balance: '10010000000000000000/1',
+                    contract_address:
+                      '0xbddab785b306bcd9fb056da189615cc8ece1d823',
                     current_usd_price: 0,
                     decimals: 18,
                     logos: [],
-                    name: 'BR1',
-                    symbol: 'BR1',
+                    name: 'Ebakus',
+                    symbol: 'EBK',
                     total_supply: '100000000000000000000000000',
                     urls: [],
                   },
+                  {
+                    balance: '88888800000000/1',
+                    contract_address:
+                      '0xc12d1c73ee7dc3615ba4e37e4abfdbddfa38907e',
+                    current_usd_price: 0,
+                    decimals: 8,
+                    logos: [],
+                    name: 'KickToken',
+                    symbol: 'KICK',
+                    total_supply: '125123346789819622107',
+                    urls: [],
+                  },
                 ],
-                Ethereum: null,
                 Polygon: null,
                 Avalanche: null,
                 Optimism: null,
