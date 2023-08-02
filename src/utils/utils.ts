@@ -32,17 +32,19 @@ export function div(a: number, b: number) {
 type FormatAddressType = (
   str: string,
   startNum?: number,
-  endNum?: number
+  endNum?: number,
+  sepStr?:string
 ) => string;
 export const formatAddress: FormatAddressType = function (
   str,
   startNum = 6,
-  endNum = 4
+  endNum = 4,
+  sepStr = '...'
 ) {
   const endIdx = -1 * endNum;
   const startS = str.substr(0, startNum);
   const endS = str.substr(endIdx);
-  return `${startS}...${endS}`;
+  return `${startS}${sepStr}${endS}`;
 };
 
 // TODO nouse

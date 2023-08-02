@@ -5,7 +5,7 @@ import PFilter from '@/components/PFilter';
 import { setSysConfigAction } from '@/store/actions';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
-import { sub, postMsg, formatNumeral } from '@/utils/utils';
+import { sub, postMsg, formatNumeral, formatAddress } from '@/utils/utils';
 
 import type { UserState } from '@/types/store';
 import type {
@@ -244,7 +244,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     //   },
     //   [tokenLogoPrefix]
     // );
-    
+
     const onChainTokenLogoFn = useCallback(
       (item: TokenMap) => {
         let activeImg = null;
@@ -284,6 +284,17 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         getSysConfig();
       }
     }, [sysConfig]);
+    const tokenSymbolFn = useCallback((item) => {
+      if (item?.address) {
+        // return `${item.symbol}(${formatAddr})`;
+        const symbolAAddrArr = item.symbol.split('---')
+        const formatAddr = formatAddress(item.address, 0, 4,'**');
+        const formatSymbol = `${symbolAAddrArr[0]}(${formatAddr})`;
+        return formatSymbol;
+      } else {
+        return item.symbol;
+      }
+    }, []);
 
     return (
       <section className="tokenListWrapper assets">
@@ -329,7 +340,8 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                             alt=""
                           />
                         )}
-                      <span>{item.symbol}</span>
+                      {/* <span>{item.symbol}</span> */}
+                      <span>{tokenSymbolFn(item)}</span>
                     </div>
                     <div className="price">
                       {'$' +
