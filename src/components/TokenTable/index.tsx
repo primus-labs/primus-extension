@@ -13,7 +13,7 @@ import type {
   DataSourceItemType,
 } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
-
+import type { ChainAssetsMap } from '@/types/dataSource';
 import './index.sass';
 
 interface TokenTableProps {
@@ -23,8 +23,64 @@ interface TokenTableProps {
   spotAccountTokenMap?: any;
   name?: string;
   headerRightContent?: ReactNode;
+  showFilter?: boolean;
+  allChainMap?: ChainAssetsMap;
 }
 
+const accountList = [
+  {
+    label: 'All',
+    disabled: false,
+    defaultValue: true,
+  },
+  {
+    label: 'Spot',
+    disabled: false,
+    defaultValue: false,
+  },
+  {
+    label: 'Flexible',
+    disabled: false,
+    defaultValue: false,
+  },
+];
+const chainList = [
+  {
+    label: 'All',
+    disabled: false,
+    defaultValue: true,
+  },
+  {
+    label: 'Arbitrum One',
+    disabled: false,
+    defaultValue: false,
+  },
+  {
+    label: 'BSC',
+    disabled: false,
+    defaultValue: false,
+  },
+  {
+    label: 'Ethereum',
+    disabled: false,
+    defaultValue: false,
+  },
+  {
+    label: 'Polygon',
+    disabled: false,
+    defaultValue: false,
+  },
+  {
+    label: 'Avalanche',
+    disabled: false,
+    defaultValue: false,
+  },
+  {
+    label: 'Optimism',
+    disabled: false,
+    defaultValue: false,
+  },
+];
 const TokenTable: React.FC<TokenTableProps> = memo(
   ({
     list,
@@ -32,13 +88,16 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     spotAccountTokenMap,
     name,
     headerRightContent,
+    showFilter,
+    allChainMap,
   }) => {
     console.log(
       'TokenTable-list',
       list,
       name,
       spotAccountTokenMap,
-      flexibleAccountTokenMap
+      flexibleAccountTokenMap,
+      allChainMap
     );
     const [filterAccount, setFilterAccount] = useState<string | undefined>();
     const [activeItem, setActiveItem] = useState<string>();
@@ -54,24 +113,49 @@ const TokenTable: React.FC<TokenTableProps> = memo(
       console.log('TokenTable-sysConfig', sysConfig);
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
-    const showFilter = useMemo(() => {
-      return name === 'binance' || name === 'on-chain assets';
+    const activeShowFilter = useMemo(() => {
+      return name === 'binance' || (name === 'on-chain assets' && showFilter);
+    }, [name, showFilter]);
+    const filterList = useMemo(() => {
+      if (name === 'binance') {
+        return accountList;
+      }
+      if (name === 'on-chain assets') {
+        return chainList;
+      }
+      return accountList;
     }, [name]);
     const currentList = useMemo(() => {
       if (filterAccount === undefined || filterAccount === 'All') {
         return list;
       }
-      if (filterAccount === 'Spot' && typeof spotAccountTokenMap === 'object') {
-        return Object.values(spotAccountTokenMap);
+      if (name === 'binance') {
+        if (
+          filterAccount === 'Spot' &&
+          typeof spotAccountTokenMap === 'object'
+        ) {
+          return Object.values(spotAccountTokenMap);
+        }
+        if (
+          filterAccount === 'Flexible' &&
+          typeof flexibleAccountTokenMap === 'object'
+        ) {
+          return Object.values(flexibleAccountTokenMap);
+        }
       }
-      if (
-        filterAccount === 'Flexible' &&
-        typeof flexibleAccountTokenMap === 'object'
-      ) {
-        return Object.values(flexibleAccountTokenMap);
+      if (name === 'on-chain assets' && showFilter) {
+        return Object.values(allChainMap[filterAccount as keyof typeof allChainMap]);
       }
       return list;
-    }, [list, flexibleAccountTokenMap, spotAccountTokenMap, filterAccount]);
+    }, [
+      list,
+      flexibleAccountTokenMap,
+      spotAccountTokenMap,
+      filterAccount,
+      name,
+      allChainMap,
+      showFilter
+    ]);
     const activeList = useMemo(() => {
       return (currentList as TokenMap[]).sort((a, b) =>
         sub(Number(b.value), Number(a.value)).toNumber()
@@ -105,7 +189,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     const liClassName = useCallback(
       (item: TokenMap) => {
         let cN = 'tokenItem tr';
-        if (showFilter) {
+        if (activeShowFilter) {
           cN += ' new';
           if (activeItem === item.symbol) {
             if (
@@ -124,7 +208,12 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         }
         return cN;
       },
-      [activeItem, spotAccountTokenMap, flexibleAccountTokenMap, showFilter]
+      [
+        activeItem,
+        spotAccountTokenMap,
+        flexibleAccountTokenMap,
+        activeShowFilter,
+      ]
     );
 
     const handleCheckDetail = (symbol: string) => {
@@ -168,7 +257,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         </header>
         <ul className="tokens">
           <li
-            className={showFilter ? 'tokenItem th new' : 'tokenItem th'}
+            className={activeShowFilter ? 'tokenItem th new' : 'tokenItem th'}
             key="th"
           >
             <div className="innerWrapper">
@@ -177,9 +266,9 @@ const TokenTable: React.FC<TokenTableProps> = memo(
               <div className="amount">Amount</div>
               <div className="value">USD Value</div>
             </div>
-            {showFilter && (
+            {activeShowFilter && (
               <div className="accountFilterWrapper">
-                <PFilter onChange={handleChangeFilter} />
+                <PFilter onChange={handleChangeFilter} list={filterList} />
               </div>
             )}
           </li>
@@ -211,7 +300,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                       {'$' + formatNumeral(item.value)}
                     </div>
                   </div>
-                  {showFilter && filterAccount === 'All' && (
+                  {activeShowFilter && filterAccount === 'All' && (
                     <div
                       className="arrowWrapper"
                       onClick={() => handleCheckDetail(item.symbol)}

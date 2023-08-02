@@ -1,5 +1,3 @@
-
-
 type SysConfigInfo = {
   [propName: string]: any;
 };
@@ -15,3 +13,10 @@ export type ActiveRequestType = {
   title: string;
   desc: any;
 };
+
+export type FilterOption = {
+  label: string;
+  disabled: boolean;
+  defaultValue: boolean;
+};
+export type FilterOptionList = FilterOption[];

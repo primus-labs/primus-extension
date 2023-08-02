@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
 import PfilterContent from './PfilterContent';
 import type { MouseEvent } from 'react';
+import type {FilterOptionList} from '@/types/config'
 import './index.sass';
 
 interface TokenTableProps {
   onChange: (label: string | undefined) => void;
+  list: FilterOptionList;
 }
 
-const PFilter: React.FC<TokenTableProps> = memo(({ onChange }) => {
+const PFilter: React.FC<TokenTableProps> = memo(({ onChange,list }) => {
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [activeItem, setActiveItem] = useState<string>();
 
@@ -52,7 +54,7 @@ const PFilter: React.FC<TokenTableProps> = memo(({ onChange }) => {
         ref={iconEl}
         onMouseEnter={handleEnterAvatar}
       ></div>
-      <PfilterContent onChange={handleChange} visible={dorpdownVisible} />
+      <PfilterContent onChange={handleChange} visible={dorpdownVisible} list={list} />
     </section>
   );
 });

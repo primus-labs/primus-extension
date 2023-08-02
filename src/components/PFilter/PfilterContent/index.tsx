@@ -1,30 +1,16 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
 import type { ChangeEvent } from 'react';
 import './index.sass';
+import type {FilterOptionList} from '@/types/config'
 
 interface TokenTableProps {
   onChange: (label: string | undefined) => void;
   visible: boolean;
+  list: FilterOptionList;
 }
-const list = [
-  {
-    label: 'All',
-    disabled: false,
-    defaultValue: true,
-  },
-  {
-    label: 'Spot',
-    disabled: false,
-    defaultValue: false,
-  },
-  {
-    label: 'Flexible',
-    disabled: false,
-    defaultValue: false,
-  },
-];
+
 const PFilterContent: React.FC<TokenTableProps> = memo(
-  ({ onChange, visible }) => {
+  ({ onChange, visible, list }) => {
     const willCloseEl = useRef(null);
     const [activeItem, setActiveItem] = useState<string | undefined>('All');
 
@@ -48,7 +34,7 @@ const PFilterContent: React.FC<TokenTableProps> = memo(
 
     return (
       <section
-        className={visible ? 'pFilterContent visible' : 'pFilterContent'}
+        className={visible ? 'pFilterContent visible' : 'pFilterContent visible'}
         ref={willCloseEl}
       >
         <ul className="formItems">
