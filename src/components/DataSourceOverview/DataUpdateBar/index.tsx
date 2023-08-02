@@ -7,7 +7,7 @@ import './index.sass'
 interface DataUpdateBarProps {
   type?: string;
   sourceName?: string;
-  onUpdateStart?: () => void;
+  onUpdate: () => void;
 }
 const DataUpdateBar: React.FC<DataUpdateBarProps> = memo(({ type = 'All', onUpdate, sourceName }) => {
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSources()

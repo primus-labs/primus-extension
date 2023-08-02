@@ -33,6 +33,8 @@ import type {
   SourceData,
   ExchangeMeta,
   onChainAssetsDataList,
+  ExData,
+  onChainAssetsData,
 } from '@/types/dataSource';
 import './index.sass';
 
@@ -118,7 +120,7 @@ const DataSourceOverview = memo(() => {
     let orderedDataSourceList = [...dataSourceList];
     if (activeSourceType !== 'All') {
       orderedDataSourceList = orderedDataSourceList.filter(
-        (i) => i.type === activeSourceType
+        (i) => (i as ExData)?.type === activeSourceType
       );
     }
     if (filterWord) {
@@ -219,10 +221,18 @@ const DataSourceOverview = memo(() => {
     setStep(1);
   }, []);
   const handleCheckDataSourceDetail = useCallback(
-    ({ type, name, address }: SourceData) => {
-      navigate(
-        `/dataDetail?type=${type}&name=${name}&address=${encodeURIComponent(address)}`
-      );
+    (s: SourceData) => {
+
+      const { name } = s
+      let p = `/dataDetail?name=${name}`
+      if ((s as ExData)?.type) {
+        p+=`&type=${(s as ExData)?.type}`
+      }
+      if ((s as onChainAssetsData).address) {
+        const addr:string = (s as onChainAssetsData).address
+        p+=`&address=${encodeURIComponent(addr)}`
+      }
+      navigate(p);
     },
     [navigate]
   );

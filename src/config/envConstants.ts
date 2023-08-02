@@ -199,6 +199,7 @@ const EASINFOMAP = {
     Ethereum: {
       icon: iconTool1,
       title: 'Ethereum',
+      disabled: true,
       rpcUrl: 'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       easContact: '0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587',
       easProxyContrac: '',

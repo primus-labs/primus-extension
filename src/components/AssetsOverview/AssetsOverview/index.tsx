@@ -19,12 +19,19 @@ import type {
   AssetsMap,
   DataSourceItemType,
 } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
-import type { ExDataList, ExData } from '@/types/dataSource';
+import type {
+  ExDataList,
+  ExData,
+  AssetDataList,
+  onChainAssetsData,
+} from '@/types/dataSource';
 import './index.sass';
+
+
 interface AssetsOverviewProps {
   filterSource: string | undefined;
   onClearFilter: () => void;
-  list: ExDataList;
+  list: AssetDataList;
 }
 
 const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
@@ -202,15 +209,15 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     }, []);
     const activeAllChainMap = useMemo(() => {
       if (activeSourceName?.includes('...')) {
-        const activeS: DataSourceItemType = list.find((item) => {
+        const activeS: onChainAssetsData = list.find((item) => {
           if (item.name === 'On-chain Assets') {
             // debugger
             const formatAddr = formatAddress(item.address as string, 4, 4);
             return formatAddr === activeSourceName;
           }
           return item.name === activeSourceName;
-        }) as any;
-        return activeS.chainsAssetsMap;
+        }) as onChainAssetsData;
+        return activeS?.chainsAssetsMap;
       }
       return {};
     }, [activeSourceName, list]);

@@ -32,10 +32,15 @@ import { getTokenPrice, getAssetsOnChains } from '@/services/api/dataSource';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
-import type { ExData, onChainAssetsData } from '@/types/dataSource';
+import type {
+  ExData,
+  onChainAssetsData,
+  ChainAssetsMap,
+  ChainsAssetsMap,
+  SourceDataList,
+} from '@/types/dataSource';
 
 import './index.sass';
-import { ChainAssetsMap } from '../../../types/dataSource';
 
 const AssetsDetail = memo(() => {
   const [activeSourceName, setActiveSourceName] = useState<string>();
@@ -78,9 +83,10 @@ const AssetsDetail = memo(() => {
       return btcPriceFromService;
     } else {
       if (typeof dataSource === 'object') {
+        const curDataSource = dataSource as ExData;
         const originP =
-          dataSource?.tokenPriceMap[
-            BTC as keyof typeof dataSource.tokenPriceMap
+          curDataSource?.tokenPriceMap[
+            BTC as keyof typeof curDataSource.tokenPriceMap
           ];
         return originP ? originP : null;
       } else {
@@ -134,20 +140,20 @@ const AssetsDetail = memo(() => {
   
   const activeAssetsMap = useMemo(() => {
     if (activeSourceName) {
-      const activeS: DataSourceItemType =
-        dataSource.chainsAssetsMap[activeSourceName];
+      const activeS: ChainAssetsMap = (dataSource as onChainAssetsData)
+        .chainsAssetsMap[activeSourceName];
       return activeS.tokenListMap;
     } else {
       return dataSource.tokenListMap;
     }
   }, [dataSource, activeSourceName]);
   const activeSourceTokenList = useMemo(() => {
-    return Object.values(activeAssetsMap as AssetsMap);
+    return Object.values(activeAssetsMap);
   }, [activeAssetsMap]);
 
   const flexibleAccountTokenMap = useMemo(() => {
     if (typeof dataSource === 'object') {
-      const obj = dataSource.flexibleAccountTokenMap;
+      const obj = (dataSource as ExData).flexibleAccountTokenMap;
       return obj;
     } else {
       return undefined;
@@ -155,18 +161,18 @@ const AssetsDetail = memo(() => {
   }, [dataSource]);
   const spotAccountTokenMap = useMemo(() => {
     if (typeof dataSource === 'object') {
-      const obj = dataSource.spotAccountTokenMap;
+      const obj = (dataSource as ExData).spotAccountTokenMap;
       return obj;
     } else {
       return undefined;
     }
   }, [dataSource]);
-  const allChainMap = useMemo(() => {
+  const allChainMap: ChainsAssetsMap = useMemo(() => {
     if (typeof dataSource === 'object') {
-      const list = dataSource.chainsAssetsMap;
+      const list = (dataSource as onChainAssetsData).chainsAssetsMap;
       return list;
     } else {
-      return [];
+      return {};
     }
   }, [dataSource]);
 
@@ -208,8 +214,8 @@ const AssetsDetail = memo(() => {
     );
   }, [navToCred, isOnChainData]);
   const formatAddr = useMemo(() => {
-    if (dataSource?.address) {
-      return formatAddress(dataSource?.address, 4, 4);
+    if ((dataSource as onChainAssetsData)?.address) {
+      return formatAddress((dataSource as onChainAssetsData)?.address, 4, 4);
     }
     return '';
   }, [dataSource]);
@@ -220,7 +226,7 @@ const AssetsDetail = memo(() => {
           ...SUPPORRTEDQUERYCHAINMAP[
             chainName as keyof typeof SUPPORRTEDQUERYCHAINMAP
           ],
-          ...allChainMap[chainName],
+          ...allChainMap[chainName as keyof typeof allChainMap],
         };
       });
       return chainInfoArr;
@@ -230,9 +236,9 @@ const AssetsDetail = memo(() => {
   const onUpdateOnChainAssets = useCallback(async () => {
     setUpdating(true);
     // check singnature is expired
-    const { signature, timestamp, address: curConnectedAddr } = dataSource;
+    const { signature, timestamp, address: curConnectedAddr } = dataSource as onChainAssetsData;
     const curTime = +new Date();
-    if (signature && curTime - timestamp < 24 * 60 * 60 * 1000) {
+    if (signature && curTime - Number(timestamp) < 24 * 60 * 60 * 1000) {
       try {
         // const [accounts, chainId, provider] = await connectWallet();
         // const curConnectedAddr = (accounts as string[])[0];
@@ -365,7 +371,7 @@ const AssetsDetail = memo(() => {
           </div>
         </section>
         <SourcesStatisticsBar
-          list={allChainList}
+          list={allChainList as any}
           onSelect={handleSelectSource}
           onClearFilter={() => {}}
           filterSource={undefined}

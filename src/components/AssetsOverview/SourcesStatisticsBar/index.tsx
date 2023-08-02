@@ -4,7 +4,10 @@ import type {
   SocialDataList,
   SocialData,
   ExDataList,
+  AssetDataList,
   SourceDataList,
+  AssetData,
+  onChainAssetsData
 } from '@/types/dataSource';
 
 import './index.sass';
@@ -22,10 +25,10 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
     console.log('SourcesStatisticsBar', list, filterSource);
     const [activeSourceName, setActiveSourceName] = useState<string>();
 
-    const activeList = useMemo(() => {
+    const activeList: SourceDataList = useMemo(() => {
       let activeL = list;
       if (type === 'Assets') {
-        activeL = (list as ExDataList).sort((a, b) =>
+        activeL = (list as AssetDataList).sort((a, b) =>
           sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
         );
       } else if (type === 'Social') {
@@ -78,7 +81,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
       return formatNum;
     };
 
-    const liClassNameFn = (name: string, address: string) => {
+    const liClassNameFn = (name: string, address?: string) => {
       let activeClassName = 'source';
       if (type === 'Social') {
         activeClassName += ' social';
@@ -115,8 +118,8 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
           setActiveSourceName(undefined);
         }
       }
-    }, [filterSource]);
-    const fromNameFn = useCallback((item) => {
+    }, [filterSource, list]);
+    const fromNameFn = useCallback((item: AssetData) => {
       if (item.name === 'On-chain Assets') {
         const formatAddr = formatAddress(item.address as string, 4, 4);
         return formatAddr;
@@ -131,13 +134,21 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
           {activeList.map((item) => {
             return (
               <li
-                className={liClassNameFn(item.name, item.address)}
+                className={liClassNameFn(
+                  item.name,
+                  (item as onChainAssetsData)?.address
+                )}
                 key={item.name}
-                onClick={() => handleClickSource(item.name, item.address)}
+                onClick={() =>
+                  handleClickSource(
+                    item.name,
+                    (item as onChainAssetsData).address
+                  )
+                }
               >
                 <div className="label">from {fromNameFn(item)}</div>
                 <div className="value">
-                  <img src={item.icon} alt="" />
+                  <img src={(item as onChainAssetsData).icon} alt="" />
                   <span>{sourceCoreDataFn(item)}</span>
                 </div>
                 {type === 'Social' && (

@@ -56,9 +56,10 @@ const AssetsDetail = memo(() => {
       return btcPriceFromService;
     } else {
       if (typeof dataSource === 'object') {
+        const curDataSource = dataSource as ExData
         const originP =
-          dataSource?.tokenPriceMap[
-            BTC as keyof typeof dataSource.tokenPriceMap
+          curDataSource?.tokenPriceMap[
+            BTC as keyof typeof curDataSource.tokenPriceMap
           ];
         return originP ? originP : null;
       } else {
@@ -119,7 +120,7 @@ const AssetsDetail = memo(() => {
   }, [dataSource]);
   const flexibleAccountTokenMap = useMemo(() => {
     if (typeof dataSource === 'object') {
-      const obj = dataSource.flexibleAccountTokenMap;
+      const obj = (dataSource as ExData).flexibleAccountTokenMap;
       return obj;
     } else {
       return undefined;
@@ -127,7 +128,7 @@ const AssetsDetail = memo(() => {
   }, [dataSource]);
   const spotAccountTokenMap = useMemo(() => {
     if (typeof dataSource === 'object') {
-      const obj = dataSource.spotAccountTokenMap;
+      const obj = (dataSource as ExData).spotAccountTokenMap;
       return obj;
     } else {
       return undefined;
@@ -175,15 +176,16 @@ const AssetsDetail = memo(() => {
     );
   }, [navToCred, isOnChainData]);
   const formatAddr = useMemo(() => {
-    if (dataSource?.address) {
-      return formatAddress(dataSource?.address, 4, 4);
+    const curDataSource = dataSource as onChainAssetsData
+    if (curDataSource?.address) {
+      return formatAddress(curDataSource?.address, 4, 4);
     }
     return '';
-  }, [dataSource?.address]);
+  }, [dataSource]);
 
   useEffect(() => {
     sourceName && fetchExData();
-  }, [sourceName]);
+  }, [sourceName,]);
 
   useEffect(() => {
     !fetchExDatasLoading && onUpdate();

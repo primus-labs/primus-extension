@@ -13,7 +13,7 @@ import type {
   DataSourceItemType,
 } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
-import type { ChainAssetsMap } from '@/types/dataSource';
+import type { ChainsAssetsMap, TokenMap } from '@/types/dataSource';
 import './index.sass';
 
 interface TokenTableProps {
@@ -24,7 +24,7 @@ interface TokenTableProps {
   name?: string;
   headerRightContent?: ReactNode;
   showFilter?: boolean;
-  allChainMap?: ChainAssetsMap;
+  allChainMap?: ChainsAssetsMap;
 }
 
 const accountList = [
@@ -143,7 +143,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
           return Object.values(flexibleAccountTokenMap);
         }
       }
-      if (showFilter) {
+      if (showFilter && allChainMap) {
         return Object.values(
           allChainMap[filterAccount as keyof typeof allChainMap]['tokenListMap']
         );
@@ -287,7 +287,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         getSysConfig();
       }
     }, [sysConfig]);
-    const tokenSymbolFn = useCallback((item) => {
+    const tokenSymbolFn = useCallback((item: TokenMap) => {
       if (item?.address) {
         // return `${item.symbol}(${formatAddr})`;
         const symbolAAddrArr = item.symbol.split('---');

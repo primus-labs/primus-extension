@@ -287,7 +287,7 @@ export const getStatisticalData = (res: any) => {
 
     // native token
     const curChainNativeToken: any = nativeToken.find(
-      (i) => i.chain === curChainName
+      (i:any) => i.chain === curChainName
     );
     const { balance, currentUsdPrice, currency } = curChainNativeToken;
     const curChainNativeTokenAmount = div(parseInt(balance), Math.pow(10, 18));
