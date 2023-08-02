@@ -6,8 +6,8 @@ import useUpdateAllSources from '@/hooks/useUpdateAllSources'
 import './index.sass'
 interface DataUpdateBarProps {
   type?: string;
-  onUpdate: () => void;
   sourceName?: string;
+  onUpdateStart?: () => void;
 }
 const DataUpdateBar: React.FC<DataUpdateBarProps> = memo(({ type = 'All', onUpdate, sourceName }) => {
   const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSources()

@@ -97,6 +97,7 @@ export type onChainData = {
   date: string;
   label?: string;
   address: string;
+  signature?: string;
 
   totalBalance: string;
   tokenListMap: AssetsMap;

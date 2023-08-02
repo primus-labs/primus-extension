@@ -1,12 +1,15 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFlex.sass'
 @import '@/assets/css/pFont.sass'
-.assetsDetail
-  width: $centerWidth
-  @extend .fcss
-  gap: $lGap
-  padding-bottom: 50px
-  position: relative
+.assetsDetail.onChainAssetsDetail
+  width: 100vw
+  .content
+    width: $centerWidth
+    @extend .fcss
+    gap: $lGap
+    padding-bottom: 50px
+    position: relative
+    margin: 0 auto
   img.iconBack
     width: $mIconSize
     position: absolute
@@ -16,7 +19,7 @@
   .iconBackWrapper
     width: $mIconSize
     height: $mIconSize
-    background-image: url('../../../assets/img/iconArrowLeft2.svg')
+    background-image: url('@/assets/img/iconArrowLeft2.svg')
     opacity: 0.4
     background-size: 100% 100%
     position: absolute
@@ -25,7 +28,7 @@
     cursor: pointer
     &:hover
       opacity: 0.8
-  >header
+  header
     width: 100%
     padding: 74px 0 49px 0
     @extend .fcsc
@@ -118,9 +121,12 @@
   
 
 @media (max-width: 1680px)
-  .assetsDetail
-    width: $sCenterWidth
-    >header
+  .assetsDetail.onChainAssetsDetail
+    width: 100vw
+    .content
+      width: $sCenterWidth
+      
+    header
       padding: 32px 0 8px 0
       img.avatar
         width: 80px

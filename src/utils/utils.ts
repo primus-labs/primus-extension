@@ -217,3 +217,130 @@ export function debounce(fn: ThrottleFn, delay: number) {
     timer = setTimeout(fn, delay);
   };
 }
+
+export const getStatisticalData = (res: any) => {
+  const { nativeToken, erc20Token } = res;
+  const tokenMap: any = {};
+  let totalBalance: any = 0;
+  const chainsAssetsMapReduceF: (
+    prevChainsAssetMap: any,
+    curChainName: string
+  ) => any = (prevChainsAssetMap, curChainName) => {
+    const curChainAssetArr =
+      erc20Token[curChainName as keyof typeof erc20Token] ?? [];
+
+    if (curChainAssetArr) {
+      // erc20 token
+      const curChainAssetMapReduceF = (prev: any, currTokenInfo: any) => {
+        const {
+          balance,
+          contract_address,
+          current_usd_price,
+          decimals,
+          symbol,
+          logos,
+        } = currTokenInfo;
+
+        const amount = div(parseInt(balance), Math.pow(10, decimals));
+        const amtNum = amount.toNumber();
+        const price = current_usd_price ?? 0;
+        if (gt(amtNum, 0) && gt(price, 0)) {
+          const rawValue = mul(amtNum, price);
+          if (gt(rawValue.toNumber(), 0.01)) {
+            const value = rawValue.toFixed();
+            const logo = logos[0]?.uri; // TODO default img
+            const assetAddrASymbol = `${symbol}---${contract_address}`;
+
+            const tokenInfoObj = {
+              symbol: assetAddrASymbol,
+              amount: amount.toFixed(),
+              price,
+              value,
+              logo,
+              address: contract_address,
+            };
+
+            if (assetAddrASymbol in tokenMap) {
+              const { amount: lastAmt } = tokenMap[assetAddrASymbol];
+              const newAmt = add(lastAmt.toNumber(), amtNum);
+              const newValue = mul(newAmt.toNumber(), price).toFixed();
+              tokenMap[assetAddrASymbol] = {
+                ...tokenMap[assetAddrASymbol],
+                amount: newAmt.toFixed(),
+                value: newValue,
+              };
+            } else {
+              tokenMap[assetAddrASymbol] = tokenInfoObj;
+            }
+            totalBalance = add(totalBalance, rawValue.toNumber());
+            prev[assetAddrASymbol] = tokenInfoObj;
+          }
+        }
+        return prev;
+      };
+      const curChainAssetMap = curChainAssetArr.reduce(
+        curChainAssetMapReduceF,
+        {}
+      );
+      // console.log('curChainAssetMap', curChainAssetMap);
+
+      // native token
+      const curChainNativeToken: any = nativeToken.find(
+        (i) => i.chain === curChainName
+      );
+      const { balance, currentUsdPrice, currency } = curChainNativeToken;
+      const curChainNativeTokenAmount = div(
+        parseInt(balance),
+        Math.pow(10, 18)
+      );
+      const curChainNativeTokenAmountNum = curChainNativeTokenAmount.toNumber();
+      const price = currentUsdPrice ?? 0;
+      if (gt(curChainNativeTokenAmountNum, 0) && gt(price, 0)) {
+        const rawValue = mul(curChainNativeTokenAmountNum, price);
+        if (gt(rawValue.toNumber(), 0.01)) {
+          const value = rawValue.toFixed();
+          const tokenInfoObj = {
+            symbol: currency,
+            amount: curChainNativeTokenAmount.toFixed(),
+            price,
+            value,
+            isNative: true,
+          };
+          if (currency in tokenMap) {
+            const { amount: lastAmt } = tokenMap[currency];
+            const newAmt = add(Number(lastAmt), curChainNativeTokenAmountNum);
+            const newValue = mul(newAmt.toNumber(), price).toFixed();
+            tokenMap[currency] = {
+              ...tokenMap[currency],
+              amount: newAmt.toFixed(),
+              value: newValue,
+            };
+          } else {
+            tokenMap[currency] = tokenInfoObj;
+          }
+          totalBalance = add(totalBalance, rawValue.toNumber());
+
+          curChainAssetMap[currency] = {
+            symbol: currency,
+            amount: curChainNativeTokenAmount.toFixed(),
+            price,
+            value,
+            isNative: true,
+          };
+        }
+      }
+      prevChainsAssetMap[curChainName] = curChainAssetMap;
+    }
+    return prevChainsAssetMap;
+  };
+  const chainsAssetsMap = Object.keys(erc20Token).reduce(
+    chainsAssetsMapReduceF,
+    {}
+  );
+
+  return {
+    tokenListMap: tokenMap,
+    chainsAssetsMap,
+    totalBalance: totalBalance.toFixed(),
+  };
+};

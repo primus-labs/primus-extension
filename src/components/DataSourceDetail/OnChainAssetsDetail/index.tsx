@@ -2,18 +2,29 @@ import React, { useMemo, useEffect, memo, useCallback, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
-
+import ConnectWalletData from '@/components/DataSourceOverview/ConnectWalletData';
 import SourcesStatisticsBar from '@/components/AssetsOverview/SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
 import iconAvatar from '@/assets/img/iconAvatar.png';
 import iconCredCreate from '@/assets/img/iconCredCreate.svg';
 
-import { setExSourcesAsync } from '@/store/actions';
+import {
+  setExSourcesAsync,
+  setOnChainAssetsSourcesAsync,
+} from '@/store/actions';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
-import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
-import { gte, div, formatNumeral, formatAddress } from '@/utils/utils';
-import { BTC } from '@/config/constants';
-import { getTokenPrice } from '@/services/api/dataSource';
+import DataUpdateBar from './DataUpdateBar';
+import {
+  gte,
+  div,
+  sub,
+  formatNumeral,
+  formatAddress,
+  getCurrentDate,
+  getStatisticalData,
+} from '@/utils/utils';
+import { BTC, DATASOURCEMAP } from '@/config/constants';
+import { getTokenPrice, getAssetsOnChains } from '@/services/api/dataSource';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -22,6 +33,9 @@ import type { ExData, onChainAssetsData } from '@/types/dataSource';
 import './index.sass';
 
 const AssetsDetail = memo(() => {
+  const [connectWalletDataDialogVisible, setConnectWalletDataDialogVisible] =
+    useState<boolean>(false);
+  const [updating, setUpdating] = useState<boolean>(false);
   const [btcPriceFromService, setBtcPriceFromService] = useState<string>();
   const exSources = useSelector((state: UserState) => state.exSources);
   const onChainAssetsSources = useSelector(
@@ -147,7 +161,8 @@ const AssetsDetail = memo(() => {
     navigate(-1);
   };
   const onUpdate = () => {
-    dispatch(setExSourcesAsync());
+    // dispatch(setExSourcesAsync());
+    // dispatch(setOnChainAssetsSourcesAsync());
   };
   const fetchExData = () => {
     !fetchExDatasLoading &&
@@ -197,72 +212,165 @@ const AssetsDetail = memo(() => {
   useEffect(() => {
     !fetchExDatasLoading && onUpdate();
   }, [fetchExDatasLoading]);
+  const onUpdateOnChainAssets = useCallback(async () => {
+    debugger;
+    setUpdating(true);
+    // check singnature is expired
+    const { signature, timestamp, address: curConnectedAddr } = dataSource;
+    const curTime = +new Date();
+    if (signature && curTime - timestamp < 24 * 60 * 60 * 1000) {
+      try {
+        // const [accounts, chainId, provider] = await connectWallet();
+        // const curConnectedAddr = (accounts as string[])[0];
+        // const timestamp = +new Date() + '';
+        // const signature = await requestSign(curConnectedAddr, timestamp);
+        const { rc, result } = await getAssetsOnChains({
+          signature,
+          timestamp,
+          address: curConnectedAddr,
+        });
+        if (rc === 0) {
+          const res = getStatisticalData(result);
+
+          const curAccOnChainAssetsItem: any = {
+            address: curConnectedAddr,
+            date: getCurrentDate(),
+            timestamp: +new Date(),
+            signature,
+            ...res,
+            ...DATASOURCEMAP['onChainAssets'],
+          };
+
+          const { onChainAssetsSources: lastOnChainAssetsMapStr } =
+            await chrome.storage.local.get(['onChainAssetsSources']);
+
+          const lastOnChainAssetsMap = lastOnChainAssetsMapStr
+            ? JSON.parse(lastOnChainAssetsMapStr)
+            : {};
+          if (curConnectedAddr in lastOnChainAssetsMap) {
+            const lastCurConnectedAddrInfo =
+              lastOnChainAssetsMap[curConnectedAddr];
+            const pnl = sub(
+              curAccOnChainAssetsItem.totalBalance,
+              lastCurConnectedAddrInfo.totalBalance
+            ).toFixed();
+
+            curAccOnChainAssetsItem.pnl = pnl;
+            curAccOnChainAssetsItem.label = lastCurConnectedAddrInfo.label;
+          }
+          lastOnChainAssetsMap[curConnectedAddr] = curAccOnChainAssetsItem;
+
+          await chrome.storage.local.set({
+            onChainAssetsSources: JSON.stringify(lastOnChainAssetsMap),
+          });
+
+          await dispatch(setOnChainAssetsSourcesAsync());
+          // setUpdating(false);
+          // setActiveRequest({
+          //   type: 'suc',
+          //   title: 'Congratulations',
+          //   desc: 'Data Connected!',
+          // });
+        } else {
+          // setActiveRequest({
+          //   type: 'suc',
+          //   title: 'Congratulations',
+          //   desc: 'Data Connected!',
+          // });
+        }
+        setUpdating(false);
+      } catch (e) {
+        setUpdating(false);
+        // setActiveRequest({
+        //   type: 'error',
+        //   title: 'Failed',
+        //   desc: errorDescEl,
+        // });
+      }
+    } else {
+      setConnectWalletDataDialogVisible(true);
+    }
+  }, [dataSource, dispatch]);
 
   return (
-    <div className="assetsDetail">
-      <div className="iconBackWrapper" onClick={handleBack}></div>
-      <header>
-        <img src={iconAvatar} alt="" className="avatar" />
-        {typeof dataSource === 'object' && <h3>{dataSource?.label}</h3>}
-        {typeof dataSource === 'object' && (
-          <div className="descItems">
-            <div className="descItem">
-              <img src={dataSource?.icon} alt="" className="sourceIcon" />
-              <div className="value">
-                {isOnChainData ? formatAddr : dataSource?.name}
+    <div className="assetsDetail onChainAssetsDetail">
+      <div className="content">
+        <div className="iconBackWrapper" onClick={handleBack}></div>
+        <header>
+          <img src={iconAvatar} alt="" className="avatar" />
+          {typeof dataSource === 'object' && <h3>{dataSource?.label}</h3>}
+          {typeof dataSource === 'object' && (
+            <div className="descItems">
+              <div className="descItem">
+                <img src={dataSource?.icon} alt="" className="sourceIcon" />
+                <div className="value">
+                  {isOnChainData ? formatAddr : dataSource?.name}
+                </div>
+              </div>
+              <div className="descItem">
+                <div className="label">Date: &nbsp;</div>
+                <div className="value">{dataSource?.date}</div>
               </div>
             </div>
-            <div className="descItem">
-              <div className="label">Date: &nbsp;</div>
-              <div className="value">{dataSource?.date}</div>
+          )}
+        </header>
+        <section className="sourceStatisticsBar">
+          <div className="descItem">
+            <div className="inner">
+              <div className="label">Est Total Value</div>
+              <div className="value">${formatNumeral(totalAssetsBalance)}</div>
+              <div className="btcValue">
+                ≈ {formatNumeral(eqBtcNum, { decimalPlaces: 6 })} BTC
+              </div>
             </div>
           </div>
-        )}
-      </header>
-      <section className="sourceStatisticsBar">
-        <div className="descItem">
-          <div className="inner">
-            <div className="label">Est Total Value</div>
-            <div className="value">${formatNumeral(totalAssetsBalance)}</div>
-            <div className="btcValue">
-              ≈ {formatNumeral(eqBtcNum, { decimalPlaces: 6 })} BTC
+          <div className="separtor"></div>
+          <div className="descItem">
+            <div className="inner">
+              <div className="label">Assets No. </div>
+              <div className="value">{totalAssetsNo}</div>
             </div>
           </div>
-        </div>
-        <div className="separtor"></div>
-        <div className="descItem">
-          <div className="inner">
-            <div className="label">Assets No. </div>
-            <div className="value">{totalAssetsNo}</div>
+          <div className="separtor"></div>
+          <div className="descItem">
+            <div className="inner">
+              <div className="label">PnL </div>
+              <div className="value">{pnl}</div>
+            </div>
           </div>
-        </div>
-        <div className="separtor"></div>
-        <div className="descItem">
-          <div className="inner">
-            <div className="label">PnL </div>
-            <div className="value">{pnl}</div>
-          </div>
-        </div>
-      </section>
-      {/* <SourcesStatisticsBar
+        </section>
+        {/* <SourcesStatisticsBar
         list={list}
         onSelect={handleSelectSource}
         filterSource={filterSource}
         onClearFilter={onClearFilter}
       /> */}
-      <TokenTable
-        list={totalAssetsList}
-        flexibleAccountTokenMap={flexibleAccountTokenMap}
-        spotAccountTokenMap={spotAccountTokenMap}
-        allChainMap={allChainMap}
-        name={sourceName}
-        showFilter={true}
-        headerRightContent={headerRightContent}
-      />
-      <DataUpdateBar
-        type="Assets"
-        onUpdate={onUpdate}
-        sourceName={sourceName}
+        <TokenTable
+          list={totalAssetsList}
+          flexibleAccountTokenMap={flexibleAccountTokenMap}
+          spotAccountTokenMap={spotAccountTokenMap}
+          allChainMap={allChainMap}
+          name={sourceName}
+          showFilter={true}
+          headerRightContent={headerRightContent}
+        />
+      </div>
+
+      <DataUpdateBar updating={updating} onUpdate={onUpdateOnChainAssets} />
+      <ConnectWalletData
+        visible={connectWalletDataDialogVisible}
+        onClose={() => {
+          setConnectWalletDataDialogVisible(false);
+          setUpdating(false);
+        }}
+        onCancel={() => {
+          setConnectWalletDataDialogVisible(false);
+          setUpdating(false);
+        }}
+        onSubmit={() => {
+          setConnectWalletDataDialogVisible(false);
+          setUpdating(false);
+        }}
       />
     </div>
   );
