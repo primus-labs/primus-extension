@@ -21,6 +21,7 @@ export type TokenMap = {
   value: string;
   logo?: string;
   isNative?: boolean;
+  address?: string;
 };
 export type AssetsMap = {
   [propName: string]: TokenMap;

@@ -29,7 +29,7 @@ interface AssetsOverviewProps {
 
 const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
   ({ filterSource, onClearFilter, list }) => {
-    console.log('AssetsOverview-list', list);
+    // console.log('AssetsOverview-list', list);
     const [activeSourceName, setActiveSourceName] = useState<string>();
 
     const totalAssetsBalance = useMemo(() => {

@@ -23,7 +23,11 @@ import {
   getCurrentDate,
   getStatisticalData,
 } from '@/utils/utils';
-import { BTC, DATASOURCEMAP } from '@/config/constants';
+import {
+  BTC,
+  DATASOURCEMAP,
+  SUPPORRTEDQUERYCHAINMAP,
+} from '@/config/constants';
 import { getTokenPrice, getAssetsOnChains } from '@/services/api/dataSource';
 
 import type { Dispatch } from 'react';
@@ -31,8 +35,10 @@ import type { UserState } from '@/types/store';
 import type { ExData, onChainAssetsData } from '@/types/dataSource';
 
 import './index.sass';
+import { ChainAssetsMap } from '../../../types/dataSource';
 
 const AssetsDetail = memo(() => {
+  const [activeSourceName, setActiveSourceName] = useState<string>();
   const [connectWalletDataDialogVisible, setConnectWalletDataDialogVisible] =
     useState<boolean>(false);
   const [updating, setUpdating] = useState<boolean>(false);
@@ -55,6 +61,7 @@ const AssetsDetail = memo(() => {
   }, [searchName]);
   const dataSource = useMemo(() => {
     if (isOnChainData) {
+      console.log('dataSource', onChainAssetsSources[searchAddress]);
       return onChainAssetsSources[searchAddress] as onChainAssetsData;
     } else {
       return exSources[sourceName] as ExData;
@@ -124,14 +131,20 @@ const AssetsDetail = memo(() => {
       return 0;
     }
   }, [dataSource]);
-  const totalAssetsList = useMemo(() => {
-    if (typeof dataSource === 'object') {
-      const list = Object.values(dataSource.tokenListMap);
-      return list;
+  
+  const activeAssetsMap = useMemo(() => {
+    if (activeSourceName) {
+      const activeS: DataSourceItemType =
+        dataSource.chainsAssetsMap[activeSourceName];
+      return activeS.tokenListMap;
     } else {
-      return [];
+      return dataSource.tokenListMap;
     }
-  }, [dataSource]);
+  }, [dataSource, activeSourceName]);
+  const activeSourceTokenList = useMemo(() => {
+    return Object.values(activeAssetsMap as AssetsMap);
+  }, [activeAssetsMap]);
+
   const flexibleAccountTokenMap = useMemo(() => {
     if (typeof dataSource === 'object') {
       const obj = dataSource.flexibleAccountTokenMap;
@@ -183,11 +196,7 @@ const AssetsDetail = memo(() => {
       alert('getTokenPrice network error!');
     }
   };
-  useEffect(() => {
-    if (isOnChainData) {
-      fetchBTCPrice();
-    }
-  }, [isOnChainData]);
+
   const headerRightContent = useMemo(() => {
     return isOnChainData ? (
       <></>
@@ -203,17 +212,22 @@ const AssetsDetail = memo(() => {
       return formatAddress(dataSource?.address, 4, 4);
     }
     return '';
-  }, [dataSource?.address]);
-
-  useEffect(() => {
-    sourceName && fetchExData();
-  }, [sourceName]);
-
-  useEffect(() => {
-    !fetchExDatasLoading && onUpdate();
-  }, [fetchExDatasLoading]);
+  }, [dataSource]);
+  const allChainList = useMemo(() => {
+    if (Object.keys(allChainMap).length > 0) {
+      const chainInfoArr = Object.keys(allChainMap).map((chainName) => {
+        return {
+          ...SUPPORRTEDQUERYCHAINMAP[
+            chainName as keyof typeof SUPPORRTEDQUERYCHAINMAP
+          ],
+          ...allChainMap[chainName],
+        };
+      });
+      return chainInfoArr;
+    }
+    return [];
+  }, [allChainMap]);
   const onUpdateOnChainAssets = useCallback(async () => {
-    debugger;
     setUpdating(true);
     // check singnature is expired
     const { signature, timestamp, address: curConnectedAddr } = dataSource;
@@ -281,16 +295,27 @@ const AssetsDetail = memo(() => {
         setUpdating(false);
       } catch (e) {
         setUpdating(false);
-        // setActiveRequest({
-        //   type: 'error',
-        //   title: 'Failed',
-        //   desc: errorDescEl,
-        // });
       }
     } else {
       setConnectWalletDataDialogVisible(true);
     }
   }, [dataSource, dispatch]);
+  const handleSelectSource = useCallback((sourceName: string | undefined) => {
+    setActiveSourceName(sourceName);
+  }, []);
+
+  useEffect(() => {
+    sourceName && fetchExData();
+  }, [sourceName]);
+
+  useEffect(() => {
+    if (isOnChainData) {
+      fetchBTCPrice();
+    }
+  }, [isOnChainData]);
+  useEffect(() => {
+    !fetchExDatasLoading && onUpdate();
+  }, [fetchExDatasLoading]);
 
   return (
     <div className="assetsDetail onChainAssetsDetail">
@@ -339,19 +364,19 @@ const AssetsDetail = memo(() => {
             </div>
           </div>
         </section>
-        {/* <SourcesStatisticsBar
-        list={list}
-        onSelect={handleSelectSource}
-        filterSource={filterSource}
-        onClearFilter={onClearFilter}
-      /> */}
+        <SourcesStatisticsBar
+          list={allChainList}
+          onSelect={handleSelectSource}
+          onClearFilter={() => {}}
+          filterSource={undefined}
+        />
         <TokenTable
-          list={totalAssetsList}
+          list={activeSourceTokenList}
           flexibleAccountTokenMap={flexibleAccountTokenMap}
           spotAccountTokenMap={spotAccountTokenMap}
           allChainMap={allChainMap}
           name={sourceName}
-          showFilter={true}
+          showFilter={false}
           headerRightContent={headerRightContent}
         />
       </div>

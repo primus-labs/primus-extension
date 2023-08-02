@@ -33,7 +33,7 @@ type FormatAddressType = (
   str: string,
   startNum?: number,
   endNum?: number,
-  sepStr?:string
+  sepStr?: string
 ) => string;
 export const formatAddress: FormatAddressType = function (
   str,
@@ -229,115 +229,119 @@ export const getStatisticalData = (res: any) => {
     const curChainAssetArr =
       erc20Token[curChainName as keyof typeof erc20Token] ?? [];
 
-    if (curChainAssetArr) {
-      // erc20 token
-      const curChainAssetMapReduceF = (prev: any, currTokenInfo: any) => {
-        const {
-          balance,
-          contract_address,
-          current_usd_price,
-          decimals,
-          symbol,
-          logos,
-        } = currTokenInfo;
+    // erc20 token
+    let curChainTotalBalance: any = new BigNumber(0);
+    const curChainAssetMapReduceF = (prev: any, currTokenInfo: any) => {
+      const {
+        balance,
+        contractAddress,
+        currentUsdPrice,
+        decimals,
+        symbol,
+        logos,
+      } = currTokenInfo;
 
-        const amount = div(parseInt(balance), Math.pow(10, decimals));
-        const amtNum = amount.toNumber();
-        const price = current_usd_price ?? 0;
-        if (gt(amtNum, 0) && gt(price, 0)) {
-          const rawValue = mul(amtNum, price);
-          if (gt(rawValue.toNumber(), 0.01)) {
-            const value = rawValue.toFixed();
-            const logo = logos[0]?.uri; // TODO default img
-            const assetAddrASymbol = `${symbol}---${contract_address}`;
-
-            const tokenInfoObj = {
-              symbol: assetAddrASymbol,
-              amount: amount.toFixed(),
-              price,
-              value,
-              logo,
-              address: contract_address,
-            };
-
-            if (assetAddrASymbol in tokenMap) {
-              const { amount: lastAmt } = tokenMap[assetAddrASymbol];
-              const newAmt = add(lastAmt.toNumber(), amtNum);
-              const newValue = mul(newAmt.toNumber(), price).toFixed();
-              tokenMap[assetAddrASymbol] = {
-                ...tokenMap[assetAddrASymbol],
-                amount: newAmt.toFixed(),
-                value: newValue,
-              };
-            } else {
-              tokenMap[assetAddrASymbol] = tokenInfoObj;
-            }
-            totalBalance = add(totalBalance, rawValue.toNumber());
-            prev[assetAddrASymbol] = tokenInfoObj;
-          }
-        }
-        return prev;
-      };
-      const curChainAssetMap = curChainAssetArr.reduce(
-        curChainAssetMapReduceF,
-        {}
-      );
-      // console.log('curChainAssetMap', curChainAssetMap);
-
-      // native token
-      const curChainNativeToken: any = nativeToken.find(
-        (i) => i.chain === curChainName
-      );
-      const { balance, currentUsdPrice, currency } = curChainNativeToken;
-      const curChainNativeTokenAmount = div(
-        parseInt(balance),
-        Math.pow(10, 18)
-      );
-      const curChainNativeTokenAmountNum = curChainNativeTokenAmount.toNumber();
+      const amount = div(parseInt(balance), Math.pow(10, decimals));
+      const amtNum = amount.toNumber();
       const price = currentUsdPrice ?? 0;
-      if (gt(curChainNativeTokenAmountNum, 0) && gt(price, 0)) {
-        const rawValue = mul(curChainNativeTokenAmountNum, price);
+      if (gt(amtNum, 0) && gt(price, 0)) {
+        const rawValue = mul(amtNum, price);
         if (gt(rawValue.toNumber(), 0.01)) {
           const value = rawValue.toFixed();
+          const logo = logos[0]?.uri; // TODO default img
+          const assetAddrASymbol = `${symbol}---${contractAddress}`;
+
           const tokenInfoObj = {
-            symbol: currency,
-            amount: curChainNativeTokenAmount.toFixed(),
+            symbol: assetAddrASymbol,
+            amount: amount.toFixed(),
             price,
             value,
-            isNative: true,
+            logo,
+            address: contractAddress,
           };
-          if (currency in tokenMap) {
-            const { amount: lastAmt } = tokenMap[currency];
-            const newAmt = add(Number(lastAmt), curChainNativeTokenAmountNum);
+
+          if (assetAddrASymbol in tokenMap) {
+            const { amount: lastAmt } = tokenMap[assetAddrASymbol];
+            const newAmt = add(lastAmt.toNumber(), amtNum);
             const newValue = mul(newAmt.toNumber(), price).toFixed();
-            tokenMap[currency] = {
-              ...tokenMap[currency],
+            tokenMap[assetAddrASymbol] = {
+              ...tokenMap[assetAddrASymbol],
               amount: newAmt.toFixed(),
               value: newValue,
             };
           } else {
-            tokenMap[currency] = tokenInfoObj;
+            tokenMap[assetAddrASymbol] = tokenInfoObj;
           }
+          curChainTotalBalance = add(totalBalance, rawValue.toNumber());
           totalBalance = add(totalBalance, rawValue.toNumber());
-
-          curChainAssetMap[currency] = {
-            symbol: currency,
-            amount: curChainNativeTokenAmount.toFixed(),
-            price,
-            value,
-            isNative: true,
-          };
+          prev[assetAddrASymbol] = tokenInfoObj;
         }
       }
-      prevChainsAssetMap[curChainName] = curChainAssetMap;
+      return prev;
+    };
+    const curChainAssetMap = curChainAssetArr.reduce(
+      curChainAssetMapReduceF,
+      {}
+    );
+    console.log('curChainAssetMap', curChainAssetMap);
+
+    // native token
+    const curChainNativeToken: any = nativeToken.find(
+      (i) => i.chain === curChainName
+    );
+    const { balance, currentUsdPrice, currency } = curChainNativeToken;
+    const curChainNativeTokenAmount = div(parseInt(balance), Math.pow(10, 18));
+    const curChainNativeTokenAmountNum = curChainNativeTokenAmount.toNumber();
+    const price = currentUsdPrice ?? 0;
+    if (gt(curChainNativeTokenAmountNum, 0) && gt(price, 0)) {
+      const rawValue = mul(curChainNativeTokenAmountNum, price);
+      if (gt(rawValue.toNumber(), 0.01)) {
+        const value = rawValue.toFixed();
+        const tokenInfoObj = {
+          symbol: currency,
+          amount: curChainNativeTokenAmount.toFixed(),
+          price,
+          value,
+          isNative: true,
+        };
+        if (currency in tokenMap) {
+          const { amount: lastAmt } = tokenMap[currency];
+          const newAmt = add(Number(lastAmt), curChainNativeTokenAmountNum);
+          const newValue = mul(newAmt.toNumber(), price).toFixed();
+          tokenMap[currency] = {
+            ...tokenMap[currency],
+            amount: newAmt.toFixed(),
+            value: newValue,
+          };
+        } else {
+          tokenMap[currency] = tokenInfoObj;
+        }
+        curChainTotalBalance = add(curChainTotalBalance, rawValue.toNumber());
+        totalBalance = add(totalBalance, rawValue.toNumber());
+
+        curChainAssetMap[currency] = {
+          symbol: currency,
+          amount: curChainNativeTokenAmount.toFixed(),
+          price,
+          value,
+          isNative: true,
+        };
+      }
     }
+    debugger;
+    if (gt(curChainTotalBalance.toNumber(), 0)) {
+      prevChainsAssetMap[curChainName] = {
+        totalBalance: curChainTotalBalance.toFixed(),
+        tokenListMap: curChainAssetMap,
+      };
+    }
+
     return prevChainsAssetMap;
   };
   const chainsAssetsMap = Object.keys(erc20Token).reduce(
     chainsAssetsMapReduceF,
     {}
   );
-
   return {
     tokenListMap: tokenMap,
     chainsAssetsMap,

@@ -89,8 +89,11 @@ export type KYCDatas = {
 };
 export type KYCDataList = KYCData[];
 
-export type ChainAssetsMap = {
-  [propName: string]: AssetsMap;
+export type ChainsAssetsMap = {
+  [propName: string]: {
+    totalBalance: string,
+    tokenListMap: AssetsMap
+  };
 };
 export type onChainData = {
   name: string;
@@ -101,7 +104,7 @@ export type onChainData = {
 
   totalBalance: string;
   tokenListMap: AssetsMap;
-  chainAssetsMap: ChainAssetsMap;
+  chainAssetsMap: ChainsAssetsMap;
   pnl?: string;
   // exUserId?: string;
   // pnlAmount?: string;

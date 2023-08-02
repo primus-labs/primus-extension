@@ -145,7 +145,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
       }
       if (showFilter) {
         return Object.values(
-          allChainMap[filterAccount as keyof typeof allChainMap]
+          allChainMap[filterAccount as keyof typeof allChainMap]['tokenListMap']
         );
       }
       return list;
@@ -272,6 +272,9 @@ const TokenTable: React.FC<TokenTableProps> = memo(
             activeImg = item.logo;
             return <img src={activeImg} alt="" />;
           }
+          if (item?.address) {
+            return <div className="defaultTokenImg"></div>;
+          }
           activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
           return <img src={activeImg} alt="" />;
         }
@@ -287,8 +290,8 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     const tokenSymbolFn = useCallback((item) => {
       if (item?.address) {
         // return `${item.symbol}(${formatAddr})`;
-        const symbolAAddrArr = item.symbol.split('---')
-        const formatAddr = formatAddress(item.address, 0, 4,'**');
+        const symbolAAddrArr = item.symbol.split('---');
+        const formatAddr = formatAddress(item.address, 0, 4, '**');
         const formatSymbol = `${symbolAAddrArr[0]}(${formatAddr})`;
         return formatSymbol;
       } else {

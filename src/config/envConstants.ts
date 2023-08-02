@@ -261,27 +261,3 @@ const EASINFOMAP = {
 export const EASInfo = EASINFOMAP[CURENV];
 
 export const ONCHAINLIST = Object.values(EASInfo);
-// console.log('ONCHAINLIST', ONCHAINLIST);
-
-// [
-// {
-//   icon: iconTool1,
-//   title: 'Tower',
-// },
-// {
-//   icon: iconPolygon,
-//   title: 'polygon',
-// },
-// {
-//   icon: iconArbitrum,
-//   title: 'Arbitrum',
-// },
-// {
-//   icon: iconOptimism,
-//   title: 'Optimism',
-// },
-// {
-//   icon: iconMina,
-//   title: 'mina',
-// },
-// ];

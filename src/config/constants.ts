@@ -1,5 +1,6 @@
 import iconTool1 from '@/assets/img/iconTool1.svg';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
+import iconPolygon from '@/assets/img/iconPolygon.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
 import iconWalletCoinbaseWallet from '@/assets/img/iconWalletCoinbaseWallet.svg';
@@ -41,6 +42,8 @@ import iconNetwork3 from '@/assets/img/iconNetwork3.png';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.png';
 import iconNetwork6 from '@/assets/img/iconNetwork6.png';
+
+import iconChainEthereum from '@/assets/img/iconChainEthereum.svg';
 import type { ExchangeMeta } from '@/types/dataSource';
 
 export type DataSourceMapType = {
@@ -333,3 +336,36 @@ export const CHAINNETWORKLIST = [
     title: '6',
   },
 ];
+
+export const SUPPORRTEDQUERYCHAINMAP = {
+  'Arbitrum One': {
+    name: 'Arbitrum One',
+    chainId: 42161,
+    icon: iconArbitrum,
+  },
+  BSC: {
+    name: 'BSC',
+    chainId: 56,
+    icon: iconBinance,
+  },
+  Ethereum: {
+    name: 'Ethereum',
+    chainId: 1,
+    icon: iconChainEthereum,
+  },
+  Polygon: {
+    name: 'Polygon',
+    chainId: 137,
+    icon: iconPolygon,
+  },
+  Avalanche: {
+    name: 'Avalanche',
+    chainId: 43114,
+    icon: iconNetwork6,
+  },
+  Optimism: {
+    name: 'Optimism',
+    chainId: 10,
+    icon: iconOptimism,
+  },
+};

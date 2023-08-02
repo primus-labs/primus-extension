@@ -100,157 +100,93 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
             address: curConnectedAddr,
           });
           if (rc === 0) {
-            // const result = {
-            //   nativeToken: [
-            //     {
-            //       chain: 'Arbitrum One',
-            //       chainId: 42161,
-            //       currency: 'ETH',
-            //       balance: '0x66f47b56125c67',
-            //       currentUsdPrice: '1930.21000000',
-            //     },
-            //     {
-            //       chain: 'BSC',
-            //       chainId: 56,
-            //       currency: 'BNB',
-            //       balance: '0x5a33caceee035',
-            //       currentUsdPrice: '243.70000000',
-            //     },
-            //     {
-            //       chain: 'Ethereum',
-            //       chainId: 1,
-            //       currency: 'ETH',
-            //       balance: '0x9471eb6de535df',
-            //       currentUsdPrice: '1930.21000000',
-            //     },
-            //     {
-            //       chain: 'Polygon',
-            //       chainId: 137,
-            //       currency: 'MATIC',
-            //       balance: '0x470de4df820000',
-            //       currentUsdPrice: '0.77950000',
-            //     },
-            //     {
-            //       chain: 'Avalanche',
-            //       chainId: 43114,
-            //       currency: 'AVAX',
-            //       balance: '0x0',
-            //       currentUsdPrice: '14.46000000',
-            //     },
-            //     {
-            //       chain: 'Optimism',
-            //       chainId: 10,
-            //       currency: 'ETH',
-            //       balance: '0x0',
-            //       currentUsdPrice: '1930.21000000',
-            //     },
-            //   ],
-            //   erc20Token: {
-            //     'Arbitrum One': null,
-            //     BSC: [
-            //       {
-            //         balance: '55437308182660911/1',
-            //         contract_address:
-            //           '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
-            //         current_usd_price: '0.08',
-            //         decimals: 18,
-            //         logos: [
-            //           {
-            //             height: 250,
-            //             uri: 'https://static.chainbase.online/logo/bsc/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82.png',
-            //             width: 250,
-            //           },
-            //         ],
-            //         name: 'PancakeSwap Token',
-            //         symbol: 'Cake',
-            //         total_supply: '1246774215751051201610995531',
-            //         urls: [
-            //           {
-            //             name: 'homepage',
-            //             url: 'https://pancakeswap.finance/',
-            //           },
-            //         ],
-            //       },
-            //       {
-            //         balance: '1000000000000/1',
-            //         contract_address:
-            //           '0x35122d1fe8001296f61290b8ba42ef597af31fb7',
-            //         current_usd_price: 0,
-            //         decimals: 6,
-            //         logos: [],
-            //         name: 'Wrapped ADAX',
-            //         symbol: 'wADAX',
-            //         total_supply: '100000000000000',
-            //         urls: [],
-            //       },
-            //       {
-            //         balance: '23000000000/1',
-            //         contract_address:
-            //           '0xd048b4c23af828e5be412505a51a8dd7b37782dd',
-            //         current_usd_price: 0,
-            //         decimals: 6,
-            //         logos: [],
-            //         name: 'AI Avail',
-            //         symbol: 'AI-A',
-            //         total_supply: '2000000000000',
-            //         urls: [],
-            //       },
-            //     ],
-            //     Ethereum: [
-            //       {
-            //         balance: '286497881386117044/1',
-            //         contract_address:
-            //           '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-            //         current_usd_price: '1.73',
-            //         decimals: 18,
-            //         logos: [
-            //           {
-            //             height: 250,
-            //             uri: 'https://static.chainbase.online/logo/ethereum/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png',
-            //             width: 250,
-            //           },
-            //         ],
-            //         name: 'Uniswap',
-            //         symbol: 'UNI',
-            //         total_supply: '1000000000000000000000000000',
-            //         urls: [
-            //           {
-            //             name: 'homepage',
-            //             url: 'https://uniswap.org/',
-            //           },
-            //         ],
-            //       },
-            //       {
-            //         balance: '10010000000000000000/1',
-            //         contract_address:
-            //           '0xbddab785b306bcd9fb056da189615cc8ece1d823',
-            //         current_usd_price: 0,
-            //         decimals: 18,
-            //         logos: [],
-            //         name: 'Ebakus',
-            //         symbol: 'EBK',
-            //         total_supply: '100000000000000000000000000',
-            //         urls: [],
-            //       },
-            //       {
-            //         balance: '88888800000000/1',
-            //         contract_address:
-            //           '0xc12d1c73ee7dc3615ba4e37e4abfdbddfa38907e',
-            //         current_usd_price: 0,
-            //         decimals: 8,
-            //         logos: [],
-            //         name: 'KickToken',
-            //         symbol: 'KICK',
-            //         total_supply: '125123346789819622107',
-            //         urls: [],
-            //       },
-            //     ],
-            //     Polygon: null,
-            //     Avalanche: null,
-            //     Optimism: null,
-            //   },
-            // }; // TODO!!! DEL
-
+            const result = {
+              nativeToken: [
+                {
+                  chain: 'Ethereum',
+                  chainId: 1,
+                  currency: 'ETH',
+                  balance: '0x9471eb6de535df',
+                  currentUsdPrice: '1854.65000000',
+                },
+                {
+                  chain: 'Polygon',
+                  chainId: 137,
+                  currency: 'MATIC',
+                  balance: '0x470de4df820000',
+                  currentUsdPrice: '0.68910000',
+                },
+                {
+                  chain: 'BSC',
+                  chainId: 56,
+                  currency: 'BNB',
+                  balance: '0x5a33caceee035',
+                  currentUsdPrice: '244.50000000',
+                },
+                {
+                  chain: 'Avalanche',
+                  chainId: 43114,
+                  currency: 'AVAX',
+                  balance: '0x0',
+                  currentUsdPrice: '12.69000000',
+                },
+                {
+                  chain: 'Arbitrum One',
+                  chainId: 42161,
+                  currency: 'ETH',
+                  balance: '0x11282c06b0c0',
+                  currentUsdPrice: '1854.65000000',
+                },
+                {
+                  chain: 'Optimism',
+                  chainId: 10,
+                  currency: 'ETH',
+                  balance: '0x0',
+                  currentUsdPrice: '1854.65000000',
+                },
+              ],
+              erc20Token: {
+                'Arbitrum One': null,
+                BSC: [
+                  {
+                    contractAddress:
+                      '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
+                    decimals: '18',
+                    name: 'PancakeSwap Token',
+                    symbol: 'Cake',
+                    totalSupply: '1246774215751051201610995531',
+                    logos: [
+                      '{"height":250,"uri":"https://static.chainbase.online/logo/bsc/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82.png","width":250}',
+                    ],
+                    urls: [
+                      '{"name":"homepage","url":"https://pancakeswap.finance/"}',
+                    ],
+                    currentUsdPrice: '0.09',
+                    balance: '0xc4f3f02588072f',
+                  },
+                ],
+                Ethereum: [
+                  {
+                    contractAddress:
+                      '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                    decimals: '18',
+                    name: 'Uniswap',
+                    symbol: 'UNI',
+                    totalSupply: '1000000000000000000000000000',
+                    logos: [
+                      '{"height":250,"uri":"https://static.chainbase.online/logo/ethereum/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png","width":250}',
+                    ],
+                    urls: ['{"name":"homepage","url":"https://uniswap.org/"}'],
+                    currentUsdPrice: '1.9',
+                    balance: '0x3f9d84e20ebe7b4',
+                  },
+                ],
+                Polygon: null,
+                Avalanche: null,
+                Optimism: null,
+              },
+            };
+            // TODO!!! DEL
             const res = getStatisticalData(result);
 
             const curAccOnChainAssetsItem: any = {
