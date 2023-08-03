@@ -66,7 +66,6 @@ const AssetsDetail = memo(() => {
   }, [searchName]);
   const dataSource = useMemo(() => {
     if (isOnChainData) {
-      console.log('dataSource', onChainAssetsSources[searchAddress]);
       return onChainAssetsSources[searchAddress] as onChainAssetsData;
     } else {
       return exSources[sourceName] as ExData;

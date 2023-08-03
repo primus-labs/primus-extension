@@ -64,7 +64,6 @@ const Home = memo(() => {
       navigate('/datas');
       // const padoServicePortListener = async function (message) {
       //   if (message.resMethodName === 'queryUserPassword') {
-      //     console.log('page_get:queryUserPassword(Home):', message.res);
       //     if (!message.res) {
       //       navigate('/lock');
       //     } else {

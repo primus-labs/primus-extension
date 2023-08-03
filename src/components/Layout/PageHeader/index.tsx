@@ -34,7 +34,6 @@ const navs: NavItem[] = [
   },
 ];
 const PageHeader = memo(() => {
-  // console.log('222222PageHeader');
   const [isScroll, setIsScroll] = useState(false);
 
   const navigate = useNavigate();

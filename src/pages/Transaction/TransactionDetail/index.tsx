@@ -28,7 +28,6 @@ const TransactionDetail = memo(() => {
   useEffect(() => {
     const activeCred =
       credentialsFromStore[requestid as keyof typeof credentialsFromStore];
-    console.log('credItem111', activeCred);
     // const activeCred = {
     //   address: '0xd7cf78d33ce4c8a70529dc379582b290e1bea1c1',
     //   authUseridHash:

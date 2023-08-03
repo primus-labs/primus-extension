@@ -110,7 +110,6 @@ class Binance extends Exchange {
         this.tokenPriceMap[tokenSymbol] = ZERO + '';
       }
     });
-    console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap, res);
     return this.tokenPriceMap;
   }
 }

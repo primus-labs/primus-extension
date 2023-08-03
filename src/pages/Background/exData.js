@@ -135,7 +135,6 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           tokenPriceMap: ex.tokenPriceMap,
           tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
         };
-        console.log(`background--${exchangeName}exData`, ex);
         if (pnl !== null && pnl !== undefined) {
           exData.pnl = pnl;
         }
@@ -343,7 +342,6 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
         'MAP_A_PURE_NUMBER_REGEX:KVVVV:"asset":"(.*?)"[\\s\\S]*?"free":"(.*?)"[\\s\\S]*?"locked":"(.*?)"[\\s\\S]*?"freeze":"(.*?)"[\\s\\S]*?"withdrawing":"(.*?)"';
       signres.decryptFlag = 'false';
       //signres.url = 'https://localhost/simulate/sapi/v3/asset/getUserAsset';
-      console.log('binance signres=', signres);
       extRequestsOrderInfo = { ...signres };
       break;
     case 'coinbase':
@@ -361,7 +359,6 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
       signres.headers['CB-VERSION'] = '2018-05-30';
       signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
       signres.decryptFlag = 'false';
-      console.log('coinbase signres=', signres);
       extRequestsOrderInfo = { ...signres };
       break;
     case 'okx':

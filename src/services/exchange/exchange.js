@@ -63,10 +63,6 @@ class Exchange {
       ...this.flexibleAccountTokenAmountMap.keys(),
     ];
     this.totalHoldingTokenSymbolList = [...new Set(duplicateSymbolArr)];
-    console.log(
-      'totalHoldingTokenSymbolList',
-      this.totalHoldingTokenSymbolList
-    );
     return this.totalHoldingTokenSymbolList;
     // }  catch (error) {
     //   console.log('exchange getTotalHoldingTokenSymbolList error', error);
@@ -105,7 +101,6 @@ class Exchange {
       this.totalAccountTokenAmountMap = this.spotAccountTokenAmountMap;
     }
 
-    console.log('totalAccountTokenAmountMap', this.totalAccountTokenAmountMap);
     return this.totalAccountTokenAmountMap;
   }
   async getTokenPriceMap() {
@@ -140,7 +135,6 @@ class Exchange {
         this.tokenPriceMap[tokenSymbol] = ZERO + '';
       }
     });
-    console.log('tokenPriceMap: ', this.exName, this.tokenPriceMap);
     return this.tokenPriceMap;
   }
   getTokenMap(amountMap) {

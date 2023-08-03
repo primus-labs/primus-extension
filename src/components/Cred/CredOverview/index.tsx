@@ -18,7 +18,6 @@ import CredAddWrapper from '../CredAddWrapper';
 import './index.sass';
 
 const CredOverview = memo(() => {
-  console.log('CredOverview');
 
   const [activeSourceName, setActiveSourceName] = useState<string>();
   const [addDialogVisible, setAddDialogVisible] = useState<boolean>(false);

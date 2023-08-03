@@ -15,7 +15,6 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   getAttestationCallback,
   getAttestationResultCallback
 ) {
-  console.log('useAlgorithm');
   const savedCallback = useRef(() => {});
   useEffect(() => {
     savedCallback.current = getAttestationCallback;

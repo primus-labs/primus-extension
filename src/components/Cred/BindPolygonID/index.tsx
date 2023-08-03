@@ -93,6 +93,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               signature: res.claimSignatureInfo.signature,
               encodedData: res.claimSignatureInfo.encodedData,
             };
+            fullAttestation.sigFormat = "Polygon";
 
             const { credentials: credentialsStr } =
               await chrome.storage.local.get(['credentials']);

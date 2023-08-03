@@ -28,7 +28,6 @@ import './index.sass';
 import LoseEfficacyDialog from '../LoseEfficacy';
 
 const Layout = () => {
-  // console.log('222222Layout');
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -87,7 +86,6 @@ const Layout = () => {
 
       const padoServicePortListener3 = async function (message: any) {
         if (message.resMethodName === 'queryUserPassword') {
-          console.log('page_get:queryUserPassword:', message.res);
           if (message.res) {
             await dispatch({
               type: 'setUserPassword',

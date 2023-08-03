@@ -5,7 +5,6 @@ import PHeader from '@/components/Layout/PHeader';
 import PageHeader from '@/components/Layout/PageHeader';
 
 const ActiveHeader = memo(() => {
-  // console.log('222222ActiveHeader');
   const location = useLocation();
   const pathname = useMemo(() => {
     return location.pathname;

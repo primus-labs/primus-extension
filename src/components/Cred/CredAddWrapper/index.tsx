@@ -62,7 +62,6 @@ interface CredAddWrapperType {
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
   ({ visible = true, activeCred, activeSource,onClose, onSubmit }) => {
-    console.log('CredAddWrapper');
     const [step, setStep] = useState(-1);
     const [activeAttestationType, setActiveAttestationType] =
       useState<string>('');

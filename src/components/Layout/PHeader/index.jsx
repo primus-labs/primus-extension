@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import './index.sass';
 import logo from '@/assets/img/logo.svg';
 const PHeader = memo(() => {
-  // console.log('222222PHeader');
   return (
     <div className="appHeader">
       <header className="pHeader">

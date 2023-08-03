@@ -23,7 +23,6 @@ interface DataSourceItemProps {
 
 const DataSourceList: React.FC<DataSourceItemProps> = memo(
   ({ onAdd, onCheck, list = [] }) => {
-    console.log('DataSourceList====', list)
     const handleAdd = () => {
       onAdd();
     };
