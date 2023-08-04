@@ -147,11 +147,11 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceDiscord,
   },
-  youtube: {
+  /*youtube: {
     name: 'Youtube',
     type: 'Social',
     icon: iconDataSourceYoutube,
-  },
+  },*/
   zan: {
     name: 'ZAN',
     type: 'Identity',
