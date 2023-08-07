@@ -177,7 +177,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
           >
             <img src={icon} alt="" />
             <div className="TLeftCon">
-              <h6>{name === 'On-chain Assets' ? formatAddr : name}</h6>
+              <h6>{name === 'On-chain' ? formatAddr : name}</h6>
               {type === 'Social' && (
                 <div className="desc">
                   <span className="label">User:&nbsp;</span>

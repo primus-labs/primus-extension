@@ -27,7 +27,6 @@ import type {
 } from '@/types/dataSource';
 import './index.sass';
 
-
 interface AssetsOverviewProps {
   filterSource: string | undefined;
   onClearFilter: () => void;
@@ -104,7 +103,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
         if (tokenListMap) {
           Object.keys(tokenListMap).forEach((tokenListMapSymbol) => {
             // const { symbol, amount } = tokenListMap[tokenListMapSymbol];
-            const symbol = tokenListMapSymbol.split('---')[0]
+            const symbol = tokenListMapSymbol.split('---')[0];
             if (symbol in prev) {
               const { amount: prevAmount, price } = prev[symbol];
               const { amount } = tokenListMap[tokenListMapSymbol];
@@ -149,7 +148,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
         // ) as DataSourceItemType;
 
         const activeS: DataSourceItemType = list.find((item) => {
-          if (item.name === 'On-chain Assets') {
+          if (item.name === 'On-chain') {
             // debugger
             const formatAddr = formatAddress(item.address as string, 4, 4);
             return formatAddr === activeSourceName;
@@ -187,7 +186,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     const getChartData = useMemo(() => {
       const chartData = list.map(({ name, totalBalance, address }) => {
         let formatName = name;
-        if (name === 'On-chain Assets') {
+        if (name === 'On-chain') {
           const formatAddr = formatAddress(address, 4, 4);
           formatName = formatAddr;
         }
@@ -210,7 +209,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     const activeAllChainMap = useMemo(() => {
       if (activeSourceName?.includes('...')) {
         const activeS: onChainAssetsData = list.find((item) => {
-          if (item.name === 'On-chain Assets') {
+          if (item.name === 'On-chain') {
             // debugger
             const formatAddr = formatAddress(item.address as string, 4, 4);
             return formatAddr === activeSourceName;

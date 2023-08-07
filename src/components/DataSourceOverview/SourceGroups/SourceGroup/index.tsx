@@ -21,9 +21,9 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
     const liClassNameCallback = useCallback(
       (item: ListItem) => {
         let defaultClassName = 'networkItem';
-        if (item.name === 'On-chain Assets') {
-          defaultClassName += ' onChainAssets';
-        }
+        // if (item.name === 'On-chain') {
+        //   defaultClassName += ' onChain';
+        // }
         if (!mutiple && !item?.disabled && activeSource?.name === item.name) {
           defaultClassName += ' active';
         }

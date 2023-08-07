@@ -12,7 +12,7 @@ const DataSourceDetail = memo(() => {
   const [searchParams] = useSearchParams();
   const searchName = searchParams.get('name') as string;
   const isOnChainData = useMemo(() => {
-    return decodeURIComponent(searchName) === 'On-chain Assets';
+    return decodeURIComponent(searchName) === 'On-chain';
   }, [searchName]);
   const handleChangeTab = useCallback(
     (val: string) => {

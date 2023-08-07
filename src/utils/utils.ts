@@ -272,7 +272,7 @@ export const getStatisticalData = (res: any) => {
           } else {
             tokenMap[assetAddrASymbol] = tokenInfoObj;
           }
-          curChainTotalBalance = add(totalBalance, rawValue.toNumber());
+          curChainTotalBalance = add(curChainTotalBalance, rawValue.toNumber());
           totalBalance = add(totalBalance, rawValue.toNumber());
           prev[assetAddrASymbol] = tokenInfoObj;
         }

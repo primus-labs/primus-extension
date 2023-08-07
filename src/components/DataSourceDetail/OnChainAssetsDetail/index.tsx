@@ -62,7 +62,7 @@ const AssetsDetail = memo(() => {
   const sourceName = searchName.toLowerCase();
 
   const isOnChainData = useMemo(() => {
-    return decodeURIComponent(searchName) === 'On-chain Assets';
+    return decodeURIComponent(searchName) === 'On-chain';
   }, [searchName]);
   const dataSource = useMemo(() => {
     if (isOnChainData) {
@@ -136,7 +136,7 @@ const AssetsDetail = memo(() => {
       return 0;
     }
   }, [dataSource]);
-  
+
   const activeAssetsMap = useMemo(() => {
     if (activeSourceName) {
       const activeS: ChainAssetsMap = (dataSource as onChainAssetsData)
@@ -235,7 +235,11 @@ const AssetsDetail = memo(() => {
   const onUpdateOnChainAssets = useCallback(async () => {
     setUpdating(true);
     // check singnature is expired
-    const { signature, timestamp, address: curConnectedAddr } = dataSource as onChainAssetsData;
+    const {
+      signature,
+      timestamp,
+      address: curConnectedAddr,
+    } = dataSource as onChainAssetsData;
     const curTime = +new Date();
     if (signature && curTime - Number(timestamp) < 24 * 60 * 60 * 1000) {
       try {
@@ -257,7 +261,7 @@ const AssetsDetail = memo(() => {
             timestamp: +new Date(),
             signature,
             ...res,
-            ...DATASOURCEMAP['onChainAssets'],
+            ...DATASOURCEMAP['onChain'],
           };
 
           const { onChainAssetsSources: lastOnChainAssetsMapStr } =

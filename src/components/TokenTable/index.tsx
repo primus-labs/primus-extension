@@ -8,10 +8,7 @@ import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import { sub, postMsg, formatNumeral, formatAddress } from '@/utils/utils';
 
 import type { UserState } from '@/types/store';
-import type {
- 
-  DataSourceItemType,
-} from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
+import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
 import type { ChainsAssetsMap, TokenMap } from '@/types/dataSource';
 import './index.sass';
@@ -249,7 +246,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
       (item: TokenMap) => {
         let activeImg = null;
         if (name) {
-          if (name === 'on-chain assets' || showFilter) {
+          if (name === 'on-chain' || showFilter) {
             if (item?.isNative) {
               activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
               return <img src={activeImg} alt="" />;
@@ -319,7 +316,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
             {activeShowFilter && (
               <div
                 className={
-                  name === 'on-chain assets' || showFilter
+                  name === 'on-chain' || showFilter
                     ? 'accountFilterWrapper moreWidthFilterWrapper'
                     : 'accountFilterWrapper'
                 }
@@ -335,9 +332,9 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                   <div className="innerWrapper">
                     <div className="token">
                       {onChainTokenLogoFn(item)}
-                      {/* {(name === 'on-chain assets' || showFilter) &&
+                      {/* {(name === 'on-chain' || showFilter) &&
                         onChainTokenLogoFn(item)} */}
-                      {/* {!(name === 'on-chain assets' || showFilter) &&
+                      {/* {!(name === 'on-chain' || showFilter) &&
                         tokenLogoPrefix && (
                           <img
                             src={`${tokenLogoPrefix}icon${item.symbol}.png`}

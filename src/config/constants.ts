@@ -50,8 +50,8 @@ export type DataSourceMapType = {
   [propName: string]: ExchangeMeta;
 };
 export const DATASOURCEMAP: DataSourceMapType = {
-  onChainAssets: {
-    name: 'On-chain Assets',
+  onChain: {
+    name: 'On-chain',
     type: 'Assets',
     icon: iconDataSourceOnChainAssets,
     iconWithCircle: iconDataSourceOnChainAssetsWithCircle,
@@ -199,7 +199,7 @@ export type WALLETITEMTYPE = {
 export const WALLETLIST: WALLETITEMTYPE[] = [
   {
     icon: iconWalletMetamask,
-    name: 'Metamask',
+    name: 'MetaMask',
   },
   {
     icon: iconWalletWalletConnect,

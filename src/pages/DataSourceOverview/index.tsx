@@ -94,7 +94,7 @@ const DataSourceOverview = memo(() => {
     );
     return orderedOnChainAssetsArr;
   }, [onChainAssetsSources]);
-  const assetsList: ExDataList | onChainAssetsDataList= useMemo(() => {
+  const assetsList: ExDataList | onChainAssetsDataList = useMemo(() => {
     return [...exList, ...onChainAssetsList];
   }, [exList, onChainAssetsList]);
   // console.log('onChainAssetsList====', onChainAssetsList);
@@ -222,15 +222,14 @@ const DataSourceOverview = memo(() => {
   }, []);
   const handleCheckDataSourceDetail = useCallback(
     (s: SourceData) => {
-
-      const { name } = s
-      let p = `/dataDetail?name=${name}`
+      const { name } = s;
+      let p = `/dataDetail?name=${name}`;
       if ((s as ExData)?.type) {
-        p+=`&type=${(s as ExData)?.type}`
+        p += `&type=${(s as ExData)?.type}`;
       }
       if ((s as onChainAssetsData).address) {
-        const addr:string = (s as onChainAssetsData).address
-        p+=`&address=${encodeURIComponent(addr)}`
+        const addr: string = (s as onChainAssetsData).address;
+        p += `&address=${encodeURIComponent(addr)}`;
       }
       navigate(p);
     },
@@ -248,7 +247,7 @@ const DataSourceOverview = memo(() => {
   const onSubmitDataSourcesDialog = useCallback(
     async (item: ExchangeMeta) => {
       if (item.type === 'Assets') {
-        if (item.name === 'On-chain Assets') {
+        if (item.name === 'On-chain') {
           setConnectWalletDataDialogVisible(true);
         } else {
           setActiveSource(item);

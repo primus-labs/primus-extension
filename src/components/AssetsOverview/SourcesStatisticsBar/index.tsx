@@ -7,7 +7,7 @@ import type {
   AssetDataList,
   SourceDataList,
   AssetData,
-  onChainAssetsData
+  onChainAssetsData,
 } from '@/types/dataSource';
 
 import './index.sass';
@@ -46,7 +46,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
       // Click to activate and then click to deactivate
       let formatSourceName = sourceName;
 
-      if (sourceName === 'On-chain Assets') {
+      if (sourceName === 'On-chain') {
         const formatAddr = formatAddress(address as string, 4, 4);
         formatSourceName = formatAddr;
       }
@@ -88,7 +88,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
       }
 
       let formatName = name;
-      if (name === 'On-chain Assets') {
+      if (name === 'On-chain') {
         const formatAddr = formatAddress(address as string, 4, 4);
         formatName = formatAddr;
       }
@@ -120,7 +120,7 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
       }
     }, [filterSource, list]);
     const fromNameFn = useCallback((item: AssetData) => {
-      if (item.name === 'On-chain Assets') {
+      if (item.name === 'On-chain') {
         const formatAddr = formatAddress(item.address as string, 4, 4);
         return formatAddr;
       }

@@ -36,7 +36,7 @@ const AssetsDetail = memo(() => {
   const sourceName = searchName.toLowerCase();
 
   const isOnChainData = useMemo(() => {
-    return decodeURIComponent(searchName) === 'On-chain Assets';
+    return decodeURIComponent(searchName) === 'On-chain';
   }, [searchName]);
   const dataSource = useMemo(() => {
     if (isOnChainData) {
@@ -56,7 +56,7 @@ const AssetsDetail = memo(() => {
       return btcPriceFromService;
     } else {
       if (typeof dataSource === 'object') {
-        const curDataSource = dataSource as ExData
+        const curDataSource = dataSource as ExData;
         const originP =
           curDataSource?.tokenPriceMap[
             BTC as keyof typeof curDataSource.tokenPriceMap
@@ -176,7 +176,7 @@ const AssetsDetail = memo(() => {
     );
   }, [navToCred, isOnChainData]);
   const formatAddr = useMemo(() => {
-    const curDataSource = dataSource as onChainAssetsData
+    const curDataSource = dataSource as onChainAssetsData;
     if (curDataSource?.address) {
       return formatAddress(curDataSource?.address, 4, 4);
     }
@@ -185,7 +185,7 @@ const AssetsDetail = memo(() => {
 
   useEffect(() => {
     sourceName && fetchExData();
-  }, [sourceName,]);
+  }, [sourceName]);
 
   useEffect(() => {
     !fetchExDatasLoading && onUpdate();
