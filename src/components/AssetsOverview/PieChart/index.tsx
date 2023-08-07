@@ -74,8 +74,8 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
       let innerRadius = 60;
       let outerRadius = 82;
       let cLeft = 28;
-      let legendItemLabelWidth = 94;
-      let legendItemValueWidth = 88;
+      let legendItemLabelWidth = 122;// 94
+      let legendItemValueWidth = 60;// 88
       let legendItemValueFontSize = 24;
       let legendItemHeight = 41;
       let legendItemRight = 6;
@@ -83,8 +83,8 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
         innerRadius = 53.5;
         outerRadius = 82.5;
         cLeft = 14;
-        legendItemLabelWidth = 76;
-        legendItemValueWidth = 81;
+        legendItemLabelWidth = 104;// 76
+        legendItemValueWidth = 61;// 81
         legendItemValueFontSize = 20;
         legendItemHeight = 36;
         legendItemRight = 9;

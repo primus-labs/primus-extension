@@ -170,10 +170,11 @@ export function strToHex(str: string) {
 type AuthParams = {
   source: string;
   state: string;
+  invitationCode: string;
 };
 export function getAuthUrl(authParams: AuthParams) {
-  const { source, state } = authParams;
-  return `${PADOSERVERURL}/public/render/${source}?state=${state}`;
+  const { source, state,invitationCode } = authParams;
+  return `${PADOSERVERURL}/public/render/${source}?state=${state}&invite-code=${invitationCode}`;
 }
 
 export async function assembleUserInfoParams() {

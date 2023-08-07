@@ -11,7 +11,6 @@ import { initWalletAddressActionAsync } from '@/store/actions';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 
-
 import './index.sass';
 interface SetPwdDialogProps {
   onClose: () => void;
@@ -73,7 +72,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
     const userInfo = useSelector((state: UserState) => state.userInfo);
     const fetchBindUserAddress = useCallback(() => {
-      chrome.storage.local.get(['userInfo'], (storedData) => {
+      chrome.storage.local.get(['userInfo', 'invitationCode'], (storedData) => {
         if (storedData['userInfo']) {
           const userId = JSON.parse(storedData['userInfo']).id;
           const padoServicePortListener = async function (message: any) {
@@ -81,7 +80,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               const { res } = message;
               console.log('page_get:bindUserAddress:', res);
               if (res) {
-                await dispatch(initWalletAddressActionAsync())
+                await dispatch(initWalletAddressActionAsync());
                 onSubmit();
               } else {
                 // loading
@@ -91,6 +90,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           };
           padoServicePort.onMessage.addListener(padoServicePortListener);
           const { token } = userInfo;
+
           postMsg(padoServicePort, {
             fullScreenType: 'padoService',
             reqMethodName: 'bindUserAddress',
@@ -104,6 +104,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               extraHeader: {
                 'user-id': userId,
                 Authorization: `Bearer ${token}`,
+                'invite-code': storedData.invitationCode,
               },
             },
           });
@@ -135,7 +136,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           if (message.res) {
             const lowercaseAddr = message.res.toLowerCase();
             setAccountAddr(lowercaseAddr);
-            
           }
         }
       };

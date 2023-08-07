@@ -28,7 +28,10 @@ const useAuthorization = () => {
       const newWindowId = res?.id;
       setAuthWindowId(newWindowId);
       // console.log('create', newWindowId)
-      const fetchIsAuthDialog = (state: string, source: string) => {
+      const fetchIsAuthDialog = async (state: string, source: string) => {
+        const { invitationCode } = await chrome.storage.local.get([
+          'invitationCode',
+        ]);
         postMsg(padoServicePort, {
           fullScreenType: 'padoService',
           reqMethodName: 'checkIsLogin',
@@ -36,6 +39,11 @@ const useAuthorization = () => {
             state,
             source,
             data_type: dataType,
+          },
+          config: {
+            extraHeader: {
+              'invite-code': invitationCode,
+            },
           },
         });
         console.log('page_send:checkIsLogin request');
@@ -54,14 +62,14 @@ const useAuthorization = () => {
           console.log('page_get:checkIsLogin:', message.res);
           if (message.res) {
             // if (message.params?.data_type === 'DATASOURCE') {
-              // console.log('remove', newWindowId)
-              newWindowId &&
-                chrome.windows.get(newWindowId, {}, (win) => {
-                  win?.id && chrome.windows.remove(newWindowId);
-                });
-              timer && clearInterval(timer);
-              onSubmit && onSubmit();
-            }
+            // console.log('remove', newWindowId)
+            newWindowId &&
+              chrome.windows.get(newWindowId, {}, (win) => {
+                win?.id && chrome.windows.remove(newWindowId);
+              });
+            timer && clearInterval(timer);
+            onSubmit && onSubmit();
+          }
           // }
         }
       };
@@ -71,7 +79,7 @@ const useAuthorization = () => {
     [padoServicePort]
   );
   const handleClickOAuthSource: OauthFn = useCallback(
-    (source, onSubmit, dataType = 'DATASOURCE') => {
+    async (source, onSubmit, dataType = 'DATASOURCE') => {
       // If the authorization window is open,focus on it
       if (authWindowId) {
         chrome.windows.update(authWindowId, {
@@ -85,9 +93,13 @@ const useAuthorization = () => {
       const windowScreen: Screen = window.screen;
       var left = Math.round(windowScreen.width / 2 - width / 2);
       var top = Math.round(windowScreen.height / 2 - height / 2);
+      const { invitationCode } = await chrome.storage.local.get([
+        'invitationCode',
+      ]);
       const authUrl = getAuthUrl({
         source,
         state,
+        invitationCode,
       });
       const windowOptions: chrome.windows.CreateData = {
         url: authUrl,

@@ -17,7 +17,9 @@ const DataSourceSearch = memo(() => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
-
+  const onChainAssetsSources = useSelector(
+    (state: UserState) => state.onChainAssetsSources
+  );
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
@@ -62,8 +64,9 @@ const DataSourceSearch = memo(() => {
       }
     } else {
       if (
-        typeof exSources === 'object' &&
-        Object.values(exSources).length > 0
+        (typeof exSources === 'object' &&
+          Object.values(exSources).length > 0) ||
+        Object.values(onChainAssetsSources).length > 0
       ) {
         defaultList.push({
           value: 'Assets',
@@ -90,7 +93,14 @@ const DataSourceSearch = memo(() => {
       }
     }
     return defaultList;
-  }, [exSources, socialSources, kycSources, pathname, credentials]);
+  }, [
+    exSources,
+    socialSources,
+    kycSources,
+    pathname,
+    credentials,
+    onChainAssetsSources,
+  ]);
   const handleChangeSelect = (val: string) => {
     dispatch({
       type: 'setActiveSourceType',

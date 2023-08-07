@@ -75,11 +75,12 @@ export const requestAuthorization = (params:RequestAuthorizationParams) => {
 };
 
 // Check login is finished with state.
-export const checkIsLogin = (params:CheckIsLoginParams) => {
+export const checkIsLogin = (params: CheckIsLoginParams, config: any) => {
   return request({
     method: 'get',
     url: `/public/oauth/check`,
-    data: params
+    data: params,
+    config,
   });
 };
 

@@ -290,14 +290,14 @@ export const DEFAULTAUTHSOURCELIST = [
   {
     id: '2',
     logoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconTwitter.svg',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconTwitterX.svg',
     name: 'TWITTER',
     enabled: '0',
   },
   {
     id: '3',
     logoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconGithub.png',
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconGithub.svg',
     name: 'GITHUB',
     enabled: '0',
   },

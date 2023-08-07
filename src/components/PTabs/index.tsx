@@ -43,7 +43,6 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
   const handleClickTab = (item: TabItem) => {
     if (!item.disabled) {
       setActiveTab(item.text);
-      debugger
       onChange(item.text);
       item.path && navigate(item.path);
     }

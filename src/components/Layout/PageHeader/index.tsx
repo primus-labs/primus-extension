@@ -100,7 +100,9 @@ const PageHeader = memo(() => {
         return;
       }
       var topScroll = document.documentElement.scrollTop || window.pageYOffset;
-      if (topScroll >= 1) {
+      // var bodyHeight = document.body.offsetHeight;
+      // var docHeight = document.documentElement.scrollHeight;
+      if (topScroll >= 32) {
         setIsScroll(true);
       } else {
         setIsScroll(false);
