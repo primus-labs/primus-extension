@@ -100,14 +100,14 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
               title: 'Failed',
               desc: errorDescEl,
             });
-            return
+            return;
           }
           const { rc, result, msg } = await getAssetsOnChains({
             signature,
             timestamp,
             address: curConnectedAddr,
           });
-          debugger;
+
           if (rc === 0) {
             const result = {
               nativeToken: [
@@ -213,7 +213,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
             };
 
             const res = getStatisticalData(result);
-            debugger;
+
             const curAccOnChainAssetsItem: any = {
               address: curConnectedAddr,
               label,

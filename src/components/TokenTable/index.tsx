@@ -118,10 +118,16 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         return accountList;
       }
       if (showFilter) {
+        if (allChainMap) {
+          const arr = chainList.filter(
+            (i) => i.label in allChainMap || i.label === 'All'
+          );
+          return arr;
+        }
         return chainList;
       }
       return accountList;
-    }, [name, showFilter]);
+    }, [name, showFilter, allChainMap]);
     const currentList = useMemo(() => {
       if (filterAccount === undefined || filterAccount === 'All') {
         return list;
