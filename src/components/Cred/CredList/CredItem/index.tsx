@@ -27,6 +27,7 @@ import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 
 import './index.sass';
+import { div } from '../../../../utils/utils';
 
 interface CredTypeListProps {
   item: CredTypeItemType;
@@ -167,19 +168,19 @@ const CredItem: React.FC<CredTypeListProps> = memo(
           <div className="mainContent">
             <div className="con">
               <div className="conl">
-                <img src={credIcon} alt="" />
+                {/* <img src={credIcon} alt="" /> */}
                 {briefTypeName}
               </div>
               <div className="conr">
                 <div className="conrItem">
-                  <div className="value">{nameCallback(item)}</div>
                   <img src={iconCallback(item)} alt="" className="sourceIcon" />
+                  <div className="value">{nameCallback(item)}</div>
                 </div>
                 <div className="conrItem">
+                  <img src={iconSuc2} alt="" className="sourceIcon" />
                   <div className="value">
                     {getCurrentDate(Number(item?.getDataTime))}
                   </div>
-                  <img src={iconSuc2} alt="" className="sourceIcon" />
                 </div>
               </div>
             </div>

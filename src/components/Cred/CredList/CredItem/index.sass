@@ -29,13 +29,13 @@
       background-size: 100% 100%
       
     .mainContent
-      @extend .fcbs
+      @extend .frbs
       height: 100%
       position: relative
       border-radius: $sBorderRadius
       width: 100%
       height: 100%
-      padding: 22px 24px
+      padding: 26px 26px 28px
       // background: rgba(255, 255, 255, 0.6)
       border-radius: $sBorderRadius
       box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.3), inset -2px -2px 4px rgba(233, 233, 233, 0.1)
@@ -43,8 +43,9 @@
       &:hover
         box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1), inset 2px 2px 4px rgba(255, 255, 255, 0.3), inset -2px -2px 4px rgba(233, 233, 233, 0.1)
       .con
-        width: 100%
-        @extend .frbs
+        // width: 100%
+        height:100%
+        @extend .fcbs
         .conl
           font-size: 20px
           line-height: 16px
@@ -56,11 +57,13 @@
             width: 28px
         .conr
           @extend .fcss
-          align-items: flex-end
-          gap: 8px
+          // align-items: flex-end
+          gap: 16px
           .conrItem
+            width: 99px
             @extend .frsc
             gap: 6px
+            
             .value
               font-size: 12px
               line-height: 16px
@@ -69,19 +72,23 @@
             >img
               width: 15px
     footer
-      width: 100%
-      @extend .frbc
+      // width: 100%
+      height:100%
+      @extend .fcbc
+      align-items: flex-end
+      .am
+        font-size: 12px
       .providedChains,.operations
         @extend .frsc
-        gap: $xxsGap
+        gap: 6px
         >a
           display: flex
           img
-            width: 18px
+            width: 22px
             cursor: pointer
       .operations
         img
-          width: 24px
+          width: 22px
           opacity: 0.4
           &:hover
             opacity: 0.8
@@ -103,10 +110,10 @@
               &:hover
                 opacity: 0.4
           &.iconPolygonIDWrapper
-            width: 24px
+            width: 22px
             opacity: 0.8
             >img
-              width: 16px
+              width: 14.66px
               opacity: 1
             &:hover
               opacity: 0.8
@@ -131,7 +138,7 @@
             >span
               transform: scale(0.8333,0.8333)
   .extra
-    padding: 10px 24px 14px 
+    padding: 10px 26px 16px 
     @extend .fcss
     gap: $xsGap
     border-radius: 0px 0px 12px 12px

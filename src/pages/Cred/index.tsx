@@ -11,7 +11,7 @@ const Cred = memo(() => {
   return (
     <div className="pageDataSourceOverview pageCred">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab} value="Cred" />
+        <PTabs onChange={handleChangeTab} value="Credit" />
         <DataSourceSearch />
       </main>
       <CresOverview />
