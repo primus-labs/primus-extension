@@ -35,7 +35,7 @@ const tabs: TabItem[] = [
   },
 ];
 const PTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
-  const [activeTab, setActiveTab] = useState<string>('Data');
+  const [activeTab, setActiveTab] = useState<string>('');
   const [focusTab, setFocusTab] = useState<string>();
 
   const navigate = useNavigate();

@@ -15,15 +15,15 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           <h3 className="ct">Get on-boarding reward! </h3>
           <div className="cn">
             <p>
-              <div className="label">Issuer:&nbsp;</div>
-              <div className="value">PADO Labs</div>
+              <span className="label">Issuer:&nbsp;</span>
+              <span className="value">PADO Labs</span>
             </p>
             <p>
-              <div className="label">Requirement:&nbsp;</div>
-              <div className="value">
+              <span className="label">Requirement:&nbsp;</span>
+              <span className="value">
                 Connect any data source, generate a proof, and provide it
                 on-chain!
-              </div>
+              </span>
             </p>
           </div>
         </div>

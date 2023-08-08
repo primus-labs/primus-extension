@@ -24,7 +24,7 @@ const DataSourceDetail = memo(() => {
   return (
     <div className="pageDataSourceDetail">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab} />
+        <PTabs onChange={handleChangeTab} value="Data" />
         {isOnChainData ? <OnChainAssetsDetail /> : <AssetsDetail />}
         {/* <AssetsDetail /> */}
       </main>
