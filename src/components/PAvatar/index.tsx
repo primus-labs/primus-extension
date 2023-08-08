@@ -4,6 +4,15 @@ import './index.sass';
 const PAvatar = memo(() => {
   const [avatar, setAvatar] = useState<any>();
   const [address, setAddress] = useState<string>();
+  const [copied, setCopied] = useState<boolean>(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText('0x' + address);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
 
   const formatAddr = useMemo(() => {
     return address ? formatAddress('0x' + address) : '';
@@ -37,7 +46,12 @@ const PAvatar = memo(() => {
       ) : (
         <div className="avatar"></div>
       )}
-      <div className="address">{formatAddr}</div>
+      <div className="address" onClick={handleCopy}>
+        {formatAddr}
+        {copied && <div className="copyTip">
+          <span>Copied</span>
+        </div>}
+      </div>
     </div>
   );
 });

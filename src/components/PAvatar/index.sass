@@ -17,6 +17,27 @@ $addressFontSize: 18px
   .address
     @extend .mLBlackBoldFont
     font-family: 'Inter-SemiBold'
+    cursor: pointer
+    position: relative
+    .copyTip
+      position: absolute
+      top: -20px
+      right: 0
+      font-size:12px
+      width: 49px
+      height: 18px
+      border-radius: 8px
+      background: rgba(0, 0, 0, 0.05)
+      backdrop-filter: blur(16px)
+      color: rgba(0, 0, 0, 0.40)
+      @extend  .frcc
+      >span
+        display: flex
+        font-family: 'Inter-Regular'
+        line-height: 16px
+        font-size: 12px
+        transform: scale(0.8333)
+        
 @media (max-width: 1680px)
   .pAvatar
     gap: 6px
