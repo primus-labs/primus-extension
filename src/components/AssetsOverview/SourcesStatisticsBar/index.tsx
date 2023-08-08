@@ -131,14 +131,14 @@ const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
       <section className="sourcesStatisticsBar">
         <header>Sources</header>
         <ul className={type === 'Social' ? 'sources social' : 'sources'}>
-          {activeList.map((item) => {
+          {activeList.map((item,k) => {
             return (
               <li
                 className={liClassNameFn(
                   item.name,
                   (item as onChainAssetsData)?.address
                 )}
-                key={item.name}
+                key={k}
                 onClick={() =>
                   handleClickSource(
                     item.name,

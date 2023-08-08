@@ -35,6 +35,7 @@ $sCardHeight: 282px
         gap: 42px
         padding-top: 48px
         padding-bottom: 78px
+          
         .descItem
           @extend .fcss
           gap: 6px
@@ -62,6 +63,17 @@ $sCardHeight: 282px
                   color: rgba(39, 194, 101, 0.8)
                 &.fall
                   color: rgba(225, 40, 40, 0.8)
+    .cardR
+      .pieChartFatherBox
+        position: relative
+        .pieTabs
+          position: absolute
+          z-index:1
+          content: ''
+          top: 69px
+          left: -10px
+          top: 50%
+          transform: translateY(-50%) translateY(-8px)
 @media (max-width: 1680px)
   .assetsOverview
     .statisticsWrapper

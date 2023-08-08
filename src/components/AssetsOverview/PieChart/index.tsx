@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, memo } from 'react';
+import React, { useCallback, useEffect, useState, memo, useRef } from 'react';
 // import the core library.
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
@@ -18,7 +18,7 @@ import BigNumber from 'bignumber.js';
 
 import { add, mul, div, gt, sub } from '@/utils/utils';
 import { CHARTCOLORS } from '@/config/constants';
-
+import type EChartsType  from 'echarts-for-react/lib/core';
 import './index.sass';
 
 // Register the required components
@@ -34,7 +34,16 @@ interface PPieChartProps {
 const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
   // console.log('PPieChart', list)
   const [options, setOptions] = useState({});
+  const chartInstance = useRef<EChartsType>();
+  
 
+  // 通过加载图表成功的回调获取 echarts 实例
+  const onChartReady = useCallback(
+    (ref: EChartsType) => {
+      chartInstance.current = ref;
+    },
+    []
+  );
   const getOption = useCallback(
     (name?: string) => {
       const chartData = list
@@ -80,14 +89,14 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
       let legendItemHeight = 41;
       let legendItemRight = 6;
       if (document.documentElement.getBoundingClientRect().width < 1680) {
-        innerRadius = 53.5;
-        outerRadius = 82.5;
-        cLeft = 14;
-        legendItemLabelWidth = 104;// 76
-        legendItemValueWidth = 61;// 81
+        innerRadius = 56.5;
+        outerRadius = 74.5;
+        cLeft = 26; // 26
+        legendItemLabelWidth = 100;// 76
+        legendItemValueWidth = 73;// 81
         legendItemValueFontSize = 20;
         legendItemHeight = 36;
-        legendItemRight = 9;
+        legendItemRight = 0;
       }
       return {
         // color: CHARTCOLORS,
@@ -101,7 +110,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
         legend: {
           type: 'scroll', //  Can be used when the number of legends is large
           pageIconSize: 10,
-          pageButtonGap: 15,
+          // pageButtonGap: 15,
           // pageIconSize: 15,
           // pageButtonGap: 32,
           top: 'center',
@@ -109,7 +118,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
           // backgroundColor: 'rgba(0, 0, 0, 0.05)',
           // borderRadius: '8px',
           orient: 'vertical',
-          padding: [6, 12],
+          padding: [6, 8],
           itemGap: 0,
           icon: 'circle',
           itemWidth: 14,
@@ -197,6 +206,15 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
   useEffect(() => {
     setOptions(getOption());
   }, [list, getOption]);
+  // useEffect(() => {
+  //   const fn = () => {
+  //     chartInstance?.current?.resize();
+  //   };
+  //   window.addEventListener('resize', fn);
+  //   return () => {
+  //     window.removeEventListener('resize',fn);
+  //   }
+  // })
 
   const onEvents = {
     legendselectchanged: (params: any) => {
@@ -204,6 +222,9 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
       setOptions(getOption(params.name));
     },
   };
+//   const fn = (instance) => {
+// instance.resize()
+//   }
   return (
     <ReactEChartsCore
       echarts={echarts}
@@ -212,6 +233,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
       lazyUpdate={true}
       onEvents={onEvents}
       className="pPie"
+      onChartReady={onChartReady}
     />
   );
 });

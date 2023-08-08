@@ -1,0 +1,19 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+
+.pieTabs
+  @extend .fcss
+  gap: 12px
+  width: 20px
+  height: 52px
+  .tab
+    @extend .frcc
+    cursor: pointer
+    img
+      width: 20px
+      height:20px
+      opacity: 0.4
+    &.activeTab
+        img
+          opacity: 0.8

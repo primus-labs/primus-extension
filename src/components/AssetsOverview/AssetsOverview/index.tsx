@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import SourcesStatisticsBar from '../SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
 import PieChart from '../PieChart';
+import PieTabs from './PieTabs';
 
 import {
   add,
@@ -35,9 +36,9 @@ interface AssetsOverviewProps {
 
 const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
   ({ filterSource, onClearFilter, list }) => {
-    // console.log('AssetsOverview-list', list);
+    console.log('AssetsOverview-list', list);
     const [activeSourceName, setActiveSourceName] = useState<string>();
-
+    const [pieTab, setPieTab] = useState<string>();
     const totalAssetsBalance = useMemo(() => {
       const reduceF: (prev: BigNumber, curr: ExData) => BigNumber = (
         prev,
@@ -184,20 +185,41 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
     }, [list, activeSourceName]);
     const getChartData = useMemo(() => {
-      const chartData = list.map(({ name, totalBalance, address }) => {
-        let formatName = name;
-        if (name === 'On-chain') {
-          const formatAddr = formatAddress(address, 4, 4);
-          formatName = formatAddr;
-        }
-        return {
-          name: formatName,
-          // name,
-          value: new BigNumber(totalBalance as string).toFixed(2),
-        };
-      });
-      return chartData;
-    }, [list]);
+      if (pieTab === 'token') {
+        const arr = Object.values(totalAssetsMap as AssetsMap).map(
+          ({ symbol, value, address }) => {
+            let formatSymbol = symbol; 
+            let formatValue = Number(value).toFixed(2)
+            if (address) {
+              const symbolAAddrArr = symbol.split('---');
+              const formatAddr = formatAddress(address, 0, 4, '**');
+              formatSymbol = `${symbolAAddrArr[0]}(${formatAddr})`;
+            }
+            
+            return {
+              name: formatSymbol,
+              value: formatValue,
+            };
+          }
+        );
+        return arr;
+      } else {
+        const chartData = list.map(({ name, totalBalance, address }) => {
+          let formatName = name;
+          if (name === 'On-chain') {
+            const formatAddr = formatAddress(address, 4, 4);
+            formatName = formatAddr;
+          }
+          return {
+            name: formatName,
+            // name,
+            value: new BigNumber(totalBalance as string).toFixed(2),
+          };
+        });
+        return chartData;
+      }
+      // totalAssetsMap
+    }, [list, pieTab, totalAssetsMap]);
     const lowerCaseSourceName = useMemo(() => {
       return activeSourceName?.toLowerCase();
     }, [activeSourceName]);
@@ -220,6 +242,11 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
       return {};
     }, [activeSourceName, list]);
+    const onChangePieTab = useCallback((tab: string) => {
+      // TODO
+      // debugger
+      setPieTab(tab);
+    }, []);
 
     return (
       <div className="assetsOverview">
@@ -256,7 +283,8 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
           </div>
           <div className="card cardR">
             <header>Distribution</header>
-            <div className="cardCon">
+            <div className="cardCon pieChartFatherBox">
+              <PieTabs onChange={onChangePieTab} value="exchange" />
               <PieChart list={getChartData} />
             </div>
           </div>
