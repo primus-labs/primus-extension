@@ -31,7 +31,7 @@ const PInput: React.FC<PInputProps> = memo(
     const inputEl = useRef<any>(null);
     const [copied, setCopied] = useState<boolean>(false);
     const [open, setOpen] = useState<boolean>(false);
-    const [val, setVal] = useState<string>();
+    const [val, setVal] = useState<string>('');
 
     const activeType = useMemo(() => {
       if (visible) {
@@ -43,7 +43,7 @@ const PInput: React.FC<PInputProps> = memo(
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       const formatVal = e.target.value.trim();
-      setVal(formatVal);
+      // setVal(formatVal);
       onChange(formatVal);
     };
     const handleCopy = () => {
