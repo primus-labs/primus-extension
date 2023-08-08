@@ -251,7 +251,6 @@ export const getStatisticalData = (res: any) => {
           const value = rawValue.toFixed();
           const logo = logos[0]?.uri; // TODO default img
           const assetAddrASymbol = `${symbol}---${contractAddress}`;
-
           const tokenInfoObj = {
             symbol: assetAddrASymbol,
             amount: amount.toFixed(),
@@ -259,6 +258,7 @@ export const getStatisticalData = (res: any) => {
             value,
             logo,
             address: contractAddress,
+            chain: curChainName,
           };
 
           if (assetAddrASymbol in tokenMap) {
@@ -284,7 +284,6 @@ export const getStatisticalData = (res: any) => {
       curChainAssetMapReduceF,
       {}
     );
-    console.log('curChainAssetMap', curChainAssetMap);
 
     // native token
     const curChainNativeToken: any = nativeToken.find(

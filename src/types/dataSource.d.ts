@@ -15,6 +15,7 @@ export type TokenMap = {
   logo?: any;
   isNative?: boolean;
   address?: string;
+  chain?: string;
 };
 
 export type AssetsMap = {
