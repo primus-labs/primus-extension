@@ -198,7 +198,8 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
               const formatAddr = formatAddress(address, 0, 4, '**');
               formatSymbol = `${symbolAAddrArr[0]}(${formatAddr})`;
             }
-            if (gte(Number(value), 10)) {
+            //  Statistics token value less than $50  in others
+            if (gte(Number(value), 50)) {
               formatArr.push({
                 name: formatSymbol,
                 value: formatValue,
