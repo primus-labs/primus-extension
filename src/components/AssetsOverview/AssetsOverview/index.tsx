@@ -10,6 +10,7 @@ import {
   add,
   mul,
   gte,
+  gt,
   sub,
   div,
   formatNumeral,
@@ -186,23 +187,42 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     }, [list, activeSourceName]);
     const getChartData = useMemo(() => {
       if (pieTab === 'token') {
-        const arr = Object.values(totalAssetsMap as AssetsMap).map(
+        let formatArr: any = [];
+        let othersTotalBalance: any = new BigNumber(0);
+        Object.values(totalAssetsMap as AssetsMap).map(
           ({ symbol, value, address }) => {
-            let formatSymbol = symbol; 
-            let formatValue = Number(value).toFixed(2)
+            let formatSymbol = symbol;
+            let formatValue = Number(value).toFixed(2);
             if (address) {
               const symbolAAddrArr = symbol.split('---');
               const formatAddr = formatAddress(address, 0, 4, '**');
               formatSymbol = `${symbolAAddrArr[0]}(${formatAddr})`;
             }
-            
-            return {
-              name: formatSymbol,
-              value: formatValue,
-            };
+            if (gte(Number(value), 10)) {
+              formatArr.push({
+                name: formatSymbol,
+                value: formatValue,
+              });
+            } else {
+              othersTotalBalance = add(
+                Number(othersTotalBalance),
+                Number(value)
+              );
+            }
+            // return {
+            //   name: formatSymbol,
+            //   value: formatValue,
+            // };
           }
         );
-        return arr;
+        if (gt(othersTotalBalance.toNumber(), 0)) {
+          formatArr.push({
+            name: 'Others',
+            value: othersTotalBalance.toFixed(2),
+          });
+        }
+
+        return formatArr;
       } else {
         const chartData = list.map(({ name, totalBalance, address }) => {
           let formatName = name;
@@ -282,9 +302,11 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
             </div>
           </div>
           <div className="card cardR">
-            <header>Distribution</header>
-            <div className="cardCon pieChartFatherBox">
+            <header>
+              <span>Distribution</span>
               <PieTabs onChange={onChangePieTab} value="exchange" />
+            </header>
+            <div className="cardCon pieChartFatherBox">
               <PieChart list={getChartData} />
             </div>
           </div>
