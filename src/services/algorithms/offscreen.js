@@ -6,8 +6,10 @@ Module.onRuntimeInitialized = async () => {
     chrome.runtime.sendMessage({ resType: 'algorithm', resMethodName: 'start', res: 'RuntimeInitialized' });
 };
 
+var AlgorithmInited = false;
+
 function init() {
-    console.log("\ninit");
+    console.log("init");
 
     var req_obj = {
         method: "init",
@@ -21,10 +23,16 @@ function init() {
 
     console.log('init typeof res', typeof (res));
     console.log('init res', res);
+    AlgorithmInited = true;
+    console.log("init AlgorithmInited=", AlgorithmInited);
     return res;
 }
 function getAttestation(params) {
-    console.log("\ngetAttestation");
+    console.log("getAttestation AlgorithmInited=", AlgorithmInited);
+    if (!AlgorithmInited) {
+        const resobj = {"content":null,"retcode":"2","retdesc":"Algorithm not initialized"};
+        return JSON.stringify(resobj);
+    }
     var req_obj = {
         method: "getAttestation",
         version: "1.0.0",
@@ -38,7 +46,7 @@ function getAttestation(params) {
     return res;
 }
 function getAttestationResult() {
-    console.log("\ngetAttestationResult");
+    console.log("getAttestationResult");
     var req_obj = {
         method: "getAttestationResult",
         version: "1.0.0",
@@ -55,7 +63,7 @@ function getAttestationResult() {
 }
 
 function startOffline(params) {
-    console.log("\nstartOffline");
+    console.log("startOffline");
     var req_obj = {
       method: "startOffline",
       version: "1.0.0",
@@ -66,6 +74,7 @@ function startOffline(params) {
     const res = Module_startOffline(json_str);
     console.log('startOffline typeof res', typeof (res));
     console.log('startOffline res:', res);
+    return res;
   }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
