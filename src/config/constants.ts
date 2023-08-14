@@ -242,7 +242,8 @@ export const DEFAULTCREDTYPELIST = [
     credDetails:
       'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
     credProofContent: 'Balance of assets',
-    credProofConditions: '["1000"]',
+    credProofConditions:
+      process.env.NODE_ENV === 'development' ? '["1000"]' : '["10"]',
     simplifiedName: 'Asset',
     display: 0,
     enabled: 0,
