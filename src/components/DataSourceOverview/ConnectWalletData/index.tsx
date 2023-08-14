@@ -18,6 +18,7 @@ import type { WALLETITEMTYPE } from '@/config/constants';
 import './index.sass';
 
 import { ChainAssetsMap, TokenMap } from '@/types/dataSource';
+import { eventReport } from '@/services/api/usertracker';
 
 export type GetDataFormProps = {
   name: string;
@@ -151,6 +152,12 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
               title: 'Congratulations',
               desc: 'Data Connected!',
             });
+
+            const eventInfo = {
+              eventType: 'DATA_SOURCE_INIT',
+              rawData: {type: 'Assets', dataSource: 'onchain'},
+            };
+            eventReport(eventInfo);
           } else {
             setActiveRequest({
               type: 'error',

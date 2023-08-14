@@ -6,17 +6,17 @@ import iconBinance from '@/assets/img/iconBinance.png';
 
 type ENVTYPE = 'development' | 'test' | 'production';
 
-// const CURENV = process.env.NODE_ENV as ENVTYPE;
-const CURENV = 'production';
+const CURENV = process.env.NODE_ENV as ENVTYPE;
+//const CURENV = 'development';
 const PADOURLMAP = {
-  development: 'wss://api.padolabs.org/algorithm',
+  development: 'wss://api-dev.padolabs.org/algorithm',
   test: '18.179.8.186:8888',
   production: 'wss://api.padolabs.org/algorithm',
 };
 export const PADOURL = PADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
-  development: 'wss://api.padolabs.org/algoproxy',
+  development: 'wss://api-dev.padolabs.org/algoproxy',
   test: '18.179.8.186:9000',
   production: 'wss://api.padolabs.org/algoproxy',
 };
@@ -30,7 +30,7 @@ const PADOADDRESSMAP = {
 export const PADOADDRESS = PADOADDRESSMAP[CURENV];
 
 const PADOSERVERURLMAP = {
-  development: 'https://api.padolabs.org',
+  development: 'https://api-dev.padolabs.org',
   test: 'http://18.179.8.186:8080',
   production: 'https://api.padolabs.org',
 };

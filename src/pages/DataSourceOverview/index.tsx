@@ -37,6 +37,7 @@ import type {
   onChainAssetsData,
 } from '@/types/dataSource';
 import './index.sass';
+import { eventReport } from '@/services/api/usertracker';
 
 export type DataSourceStorages = {
   binance?: any;
@@ -160,6 +161,12 @@ const DataSourceOverview = memo(() => {
           if (message.res) {
             setStep(3);
             dispatch(setExSourcesAsync());
+
+            const eventInfo = {
+              eventType: 'DATA_SOURCE_INIT',
+              rawData: {type: 'Assets', dataSource: lowerCaseSourceName},
+            };
+            eventReport(eventInfo);
           } else {
             if (message.msg === 'AuthenticationError') {
               setActiveRequest({

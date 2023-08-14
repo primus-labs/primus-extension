@@ -14,6 +14,7 @@ import {
   resetExchangesCipher,
   EXCHANGEINFO,
 } from './exData';
+import { eventReport } from '@/services/api/usertracker';
 
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
@@ -33,6 +34,12 @@ let USERPASSWORD = '';
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     showIndex();
+
+    const eventInfo = {
+      eventType: 'EXTENSION_INSTALL',
+      rawData: '',
+    };
+    eventReport(eventInfo);
   }
 });
 

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import type { UserState } from '@/types/store';
 import { postMsg, getAuthUrl } from '@/utils/utils';
+import { eventReport } from '@/services/api/usertracker';
 
 type CreateAuthWindowCallBack = (
   state: string,
@@ -69,6 +70,14 @@ const useAuthorization = () => {
               });
             timer && clearInterval(timer);
             onSubmit && onSubmit();
+
+            if (dataType === 'DATASOURCE') {
+              const eventInfo = {
+                eventType: 'DATA_SOURCE_INIT',
+                rawData: {type: 'Social', dataSource: source},
+              };
+              eventReport(eventInfo);
+            }
           }
           // }
         }

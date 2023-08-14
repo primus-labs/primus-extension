@@ -23,6 +23,7 @@ import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
+import { eventReport } from '@/services/api/usertracker';
 
 import './index.sass';
 
@@ -143,6 +144,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               title: 'Congratulations',
               desc: 'Your attestation is recorded on-chain!',
             });
+
+            const eventType = `${upChainParams.type}-${upChainParams.schemaName}`;
+            const eventInfo = {
+              eventType: 'UPPER_CHAIN',
+              rawData: {network: upChainParams.networkName, type: eventType, source: curCredential.source},
+            };
+            eventReport(eventInfo);
           } else {
             setActiveSendToChainRequest({
               type: 'error',

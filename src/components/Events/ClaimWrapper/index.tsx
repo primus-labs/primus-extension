@@ -25,6 +25,7 @@ import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
 import type { Dispatch } from 'react';
+import { eventReport } from '@/services/api/usertracker';
 
 import './index.sass';
 
@@ -194,6 +195,12 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             title: 'Congratulations',
             desc: 'Successfully get your rewards.',
           });
+
+          const eventInfo = {
+            eventType: 'EVENTS',
+            rawData: {name: 'Get on-boarding reward', issuer: 'PADO'},
+          };
+          eventReport(eventInfo);
         } catch (e) {
           console.log('mintWithSignature error:', e);
           setActiveRequest({

@@ -22,6 +22,7 @@ import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import iconExport2 from '@/assets/img/iconExport2.svg';
 import './index.sass';
+import { eventReport } from '@/services/api/usertracker';
 const POLLINGTIME = 3000;
 
 export type GetDataFormProps = {
@@ -193,6 +194,12 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
                 onWakeUp();
                 setTimeoutSwitchFlag(false);
               }
+
+              const eventInfo = {
+                eventType: 'DATA_SOURCE_INIT',
+                rawData: {type: 'Identity', dataSource: 'zan'},
+              };
+              eventReport(eventInfo);
               break;
             case 'FAILED':
               setSwitchFlag(false);
