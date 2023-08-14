@@ -1,6 +1,6 @@
 import type { UserInfoType } from './user';
 import type { PROOFTYPEITEM, CREDENTIALS } from './cred';
-import type { ExDatas, SocialDatas } from './dataSource';
+import type { ExDatas, SocialDatas, onChainAssetsDatas } from './dataSource';
 import type { SysConfigInfo } from './config';
 import type { Rewards } from './event';
 export type UserState = {

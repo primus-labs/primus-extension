@@ -139,7 +139,7 @@ const AssetsDetail = memo(() => {
     navigate(-1);
   };
   const onUpdate = () => {
-    dispatch(setExSourcesAsync());
+    // dispatch(setExSourcesAsync());
   };
   const fetchExData = () => {
     !fetchExDatasLoading &&

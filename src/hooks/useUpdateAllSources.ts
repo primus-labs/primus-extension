@@ -4,7 +4,7 @@ import useUpdateSocialSources from '@/hooks/useUpdateSocialSources'
 
 type ReturnPromiseType = ()=>Promise<void>
 const useUpdateAllSources = (flag = false) => {
-  const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSources(flag)
+  const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSources()
   const [fetchSocialDatasLoading, fetchSocialDatas] = useUpdateSocialSources()
   const updating = useMemo(() => {
     return fetchExDatasLoading || fetchSocialDatasLoading

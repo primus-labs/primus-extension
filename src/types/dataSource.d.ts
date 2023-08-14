@@ -110,6 +110,7 @@ export type onChainData = {
   chainsAssetsMap: ChainsAssetsMap;
   pnl?: string;
   timestamp: string;
+  updateTimestamp?: string;
   // exUserId?: string;
   // pnlAmount?: string;
   // pnlPercent?: string;

@@ -22,7 +22,7 @@ interface SourcesStatisticsBarProps {
 
 const SourcesStatisticsBar: React.FC<SourcesStatisticsBarProps> = memo(
   ({ type = 'Assets', list, filterSource, onSelect, onClearFilter }) => {
-    console.log('SourcesStatisticsBar', list, filterSource);
+    // console.log('SourcesStatisticsBar', list, filterSource);
     const [activeSourceName, setActiveSourceName] = useState<string>();
 
     const activeList: SourceDataList = useMemo(() => {

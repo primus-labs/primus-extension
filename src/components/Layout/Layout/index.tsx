@@ -19,6 +19,7 @@ import {
   setOnChainAssetsSourcesAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
+import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import { postMsg } from '@/utils/utils';
 
 import type { Dispatch } from 'react';
@@ -36,6 +37,7 @@ const Layout = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
   usePollingUpdateAllSources();
+  const [updateOnChainLoading,updateOnChainFn] = useUpdateOnChainSources()
 
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
@@ -149,8 +151,8 @@ const Layout = () => {
     dispatch(initWalletAddressActionAsync());
     dispatch(initRewardsActionAsync());
     dispatch(setOnChainAssetsSourcesAsync());
-    // chrome.storage.local.remove(['onChainAssetsSources']);
-  }, [dispatch]);
+    // (updateOnChainFn as () => void)();
+  }, [dispatch, updateOnChainFn]);
 
   return (
     <div className="pageApp">

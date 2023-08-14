@@ -8,12 +8,8 @@ import TokenTable from '@/components/TokenTable';
 import iconAvatar from '@/assets/img/iconAvatar.png';
 import iconCredCreate from '@/assets/img/iconCredCreate.svg';
 
-import {
-  setExSourcesAsync,
-  setOnChainAssetsSourcesAsync,
-} from '@/store/actions';
-import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
-import DataUpdateBar from './DataUpdateBar';
+import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
+import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
 import {
   gte,
   div,
@@ -53,8 +49,8 @@ const AssetsDetail = memo(() => {
     (state: UserState) => state.onChainAssetsSources
   );
 
-  const dispatch: Dispatch<any> = useDispatch();
-  const [fetchExDatasLoading, fetchExDatas] = useUpdateAssetSource();
+  const [fetchOnChainDatasLoading, fetchOnChainDatas] =
+    useUpdateOnChainSources();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const searchAddress = searchParams.get('address') as string;
@@ -141,31 +137,20 @@ const AssetsDetail = memo(() => {
     if (activeSourceName) {
       const activeS: ChainAssetsMap = (dataSource as onChainAssetsData)
         .chainsAssetsMap[activeSourceName];
-      return activeS.tokenListMap;
+      return activeS?.tokenListMap;
     } else {
-      return dataSource.tokenListMap;
+      if (typeof dataSource === 'object') { 
+        return dataSource?.tokenListMap;
+      } else {
+        return {}
+      }
+      
     }
   }, [dataSource, activeSourceName]);
   const activeSourceTokenList = useMemo(() => {
     return Object.values(activeAssetsMap);
   }, [activeAssetsMap]);
 
-  const flexibleAccountTokenMap = useMemo(() => {
-    if (typeof dataSource === 'object') {
-      const obj = (dataSource as ExData).flexibleAccountTokenMap;
-      return obj;
-    } else {
-      return undefined;
-    }
-  }, [dataSource]);
-  const spotAccountTokenMap = useMemo(() => {
-    if (typeof dataSource === 'object') {
-      const obj = (dataSource as ExData).spotAccountTokenMap;
-      return obj;
-    } else {
-      return undefined;
-    }
-  }, [dataSource]);
   const allChainMap: ChainsAssetsMap = useMemo(() => {
     if (typeof dataSource === 'object') {
       const list = (dataSource as onChainAssetsData).chainsAssetsMap;
@@ -177,14 +162,6 @@ const AssetsDetail = memo(() => {
 
   const handleBack = () => {
     navigate(-1);
-  };
-  const onUpdate = () => {
-    // dispatch(setExSourcesAsync());
-    // dispatch(setOnChainAssetsSourcesAsync());
-  };
-  const fetchExData = () => {
-    !fetchExDatasLoading &&
-      (fetchExDatas as (name: string) => void)(sourceName);
   };
 
   const navToCred = useCallback(() => {
@@ -232,90 +209,14 @@ const AssetsDetail = memo(() => {
     }
     return [];
   }, [allChainMap]);
-  const onUpdateOnChainAssets = useCallback(async () => {
-    setUpdating(true);
-    // check singnature is expired
-    const {
-      signature,
-      timestamp,
-      address: curConnectedAddr,
-    } = dataSource as onChainAssetsData;
-    const curTime = +new Date();
-    if (signature && curTime - Number(timestamp) < 24 * 60 * 60 * 1000) {
-      try {
-        // const [accounts, chainId, provider] = await connectWallet();
-        // const curConnectedAddr = (accounts as string[])[0];
-        // const timestamp = +new Date() + '';
-        // const signature = await requestSign(curConnectedAddr, timestamp);
-        const { rc, result } = await getAssetsOnChains({
-          signature,
-          timestamp,
-          address: curConnectedAddr,
-        });
-        if (rc === 0) {
-          const res = getStatisticalData(result);
-
-          const curAccOnChainAssetsItem: any = {
-            address: curConnectedAddr,
-            date: getCurrentDate(),
-            timestamp: +new Date(),
-            signature,
-            ...res,
-            ...DATASOURCEMAP['onChain'],
-          };
-
-          const { onChainAssetsSources: lastOnChainAssetsMapStr } =
-            await chrome.storage.local.get(['onChainAssetsSources']);
-
-          const lastOnChainAssetsMap = lastOnChainAssetsMapStr
-            ? JSON.parse(lastOnChainAssetsMapStr)
-            : {};
-          if (curConnectedAddr in lastOnChainAssetsMap) {
-            const lastCurConnectedAddrInfo =
-              lastOnChainAssetsMap[curConnectedAddr];
-            const pnl = sub(
-              curAccOnChainAssetsItem.totalBalance,
-              lastCurConnectedAddrInfo.totalBalance
-            ).toFixed();
-
-            curAccOnChainAssetsItem.pnl = pnl;
-            curAccOnChainAssetsItem.label = lastCurConnectedAddrInfo.label;
-          }
-          lastOnChainAssetsMap[curConnectedAddr] = curAccOnChainAssetsItem;
-
-          await chrome.storage.local.set({
-            onChainAssetsSources: JSON.stringify(lastOnChainAssetsMap),
-          });
-
-          await dispatch(setOnChainAssetsSourcesAsync());
-          // setUpdating(false);
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Data Connected!',
-          // });
-        } else {
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Data Connected!',
-          // });
-        }
-        setUpdating(false);
-      } catch (e) {
-        setUpdating(false);
-      }
-    } else {
-      setConnectWalletDataDialogVisible(true);
-    }
-  }, [dataSource, dispatch]);
+  
   const handleSelectSource = useCallback((sourceName: string | undefined) => {
     setActiveSourceName(sourceName);
   }, []);
 
   useEffect(() => {
-    sourceName && fetchExData();
-  }, [sourceName]);
+    searchAddress && (fetchOnChainDatas as (name?:string) => void)(searchAddress);
+  }, [searchAddress, fetchOnChainDatas]);
 
   useEffect(() => {
     if (isOnChainData) {
@@ -323,8 +224,8 @@ const AssetsDetail = memo(() => {
     }
   }, [isOnChainData]);
   useEffect(() => {
-    !fetchExDatasLoading && onUpdate();
-  }, [fetchExDatasLoading]);
+    !fetchOnChainDatasLoading && setUpdating(false);
+  }, [fetchOnChainDatasLoading]);
 
   return (
     <div className="assetsDetail onChainAssetsDetail">
@@ -381,17 +282,18 @@ const AssetsDetail = memo(() => {
         />
         <TokenTable
           list={activeSourceTokenList}
-          flexibleAccountTokenMap={flexibleAccountTokenMap}
-          spotAccountTokenMap={spotAccountTokenMap}
           allChainMap={allChainMap}
           name={sourceName}
           showFilter={false}
           headerRightContent={headerRightContent}
         />
       </div>
-
-      <DataUpdateBar updating={updating} onUpdate={onUpdateOnChainAssets} />
-      <ConnectWalletData
+      <DataUpdateBar
+        type="Assets"
+        onUpdate={() => {}}
+        sourceName={searchAddress}
+      />
+      {/* <ConnectWalletData
         visible={connectWalletDataDialogVisible}
         onClose={() => {
           setConnectWalletDataDialogVisible(false);
@@ -405,7 +307,7 @@ const AssetsDetail = memo(() => {
           setConnectWalletDataDialogVisible(false);
           setUpdating(false);
         }}
-      />
+      /> */}
     </div>
   );
 });

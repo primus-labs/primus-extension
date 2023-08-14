@@ -94,6 +94,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
           const [accounts, chainId, provider] = await connectWallet();
           const curConnectedAddr = (accounts as string[])[0];
           const timestamp: string = +new Date() + '';
+      
           const signature = await requestSign(curConnectedAddr, timestamp);
           if (!signature) {
             setActiveRequest({
@@ -112,12 +113,11 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
           if (rc === 0) {
 
             const res = getStatisticalData(result);
-
             const curAccOnChainAssetsItem: any = {
               address: curConnectedAddr,
               label,
               date: getCurrentDate(),
-              timestamp: timestamp,
+              timestamp,
               signature,
               ...res,
               ...DATASOURCEMAP['onChain'],

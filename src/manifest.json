@@ -26,6 +26,8 @@
     "https://api.mexc.com/",
     "https://contract.mexc.com/",
     "https://api.gateio.ws/",
-    "https://pado-online.s3.ap-northeast-1.amazonaws.com/"
+    "https://pado-online.s3.ap-northeast-1.amazonaws.com/",
+    "https://api-dev.padolabs.org/",
+    "https://xuda-note.oss-cn-shanghai.aliyuncs.com/"
   ]
 }
