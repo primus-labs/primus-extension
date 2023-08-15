@@ -37,6 +37,7 @@ import type {
 } from '@/types/dataSource';
 
 import './index.sass';
+import { eventReport } from '@/services/api/usertracker';
 
 const AssetsDetail = memo(() => {
   const [activeSourceName, setActiveSourceName] = useState<string>();
@@ -215,7 +216,14 @@ const AssetsDetail = memo(() => {
   }, []);
 
   useEffect(() => {
-    searchAddress && (fetchOnChainDatas as (name?:string) => void)(searchAddress);
+    if (searchAddress) {
+      (fetchOnChainDatas as (name?:string) => void)(searchAddress);
+      const eventInfo = {
+        eventType: 'DATA_FETCH',
+        rawData: {type: "AssetsOnChainDetail", source: sourceName},
+      };
+      eventReport(eventInfo);
+    }
   }, [searchAddress, fetchOnChainDatas]);
 
   useEffect(() => {

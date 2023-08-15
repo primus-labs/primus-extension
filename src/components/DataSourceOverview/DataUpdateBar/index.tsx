@@ -6,6 +6,7 @@ import useUpdateExSources from '@/hooks/useUpdateExSources';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 
 import './index.sass';
+import { eventReport } from '@/services/api/usertracker';
 interface DataUpdateBarProps {
   type?: string;
   sourceName?: string;
@@ -68,6 +69,12 @@ const DataUpdateBar: React.FC<DataUpdateBarProps> = memo(
       } else if (type === 'Social') {
         (fetchSocialDatas as () => void)();
       }
+
+      const eventInfo = {
+        eventType: 'DATA_FETCH',
+        rawData: {type: type, assetType: assetType, trigger: 'clickrefresh'},
+      };
+      eventReport(eventInfo);
     }, [
       fetchAssetDatas,
       fetchSocialDatas,

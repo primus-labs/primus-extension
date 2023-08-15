@@ -19,6 +19,7 @@ import type { UserState } from '@/types/store';
 import type { ExData, onChainAssetsData } from '@/types/dataSource';
 
 import './index.sass';
+import { eventReport } from '@/services/api/usertracker';
 
 const AssetsDetail = memo(() => {
   const [btcPriceFromService, setBtcPriceFromService] = useState<string>();
@@ -183,8 +184,18 @@ const AssetsDetail = memo(() => {
     return '';
   }, [dataSource]);
 
+  const detailEventReport = () => {
+    const eventInfo = {
+      eventType: 'DATA_FETCH',
+      rawData: {type: "AssetsDetail", source: sourceName},
+    };
+    eventReport(eventInfo);
+  };
   useEffect(() => {
-    sourceName && fetchExData();
+    if (sourceName) {
+      fetchExData();
+      detailEventReport();
+    }
   }, [sourceName]);
 
   useEffect(() => {
