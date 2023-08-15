@@ -158,7 +158,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
     };
     const activeClassName = useMemo(() => {
       let defalutClass = 'dataSourceItem';
-      if (type === 'Social') {
+      if (type === 'Social' || type === 'Identity') {
         defalutClass += ' deactive';
       }
       return defalutClass;

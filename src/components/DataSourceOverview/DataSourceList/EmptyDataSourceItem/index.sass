@@ -13,7 +13,7 @@ $dataSourceItemHeight: 242px
   @include backdropMixin
   @extend .frcc
   transition: all 0.5s
-  &:hover
+  &:not(.deactive):hover
     transform: translateY(-20px)
   .emptyDataSourceItemC
     @extend .lLBlackSemiBoldFont

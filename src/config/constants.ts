@@ -25,7 +25,6 @@ import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
 import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan2.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
-import iconDataSourceOnChainAssetsWithCircle from '@/assets/img/iconDataSourceOnChainAssetsWithCircle.svg';
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -54,7 +53,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     name: 'On-chain',
     type: 'Assets',
     icon: iconDataSourceOnChainAssets,
-    iconWithCircle: iconDataSourceOnChainAssetsWithCircle,
   },
   binance: {
     name: 'Binance',

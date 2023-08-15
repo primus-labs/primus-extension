@@ -26,7 +26,7 @@ $tabLineHeight: 22px
     width: 137px
     height: 56px
     cursor: pointer
-    @extend .frcc
+    @extend .frsc
     gap: $xxsGap
     @extend .mSBlackSemiBoldFont
     img
@@ -48,9 +48,11 @@ $tabLineHeight: 22px
 @media (max-width: 1680px)
   .pTabs
     padding: 6px
-    gap: 13px
+    // gap: 13px
+    gap: 0
     .tab
-      width: 116px
+      width: auto
+      padding: 0 26px
       height: 43px
       font-size: 16px
       line-height: 22px
