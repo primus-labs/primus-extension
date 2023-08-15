@@ -66,13 +66,7 @@ export const getAllOAuthSources = () => {
   });
 };
 
-// Request authorization and jump to the corresponding authorization page
-export const requestAuthorization = (params:RequestAuthorizationParams) => {
-  return request({
-    method: 'get',
-    url: `/public/render/${params.source}?state=${params.state}`
-  });
-};
+
 
 // Check login is finished with state.
 export const checkIsLogin = (params: CheckIsLoginParams, config: any) => {

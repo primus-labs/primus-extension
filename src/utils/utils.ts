@@ -171,10 +171,11 @@ type AuthParams = {
   source: string;
   state: string;
   invitationCode: string;
+  type: string;
 };
 export function getAuthUrl(authParams: AuthParams) {
-  const { source, state,invitationCode } = authParams;
-  return `${PADOSERVERURL}/public/render/${source}?state=${state}&invite-code=${invitationCode}`;
+  const { source, state,invitationCode,type } = authParams;
+  return `${PADOSERVERURL}/v2/public/render/${source}?state=${state}&invite-code=${invitationCode}&type=${type}`;
 }
 
 export async function assembleUserInfoParams() {

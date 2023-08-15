@@ -109,6 +109,7 @@ const useAuthorization = () => {
         source,
         state,
         invitationCode,
+        type: dataType,
       });
       const windowOptions: chrome.windows.CreateData = {
         url: authUrl,
