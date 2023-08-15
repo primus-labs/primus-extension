@@ -383,20 +383,21 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 </div>
                 {activeConnectedSourceList.length > 0 && (
                   <ul className="dataList">
-                    {activeConnectedSourceList.map((item) => {
-                      return (
-                        <li
-                          className={liClassNameCallback(item)}
-                          key={item.name}
-                          onClick={() => {
-                            handleClickData(item);
-                          }}
-                        >
-                          <img src={item.icon} alt="" />
-                          <h6>{item.name}</h6>
-                        </li>
-                      );
-                    })}
+                    {activeConnectedSourceList
+                      .map((item) => {
+                        return (
+                          <li
+                            className={liClassNameCallback(item)}
+                            key={item.name}
+                            onClick={() => {
+                              handleClickData(item);
+                            }}
+                          >
+                            <img src={item.icon} alt="" />
+                            <h6>{item.name}</h6>
+                          </li>
+                        );
+                      })}
                   </ul>
                 )}
                 {activeConnectedSourceList.length === 0 && (

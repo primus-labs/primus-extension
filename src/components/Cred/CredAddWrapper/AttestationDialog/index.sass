@@ -8,22 +8,18 @@
     width: 100%
     @extend .fcss
     gap: $xlGap
+    gap: 10px
     h1
       @extend .frsc
       gap: $xxsGap
       align-self: center
       @extend .xlLBlackBoldFont
-      img
-        width: 32px
-        cursor: pointer
-    h2
-      @extend .sSBlackRegularFont
-      line-height: 26px
     .scrollList
-      width: calc( 100% + 38px )
-      height: 332px
-      overflow-y: auto
-      overflow-x: hidden
+      // width: calc( 100% + 38px )
+      width: 100%
+      height: 400px
+      // overflow-y: auto
+      // overflow-x: hidden
       &::-webkit-scrollbar
         width: 6px
         height: 300px
@@ -33,25 +29,25 @@
       .contItem
         @extend .fcss
         gap: 14px
-        padding-top: 38px
+        padding-top: 32px
         &.contItemAssets
           padding-top: 20px
         .label
-          font-size: 18px
+          font-size: 20px
           line-height: 26px
           font-family: 'Inter-SemiBold'
           color: $colLBlack
         .value
           @extend .frsc
-          gap: $xxsGap
+          gap: 0
           .desc
-            font-size: 16px
-            line-height: 34px
+            font-size: 18px
+            line-height: 28px
             font-family: 'Inter-Medium'
             color: $colSBlack
             .iconGreater
               width: 20px
-              margin: 0 6px 0 14px
+              margin: 0 18px
               opacity: 0.6
           
           .con
@@ -123,38 +119,25 @@
                       color: $colLBlack
                     >img
                       width: 14px
-        .emptyContent
-          width: 416px
-          padding-top: 46px 
-          @extend .fcsc
-          gap: 12px
-          >img
-            width: 45px
-          >h2
-            width: 100%
-            text-align: center
-            font-size: 12px
-            line-height: 18px
-            font-family: 'Inter-Regular'
-            color: $colSBlack
-              
+
       ul.dataList
         width: 100%
         display: flex
         flex-wrap: wrap
         gap: $sGap
+        gap: 12px
         li
           cursor: pointer
-          width: 156px
-          height: 150px
-          padding: 28px 12px
+          width: 116px
+          height: 112px
+          padding: 23px 12px
           background: rgba(0, 0, 0, 0.05)
           backdrop-filter: blur(18.1333px)
           border-radius: $sBorderRadius
           @extend .fccc
-          gap: 6px
+          gap: 10px
           &.excitable,&:not(.disabled):hover
-            padding: 14px 2px
+            padding: 21px 10px
             background: #FFFFFF
             border: 2PX solid transparent
             background-clip: padding-box, border-box
@@ -164,7 +147,7 @@
           &.disabled
             cursor: not-allowed
           &.active
-            padding: 14px 2px
+            padding: 21px 10px
             background: #FFFFFF
             border: 2PX solid transparent
             background-clip: padding-box, border-box
@@ -174,43 +157,17 @@
             &:after
               position: absolute
               content: ''
-              right: 6px
-              bottom: 6px
-              width: 24px
-              height: 24px
+              right: 4px
+              bottom: 4px
+              width: 18px
+              height: 18px
               background: url('@/assets/img/iconSuc.svg')
               background-size: 100% 100%
           img
-            width: 48px
-          .desc
-            font-size: 14px
-            line-height: 16px
-            font-family: 'Inter-Bold'
-            color: $colLBlack
-            padding: 13px 0 1px
-            max-width: 132px
-            // text-align: center
-            text-overflow: ellipsis
-            overflow: hidden
-            white-space: nowrap
-            position: relative
-          .desc[title]:hover:after
-            position: absolute
-            content: attr(title)
-            z-index: 99999
-            padding: 6px 12px
-            left: -16px
-            top: -44px
-              // white-space: nowrap
-            background: $colSBlack
-            backdrop-filter: blur(16px)
-            border-radius: $sBorderRadius
-            color: #fff
-            font-size: 14px
-            line-height: 16px
+            width: 40px
           h6
-            font-family: 'Inter-Medium'
-            font-size: 12px
+            font-family: 'Inter-SemiBold'
+            font-size: 14px
             line-height: 16px
             color: $colLBlack
   button.nextBtn
@@ -246,17 +203,22 @@
         font-size: 30px
         line-height: 36px
         font-family:'Inter-SemiBold'
-      >h2
-        font-size: 12px
-        line-height: 18px
-        font-family: 'Inter-Regular'
-        color: $colSBlack
-        padding-top: 24px
       .scrollList
         width: calc( 100% + 34px )
         height: 312px
         &::-webkit-scrollbar
           height: 250px
+        .contItem
+          padding-top: 38px
+          .label
+            font-size: 18px
+          .value
+            gap: $xxsGap
+            .desc
+              font-size: 16px
+              line-height: 34px
+              .iconGreater
+                margin: 0 6px 0 14px
         ul.dataList
           column-gap: 21px
           row-gap: 14px
