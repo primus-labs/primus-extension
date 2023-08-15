@@ -5,8 +5,8 @@ import PFilter from '@/components/PFilter';
 import { setSysConfigAction } from '@/store/actions';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
-import { sub, postMsg, formatNumeral, formatAddress } from '@/utils/utils';
-
+import { sub, postMsg, formatNumeral, formatAddress, div } from '@/utils/utils';
+import {SUPPORRTEDQUERYCHAINMAP} from '@/config/constants'
 import type { UserState } from '@/types/store';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
@@ -257,10 +257,27 @@ const TokenTable: React.FC<TokenTableProps> = memo(
               activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
               return <img src={activeImg} alt="" />;
             }
-            if (item?.logo) {
-              activeImg = item.logo;
-              return <img src={activeImg} alt="" />;
+            if (item?.address) {
+              if (item?.logo) {
+                activeImg = item.logo;
+                const chainImg =
+                  SUPPORRTEDQUERYCHAINMAP[
+                    item.chain as keyof typeof SUPPORRTEDQUERYCHAINMAP
+                  ].icon;
+                return (
+                  <div className="syntheticLogo">
+                    <img className="tokenLogo" src={activeImg} alt="" />
+                    <img className="chainLogo" src={chainImg} alt="" />
+                  </div>
+                );
+              }
+
+              return <div className="defaultTokenImg"></div>;
             }
+            // if (item?.logo) {
+            //   activeImg = item.logo;
+            //   return <img src={activeImg} alt="" />;
+            // }
             return <div className="defaultTokenImg"></div>;
           } else {
             activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
@@ -271,11 +288,28 @@ const TokenTable: React.FC<TokenTableProps> = memo(
             activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
             return <img src={activeImg} alt="" />;
           }
-          if (item?.logo) {
-            activeImg = item.logo;
-            return <img src={activeImg} alt="" />;
-          }
+          // if (item?.logo) {
+          //   activeImg = item.logo;
+          //   return <img src={activeImg} alt="" />;
+          // }
+          // if (item?.address) {
+          //   return <div className="defaultTokenImg"></div>;
+          // }
           if (item?.address) {
+            if (item?.logo) {
+              activeImg = item.logo;
+              const chainImg =
+                SUPPORRTEDQUERYCHAINMAP[
+                  item.chain as keyof typeof SUPPORRTEDQUERYCHAINMAP
+                ].icon;
+              return (
+                <div className="syntheticLogo">
+                  <img className="tokenLogo" src={activeImg} alt="" />
+                  <img className="chainLogo" src={chainImg} alt="" />
+                </div>
+              );
+            }
+
             return <div className="defaultTokenImg"></div>;
           }
           activeImg = `${tokenLogoPrefix}icon${item.symbol}.png`;
@@ -292,10 +326,10 @@ const TokenTable: React.FC<TokenTableProps> = memo(
     }, [sysConfig]);
     const tokenSymbolFn = useCallback((item: TokenMap) => {
       if (item?.address) {
-        // return `${item.symbol}(${formatAddr})`;
         const symbolAAddrArr = item.symbol.split('---');
-        const formatAddr = formatAddress(item.address, 0, 4, '**');
-        const formatSymbol = `${symbolAAddrArr[0]}(${formatAddr})`;
+        // const formatAddr = formatAddress(item.address, 0, 4, '**');
+        // const formatSymbol = `${symbolAAddrArr[0]}(${formatAddr})`;
+        const formatSymbol = `${symbolAAddrArr[0]}`;
         return formatSymbol;
       } else {
         return item.symbol;
