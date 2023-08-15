@@ -151,7 +151,7 @@ const Layout = () => {
     dispatch(initWalletAddressActionAsync());
     dispatch(initRewardsActionAsync());
     dispatch(setOnChainAssetsSourcesAsync());
-    // (updateOnChainFn as () => void)();
+    (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);
 
   return (

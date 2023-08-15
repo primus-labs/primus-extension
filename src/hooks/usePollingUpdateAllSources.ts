@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import useUpdateAllSources from '@/hooks/useUpdateAllSources';
+// import useUpdateAllSources from '@/hooks/useUpdateAllSources';
+import useUpdateExASocialSources from '@/hooks/useUpdateExASocialSources';
 import useInterval from '@/hooks/useInterval';
 import { ONEMINUTE } from '@/config/constants';
 
@@ -33,7 +34,8 @@ const usePollingUpdateAllSources = () => {
     }
   }, [sourceUpdateFrequency]);
 
-  const [updating, updateF] = useUpdateAllSources(true);
+  // const [updating, updateF] = useUpdateAllSources(true);
+  const [updating, updateF] = useUpdateExASocialSources();
   
   useInterval(updateF as () => void, delay, switchFlag, true);
 };
