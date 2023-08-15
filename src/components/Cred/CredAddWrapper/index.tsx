@@ -434,9 +434,19 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setStep(0);
     }, [activeRequest?.type]);
 
-    const getAttestationCallback = useCallback(() => {
-      setTimeoutSwitch(true);
-      setIntervalSwitch(true);
+    const getAttestationCallback = useCallback((res: any) => {
+      const { retcode, retdesc } = JSON.parse(res);
+      if (retcode === '0') { 
+        setTimeoutSwitch(true);
+        setIntervalSwitch(true);
+      } else if (retcode === '2') {
+        // algorithm is not initialized
+        setActiveRequest({
+          type: 'error',
+          title: 'Failed',
+          desc: retdesc,
+        });
+      }
     }, []);
     const getAttestationResultCallback = useCallback(
       async (res: any) => {

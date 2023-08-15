@@ -138,8 +138,22 @@ const Layout = () => {
   }, [initPage, addDisconnectListener]);
   useEffect(() => {
     console.log('updated port in page layout', padoServicePort.name);
+    const beforeunloadFn = () => {
+      const msg = {
+        fullScreenType: 'algorithm',
+        reqMethodName: 'stop',
+        params: {
+          noRestart: true,
+        },
+      };
+      postMsg(padoServicePort, msg);
+    };
+    window.addEventListener('beforeunload', beforeunloadFn);
+    return () => {
+      window.removeEventListener('beforeunload', beforeunloadFn);
+    };
   }, [padoServicePort]);
-
+  
   useEffect(() => {
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
@@ -153,6 +167,7 @@ const Layout = () => {
     dispatch(setOnChainAssetsSourcesAsync());
     (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);
+  
 
   return (
     <div className="pageApp">

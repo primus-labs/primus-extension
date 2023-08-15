@@ -7,7 +7,7 @@ import {STARTOFFLINETIMEOUT} from '@/config/constants'
 import type { UserState } from '@/types/store';
 
 type UseAlgorithm = (
-  getAttestationCallback: () => void,
+  getAttestationCallback: (res:any) => void,
   getAttestationResultCallback: (res: any) => void
 ) => void;
 
@@ -15,7 +15,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   getAttestationCallback,
   getAttestationResultCallback
 ) {
-  const savedCallback = useRef(() => {});
+  const savedCallback = useRef((res:any) => {});
   useEffect(() => {
     savedCallback.current = getAttestationCallback;
   });
@@ -28,7 +28,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   );
   const padoServicePortListener = useCallback(
     async function (message: any) {
-      const { resType, resMethodName, res } = message;
+      const { resType, resMethodName, res,params } = message;
       if (resType === 'algorithm') {
         console.log(`page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
@@ -58,7 +58,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         if (resMethodName === `getAttestation`) {
           if (res) {
             // TODO wheather wait getAttestation msg back
-            const handler = () => savedCallback.current();
+            const handler = () => savedCallback.current(res);
             handler();
           }
         }
@@ -70,7 +70,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
           }
         }
         if (resMethodName === `stop`) {
-          if (res.retcode === 0) {
+          if (res.retcode === 0 && !params.noRestart) {
             const msg: any = {
               fullScreenType: 'algorithm',
               reqMethodName: 'start',
