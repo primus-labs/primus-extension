@@ -3,19 +3,14 @@ import iconChecked from '@/assets/img/iconChecked.svg';
 import './index.sass';
 
 interface AuthInfoHeaderProps {
-  onBack?: () => void;
   checked?: boolean;
-  backable?: boolean;
 }
 
 const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = memo(
-  ({ checked = true, onBack, backable = true }) => {
+  ({ checked = true }) => {
     const [email, setEmail] = useState<string>();
     const [avatar, setAvatar] = useState<string>();
 
-    const handleClickBack = () => {
-      onBack && onBack();
-    };
     const getUserInfo = async () => {
       const res: any = await chrome.storage.local.get(['userInfo']);
       const userInfo = res.userInfo;
@@ -32,8 +27,6 @@ const AuthInfoHeader: React.FC<AuthInfoHeaderProps> = memo(
     }, []);
     return (
       <header className="authInfoHeader">
-        {backable && <div className="iconBack" onClick={handleClickBack}></div>}
-
         <div className="content">
           {avatar ? (
             <img className="avatar" src={avatar} alt="" />

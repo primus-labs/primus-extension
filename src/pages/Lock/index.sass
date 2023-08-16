@@ -1,58 +1,36 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFont.sass'
 @import '@/assets/css/pFlex.sass'
+@import '@/pages/Home/pageIndex.sass'
 
-$contentWidth: 520px
-$contentGap: 60px
-$h1FontSize: 48px
-$h1LineHeight: 58px
-$btnHeight: 58px
-$btnBorderRadius: 12px
-$inputWrapperHeight: 60px
-$inputBorderRadius: 12px
-$contentWrapperPaddingRight: 360px
+// $contentWidth: 520px
+// $contentGap: 60px
+// $h1FontSize: 48px
+// $h1LineHeight: 58px
+// $btnHeight: 58px
+// $btnBorderRadius: 12px
+// $inputWrapperHeight: 60px
+// $inputBorderRadius: 12px
+// $contentWrapperPaddingRight: 360px
 
 .pageIndex.pageLock
-  @extend .frsc
-  height: 100vh
-  margin-top: -$pageHeaderHeight
-  .appContent
-    padding-left: 190px
-    padding-right: 277px
-    @extend .frsc
-    gap: 165px
-    // width: 1517px
-
-@media (max-width: 1680px)
-  .pageIndex.pageLock
-    justify-content: center
-    .appContent
-      padding-left: 111px
-      padding-right: 178px
-      justify-content: center
-      gap: 86px
-// @media (max-width: 1470px)
-//   .pageIndex.pageLock
-//     .appContent
-//       padding-left: 50px
-//       padding-right: 178px
-//       gap: 86px
-
-.pageLock
   .appContent
     article
-      width: 569px
-      @extend .fcss
-      gap: $contentGap
+      width:520px
+      gap: 54px
       .articleHeader
         @extend .fcss
         gap: $mGap
         h1
-          @extend .xxlLBlackBoldFont
           font-family: 'Inter-Black'
           color: #000000
+          font-size: 48px
+          line-height: 58px
         p
-          @extend .mSBlackRegularFont
+          font-family: 'Inter-Regular'
+          color: $colSBlack
+          font-size: 18px
+          line-height: 22px
       .articleMain
         width: 100%
         @extend .fcss
@@ -70,9 +48,9 @@ $contentWrapperPaddingRight: 360px
 
         button.unLockBtn
           width: 100%
-          height: $btnHeight
+          height: 58px
           background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-          border-radius: $btnBorderRadius
+          border-radius: 12px
           @extend .frcc
           @extend .mLBlackBoldFont
           &:hover,&:active
@@ -80,28 +58,35 @@ $contentWrapperPaddingRight: 360px
         >p
           @extend .mSBlackRegularFont
           color: rgba(0,0,0,0.4)
+  
 @media (max-width: 1680px)
-  .pageLock
+  .pageIndex.pageLock
     .appContent
       article
-        width: 515px
-        padding-right: 105px
+        width: 410px
         gap: 32px
         .articleHeader
           h1
             font-size: 44px
             line-height: 53px
             font-family: 'Inter-Bold'
-          
-        .pInputWrapper
-          .pInput
-            padding-left:24px
-            font-size: 20px
+          p
+            font-size: 24px
             line-height: 29px
-            font-family: 'Inter-SemiBold'
-            &::placeholder
-              font-size: 18px
-          .suffixIcon
-            width: 16px
+        .articleMain
+          .pInputWrapper
+            .pInput
+              padding-left:24px
+              font-size: 20px
+              line-height: 29px
+              font-family: 'Inter-SemiBold'
+              &::placeholder
+                font-size: 18px
+            .suffixIcon
+              width: 16px
         .articleFooter
           margin-top: 4px
+
+        
+        
+   

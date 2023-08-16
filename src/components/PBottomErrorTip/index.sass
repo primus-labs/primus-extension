@@ -11,9 +11,15 @@
   .errorTip
     width: fit-content
     margin: 0 auto
-    padding: 0 12px
+    padding: 0 46px
     @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
     font-size: 12px
     line-height: 25px
     font-family: 'Inter-Regualr'
     color: rgba(0,0,0,0.4)
+
+@media (max-width: 1680px) 
+  .tipWrapper
+    top: -39px
+    .errorTip
+      padding: 0 12px

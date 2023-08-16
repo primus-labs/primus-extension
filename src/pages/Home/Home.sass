@@ -1,112 +1,85 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFont.sass'
 @import '@/assets/css/pFlex.sass'
-
-$btnWidth: 343px
-$btnHeight: 80px
-$btnBorderRadius: 100px
-$btnFontSize: 24px
-
-$contentMarginTop: -5px
-$contentPaddingTop: 156px
-$contentPaddingLeft: 43px
-$contentPaddingRight: 278px
-$sContentGap: 35px
-
+@import '@/pages/Home/pageIndex.sass'
 .pageIndex.pageHome
-  @extend .frsc
-  height: 100vh
-  margin-top: -$pageHeaderHeight
   .appContent
-
-    padding-left: 190px
-    padding-right: 277px
-    @extend .frsc
-    gap: 165px
-    // width: 1599px
-
-@media (max-width: 1680px)
-  .pageIndex.pageHome
-    justify-content: center
-    .appContent
-      padding-left: 111px
-      padding-right: 178px
-      justify-content: center
-      gap: 86px
-// @media (max-width: 1470px)
-//   .pageIndex.pageHome
-//     .appContent
-//       padding-left: 50px
-//       padding-right: 178px
-//       gap: 83px
-.pageHome
-  article
-    width: 569px
-    @extend .fcss
-    gap: 60px
-    .descWrapper
-      @extend .fcss
-      gap: 20px
-      h1
-        @extend .xxlLBlackBoldFont
-        font-family: 'Inter-Black'
-        // text-transform: uppercase
-        >span
-          font-size: 44px
-          line-height: 53px
-          font-family: 'Inter-Bold'
-      p
-        @extend .mSBlackRegularFont
-    button.startBtn
-      width: $btnWidth
-      height: $btnHeight
-      border: 2PX solid $colLBlack
-      border-radius: $btnBorderRadius
-      @extend .frcc
-      gap: $xxsGap
-      color: $colLBlack  
-      @extend .lLBlackSemiBoldFont
-      &:hover,&:active
-        border: 0
-        background: $colLBlack
-        color: #fff
+    article
+      width: 574px
+      gap: 60px
+      .descWrapper
+        @extend .fcss
+        gap: 18px
+        h1
+          font-size: 48px
+          line-height: 130%
+          font-family: 'Inter-Black'
+          text-transform: uppercase
+        p
+          font-size: 24px
+          line-height: 29px
+          font-family: 'Inter-Regular'
+          color: $colSBlack
+      
+      button.startBtn
+        width: 343px
+        height: 80px
+        border: 2PX solid $colLBlack
+        border-radius: 100px
+        @extend .frcc
+        gap: $xxsGap
+        color: $colLBlack  
+        @extend .lLBlackSemiBoldFont
+        &:hover,&:active
+          border: 0
+          background: $colLBlack
+          color: #fff
+          .iconArrow
+            background-image: url("@/assets/img/rightArrowHover.svg")
         .iconArrow
-          background-image: url("../../assets/img/rightArrowHover.svg")
-      .iconArrow
-        width: $mIconSize
-        height: $mIconSize
-        background-size: 100% 100%
-        background-image: url("../../assets/img/rightArrow.svg")
+          width: $mIconSize
+          height: $mIconSize
+          background-size: 100% 100%
+          background-image: url("@/assets/img/rightArrow.svg")
   .TransferToChainDialog
     padding: 30px 90px 70px
     >main
       padding: 0
+      h1
+        padding-top: 56px
+      h2
+        font-size: 12px
+        line-height: 18px
+        padding: 18px 0 75px 0
+      .dividerWrapper
+        .divider
+          line-height: 35px
     button.nextBtn
       height: 60px
       font-family: 'Inter-Bold'
-
 @media (max-width: 1680px)
-  .pageHome
-    article
-      width: 515px
-      gap: 48px
-      .descWrapper
-        gap: 36px
-        h1
-          font-size: 44px
-          line-height: 68px
-          font-family: 'Inter-Bold'
-        p
-          font-size: 20px
-          line-height: 24px
-      button.startBtn
-        width: 256px
-        height: 64px
-        font-size: 18px
-        line-height: 22px
-        .iconArrow
-          width: 28px
-          height: 28px
+  .pageIndex.pageHome
+    .appContent
+      article
+        width: 515px
+        gap: 48px
+        .descWrapper
+          gap: 36px
+          h1
+            font-size: 44px
+            line-height: 68px
+            font-family: 'Inter-Bold'
+          p
+            font-size: 20px
+            line-height: 24px
+        button.startBtn
+          width: 256px
+          height: 64px
+          font-size: 18px
+          line-height: 22px
+          .iconArrow
+            width: 28px
+            height: 28px
     .TransferToChainDialog
       padding: 48px 60px 60px
       main

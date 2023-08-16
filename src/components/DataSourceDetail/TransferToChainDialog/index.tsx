@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback, memo } from 'react';
 
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
+import PBack from '@/components/PBack';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
 import rightArrow from '@/assets/img/rightArrow.svg';
@@ -121,11 +122,10 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
       <PMask onClose={onClose}>
         <div className={wrapperClassName}>
           <main>
+            {!!backable && <PBack onBack={handleClickBack} />}
             {headerType === 'dataSource' && (
               <AuthInfoHeader
-                onBack={handleClickBack}
                 checked={checked}
-                backable={backable}
               />
             )}
             {headerType === 'attestation' && <AddressInfoHeader />}

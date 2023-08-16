@@ -72,7 +72,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
         <div className={dialogClassName}>
           <main>
             {headerType === 'setting' && (
-              <AuthInfoHeader checked={false} backable={false} />
+              <AuthInfoHeader checked={false} />
             )}
             {headerType === 'dataSource' && <Bridge endIcon={icon} />}
             {headerType === 'attestation' && <AddressInfoHeader />}

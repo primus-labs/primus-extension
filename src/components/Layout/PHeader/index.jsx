@@ -7,7 +7,9 @@ const PHeader = memo(() => {
       <header className="pHeader">
         <img src={logo} className="pLogo" alt="" />
         <i></i>
-        <p>Privacy-preserving Attestation Data Operator</p>
+        <div className="logoText">
+          <p>Privacy-preserving Attestation Data Operator</p>
+        </div>
       </header>
     </div>
   );

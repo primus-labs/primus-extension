@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PInput from '@/components/PInput/index';
 import PHeader from '@/components/Layout/PHeader';
 import PMask from '@/components/PMask';
+import PBottomErrorTip from '@/components/PBottomErrorTip';
 import rightArrow from '@/assets/img/rightArrow.svg';
 
 import type { AuthSourcesItem, AuthSourcesItems } from '@/services/api/user';
@@ -156,11 +157,7 @@ const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
           </div>
         </main>
         <button className="nextBtn authDialogNextBtn" onClick={handleClickNext}>
-          {errorTip && (
-            <div className="tipWrapper">
-              <div className="errorTip">{errorTip}</div>
-            </div>
-          )}
+          {errorTip && <PBottomErrorTip text={errorTip} />}
           <span>Next</span>
           <img src={rightArrow} alt="" />
         </button>

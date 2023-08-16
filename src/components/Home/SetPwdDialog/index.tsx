@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import PInput from '@/components/PInput/index';
 import PMask from '@/components/PMask';
+import PBack from '@/components/PBack';
 import iconAddress from '@/assets/img/iconAddress.svg';
 
 import { postMsg } from '@/utils/utils';
@@ -163,8 +164,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       <PMask onClose={onClose}>
         <div className="padoDialog setPwdDialog">
           <main>
+            <PBack onBack={handleClickBack} />
             <header className="setPwdDialogHeader">
-              <div className="iconBack" onClick={handleClickBack}></div>
               <div className="headerContent">
                 {/* TODO */}
                 <div className="networkItem">

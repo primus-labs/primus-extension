@@ -14,12 +14,10 @@
       @extend .xlLBlackBoldFont
       padding-top: 84px
       padding-bottom: 80px
-      padding-top: 140px
-      padding-bottom: 96px
       text-transform: capitalize
     ul.licensorList
       @extend .frcc
-      gap: $xsGap
+      gap: 48px
       li.licensorItem
         cursor: pointer
         border: 2PX solid rgba(0, 0, 0, 0.1)
@@ -61,7 +59,7 @@
             background-size: 100% 100%
     .dividerWrapper
       @extend .frbc
-      margin: 18px 0 17px
+      margin: 57px 0 58px
       width: 100%
       i
         flex: 1
@@ -70,46 +68,27 @@
       .divider
         @extend .mSBlackRegularFont
         line-height: 35px
-        width: 43.4px
+        width: 48px
         text-align: center
     .formItem
       @extend .fcss
       gap: 8px
       width:100%
       h6
-        font-size: 14px
-        line-height: 17px
         font-family: 'Inter-Regular'
         color: $colSBlack
+        font-size: 18px
+        line-height: 22px
       .pInputWrapper
-        height: 52px
+        height: 60px
         .pInput
           font-size: 18px
           line-height: 22px
           font-family: 'Inter-Bold'
-          padding-left: 25px
+          padding-left: 28px
   button.nextBtn
     height: $dialogLBtnHeight
     position: relative
-    .tipWrapper
-      position: absolute
-      content: ''
-      top: -40px
-      left: 50%
-      transform: translateX(-50%)
-      width: 100%
-      text-align: center
-      .errorTip
-        width: fit-content
-        margin: 0 auto
-        padding: 0 12px
-        @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
-        font-size: 12px
-        line-height: 25px
-        font-family: 'Inter-Regualr'
-        color: rgba(0,0,0,0.4)
-    // &.authDialogNextBtn
-    //   cursor: not-allowed
 @media (max-width: 1680px)
   .authDialog
     padding: 55px 60px 60px
@@ -122,9 +101,20 @@
         padding-bottom: 42px
 
       ul.licensorList
-        gap: $mGap
         gap: 32px
         li.licensorItem
           width: 66px
           height: 66px
+      .dividerWrapper
+        margin: 18px 0 17px
+        .divider
+          width: 43.4px
+      .formItem
+        h6
+          font-size: 14px
+          line-height: 17px
+        .pInputWrapper
+          height: 52px
+          .pInput
+            padding-left: 25px
       
