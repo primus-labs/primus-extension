@@ -70,7 +70,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
           }
         }
         if (resMethodName === `stop`) {
-          if (res.retcode === 0 && !params.noRestart) {
+          if (res.retcode === 0 && !params?.noRestart) {
             const msg: any = {
               fullScreenType: 'algorithm',
               reqMethodName: 'start',
