@@ -207,7 +207,7 @@ const AssetsDetail = memo(() => {
       <div className="iconBackWrapper" onClick={handleBack}></div>
       <header>
         <img src={iconAvatar} alt="" className="avatar" />
-        {typeof dataSource === 'object' && <h3>{dataSource?.label}</h3>}
+        {typeof dataSource === 'object' && dataSource?.label && <h3>{dataSource?.label}</h3>}
         {typeof dataSource === 'object' && (
           <div className="descItems">
             <div className="descItem">

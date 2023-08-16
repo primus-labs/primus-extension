@@ -8,8 +8,10 @@
   padding: 0 50px
   header
     @extend .lLBlackBoldFont
+    line-height:25px
     border-bottom: 1px solid rgba(0, 0, 0, 0.1)
-    padding: 32px 0 16px 0
+    height: 81px
+    box-sizing: border-box
     @extend .frbc
   ul.tokens
     padding-bottom: 62px
@@ -20,12 +22,11 @@
     li.tokenItem
       .innerWrapper
         @extend .frbc
-      .innerWrapper
         margin: 0 -50px
         @extend .frbc
         @extend .sFont
-        font-size: 14px
-        line-height: 17px
+        font-size: 16px
+        line-height: 19px
         font-family: 'Inter-Medium'
         color: $colLBlack
         >div
@@ -35,12 +36,12 @@
           gap: $xxsGap
           text-align: left
           >.defaultTokenImg
-            width: 18px
-            height: 18px
+            width: 20px
+            height: 20px
             border-radius: 50%
             background-color: rgba(0, 0, 0, 0.05)
           >img
-            width: 18px
+            width: 20px
             border-radius: 50%
 
       &.th
@@ -49,8 +50,8 @@
         .innerWrapper
           padding: 16px 50px 15px
           color: $colSBlack
-          font-size: 16px
-          line-height: 19px
+          font-size: 20px
+          line-height: 24px
       &.tr
         margin-top: 10px
         position: relative
@@ -79,7 +80,7 @@
   .tokenListWrapper
     padding: 0 44px
     header
-      padding: 25px 0 16px 0
+      height: 65px
       font-size: 20px
       line-height: 24px
       font-family: 'Inter-SemiBold'
@@ -88,9 +89,19 @@
       li.tokenItem
         .innerWrapper
           margin: 0 -44px
+          .token
+            font-size: 14px
+            line-height: 17px
+            >.defaultTokenImg
+              width: 18px
+              height: 18px
+            >img
+              width: 18px
         &.th
           margin-bottom: 12px
           .innerWrapper
+            font-size: 16px
+            line-height: 19px
             padding: 12px 44px
         &.tr
           margin-top: 2px

@@ -82,7 +82,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
       const totalBal = list.reduce(reduceF, new BigNumber(0));
       let innerRadius = 60;
       let outerRadius = 82;
-      let cLeft = 28;
+      let cLeft = 8;
       let legendItemLabelWidth = 122;// 94
       let legendItemValueWidth = 60;// 88
       let legendItemValueFontSize = 24;

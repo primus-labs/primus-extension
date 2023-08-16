@@ -27,14 +27,16 @@
       opacity: 0.8
   >header
     width: 100%
-    padding: 74px 0 49px 0
+    padding: 46px 0 32px 0
     @extend .fcsc
     img.avatar
-      width: 120px
+      width: 92px
     h3
       @extend .lLBlackBoldFont
-      margin: 24px 0 32px 0
+      font-family: 'Inter-SemiBold'
+      margin-top: 24px
     .descItems
+      margin-top: 18px
       display: flex
       align-items: center
       @extend .frsc
@@ -43,10 +45,7 @@
         @extend .frsc
         .sourceIcon
           margin-right: 12px
-          width: $mIconSize
-        .clockIcon
-          margin-left: 12px
-          width: $xxsIconSize
+          width: 29.24px
         .label
           @extend .xsSBlackRegularFont
         .value
@@ -97,8 +96,10 @@
       .value
         @extend .xxlLBlackBoldFont
       .btcValue
-        @extend .sSBlackRegularFont
+        font-family: "Inter-Regular"
         color: $colLBlack
+        font-size: 14px
+        line-height: 17px
   .tokenTableHeaderRight
     @extend .frcc
     gap: 6px
@@ -116,7 +117,6 @@
     >img
       width: 16px
     
-    
 
 @media (max-width: 1680px)
   .assetsDetail
@@ -126,10 +126,10 @@
       img.avatar
         width: 80px
       h3
-        margin: 12px 0 0 0
         font-size: 20px
         line-height: 24px
         font-family: 'Inter-Medium'
+        margin-top: 12px
       .descItems
         margin-top: 12px
     .sourceStatisticsBar
