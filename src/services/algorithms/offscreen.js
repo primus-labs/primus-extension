@@ -63,7 +63,11 @@ function getAttestationResult() {
 }
 
 function startOffline(params) {
-    console.log("startOffline");
+    console.log("startOffline AlgorithmInited=", AlgorithmInited);
+    if (!AlgorithmInited) {
+        const resobj = {"content":null,"retcode":"2","retdesc":"Algorithm not initialized"};
+        return JSON.stringify(resobj);
+    }
     var req_obj = {
       method: "startOffline",
       version: "1.0.0",
