@@ -3,6 +3,7 @@ import iconPolygon from '@/assets/img/iconPolygon.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
+import iconChainEthereum from '@/assets/img/iconChainEthereum.svg';
 
 type ENVTYPE = 'development' | 'test' | 'production';
 
@@ -39,7 +40,7 @@ export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
 const EASINFOMAP = {
   development: {
     Sepolia: {
-      icon: iconTool1,
+      icon: iconChainEthereum,
       title: 'Sepolia',
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
@@ -118,7 +119,7 @@ const EASINFOMAP = {
   },
   test: {
     Sepolia: {
-      icon: iconTool1,
+      icon: iconChainEthereum,
       title: 'Sepolia',
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
@@ -227,7 +228,7 @@ const EASINFOMAP = {
       blockExploreUrls: ['https://arbiscan.io'],
     },
     Ethereum: {
-      icon: iconTool1,
+      icon: iconChainEthereum,
       title: 'Ethereum',
       disabled: true,
       rpcUrl: 'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
