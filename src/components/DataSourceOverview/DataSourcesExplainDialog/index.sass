@@ -3,29 +3,16 @@
   padding: 64px 50px 50px
   @extend .fcbc
   position: relative
-  .iconBack
-    position: absolute
-    content: ''
-    top: 35px
-    left: 32px
-    width: $mIconSize
-    height: $mIconSize
-    background-image: url('../../../assets/img/iconArrowLeft2.svg')
-    opacity: 0.4
-    background-size: 100% 100%
-    cursor: pointer
-    &:hover
-      opacity: 0.8
   main
     width: 100%
     @extend .fcsc
-    gap: 124px
+    gap: 109px
     >h1
       width: 318px
       @extend .xlLBlackBoldFont
       text-align: center
     ul.explainItemList
-      width: 446px
+      width: 448px
       @extend .fcss
       gap: 56px
       li
@@ -41,19 +28,16 @@
           h5
             @extend .lLBlackBoldFont
           h6
-            font-size: 12px
-            line-height: 16px
             font-family: 'Inter-Regular'
             color: $colSBlack
+            font-size: 16px
+            line-height: 26px
   button.nextBtn
     height: 58px !important
     background: rgba(0, 0, 0, 0.05)
 @media (max-width: 1680px)
   .dataFieldsExplainDialog
     padding: 48px 42px 32px
-    .iconBack
-      top: 48px
-      left: 32px
     main
       gap: 58px
       >h1
@@ -75,6 +59,7 @@
               line-height: 24px
               font-family: 'Inter-Medium'
             h6
+              font-size: 12px
               line-height: 18px
     button.nextBtn
       height: 48px !important

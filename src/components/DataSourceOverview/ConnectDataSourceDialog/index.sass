@@ -1,21 +1,8 @@
 @import '@/assets/css/pDialog.sass'
 .connectDataSourceDialog
-  padding: 64px 50px 50px
+  padding: 30px 50px 50px
   @extend .fcbc
   position: relative
-  .iconBack
-    position: absolute
-    content: ''
-    top: 35px
-    left: 32px
-    width: $mIconSize
-    height: $mIconSize
-    background-image: url('../../../assets/img/iconArrowLeft2.svg')
-    opacity: 0.4
-    background-size: 100% 100%
-    cursor: pointer
-    &:hover
-      opacity: 0.8
   main
     width: 100%
     .scrollList
@@ -40,9 +27,11 @@
     h1
       @extend .xlLBlackBoldFont
       align-self: center
+      margin-top: 2px
     h2
       @extend .sSBlackRegularFont
       line-height: 26px
+      margin-top: -14px
     .formItem
       width: 100%
       @extend .fcss
@@ -60,6 +49,7 @@
       @extend .frcs
       gap: $xsGap
       @extend .xsSBlackRegularFont
+      line-height: 22px
       >a
         color: #0066FF
     .loadingSection
@@ -74,9 +64,6 @@
 @media (max-width: 1680px)
   .connectDataSourceDialog
     padding: 36px 42px 32px
-    .iconBack
-      top: 48px
-      left: 32px
     main
       .scrollList
         padding-bottom: 16px

@@ -4,21 +4,6 @@
 $sAvatar: 36px
 .authInfoHeader
   width: 100%
-  position: relative
-  .iconBack
-    position: absolute
-    content: ''
-    top: 50%
-    transform: translateY(-50%)
-    left: -58px
-    width: 32px
-    height: 32px
-    background-image: url('../../../assets/img/iconArrowLeft2.svg')
-    opacity: 0.4
-    background-size: 100% 100%
-    cursor: pointer
-    &:hover
-      opacity: 0.8
   .content
     @extend .frcc
     gap: 8px
@@ -38,10 +23,6 @@ $sAvatar: 36px
       width: 24px
 @media (max-width: 1680px)
   .authInfoHeader
-    .iconBack
-      left: -12px
-      top: 0
-      transform: translateY(0)
     .content
       img.avatar
         width: $sAvatar

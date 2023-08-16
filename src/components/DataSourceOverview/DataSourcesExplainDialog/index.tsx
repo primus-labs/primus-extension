@@ -1,6 +1,7 @@
 import React, { useState, memo } from 'react';
 
 import PMask from '@/components/PMask';
+import PBack from '@/components/PBack';
 import iconShield1 from '@/assets/img/iconShield1.svg';
 import iconShield2 from '@/assets/img/iconShield2.svg';
 
@@ -32,7 +33,7 @@ const DataSourcesExplainDialog: React.FC<DataSourcesExplainDialogProps> = memo(
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog dataFieldsExplainDialog">
-          <div className="iconBack" onClick={onSubmit}></div>
+          <PBack onBack={onSubmit} />
           <main>
             <h1>Connect data under your control</h1>
             <ul className="explainItemList">

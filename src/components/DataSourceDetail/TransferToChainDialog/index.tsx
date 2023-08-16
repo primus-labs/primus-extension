@@ -121,12 +121,10 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
     return (
       <PMask onClose={onClose}>
         <div className={wrapperClassName}>
+          {!!backable && <PBack onBack={handleClickBack} />}
           <main>
-            {!!backable && <PBack onBack={handleClickBack} />}
             {headerType === 'dataSource' && (
-              <AuthInfoHeader
-                checked={checked}
-              />
+              <AuthInfoHeader checked={checked} />
             )}
             {headerType === 'attestation' && <AddressInfoHeader />}
             {headerType === 'polygonIdAttestation' && (

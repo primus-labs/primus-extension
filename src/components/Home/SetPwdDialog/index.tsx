@@ -163,8 +163,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog setPwdDialog">
+          <PBack onBack={handleClickBack} />
           <main>
-            <PBack onBack={handleClickBack} />
             <header className="setPwdDialogHeader">
               <div className="headerContent">
                 {/* TODO */}

@@ -4,22 +4,22 @@
 
 .dataAddBar
   position: fixed
-  right: 100px
-  bottom: 100px
+  right: 104px
+  bottom: 104px
   >button.updateBtn
     border-radius: $xxLBorderRadius
     @extend .sFont
     font-family: 'Inter-Medium'
     color:$colSBlack
     @extend .frsc
-    gap: $xsGap
     background: #fff
-    padding: 12px
+    gap: 12px
+    padding: 14px
     &:hover
-      padding: 12px 21.5px
+      padding: 13px 18px
       >.imgUpdate
-        width: 22px
-        height: 22px
+        width: 24px
+        height: 24px
       >span
         display: block
     >.imgUpdate
@@ -29,3 +29,16 @@
       background-size: 100% 100%
     >span
       display: none
+@media (max-width:1680px)
+  .dataAddBar
+    right: 100px
+    bottom: 100px
+    >button.updateBtn
+      gap: $xsGap
+      padding: 12px
+      &:hover
+        padding: 12px 21.5px
+        >.imgUpdate
+          width: 22px
+          height: 22px
+        
