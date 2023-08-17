@@ -158,7 +158,8 @@ const AssetsDetail = memo(() => {
       });
       setBtcPriceFromService(BTC);
     } catch {
-      alert('getTokenPrice network error!');
+      //alert('getTokenPrice network error!');
+      console.log('getTokenPrice network error!');
     }
   };
   useEffect(() => {

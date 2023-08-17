@@ -154,7 +154,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
                   <div className="ctipWrapper">
                     <span>How to get API Key & Secret key?</span>
                     <a
-                      href="https://docs.padolabs.org/Tutorials/Set-up-Exchanges-API-Key"
+                      href="https://docs.padolabs.org/category/exchanges-api-setup"
                       target="_blank"
                       rel="noreferrer"
                     >

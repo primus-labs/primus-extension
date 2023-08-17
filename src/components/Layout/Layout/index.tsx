@@ -55,7 +55,8 @@ const Layout = () => {
           );
           dispatch(setSysConfigAction(configMap));
         } else {
-          alert('getSysConfig network error');
+          //alert('getSysConfig network error');
+          console.log('getSysConfig network error');
         }
       }
     };
