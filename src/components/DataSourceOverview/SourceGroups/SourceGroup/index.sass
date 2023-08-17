@@ -6,6 +6,7 @@
     // width: calc( 100% + 35px )
     width: 510px
     height: 362px
+    
     overflow-y: auto
     overflow-x: hidden
     &::-webkit-scrollbar
@@ -90,6 +91,8 @@
       color: $colSBlack
 @media (max-width: 1680px)
   .sourceGroup
+    &.scroll
+      height: 316px
     ul.dataList
       column-gap: 19px
       row-gap: 14px

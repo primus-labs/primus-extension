@@ -11,16 +11,19 @@
     padding: 0 40px
     h1
       @extend .xlLBlackBoldFont
-      padding-top: 53px
+      padding-top: 34px
     h2
-      @extend .tipFont
+      font-family: "Inter-Regular"
+      color: rgba(0, 0, 0, 0.6)
+      font-size: 16px
+      line-height: 26px
       padding: 18px 0 70px 0
       text-align: center
     h6
       @extend .mFont
       font-family: 'Inter-Bold'
       color: $colSBlack
-      padding-bottom: 56px
+      padding-bottom: 55px
     .networkItem
       width: 72px
       height: 72px
@@ -71,10 +74,11 @@
       .divider
         @extend .mSBlackRegularFont
         width: 48px
+        line-height: 35px
         text-align: center
     ul.networkList
       @extend .frac
-      gap: $mGap
+      gap: 36px
   button.nextBtn
     position: relative
     .tipWrapper
@@ -139,6 +143,8 @@
         .divider
           font-size: 12px
           line-height:15px
+      ul.networkList
+        gap: $mGap
     button.nextBtn
       height: 48px
       font-family: 'Inter-SemiBold'

@@ -3,19 +3,22 @@
 @import '@/assets/css/pDialog.sass'
 
 .qrcodeDialog
-  padding: 64px 50px 50px
+  padding: 30px 50px 50px
   @extend .fcbc
   main
     width: 100%
     @extend .fcsc
     .qrcodeMain
-      margin-top: 27px
+      margin-top: 34px
+      
   button.nextBtn
     height: 58px !important
     position: relative
 @media (max-width: 1680px)
   .qrcodeDialog
     padding: 42px 42px 32px
+    .qrcodeMain
+      margin-top: 27px
     button.nextBtn
       height: 48px !important
       font-family: 'Inter-SemiBold' !important

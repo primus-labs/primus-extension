@@ -12,22 +12,22 @@
     @extend .xlLBlackBoldFont
     text-align: center
   h2
-    @extend .sSBlackRegularFont
-    // align-self: center
+    font-family: "Inter-Regular"
+    color: rgba(0, 0, 0, 0.6)
+    font-size: 16px
     line-height: 26px
-    padding-top: 15px
-    width: 379px
+    padding-top: 18px
+    width: 100%
     text-align: center
-  
   .pQRCodeWrapper,.defaultImg
-    margin-top: 24px
+    margin-top: 32px
   .defaultImg
-    width: 280px
-    height: 280px
+    width: 350px
+    height: 350px
     background-color: #f2f2f2
     @extend .frcc
     >img
-      width: 80px
+      width: 100px
 @media (max-width: 1680px)
   .qrcodeMain
     h1
@@ -42,4 +42,11 @@
       font-family: 'Inter-Regular'
       color: $colSBlack
       padding-top: 12px
+    .pQRCodeWrapper,.defaultImg
+      margin-top: 24px
+    .defaultImg
+      width: 280px
+      height: 280px
+      >img
+        width: 80px
     

@@ -3,6 +3,16 @@
 @import '@/assets/css/pDialog.sass'
 @import '@/components/Cred/QRCodeDialog/qrCode.sass'
 .qrcodeDialog.bindPolygonidDialog
+  padding: 30px 50px 50px
   main
     .qrcodeMain
-      margin-top: 26px
+      margin-top: 34px
+      .pQRCodeWrapper,.defaultImg
+        margin-top: 50px
+@media (max-width:1680px)
+  .qrcodeDialog.bindPolygonidDialog
+    main
+      .qrcodeMain
+        margin-top: 26px
+        .pQRCodeWrapper,.defaultImg
+          margin-top: 18px

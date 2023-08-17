@@ -1,44 +1,35 @@
 @import '@/assets/css/pDialog.sass'
 .padoDialog.kycVerifyDialog
-  padding: 64px 50px 50px
+  padding: 30px 50px 50px
   @extend .fcbc
   position: relative
   main
     .qrcodeMain
-      margin-top: 24px
-      h1
-        font-size: 30px
-        line-height: 36px
-      h2
-        font-size: 14px
-        line-height: 20px
-        padding-top: 20px
-        width: 100%
+      margin-top: 34px
+     
       .pQRCodeWrapper,.defaultImg
-        width: 200px
-        height: 200px
-        // background-color: #fff
+        width: 250px
+        height: 250px
       .pQRCodeWrapper
-        margin-top: 24px
-      // .defaultImg
-      //   >img
-      //     width: 100%
-          // width: 159px
+        margin-top: 34px
+        >svg
+          width: 250px !important
+          height: 250px !important
     .friendlyRemainer
-      padding-top: 24px
-      font-size: 14px
-      line-height: 20px
+      padding-top: 34px
+      font-size: 16px
+      line-height: 26px
       color: $colSBlack
       >h6
-        font-size: 14px
+        font-size: 16px
         font-family: 'Inter-SemiBold'
       >ul>li
         font-family: 'Inter-Regular'
         @extend .frsc
         >i
-          margin: 0 7px
-          width:4px
-          height: 4px
+          margin: 0 9.5px
+          width:5px
+          height: 5px
           border-radius: 50%
           background-color: $colSBlack
   button.nextBtn
@@ -46,6 +37,33 @@
 @media (max-width: 1680px)
   .padoDialog.kycVerifyDialog
     padding: 36px 42px 32px
+    main
+      .qrcodeMain
+        margin-top: 24px
+        h1
+          font-size: 30px
+          line-height: 36px
+        h2
+          font-size: 14px
+          line-height: 20px
+          padding-top: 20px
+        .pQRCodeWrapper,.defaultImg
+          width: 200px
+          height: 200px
+        .pQRCodeWrapper
+          margin-top: 24px
+      .friendlyRemainer
+        padding-top: 24px
+        font-size: 14px
+        line-height: 20px
+        
+        >h6
+          font-size: 14px
+        >ul>li
+          >i
+            margin: 0 7px
+            width:4px
+            height: 4px
     button.nextBtn
       height: 48px !important
       font-family: 'Inter-SemiBold' !important      

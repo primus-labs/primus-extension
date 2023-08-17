@@ -7,38 +7,36 @@
   main
     width: 100%
     @extend .fcss
-    gap: $xlGap
+    gap: 0
     h1
       @extend .frsc
       gap: $xxsGap
       align-self: center
       @extend .xlLBlackBoldFont
-      img
-        width: 32px
-        cursor: pointer
     h2
       @extend .sSBlackRegularFont
       line-height: 26px
       align-self: center
+      padding-top: 18px
     .scrollList
       width: 100%
-      padding-top: 24px
+      padding-top: 32px
       ul.credTypeList
         width: 100%
         @extend .fcss
-        gap: 24px
+        gap: 32px
         li
           width: 100%
           @extend .frsc
-          gap: 21px
+          gap: 32px
           cursor: pointer
           width: 100%
-          height: 80px
-          padding: 0 28px 0 32px
+          height: 100px
+          padding: 0 30px 0 32px
           background: rgba(0, 0, 0, 0.05)
           border-radius: 12px
           &:not(.disabled):hover
-            padding: 0 26px 0 30px
+            padding: 0 28px 0 30px
             background: #FFFFFF
             border: 2PX solid transparent
             background-clip: padding-box, border-box
@@ -61,24 +59,24 @@
               top: 50%
               right: 32px
               transform: translateY(-50%)
-              width: 24px
-              height: 24px
+              width: 30px
+              height: 30px
               background: url('@/assets/img/iconSuc.svg')
               background-size: 100% 100%
           img.icon
-            width: 36px
+            width: 48px
           .con
-            width: 252px
+            width: 300px
             @extend .fcss
-            gap: 6px
+            gap: 8px
             .title
-              font-size: 16px
-              line-height: 19px
+              font-size: 20px
+              line-height: 24px
               font-family: 'Inter-SemiBold'
               color: $colLBlack
             .desc
-              font-size: 12px
-              line-height: 15px
+              font-size: 14px
+              line-height: 17px
               font-family: 'Inter-Regular'
               color: $colSBlack
            
@@ -109,8 +107,7 @@
 @media (max-width: 1680px)
   .padoDialog.credTypesDialog
     padding: 48px 42px 32px
-    main
-      gap: 0
+    main 
       h1
         font-size: 30px
         line-height: 36px
@@ -121,7 +118,39 @@
         font-family: 'Inter-Regular'
         color: $colSBlack
         padding-top: 24px
-      
+      .scrollList
+        padding-top: 24px
+        ul.credTypeList
+          gap: 24px
+          li
+            gap: 21px
+            height: 80px
+            padding: 0 28px 0 32px
+            
+            &:not(.disabled):hover
+              padding: 0 26px 0 30px
+              
+            &.disabled
+              cursor: not-allowed
+            &.active
+              padding: 0 26px 0 30px
+              
+              &:after
+                right: 30px
+                width: 24px
+                height: 24px
+            img.icon
+              width: 36px
+            .con
+              width: 252px
+              gap: 6px
+              .title
+                font-size: 16px
+                line-height: 19px
+              .desc
+                font-size: 12px
+                line-height: 15px
+            
     button.nextBtn
       height: 48px !important
       font-family: 'Inter-SemiBold' !important

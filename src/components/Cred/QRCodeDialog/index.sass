@@ -7,22 +7,37 @@
   main
     .exportWrapper
       @extend .frcc
-      gap: $xsGap
-      font-size: 14px
-      line-height: 18px
+      gap: 24px
+      font-size: 16px
+      line-height: 26px
       font-family:'Inter-Medium'
       color: $colLBlack
       opacity: 0.4
-      padding-top: 13px
+      padding-top: 24px
       cursor: pointer
       &:hover
         opacity: 0.8
       >img.iconExport
-        width: 20px
+        width: 24px
   &.polygonIdScanDialog
     main
       .qrcodeMain
         margin-top: 32px
-        h2
-          width: 379px
-          text-align: left
+        
+@media (max-width:1680px)
+  .qrcodeDialog.scanDialog
+    main
+      .exportWrapper
+        gap: $xsGap
+        font-size: 14px
+        line-height: 18px
+        
+        padding-top: 13px
+        
+        >img.iconExport
+          width: 20px
+    &.polygonIdScanDialog
+      main
+        .qrcodeMain
+          margin-top: 32px
+          

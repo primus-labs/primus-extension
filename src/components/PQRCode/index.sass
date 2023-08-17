@@ -1,4 +1,12 @@
 @import '@/assets/css/pFlex.sass'
 .pQRCodeWrapper
   @extend .frcc
-  
+  >svg
+    width: 350px !important
+    height: 350px !important
+@media (max-width:1680px)
+  .pQRCodeWrapper
+    @extend .frcc
+    >svg
+      width: 280px !important
+      height: 280px !important
