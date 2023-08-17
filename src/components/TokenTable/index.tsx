@@ -6,7 +6,7 @@ import { setSysConfigAction } from '@/store/actions';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 
 import { sub, postMsg, formatNumeral, formatAddress, div } from '@/utils/utils';
-import {SUPPORRTEDQUERYCHAINMAP} from '@/config/constants'
+import { SUPPORRTEDQUERYCHAINMAP } from '@/config/constants';
 import type { UserState } from '@/types/store';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
@@ -146,10 +146,14 @@ const TokenTable: React.FC<TokenTableProps> = memo(
           return Object.values(flexibleAccountTokenMap);
         }
       }
-      if (showFilter && allChainMap) {
-        return Object.values(
-          allChainMap[filterAccount as keyof typeof allChainMap]['tokenListMap']
-        );
+      if (showFilter && allChainMap && filterAccount) {
+        const curChainMap =
+          allChainMap[filterAccount as keyof typeof allChainMap];
+        if (curChainMap) {
+          return Object.values(curChainMap['tokenListMap']);
+        } else {
+          return list
+        }
       }
       return list;
     }, [
@@ -336,6 +340,9 @@ const TokenTable: React.FC<TokenTableProps> = memo(
         return item.symbol;
       }
     }, []);
+    useEffect(() => {
+      setFilterAccount(undefined);
+    }, [name]);
 
     return (
       <section className="tokenListWrapper assets">
