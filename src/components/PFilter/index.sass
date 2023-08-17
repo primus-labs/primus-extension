@@ -5,14 +5,22 @@
   .filterIconWrapper
     position: absolute
     content: ''
-    top: 14px
+    top: 18px
     right: 0
-    width: 14px
-    height: 14px
-    background: url('../../assets/img/iconFilter.svg')
+    width: 19px
+    height: 19px
+    background: url('@/assets/img/iconFilter.svg')
     background-size: 100% 100%
     cursor: pointer
     &:hover
       background-image: url('../../assets/img/iconFilterActive.svg')
     &.active,&.active:hover
       background-image: url('../../assets/img/iconFilteredActive.svg')
+@media (max-width:1680px)
+  .pFilter
+    padding-top: 38px
+    .filterIconWrapper
+      top: 14px
+      right: 0
+      width: 14px
+      height: 14px

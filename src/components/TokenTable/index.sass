@@ -18,11 +18,11 @@
         .arrowWrapper
           position: absolute
           content: ''
-          top: 15px
+          top: 11px
           transform: rotate(-90deg)
           right: 0
-          width: 12px
-          height: 12px
+          width: 19px
+          height: 19px
           background-image: url('@/assets/img/iconArrowLeft2.svg')
           opacity: 0.4
           background-size: 100% 100%
@@ -51,6 +51,12 @@
               .label
                 width:51px
                 text-align: left
+      &.th
+        .innerWrapper
+          padding: 16px 50px 16px 50px
+        &.new 
+          .innerWrapper
+            padding: 16px 95px 16px 50px
       &.new
         .innerWrapper
           padding: 11px 95px 11px 50px
@@ -77,7 +83,7 @@
             z-index: 1
   .moreWidthFilterWrapper
     .pFilterContent .formItems .formItem
-      width: 124px
+      width: 160px
 @media (max-width: 1680px)
   .tokenListWrapper
     ul.tokens
@@ -95,6 +101,15 @@
         &.tr
           .innerWrapper
             padding: 11px 44px 11px
-      
+        &.tr
+          .arrowWrapper
+            top: 15px
+            right: 0
+            width: 12px
+            height: 12px
+         
+    .moreWidthFilterWrapper
+      .pFilterContent .formItems .formItem
+        width: 124px  
           
         
