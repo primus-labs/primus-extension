@@ -3,41 +3,68 @@
 @import '@/assets/css/pDialog.sass'
 @import '@/components/Cred/QRCodeDialog/qrCode.sass'
 .padoDialog.claimDialog
-  padding: 0 42px 32px
+  padding: 0 50px 50px
   main
-    width: 100%
     @extend .fcss
-    gap: 44px
+    gap: 86px
     .headerWrapper
-      margin: 0 -42px
+      margin: 0 -50px
     .descContent
       @extend .fcss
       gap: 28px
       .title
-        font-size: 18px
-        line-height: 26px
-        font-family: 'Inter-SemiBold'
+        font-size: 22px
+        line-height: 38px
+        font-family: 'Inter-Bold'
         color: $colLBlack
       .desc
-        font-size: 16px
-        line-height: 26px
+        font-size: 18px
+        line-height: 38px
         font-family: 'Inter-Regular'
         color: $colMBlack
       .details
         >li
-          font-size: 16px
-          line-height: 32px
-          font-family: 'Inter-SemiBold'
+          font-size: 18px
+          line-height: 38px
+          font-family: 'Inter-Bold'
           color: $colLBlack
           @extend .frsc
           >i
-            margin: 0 9px
-            width: 5px
-            height: 5px
+            margin: 0 10.5px
+            width: 5.5px
+            height: 5.5px
             border-radius: 50%
             background-color: $colLBlack
 
 
+
+@media (max-width:1680px)
+  .padoDialog.claimDialog
+    padding: 0 42px 32px
+    main
+      gap: 44px
+      .headerWrapper
+        margin: 0 -42px
+      .descContent
+       
+        .title
+          font-size: 18px
+          line-height: 26px
+          font-family: 'Inter-SemiBold'
+          
+        .desc
+          font-size: 16px
+          line-height: 26px
+        .details
+          >li
+            font-size: 16px
+            line-height: 32px
+            font-family: 'Inter-SemiBold'
+            
+            >i
+              margin: 0 9px
+              width: 5px
+              height: 5px
 
 
   

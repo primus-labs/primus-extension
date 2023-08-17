@@ -7,15 +7,24 @@
   width: 100%
   .eventOverviewContent
     width: 1032px
-    margin: -8px auto 0
+    margin: 0 auto
     .rewardsWrapper
-      padding-top: 8px
+      padding-top: 14px
       header
         @extend .frsc
         font-size: 24px
         line-height: 29px
         font-family: 'Inter-SemiBold'
         color: $colLBlack
-        padding-left: 37px
-        height: 65px
+        padding-left: 17px
+        height: 63px
         border-bottom: 1px solid rgba(0,0,0,0.2)
+@media (max-width:1680px)
+  .eventOverview
+    .eventOverviewContent
+      margin: -8px auto 0
+      .rewardsWrapper
+        padding-top: 8px
+        header
+          padding-left: 37px
+          height: 65px

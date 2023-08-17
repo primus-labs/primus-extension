@@ -3,15 +3,16 @@
 @import '@/components/DataSourceOverview/DataSourcesDialog/index.sass'
 
 .connectWalletDialog
-  padding: 43px 42px 32px
+  padding: 30px 50px 50px
+  // padding: 43px 42px 32px
   main
     gap: 0
     .addressInfoHeader
       align-self: center
     h1
-      padding-top:  27px
+      padding-top:  34px
     .scrollList
-      margin-top: 48px
+      margin-top: 38px
       ul.dataList
         li
           &.disabled
@@ -96,6 +97,7 @@ ul.dataList
       line-height: 16px
     color: $colSBlack
 @media (max-width: 1680px)
+
   ul.dataList
     gap: 7px
     li
@@ -113,3 +115,10 @@ ul.dataList
       .desc
         padding: 11px 0 1px
         font-family:'Inter-SemiBold'
+  .connectWalletDialog
+    padding: 43px 42px 32px
+    main
+      h1
+        padding-top:  27px
+      .scrollList
+        margin-top: 48px
