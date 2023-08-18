@@ -54,6 +54,9 @@ const SetPassword: React.FC<SetPwdProps> = memo(
         return initalRules;
       }
     }, [pwd]);
+    const errorTipVisible = useMemo(() => {
+      return pwd && confirm && pwd !== confirm;
+    }, [pwd, confirm]);
     const handleClickNext = useCallback(async () => {
       if (!pwd || !confirm || errorTipVisible) {
         return;
@@ -63,7 +66,7 @@ const SetPassword: React.FC<SetPwdProps> = memo(
         return;
       }
       onSubmit(pwd);
-    }, []);
+    }, [pwd, confirm, errorTipVisible, onSubmit, pwdRules]);
 
     const handleChangePwd = useCallback((val: string) => {
       setPwd(val);
@@ -71,10 +74,6 @@ const SetPassword: React.FC<SetPwdProps> = memo(
     const handleChangeConfirm = useCallback((val: string) => {
       setConfirm(val);
     }, []);
-
-    const errorTipVisible = useMemo(() => {
-      return pwd && confirm && pwd !== confirm;
-    }, [pwd, confirm]);
 
     return (
       <div className="setPasswordWrapper">

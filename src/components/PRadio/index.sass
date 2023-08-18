@@ -10,18 +10,18 @@
   display: flex
   .radioOptions
     @extend .frsc
-    height: 47px
-    gap:18px
+    height: 72px
+    gap:14px
     .radioOption
       @extend .frcc
-      width: 47px
-      height: 47px
+      width: 72px
+      height: 72px
       padding: 2px
       background: rgba(0, 0, 0, 0.05)
       backdrop-filter: blur(16px)
       border-radius: 8px
-      font-size: 14px
-      line-height: 17px
+      font-size: 16px
+      line-height: 19px
       font-family:'Inter-Medium'
       color: $colMBlack
       cursor: pointer
@@ -33,12 +33,29 @@
         &:after
           position: absolute
           content: ''
-          right: 3px
-          bottom: 3px
-          width: 8.17px
-          height: 8.17px
+          right: 4px
+          bottom: 4px
+          width: 12px
+          height: 12px
           background: url('@/assets/img/iconSuc.svg')
           background-size: 100% 100%
 
-      
+@media (max-width:1680px)
+  .pRadio
+    .radioOptions
+      @extend .frsc
+      height: 47px
+      gap:18px
+      .radioOption
+        width: 47px
+        height: 47px
+        font-size: 14px
+        line-height: 17px
+        &.active
+          &:after
+            right: 3px
+            bottom: 3px
+            width: 8.17px
+            height: 8.17px
+   
         

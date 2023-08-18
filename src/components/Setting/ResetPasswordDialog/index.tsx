@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import PMask from '@/components/PMask';
-import SetPassword from '@/components/Setting/SetPassword';
+import SetPassword from './SetPassword';
 import PBack from '@/components/PBack';
 
 import { postMsg } from '@/utils/utils';

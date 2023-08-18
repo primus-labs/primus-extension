@@ -1,5 +1,5 @@
 @import '@/assets/css/pDialog.sass'
-$lAvatar: 70px
+$lAvatar: 84px
 $sAvatar: 60px
 .settingDialog
   padding: 48px 32px 36px
@@ -7,7 +7,7 @@ $sAvatar: 60px
   main
     width: 100%
     @extend .fcsc
-    gap: 32px
+    gap: 48px
     header
       @extend .fcsc
       gap: 24px
@@ -15,17 +15,17 @@ $sAvatar: 60px
         border-radius: 50%
       img.avatar
         width: $lAvatar
-        height: $lAvatar
+        // height: $lAvatar
       >i.avatarAlternate
         width: $lAvatar
         height: $lAvatar
         background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
       .baseInfo
         @extend .frcc
-        gap: 12px
+        gap: 18px
         font-size: 16px
         line-height: 19px
-        font-family: 'Inter-Medium'
+        font-family: 'Inter-Regular'
         color: $colMBlack
         .separtor
           width: 1px
@@ -36,9 +36,9 @@ $sAvatar: 60px
       align-self: flex-start
       .moduleItem
         width: 100%
-        padding: 12px 0
+        padding: 16px 0
         @extend .fcss
-        gap: 12px
+        gap: 16px
         border-bottom: 1px solid rgba(0, 0, 0, 0.1)
         &:first-child
           padding-top: 0
@@ -49,11 +49,11 @@ $sAvatar: 60px
           width: 100%
           @extend .frbc
           cursor: pointer
-          height: 46px
-          padding: 0 14px
+          height: 56px
+          padding: 0 16px
           border-radius: 8px
-          font-size: 16px
-          line-height: 19px
+          font-size: 18px
+          line-height: 22px
           font-family: 'Inter-Medium'
           color: $colLBlack
           &:hover
@@ -75,12 +75,38 @@ $sAvatar: 60px
   .settingDialog
     padding: 48px 32px 32px
     main
+      gap: 32px
       header
+
         img.avatar
           width: $sAvatar
-          height: $sAvatar
+          // height: $sAvatar
         >i.avatarAlternate
           width: $sAvatar
           height: $sAvatar
+        .baseInfo
+          gap: 12px
+          font-size: 14px
+          line-height: 17px
+          font-family: 'Inter-Medium'
+          .separtor
+            background-color: rgba(0,0,0,0.1)
           
+      .settingContent
+        width: 100%
+        align-self: flex-start
+        .moduleItem
+          width: 100%
+          padding: 12px 0
+          @extend .fcss
+          gap: 12px
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+         
+          .settingItem
+           
+            height: 46px
+            padding: 0 14px
+            font-size: 16px
+            line-height: 19px
+            
     

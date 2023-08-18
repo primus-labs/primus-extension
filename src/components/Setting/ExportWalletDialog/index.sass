@@ -9,72 +9,75 @@
     width: 100%
     h1
       text-align: center
-      font-size: 26px
-      line-height: 31px
-      font-family: "Inter-SemiBold"
+      font-size: 32px
+      line-height: 39px
+      font-family: "Inter-Bold"
       color: $colLBlack
       padding: 0
     .infoWrapper
       width: 100%
-      padding-top: 48px
+      padding-top: 68px
       @extend .fcss
-      gap: 32px
+      gap: 48px
       .infoItem
         width: 100%
         @extend .fcss
-        gap: 14px
+        gap: 8px
         &:first-child
           .value
             font-size: 16px
             line-height: 22px
             font-family: 'Inter-Regular'
         &:last-child
-          gap: 14px
+          gap: 8px
         &.gray
           .value
             width: 100%
-            min-height: 79px
+            min-height: 110px
             background: rgba(0, 0, 0, 0.05)
             backdrop-filter: blur(16px)
             border-radius: 12px
-            padding: 0 22px
+            padding: 0 28px
             .left
-              width: 332px
+              width: 390px
+            .pCopy
+              .iconCopy
+                width: 24px
         &.privateKey
           .value
             .left
-              line-height: 24px
-              color: $colLBlack
+              line-height: 22px
+              color: $colSBlack
         .label
           font-size: 18px
-          line-height: 26px
+          line-height: 22px
           font-family: "Inter-Medium"
-          color: $colLBlack
+          color: $colMBlack
         .value
           width: 100%
           @extend .frbc
           .left 
-            font-size: 16px
+            font-size: 18px
             line-height: 22px
             font-family: "Inter-Regular"
             color: $colSBlack
-            width: 354px
+            width: 390px
             word-wrap: break-word
           img.right
-            width: 22px
+            width: 24px
             cursor: pointer
             opacity: 0.4
             &:hover
               opacity: 0.8
           .pInputWrapper
-            height: 52px
-            padding-right: 22px
+            height: 60px
+            padding-right: 28px
             .pInput
-              padding-left: 22px
-              font-size: 16px
-              font-family: 'Inter-Regular'
+              padding-left: 28px
+              font-size: 18px
+              font-family: 'Inter-Bold'
             .suffixIcon
-              width: 18px
+              width: 24px
         .errorTip
           margin-top: -8px
           font-size: 12px
@@ -83,23 +86,89 @@
           color: $colError
         .tip
           @extend .frbs
-          gap: 14px
+          gap: 22px
+          margin-top: 22px
           >img
-            width: 20px
-            margin-top: 3px
+            width: 22px
+            margin-top: 5px
           .txt
-            font-size: 12px
-            line-height: 16px
+            font-size: 14px
+            line-height: 18px
             font-family: "Inter-Regular"
             color: $colSBlack
 
-
-      
-
-  
 @media (max-width: 1680px)
   .padoDialog.exportWalletDialog
     padding: 48px 42px 32px
+    main
+      h1
+        font-family: "Inter-SemiBold"
+      .infoWrapper
+        padding-top: 48px
+        gap: 32px
+        .infoItem
+          gap: 14px
+          &:first-child
+            .value
+              font-size: 16px
+              line-height: 22px
+              font-family: 'Inter-Regular'
+          &:last-child
+            gap: 14px
+          &.gray
+            .value
+              min-height: 79px
+              padding: 0 22px
+              .left
+                width: 332px
+              .pCopy
+                .iconCopy
+                  width: 22px
+          &.privateKey
+            .value
+              .left
+                line-height: 24px
+                color: $colLBlack
+          .label
+            font-size: 18px
+            line-height: 26px
+            color: $colLBlack
+          .value
+            width: 100%
+            @extend .frbc
+            .left 
+              font-size: 16px
+              
+              width: 354px
+          
+            img.right
+              width: 20px
+            .pInputWrapper
+              height: 52px
+              padding-right: 22px
+              .pInput
+                padding-left: 22px
+                font-size: 16px
+                font-family: 'Inter-Regular'
+              .suffixIcon
+                width: 18px
+          .errorTip
+            margin-top: -8px
+            font-size: 12px
+            line-height: 18px
+            font-family: 'Inter-Regular'
+            color: $colError
+          .tip
+            @extend .frbs
+            gap: 14px
+            margin-top: 0
+            >img
+              width: 20px
+              margin-top: 3px
+            .txt
+              font-size: 12px
+              line-height: 16px
+
     button.nextBtn
       height: 48px
       font-family: 'Inter-SemiBold'

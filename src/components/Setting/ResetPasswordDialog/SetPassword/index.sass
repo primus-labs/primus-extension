@@ -63,7 +63,7 @@
           color: #000
           font-family: 'Inter-Bold'
           &::before
-            background: url(../../../assets/img/iconChecked.svg)
+            background: url(@/assets/img/iconChecked.svg)
             background-size: 100% 100%
             width: 18px
             height: 18px
@@ -136,3 +136,55 @@
         padding-top: 4px
         font-size: 12px
         line-height: 18px
+
+
+
+.padoDialog.resetPwdDialog
+  .setPasswordWrapper
+    flex: 1
+    main
+      h1
+        font-size: 32px
+        line-height: 39px
+        font-family: "Inter-Bold"
+        color: $colLBlack
+        padding: 0
+      h2
+        font-size: 16px
+        line-height: 26px
+        font-family: "Inter-Regular"
+        color: $colSBlack
+        margin-top: 32px
+        align-self: flex-start
+      h6
+        padding: 32px 0 8px 0
+        font-size: 18px
+        line-height: 22px
+        font-family: "Inter-Regular"
+        color: $colSBlack
+
+  
+@media (max-width: 1680px)
+  .padoDialog.resetPwdDialog
+    .setPasswordWrapper
+      main
+        h1
+          font-size: 30px
+          line-height: 36px
+          font-family: "Inter-SemiBold"
+        h2
+          font-size: 12px
+          line-height: 18px
+          margin-top: 32px
+        h6
+          padding-top: 24px
+          padding-top: 24px
+          font-size: 16px
+          line-height: 26px
+          
+    button.nextBtn
+      height: 48px
+      font-family: 'Inter-SemiBold'
+
+
+    

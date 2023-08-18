@@ -6,9 +6,9 @@ import PRadio from '@/components/PRadio';
 import ConnectedDataSourceList from '@/components/ConnectedDataSourceList';
 import IconClear from '@/components/Icons/IconClear';
 import IconDownload from '@/components/Icons/IconDownload';
-import Reconfirm from '@/components/Setting/ReConfirm';
+import ReconfirmDialog from './ReconfirmDialog';
 import PBack from '@/components/PBack';
-
+import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import { BIGZERO, DATASOURCEMAP } from '@/config/constants';
 import { formatFullTime, getCurrentDate, sub } from '@/utils/utils';
 import {
@@ -52,7 +52,11 @@ const updateFrequencyList = [
     value: '5',
   },
 ];
-
+const activeRequest = {
+  type: 'warn',
+  title: 'Are your sure to delete?',
+  desc: 'To re-connect, you will need to go through the process again.',
+};
 const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
   ({ onClose, onSubmit, onBack }) => {
     const [errorTip, setErrorTip] = useState<string>();
@@ -435,61 +439,67 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
 
     return (
       <PMask onClose={onClose}>
-        <div className="padoDialog manageDataDialog">
-          <PBack onBack={onBack} />
-          <main>
-            <h1>Manage Your Data</h1>
-            <div className="scrollList">
-              <div className="contItem">
-                <div className="label">Update frequency</div>
-                <div className="value">
-                  <div className="desc">
-                    Choose a time frequency to updating your data:
+        {!reconfirmVisible && (
+          <div className="padoDialog manageDataDialog">
+            <PBack onBack={onBack} />
+            <main>
+              <h1>Manage Your Data</h1>
+              <div className="scrollList">
+                <div className="contItem">
+                  <div className="label">Update frequency</div>
+                  <div className="value">
+                    <div className="desc">
+                      Choose a time frequency to updating your data:
+                    </div>
+                    <div className="con">
+                      <PRadio
+                        val={updateFrequency}
+                        onChange={setUpdateFrequency}
+                        options={updateFrequencyList}
+                      />
+                    </div>
                   </div>
-                  <div className="con">
-                    <PRadio
-                      val={updateFrequency}
-                      onChange={setUpdateFrequency}
-                      options={updateFrequencyList}
+                </div>
+                <div className="contItem contItemAssets">
+                  <div className="label">Data Connected</div>
+                  <div className="value">
+                    <div className="operations">
+                      <div className="operationItem" onClick={onDownload}>
+                        <IconDownload />
+                      </div>
+                      <div className="operationItem" onClick={onClear}>
+                        <IconClear />
+                      </div>
+                    </div>
+                    <ConnectedDataSourceList
+                      mutiple
+                      onChange={onChangeDataSource}
                     />
                   </div>
                 </div>
               </div>
-              <div className="contItem contItemAssets">
-                <div className="label">Data Connected</div>
-                <div className="value">
-                  <div className="operations">
-                    <div className="operationItem" onClick={onDownload}>
-                      <IconDownload />
-                    </div>
-                    <div className="operationItem" onClick={onClear}>
-                      <IconClear />
-                    </div>
-                  </div>
-                  <ConnectedDataSourceList
-                    mutiple
-                    onChange={onChangeDataSource}
-                  />
+            </main>
+            <button className="nextBtn" onClick={onSubmitDialog}>
+              {errorTip && (
+                <div className="tipWrapper">
+                  <div className="errorTip">{errorTip}</div>
                 </div>
-              </div>
-            </div>
-          </main>
-          <button className="nextBtn" onClick={onSubmitDialog}>
-            {errorTip && (
-              <div className="tipWrapper">
-                <div className="errorTip">{errorTip}</div>
-              </div>
-            )}
-            <span>OK</span>
-          </button>
+              )}
+              <span>OK</span>
+            </button>
 
-          {reconfirmVisible && (
+            {/* {reconfirmVisible && (
             <Reconfirm
               onCancel={onCancelReconfirm}
               onConfirm={onConfirmReconfirm}
             />
-          )}
-        </div>
+          )} */}
+          </div>
+        )}
+
+        {reconfirmVisible && (
+          <ReconfirmDialog onClose={onClose} onSubmit={onConfirmReconfirm} onBack={() => { setReconfirmVisible(false) }} />
+        )}
       </PMask>
     );
   }

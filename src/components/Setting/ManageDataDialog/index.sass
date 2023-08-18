@@ -8,37 +8,26 @@
   main
     width: 100%
     @extend .fcss
-    gap: $xlGap
+    gap: 0
     h1
       @extend .frsc
       gap: $xxsGap
       align-self: center
       @extend .xlLBlackBoldFont
-   
     .scrollList
-      // width: calc( 100% + 38px )
-      // height: 332px
-      // overflow-y: auto
-      // overflow-x: hidden
-      // &::-webkit-scrollbar
-      //   width: 6px
-      //   height: 300px
-      // &::-webkit-scrollbar-thumb
-      //   background: rgba(0, 0, 0, 0.2)
-      //   border-radius: $xxLBorderRadius
       .contItem
         @extend .fcss
-        gap: 14px
-        padding-top: 32px
+        gap: 19px
+        padding-top: 42px
         .label
-          font-size: 18px
+          font-size: 20px
           line-height: 26px
           font-family: 'Inter-SemiBold'
           color: $colLBlack
         .value
           width: 100%
           @extend .frbc
-          gap: $xxsGap
+          gap: 44px
           position: relative
           .desc
             font-size: 16px
@@ -53,12 +42,14 @@
             position: absolute
             content: ''
             right: 35px
-            top: -38px
+            top: -56px
             @extend .frsc
             gap: 12px
             .operationItem
               display: flex
-                
+      &.contItemAssets  
+        padding-top: 32px
+        gap: 32px        
   button.nextBtn
     height: 58px !important
     position: relative
@@ -89,15 +80,31 @@
     main
       gap: 0
       h1
-        font-size: 32px
-        line-height: 39px
         font-family:'Inter-SemiBold'
-     
-      // .scrollList
-      //   width: calc( 100% + 34px )
-      //   height: 328px
-      //   &::-webkit-scrollbar
-      //     height: 250px
+      .scrollList
+        .contItem
+          @extend .fcss
+          gap: 14px
+          padding-top: 32px
+          .label
+            font-family: 'Inter-SemiBold'
+            color: $colLBlack
+          .value
+            
+            gap: $xxsGap
+            
+            
+            .con
+              padding-right: 35px
+            .operations
+              position: absolute
+              content: ''
+              right: 35px
+              top: -38px
+              @extend .frsc
+              gap: 12px
+              .operationItem
+                display: flex
         
     button.nextBtn
       height: 48px !important

@@ -20,6 +20,7 @@ interface SetPwdDialogProps {
 const ExportWallet: React.FC<SetPwdDialogProps> = memo(
   ({ onClose, onSubmit, onBack }) => {
     const [errorTipVisible, setErrorTipVisible] = useState<boolean>();
+    const [pwdErrorTxt, setPwdErrorTxt] = useState<string>('');
     const [passphase, setPassphase] = useState<string>('');
     const [step, setStep] = useState<number>(1);
     const [privateKey, setPrivateKey] = useState<string>('');
@@ -53,8 +54,10 @@ const ExportWallet: React.FC<SetPwdDialogProps> = memo(
             const { privateKey } = message.res;
             setPrivateKey(privateKey);
             setStep(2);
+            
           } else {
-            alert('Failed to decrypt wallet');
+            setPwdErrorTxt('Password error');
+            // alert('Failed to decrypt wallet');
           }
           padoServicePort.onMessage.removeListener(padoServicePortListener);
         }
@@ -66,10 +69,12 @@ const ExportWallet: React.FC<SetPwdDialogProps> = memo(
       const msg = {
         fullScreenType: 'wallet',
         reqMethodName: `decrypt`,
-        params: {},
+        params: {
+          password: passphase,
+        },
       };
       postMsg(padoServicePort, msg);
-    }, [padoServicePort, padoServicePortListener]);
+    }, [padoServicePort, padoServicePortListener, passphase]);
     const handleClickNext = useCallback(() => {
       if (step === 1) {
         if (!passphase) {
@@ -85,8 +90,13 @@ const ExportWallet: React.FC<SetPwdDialogProps> = memo(
       getUserInfo();
     }, []);
     useEffect(() => {
-      passphase && setErrorTipVisible(false);
+      if (passphase) {
+        setErrorTipVisible(false);
+      } else {
+        setPwdErrorTxt('');
+      }
     }, [passphase]);
+    
 
     return (
       <PMask onClose={onClose}>
@@ -119,6 +129,7 @@ const ExportWallet: React.FC<SetPwdDialogProps> = memo(
                   {errorTipVisible && (
                     <p className="errorTip">Please enter your password</p>
                   )}
+                  {pwdErrorTxt && <p className="errorTip">{pwdErrorTxt}</p>}
                 </div>
               )}
               {step === 2 && (
