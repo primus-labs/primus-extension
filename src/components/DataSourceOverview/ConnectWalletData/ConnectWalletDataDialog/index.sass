@@ -1,6 +1,6 @@
 @import '@/assets/css/pDialog.sass'
 .connectWalletDataDialog
-  padding: 64px 50px 50px
+  padding: 30px 50px 50px
   @extend .fcbc
   position: relative
   main
@@ -8,7 +8,7 @@
     
     padding-bottom: 103px
     @extend .fcsc
-    gap: $xlGap
+    gap: 0
     // width: 500px
     max-height: 628px
     overflow-y: auto
@@ -19,32 +19,36 @@
     h1
       @extend .xlLBlackBoldFont
       align-self: center
+      margin-top: 34px
     h2
       @extend .sSBlackRegularFont
       line-height: 26px
+      margin-top: 18px
     .formItem
+      margin-top: 42px
       width: 100%
       @extend .fcss
-      gap: $xxsGap
+      gap: 9.13px
       h6
         @extend .mSBlackRegularFont
       .sourceGroup.scroll
         height: auto
         ul.dataList 
-          gap: 5px
+          gap: 12px
           li
-            width: 100px
-            height: 95px
+            width: 116px
+            height: 112px
+            gap: 6px
             img
-              width: 35.821px
-            // &.onChain
-            //   h6
-            //     line-height: 12px
-            //     margin-top: -4px
-            //     text-align: center
+              width: 44px
+            h6
+              color: #000
+              font-family: 'Inter-SemiBold'
+              font-size: 14px
+              line-height: 16px
             &.active:after 
-              right: 2px
-              bottom: 2px
+              right: 3px
+              bottom: 3px
             
     
   button.nextBtn
@@ -74,6 +78,21 @@
         h6
           font-size: 14px
           line-height: 17px
+        .sourceGroup.scroll
+          ul.dataList 
+            gap: 5px
+            li
+              width: 100px
+              height: 95px
+              gap: 5.56px
+              img
+                width: 35.821px
+              h6
+                font-family: 'Inter-Medium'
+                font-size: 12px
+              &.active:after 
+                right: 2px
+                bottom: 2px
         .pInputWrapper
           height: 49px
           .pInput

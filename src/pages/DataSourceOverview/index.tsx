@@ -256,6 +256,7 @@ const DataSourceOverview = memo(() => {
       if (item.type === 'Assets') {
         if (item.name === 'On-chain') {
           setConnectWalletDataDialogVisible(true);
+          setStep(0);
         } else {
           setActiveSource(item);
           setStep(2);

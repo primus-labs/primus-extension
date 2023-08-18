@@ -180,7 +180,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
       setStep(1);
     }, [visible]);
     return (
-      <>
+      <div className="connectWalletDataWrapper">
         {visible && step === 1 && (
           <ConnectWalletDataDialog
             onClose={onClose}
@@ -198,7 +198,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
             desc={activeRequest?.desc}
           />
         )}
-      </>
+      </div>
     );
   }
 );

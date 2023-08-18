@@ -72,9 +72,15 @@
       .token
         .syntheticLogo
           position: relative
-          padding: 2px 0 0 2px
+          // padding: 2px 0 0 2px
+          width:20px
+          height: 20px
+          box-sizing: border-box
+          display: flex
+          justify-content: flex-end
+          align-items: flex-end
           .tokenLogo
-            width:16px
+            width:18px
           .chainLogo
             width:10px
             position: absolute
@@ -113,6 +119,14 @@
             right: 0
             width: 12px
             height: 12px
+        .token
+          .syntheticLogo
+            width:18px
+            height: 18px
+            .tokenLogo
+              width:16px
+            .chainLogo
+              width:10px
          
     .moreWidthFilterWrapper
       .pFilterContent .formItems .formItem

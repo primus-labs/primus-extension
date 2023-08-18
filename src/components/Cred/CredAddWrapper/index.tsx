@@ -158,7 +158,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           setActiveRequest({
             type: 'warn',
             title: 'Not met the requirements',
-            desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+            desc: <>
+              <p>Your request did not meet the necessary requirements.</p>
+              <p>Please confirm and try again later.</p>
+            </>,
           });
           return false;
         }
@@ -486,7 +489,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             setActiveRequest({
               type: 'warn',
               title: 'Not met the requirements',
-              desc: 'Your request did not meet the necessary requirements. Please confirm and try again later.',
+              desc: (
+                <>
+                  <p>Your request did not meet the necessary requirements.</p>
+                  <p>Please confirm and try again later.</p>
+                </>
+              ),
             });
           }
         } else if (retcode === '2') {
