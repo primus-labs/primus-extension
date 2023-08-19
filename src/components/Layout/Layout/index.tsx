@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 import ActiveHeader from '@/components/Layout/ActiveHeader';
 import BackgroundAnimation from '@/components/Layout/BackgroundAnimation';
@@ -30,6 +30,8 @@ import LoseEfficacyDialog from '../LoseEfficacy';
 import { updateAlgoUrl } from '@/config/envConstants';
 
 const Layout = () => {
+  const location = useLocation();
+  const pathname = location.pathname;
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -171,8 +173,10 @@ const Layout = () => {
   }, [dispatch, updateOnChainFn]);
   
   useEffect(() => {
-   updateAlgoUrl();
-  }, []);
+    if (pathname === '/datas') {
+      updateAlgoUrl();
+    }
+  }, [pathname]);
 
   return (
     <div className="pageApp">
