@@ -553,7 +553,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         onClose();
       }
     }, [activeRequest?.type, onClose]);
-    const startOfflineFn = async () => {
+    const startOfflineFn = useCallback(async () => {
       const padoUrl = await getPadoUrl();
       const proxyUrl = await getProxyUrl();
       postMsg(padoServicePort, {
@@ -565,10 +565,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           proxyUrl,
         },
       });
-    };
+    }, [padoServicePort]);
     useEffect(() => {
       visible && startOfflineFn();
-    }, [visible]);
+    }, [visible, startOfflineFn]);
 
     return (
       <div className={'credAddWrapper'}>
