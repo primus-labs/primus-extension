@@ -27,6 +27,7 @@ import type { UserState } from '@/types/store';
 import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 import './index.sass';
 import LoseEfficacyDialog from '../LoseEfficacy';
+import { updateAlgoUrl } from '@/config/envConstants';
 
 const Layout = () => {
   const padoServicePort = useSelector(
@@ -169,6 +170,9 @@ const Layout = () => {
     (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);
   
+  useEffect(() => {
+   updateAlgoUrl();
+  }, []);
 
   return (
     <div className="pageApp">

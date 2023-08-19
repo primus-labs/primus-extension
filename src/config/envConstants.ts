@@ -4,6 +4,7 @@ import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
 import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
+import { getAlgoUrl } from '@/services/api/algorithm';
 
 type ENVTYPE = 'development' | 'test' | 'production';
 
@@ -14,14 +15,14 @@ const PADOURLMAP = {
   test: '18.179.8.186:8888',
   production: 'wss://api.padolabs.org/algorithm',
 };
-export const PADOURL = PADOURLMAP[CURENV];
+export let PADOURL = PADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
   development: 'wss://api-dev.padolabs.org/algoproxy',
   test: '18.179.8.186:9000',
   production: 'wss://api.padolabs.org/algoproxy',
 };
-export const PROXYURL = PROXYURLMAP[CURENV];
+export let PROXYURL = PROXYURLMAP[CURENV];
 
 const PADOADDRESSMAP = {
   development: '0xe02bd7a6c8aa401189aebb5bad755c2610940a73',
@@ -321,3 +322,85 @@ const EASINFOMAP = {
 export const EASInfo = EASINFOMAP[CURENV];
 
 export const ONCHAINLIST = Object.values(EASInfo);
+
+
+
+
+export const updateAlgoUrl = async () => {
+
+  const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
+  if (!algorithmUrl) {
+    console.log('updateAlgoUrl store first');
+    const algojsonobj = {
+      padoUrl: PADOURL,
+      proxyUrl: PROXYURL
+    };
+    await chrome.storage.local.set({
+      algorithmUrl: JSON.stringify(algojsonobj),
+    });
+  }
+
+  const res = await getAlgoUrl();
+
+  /*const res = {
+    "rc": 0,
+    "mc": "SUCCESS",
+    "msg": "",
+    "result": [
+        {
+            "algorithmDomain": "api1.padolabs.org",
+            "algoProxyDomain": "api1.padolabs.org"
+        },
+        {
+          "algorithmDomain": "api-dev.padolabs.org",
+          "algoProxyDomain": "api-dev.padolabs.org"
+        }
+    ]
+  };*/
+
+  console.log('updateAlgoUrl res=', res);
+  if (res.rc === 0) {
+    let isInited = false;
+    res.result.forEach((item: any) => {
+      console.log(item);
+      let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);
+      ws.onopen = async function(e) {
+        console.log('updateAlgoUrl onopen url=', item.algoProxyDomain);
+        if (!isInited) {
+          console.log('updateAlgoUrl onopen update url new');
+          PADOURL = `wss://${item.algorithmDomain}/algorithm`;
+          PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
+          const jsonobj = {
+            padoUrl: PADOURL,
+            proxyUrl: PROXYURL
+          };
+          await chrome.storage.local.set({
+            algorithmUrl: JSON.stringify(jsonobj),
+          });
+          isInited = true;
+        }
+        ws.close();
+      };
+      ws.onerror = function(e) {
+        console.log('updateAlgoUrl ws onerror', e);
+      }
+      ws.onclose = function(e) {
+        console.log('updateAlgoUrl ws onclose', e);
+      }
+    });
+  }
+};
+
+export const getPadoUrl = async() => {
+  const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
+  const algorithmUrlObj = JSON.parse(algorithmUrl);
+  console.log('updateAlgoUrl getPadoUrl PADOURL=', algorithmUrlObj.padoUrl);
+  return algorithmUrlObj.padoUrl;
+}
+
+export const getProxyUrl = async() => {
+  const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
+  const algorithmUrlObj = JSON.parse(algorithmUrl);
+  console.log('updateAlgoUrl getProxyUrl PROXYURL=', algorithmUrlObj.proxyUrl);
+  return algorithmUrlObj.proxyUrl;
+}

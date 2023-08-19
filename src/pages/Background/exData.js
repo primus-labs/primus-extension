@@ -4,7 +4,7 @@ import {
   CredVersion,
   ExchangeStoreVersion,
 } from '@/config/constants';
-import { PADOURL, PROXYURL } from '@/config/envConstants';
+import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
 
 export let EXCHANGEINFO = {
@@ -250,6 +250,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
   };
   const schemaType = schemaTypeMap[type];
+  const padoUrl = await getPadoUrl();
+  const proxyUrl = await getProxyUrl();
   const params = {
     type,
     label,
@@ -258,8 +260,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     requestid: prevRequestid || timeStampStr,
     version: CredVersion,
     baseName, // host, such as "api.binance.com"
-    padoUrl: PADOURL, // client <----> pado-server // TODO
-    proxyUrl: PROXYURL, // TODO
+    padoUrl: padoUrl, // client <----> pado-server // TODO
+    proxyUrl: proxyUrl, // TODO
     // if cipher non-exist or empty use default. options:
     //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
     cipher: '', // TODO
