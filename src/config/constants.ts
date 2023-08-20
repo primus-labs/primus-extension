@@ -176,7 +176,7 @@ export const CHARTCOLORS = [
 export const ExchangeStoreVersion = '1.0.0';
 export const SocailStoreVersion = '1.0.0';
 export const KYCStoreVersion = '1.0.0';
-export const padoExtensionVersion = '0.2.1';
+export const padoExtensionVersion = '0.2.2';
 export const CredVersion = '1.0.0';
 
 export const USDT = 'USDT';

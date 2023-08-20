@@ -323,11 +323,7 @@ export const EASInfo = EASINFOMAP[CURENV];
 
 export const ONCHAINLIST = Object.values(EASInfo);
 
-
-
-
 export const updateAlgoUrl = async () => {
-
   const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
   if (!algorithmUrl) {
     console.log('updateAlgoUrl store first');
@@ -362,7 +358,6 @@ export const updateAlgoUrl = async () => {
   if (res.rc === 0) {
     let isInited = false;
     res.result.forEach((item: any) => {
-      console.log(item);
       let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);
       ws.onopen = async function(e) {
         console.log('updateAlgoUrl onopen url=', item.algoProxyDomain);
