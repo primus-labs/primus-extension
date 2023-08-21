@@ -368,3 +368,5 @@ export const SUPPORRTEDQUERYCHAINMAP = {
     icon: iconOptimism,
   },
 };
+
+export const DEFAULTFETCHTIMEOUT = 10 * 60 * 1000;

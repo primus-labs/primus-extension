@@ -1,4 +1,5 @@
 import { PADOSERVERURL } from '@/config/envConstants';
+import {DEFAULTFETCHTIMEOUT} from '@/config/constants'
 type FetchParams = {
   method: string;
   url: string;
@@ -34,7 +35,12 @@ const request = async (fetchParams: FetchParams) => {
       golbalHeader['user-id'] = id;
     }
   }
-
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const timeout = config?.timeout ?? DEFAULTFETCHTIMEOUT;
+  const timeoutTimer = setTimeout(() => {
+    controller.abort();
+  }, timeout);
   let requestConfig: any = {
     credentials: 'same-origin',
     method: method,
@@ -47,6 +53,7 @@ const request = async (fetchParams: FetchParams) => {
     },
     mode: 'cors', //  same-origin | no-cors（default）|cores;
     cache: config?.cache ?? 'default', //  default | no-store | reload | no-cache | force-cache | only-if-cached 。
+    signal: signal,
   };
 
   if (method === 'POST') {
@@ -57,9 +64,17 @@ const request = async (fetchParams: FetchParams) => {
   try {
     const response = await fetch(url, requestConfig);
     const responseJson = await response.json();
+    clearTimeout(timeoutTimer);
     return responseJson;
   } catch (error: any) {
-    throw new Error(error);
+    if (error.name === 'AbortError') {
+      console.log(`fetch ${url} timeout`);
+    } else {
+      throw new Error(error);
+    }
+    
+  } finally {
+    clearTimeout(timeoutTimer);
   }
 };
 export default request;
