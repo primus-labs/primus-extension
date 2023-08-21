@@ -76,7 +76,7 @@ const PageHeader = memo(() => {
     (state: UserState) => state.activeSourceType
   );
   const pageHeaderWrapperClassName = useMemo(() => {
-    let activeClassName = 'pageHeaderWrapper aaa';
+    let activeClassName = 'pageHeaderWrapper';
     if (isScroll) {
       activeClassName += ' scroll';
     }
