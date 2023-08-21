@@ -130,8 +130,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     constructorF: Mexc,
     baseName: 'api.mexc.com',
   },
-  twitter: {
-    name: 'Twitter',
+  x: {
+    name: 'X',
     type: 'Social',
     icon: iconDataSourceTwitter,
   },
@@ -290,7 +290,7 @@ export const DEFAULTAUTHSOURCELIST = [
     id: '2',
     logoUrl:
       'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconTwitterX.svg',
-    name: 'TWITTER',
+    name: 'X',
     enabled: '0',
   },
   {

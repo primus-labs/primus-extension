@@ -88,7 +88,7 @@ export const bindUserAddress = (data:BindUserAddressParams, config:any) => {
   });
 };
 
-// refresh social data (twitter,google)
+// refresh social data (x,google)
 export const refreshAuthData = (data:RefreshAuthDataParams) => {
   return request({
     method: 'get',

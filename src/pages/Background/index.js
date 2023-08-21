@@ -203,7 +203,7 @@ const processpadoServiceReq = async (message, port) => {
                 case 'google':
                   formatUserInfo.formatUser = userInfo.email;
                   break;
-                case 'twitter':
+                case 'x':
                   formatUserInfo.formatUser = '@' + userInfo.nickName;
                   break;
                 case 'github':

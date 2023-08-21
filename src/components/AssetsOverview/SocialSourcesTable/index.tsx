@@ -24,7 +24,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(({ list }) => {
     let lowerCaseName = item.name.toLowerCase();
     let formatTxt;
     switch (lowerCaseName) {
-      case 'twitter':
+      case 'x':
         formatTxt = item.verified ? 'Verified' : 'Not Verified';
         break;
       case 'discord':

@@ -43,7 +43,7 @@ export type DataSourceStorages = {
   binance?: any;
   okx?: any;
   kucoin?: any;
-  twitter?: any;
+  x?: any;
   coinbase?: any;
   [propName: string]: any;
 };

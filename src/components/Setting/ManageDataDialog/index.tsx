@@ -140,7 +140,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       let lowerCaseName = item.name.toLowerCase();
       let formatTxt;
       switch (lowerCaseName) {
-        case 'twitter':
+        case 'x':
           formatTxt = item.verified ? 'Verified' : 'Not Verified';
           break;
         case 'discord':

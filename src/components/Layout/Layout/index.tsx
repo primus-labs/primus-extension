@@ -40,7 +40,7 @@ const Layout = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
   usePollingUpdateAllSources();
-  const [updateOnChainLoading,updateOnChainFn] = useUpdateOnChainSources()
+  const [updateOnChainLoading, updateOnChainFn] = useUpdateOnChainSources();
 
   const getSysConfig = useCallback(async () => {
     const padoServicePortListener = async function (message: GetSysConfigMsg) {
@@ -157,8 +157,27 @@ const Layout = () => {
       window.removeEventListener('beforeunload', beforeunloadFn);
     };
   }, [padoServicePort]);
-  
-  useEffect(() => {
+
+  // useEffect(() => {
+  //   dispatch(setExSourcesAsync());
+  //   dispatch(setSocialSourcesAsync());
+  //   dispatch(setKYCsAsync());
+  //   dispatch(setProofTypesAsync());
+  //   dispatch(initSourceUpdateFrequencyActionAsync());
+  //   dispatch(initUserInfoActionAsync());
+  //   dispatch(setCredentialsAsync());
+  //   dispatch(initWalletAddressActionAsync());
+  //   dispatch(initRewardsActionAsync());
+  //   dispatch(setOnChainAssetsSourcesAsync());
+  //   (updateOnChainFn as () => void)();
+  // }, [dispatch, updateOnChainFn]);
+  const initStoreData = useCallback(async () => {
+    // 
+    const { twitter } = await chrome.storage.local.get(['twitter'])
+    if (twitter) {
+      await chrome.storage.local.set({ x: twitter });
+      await chrome.storage.local.remove('twitter')
+    }
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
     dispatch(setKYCsAsync());
@@ -171,7 +190,10 @@ const Layout = () => {
     dispatch(setOnChainAssetsSourcesAsync());
     (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);
-  
+  useEffect(() => {
+    initStoreData();
+  }, [initStoreData]);
+
   useEffect(() => {
     if (pathname === '/datas') {
       updateAlgoUrl();
@@ -185,7 +207,7 @@ const Layout = () => {
         <ActiveHeader />
         <Outlet />
       </div>
-      <LoseEfficacyDialog/>
+      <LoseEfficacyDialog />
     </div>
   );
 };
