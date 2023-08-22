@@ -173,24 +173,17 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     );
     const userInfo = useSelector((state: UserState) => state.userInfo);
     const requestConfigParams = useMemo(() => {
-      const { id, token } = userInfo;
-      const requestConfigParams = {
+      const { id } = userInfo;
+      const rCParams = {
         extraHeader: {
           'user-id': id,
-          Authorization: `Bearer ${token}`,
         },
       };
-      return requestConfigParams;
+      return rCParams;
     }, [userInfo]);
     const fetchAttestForPolygonID = useCallback(async () => {
       try {
-        const { id, token } = userInfo;
-        const requestConfigParams = {
-          extraHeader: {
-            'user-id': id,
-            Authorization: `Bearer ${token}`,
-          },
-        };
+        const { id } = userInfo;
         const {
           type,
           signature,
@@ -269,7 +262,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         });
         alert('attestForPolygonId network error');
       }
-    }, [activeCred, userInfo, initCredList]);
+    }, [activeCred, userInfo, initCredList, requestConfigParams]);
     const fetchAttestForAnt = useCallback(
       async (form: AttestionForm) => {
         const {
