@@ -51,7 +51,6 @@ const sourcesLabel = {
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
-    
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -68,7 +67,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const navigate = useNavigate();
 
     const emptyCon = useMemo(() => {
-      let el 
+      let el;
       switch (type) {
         case 'ASSETS_PROOF':
           el = (
@@ -95,8 +94,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           );
           break;
       }
-      return el
-    },[type])
+      return el;
+    }, [type]);
     const tokenLogoPrefix = useMemo(() => {
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
@@ -141,7 +140,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return connectedExSourceList.filter((i) =>
           supportAssetCredList.includes(i.name.toLowerCase())
         );
-      }else if (type === 'TOKEN_HOLDINGS') {
+      } else if (type === 'TOKEN_HOLDINGS') {
         return connectedExSourceList.filter((i) =>
           supportTokenCredList.includes(i.name.toLowerCase())
         );
@@ -194,6 +193,24 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return [];
       }
     }, [exSources, activeToken]);
+    const baseValueArr = useMemo(() => {
+      if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
+        const baseValArr = JSON.parse(
+          activeAttestationTypeInfo.credProofConditions
+        );
+        return baseValArr;
+      } else {
+        return [];
+      }
+    }, [activeAttestationTypeInfo]);
+    const baseValueList = useMemo(() => {
+      return baseValueArr.map((i: string) => {
+        return {
+          text: '$'+i,
+          value: i,
+        };
+      });
+    }, [baseValueArr]);
 
     const handleChangeSelect = useCallback((val: string) => {
       if (!val) {
@@ -201,6 +218,12 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
       setActiveToken(val);
       // setActiveSource(undefined);
+    }, []);
+    const handleChangeSelectBaseValue = useCallback((val: string) => {
+      if (!val) {
+        setActiveBaseValue('');
+      }
+      setActiveBaseValue(val);
     }, []);
     const handleClickNext = async () => {
       if (activeConnectedSourceList.length === 0) {
@@ -332,6 +355,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
       }
     }, [activeAttestationTypeInfo]);
+    useEffect(() => {
+      if (baseValueArr.length === 1) setActiveBaseValue(baseValueArr[0]);
+    }, [baseValueArr]);
 
     return (
       <PMask onClose={onClose}>
@@ -351,13 +377,23 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                     )}
                   </div>
                   {type === 'ASSETS_PROOF' && (
-                    <div className="con">
-                      $
-                      {activeBaseValue
-                        ? formatNumeral(activeBaseValue, {
-                            decimalPlaces: 0,
-                          })
-                        : ''}
+                    <div className={baseValueArr.length === 1 ?"con": 'con conList' }>
+                      {/* formatNumeral(baseValueArr[0], {
+                          decimalPlaces: 0,
+                        }) */}
+
+                      {baseValueArr.length === 1 ? (
+                        '$' + baseValueArr[0]
+                      ) : (
+                        <div>
+                          
+                          <PSelect
+                            options={baseValueList}
+                            onChange={handleChangeSelectBaseValue}
+                            val={activeBaseValue}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                   {type === 'TOKEN_HOLDINGS' && (
@@ -383,21 +419,20 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 </div>
                 {activeConnectedSourceList.length > 0 && (
                   <ul className="dataList">
-                    {activeConnectedSourceList
-                      .map((item) => {
-                        return (
-                          <li
-                            className={liClassNameCallback(item)}
-                            key={item.name}
-                            onClick={() => {
-                              handleClickData(item);
-                            }}
-                          >
-                            <img src={item.icon} alt="" />
-                            <h6>{item.name}</h6>
-                          </li>
-                        );
-                      })}
+                    {activeConnectedSourceList.map((item) => {
+                      return (
+                        <li
+                          className={liClassNameCallback(item)}
+                          key={item.name}
+                          onClick={() => {
+                            handleClickData(item);
+                          }}
+                        >
+                          <img src={item.icon} alt="" />
+                          <h6>{item.name}</h6>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
                 {activeConnectedSourceList.length === 0 && (
