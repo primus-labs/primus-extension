@@ -16,6 +16,7 @@ import {
   setSocialSourcesAsync,
   setKYCsAsync,
   setCredentialsAsync,
+  setOnChainAssetsSourcesAsync,
 } from '@/store/actions';
 import { setSourceUpdateFrequencyActionAsync } from '@/store/actions';
 import { add } from '@/utils/utils';
@@ -79,7 +80,9 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       return arr;
     }, [activeSourceList]);
     const activeExSourceNameArr = useMemo(() => {
-      const sourceArr = activeSourceList.filter((i) => i.type === 'Assets');
+      const sourceArr = activeSourceList.filter(
+        (i) => i.type === 'Assets' && i.name !== 'On-chain'
+      );
       const arr = sourceArr.map((i) => i.name.toLowerCase());
       return arr;
     }, [activeSourceList]);
@@ -97,6 +100,13 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       const arr = sourceArr.map((i) => i.name.toLowerCase());
       return arr;
     }, [activeSourceList]);
+    const activeOnChainSourceNameArr = useMemo(() => {
+      const sourceArr = activeSourceList.filter(
+        (i) => i.type === 'Assets' && i.name.startsWith('0x')
+      );
+      const arr = sourceArr.map((i: any) => i?.address);
+      return arr;
+    }, [activeSourceList]);
     useEffect(() => {
       setUpdateFrequency(sourceUpdateFrequency);
     }, []);
@@ -109,7 +119,6 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
     );
     const onClear = async () => {
       if (activeSourceNameArr.length < 1) {
-        // alert('Please select at least one data source');
         setErrorTip('Please select at least one data source');
         return;
       }
@@ -401,7 +410,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
         ...activeKYCSourceNameArr,
       ];
       await chrome.storage.local.remove(removeStorageKeyArr);
-
+      // Delete credentials related to the exchange
       const { credentials: credentialsStr } = await chrome.storage.local.get([
         'credentials',
       ]);
@@ -415,13 +424,33 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           delete newCredentialObj[key];
         }
       });
+      await chrome.storage.local.set({
+        credentials: JSON.stringify(newCredentialObj),
+      });
+      // Delete on-chain datas
+      if (activeOnChainSourceNameArr.length > 0) {
+        const { onChainAssetsSources: onChainAssetsSourcesStr } =
+          await chrome.storage.local.get(['onChainAssetsSources']);
+        const onChainAssetsSourcesObj = onChainAssetsSourcesStr
+          ? JSON.parse(onChainAssetsSourcesStr)
+          : {};
+        let newOnChainAssetsSourcesObj = { ...onChainAssetsSourcesObj };
+        activeOnChainSourceNameArr.forEach((key) => {
+          if (newOnChainAssetsSourcesObj[key]) {
+            delete newOnChainAssetsSourcesObj[key];
+          }
+        });
+        await chrome.storage.local.set({
+          onChainAssetsSources: JSON.stringify(newOnChainAssetsSourcesObj),
+        });
+        dispatch(setOnChainAssetsSourcesAsync());
+      }
+
       dispatch(setExSourcesAsync());
       dispatch(setSocialSourcesAsync());
       dispatch(setKYCsAsync());
       dispatch(setCredentialsAsync());
-      await chrome.storage.local.set({
-        credentials: JSON.stringify(newCredentialObj),
-      });
+
       setReconfirmVisible(false);
     }, [
       dispatch,
@@ -429,6 +458,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       activeExSourceNameArr,
       activeExSourceCipherNameArr,
       activeKYCSourceNameArr,
+      activeOnChainSourceNameArr,
     ]);
     const onSubmitDialog = async () => {
       if (sourceUpdateFrequency !== updateFrequency) {
@@ -498,7 +528,13 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
         )}
 
         {reconfirmVisible && (
-          <ReconfirmDialog onClose={onClose} onSubmit={onConfirmReconfirm} onBack={() => { setReconfirmVisible(false) }} />
+          <ReconfirmDialog
+            onClose={onClose}
+            onSubmit={onConfirmReconfirm}
+            onBack={() => {
+              setReconfirmVisible(false);
+            }}
+          />
         )}
       </PMask>
     );

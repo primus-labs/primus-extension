@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import './index.sass';
-
+import { sub, formatAddress } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/constants';
 
 import type { ConnectSourceType } from '@/types/dataSource';
@@ -33,6 +33,9 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
       (state: UserState) => state.socialSources
     );
     const kycSources = useSelector((state: UserState) => state.kycSources);
+    const onChainAssetsSources = useSelector(
+      (state: UserState) => state.onChainAssetsSources
+    );
 
     const connectedSourceList: ConnectSourceType[] = useMemo(() => {
       const exArr = Object.keys(exSources).map((key) => {
@@ -76,8 +79,21 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         };
         return infoObj;
       });
-      return [...exArr, ...socialArr, ...kycArr];
-    }, [exSources, socialSources, kycSources]);
+      const onChainArr = Object.keys(onChainAssetsSources).map((key) => {
+        const sourceInfo: ExchangeMeta = DATASOURCEMAP['onChain'];
+        const { name, icon, type } = sourceInfo;
+        const { label, address } = onChainAssetsSources[key];
+        const infoObj: ConnectSourceType = {
+          name: formatAddress(address, 4, 2),
+          icon,
+          label,
+          type,
+          address
+        };
+        return infoObj;
+      });
+      return [...exArr, ...socialArr, ...kycArr, ...onChainArr];
+    }, [exSources, socialSources, kycSources, onChainAssetsSources]);
     const liClassNameCallback = useCallback(
       (item: ConnectSourceType) => {
         let defaultClassName = 'networkItem';

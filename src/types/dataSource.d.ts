@@ -5,6 +5,7 @@ export type ConnectSourceType = {
   label?: string;
   type?: string;
   desc?: string;
+  address?: string;
 };
 
 export type TokenMap = {
