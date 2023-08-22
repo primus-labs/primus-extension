@@ -24,7 +24,7 @@ import {
   DATASOURCEMAP,
   SUPPORRTEDQUERYCHAINMAP,
 } from '@/config/constants';
-import { getTokenPrice, getAssetsOnChains } from '@/services/api/dataSource';
+import { getTokenPrice } from '@/services/api/dataSource';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';

@@ -8,7 +8,7 @@ import { setOnChainAssetsSourcesAsync } from '@/store/actions';
 import { div, mul, gt, add, sub, getStatisticalData } from '@/utils/utils';
 import { getAssetsOnChains } from '@/services/api/dataSource';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
-import { DATASOURCEMAP } from '@/config/constants';
+import { DATASOURCEMAP, ONEMINUTE } from '@/config/constants';
 import { getCurrentDate } from '@/utils/utils';
 import type { ActiveRequestType } from '@/types/config';
 import type { Dispatch } from 'react';
@@ -108,6 +108,8 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
             signature,
             timestamp,
             address: curConnectedAddr,
+          }, {
+            timeout: ONEMINUTE
           });
 
           if (rc === 0) {

@@ -9,6 +9,7 @@ import {
 import { setOnChainAssetsSourcesAsync } from '@/store/actions';
 
 import { getAssetsOnChains } from '@/services/api/dataSource';
+import { ONEMINUTE } from '@/config/constants';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import type { onChainAssetsData } from '@/types/dataSource';
@@ -59,11 +60,16 @@ const useUpdateOnChainSources = () => {
       // Signature is permanently valid
       if (signature) {
         try {
-          const { rc, result } = await getAssetsOnChains({
-            signature,
-            timestamp,
-            address,
-          });
+          const { rc, result } = await getAssetsOnChains(
+            {
+              signature,
+              timestamp,
+              address,
+            },
+            {
+              timeout: ONEMINUTE,
+            }
+          );
           if (rc === 0) {
             const res = getStatisticalData(result);
             const curAccOnChainAssetsItem: any = {

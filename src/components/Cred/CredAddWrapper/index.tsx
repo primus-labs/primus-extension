@@ -22,6 +22,8 @@ import {
   ATTESTATIONPOLLINGTIMEOUT,
   ATTESTATIONPOLLINGTIME,
   BIGZERO,
+  ONESECOND,
+  ONEMINUTE,
 } from '@/config/constants';
 import {getPadoUrl, getProxyUrl} from '@/config/envConstants'
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -289,7 +291,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         try {
           const { rc, result, msg } = await attestForAnt(
             params as ATTESTFORANTPARAMS,
-            requestConfigParams
+            {
+              ...requestConfigParams,
+              timeout: 30 * ONESECOND,
+            }
           );
           if (rc === 0) {
             // setActiveKYCApplication(result)
@@ -306,7 +311,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               rc: rc2,
               result: result2,
               msg: msg2,
-            } = await validateAttestationForAnt(params2, requestConfigParams);
+            } = await validateAttestationForAnt(params2, {
+              ...requestConfigParams,
+              timeout: ONEMINUTE,
+            });
             if (rc2 === 0) {
               const credentialsObj = { ...credentialsFromStore };
               const activeRequestId = activeCred?.requestid ?? +new Date();

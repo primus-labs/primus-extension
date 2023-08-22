@@ -46,10 +46,11 @@ export const getSupportedQueryableChains = () => {
   });
 };
 
-export const getAssetsOnChains = (data: GETASSETSONCHAINSParams) => {
+export const getAssetsOnChains = (data: GETASSETSONCHAINSParams,config?: any) => {
   return request({
     method: 'get',
     url: `/chain/token?signature=${data.signature}&timestamp=${data.timestamp}&address=${data.address}`,
+    config
   });
 };
 

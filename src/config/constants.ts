@@ -369,4 +369,4 @@ export const SUPPORRTEDQUERYCHAINMAP = {
   },
 };
 
-export const DEFAULTFETCHTIMEOUT = 10 * 60 * 1000;
+export const DEFAULTFETCHTIMEOUT = 10 * ONESECOND;
