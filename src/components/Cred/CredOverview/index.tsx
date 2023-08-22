@@ -115,8 +115,8 @@ const CredOverview = memo(() => {
   }, []);
 
   const handleSubmitBindPolygonid = useCallback(async () => {
-    setBindPolygonidVisible(false);
     await initCredList();
+    setBindPolygonidVisible(false);
   }, [initCredList]);
 
   useEffect(() => {
