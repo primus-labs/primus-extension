@@ -72,6 +72,9 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       (state: UserState) => state.socialSources
     );
     const kycSources = useSelector((state: UserState) => state.kycSources);
+    const onChainAssetsSources = useSelector(
+      (state: UserState) => state.onChainAssetsSources
+    );
     const sourceUpdateFrequency = useSelector(
       (state: UserState) => state.sourceUpdateFrequency
     );
@@ -81,7 +84,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
     }, [activeSourceList]);
     const activeExSourceNameArr = useMemo(() => {
       const sourceArr = activeSourceList.filter(
-        (i) => i.type === 'Assets' && i.name !== 'On-chain'
+        (i) => i.type === 'Assets' && !i.name.startsWith('0x')
       );
       const arr = sourceArr.map((i) => i.name.toLowerCase());
       return arr;
@@ -228,7 +231,6 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
         activeExSourceCipherNameArr
       );
       let assetsRows = [];
-
       activeExSourceNameArr
         .sort((a, b) =>
           sub(
@@ -294,6 +296,74 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           ];
           assetsRows.push(...curSourceRows);
         });
+      // on-chain Datas
+      const exSourceLen = activeExSourceNameArr.length;
+      
+      activeOnChainSourceNameArr
+        .sort((a, b) =>
+          sub(
+            Number(onChainAssetsSources[b].totalBalance),
+            Number(onChainAssetsSources[a].totalBalance)
+          ).toNumber()
+        )
+        .forEach((key, idx) => {
+          let { name, totalBalance, tokenListMap, label, address } =
+            onChainAssetsSources[key];
+          checkedExSourcesTotalBal = add(
+            Number(totalBalance),
+            checkedExSourcesTotalBal
+          );
+          const tokensRows = Object.values(tokenListMap as AssetsMap)
+            .sort((a, b) => sub(Number(b.value), Number(a.value)).toNumber())
+            .reduce((prev: any[], token) => {
+              let { symbol, amount, price, value,chain,address } = token as any;
+              prev.push({
+                empty: '',
+                empty2: '',
+                symbol: address?symbol.split('---')[0]: symbol,
+                chain,
+                amount: amount + '\t',
+                price: price + '\t',
+                value: value + '\t',
+              });
+              return prev;
+            }, []);
+
+          let curSourceRows = [
+            {
+              empty: '',
+              label: 'Source' + (exSourceLen + idx + 1),
+              value: name,
+            },
+            {
+              empty: '',
+              label: 'Label',
+              value: label,
+            },
+            {
+              empty: '',
+              label: 'Address',
+              value: address,
+            },
+            {
+              empty: '',
+              label: 'Balance(USD)',
+              value: totalBalance + '\t',
+            },
+            {
+              empty: '',
+              TokenListMap: 'TokenListMap',
+              symbol: 'TokenName',
+              Blockchain: 'Blockchain',
+              amount: 'Amount',
+              price: 'Price(USD)',
+              value: 'Value(USD)',
+            },
+            ...tokensRows,
+          ];
+          assetsRows.push(...curSourceRows);
+        });
+      
       assetsRows.unshift(
         {
           label: 'DataType',

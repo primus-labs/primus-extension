@@ -304,6 +304,7 @@ export const getStatisticalData = (res: any) => {
           price,
           value,
           isNative: true,
+          chain: curChainName,
         };
         if (currency in tokenMap) {
           const { amount: lastAmt } = tokenMap[currency];
