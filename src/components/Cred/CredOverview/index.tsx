@@ -10,6 +10,7 @@ import BindPolygonID from '@/components/Cred/BindPolygonID';
 import CredSendToChainWrapper from '../CredSendToChainWrapper';
 import { setCredentialsAsync } from '@/store/actions';
 
+import {postMsg} from '@/utils/utils'
 import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -37,6 +38,9 @@ const CredOverview = memo(() => {
   const proofTypes = useSelector((state: UserState) => state.proofTypes);
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
+  );
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
   );
 
   const dispatch: Dispatch<any> = useDispatch();
@@ -148,6 +152,16 @@ const CredOverview = memo(() => {
       setAddDialogVisible(false);
     }
   }, [createFlag]);
+  useEffect(() => {
+    return () => {
+      const msg = {
+        fullScreenType: 'algorithm',
+        reqMethodName: 'stop',
+        params: {},
+      };
+      postMsg(padoServicePort, msg);
+    };
+  }, [padoServicePort]);
   return (
     <div className="credOverview">
       <CredList
