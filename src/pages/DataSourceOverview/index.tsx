@@ -35,6 +35,7 @@ import type {
   onChainAssetsDataList,
   ExData,
   onChainAssetsData,
+  onChainData,
 } from '@/types/dataSource';
 import './index.sass';
 import { eventReport } from '@/services/api/usertracker';
@@ -126,8 +127,14 @@ const DataSourceOverview = memo(() => {
     }
     if (filterWord) {
       return orderedDataSourceList.filter((item) => {
-        const lowerCaseName = item.name.toLowerCase();
-        const lowerFilterWord = filterWord?.toLowerCase();
+        let lowerCaseName;
+        let lowerFilterWord;
+        if (item.name === 'On-chain') {
+          lowerCaseName = (item as onChainData)?.address.toLowerCase();
+        } else {
+          lowerCaseName = item.name.toLowerCase();
+        }
+        lowerFilterWord = filterWord?.toLowerCase();
         return lowerCaseName.startsWith(lowerFilterWord as string);
       });
     } else {
