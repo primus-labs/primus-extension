@@ -20,10 +20,11 @@ interface PSelectProps {
   placeholder?: string;
   val: string;
   showIcon?: boolean;
+  prefix?: any;
 }
 
 const PSelect: React.FC<PSelectProps> = memo(
-  ({ onChange, options, placeholder = '', val, showIcon }) => {
+  ({ onChange, options, placeholder = '', val, showIcon, prefix }) => {
     // const [activeOption, setActiveOption] = useState<OptionItem>();
     const [optionsVisible, setOptionsVisible] = useState(false);
 
@@ -86,6 +87,7 @@ const PSelect: React.FC<PSelectProps> = memo(
           )}
 
           <span ref={valEl} className={val ? '' : 'placeholder'}>
+            {val && prefix && prefix}
             {val ? val : 'Select'}
           </span>
 

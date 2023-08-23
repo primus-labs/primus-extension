@@ -206,7 +206,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const baseValueList = useMemo(() => {
       return baseValueArr.map((i: string) => {
         return {
-          text: '$'+i,
+          text: '$' + i,
           value: i,
         };
       });
@@ -377,7 +377,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                     )}
                   </div>
                   {type === 'ASSETS_PROOF' && (
-                    <div className={baseValueArr.length === 1 ?"con": 'con conList' }>
+                    <div
+                      className={
+                        baseValueArr.length === 1 ? 'con' : 'con conList'
+                      }
+                    >
                       {/* formatNumeral(baseValueArr[0], {
                           decimalPlaces: 0,
                         }) */}
@@ -386,11 +390,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                         '$' + baseValueArr[0]
                       ) : (
                         <div>
-                          
                           <PSelect
                             options={baseValueList}
                             onChange={handleChangeSelectBaseValue}
                             val={activeBaseValue}
+                            prefix="$"
                           />
                         </div>
                       )}
