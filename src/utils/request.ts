@@ -1,5 +1,5 @@
 import { PADOSERVERURL } from '@/config/envConstants';
-import {DEFAULTFETCHTIMEOUT} from '@/config/constants'
+import { DEFAULTFETCHTIMEOUT, padoExtensionVersion } from '@/config/constants';
 type FetchParams = {
   method: string;
   url: string;
@@ -23,7 +23,10 @@ const request = async (fetchParams: FetchParams) => {
       url = url + '?' + dataStr;
     }
   }
-  let golbalHeader: any = {};
+  let golbalHeader: any = {
+    'client-type': 'WEB',
+    'client-version': padoExtensionVersion,
+  };
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   if (userInfo) {
     const userInfoObj = JSON.parse(userInfo);
