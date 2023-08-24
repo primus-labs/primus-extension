@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
+import React, { useState, useEffect, memo, useCallback ,useMemo} from 'react';
 
 import PControledInput from '@/components/PControledInput';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
@@ -22,6 +22,19 @@ interface ConnectDataDialogProps {
   onCancel: () => void;
   activeSourceKeys?: GetDataFormProps;
 }
+const guideMap = {
+  Binance:
+    'https://docs.padolabs.org/Exchanges-API-Setup/Binance-API-Key-Setup',
+  Coinbase:
+    'https://docs.padolabs.org/Exchanges-API-Setup/Coinbase-API-Key-Setup',
+  KuCoin: 'https://docs.padolabs.org/Exchanges-API-Setup/Kucoin-API-Key-Setup',
+  Bybit: 'https://docs.padolabs.org/Exchanges-API-Setup/Bybit-API-Key-Setup',
+  OKX: 'https://docs.padolabs.org/Exchanges-API-Setup/OKX-API-Key-Setup',
+  Gate: 'https://docs.padolabs.org/Exchanges-API-Setup/Gate-API-Key-Setup',
+  Huobi: 'https://docs.padolabs.org/Exchanges-API-Setup/Huobi-API-Key-Setup',
+  Bitget: 'https://docs.padolabs.org/Exchanges-API-Setup/Bitget-API-Key-Setup',
+  MEXC: 'https://docs.padolabs.org/Exchanges-API-Setup/MEXC-API-Key-Setup',
+};
 
 const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
   ({
@@ -42,6 +55,13 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
     const [label, setLabel] = useState<string>();
     const [submitted, setSubmitted] = useState<boolean>(false);
 
+    const activeGuideUrl = useMemo(() => {
+      if (name) {
+        return guideMap[name as keyof typeof guideMap]
+      } else {
+        return ''
+      }
+    },[name])
     const handleClickNext = () => {
       setSubmitted(true);
       if (loading) {
@@ -153,11 +173,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
                   </div>
                   <div className="ctipWrapper">
                     <span>How to get API Key & Secret key?</span>
-                    <a
-                      href="https://docs.padolabs.org/category/exchanges-api-setup"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a href={activeGuideUrl} target="_blank" rel="noreferrer">
                       Click here
                     </a>
                   </div>
