@@ -72,6 +72,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
 
     const [timeoutSwitch, setTimeoutSwitch] = useState<boolean>(false);
     const [intervalSwitch, setIntervalSwitch] = useState<boolean>(false);
+    const [activeAttestForm, setActiveAttestForm] = useState<any>();
     
 
     const padoServicePort = useSelector(
@@ -160,10 +161,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           setActiveRequest({
             type: 'warn',
             title: 'Not met the requirements',
-            desc: <>
-              <p>Your request did not meet the necessary requirements.</p>
-              <p>Please confirm and try again later.</p>
-            </>,
+            desc: (
+              <>
+                <p>Insufficient assets in your {source === 'okx'? 'Trading': 'Spot'} Account.</p>
+                <p>Please confirm and try again later.</p>
+              </>
+            ),
           });
           return false;
         }
@@ -365,6 +368,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     );
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
+        setActiveAttestForm(form);
         setStep(2);
         setActiveRequest({
           type: 'loading',
@@ -487,12 +491,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               desc: 'Your proof is created!',
             });
           } else if (content.balanceGreaterThanBaseValue === 'false') {
+            let descItem1 = 'Your request did not meet the necessary requirements.';
+            if (activeAttestForm.type === 'ASSETS_PROOF') {
+              descItem1 = `Insufficient assets in your ${activeAttestForm.source === 'okx' ? 'Trading' : 'Spot'} Account.`;
+            };
             setActiveRequest({
               type: 'warn',
               title: 'Not met the requirements',
               desc: (
                 <>
-                  <p>Your request did not meet the necessary requirements.</p>
+                  <p>{descItem1}</p>
                   <p>Please confirm and try again later.</p>
                 </>
               ),
@@ -517,6 +525,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         padoServicePort,
         initCredList,
         credentialsFromStore,
+        activeAttestForm,
       ]
     );
     useAlgorithm(getAttestationCallback, getAttestationResultCallback);
