@@ -155,7 +155,8 @@ export function postMsg(port: chrome.runtime.Port, msg: any) {
   try {
     port.postMessage(msg);
   } catch (error: any) {
-    throw new Error(error);
+    console.log('postMsg error: ', error)
+    // throw new Error(error);
   }
 }
 

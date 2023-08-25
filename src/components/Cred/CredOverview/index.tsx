@@ -154,11 +154,16 @@ const CredOverview = memo(() => {
   }, [createFlag]);
   useEffect(() => {
     return () => {
+      
       const msg = {
         fullScreenType: 'algorithm',
         reqMethodName: 'stop',
-        params: {},
+        // params: {},
+        params: {
+          noRestart: true,
+        },
       };
+      console.log('before leave page credit port:', padoServicePort);
       postMsg(padoServicePort, msg);
     };
   }, [padoServicePort]);

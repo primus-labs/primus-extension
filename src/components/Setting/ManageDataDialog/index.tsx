@@ -394,7 +394,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       onChainAssetsSources,
     ]);
     const assembleSocialExcelParams = useCallback(async () => {
-      const socialRows: object[] = [];
+      let socialRows: object[] = [];
       if (activeSocialSourceNameArr.length > 0) {
         socialRows = [
           {
