@@ -266,6 +266,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
     cipher: '', // TODO
     getdatatime: timeStampStr,
+    credVersion: '1.0.1',
     exchange: {
       apikey: 'xxx',
       apisecret: 'xxx',

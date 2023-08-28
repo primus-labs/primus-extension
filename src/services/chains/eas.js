@@ -189,6 +189,18 @@ export async function attestByDelegation(params) {
   return newAttestationUID;
 }
 
+async function getFee(networkName, metamaskprovider) {
+  const contractAddress = EASInfo[networkName].easProxyContrac;
+  const abi = [
+    'function fee() public view returns(uint256)',
+  ];
+  let provider = new ethers.providers.Web3Provider(metamaskprovider);
+  const contract = new ethers.Contract(contractAddress, abi, provider);
+  const fee = await contract.fee();
+  console.log('get fee=', fee);
+  return fee;
+}
+
 export async function attestByDelegationProxy(params) {
   let {
     networkName,
@@ -227,6 +239,7 @@ export async function attestByDelegationProxy(params) {
       schemauid = activeSchemaInfo.schemaUidIdentification;
     }
     console.log('attestByDelegationProxy schemauid=', schemauid);
+    const fee = await getFee(networkName, metamaskprovider);
     tx = await easProxy.attestByDelegationProxy(
       {
         schema: schemauid,
@@ -239,7 +252,8 @@ export async function attestByDelegationProxy(params) {
         attester: attesteraddr,
         signature: formatSignature,
         deadline: 0,
-      }
+      },
+      { value: fee }
       // { gasPrice: BN.from('20000000000'), gasLimit: BN.from('1000000') }
     );
   } catch (er) {

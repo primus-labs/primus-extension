@@ -46,7 +46,7 @@ const EASINFOMAP = {
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
-      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
+      easProxyContrac: '0x3330843f37f2B5AaDC436c4047a87AaABD64C48C',
       schemas: {
         EAS: {
           schemaUid:
@@ -235,7 +235,7 @@ const EASINFOMAP = {
       rpcUrl: 'https://arb1.arbitrum.io/rpc',
       erc721Contract: '',
       easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
-      easProxyContrac: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
+      easProxyContrac: '0xC30b99CC6a4Bd7628Da385fa36bd769A5CD03300',
       schemas: {
         EAS: {
           schemaUid:
