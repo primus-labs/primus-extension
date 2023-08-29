@@ -15,7 +15,7 @@ import ConnectWalletDialog from './ConnectWalletDialog';
 
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
-import { attestByDelegationProxy } from '@/services/chains/eas.js';
+import { attestByDelegationProxy, attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
 
 import type { Dispatch } from 'react';
@@ -116,7 +116,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             type: activeCred?.type,
             schemaName: activeCred?.schemaName ?? 'EAS',
           };
-          const upChainRes = await attestByDelegationProxy(upChainParams);
+          const upChainRes = await attestByDelegationProxyFee(upChainParams);
           if (upChainRes) {
             const cObj = { ...credentialsFromStore };
             const curRequestid = activeCred?.requestid as string;
@@ -159,6 +159,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             });
           }
         } catch (e) {
+          console.log('upChainRes catch e=', e);
           setActiveSendToChainRequest({
             type: 'error',
             title: 'Failed',
