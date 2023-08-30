@@ -66,6 +66,12 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const hasCred = useMemo(() => {
       return credList.length > 0;
     }, [credList]);
+    const hadSendToChain = useMemo(() => {
+      const hadFlag = credList.some(
+        (item) => item?.provided?.length && item?.provided?.length > 0
+      );
+      return hadFlag;
+    }, [credList]);
     const errorDescEl = useMemo(
       () => (
         <>
@@ -93,7 +99,16 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setActiveRequest({
           type: 'warn',
           title: 'No proof is created',
-          desc: 'Please go to the Credential page to generate.',
+          desc: 'Please go to the Credit page to generate.',
+        });
+        setStep(2);
+        return;
+      }
+      if (!hadSendToChain) {
+        setActiveRequest({
+          type: 'warn',
+          title: 'No proof is submitted',
+          desc: 'Please go to the Credit page to submit proof to the blockchain.',
         });
         setStep(2);
         return;
@@ -112,6 +127,10 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         return;
       }
       if (!hasCred) {
+        navigate('/cred');
+        return;
+      }
+      if (!hadSendToChain) {
         navigate('/cred');
         return;
       }
@@ -198,7 +217,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
 
           const eventInfo = {
             eventType: 'EVENTS',
-            rawData: {name: 'Get on-boarding reward', issuer: 'PADO'},
+            rawData: { name: 'Get on-boarding reward', issuer: 'PADO' },
           };
           eventReport(eventInfo);
         } catch (e) {
