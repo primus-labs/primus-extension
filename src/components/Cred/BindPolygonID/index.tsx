@@ -5,7 +5,7 @@ import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDial
 import BindPolygonIDDialog from './BindPolygonIDDialog';
 
 import { attestForPolygonId } from '@/services/api/cred';
-
+import { CredVersion } from '@/config/constants';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
@@ -92,8 +92,9 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               provided: [],
               signature: res.claimSignatureInfo.signature,
               encodedData: res.claimSignatureInfo.encodedData,
+              version: CredVersion,
             };
-            fullAttestation.sigFormat = "Polygon";
+            fullAttestation.sigFormat = 'Polygon';
 
             const { credentials: credentialsStr } =
               await chrome.storage.local.get(['credentials']);

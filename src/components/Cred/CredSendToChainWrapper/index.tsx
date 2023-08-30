@@ -17,7 +17,7 @@ import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { attestByDelegationProxy, attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
-
+import {compareVersions} from '@/utils/utils'
 import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -116,7 +116,17 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             type: activeCred?.type,
             schemaName: activeCred?.schemaName ?? 'EAS',
           };
-          const upChainRes = await attestByDelegationProxyFee(upChainParams);
+          const compareRes = compareVersions(
+            '1.0.0',
+            activeCred?.version ?? ''
+          );
+          let upChainRes;
+          if (compareRes > -1) {
+            // old version
+            upChainRes = await attestByDelegationProxy(upChainParams);
+          } else {
+            upChainRes = await attestByDelegationProxyFee(upChainParams);
+          }
           if (upChainRes) {
             const cObj = { ...credentialsFromStore };
             const curRequestid = activeCred?.requestid as string;
@@ -148,7 +158,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             const eventType = `${upChainParams.type}-${upChainParams.schemaName}`;
             const eventInfo = {
               eventType: 'UPPER_CHAIN',
-              rawData: {network: upChainParams.networkName, type: eventType, source: curCredential.source},
+              rawData: {
+                network: upChainParams.networkName,
+                type: eventType,
+                source: curCredential.source,
+              },
             };
             eventReport(eventInfo);
           } else {

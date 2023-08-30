@@ -24,6 +24,7 @@ import {
   BIGZERO,
   ONESECOND,
   ONEMINUTE,
+  CredVersion,
 } from '@/config/constants';
 import {getPadoUrl, getProxyUrl} from '@/config/envConstants'
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -232,6 +233,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             provided: [],
             signature: res.claimSignatureInfo.signature,
             encodedData: res.claimSignatureInfo.encodedData,
+            version: CredVersion,
           };
 
           const { credentials: credentialsStr } =
@@ -324,7 +326,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 source,
                 sourceUseridHash: '',
                 address: walletAddress,
-                version: '1.0.0',
                 label,
                 credential,
                 ...result2,
@@ -332,6 +333,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 sigFormat: 'EAS-Ethereum',
                 schemaType: type,
                 user,
+                version: CredVersion,
               };
 
               await chrome.storage.local.set({
