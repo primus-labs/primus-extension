@@ -216,6 +216,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             baseValue,
             balanceGreaterThanBaseValue,
           },
+          update: 'true'
         };
         if (type === 'TOKEN_HOLDINGS') {
           params.credentialSubject.asset = holdingToken;

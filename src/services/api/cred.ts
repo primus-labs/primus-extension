@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 type GETCONNECTPOLYGONIDQRCODEParams = {
   sessionId: string;
+  update?: string;
 };
 type GETCONNECTPOLYGONIDRESULTParams = {
   sessionId: string;
@@ -38,7 +39,7 @@ export const attestForPolygonId = (
 ) => {
   return request({
     method: 'post',
-    url: `/polygon/claim?sessionId=${data.sessionId}`,
+    url: `/polygon/claim?sessionId=${data.sessionId}&update=${data.update}`,
     data,
     config,
   });
