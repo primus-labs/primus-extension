@@ -71,7 +71,12 @@ const EASINFOMAP = {
       rpcUrls: [
         'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
-      blockExploreUrls: ['https://sepolia.etherscan.io'],
+      blockExplorerUrls: ['https://sepolia.etherscan.io'],
+      nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18,
+      },
     },
     ArbitrumOne: {
       icon: iconArbitrum,
@@ -102,7 +107,7 @@ const EASINFOMAP = {
       chainId: '0xa4b1', // numToHex
       chainName: 'ArbitrumOne',
       rpcUrls: ['https://arb1.arbitrum.io/rpc'],
-      blockExploreUrls: ['https://arbiscan.io'],
+      blockExplorerUrls: ['https://arbiscan.io'],
     },
     Polygon: {
       icon: iconPolygon,
@@ -120,7 +125,12 @@ const EASINFOMAP = {
       rpcUrls: [
         'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
-      blockExploreUrls: ['https://sepolia.etherscan.io'],
+      blockExplorerUrls: ['https://sepolia.etherscan.io'],
+      nativeCurrency: {
+        name: 'MATIC',
+        symbol: 'MATIC',
+        decimals: 18,
+      },
     },
     BNB: {
       icon: iconBinance,
@@ -147,7 +157,7 @@ const EASINFOMAP = {
       chainId: '0x61', // numToHex
       chainName: 'BNB Smart Chain Testnet',
       rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545/'],
-      blockExploreUrls: ['https://testnet.bscscan.com/'],
+      blockExplorerUrls: ['https://testnet.bscscan.com/'],
     },
   },
   test: {
@@ -181,7 +191,7 @@ const EASINFOMAP = {
       rpcUrls: [
         'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
-      blockExploreUrls: ['https://sepolia.etherscan.io'],
+      blockExplorerUrls: ['https://sepolia.etherscan.io'],
     },
     Polygon: {
       icon: iconPolygon,
@@ -199,7 +209,12 @@ const EASINFOMAP = {
       rpcUrls: [
         'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
-      blockExploreUrls: ['https://sepolia.etherscan.io'],
+      blockExplorerUrls: ['https://sepolia.etherscan.io'],
+      nativeCurrency: {
+        name: 'MATIC',
+        symbol: 'MATIC',
+        decimals: 18,
+      },
     },
     BNB: {
       icon: iconBinance,
@@ -226,7 +241,7 @@ const EASINFOMAP = {
       chainId: '0x61', // numToHex
       chainName: 'BNB Smart Chain Testnet',
       rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545/'],
-      blockExploreUrls: ['https://testnet.bscscan.com/'],
+      blockExplorerUrls: ['https://testnet.bscscan.com/'],
     },
   },
   production: {
@@ -259,7 +274,12 @@ const EASINFOMAP = {
       chainId: '0xa4b1', // numToHex
       chainName: 'ArbitrumOne',
       rpcUrls: ['https://arb1.arbitrum.io/rpc'],
-      blockExploreUrls: ['https://arbiscan.io'],
+      blockExplorerUrls: ['https://arbiscan.io'],
+      nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18,
+      },
     },
     Ethereum: {
       icon: iconUpChainEthereum,
@@ -275,7 +295,7 @@ const EASINFOMAP = {
       rpcUrls: [
         'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
-      blockExploreUrls: ['https://etherscan.io/'],
+      blockExplorerUrls: ['https://etherscan.io/'],
     },
     BNB: {
       icon: iconBinance,
@@ -302,7 +322,7 @@ const EASINFOMAP = {
       chainId: '0x61', // numToHex
       chainName: 'BNB Smart Chain Testnet',
       rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545/'],
-      blockExploreUrls: ['https://testnet.bscscan.com/'],
+      blockExplorerUrls: ['https://testnet.bscscan.com/'],
     },
     Polygon: {
       icon: iconPolygon,
@@ -317,7 +337,12 @@ const EASINFOMAP = {
       chainId: '0x89', // numToHex
       chainName: 'Polygon Mainnet',
       rpcUrls: ['https://polygon-rpc.com'],
-      blockExploreUrls: ['https://polygonscan.com/'],
+      blockExplorerUrls: ['https://polygonscan.com/'],
+      nativeCurrency: {
+        name: 'MATIC',
+        symbol: 'MATIC',
+        decimals: 18,
+      },
     },
   },
 };

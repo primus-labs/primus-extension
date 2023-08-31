@@ -30,12 +30,14 @@ export const connectWallet = async (targetNetwork) => {
   }
 };
 const switchChain = async (connectedChainId, targetNetwork) => {
-  const { chainId, chainName, rpcUrls, blockExploreUrls } = targetNetwork;
+  const { chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
+    targetNetwork;
   const obj = {
     chainId,
     chainName,
     rpcUrls,
-    blockExploreUrls,
+    blockExplorerUrls,
+    nativeCurrency,
   };
 
   if (connectedChainId === obj.chainId) {
