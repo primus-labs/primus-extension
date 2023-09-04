@@ -26,10 +26,12 @@ interface AddSourceSucDialogProps {
   footerButton?: any;
   closeable?: boolean;
   tip?: any;
+  headerEl?: any
 }
 
 const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
   ({
+    headerEl,
     onClose,
     activeSource,
     onSubmit,
@@ -71,6 +73,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
       <PMask onClose={onClose} closeable={closeable}>
         <div className={dialogClassName}>
           <main>
+            {headerEl}
             {headerType === 'setting' && (
               <AuthInfoHeader checked={false} />
             )}

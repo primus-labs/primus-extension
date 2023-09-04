@@ -42,7 +42,8 @@ import {
 } from '@/services/api/cred';
 
 
-
+import { DATASOURCEMAP } from '@/config/constants';
+import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 import type { Dispatch } from 'react';
 import type { CredTypeItemType, AttestionForm } from '@/types/cred';
@@ -51,6 +52,8 @@ import type { AssetsMap } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 import './index.sass';
+
+const onChainObj:any = DATASOURCEMAP.onChain;
 const schemaTypeMap = {
   ASSETS_PROOF: 'Assets Proof',
   TOKEN_HOLDINGS: 'Token Holdings',
@@ -62,9 +65,10 @@ interface CredAddWrapperType {
   activeSource?: string;
   onSubmit: () => void;
   onClose: () => void;
+  type?: string;
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
-  ({ visible = true, activeCred, activeSource,onClose, onSubmit }) => {
+  ({ visible = true, activeCred, activeSource, onClose, onSubmit, type }) => {
     const [step, setStep] = useState(-1);
     const [activeAttestationType, setActiveAttestationType] =
       useState<string>('');
@@ -74,7 +78,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const [timeoutSwitch, setTimeoutSwitch] = useState<boolean>(false);
     const [intervalSwitch, setIntervalSwitch] = useState<boolean>(false);
     const [activeAttestForm, setActiveAttestForm] = useState<any>();
-    
 
     const padoServicePort = useSelector(
       (state: UserState) => state.padoServicePort
@@ -164,7 +167,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             title: 'Not met the requirements',
             desc: (
               <>
-                <p>Insufficient assets in your {source === 'okx'? 'Trading': 'Spot'} Account.</p>
+                <p>
+                  Insufficient assets in your{' '}
+                  {source === 'okx' ? 'Trading' : 'Spot'} Account.
+                </p>
                 <p>Please confirm and try again later.</p>
               </>
             ),
@@ -216,7 +222,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             baseValue,
             balanceGreaterThanBaseValue,
           },
-          update: 'true'
+          update: 'true',
         };
         if (type === 'TOKEN_HOLDINGS') {
           params.credentialSubject.asset = holdingToken;
@@ -318,9 +324,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               const credentialsObj = { ...credentialsFromStore };
               const activeRequestId = activeCred?.requestid ?? +new Date();
               // // credentialsObj[activeRequestId] = fullAttestation;
-              
-              const user = await assembleUserInfoParams()
-              
+
+              const user = await assembleUserInfoParams();
+
               credentialsObj[activeRequestId] = {
                 type,
                 requestid: activeRequestId + '',
@@ -373,15 +379,25 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);
         setStep(2);
-        setActiveRequest({
+        let loadingObj = {
           type: 'loading',
           title: 'Attestation is processing',
           desc: 'It may take a few seconds.',
-        });
+        };
+        if (form.source === 'metamask') {
+          loadingObj = {
+            type: 'loading',
+            title: 'Processing',
+            desc: 'Please complete the transaction in your wallet.',
+          };
+        }
+        setActiveRequest(loadingObj);
         if (activeCred?.did) {
           fetchAttestForPolygonID();
         } else {
-          if (form.type === 'IDENTIFICATION_PROOF') {
+          if (form.type === 'UNISWAP_PROOF') {
+            // TODO
+          } else if (form.type === 'IDENTIFICATION_PROOF') {
             fetchAttestForAnt(form);
           } else {
             if (form.type === 'ASSETS_PROOF') {
@@ -447,7 +463,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
 
     const getAttestationCallback = useCallback((res: any) => {
       const { retcode, retdesc } = JSON.parse(res);
-      if (retcode === '0') { 
+      if (retcode === '0') {
         setTimeoutSwitch(true);
         setIntervalSwitch(true);
       } else if (retcode === '2') {
@@ -494,10 +510,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               desc: 'Your proof is created!',
             });
           } else if (content.balanceGreaterThanBaseValue === 'false') {
-            let descItem1 = 'Your request did not meet the necessary requirements.';
+            let descItem1 =
+              'Your request did not meet the necessary requirements.';
             if (activeAttestForm.type === 'ASSETS_PROOF') {
-              descItem1 = `Insufficient assets in your ${activeAttestForm.source === 'okx' ? 'Trading' : 'Spot'} Account.`;
-            };
+              descItem1 = `Insufficient assets in your ${
+                activeAttestForm.source === 'okx' ? 'Trading' : 'Spot'
+              } Account.`;
+            }
             setActiveRequest({
               type: 'warn',
               title: 'Not met the requirements',
@@ -589,6 +608,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           <CredTypesDialog
             onClose={handleCloseMask}
             onSubmit={handleChangeProofType}
+            type={type}
           />
         )}
         {visible && step === 1 && (
@@ -606,7 +626,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
-            headerType="attestation"
+            headerType={
+              activeAttestForm.source === 'metamask'
+                ? 'dataSource'
+                : 'attestation'
+            }
+            activeSource={
+              activeAttestForm.source === 'metamask' ? onChainObj : null
+            }
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveRequestDialog}
           />

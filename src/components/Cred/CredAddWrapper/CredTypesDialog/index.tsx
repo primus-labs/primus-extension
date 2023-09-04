@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, memo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import PMask from '@/components/PMask';
@@ -11,22 +11,29 @@ import type { PROOFTYPEITEM } from '@/types/cred';
 interface CredTypesDialogProps {
   onClose: () => void;
   onSubmit: (type: string) => void;
+  type?: string;
 }
 
 const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
-  ({ onClose, onSubmit }) => {
+  ({ onClose, onSubmit, type }) => {
     const [errorTip, setErrorTip] = useState<string>();
     const [activeType, setActiveType] = useState<string>();
 
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
 
-    const handleChange = (item: PROOFTYPEITEM) => {
-      // if (item.enabled === 1) {
-      //   return;
-      // }
-      setErrorTip('');
-      setActiveType(item.credIdentifier);
-    };
+    const handleChange = useCallback(
+      (item: PROOFTYPEITEM) => {
+        if (item.enabled === 1) {
+          return;
+        }
+        if (type && type !== item.credIdentifier) {
+          return
+        }
+        setErrorTip('');
+        setActiveType(item.credIdentifier);
+      },
+      [type]
+    );
     const handleClickNext = () => {
       if (activeType) {
         onSubmit(activeType);
@@ -37,7 +44,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
     const liClassName = useCallback(
       (item: PROOFTYPEITEM) => {
         let defaultCN = 'credTypeItem';
-        if (item.enabled === 1) {
+        if (item.enabled === 1 || (type && type !== item.credIdentifier)) {
           defaultCN += ' disabled';
         }
         if (item.credIdentifier === activeType) {
@@ -45,8 +52,11 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         }
         return defaultCN;
       },
-      [activeType]
+      [activeType, type]
     );
+    useEffect(() => {
+      setActiveType(type);
+    }, [type]);
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog credTypesDialog">

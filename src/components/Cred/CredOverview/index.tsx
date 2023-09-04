@@ -30,6 +30,7 @@ const CredOverview = memo(() => {
   const [activeCred, setActiveCred] = useState<CredTypeItemType>();
   const [searchParams] = useSearchParams();
   const createFlag = searchParams.get('createFlag')?.toLowerCase();
+  const proofType:any = searchParams.get('proofType');
 
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
@@ -144,17 +145,17 @@ const CredOverview = memo(() => {
   }, []);
 
   useEffect(() => {
-    if (createFlag) {
+    if (createFlag || proofType) {
       setActiveSourceName(createFlag);
       setAddDialogVisible(true);
     } else {
       setActiveSourceName(undefined);
       setAddDialogVisible(false);
     }
-  }, [createFlag]);
+  }, [createFlag, proofType]);
+
   useEffect(() => {
     return () => {
-      
       const msg = {
         fullScreenType: 'algorithm',
         reqMethodName: 'stop',
@@ -184,6 +185,7 @@ const CredOverview = memo(() => {
         activeSource={activeSourceName}
         onClose={handleCloseAddDialog}
         onSubmit={handleCloseAddDialog}
+        type={proofType}
       />
       <CredSendToChainWrapper
         visible={sendToChainDialogVisible}

@@ -30,6 +30,14 @@
         @extend .fcss
         gap: 14px
         padding-top: 32px
+        .uniswapContentExtra
+          color: rgba(0, 0, 0, 0.60)
+          font-family: 'Inter-Regular'
+          font-size: 12px
+          line-height: 16px
+          width: 201px
+          transform: scale(0.83) translateX(-19px)
+          margin-top: -16px
         &.contItemAssets
           padding-top: 20px
         .label
@@ -64,6 +72,9 @@
               padding: 5px 13px
             &.conList
               padding: 0
+            &.uniswap
+              padding: 5px 7.5px
+              width: auto
           .pSelectWrapper
             .pSelect
               width: 115px
@@ -193,23 +204,7 @@
       background: rgba(0, 0, 0, 0.05)
       &:hover
        background: rgba(0, 0, 0, 0.05) 
-    .tipWrapper
-      position: absolute
-      content: ''
-      top: -40px
-      left: 50%
-      transform: translateX(-50%)
-      width: 100%
-      text-align: center
-      .errorTip
-        width: fit-content
-        margin: 0 auto
-        padding: 0 12px
-        @include backdropMixin(16px,rgba(0, 0, 0, 0.05))
-        font-size: 12px
-        line-height: 25px
-        font-family: 'Inter-Regualr'
-        color: rgba(0,0,0,0.4)
+    
 @media (max-width: 1680px)
   .attestationDialog
     padding: 48px 42px 32px

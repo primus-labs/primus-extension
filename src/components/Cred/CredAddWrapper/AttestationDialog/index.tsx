@@ -1,14 +1,17 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
+import { WALLETLIST } from '@/config/constants'
+import type { WALLETITEMTYPE } from '@/config/constants';
 import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
 import PSelect from '@/components/PSelect';
+import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { DATASOURCEMAP } from '@/config/constants';
 import { formatNumeral } from '@/utils/utils';
 import iconGreater from '@/assets/img/iconGreater.svg';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
+import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 
 import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/dataSource';
@@ -47,6 +50,7 @@ const sourcesLabel = {
   ASSETS_PROOF: 'Assets',
   TOKEN_HOLDINGS: 'Tokens',
   IDENTIFICATION_PROOF: 'Identity',
+  UNISWAP_PROOF: 'Assets',
 };
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
@@ -144,13 +148,15 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return connectedExSourceList.filter((i) =>
           supportTokenCredList.includes(i.name.toLowerCase())
         );
+      } else if (type === 'UNISWAP_PROOF') {
+        return WALLETLIST.filter((i: WALLETITEMTYPE) => !i.disabled);
       } else {
         return connectedExSourceList;
       }
     }, [connectedExSourceList, connectedKYCSourceList, type]);
     const tokenList = useMemo(() => {
       let list: string[] = [];
-      if (type === 'IDENTIFICATION_PROOF') {
+      if (type !== 'TOKEN_HOLDINGS') {
         return [];
       }
       if (!activeSource?.name) {
@@ -267,6 +273,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           form.userIdentity = walletAddress;
           form.verifyIdentity = walletAddress;
           form.proofType = type;
+        }
+        if (type === 'UNISWAP_PROOF') {
+          // TODO
         }
         if (activeCred?.requestid) {
           form.requestid = activeCred?.requestid;
@@ -415,7 +424,17 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                       {activeAttestationTypeInfo.credProofConditions}
                     </div>
                   )}
+                  {type === 'UNISWAP_PROOF' && (
+                    <div className="con uniswap">
+                      {activeAttestationTypeInfo.credProofConditions}
+                    </div>
+                  )}
                 </div>
+                {type === 'UNISWAP_PROOF' && (
+                  <div className="uniswapContentExtra">
+                    The largests swap transaction from Uniswap on Ethereum
+                  </div>
+                )}
               </div>
               <div className="contItem contItemAssets">
                 <div className="label">
@@ -454,11 +473,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             </button>
           ) : (
             <button className="nextBtn" onClick={handleClickNext}>
-              {errorTip && (
-                <div className="tipWrapper">
-                  <div className="errorTip">{errorTip}</div>
-                </div>
-              )}
+              {errorTip && <PBottomErrorTip text={errorTip} />}
               <span>Next</span>
             </button>
           )}
