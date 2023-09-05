@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
@@ -268,7 +269,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
-            headerType="claim"
+            headerEl={<ClaimDialogHeaderDialog/>}
           />
         )}
       </div>

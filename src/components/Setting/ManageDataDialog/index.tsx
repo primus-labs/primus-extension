@@ -8,7 +8,6 @@ import IconClear from '@/components/Icons/IconClear';
 import IconDownload from '@/components/Icons/IconDownload';
 import ReconfirmDialog from './ReconfirmDialog';
 import PBack from '@/components/PBack';
-import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import { BIGZERO, DATASOURCEMAP } from '@/config/constants';
 import { formatFullTime, getCurrentDate, sub } from '@/utils/utils';
 import {

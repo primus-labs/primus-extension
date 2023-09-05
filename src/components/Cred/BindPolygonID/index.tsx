@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useCallback, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
+import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import BindPolygonIDDialog from './BindPolygonIDDialog';
 
@@ -152,8 +153,9 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             type={activeRequest.type}
             title={activeRequest.title}
             desc={activeRequest.desc}
-            headerType="polygonIdAttestation"
-            address={did as string}
+            headerEl={
+              <PolygonIdAddressInfoHeader address={did as string}/>
+            }
           />
         )}
       </div>

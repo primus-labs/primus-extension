@@ -1,6 +1,7 @@
 import React, { useState, useCallback,memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import SettingDialog from '@/components/Setting/SettingDialog';
 import ResetPasswordDialog from '@/components/Setting/ResetPasswordDialog';
 import ExportWalletDialog from '@/components/Setting/ExportWalletDialog';
@@ -66,7 +67,7 @@ const Setting: React.FC<SettingProps> = memo(({ onClose }) => {
   }, []);
 
   return (
-    <>
+    <div className='mySetting'>
       <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />
 
       {resetPwdDialogVisible && (
@@ -78,7 +79,7 @@ const Setting: React.FC<SettingProps> = memo(({ onClose }) => {
       )}
       {resetPwdSucDialogVisible && (
         <AddSourceSucDialog
-          headerType="setting"
+          headerEl={<AuthInfoHeader checked={false} />}
           type="suc"
           title="Congratulations"
           desc="Your password has been setup."
@@ -100,7 +101,7 @@ const Setting: React.FC<SettingProps> = memo(({ onClose }) => {
           onSubmit={onCloseDialog}
         />
       )}
-    </>
+    </div>
   );
 });
 

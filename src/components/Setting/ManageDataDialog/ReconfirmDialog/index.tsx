@@ -11,7 +11,7 @@ interface AddSourceSucDialogProps {
   onBack: () => void;
 }
 
-const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
+const ReconfirmDialog: React.FC<AddSourceSucDialogProps> = memo(
   ({
     onClose,
     onSubmit,
@@ -37,4 +37,4 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
   }
 );
 
-export default AddSourceSucDialog;
+export default ReconfirmDialog;

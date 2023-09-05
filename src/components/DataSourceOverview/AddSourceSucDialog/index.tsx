@@ -51,38 +51,14 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     );
     const icon = activeSource?.icon;
 
-    const dialogClassName = useMemo(() => {
-      let defaultCN = 'padoDialog addDataSourceSucDialog';
-      if (headerType === 'dataSource') {
-        defaultCN += ' dataSourceSucDialog';
-      }
-      if (headerType === 'attestation') {
-        defaultCN += ' attestSucDialog';
-      }
-      if (headerType === 'setting') {
-        defaultCN += ' settingSucDialog';
-      }
-      if (headerType === 'claim') {
-        defaultCN += ' claimSucDialog';
-      }
-      defaultCN += ` ${type}`;
-      return defaultCN;
-    }, [headerType, type]);
-
+    const formatHeaderEl = useMemo(() => {
+      return headerEl ?? <Bridge endIcon={icon} />;
+    }, [headerEl, icon]);
     return (
       <PMask onClose={onClose} closeable={closeable}>
-        <div className={dialogClassName}>
+        <div className="padoDialog addDataSourceSucDialog">
           <main>
-            {headerEl}
-            {headerType === 'setting' && (
-              <AuthInfoHeader checked={false} />
-            )}
-            {headerType === 'dataSource' && <Bridge endIcon={icon} />}
-            {headerType === 'attestation' && <AddressInfoHeader />}
-            {headerType === 'polygonIdAttestation' && (
-              <PolygonIdAddressInfoHeader address={address as string} />
-            )}
-            {headerType === 'claim' && <ClaimDialogHeaderDialog />}
+            {formatHeaderEl}
             {type === 'suc' && <img className="sucImg" src={iconSuc} alt="" />}
             {type === 'error' && (
               <img className="sucImg" src={iconError} alt="" />

@@ -9,6 +9,7 @@ import React, {
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
+import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
 import ConnectWalletDialog from './ConnectWalletDialog';
@@ -228,7 +229,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             type={activeSendToChainRequest?.type}
             title={activeSendToChainRequest?.title}
             desc={activeSendToChainRequest?.desc}
-            headerType="attestation"
+            headerEl={<AddressInfoHeader />}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveSendToChainRequestDialog}
           />

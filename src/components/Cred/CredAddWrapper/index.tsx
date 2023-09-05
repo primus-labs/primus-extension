@@ -10,6 +10,8 @@ import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
+import Bridge from '@/components/DataSourceOverview/Bridge/index';
+import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AttestationDialog from './AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
@@ -601,7 +603,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     useEffect(() => {
       visible && startOfflineFn();
     }, [visible, startOfflineFn]);
-
+    const resultDialogHeaderEl = useMemo(() => {
+      return activeAttestForm?.source === 'metamask' ? (
+        <Bridge endIcon={onChainObj.icon} />
+      ) : (
+        <AddressInfoHeader />
+      );
+    }, [activeAttestForm]);
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (
@@ -626,14 +634,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
-            headerType={
-              activeAttestForm.source === 'metamask'
-                ? 'dataSource'
-                : 'attestation'
-            }
-            activeSource={
-              activeAttestForm.source === 'metamask' ? onChainObj : null
-            }
+            headerEl={resultDialogHeaderEl}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveRequestDialog}
           />

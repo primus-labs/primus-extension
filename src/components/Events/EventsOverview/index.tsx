@@ -40,7 +40,6 @@ const EventsOverview = memo(() => {
           <AdSpace onClick={handleClickClaim} />
           <AdSpace2 onClick={navToCred} />
         </Slider>
-
         <section className="rewardsWrapper">
           <header>Rewards</header>
           <RewardList />
