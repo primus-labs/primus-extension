@@ -17,7 +17,6 @@ import { CanvasRenderer } from 'echarts/renderers';
 import BigNumber from 'bignumber.js';
 
 import { add, mul, div, gt, sub } from '@/utils/utils';
-import { CHARTCOLORS } from '@/config/constants';
 import type EChartsType  from 'echarts-for-react/lib/core';
 import './index.sass';
 
@@ -31,6 +30,20 @@ type ChartDataType = {
 interface PPieChartProps {
   list: ChartDataType[];
 }
+const CHARTCOLORS = [
+  '#00CDFF',
+  '#00F0DC',
+  '#00D7C8',
+  '#2864E1',
+  '#335BEB',
+  '#8741E1',
+  '#D663D9',
+  '#5DD8BA',
+  '#6FD85D',
+  '#BFD85D',
+  '#EDC45A',
+  '#ED8F5A',
+];
 const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
   // console.log('PPieChart', list)
   const [options, setOptions] = useState({});

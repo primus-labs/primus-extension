@@ -11,7 +11,6 @@ import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 
 import { postMsg } from '@/utils/utils';
-import { DEFAULTAUTHSOURCELIST } from '@/config/constants';
 import useAuthorization from '@/hooks/useAuthorization';
 import { initUserInfoActionAsync } from '@/store/actions';
 
@@ -22,6 +21,36 @@ interface authDialogProps {
   onSubmit: () => void;
 }
 
+const DEFAULTAUTHSOURCELIST = [
+  {
+    id: '1',
+    logoUrl:
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconGoogle.svg',
+    name: 'GOOGLE',
+    enabled: '0',
+  },
+  {
+    id: '2',
+    logoUrl:
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconTwitterX.svg',
+    name: 'X',
+    enabled: '0',
+  },
+  {
+    id: '3',
+    logoUrl:
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconGithub.svg',
+    name: 'GITHUB',
+    enabled: '0',
+  },
+  {
+    id: '4',
+    logoUrl:
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconDiscord.svg',
+    name: 'DISCORD',
+    enabled: '0',
+  },
+];
 const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
   const [pwd, setPwd] = useState<string>();
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>(

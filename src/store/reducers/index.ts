@@ -1,8 +1,69 @@
 import { SETSYSCONFIG } from '../actions';
 import {
   DEFAULTDATASOURCEPOLLINGTIMENUM,
-  DEFAULTCREDTYPELIST,
 } from '@/config/constants';
+
+const DEFAULTCREDTYPELIST = [
+  {
+    id: '1',
+    credIdentifier: 'ASSETS_PROOF',
+    credTitle: 'Assets Proof',
+    credIntroduce: 'Assets balance in Binance, OKX',
+    credLogoUrl:
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredAsset.svg',
+    credDetails:
+      'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
+    credProofContent: 'Balance of assets',
+    credProofConditions:
+      process.env.NODE_ENV === 'development' ? '["1000"]' : '["10"]',
+    simplifiedName: 'Asset',
+    display: 0,
+    enabled: 0,
+  },
+  {
+    id: '2',
+    credIdentifier: 'TOKEN_HOLDINGS',
+    credTitle: 'Token Holdings Proof',
+    credIntroduce: 'Token ownership in Binance, Coinbase, OKX',
+    credLogoUrl:
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredToken.svg',
+    credDetails:
+      'Proving you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
+    credProofContent: 'Hold this kind of Token',
+    credProofConditions: '["USDT","LAT"]',
+    simplifiedName: 'Token',
+    display: 0,
+    enabled: 0,
+  },
+  {
+    id: '3',
+    credIdentifier: 'IDENTIFICATION_PROOF',
+    credTitle: 'Identity Proof',
+    credIntroduce: 'Identity or membership',
+    credLogoUrl:
+      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredCred.svg',
+    credDetails:
+      'Proving you have completed the identity verification process. PADO verifies the authenticity of the verification result.',
+    credProofContent: 'Identity verification',
+    credProofConditions: 'Verified',
+    simplifiedName: 'Identity',
+    display: 0,
+    enabled: 0,
+  },
+  {
+    id: '4',
+    credIdentifier: 'UNISWAP_PROOF',
+    credTitle: 'UniSwap Proof',
+    credIntroduce: 'ETH/USDC transaction, powered by Brevis',
+    credLogoUrl: '',
+    credDetails: '',
+    credProofContent: 'ETH/USDC transaction',
+    credProofConditions: 'since Jun 6 2023',
+    simplifiedName: 'UniSwap',
+    display: 0,
+    enabled: 0,
+  },
+];
 
 // initial state
 const initState = {

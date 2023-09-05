@@ -41,13 +41,43 @@ import iconNetwork3 from '@/assets/img/iconNetwork3.png';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.png';
 import iconNetwork6 from '@/assets/img/iconNetwork6.png';
-
 import iconChainEthereum from '@/assets/img/iconChainEthereum.svg';
+
 import type { ExchangeMeta } from '@/types/dataSource';
 
 export type DataSourceMapType = {
   [propName: string]: ExchangeMeta;
 };
+export type WALLETITEMTYPE = {
+  icon: any;
+  name: string;
+  disabled?: boolean;
+};
+
+export const ExchangeStoreVersion = '1.0.0';
+export const SocailStoreVersion = '1.0.0';
+export const KYCStoreVersion = '1.0.0';
+export const padoExtensionVersion = '0.2.4';
+export const CredVersion = '1.0.1';
+
+export const USDT = 'USDT';
+export const USD = 'USD';
+export const USDC = 'USDC';
+export const DAI = 'DAI';
+export const BUSD = 'BUSD';
+export const TUSD = 'TUSD';
+export const BTC = 'BTC';
+export const LDO = 'LDO';
+export const STABLETOKENLIST = [USDT, USD, USDC, DAI, BUSD, TUSD];
+export const ONESECOND = 1000;
+export const ONEMINUTE = 60 * ONESECOND;
+export const ATTESTATIONPOLLINGTIME = 3 * ONESECOND;
+export const ATTESTATIONPOLLINGTIMEOUT = 2 * ONEMINUTE;
+export const STARTOFFLINETIMEOUT = ONEMINUTE + '';
+export const DEFAULTDATASOURCEPOLLINGTIMENUM = '3';
+export const DEFAULTFETCHTIMEOUT = 10 * ONESECOND;
+export const BIGZERO = new BigNumber(0);
+
 export const DATASOURCEMAP: DataSourceMapType = {
   onChain: {
     name: 'On-chain',
@@ -157,43 +187,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     // desc: 'by Antchain',
   },
 };
-
-export const CHARTCOLORS = [
-  '#00CDFF',
-  '#00F0DC',
-  '#00D7C8',
-  '#2864E1',
-  '#335BEB',
-  '#8741E1',
-  '#D663D9',
-  '#5DD8BA',
-  '#6FD85D',
-  '#BFD85D',
-  '#EDC45A',
-  '#ED8F5A',
-];
-
-export const ExchangeStoreVersion = '1.0.0';
-export const SocailStoreVersion = '1.0.0';
-export const KYCStoreVersion = '1.0.0';
-export const padoExtensionVersion = '0.2.4';
-export const CredVersion = '1.0.1';
-
-export const USDT = 'USDT';
-export const USD = 'USD';
-export const USDC = 'USDC';
-export const DAI = 'DAI';
-export const BUSD = 'BUSD';
-export const TUSD = 'TUSD';
-export const BTC = 'BTC';
-export const LDO = 'LDO';
-export const STABLETOKENLIST = [USDT, USD, USDC, DAI, BUSD, TUSD];
-
-export type WALLETITEMTYPE = {
-  icon: any;
-  name: string;
-  disabled?: boolean;
-};
 export const WALLETLIST: WALLETITEMTYPE[] = [
   {
     icon: iconWalletMetamask,
@@ -220,106 +213,6 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
   //   name: 'TrustWallet',
   //   disabled: true,
   // },
-];
-export const ONESECOND = 1000;
-export const ONEMINUTE = 60 * ONESECOND;
-export const ATTESTATIONPOLLINGTIME = 3 * ONESECOND;
-export const ATTESTATIONPOLLINGTIMEOUT = 2 * ONEMINUTE;
-export const STARTOFFLINETIMEOUT = ONEMINUTE + '';
-export const DEFAULTDATASOURCEPOLLINGTIMENUM = '3';
-export const BIGZERO = new BigNumber(0);
-
-export const DEFAULTCREDTYPELIST = [
-  {
-    id: '1',
-    credIdentifier: 'ASSETS_PROOF',
-    credTitle: 'Assets Proof',
-    credIntroduce: 'Assets balance in Binance, OKX',
-    credLogoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredAsset.svg',
-    credDetails:
-      'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
-    credProofContent: 'Balance of assets',
-    credProofConditions:
-      process.env.NODE_ENV === 'development' ? '["1000"]' : '["10"]',
-    simplifiedName: 'Asset',
-    display: 0,
-    enabled: 0,
-  },
-  {
-    id: '2',
-    credIdentifier: 'TOKEN_HOLDINGS',
-    credTitle: 'Token Holdings Proof',
-    credIntroduce: 'Token ownership in Binance, Coinbase, OKX',
-    credLogoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredToken.svg',
-    credDetails:
-      'Proving you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
-    credProofContent: 'Hold this kind of Token',
-    credProofConditions: '["USDT","LAT"]',
-    simplifiedName: 'Token',
-    display: 0,
-    enabled: 0,
-  },
-  {
-    id: '3',
-    credIdentifier: 'IDENTIFICATION_PROOF',
-    credTitle: 'Identity Proof',
-    credIntroduce: 'Identity or membership',
-    credLogoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredCred.svg',
-    credDetails:
-      'Proving you have completed the identity verification process. PADO verifies the authenticity of the verification result.',
-    credProofContent: 'Identity verification',
-    credProofConditions: 'Verified',
-    simplifiedName: 'Identity',
-    display: 0,
-    enabled: 0,
-  },
-  {
-    id: '4',
-    credIdentifier: 'UNISWAP_PROOF',
-    credTitle: 'UniSwap Proof',
-    credIntroduce: 'ETH/USDC transaction, powered by Brevis',
-    credLogoUrl: '',
-    credDetails: '',
-    credProofContent: 'ETH/USDC transaction',
-    credProofConditions: 'since Jun 6 2023',
-    simplifiedName: 'UniSwap',
-    display: 0,
-    enabled: 0,
-  },
-];
-
-export const DEFAULTAUTHSOURCELIST = [
-  {
-    id: '1',
-    logoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconGoogle.svg',
-    name: 'GOOGLE',
-    enabled: '0',
-  },
-  {
-    id: '2',
-    logoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconTwitterX.svg',
-    name: 'X',
-    enabled: '0',
-  },
-  {
-    id: '3',
-    logoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconGithub.svg',
-    name: 'GITHUB',
-    enabled: '0',
-  },
-  {
-    id: '4',
-    logoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconDiscord.svg',
-    name: 'DISCORD',
-    enabled: '0',
-  },
 ];
 
 export const CHAINNETWORKLIST = [
@@ -382,4 +275,4 @@ export const SUPPORRTEDQUERYCHAINMAP = {
   },
 };
 
-export const DEFAULTFETCHTIMEOUT = 10 * ONESECOND;
+
