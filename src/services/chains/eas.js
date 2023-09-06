@@ -9,6 +9,7 @@ import {
 import { EIP712Proxy } from '@ethereum-attestation-service/eas-sdk/dist/eip712-proxy';
 import { ethers, utils, BigNumber as BN } from 'ethers';
 import { proxyabi } from './proxyabi';
+import { lineaportalabi } from './lineaportalabi';
 
 //const { keccak256, toUtf8Bytes, splitSignature } = utils;
 import { _TypedDataEncoder } from '@ethersproject/hash';
@@ -290,7 +291,12 @@ export async function attestByDelegationProxyFee(params) {
   let provider = new ethers.providers.Web3Provider(metamaskprovider);
   await provider.send('eth_requestAccounts', []);
   let signer = provider.getSigner();
-  const contract = new ethers.Contract(easProxyFeeContractAddress, proxyabi, signer);
+  let contract;
+  if (networkName.startWith("Linea")) {
+    contract = new ethers.Contract(easProxyFeeContractAddress, lineaportalabi, signer);
+  } else {
+    contract = new ethers.Contract(easProxyFeeContractAddress, proxyabi, signer);
+  }
   let tx;
   try {
     let schemauid;
@@ -304,24 +310,27 @@ export async function attestByDelegationProxyFee(params) {
     }
     console.log('attestByDelegationProxyFee schemauid=', schemauid);
     const fee = await getFee(networkName, metamaskprovider);
-    tx = await contract.attestByDelegation(
-      {
-        schema: schemauid,
-        data: {
-          recipient: receipt,
-          expirationTime: 0,
-          revocable: true,
-          refUID: ZERO_BYTES32,
-          data: data,
-          value: 0n,
-        },
-        signature: formatSignature,
-        attester: attesteraddr,
-        deadline: 0,
+    const paramsobj = {
+      schema: schemauid,
+      data: {
+        recipient: receipt,
+        expirationTime: 0,
+        revocable: true,
+        refUID: ZERO_BYTES32,
+        data: data,
+        value: 0n,
       },
-      { value: fee }
-      // { gasPrice: BN.from('20000000000'), gasLimit: BN.from('1000000') }
-    );
+      signature: formatSignature,
+      attester: attesteraddr,
+      deadline: 0,
+    };
+    if (networkName.startWith("Linea")) {
+      tx = await contract.attest(paramsobj, { value: fee });
+    } else {
+      tx = await contract.attestByDelegation(paramsobj, { value: fee }
+        // { gasPrice: BN.from('20000000000'), gasLimit: BN.from('1000000') }
+      );
+    }
   } catch (er) {
     console.log('eas attestByDelegationProxyFee attest failed', er);
     return;
@@ -329,7 +338,11 @@ export async function attestByDelegationProxyFee(params) {
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
   const newAttestationUID = txreceipt.logs[txreceipt.logs.length -1].data;
-  return newAttestationUID;
+  if (networkName.startWith("Linea")) {
+    return txreceipt.transactionHash;
+  } else {
+    return newAttestationUID;
+  }
 }
 
 export function getAttestInfoByEncodeDdata(schemaStr, encodeD) {
