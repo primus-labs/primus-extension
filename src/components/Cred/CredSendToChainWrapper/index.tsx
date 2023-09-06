@@ -16,9 +16,14 @@ import ConnectWalletDialog from './ConnectWalletDialog';
 
 import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
-import { attestByDelegationProxy, attestByDelegationProxyFee } from '@/services/chains/eas.js';
+import {
+  attestByDelegationProxy,
+  attestByDelegationProxyFee,
+} from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
-import {compareVersions} from '@/utils/utils'
+import { compareVersions } from '@/utils/utils';
+import { regenerateAttestation } from '@/services/api/cred';
+
 import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -107,7 +112,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           setSubmitAddress((accounts as string[])[0]);
           const { keyStore } = await chrome.storage.local.get(['keyStore']);
           const { address } = JSON.parse(keyStore);
-          const upChainParams = {
+          let upChainParams = {
             networkName: activeNetworkName,
             metamaskprovider: provider,
             receipt: '0x' + address,
@@ -115,23 +120,40 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             data: activeCred?.encodedData,
             signature: activeCred?.signature,
             type: activeCred?.type,
-            schemaName: activeCred?.schemaName ?? 'EAS',
+            schemaName: activeCred?.schemaName ? activeCred?.schemaName: (activeNetworkName?.startsWith('Linea')?'Verax' : 'EAS'),
+            
           };
           const compareRes = compareVersions(
             '1.0.0',
             activeCred?.version ?? ''
           );
           let upChainRes;
+          const cObj = { ...credentialsFromStore };
+          const curRequestid = activeCred?.requestid as string;
+          const curCredential = cObj[curRequestid];
           if (compareRes > -1) {
             // old version
             upChainRes = await attestByDelegationProxy(upChainParams);
           } else {
+            const requestParams: any = {
+              rawParam: Object.assign(curCredential, { ext: null }),
+              greaterThanBaseValue: true,
+              signature: curCredential.signature,
+              newSigFormat: 'Verax-Linea-Goerli', // TODO !!! query params
+            };
+            
+            if (activeNetworkName !== Object.values(EASInfo)[0].title) {
+              const { rc, result } = await regenerateAttestation(requestParams);
+              if (rc === 0) {
+                upChainParams.signature = result.result.signature;
+                upChainParams.data = result.result.encodedData;
+               
+              }
+            }
+            
             upChainRes = await attestByDelegationProxyFee(upChainParams);
           }
           if (upChainRes) {
-            const cObj = { ...credentialsFromStore };
-            const curRequestid = activeCred?.requestid as string;
-            const curCredential = cObj[curRequestid];
             const newProvided = curCredential.provided ?? [];
             const currentChainObj: any = ONCHAINLIST.find(
               (i) => activeNetworkName === i.title

@@ -96,7 +96,8 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               encodedData: res.claimSignatureInfo.encodedData,
               version: CredVersion,
             };
-            fullAttestation.sigFormat = 'Polygon';
+            fullAttestation.sigFormat = 'EAS-Ethereum';
+            fullAttestation.schemaType = `${(activeCred as any)?.schemaType}_POLYGON`;
 
             const { credentials: credentialsStr } =
               await chrome.storage.local.get(['credentials']);

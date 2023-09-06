@@ -79,3 +79,13 @@ export const validateAttestationForAnt = (data: object, config: any) => {
     config,
   });
 };
+
+
+export const regenerateAttestation = (data: any, config?: any) => {
+  return request({
+    method: 'post',
+    url: `/credential/re-generate?newSigFormat=${data?.newSigFormat}`,
+    data,
+    config,
+  });
+};

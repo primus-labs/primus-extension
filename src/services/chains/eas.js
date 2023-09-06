@@ -4,7 +4,7 @@ import {
   ATTEST_TYPE,
   SchemaEncoder,
   SchemaRegistry,
-  ZERO_BYTES32
+  ZERO_BYTES32,
 } from '@ethereum-attestation-service/eas-sdk';
 import { EIP712Proxy } from '@ethereum-attestation-service/eas-sdk/dist/eip712-proxy';
 import { ethers, utils, BigNumber as BN } from 'ethers';
@@ -194,9 +194,7 @@ export async function attestByDelegation(params) {
 
 async function getFee(networkName, metamaskprovider) {
   const contractAddress = EASInfo[networkName].easProxyFeeContract;
-  const abi = [
-    'function fee() public view returns(uint256)',
-  ];
+  const abi = ['function fee() public view returns(uint256)'];
   let provider = new ethers.providers.Web3Provider(metamaskprovider);
   const contract = new ethers.Contract(contractAddress, abi, provider);
   const fee = await contract.fee();
@@ -292,10 +290,18 @@ export async function attestByDelegationProxyFee(params) {
   await provider.send('eth_requestAccounts', []);
   let signer = provider.getSigner();
   let contract;
-  if (networkName.startWith("Linea")) {
-    contract = new ethers.Contract(easProxyFeeContractAddress, lineaportalabi, signer);
+  if (networkName.startsWith('Linea')) {
+    contract = new ethers.Contract(
+      easProxyFeeContractAddress,
+      lineaportalabi,
+      signer
+    );
   } else {
-    contract = new ethers.Contract(easProxyFeeContractAddress, proxyabi, signer);
+    contract = new ethers.Contract(
+      easProxyFeeContractAddress,
+      proxyabi,
+      signer
+    );
   }
   let tx;
   try {
@@ -324,10 +330,13 @@ export async function attestByDelegationProxyFee(params) {
       attester: attesteraddr,
       deadline: 0,
     };
-    if (networkName.startWith("Linea")) {
+    if (networkName.startsWith('Linea')) {
+      debugger
       tx = await contract.attest(paramsobj, { value: fee });
     } else {
-      tx = await contract.attestByDelegation(paramsobj, { value: fee }
+      tx = await contract.attestByDelegation(
+        paramsobj,
+        { value: fee }
         // { gasPrice: BN.from('20000000000'), gasLimit: BN.from('1000000') }
       );
     }
@@ -337,10 +346,10 @@ export async function attestByDelegationProxyFee(params) {
   }
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
-  if (networkName.startWith("Linea")) {
+  if (networkName.startsWith('Linea')) {
     return txreceipt.transactionHash;
   } else {
-    const newAttestationUID = txreceipt.logs[txreceipt.logs.length -1].data;
+    const newAttestationUID = txreceipt.logs[txreceipt.logs.length - 1].data;
     return newAttestationUID;
   }
 }
