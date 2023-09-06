@@ -3,7 +3,7 @@ import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
 import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
 import { getAlgoUrl } from '@/services/api/algorithm';
-import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
+import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.png';
 
 type ENVTYPE = 'development' | 'test' | 'production';
 
@@ -87,7 +87,7 @@ const EASINFOMAP = {
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       easProxyFeeContract: '0x9eC56cd6f6CA10Fb9Bc3a3D17D83028639b62DF5',
       schemas: {
-        Verax: {
+        'Verax-Linea-Goerli': {
           schemaUid:
             '0x89C0A9424F9D62C6CDE9FEB83653033899FE5DF952BEAB024E38A13C3AAE3EE9',
           schemaUidTokenHoldings:
@@ -109,7 +109,7 @@ const EASINFOMAP = {
       rpcUrls: [
         'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
-      blockExplorerUrls: ['https://goerli.lineascan.build'],
+      blockExplorerUrls: ['https://goerli.lineascan.build/tx'],
       nativeCurrency: {
         name: 'LineaETH',
         symbol: 'LineaETH',
@@ -464,3 +464,11 @@ export const getProxyUrl = async() => {
   console.log('updateAlgoUrl getProxyUrl PROXYURL=', algorithmUrlObj.proxyUrl);
   return algorithmUrlObj.proxyUrl;
 }
+
+const LINEASCHEMANAMEMAP = {
+  development: 'Verax-Linea-Goerli',
+  test: 'Verax-Linea-Goerli',
+  production: 'Verax-Linea-Mainnet',
+};
+export let LINEASCHEMANAME = LINEASCHEMANAMEMAP[CURENV];
+;
