@@ -337,10 +337,10 @@ export async function attestByDelegationProxyFee(params) {
   }
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
-  const newAttestationUID = txreceipt.logs[txreceipt.logs.length -1].data;
   if (networkName.startWith("Linea")) {
     return txreceipt.transactionHash;
   } else {
+    const newAttestationUID = txreceipt.logs[txreceipt.logs.length -1].data;
     return newAttestationUID;
   }
 }
