@@ -31,46 +31,6 @@ export const lineaportalabi = [
 				"components": [
 					{
 						"internalType": "bytes32",
-						"name": "schemaId",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "uint64",
-						"name": "expirationDate",
-						"type": "uint64"
-					},
-					{
-						"internalType": "bytes",
-						"name": "subject",
-						"type": "bytes"
-					},
-					{
-						"internalType": "bytes",
-						"name": "attestationData",
-						"type": "bytes"
-					}
-				],
-				"internalType": "struct AttestationPayload",
-				"name": "attestationPayload",
-				"type": "tuple"
-			},
-			{
-				"internalType": "bytes[]",
-				"name": "validationPayload",
-				"type": "bytes[]"
-			}
-		],
-		"name": "attest",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"components": [
-					{
-						"internalType": "bytes32",
 						"name": "schema",
 						"type": "bytes32"
 					},

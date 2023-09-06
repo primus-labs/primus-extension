@@ -331,7 +331,6 @@ export async function attestByDelegationProxyFee(params) {
       deadline: 0,
     };
     if (networkName.startsWith('Linea')) {
-      debugger
       tx = await contract.attest(paramsobj, { value: fee });
     } else {
       tx = await contract.attestByDelegation(
@@ -344,6 +343,8 @@ export async function attestByDelegationProxyFee(params) {
     console.log('eas attestByDelegationProxyFee attest failed', er);
     return;
   }
+
+  console.log('eas attestByDelegationProxyFee tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
   if (networkName.startsWith('Linea')) {
