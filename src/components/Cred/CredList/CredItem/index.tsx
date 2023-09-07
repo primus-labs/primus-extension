@@ -39,7 +39,6 @@ interface CredTypeListProps {
 }
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
-    console.log('CredItem', item);
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
     const [expand, setExpand] = useState(false);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -156,8 +155,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       }
       return null;
     }, []);
-    //   href={`https://arbitrum.easscan.org/attestation/view/${i.attestationUID}`}
-    //  TODO !!!
+
     return (
       <div className={expand ? 'credItem expand' : 'credItem'}>
         <div
@@ -189,7 +187,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="providedChains">
                 {item.provided?.map((i, k) => (
                   <a
-                    href={`${i?.blockExplorerUrls && i?.blockExplorerUrls[0]}/${i.attestationUID}`}
+                    href={`${i?.transactionDetailUrl}/${i.attestationUID}`}
                     target="_blank"
                     rel="noreferrer"
                     key={k}

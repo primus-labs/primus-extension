@@ -6,18 +6,14 @@ import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDial
 import BindPolygonIDDialog from './BindPolygonIDDialog';
 
 import { attestForPolygonId } from '@/services/api/cred';
-import { CredVersion } from '@/config/constants';
+import { CredVersion, schemaTypeMap } from '@/config/constants';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 
 import './index.sass';
 
-const schemaTypeMap = {
-  ASSETS_PROOF: 'Assets Proof',
-  TOKEN_HOLDINGS: 'Token Holdings',
-  IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
-};
+
 interface BindPolygonIDProps {
   visible: boolean;
   onClose: () => void;
@@ -60,10 +56,12 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             exUserId,
             holdingToken,
           } = activeCred as CredTypeItemType;
-
+          const formatType = `${
+            schemaTypeMap[type as keyof typeof schemaTypeMap]
+          }_POLYGON`;
           const params: any = {
             sessionId: uuid,
-            credType: schemaTypeMap[type as keyof typeof schemaTypeMap],
+            credType: formatType,
             signature,
             credentialSubject: {
               id: didp,
@@ -75,7 +73,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               baseValue,
               balanceGreaterThanBaseValue,
             },
-            update: 'false'
+            update: 'false',
           };
           if (type === 'TOKEN_HOLDINGS') {
             params.credentialSubject.asset = holdingToken;
@@ -95,10 +93,9 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               signature: res.claimSignatureInfo.signature,
               encodedData: res.claimSignatureInfo.encodedData,
               version: CredVersion,
+              credVersion: CredVersion,
             };
-            fullAttestation.sigFormat = 'EAS-Ethereum';
-            fullAttestation.schemaType = `${(activeCred as any)?.schemaType}_POLYGON`;
-
+            fullAttestation.schemaType = formatType;
             const { credentials: credentialsStr } =
               await chrome.storage.local.get(['credentials']);
             const credentialsObj = credentialsStr

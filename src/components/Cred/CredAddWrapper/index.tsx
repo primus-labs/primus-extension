@@ -243,6 +243,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             signature: res.claimSignatureInfo.signature,
             encodedData: res.claimSignatureInfo.encodedData,
             version: CredVersion,
+            credVersion: CredVersion,
           };
 
           const { credentials: credentialsStr } =
@@ -343,6 +344,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 schemaType: type,
                 user,
                 version: CredVersion,
+                credVersion: CredVersion,
               };
 
               await chrome.storage.local.set({

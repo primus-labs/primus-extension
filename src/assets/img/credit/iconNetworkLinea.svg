@@ -1,13 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="49" height="51" viewBox="0 0 49 51" fill="none">
-  <g clip-path="url(#clip0_2334_4984)">
-    <path d="M39.7948 50.6626H0.125V8.864H9.20151V42.5619H39.7948V50.6583V50.6626Z" fill="#000" />
-    <path
-      d="M39.795 16.9603C44.2665 16.9603 47.8914 13.3355 47.8914 8.864C47.8914 4.39253 44.2665 0.767685 39.795 0.767685C35.3236 0.767685 31.6987 4.39253 31.6987 8.864C31.6987 13.3355 35.3236 16.9603 39.795 16.9603Z"
-      fill="#000" />
-  </g>
+<svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <circle cx="18.48" cy="18.48" r="18.48" fill="black" />
+  <rect x="12" y="11" width="14" height="14.5714" fill="url(#pattern0)" />
   <defs>
-    <clipPath id="clip0_2334_4984">
-      <rect width="47.7661" height="49.8949" fill="#000" transform="translate(0.125 0.767685)" />
-    </clipPath>
+    <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
+      <use xlink:href="#image0_9408_99" transform="scale(0.0204082 0.0196078)" />
+    </pattern>
+    <image id="image0_9408_99" width="49" height="51"
+      xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADEAAAAzCAYAAAA+VOAXAAAABmJLR0QA/wD/AP+gvaeTAAABr0lEQVRoge2ZP2sUURRHzw1b2IiFCkZBbMQvEG0CKtgKwVYE23yBfIG0FjZpY2FppY02NhYBUUs7SWIIIoFgbAJZFU6KyS4kJpnZmdX3WN7pBu6d9zvM+8PMBJmiTgOXgD6wERG7iSM1Qz2nLqqrHua3+la9nzrjqai31S3reameTZ33L9S7ar+BwID36pnUuYeo59XtEQQGLKXOPkR90kJAq3VyHWAqscAU8Khlew94CIklgBtU22hb7gD01KtUVqfxLSL6HQY7icsd+69AFf4dcK2m+CbwqeOAx/GrY/8epJ9OX8fRn1QiIjaBzx1u8QbSPwmAtvv9DvAC8pBYBj606FuIiB+QgURE/AEeAGsjtD2NiOXhlbre4HScGXf4o6gX1Fc1OX6q80d7686H/0ZEbANz6izVKT4LTFO9T3yhWsTPDuoOkY3EgIhYAVZG6Um+JsZBkciFIpELRSIXikQuFIlcKBK5UCRyoUjkQpHIhSKRC0UiFyZCounHs8fqvX+a5Hi+R8TzuqJQ16n/U5SKjxFxq65oIqZTkciFIpELEyHRA14DF1MHOYHVJkX7NniFZEoywkMAAAAASUVORK5CYII=" />
   </defs>
 </svg>

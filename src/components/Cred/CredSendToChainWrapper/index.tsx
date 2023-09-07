@@ -19,6 +19,7 @@ import {
   PADOADDRESS,
   EASInfo,
   LINEASCHEMANAME,
+  FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import {
@@ -26,7 +27,7 @@ import {
   attestByDelegationProxyFee,
 } from '@/services/chains/eas.js';
 import { setCredentialsAsync } from '@/store/actions';
-import { compareVersions } from '@/utils/utils';
+import { compareVersions, getAuthUserIdHash } from '@/utils/utils';
 import { regenerateAttestation } from '@/services/api/cred';
 
 import type { Dispatch } from 'react';
@@ -55,6 +56,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
 
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
+    );
+    const walletAddress = useSelector(
+      (state: UserState) => state.walletAddress
     );
 
     const dispatch: Dispatch<any> = useDispatch();
@@ -142,20 +146,32 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             // old version
             upChainRes = await attestByDelegationProxy(upChainParams);
           } else {
-            if (activeNetworkName !== Object.values(EASInfo)[0].title) {
+            if (activeNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
               const requestParams: any = {
                 rawParam: Object.assign(curCredential, { ext: null }),
                 greaterThanBaseValue: true,
                 signature: curCredential.signature,
                 newSigFormat: LineaSchemaName,
               };
+              if (activeCred?.source === 'zan') {
+                const authUseridHash = await getAuthUserIdHash();
+                requestParams.dataToBeSigned = {
+                  source: activeCred?.source,
+                  type: activeCred?.type,
+                  authUseridHash: authUseridHash,
+                  recipient: walletAddress,
+                  timestamp: +new Date() + '',
+                  result: true,
+                };
+              }
+
               const { rc, result } = await regenerateAttestation(requestParams);
               if (rc === 0) {
                 upChainParams.signature = result.result.signature;
                 upChainParams.data = result.result.encodedData;
               }
             }
-            
+
             upChainRes = await attestByDelegationProxyFee(upChainParams);
           }
           if (upChainRes) {

@@ -3,6 +3,7 @@ import {
   DATASOURCEMAP,
   CredVersion,
   ExchangeStoreVersion,
+  schemaTypeMap,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
@@ -244,11 +245,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const authUseridHash = strToHex(authUserId);
 
   const timeStampStr = (+new Date()).toString();
-  const schemaTypeMap = {
-    ASSETS_PROOF: 'Assets Proof',
-    TOKEN_HOLDINGS: 'Token Holdings',
-    IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
-  };
   const schemaType = schemaTypeMap[type];
   const padoUrl = await getPadoUrl();
   const proxyUrl = await getProxyUrl();
