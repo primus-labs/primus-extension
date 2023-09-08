@@ -21,6 +21,7 @@ import {
   LINEASCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
+import { CredVersion } from '@/config/constants';
 import { connectWallet } from '@/services/wallets/metamask';
 import {
   attestByDelegationProxy,
@@ -134,44 +135,43 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             type: activeCred?.type,
             schemaName: activeCred?.schemaName ?? LineaSchemaName,
           };
-          const compareRes = compareVersions(
-            '1.0.0',
-            activeCred?.version ?? ''
-          );
+          let versionForComparison = activeCred?.version ?? '';
+          
           let upChainRes;
           const cObj = { ...credentialsFromStore };
           const curRequestid = activeCred?.requestid as string;
           const curCredential = cObj[curRequestid];
-          if (compareRes > -1) {
-            // old version
-            upChainRes = await attestByDelegationProxy(upChainParams);
-          } else {
-            if (activeNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
-              const requestParams: any = {
-                rawParam: Object.assign(curCredential, { ext: null }),
-                greaterThanBaseValue: true,
-                signature: curCredential.signature,
-                newSigFormat: LineaSchemaName,
+          if (activeNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
+            const requestParams: any = {
+              rawParam: Object.assign(curCredential, { ext: null }),
+              greaterThanBaseValue: true,
+              signature: curCredential.signature,
+              newSigFormat: LineaSchemaName,
+            };
+            if (activeCred?.source === 'zan') {
+              const authUseridHash = await getAuthUserIdHash();
+              requestParams.dataToBeSigned = {
+                source: activeCred?.source,
+                type: activeCred?.type,
+                authUseridHash: authUseridHash,
+                recipient: walletAddress,
+                timestamp: +new Date() + '',
+                result: true,
               };
-              if (activeCred?.source === 'zan') {
-                const authUseridHash = await getAuthUserIdHash();
-                requestParams.dataToBeSigned = {
-                  source: activeCred?.source,
-                  type: activeCred?.type,
-                  authUseridHash: authUseridHash,
-                  recipient: walletAddress,
-                  timestamp: +new Date() + '',
-                  result: true,
-                };
-              }
-
-              const { rc, result } = await regenerateAttestation(requestParams);
-              if (rc === 0) {
-                upChainParams.signature = result.result.signature;
-                upChainParams.data = result.result.encodedData;
-              }
             }
 
+            const { rc, result } = await regenerateAttestation(requestParams);
+            if (rc === 0) {
+              upChainParams.signature = result.result.signature;
+              upChainParams.data = result.result.encodedData;
+            }
+            versionForComparison = CredVersion;
+          }
+          const compareRes = compareVersions('1.0.0', versionForComparison);
+          if (compareRes > -1) {
+            // old version <= 1.0.0
+            upChainRes = await attestByDelegationProxy(upChainParams);
+          } else {
             upChainRes = await attestByDelegationProxyFee(upChainParams);
           }
           if (upChainRes) {
