@@ -17,6 +17,7 @@ export const connectWallet = async (targetNetwork) => {
       await switchChain(chainId, targetNetwork);
     }
     subscribeToEvents();
+    debugger
     return [accounts, chainId, provider];
   } catch (e) {
     console.log('connect wallet error: ', e);
@@ -127,6 +128,6 @@ const handleConnect = () => {
   console.log('metamask connected]');
 };
 const handleDisconnect = () => {
-  provider = null;
+  // provider = null;
   console.log('metamask disconnected');
 };
