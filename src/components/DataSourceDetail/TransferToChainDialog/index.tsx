@@ -48,14 +48,28 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
     listTitle = 'Continue with',
     listSeparator = 'or',
     requireItem = true,
-    address
+    address,
   }) => {
     const [activeName, setActiveName] = useState<string>();
     const [errorTip, setErrorTip] = useState<string>();
-
-    const activeList = useMemo(() => {
-      return list.filter((item, idx) => idx !== 0);
+    const flag = useMemo(() => {
+      const f = list.some((item, idx) => item.disabled);
+      return f;
     }, [list]);
+    const topList = useMemo(() => {
+      if (flag) {
+        return list.filter((item, idx) => !item.disabled);
+      } else {
+        return list.filter((item, idx) => idx === 0);
+      }
+    }, [list, flag]);
+    const activeList = useMemo(() => {
+      if (flag) {
+        return list.filter((item, idx) => item.disabled);
+      } else {
+        return list.filter((item, idx) => idx !== 0);
+      }
+    }, [list, flag]);
 
     const liClassName = useCallback(
       (item: ToolItem) => {
@@ -116,7 +130,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
       if (headerType === 'attestation') {
         defaultCN += ' polygonIdAttestationUpChainDialog';
       }
-      return defaultCN
+      return defaultCN;
     }, [headerType]);
     return (
       <PMask onClose={onClose}>
@@ -133,12 +147,25 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
             <h1>{title}</h1>
             <h2>{desc}</h2>
             <h6>{listTitle}</h6>
-            <div
+            <ul className="networkList">
+              {topList.map((item) => {
+                return (
+                  <li
+                    className={liClassName(item)}
+                    key={item.title}
+                    onClick={() => handleClickNetwork(item)}
+                  >
+                    <img src={item.icon} alt="" />
+                  </li>
+                );
+              })}
+            </ul>
+            {/* <div
               className={liClassName(list[0])}
               onClick={() => handleClickNetwork(list[0])}
             >
               <img src={list[0]?.icon} alt="" />
-            </div>
+            </div> */}
             <div className="dividerWrapper">
               <i></i>
               <div className="divider">{listSeparator}</div>
