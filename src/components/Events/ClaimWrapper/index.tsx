@@ -14,7 +14,12 @@ import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
 import useAllSources from '@/hooks/useAllSources';
-import { ONCHAINLIST, PADOADDRESS, EASInfo } from '@/config/envConstants';
+import {
+  ONCHAINLIST,
+  PADOADDRESS,
+  EASInfo,
+  CLAIMNFTNETWORKNAME
+} from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
@@ -187,7 +192,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           alert('getEventSignature network error!');
         }
 
-        const activeNetworkName = 'Polygon';
+        const activeNetworkName = CLAIMNFTNETWORKNAME;
         const targetNetwork =
           EASInfo[activeNetworkName as keyof typeof EASInfo];
         try {

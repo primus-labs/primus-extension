@@ -17,7 +17,6 @@ export const connectWallet = async (targetNetwork) => {
       await switchChain(chainId, targetNetwork);
     }
     subscribeToEvents();
-    debugger
     return [accounts, chainId, provider];
   } catch (e) {
     console.log('connect wallet error: ', e);
