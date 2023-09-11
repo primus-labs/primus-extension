@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PInput from '@/components/PInput/index';
 import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';
@@ -165,19 +166,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         <div className="padoDialog setPwdDialog">
           <PBack onBack={handleClickBack} />
           <main>
-            <header className="setPwdDialogHeader">
-              <div className="headerContent">
-                {/* TODO */}
-                <div className="networkItem">
-                  <img className="iconNetwork" src={iconAddress} alt="" />
-                </div>
-                <p className="address">{accountAddr}</p>
-              </div>
-            </header>
+            <AuthInfoHeader checked={true} />
             <h1>Set Password</h1>
-            <h2>
-              Enter an secure password to protect local data and private key.
-            </h2>
             <h6>Setting</h6>
             <PInput
               type="password"

@@ -2,6 +2,8 @@ import React, { useState, useEffect, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 
+import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
+import PHeader from '@/components/Layout/PHeader';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
 import AuthDialog from '@/components/Home/AuthDialog';
 import SetPwdDialog from '@/components/Home/SetPwdDialog';
@@ -33,11 +35,11 @@ const Home = memo(() => {
   }, []);
   const handleSubmitAuth = useCallback(() => {
     dispatch(setSocialSourcesAsync());
-    setStep(2);
-  }, [dispatch]);
-  const handleSubmitCreateAccount = useCallback(() => {
     setStep(3);
-  }, []);
+  }, [dispatch]);
+  // const handleSubmitCreateAccount = useCallback(() => {
+  //   setStep(3);
+  // }, []);
   const handleCancelCreateAccount = useCallback(() => {
     setStep(1);
   }, []);
@@ -117,7 +119,7 @@ const Home = memo(() => {
       {step === 1 && (
         <AuthDialog onSubmit={handleSubmitAuth} onClose={handleCloseMask} />
       )}
-      {step === 2 && (
+      {/* {step === 2 && (
         <TransferToChainDialog
           onClose={handleCloseMask}
           onSubmit={handleSubmitCreateAccount}
@@ -131,7 +133,7 @@ const Home = memo(() => {
           listSeparator="and"
           requireItem={false}
         />
-      )}
+      )} */}
       {step === 3 && (
         <SetPwdDialog
           onClose={handleCloseMask}
@@ -139,10 +141,20 @@ const Home = memo(() => {
           onCancel={handleCancelSetPwd}
         />
       )}
-      {step === 4 && (
+      {/* {step === 4 && (
         <SetSucDialog
           onClose={handleSubmitSetSuc}
           onSubmit={handleSubmitSetSuc}
+        />
+      )} */}
+      {step === 4 && (
+        <AddSourceSucDialog
+          onClose={handleSubmitSetSuc}
+          onSubmit={handleSubmitSetSuc}
+          type="suc"
+          title="Congratulations"
+          desc="You have signed up successfully!"
+          headerEl={<PHeader />}
         />
       )}
     </div>
