@@ -5,7 +5,7 @@ import SourcesStatisticsBar from '../SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
 import PieChart from '../PieChart';
 import PieTabs from './PieTabs';
-
+import ChartOptionsDetailDialog from './ChartOptionsDetailDialog';
 import {
   add,
   mul,
@@ -38,8 +38,10 @@ interface AssetsOverviewProps {
 const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
   ({ filterSource, onClearFilter, list }) => {
     //console.log('AssetsOverview-list', list);
+    const [chartOptionsDetailVisible, setChartOptionsDetailVisible] =
+      useState(false);
     const [activeSourceName, setActiveSourceName] = useState<string>();
-    const [pieTab, setPieTab] = useState<string>();
+    const [pieTab, setPieTab] = useState<string>('Source');
     const totalAssetsBalance = useMemo(() => {
       const reduceF: (prev: BigNumber, curr: ExData) => BigNumber = (
         prev,
@@ -97,6 +99,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
     }, [totalPnl, totalAssetsBalance]);
     const totalAssetsMap: AssetsMap = useMemo(() => {
+     
       const reduceF: (
         prev: AssetsMap,
         curr: DataSourceItemType
@@ -151,7 +154,6 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
 
         const activeS: DataSourceItemType = list.find((item) => {
           if (item.name === 'On-chain') {
-            // debugger
             const formatAddr = formatAddress(item.address as string, 4, 4);
             return formatAddr === activeSourceName;
           }
@@ -186,10 +188,11 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
     }, [list, activeSourceName]);
     const getChartData = useMemo(() => {
-      if (pieTab === 'token') {
+      
+      if (pieTab === 'Token') {
         let formatArr: any = [];
-        let othersTotalBalance: any = new BigNumber(0);
-        Object.values(totalAssetsMap as AssetsMap).map(
+        // let othersTotalBalance: any = new BigNumber(0);
+        Object.values(totalAssetsMap as AssetsMap).forEach(
           ({ symbol, value, address }) => {
             let formatSymbol = symbol;
             let formatValue = Number(value).toFixed(2);
@@ -199,31 +202,13 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
               // formatSymbol = `${symbolAAddrArr[0]}(${formatAddr})`;
               formatSymbol = `${symbolAAddrArr[0]}`;
             }
-            //  Statistics token value less than $50  in others
-            if (gte(Number(value), 50)) {
-              formatArr.push({
-                name: formatSymbol,
-                value: formatValue,
-              });
-            } else {
-              othersTotalBalance = add(
-                Number(othersTotalBalance),
-                Number(value)
-              );
-            }
-            // return {
-            //   name: formatSymbol,
-            //   value: formatValue,
-            // };
+            formatArr.push({
+              name: formatSymbol,
+              value: formatValue,
+            });
           }
         );
-        if (gt(othersTotalBalance.toNumber(), 0)) {
-          formatArr.push({
-            name: 'Others',
-            value: othersTotalBalance.toFixed(2),
-          });
-        }
-
+        
         return formatArr;
       } else {
         const chartData = list.map(({ name, totalBalance, address }) => {
@@ -242,6 +227,37 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
       // totalAssetsMap
     }, [list, pieTab, totalAssetsMap]);
+    const getShowChartData = useMemo(() => {
+      const len = getChartData.length;
+      if (len > 6) {
+        const orderedList = getChartData.sort((a:any, b:any) =>
+            sub(Number(b.value), Number(a.value)).toNumber())
+          
+        // console.log('getChartData', getChartData, getChartData.slice(0, 6));
+        return orderedList.slice(0, 6);
+      }
+      return getChartData;
+    }, [getChartData]);
+    const handleShowChartOptionsDetail = useCallback(() => {
+      setChartOptionsDetailVisible(true);
+    }, []);
+    const getShowChartOthers = useMemo(() => {
+      const len = getChartData.length;
+      if (len > 6) {
+        return (
+          <div
+            className="chartOthersWrapper"
+            onClick={handleShowChartOptionsDetail}
+          >
+            <i></i>
+            <div className="label">Others</div>
+            <div className="value">View All</div>
+          </div>
+        );
+      } else {
+        return null;
+      }
+    }, [getChartData, handleShowChartOptionsDetail]);
     const lowerCaseSourceName = useMemo(() => {
       return activeSourceName?.toLowerCase();
     }, [activeSourceName]);
@@ -254,7 +270,6 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       if (activeSourceName?.includes('...')) {
         const activeS: onChainAssetsData = list.find((item) => {
           if (item.name === 'On-chain') {
-            // debugger
             const formatAddr = formatAddress(item.address as string, 4, 4);
             return formatAddr === activeSourceName;
           }
@@ -265,8 +280,6 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       return {};
     }, [activeSourceName, list]);
     const onChangePieTab = useCallback((tab: string) => {
-      // TODO
-      // debugger
       setPieTab(tab);
     }, []);
 
@@ -306,13 +319,15 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
           <div className="card cardR">
             <header>
               <span>Distribution</span>
-              <PieTabs onChange={onChangePieTab} value="exchange" />
+              <PieTabs onChange={onChangePieTab} value="Source" />
             </header>
             <div className="cardCon pieChartFatherBox">
-              <PieChart list={getChartData} />
+              <PieChart list={getShowChartData} others={getShowChartOthers} />
             </div>
+            {getShowChartOthers}
           </div>
         </section>
+        {chartOptionsDetailVisible && <ChartOptionsDetailDialog type={pieTab}  list={getChartData} onClose={ () => {setChartOptionsDetailVisible(false)}} />}
         <SourcesStatisticsBar
           list={list}
           onSelect={handleSelectSource}

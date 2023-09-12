@@ -1,0 +1,66 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
+@import '@/assets/css/pFont.sass'
+
+
+.padoDialog.ChartOptionsDetailDialog
+  padding: 48px 42px 79px
+  gap: 0
+  justify-content: flex-start
+  align-items: flex-start
+  >h1
+    width: 100%
+    color: #000
+    text-align: center
+    font-family: 'Inter-SemiBold'
+    font-size: 30px
+    line-height: 36px
+  .descItems
+    display: flex
+    flex-direction: column
+    gap: 16px
+    &.tableHeader
+      margin-top: 32px
+      margin-bottom: 16px
+    &.tableCon
+      width: calc( 100% + 36px  )
+      height: 364px
+      overflow: auto
+      // &::-webkit-scrollbar
+      //   position: relative
+      //   right: 30px
+    .descItem
+      display: flex
+      flex-direction: row
+      justify-content: flex-start
+      align-items: center
+      height: 22px
+      gap: 14px
+      .token
+        width: 148px
+      .value
+        width: 130px
+        text-align: right
+      .ratio
+        width: 110px
+        text-align: right
+      .token,.value,.ratio
+        color: #000
+        font-family: 'Inter-Medium'
+      &.th
+        height: 47px
+        padding: 14px 0 11px 0
+        border-top: 1px solid rgba(0, 0, 0, 0.10)
+        border-bottom: 1px solid rgba(0, 0, 0, 0.10)
+        .token,.value,.ratio
+          font-size: 16px
+          line-height: 19px
+      &.tr
+        .token,.value,.ratio
+          font-size: 14px
+          line-height: 17px
+        .token
+          display: flex
+          gap: 8px
+          >img
+            width: 20px

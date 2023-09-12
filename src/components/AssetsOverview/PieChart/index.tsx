@@ -29,6 +29,7 @@ type ChartDataType = {
 };
 interface PPieChartProps {
   list: ChartDataType[];
+  others? :any
 }
 const CHARTCOLORS = [
   '#00CDFF',
@@ -44,19 +45,15 @@ const CHARTCOLORS = [
   '#EDC45A',
   '#ED8F5A',
 ];
-const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
+const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
   // console.log('PPieChart', list)
   const [options, setOptions] = useState({});
   const chartInstance = useRef<EChartsType>();
-  
 
-  // 通过加载图表成功的回调获取 echarts 实例
-  const onChartReady = useCallback(
-    (ref: EChartsType) => {
-      chartInstance.current = ref;
-    },
-    []
-  );
+  // Obtain an instance of eccharts through a successful callback of loading the chart
+  const onChartReady = useCallback((ref: EChartsType) => {
+    chartInstance.current = ref;
+  }, []);
   const getOption = useCallback(
     (name?: string) => {
       const chartData = list
@@ -96,20 +93,21 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
       let innerRadius = 60;
       let outerRadius = 82;
       let cLeft = 8;
-      let legendItemLabelWidth = 122;// 94
-      let legendItemValueWidth = 60;// 88
+      let legendItemLabelWidth = 122; // 94
+      let legendItemValueWidth = 60; // 88
       let legendItemValueFontSize = 24;
       let legendItemHeight = 41;
       let legendItemRight = 6;
+      let legendTop = others ? '12' : 'center';
       if (document.documentElement.getBoundingClientRect().width < 1680) {
-        innerRadius = 51.5;//56.5
-        outerRadius = 75.5;//74.5
+        innerRadius = 51.5; //56.5
+        outerRadius = 75.5; //74.5
         cLeft = 12; // 26
-        legendItemLabelWidth = 100;// 76
-        legendItemValueWidth = 73;// 81
-        legendItemValueFontSize = 18;
-        legendItemHeight = 36;
-        legendItemRight = 0;
+        legendItemLabelWidth = 108; // 76
+        legendItemValueWidth = 57; // 81
+        legendItemValueFontSize = 16;
+        legendItemHeight = 27;
+        legendItemRight = 8;
       }
       return {
         // color: CHARTCOLORS,
@@ -126,12 +124,12 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
           // pageButtonGap: 15,
           // pageIconSize: 15,
           // pageButtonGap: 32,
-          top: 'center',
+          top: legendTop,
           right: legendItemRight,
           // backgroundColor: 'rgba(0, 0, 0, 0.05)',
           // borderRadius: '8px',
           orient: 'vertical',
-          padding: [6, 8],
+          // padding: [4, 8],
           itemGap: 0,
           icon: 'circle',
           itemWidth: 14,
@@ -166,7 +164,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
                 width: legendItemLabelWidth,
               },
               value: {
-                fontFamily: 'Inter-SemiBold',
+                fontFamily: 'Inter-Medium',
                 color: 'rgb(0,0,0)',
                 fontSize: legendItemValueFontSize,
                 height: legendItemHeight,
@@ -235,19 +233,19 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list }) => {
       setOptions(getOption(params.name));
     },
   };
-//   const fn = (instance) => {
-// instance.resize()
-//   }
+  //   const fn = (instance) => {
+  // instance.resize()
+  //   }
   return (
     <ReactEChartsCore
-      echarts={echarts}
-      option={options}
-      notMerge={true}
-      lazyUpdate={true}
-      onEvents={onEvents}
-      className="pPie"
-      onChartReady={onChartReady}
-    />
+        echarts={echarts}
+        option={options}
+        notMerge={true}
+        lazyUpdate={true}
+        onEvents={onEvents}
+        className="pPie"
+        onChartReady={onChartReady}
+      />
   );
 });
 

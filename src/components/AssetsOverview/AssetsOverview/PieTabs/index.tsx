@@ -13,8 +13,8 @@ type TabItem = {
 };
 
 const pieTabList: TabItem[] = [
-  { text: 'exchange', icon: iconPieTabExchange },
-  { text: 'token', icon: iconPieTabToken },
+  { text: 'Source', icon: iconPieTabExchange },
+  { text: 'Token', icon: iconPieTabToken },
 ];
 
 const PTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
