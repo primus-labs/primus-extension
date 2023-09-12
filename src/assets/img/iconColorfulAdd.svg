@@ -1,26 +1,14 @@
-<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g filter="url(#filter0_d_1668_10160)">
-        <path
-            d="M13.7143 32.0001V18.2858H0V13.7144H13.7143V0.00012207H18.2857V13.7144H32V18.2858H18.2857V32.0001H13.7143Z"
-            fill="url(#paint0_linear_1668_10160)" />
-    </g>
-    <defs>
-        <filter id="filter0_d_1668_10160" x="0" y="0.00012207" width="34" height="34" filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB">
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
-            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                result="hardAlpha" />
-            <feOffset dx="1" dy="1" />
-            <feGaussianBlur stdDeviation="0.5" />
-            <feComposite in2="hardAlpha" operator="out" />
-            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
-            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1668_10160" />
-            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1668_10160" result="shape" />
-        </filter>
-        <linearGradient id="paint0_linear_1668_10160" x1="32" y1="22.6668" x2="-6.62277e-09" y2="9.33346"
-            gradientUnits="userSpaceOnUse">
-            <stop stop-color="#71FDC3" />
-            <stop offset="1" stop-color="#78DEFF" />
-        </linearGradient>
-    </defs>
+<svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_9610_14590)">
+<path d="M7.33325 7.83337V3.83337H8.66658V7.83337H12.6666V9.16671H8.66658V13.1667H7.33325V9.16671H3.33325V7.83337H7.33325Z" fill="url(#paint0_linear_9610_14590)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_9610_14590" x1="14.5" y1="7" x2="3" y2="11.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#70FFBA"/>
+<stop offset="1" stop-color="#78DEFF"/>
+</linearGradient>
+<clipPath id="clip0_9610_14590">
+<rect width="16" height="16" fill="white" transform="translate(0 0.5)"/>
+</clipPath>
+</defs>
 </svg>

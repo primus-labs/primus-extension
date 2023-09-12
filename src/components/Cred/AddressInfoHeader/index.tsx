@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import iconAddress from '@/assets/img/iconAddress.svg';
+import iconMy from '@/assets/img/iconMy.svg';
 import './index.sass';
 
 const AddressInfoHeader = memo(() => {
@@ -19,7 +19,7 @@ const AddressInfoHeader = memo(() => {
     <header className="addressInfoHeader">
       <div className="content">
         <div className="iconAddressWrapper">
-          <img className="avatar" src={iconAddress} alt="" />
+          <img className="avatar" src={iconMy} alt="" />
         </div>
         <p className="address">{accountAddr}</p>
       </div>

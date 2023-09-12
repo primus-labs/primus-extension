@@ -5,7 +5,6 @@ import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PInput from '@/components/PInput/index';
 import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';
-import iconAddress from '@/assets/img/iconAddress.svg';
 
 import { postMsg } from '@/utils/utils';
 import { initWalletAddressActionAsync } from '@/store/actions';

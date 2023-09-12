@@ -14,31 +14,31 @@
     @extend .frsc
     background: #fff
     gap: 12px
-    padding: 14px
-    &:hover
-      padding: 13px 18px
-      >.imgUpdate
-        width: 24px
-        height: 24px
-      >span
-        display: block
+    padding: 13px 18px
     >.imgUpdate
-      width: 28px
-      height: 28px
-      background-image: url('../../../assets/img/iconColorfulAdd.svg')
+      background-image: url('@/assets/img/iconColorfulAdd.svg')
+      background-image: url('@/assets/img/iconAdd.svg')
       background-size: 100% 100%
-    >span
-      display: none
+      width: 24px
+      height: 24px
 @media (max-width:1680px)
   .dataAddBar
     right: 100px
     bottom: 100px
     >button.updateBtn
-      gap: $xsGap
-      padding: 12px
-      &:hover
-        padding: 12px 21.5px
-        >.imgUpdate
-          width: 22px
-          height: 22px
+      gap: 4px
+      padding: 8px 12px
+      >.imgUpdate
+        width: 16px
+        height: 16px
+      >span
+        font-family: 'Inter-Regular'
+        font-size: 14px
+        line-height: 17px
+        // background: linear-gradient(269deg, #70FFBA 0.5%, #78DEFF 99.59%)
+        // background-clip: text
+        // -webkit-background-clip: text
+        // -webkit-text-fill-color: transparent
+        color: #000
+        font-family: 'Inter-Medium'
         
