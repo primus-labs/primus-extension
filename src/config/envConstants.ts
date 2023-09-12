@@ -86,7 +86,7 @@ const EASINFOMAP = {
       erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
-      easProxyFeeContract: '0x870C1B49fC34dEB24Ab51F4F4a58bbE85456e2b2',
+      easProxyFeeContract: '0x0B991E5f3773b6a0F6E3672549cBfbD1178fBE22',
       schemas: {
         'Verax-Linea-Goerli': {
           schemaUid:
