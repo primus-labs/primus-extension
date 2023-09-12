@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
 import { formatAddress } from '@/utils/utils';
+import iconMy from '@/assets/img/iconMy.svg'
 import './index.sass';
 const PAvatar = memo(() => {
   const [avatar, setAvatar] = useState<any>();
@@ -41,16 +42,21 @@ const PAvatar = memo(() => {
   }, []);
   return (
     <div className="pAvatar">
-      {avatar ? (
+      {/* {avatar ? (
         <img className="avatar" src={avatar} alt="" />
       ) : (
         <div className="avatar"></div>
-      )}
+      )} */}
+      <div className="avatar">
+        <img src={iconMy} alt="" />
+      </div>
       <div className="address" onClick={handleCopy}>
         {formatAddr}
-        {copied && <div className="copyTip">
-          <span>Copied</span>
-        </div>}
+        {copied && (
+          <div className="copyTip">
+            <span>Copied</span>
+          </div>
+        )}
       </div>
     </div>
   );

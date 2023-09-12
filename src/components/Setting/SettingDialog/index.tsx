@@ -2,8 +2,11 @@ import React, { useState, useMemo, useEffect, memo } from 'react';
 import PMask from '@/components/PMask';
 import { formatAddress } from '@/utils/utils';
 import iconArrow from '@/assets/img/iconArrowLeft2.svg';
+import iconMy from '@/assets/img/iconMy.svg'
+import iconLoginFrom from '@/assets/img/iconLoginFrom.svg';
 import { padoExtensionVersion } from '@/config/constants';
 import './index.sass';
+import { div } from '../../../utils/utils';
 
 interface AddSourceSucDialogProps {
   onClose: () => void;
@@ -18,13 +21,13 @@ const moduleObj = [
     },
     {
       moduleType: 'wallet',
-      settingType: 'Back up on-chain address',
+      settingType: 'Backup Your Account',
     },
   ],
   [
     {
       moduleType: 'data',
-      settingType: 'Manage your data',
+      settingType: 'Manage Your Data',
     },
   ],
   [
@@ -84,12 +87,20 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
               {avatar ? (
                 <img className="avatar" src={avatar} alt="" />
               ) : (
-                <i className="avatarAlternate"></i>
+                <i className="avatarAlternate">
+                  <img src={iconMy} alt="" />
+                </i>
               )}
               <div className="baseInfo">
-                <span>{email}</span>
+                <div className="authInfo">
+                  <img src={iconLoginFrom} alt="" />
+                  <span>{email}</span>
+                </div>
                 <i className="separtor"></i>
-                <span>{formatAddr}</span>
+                <div className="accountInfo">
+                  <img src={iconMy} alt="" />
+                  <span>{formatAddr}</span>
+                </div>
               </div>
             </header>
             <div className="settingContent">
