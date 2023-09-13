@@ -98,7 +98,7 @@ const Home = memo(() => {
   }, [navigate, padoServicePort]);
 
   useEffect(() => {
-    checkActiveStep();
+    checkActiveStep();  
   }, []);
 
   return (
