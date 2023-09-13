@@ -93,13 +93,14 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
       let innerRadius = 60;
       let outerRadius = 82;
       let cLeft = 8;
-      let legendItemLabelWidth = 122; // 94
-      let legendItemValueWidth = 60; // 88
-      let legendItemValueFontSize = 24;
-      let legendItemHeight = 41;
-      let legendItemRight = 6;
-      let legendTop = others ? '12' : 'center';
-      if (document.documentElement.getBoundingClientRect().width < 1680) {
+      let legendItemLabelWidth = 109; // 94
+      let legendItemValueWidth = 71; // 88
+      let legendItemValueFontSize = 20;
+      let legendItemHeight = 27;
+      let legendItemRight = 12;
+      let legendTop = others ? '32' : 'center';
+      if (document.documentElement.getBoundingClientRect().width <= 1680) {
+        legendTop = others ? '12' : 'center';
         innerRadius = 51.5; //56.5
         outerRadius = 75.5; //74.5
         cLeft = 12; // 26
@@ -119,8 +120,8 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
           formatter: '{b} : ${c} ({d}%)',
         },
         legend: {
-          type: 'scroll', //  Can be used when the number of legends is large
-          pageIconSize: 10,
+          // type: 'scroll', //  Can be used when the number of legends is large
+          // pageIconSize: 10,
           // pageButtonGap: 15,
           // pageIconSize: 15,
           // pageButtonGap: 32,

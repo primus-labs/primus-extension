@@ -80,8 +80,8 @@ $sCardHeight: 282px
           transform: translateY(-50%) translateY(-8px)
   .chartOthersWrapper
     position: absolute
-    bottom: 15px
-    right: 56px
+    bottom: 44px
+    right: 60px
     @extend .frsc
     // padding: 8px 12px
     >i
@@ -97,11 +97,13 @@ $sCardHeight: 282px
       font-size: 14px
     .value
       margin-left: 0px
-      width: 57px
+      width: 77px
       color: rgba(0, 0, 0, 0.80)
       font-family: 'Inter-Medium'
-      font-size: 14px
+      font-size: 20px
       cursor: pointer
+      &:hover 
+        color: #000
 
 @media (max-width: 1680px)
   .assetsOverview
@@ -133,4 +135,15 @@ $sCardHeight: 282px
             .value
               font-size: 34px
               line-height: 41px
-              
+    .chartOthersWrapper
+      bottom: 15px
+      right: 56px
+      .label 
+        margin-left: 6px
+        width: 113px
+      .value
+        margin-left: 0px
+        width: 57px
+        font-size: 14px
+        &:hover 
+          color: #000             
