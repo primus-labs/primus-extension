@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 
 import { DATASOURCEMAP } from '@/config/constants';
-import { PADOADDRESS } from '@/config/envConstants';
+import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import {
   getCurrentDate,
   formatNumeral,
@@ -187,7 +187,10 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="providedChains">
                 {item.provided?.map((i, k) => (
                   <a
-                    href={`${i?.transactionDetailUrl}/${i.attestationUID}`}
+                    href={`${
+                      (EASInfo[i.title as keyof typeof EASInfo]as any)
+                        ?.transactionDetailUrl
+                    }/${i.attestationUID}`}
                     target="_blank"
                     rel="noreferrer"
                     key={k}
