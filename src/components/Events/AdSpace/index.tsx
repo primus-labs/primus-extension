@@ -8,7 +8,7 @@ interface AdSpaceProps {
 }
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
   return (
-    <div className="adSpace">
+    <div className="adSpace adSpace1">
       <div className="left">
         <img src={bannerIllstration} alt="" />
         <div className="bannerContent">

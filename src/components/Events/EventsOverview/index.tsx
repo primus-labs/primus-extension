@@ -12,12 +12,12 @@ import Slider from 'react-slick';
 
 const EventsOverview = memo(() => {
   var settings = {
-    // dots: true,
+    dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
+    autoplay: false,
     pauseOnHover: true,
     nextArrow: <></>,
     prevArrow: <></>,
