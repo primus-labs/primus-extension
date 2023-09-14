@@ -6,6 +6,7 @@ import React, {
   useEffect,
   memo,
 } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -15,8 +16,8 @@ import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AttestationDialog from './AttestationDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
-
-import { postMsg,strToHex } from '@/utils/utils';
+import { connectWallet, requestSign } from '@/services/wallets/metamask';
+import { postMsg, strToHex, base64ToHex } from '@/utils/utils';
 import useTimeout from '@/hooks/useTimeout';
 import useInterval from '@/hooks/useInterval';
 import useAlgorithm from '@/hooks/useAlgorithm';
@@ -28,20 +29,16 @@ import {
   ONEMINUTE,
   CredVersion,
 } from '@/config/constants';
-import {getPadoUrl, getProxyUrl} from '@/config/envConstants'
+import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import { setCredentialsAsync } from '@/store/actions';
-import {
-  add,
-  mul,
-  gt,
-  assembleUserInfoParams,
-} from '@/utils/utils';
+import { add, mul, gt, assembleUserInfoParams } from '@/utils/utils';
 import {
   attestForAnt,
   validateAttestationForAnt,
   attestForPolygonId,
 } from '@/services/api/cred';
+import { submitUniswapTxProof } from '@/services/chains/erc721';
 
 
 import { DATASOURCEMAP } from '@/config/constants';
@@ -54,8 +51,13 @@ import type { AssetsMap } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 import './index.sass';
+import {
+  claimUniNFT,
+  getUniNFTResult,
+  getUniswapProof,
+} from '@/services/api/event';
 
-const onChainObj:any = DATASOURCEMAP.onChain;
+const onChainObj: any = DATASOURCEMAP.onChain;
 const schemaTypeMap = {
   ASSETS_PROOF: 'Assets Proof',
   TOKEN_HOLDINGS: 'Token Holdings',
@@ -71,6 +73,8 @@ interface CredAddWrapperType {
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
   ({ visible = true, activeCred, activeSource, onClose, onSubmit, type }) => {
+    const [uniSwapProofParams, setUniSwapProofParams] = useState<any>({});
+    const [uniSwapProofRequestId, setUniSwapProofRequestId] = useState<string>('');
     const [step, setStep] = useState(-1);
     const [activeAttestationType, setActiveAttestationType] =
       useState<string>('');
@@ -379,6 +383,126 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         activeCred?.requestid,
       ]
     );
+    const errorDescEl = useMemo(
+      () => (
+        <>
+          <p>Your wallet did not connect or refused to authorize.</p>
+          <p>Please try again later.</p>
+        </>
+      ),
+      []
+    );
+    const [pollingUniProofIntervalSwitch, setPollingUniProofIntervalSwitch] =
+      useState<boolean>(false);
+    
+    const pollingUniProofResult = useCallback(async () => {
+      try {
+        const { rc, result } = await getUniNFTResult({
+          requestId: uniSwapProofRequestId,
+        });
+        if (rc === 0) {
+          const { status, reason, transactionHash, proof } = result;
+          if (status === 'COMPLETE' || status === 'ERROR') {
+            setPollingUniProofIntervalSwitch(false);
+          }
+          // store nft & proof
+          if (status === 'COMPLETE') {
+            const { proofWithPublicInputs, auxiBlkVerifyInfo } = proof;
+            // const { transactionHash } = uniSwapProofParams;
+            const upperChainTxHash = await submitUniswapTxProof({
+              txHash: transactionHash,
+              proof: base64ToHex(proofWithPublicInputs),
+              auxiBlkVerifyInfo: base64ToHex(auxiBlkVerifyInfo),
+              metamaskprovider: uniSwapProofParams.provider,
+            });
+            const { rc, result } = await getUniswapProof({
+              ...uniSwapProofParams,
+              timestamp: +new Date() + '',
+              transactionHash: upperChainTxHash,
+              addressId: walletAddress,
+            });
+            if (rc === 0) {
+              // store result.result
+            }
+          }
+        }
+      } catch {
+      } finally {
+      }
+    }, [uniSwapProofRequestId, uniSwapProofParams, walletAddress]);
+    useInterval(
+      pollingUniProofResult,
+      3000,
+      pollingUniProofIntervalSwitch,
+      false
+    );
+    const fetchAttestForUni = useCallback(async () => {
+      try {
+        const curRequestId = uuidv4();
+        setUniSwapProofRequestId(curRequestId);
+        const [accounts, chainId, provider] = await connectWallet();
+        const curConnectedAddr = (accounts as string[])[0];
+        const timestamp: string = +new Date() + '';
+
+        const signature = await requestSign(curConnectedAddr, timestamp);
+        if (!signature) {
+          setActiveRequest({
+            type: 'error',
+            title: 'Failed',
+            desc: errorDescEl,
+          });
+          return;
+        }
+        setUniSwapProofParams({
+          signature,
+          // address: curConnectedAddr,
+          address:'0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
+          provider,
+        });
+        const { rc, result, msg } = await claimUniNFT({
+          signature,
+          timestamp,
+          // address: curConnectedAddr,
+          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
+          requestId: curRequestId,
+        });
+
+        if (rc === 0 && result) {
+          setPollingUniProofIntervalSwitch(true);
+          // store nft & credit
+          // await chrome.storage.local.set({
+          //   rewards: JSON.stringify(newRewards),
+          // });
+          // await dispatch(initRewardsActionAsync());
+          // setActiveRequest({
+          //   type: 'suc',
+          //   title: 'Congratulations',
+          //   desc: 'Successfully get your rewards.',
+          // });
+          // await chrome.storage.local.set({
+          //   credentials: JSON.stringify(credentialsObj),
+          // });
+          // await initCredList();
+          // setActiveRequest({
+          //   type: 'suc',
+          //   title: 'Congratulations',
+          //   desc: 'Your proof is created!',
+          // });
+        } else {
+          setActiveRequest({
+            type: 'error',
+            title: 'Failed',
+            desc: msg,
+          });
+        }
+      } catch (e) {
+        setActiveRequest({
+          type: 'error',
+          title: 'Failed',
+          desc: errorDescEl,
+        });
+      }
+    }, []);
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);
@@ -394,6 +518,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             title: 'Processing',
             desc: 'Please complete the transaction in your wallet.',
           };
+          setActiveRequest(loadingObj);
+          fetchAttestForUni();
+          return;
         }
         setActiveRequest(loadingObj);
         if (activeCred?.did) {

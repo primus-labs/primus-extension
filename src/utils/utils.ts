@@ -167,6 +167,11 @@ export function strToHex(str: string) {
   );
   return returnValue;
 }
+export function base64ToHex(base64Str: string) {
+  const value = Buffer.from(base64Str, 'base64');
+  const returnValue = ethereumjsUtil.bufferToHex(value);
+  return returnValue;
+}
 
 type AuthParams = {
   source: string;

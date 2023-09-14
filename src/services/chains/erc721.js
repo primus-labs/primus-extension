@@ -46,3 +46,35 @@ export async function mintWithSignature(params) {
   console.log('erc721 nftInfo=', nftInfo);
   return [Number(tokenId), nftInfo];
 }
+
+export async function submitUniswapTxProof(params) {
+  try {
+    let { metamaskprovider, txHash, proof, auxiBlkVerifyInfo } = params;
+    console.log('submitUniswapTxProof params===', params);
+    const contractAddress = '0x0e38FDbDebB447B76568a57A71165fC0a669C9F8';
+    const abi = [
+      'function submitUniswapTxProof(bytes,bytes,bytes) external',
+    ];
+    let provider = new ethers.providers.Web3Provider(metamaskprovider);
+    await provider.send('eth_requestAccounts', []);
+    let signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+
+    const tx = await contract.submitUniswapTxProof(
+      txHash,
+      proof,
+      auxiBlkVerifyInfo
+    );
+    console.log('submitUniswapTxProof tx...');
+    await tx.wait();
+    const receiptInfo = await provider.getTransactionReceipt(tx.hash);
+    console.log('submitUniswapTxProof tx=', tx, 'receipt=', receiptInfo);
+    // const topics = receiptInfo.logs[0].topics;
+    // const topicsLen = topics.length;
+    // const tokenId = topics[topicsLen - 1];
+    // console.log('erc721 mintWithSignature tokenId=', tokenId);
+    return tx.hash;
+  } catch (e) {
+    console.log('submitUniswapTxProof error: ', e);
+  }
+}
