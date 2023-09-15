@@ -407,7 +407,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           }
           // store nft & proof
           if (status === 'COMPLETE') {
-            const { proofWithPublicInputs, auxiBlkVerifyInfo } = proof;
+            const { transactionInput,proofWithPublicInputs, auxiBlkVerifyInfo } = proof;
             // const { transactionHash } = uniSwapProofParams;
             const upperChainTxHash = await submitUniswapTxProof({
               txHash: transactionHash,

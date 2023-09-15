@@ -1,7 +1,5 @@
-import { ethers } from 'ethers';
+import { ethers,utils } from 'ethers';
 import { EASInfo } from '@/config/envConstants';
-import { utils } from 'ethers';
-
 /*
 params = {
     networkName: networkName,
@@ -59,9 +57,41 @@ export async function submitUniswapTxProof(params) {
     await provider.send('eth_requestAccounts', []);
     let signer = provider.getSigner();
     const contract = new ethers.Contract(contractAddress, abi, signer);
+    
+    function getRawTransaction(tx) {
+      function addKey(accum, key) {
+        if (key in tx) {
+          accum[key] = tx[key];
+        }
+        return accum;
+      }
 
+      // Extract the relevant parts of the transaction and signature
+      const txFields =
+        'accessList chainId data gasLimit maxFeePerGas maxPriorityFeePerGas nonce to type value'.split(
+          ' '
+        );
+      const sigFields = 'v r s'.split(' ');
+
+      // Seriailze the signed transaction
+      const raw = utils.serializeTransaction(
+        txFields.reduce(addKey, {}),
+        sigFields.reduce(addKey, {})
+      );
+
+      // Double check things went well
+      if (utils.keccak256(raw) !== tx.hash) {
+        throw new Error('serializing failed!');
+      }
+
+      return raw;
+    };
+
+    const txObj = await new ethers.getDefaultProvider().getTransaction(txHash);
+   
+    const txParams = getRawTransaction(txObj);
     const tx = await contract.submitUniswapTxProof(
-      txHash,
+      txParams,
       proof,
       auxiBlkVerifyInfo
     );
