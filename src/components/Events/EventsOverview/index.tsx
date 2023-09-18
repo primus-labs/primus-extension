@@ -38,7 +38,7 @@ const EventsOverview = memo(() => {
       <div className="eventOverviewContent">
         <Slider {...settings}>
           <AdSpace onClick={handleClickClaim} />
-          <AdSpace2 onClick={navToCred} />
+          {/* <AdSpace2 onClick={navToCred} /> */}
         </Slider>
         <section className="rewardsWrapper">
           <header>Rewards</header>
