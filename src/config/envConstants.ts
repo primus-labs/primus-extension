@@ -83,9 +83,9 @@ const EASINFOMAP = {
       title: 'Linea Goerli',
       rpcUrl:
         'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
-      easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
-      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
+      erc721Contract: '',
+      easContact: '',
+      easProxyContrac: '',
       easProxyFeeContract: '0x0B991E5f3773b6a0F6E3672549cBfbD1178fBE22',
       schemas: {
         'Verax-Linea-Goerli': {
@@ -326,13 +326,13 @@ const EASINFOMAP = {
       icon: iconNetworkLinea,
       title: 'Linea Goerli',
       rpcUrl:
-        'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
-      easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
-      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
+        'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      erc721Contract: '',
+      easContact: '',
+      easProxyContrac: '',
       easProxyFeeContract: '0x9eC56cd6f6CA10Fb9Bc3a3D17D83028639b62DF5',
       schemas: {
-        'Verax-Linea-Goerli': {
+        'Verax-Linea-Mainnet': {
           schemaUid:
             '0x89C0A9424F9D62C6CDE9FEB83653033899FE5DF952BEAB024E38A13C3AAE3EE9',
           schemaUidTokenHoldings:
@@ -349,12 +349,12 @@ const EASINFOMAP = {
             '0xe08e249cc244e018cc56cb05938665fd16e373e77acc23d625e84cd4fe07cc48',
         },
       },
-      chainId: '0xE704', //59140
+      chainId: '0xe7084', //59144
       chainName: 'Linea',
       rpcUrls: [
-        'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+        'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       ],
-      blockExplorerUrls: ['https://goerli.lineascan.build'],
+      blockExplorerUrls: ['https://lineascan.build'],
       nativeCurrency: {
         name: 'LineaETH',
         symbol: 'LineaETH',
