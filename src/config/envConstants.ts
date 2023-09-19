@@ -86,7 +86,7 @@ const EASINFOMAP = {
       erc721Contract: '',
       easContact: '',
       easProxyContrac: '',
-      easProxyFeeContract: '0x0B991E5f3773b6a0F6E3672549cBfbD1178fBE22',
+      easProxyFeeContract: '0xB596b2B3eDD2C69204c0DCdD8da6329C9f056F52',
       schemas: {
         'Verax-Linea-Goerli': {
           schemaUid:
@@ -330,23 +330,23 @@ const EASINFOMAP = {
       erc721Contract: '',
       easContact: '',
       easProxyContrac: '',
-      easProxyFeeContract: '0x9eC56cd6f6CA10Fb9Bc3a3D17D83028639b62DF5',
+      easProxyFeeContract: '0x50bd377EB8D4236Bb587AB3FB1eeafd888AEeC58',
       schemas: {
         'Verax-Linea-Mainnet': {
           schemaUid:
-            '0x89C0A9424F9D62C6CDE9FEB83653033899FE5DF952BEAB024E38A13C3AAE3EE9',
+            '0x5C136E30F599E1A646323513BFE92F52AE6CB7C69141B1F156B7E648062BB280',
           schemaUidTokenHoldings:
-            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
+            '0xC9992483A7DA0207213D34288B835094B48567290CECF044C48913D3F1472A3A',
           schemaUidIdentification:
-            '0x871cb30613666b4349fe45b1e4af222e7da3c3f3b6487ef99b813a897470cb28',
+            '0x26F9780B51AEFE9581802FF0B315DECB36701D39766FBB78DBD9B4596B6DA0BD',
         },
         PolygonID: {
           schemaUid:
-            '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
+            '0x35E2EB198B2D9019F0D7C70EA2327C669A81B67721049D65CEC92EC5FA5E2905',
           schemaUidTokenHoldings:
-            '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
+            '0x640B7A045D305F646074AC038830AAA2E8EDFAAC069F7CC2BE53AE9034D13AD4',
           schemaUidIdentification:
-            '0xe08e249cc244e018cc56cb05938665fd16e373e77acc23d625e84cd4fe07cc48',
+            '0xF406CE092700219C3BE1729E52A0BC9539177E96B4A63D73D1E846CA20E1E900',
         },
       },
       chainId: '0xe7084', //59144
