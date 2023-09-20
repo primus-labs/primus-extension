@@ -304,32 +304,32 @@ export async function attestByDelegationProxyFee(params) {
     );
   }
   let tx;
+  let schemauid;
+  const activeSchemaInfo = EASInfo[networkName].schemas[schemaName];
+  if (type === 'ASSETS_PROOF') {
+    schemauid = activeSchemaInfo.schemaUid;
+  } else if (type === 'TOKEN_HOLDINGS') {
+    schemauid = activeSchemaInfo.schemaUidTokenHoldings;
+  } else if (type === 'IDENTIFICATION_PROOF') {
+    schemauid = activeSchemaInfo.schemaUidIdentification;
+  }
+  console.log('attestByDelegationProxyFee schemauid=', schemauid);
+  const fee = await getFee(networkName, metamaskprovider);
+  const paramsobj = {
+    schema: schemauid,
+    data: {
+      recipient: receipt,
+      expirationTime: 0,
+      revocable: true,
+      refUID: ZERO_BYTES32,
+      data: data,
+      value: 0n,
+    },
+    signature: formatSignature,
+    attester: attesteraddr,
+    deadline: 0,
+  };
   try {
-    let schemauid;
-    const activeSchemaInfo = EASInfo[networkName].schemas[schemaName];
-    if (type === 'ASSETS_PROOF') {
-      schemauid = activeSchemaInfo.schemaUid;
-    } else if (type === 'TOKEN_HOLDINGS') {
-      schemauid = activeSchemaInfo.schemaUidTokenHoldings;
-    } else if (type === 'IDENTIFICATION_PROOF') {
-      schemauid = activeSchemaInfo.schemaUidIdentification;
-    }
-    console.log('attestByDelegationProxyFee schemauid=', schemauid);
-    const fee = await getFee(networkName, metamaskprovider);
-    const paramsobj = {
-      schema: schemauid,
-      data: {
-        recipient: receipt,
-        expirationTime: 0,
-        revocable: true,
-        refUID: ZERO_BYTES32,
-        data: data,
-        value: 0n,
-      },
-      signature: formatSignature,
-      attester: attesteraddr,
-      deadline: 0,
-    };
     if (networkName.startsWith('Linea')) {
       tx = await contract.attest(paramsobj, { value: fee });
     } else {
@@ -340,7 +340,16 @@ export async function attestByDelegationProxyFee(params) {
       );
     }
   } catch (er) {
-    console.log('eas attestByDelegationProxyFee attest failed', er);
+    //console.log('eas attestByDelegationProxyFee attest failed', er);
+    try {
+      if (networkName.startsWith('Linea')) {
+        tx = await contract.callStatic.attest(paramsobj, { value: fee });
+      } else {
+        tx = await contract.callStatic.attestByDelegation(paramsobj, { value: fee });
+      }
+    } catch (error) {
+      console.log("eas attestByDelegationProxyFee caught error:\n", error);
+    }
     return;
   }
 

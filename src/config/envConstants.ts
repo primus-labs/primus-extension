@@ -349,7 +349,7 @@ const EASINFOMAP = {
             '0xF406CE092700219C3BE1729E52A0BC9539177E96B4A63D73D1E846CA20E1E900',
         },
       },
-      chainId: '0xe7084', //59144
+      chainId: '0xe708', //59144
       chainName: 'Linea',
       rpcUrls: [
         'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
