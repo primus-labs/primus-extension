@@ -82,7 +82,9 @@ const TokenTable: React.FC<TokenTableProps> = memo(({ list }) => {
                   <span>{item.name}</span>
                 </div>
                 <div className="userName">
-                  {item.userName ?? item.screenName}
+                  {item.name === 'X'
+                    ? item.screenName
+                    : item.userName ?? item.screenName}
                 </div>
 
                 <div className="createTime">

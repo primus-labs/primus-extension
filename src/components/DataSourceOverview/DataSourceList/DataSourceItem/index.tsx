@@ -181,7 +181,7 @@ const DataSourceItem: React.FC<DataSourceItemProps> = memo(
               {type === 'Social' && (
                 <div className="desc">
                   <span className="label">User:&nbsp;</span>
-                  <span className="value">{userName ?? screenName}</span>
+                  <span className="value">{name === 'X' ? screenName: (userName ?? screenName)}</span>
                 </div>
               )}
               {type === 'Assets' && label && (
