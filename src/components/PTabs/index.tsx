@@ -30,7 +30,7 @@ const tabs: TabItem[] = [
   },
   {
     activeIcon: iconCredHover,
-    text: 'Credit',
+    text: 'Proofs',
     path: '/cred',
   },
 ];
@@ -87,8 +87,11 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
             onMouseEnter={() => handleMouseEnter(item)}
             onMouseLeave={handleMouseLeave}
           >
-            <img src={item.activeIcon} alt="" />
-            <span>{item.text}</span>
+            <div className="con">
+              <img src={item.activeIcon} alt="" />
+              <span>{item.text}</span>
+            </div>
+            <i className="borderB"></i>
           </div>
         );
       })}

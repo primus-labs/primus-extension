@@ -17,44 +17,50 @@ $tabLineHeight: 22px
       width: $sIconSize*$N
 
 .pTabs
-  @include ptabsMinxin(1)
-  // padding: 4px
-  @include backdropMixin(16px,$colSWhite,$xxLBorderRadius)
   display: flex
-  gap: 21px
+  gap: 48px
   .tab
-    padding: 0 32px
-    height: 56px
+    height: 52px
+    min-width: 70px
     cursor: pointer
-    @extend .frcc
-    gap: 10px
-    @extend .mSBlackSemiBoldFont
-    img
-      opacity: 0.6
-    &:hover
-      img
-        opacity: 1
+    @extend .fcbc
     &.activeTab
-      background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-      color: #000000
+      .con 
+        opacity: 1
+      .borderB
+        display: inline-flex
     &.disabled
       cursor: not-allowed
       &:hover
-        img
+        .con
           opacity: 0.6
     &:not(.disabled):hover
-      color: #000000
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+      .con
+        opacity: 1
+    .con
+      @extend .frcc
+      gap: 8px
+      @extend .mSBlackSemiBoldFont
+      color: #000
+      opacity: 0.6
+      >img
+        width: 18px
+    .borderB
+      width: 70px
+      height: 4px
+      border-radius: 2px
+      background: linear-gradient(269deg, #70FFBA 0.52%, #78DEFF 100.71%)
+      display: none
+      
+
+      
 @media (max-width: 1680px)
   .pTabs
-    padding: 6px
-    // gap: 13px
-    gap: 0
+    gap: 40px
     .tab
-      padding: 0 26px
-      height: 43px
+      height: 45px
       font-size: 16px
-      line-height: 22px
-      gap: 8px
-      img
-        width: 18px
+      line-height: 19px
+      .con
+        gap: 8px
+      

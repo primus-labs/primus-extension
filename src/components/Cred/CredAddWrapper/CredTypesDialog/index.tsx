@@ -61,7 +61,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
       <PMask onClose={onClose}>
         <div className="padoDialog credTypesDialog">
           <main>
-            <h1>Create a Credential</h1>
+            <h1>Create Your Proof</h1>
             <h2>PADO uses interactive ZK protocol to attesting your data.</h2>
             <div className="scrollList">
               <ul className="credTypeList">

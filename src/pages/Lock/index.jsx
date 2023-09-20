@@ -80,8 +80,8 @@ const Lock = memo(() => {
         <AsideAnimation />
         <article>
           <header className="articleHeader">
-            <h1>WELCOME BACK！</h1>
-            <p>Manage and share your data simply and safely.</p>
+            <h1>Welcome Back！</h1>
+            <p>Bringing all internet data into smart contract.</p>
           </header>
           <main className="articleMain formItem">
             <h6>Password</h6>

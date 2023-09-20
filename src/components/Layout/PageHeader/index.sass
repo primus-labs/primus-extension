@@ -13,53 +13,45 @@ $dropdownItemY: 18px
 $dropdownItemX: 16px
 $lastDropdownItemPaddingTop: 10px
 $lastDropdownItemBorderRadius: 8px
-@mixin pageHeaderMixin($N)
-  height: $pageHeaderHeight*$N
-  .pLogo
-    width: $headerLogoWidth*$N
-  .rightHeader
-    height: 100%
-    .dropdownWrapper
-      padding: $dropdownWrapperPadding*$N
-      top: $dropdownWrapperTop*$N
-      border-radius: $dropdownWrapperBorderRadius*$N
-      .dropdown
-        .dropdownItemWrapper
-          padding: $dropdownItemWrapperY*$N 0
-          .dropdownItem
-            padding: $dropdownItemY*$N $dropdownItemX*$N
-            gap: $xsGap*$N
-            img
-              width: $xxsIconSize*$N
-          &:last-child
-            padding: $lastDropdownItemPaddingTop*$N 0 0 0
-            .dropdownItem
-              border-radius: $lastDropdownItemBorderRadius*$N
 
 
 .pageHeader
   .pageHeaderInner
     width: 100%
-    @include pageHeaderMixin(1)
+    height: 90px
     padding: 0 50px
     @extend .frbc
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0.2%, rgba(255, 255, 255, 0.00) 100%)
+    box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.05)
+    .pLogo
+      width: 158px
     .rightHeader
+      height: 100%
       position: relative
       .rightHeaderInner
-        height: $pageHeaderHeight
+        height: 90px
         @extend .frsc
       .dropdownWrapper
+        padding: 16px
+        top: 92px
+        border-radius: 12px
+        
         position: absolute
         z-index: 3
         right: 0
         background: #FFFFFF
         box-shadow: 0 24px 32px rgba(0, 0, 0, 0.1)
-        top: 92px
+        top: 87px
         .dropdown
           .dropdownItemWrapper
+            padding: 8px
             border-bottom: 1PX solid rgba(0, 0, 0, 0.05)
             padding: 0
             .dropdownItem
+              padding: 18px 16px
+              gap: 12px
+              img
+                width: 18px
               display: flex
               @extend .sFont
               font-family: 'Inter-Medium'
@@ -70,6 +62,9 @@ $lastDropdownItemBorderRadius: 8px
               >img
                 width: 18px
             &:last-child
+              padding: 10px 0 0 0
+              .dropdownItem
+                border-radius: 8px
               border-bottom: 0
               .dropdownItem
                 background: rgba(0, 0, 0, 0.05)
@@ -103,13 +98,16 @@ $lastDropdownItemBorderRadius: 8px
   .pageHeader
     .pageHeaderInner
       padding: 0 52px
+      height: 76px
       .pLogo
         width: 143px
         margin: -3.5px
       .rightHeader
         margin: -3.5px
+        .rightHeaderInner
+          height: 76px
         .dropdownWrapper
-          top: 85.5px
+          top: 71px
           .dropdown
             .dropdownItemWrapper
               padding: 0

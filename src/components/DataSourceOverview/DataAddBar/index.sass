@@ -7,8 +7,15 @@
   right: 104px
   bottom: 104px
   >button.updateBtn
-    border-radius: 50%
-    opacity: 0.7
+    border-radius: $xxLBorderRadius
+    @extend .sFont
+    font-family: 'Inter-Medium'
+    color:$colSBlack
+    @extend .frsc
+    background: rgba(255,255,255,0.8)
+    gap: 12px
+    padding: 14px
+    filter: drop-shadow(2px 6px 8px rgba(31, 131, 153, 0.15))
     &:hover
       opacity: 1
     >img
