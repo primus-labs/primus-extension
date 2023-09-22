@@ -4,12 +4,17 @@
 
 .pieTabs
   @extend .frsc
-  gap: 14px
+  gap: 18px
   // width: 20px
   // height: 52px
   .tab
     @extend .frcc
     cursor: pointer
+    gap: 8px
+    color: #000
+    font-family: 'Inter-Medium'
+    font-size: 12px
+    line-height: 22px
     img
       width: 24px
       height:24px
@@ -19,8 +24,8 @@
           opacity: 0.8
 @media (max-width: 1680px)
   .pieTabs
-    gap: 18px
+    gap: 14px
     .tab
       img
-        width: 20px
-        height: 20px
+        width: 14px
+        height: 14px

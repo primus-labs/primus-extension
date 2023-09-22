@@ -313,7 +313,7 @@ const DataSourceOverview = memo(() => {
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab} value="Data"/>
+        <PTabs onChange={handleChangeTab} value="Data" />
         <DataSourceSearch />
         {(activeSourceType === 'All' || activeSourceType === 'Identity') && (
           <DataSourceList

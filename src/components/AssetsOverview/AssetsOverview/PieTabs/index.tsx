@@ -13,7 +13,7 @@ type TabItem = {
 };
 
 const pieTabList: TabItem[] = [
-  { text: 'Source', icon: iconPieTabExchange },
+  { text: 'Source', icon: iconPieTabExchange},
   { text: 'Token', icon: iconPieTabToken },
 ];
 
@@ -50,6 +50,7 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
             onClick={() => handleClickTab(item)}
           >
             <img src={item.icon} alt="" />
+            <span>{item.text}</span>
           </li>
         );
       })}

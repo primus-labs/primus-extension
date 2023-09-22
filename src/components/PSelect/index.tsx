@@ -13,6 +13,7 @@ type OptionItem = {
   text: string;
   value: string;
   icon?: string;
+  
 };
 interface PSelectProps {
   options: OptionItem[];
@@ -21,10 +22,11 @@ interface PSelectProps {
   val: string;
   showIcon?: boolean;
   prefix?: any;
+  showSelf?: boolean;
 }
 
 const PSelect: React.FC<PSelectProps> = memo(
-  ({ onChange, options, placeholder = '', val, showIcon, prefix }) => {
+  ({ onChange, options, placeholder = '', val, showIcon, prefix,showSelf = true }) => {
     // const [activeOption, setActiveOption] = useState<OptionItem>();
     const [optionsVisible, setOptionsVisible] = useState(false);
 
@@ -33,6 +35,13 @@ const PSelect: React.FC<PSelectProps> = memo(
     const tokenLogoPrefix = useMemo(() => {
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
+    const activeOptions = useMemo(() => {
+      if (showSelf) {
+        return options;
+      } else {
+        return options.filter((i) => i.value !== val);
+      }
+    }, [options, showSelf, val]); 
 
     const selectInputEl = useRef(null);
     const prefixIconEl = useRef(null);
@@ -116,7 +125,7 @@ const PSelect: React.FC<PSelectProps> = memo(
             onMouseLeave={handleLeaveAvatar}
           >
             <ul className="selectOptions">
-              {options.map((item) => {
+              {activeOptions.map((item) => {
                 return (
                   <li
                     className="selectOption"

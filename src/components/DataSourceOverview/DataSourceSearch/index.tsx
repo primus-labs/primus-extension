@@ -119,6 +119,7 @@ const DataSourceSearch = memo(() => {
         options={dataSourceTypeList}
         onChange={handleChangeSelect}
         val={activeSourceType}
+        showSelf={false}
       />
       <div className="pSearch">
         <PControledInput
