@@ -49,12 +49,14 @@ $sSelectInput: 48px
     font-family: 'Inter-Medium'
     color: rgba(0, 0, 0, 0.6)
     position: relative
-    cursor: pointer
+    cursor: not-allowed
     .placeholder
       color: rgba(0, 0, 0, 0.4)
-    &:hover
-      .suffixIcon
-        opacity: 0.8
+    &.active
+      cursor: pointer
+      &:hover
+        .suffixIcon
+          opacity: 0.8
     .suffixIcon
       position: absolute
       content: ''

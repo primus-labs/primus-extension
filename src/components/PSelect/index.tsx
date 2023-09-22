@@ -13,7 +13,6 @@ type OptionItem = {
   text: string;
   value: string;
   icon?: string;
-  
 };
 interface PSelectProps {
   options: OptionItem[];
@@ -26,7 +25,15 @@ interface PSelectProps {
 }
 
 const PSelect: React.FC<PSelectProps> = memo(
-  ({ onChange, options, placeholder = '', val, showIcon, prefix,showSelf = true }) => {
+  ({
+    onChange,
+    options,
+    placeholder = '',
+    val,
+    showIcon,
+    prefix,
+    showSelf = true,
+  }) => {
     // const [activeOption, setActiveOption] = useState<OptionItem>();
     const [optionsVisible, setOptionsVisible] = useState(false);
 
@@ -41,7 +48,7 @@ const PSelect: React.FC<PSelectProps> = memo(
       } else {
         return options.filter((i) => i.value !== val);
       }
-    }, [options, showSelf, val]); 
+    }, [options, showSelf, val]);
 
     const selectInputEl = useRef(null);
     const prefixIconEl = useRef(null);
@@ -76,12 +83,22 @@ const PSelect: React.FC<PSelectProps> = memo(
         dE.removeEventListener('click', dEClickHandler);
       };
     }, []);
+    const activeClassName = useMemo(() => {
+      let defaultCN = 'selectInput';
+      if (showIcon) {
+        defaultCN += ' hasIcon';
+      }
+      if (activeOptions.length > 0) {
+        defaultCN += ' active';
+      }
+      return defaultCN;
+    }, [showIcon, activeOptions]);
 
     return (
       <div className="pSelect">
         <div
           ref={selectInputEl}
-          className={showIcon ? 'selectInput hasIcon' : 'selectInput'}
+          className={activeClassName}
           onClick={handleEnterAvatar}
           onMouseEnter={handleEnterAvatar}
           onMouseLeave={handleLeaveAvatar}
@@ -117,7 +134,7 @@ const PSelect: React.FC<PSelectProps> = memo(
             />
           )}
         </div>
-        {optionsVisible && (
+        {optionsVisible && activeOptions.length > 0 && (
           <div
             className="selectOptionswrapper"
             onClick={handleEnterAvatar}

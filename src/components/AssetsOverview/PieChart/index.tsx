@@ -97,7 +97,7 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
       let legendItemValueWidth = 71; // 88
       let legendItemValueFontSize = 20;
       let legendItemHeight = 27;
-      let legendItemRight = 12;
+      let legendItemLeft = 263;
       let legendTop = others ? '32' : 'center';
       if (document.documentElement.getBoundingClientRect().width <= 1680) {
         legendTop = others ? '12' : 'center';
@@ -108,8 +108,9 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
         legendItemValueWidth = 57; // 81
         legendItemValueFontSize = 16;
         legendItemHeight = 27;
-        legendItemRight = 8;
+        legendItemLeft = 209;
       }
+    
       return {
         // color: CHARTCOLORS,
         tooltip: {
@@ -126,7 +127,8 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
           // pageIconSize: 15,
           // pageButtonGap: 32,
           top: legendTop,
-          right: legendItemRight,
+          // right: legendItemRight,
+          left: legendItemLeft,
           // backgroundColor: 'rgba(0, 0, 0, 0.05)',
           // borderRadius: '8px',
           orient: 'vertical',
