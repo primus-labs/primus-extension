@@ -105,7 +105,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setActiveRequest({
           type: 'warn',
           title: 'No proof is created',
-          desc: 'Please go to the Credit page to generate.',
+          desc: 'Please go to the Proofs page to generate.',
         });
         setStep(2);
         return;
@@ -114,7 +114,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setActiveRequest({
           type: 'warn',
           title: 'No proof is submitted',
-          desc: 'Please go to the Credit page to submit proof to the blockchain.',
+          desc: 'Please go to the Proofs page to submit to the blockchain.',
         });
         setStep(2);
         return;

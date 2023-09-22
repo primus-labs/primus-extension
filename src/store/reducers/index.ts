@@ -50,19 +50,19 @@ const DEFAULTCREDTYPELIST = [
     display: 0,
     enabled: 0,
   },
-  {
-    id: '4',
-    credIdentifier: 'UNISWAP_PROOF',
-    credTitle: 'UniSwap Proof',
-    credIntroduce: 'ETH/USDC transaction, powered by Brevis',
-    credLogoUrl: '',
-    credDetails: '',
-    credProofContent: 'ETH/USDC transaction',
-    credProofConditions: 'since Jun 6 2023',
-    simplifiedName: 'UniSwap',
-    display: 0,
-    enabled: 0,
-  },
+  // {
+  //   id: '4',
+  //   credIdentifier: 'UNISWAP_PROOF',
+  //   credTitle: 'UniSwap Proof',
+  //   credIntroduce: 'ETH/USDC transaction, powered by Brevis',
+  //   credLogoUrl: '',
+  //   credDetails: '',
+  //   credProofContent: 'ETH/USDC transaction',
+  //   credProofConditions: 'since Jun 6 2023',
+  //   simplifiedName: 'UniSwap',
+  //   display: 0,
+  //   enabled: 0,
+  // },
 ];
 
 // initial state

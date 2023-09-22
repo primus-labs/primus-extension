@@ -561,7 +561,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           <div className="padoDialog manageDataDialog">
             <PBack onBack={onBack} />
             <main>
-              <h1>Manage Your Data</h1>
+              <h1>Manage Data</h1>
               <div className="scrollList">
                 <div className="contItem">
                   <div className="label">Update frequency</div>
