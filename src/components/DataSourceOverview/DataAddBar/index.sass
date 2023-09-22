@@ -12,19 +12,25 @@
     font-family: 'Inter-Medium'
     color:$colSBlack
     @extend .frsc
-    background: rgba(255,255,255,0.8)
+    background: rgba(255,255,255,0.7)
     gap: 12px
-    padding: 14px
+    // padding: 14px
     filter: drop-shadow(2px 6px 8px rgba(31, 131, 153, 0.15))
+    width: 58px
+    height: 58px
+    display: flex
+    justify-content: center
     &:hover
-      opacity: 1
+      background: rgba(255,255,255,0.8)
     >img
-      width: 58px
+      width: 26.58px
 @media (max-width:1680px)
   .dataAddBar
     right: 104px
     bottom: 104px
     >button.updateBtn
+      width: 48px
+      height: 48px
       >img
-        width: 48px
+        width: 22px
         
