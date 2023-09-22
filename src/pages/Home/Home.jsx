@@ -107,8 +107,8 @@ const Home = memo(() => {
         <AsideAnimation />
         <article>
           <section className="descWrapper">
-            <h1>Welcome to PADO zkAttestation Protocol</h1>
-            <p>Bringing all internet data into smart contract.</p>
+            <h1>Welcome to PADO Attestation Service</h1>
+            <p>Bringing all internet data into smart contracts.</p>
           </section>
           <button className="startBtn" onClick={handleClickStart}>
             <span>Click here to start</span>

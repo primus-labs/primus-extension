@@ -81,7 +81,7 @@ const Lock = memo(() => {
         <article>
           <header className="articleHeader">
             <h1>Welcome Back！</h1>
-            <p>Bringing all internet data into smart contract.</p>
+            <p>Bringing all internet data into smart contracts.</p>
           </header>
           <main className="articleMain formItem">
             <h6>Password</h6>

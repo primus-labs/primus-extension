@@ -31,10 +31,10 @@ const Setting: React.FC<SettingProps> = memo(({ onClose }) => {
       case 'Change Password':
         setResetPwdDialogVisible(true);
         break;
-      case 'Backup Your Account':
+      case 'Backup Account':
         setExportAddressDialogVisible(true);
         break;
-      case 'Manage Your Data':
+      case 'Manage Data':
         setManageDataDialogVisible(true);
         break;
       // case 'Privacy Policy':

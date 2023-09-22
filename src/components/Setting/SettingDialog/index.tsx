@@ -21,13 +21,13 @@ const moduleObj = [
     },
     {
       moduleType: 'wallet',
-      settingType: 'Backup Your Account',
+      settingType: 'Backup Account',
     },
   ],
   [
     {
       moduleType: 'data',
-      settingType: 'Manage Your Data',
+      settingType: 'Manage Data',
     },
   ],
   [

@@ -36,13 +36,16 @@
           font-family: 'Inter-Regular'
           color: $colMBlack
           word-break: break-all
-    h1
-      @extend .xlLBlackBoldFont
-      padding-top: 45px
-      padding-bottom: 18px
-      align-self: center
+    // h1
+    //   @extend .xlLBlackBoldFont
+    //   padding-top: 45px
+    //   padding-bottom: 18px
+    //   align-self: center
     h2
-      @extend .xsSBlackRegularFont
+      font-size: 32px
+      line-height: 39px
+      font-family: 'Inter-Bold'
+      color: #000
       align-self: center
     h6
       @extend .mSBlackRegularFont
@@ -101,9 +104,9 @@
         font-size: 12px
         line-height: 20px
       h6
-        font-size: 14px
-        line-height: 17px
-        font-family: 'Inter-Regular'
+        font-size: 18px
+        line-height: 22px
+        font-family: 'Inter-SemiBold'
         padding: 22px 0 6px 0
       .reconfirmLabel
         padding-top: 12px
@@ -149,19 +152,20 @@
         font-family: "Inter-Bold"
         color: $colLBlack
         padding: 0
+        align-self: center
       h2
         font-size: 16px
         line-height: 26px
         font-family: "Inter-Regular"
         color: $colSBlack
-        margin-top: 32px
+        margin-top: 18px
         align-self: flex-start
       h6
         padding: 32px 0 8px 0
         font-size: 18px
         line-height: 22px
-        font-family: "Inter-Regular"
-        color: $colSBlack
+        font-family: "Inter-SemiBold"
+        color: $colLBlack
 
   
 @media (max-width: 1680px)
@@ -177,10 +181,9 @@
           line-height: 18px
           margin-top: 32px
         h6
-          padding-top: 24px
-          padding-top: 24px
-          font-size: 16px
-          line-height: 26px
+          padding-top: 14px
+          font-size: 22px
+          line-height: 22px
           
     button.nextBtn
       height: 48px

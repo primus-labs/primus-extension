@@ -36,7 +36,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
       onSubmit();
     };
     const handleExport = () => {
-      exportJson(jsonStr, 'credential');
+      exportJson(jsonStr, 'Proof');
     };
     const getPolygonIdExportContent = useCallback(async () => {
       try {
@@ -116,17 +116,17 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
               <AddressInfoHeader />
             )}
             <QRCodeMain
-              title="Present Your Credential"
+              title="Present Your Proof"
               desc={
                 isPolygonId
                   ? 'Use your Polygon ID wallet to scan and import to your wallet.'
-                  : 'Scan this QR code to use or download your credential.'
+                  : 'Scan this QR code to use or download your proof.'
               }
               qrcodeValue={qrCodeVal}
             />
             <div className="exportWrapper" onClick={handleExport}>
               <img className="exportIcon" src={iconExport} alt="" />
-              <p>Export your credential</p>
+              <p>Export your proof</p>
             </div>
           </main>
           <button className="nextBtn" onClick={handleClickNext}>

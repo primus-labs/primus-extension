@@ -25,7 +25,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                 <i></i>Connected any data source before Sep 30, 2023
               </li>
               <li>
-                <i></i>Generated one credit credential
+                <i></i>Generated one proof
               </li>
               <li>
                 <i></i>Provided at least one on-chain attestation

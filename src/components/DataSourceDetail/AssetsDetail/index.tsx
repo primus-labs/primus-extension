@@ -173,7 +173,7 @@ const AssetsDetail = memo(() => {
     ) : (
       <button className="tokenTableHeaderRight" onClick={navToCred}>
         <img src={iconCredCreate} alt="" />
-        <span>Create Credential</span>
+        <span>Create Proof</span>
       </button>
     );
   }, [navToCred, isOnChainData]);

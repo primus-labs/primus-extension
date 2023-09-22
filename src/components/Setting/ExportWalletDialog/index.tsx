@@ -103,7 +103,7 @@ const ExportWallet: React.FC<SetPwdDialogProps> = memo(
         <div className="padoDialog exportWalletDialog">
           <PBack onBack={onBack} />
           <main>
-            <h1>Backup Your Account</h1>
+            <h1>Backup Account</h1>
             <div className="infoWrapper">
               <div className="infoItem gray">
                 <div className="label">Account</div>

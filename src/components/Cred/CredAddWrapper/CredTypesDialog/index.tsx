@@ -38,7 +38,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
       if (activeType) {
         onSubmit(activeType);
       } else {
-        setErrorTip('Please select one credential type');
+        setErrorTip('Please select one proof type');
       }
     };
     const liClassName = useCallback(

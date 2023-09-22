@@ -583,7 +583,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const handleAdd = useCallback(() => {
       if (activeRequest?.type === 'loading') {
         alert(
-          'There is already a credential being processed. Please try again later.'
+          'There is already a proof being processed. Please try again later.'
         );
         onClose();
         return;
