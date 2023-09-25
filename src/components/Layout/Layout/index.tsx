@@ -172,11 +172,11 @@ const Layout = () => {
   //   (updateOnChainFn as () => void)();
   // }, [dispatch, updateOnChainFn]);
   const initStoreData = useCallback(async () => {
-    // 
-    const { twitter } = await chrome.storage.local.get(['twitter'])
+    //
+    const { twitter } = await chrome.storage.local.get(['twitter']);
     if (twitter) {
       await chrome.storage.local.set({ x: twitter });
-      await chrome.storage.local.remove('twitter')
+      await chrome.storage.local.remove('twitter');
     }
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
@@ -200,10 +200,83 @@ const Layout = () => {
     }
   }, [pathname]);
 
+
+  // const handlePageDecode = async () => {
+  //   debugger
+  //   const DYNAMIC_SCRIPT_ID = 'dynamic-script';
+  //   async function isDynamicContentScriptRegistered() {
+  //     const scripts = await chrome.scripting.getRegisteredContentScripts();
+  //     return scripts.some((s) => s.id === DYNAMIC_SCRIPT_ID);
+  //   }
+  //   // Unregister the dynamic content script to avoid multiple injections.
+  //   const dynamicContentScriptRegistered =
+  //     await isDynamicContentScriptRegistered();
+    
+  //   if (dynamicContentScriptRegistered) {
+  //     await chrome.scripting.unregisterContentScripts({
+  //       ids: [DYNAMIC_SCRIPT_ID],
+  //     });
+  //   }
+
+  //   // // Now, execute the script. We handle this in the service worker so we can
+  //   // // wait for the tab to open and **then** inject our script.
+  //   // chrome.runtime.sendMessage({
+  //   //   name: 'inject-programmatic',
+  //   //   options: { world: 'ISOLATED' },
+  //   // });
+  //   const matches = ['https://www.binance.com/zh-CN/my/dashboard'];
+  //   await chrome.scripting.registerContentScripts([
+  //     {
+  //       id: 'dynamic-script',
+  //       js: ['/content-script.js'],
+  //       // persistAcrossSessions: false,
+  //       matches: matches,
+  //       // runAt: 'document_start',
+  //       // allFrames: false,
+  //       // world: 'ISOLATED',
+  //     },
+  //   ]);
+
+  //   // Only open the page by default if the `matches` field hasn't been changed.
+  //   if (matches.includes('https://www.binance.com/zh-CN/my/dashboard')) {
+  //     await chrome.tabs.create({
+  //       url: 'https://www.binance.com/zh-CN/my/dashboard',
+  //     });
+  //     // debugger
+  //     // await chrome.runtime.sendMessage({
+  //     //   name: 'inject-pagedecode',
+  //     // });
+  //   }
+  // };
+
+
+  const handlePageDecode = async () => {
+    await chrome.runtime.sendMessage({
+      name: 'inject-dynamic-pageDecode',
+    });
+  };
+  const handlePageRequest = async () => {
+    await chrome.runtime.sendMessage({
+      name: 'pageDecode-send-request',
+    });
+  };
+
   return (
     <div className="pageApp">
       <BackgroundAnimation />
       <div className="pageLayer">
+        <button
+          className="openPageDataSource"
+          onClick={handlePageDecode}
+        >
+          Open Binance
+        </button>
+        <button
+          className="requestBtn"
+          onClick={handlePageRequest}
+        >
+          Request
+        </button>
         <ActiveHeader />
         <Outlet />
       </div>
