@@ -7,13 +7,14 @@ Module.onRuntimeInitialized = async () => {
 };
 
 var AlgorithmInited = false;
+var ClientVersion = "1.1.0";
 
 function init() {
     console.log("init");
 
     var req_obj = {
         method: "init",
-        version: "1.0.0",
+        version: ClientVersion,
         params: {}
     };
     var json_str = JSON.stringify(req_obj);
@@ -35,7 +36,7 @@ function getAttestation(params) {
     }
     var req_obj = {
         method: "getAttestation",
-        version: "1.0.0",
+        version: ClientVersion,
         params: params
     };
     var json_str = JSON.stringify(req_obj);
@@ -49,7 +50,7 @@ function getAttestationResult() {
     console.log("getAttestationResult");
     var req_obj = {
         method: "getAttestationResult",
-        version: "1.0.0",
+        version: ClientVersion,
         params: {
           requestid: "1"
         }
@@ -70,7 +71,7 @@ function startOffline(params) {
     }
     var req_obj = {
       method: "startOffline",
-      version: "1.0.0",
+      version: ClientVersion,
       params: params
     };
     var json_str = JSON.stringify(req_obj);
