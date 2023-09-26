@@ -1,50 +1,42 @@
-const DYNAMIC_SCRIPT_ID = 'dynamic-script';
-chrome.webNavigation.onDOMContentLoaded.addListener(async ({ tabId, url }) => {
-  console.log('pado-bg-webNavigation', tabId, url);
-  if (url !== 'https://www.binance.com/zh-CN/my/dashboard') return;
-
-  async function isDynamicContentScriptRegistered() {
-    const scripts = await chrome.scripting.getRegisteredContentScripts();
-
-    return scripts.some((s) => s.id === DYNAMIC_SCRIPT_ID);
-  }
-  const dynamicContentScriptRegistered =
-    await isDynamicContentScriptRegistered();
-
-  if (dynamicContentScriptRegistered) {
-    await chrome.scripting.unregisterContentScripts({
-      ids: [DYNAMIC_SCRIPT_ID],
-    });
-  }
-  await chrome.scripting.registerContentScripts([
-    {
-      id: 'dynamic-script',
-      js: ['pageDecode.js'],
-      // persistAcrossSessions: false,
-      matches: ['https://www.binance.com/zh-CN/my/dashboard'],
-      // runAt: 'document_start',
-      // allFrames: false,
-      // world: 'ISOLATED',
-    },
-  ]);
-  await chrome.scripting.insertCSS({
-    files: ['pageDecode.css'],
-    target: { tabId: tabId },
-  });
-});
+import { dataSourceRequest } from '@/utils/request';
 
 // // inject-dynamic
-chrome.runtime.onMessage.addListener(async ({ name, options }) => {
-  if (name === 'inject-dynamic-pageDecode') {
-    await chrome.tabs.create({
+export const pageDecodeMsgListener = async (request, sender, sendResponse) => {
+  const { name, options } = request;
+  if (name === 'inject') {
+    const tabCreatedByPado = await chrome.tabs.create({
       url: 'https://www.binance.com/zh-CN/my/dashboard',
     });
+    console.log('222222tabCreatedByPado', tabCreatedByPado);
+    await chrome.scripting.executeScript({
+      target: {
+        tabId: tabCreatedByPado.id,
+      },
+      files: ['pageDecode.js'],
+    });
+    await chrome.scripting.insertCSS({
+      target: { tabId: tabCreatedByPado.id },
+      files: ['pageDecode.css'],
+    });
   }
-  if (name === 'pageDecode-send-request') {
-    request().then((r) => {});
+  if (name === 'sendRequest') {
+    requestF().then((r) => {});
   }
-});
-async function request() {
+  // const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  console.log('222222bg received:', name, sender, sendResponse);
+  if (name === 'injectionCompleted') {
+    sendResponse({
+      name: 'append',
+    });
+  }
+  if (name === 'startDataSourceAttest') {
+    requestF().then((r) => {
+      sendResponse(r)
+    });
+  }
+};
+
+async function requestF() {
   const {
     binance_url: url,
     binance_method: method,
@@ -56,53 +48,26 @@ async function request() {
     'binance_body',
     'binance_header',
   ]);
-  sendRequest(
-    url,
-    method,
-    body,
-    JSON.parse(header),
-    function (response) {
-      // 处理响应数据
-      alert('Received response:' + response);
-    },
-    function (response) {
-      // 处理响应数据
-      alert('Error response:' + response);
-    }
-  );
-}
-function sendRequest(
-  url,
-  method,
-  body,
-  headers,
-  successCallback,
-  errorCallback
-) {
-  var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        // 请求成功，执行成功回调并传递响应数据
-        successCallback(xhr.responseText);
-      } else {
-        // 请求失败，执行错误回调并传递错误信息
-        errorCallback('Request failed with status: ' + xhr.status);
-      }
-    }
-  };
-  xhr.onerror = function () {
-    // 发生网络错误，执行错误回调并传递错误信息
-    errorCallback('Network error occurred');
-  };
-  xhr.open(method, url, true);
+  const formatHeader = JSON.parse(header).reduce((prev, curr) => {
+    const { name, value } = curr;
+    prev[name] = value;
+    return prev;
+  }, {});
 
-  // 设置请求头
-  for (var i = 0; i < headers.length; i++) {
-    xhr.setRequestHeader(headers[i].name, headers[i].value);
-  }
-
-  xhr.send(body); // 发送请求主体
+  const requestParams = {
+    method: method,
+    url: url,
+    data: JSON.parse(body),
+    header: formatHeader,
+  };
+  console.log('requestParams', requestParams);
+  dataSourceRequest(requestParams)
+    .then((res) => {
+      console.log('222222Biannce request res: ', res);
+    })
+    .catch((e) => {
+      console.log('222222Biannce request error: ', e);
+    });
 }
 // Listen to request header information
 chrome.webRequest.onBeforeSendHeaders.addListener(

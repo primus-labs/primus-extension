@@ -16,6 +16,7 @@ import {
 } from './exData';
 import { eventReport } from '@/services/api/usertracker';
 import './pageDecode.js';
+import { pageDecodeMsgListener } from './pageDecode.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -482,5 +483,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('background onMessage message', message, fullscreenPort);
   if (message.resType === 'algorithm' && fullscreenPort) {
     postMsg(fullscreenPort, message);
+  }
+  if (message.type === 'pageDecode') {
+    pageDecodeMsgListener(message, sender, sendResponse);
   }
 });

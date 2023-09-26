@@ -1,9 +1,4 @@
-chrome.runtime.sendMessage({
-  name: 'webReceived',
-});
-chrome.runtime.onMessage.addListener((msg) => {
-  console.log('webReceived', msg);
-});
+
 function createDomElement(html) {
   const dom = new DOMParser().parseFromString(html, 'text/html');
   return dom.body.firstElementChild;
@@ -11,7 +6,17 @@ function createDomElement(html) {
 const padoMaskStr =
   '<div id="pado-mask" draggable><button class="creatBtn" > Creat PADO Proof</button ></div > ';
 const padoMaskNode = createDomElement(padoMaskStr);
-
+padoMaskNode.onclick = () => {
+  chrome.runtime.sendMessage(
+    {
+      type: 'pageDecode',
+      name: 'sendRequest',
+    },
+    (response) => {
+      console.log('222222web received (sendRequest) response:', response);
+    }
+  );
+}
 padoMaskNode.onmousedown = function (event) {
   let shiftX = event.clientX - padoMaskNode.getBoundingClientRect().left;
   let shiftY = event.clientY - padoMaskNode.getBoundingClientRect().top;
@@ -38,6 +43,19 @@ padoMaskNode.ondragstart = function () {
   return false;
 };
 
-document.body.appendChild(padoMaskNode);
-
 alert('Injection completed');
+chrome.runtime.sendMessage(
+  {
+    type: 'pageDecode',
+    name: 'injectionCompleted',
+  },
+  (response) => {
+    console.log('222222web received (injectionCompleted) response:', response);
+    document.body.appendChild(padoMaskNode);
+    if (response.name === 'append') {
+    }
+  }
+);
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('web received:', request);
+});

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import React, { useEffect, useCallback, useState, useMemo, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
@@ -29,7 +29,7 @@ import './index.sass';
 import LoseEfficacyDialog from '../LoseEfficacy';
 import { updateAlgoUrl } from '@/config/envConstants';
 
-const Layout = () => {
+const Layout = memo(() => {
   const location = useLocation();
   const pathname = location.pathname;
   const padoServicePort = useSelector(
@@ -200,82 +200,19 @@ const Layout = () => {
     }
   }, [pathname]);
 
-
-  // const handlePageDecode = async () => {
-  //   debugger
-  //   const DYNAMIC_SCRIPT_ID = 'dynamic-script';
-  //   async function isDynamicContentScriptRegistered() {
-  //     const scripts = await chrome.scripting.getRegisteredContentScripts();
-  //     return scripts.some((s) => s.id === DYNAMIC_SCRIPT_ID);
-  //   }
-  //   // Unregister the dynamic content script to avoid multiple injections.
-  //   const dynamicContentScriptRegistered =
-  //     await isDynamicContentScriptRegistered();
-    
-  //   if (dynamicContentScriptRegistered) {
-  //     await chrome.scripting.unregisterContentScripts({
-  //       ids: [DYNAMIC_SCRIPT_ID],
-  //     });
-  //   }
-
-  //   // // Now, execute the script. We handle this in the service worker so we can
-  //   // // wait for the tab to open and **then** inject our script.
-  //   // chrome.runtime.sendMessage({
-  //   //   name: 'inject-programmatic',
-  //   //   options: { world: 'ISOLATED' },
-  //   // });
-  //   const matches = ['https://www.binance.com/zh-CN/my/dashboard'];
-  //   await chrome.scripting.registerContentScripts([
-  //     {
-  //       id: 'dynamic-script',
-  //       js: ['/content-script.js'],
-  //       // persistAcrossSessions: false,
-  //       matches: matches,
-  //       // runAt: 'document_start',
-  //       // allFrames: false,
-  //       // world: 'ISOLATED',
-  //     },
-  //   ]);
-
-  //   // Only open the page by default if the `matches` field hasn't been changed.
-  //   if (matches.includes('https://www.binance.com/zh-CN/my/dashboard')) {
-  //     await chrome.tabs.create({
-  //       url: 'https://www.binance.com/zh-CN/my/dashboard',
-  //     });
-  //     // debugger
-  //     // await chrome.runtime.sendMessage({
-  //     //   name: 'inject-pagedecode',
-  //     // });
-  //   }
-  // };
-
-
-  const handlePageDecode = async () => {
+  const handlePageDecode = useCallback(async () => {
     await chrome.runtime.sendMessage({
-      name: 'inject-dynamic-pageDecode',
+      type: 'pageDecode',
+      name: 'inject',
     });
-  };
-  const handlePageRequest = async () => {
-    await chrome.runtime.sendMessage({
-      name: 'pageDecode-send-request',
-    });
-  };
+  }, []);
 
   return (
     <div className="pageApp">
       <BackgroundAnimation />
       <div className="pageLayer">
-        <button
-          className="openPageDataSource"
-          onClick={handlePageDecode}
-        >
+        <button className="openPageDataSource" onClick={handlePageDecode}>
           Open Binance
-        </button>
-        <button
-          className="requestBtn"
-          onClick={handlePageRequest}
-        >
-          Request
         </button>
         <ActiveHeader />
         <Outlet />
@@ -283,6 +220,6 @@ const Layout = () => {
       <LoseEfficacyDialog />
     </div>
   );
-};
+});
 
 export default Layout;

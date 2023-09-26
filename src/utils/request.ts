@@ -6,6 +6,13 @@ type FetchParams = {
   data?: any;
   config?: any;
 };
+type FetchParams2 = {
+  method: string;
+  url: string;
+  data?: any;
+  header?: any;
+  timeout?: any;
+};
 
 const request = async (fetchParams: FetchParams) => {
   let { method, url, data = {}, config } = fetchParams;
@@ -81,3 +88,59 @@ const request = async (fetchParams: FetchParams) => {
   }
 };
 export default request;
+
+export const dataSourceRequest = async (fetchParams: FetchParams2) => {
+  let { method, url, data = {}, header, timeout } = fetchParams;
+  method = method.toUpperCase();
+ 
+  if (method === 'GET') {
+    let dataStr = '';
+    Object.keys(data).forEach((key) => {
+      dataStr += key + '=' + data[key] + '&';
+    });
+    if (dataStr !== '') {
+      dataStr = dataStr.substr(0, dataStr.lastIndexOf('&'));
+      url = url + '?' + dataStr;
+    }
+  }
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const fotmatTimeout = timeout ?? DEFAULTFETCHTIMEOUT;
+  const timeoutTimer = setTimeout(() => {
+    controller.abort();
+  }, fotmatTimeout);
+  let requestConfig: any = {
+    credentials: 'same-origin',
+    method: method,
+    headers: {
+      ...header,
+      // 'no-referrer': true
+    },
+    mode: 'cors', //  same-origin | no-cors（default）|cores;
+    cache: 'default', //  default | no-store | reload | no-cache | force-cache | only-if-cached 。
+    signal: signal,
+  };
+
+  if (method === 'POST') {
+    Object.defineProperty(requestConfig, 'body', {
+      value: JSON.stringify(data),
+    });
+  }
+  try {
+    const response = await fetch(url, requestConfig);
+    const responseJson = await response.json();
+    clearTimeout(timeoutTimer);
+    return responseJson;
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.log(`fetch ${url} timeout`);
+    } else {
+      throw new Error(error);
+    }
+  } finally {
+    clearTimeout(timeoutTimer);
+  }
+};
+
+
