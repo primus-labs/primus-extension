@@ -200,20 +200,10 @@ const Layout = memo(() => {
     }
   }, [pathname]);
 
-  const handlePageDecode = useCallback(async () => {
-    await chrome.runtime.sendMessage({
-      type: 'pageDecode',
-      name: 'inject',
-    });
-  }, []);
-
   return (
     <div className="pageApp">
       <BackgroundAnimation />
       <div className="pageLayer">
-        <button className="openPageDataSource" onClick={handlePageDecode}>
-          Open Binance
-        </button>
         <ActiveHeader />
         <Outlet />
       </div>

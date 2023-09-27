@@ -485,6 +485,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     postMsg(fullscreenPort, message);
   }
   if (message.type === 'pageDecode') {
-    pageDecodeMsgListener(message, sender, sendResponse);
+    pageDecodeMsgListener(message, sender, sendResponse, USERPASSWORD);
   }
 });

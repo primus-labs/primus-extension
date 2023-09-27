@@ -54,6 +54,12 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
       },
       [activeType, type]
     );
+    const handlePageDecode = useCallback(async () => {
+      await chrome.runtime.sendMessage({
+        type: 'pageDecode',
+        name: 'inject',
+      });
+    }, []);
     useEffect(() => {
       setActiveType(type);
     }, [type]);
@@ -83,6 +89,9 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
               </ul>
             </div>
           </main>
+          <button className="openPageDataSource" onClick={handlePageDecode}>
+            Open Binance
+          </button>
 
           <button className="nextBtn" onClick={handleClickNext}>
             {errorTip && (
