@@ -28,6 +28,14 @@ export const pageDecodeMsgListener = async (
       'binance_body',
       'binance_header',
     ]);
+    const dataSourceCookies = await chrome.cookies.getAll({
+      url: 'https://www.binance.com',
+    });
+    const cookiesObj = dataSourceCookies.reduce((prev, curr) => {
+      const { name, value } = curr;
+      prev[name] = value;
+      return prev;
+    }, {});
     const form = {
       source: 'binance',
       type: 'KYC',
@@ -90,7 +98,7 @@ export const pageDecodeMsgListener = async (
       schemaType,
       datasourceTemplate: { host, requests, responses },
     } = schemaInfo;
-    const formatRequests = requests.map((r) => {
+    const formatRequests = requests.map( (r) => {
       const { headers, cookies, body } = r;
       let formateHeader = {},
         formateCookie = {},
@@ -103,27 +111,28 @@ export const pageDecodeMsgListener = async (
           );
           formateHeader[hk] = binance_headerObj[inDataSourceHeaderKey];
         });
+        Object.assign(r, {
+          headers: formateHeader,
+        });
       }
       if (cookies && cookies.length > 0) {
-        cookies.forEach(async (ck) => {
-          const c = await chrome.cookies.get({
-            name: ck,
-            url: 'https://www.binance.com',
-          });
-
-          formateCookie[ck] = c.value;
+        cookies.forEach((ck) => {
+          formateCookie[ck] = cookiesObj[ck];
+        });
+        Object.assign(r, {
+          cookies: formateCookie,
         });
       }
       if (body && body.length > 0) {
         body.forEach((hk) => {
           formateBody[hk] = JSON.parse(binance_body)[hk];
         });
+        Object.assign(r, {
+          body: formateBody,
+        });
       }
-      return Object.assign(r, {
-        headers: formateHeader,
-        cookies: formateCookie,
-        body: formateBody,
-      });
+
+      return r;
     });
     Object.assign(aligorithmParams, {
       reqType: 'web',
