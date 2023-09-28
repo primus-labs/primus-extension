@@ -61,8 +61,8 @@ export const pageDecodeMsgListener = async (
             name: 'kyc',
             url: 'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail',
             method: 'POST',
-            header: ['Clienttype', 'Csrftoken', 'User-Agent'],
-            cookie: ['p20t'],
+            headers: ['Clienttype', 'Csrftoken', 'User-Agent'],
+            cookies: ['p20t'],
           },
         ],
         responses: [
@@ -91,12 +91,12 @@ export const pageDecodeMsgListener = async (
       datasourceTemplate: { host, requests, responses },
     } = schemaInfo;
     const formatRequests = requests.map((r) => {
-      const { header, cookie, body } = r;
+      const { headers, cookies, body } = r;
       let formateHeader = {},
         formateCookie = {},
         formateBody = {};
-      if (header && header.length > 0) {
-        header.forEach((hk) => {
+      if (headers && headers.length > 0) {
+        headers.forEach((hk) => {
           const binance_headerObj = JSON.parse(binance_header);
           const inDataSourceHeaderKey = Object.keys(binance_headerObj).find(
             (h) => h.toLowerCase() === hk.toLowerCase()
@@ -104,8 +104,8 @@ export const pageDecodeMsgListener = async (
           formateHeader[hk] = binance_headerObj[inDataSourceHeaderKey];
         });
       }
-      if (cookie && cookie.length > 0) {
-        cookie.forEach(async (ck) => {
+      if (cookies && cookies.length > 0) {
+        cookies.forEach(async (ck) => {
           const c = await chrome.cookies.get({
             name: ck,
             url: 'https://www.binance.com',
@@ -120,8 +120,8 @@ export const pageDecodeMsgListener = async (
         });
       }
       return Object.assign(r, {
-        header: formateHeader,
-        cookie: formateCookie,
+        headers: formateHeader,
+        cookies: formateCookie,
         body: formateBody,
       });
     });
