@@ -107,18 +107,18 @@ const processAlgorithmReq = async (message, port) => {
   let { reqMethodName, params = {} } = message;
   switch (reqMethodName) {
     case 'start':
-      // const offscreenDocumentPath = 'offscreen.html';
-      // if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
-      //   console.log('create offscreen document...........');
-      //   await chrome.offscreen.createDocument({
-      //     url: chrome.runtime.getURL(offscreenDocumentPath),
-      //     reasons: ['IFRAME_SCRIPTING'],
-      //     justification: 'WORKERS for needing the document',
-      //   });
-      //   console.log('offscreen document created');
-      // } else {
-      //   console.log('offscreen document has already created');
-      // }
+      const offscreenDocumentPath = 'offscreen.html';
+      if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
+        console.log('create offscreen document...........');
+        await chrome.offscreen.createDocument({
+          url: chrome.runtime.getURL(offscreenDocumentPath),
+          reasons: ['IFRAME_SCRIPTING'],
+          justification: 'WORKERS for needing the document',
+        });
+        console.log('offscreen document created');
+      } else {
+        console.log('offscreen document has already created');
+      }
       break;
     case 'init':
       chrome.runtime.sendMessage({

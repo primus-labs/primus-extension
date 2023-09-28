@@ -168,7 +168,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
             <div className="con">
               <div className="conl">
                 {/* <img src={credIcon} alt="" /> */}
-                {briefTypeName}
+                {briefTypeName ?? item.type}
               </div>
               <div className="conr">
                 <div className="conrItem">
