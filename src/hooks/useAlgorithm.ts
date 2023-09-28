@@ -57,14 +57,14 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
             });
           }
         }
-        if (resMethodName === `getAttestation`) {
+        if (resMethodName === `getAttestation`) {      
           if (res) {
             // TODO wheather wait getAttestation msg back
             const handler = () => savedCallback.current(res);
             handler();
           }
         }
-        if (resMethodName === `getAttestationResult`) {
+        if (resMethodName === `getAttestationResult`) {   
           if (res) {
             const handler = () =>
               savedGetAttestationResultCallback.current(res);

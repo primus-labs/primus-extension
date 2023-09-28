@@ -1,4 +1,4 @@
-import { dataSourceRequest } from '@/utils/request';
+
 import { assembleAlgorithmParams } from './exData';
 // // inject-dynamic
 export const pageDecodeMsgListener = async (
@@ -7,7 +7,7 @@ export const pageDecodeMsgListener = async (
   sendResponse,
   password
 ) => {
-  const { name,params } = request;
+  const { name } = request;
   if (name === 'inject') {
     const tabCreatedByPado = await chrome.tabs.create({
       url: 'https://www.binance.com/zh-CN/my/dashboard',
@@ -25,20 +25,17 @@ export const pageDecodeMsgListener = async (
     });
   }
   if (name === 'sendRequest') {
-    const {
-      binance_body,
-      binance_header,
-    } = await chrome.storage.local.get([
+    const { binance_body, binance_header } = await chrome.storage.local.get([
       'binance_body',
       'binance_header',
     ]);
     const form = {
       source: 'binance',
       type: 'KYC',
-      // baseValue: null, 
-      // token: null, 
+      // baseValue: null,
+      // token: null,
       label: null, // TODO
-      exUserId: null, 
+      exUserId: null,
     };
     let aligorithmParams = await assembleAlgorithmParams(form, password);
     const schemaInfo = {
@@ -65,7 +62,7 @@ export const pageDecodeMsgListener = async (
             name: 'kyc',
             url: 'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail',
             method: 'POST',
-            header: ['Clienttype', 'Csrftoken', 'User-Agent'],
+            header: ['clienttype', 'csrftoken', 'User-Agent'],
             cookie: ['p20t'],
           },
         ],
@@ -106,7 +103,13 @@ export const pageDecodeMsgListener = async (
       }
       if (cookie && cookie.length > 0) {
         cookie.forEach((ck) => {
-          formateCookie[ck] = params.cookies[ck];
+          //     const c = await chrome.cookies.get({
+          //   name: 'p20t',
+          //   url: 'https://www.binance.com',
+          // });
+          // console.log('222222p20t', c);
+          // formateCookie[ck] = params.cookies[ck];// TODO!!!
+          formateCookie[ck] = 'web.782151446.F4141B10D5B6B96B69959E3D0CE8BD9C';
         });
       }
       if (body && body.length > 0) {
@@ -125,9 +128,9 @@ export const pageDecodeMsgListener = async (
       host,
       schemaType,
       requests: formatRequests,
-      responses
+      responses,
     });
-   console.log('222222pageDecode-params', aligorithmParams);
+    console.log('222222pageDecode-params', aligorithmParams);
     chrome.runtime.sendMessage({
       type: 'algorithm',
       method: 'getAttestation',
@@ -146,57 +149,27 @@ export const pageDecodeMsgListener = async (
     // requestF().then((r) => {
     //   sendResponse(r)
     // });
-    
   }
 };
 
-async function requestF() {
-  const {
-    binance_url: url,
-    binance_method: method,
-    binance_body: body,
-    binance_header: header,
-  } = await chrome.storage.local.get([
-    'binance_url',
-    'binance_method',
-    'binance_body',
-    'binance_header',
-  ]);
-  const formatHeader = JSON.parse(header)
-  const requestParams = {
-    method: method,
-    url: url,
-    data: JSON.parse(body),
-    header: formatHeader,
-  };
-  console.log('requestParams', requestParams);
-  dataSourceRequest(requestParams)
-    .then((res) => {
-      console.log('222222Biannce request res: ', res);
-    })
-    .catch((e) => {
-      console.log('222222Biannce request error: ', e);
-    });
-}
 // Listen to request header information
 chrome.webRequest.onBeforeSendHeaders.addListener(
-  (details) => {
+  async (details) => {
     if (
       details.url ===
       'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail'
     ) {
-      let formatHeader = details.requestHeaders.reduce(
-        (prev, curr) => {
-          const { name, value } = curr;
-          prev[name] = value;
-          return prev;
-        },
-        {}
-      );
+      console.log('222222details', details);
+      let formatHeader = details.requestHeaders.reduce((prev, curr) => {
+        const { name, value } = curr;
+        prev[name] = value;
+        return prev;
+      }, {});
       const requestHeaders = JSON.stringify(formatHeader);
       const requestInfo = {
         binance_header: requestHeaders,
       };
+
       console.log('222222requestInfo', requestInfo);
       chrome.storage.local.set(requestInfo, function () {
         if (chrome.runtime.lastError) {
@@ -208,7 +181,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     }
   },
   { urls: ['<all_urls>'] },
-  ['requestHeaders']
+  ['requestHeaders', 'extraHeaders']
 );
 
 chrome.webRequest.onBeforeRequest.addListener(
@@ -233,7 +206,6 @@ chrome.webRequest.onBeforeRequest.addListener(
             }
           });
         }
-        
       }
     }
   },

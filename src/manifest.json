@@ -19,7 +19,8 @@
     "webRequest",
     "activeTab",
     "webNavigation",
-    "scripting"
+    "scripting",
+    "cookies"
   ],
   "host_permissions": [
     "https://api.padolabs.org/",

@@ -7,21 +7,10 @@ const padoMaskStr =
   '<div id="pado-mask" draggable><button class="creatBtn" > Creat PADO Proof</button ></div > ';
 const padoMaskNode = createDomElement(padoMaskStr);
 padoMaskNode.onclick = () => {
-  function cookieToJson() {
-    let cookieArr = document.cookie.split(";");
-    let obj = {} 
-    cookieArr.forEach((i) => {
-        let arr = i.split("=");
-        obj[arr[0]] =arr[1];
-    });
-    return obj
-  }
+  console.log('cookies', document.cookie);
   const msgObj = {
       type: 'pageDecode',
       name: 'sendRequest',
-      params: {
-        cookies: cookieToJson(),
-      },
     }
   chrome.runtime.sendMessage(msgObj, (response) => {
     console.log('222222web received (sendRequest) response:', response);
@@ -53,7 +42,7 @@ padoMaskNode.ondragstart = function () {
   return false;
 };
 var cookies = document.cookie;
-console.log('cookies', cookies);
+
 chrome.runtime.sendMessage(
   {
     type: 'pageDecode',
