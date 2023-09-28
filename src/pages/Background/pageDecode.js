@@ -1,4 +1,3 @@
-
 import { assembleAlgorithmParams } from './exData';
 // // inject-dynamic
 export const pageDecodeMsgListener = async (
@@ -62,7 +61,7 @@ export const pageDecodeMsgListener = async (
             name: 'kyc',
             url: 'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail',
             method: 'POST',
-            header: ['clienttype', 'csrftoken', 'User-Agent'],
+            header: ['Clienttype', 'Csrftoken', 'User-Agent'],
             cookie: ['p20t'],
           },
         ],
@@ -98,18 +97,21 @@ export const pageDecodeMsgListener = async (
         formateBody = {};
       if (header && header.length > 0) {
         header.forEach((hk) => {
-          formateHeader[hk] = JSON.parse(binance_header)[hk];
+          const binance_headerObj = JSON.parse(binance_header);
+          const inDataSourceHeaderKey = Object.keys(binance_headerObj).find(
+            (h) => h.toLowerCase() === hk.toLowerCase()
+          );
+          formateHeader[hk] = binance_headerObj[inDataSourceHeaderKey];
         });
       }
       if (cookie && cookie.length > 0) {
-        cookie.forEach((ck) => {
-          //     const c = await chrome.cookies.get({
-          //   name: 'p20t',
-          //   url: 'https://www.binance.com',
-          // });
-          // console.log('222222p20t', c);
-          // formateCookie[ck] = params.cookies[ck];// TODO!!!
-          formateCookie[ck] = 'web.782151446.F4141B10D5B6B96B69959E3D0CE8BD9C';
+        cookie.forEach(async (ck) => {
+          const c = await chrome.cookies.get({
+            name: ck,
+            url: 'https://www.binance.com',
+          });
+
+          formateCookie[ck] = c.value;
         });
       }
       if (body && body.length > 0) {
