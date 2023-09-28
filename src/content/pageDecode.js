@@ -8,6 +8,7 @@ const padoMaskStr =
 const padoMaskNode = createDomElement(padoMaskStr);
 padoMaskNode.onclick = () => {
   console.log('cookies', document.cookie);
+  padoMaskNode.innerHTML = 'processing...';
   const msgObj = {
       type: 'pageDecode',
       name: 'sendRequest',
@@ -53,8 +54,15 @@ chrome.runtime.sendMessage(
     document.body.appendChild(padoMaskNode);
     if (response.name === 'append') {
     }
+    // if (response.name === 'attestSuc') {
+    //   padoMaskNode.innerHTML = 'Success2';
+    // }
   }
 );
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log('web received:', request);
+  console.log('2222223web received:', request);
+  const {name, type} = request
+  if (type === 'pageDecode' && name === 'attestSuc') {
+    padoMaskNode.innerHTML = 'Success';
+  }
 });

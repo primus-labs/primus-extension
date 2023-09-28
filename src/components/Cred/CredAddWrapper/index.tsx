@@ -612,6 +612,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (retcode === '0') {
           clearFetchAttestationTimer();
           if (content.balanceGreaterThanBaseValue === 'true') {
+            
             const { activeRequestAttestation } = await chrome.storage.local.get(
               ['activeRequestAttestation']
             );
@@ -635,15 +636,24 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             await chrome.storage.local.remove(['activeRequestAttestation']);
 
             await initCredList();
-            setActiveRequest({
-              type: 'suc',
-              title: 'Congratulations',
-              desc: 'Your proof is created!',
-            });
+            if (fullAttestation.reqType === 'web') {
+              await chrome.runtime.sendMessage({
+                type: 'pageDecode',
+                name: 'attestSuc',
+              });
+              onSubmit();
+            } else {
+              setActiveRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your proof is created!',
+              });
+            }
+            
           } else if (content.balanceGreaterThanBaseValue === 'false') {
             let descItem1 =
               'Your request did not meet the necessary requirements.';
-            if (activeAttestForm.type === 'ASSETS_PROOF') {
+            if (activeAttestForm?.type === 'ASSETS_PROOF') {
               descItem1 = `Insufficient assets in your ${
                 activeAttestForm.source === 'okx' ? 'Trading' : 'Spot'
               } Account.`;

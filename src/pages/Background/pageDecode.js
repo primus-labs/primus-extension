@@ -54,7 +54,7 @@ const proofTemplateList = [
   schemaInfo
 ]
 const allJumpUrlList = proofTemplateList.map(t => t.jumpTo)
-
+let tabCreatedByPado;
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -131,7 +131,7 @@ export const pageDecodeMsgListener = async (
 
 
 
-const tabCreatedByPado = await chrome.tabs.create({
+    tabCreatedByPado = await chrome.tabs.create({
       url: 'https://www.binance.com/zh-CN/my/dashboard'
     });
     console.log('222222tabCreatedByPado', tabCreatedByPado);
@@ -235,10 +235,14 @@ const tabCreatedByPado = await chrome.tabs.create({
       name: 'append',
     });
   }
-  if (name === 'startDataSourceAttest') {
-    // requestF().then((r) => {
-    //   sendResponse(r)
-    // });
+  if (name === 'attestSuc') {
+    console.log('222222attestSuc--bg', tabCreatedByPado.id);
+    sendResponse({
+      name: 'attestSuc',
+    });
+  
+    await chrome.tabs.remove(tabCreatedByPado.id);
+
   }
 };
 
