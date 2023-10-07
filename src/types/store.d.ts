@@ -14,6 +14,7 @@ export type UserState = {
   kycSources: any;
   sourceUpdateFrequency: string;
   proofTypes: PROOFTYPEITEM[];
+  webProofTypes: any[];
   credentials: CREDENTIALS;
   userInfo: UserInfoType;
   walletAddress: string;

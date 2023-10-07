@@ -31,6 +31,10 @@ export const setProofTypesAction = (values: any) => ({
   type: 'setProofTypes',
   payload: values,
 });
+export const setWebProofTypesAction = (values: any) => ({
+  type: 'setWebProofTypes',
+  payload: values,
+});
 export const setSocialSourcesAction = (values: object) => ({
   type: 'setSocialSources',
   payload: values,
@@ -213,6 +217,14 @@ export const setProofTypesAsync = () => {
           (i: PROOFTYPEITEM) => i.display === 0
         );
         dispatch(setProofTypesAction(filteredTypes));
+      } else {
+        // alert('getProofTypes network error');
+      }
+      const { rc: rc2, result: result2 } = await getProofTypes({
+        type: 'web_cred',
+      });
+      if (rc2 === 0) {
+        dispatch(setWebProofTypesAction(result2));
       } else {
         // alert('getProofTypes network error');
       }

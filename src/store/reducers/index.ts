@@ -77,6 +77,7 @@ const initState = {
   kycSources: {},
   sourceUpdateFrequency: DEFAULTDATASOURCEPOLLINGTIMENUM,
   proofTypes: DEFAULTCREDTYPELIST,
+  webProofTypes: [],
   credentials: {},
   userInfo: {},
   walletAddress: '',
@@ -107,6 +108,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, kycSources: action.payload };
     case 'setProofTypes':
       return { ...state, proofTypes: action.payload };
+    case 'setWebProofTypes':
+      return { ...state, webProofTypes: action.payload };
     case 'setCredentials':
       return { ...state, credentials: action.payload };
     case 'setSourceUpdateFrequency':

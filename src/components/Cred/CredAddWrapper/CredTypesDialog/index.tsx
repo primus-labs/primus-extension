@@ -58,6 +58,9 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
       await chrome.runtime.sendMessage({
         type: 'pageDecode',
         name: 'inject',
+        params: {
+          dataSource: 'binance'
+        },
       });
     }, []);
     useEffect(() => {

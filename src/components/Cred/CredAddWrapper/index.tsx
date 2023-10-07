@@ -40,7 +40,6 @@ import {
 } from '@/services/api/cred';
 import { submitUniswapTxProof } from '@/services/chains/erc721';
 
-
 import { DATASOURCEMAP } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
@@ -74,7 +73,8 @@ interface CredAddWrapperType {
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
   ({ visible = true, activeCred, activeSource, onClose, onSubmit, type }) => {
     const [uniSwapProofParams, setUniSwapProofParams] = useState<any>({});
-    const [uniSwapProofRequestId, setUniSwapProofRequestId] = useState<string>('');
+    const [uniSwapProofRequestId, setUniSwapProofRequestId] =
+      useState<string>('');
     const [step, setStep] = useState(-1);
     const [activeAttestationType, setActiveAttestationType] =
       useState<string>('');
@@ -394,7 +394,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     );
     const [pollingUniProofIntervalSwitch, setPollingUniProofIntervalSwitch] =
       useState<boolean>(false);
-    
+
     const pollingUniProofResult = useCallback(async () => {
       try {
         const { rc, result } = await getUniNFTResult({
@@ -407,7 +407,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           }
           // store nft & proof
           if (status === 'COMPLETE') {
-            const { transactionInput,proofWithPublicInputs, auxiBlkVerifyInfo } = proof;
+            const {
+              transactionInput,
+              proofWithPublicInputs,
+              auxiBlkVerifyInfo,
+            } = proof;
             // const { transactionHash } = uniSwapProofParams;
             const upperChainTxHash = await submitUniswapTxProof({
               txHash: transactionHash,
@@ -456,7 +460,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setUniSwapProofParams({
           signature,
           // address: curConnectedAddr,
-          address:'0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
+          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
           provider,
         });
         const { rc, result, msg } = await claimUniNFT({
@@ -612,7 +616,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (retcode === '0') {
           clearFetchAttestationTimer();
           if (content.balanceGreaterThanBaseValue === 'true') {
-            
             const { activeRequestAttestation } = await chrome.storage.local.get(
               ['activeRequestAttestation']
             );
@@ -640,6 +643,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
                 name: 'attestSuc',
+                params: {
+                  dataSource: 'binance'
+                }
               });
               onSubmit();
             } else {
@@ -649,7 +655,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 desc: 'Your proof is created!',
               });
             }
-            
           } else if (content.balanceGreaterThanBaseValue === 'false') {
             let descItem1 =
               'Your request did not meet the necessary requirements.';

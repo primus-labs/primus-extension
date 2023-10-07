@@ -462,7 +462,7 @@ export const updateAlgoUrl = async () => {
   };*/
 
   console.log('updateAlgoUrl res=', res);
-  if (res.rc === 0) {
+  if (res?.rc === 0) {
     let isInited = false;
     res.result.forEach((item: any) => {
       let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);

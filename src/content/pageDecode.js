@@ -10,9 +10,12 @@ padoMaskNode.onclick = () => {
   console.log('cookies', document.cookie);
   padoMaskNode.innerHTML = 'processing...';
   const msgObj = {
-      type: 'pageDecode',
-      name: 'sendRequest',
-    }
+    type: 'pageDecode',
+    name: 'sendRequest',
+    params: {
+      dataSource: 'binance',
+    },
+  };
   chrome.runtime.sendMessage(msgObj, (response) => {
     console.log('222222web received (sendRequest) response:', response);
   });
@@ -42,12 +45,15 @@ padoMaskNode.onmousedown = function (event) {
 padoMaskNode.ondragstart = function () {
   return false;
 };
-var cookies = document.cookie;
+// var cookies = document.cookie;
 
 chrome.runtime.sendMessage(
   {
     type: 'pageDecode',
     name: 'injectionCompleted',
+    params: {
+      dataSource: 'binance'
+    }
   },
   (response) => {
     console.log('222222web received (injectionCompleted) response:', response);
