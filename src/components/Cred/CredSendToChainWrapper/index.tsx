@@ -132,7 +132,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             attesteraddr: PADOADDRESS,
             data: activeCred?.encodedData,
             signature: activeCred?.signature,
-            type: activeCred?.type,
+            type:
+              activeCred?.reqType === 'web'
+                ? activeCred?.reqType
+                : activeCred?.type,
             schemaName: activeCred?.schemaName ?? LineaSchemaName,
           };
           let versionForComparison = activeCred?.version ?? '';

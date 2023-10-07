@@ -312,6 +312,8 @@ export async function attestByDelegationProxyFee(params) {
     schemauid = activeSchemaInfo.schemaUidTokenHoldings;
   } else if (type === 'IDENTIFICATION_PROOF') {
     schemauid = activeSchemaInfo.schemaUidIdentification;
+  } else if (type === 'web') {// TODO
+    schemauid = activeSchemaInfo.schemaUidWeb;
   }
   console.log('attestByDelegationProxyFee schemauid=', schemauid);
   const fee = await getFee(networkName, metamaskprovider);

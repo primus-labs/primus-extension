@@ -34,6 +34,7 @@ export type CredTypeItemType = {
   schemaName?: string;
   credIdentifier?: string;
   credential?: string;
+  reqType?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

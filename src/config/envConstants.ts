@@ -55,6 +55,8 @@ const EASINFOMAP = {
             '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
           schemaUidIdentification:
             '0x871cb30613666b4349fe45b1e4af222e7da3c3f3b6487ef99b813a897470cb28',
+          schemaUidWeb:
+            '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
         },
         PolygonID: {
           schemaUid:
@@ -325,8 +327,7 @@ const EASINFOMAP = {
     'Linea Goerli': {
       icon: iconNetworkLinea,
       title: 'Linea Goerli',
-      rpcUrl:
-        'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      rpcUrl: 'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       erc721Contract: '',
       easContact: '',
       easProxyContrac: '',
@@ -351,9 +352,7 @@ const EASINFOMAP = {
       },
       chainId: '0xe708', //59144
       chainName: 'Linea',
-      rpcUrls: [
-        'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      ],
+      rpcUrls: ['https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8'],
       blockExplorerUrls: ['https://lineascan.build'],
       nativeCurrency: {
         name: 'LineaETH',
