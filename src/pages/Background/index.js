@@ -30,7 +30,7 @@ const padoServices = {
   getProofTypes,
 };
 
-let USERPASSWORD = 'pado2023.';//TODO!!!
+let USERPASSWORD = '';
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {

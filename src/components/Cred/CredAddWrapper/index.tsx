@@ -616,16 +616,22 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
         ]);
-        if (activeRequestAttestation.reqType === 'web') {
-          setStep(2)
+        const parsedActiveRequestAttestation = activeRequestAttestation
+          ? JSON.parse(activeRequestAttestation)
+          : {};
+        if (parsedActiveRequestAttestation.reqType === 'web') {
+          setStep(2);
+          setActiveRequest({
+            type: 'loading',
+            title: 'Attestation is processing',
+            desc: 'It may take a few seconds.',
+          });
         }
         if (retcode === '0') {
           clearFetchAttestationTimer();
           if (content.balanceGreaterThanBaseValue === 'true') {
             
-            const parsedActiveRequestAttestation = activeRequestAttestation
-              ? JSON.parse(activeRequestAttestation)
-              : {};
+            
             const activeRequestId = parsedActiveRequestAttestation.requestid;
             if (activeRequestId !== content?.requestid) {
               return;
