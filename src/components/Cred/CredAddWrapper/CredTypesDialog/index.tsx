@@ -20,6 +20,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
     const [activeType, setActiveType] = useState<string>();
 
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
+    const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
 
     const handleChange = useCallback(
       (item: PROOFTYPEITEM) => {
@@ -54,12 +55,12 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
       },
       [activeType, type]
     );
-    const handlePageDecode = useCallback(async () => {
+    const handlePageDecode = useCallback(async (webProofMeta: any) => {
       await chrome.runtime.sendMessage({
         type: 'pageDecode',
         name: 'inject',
         params: {
-          dataSource: 'binance'
+          id:webProofMeta.id,
         },
       });
     }, []);
@@ -92,9 +93,19 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
               </ul>
             </div>
           </main>
-          <button className="openPageDataSource" onClick={handlePageDecode}>
-            Open Binance
+          {webProofTypes.map(p => {
+            return (
+              <button key={p.id}  className="openPageDataSource" onClick={() => {handlePageDecode(p)}}>
+                {p.name}
+              </button>
+            );
+          })}
+          {/* <button className="openPageDataSource" onClick={handlePageDecode}>
+            Binance KYC
           </button>
+          <button className="openPageDataSource" onClick={handlePageDecode2}>
+            Binance Nationality
+          </button> */}
 
           <button className="nextBtn" onClick={handleClickNext}>
             {errorTip && (

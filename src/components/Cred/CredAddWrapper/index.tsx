@@ -613,12 +613,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const getAttestationResultCallback = useCallback(
       async (res: any) => {
         const { retcode, content } = JSON.parse(res);
+        const { activeRequestAttestation } = await chrome.storage.local.get([
+          'activeRequestAttestation',
+        ]);
+        if (activeRequestAttestation.reqType === 'web') {
+          setStep(2)
+        }
         if (retcode === '0') {
           clearFetchAttestationTimer();
           if (content.balanceGreaterThanBaseValue === 'true') {
-            const { activeRequestAttestation } = await chrome.storage.local.get(
-              ['activeRequestAttestation']
-            );
+            
             const parsedActiveRequestAttestation = activeRequestAttestation
               ? JSON.parse(activeRequestAttestation)
               : {};
@@ -643,18 +647,19 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
                 name: 'attestSuc',
-                params: {
-                  dataSource: 'binance'
-                }
+                // params: {
+                //   dataSource: 'binance'
+                // }
               });
               onSubmit();
-            } else {
+            }
+
               setActiveRequest({
                 type: 'suc',
                 title: 'Congratulations',
                 desc: 'Your proof is created!',
               });
-            }
+            
           } else if (content.balanceGreaterThanBaseValue === 'false') {
             let descItem1 =
               'Your request did not meet the necessary requirements.';

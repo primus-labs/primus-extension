@@ -12,9 +12,9 @@ padoMaskNode.onclick = () => {
   const msgObj = {
     type: 'pageDecode',
     name: 'sendRequest',
-    params: {
-      dataSource: 'binance',
-    },
+    // params: {
+    //   id: '1',
+    // },
   };
   chrome.runtime.sendMessage(msgObj, (response) => {
     console.log('222222web received (sendRequest) response:', response);
@@ -51,12 +51,12 @@ chrome.runtime.sendMessage(
   {
     type: 'pageDecode',
     name: 'injectionCompleted',
-    params: {
-      dataSource: 'binance'
-    }
+    // params: {
+    //   dataSource: 'binance'
+    // }
   },
   (response) => {
-    console.log('222222web received (injectionCompleted) response:', response);
+    console.log('222222web received response (injectionCompleted) response:', response);
     document.body.appendChild(padoMaskNode);
     if (response.name === 'append') {
     }

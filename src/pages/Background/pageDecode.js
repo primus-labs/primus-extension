@@ -1,58 +1,121 @@
 import { assembleAlgorithmParams } from './exData';
 // TODO all jump url
 // all request url
-const schemaInfo = {
-  id: '1',
-  schemaType: 'BINANCE_KYC_LEVEL#1',
-  name: 'binance kyc level',
-  category: 'KYC',
-  description: 'kyc level must >= 2',
-  dataSource: 'binance',
-  jumpTo: 'https://www.binance.com/zh-CN/my/dashboard',
-  uiTemplate: {
-    icon: '',
-    bgColor: '',
-    bgImage: '',
+
+const proofTemplateList = [
+  {
+    id: '2',
+    schemaType: 'BINANCE_KYC_COUNTRY#1',
+    name: 'binance kyc country',
+    category: 'KYC',
+    description: 'kyc country not in [AF,EG,CN]',
+    dataSource: 'binance',
+    jumpTo: 'https://www.binance.com/zh-CN/my/settings/profile',
+    uiTemplate: {
+      title: 'Identity',
+      icon: '',
+      bgColor: '',
+      bgImage: '',
+    },
+    datasourceTemplate: {
+      cipher: 'ECDHE-ECDSA-AES128-GCM-SHA256',
+      reqType: 'web',
+      host: 'www.binance.com',
+      requests: [
+        {
+          name: 'first',
+          url: 'https://www.binance.com/bapi/accounts/v2/public/account/ip/country-city-short',
+        },
+        {
+          name: 'countries',
+          url: 'https://www.binance.com/bapi/kyc/v2/private/certificate/user-kyc/current-kyc-status',
+          method: 'POST',
+          header: ['Clienttype', 'Csrftoken', 'User-Agent'],
+          cookie: ['p20t'],
+        },
+      ],
+      responses: [
+        {},
+        {
+          conditions: [
+            {
+              type: 'FieldRange',
+              field: '.data.fillInfo.country',
+              op: 'STRNEQ',
+              value: 'AF',
+            },
+            {
+              type: 'FieldRange',
+              field: '.data.fillInfo.country',
+              op: 'STRNEQ',
+              value: 'EG',
+            },
+            {
+              type: 'FieldRange',
+              field: '.data.fillInfo.country',
+              op: 'STREQ',
+              value: 'CN',
+            },
+          ],
+        },
+      ],
+    },
   },
-  datasourceTemplate: {
-    host: 'www.binance.com',
-    requests: [
-      {
-        name: 'first',
-        url: 'https://www.binance.com/bapi/accounts/v2/public/account/ip/country-city-short',
-      },
-      {
-        name: 'kyc',
-        url: 'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail',
-        method: 'POST',
-        headers: ['Clienttype', 'Csrftoken', 'User-Agent'],
-        cookies: ['p20t'],
-      },
-    ],
-    responses: [
-      {},
-      {
-        conditions: [
-          {
-            type: 'FieldRange',
-            field: '.data.jumioEnable',
-            op: '=',
-            value: '1',
-          },
-          {
-            type: 'FieldRange',
-            field: '.data.level',
-            op: '>=',
-            value: '2',
-          },
-        ],
-      },
-    ],
+  {
+    id: '1',
+    schemaType: 'BINANCE_KYC_LEVEL#1',
+    name: 'binance kyc level',
+    category: 'KYC',
+    description: 'kyc level must &gt;= 2',
+    dataSource: 'binance',
+    schemaUid:
+      '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
+    jumpTo: 'https://www.binance.com/zh-CN/my/dashboard',
+    uiTemplate: {
+      title: 'Identity',
+      proofContent: 'KYC Status',
+      condition: '≥ L2',
+    },
+    datasourceTemplate: {
+      host: 'www.binance.com',
+      requests: [
+        {
+          name: 'first',
+          url: 'https://www.binance.com/bapi/accounts/v2/public/account/ip/country-city-short',
+        },
+        {
+          name: 'kyc',
+          url: 'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail',
+          method: 'POST',
+          header: ['Clienttype', 'Csrftoken', 'User-Agent'],
+          cookie: ['p20t'],
+        },
+      ],
+      responses: [
+        {},
+        {
+          conditions: [
+            {
+              type: 'FieldRange',
+              field: '.data.jumioEnable',
+              op: '=',
+              value: '1',
+            },
+            {
+              type: 'FieldRange',
+              field: '.data.level',
+              op: '&gt;=',
+              value: '2',
+            },
+          ],
+        },
+      ],
+    },
   },
-};
-const proofTemplateList = [schemaInfo];
+];
 const allJumpUrlList = proofTemplateList.map((t) => t.jumpTo);
 let tabCreatedByPado;
+let activeTemplateId = '0'
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -61,13 +124,14 @@ export const pageDecodeMsgListener = async (
   password
 ) => {
   const { name, params } = request;
-  const { dataSource } = params;
-  const schemaInfo = proofTemplateList.find((i) => i.dataSource === dataSource);
-
+  activeTemplateId = params?.id ?? activeTemplateId;
+  const schemaInfo = proofTemplateList.find((i) => i.id === activeTemplateId);
   const {
+    dataSource,
     jumpTo,
     schemaType,
     datasourceTemplate: { host, requests, responses },
+    uiTemplate,
   } = schemaInfo;
   const requestUrlList = requests.map((r) => r.url);
   const onBeforeSendHeadersFn = async (details) => {
@@ -122,16 +186,16 @@ export const pageDecodeMsgListener = async (
     }
   };
   if (name === 'inject') {
-    // chrome.webRequest.onBeforeSendHeaders.addListener(
-    //   onBeforeSendHeadersFn,
-    //   { urls: ['<all_urls>'] },
-    //   ['requestHeaders', 'extraHeaders']
-    // );
-    // chrome.webRequest.onBeforeRequest.addListener(
-    //   onBeforeRequestFn,
-    //   { urls: ['<all_urls>'] },
-    //   ['requestBody']
-    // );
+    chrome.webRequest.onBeforeSendHeaders.addListener(
+      onBeforeSendHeadersFn,
+      { urls: ['<all_urls>'] },
+      ['requestHeaders', 'extraHeaders']
+    );
+    chrome.webRequest.onBeforeRequest.addListener(
+      onBeforeRequestFn,
+      { urls: ['<all_urls>'] },
+      ['requestBody']
+    );
     tabCreatedByPado = await chrome.tabs.create({
       url: jumpTo,
     });
@@ -212,6 +276,7 @@ export const pageDecodeMsgListener = async (
       schemaType,
       requests: formatRequests,
       responses,
+      uiTemplate,
     });
     await chrome.storage.local.set({
       activeRequestAttestation: JSON.stringify(aligorithmParams),
@@ -240,7 +305,6 @@ export const pageDecodeMsgListener = async (
     });
     chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-   
     await chrome.tabs.remove(tabCreatedByPado.id);
   }
 };
