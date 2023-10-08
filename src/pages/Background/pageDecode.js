@@ -105,7 +105,7 @@ const proofTemplateList = [
               type: 'FieldRange',
               field: '.data.level',
               op: '&gt;=',
-              value: '2',
+              value: '1',// TODO!!!
             },
           ],
         },
@@ -137,13 +137,13 @@ export const pageDecodeMsgListener = async (
   const onBeforeSendHeadersFn = async (details) => {
     const { url: currRequestUrl, requestHeaders } = details;
     if (requestUrlList.includes(currRequestUrl)) {
-      console.log('222222details', details);
+      // console.log('222222details', details);
       let formatHeader = requestHeaders.reduce((prev, curr) => {
         const { name, value } = curr;
         prev[name] = value;
         return prev;
       }, {});
-      const requestHeadersObj = JSON.stringify(formatHeader);
+      // const requestHeadersObj = JSON.stringify(formatHeader);
       const storageObj = await chrome.storage.local.get([currRequestUrl]);
       const currRequestUrlStorage = storageObj[currRequestUrl];
       const currRequestObj = currRequestUrlStorage
@@ -151,12 +151,12 @@ export const pageDecodeMsgListener = async (
         : {};
       const newCurrRequestObj = {
         ...currRequestObj,
-        headers: requestHeadersObj,
+        headers: formatHeader,
       };
       await chrome.storage.local.set({
         [currRequestUrl]: JSON.stringify(newCurrRequestObj),
       });
-      console.log('222222requestInfo', newCurrRequestObj);
+      console.log('222222requestInfo-headers',currRequestUrl, newCurrRequestObj);
     }
   };
   const onBeforeRequestFn = async (subDetails) => {
@@ -176,11 +176,11 @@ export const pageDecodeMsgListener = async (
           const currRequestObj = currRequestUrlStorage
             ? JSON.parse(currRequestUrlStorage)
             : {};
-          const newCurrRequestObj = { ...currRequestObj, body: bodyText };
+          const newCurrRequestObj = { ...currRequestObj, body: JSON.parse(bodyText) };
           await chrome.storage.local.set({
             [currRequestUrl]: JSON.stringify(newCurrRequestObj),
           });
-          console.log('222222requestInfo', newCurrRequestObj);
+          console.log('222222requestInfo-body', currRequestUrl,newCurrRequestObj);
         }
       }
     }
@@ -233,15 +233,23 @@ export const pageDecodeMsgListener = async (
 
     const formatRequests = [];
     for (const r of requests) {
-      const { headers, cookies, body, url } = r;
+      const { header: headers, cookie: cookies, body, url } = r;
       const requestInfoObj = await chrome.storage.local.get([url]);
-      const { header: curRequestHeader, body: curRequestBody } = JSON.parse(
+      
+      const { headers: curRequestHeader, body: curRequestBody } = JSON.parse(
         requestInfoObj[url]
       );
       let formateHeader = {},
         formateCookie = {},
         formateBody = {};
+      console.log(
+        '222222requestInfoObj',
+        JSON.parse(requestInfoObj[url]),
+        headers,
+        cookies
+      );
       if (headers && headers.length > 0) {
+
         headers.forEach((hk) => {
           if (curRequestHeader) {
             const inDataSourceHeaderKey = Object.keys(curRequestHeader).find(
