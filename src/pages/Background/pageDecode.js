@@ -105,7 +105,7 @@ const proofTemplateList = [
               type: 'FieldRange',
               field: '.data.level',
               op: '&gt;=',
-              value: '1',// TODO!!!
+              value: '2',
             },
           ],
         },
