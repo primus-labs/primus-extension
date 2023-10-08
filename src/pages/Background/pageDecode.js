@@ -8,7 +8,7 @@ const proofTemplateList = [
     schemaType: 'BINANCE_KYC_COUNTRY#1',
     name: 'binance kyc country',
     category: 'KYC',
-    description: 'kyc country not in [AF,EG,CN]',
+    description: 'kyc country not in [AF,EG]',
     dataSource: 'binance',
     jumpTo: 'https://www.binance.com/zh-CN/my/settings/profile',
     uiTemplate: {
@@ -30,8 +30,8 @@ const proofTemplateList = [
           name: 'countries',
           url: 'https://www.binance.com/bapi/kyc/v2/private/certificate/user-kyc/current-kyc-status',
           method: 'POST',
-          header: ['Clienttype', 'Csrftoken', 'User-Agent'],
-          cookie: ['p20t'],
+          headers: ['Clienttype', 'Csrftoken', 'User-Agent'],
+          cookies: ['p20t'],
         },
       ],
       responses: [
@@ -50,12 +50,6 @@ const proofTemplateList = [
               op: 'STRNEQ',
               value: 'EG',
             },
-            {
-              type: 'FieldRange',
-              field: '.data.fillInfo.country',
-              op: 'STREQ',
-              value: 'CN',
-            },
           ],
         },
       ],
@@ -66,7 +60,7 @@ const proofTemplateList = [
     schemaType: 'BINANCE_KYC_LEVEL#1',
     name: 'binance kyc level',
     category: 'KYC',
-    description: 'kyc level must &gt;= 2',
+    description: 'kyc level must >= 2',
     dataSource: 'binance',
     schemaUid:
       '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
@@ -87,8 +81,8 @@ const proofTemplateList = [
           name: 'kyc',
           url: 'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail',
           method: 'POST',
-          header: ['Clienttype', 'Csrftoken', 'User-Agent'],
-          cookie: ['p20t'],
+          headers: ['Clienttype', 'Csrftoken', 'User-Agent'],
+          cookies: ['p20t'],
         },
       ],
       responses: [
@@ -115,7 +109,7 @@ const proofTemplateList = [
 ];
 const allJumpUrlList = proofTemplateList.map((t) => t.jumpTo);
 let tabCreatedByPado;
-let activeTemplateId = '0'
+let activeTemplateId = '0';
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -156,7 +150,11 @@ export const pageDecodeMsgListener = async (
       await chrome.storage.local.set({
         [currRequestUrl]: JSON.stringify(newCurrRequestObj),
       });
-      console.log('222222requestInfo-headers',currRequestUrl, newCurrRequestObj);
+      console.log(
+        '222222requestInfo-headers',
+        currRequestUrl,
+        newCurrRequestObj
+      );
     }
   };
   const onBeforeRequestFn = async (subDetails) => {
@@ -176,11 +174,18 @@ export const pageDecodeMsgListener = async (
           const currRequestObj = currRequestUrlStorage
             ? JSON.parse(currRequestUrlStorage)
             : {};
-          const newCurrRequestObj = { ...currRequestObj, body: JSON.parse(bodyText) };
+          const newCurrRequestObj = {
+            ...currRequestObj,
+            body: JSON.parse(bodyText),
+          };
           await chrome.storage.local.set({
             [currRequestUrl]: JSON.stringify(newCurrRequestObj),
           });
-          console.log('222222requestInfo-body', currRequestUrl,newCurrRequestObj);
+          console.log(
+            '222222requestInfo-body',
+            currRequestUrl,
+            newCurrRequestObj
+          );
         }
       }
     }
@@ -224,18 +229,16 @@ export const pageDecodeMsgListener = async (
     const form = {
       source: dataSource,
       type: category,
-      baseValue: '2', // Arbitrary value
       label: null, // TODO
       exUserId: null,
     };
     let aligorithmParams = await assembleAlgorithmParams(form, password);
 
-
     const formatRequests = [];
     for (const r of requests) {
-      const { header: headers, cookie: cookies, body, url } = r;
+      const { headers, cookies, body, url } = r;
       const requestInfoObj = await chrome.storage.local.get([url]);
-      
+
       const { headers: curRequestHeader, body: curRequestBody } = JSON.parse(
         requestInfoObj[url]
       );
@@ -249,7 +252,6 @@ export const pageDecodeMsgListener = async (
         cookies
       );
       if (headers && headers.length > 0) {
-
         headers.forEach((hk) => {
           if (curRequestHeader) {
             const inDataSourceHeaderKey = Object.keys(curRequestHeader).find(
@@ -267,7 +269,7 @@ export const pageDecodeMsgListener = async (
           formateCookie[ck] = cookiesObj[ck];
         });
         Object.assign(r, {
-          cookies: formateCookie
+          cookies: formateCookie,
         });
       }
       if (body && body.length > 0) {

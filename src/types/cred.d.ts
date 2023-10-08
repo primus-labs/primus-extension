@@ -36,6 +36,7 @@ export type CredTypeItemType = {
   credential?: string;
   reqType?: string;
   uiTemplate?: any;
+  host?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

@@ -282,8 +282,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     params.baseValue = '0';
     params.holdingToken = holdingToken;
     calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
-  } else {
-    params.baseValue = baseValue;
   }
   if (port) { // it's noneed for page decode
     const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(

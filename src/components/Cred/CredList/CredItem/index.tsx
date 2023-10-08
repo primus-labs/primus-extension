@@ -146,6 +146,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       return null;
     }, []);
     const nameCallback = useCallback((item: CredTypeItemType) => {
+      if (item.reqType === 'web') {
+        return item.host;
+      }
       if (item.exUserId) {
         return `ID: ${item.exUserId}`;
       }
@@ -158,6 +161,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         const sourceLowerCaseName = item.source.toLowerCase();
         return DATASOURCEMAP[sourceLowerCaseName].name;
       }
+
       return null;
     }, []);
 
@@ -173,7 +177,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
             <div className="con">
               <div className="conl">
                 {/* <img src={credIcon} alt="" /> */}
-                {briefTypeName ?? item.type}
+
+                {briefTypeName}
               </div>
               <div className="conr">
                 <div className="conrItem">
@@ -202,12 +207,6 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   >
                     <img src={i.icon} alt="" />
                   </a>
-                  // <Link
-                  //   to={`/transactionDetail?requestid=${item.requestid}`}
-                  //   key={k}
-                  // >
-                  //   <img src={i.icon} alt="" />
-                  // </Link>
                 ))}
               </div>
               <div className="operations">
@@ -239,7 +238,6 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                     </div>
                   )}
                 </>
-
                 <div
                   className="iconOtherWrapper"
                   onClick={handleClickOther}
@@ -277,10 +275,37 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         {expand && (
           <div className="extra">
             <div className="descItem">
+              <div className="value">
+                <div className="desc">Proof Content</div>
+                {item.reqType === 'web' && (
+                  <div className="con">{item.uiTemplate.proofContent}</div>
+                )}
+                {item.type === 'ASSETS_PROOF' && (
+                  <div className="con">Spot Amount</div>
+                )}
+                {item.type === 'TOKEN_HOLDINGS' && (
+                  <div className="con">
+                    {tokenLogoPrefix && (
+                      <img
+                        src={`${tokenLogoPrefix}icon${item.holdingToken}.png`}
+                        alt=""
+                        className="tokenImg"
+                      />
+                    )}
+                    <span>{item.holdingToken}</span>
+                  </div>
+                )}
+                {item.type === 'IDENTIFICATION_PROOF' && (
+                  // TODO!!!
+                  <div className="con">KYC Status</div>
+                )}
+              </div>
+            </div>
+            <div className="descItem">
               {/* <div className="label">Proof Content</div> */}
               {item.type === 'ASSETS_PROOF' && (
                 <div className="value">
-                  <div className="desc">{credProofContent}</div>
+                  <div className="desc">Condition</div>
                   <div className="con">
                     {/* <i className="greaterSymbol">&gt;</i> */}
                     <img src={iconGreater} className="iconGreater" alt="" />$
@@ -294,29 +319,42 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               )}
               {item.type === 'TOKEN_HOLDINGS' && (
                 <div className="value">
-                  <div className="desc">{credProofContent}</div>
+                  <div className="desc">Condition</div>
                   <div className="con">
-                    {tokenLogoPrefix && (
-                      <img
-                        src={`${tokenLogoPrefix}icon${item.holdingToken}.png`}
-                        alt=""
-                        className="tokenImg"
-                      />
-                    )}
-                    <span>{item.holdingToken}</span>
+                    <img src={iconGreater} className="iconGreater" alt="" />
+                    <span>0</span>
                   </div>
                 </div>
               )}
               {item.type === 'IDENTIFICATION_PROOF' && (
                 <div className="value">
-                  <div className="desc">{credProofContent}</div>
+                  <div className="desc">Condition</div>
                   <div className="con">{credProofConditions}</div>
                 </div>
               )}
+
+              {item.reqType === 'web' && (
+                <div className="value">
+                  <div className="desc">Condition</div>
+                  <div className="con">
+                    <span className="comparisonSymbol">
+                      {item.uiTemplate.condition.split(' ')[0]}
+                    </span>
+                    <span>{item.uiTemplate.condition.split(' ')[1]}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="descItem">
+              <div className="value">
+                <div className="desc">Data Source ID</div>
+                <div className="con"></div>
+              </div>
             </div>
             {item.did ? (
               <div className="descItem arow">
-                <div className="label">Recipient Account</div>
+                <div className="label">Submit Account</div>
                 <div className="value didWrapper">
                   <img src={iconPolygonID} alt="" />
                   <span>{formatAddress(item.did.toLowerCase(), 13)}</span>
@@ -324,12 +362,11 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               </div>
             ) : (
               <div className="descItem arow">
-                <div className="label">Recipient Address</div>
+                <div className="label">Submit Account</div>
                 <div className="value">{formatAddress(item.address)}</div>
               </div>
             )}
             <div className="descItem">
-              {/* <div className="label">Attested By</div> */}
               <div className="value">
                 <div className="desc">Attested By PADO</div>
                 {item.did ? (
