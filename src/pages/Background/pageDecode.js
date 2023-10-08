@@ -258,24 +258,27 @@ export const pageDecodeMsgListener = async (
             formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
           }
         });
+        Object.assign(r, {
+          headers: formateHeader,
+        });
       }
       if (cookies && cookies.length > 0) {
         cookies.forEach((ck) => {
           formateCookie[ck] = cookiesObj[ck];
+        });
+        Object.assign(r, {
+          cookies: formateCookie
         });
       }
       if (body && body.length > 0) {
         body.forEach((hk) => {
           formateBody[hk] = curRequestBody[hk];
         });
-      }
-      formatRequests.push(
         Object.assign(r, {
-          headers: formateHeader,
-          cookies: formateCookie,
           body: formateBody,
-        })
-      );
+        });
+      }
+      formatRequests.push(r);
     }
 
     Object.assign(aligorithmParams, {
