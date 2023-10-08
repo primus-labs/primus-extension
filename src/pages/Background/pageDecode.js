@@ -306,15 +306,28 @@ export const pageDecodeMsgListener = async (
   if (name === 'injectionCompleted') {
     sendResponse({
       name: 'append',
+      params: {
+        ...schemaInfo,
+      },
     });
   }
   if (name === 'attestSuc') {
     console.log('222222attestSuc--bg', tabCreatedByPado.id);
-    sendResponse({
-      name: 'attestSuc',
-      params: {
-        dataSource: 'binance',
-      },
+    // sendResponse({
+    //   name: 'attestSuc',
+    //   params: {
+    //     dataSource: 'binance',
+    //   },
+    // });
+    // to send back your response  to the current tab
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { name: 'attestSuc' },
+        function (response) {
+          console.log('222222chrome.tabs.responseMessage', response);
+        }
+      );
     });
     chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);

@@ -1,10 +1,11 @@
 #pado-mask{
   position: fixed;
-  bottom: 0;
-  right: 0;
+  bottom: 46px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
-  width: 400px;
-  height: 300px;
+  width: 420px;
+  height: 132px;
   background-color: gray;
   color: #fff;
   cursor: move;
