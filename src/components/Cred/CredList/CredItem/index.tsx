@@ -39,6 +39,7 @@ interface CredTypeListProps {
 }
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
+    console.log('CredItem', item);
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
     const [expand, setExpand] = useState(false);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -60,8 +61,12 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       return obj;
     }, [proofTypes, item.type]);
     const briefTypeName = useMemo(() => {
-      return activeTypeConfig?.simplifiedName;
-    }, [activeTypeConfig]);
+      if (item.reqType === 'web') {
+        return item.uiTemplate?.title;
+      } else {
+        return activeTypeConfig?.simplifiedName;
+      }
+    }, [activeTypeConfig, item.uiTemplate, item.reqType]);
     const credProofContent = useMemo(() => {
       return activeTypeConfig?.credProofContent;
     }, [activeTypeConfig]);
@@ -188,7 +193,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 {item.provided?.map((i, k) => (
                   <a
                     href={`${
-                      (EASInfo[i.title as keyof typeof EASInfo]as any)
+                      (EASInfo[i.title as keyof typeof EASInfo] as any)
                         ?.transactionDetailUrl
                     }/${i.attestationUID}`}
                     target="_blank"

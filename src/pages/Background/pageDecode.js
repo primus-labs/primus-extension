@@ -104,7 +104,7 @@ const proofTemplateList = [
             {
               type: 'FieldRange',
               field: '.data.level',
-              op: '&gt;=',
+              op: '>=',
               value: '2',
             },
           ],
@@ -224,7 +224,7 @@ export const pageDecodeMsgListener = async (
     const form = {
       source: dataSource,
       type: category,
-      baseValue: '0', // Arbitrary value
+      baseValue: '2', // Arbitrary value
       label: null, // TODO
       exUserId: null,
     };
