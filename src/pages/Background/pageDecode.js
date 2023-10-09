@@ -90,6 +90,11 @@ const proofTemplateList = [
         {
           conditions: [
             {
+              "type": "FieldValue",
+              "field": ".data.userId",
+              "op": "SHA256"
+            },
+            {
               type: 'FieldRange',
               field: '.data.jumioEnable',
               op: '=',
@@ -99,7 +104,7 @@ const proofTemplateList = [
               type: 'FieldRange',
               field: '.data.level',
               op: '>=',
-              value: '2',
+              value: '1',
             },
           ],
         },

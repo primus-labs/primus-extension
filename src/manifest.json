@@ -17,8 +17,6 @@
     "unlimitedStorage",
     "offscreen",
     "webRequest",
-    "activeTab",
-    "webNavigation",
     "scripting",
     "cookies"
   ],
