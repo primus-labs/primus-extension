@@ -35,6 +35,11 @@
     "https://api.gateio.ws/",
     "https://pado-online.s3.ap-northeast-1.amazonaws.com/",
     "https://www.binance.com/"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["iconExtension.svg"],
+      "matches": ["https://www.binance.com/*"]
+    }
   ]
-  
 }

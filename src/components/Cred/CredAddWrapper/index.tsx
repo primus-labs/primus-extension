@@ -630,8 +630,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (retcode === '0') {
           clearFetchAttestationTimer();
           if (content.balanceGreaterThanBaseValue === 'true') {
-            
-            
             const activeRequestId = parsedActiveRequestAttestation.requestid;
             if (activeRequestId !== content?.requestid) {
               return;
@@ -647,25 +645,22 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               credentials: JSON.stringify(credentialsObj),
             });
             await chrome.storage.local.remove(['activeRequestAttestation']);
-
             await initCredList();
             if (fullAttestation.reqType === 'web') {
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
-                name: 'attestSuc',
-                // params: {
-                //   dataSource: 'binance'
-                // }
+                name: 'attestResult',
+                params: {
+                  result: 'success'
+                }
               });
               onSubmit();
             }
-
-              setActiveRequest({
-                type: 'suc',
-                title: 'Congratulations',
-                desc: 'Your proof is created!',
-              });
-            
+            setActiveRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'Your proof is created!',
+            });
           } else if (content.balanceGreaterThanBaseValue === 'false') {
             let descItem1 =
               'Your request did not meet the necessary requirements.';
@@ -684,6 +679,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 </>
               ),
             });
+            if (parsedActiveRequestAttestation.reqType === 'web') {
+              await chrome.runtime.sendMessage({
+                type: 'pageDecode',
+                name: 'attestResult',
+                params: {
+                  result: 'fail',
+                },
+              });
+              onSubmit();
+            }
           }
         } else if (retcode === '2') {
           const msg = {
@@ -697,6 +702,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             title: 'Something went wrong',
             desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
           });
+          if (parsedActiveRequestAttestation.reqType === 'web') {
+            await chrome.runtime.sendMessage({
+              type: 'pageDecode',
+              name: 'attestResult',
+              params: {
+                result: 'warn',
+              },
+            });
+            onSubmit();
+          }
         }
       },
       [
@@ -705,6 +720,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         initCredList,
         credentialsFromStore,
         activeAttestForm,
+        onSubmit
       ]
     );
     useAlgorithm(getAttestationCallback, getAttestationResultCallback);
