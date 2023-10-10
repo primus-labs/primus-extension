@@ -60,7 +60,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         type: 'pageDecode',
         name: 'inject',
         params: {
-          id:webProofMeta.id,
+          ...webProofMeta,
         },
       });
     }, []);

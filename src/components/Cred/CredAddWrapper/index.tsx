@@ -96,11 +96,26 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       (state: UserState) => state.walletAddress
     );
 
-    const timeoutFn = useCallback(() => {
+    const timeoutFn = useCallback(async() => {
       console.log('120s timeout');
       if (activeRequest?.type === 'suc') {
         return;
       }
+      const { activeRequestAttestation } = await chrome.storage.local.get([
+        'activeRequestAttestation',
+      ]);
+      const parsedActiveRequestAttestation = activeRequestAttestation
+        ? JSON.parse(activeRequestAttestation)
+        : {};
+      if (parsedActiveRequestAttestation.reqType === 'web') {
+        chrome.runtime.sendMessage({
+          name: 'attestResult',
+          params: {
+            result: 'warn',
+          },
+        });
+      }
+
       setActiveRequest({
         type: 'warn',
         title: 'Something went wrong',
@@ -651,8 +666,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 type: 'pageDecode',
                 name: 'attestResult',
                 params: {
-                  result: 'success'
-                }
+                  result: 'success',
+                },
               });
               onSubmit();
             }
@@ -669,6 +684,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 activeAttestForm.source === 'okx' ? 'Trading' : 'Spot'
               } Account.`;
             }
+            if (parsedActiveRequestAttestation.reqType === 'web') {
+              await chrome.runtime.sendMessage({
+                type: 'pageDecode',
+                name: 'attestResult',
+                params: {
+                  result: 'fail',
+                },
+              });
+            }
             setActiveRequest({
               type: 'warn',
               title: 'Not met the requirements',
@@ -679,16 +703,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 </>
               ),
             });
-            if (parsedActiveRequestAttestation.reqType === 'web') {
-              await chrome.runtime.sendMessage({
-                type: 'pageDecode',
-                name: 'attestResult',
-                params: {
-                  result: 'fail',
-                },
-              });
-              onSubmit();
-            }
+            
           }
         } else if (retcode === '2') {
           const msg = {
@@ -720,7 +735,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         initCredList,
         credentialsFromStore,
         activeAttestForm,
-        onSubmit
+        onSubmit,
       ]
     );
     useAlgorithm(getAttestationCallback, getAttestationResultCallback);

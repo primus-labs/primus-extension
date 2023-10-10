@@ -332,7 +332,6 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   <div className="con">{credProofConditions}</div>
                 </div>
               )}
-
               {item.reqType === 'web' && (
                 <div className="value">
                   <div className="desc">Condition</div>
@@ -349,7 +348,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
             <div className="descItem">
               <div className="value">
                 <div className="desc">Data Source ID</div>
-                <div className="con"></div>
+                <div className="con">{item?.sourceUseridHash ? formatAddress('0x'+item.sourceUseridHash, 6): '--'}</div>
               </div>
             </div>
             {item.did ? (

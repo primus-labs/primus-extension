@@ -1,120 +1,7 @@
 import { assembleAlgorithmParams } from './exData';
-// TODO all jump url
-// all request url
 
-const proofTemplateList = [
-  {
-    id: '2',
-    schemaType: 'BINANCE_KYC_COUNTRY#1',
-    name: 'binance kyc country',
-    category: 'KYC',
-    description: 'kyc country not in [AF,EG]',
-    dataSource: 'binance',
-    jumpTo: 'https://www.binance.com/zh-CN/my/settings/profile',
-    uiTemplate: {
-      title: 'Identity',
-      icon: '',
-      bgColor: '',
-      bgImage: '',
-    },
-    datasourceTemplate: {
-      cipher: 'ECDHE-ECDSA-AES128-GCM-SHA256',
-      reqType: 'web',
-      host: 'www.binance.com',
-      requests: [
-        {
-          name: 'first',
-          url: 'https://www.binance.com/bapi/accounts/v2/public/account/ip/country-city-short',
-        },
-        {
-          name: 'countries',
-          url: 'https://www.binance.com/bapi/kyc/v2/private/certificate/user-kyc/current-kyc-status',
-          method: 'POST',
-          headers: ['Clienttype', 'Csrftoken', 'User-Agent'],
-          cookies: ['p20t'],
-        },
-      ],
-      responses: [
-        {},
-        {
-          conditions: [
-            {
-              type: 'FieldRange',
-              field: '.data.fillInfo.country',
-              op: 'STRNEQ',
-              value: 'AF',
-            },
-            {
-              type: 'FieldRange',
-              field: '.data.fillInfo.country',
-              op: 'STRNEQ',
-              value: 'EG',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: '1',
-    schemaType: 'BINANCE_KYC_LEVEL#1',
-    name: 'binance kyc level',
-    category: 'KYC',
-    description: 'kyc level must >= 2',
-    dataSource: 'binance',
-    schemaUid:
-      '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
-    jumpTo: 'https://www.binance.com/zh-CN/my/dashboard',
-    uiTemplate: {
-      title: 'Identity',
-      proofContent: 'KYC Status',
-      condition: '≥ L2',
-    },
-    datasourceTemplate: {
-      host: 'www.binance.com',
-      requests: [
-        {
-          name: 'first',
-          url: 'https://www.binance.com/bapi/accounts/v2/public/account/ip/country-city-short',
-        },
-        {
-          name: 'kyc',
-          url: 'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail',
-          method: 'POST',
-          headers: ['Clienttype', 'Csrftoken', 'User-Agent'],
-          cookies: ['p20t'],
-        },
-      ],
-      responses: [
-        {},
-        {
-          conditions: [
-            {
-              type: 'FieldValue',
-              field: '.data.userId',
-              op: 'SHA256',
-            },
-            {
-              type: 'FieldRange',
-              field: '.data.jumioEnable',
-              op: '=',
-              value: '1',
-            },
-            {
-              type: 'FieldRange',
-              field: '.data.level',
-              op: '>=',
-              value: '1',
-            },
-          ],
-        },
-      ],
-    },
-  },
-];
-const allJumpUrlList = proofTemplateList.map((t) => t.jumpTo);
 let tabCreatedByPado;
-let activeTemplateId = '0';
+let activeTemplate = {};
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -123,15 +10,14 @@ export const pageDecodeMsgListener = async (
   password
 ) => {
   const { name, params } = request;
-  activeTemplateId = params?.id ?? activeTemplateId;
-  const schemaInfo = proofTemplateList.find((i) => i.id === activeTemplateId);
+  activeTemplate = name === 'inject' ? params : activeTemplate;
   const {
     dataSource,
     jumpTo,
     schemaType,
     datasourceTemplate: { host, requests, responses },
     uiTemplate,
-  } = schemaInfo;
+  } = activeTemplate;
   const requestUrlList = requests.map((r) => r.url);
   const onBeforeSendHeadersFn = async (details) => {
     const { url: currRequestUrl, requestHeaders } = details;
@@ -230,7 +116,7 @@ export const pageDecodeMsgListener = async (
       prev[name] = value;
       return prev;
     }, {});
-    const { category } = schemaInfo;
+    const { category } = activeTemplate;
     const form = {
       source: dataSource,
       type: category,
@@ -306,27 +192,24 @@ export const pageDecodeMsgListener = async (
       params: aligorithmParams,
     });
   }
-  // const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  
   console.log('222222bg received:', name, sender, sendResponse);
   if (name === 'injectionCompleted') {
     sendResponse({
       name: 'append',
       params: {
-        ...schemaInfo,
+        ...activeTemplate,
       },
     });
   }
   if (name === 'attestResult') {
-    console.log('222222attestResult--bg', tabCreatedByPado.id);
+    console.log('222222attestResult--bg', tabCreatedByPado.id, request);
     // to send back your response  to the current tab
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, request, function (response) {
-        console.log('222222chrome.tabs.responseMessage', response);
-      });
+    chrome.tabs.sendMessage(tabCreatedByPado.id, request, function (response) {
+      console.log('222222chrome.tabs.responseMessage', response);
     });
     chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-    // await chrome.tabs.remove(tabCreatedByPado.id); // TODO!!!
   }
   if (name === 'closeDataSourcePage') {
     await chrome.tabs.remove(tabCreatedByPado.id);

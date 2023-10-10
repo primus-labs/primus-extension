@@ -37,6 +37,7 @@ export type CredTypeItemType = {
   reqType?: string;
   uiTemplate?: any;
   host?: string;
+  sourceUseridHash?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;
