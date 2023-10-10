@@ -96,6 +96,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const walletAddress = useSelector(
       (state: UserState) => state.walletAddress
     );
+    const webProofTypes = useSelector(
+      (state: UserState) => state.webProofTypes
+    );
 
     const timeoutFn = useCallback(async () => {
       console.log('120s timeout');
@@ -546,27 +549,47 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (activeCred?.did) {
           fetchAttestForPolygonID();
         } else {
-          if (form.type === 'UNISWAP_PROOF') {
-            // TODO
-          } else if (form.type === 'IDENTIFICATION_PROOF') {
-            fetchAttestForAnt(form);
-          } else {
-            if (form.type === 'ASSETS_PROOF') {
-              // fetch balance first
-              if (!validateBaseInfo(form)) {
-                return;
-              }
-            }
-            // if curCred is update,not add
-            const msg = {
-              fullScreenType: 'algorithm',
-              reqMethodName: 'getAttestation',
-              params: {
-                ...form,
-              },
+          if (form?.proofClientType === 'Internet Data') {
+            // TODO!!!
+            const contentMap = {
+              'binance kyc country': 'Nationality (not in Russia)',
+              'binance kyc level': 'KYC Status',
             };
-            postMsg(padoServicePort, msg);
-            console.log(`page_send:getAttestation:`, form);
+            const currRequestObj = webProofTypes.find(
+              (r) =>
+                contentMap[r.name as keyof typeof contentMap] ===
+                form.proofContent
+            );
+            await chrome.runtime.sendMessage({
+              type: 'pageDecode',
+              name: 'inject',
+              params: {
+                ...currRequestObj,
+              },
+            });
+          } else {
+            if (form.type === 'UNISWAP_PROOF') {
+              // TODO
+            } else if (form.type === 'IDENTIFICATION_PROOF') {
+              fetchAttestForAnt(form);
+            } else {
+              if (form.type === 'ASSETS_PROOF') {
+                // fetch balance first
+                if (!validateBaseInfo(form)) {
+                  return;
+                }
+              }
+              // if curCred is update,not add
+              const msg = {
+                fullScreenType: 'algorithm',
+                reqMethodName: 'getAttestation',
+                params: {
+                  ...form,
+                },
+              };
+              postMsg(padoServicePort, msg);
+              console.log(`page_send:getAttestation:`, form);
+            }
           }
         }
       },
@@ -635,14 +658,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
-        if (parsedActiveRequestAttestation.reqType === 'web') {
-          setStep(2);
-          setActiveRequest({
-            type: 'loading',
-            title: 'Attestation is processing',
-            desc: 'It may take a few seconds.',
-          });
-        }
+
         if (retcode === '0') {
           clearFetchAttestationTimer();
           if (content.balanceGreaterThanBaseValue === 'true') {
@@ -739,7 +755,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       ]
     );
     const cancelAttestationCallback = useCallback(() => {
-      setStep(2)
+      setStep(2);
       setActiveRequest({
         type: 'error',
         title: 'Failed',

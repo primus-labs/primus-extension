@@ -20,7 +20,6 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
     const [activeType, setActiveType] = useState<string>();
 
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
-    const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
 
     const handleChange = useCallback(
       (item: PROOFTYPEITEM) => {
@@ -93,13 +92,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
               </ul>
             </div>
           </main>
-          {webProofTypes.map(p => {
-            return (
-              <button key={p.id}  className="openPageDataSource" onClick={() => {handlePageDecode(p)}}>
-                {p.name}
-              </button>
-            );
-          })}
+          
           {/* <button className="openPageDataSource" onClick={handlePageDecode}>
             Binance KYC
           </button>

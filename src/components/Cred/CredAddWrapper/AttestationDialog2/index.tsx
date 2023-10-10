@@ -19,24 +19,9 @@ import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { UserState } from '@/types/store';
 import type { ConnectSourceType } from '@/types/dataSource';
-import type { PROOFTYPEITEM } from '@/types/cred';
-
+import type { PROOFTYPEITEM, AttestionForm } from '@/types/cred';
 import './index.sass';
 
-export type AttestionForm = {
-  token?: string;
-  baseValue?: string;
-  source: string;
-  type: string;
-  exUserId?: string;
-  label?: string;
-  requestid?: string;
-
-  credential?: string;
-  userIdentity?: string;
-  verifyIdentity?: string;
-  proofType?: string;
-};
 interface AttestationDialogProps {
   type: string;
   onClose: () => void;
@@ -54,13 +39,7 @@ const sourcesLabel = {
   IDENTIFICATION_PROOF: 'Identity',
   UNISWAP_PROOF: 'Assets',
 };
-const identityList = [
-  { text: 'KYC Status', value: 'KYC Status' },
-  {
-    text: 'Nationality (not in Russia)',
-    value: 'Nationality (not in Russia)',
-  },
-];
+
 const tabList = [
   {
     text: 'Local Data',
@@ -69,11 +48,10 @@ const tabList = [
     text: 'Internet Data',
   },
 ];
-const webDataSourceList = [{ name: 'binance', icon: iconWebDataSource }];
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
-    const [activeWebDataSource, setActiveWebDataSource]= useState<string>('');
+    const [activeWebDataSource, setActiveWebDataSource] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('Local Data');
     const [activeIdentityType, setActiveIdentityType] = useState<string>('');
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
@@ -88,8 +66,33 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const walletAddress = useSelector(
       (state: UserState) => state.walletAddress
     );
+    const webProofTypes = useSelector(
+      (state: UserState) => state.webProofTypes
+    );
 
     const navigate = useNavigate();
+    const identityList = useMemo(() => {
+      webProofTypes.map((r) => ({
+        value: r.name,
+        text: r.name,
+      }));
+      // TODO!!!
+      return [
+        { text: 'KYC Status', value: 'KYC Status' },
+        {
+          text: 'Nationality (not in Russia)',
+          value: 'Nationality (not in Russia)',
+        },
+      ];
+    }, [webProofTypes]);
+    const webDataSourceList = useMemo(() => {
+      webProofTypes.map((r) => ({
+        name: r.dataSource,
+        icon: r.icon,
+      }));
+      // TODO!!!
+      return [{ name: 'binance', icon: iconWebDataSource }];
+    }, [webProofTypes]);
 
     const emptyCon = useMemo(() => {
       let el;
@@ -160,7 +163,14 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [kycSources]);
     const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
       if (type === 'IDENTIFICATION_PROOF') {
-        return connectedKYCSourceList;
+        if (
+          !activeIdentityType ||
+          (activeIdentityType && activeIdentityType === 'KYC Status')
+        ) {
+          return connectedKYCSourceList;
+        } else {
+          return [];
+        }
       } else if (type === 'ASSETS_PROOF') {
         return connectedExSourceList.filter((i) =>
           supportAssetCredList.includes(i.name.toLowerCase())
@@ -174,7 +184,12 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       } else {
         return connectedExSourceList;
       }
-    }, [connectedExSourceList, connectedKYCSourceList, type]);
+    }, [
+      connectedExSourceList,
+      connectedKYCSourceList,
+      type,
+      activeIdentityType,
+    ]);
     const tokenList = useMemo(() => {
       let list: string[] = [];
       if (type !== 'TOKEN_HOLDINGS') {
@@ -252,8 +267,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const handleChangeTab = useCallback((val: string) => {
       setActiveTab(val);
     }, []);
-    const onChangeWebDataSource = useCallback((i:any) => {
-      setActiveWebDataSource(i.name)
+    const onChangeWebDataSource = useCallback((i: any) => {
+      setActiveWebDataSource(i.name);
       // await chrome.runtime.sendMessage({
       //   type: 'pageDecode',
       //   name: 'inject',
@@ -261,7 +276,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       //     ...webProofMeta,
       //   },
       // });
-    },[]) 
+    }, []);
     const handleChangeSelectBaseValue = useCallback((val: string) => {
       if (!val) {
         setActiveBaseValue('');
@@ -273,47 +288,71 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         navigate('/datas');
       }
 
-      if (activeConnectedSourceList.length > 0) {
-        if (!activeSource) {
+      if (activeTab === 'Local Data') {
+        if (activeConnectedSourceList.length > 0) {
+          if (!activeSource) {
+            setErrorTip('Please select one data source');
+            return;
+          }
+          const form: AttestionForm = {
+            source: activeSource.name.toLowerCase(),
+            type,
+            exUserId: activeSource?.exUserId,
+            label: activeSource?.label,
+          };
+
+          if (type === 'TOKEN_HOLDINGS') {
+            if (!activeToken) {
+              setErrorTip('Please select one token');
+              return;
+            } else {
+              form.token = activeToken;
+            }
+          }
+          if (type === 'ASSETS_PROOF') {
+            if (!activeBaseValue) {
+              setErrorTip('Please select one baseValue');
+              return;
+            } else {
+              form.baseValue = activeBaseValue;
+            }
+          }
+
+          if (type === 'IDENTIFICATION_PROOF') {
+            // credential?: string;
+            const sourceLowerCaseName = activeSource.name.toLowerCase();
+            const res = await chrome.storage.local.get([sourceLowerCaseName]);
+            form.credential = JSON.parse(res[sourceLowerCaseName]).credential;
+            form.userIdentity = walletAddress;
+            form.verifyIdentity = walletAddress;
+            form.proofType = type;
+          }
+          if (type === 'UNISWAP_PROOF') {
+            // TODO
+          }
+          if (activeCred?.requestid) {
+            form.requestid = activeCred?.requestid;
+            onSubmit(form);
+          } else {
+            onSubmit(form);
+          }
+        }
+      } else {
+        if (!activeIdentityType) {
+          setErrorTip('Please select one proof content');
+          return;
+        }
+        if (!activeWebDataSource) {
           setErrorTip('Please select one data source');
           return;
         }
+
         const form: AttestionForm = {
-          source: activeSource.name.toLowerCase(),
+          source: activeWebDataSource.toLowerCase(),
           type,
-          exUserId: activeSource?.exUserId,
-          label: activeSource?.label,
+          proofContent: activeIdentityType,
+          proofClientType: activeTab,
         };
-
-        if (type === 'TOKEN_HOLDINGS') {
-          if (!activeToken) {
-            setErrorTip('Please select one token');
-            return;
-          } else {
-            form.token = activeToken;
-          }
-        }
-        if (type === 'ASSETS_PROOF') {
-          if (!activeBaseValue) {
-            setErrorTip('Please select one baseValue');
-            return;
-          } else {
-            form.baseValue = activeBaseValue;
-          }
-        }
-
-        if (type === 'IDENTIFICATION_PROOF') {
-          // credential?: string;
-          const sourceLowerCaseName = activeSource.name.toLowerCase();
-          const res = await chrome.storage.local.get([sourceLowerCaseName]);
-          form.credential = JSON.parse(res[sourceLowerCaseName]).credential;
-          form.userIdentity = walletAddress;
-          form.verifyIdentity = walletAddress;
-          form.proofType = type;
-        }
-        if (type === 'UNISWAP_PROOF') {
-          // TODO
-        }
         if (activeCred?.requestid) {
           form.requestid = activeCred?.requestid;
           onSubmit(form);
@@ -324,7 +363,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     };
     const handleClickData = (item: ConnectSourceType) => {
       if (!activeIdentityType) {
-        return
+        return;
       }
       if (activeSourceName) {
         return;
@@ -493,7 +532,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                   list={tabList}
                 />
                 {activeTab === 'Local Data' ? (
-                  <div>
+                  <>
                     {activeConnectedSourceList.length > 0 && (
                       <ul className="dataList">
                         {activeConnectedSourceList.map((item) => {
@@ -518,7 +557,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                         <h2>{emptyCon}</h2>
                       </div>
                     )}
-                  </div>
+                  </>
                 ) : (
                   <WebDataSourceList
                     list={webDataSourceList}
@@ -529,7 +568,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
               </div>
             </div>
           </main>
-          {activeConnectedSourceList.length === 0 ? (
+          {activeConnectedSourceList.length === 0 &&
+          webDataSourceList.length === 0 ? (
             <button className="nextBtn gray" onClick={handleClickNext}>
               <span>OK</span>
             </button>

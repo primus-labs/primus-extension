@@ -17,24 +17,10 @@ import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { UserState } from '@/types/store';
 import type { ConnectSourceType } from '@/types/dataSource';
-import type { PROOFTYPEITEM } from '@/types/cred';
+import type { PROOFTYPEITEM, AttestionForm } from '@/types/cred';
 
 import './index.sass';
 
-export type AttestionForm = {
-  token?: string;
-  baseValue?: string;
-  source: string;
-  type: string;
-  exUserId?: string;
-  label?: string;
-  requestid?: string;
-
-  credential?: string;
-  userIdentity?: string;
-  verifyIdentity?: string;
-  proofType?: string;
-};
 interface AttestationDialogProps {
   type: string;
   onClose: () => void;
@@ -286,6 +272,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     };
     const handleClickData = (item: ConnectSourceType) => {
+      if (!activeToken) {
+        return
+      }
       if (activeSourceName) {
         return;
       }
@@ -331,9 +320,18 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         if (activeSource?.name === item.name) {
           defaultClassName += ' active';
         }
+        if (!activeToken) {
+          defaultClassName += ' disabled';
+        }
         return defaultClassName;
       },
-      [activeSource, activeSourceList, activeCred, activeSourceName]
+      [
+        activeSource,
+        activeSourceList,
+        activeCred,
+        activeSourceName,
+        activeToken,
+      ]
     );
 
     useEffect(() => {

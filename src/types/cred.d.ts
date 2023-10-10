@@ -68,4 +68,6 @@ export type AttestionForm = {
   userIdentity?: string;
   verifyIdentity?: string;
   proofType?: string;
+  proofClientType?: string;
+  proofContent?: string;
 };
