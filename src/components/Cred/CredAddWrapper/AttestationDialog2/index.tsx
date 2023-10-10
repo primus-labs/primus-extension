@@ -69,30 +69,31 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const webProofTypes = useSelector(
       (state: UserState) => state.webProofTypes
     );
+    const activeWebProofTypes = useMemo(() => {
+      return webProofTypes.filter(i => i.category === 'IDENTIFICATION_PROOF')
+    }, [webProofTypes]);
 
     const navigate = useNavigate();
     const identityList = useMemo(() => {
-      webProofTypes.map((r) => ({
+      const l = activeWebProofTypes.map((r) => ({
         value: r.name,
         text: r.name,
       }));
-      // TODO!!!
-      return [
-        { text: 'KYC Status', value: 'KYC Status' },
-        {
-          text: 'Nationality (not in Russia)',
-          value: 'Nationality (not in Russia)',
-        },
-      ];
-    }, [webProofTypes]);
+      return l;
+    }, [activeWebProofTypes]);
     const webDataSourceList = useMemo(() => {
-      webProofTypes.map((r) => ({
-        name: r.dataSource,
-        icon: r.icon,
-      }));
-      // TODO!!!
-      return [{ name: 'binance', icon: iconWebDataSource }];
-    }, [webProofTypes]);
+      let l: any = [];
+      activeWebProofTypes.forEach((r) => {
+        const existObj = l.find((i: any) => i.name === r.dataSource);
+        if (!existObj) {
+          l.push({
+            name: r.dataSource,
+            icon: r.bgImg,
+          });
+        }
+      });
+      return l;
+    }, [activeWebProofTypes]);
 
     const emptyCon = useMemo(() => {
       let el;

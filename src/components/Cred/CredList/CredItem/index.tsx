@@ -277,9 +277,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
             <div className="descItem">
               <div className="value">
                 <div className="desc">Proof Content</div>
-                {item.reqType === 'web' && (
-                  <div className="con">{item.uiTemplate.proofContent}</div>
-                )}
+
                 {item.type === 'ASSETS_PROOF' && (
                   <div className="con">Spot Amount</div>
                 )}
@@ -297,7 +295,11 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 )}
                 {item.type === 'IDENTIFICATION_PROOF' && (
                   // TODO!!!
-                  <div className="con">KYC Status</div>
+                  <div className="con">
+                    {item.reqType === 'web'
+                      ? item.uiTemplate.proofContent
+                      : 'KYC Status'}
+                  </div>
                 )}
               </div>
             </div>
@@ -326,29 +328,32 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   </div>
                 </div>
               )}
-              {item.type === 'IDENTIFICATION_PROOF' && (
-                <div className="value">
-                  <div className="desc">Condition</div>
-                  <div className="con">{credProofConditions}</div>
-                </div>
-              )}
-              {item.reqType === 'web' && (
-                <div className="value">
-                  <div className="desc">Condition</div>
-                  <div className="con">
-                    <span className="comparisonSymbol">
-                      {item.uiTemplate.condition.split(' ')[0]}
-                    </span>
-                    <span>{item.uiTemplate.condition.split(' ')[1]}</span>
-                  </div>
-                </div>
-              )}
-            </div>
+              {item.type === 'IDENTIFICATION_PROOF' && item.reqType === 'web' &&
+                          <div className="value">
+                            <div className="desc">Condition</div>
+                            <div className="con">
+                              <span className="comparisonSymbol">
+                                {item.uiTemplate.condition.split(' ')[0]}
+                              </span>
+                              <span>{item.uiTemplate.condition.split(' ')[1]}</span>
+                            </div>
+                          </div> }
+              {
+                item.type === 'IDENTIFICATION_PROOF' && item.reqType !== 'web' &&
+                          <div className="value">
+                            <div className="desc">Condition</div>
+                            <div className="con">{credProofConditions}</div>
+                          </div>
+            }
 
             <div className="descItem">
               <div className="value">
                 <div className="desc">Data Source ID</div>
-                <div className="con">{item?.sourceUseridHash ? formatAddress('0x'+item.sourceUseridHash, 6): '--'}</div>
+                <div className="con">
+                  {item?.sourceUseridHash
+                    ? formatAddress('0x' + item.sourceUseridHash, 6)
+                    : '--'}
+                </div>
               </div>
             </div>
             {item.did ? (
@@ -388,6 +393,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="value">
                 {formatTime(Number(item?.getDataTime))}
               </div>
+            </div>
             </div>
           </div>
         )}
