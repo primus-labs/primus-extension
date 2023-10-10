@@ -33,33 +33,19 @@
       gap: 10px
       &.excitable,&:not(.disabled):hover
         padding: 21px 10px
-        background: #FFFFFF
-        backdrop-filter: blur(16px)
-        border: 2PX solid transparent
-        background-clip: padding-box, border-box
-        background-origin: padding-box, border-box
-        background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-        position: relative
+        background-color: #FFFFFF
+        
       &.disabled
         cursor: not-allowed
         opacity: 0.4
       &.active
         padding: 21px 10px
-        background: #FFFFFF
+        background-color: #FFFFFF
         border: 2PX solid transparent
         background-clip: padding-box, border-box
         background-origin: padding-box, border-box
         background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-        position: relative
-        &:after
-          position: absolute
-          content: ''
-          right: 4px
-          bottom: 4px
-          width: 18px
-          height: 18px
-          background: url('@/assets/img/iconSuc.svg')
-          background-size: 100% 100%
+        
       img
         width: 40px
       h6

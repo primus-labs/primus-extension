@@ -32,27 +32,15 @@
       @extend .frcc
       cursor: pointer
       &:not(.forbid):hover
-        background: #FFFFFF
-        border: 2PX solid transparent
-        background-clip: padding-box, border-box
-        background-origin: padding-box, border-box
-        background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
+        background-color: #FFFFFF
       &.active
         position: relative
-        background: #FFFFFF
+        background-color: #FFFFFF
         border: 2PX solid transparent
         background-clip: padding-box, border-box
         background-origin: padding-box, border-box
         background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-        &:after
-          position: absolute
-          content: ''
-          right: 2px
-          bottom: 2px
-          width: 14px
-          height: 14px
-          background: url('../../../assets/img/iconSuc.svg')
-          background-size: 100% 100%
+        
       &.forbid
         cursor: default
       &.disabled

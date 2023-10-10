@@ -128,7 +128,9 @@ const PSelect: React.FC<PSelectProps> = memo(
           ) : (
             <img
               ref={suffixIconEl}
-              className="suffixIcon arrow"
+              className={
+                optionsVisible ? 'suffixIcon arrow open' : 'suffixIcon arrow'
+              }
               src={iconArrowBottom}
               alt=""
             />

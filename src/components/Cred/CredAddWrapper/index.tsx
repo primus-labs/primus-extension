@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AttestationDialog from './AttestationDialog';
+import AttestationDialog2 from './AttestationDialog2';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
@@ -827,16 +828,27 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             type={type}
           />
         )}
-        {visible && step === 1 && (
-          <AttestationDialog
-            type={activeAttestationType}
-            activeSourceName={activeSourceName}
-            activeCred={activeCred}
-            onBack={onBackAttestationDialog}
-            onClose={handleCloseMask}
-            onSubmit={onSubmitAttestationDialog}
-          />
-        )}
+        {visible &&
+          step === 1 &&
+          (activeAttestationType === 'IDENTIFICATION_PROOF' ? (
+            <AttestationDialog2
+              type={activeAttestationType}
+              activeSourceName={activeSourceName}
+              activeCred={activeCred}
+              onBack={onBackAttestationDialog}
+              onClose={handleCloseMask}
+              onSubmit={onSubmitAttestationDialog}
+            />
+          ) : (
+            <AttestationDialog
+              type={activeAttestationType}
+              activeSourceName={activeSourceName}
+              activeCred={activeCred}
+              onBack={onBackAttestationDialog}
+              onClose={handleCloseMask}
+              onSubmit={onSubmitAttestationDialog}
+            />
+          ))}
         {visible && step === 2 && (
           <AddSourceSucDialog
             type={activeRequest?.type}

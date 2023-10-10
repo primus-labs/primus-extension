@@ -1,0 +1,73 @@
+@import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFont.sass'
+@import '@/assets/css/pFlex.sass'
+$pTabsPadding: 4px
+$pTabsBorderRaiuds: 100px
+$tabspaddingY: 16px
+$tabspaddingX: 32px
+
+$tabFontSize: 18px
+$tabLineHeight: 22px
+
+@mixin ptabsMinxin($N)
+  padding: $pTabsPadding *$N
+  .tab
+    border-radius: $pTabsBorderRaiuds*$N
+    img
+      width: $sIconSize*$N
+
+.pTabsNew
+  display: flex
+  @extend .frsc
+  gap: 4px
+  .tab
+    
+    cursor: pointer
+    @extend .frsc
+    padding: 0 8px
+    &.activeTab
+      .con
+        .borderB
+          background: linear-gradient(269deg, #70FFBA 0.52%, #78DEFF 100.71%)
+    &.disabled
+      cursor: not-allowed
+    &:not(.disabled):hover
+      .con
+        opacity: 1
+    .con
+      height: 25px
+      @extend .frcc
+      gap: 8px
+      color: var(--Button-default, #515758)
+      /* Text 1 */
+      font-family: Inter-Regualr
+      font-size: 14px
+      line-height: 20px
+      position: relative
+      padding: 0 4px
+      .borderB
+        position: absolute
+        bottom: 0
+        left: 0
+        content: ''
+        width: 100%
+        height: 1.5px
+        border-radius: 1px
+        background: var(--Line, #DFE0E0)
+        
+        
+
+    
+      
+
+      
+// @media (max-width: 1680px)
+//   .pTabsNew
+//     gap: 4px
+//     .tab
+//       height: 45px
+//       font-size: 16px
+//       line-height: 19px
+//       .con
+//         gap: 8px
+      

@@ -1,6 +1,6 @@
 @import '@/assets/css/pVars.sass'
 @import '@/assets/css/pFlex.sass'
-.connectedDataSourceList
+.webDataSourceListWrapper
   width:100%
   &.scroll
     // width: calc( 100% + 35px )
@@ -14,44 +14,34 @@
     &::-webkit-scrollbar-thumb
       background: rgba(0, 0, 0, 0.2)
       border-radius: $xxLBorderRadius
-  ul.dataList
+  ul.webDataSourceList
     width: 100%
     display: flex
     flex-wrap: wrap
-    // gap: $sGap
-    column-gap: 12px
-    row-gap: 12px
+    column-gap: 16px
+    row-gap: 16px
     li
       cursor: pointer
-      width: 116px
-      height: 112px
-      padding: 23px 12px
-      background: rgba(0, 0, 0, 0.05)
-      backdrop-filter: blur(18.1333px)
-      border-radius: $sBorderRadius
-      @extend .fccc
-      gap: 10px
-      &.excitable,&:not(.disabled):hover
-        padding: 21px 10px
-        background-color: #FFFFFF
-        
+      width: 128px
+      height: var(--spacing-80, 80px)
+      box-sizing: border-box
+      border-radius: 10px
+      flex-shrink: 0
+      @extend .frcc
+      background: rgba(10, 18, 20, 0.05)
+      
       &.disabled
         cursor: not-allowed
       &.active
-        padding: 21px 10px
-        background-color: #FFFFFF
-        border: 2PX solid transparent
+        background: #FFFFFF
+        border: 1.5PX solid transparent
         background-clip: padding-box, border-box
         background-origin: padding-box, border-box
         background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-        
+        position: relative
       img
-        width: 40px
-      h6
-        font-family: 'Inter-SemiBold'
-        font-size: 14px
-        line-height: 16px
-        color: $colLBlack
+        width: 91.157px
+      
   .emptyContent
     width: 500px
     padding-top: 58px
