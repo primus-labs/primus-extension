@@ -92,7 +92,7 @@ window.onload = () => {
         padoCenterBottomCancelNode.onclick = () => {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
-            name: 'closeDataSourcePage',
+            name: 'cancelAttest',
           });
         };
         padoCenterBottomStartNode.onclick = () => {

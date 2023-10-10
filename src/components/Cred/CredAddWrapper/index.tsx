@@ -96,7 +96,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       (state: UserState) => state.walletAddress
     );
 
-    const timeoutFn = useCallback(async() => {
+    const timeoutFn = useCallback(async () => {
       console.log('120s timeout');
       if (activeRequest?.type === 'suc') {
         return;
@@ -703,7 +703,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 </>
               ),
             });
-            
           }
         } else if (retcode === '2') {
           const msg = {
@@ -738,7 +737,19 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         onSubmit,
       ]
     );
-    useAlgorithm(getAttestationCallback, getAttestationResultCallback);
+    const cancelAttestationCallback = useCallback(() => {
+      setStep(2)
+      setActiveRequest({
+        type: 'error',
+        title: 'Failed',
+        desc: 'Looks like you refused to make the attestation process.Please try again later.',
+      });
+    }, []);
+    useAlgorithm(
+      getAttestationCallback,
+      getAttestationResultCallback,
+      cancelAttestationCallback
+    );
 
     useEffect(() => {
       if (
@@ -796,6 +807,17 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         <AddressInfoHeader />
       );
     }, [activeAttestForm]);
+    useEffect(() => {
+      const listerFn = (message: any) => {
+        if (message.type === 'pageDecode' && message.name === 'cancelAttest') {
+          cancelAttestationCallback();
+        }
+      };
+      chrome.runtime.onMessage.addListener(listerFn);
+      return () => {
+        chrome.runtime.onMessage.removeListener(listerFn);
+      };
+    }, [cancelAttestationCallback]);
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (

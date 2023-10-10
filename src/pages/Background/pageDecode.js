@@ -1,4 +1,6 @@
 import { assembleAlgorithmParams } from './exData';
+import { postMsg } from '@/utils/utils';
+
 
 let tabCreatedByPado;
 let activeTemplate = {};
@@ -7,7 +9,8 @@ export const pageDecodeMsgListener = async (
   request,
   sender,
   sendResponse,
-  password
+  password,
+  port
 ) => {
   const { name, params } = request;
   activeTemplate = name === 'inject' ? params : activeTemplate;
@@ -192,7 +195,7 @@ export const pageDecodeMsgListener = async (
       params: aligorithmParams,
     });
   }
-  
+
   console.log('222222bg received:', name, sender, sendResponse);
   if (name === 'injectionCompleted') {
     sendResponse({
@@ -213,5 +216,9 @@ export const pageDecodeMsgListener = async (
   }
   if (name === 'closeDataSourcePage') {
     await chrome.tabs.remove(tabCreatedByPado.id);
+  }
+  if (name === 'cancelAttest') {
+    // await postMsg(port, request);
+    chrome.tabs.remove(tabCreatedByPado.id);
   }
 };
