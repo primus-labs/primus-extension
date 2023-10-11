@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router';
 import iconDataHover from '@/assets/img/iconDataHover.svg';
 import iconEventsHover from '@/assets/img/iconEventsHover.svg';
 import iconCredHover from '@/assets/img/iconCredHover.svg';
+import iconTooltip from '@/assets/img/credit/iconTooltip.svg';
 import './index.sass';
 
 type TabItem = {
   icon?: any;
+  tooltip?: string;
   text: string;
   disabled?: boolean;
   path?: string;
@@ -76,8 +78,12 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value,list }) => {
             <div className="con">
               {item.icon && <img src={item.icon} alt="" />}
               <span>{item.text}</span>
+              {item.tooltip && (
+                <img className="iconTooltip" src={iconTooltip} alt="" />
+              )}
               <i className="borderB"></i>
             </div>
+            {item.tooltip && <p className="tooltip">{item.tooltip}</p>}
           </div>
         );
       })}

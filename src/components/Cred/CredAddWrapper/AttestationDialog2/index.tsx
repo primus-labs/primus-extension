@@ -42,7 +42,8 @@ const sourcesLabel = {
 
 const tabList = [
   {
-    text: 'Local Data',
+    text: 'API Data',
+    tooltip: 'Data you connected from the Data Page',
   },
   {
     text: 'Internet Data',
@@ -52,7 +53,7 @@ const tabList = [
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
     const [activeWebDataSource, setActiveWebDataSource] = useState<string>('');
-    const [activeTab, setActiveTab] = useState<string>('Local Data');
+    const [activeTab, setActiveTab] = useState<string>('API Data');
     const [activeIdentityType, setActiveIdentityType] = useState<string>('');
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
@@ -293,7 +294,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         navigate('/datas');
       }
 
-      if (activeTab === 'Local Data') {
+      if (activeTab === 'API Data') {
         if (activeConnectedSourceList.length > 0) {
           if (!activeSource) {
             setErrorTip('Please select one data source');
@@ -536,7 +537,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                   value={activeTab}
                   list={tabList}
                 />
-                {activeTab === 'Local Data' ? (
+                {activeTab === 'API Data' ? (
                   <>
                     {activeConnectedSourceList.length > 0 && (
                       <ul className="dataList">

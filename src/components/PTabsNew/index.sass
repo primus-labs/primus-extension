@@ -25,6 +25,7 @@ $tabLineHeight: 22px
     cursor: pointer
     @extend .frsc
     padding: 0 8px
+    position: relative
     &.activeTab
       .con
         .borderB
@@ -34,10 +35,12 @@ $tabLineHeight: 22px
     &:not(.disabled):hover
       .con
         opacity: 1
+      .tooltip
+        display: inline-block  
     .con
       height: 25px
       @extend .frcc
-      gap: 8px
+      gap: 4px
       color: var(--Button-default, #515758)
       /* Text 1 */
       font-family: Inter-Regualr
@@ -45,6 +48,9 @@ $tabLineHeight: 22px
       line-height: 20px
       position: relative
       padding: 0 4px
+        
+      .iconTooltip
+        width: 12px
       .borderB
         position: absolute
         bottom: 0
@@ -54,7 +60,21 @@ $tabLineHeight: 22px
         height: 1.5px
         border-radius: 1px
         background: var(--Line, #DFE0E0)
-        
+    .tooltip
+        position: absolute
+        bottom: -28px
+        left: 0
+        padding: 4px 20px   
+        border-radius: var(--spacing-12, 12px)
+        background: var(--Badge, rgba(10, 18, 20, 0.05))
+        backdrop-filter: blur(16px)
+        color: var(--Text-hint, #7B7F80)
+        text-align: center
+        font-size: 12px
+        line-height: 16px
+        white-space: nowrap
+        display: none
+        z-index:3       
         
 
     
