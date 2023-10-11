@@ -307,7 +307,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               {/* <div className="label">Proof Content</div> */}
               {item.type === 'ASSETS_PROOF' && (
                 <div className="value">
-                  <div className="desc">Condition</div>
+                  <div className="desc">Proof Result</div>
                   <div className="con">
                     {/* <i className="greaterSymbol">&gt;</i> */}
                     <img src={iconGreater} className="iconGreater" alt="" />$
@@ -321,79 +321,84 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               )}
               {item.type === 'TOKEN_HOLDINGS' && (
                 <div className="value">
-                  <div className="desc">Condition</div>
+                  <div className="desc">Proof Result</div>
                   <div className="con">
                     <img src={iconGreater} className="iconGreater" alt="" />
                     <span>0</span>
                   </div>
                 </div>
               )}
-              {item.type === 'IDENTIFICATION_PROOF' && item.reqType === 'web' &&
-                          <div className="value">
-                            <div className="desc">Condition</div>
-                            <div className="con">
-                              <span className="comparisonSymbol">
-                                {item.uiTemplate.condition.split(' ')[0]}
-                              </span>
-                              <span>{item.uiTemplate.condition.split(' ')[1]}</span>
-                            </div>
-                          </div> }
-              {
-                item.type === 'IDENTIFICATION_PROOF' && item.reqType !== 'web' &&
-                          <div className="value">
-                            <div className="desc">Condition</div>
-                            <div className="con">{credProofConditions}</div>
-                          </div>
-            }
-
-            <div className="descItem">
-              <div className="value">
-                <div className="desc">Data Source ID</div>
-                <div className="con">
-                  {item?.sourceUseridHash
-                    ? formatAddress('0x' + item.sourceUseridHash, 6)
-                    : '--'}
-                </div>
-              </div>
-            </div>
-            {item.did ? (
-              <div className="descItem arow">
-                <div className="label">Submit Account</div>
-                <div className="value didWrapper">
-                  <img src={iconPolygonID} alt="" />
-                  <span>{formatAddress(item.did.toLowerCase(), 13)}</span>
-                </div>
-              </div>
-            ) : (
-              <div className="descItem arow">
-                <div className="label">Submit Account</div>
-                <div className="value">{formatAddress(item.address)}</div>
-              </div>
-            )}
-            <div className="descItem">
-              <div className="value">
-                <div className="desc">Attested By PADO</div>
-                {item.did ? (
-                  <div className="con didWrapper">
-                    <img src={iconPolygonID} alt="" className="iconPolygonID" />
-                    <span>
-                      {formatAddress(
-                        (item?.issuer?.toLowerCase() || '') as string,
-                        13
-                      )}
-                    </span>
+              {item.type === 'IDENTIFICATION_PROOF' &&
+                item.reqType === 'web' && (
+                  <div className="value">
+                    <div className="desc">Proof Result</div>
+                    <div className="con">
+                      {item.uiTemplate.subProofContent &&
+                        item.uiTemplate.subProofContent + ','}
+                      {item.uiTemplate.condition}
+                    </div>
                   </div>
-                ) : (
-                  <div className="con">{formatAddress(PADOADDRESS)}</div>
                 )}
+              {item.type === 'IDENTIFICATION_PROOF' &&
+                item.reqType !== 'web' && (
+                  <div className="value">
+                    <div className="desc">Proof Result</div>
+                    <div className="con">{credProofConditions}</div>
+                  </div>
+                )}
+
+              <div className="descItem">
+                <div className="value">
+                  <div className="desc">Data Source ID</div>
+                  <div className="con">
+                    {item?.sourceUseridHash
+                      ? formatAddress('0x' + item.sourceUseridHash, 6)
+                      : 'N/A'}
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="descItem arow">
-              <div className="label">Attested Time</div>
-              <div className="value">
-                {formatTime(Number(item?.getDataTime))}
+              {item.did ? (
+                <div className="descItem arow">
+                  <div className="label">Submit Account</div>
+                  <div className="value didWrapper">
+                    <img src={iconPolygonID} alt="" />
+                    <span>{formatAddress(item.did.toLowerCase(), 13)}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="descItem arow">
+                  <div className="label">Submit Account</div>
+                  <div className="value">{formatAddress(item.address)}</div>
+                </div>
+              )}
+              <div className="descItem">
+                <div className="value">
+                  <div className="desc">Attested By PADO</div>
+                  {item.did ? (
+                    <div className="con didWrapper">
+                      <img
+                        src={iconPolygonID}
+                        alt=""
+                        className="iconPolygonID"
+                      />
+                      <span>
+                        {formatAddress(
+                          (item?.issuer?.toLowerCase() || '') as string,
+                          13
+                        )}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="con">{formatAddress(PADOADDRESS)}</div>
+                  )}
+                </div>
               </div>
-            </div>
+              <div className="descItem arow">
+                <div className="label">Attested Time</div>
+                <div className="value">
+                  {formatTime(Number(item?.getDataTime))}
+                </div>
+              </div>
             </div>
           </div>
         )}

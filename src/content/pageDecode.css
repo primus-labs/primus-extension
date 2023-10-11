@@ -69,6 +69,7 @@
 }
 .pado-center .pado-center-center p {
   display: flex;
+  gap: 12px;
   font-family: Inter;
   font-size: 12px;
   font-style: normal;
@@ -81,6 +82,14 @@
 }
 .pado-center .pado-center-center p span:last-child {
   color: #172b4d;
+  display: flex;
+}
+.pado-center .pado-center-center p span:last-child  img{
+  width: 16px;
+  margin-left: 8px;
+}
+.pado-center .pado-center-center p.warn-tip {
+  color: #172b4d;
 }
 
 .pado-center .pado-center-center .progress {
@@ -90,7 +99,7 @@
 }
 .progress .progress-bar {
   position: relative;
-  width: 270px;
+  width: 308px;
   height: 6px;
   flex-shrink: 0;
   border-radius: 100px;
@@ -101,7 +110,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 210px;
+  width: 0;
   height: 6px;
   flex-shrink: 0;
   border-radius: 100px;

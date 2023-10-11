@@ -177,7 +177,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           }, BIGZERO);
         } else {
           const targetMap: AssetsMap = exSources[source].spotAccountTokenMap;
-          
+
           totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
             const obj = targetMap[curr as keyof typeof targetMap];
             const curValue = obj.value;
@@ -530,6 +530,19 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);
+        if (form?.proofClientType === 'Internet Data') {
+          const currRequestObj = webProofTypes.find(
+            (r) => r.name === form.proofContent
+          );
+          await chrome.runtime.sendMessage({
+            type: 'pageDecode',
+            name: 'inject',
+            params: {
+              ...currRequestObj,
+            },
+          });
+          return;
+        }
         setStep(2);
         let loadingObj = {
           type: 'loading',
@@ -550,40 +563,27 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (activeCred?.did) {
           fetchAttestForPolygonID();
         } else {
-          if (form?.proofClientType === 'Internet Data') {
-            const currRequestObj = webProofTypes.find(
-              (r) => r.name === form.proofContent
-            );
-            await chrome.runtime.sendMessage({
-              type: 'pageDecode',
-              name: 'inject',
-              params: {
-                ...currRequestObj,
-              },
-            });
+          if (form.type === 'UNISWAP_PROOF') {
+            // TODO
+          } else if (form.type === 'IDENTIFICATION_PROOF') {
+            fetchAttestForAnt(form);
           } else {
-            if (form.type === 'UNISWAP_PROOF') {
-              // TODO
-            } else if (form.type === 'IDENTIFICATION_PROOF') {
-              fetchAttestForAnt(form);
-            } else {
-              if (form.type === 'ASSETS_PROOF') {
-                // fetch balance first
-                if (!validateBaseInfo(form)) {
-                  return;
-                }
+            if (form.type === 'ASSETS_PROOF') {
+              // fetch balance first
+              if (!validateBaseInfo(form)) {
+                return;
               }
-              // if curCred is update,not add
-              const msg = {
-                fullScreenType: 'algorithm',
-                reqMethodName: 'getAttestation',
-                params: {
-                  ...form,
-                },
-              };
-              postMsg(padoServicePort, msg);
-              console.log(`page_send:getAttestation:`, form);
             }
+            // if curCred is update,not add
+            const msg = {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'getAttestation',
+              params: {
+                ...form,
+              },
+            };
+            postMsg(padoServicePort, msg);
+            console.log(`page_send:getAttestation:`, form);
           }
         }
       },
@@ -681,7 +681,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                   result: 'success',
                 },
               });
-              onSubmit();
             }
             setActiveRequest({
               type: 'suc',
@@ -736,7 +735,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 result: 'warn',
               },
             });
-            onSubmit();
           }
         }
       },
@@ -749,19 +747,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         onSubmit,
       ]
     );
-    const cancelAttestationCallback = useCallback(() => {
-      setStep(2);
-      setActiveRequest({
-        type: 'error',
-        title: 'Failed',
-        desc: 'Looks like you refused to make the attestation process.Please try again later.',
-      });
-    }, []);
-    useAlgorithm(
-      getAttestationCallback,
-      getAttestationResultCallback,
-      cancelAttestationCallback
-    );
+
+    useAlgorithm(getAttestationCallback, getAttestationResultCallback);
 
     useEffect(() => {
       if (
@@ -821,15 +808,29 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [activeAttestForm]);
     useEffect(() => {
       const listerFn = (message: any) => {
-        if (message.type === 'pageDecode' && message.name === 'cancelAttest') {
-          cancelAttestationCallback();
+        if (message.type === 'pageDecode') {
+          if (message.name === 'cancelAttest') {
+            setStep(2);
+            setActiveRequest({
+              type: 'error',
+              title: 'Failed',
+              desc: 'Looks like you refused to make the attestation process.Please try again later.',
+            });
+          } else if (message.name === 'sendRequest') {
+            setStep(2);
+            setActiveRequest({
+              type: 'loading',
+              title: 'Attestation is processing',
+              desc: 'It may take a few seconds.',
+            });
+          }
         }
       };
       chrome.runtime.onMessage.addListener(listerFn);
       return () => {
         chrome.runtime.onMessage.removeListener(listerFn);
       };
-    }, [cancelAttestationCallback]);
+    }, []);
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (

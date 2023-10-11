@@ -1,4 +1,5 @@
 window.onload = () => {
+  let intervalTimer = null
   let activeTemplate = {};
   function createDomElement(html) {
     const dom = new DOMParser().parseFromString(html, 'text/html');
@@ -22,17 +23,17 @@ window.onload = () => {
         activeTemplate = response.params;
         const {
           jumpTo,
-          uiTemplate: { proofContent, condition },
+          uiTemplate: { proofContent, condition, subProofContent },
         } = activeTemplate;
         const aactiveOrigin = new URL(jumpTo).origin;
-        const aactiveDesc = `${proofContent}(${condition})`;
+        const aactiveDesc = `${proofContent} ${subProofContent} ${condition}`;
         const padoLeftStr = `<img class="pado-left"></img>`;
         const padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
         const padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
 
         const padoCenterBottomStartStr = `<button class="startBtn" > Start</button>`;
         const padoCenterBottomCancelStr = `<button class="cancelBtn">Cancel</button>`;
-        const padoCenterCenterStr = `<div class="pado-center-center"><p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Condition</span><span>${aactiveDesc}</span></p></div>`;
+        const padoCenterCenterStr = `<div class="pado-center-center"><p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Content</span><span>${aactiveDesc}</span></p></div>`;
         const padoCenterStr = `<div class="pado-center"></div>`;
         const padoRightStr = `<div class="pado-right">1/3</div>`;
         const padoMaskStr = '<div id="pado-mask"></div > ';
@@ -74,20 +75,15 @@ window.onload = () => {
 
         const VerifyingNode = createDomElement('<p>Verifying...</p > ');
         const ProgressNode = createDomElement(
-          '<div class="progress"><div class="progress-bar"><div class="bg"></div><div class="bar"></div></div><div class="percent">75%</div></div > '
+          '<div class="progress"><div class="progress-bar"><div class="bg"></div><div class="bar"></div></div><div class="percent">0%</div></div > '
         );
 
         padoCenterBottomOKNode.onclick = () => {
-          // if (padoRightNode.innerHTML === '3/3') {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'closeDataSourcePage',
           });
           return;
-          // } else {
-          //   padoRightNode.innerHTML = '3/3';
-          //   padoCenterCenterNode.innerHTML = padoCenterCenterStr;
-          // }
         };
         padoCenterBottomCancelNode.onclick = () => {
           chrome.runtime.sendMessage({
@@ -97,11 +93,25 @@ window.onload = () => {
         };
         padoCenterBottomStartNode.onclick = () => {
           padoRightNode.innerHTML = '2/3';
+          padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
+        
+          padoCenterBottomNode.removeChild(padoCenterBottomNode.childNodes[0]);
+          padoCenterBottomNode.removeChild(padoCenterBottomNode.childNodes[0]);
+          // padoCenterBottomNode.appendChild(padoCenterBottomOKNode);
+          // const progress = document.querySelector('.percent');
+          const barEl = document.querySelector('.bar');
+          let progressPercentage = 0;
 
-          padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div><div class="percent">75%</div></div >`;
-          padoCenterBottomNode.removeChild(padoCenterBottomNode.childNodes[0]);
-          padoCenterBottomNode.removeChild(padoCenterBottomNode.childNodes[0]);
-          padoCenterBottomNode.appendChild(padoCenterBottomOKNode);
+          function simulateFileUpload() {
+            progressPercentage += 1;
+            if (progressPercentage > 100) {
+              progressPercentage = 100;
+              clearInterval(intervalTimer);
+            }
+            barEl.style.width = `${progressPercentage}%`;
+            // progress.innerHTML = `${progressPercentage}%`;
+          }
+          intervalTimer = setInterval(simulateFileUpload, 100/130 *1000); // algorithm timeout
           const msgObj = {
             type: 'pageDecode',
             name: 'sendRequest',
@@ -121,23 +131,47 @@ window.onload = () => {
       params: { result },
     } = request;
     if (name === 'attestResult') {
-      if (result === 'success') {
-        alert(result);
-      } else if (result === 'warn') {
-        alert(result);
-      } else if (result === 'fail') {
-        alert(result);
-      }
-      document.querySelector('.pado-right').innerHTML = '3/3';
+      const padoRightEl = document.querySelector('.pado-right');
+      const padoCenterCenterEl = document.querySelector('.pado-center-center');
+      const padoCenterEl = document.querySelector('.pado-center');
       const {
         jumpTo,
-        uiTemplate: { proofContent, condition },
+        uiTemplate: { proofContent, condition, subProofContent },
       } = activeTemplate;
       const aactiveOrigin = new URL(jumpTo).origin;
-      const aactiveDesc = `${proofContent}(${condition})`;
-      document.querySelector(
-        '.pado-center-center'
-      ).innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Condition</span><span>${aactiveDesc}</span></p>`;
+      const aactiveDesc = `${subProofContent ?? ''} ${condition}`;
+      if (result === 'success') {
+        padoRightEl.innerHTML = '3/3';
+        const iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
+        padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
+        const padoCenterBottomOKNode = createDomElement(
+          `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
+        );
+        padoCenterBottomOKNode.onclick = () => {
+          chrome.runtime.sendMessage({
+            type: 'pageDecode',
+            name: 'closeDataSourcePage',
+          });
+          return;
+        };
+        padoCenterEl.appendChild(padoCenterBottomOKNode);
+      } else if (result === 'fail') {
+        padoRightEl.innerHTML = '3/3';
+        padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>Not eligible</span></p>`;
+      }else if (result === 'warn') {
+        padoCenterCenterEl.innerHTML = `<p class="warn-tip">The process has been interrupted...</p><p>Please try again later.</p>`;
+        const padoCenterBottomOKNode = createDomElement(
+          `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
+        );
+        padoCenterBottomOKNode.onclick = () => {
+          chrome.runtime.sendMessage({
+            type: 'pageDecode',
+            name: 'closeDataSourcePage',
+          });
+          return;
+        };
+        padoCenterEl.appendChild(padoCenterBottomOKNode);
+      }
     }
   });
 
