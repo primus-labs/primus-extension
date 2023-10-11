@@ -551,15 +551,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           fetchAttestForPolygonID();
         } else {
           if (form?.proofClientType === 'Internet Data') {
-            // TODO!!!
-            const contentMap = {
-              'binance kyc country': 'Nationality (not in Russia)',
-              'binance kyc level': 'KYC Status',
-            };
             const currRequestObj = webProofTypes.find(
-              (r) =>
-                contentMap[r.name as keyof typeof contentMap] ===
-                form.proofContent
+              (r) => r.name === form.proofContent
             );
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
@@ -600,6 +593,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         fetchAttestForAnt,
         activeCred?.did,
         fetchAttestForPolygonID,
+        webProofTypes,
       ]
     );
     const onBackAttestationDialog = useCallback(() => {
