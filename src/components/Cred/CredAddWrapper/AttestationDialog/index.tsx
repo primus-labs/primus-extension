@@ -272,8 +272,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     };
     const handleClickData = (item: ConnectSourceType) => {
-      if (!activeToken) {
-        return
+    
+      if (type === 'TOKEN_HOLDINGS' && !activeToken) {
+        return;
       }
       if (activeSourceName) {
         return;
@@ -320,7 +321,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         if (activeSource?.name === item.name) {
           defaultClassName += ' active';
         }
-        if (!activeToken) {
+        if (type !== 'ASSETS_PROOF' && !activeToken) {
           defaultClassName += ' disabled';
         }
         return defaultClassName;
@@ -331,6 +332,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         activeCred,
         activeSourceName,
         activeToken,
+        type,
       ]
     );
 

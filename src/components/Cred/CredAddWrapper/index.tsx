@@ -177,6 +177,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           }, BIGZERO);
         } else {
           const targetMap: AssetsMap = exSources[source].spotAccountTokenMap;
+          
           totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
             const obj = targetMap[curr as keyof typeof targetMap];
             const curValue = obj.value;

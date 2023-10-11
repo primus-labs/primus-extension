@@ -50,12 +50,11 @@ class Binance extends Exchange {
       gt(amt, BIGZERO) &&
         (!asset.startsWith('LD') || asset === LDO) &&
         this.tradingAccountTokenAmountMap.set(asset, amt);
-      
     });
-    // console.log(
-    //   'tradingAccountTokenAmountMap',
-    //   this.tradingAccountTokenAmountMap
-    // );
+    console.log(
+      'tradingAccountTokenAmountMap',
+      this.tradingAccountTokenAmountMap
+    );
     return this.tradingAccountTokenAmountMap;
   }
 
