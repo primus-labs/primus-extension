@@ -95,7 +95,15 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       });
       return l;
     }, [activeWebProofTypes]);
-
+    const activeWebTemplate = useMemo(() => {
+      const aWT = activeWebProofTypes.find((i) => i.id === activeCred?.templateId);
+      return aWT;
+    }, [activeWebProofTypes, activeCred?.templateId]);
+    const activeWebDataSourceObj = useMemo(() => {
+      return webDataSourceList.find(
+        (i:any) => i.name === activeWebTemplate?.dataSource
+      );
+    }, [activeWebTemplate, webDataSourceList]);
     const emptyCon = useMemo(() => {
       let el;
       switch (type) {
@@ -361,7 +369,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     };
     const handleClickData = (item: ConnectSourceType) => {
-      if (!activeIdentityType) {
+      if (!activeIdentityType || activeCred) {
         return;
       }
       if (activeSourceName) {
@@ -409,7 +417,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         if (activeSource?.name === item.name) {
           defaultClassName += ' active';
         }
-        if (!activeIdentityType) {
+        if (!activeIdentityType || activeCred) {
           defaultClassName += ' disabled';
         }
         return defaultClassName;
@@ -441,10 +449,12 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           activeCred.holdingToken && setActiveToken(activeCred.holdingToken);
         }
         if (type === 'IDENTIFICATION_PROOF' && activeCred?.reqType === 'web') {
-          // TODO!!!
+          setActiveIdentityType(activeWebTemplate?.name);
+          setActiveTab('Internet Data')
+          setActiveWebDataSource(activeWebTemplate?.dataSource);
         }
       }
-    }, [activeCred, type, activeConnectedSourceList]);
+    }, [activeCred, type, activeConnectedSourceList, activeWebTemplate]);
 
     useEffect(() => {
       if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
@@ -509,6 +519,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                         options={identityList}
                         onChange={handleChangeSelectIdentityType}
                         val={activeIdentityType}
+                        disabled={!!activeCred}
                       />
                     </div>
                   )}
@@ -562,9 +573,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                   </>
                 ) : (
                   <WebDataSourceList
-                    list={webDataSourceList}
-                    onChange={onChangeWebDataSource}
-                    disabled={!activeIdentityType}
+                      list={webDataSourceList}
+                      onChange={onChangeWebDataSource}
+                      disabled={!activeIdentityType || activeCred}
+                      val={activeWebDataSourceObj}
                   />
                 )}
               </div>

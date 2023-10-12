@@ -22,6 +22,7 @@ interface PSelectProps {
   showIcon?: boolean;
   prefix?: any;
   showSelf?: boolean;
+  disabled?:boolean
 }
 
 const PSelect: React.FC<PSelectProps> = memo(
@@ -33,6 +34,7 @@ const PSelect: React.FC<PSelectProps> = memo(
     showIcon,
     prefix,
     showSelf = true,
+    disabled = false
   }) => {
     // const [activeOption, setActiveOption] = useState<OptionItem>();
     const [optionsVisible, setOptionsVisible] = useState(false);
@@ -88,11 +90,14 @@ const PSelect: React.FC<PSelectProps> = memo(
       if (showIcon) {
         defaultCN += ' hasIcon';
       }
-      if (activeOptions.length > 0) {
+      if (activeOptions.length > 0 && !disabled) {
         defaultCN += ' active';
       }
+      if (disabled) {
+        defaultCN += ' disabled';
+      }
       return defaultCN;
-    }, [showIcon, activeOptions]);
+    }, [showIcon, activeOptions, disabled]);
 
     return (
       <div className="pSelect">
@@ -129,14 +134,14 @@ const PSelect: React.FC<PSelectProps> = memo(
             <img
               ref={suffixIconEl}
               className={
-                optionsVisible ? 'suffixIcon arrow open' : 'suffixIcon arrow'
+                optionsVisible && !disabled ? 'suffixIcon arrow open' : 'suffixIcon arrow'
               }
               src={iconArrowBottom}
               alt=""
             />
           )}
         </div>
-        {optionsVisible && activeOptions.length > 0 && (
+        {optionsVisible && !disabled && activeOptions.length > 0 && (
           <div
             className="selectOptionswrapper"
             onClick={handleEnterAvatar}

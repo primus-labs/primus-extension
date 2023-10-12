@@ -19,6 +19,7 @@ export const pageDecodeMsgListener = async (
     schemaType,
     datasourceTemplate: { host, requests, responses },
     uiTemplate,
+    id
   } = activeTemplate;
   const requestUrlList = requests.map((r) => r.url);
   const onBeforeSendHeadersFn = async (details) => {
@@ -83,6 +84,7 @@ export const pageDecodeMsgListener = async (
       }
     }
   };
+
   if (name === 'inject') {
     const { extensionTabId } = request;
     currExtentionId = extensionTabId;
@@ -112,6 +114,15 @@ export const pageDecodeMsgListener = async (
       files: ['pageDecode.css'],
     });
   }
+  if (name === 'injectionCompleted') {
+    sendResponse({
+      name: 'append',
+      params: {
+        ...activeTemplate,
+      },
+      dataSourcePageTabId: tabCreatedByPado.id,
+    });
+  }
   if (name === 'sendRequest') {
     const dataSourceCookies = await chrome.cookies.getAll({
       url: new URL(jumpTo).origin,
@@ -128,6 +139,9 @@ export const pageDecodeMsgListener = async (
       label: null, // TODO
       exUserId: null,
     };
+    if (activeTemplate.requestid) {
+      form.requestid = activeTemplate.requestid;
+    }
     let aligorithmParams = await assembleAlgorithmParams(form, password);
 
     const formatRequests = [];
@@ -186,6 +200,7 @@ export const pageDecodeMsgListener = async (
       requests: formatRequests,
       responses,
       uiTemplate,
+      templateId: id,
     });
     await chrome.storage.local.set({
       activeRequestAttestation: JSON.stringify(aligorithmParams),
@@ -197,16 +212,9 @@ export const pageDecodeMsgListener = async (
       params: aligorithmParams,
     });
   }
-
+  
   console.log('222222bg received:', name, sender, sendResponse);
-  if (name === 'injectionCompleted') {
-    sendResponse({
-      name: 'append',
-      params: {
-        ...activeTemplate,
-      },
-    });
-  }
+
   if (name === 'attestResult') {
     console.log('222222attestResult--bg', tabCreatedByPado.id, request);
     // to send back your response  to the current tab
@@ -220,9 +228,8 @@ export const pageDecodeMsgListener = async (
     await chrome.tabs.update(currExtentionId, {
       active: true,
     });
-    if (tabCreatedByPado?.id) {
-      await chrome.tabs.remove(tabCreatedByPado.id);
-    }
-    tabCreatedByPado = null;
+    const { dataSourcePageTabId } = request;
+
+    await chrome.tabs.remove(dataSourcePageTabId);
   }
 };

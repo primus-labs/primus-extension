@@ -1,4 +1,5 @@
 window.onload = () => {
+  let dataSourcePageTabId = null
   let intervalTimer = null
   let activeTemplate = {};
   function createDomElement(html) {
@@ -21,12 +22,15 @@ window.onload = () => {
       );
       if (response.name === 'append') {
         activeTemplate = response.params;
+        dataSourcePageTabId = response.dataSourcePageTabId;
         const {
           jumpTo,
           uiTemplate: { proofContent, condition, subProofContent },
         } = activeTemplate;
         const aactiveOrigin = new URL(jumpTo).origin;
-        const aactiveDesc = `${proofContent ?? ''} ${subProofContent ?? ''} ${condition ?? ''}`;
+        const aactiveDesc = `${proofContent ?? ''} ${subProofContent ?? ''} ${
+          condition ?? ''
+        }`;
         const padoLeftStr = `<img class="pado-left"></img>`;
         const padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
         const padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
@@ -55,6 +59,29 @@ window.onload = () => {
           `<div class="pado-right">1/3</div>`
         );
         const padoMaskNode = createDomElement(padoMaskStr);
+        // padoMaskNode.onmousedown = function (event) {
+        //   let shiftX = event.clientX - padoMaskNode.getBoundingClientRect().left;
+        //   let shiftY = event.clientY - padoMaskNode.getBoundingClientRect().top;
+        //   padoMaskNode.style.position = 'absolute';
+        //   padoMaskNode.style.zIndex = 9999;
+        //   moveAt(event.pageX, event.pageY);
+        //   function moveAt(pageX, pageY) {
+        //     padoMaskNode.style.left = pageX - shiftX + 'px';
+        //     padoMaskNode.style.top = pageY - shiftY + 'px';
+        //   }
+        //   function onMouseMove(event) {
+        //     moveAt(event.pageX, event.pageY);
+        //   }
+
+        //   document.addEventListener('mousemove', onMouseMove);
+        //   padoMaskNode.onmouseup = function () {
+        //     document.removeEventListener('mousemove', onMouseMove);
+        //     padoMaskNode.onmouseup = null;
+        //   };
+        // };
+        // padoMaskNode.ondragstart = function () {
+        //   return false;
+        // };
         if (isThemeLight) {
           padoMaskNode.classList.add('light');
         } else {
@@ -82,6 +109,7 @@ window.onload = () => {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'closeDataSourcePage',
+            dataSourcePageTabId,
           });
           return;
         };
@@ -89,12 +117,13 @@ window.onload = () => {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'cancelAttest',
+            dataSourcePageTabId,
           });
         };
         padoCenterBottomStartNode.onclick = () => {
           padoRightNode.innerHTML = '2/3';
           padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
-        
+
           padoCenterBottomNode.removeChild(padoCenterBottomNode.childNodes[0]);
           padoCenterBottomNode.removeChild(padoCenterBottomNode.childNodes[0]);
           // padoCenterBottomNode.appendChild(padoCenterBottomOKNode);
@@ -111,7 +140,7 @@ window.onload = () => {
             barEl.style.width = `${progressPercentage}%`;
             // progress.innerHTML = `${progressPercentage}%`;
           }
-          intervalTimer = setInterval(simulateFileUpload, 100/130 *1000); // algorithm timeout
+          intervalTimer = setInterval(simulateFileUpload, (100 / 110) * 1000); // algorithm timeout
           const msgObj = {
             type: 'pageDecode',
             name: 'sendRequest',
@@ -148,10 +177,10 @@ window.onload = () => {
           `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
         );
         padoCenterBottomOKNode.onclick = () => {
-          
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'closeDataSourcePage',
+            dataSourcePageTabId,
           });
           return;
         };
@@ -168,6 +197,7 @@ window.onload = () => {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'closeDataSourcePage',
+            dataSourcePageTabId,
           });
           return;
         };
@@ -176,28 +206,6 @@ window.onload = () => {
     }
   });
 
-  // padoMaskNode.onmousedown = function (event) {
-  //   let shiftX = event.clientX - padoMaskNode.getBoundingClientRect().left;
-  //   let shiftY = event.clientY - padoMaskNode.getBoundingClientRect().top;
-  //   padoMaskNode.style.position = 'absolute';
-  //   padoMaskNode.style.zIndex = 9999;
-  //   moveAt(event.pageX, event.pageY);
-  //   function moveAt(pageX, pageY) {
-  //     padoMaskNode.style.left = pageX - shiftX + 'px';
-  //     padoMaskNode.style.top = pageY - shiftY + 'px';
-  //   }
-  //   function onMouseMove(event) {
-  //     moveAt(event.pageX, event.pageY);
-  //   }
-
-  //   document.addEventListener('mousemove', onMouseMove);
-  //   padoMaskNode.onmouseup = function () {
-  //     document.removeEventListener('mousemove', onMouseMove);
-  //     padoMaskNode.onmouseup = null;
-  //   };
-  // };
-  // padoMaskNode.ondragstart = function () {
-  //   return false;
-  // };
+  
   // var cookies = document.cookie;
 };

@@ -38,6 +38,7 @@ export type CredTypeItemType = {
   uiTemplate?: any;
   host?: string;
   sourceUseridHash?: string;
+  templateId?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;
