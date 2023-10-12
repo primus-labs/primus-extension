@@ -334,9 +334,10 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                     <div className="desc">Proof Result</div>
                     <div className="con">
                       {item.uiTemplate.subProofContent &&
-                        item.uiTemplate.subProofContent + ','}
+                        item.uiTemplate.subProofContent + ' '}
                       {item.uiTemplate.condition}
-                    </div>
+                  </div>
+                  
                   </div>
                 )}
               {item.type === 'IDENTIFICATION_PROOF' &&

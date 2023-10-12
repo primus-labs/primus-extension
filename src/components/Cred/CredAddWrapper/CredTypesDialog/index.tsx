@@ -54,15 +54,6 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
       },
       [activeType, type]
     );
-    const handlePageDecode = useCallback(async (webProofMeta: any) => {
-      await chrome.runtime.sendMessage({
-        type: 'pageDecode',
-        name: 'inject',
-        params: {
-          ...webProofMeta,
-        },
-      });
-    }, []);
     useEffect(() => {
       setActiveType(type);
     }, [type]);

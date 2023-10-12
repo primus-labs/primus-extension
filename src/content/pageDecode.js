@@ -14,10 +14,10 @@ window.onload = () => {
       type: 'pageDecode',
       name: 'injectionCompleted',
     },
-    (response) => {
+    (response, a,b) => {
       console.log(
         '222222web received response (injectionCompleted) response:',
-        response
+        response,a,b
       );
       if (response.name === 'append') {
         activeTemplate = response.params;
@@ -26,7 +26,7 @@ window.onload = () => {
           uiTemplate: { proofContent, condition, subProofContent },
         } = activeTemplate;
         const aactiveOrigin = new URL(jumpTo).origin;
-        const aactiveDesc = `${proofContent} ${subProofContent} ${condition}`;
+        const aactiveDesc = `${proofContent ?? ''} ${subProofContent ?? ''} ${condition ?? ''}`;
         const padoLeftStr = `<img class="pado-left"></img>`;
         const padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
         const padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
@@ -139,7 +139,7 @@ window.onload = () => {
         uiTemplate: { proofContent, condition, subProofContent },
       } = activeTemplate;
       const aactiveOrigin = new URL(jumpTo).origin;
-      const aactiveDesc = `${subProofContent ?? ''} ${condition}`;
+      const aactiveDesc = `${subProofContent ?? ''} ${condition ?? ''}`;
       if (result === 'success') {
         padoRightEl.innerHTML = '3/3';
         const iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
@@ -148,6 +148,7 @@ window.onload = () => {
           `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
         );
         padoCenterBottomOKNode.onclick = () => {
+          
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'closeDataSourcePage',

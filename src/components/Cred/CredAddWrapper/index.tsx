@@ -534,12 +534,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           const currRequestObj = webProofTypes.find(
             (r) => r.name === form.proofContent
           );
+          const currentWindowTabs = await chrome.tabs.query({ active: true, currentWindow: true })
+          
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',
             params: {
               ...currRequestObj,
             },
+            extensionTabId: currentWindowTabs[0].id
           });
           return;
         }

@@ -271,13 +271,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, []);
     const onChangeWebDataSource = useCallback((i: any) => {
       setActiveWebDataSource(i.name);
-      // await chrome.runtime.sendMessage({
-      //   type: 'pageDecode',
-      //   name: 'inject',
-      //   params: {
-      //     ...webProofMeta,
-      //   },
-      // });
     }, []);
     const handleChangeSelectBaseValue = useCallback((val: string) => {
       if (!val) {
@@ -446,6 +439,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         setActiveSource(sourceInfo);
         if (type === 'TOKEN_HOLDINGS') {
           activeCred.holdingToken && setActiveToken(activeCred.holdingToken);
+        }
+        if (type === 'IDENTIFICATION_PROOF' && activeCred?.reqType === 'web') {
+          // TODO!!!
         }
       }
     }, [activeCred, type, activeConnectedSourceList]);

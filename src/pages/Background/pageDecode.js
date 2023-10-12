@@ -1,16 +1,15 @@
 import { assembleAlgorithmParams } from './exData';
-import { postMsg } from '@/utils/utils';
-
 
 let tabCreatedByPado;
 let activeTemplate = {};
+let currExtentionId;
+
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
   sender,
   sendResponse,
-  password,
-  port
+  password
 ) => {
   const { name, params } = request;
   activeTemplate = name === 'inject' ? params : activeTemplate;
@@ -85,6 +84,8 @@ export const pageDecodeMsgListener = async (
     }
   };
   if (name === 'inject') {
+    const { extensionTabId } = request;
+    currExtentionId = extensionTabId;
     chrome.webRequest.onBeforeSendHeaders.addListener(
       onBeforeSendHeadersFn,
       { urls: ['<all_urls>'] },
@@ -95,6 +96,7 @@ export const pageDecodeMsgListener = async (
       { urls: ['<all_urls>'] },
       ['requestBody']
     );
+
     tabCreatedByPado = await chrome.tabs.create({
       url: jumpTo,
     });
@@ -211,14 +213,16 @@ export const pageDecodeMsgListener = async (
     chrome.tabs.sendMessage(tabCreatedByPado.id, request, function (response) {
       console.log('222222chrome.tabs.responseMessage', response);
     });
-    chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
-    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+    chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
+    chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
   }
-  if (name === 'closeDataSourcePage') {
-    await chrome.tabs.remove(tabCreatedByPado.id);
-  }
-  if (name === 'cancelAttest') {
-    // await postMsg(port, request);
-    chrome.tabs.remove(tabCreatedByPado.id);
+  if (name === 'closeDataSourcePage' || name === 'cancelAttest') {
+    await chrome.tabs.update(currExtentionId, {
+      active: true,
+    });
+    if (tabCreatedByPado?.id) {
+      await chrome.tabs.remove(tabCreatedByPado.id);
+    }
+    tabCreatedByPado = null;
   }
 };
