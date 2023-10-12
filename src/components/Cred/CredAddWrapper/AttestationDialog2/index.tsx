@@ -575,7 +575,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                   <WebDataSourceList
                       list={webDataSourceList}
                       onChange={onChangeWebDataSource}
-                      disabled={!activeIdentityType || activeCred}
+                      disabled={!activeIdentityType || !!activeCred}
                       val={activeWebDataSourceObj}
                   />
                 )}

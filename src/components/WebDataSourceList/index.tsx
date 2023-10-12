@@ -8,7 +8,7 @@ type DataSourceItemType = {
   id?: string;
 };
 interface ConnectDataSourceListProps {
-  val?: DataSourceItemType;
+  val?: any;
   disabled?: boolean;
   list: DataSourceItemType[];
   onChange: (source: DataSourceItemType | undefined) => void;
@@ -44,7 +44,9 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
     };
 
     useEffect(() => {
-      setActiveSource(val) && onChange(activeSource);
+      if (val) {
+        setActiveSource(val)
+      }
     }, [val]);
     return (
       <div className="webDataSourceListWrapper">
