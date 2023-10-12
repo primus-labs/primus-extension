@@ -1,10 +1,8 @@
 import React, { useState, useCallback, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router';
 
-import iconDataHover from '@/assets/img/iconDataHover.svg';
-import iconEventsHover from '@/assets/img/iconEventsHover.svg';
-import iconCredHover from '@/assets/img/iconCredHover.svg';
 import iconTooltip from '@/assets/img/credit/iconTooltip.svg';
+import iconTooltipActive from '@/assets/img/credit/iconTooltipActive.svg';
 import './index.sass';
 
 type TabItem = {
@@ -84,7 +82,7 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value, list }) => {
               {item.tooltip && (
                 <img
                   className="iconTooltip"
-                  src={iconTooltip}
+                  src={tooltipVisible?iconTooltipActive:iconTooltip}
                   alt=""
                   onMouseEnter={handleEnterAvatar}
                   onMouseLeave={handleLeaveAvatar}

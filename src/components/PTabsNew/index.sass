@@ -27,6 +27,7 @@ $tabLineHeight: 22px
     position: relative
     &.activeTab
       .con
+        color: var(--Button-active, #252C2E)
         .borderB
           background: linear-gradient(269deg, #70FFBA 0.52%, #78DEFF 100.71%)
     &.disabled
@@ -46,7 +47,8 @@ $tabLineHeight: 22px
       line-height: 20px
       position: relative
       padding: 0 4px
-        
+      &:hover
+        color: var(--Button-active, #252C2E)
       .iconTooltip
         width: 12px
       .borderB
