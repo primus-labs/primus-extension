@@ -20,12 +20,10 @@ interface PInputProps {
   list: TabItem[];
 }
 
-
-
-const PTabs: React.FC<PInputProps> = memo(({ onChange, value,list }) => {
+const PTabs: React.FC<PInputProps> = memo(({ onChange, value, list }) => {
   const [activeTab, setActiveTab] = useState<string>('');
   const [focusTab, setFocusTab] = useState<string>();
-
+  const [tooltipVisible, setTooltipVisible] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleClickTab = (item: TabItem) => {
@@ -59,7 +57,12 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value,list }) => {
     },
     [focusTab, activeTab]
   );
-
+  const handleEnterAvatar = () => {
+    setTooltipVisible(true);
+  };
+  const handleLeaveAvatar = () => {
+    setTooltipVisible(false);
+  };
   useEffect(() => {
     value && setActiveTab(value);
   }, [value]);
@@ -79,11 +82,19 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value,list }) => {
               {item.icon && <img src={item.icon} alt="" />}
               <span>{item.text}</span>
               {item.tooltip && (
-                <img className="iconTooltip" src={iconTooltip} alt="" />
+                <img
+                  className="iconTooltip"
+                  src={iconTooltip}
+                  alt=""
+                  onMouseEnter={handleEnterAvatar}
+                  onMouseLeave={handleLeaveAvatar}
+                />
               )}
               <i className="borderB"></i>
             </div>
-            {item.tooltip && <p className="tooltip">{item.tooltip}</p>}
+            {item.tooltip && tooltipVisible && (
+              <p className="tooltip">{item.tooltip}</p>
+            )}
           </div>
         );
       })}

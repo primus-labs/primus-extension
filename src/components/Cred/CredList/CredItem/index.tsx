@@ -302,8 +302,6 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   </div>
                 )}
               </div>
-            </div>
-            <div className="descItem">
               {/* <div className="label">Proof Content</div> */}
               {item.type === 'ASSETS_PROOF' && (
                 <div className="value">

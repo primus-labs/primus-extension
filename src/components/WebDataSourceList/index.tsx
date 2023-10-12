@@ -33,6 +33,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
 
     const handleClickData = (item: DataSourceItemType) => {
       if (allDisabled) {
+        onChange(item);
         return;
       }
       if (activeSource?.name === item.name) {

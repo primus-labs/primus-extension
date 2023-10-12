@@ -124,9 +124,7 @@ window.onload = () => {
           padoRightNode.innerHTML = '2/3';
           padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
 
-          padoCenterBottomNode.removeChild(padoCenterBottomNode.childNodes[0]);
-          padoCenterBottomNode.removeChild(padoCenterBottomNode.childNodes[0]);
-          // padoCenterBottomNode.appendChild(padoCenterBottomOKNode);
+          padoCenterBottomNode.remove();
           // const progress = document.querySelector('.percent');
           const barEl = document.querySelector('.bar');
           let progressPercentage = 0;

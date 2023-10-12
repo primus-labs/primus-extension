@@ -277,9 +277,17 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const handleChangeTab = useCallback((val: string) => {
       setActiveTab(val);
     }, []);
-    const onChangeWebDataSource = useCallback((i: any) => {
-      setActiveWebDataSource(i.name);
-    }, []);
+    
+    const onChangeWebDataSource = useCallback(
+      (i: any) => {
+        if (!activeIdentityType) {
+          setErrorTip('Please select the proof content first')
+        } else {
+          setActiveWebDataSource(i.name);
+        }
+      },
+      [activeIdentityType]
+    );
     const handleChangeSelectBaseValue = useCallback((val: string) => {
       if (!val) {
         setActiveBaseValue('');
@@ -369,6 +377,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     };
     const handleClickData = (item: ConnectSourceType) => {
+      if (!activeIdentityType) {
+        setErrorTip('Please select the proof content first');
+      } 
       if (!activeIdentityType || activeCred) {
         return;
       }

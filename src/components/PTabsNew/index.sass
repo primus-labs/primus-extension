@@ -21,7 +21,6 @@ $tabLineHeight: 22px
   @extend .frsc
   gap: 4px
   .tab
-    
     cursor: pointer
     @extend .frsc
     padding: 0 8px
@@ -35,8 +34,7 @@ $tabLineHeight: 22px
     &:not(.disabled):hover
       .con
         opacity: 1
-      .tooltip
-        display: inline-block  
+      
     .con
       height: 25px
       @extend .frcc
@@ -61,20 +59,20 @@ $tabLineHeight: 22px
         border-radius: 1px
         background: var(--Line, #DFE0E0)
     .tooltip
-        position: absolute
-        bottom: -28px
-        left: 0
-        padding: 4px 20px   
-        border-radius: var(--spacing-12, 12px)
-        background: var(--Badge, rgba(10, 18, 20, 0.05))
-        backdrop-filter: blur(16px)
-        color: var(--Text-hint, #7B7F80)
-        text-align: center
-        font-size: 12px
-        line-height: 16px
-        white-space: nowrap
-        display: none
-        z-index:3       
+      position: absolute
+      bottom: -28px
+      left: 0
+      padding: 4px 20px   
+      border-radius: var(--spacing-12, 12px)
+      background: var(--Badge, rgba(10, 18, 20, 0.05))
+      backdrop-filter: blur(16px)
+      color: var(--Text-hint, #7B7F80)
+      text-align: center
+      font-size: 12px
+      line-height: 16px
+      white-space: nowrap
+     
+      z-index:3    
         
 
     

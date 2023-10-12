@@ -29,12 +29,13 @@
       flex-shrink: 0
       @extend .frcc
       background: rgba(10, 18, 20, 0.05)
-      
       &.disabled
         cursor: not-allowed
+      &:not(.disabled):hover
+        background: #FFFFFF
       &.active
         background: #FFFFFF
-        border: 1.5PX solid transparent
+        border: 2PX solid transparent
         background-clip: padding-box, border-box
         background-origin: padding-box, border-box
         background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
@@ -56,7 +57,7 @@
       line-height: 24px
       font-family: 'Inter-Regular'
       color: $colSBlack
-@media (max-width: 1680px)
+
   .connectedDataSourceList
     &.scroll
       // width: calc( 100% + 35px )

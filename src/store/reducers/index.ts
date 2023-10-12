@@ -24,7 +24,7 @@ const DEFAULTCREDTYPELIST = [
     id: '2',
     credIdentifier: 'TOKEN_HOLDINGS',
     credTitle: 'Token Holdings Proof',
-    credIntroduce: 'Token ownership in Binance, Coinbase, OKX',
+    credIntroduce: 'Ownership in Binance, Coinbase, OKX',
     credLogoUrl:
       'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredToken.svg',
     credDetails:
@@ -39,7 +39,7 @@ const DEFAULTCREDTYPELIST = [
     id: '3',
     credIdentifier: 'IDENTIFICATION_PROOF',
     credTitle: 'Identity Proof',
-    credIntroduce: 'Identity or membership',
+    credIntroduce: 'eKYC, Nationality, Membership',
     credLogoUrl:
       'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredCred.svg',
     credDetails:

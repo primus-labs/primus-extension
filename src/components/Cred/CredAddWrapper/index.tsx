@@ -822,8 +822,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             setStep(2);
             setActiveRequest({
               type: 'error',
-              title: 'Failed',
-              desc: 'Looks like you refused to make the attestation process.Please try again later.',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
             });
           } else if (message.name === 'sendRequest') {
             setStep(2);
