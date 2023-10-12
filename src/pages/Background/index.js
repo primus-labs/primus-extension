@@ -138,6 +138,9 @@ const processAlgorithmReq = async (message, port) => {
         activeRequestAttestation: JSON.stringify(attestationParams),
       });
 
+      if (attestationParams.source === "binance" && process.env.NODE_ENV === "production") {
+        attestationParams.proxyUrl = "wss://api.padolabs.org/algoproxy";
+      }
       console.log('attestationParams=', attestationParams);
       chrome.runtime.sendMessage({
         type: 'algorithm',
