@@ -145,6 +145,11 @@
   padding: 0 4px;
   color: var(--neutral-light-n-70, #a5adba);
 }
+.pado-center .pado-center-bottom button.startBtn.disabled {
+  cursor: not-allowed;
+  color: rgb(137, 137, 137);
+}
+
 
 .pado-right {
   color: var(--Text-hint, #7b7f80);

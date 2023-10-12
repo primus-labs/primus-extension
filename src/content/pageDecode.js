@@ -1,3 +1,4 @@
+
 window.onload = () => {
   let dataSourcePageTabId = null
   let intervalTimer = null
@@ -51,6 +52,11 @@ window.onload = () => {
         const padoCenterBottomStartNode = createDomElement(
           padoCenterBottomStartStr
         );
+        const disabledPathList = ['login', 'register']
+        const isDisabled = disabledPathList.some(i => window.location.href.indexOf('login') > -1)
+        if (isDisabled) {
+          padoCenterBottomStartNode.classList.add('disabled')
+        }
         const padoCenterBottomCancelNode = createDomElement(
           padoCenterBottomCancelStr
         );
@@ -100,11 +106,6 @@ window.onload = () => {
         padoMaskNode.appendChild(padoCenterNode);
         padoMaskNode.appendChild(padoRightNode);
 
-        const VerifyingNode = createDomElement('<p>Verifying...</p > ');
-        const ProgressNode = createDomElement(
-          '<div class="progress"><div class="progress-bar"><div class="bg"></div><div class="bar"></div></div><div class="percent">0%</div></div > '
-        );
-
         padoCenterBottomOKNode.onclick = () => {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
@@ -121,6 +122,9 @@ window.onload = () => {
           });
         };
         padoCenterBottomStartNode.onclick = () => {
+          if (isDisabled) {
+            return
+          }
           padoRightNode.innerHTML = '2/3';
           padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
 

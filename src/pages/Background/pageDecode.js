@@ -19,7 +19,7 @@ export const pageDecodeMsgListener = async (
     schemaType,
     datasourceTemplate: { host, requests, responses },
     uiTemplate,
-    id
+    id,
   } = activeTemplate;
   const requestUrlList = requests.map((r) => r.url);
   const onBeforeSendHeadersFn = async (details) => {
@@ -103,16 +103,34 @@ export const pageDecodeMsgListener = async (
       url: jumpTo,
     });
     console.log('222222tabCreatedByPado', tabCreatedByPado);
-    await chrome.scripting.executeScript({
-      target: {
-        tabId: tabCreatedByPado.id,
-      },
-      files: ['pageDecode.js'],
+    const injectFn = async () => {
+      await chrome.scripting.executeScript({
+        target: {
+          tabId: tabCreatedByPado.id,
+        },
+        files: ['pageDecode.js'],
+      });
+      await chrome.scripting.insertCSS({
+        target: { tabId: tabCreatedByPado.id },
+        files: ['pageDecode.css'],
+      });
+    };
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+      console.log('222222tabUpdate', tabId, changeInfo, tab);
+      if (tabId === tabCreatedByPado.id && changeInfo.url) {
+        injectFn();
+      }
     });
-    await chrome.scripting.insertCSS({
-      target: { tabId: tabCreatedByPado.id },
-      files: ['pageDecode.css'],
+   
+    chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+      if (tabId === tabCreatedByPado.id) {
+        chrome.runtime.sendMessage({
+          type: 'pageDecode',
+          name: 'abortAttest',
+        });
+      }
     });
+    injectFn();
   }
   if (name === 'injectionCompleted') {
     sendResponse({
@@ -212,7 +230,7 @@ export const pageDecodeMsgListener = async (
       params: aligorithmParams,
     });
   }
-  
+
   console.log('222222bg received:', name, sender, sendResponse);
 
   if (name === 'attestResult') {

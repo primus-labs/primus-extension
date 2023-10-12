@@ -537,18 +537,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (form?.requestid) {
             currRequestObj.requestid = form.requestid;
           }
-            const currentWindowTabs = await chrome.tabs.query({
-              active: true,
-              currentWindow: true,
-            });
-          
+          const currentWindowTabs = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+          });
+
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',
             params: {
               ...currRequestObj,
             },
-            extensionTabId: currentWindowTabs[0].id
+            extensionTabId: currentWindowTabs[0].id,
           });
           return;
         }
@@ -832,6 +832,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               title: 'Attestation is processing',
               desc: 'It may take a few seconds.',
             });
+          } else if (message.name === 'abortAttest') {
+            setStep(2);
+            setActiveRequest({
+              type: 'error',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
+            });
+            setIntervalSwitch(false);
+            
           }
         }
       };
