@@ -8,6 +8,7 @@ import { postMsg } from '@/utils/utils';
 import './index.sass';
 
 const Lock = memo(() => {
+  const [hadSetPwd, setHadSetPwd] = useState()
   const dispatch = useDispatch();
   const padoServicePort = useSelector((state) => state.padoServicePort);
   const navigate = useNavigate();
@@ -31,21 +32,25 @@ const Lock = memo(() => {
   };
 
   const handleClickStart = () => {
-    if (!pwd) {
-      setErrorMsg('Please enter your password');
-      return;
-    }
+    if (hadSetPwd) {
+      if (!pwd) {
+        setErrorMsg('Please enter your password');
+        return;
+      }
 
-    if (![undefined, null].includes(pwd)) {
-      padoServicePort.onMessage.addListener(padoServicePortListener);
-      const msg = {
-        fullScreenType: 'wallet',
-        reqMethodName: `decrypt`,
-        params: {
-          password: pwd,
-        },
-      };
-      postMsg(padoServicePort, msg);
+      if (![undefined, null].includes(pwd)) {
+        padoServicePort.onMessage.addListener(padoServicePortListener);
+        const msg = {
+          fullScreenType: 'wallet',
+          reqMethodName: `decrypt`,
+          params: {
+            password: pwd,
+          },
+        };
+        postMsg(padoServicePort, msg);
+      }
+    } else {
+      navigate('/datas');
     }
   };
   const handleChangePwd = (val) => {
@@ -69,10 +74,17 @@ const Lock = memo(() => {
     };
     postMsg(padoServicePort, msg);
   }, [dispatch, padoServicePort]);
+  const checkIfHadSetPwd = useCallback(async() => {
+    let { keyStore } = await chrome.storage.local.get(['keyStore']);
+    setHadSetPwd(!!keyStore);
+  },[])
 
   useEffect(() => {
     handleClearUserPwd();
   }, [handleClearUserPwd]);
+  useEffect(() => {
+    checkIfHadSetPwd();
+  }, [checkIfHadSetPwd]);
 
   return (
     <div className="pageIndex pageLock">
@@ -83,7 +95,7 @@ const Lock = memo(() => {
             <h1>Welcome Back！</h1>
             <p>Bringing all internet data into smart contracts.</p>
           </header>
-          <main className="articleMain formItem">
+          {hadSetPwd && <main className="articleMain formItem">
             <h6>Password</h6>
             <PInput
               type="password"
@@ -93,7 +105,7 @@ const Lock = memo(() => {
               visible
             />
             {errorMsg && <div className="errorTip">{errorMsg}</div>}
-          </main>
+          </main>}
           <footer className="articleFooter">
             <button className="unLockBtn" onClick={handleClickStart}>
               <span>Unlock</span>

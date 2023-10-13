@@ -12,7 +12,7 @@ import { initWalletAddressActionAsync } from '@/store/actions';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 
-import './index.sass';
+import './index.scss';
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -73,9 +73,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
     const userInfo = useSelector((state: UserState) => state.userInfo);
     const fetchBindUserAddress = useCallback(() => {
-      chrome.storage.local.get(['userInfo', 'invitationCode'], (storedData) => {
+      chrome.storage.local.get(['userInfo'], (storedData) => {
         if (storedData['userInfo']) {
-          const userId = JSON.parse(storedData['userInfo']).id;
           const padoServicePortListener = async function (message: any) {
             if (message.resMethodName === 'bindUserAddress') {
               const { res } = message;
@@ -84,29 +83,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 await dispatch(initWalletAddressActionAsync());
                 onSubmit();
               } else {
-                // loading
-                alert('BindUserAddress network error');
               }
             }
           };
           padoServicePort.onMessage.addListener(padoServicePortListener);
-          const { token } = userInfo;
-
+          
           postMsg(padoServicePort, {
             fullScreenType: 'padoService',
             reqMethodName: 'bindUserAddress',
             params: {
-              userId: userId,
-              walletAddress: accountAddr,
               password: pwd,
-            },
-            config: {
-              // TODO
-              extraHeader: {
-                'user-id': userId,
-                Authorization: `Bearer ${token}`,
-                'invite-code': storedData.invitationCode,
-              },
             },
           });
           dispatch({
@@ -115,7 +101,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           });
         }
       });
-    }, [accountAddr, dispatch, onSubmit, padoServicePort, pwd]);
+    }, [dispatch, onSubmit, padoServicePort, pwd]);
     const handleClickNext = useCallback(async () => {
       if (!pwd || !confirm || errorTipVisible) {
         return;
@@ -127,28 +113,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       fetchBindUserAddress();
     }, [pwd, confirm, errorTipVisible, pwdRules, fetchBindUserAddress]);
 
-    const handleClickBack = () => {
-      onCancel();
-    };
-    const initAccount = () => {
-      const padoServicePortListener = function (message: any) {
-        if (message.resMethodName === 'create') {
-          console.log('page_get:create:', message.res);
-          if (message.res) {
-            const lowercaseAddr = message.res.toLowerCase();
-            setAccountAddr(lowercaseAddr);
-          }
-        }
-      };
-      padoServicePort.onMessage.addListener(padoServicePortListener);
-
-      const msg = {
-        fullScreenType: 'wallet',
-        reqMethodName: 'create',
-        params: {},
-      };
-      postMsg(padoServicePort, msg);
-    };
     const handleChangePwd = useCallback((val: string) => {
       setPwd(val);
     }, []);
@@ -156,17 +120,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       setConfirm(val);
     };
 
-    useEffect(() => {
-      initAccount();
-    }, []);
 
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog setPwdDialog">
-          <PBack onBack={handleClickBack} />
           <main>
-            <AuthInfoHeader checked={true} />
             <h1>Set Password</h1>
+            <h2>
+              Set a password to protect local data and unlock your account.
+            </h2>
             <h6>Setting</h6>
             <PInput
               type="password"

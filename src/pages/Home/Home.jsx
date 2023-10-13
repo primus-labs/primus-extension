@@ -2,24 +2,15 @@ import React, { useState, useEffect, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 
-import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
-import PHeader from '@/components/Layout/PHeader';
-import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
-import AuthDialog from '@/components/Home/AuthDialog';
-import SetPwdDialog from '@/components/Home/SetPwdDialog';
-import SetSucDialog from '@/components/Home/SetSucDialog';
 import AsideAnimation from '@/components/Layout/AsideAnimation';
 
-import { setSocialSourcesAsync } from '@/store/actions';
 import { postMsg } from '@/utils/utils';
-import { CHAINNETWORKLIST } from '@/config/constants';
 import { requestSignTypedData } from '@/services/wallets/utils';
 import { getUserIdentity } from '@/services/api/user';
 
 import './Home.sass';
 
 const Home = memo(() => {
-  const [step, setStep] = useState(0);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -31,7 +22,6 @@ const Home = memo(() => {
       if (message.resMethodName === 'create') {
         console.log('page_get:create:', message.res);
         if (message.res) {
-          // navigate('/data')
           const { privateKey } = await chrome.storage.local.get([
             'privateKey',
           ]);
@@ -53,13 +43,14 @@ const Home = memo(() => {
             });
             const { rc, result } = res;
             if (rc === 0) {
-              const { bearerToken, identifier } = result
+              const { bearerToken, identifier } = result;
               await chrome.storage.local.set({
                 userInfo: JSON.stringify({
                   id: identifier,
                   token: bearerToken,
-                })
+                }),
               });
+              navigate('/datas')
             }
           } catch (e) {
             console.log('handleClickStart error', e);
@@ -76,82 +67,21 @@ const Home = memo(() => {
     };
     postMsg(padoServicePort, msg);
   }, [padoServicePort]);
-  // const handleClickStart = async () => {
-  // const isInProcess = await checkActiveStep();
-  // if (!isInProcess) {
-  //   setStep(1);
-  // }
-  // };
-  const handleCloseMask = useCallback(() => {
-    setStep(0);
-  }, []);
-  const handleSubmitAuth = useCallback(() => {
-    dispatch(setSocialSourcesAsync());
-    setStep(3);
-  }, [dispatch]);
-  // const handleSubmitCreateAccount = useCallback(() => {
-  //   setStep(3);
-  // }, []);
-  const handleCancelCreateAccount = useCallback(() => {
-    setStep(1);
-  }, []);
-  const handleSubmitSetPwd = useCallback(() => {
-    setStep(4);
-  }, []);
-  const handleCancelSetPwd = useCallback(() => {
-    setStep(2);
-  }, []);
-  const handleSubmitSetSuc = useCallback(() => {
-    navigate('/datas');
-  }, [navigate]);
 
   const checkActiveStep = useCallback(async () => {
-    // It can be called like this:
-    let { userInfo, privateKey, keyStore } = await chrome.storage.local.get([
+    let { userInfo } = await chrome.storage.local.get([
       'userInfo',
-      'privateKey',
-      'keyStore',
     ]);
-
-    // If keyStore is cached,,it represents that the user has already bound a wallet => data page
-    if (keyStore) {
-      navigate('/datas');
-      // const padoServicePortListener = async function (message) {
-      //   if (message.resMethodName === 'queryUserPassword') {
-      //     if (!message.res) {
-      //       navigate('/lock');
-      //     } else {
-      //       navigate('/datas');
-      //     }
-      //   }
-      //   padoServicePort.onMessage.removeListener(padoServicePortListener);
-      // };
-      // padoServicePort.onMessage.addListener(padoServicePortListener);
-      // const msg = {
-      //   fullScreenType: 'wallet',
-      //   reqMethodName: 'queryUserPassword',
-      //   params: {},
-      // };
-      // postMsg(padoServicePort, msg);
-      return true;
-    }
-    // If privateKey is cached,,it represents that the user has created account without password => step3
-    if (privateKey) {
-      setStep(3);
-      return true;
-    }
-    // If user information is cached,it represents that it is authorized => step2
     if (userInfo) {
-      setStep(2);
+      navigate('/lock');
       return true;
     }
-
     return false;
-  }, [navigate, padoServicePort]);
+  }, [navigate]);
 
-  // useEffect(() => {
-  //   checkActiveStep();
-  // }, []);
+  useEffect(() => {
+    checkActiveStep();
+  }, [checkActiveStep]);
 
   return (
     <div className="pageIndex pageHome">
@@ -168,47 +98,6 @@ const Home = memo(() => {
           </button>
         </article>
       </main>
-      {step === 1 && (
-        <AuthDialog onSubmit={handleSubmitAuth} onClose={handleCloseMask} />
-      )}
-      {/* {step === 2 && (
-        <TransferToChainDialog
-          onClose={handleCloseMask}
-          onSubmit={handleSubmitCreateAccount}
-          onCancel={handleCancelCreateAccount}
-          title="Create account"
-          desc="Create an EVM compatible on-chain address to easily manage your data. The address will bind to your sign up account."
-          list={CHAINNETWORKLIST}
-          showButtonSuffixIcon={true}
-          tip="Please select one chain to create"
-          listTitle="Compatible with"
-          listSeparator="and"
-          requireItem={false}
-        />
-      )} */}
-      {step === 3 && (
-        <SetPwdDialog
-          onClose={handleCloseMask}
-          onSubmit={handleSubmitSetPwd}
-          onCancel={handleCancelSetPwd}
-        />
-      )}
-      {/* {step === 4 && (
-        <SetSucDialog
-          onClose={handleSubmitSetSuc}
-          onSubmit={handleSubmitSetSuc}
-        />
-      )} */}
-      {step === 4 && (
-        <AddSourceSucDialog
-          onClose={handleSubmitSetSuc}
-          onSubmit={handleSubmitSetSuc}
-          type="suc"
-          title="Congratulations"
-          desc="You have signed up successfully!"
-          headerEl={<PHeader />}
-        />
-      )}
     </div>
   );
 });

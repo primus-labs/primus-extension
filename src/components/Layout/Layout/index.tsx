@@ -158,19 +158,6 @@ const Layout = memo(() => {
     };
   }, [padoServicePort]);
 
-  // useEffect(() => {
-  //   dispatch(setExSourcesAsync());
-  //   dispatch(setSocialSourcesAsync());
-  //   dispatch(setKYCsAsync());
-  //   dispatch(setProofTypesAsync());
-  //   dispatch(initSourceUpdateFrequencyActionAsync());
-  //   dispatch(initUserInfoActionAsync());
-  //   dispatch(setCredentialsAsync());
-  //   dispatch(initWalletAddressActionAsync());
-  //   dispatch(initRewardsActionAsync());
-  //   dispatch(setOnChainAssetsSourcesAsync());
-  //   (updateOnChainFn as () => void)();
-  // }, [dispatch, updateOnChainFn]);
   const initStoreData = useCallback(async () => {
     //
     const { twitter } = await chrome.storage.local.get(['twitter']);

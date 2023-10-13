@@ -138,8 +138,11 @@ const processAlgorithmReq = async (message, port) => {
         activeRequestAttestation: JSON.stringify(attestationParams),
       });
 
-      if (attestationParams.source === "binance" && process.env.NODE_ENV === "production") {
-        attestationParams.proxyUrl = "wss://api.padolabs.org/algoproxy";
+      if (
+        attestationParams.source === 'binance' &&
+        process.env.NODE_ENV === 'production'
+      ) {
+        attestationParams.proxyUrl = 'wss://api.padolabs.org/algoproxy';
       }
       console.log('attestationParams=', attestationParams);
       chrome.runtime.sendMessage({
@@ -181,12 +184,19 @@ const processpadoServiceReq = async (message, port) => {
   const formatParams = { ...params };
   delete formatParams.password;
   try {
-    const { rc, result, mc } = await padoServices[reqMethodName](
-      { ...formatParams },
-      {
-        ...config,
-      }
-    );
+    let rc, result, mc;
+    if (reqMethodName !== 'bindUserAddress') {
+      const fetchRes = await padoServices[reqMethodName](
+        { ...formatParams },
+        {
+          ...config,
+        }
+      );
+      rc = fetchRes.rc;
+      result = fetchRes.result;
+      mc = fetchRes.mc;
+    }
+
     switch (reqMethodName) {
       case 'getAllOAuthSources':
         if (rc === 0) {
@@ -274,7 +284,7 @@ const processpadoServiceReq = async (message, port) => {
         }
         break;
       case 'bindUserAddress':
-        if (rc === 0) {
+        try{
           const msg = {
             fullScreenType: 'wallet',
             reqMethodName: 'encrypt',
@@ -284,7 +294,7 @@ const processpadoServiceReq = async (message, port) => {
           };
           await processWalletReq(msg, port);
           postMsg(port, { resMethodName: reqMethodName, res: true });
-        } else {
+        } catch {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }
         break;

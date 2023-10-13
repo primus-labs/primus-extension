@@ -9,6 +9,7 @@ import Setting from '@/components/Setting/Setting';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
+import PConnect from '@/components/PConnect'
 
 import { debounce, throttle } from '@/utils/utils';
 import type { UserState } from '@/types/store';
@@ -130,7 +131,8 @@ const PageHeader = memo(() => {
               onMouseEnter={handleEnterAvatar}
               onMouseLeave={handleLeaveAvatar}
             >
-              <PAvatar />
+              {/* <PAvatar /> */}
+              <PConnect/>
             </div>
             {dorpdownVisible && (
               <div

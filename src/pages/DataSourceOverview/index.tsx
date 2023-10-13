@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 
+import SetPwdDialog from '@/components/Home/SetPwdDialog';
 import PTabs from '@/components/PTabs';
 import DataSourceList from '@/components/DataSourceOverview/DataSourceList';
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog';
@@ -171,7 +172,7 @@ const DataSourceOverview = memo(() => {
 
             const eventInfo = {
               eventType: 'DATA_SOURCE_INIT',
-              rawData: {type: 'Assets', dataSource: lowerCaseSourceName},
+              rawData: { type: 'Assets', dataSource: lowerCaseSourceName },
             };
             eventReport(eventInfo);
           } else {
@@ -232,7 +233,8 @@ const DataSourceOverview = memo(() => {
     [dispatch]
   );
   const handleAdd = useCallback(() => {
-    setStep(1);
+    setStep(0.5);
+    // setStep(1);
   }, []);
   const handleCheckDataSourceDetail = useCallback(
     (s: SourceData) => {
@@ -305,6 +307,12 @@ const DataSourceOverview = memo(() => {
       setStep(2);
     }
   }, [activeRequest?.type, onSubmitAddSourceSucDialog]);
+  const handleSubmitSetPwd = useCallback(() => {
+    setStep(1);
+  }, []);
+  const handleCancelSetPwd = useCallback(() => {
+    setStep(0);
+  }, []);
 
   useEffect(() => {
     step === 1 && setActiveSourceKeys(undefined);
@@ -337,6 +345,13 @@ const DataSourceOverview = memo(() => {
           />
         )}
       </main>
+      {step === 0.5 && (
+        <SetPwdDialog
+          onClose={handleCloseMask}
+          onSubmit={handleSubmitSetPwd}
+          onCancel={handleCancelSetPwd}
+        />
+      )}
       {step === 1 && (
         <DataSourcesDialog
           onClose={handleCloseMask}

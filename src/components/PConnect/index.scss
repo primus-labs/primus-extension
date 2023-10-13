@@ -1,0 +1,16 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/pFont.sass';
+
+.PConnect {
+  .pButton {
+    width: 120px;
+    height: 28px;
+    font-size: 14px;
+    line-height: 20px; /* 142.857% */
+  }
+}
+
+@media (max-width: 1680px) {
+
+}
