@@ -232,9 +232,14 @@ const DataSourceOverview = memo(() => {
     },
     [dispatch]
   );
-  const handleAdd = useCallback(() => {
-    setStep(0.5);
-    // setStep(1);
+  const handleAdd = useCallback(async() => {
+    let { keyStore } = await chrome.storage.local.get(['keyStore']);
+    
+    if (keyStore) {
+      setStep(1);
+    } else {
+      setStep(0.5);
+    }
   }, []);
   const handleCheckDataSourceDetail = useCallback(
     (s: SourceData) => {

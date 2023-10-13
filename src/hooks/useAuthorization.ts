@@ -102,15 +102,16 @@ const useAuthorization = () => {
       const windowScreen: Screen = window.screen;
       var left = Math.round(windowScreen.width / 2 - width / 2);
       var top = Math.round(windowScreen.height / 2 - height / 2);
-      const { invitationCode } = await chrome.storage.local.get([
-        'invitationCode',
+      const { userInfo } = await chrome.storage.local.get([
+        'userInfo',
       ]);
+      const parseUserInfo = JSON.parse(userInfo)
       const authUrl = getAuthUrl({
         source,
         state,
-        invitationCode,
-        type: dataType,
+        token: parseUserInfo.token,
       });
+      
       const windowOptions: chrome.windows.CreateData = {
         url: authUrl,
         type: 'popup',
