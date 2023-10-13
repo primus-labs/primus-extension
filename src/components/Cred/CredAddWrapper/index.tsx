@@ -852,13 +852,30 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               desc: 'It may take a few seconds.',
             });
           } else if (message.name === 'abortAttest') {
-            setStep(2);
-            setActiveRequest({
-              type: 'error',
-              title: 'Unable to proceed',
-              desc: 'Please try again later.',
-            });
-            setIntervalSwitch(false);
+            if (activeRequest?.type === 'loading' || !activeRequest?.type) {
+              setStep(2);
+              setActiveRequest({
+                type: 'error',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
+            }
+            if (!activeRequest?.type) {
+              setStep(2);
+              setActiveRequest({
+                type: 'error',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
+            } else if (activeRequest?.type === 'loading') {
+              setActiveRequest({
+                type: 'error',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
+              setIntervalSwitch(false);
+            }
+            
           }
         }
       };
