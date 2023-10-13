@@ -1,5 +1,9 @@
 import request from '@/utils/request';
-
+type GrtUserIdentityParams = {
+  signature: string;
+  timestamp: string;
+  address: string;
+};
 type RefreshAuthDataParams = {
   userId?:string;
   uniqueId?:string;
@@ -94,5 +98,13 @@ export const refreshAuthData = (data:RefreshAuthDataParams) => {
     method: 'get',
     url: `/public/data/refresh`,
     data
+  });
+};
+
+export const getUserIdentity = (data: GrtUserIdentityParams) => {
+  return request({
+    method: 'get',
+    url: `/public/pado/identity`,
+    data,
   });
 };

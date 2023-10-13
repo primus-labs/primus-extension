@@ -13,6 +13,8 @@ import AsideAnimation from '@/components/Layout/AsideAnimation';
 import { setSocialSourcesAsync } from '@/store/actions';
 import { postMsg } from '@/utils/utils';
 import { CHAINNETWORKLIST } from '@/config/constants';
+import { requestSignTypedData } from '@/services/wallets/utils';
+import { getUserIdentity } from '@/services/api/user';
 
 import './Home.sass';
 
@@ -24,12 +26,62 @@ const Home = memo(() => {
 
   const padoServicePort = useSelector((state) => state.padoServicePort);
 
-  const handleClickStart = async () => {
-    const isInProcess = await checkActiveStep();
-    if (!isInProcess) {
-      setStep(1);
-    }
-  };
+  const handleClickStart = useCallback(() => {
+    const padoServicePortListener = async function (message) {
+      if (message.resMethodName === 'create') {
+        console.log('page_get:create:', message.res);
+        if (message.res) {
+          // navigate('/data')
+          const { privateKey } = await chrome.storage.local.get([
+            'privateKey',
+          ]);
+          const privateKeyStr = privateKey?.substr(2)
+          // const address = message.res.toLowerCase();
+          const address = message.res;
+          const timestamp = +new Date() + '';
+
+          try {
+            const signature = await requestSignTypedData(
+              privateKeyStr,
+              address,
+              timestamp
+            );
+            const res = await getUserIdentity({
+              signature,
+              timestamp,
+              address,
+            });
+            const { rc, result } = res;
+            if (rc === 0) {
+              const { bearerToken, identifier } = result
+              await chrome.storage.local.set({
+                userInfo: JSON.stringify({
+                  id: identifier,
+                  token: bearerToken,
+                })
+              });
+            }
+          } catch (e) {
+            console.log('handleClickStart error', e);
+          }
+        }
+      }
+    };
+    padoServicePort.onMessage.addListener(padoServicePortListener);
+
+    const msg = {
+      fullScreenType: 'wallet',
+      reqMethodName: 'create',
+      params: {},
+    };
+    postMsg(padoServicePort, msg);
+  }, [padoServicePort]);
+  // const handleClickStart = async () => {
+  // const isInProcess = await checkActiveStep();
+  // if (!isInProcess) {
+  //   setStep(1);
+  // }
+  // };
   const handleCloseMask = useCallback(() => {
     setStep(0);
   }, []);
@@ -52,7 +104,7 @@ const Home = memo(() => {
   const handleSubmitSetSuc = useCallback(() => {
     navigate('/datas');
   }, [navigate]);
-  
+
   const checkActiveStep = useCallback(async () => {
     // It can be called like this:
     let { userInfo, privateKey, keyStore } = await chrome.storage.local.get([
@@ -97,9 +149,9 @@ const Home = memo(() => {
     return false;
   }, [navigate, padoServicePort]);
 
-  useEffect(() => {
-    checkActiveStep();  
-  }, []);
+  // useEffect(() => {
+  //   checkActiveStep();
+  // }, []);
 
   return (
     <div className="pageIndex pageHome">

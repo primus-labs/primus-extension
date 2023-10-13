@@ -38,7 +38,7 @@ const request = async (fetchParams: FetchParams) => {
   if (userInfo) {
     const userInfoObj = JSON.parse(userInfo);
     const { id, token } = userInfoObj;
-    if (!url.includes('/public') && !url.startsWith('https://pado-online.s3.ap-northeast-1.amazonaws.com') && token) {
+    if (!url.startsWith('https://pado-online.s3.ap-northeast-1.amazonaws.com') && token) {
       golbalHeader.Authorization = `Bearer ${token}`;
     }
     if (url.includes('/public/event/report')) {
