@@ -159,7 +159,7 @@ window.onload = () => {
     console.log('2222223web received:', request);
     const {
       name,
-      params: { result },
+      params: { result, failReason },
     } = request;
     if (name === 'attestResult') {
       const padoRightEl = document.querySelector('.pado-right');
@@ -190,8 +190,10 @@ window.onload = () => {
       } else if (result === 'fail') {
         padoRightEl.innerHTML = '3/3';
         padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>Not eligible</span></p>`;
-      }else if (result === 'warn') {
-        padoCenterCenterEl.innerHTML = `<p class="warn-tip">The process has been interrupted...</p><p>Please try again later.</p>`;
+      } else if (result === 'warn') {
+        const str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
+        const str2 = `<p class="warn-tip">Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
+        padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
         const padoCenterBottomOKNode = createDomElement(
           `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
         );

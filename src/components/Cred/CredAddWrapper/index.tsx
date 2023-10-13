@@ -655,7 +655,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, []);
     const getAttestationResultCallback = useCallback(
       async (res: any) => {
-        const { retcode, content } = JSON.parse(res);
+        const { retcode, content,retdesc } = JSON.parse(res);
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
         ]);
@@ -731,20 +731,40 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             params: {},
           };
           postMsg(padoServicePort, msg);
-          setActiveRequest({
+          let requestResObj = {
             type: 'warn',
             title: 'Something went wrong',
             desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
-          });
+          };
+          if (
+            retdesc.indexOf('connect to proxy error') ||
+            retdesc.indexOf('WebSocket On Error')
+            ) {
+            requestResObj = {
+              type: 'error',
+              title: 'Ooops',
+              desc: 'Unstable internet connection. Please try again later.',
+            };
+          }
+            setActiveRequest(requestResObj);
           if (parsedActiveRequestAttestation.reqType === 'web') {
+            let failReason = ''
+            if (
+              retdesc.indexOf('connect to proxy error') ||
+              retdesc.indexOf('WebSocket On Error')
+            ) {
+              failReason = 'network'
+            }
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
               name: 'attestResult',
               params: {
                 result: 'warn',
+                failReason
               },
             });
           }
+          
         }
       },
       [
@@ -753,7 +773,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         initCredList,
         credentialsFromStore,
         activeAttestForm,
-        onSubmit,
       ]
     );
 
@@ -840,7 +859,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               desc: 'Please try again later.',
             });
             setIntervalSwitch(false);
-            
           }
         }
       };
