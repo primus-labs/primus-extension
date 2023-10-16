@@ -35,8 +35,9 @@ const navs: NavItem[] = [
   },
 ];
 const PageHeader = memo(() => {
+  
   const [isScroll, setIsScroll] = useState(false);
-
+const userPassword = useSelector((state: UserState) => state.userPassword);
   const navigate = useNavigate();
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
@@ -117,6 +118,7 @@ const PageHeader = memo(() => {
       window.removeEventListener('scroll', tFn);
     };
   }, [activeSourceType, pathname]);
+  
 
   return (
     <div className={pageHeaderWrapperClassName}>
@@ -132,34 +134,38 @@ const PageHeader = memo(() => {
               onMouseLeave={handleLeaveAvatar}
             >
               {/* <PAvatar /> */}
-              <PConnect/>
-            </div>
-            {dorpdownVisible && (
-              <div
-                className="dropdownWrapper"
-                onMouseEnter={handleEnterAvatar}
-                onMouseLeave={handleLeaveAvatar}
-              >
-                <ul className="dropdown">
-                  {navs.map((item) => {
-                    return (
-                      <li
-                        key={item.text}
-                        className="dropdownItemWrapper"
-                        onClick={() => {
-                          handleClickDropdownItem(item.text);
-                        }}
-                      >
-                        <div className="dropdownItem">
-                          <img src={item.icon} alt="" />
-                          <span>{item.text}</span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+              <div className="iconMyWrapper">
+                <img src={iconMy} alt="" className="iconMy" />
               </div>
-            )}
+              <PConnect />
+            </div>
+            {dorpdownVisible &&
+              !!userPassword && (
+                <div
+                  className="dropdownWrapper"
+                  onMouseEnter={handleEnterAvatar}
+                  onMouseLeave={handleLeaveAvatar}
+                >
+                  <ul className="dropdown">
+                    {navs.map((item) => {
+                      return (
+                        <li
+                          key={item.text}
+                          className="dropdownItemWrapper"
+                          onClick={() => {
+                            handleClickDropdownItem(item.text);
+                          }}
+                        >
+                          <div className="dropdownItem">
+                            <img src={item.icon} alt="" />
+                            <span>{item.text}</span>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
           </div>
         </div>
         {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}

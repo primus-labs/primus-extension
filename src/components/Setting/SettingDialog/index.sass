@@ -6,59 +6,55 @@ $sAvatar: 60px
   @extend .fcbc
   main
     width: 100%
-    @extend .fcsc
+    @extend .fcss
     gap: 48px
     header
-      @extend .fcsc
-      gap: 24px
-      img.avatar,>i.avatarAlternate
-        border-radius: 50%
-      img.avatar
-        width: $lAvatar
-        // height: $lAvatar
-      >i.avatarAlternate
-        width: $lAvatar
-        height: $lAvatar
-        background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-        >img
-          width: 40px
-      .baseInfo
+      @extend .frsc
+      gap: var(--spacing-16, 16px)
+      h6
+        color: var(--Text-headline, #0A1214)
+
+        /* Body 2 */
+        font-family: Inter
+        font-size: 16px
+        font-style: normal
+        font-weight: 500
+        line-height: 22px /* 137.5% */
+      .avatarAlternate
         @extend .frcc
-        gap: 18px
-        font-size: 14px
-        line-height: 17px
-        font-family: 'Inter-Regular'
-        color: $colMBlack
-        .separtor
-          width: 1px
-          height: 17px
-          background-color: rgba(0,0,0,0.3)
-        .authInfo
-          @extend .frsc
-          gap: 18px
-          // margin-right: 12px
-          >img
-            width: 16px
+        border-radius: 50%
+        width: var(--spacing-64, 64px)
+        height: var(--spacing-64, 64px)
+        flex-shrink: 0
+        background: var(--PADO, linear-gradient(269deg, #70FFBA 0.52%, #78DEFF 100.71%))
+        >img
+          width: var(--spacing-28, 28px)
+      .baseInfo
+        @extend .fcss
+        gap: var(--spacing-8, 8px)
         .accountInfo
-          @extend .frsc
-          gap: 12px
-          // margin-left: 8px
-          >img
-            width: 16px
+          @extend .fcss
+          gap: var(--spacing-4, 4px)
+          /* Text 2 */
+          font-family: Inter
+          font-size: 12px
+          font-style: normal
+          font-weight: 400
+          line-height: 16px /* 133.333% */
+          &:first-child
+            color: var(--Text-hint, #7B7F80)
+          &:last-child
+            color: var(--Text-body, #515758)
+            letter-spacing: -0.06px
     .settingContent
       width: 100%
       align-self: flex-start
       .moduleItem
         width: 100%
-        padding: 16px 0
+        padding: var(--spacing-16, 16px) 0
+        gap: var(--spacing-16, 16px)
         @extend .fcss
-        gap: 16px
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1)
-        &:first-child
-          padding-top: 0
-        &:last-child
-          padding-bottom: 0
-          border-bottom: 0
+        border-top: 1px solid rgba(0, 0, 0, 0.1)
         .settingItem
           width: 100%
           @extend .frbc
@@ -87,30 +83,9 @@ $sAvatar: 60px
     
 @media (max-width: 1680px)
   .settingDialog
-    padding: 48px 32px 32px
+    padding: 61px 60px 30px
     main
-      gap: 34px
-      header
-        img.avatar
-          width: $sAvatar
-          // height: $sAvatar
-        >i.avatarAlternate
-          width: $sAvatar
-          height: $sAvatar
-          >img
-            width: 28px
-        .baseInfo
-          gap: 12px
-          font-size: 14px
-          line-height: 17px
-          font-family: 'Inter-Medium'
-          .separtor
-            background-color: rgba(0,0,0,0.1)
-          .authInfo
-            gap: 12px
-          .accountInfo
-            gap: 8px
-            margin-left: -4px
+      gap: var(--spacing-24, 24px)
       .settingContent
         width: 100%
         align-self: flex-start
@@ -119,13 +94,15 @@ $sAvatar: 60px
           padding: 12px 0
           @extend .fcss
           gap: 12px
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1)
-         
           .settingItem
-           
             height: 46px
-            padding: 0 14px
+            border-radius: var(--spacing-8, 8px)
+            color: var(--Text-headline, #0A1214)
+            /* Body 2 */
+            font-family: Inter
             font-size: 16px
-            line-height: 19px
+            font-style: normal
+            font-weight: 500
+            line-height: 22px /* 137.5% */
             
     

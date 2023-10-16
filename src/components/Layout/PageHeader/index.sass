@@ -31,14 +31,26 @@ $lastDropdownItemBorderRadius: 8px
       .rightHeaderInner
         height: 90px
         @extend .frsc
+        gap: var(--spacing-12, 12px)
+        .iconMyWrapper
+          cursor: pointer
+          @extend .frcc
+          width: var(--spacing-24, 24px)
+          height: var(--spacing-24, 24px)
+          border-radius: 90px
+          border: 1px solid var(--Text-headline, #0A1214)
+          .iconMy
+            width: 12px
+
+
       .dropdownWrapper
         padding: 16px
-        top: 92px
+        
         border-radius: 12px
         
         position: absolute
         z-index: 3
-        right: 0
+        right: -5px
         background: #FFFFFF
         box-shadow: 0 24px 32px rgba(0, 0, 0, 0.1)
         top: 87px

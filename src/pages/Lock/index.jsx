@@ -2,7 +2,9 @@ import React, { useState, useEffect, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
+import iconArrow from '@/assets/img/rightArrow.svg';
 import PInput from '@/components/PInput/index';
+import PButton from '@/components/PButton'
 import AsideAnimation from '@/components/Layout/AsideAnimation';
 import { postMsg } from '@/utils/utils';
 import './index.sass';
@@ -95,20 +97,23 @@ const Lock = memo(() => {
             <h1>Welcome Back！</h1>
             <p>Bringing all internet data into smart contracts.</p>
           </header>
-          {hadSetPwd && <main className="articleMain formItem">
-            <h6>Password</h6>
-            <PInput
-              type="password"
-              placeholder="Please enter your password"
-              onChange={handleChangePwd}
-              onSearch={handleSubmitPwd}
-              visible
-            />
-            {errorMsg && <div className="errorTip">{errorMsg}</div>}
-          </main>}
+          {hadSetPwd && (
+            <main className="articleMain formItem">
+              <h6>Password</h6>
+              <PInput
+                type="password"
+                placeholder="Please enter your password"
+                onChange={handleChangePwd}
+                onSearch={handleSubmitPwd}
+                visible
+              />
+              {errorMsg && <div className="errorTip">{errorMsg}</div>}
+            </main>
+          )}
           <footer className="articleFooter">
-            <button className="unLockBtn" onClick={handleClickStart}>
+            <button className="startBtn" onClick={handleClickStart}>
               <span>Unlock</span>
+              <div className="iconArrow"></div>
             </button>
             {/* <p className="forgetPwd">Forgot password?</p> */}
             {/* <p className="help">Need help? Contact PADO support</p> */}

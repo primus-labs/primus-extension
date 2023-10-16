@@ -1,12 +1,19 @@
-import React, { useState, useMemo, useEffect, memo } from 'react';
+import React, { useState, useMemo, useEffect, memo, useCallback } from 'react';
+import {useSelector} from 'react-redux'
 import PMask from '@/components/PMask';
 import { formatAddress } from '@/utils/utils';
 import iconArrow from '@/assets/img/iconArrowLeft2.svg';
-import iconMy from '@/assets/img/iconMy.svg'
+import iconMy from '@/assets/img/iconMy.svg';
 import iconLoginFrom from '@/assets/img/iconLoginFrom.svg';
 import { padoExtensionVersion } from '@/config/constants';
 import './index.sass';
 import { div } from '../../../utils/utils';
+
+import { DATASOURCEMAP } from '@/config/constants';
+
+import type { ConnectSourceType } from '@/types/dataSource';
+import type { UserState } from '@/types/store';
+import type { ExchangeMeta } from '@/types/dataSource';
 
 interface AddSourceSucDialogProps {
   onClose: () => void;
@@ -19,12 +26,12 @@ const moduleObj = [
       moduleType: 'wallet',
       settingType: 'Change Password',
     },
-    {
-      moduleType: 'wallet',
-      settingType: 'Backup Account',
-    },
-  ],
-  [
+    //   {
+    //     moduleType: 'wallet',
+    //     settingType: 'Backup Account',
+    //   },
+    // ],
+    // [
     {
       moduleType: 'data',
       settingType: 'Manage Data',
@@ -33,37 +40,109 @@ const moduleObj = [
   [
     {
       moduleType: 'pado',
-      settingType: 'Privacy Policy',
-      link: 'https://docs.padolabs.org/Privacy-Policy',
+      settingType: 'PADO Support',
+      link: 'https://docs.padolabs.org/',
     },
     {
       moduleType: 'pado',
-      settingType: 'PADO Support',
-      link: 'https://docs.padolabs.org/',
+      settingType: 'Privacy Policy',
+      link: 'https://docs.padolabs.org/Privacy-Policy',
     },
   ],
 ];
 const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
   ({ onClose, onChange }) => {
-    const [email, setEmail] = useState<string>();
-    const [avatar, setAvatar] = useState<string>();
     const [address, setAddress] = useState<string>();
+    const userPassword = useSelector((state: UserState) => state.userPassword);
+    const exSources = useSelector((state: UserState) => state.exSources);
+    const socialSources = useSelector(
+      (state: UserState) => state.socialSources
+    );
+    const kycSources = useSelector((state: UserState) => state.kycSources);
+    const onChainAssetsSources = useSelector(
+      (state: UserState) => state.onChainAssetsSources
+    );
+
+    const connectedSourceList: ConnectSourceType[] = useMemo(() => {
+      const exArr = Object.keys(exSources).map((key) => {
+        const sourceInfo: ExchangeMeta =
+          DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
+        const { name, icon, type } = sourceInfo;
+        const { exUserId, label } = exSources[key];
+        const infoObj: ConnectSourceType = {
+          name,
+          icon,
+          exUserId,
+          label,
+          type,
+        };
+        return infoObj;
+      });
+      const socialArr = Object.keys(socialSources).map((key) => {
+        const sourceInfo: ExchangeMeta =
+          DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
+        const { name, icon, type } = sourceInfo;
+        const { label } = socialSources[key];
+        const infoObj: ConnectSourceType = {
+          name,
+          icon,
+          label,
+          type,
+        };
+        return infoObj;
+      });
+
+      const kycArr = Object.keys(kycSources).map((key) => {
+        const sourceInfo: ExchangeMeta =
+          DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
+        const { name, icon, type } = sourceInfo;
+        const { label } = kycSources[key];
+        const infoObj: ConnectSourceType = {
+          name,
+          icon,
+          label,
+          type,
+        };
+        return infoObj;
+      });
+      const onChainArr = Object.keys(onChainAssetsSources).map((key) => {
+        const sourceInfo: ExchangeMeta = DATASOURCEMAP['onChain'];
+        const { name, icon, type } = sourceInfo;
+        const { label, address } = onChainAssetsSources[key];
+        const infoObj: ConnectSourceType = {
+          name: formatAddress(address, 4, 2),
+          icon,
+          label,
+          type,
+          address,
+        };
+        return infoObj;
+      });
+      return [...exArr, ...socialArr, ...kycArr, ...onChainArr];
+    }, [exSources, socialSources, kycSources, onChainAssetsSources]);
 
     const getUserInfo = async () => {
-      const res: any = await chrome.storage.local.get(['userInfo', 'keyStore']);
-      const { userInfo, keyStore } = res;
-      if (userInfo) {
-        const parseUserInfo = JSON.parse(userInfo);
-        const { picture, formatUser } = parseUserInfo;
-        setEmail(formatUser);
-        setAvatar(picture);
-      }
+      const res: any = await chrome.storage.local.get([ 'keyStore']);
+      const { keyStore } = res;
+      
       if (keyStore) {
         const parseKeystore = JSON.parse(keyStore);
         const { address } = parseKeystore;
         setAddress(address);
       }
     };
+    
+    const formatModuleObj = useMemo(() => {
+      let obj = [...moduleObj];
+      if (!userPassword) {
+        obj.splice(0, 1);
+      } else {
+        if (connectedSourceList?.length === 0) {
+          obj[0] = obj[0].filter((i) => i.moduleType === 'data');
+        }
+      }
+      return obj;
+    }, [userPassword,connectedSourceList]);
     const formatAddr = useMemo(() => {
       return address ? formatAddress('0x' + address) : '';
     }, [address]);
@@ -79,32 +158,26 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
       }
     };
 
+
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog settingDialog">
           <main>
             <header>
-              {avatar ? (
-                <img className="avatar" src={avatar} alt="" />
-              ) : (
-                <i className="avatarAlternate">
-                  <img src={iconMy} alt="" />
-                </i>
-              )}
+              <div className="avatarAlternate">
+                <img src={iconMy} alt="" />
+              </div>
               <div className="baseInfo">
-                <div className="authInfo">
-                  <img src={iconLoginFrom} alt="" />
-                  <span>{email}</span>
-                </div>
-                <i className="separtor"></i>
+                <h6>Hi</h6>
+                {/* TODO!!! connected wallet address */}
                 <div className="accountInfo">
-                  <img src={iconMy} alt="" />
-                  <span>{formatAddr}</span>
+                  <p>PADO Account</p>
+                  <p>{'0x' + address}</p>
                 </div>
               </div>
             </header>
             <div className="settingContent">
-              {moduleObj.map((mItem) => {
+              {formatModuleObj.map((mItem) => {
                 return (
                   <div className="moduleItem" key={mItem[0].moduleType}>
                     {mItem.map((sItem) => {

@@ -860,22 +860,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 desc: 'Please try again later.',
               });
             }
-            if (!activeRequest?.type) {
-              setStep(2);
-              setActiveRequest({
-                type: 'error',
-                title: 'Unable to proceed',
-                desc: 'Please try again later.',
-              });
-            } else if (activeRequest?.type === 'loading') {
-              setActiveRequest({
-                type: 'error',
-                title: 'Unable to proceed',
-                desc: 'Please try again later.',
-              });
+            if (activeRequest?.type === 'loading') {
               setIntervalSwitch(false);
             }
-            
           }
         }
       };
