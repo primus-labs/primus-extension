@@ -22,7 +22,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
             <p className="desc">Meet the following conditions to claim:</p>
             <ul className="details">
               <li>
-                <i></i>Connected any data source before Sep 30, 2023
+                <i></i>Connected any data source before Nov 30, 2023
               </li>
               <li>
                 <i></i>Generated one proof
