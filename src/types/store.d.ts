@@ -21,4 +21,5 @@ export type UserState = {
   rewards: Rewards;
   effective: boolean;
   onChainAssetsSources: onChainAssetsDatas;
+  connectWalletDialogVisible: boolean;
 };

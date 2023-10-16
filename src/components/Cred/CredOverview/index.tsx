@@ -2,24 +2,32 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import { DATASOURCEMAP } from '@/config/constants';
 
+import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredList from '@/components/Cred/CredList';
 import QRCodeDialog from '@/components/Cred/QRCodeDialog';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import BindPolygonID from '@/components/Cred/BindPolygonID';
 import CredSendToChainWrapper from '../CredSendToChainWrapper';
-import { setCredentialsAsync } from '@/store/actions';
+import {
+  setCredentialsAsync,
+  setConnectWalletDialogVisibleAction,
+} from '@/store/actions';
 
-import {postMsg} from '@/utils/utils'
+import { postMsg } from '@/utils/utils';
 import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
+import type { ActiveRequestType } from '@/types/config';
 
 import CredAddWrapper from '../CredAddWrapper';
 import './index.sass';
 
 const CredOverview = memo(() => {
-
+  const [connectTipDialogVisible, setConnectTipDialogVisible] =
+    useState<boolean>();
+  const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [activeSourceName, setActiveSourceName] = useState<string>();
   const [addDialogVisible, setAddDialogVisible] = useState<boolean>(false);
   const [sendToChainDialogVisible, setSendToChainDialogVisible] =
@@ -30,7 +38,7 @@ const CredOverview = memo(() => {
   const [activeCred, setActiveCred] = useState<CredTypeItemType>();
   const [searchParams] = useSearchParams();
   const createFlag = searchParams.get('createFlag')?.toLowerCase();
-  const proofType:any = searchParams.get('proofType');
+  const proofType: any = searchParams.get('proofType');
 
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
@@ -110,9 +118,22 @@ const CredOverview = memo(() => {
     setAddDialogVisible(true);
   }, []);
 
-  const handleAdd = useCallback(() => {
-    setActiveCred(undefined);
-    setAddDialogVisible(true);
+  const handleAdd = useCallback(async () => {
+    const { metamaskWallet } = await chrome.storage.local.get([
+      'metamaskWallet',
+    ]);
+    if (metamaskWallet) {
+      setActiveCred(undefined);
+      setConnectTipDialogVisible(false);
+      setAddDialogVisible(true);
+    } else {
+      setConnectTipDialogVisible(true);
+      setActiveRequest({
+        type: 'warn',
+        title: 'Connect the wallet',
+        desc: 'To generate a proof, you must login via wallet first.',
+      });
+    }
   }, []);
 
   const handleSubmitBindPolygonid = useCallback(async () => {
@@ -143,6 +164,10 @@ const CredOverview = memo(() => {
   const handleCloseSendToChainDialog = useCallback(() => {
     setSendToChainDialogVisible(false);
   }, []);
+  const onSubmitConnectTipDialog = useCallback(() => {
+    setConnectTipDialogVisible(false);
+    dispatch(setConnectWalletDialogVisibleAction(true));
+  }, [dispatch]);
 
   useEffect(() => {
     if (createFlag || proofType) {
@@ -179,6 +204,18 @@ const CredOverview = memo(() => {
         onUpdate={handleUpdateCred}
         onAdd={handleAdd}
       />
+      {connectTipDialogVisible && (
+        <AddSourceSucDialog
+          type={activeRequest?.type}
+          title={activeRequest?.title}
+          desc={activeRequest?.desc}
+          activeSource={DATASOURCEMAP['onChain']}
+          onClose={() => {
+            setConnectTipDialogVisible(false);
+          }}
+          onSubmit={onSubmitConnectTipDialog}
+        />
+      )}
       <CredAddWrapper
         visible={addDialogVisible}
         activeCred={activeCred}
@@ -208,13 +245,7 @@ const CredOverview = memo(() => {
         onClose={handleCloseBindPolygonid}
         onSubmit={handleSubmitBindPolygonid}
       />
-      {credList.length > 0 && (
-        <DataAddBar
-          onClick={() => {
-            handleAdd();
-          }}
-        />
-      )}
+      {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>
   );
 });

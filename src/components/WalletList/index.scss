@@ -1,0 +1,54 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+
+.walletListWrapper{
+  ul.walletList{
+    width: 100%;
+    @extend .frss;
+    flex-wrap: wrap;
+    gap: var(--spacing-24, 24px);
+    li.walletItem{
+      @extend .frcc;
+      cursor: pointer;
+      box-sizing: border-box;
+      width: 196px;
+      height: var(--spacing-64, 64px);
+      // padding: var(--spacing-16, 16px);
+      border-radius: 12px;
+      background: var(--Badge, rgba(10, 18, 20, 0.05));
+      &:not(.disabled):hover{
+        background-color: #FFFFFF;
+      }
+      &.active{
+        background-color: #FFFFFF;
+        border: 2PX solid transparent;
+        background-clip: padding-box, border-box;
+        background-origin: padding-box, border-box;
+        background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA);
+      }
+      .walletInfo{
+        width: 164px;
+        gap: var(--spacing-16, 16px);
+        @extend .frsc;
+        img{
+          width: var(--spacing-32, 32px);
+        }
+        .desc{
+          overflow: hidden;
+          color: var(--Text-headline, #0A1214);
+          text-overflow: ellipsis;
+
+          /* Body 2 */
+          font-family: Inter;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 22px; /* 137.5% */
+        }
+      }
+    }
+  }
+}
+@media (max-width: 1680px){
+
+}

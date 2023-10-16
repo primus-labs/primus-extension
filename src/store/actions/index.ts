@@ -63,6 +63,10 @@ export const setRewardsAction = (values: object) => ({
   type: 'setRewards',
   payload: values,
 });
+export const setConnectWalletDialogVisibleAction = (values: boolean) => ({
+  type: 'setConnectWalletDialogVisible',
+  payload: values,
+});
 export const initRewardsActionAsync = () => {
   return async (dispatch: any) => {
     const { rewards } = await chrome.storage.local.get(['rewards']);

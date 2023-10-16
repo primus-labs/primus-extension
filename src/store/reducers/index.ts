@@ -1,6 +1,6 @@
 import { SETSYSCONFIG } from '../actions';
-import {
-  DEFAULTDATASOURCEPOLLINGTIMENUM,
+import { connectWallet } from '@/services/wallets/metamask';
+import {DEFAULTDATASOURCEPOLLINGTIMENUM,
 } from '@/config/constants';
 
 const DEFAULTCREDTYPELIST = [
@@ -83,7 +83,8 @@ const initState = {
   walletAddress: '',
   rewards: {},
   effective: true,
-  onChainAssetsSources:{}
+  onChainAssetsSources: {},
+  connectWalletDialogVisible: false
 };
 
 // reducer
@@ -126,6 +127,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, onChainAssetsSources: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
+    case 'setConnectWalletDialogVisible':
+      return {...state, connectWalletDialogVisible: action.payload }
     default:
       return state;
   }

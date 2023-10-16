@@ -1,4 +1,10 @@
 import request from '@/utils/request';
+type BindConnectedWalletParams = {
+  signature: string;
+  timestamp: string;
+  address: string;
+  type: string;
+};
 type GrtUserIdentityParams = {
   signature: string;
   timestamp: string;
@@ -104,6 +110,15 @@ export const getUserIdentity = (data: GrtUserIdentityParams) => {
   return request({
     method: 'get',
     url: `/public/pado/identity`,
+    data,
+  });
+};
+
+// bind  metamask wallet user connected
+export const bindConnectedWallet = (data: BindConnectedWalletParams) => {
+  return request({
+    method: 'get',
+    url: `/wallet/connect`,
     data,
   });
 };
