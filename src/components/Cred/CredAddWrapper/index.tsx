@@ -870,7 +870,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       return () => {
         chrome.runtime.onMessage.removeListener(listerFn);
       };
-    }, []);
+    }, [activeRequest?.type]);
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (
