@@ -73,12 +73,11 @@ export const getAllOAuthSources = () => {
 
 
 // Check login is finished with state.
-export const checkIsLogin = (params: CheckIsLoginParams, config: any) => {
+export const checkIsLogin = (params: CheckIsLoginParams) => {
   return request({
     method: 'get',
-    url: `/public/oauth/check`,
+    url: `/oauth2/check`,
     data: params,
-    config,
   });
 };
 
@@ -96,7 +95,7 @@ export const bindUserAddress = (data:BindUserAddressParams, config:any) => {
 export const refreshAuthData = (data:RefreshAuthDataParams) => {
   return request({
     method: 'get',
-    url: `/public/data/refresh`,
+    url: `/oauth2/data/refresh`,
     data
   });
 };

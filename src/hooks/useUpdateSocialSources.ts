@@ -14,6 +14,7 @@ type queryObjType = {
   [propName: string]: any;
 };
 const useUpdateSocialSources = () => {
+  const userInfo = useSelector((state: UserState) => state.userInfo);
   const dispatch: Dispatch<any> = useDispatch();
   const authorize = useAuthorization();
   const padoServicePort = useSelector(
@@ -48,13 +49,13 @@ const useUpdateSocialSources = () => {
         list.push(i);
       }
     });
+    
     list.forEach(async (item) => {
-      const uniqueId = JSON.parse(res[item]).uniqueId;
       const msg: any = {
         fullScreenType: 'padoService',
         reqMethodName: `refreshAuthData`,
         params: {
-          uniqueId,
+          userId: userInfo.id,
           source: item.toUpperCase(),
         },
       };

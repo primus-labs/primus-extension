@@ -39,12 +39,6 @@ const useAuthorization = () => {
           params: {
             state,
             source,
-            data_type: dataType,
-          },
-          config: {
-            extraHeader: {
-              'invite-code': invitationCode,
-            },
           },
         });
         console.log('page_send:checkIsLogin request');
@@ -71,13 +65,11 @@ const useAuthorization = () => {
             timer && clearInterval(timer);
             onSubmit && onSubmit();
 
-            if (dataType === 'DATASOURCE') {
-              const eventInfo = {
-                eventType: 'DATA_SOURCE_INIT',
-                rawData: {type: 'Social', dataSource: source},
-              };
-              eventReport(eventInfo);
-            }
+            const eventInfo = {
+              eventType: 'DATA_SOURCE_INIT',
+              rawData: { type: 'Social', dataSource: source },
+            };
+            eventReport(eventInfo);
           }
           // }
         }
@@ -102,16 +94,14 @@ const useAuthorization = () => {
       const windowScreen: Screen = window.screen;
       var left = Math.round(windowScreen.width / 2 - width / 2);
       var top = Math.round(windowScreen.height / 2 - height / 2);
-      const { userInfo } = await chrome.storage.local.get([
-        'userInfo',
-      ]);
-      const parseUserInfo = JSON.parse(userInfo)
+      const { userInfo } = await chrome.storage.local.get(['userInfo']);
+      const parseUserInfo = JSON.parse(userInfo);
       const authUrl = getAuthUrl({
         source,
         state,
         token: parseUserInfo.token,
       });
-      
+
       const windowOptions: chrome.windows.CreateData = {
         url: authUrl,
         type: 'popup',
