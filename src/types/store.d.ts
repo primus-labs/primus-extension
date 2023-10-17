@@ -5,7 +5,8 @@ import type { SysConfigInfo } from './config';
 import type { Rewards } from './event';
 type ConnectedWallet = {
   address: string;
-  provider: any
+  provider: any;
+  name: string;
 }
 export type UserState = {
   padoServicePort: chrome.runtime.Port;

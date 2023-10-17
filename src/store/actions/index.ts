@@ -4,8 +4,9 @@ import type { ExchangeMeta } from '@/types/dataSource';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
 import type { PROOFTYPEITEM } from '@/types/cred';
-
+import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import { bindConnectedWallet } from '@/services/api/user';
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
 type ExInfo = {
@@ -73,12 +74,26 @@ export const setConnectWalletAction = (values: any) => ({
 });
 export const initConnectedWalletActionAsync = () => {
   return async (dispatch: any) => {
-    const { connectedWallet } = await chrome.storage.local.get([
-      'connectedWallet',
+    const { connectedWalletAddress } = await chrome.storage.local.get([
+      'connectedWalletAddress',
     ]);
-    if (connectedWallet) {
-      const connectedWalletObj = JSON.parse(connectedWallet);
-      dispatch(setConnectWalletAction(connectedWalletObj));
+    if (connectedWalletAddress) {
+      const connectedWalletAddressObj = JSON.parse(connectedWalletAddress);
+      try {
+        const [accounts, chainId, provider] = await connectWallet();
+        const address = (accounts as string[])[0];
+        //TODO!!!
+        await dispatch(
+          setConnectWalletAction({
+            address,
+            provider,
+            name: connectedWalletAddressObj.name,
+          })
+        );
+        await dispatch(setConnectWalletDialogVisibleAction(false));
+      } catch (e) {
+        console.log('pConnect catch e=', e);
+      }
     }
   };
 };

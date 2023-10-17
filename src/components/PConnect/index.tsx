@@ -79,6 +79,11 @@ const PConnect = memo(() => {
         });
         const { rc, result } = res;
         if (rc === 0 && result) {
+          await chrome.storage.local.set({
+            connectedWalletAddress: JSON.stringify({
+              name: type,
+              address
+          }) });
           await dispatch(setConnectWalletAction({ address, provider }));
           await dispatch(setConnectWalletDialogVisibleAction(false));
         }
