@@ -1,5 +1,6 @@
 import React, { useState, useCallback, memo } from 'react';
 
+import WalletList from '@/components/WalletList';
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import PBack from '@/components/PBack';
@@ -9,7 +10,7 @@ import { WALLETLIST } from '@/config/constants';
 
 import type { WALLETITEMTYPE } from '@/config/constants';
 
-import './index.sass';
+import './index.scss';
 
 export type DataFieldItem = {
   icon: any;
@@ -54,7 +55,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
       }
       onSubmit(activeItem);
     };
-    const handleClickData = (item: WALLETITEMTYPE) => {
+    const onChangeWallet = (item: WALLETITEMTYPE) => {
       if (!item.disabled) {
         setErrorTip(undefined);
         setActiveItem(item);
@@ -66,28 +67,9 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
         <div className="padoDialog dataSourcesDialog connectWalletDialog">
           {!!onBack && <PBack onBack={handleClickBack} />}
           <main>
-            <AddressInfoHeader />
-            <h1>
-              <span>Connect Wallet</span>
-            </h1>
-            <div className="scrollList">
-              <ul className="dataList">
-                {WALLETLIST.map((item) => {
-                  return (
-                    <li
-                      className={liClassName(item)}
-                      key={item.name}
-                      onClick={() => {
-                        handleClickData(item);
-                      }}
-                    >
-                      <img src={item.icon} alt="" />
-                      <div className="desc">{item.name}</div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            <h1>Connect Your Wallet</h1>
+            <h2>Your wallet address will set as the login account.</h2>
+            <WalletList onClick={onChangeWallet} />
           </main>
           <button className="nextBtn" onClick={handleClickNext}>
             {errorTip && <PBottomErrorTip text={errorTip} />}
