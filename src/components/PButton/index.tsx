@@ -1,4 +1,5 @@
 import React, { memo } from "react";
+import type {MouseEvent} from 'react'
 import "./index.scss";
 
 interface PButtonProps {
@@ -9,7 +10,8 @@ interface PButtonProps {
 }
 const PButton: React.FC<PButtonProps> = memo(
   ({ prefix, suffix, text, onClick }) => {
-    const handleClick = () => {
+    const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
       onClick && onClick();
     };
     return (

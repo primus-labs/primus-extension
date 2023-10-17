@@ -67,7 +67,7 @@ export const setConnectWalletDialogVisibleAction = (values: boolean) => ({
   type: 'setConnectWalletDialogVisible',
   payload: values,
 });
-export const setConnectWalletAction = (values: object) => ({
+export const setConnectWalletAction = (values: any) => ({
   type: 'setConnectWallet',
   payload: values,
 });

@@ -2,7 +2,7 @@ import React, { useState, useCallback, memo } from 'react';
 
 import WalletList from '@/components/WalletList';
 import PMask from '@/components/PMask';
-import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
+
 import PBack from '@/components/PBack';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 

@@ -1,16 +1,19 @@
 import React, { useState, useCallback, useMemo, useEffect, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import logo from '@/assets/img/logo.svg';
 import PAvatar from '@/components/PAvatar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
+import iconWallet from '@/assets/img/layout/iconWallet.svg';
 import Setting from '@/components/Setting/Setting';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
-import PConnect from '@/components/PConnect'
+import PConnect from '@/components/PConnect';
+import PDropdownList from '@/components/PDropdownList';
 
+import { setConnectWalletAction } from '@/store/actions';
 import { debounce, throttle } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import './index.sass';
@@ -33,15 +36,22 @@ const navs: NavItem[] = [
     icon: iconLock,
     text: 'Lock Account',
   },
+  {
+    icon: iconWallet,
+    text: 'Disconnect',
+  },
 ];
 const PageHeader = memo(() => {
-  
   const [isScroll, setIsScroll] = useState(false);
-const userPassword = useSelector((state: UserState) => state.userPassword);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
     useState<boolean>(false);
+  const userPassword = useSelector((state: UserState) => state.userPassword);
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   const handleClickAvatar = () => {
     setDorpdownVisible((visible) => !visible);
   };
@@ -51,7 +61,6 @@ const userPassword = useSelector((state: UserState) => state.userPassword);
   const handleLeaveAvatar = () => {
     setDorpdownVisible(false);
   };
-
   const handleClickDropdownItem = (text: string) => {
     switch (text) {
       case 'Logout':
@@ -66,7 +75,11 @@ const userPassword = useSelector((state: UserState) => state.userPassword);
       case 'Setting':
         setSettingDialogVisible(true);
         break;
+      case 'Disconnect':
+        dispatch(setConnectWalletAction(undefined));
+        break;
     }
+    setDorpdownVisible(false);
   };
   const onCloseSettingDialog = useCallback(() => {
     setSettingDialogVisible(false);
@@ -84,6 +97,28 @@ const userPassword = useSelector((state: UserState) => state.userPassword);
     }
     return activeClassName;
   }, [isScroll]);
+  const formatNavs = useMemo(() => {
+    let arr: NavItem[] = [];
+    if (userPassword) {
+      arr.push(
+        {
+          icon: iconSetting,
+          text: 'Setting',
+        },
+        {
+          icon: iconLock,
+          text: 'Lock Account',
+        }
+      );
+    }
+    if (connectedWallet?.address) {
+      arr.push({
+        icon: iconWallet,
+        text: 'Disconnect',
+      });
+    }
+    return arr;
+  }, [userPassword, connectedWallet]);
   useEffect(() => {
     if (activeSourceType !== 'All') {
       setIsScroll(false);
@@ -109,16 +144,15 @@ const userPassword = useSelector((state: UserState) => state.userPassword);
       } else {
         setIsScroll(false);
       }
-    }
+    };
     // const tFn = debounce(fn, 500);
     const tFn = throttle(fn, 500);
-    
+
     window.addEventListener('scroll', tFn);
     return () => {
       window.removeEventListener('scroll', tFn);
     };
   }, [activeSourceType, pathname]);
-  
 
   return (
     <div className={pageHeaderWrapperClassName}>
@@ -139,33 +173,18 @@ const userPassword = useSelector((state: UserState) => state.userPassword);
               </div>
               <PConnect />
             </div>
-            {dorpdownVisible &&
-              !!userPassword && (
-                <div
-                  className="dropdownWrapper"
-                  onMouseEnter={handleEnterAvatar}
-                  onMouseLeave={handleLeaveAvatar}
-                >
-                  <ul className="dropdown">
-                    {navs.map((item) => {
-                      return (
-                        <li
-                          key={item.text}
-                          className="dropdownItemWrapper"
-                          onClick={() => {
-                            handleClickDropdownItem(item.text);
-                          }}
-                        >
-                          <div className="dropdownItem">
-                            <img src={item.icon} alt="" />
-                            <span>{item.text}</span>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
+            {dorpdownVisible && !!userPassword && (
+              <div
+                className="dropdownWrapper"
+                onMouseEnter={handleEnterAvatar}
+                onMouseLeave={handleLeaveAvatar}
+              >
+                <PDropdownList
+                  list={formatNavs}
+                  onClick={handleClickDropdownItem}
+                />
+              </div>
+            )}
           </div>
         </div>
         {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
