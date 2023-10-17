@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useMemo, memo, useCallback } from 'react';
-import { useSelector,useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
 
-import {setConnectWalletDialogVisibleAction} from '@/store/actions'
+import {
+  setConnectWalletDialogVisibleAction,
+  setConnectWalletAction,
+} from '@/store/actions';
 import { formatAddress } from '@/utils/utils';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
+
 import {
   ONCHAINLIST,
   PADOADDRESS,
@@ -11,29 +15,37 @@ import {
   LINEASCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
-import {bindConnectedWallet} from '@/services/api/user'
+import { DATASOURCEMAP } from '@/config/constants';
+import { bindConnectedWallet } from '@/services/api/user';
 
-import iconMy from '@/assets/img/iconMy.svg'
-import PButton from '@/components/PButton'
+import iconMy from '@/assets/img/iconMy.svg';
+import iconWallet from '@/assets/img/layout/iconWallet.svg';
+import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
+import PButton from '@/components/PButton';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import './index.scss';
-import type { UserState } from '@/types/store'
+import type { UserState } from '@/types/store';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ActiveRequestType } from '@/types/config';
 
 const PConnect = memo(() => {
-  
-  const [activeRequest, setActiveRequest] =
-    useState<ActiveRequestType>();
-  const [step, setStep] = useState<number>(1)
+  const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
+  const [step, setStep] = useState<number>(1);
   const [avatar, setAvatar] = useState<any>();
   const [address, setAddress] = useState<string>();
   const [copied, setCopied] = useState<boolean>(false);
   const connectWalletDialogVisible = useSelector(
     (state: UserState) => state.connectWalletDialogVisible
   );
-  console.log('222222connectWalletDialogVisible', connectWalletDialogVisible, step);
-  const dispatch = useDispatch()
+  console.log(
+    '222222connectWalletDialogVisible',
+    connectWalletDialogVisible,
+    step
+  );
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
+  const dispatch = useDispatch();
   const errorDescEl = useMemo(
     () => (
       <>
@@ -71,11 +83,11 @@ const PConnect = memo(() => {
     );
   };
   const handleConnect = useCallback(() => {
-
-  }, [])
+    dispatch(setConnectWalletDialogVisibleAction(true));
+  }, [dispatch]);
   const handleCloseMask = useCallback(() => {
     dispatch(setConnectWalletDialogVisibleAction(false));
-  },[dispatch])
+  }, [dispatch]);
   const handleSubmitConnectWallet = useCallback(
     async (wallet: WALLETITEMTYPE) => {
       setActiveRequest({
@@ -84,13 +96,10 @@ const PConnect = memo(() => {
         desc: "PADO uses this signature to verify that you're the owner of this address.",
       });
       setStep(2);
-      const targetNetwork = EASInfo['Sepolia' as keyof typeof EASInfo];//TODO!!!
       try {
-        const [accounts, chainId, provider] = await connectWallet(
-          targetNetwork
-        );
-        const address = (accounts as string[])[0]
-        const type = wallet.name.toLowerCase()
+        const [accounts, chainId, provider] = await connectWallet();
+        const address = (accounts as string[])[0];
+        const type = wallet.name.toLowerCase();
         const timestamp: string = +new Date() + '';
         const signature = await requestSign(address, timestamp);
         if (!signature) {
@@ -107,19 +116,30 @@ const PConnect = memo(() => {
           address,
           type,
         });
-        const { rc } = res
-        if (rc === 0) {
+        const { rc, result } = res;
+        if (rc === 0 && result) {
+          await dispatch(setConnectWalletAction({ address, provider }));
+          
+          const obj = {
+            address,
+            provider,
+          };
           await chrome.storage.local.set({
-            connectedWallet: address,
+            connectedWalletAddress: address,
           });
+          // const connectedWalletJSONStr = JSON.stringify(obj);
+          // await chrome.storage.local.set({
+          //   connectedWallet: connectedWalletJSONStr,
+          // });
+
           setActiveRequest({
-            type: 'success',
+            type: 'suc',
             title: 'Success',
-            desc:'Success' // TODO!!!
-          })
+            desc: 'Success', // TODO!!!
+          });
         }
       } catch (e) {
-        // console.log('upChainRes catch e=', e);
+        console.log('pConnect catch e=', e);
         setActiveRequest({
           type: 'error',
           title: 'Failed',
@@ -127,33 +147,43 @@ const PConnect = memo(() => {
         });
       }
     },
-    [
-     
-    ]
+    [dispatch, errorDescEl]
   );
+  const onSubmitProcessDialog = useCallback(() => {
+    setStep(1);
+    dispatch(setConnectWalletDialogVisibleAction(false));
+  }, [dispatch]);
   // useEffect(() => {
   //   getUserInfo();
   // }, []);
   return (
     <div className="PConnect">
-      <PButton text="Connect Wallet" onClick={handleConnect} />
-      {connectWalletDialogVisible &&
-        step === 1 && (
-          <ConnectWalletDialog
-            onClose={handleCloseMask}
-            onSubmit={handleSubmitConnectWallet}
-          />
-        )}
-      {/* {visible && step === 2 && (
-        <AddSourceSucDialog
-          type={activeSendToChainRequest?.type}
-          title={activeSendToChainRequest?.title}
-          desc={activeSendToChainRequest?.desc}
-          headerEl={<AddressInfoHeader />}
-          onClose={handleCloseMask}
-          onSubmit={onSubmitActiveSendToChainRequestDialog}
+      {connectedWallet?.address ? (
+        <PButton
+          prefix={iconWallet}
+          text={formatAddress(connectedWallet?.address, 4)}
+          onClick={() => {}}
         />
-      )} */}
+      ) : (
+        <PButton text="Connect Wallet" onClick={handleConnect} />
+      )}
+
+      {connectWalletDialogVisible && step === 1 && (
+        <ConnectWalletDialog
+          onClose={handleCloseMask}
+          onSubmit={handleSubmitConnectWallet}
+        />
+      )}
+      {connectWalletDialogVisible && step === 2 && (
+        <AddSourceSucDialog
+          type={activeRequest?.type}
+          title={activeRequest?.title}
+          desc={activeRequest?.desc}
+          activeSource={DATASOURCEMAP['onChain']}
+          onClose={handleCloseMask}
+          onSubmit={onSubmitProcessDialog}
+        />
+      )}
     </div>
   );
 });

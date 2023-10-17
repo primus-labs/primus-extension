@@ -67,6 +67,21 @@ export const setConnectWalletDialogVisibleAction = (values: boolean) => ({
   type: 'setConnectWalletDialogVisible',
   payload: values,
 });
+export const setConnectWalletAction = (values: object) => ({
+  type: 'setConnectWallet',
+  payload: values,
+});
+export const initConnectedWalletActionAsync = () => {
+  return async (dispatch: any) => {
+    const { connectedWallet } = await chrome.storage.local.get([
+      'connectedWallet',
+    ]);
+    if (connectedWallet) {
+      const connectedWalletObj = JSON.parse(connectedWallet);
+      dispatch(setConnectWalletAction(connectedWalletObj));
+    }
+  };
+};
 export const initRewardsActionAsync = () => {
   return async (dispatch: any) => {
     const { rewards } = await chrome.storage.local.get(['rewards']);

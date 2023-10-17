@@ -23,6 +23,7 @@ import type { ActiveRequestType } from '@/types/config';
 
 import CredAddWrapper from '../CredAddWrapper';
 import './index.sass';
+import ConnectWalletDialog from '../CredSendToChainWrapper/ConnectWalletDialog';
 
 const CredOverview = memo(() => {
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
@@ -51,7 +52,12 @@ const CredOverview = memo(() => {
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
-
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
+  const connectWalletDialogVisible = useSelector(
+    (state: UserState) => state.connectWalletDialogVisible
+  );
   const dispatch: Dispatch<any> = useDispatch();
 
   const credList: CredTypeItemType[] = useMemo(() => {
@@ -119,10 +125,11 @@ const CredOverview = memo(() => {
   }, []);
 
   const handleAdd = useCallback(async () => {
-    const { metamaskWallet } = await chrome.storage.local.get([
-      'metamaskWallet',
-    ]);
-    if (metamaskWallet) {
+    // const { metamaskWallet } = await chrome.storage.local.get([
+    //   'metamaskWallet',
+    // ]);
+
+    if (connectedWallet?.address) {
       setActiveCred(undefined);
       setConnectTipDialogVisible(false);
       setAddDialogVisible(true);
@@ -134,7 +141,7 @@ const CredOverview = memo(() => {
         desc: 'To generate a proof, you must login via wallet first.',
       });
     }
-  }, []);
+  }, [connectedWallet?.address]);
 
   const handleSubmitBindPolygonid = useCallback(async () => {
     await initCredList();
@@ -168,6 +175,10 @@ const CredOverview = memo(() => {
     setConnectTipDialogVisible(false);
     dispatch(setConnectWalletDialogVisibleAction(true));
   }, [dispatch]);
+  
+  useEffect(() => {
+    !connectWalletDialogVisible && setAddDialogVisible(true);
+  }, [connectWalletDialogVisible]);
 
   useEffect(() => {
     if (createFlag || proofType) {

@@ -29,7 +29,8 @@ export const connectWallet = async (targetNetwork) => {
     throw new Error(e);
   }
 };
-const switchChain = async (connectedChainId, targetNetwork) => {
+export const switchChain = async (connectedChainId, targetNetwork, p) => {
+  provider = p ?? provider;
   const { chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
     targetNetwork;
   const obj = {
