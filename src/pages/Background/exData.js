@@ -414,15 +414,15 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   return extRequestsOrderInfo;
 }
 async function assembleUserInfoParams() {
-  const { keyStore, userInfo } = await chrome.storage.local.get([
-    'keyStore',
+  const { connectedWalletAddress, userInfo } = await chrome.storage.local.get([
+    'connectedWalletAddress',
     'userInfo',
   ]);
-  const { address } = JSON.parse(keyStore);
+  const { address } = JSON.parse(connectedWalletAddress);
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
     userid: id,
-    address: '0x' + address,
+    address: address,
     token: loginToken,
   };
   return user;

@@ -132,6 +132,12 @@ const handleChainChanged = (chainId) => {
 const handleAccountsChanged = (accounts) => {
   console.log('metamask account changes: ', accounts, provider);
   if (accounts.length > 0) {
+    chrome.storage.local.set({
+      connectedWalletAddress: JSON.stringify({
+        name: 'metamask',
+        address: accounts[0],
+      }),
+    });
     store.dispatch(
       setConnectWalletAction({
         address: accounts[0],
