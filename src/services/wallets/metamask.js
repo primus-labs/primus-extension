@@ -1,5 +1,6 @@
 import createMetaMaskProvider from 'metamask-extension-provider';
-
+import store from '@/store';
+import { setConnectWalletAction } from '@/store/actions';
 var provider;
 
 export const connectWallet = async (targetNetwork) => {
@@ -119,10 +120,29 @@ const subscribeToEvents = () => {
 };
 
 const handleChainChanged = (chainId) => {
-  console.log('metamask chainId changes: ', chainId);
+  console.log('metamask chainId changes: ', chainId, provider);
+  const addr = store.getState().connectedWallet.address;
+  store.dispatch(
+    setConnectWalletAction({
+      address: addr,
+      provider,
+    })
+  );
 };
 const handleAccountsChanged = (accounts) => {
-  console.log('metamask account changes: ', accounts);
+  console.log('metamask account changes: ', accounts, provider);
+  if (accounts.length > 0) {
+    store.dispatch(
+      setConnectWalletAction({
+        address: accounts[0],
+        provider,
+      })
+    );
+  } else {
+    chrome.storage.local.remove(['connectedWalletAddress'], () => {
+      store.dispatch(setConnectWalletAction(undefined));
+    });
+  }
 };
 const handleConnect = () => {
   console.log('metamask connected]');

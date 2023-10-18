@@ -76,7 +76,9 @@ const PageHeader = memo(() => {
         setSettingDialogVisible(true);
         break;
       case 'Disconnect':
-        dispatch(setConnectWalletAction(undefined));
+        chrome.storage.local.remove(['connectedWalletAddress'], () => {
+          dispatch(setConnectWalletAction(undefined));
+        });
         break;
     }
     setDorpdownVisible(false);
