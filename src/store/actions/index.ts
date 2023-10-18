@@ -72,6 +72,24 @@ export const setConnectWalletAction = (values: any) => ({
   type: 'setConnectWallet',
   payload: values,
 });
+export const setConnectWalletActionAsync = (values: any) => {
+  return async (dispatch: any) => {
+    if (values?.address) {
+      const { address, name } = values;
+      await chrome.storage.local.set({
+        connectedWalletAddress: JSON.stringify({
+          name,
+          address,
+        }),
+      });
+      await dispatch(setConnectWalletAction(values));
+      await dispatch(setConnectWalletDialogVisibleAction(false));
+    } else {
+      await chrome.storage.local.remove(['connectedWalletAddress']);
+      await dispatch(setConnectWalletAction(values));
+    }
+  }
+};
 export const initConnectedWalletActionAsync = () => {
   return async (dispatch: any) => {
     const { connectedWalletAddress } = await chrome.storage.local.get([
@@ -82,9 +100,8 @@ export const initConnectedWalletActionAsync = () => {
       try {
         const [accounts, chainId, provider] = await connectWallet();
         const address = (accounts as string[])[0];
-        //TODO!!!
         await dispatch(
-          setConnectWalletAction({
+          setConnectWalletActionAsync({
             address,
             provider,
             name: connectedWalletAddressObj.name,

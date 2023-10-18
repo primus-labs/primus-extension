@@ -13,7 +13,7 @@ import iconLock from '@/assets/img/iconLock.svg';
 import PConnect from '@/components/PConnect';
 import PDropdownList from '@/components/PDropdownList';
 
-import { setConnectWalletAction } from '@/store/actions';
+import { setConnectWalletActionAsync } from '@/store/actions';
 import { debounce, throttle } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import './index.sass';
@@ -43,7 +43,7 @@ const navs: NavItem[] = [
 ];
 const PageHeader = memo(() => {
   const [isScroll, setIsScroll] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch: React.Dispatch<any>= useDispatch();
   const navigate = useNavigate();
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
@@ -76,9 +76,7 @@ const PageHeader = memo(() => {
         setSettingDialogVisible(true);
         break;
       case 'Disconnect':
-        chrome.storage.local.remove(['connectedWalletAddress'], () => {
-          dispatch(setConnectWalletAction(undefined));
-        });
+          dispatch(setConnectWalletActionAsync(undefined));
         break;
     }
     setDorpdownVisible(false);

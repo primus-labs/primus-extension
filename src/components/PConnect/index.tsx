@@ -4,7 +4,7 @@ import type {MouseEvent} from 'react'
 
 import {
   setConnectWalletDialogVisibleAction,
-  setConnectWalletAction,
+  setConnectWalletActionAsync,
 } from '@/store/actions';
 import { formatAddress } from '@/utils/utils';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
@@ -29,7 +29,7 @@ const PConnect = memo(() => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
-  const dispatch = useDispatch();
+  const dispatch: React.Dispatch<any> = useDispatch();
   const errorDescEl = useMemo(
     () => (
       <>
@@ -41,7 +41,6 @@ const PConnect = memo(() => {
   );
   const handleConnect = useCallback(
     () => {
-      
       dispatch(setConnectWalletDialogVisibleAction(true));
     },
     [dispatch]
@@ -79,12 +78,7 @@ const PConnect = memo(() => {
         });
         const { rc, result } = res;
         if (rc === 0 && result) {
-          await chrome.storage.local.set({
-            connectedWalletAddress: JSON.stringify({
-              name: type,
-              address
-          }) });
-          await dispatch(setConnectWalletAction({ address, provider }));
+          await dispatch(setConnectWalletActionAsync({ name: type, address, provider }))
           await dispatch(setConnectWalletDialogVisibleAction(false));
         }
       } catch (e) {
