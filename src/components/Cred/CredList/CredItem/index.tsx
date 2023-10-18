@@ -120,7 +120,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     };
     const handleClickBind = (e: SyntheticEvent) => {
       e.stopPropagation();
-      if (item.did) {
+      if (item.did || item.reqType === 'web') {
         return;
       }
       onBindPolygonID(item);
@@ -228,10 +228,14 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                       />
                     </div>
                   ) : (
-                    <div className="iconWrapper ">
+                    <div
+                      className={
+                        item.reqType === 'web' ? 'iconWrapper disabled' : 'iconWrapper'
+                      }
+                    >
                       <img
                         src={iconBind}
-                        className="iconBind"
+                        className='iconBind'
                         alt=""
                         onClick={handleClickBind}
                       />
@@ -334,8 +338,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                       {item.uiTemplate.subProofContent &&
                         item.uiTemplate.subProofContent + ' '}
                       {item.uiTemplate.condition}
-                  </div>
-                  
+                    </div>
                   </div>
                 )}
               {item.type === 'IDENTIFICATION_PROOF' &&
