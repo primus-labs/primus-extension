@@ -175,10 +175,6 @@ const CredOverview = memo(() => {
     setConnectTipDialogVisible(false);
     dispatch(setConnectWalletDialogVisibleAction(true));
   }, [dispatch]);
-  
-  useEffect(() => {
-    !connectWalletDialogVisible && setAddDialogVisible(true);
-  }, [connectWalletDialogVisible]);
 
   useEffect(() => {
     if (createFlag || proofType) {

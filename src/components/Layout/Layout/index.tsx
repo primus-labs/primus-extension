@@ -176,7 +176,7 @@ const Layout = memo(() => {
     dispatch(initWalletAddressActionAsync());
     dispatch(initRewardsActionAsync());
     dispatch(setOnChainAssetsSourcesAsync());
-    dispatch(initConnectedWalletActionAsync());
+    // dispatch(initConnectedWalletActionAsync());
     (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);
   useEffect(() => {

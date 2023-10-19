@@ -1,6 +1,9 @@
 import createMetaMaskProvider from 'metamask-extension-provider';
 import store from '@/store';
-import { setConnectWalletActionAsync } from '@/store/actions';
+import {
+  setConnectWalletActionAsync,
+  connectWalletAsync,
+} from '@/store/actions';
 var provider;
 
 export const connectWallet = async (targetNetwork) => {
@@ -121,8 +124,8 @@ const subscribeToEvents = () => {
 
 const handleChainChanged = (chainId) => {
   console.log('metamask chainId changes: ', chainId, provider);
-  const addr = store.getState().connectedWallet.address;
-  const name = store.getState().connectedWallet.name;
+  const addr = provider.selectedAddress;
+  const name = store.getState().connectedWallet?.name;
   store.dispatch(
     setConnectWalletActionAsync({
       name,
@@ -134,13 +137,14 @@ const handleChainChanged = (chainId) => {
 const handleAccountsChanged = (accounts) => {
   console.log('metamask account changes: ', accounts, provider);
   if (accounts.length > 0) {
-    store.dispatch(
-      setConnectWalletActionAsync({
-        name: 'metamask',
-        address: accounts[0],
-        provider,
-      })
-    );
+    store.dispatch(connectWalletAsync());
+    // store.dispatch(
+    //   setConnectWalletActionAsync({
+    //     name: 'metamask',
+    //     address: accounts[0],
+    //     provider,
+    //   })
+    // );
   } else {
     store.dispatch(setConnectWalletActionAsync(undefined));
   }

@@ -6,7 +6,11 @@ import { getProofTypes } from '@/services/api/config';
 import type { PROOFTYPEITEM } from '@/types/cred';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
-import { bindConnectedWallet } from '@/services/api/user';
+import {
+  bindConnectedWallet,
+  checkIfBindConnectedWallet,
+} from '@/services/api/user';
+
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
 type ExInfo = {
@@ -88,32 +92,62 @@ export const setConnectWalletActionAsync = (values: any) => {
       await chrome.storage.local.remove(['connectedWalletAddress']);
       await dispatch(setConnectWalletAction(values));
     }
-  }
+  };
 };
-export const initConnectedWalletActionAsync = () => {
+export const connectWalletAsync = (
+  startFn?: any,
+  errorFn?: any,
+  sucFn?: any,
+  network?: any
+) => {
   return async (dispatch: any) => {
-    const { connectedWalletAddress } = await chrome.storage.local.get([
-      'connectedWalletAddress',
-    ]);
-    if (connectedWalletAddress) {
-      const connectedWalletAddressObj = JSON.parse(connectedWalletAddress);
-      try {
-        const [accounts, chainId, provider] = await connectWallet();
-        const address = (accounts as string[])[0];
+    try {
+      const [accounts, chainId, provider] = await connectWallet(network);
+      const address = (accounts as string[])[0];
+      const type = 'metamask';
+      const checkRes = await checkIfBindConnectedWallet({ address });
+      if (checkRes.rc === 0 && checkRes.result) {
         await dispatch(
-          setConnectWalletActionAsync({
-            address,
-            provider,
-            name: connectedWalletAddressObj.name,
-          })
+          setConnectWalletActionAsync({ name: type, address, provider })
         );
         await dispatch(setConnectWalletDialogVisibleAction(false));
-      } catch (e) {
-        console.log('pConnect catch e=', e);
+        if (sucFn) {
+          startFn && startFn();
+          sucFn && sucFn({ name: type, address, provider });
+        } else {
+          return;
+        }
+      } else {
+        startFn && startFn();
+        await dispatch(setConnectWalletDialogVisibleAction(true));
+        const timestamp: string = +new Date() + '';
+        const signature = await requestSign(address, timestamp);
+        if (!signature) {
+          errorFn && errorFn();
+          return;
+        }
+        const res = await bindConnectedWallet({
+          signature,
+          timestamp,
+          address,
+          type,
+        });
+        const { rc, result } = res;
+        if (rc === 0 && result) {
+          await dispatch(
+            setConnectWalletActionAsync({ name: type, address, provider })
+          );
+          await dispatch(setConnectWalletDialogVisibleAction(false));
+          sucFn && sucFn({ name: type, address, provider });
+        }
       }
+    } catch (e) {
+      console.log('connectWalletAsync catch e=', e);
+      errorFn && errorFn();
     }
   };
 };
+
 export const initRewardsActionAsync = () => {
   return async (dispatch: any) => {
     const { rewards } = await chrome.storage.local.get(['rewards']);

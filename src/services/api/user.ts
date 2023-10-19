@@ -1,4 +1,7 @@
 import request from '@/utils/request';
+type CheckIfBindConnectedWalletParams = {
+  address?: string;
+};
 type BindConnectedWalletParams = {
   signature: string;
   timestamp: string;
@@ -119,6 +122,15 @@ export const bindConnectedWallet = (data: BindConnectedWalletParams) => {
   return request({
     method: 'get',
     url: `/wallet/connect`,
+    data,
+  });
+};
+
+// check if hand bound  metamask wallet user connected
+export const checkIfBindConnectedWallet = (data: CheckIfBindConnectedWalletParams) => {
+  return request({
+    method: 'get',
+    url: `/wallet/connect/check`,
     data,
   });
 };

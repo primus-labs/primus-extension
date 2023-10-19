@@ -64,10 +64,8 @@ const PageHeader = memo(() => {
   const handleClickDropdownItem = (text: string) => {
     switch (text) {
       case 'Logout':
-        // navigate('/')
         break;
       case 'My':
-        // navigate('/my')
         break;
       case 'Lock Account':
         navigate('/lock');
@@ -173,18 +171,20 @@ const PageHeader = memo(() => {
               </div>
               <PConnect />
             </div>
-            {dorpdownVisible && !!userPassword && (
-              <div
-                className="dropdownWrapper"
-                onMouseEnter={handleEnterAvatar}
-                onMouseLeave={handleLeaveAvatar}
-              >
-                <PDropdownList
-                  list={formatNavs}
-                  onClick={handleClickDropdownItem}
-                />
-              </div>
-            )}
+            {dorpdownVisible &&
+              (!!userPassword ||
+              !!connectedWallet?.address) &&(
+                <div
+                  className="dropdownWrapper"
+                  onMouseEnter={handleEnterAvatar}
+                  onMouseLeave={handleLeaveAvatar}
+                >
+                  <PDropdownList
+                    list={formatNavs}
+                    onClick={handleClickDropdownItem}
+                  />
+                </div>
+              )}
           </div>
         </div>
         {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}

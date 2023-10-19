@@ -1,15 +1,12 @@
-import React, { useState, useMemo, memo, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import type {MouseEvent} from 'react'
-
+import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
+import { useSelector, useDispatch,  } from 'react-redux';
+import useConnect from '@/hooks/useConnect';
 import {
   setConnectWalletDialogVisibleAction,
-  setConnectWalletActionAsync,
+  connectWalletAsync,
 } from '@/store/actions';
 import { formatAddress } from '@/utils/utils';
-import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import { DATASOURCEMAP } from '@/config/constants';
-import { bindConnectedWallet } from '@/services/api/user';
 
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
@@ -30,6 +27,7 @@ const PConnect = memo(() => {
     (state: UserState) => state.connectedWallet
   );
   const dispatch: React.Dispatch<any> = useDispatch();
+  const connectFn = useConnect();
   const errorDescEl = useMemo(
     () => (
       <>
@@ -39,63 +37,49 @@ const PConnect = memo(() => {
     ),
     []
   );
-  const handleConnect = useCallback(
-    () => {
-      dispatch(setConnectWalletDialogVisibleAction(true));
-    },
-    [dispatch]
-  );
+  const handleConnect = useCallback(() => {
+    dispatch(setConnectWalletDialogVisibleAction(true));
+  }, [dispatch]);
   const handleCloseMask = useCallback(() => {
     dispatch(setConnectWalletDialogVisibleAction(false));
   }, [dispatch]);
   const handleSubmitConnectWallet = useCallback(
-    async (wallet: WALLETITEMTYPE) => {
-      setActiveRequest({
-        type: 'loading',
-        title: 'Sign the message',
-        desc: "PADO uses this signature to verify that you're the owner of this address.",
-      });
-      setStep(2);
-      try {
-        const [accounts, chainId, provider] = await connectWallet();
-        const address = (accounts as string[])[0];
-        const type = wallet.name.toLowerCase();
-        const timestamp: string = +new Date() + '';
-        const signature = await requestSign(address, timestamp);
-        if (!signature) {
-          setActiveRequest({
-            type: 'error',
-            title: 'Failed',
-            desc: errorDescEl,
-          });
-          return;
-        }
-        const res = await bindConnectedWallet({
-          signature,
-          timestamp,
-          address,
-          type,
+    async (wallet?: WALLETITEMTYPE) => {
+      const startFn = () => {
+        setActiveRequest({
+          type: 'loading',
+          title: 'Sign the message',
+          desc: "PADO uses this signature to verify that you're the owner of this address.",
         });
-        const { rc, result } = res;
-        if (rc === 0 && result) {
-          await dispatch(setConnectWalletActionAsync({ name: type, address, provider }))
-          await dispatch(setConnectWalletDialogVisibleAction(false));
-        }
-      } catch (e) {
-        console.log('pConnect catch e=', e);
+        setStep(2);
+      };
+      const errorFn = () => {
         setActiveRequest({
           type: 'error',
           title: 'Failed',
           desc: errorDescEl,
         });
-      }
+      };
+      // connectFn(startFn, errorFn);
+      dispatch(connectWalletAsync(startFn, errorFn));
     },
-    [dispatch, errorDescEl]
+    [dispatch,errorDescEl]
   );
   const onSubmitProcessDialog = useCallback(() => {
     setStep(1);
     dispatch(setConnectWalletDialogVisibleAction(false));
   }, [dispatch]);
+  const checkIfHadBound = useCallback(async () => {
+    const { connectedWalletAddress } = await chrome.storage.local.get([
+      'connectedWalletAddress',
+    ]);
+    if (connectedWalletAddress) {
+      handleSubmitConnectWallet();
+    }
+  }, [handleSubmitConnectWallet]);
+  useEffect(() => {
+    checkIfHadBound();
+  }, [checkIfHadBound]);
   return (
     <div className="PConnect">
       {connectedWallet?.address ? (
@@ -107,7 +91,6 @@ const PConnect = memo(() => {
       ) : (
         <PButton text="Connect Wallet" onClick={handleConnect} />
       )}
-
       {connectWalletDialogVisible && step === 1 && (
         <ConnectWalletDialog
           onClose={handleCloseMask}

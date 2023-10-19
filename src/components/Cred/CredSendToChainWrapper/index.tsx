@@ -27,7 +27,11 @@ import {
   attestByDelegationProxy,
   attestByDelegationProxyFee,
 } from '@/services/chains/eas.js';
-import { setCredentialsAsync } from '@/store/actions';
+import {
+  setCredentialsAsync,
+  setConnectWalletDialogVisibleAction,
+  connectWalletAsync,
+} from '@/store/actions';
 import { compareVersions, getAuthUserIdHash } from '@/utils/utils';
 import { regenerateAttestation } from '@/services/api/cred';
 
@@ -48,7 +52,6 @@ interface CredSendToChainWrapperType {
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
-    const [submitAddress, setSubmitAddress] = useState<string>();
     const [step, setStep] = useState(0);
     const [activeNetworkName, setActiveNetworkName] = useState<string>();
     // const [activeCred, setActiveCred] = useState<CredTypeItemType>();
@@ -104,43 +107,30 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       setStep(3);
     }, []);
     const handleSubmitConnectWallet = useCallback(
-      async (wallet?: WALLETITEMTYPE, networkName?:string) => {
-        setActiveSendToChainRequest({
-          type: 'loading',
-          title: 'Processing',
-          desc: 'Please complete the transaction in your wallet.',
-        });
-        setStep(5);
-        const formatNetworkName = activeNetworkName?? networkName
-        const targetNetwork =
-          EASInfo[formatNetworkName as keyof typeof EASInfo];
-        let formatProvider;
-        try {
-          if (connectedWallet?.address) {
-            const awitchChainRes = await switchChain(
-              connectedWallet?.provider?.chainId,
-              targetNetwork,
-              connectedWallet?.provider
-            );
-            formatProvider = connectedWallet?.provider;
-            setSubmitAddress(connectedWallet?.address);
-          } else {
-            const [accounts, chainId, provider] = await connectWallet(
-              targetNetwork
-            );
-            formatProvider = provider;
-            setSubmitAddress((accounts as string[])[0]);
-          }
-
-          const { keyStore } = await chrome.storage.local.get(['keyStore']);
-          const { address } = JSON.parse(keyStore);
+      async (wallet?: WALLETITEMTYPE, networkName?: string) => {
+        const startFn = () => {
+          setActiveSendToChainRequest({
+            type: 'loading',
+            title: 'Processing',
+            desc: 'Please complete the transaction in your wallet.',
+          });
+          setStep(5);
+        };
+        const errorFn = () => {
+          setActiveSendToChainRequest({
+            type: 'error',
+            title: 'Failed',
+            desc: errorDescEl,
+          });
+        };
+        const sucFn = async(walletObj:any) => {
           const LineaSchemaName = formatNetworkName?.startsWith('Linea')
             ? LINEASCHEMANAME
             : 'EAS';
           let upChainParams = {
             networkName: formatNetworkName,
-            metamaskprovider: formatProvider,
-            receipt: '0x' + address,
+            metamaskprovider: walletObj.provider,
+            receipt: activeCred?.address,
             attesteraddr: PADOADDRESS,
             data: activeCred?.encodedData,
             signature: activeCred?.signature,
@@ -169,7 +159,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 source: activeCred?.source,
                 type: activeCred?.type,
                 authUseridHash: authUseridHash,
-                recipient: walletAddress,
+                recipient: activeCred?.address,
                 timestamp: +new Date() + '',
                 result: true,
               };
@@ -195,7 +185,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               (i) => formatNetworkName === i.title
             );
             currentChainObj.attestationUID = upChainRes;
-            currentChainObj.submitAddress = submitAddress;
+            currentChainObj.submitAddress = walletObj.address;
             const existIndex = newProvided.findIndex(
               (i) => i.title === formatNetworkName
             );
@@ -231,24 +221,19 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               desc: errorDescEl,
             });
           }
-        } catch (e) {
-          console.log('upChainRes catch e=', e);
-          setActiveSendToChainRequest({
-            type: 'error',
-            title: 'Failed',
-            desc: errorDescEl,
-          });
         }
+        const formatNetworkName = activeNetworkName ?? networkName;
+        const targetNetwork =
+          EASInfo[formatNetworkName as keyof typeof EASInfo];
+        dispatch(connectWalletAsync(startFn, errorFn, sucFn, targetNetwork));
       },
       [
         activeCred,
         activeNetworkName,
         credentialsFromStore,
         initCredList,
-        submitAddress,
         errorDescEl,
-        walletAddress,
-        connectedWallet,
+        dispatch
       ]
     );
     const handleSubmitTransferToChain = useCallback(
@@ -256,19 +241,18 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         if (networkName) {
           await setActiveNetworkName(networkName);
         } else {
-          return
+          return;
         }
         if (connectedWallet?.address) {
-          handleSubmitConnectWallet(undefined,networkName);
+          handleSubmitConnectWallet(undefined, networkName);
         } else {
           setStep(4);
         }
       },
-      [connectedWallet?.address, handleSubmitConnectWallet]
+      [connectedWallet?.address, handleSubmitConnectWallet, dispatch]
     );
     useEffect(() => {
       if (visible) {
-        setSubmitAddress(undefined);
         setActiveNetworkName(undefined);
         setStep(3);
       }
