@@ -64,8 +64,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const kycSources = useSelector((state: UserState) => state.kycSources);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
-    const walletAddress = useSelector(
-      (state: UserState) => state.walletAddress
+    const connectedWallet = useSelector(
+      (state: UserState) => state.connectedWallet
     );
     const webProofTypes = useSelector(
       (state: UserState) => state.webProofTypes
@@ -338,8 +338,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             const sourceLowerCaseName = activeSource.name.toLowerCase();
             const res = await chrome.storage.local.get([sourceLowerCaseName]);
             form.credential = JSON.parse(res[sourceLowerCaseName]).credential;
-            form.userIdentity = walletAddress;
-            form.verifyIdentity = walletAddress;
+            form.userIdentity = connectedWallet?.address;
+            form.verifyIdentity = connectedWallet?.address;
             form.proofType = type;
           }
           if (type === 'UNISWAP_PROOF') {

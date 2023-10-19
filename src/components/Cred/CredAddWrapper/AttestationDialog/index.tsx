@@ -54,6 +54,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       (state: UserState) => state.walletAddress
     );
 
+
     const navigate = useNavigate();
 
     const emptyCon = useMemo(() => {

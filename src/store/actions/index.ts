@@ -109,7 +109,6 @@ export const connectWalletAsync = (
         address = connectObj.address
         provider = connectObj.provider;
       } else {
-        // const [accounts, chainId, provider:connectedProvider] = await connectWallet(network);
         const connectRes = await connectWallet(network);
         provider = connectRes[2]
         address = (connectRes[0] as string[])[0];

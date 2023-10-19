@@ -93,12 +93,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
-    const walletAddress = useSelector(
-      (state: UserState) => state.walletAddress
-    );
     const webProofTypes = useSelector(
       (state: UserState) => state.webProofTypes
     );
+    const walletAddress = useSelector(
+     (state: UserState) => state.walletAddress
+   );
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
@@ -338,9 +338,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               proof,
               salt,
               rootHash,
-              userIdentity: walletAddress,
+              userIdentity,
               source,
               // sigFormat: 'EAS-BNB'
+              // TODO!!!
             };
             const {
               rc: rc2,
@@ -362,7 +363,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 requestid: activeRequestId + '',
                 source,
                 sourceUseridHash: '',
-                address: walletAddress,
+                address: connectedWallet?.address,
                 label,
                 credential,
                 ...result2,
@@ -402,8 +403,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         credentialsFromStore,
         requestConfigParams,
         initCredList,
-        walletAddress,
         activeCred?.requestid,
+        connectedWallet?.address,
       ]
     );
     const errorDescEl = useMemo(
@@ -446,7 +447,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               ...uniSwapProofParams,
               timestamp: +new Date() + '',
               transactionHash: upperChainTxHash,
-              addressId: walletAddress,
+              addressId: connectedWallet?.address,
             });
             if (rc === 0) {
               // store result.result
@@ -456,7 +457,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       } catch {
       } finally {
       }
-    }, [uniSwapProofRequestId, uniSwapProofParams, walletAddress]);
+    }, [uniSwapProofRequestId, uniSwapProofParams, connectedWallet?.address]);
     useInterval(
       pollingUniProofResult,
       3000,

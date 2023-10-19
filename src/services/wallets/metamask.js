@@ -144,13 +144,6 @@ const handleAccountsChanged = (accounts) => {
         provider,
       })
     );
-    // store.dispatch(
-    //   setConnectWalletActionAsync({
-    //     name: 'metamask',
-    //     address: accounts[0],
-    //     provider,
-    //   })
-    // );
   } else {
     store.dispatch(setConnectWalletActionAsync(undefined));
   }

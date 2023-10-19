@@ -61,9 +61,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
-    const walletAddress = useSelector(
-      (state: UserState) => state.walletAddress
-    );
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );

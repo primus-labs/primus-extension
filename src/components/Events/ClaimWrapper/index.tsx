@@ -45,8 +45,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
 
-    const walletAddress = useSelector(
-      (state: UserState) => state.walletAddress
+    const connectedWallet = useSelector(
+      (state: UserState) => state.connectedWallet
     );
     const rewards = useSelector((state: UserState) => state.rewards);
     const credentialsFromStore = useSelector(
@@ -179,7 +179,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
               source: source,
               type: type,
               authUseridHash: authUseridHash,
-              recipient: walletAddress,
+              recipient: connectedWallet?.address,
               timestamp: +new Date() + '',
               result: true,
             };
@@ -235,7 +235,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           });
         }
       },
-      [credList, rewards, dispatch, walletAddress, errorDescEl]
+      [credList, rewards, dispatch, connectedWallet?.address, errorDescEl]
     );
 
     return (
