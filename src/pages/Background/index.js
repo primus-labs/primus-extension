@@ -347,6 +347,7 @@ const processWalletReq = async (message, port) => {
     case 'encrypt':
       const pKRes = await chrome.storage.local.get(['privateKey']);
       let privateKey = pKRes.privateKey;
+      web3EthAccount = web3EthAccount || new Web3EthAccounts();
       const orignAccount = web3EthAccount.privateKeyToAccount(privateKey);
       const encryptAccount = orignAccount.encrypt(password);
       USERPASSWORD = password;
