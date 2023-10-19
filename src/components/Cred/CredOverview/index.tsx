@@ -202,7 +202,7 @@ const CredOverview = memo(() => {
         setAddDialogVisible(true);
         setConnectTipDialogVisible(false);
       };
-      dispatch(connectWalletAsync(startFn, errorFn, sucFn));
+      dispatch(connectWalletAsync(undefined,startFn, errorFn, sucFn));
     },
     [errorDescEl, dispatch]
   );

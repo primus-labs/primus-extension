@@ -137,7 +137,13 @@ const handleChainChanged = (chainId) => {
 const handleAccountsChanged = (accounts) => {
   console.log('metamask account changes: ', accounts, provider);
   if (accounts.length > 0) {
-    store.dispatch(connectWalletAsync());
+    const addr = provider.selectedAddress;
+    store.dispatch(
+      connectWalletAsync({
+        address: addr,
+        provider,
+      })
+    );
     // store.dispatch(
     //   setConnectWalletActionAsync({
     //     name: 'metamask',

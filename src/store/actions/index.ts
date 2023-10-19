@@ -95,6 +95,7 @@ export const setConnectWalletActionAsync = (values: any) => {
   };
 };
 export const connectWalletAsync = (
+  connectObj?:any,
   startFn?: any,
   errorFn?: any,
   sucFn?: any,
@@ -102,8 +103,18 @@ export const connectWalletAsync = (
 ) => {
   return async (dispatch: any) => {
     try {
-      const [accounts, chainId, provider] = await connectWallet(network);
-      const address = (accounts as string[])[0];
+      let address;
+      let provider;
+      if (connectObj) {
+        address = connectObj.address
+        provider = connectObj.provider;
+      } else {
+        // const [accounts, chainId, provider:connectedProvider] = await connectWallet(network);
+        const connectRes = await connectWallet(network);
+        provider = connectRes[2]
+        address = (connectRes[0] as string[])[0];
+      }
+        
       const type = 'metamask';
       const checkRes = await checkIfBindConnectedWallet({ address });
       if (checkRes.rc === 0 && checkRes.result) {

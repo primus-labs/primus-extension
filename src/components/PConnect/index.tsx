@@ -65,7 +65,7 @@ const PConnect = memo(() => {
         });
       };
       // connectFn(startFn, errorFn);
-      dispatch(connectWalletAsync(startFn, errorFn));
+      dispatch(connectWalletAsync(undefined,startFn, errorFn));
     },
     [dispatch,errorDescEl]
   );

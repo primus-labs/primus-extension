@@ -225,7 +225,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         const formatNetworkName = activeNetworkName ?? networkName;
         const targetNetwork =
           EASInfo[formatNetworkName as keyof typeof EASInfo];
-        dispatch(connectWalletAsync(startFn, errorFn, sucFn, targetNetwork));
+        dispatch(
+          connectWalletAsync(undefined,startFn, errorFn, sucFn, targetNetwork)
+        );
       },
       [
         activeCred,
