@@ -116,7 +116,6 @@ export const pageDecodeMsgListener = async (
       });
     };
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-      console.log('222222tabUpdate', tabId, changeInfo, tab);
       if (tabId === tabCreatedByPado.id && changeInfo.url) {
         injectFn();
       }

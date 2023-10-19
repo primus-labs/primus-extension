@@ -13,6 +13,7 @@ import CredSendToChainWrapper from '../CredSendToChainWrapper';
 import {
   setCredentialsAsync,
   setConnectWalletDialogVisibleAction,
+  connectWalletAsync,
 } from '@/store/actions';
 
 import { postMsg } from '@/utils/utils';
@@ -20,12 +21,13 @@ import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
-
+import type { WALLETITEMTYPE } from '@/types/config';
 import CredAddWrapper from '../CredAddWrapper';
 import './index.sass';
 import ConnectWalletDialog from '../CredSendToChainWrapper/ConnectWalletDialog';
 
 const CredOverview = memo(() => {
+  const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
@@ -60,6 +62,15 @@ const CredOverview = memo(() => {
   );
   const dispatch: Dispatch<any> = useDispatch();
 
+  const errorDescEl = useMemo(
+    () => (
+      <>
+        <p>Your wallet did not connect or refused to authorize.</p>
+        <p>Please try again later.</p>
+      </>
+    ),
+    []
+  );
   const credList: CredTypeItemType[] = useMemo(() => {
     let credArr = Object.values(credentialsFromStore);
     credArr = credArr.sort(
@@ -119,27 +130,25 @@ const CredOverview = memo(() => {
     },
     [initCredList, credentialsFromStore]
   );
-  const handleUpdateCred = useCallback((item: CredTypeItemType) => {
-    setActiveCred(item);
-    setAddDialogVisible(true);
-  }, []);
+  const handleUpdateCred = useCallback(
+    (item: CredTypeItemType) => {
+      setActiveCred(item);
+      if (connectedWallet?.address) {
+        setAddDialogVisible(true);
+      } else {
+        setConnectDialogVisible(true);
+      }
+    },
+    [connectedWallet?.address]
+  );
 
   const handleAdd = useCallback(async () => {
-    // const { metamaskWallet } = await chrome.storage.local.get([
-    //   'metamaskWallet',
-    // ]);
-
+    setActiveCred(undefined);
     if (connectedWallet?.address) {
-      setActiveCred(undefined);
       setConnectTipDialogVisible(false);
       setAddDialogVisible(true);
     } else {
-      setConnectTipDialogVisible(true);
-      setActiveRequest({
-        type: 'warn',
-        title: 'Connect the wallet',
-        desc: 'To generate a proof, you must login via wallet first.',
-      });
+      setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address]);
 
@@ -171,10 +180,36 @@ const CredOverview = memo(() => {
   const handleCloseSendToChainDialog = useCallback(() => {
     setSendToChainDialogVisible(false);
   }, []);
-  const onSubmitConnectTipDialog = useCallback(() => {
-    setConnectTipDialogVisible(false);
-    dispatch(setConnectWalletDialogVisibleAction(true));
-  }, [dispatch]);
+  const handleSubmitConnectWallet = useCallback(
+    async (wallet?: WALLETITEMTYPE) => {
+      const startFn = () => {
+        setActiveRequest({
+          type: 'loading',
+          title: 'Processing',
+          desc: 'Please complete the transaction in your wallet.',
+        });
+        setConnectTipDialogVisible(true);
+      };
+      const errorFn = () => {
+        setActiveRequest({
+          type: 'error',
+          title: 'Failed',
+          desc: errorDescEl,
+        });
+        setActiveCred(undefined);
+      };
+      const sucFn = async (walletObj: any) => {
+        setAddDialogVisible(true);
+        setConnectTipDialogVisible(false);
+      };
+      dispatch(connectWalletAsync(startFn, errorFn, sucFn));
+    },
+    [errorDescEl, dispatch]
+  );
+  // const onSubmitConnectTipDialog = useCallback(() => {
+  //   setConnectTipDialogVisible(false);
+  //   dispatch(setConnectWalletDialogVisibleAction(true));
+  // }, [dispatch]);
 
   useEffect(() => {
     if (createFlag || proofType) {
@@ -211,6 +246,14 @@ const CredOverview = memo(() => {
         onUpdate={handleUpdateCred}
         onAdd={handleAdd}
       />
+      {connectDialogVisible && (
+        <ConnectWalletDialog
+          onClose={() => {
+            setConnectDialogVisible(false);
+          }}
+          onSubmit={handleSubmitConnectWallet}
+        />
+      )}
       {connectTipDialogVisible && (
         <AddSourceSucDialog
           type={activeRequest?.type}
@@ -220,7 +263,7 @@ const CredOverview = memo(() => {
           onClose={() => {
             setConnectTipDialogVisible(false);
           }}
-          onSubmit={onSubmitConnectTipDialog}
+          onSubmit={() => {}}
         />
       )}
       <CredAddWrapper
