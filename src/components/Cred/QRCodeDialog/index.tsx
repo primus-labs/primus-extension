@@ -113,7 +113,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
             {isPolygonId ? (
               <PolygonIdAddressInfoHeader address={activeCred?.did as string} />
             ) : (
-              <AddressInfoHeader />
+              <AddressInfoHeader address={activeCred?.address as string} />
             )}
             <QRCodeMain
               title="Present Your Proof"

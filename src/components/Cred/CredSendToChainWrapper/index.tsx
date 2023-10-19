@@ -270,7 +270,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             headerType={
               activeCred?.did ? 'polygonIdAttestation' : 'attestation'
             }
-            address={activeCred?.did as string}
+            address={(activeCred?.did ?? activeCred?.address) as string}
             onClose={handleCloseMask}
             onSubmit={handleSubmitTransferToChain}
             onCancel={handleCancelTransferToChain}
@@ -288,7 +288,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             type={activeSendToChainRequest?.type}
             title={activeSendToChainRequest?.title}
             desc={activeSendToChainRequest?.desc}
-            headerEl={<AddressInfoHeader />}
+            headerEl={
+              <AddressInfoHeader address={activeCred?.address as string} />
+            }
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveSendToChainRequestDialog}
           />

@@ -140,7 +140,9 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
             {headerType === 'dataSource' && (
               <AuthInfoHeader checked={checked} />
             )}
-            {headerType === 'attestation' && <AddressInfoHeader />}
+            {headerType === 'attestation' && (
+              <AddressInfoHeader address={address as string} />
+            )}
             {headerType === 'polygonIdAttestation' && (
               <PolygonIdAddressInfoHeader address={address as string} />
             )}

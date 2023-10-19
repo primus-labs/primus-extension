@@ -1,20 +1,17 @@
-import React, { useState, useEffect, memo } from 'react';
-import {useSelector} from 'react-redux'
+import React, {  memo } from 'react';
 import iconMy from '@/assets/img/iconMy.svg';
 import './index.sass';
-import type { UserState } from '@/types/store';
-
-const AddressInfoHeader = memo(() => {
-  const connectedWallet = useSelector(
-    (state: UserState) => state.connectedWallet
-  );
+interface AddressInfoHeaderProps {
+  address: string;
+}
+const AddressInfoHeader: React.FC<AddressInfoHeaderProps> = memo(({address  = ''}) => {
   return (
     <header className="addressInfoHeader">
       <div className="content">
         <div className="iconAddressWrapper">
           <img className="avatar" src={iconMy} alt="" />
         </div>
-        <p className="address">{connectedWallet?.address}</p>
+        <p className="address">{address}</p>
       </div>
     </header>
   );

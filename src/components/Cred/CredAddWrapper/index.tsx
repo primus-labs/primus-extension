@@ -99,6 +99,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const webProofTypes = useSelector(
       (state: UserState) => state.webProofTypes
     );
+    const connectedWallet = useSelector(
+      (state: UserState) => state.connectedWallet
+    );
 
     const timeoutFn = useCallback(async () => {
       console.log('120s timeout');
@@ -831,9 +834,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       return activeAttestForm?.source === 'metamask' ? (
         <Bridge endIcon={onChainObj.icon} />
       ) : (
-        <AddressInfoHeader />
+        <AddressInfoHeader address={connectedWallet?.address as string} />
       );
-    }, [activeAttestForm]);
+    }, [activeAttestForm, connectedWallet?.address]);
     useEffect(() => {
       const listerFn = (message: any) => {
         if (message.type === 'pageDecode') {

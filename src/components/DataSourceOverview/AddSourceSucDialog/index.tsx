@@ -3,10 +3,6 @@ import React, { useMemo, memo } from 'react';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
-import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
-import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
-import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
-import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
 
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconError from '@/assets/img/iconError.svg';
