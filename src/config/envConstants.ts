@@ -46,7 +46,7 @@ const EASINFOMAP = {
       erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
-      easProxyFeeContract: '0xb53F5BcB421B0aE0f0d2a16D3f7531A8d00f63aC',
+      easProxyFeeContract: '0x140Bd8EaAa07d49FD98C73aad908e69a75867336',
       schemas: {
         EAS: {
           schemaUid:
