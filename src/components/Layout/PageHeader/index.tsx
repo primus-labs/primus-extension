@@ -43,7 +43,7 @@ const navs: NavItem[] = [
 ];
 const PageHeader = memo(() => {
   const [isScroll, setIsScroll] = useState(false);
-  const dispatch: React.Dispatch<any>= useDispatch();
+  const dispatch: React.Dispatch<any> = useDispatch();
   const navigate = useNavigate();
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
@@ -74,7 +74,7 @@ const PageHeader = memo(() => {
         setSettingDialogVisible(true);
         break;
       case 'Disconnect':
-          dispatch(setConnectWalletActionAsync(undefined));
+        dispatch(setConnectWalletActionAsync(undefined));
         break;
     }
     setDorpdownVisible(false);
@@ -87,6 +87,9 @@ const PageHeader = memo(() => {
   const pathname = location.pathname;
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
+  );
+  const connectWalletDialogVisible = useSelector(
+    (state: UserState) => state.connectWalletDialogVisible
   );
   const pageHeaderWrapperClassName = useMemo(() => {
     let activeClassName = 'pageHeaderWrapper';
@@ -151,6 +154,9 @@ const PageHeader = memo(() => {
       window.removeEventListener('scroll', tFn);
     };
   }, [activeSourceType, pathname]);
+  useEffect(() => {
+    connectWalletDialogVisible && setDorpdownVisible(false);
+  }, [connectWalletDialogVisible]);
 
   return (
     <div className={pageHeaderWrapperClassName}>
@@ -172,8 +178,7 @@ const PageHeader = memo(() => {
               <PConnect />
             </div>
             {dorpdownVisible &&
-              (!!userPassword ||
-              !!connectedWallet?.address) &&(
+              (!!userPassword || !!connectedWallet?.address) && (
                 <div
                   className="dropdownWrapper"
                   onMouseEnter={handleEnterAvatar}

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
-import { useSelector, useDispatch,  } from 'react-redux';
+import { useSelector, useDispatch, } from 'react-redux';
+import type {SyntheticEvent} from 'react'
 import useConnect from '@/hooks/useConnect';
 import {
   setConnectWalletDialogVisibleAction,
@@ -27,7 +28,7 @@ const PConnect = memo(() => {
     (state: UserState) => state.connectedWallet
   );
   const dispatch: React.Dispatch<any> = useDispatch();
-  const connectFn = useConnect();
+  // const connectFn = useConnect();
   const errorDescEl = useMemo(
     () => (
       <>
@@ -37,9 +38,12 @@ const PConnect = memo(() => {
     ),
     []
   );
-  const handleConnect = useCallback(() => {
-    dispatch(setConnectWalletDialogVisibleAction(true));
-  }, [dispatch]);
+  const handleConnect = useCallback(
+    () => {
+      dispatch(setConnectWalletDialogVisibleAction(true));
+    },
+    [dispatch]
+  );
   const handleCloseMask = useCallback(() => {
     dispatch(setConnectWalletDialogVisibleAction(false));
   }, [dispatch]);
