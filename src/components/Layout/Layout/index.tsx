@@ -17,7 +17,6 @@ import {
   initWalletAddressActionAsync,
   initRewardsActionAsync,
   setOnChainAssetsSourcesAsync,
-  initConnectedWalletActionAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
