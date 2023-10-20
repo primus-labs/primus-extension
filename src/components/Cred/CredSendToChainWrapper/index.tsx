@@ -201,11 +201,19 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               desc: 'Your attestation is recorded on-chain!',
             });
 
-            const eventType = `${upChainParams.type}-${upChainParams.schemaName}`;
+            let upChainType = upChainParams.type;
+            if (upChainParams.type === "web") {
+              upChainType = activeCred?.schemaType;
+            }
+            const eventType = `${upChainType}-${upChainParams.schemaName}`;
+            let upchainNetwork = upChainParams.networkName;
+            if (process.env.NODE_ENV === "production" && upChainParams.networkName === "Linea Goerli") {
+              upchainNetwork = "Linea Mainnet";
+            }
             const eventInfo = {
               eventType: 'UPPER_CHAIN',
               rawData: {
-                network: upChainParams.networkName,
+                network: upchainNetwork,
                 type: eventType,
                 source: curCredential.source,
               },

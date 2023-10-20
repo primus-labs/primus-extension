@@ -39,6 +39,7 @@ export type CredTypeItemType = {
   host?: string;
   sourceUseridHash?: string;
   templateId?: string;
+  schemaType?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;
