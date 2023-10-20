@@ -1,5 +1,5 @@
-import React, { memo, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { memo, useState, useCallback, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import ClaimWrapper from '../ClaimWrapper';
 import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
 import RewardList from '../RewardList';
@@ -12,6 +12,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 
 const EventsOverview = memo(() => {
+  const [searchParams] = useSearchParams();
+  const from = searchParams.get('from');
   var settings = {
     dots: true,
     infinite: true,
@@ -41,6 +43,9 @@ const EventsOverview = memo(() => {
   const navToCred = useCallback(() => {
     navigate(`/cred?proofType=UNISWAP_PROOF`);
   }, [navigate]);
+  useEffect(() => {
+    !!from && setClaimMysteryBoxVisible(true);
+  }, [from]);
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">

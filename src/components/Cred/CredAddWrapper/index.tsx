@@ -67,12 +67,16 @@ interface CredAddWrapperType {
   visible?: boolean;
   activeCred?: CredTypeItemType;
   activeSource?: string;
-  onSubmit: () => void;
+  onSubmit: (addSucFlag?:any) => void;
   onClose: () => void;
   type?: string;
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
-  ({ visible = true, activeCred, activeSource, onClose, onSubmit, type }) => {
+  ({ visible, activeCred, activeSource, onClose, onSubmit, type }) => {
+    console.log('222222CredAddWrapper', visible);
+    const [credRequestId, setCredRequestId] = useState<string>();
+    const [searchParams] = useSearchParams();
+    const from = searchParams.get('from');
     const [uniSwapProofParams, setUniSwapProofParams] = useState<any>({});
     const [uniSwapProofRequestId, setUniSwapProofRequestId] =
       useState<string>('');
@@ -97,8 +101,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       (state: UserState) => state.webProofTypes
     );
     const walletAddress = useSelector(
-     (state: UserState) => state.walletAddress
-   );
+      (state: UserState) => state.walletAddress
+    );
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
@@ -621,10 +625,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       ) {
         setStep(-1);
         initCredList();
-        onSubmit();
+        if (activeRequest?.type === 'suc') {
+          onSubmit(credRequestId);
+        } else {
+          onSubmit();
+        }
         return;
       }
-    }, [activeRequest?.type, initCredList, onSubmit]);
+    }, [activeRequest?.type, initCredList, onSubmit, credRequestId]);
 
     const clearFetchAttestationTimer = useCallback(() => {
       setIntervalSwitch(false);
@@ -660,7 +668,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, []);
     const getAttestationResultCallback = useCallback(
       async (res: any) => {
-        const { retcode, content,retdesc } = JSON.parse(res);
+        const { retcode, content, retdesc } = JSON.parse(res);
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
         ]);
@@ -696,6 +704,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 },
               });
             }
+            setCredRequestId(activeRequestId);
             setActiveRequest({
               type: 'suc',
               title: 'Congratulations',
@@ -744,32 +753,31 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (
             retdesc.indexOf('connect to proxy error') ||
             retdesc.indexOf('WebSocket On Error')
-            ) {
+          ) {
             requestResObj = {
               type: 'error',
               title: 'Ooops',
               desc: 'Unstable internet connection. Please try again later.',
             };
           }
-            setActiveRequest(requestResObj);
+          setActiveRequest(requestResObj);
           if (parsedActiveRequestAttestation.reqType === 'web') {
-            let failReason = ''
+            let failReason = '';
             if (
               retdesc.indexOf('connect to proxy error') ||
               retdesc.indexOf('WebSocket On Error')
             ) {
-              failReason = 'network'
+              failReason = 'network';
             }
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
               name: 'attestResult',
               params: {
                 result: 'warn',
-                failReason
+                failReason,
               },
             });
           }
-          
         }
       },
       [
@@ -794,7 +802,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [clearFetchAttestationTimer, activeRequest?.type]);
 
     useEffect(() => {
-      if (visible) {
+      if (visible && !from) {
         setStep(-1);
         setActiveAttestationType('');
         setActiveSourceName(undefined);
@@ -810,7 +818,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           handleAdd();
         }
       }
-    }, [visible, activeSource, activeCred]);
+      if (visible && !!from) {
+        setStep(1);
+        setActiveAttestationType('IDENTIFICATION_PROOF');
+      }
+    }, [visible, activeSource, activeCred, from]);
+    
     useEffect(() => {
       if (!activeRequest?.type) {
         onClose();

@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { DATASOURCEMAP } from '@/config/constants';
 
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
@@ -27,6 +26,7 @@ import './index.sass';
 import ConnectWalletDialog from '../CredSendToChainWrapper/ConnectWalletDialog';
 
 const CredOverview = memo(() => {
+  const navigate = useNavigate();
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
@@ -42,6 +42,7 @@ const CredOverview = memo(() => {
   const [searchParams] = useSearchParams();
   const createFlag = searchParams.get('createFlag')?.toLowerCase();
   const proofType: any = searchParams.get('proofType');
+  const from = searchParams.get('from');
 
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
@@ -145,7 +146,6 @@ const CredOverview = memo(() => {
   const handleAdd = useCallback(async () => {
     setActiveCred(undefined);
     if (connectedWallet?.address) {
-      setConnectTipDialogVisible(false);
       setAddDialogVisible(true);
     } else {
       setConnectDialogVisible(true);
@@ -157,29 +157,32 @@ const CredOverview = memo(() => {
     setBindPolygonidVisible(false);
   }, [initCredList]);
 
-  useEffect(() => {
-    initCredList();
-  }, []);
-  useEffect(() => {
-    dispatch({
-      type: 'setActiveSourceType',
-      payload: 'All',
-    });
-    return () => {
-      dispatch({
-        type: 'setActiveSourceType',
-        payload: 'All',
-      });
-    };
-  }, [dispatch]);
-
-  const handleCloseAddDialog = useCallback(() => {
-    setActiveSourceName(undefined);
-    setAddDialogVisible(false);
-  }, []);
-  const handleCloseSendToChainDialog = useCallback(() => {
-    setSendToChainDialogVisible(false);
-  }, []);
+  const handleCloseAddDialog = useCallback(
+    (addSucFlag?: any) => {
+      setActiveSourceName(undefined);
+      !from && setAddDialogVisible(false);
+      if (from && addSucFlag) {
+        // addSucFlag: requestid;
+        const activeC = credentialsFromStore[addSucFlag];
+        setActiveCred(activeC);
+        setAddDialogVisible(false);
+        setSendToChainDialogVisible(true);
+      }
+    },
+    [credentialsFromStore, from]
+  );
+  const handleCloseSendToChainDialog = useCallback(
+    async (sucFlag?: any) => {
+      setSendToChainDialogVisible(false);
+      if (from && sucFlag) {
+        await chrome.storage.local.set({
+          mysteryBoxRewards: 'TODO',
+        });
+        navigate('/events?badge=1');
+      }
+    },
+    [from, navigate]
+  );
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       const startFn = () => {
@@ -202,7 +205,7 @@ const CredOverview = memo(() => {
         setAddDialogVisible(true);
         setConnectTipDialogVisible(false);
       };
-      dispatch(connectWalletAsync(undefined,startFn, errorFn, sucFn));
+      dispatch(connectWalletAsync(undefined, startFn, errorFn, sucFn));
     },
     [errorDescEl, dispatch]
   );
@@ -210,16 +213,37 @@ const CredOverview = memo(() => {
   //   setConnectTipDialogVisible(false);
   //   dispatch(setConnectWalletDialogVisibleAction(true));
   // }, [dispatch]);
-
+  useEffect(() => {
+    initCredList();
+  }, []);
+  useEffect(() => {
+    dispatch({
+      type: 'setActiveSourceType',
+      payload: 'All',
+    });
+    return () => {
+      dispatch({
+        type: 'setActiveSourceType',
+        payload: 'All',
+      });
+    };
+  }, [dispatch]);
   useEffect(() => {
     if (createFlag || proofType) {
       setActiveSourceName(createFlag);
       setAddDialogVisible(true);
     } else {
       setActiveSourceName(undefined);
-      setAddDialogVisible(false);
+      if (!from) {
+        setAddDialogVisible(false);
+      }
     }
-  }, [createFlag, proofType]);
+  }, [createFlag, proofType, from]);
+  useEffect(() => {
+    if (from === 'badge') {
+      handleAdd();
+    }
+  }, [from, handleAdd]);
 
   useEffect(() => {
     return () => {

@@ -6,14 +6,13 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
-
-import useAllSources from '@/hooks/useAllSources';
+import RewardsDialog from './RewardsDialog'
 import {
   ONCHAINLIST,
   PADOADDRESS,
@@ -25,7 +24,7 @@ import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
 import { initRewardsActionAsync } from '@/store/actions';
 import { getAuthUserIdHash } from '@/utils/utils';
-
+import useAllSources from '@/hooks/useAllSources';
 import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
@@ -42,6 +41,8 @@ interface ClaimWrapperProps {
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit }) => {
+    const [searchParams] = useSearchParams();
+    const from = searchParams.get('from');
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
 
@@ -72,9 +73,19 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const hasCred = useMemo(() => {
       return credList.length > 0;
     }, [credList]);
+    
     const hadSendToChain = useMemo(() => {
       const hadFlag = credList.some(
         (item) => item?.provided?.length && item?.provided?.length > 0
+      );
+      return hadFlag;
+    }, [credList]);
+    const hasOnChainWebProof = useMemo(() => {
+      const hadFlag = credList.some(
+        (item) =>
+          item.reqType === 'web' &&
+          item?.provided?.length &&
+          item?.provided?.length > 0
       );
       return hadFlag;
     }, [credList]);
@@ -91,41 +102,57 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
 
-    const onSubmitClaimDialog = useCallback(() => {
-      if (!hasSource) {
-        setActiveRequest({
-          type: 'warn',
-          title: 'No required data',
-          desc: 'Please go to the Data page to add Assets and Identity data.',
-        });
-        setStep(2);
-        return;
+    // const onSubmitClaimDialog = useCallback(() => {
+    //   if (!hasSource) {
+    //     setActiveRequest({
+    //       type: 'warn',
+    //       title: 'No required data',
+    //       desc: 'Please go to the Data page to add Assets and Identity data.',
+    //     });
+    //     setStep(2);
+    //     return;
+    //   }
+    //   if (!hasCred) {
+    //     setActiveRequest({
+    //       type: 'warn',
+    //       title: 'No proof is created',
+    //       desc: 'Please go to the Proofs page to generate.',
+    //     });
+    //     setStep(2);
+    //     return;
+    //   }
+    //   if (!hadSendToChain) {
+    //     setActiveRequest({
+    //       type: 'warn',
+    //       title: 'No proof is submitted',
+    //       desc: 'Please go to the Proofs page to submit to the blockchain.',
+    //     });
+    //     setStep(2);
+    //     return;
+    //   }
+    //   // setActiveRequest({
+    //   //   type: 'loading',
+    //   //   title: 'Processing',
+    //   //   desc: 'It may take a few seconds.',
+    //   // });
+    //   setStep(1.5);
+    // }, [hasSource, hasCred]);
+    const onSubmitClaimDialog = useCallback(async () => {
+      // 1.if participated
+      // 2.has on chain web proof
+      // 2.has connect wallet;
+      // 3.has web proof;
+      // 4.web proof on chain add exchange data source
+      const {mysteryBoxRewards} = await chrome.storage.local.get([
+        'mysteryBoxRewards',
+      ]);
+      
+      if (mysteryBoxRewards) {
+        setStep(3);
+      } else {
+        navigate('/cred?from=badge');
       }
-      if (!hasCred) {
-        setActiveRequest({
-          type: 'warn',
-          title: 'No proof is created',
-          desc: 'Please go to the Proofs page to generate.',
-        });
-        setStep(2);
-        return;
-      }
-      if (!hadSendToChain) {
-        setActiveRequest({
-          type: 'warn',
-          title: 'No proof is submitted',
-          desc: 'Please go to the Proofs page to submit to the blockchain.',
-        });
-        setStep(2);
-        return;
-      }
-      // setActiveRequest({
-      //   type: 'loading',
-      //   title: 'Processing',
-      //   desc: 'It may take a few seconds.',
-      // });
-      setStep(1.5);
-    }, [hasSource, hasCred]);
+    }, [navigate]);
 
     const onSubmitActiveRequestDialog = useCallback(() => {
       if (!hasSource) {
@@ -142,101 +169,23 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       }
       onSubmit();
     }, [onSubmit, hasSource, hasCred, navigate]);
-    useEffect(() => {
-      if (visible) {
-        setStep(1);
-        setActiveRequest(undefined);
-      }
-    }, [visible]);
+    
     const handleBackConnectWallet = useCallback(() => {
       setStep(1);
     }, []);
-    const handleSubmitConnectWallet = useCallback(
-      async (wallet: WALLETITEMTYPE) => {
-        // setActiveRequest({
-        //   type: 'loading',
-        //   title: 'Processing',
-        //   desc: 'It may take a few seconds.',
-        // });
-        setActiveRequest({
-          type: 'loading',
-          title: 'Processing',
-          desc: 'Please complete the transaction in your wallet.',
-        });
-        setStep(2);
-        let eventSingnature = '';
-        try {
-          const activeCred = credList[credList.length - 1];
-          const requestParams: any = {
-            rawParam: activeCred,
-            greaterThanBaseValue: true,
-            signature: activeCred.signature,
-          };
-          if (activeCred.type === 'IDENTIFICATION_PROOF') {
-            const authUseridHash = await getAuthUserIdHash();
-            const { source, type } = activeCred;
-            requestParams.dataToBeSigned = {
-              source: source,
-              type: type,
-              authUseridHash: authUseridHash,
-              recipient: connectedWallet?.address,
-              timestamp: +new Date() + '',
-              result: true,
-            };
-          }
-          const { rc, result } = await getEventSignature(requestParams);
-          if (rc === 0) {
-            eventSingnature = result.signature;
-          }
-        } catch {
-          alert('getEventSignature network error!');
-        }
-
-        const activeNetworkName = CLAIMNFTNETWORKNAME;
-        const targetNetwork =
-          EASInfo[activeNetworkName as keyof typeof EASInfo];
-        try {
-          const [accounts, chainId, provider] = await connectWallet(
-            targetNetwork
-          );
-          const { keyStore } = await chrome.storage.local.get(['keyStore']);
-          const { address } = JSON.parse(keyStore);
-          const upChainParams = {
-            networkName: activeNetworkName,
-            metamaskprovider: provider,
-            receipt: '0x' + address,
-            signature: '0x' + eventSingnature, // TODO
-          };
-          const mintRes = await mintWithSignature(upChainParams);
-          const nftInfo = await getNFTInfo(mintRes[1]);
-          const newRewards = { ...rewards };
-          newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
-          await chrome.storage.local.set({
-            rewards: JSON.stringify(newRewards),
-          });
-          await dispatch(initRewardsActionAsync());
-          setActiveRequest({
-            type: 'suc',
-            title: 'Congratulations',
-            desc: 'Successfully get your rewards.',
-          });
-
-          const eventInfo = {
-            eventType: 'EVENTS',
-            rawData: { name: 'Get on-boarding reward', issuer: 'PADO' },
-          };
-          eventReport(eventInfo);
-        } catch (e) {
-          console.log('mintWithSignature error:', e);
-          setActiveRequest({
-            type: 'error',
-            title: 'Failed',
-            desc: errorDescEl,
-          });
-        }
-      },
-      [credList, rewards, dispatch, connectedWallet?.address, errorDescEl]
-    );
+    useEffect(() => {
+      if (visible && !from) {
+        setStep(1);
+        setActiveRequest(undefined);
+      }
+      if (visible && from) {
+        setStep(3);
+        setActiveRequest(undefined);
+      }
+    }, [visible, from]);
+    // useEffect(() => {
+    //    chrome.storage.local.remove(['mysteryBoxRewards']);
+    // })
 
     return (
       <div className="claimMysteryBoxWrapper">
@@ -260,14 +209,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             onCancel={handleCancelTransferToChain}
           />
         )} */}
-        {visible && step === 1.5 && (
-          <ConnectWalletDialog
-            onClose={onClose}
-            onSubmit={handleSubmitConnectWallet}
-            onBack={handleBackConnectWallet}
-            desc="Your have to connect a wallet before generate an attestation."
-          />
-        )}
         {visible && step === 2 && (
           <AddSourceSucDialog
             onClose={onClose}
@@ -277,6 +218,9 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             desc={activeRequest?.desc}
             headerEl={<ClaimDialogHeaderDialog />}
           />
+        )}
+        {visible && step === 3 && (
+          <RewardsDialog onClose={onClose} onSubmit={onClose} />
         )}
       </div>
     );

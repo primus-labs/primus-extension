@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
@@ -47,11 +48,13 @@ import './index.sass';
 interface CredSendToChainWrapperType {
   visible?: boolean;
   activeCred?: CredTypeItemType;
-  onSubmit: () => void;
+  onSubmit: (sucFlag?: any) => void;
   onClose: () => void;
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
+    const [searchParams] = useSearchParams();
+    const from = searchParams.get('from');
     const [step, setStep] = useState(0);
     const [activeNetworkName, setActiveNetworkName] = useState<string>();
     // const [activeCred, setActiveCred] = useState<CredTypeItemType>();
@@ -76,6 +79,16 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       ),
       []
     );
+    const formatChainList = useMemo(() => {
+      const newList = ONCHAINLIST.map((i) => {
+        if (i.title === 'Linea Goerli') {
+          i.disabled = false;
+          return {...i}
+        }
+        return { ...i, disabled: true };
+      });
+      return newList;
+    }, []);
 
     const initCredList = useCallback(async () => {
       await dispatch(setCredentialsAsync());
@@ -93,12 +106,15 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         activeSendToChainRequest?.type === 'warn'
       ) {
         setStep(0);
-        onSubmit();
+        if (activeSendToChainRequest?.type === 'suc') {
+          onSubmit(true);
+        } else {
+          onSubmit();
+        }
         return;
       }
     }, [activeSendToChainRequest?.type, onSubmit]);
 
-    
     const handleCancelTransferToChain = useCallback(() => {}, []);
     const handleBackConnectWallet = useCallback(() => {
       setStep(3);
@@ -120,7 +136,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             desc: errorDescEl,
           });
         };
-        const sucFn = async(walletObj:any) => {
+        const sucFn = async (walletObj: any) => {
           const LineaSchemaName = formatNetworkName?.startsWith('Linea')
             ? LINEASCHEMANAME
             : 'EAS';
@@ -202,13 +218,16 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             });
 
             let upChainType = upChainParams.type;
-            if (upChainParams.type === "web") {
+            if (upChainParams.type === 'web') {
               upChainType = activeCred?.schemaType;
             }
             const eventType = `${upChainType}-${upChainParams.schemaName}`;
             let upchainNetwork = upChainParams.networkName;
-            if (process.env.NODE_ENV === "production" && upChainParams.networkName === "Linea Goerli") {
-              upchainNetwork = "Linea Mainnet";
+            if (
+              process.env.NODE_ENV === 'production' &&
+              upChainParams.networkName === 'Linea Goerli'
+            ) {
+              upchainNetwork = 'Linea Mainnet';
             }
             const eventInfo = {
               eventType: 'UPPER_CHAIN',
@@ -226,12 +245,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               desc: errorDescEl,
             });
           }
-        }
+        };
         const formatNetworkName = activeNetworkName ?? networkName;
         const targetNetwork =
           EASInfo[formatNetworkName as keyof typeof EASInfo];
         dispatch(
-          connectWalletAsync(undefined,startFn, errorFn, sucFn, targetNetwork)
+          connectWalletAsync(undefined, startFn, errorFn, sucFn, targetNetwork)
         );
       },
       [
@@ -240,7 +259,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         credentialsFromStore,
         initCredList,
         errorDescEl,
-        dispatch
+        dispatch,
       ]
     );
     const handleSubmitTransferToChain = useCallback(
@@ -258,6 +277,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       },
       [connectedWallet?.address, handleSubmitConnectWallet, dispatch]
     );
+
     useEffect(() => {
       if (visible) {
         setActiveNetworkName(undefined);
@@ -270,7 +290,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           <TransferToChainDialog
             title="Provide Attestation"
             desc="Provide your attestation for on-chain applications."
-            list={ONCHAINLIST}
+            list={from ? formatChainList : ONCHAINLIST}
             tip="Please select one chain to provide attestation"
             checked={false}
             backable={false}
