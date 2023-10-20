@@ -25,7 +25,6 @@ export const pageDecodeMsgListener = async (
   const onBeforeSendHeadersFn = async (details) => {
     const { url: currRequestUrl, requestHeaders } = details;
     if (requestUrlList.includes(currRequestUrl)) {
-      // console.log('222222details', details);
       let formatHeader = requestHeaders.reduce((prev, curr) => {
         const { name, value } = curr;
         prev[name] = value;
@@ -44,11 +43,6 @@ export const pageDecodeMsgListener = async (
       await chrome.storage.local.set({
         [currRequestUrl]: JSON.stringify(newCurrRequestObj),
       });
-      console.log(
-        '222222requestInfo-headers',
-        currRequestUrl,
-        newCurrRequestObj
-      );
     }
   };
   const onBeforeRequestFn = async (subDetails) => {
@@ -75,11 +69,6 @@ export const pageDecodeMsgListener = async (
           await chrome.storage.local.set({
             [currRequestUrl]: JSON.stringify(newCurrRequestObj),
           });
-          console.log(
-            '222222requestInfo-body',
-            currRequestUrl,
-            newCurrRequestObj
-          );
         }
       }
     }
@@ -102,7 +91,6 @@ export const pageDecodeMsgListener = async (
     tabCreatedByPado = await chrome.tabs.create({
       url: jumpTo,
     });
-    console.log('222222tabCreatedByPado', tabCreatedByPado);
     const injectFn = async () => {
       await chrome.scripting.executeScript({
         target: {
@@ -172,12 +160,6 @@ export const pageDecodeMsgListener = async (
       let formateHeader = {},
         formateCookie = {},
         formateBody = {};
-      console.log(
-        '222222requestInfoObj',
-        JSON.parse(requestInfoObj[url]),
-        headers,
-        cookies
-      );
       if (headers && headers.length > 0) {
         headers.forEach((hk) => {
           if (curRequestHeader) {
@@ -222,7 +204,6 @@ export const pageDecodeMsgListener = async (
     await chrome.storage.local.set({
       activeRequestAttestation: JSON.stringify(aligorithmParams),
     });
-    console.log('222222pageDecode-params', aligorithmParams);
     chrome.runtime.sendMessage({
       type: 'algorithm',
       method: 'getAttestation',
@@ -230,13 +211,10 @@ export const pageDecodeMsgListener = async (
     });
   }
 
-  console.log('222222bg received:', name, sender, sendResponse);
 
   if (name === 'attestResult') {
-    console.log('222222attestResult--bg', tabCreatedByPado.id, request);
     // to send back your response  to the current tab
     chrome.tabs.sendMessage(tabCreatedByPado.id, request, function (response) {
-      console.log('222222chrome.tabs.responseMessage', response);
     });
     chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
     chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);

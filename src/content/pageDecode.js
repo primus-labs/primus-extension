@@ -17,10 +17,6 @@ window.onload = () => {
       name: 'injectionCompleted',
     },
     (response, a,b) => {
-      console.log(
-        '222222web received response (injectionCompleted) response:',
-        response,a,b
-      );
       if (response.name === 'append') {
         activeTemplate = response.params;
         dataSourcePageTabId = response.dataSourcePageTabId;
@@ -148,7 +144,6 @@ window.onload = () => {
             name: 'sendRequest',
           };
           chrome.runtime.sendMessage(msgObj, (response) => {
-            console.log('222222web received (sendRequest) response:', response);
           });
         };
         document.body.appendChild(padoMaskNode);
@@ -156,7 +151,6 @@ window.onload = () => {
     }
   );
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log('2222223web received:', request);
     const {
       name,
       params: { result, failReason },
