@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useSearchParams } from 'react-router-dom';
 import { WALLETLIST } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import PTabsNew from '@/components/PTabsNew';
@@ -20,6 +20,7 @@ import type { ExchangeMeta } from '@/types/dataSource';
 import type { UserState } from '@/types/store';
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { PROOFTYPEITEM, AttestionForm } from '@/types/cred';
+import type {TabItem} from '@/components/PTabsNew'
 import './index.sass';
 
 interface AttestationDialogProps {
@@ -40,7 +41,7 @@ const sourcesLabel = {
   UNISWAP_PROOF: 'Assets',
 };
 
-const tabList = [
+const tabList: TabItem[] = [
   {
     text: 'API Data',
     tooltip: 'Data you connected from the Data Page',
@@ -52,6 +53,8 @@ const tabList = [
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const [activeWebDataSource, setActiveWebDataSource] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('API Data');
     const [activeIdentityType, setActiveIdentityType] = useState<string>('');
@@ -262,6 +265,19 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         };
       });
     }, [baseValueArr]);
+    const formatTabList = useMemo(() => {
+      if (fromEvents) {
+        const newList = tabList.map(i => {
+          if (i.text !== 'Webpage Data') {
+            i.disabled = true;
+          }
+          return i
+        })
+        return newList
+      } else {
+        return [...tabList]
+      }
+    },[fromEvents])
 
     const handleChangeSelect = useCallback((val: string) => {
       if (!val) {
@@ -477,6 +493,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     useEffect(() => {
       if (baseValueArr.length === 1) setActiveBaseValue(baseValueArr[0]);
     }, [baseValueArr]);
+    useEffect(() => {
+      fromEvents && setActiveTab('Webpage Data');
+    },[fromEvents])
 
     return (
       <PMask onClose={onClose}>
@@ -552,7 +571,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 <PTabsNew
                   onChange={handleChangeTab}
                   value={activeTab}
-                  list={tabList}
+                  list={formatTabList}
                 />
                 {activeTab === 'API Data' ? (
                   <>
@@ -583,10 +602,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                   </>
                 ) : (
                   <WebDataSourceList
-                      list={webDataSourceList}
-                      onChange={onChangeWebDataSource}
-                      disabled={!activeIdentityType || !!activeCred}
-                      val={activeWebDataSourceObj}
+                    list={webDataSourceList}
+                    onChange={onChangeWebDataSource}
+                    disabled={!activeIdentityType || !!activeCred}
+                    val={activeWebDataSourceObj}
                   />
                 )}
               </div>

@@ -13,6 +13,7 @@ import {
   setCredentialsAsync,
   setConnectWalletDialogVisibleAction,
   connectWalletAsync,
+  setRewardsDialogVisibleAction,
 } from '@/store/actions';
 
 import { postMsg } from '@/utils/utils';
@@ -42,7 +43,7 @@ const CredOverview = memo(() => {
   const [searchParams] = useSearchParams();
   const createFlag = searchParams.get('createFlag')?.toLowerCase();
   const proofType: any = searchParams.get('proofType');
-  const from = searchParams.get('from');
+  const fromEvents = searchParams.get('fromEvents');
 
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
@@ -160,8 +161,8 @@ const CredOverview = memo(() => {
   const handleCloseAddDialog = useCallback(
     (addSucFlag?: any) => {
       setActiveSourceName(undefined);
-      !from && setAddDialogVisible(false);
-      if (from && addSucFlag) {
+      !fromEvents && setAddDialogVisible(false);
+      if (fromEvents && addSucFlag) {
         // addSucFlag: requestid;
         const activeC = credentialsFromStore[addSucFlag];
         setActiveCred(activeC);
@@ -169,19 +170,28 @@ const CredOverview = memo(() => {
         setSendToChainDialogVisible(true);
       }
     },
-    [credentialsFromStore, from]
+    [credentialsFromStore, fromEvents]
   );
   const handleCloseSendToChainDialog = useCallback(
     async (sucFlag?: any) => {
       setSendToChainDialogVisible(false);
-      if (from && sucFlag) {
-        await chrome.storage.local.set({
-          mysteryBoxRewards: 'TODO',
-        });
-        navigate('/events?badge=1');
+      if (fromEvents) {
+        // TODO!!! NFTs
+        if (sucFlag) {
+          await chrome.storage.local.set({
+            mysteryBoxRewards: 'TODO',
+          });
+          dispatch(
+            setRewardsDialogVisibleAction({
+              visible: true,
+              tab: fromEvents,
+            })
+          );
+        }
+        navigate('/events');
       }
     },
-    [from, navigate]
+    [fromEvents, navigate, dispatch]
   );
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
@@ -234,16 +244,16 @@ const CredOverview = memo(() => {
       setAddDialogVisible(true);
     } else {
       setActiveSourceName(undefined);
-      if (!from) {
+      if (!fromEvents) {
         setAddDialogVisible(false);
       }
     }
-  }, [createFlag, proofType, from]);
+  }, [createFlag, proofType, fromEvents]);
   useEffect(() => {
-    if (from === 'badge') {
+    if (fromEvents === 'Badges') {
       handleAdd();
     }
-  }, [from, handleAdd]);
+  }, [fromEvents, handleAdd]);
 
   useEffect(() => {
     return () => {

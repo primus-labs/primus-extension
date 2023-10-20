@@ -5,7 +5,7 @@ import iconTooltip from '@/assets/img/credit/iconTooltip.svg';
 import iconTooltipActive from '@/assets/img/credit/iconTooltipActive.svg';
 import './index.sass';
 
-type TabItem = {
+export type TabItem = {
   icon?: any;
   tooltip?: string;
   text: string;

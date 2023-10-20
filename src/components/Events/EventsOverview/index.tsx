@@ -1,5 +1,8 @@
 import React, { memo, useState, useCallback, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import type { Dispatch } from 'react';
+import RewardsDialog from '@/components/RewardsDialog';
 import ClaimWrapper from '../ClaimWrapper';
 import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
 import RewardList from '../RewardList';
@@ -8,12 +11,14 @@ import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
 import './index.sass';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import type { UserState } from '@/types/store';
 
 import Slider from 'react-slick';
 
 const EventsOverview = memo(() => {
+  const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
-  const from = searchParams.get('from');
+  const Badges = searchParams.get('Badges');
   var settings = {
     dots: true,
     infinite: true,
@@ -26,7 +31,11 @@ const EventsOverview = memo(() => {
     prevArrow: <></>,
   };
   const [claimVisible, setClaimVisible] = useState<boolean>(false);
-  const [claimMysteryBoxVisible, setClaimMysteryBoxVisible] = useState<boolean>(false);
+  const [claimMysteryBoxVisible, setClaimMysteryBoxVisible] =
+    useState<boolean>(false);
+  const rewardsDialogVisible = useSelector(
+    (state: UserState) => state.rewardsDialogVisible
+  );
   const navigate = useNavigate();
   const onCloseClaimDialog = useCallback(() => {
     setClaimVisible(false);
@@ -38,14 +47,15 @@ const EventsOverview = memo(() => {
     setClaimMysteryBoxVisible(false);
   }, []);
   const handleClickMysterybox = useCallback(() => {
-    setClaimMysteryBoxVisible(true)
-  }, [])
+    setClaimMysteryBoxVisible(true);
+  }, []);
   const navToCred = useCallback(() => {
     navigate(`/cred?proofType=UNISWAP_PROOF`);
   }, [navigate]);
+  
   useEffect(() => {
-    !!from && setClaimMysteryBoxVisible(true);
-  }, [from]);
+    !!Badges && setClaimMysteryBoxVisible(true);
+  }, [Badges]);
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">
@@ -68,6 +78,12 @@ const EventsOverview = memo(() => {
         onClose={onCloseClaimMysteryBoxDialog}
         onSubmit={onCloseClaimMysteryBoxDialog}
       />
+      {/* {rewardsDialogVisible && (
+        <RewardsDialog
+          onClose={onCloseRewardsDialog}
+          onSubmit={onCloseRewardsDialog}
+        />
+      )} */}
     </div>
   );
 });

@@ -76,6 +76,11 @@ export const setConnectWalletAction = (values: any) => ({
   type: 'setConnectWallet',
   payload: values,
 });
+;
+export const setRewardsDialogVisibleAction = (values: any) => ({
+  type: 'setRewardsDialogVisibleAction',
+  payload: values,
+});
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {

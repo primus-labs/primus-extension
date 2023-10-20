@@ -86,6 +86,9 @@ const initState = {
   onChainAssetsSources: {},
   connectWalletDialogVisible: false,
   connectedWallet: null,
+  rewardsDialogVisible: {
+    visible: false
+  }
 };
 
 // reducer
@@ -132,6 +135,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, connectWalletDialogVisible: action.payload }
     case 'setConnectWallet':
       return { ...state, connectedWallet: action.payload };
+    case 'setRewardsDialogVisibleAction':
+      return { ...state, rewardsDialogVisible: action.payload };
     default:
       return state;
   }

@@ -76,7 +76,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     console.log('222222CredAddWrapper', visible);
     const [credRequestId, setCredRequestId] = useState<string>();
     const [searchParams] = useSearchParams();
-    const from = searchParams.get('from');
+    const fromEvents = searchParams.get('fromEvents');
     const [uniSwapProofParams, setUniSwapProofParams] = useState<any>({});
     const [uniSwapProofRequestId, setUniSwapProofRequestId] =
       useState<string>('');
@@ -802,7 +802,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [clearFetchAttestationTimer, activeRequest?.type]);
 
     useEffect(() => {
-      if (visible && !from) {
+      if (visible && !fromEvents) {
         setStep(-1);
         setActiveAttestationType('');
         setActiveSourceName(undefined);
@@ -818,11 +818,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           handleAdd();
         }
       }
-      if (visible && !!from) {
+      if (visible && !!fromEvents) {
         setStep(1);
         setActiveAttestationType('IDENTIFICATION_PROOF');
       }
-    }, [visible, activeSource, activeCred, from]);
+    }, [visible, activeSource, activeCred, fromEvents]);
     
     useEffect(() => {
       if (!activeRequest?.type) {

@@ -1,5 +1,6 @@
 @import '@/assets/css/pDialog.sass';
 @import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
 @import '@/assets/css/pDialog.sass';
 .padoDialog.mysteryBoxRewardsDialog {
   padding: 48px 60px 56px;
@@ -20,6 +21,7 @@
       line-height: 36px; /* 128.571% */
     }
     .content {
+      width: 100%;
       @extend .fcss;
       gap: 16px;
       .pTabsNew {
@@ -76,6 +78,25 @@
           font-style: normal;
           font-weight: 500;
           line-height: 22px; /* 137.5% */
+        }
+      }
+      .emptyWrapper {
+        width: 100%;
+        padding-top: 84px;
+        @extend .fcsc;
+        gap: var(--spacing-16, 16px);
+        > img {
+          width: 48px;
+        }
+        > p {
+          color: rgba(0, 0, 0, 0.4);
+          text-align: center;
+          /* Text 2 */
+          font-family: Inter;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 16px; /* 133.333% */
         }
       }
     }

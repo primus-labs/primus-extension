@@ -54,7 +54,7 @@ interface CredSendToChainWrapperType {
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
     const [searchParams] = useSearchParams();
-    const from = searchParams.get('from');
+    const fromEvents = searchParams.get('fromEvents');
     const [step, setStep] = useState(0);
     const [activeNetworkName, setActiveNetworkName] = useState<string>();
     // const [activeCred, setActiveCred] = useState<CredTypeItemType>();
@@ -290,7 +290,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           <TransferToChainDialog
             title="Provide Attestation"
             desc="Provide your attestation for on-chain applications."
-            list={from ? formatChainList : ONCHAINLIST}
+            list={fromEvents ? formatChainList : ONCHAINLIST}
             tip="Please select one chain to provide attestation"
             checked={false}
             backable={false}

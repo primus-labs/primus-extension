@@ -8,6 +8,10 @@ type ConnectedWallet = {
   provider: any;
   name: string;
 }
+type rewardsDialogVisibleType = {
+  visible: boolean;
+  tab?: string;
+}
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -28,4 +32,5 @@ export type UserState = {
   onChainAssetsSources: onChainAssetsDatas;
   connectWalletDialogVisible: boolean;
   connectedWallet: ConnectedWallet;
+  rewardsDialogVisible: rewardsDialogVisibleType;
 };

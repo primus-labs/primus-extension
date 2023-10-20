@@ -10,13 +10,18 @@ import Setting from '@/components/Setting/Setting';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
+import iconRewards from '@/assets/img/layout/iconRewards.svg';
 import PConnect from '@/components/PConnect';
 import PDropdownList from '@/components/PDropdownList';
 
-import { setConnectWalletActionAsync } from '@/store/actions';
+import {
+  setConnectWalletActionAsync,
+  setRewardsDialogVisibleAction,
+} from '@/store/actions';
 import { debounce, throttle } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import './index.sass';
+import RewardsDialog from '@/components/RewardsDialog';
 
 type NavItem = {
   icon: any;
@@ -52,6 +57,12 @@ const PageHeader = memo(() => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
+  const rewardsDialogVisible = useSelector(
+    (state: UserState) => state.rewardsDialogVisible
+  );
+  const connectWalletDialogVisible = useSelector(
+    (state: UserState) => state.connectWalletDialogVisible
+  );
   const handleClickAvatar = () => {
     setDorpdownVisible((visible) => !visible);
   };
@@ -76,21 +87,34 @@ const PageHeader = memo(() => {
       case 'Disconnect':
         dispatch(setConnectWalletActionAsync(undefined));
         break;
+      case 'Rewards':
+        dispatch(
+          setRewardsDialogVisibleAction({
+            visible: true,
+            tab: 'Badges',
+          })
+        );
+        break;
     }
     setDorpdownVisible(false);
   };
   const onCloseSettingDialog = useCallback(() => {
     setSettingDialogVisible(false);
   }, []);
+  const onCloseRewardsDialog = useCallback(() => {
+    dispatch(
+      setRewardsDialogVisibleAction({
+        visible: false,
+      })
+    );
+  }, [dispatch]);
 
   const location = useLocation();
   const pathname = location.pathname;
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
-  const connectWalletDialogVisible = useSelector(
-    (state: UserState) => state.connectWalletDialogVisible
-  );
+  
   const pageHeaderWrapperClassName = useMemo(() => {
     let activeClassName = 'pageHeaderWrapper';
     if (isScroll) {
@@ -99,7 +123,12 @@ const PageHeader = memo(() => {
     return activeClassName;
   }, [isScroll]);
   const formatNavs = useMemo(() => {
-    let arr: NavItem[] = [];
+    let arr: NavItem[] = [
+      {
+        icon: iconRewards,
+        text: 'Rewards',
+      },
+    ];
     if (userPassword) {
       arr.push(
         {
@@ -193,6 +222,12 @@ const PageHeader = memo(() => {
           </div>
         </div>
         {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
+
+        <RewardsDialog
+          onClose={onCloseRewardsDialog}
+          onSubmit={onCloseRewardsDialog}
+          tab={rewardsDialogVisible?.tab}
+        ></RewardsDialog>
       </header>
     </div>
   );
