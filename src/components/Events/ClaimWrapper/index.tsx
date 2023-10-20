@@ -204,7 +204,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           const upChainParams = {
             networkName: activeNetworkName,
             metamaskprovider: provider,
-            receipt: '0x' + address,
+            receipt: connectedWallet?.address,
             signature: '0x' + eventSingnature, // TODO
           };
           const mintRes = await mintWithSignature(upChainParams);
