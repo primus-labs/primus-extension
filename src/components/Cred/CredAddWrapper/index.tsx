@@ -340,6 +340,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               rootHash,
               userIdentity,
               source,
+              metamaskAddress: connectedWallet?.address,
               // sigFormat: 'EAS-BNB'
               // TODO!!!
             };

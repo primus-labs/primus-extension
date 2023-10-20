@@ -267,9 +267,9 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     useEffect(() => {
       visible && privateKey && step === 1 && fetchConnectQrcodeValue();
     }, [privateKey, fetchConnectQrcodeValue, visible, step]);
-    // useEffect(() => {
-    //   decryptingKeyStore(); //TODO!!!
-    // }, [decryptingKeyStore]);
+    useEffect(() => {
+       decryptingKeyStore(); //TODO!!!
+    }, [decryptingKeyStore]);
     useEffect(() => {
       padoServicePort.onMessage.addListener(padoServicePortListener);
       return () => {
