@@ -1,9 +1,10 @@
 import React, { memo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClaimWrapper from '../ClaimWrapper';
+import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
 import RewardList from '../RewardList';
 import AdSpace from '../AdSpace';
-import AdSpace2 from '../AdSpace2';
+import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
 import './index.sass';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -23,12 +24,19 @@ const EventsOverview = memo(() => {
     prevArrow: <></>,
   };
   const [claimVisible, setClaimVisible] = useState<boolean>(false);
-  const navigate = useNavigate()
+  const [claimMysteryBoxVisible, setClaimMysteryBoxVisible] = useState<boolean>(false);
+  const navigate = useNavigate();
   const onCloseClaimDialog = useCallback(() => {
     setClaimVisible(false);
   }, []);
   const handleClickClaim = useCallback(() => {
-    setClaimVisible(true)
+    setClaimVisible(true);
+  }, []);
+  const onCloseClaimMysteryBoxDialog = useCallback(() => {
+    setClaimMysteryBoxVisible(false);
+  }, []);
+  const handleClickMysterybox = useCallback(() => {
+    setClaimMysteryBoxVisible(true)
   }, [])
   const navToCred = useCallback(() => {
     navigate(`/cred?proofType=UNISWAP_PROOF`);
@@ -36,19 +44,24 @@ const EventsOverview = memo(() => {
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">
-        <Slider {...settings}>
-          <AdSpace onClick={handleClickClaim} />
-          {/* <AdSpace2 onClick={navToCred} /> */}
-        </Slider>
-        <section className="rewardsWrapper">
+        {/* <Slider {...settings}> */}
+        <AdSpaceMysteryBox onClick={handleClickMysterybox} />
+        <AdSpace onClick={handleClickClaim} />
+        {/* </Slider> */}
+        {/* <section className="rewardsWrapper">
           <header>Rewards</header>
           <RewardList />
-        </section>
+        </section> */}
       </div>
       <ClaimWrapper
         visible={claimVisible}
         onClose={onCloseClaimDialog}
         onSubmit={onCloseClaimDialog}
+      />
+      <ClaimMysteryBoxWrapper
+        visible={claimMysteryBoxVisible}
+        onClose={onCloseClaimMysteryBoxDialog}
+        onSubmit={onCloseClaimMysteryBoxDialog}
       />
     </div>
   );

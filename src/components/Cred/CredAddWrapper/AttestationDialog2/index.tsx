@@ -46,7 +46,7 @@ const tabList = [
     tooltip: 'Data you connected from the Data Page',
   },
   {
-    text: 'Internet Data',
+    text: 'Webpage Data',
   },
 ];
 
@@ -460,7 +460,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
         if (type === 'IDENTIFICATION_PROOF' && activeCred?.reqType === 'web') {
           setActiveIdentityType(activeWebTemplate?.name);
-          setActiveTab('Internet Data')
+          setActiveTab('Webpage Data');
           setActiveWebDataSource(activeWebTemplate?.dataSource);
         }
       }

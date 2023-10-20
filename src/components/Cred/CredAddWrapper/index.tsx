@@ -534,7 +534,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);
-        if (form?.proofClientType === 'Internet Data') {
+        if (form?.proofClientType === 'Webpage Data') {
           const currRequestObj = webProofTypes.find(
             (r) => r.name === form.proofContent
           );

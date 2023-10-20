@@ -23,10 +23,16 @@ interface DataSourcesDialogProps {
   onClose: () => void;
   onSubmit: (item: WALLETITEMTYPE) => void;
   onBack?: () => void;
+  desc?:string
 }
 
 const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
-  ({ onClose, onSubmit, onBack }) => {
+  ({
+    onClose,
+    onSubmit,
+    onBack,
+    desc = 'Your wallet address will set as the login account.',
+  }) => {
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
     // const list: DataFieldItem[] = WALLETLIST;
@@ -68,7 +74,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
           {!!onBack && <PBack onBack={handleClickBack} />}
           <main>
             <h1>Connect Your Wallet</h1>
-            <h2>Your wallet address will set as the login account.</h2>
+            <h2>{ desc}</h2>
             <WalletList onClick={onChangeWallet} />
           </main>
           <button className="nextBtn" onClick={handleClickNext}>
