@@ -129,14 +129,14 @@ export const pageDecodeMsgListener = async (
     });
   }
   if (name === 'sendRequest') {
-    const dataSourceCookies = await chrome.cookies.getAll({
+    /*const dataSourceCookies = await chrome.cookies.getAll({
       url: new URL(jumpTo).origin,
     });
     const cookiesObj = dataSourceCookies.reduce((prev, curr) => {
       const { name, value } = curr;
       prev[name] = value;
       return prev;
-    }, {});
+    }, {});*/
     const { category } = activeTemplate;
     const form = {
       source: dataSource,
@@ -157,6 +157,7 @@ export const pageDecodeMsgListener = async (
       const { headers: curRequestHeader, body: curRequestBody } = JSON.parse(
         requestInfoObj[url]
       );
+      const cookiesObj = parseCookie(curRequestHeader.Cookie);
       let formateHeader = {},
         formateCookie = {},
         formateBody = {};
@@ -228,3 +229,12 @@ export const pageDecodeMsgListener = async (
     await chrome.tabs.remove(dataSourcePageTabId);
   }
 };
+
+const parseCookie = str =>
+  str
+  .split(';')
+  .map(v => v.split('='))
+  .reduce((acc, v) => {
+    acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+    return acc;
+  }, {});
