@@ -20,13 +20,16 @@ import {
   EASInfo,
   CLAIMNFTNETWORKNAME,
 } from '@/config/envConstants';
-import {
-  supportAttestDataSourceNameList,
-} from '@/config/constants';
+import { supportAttestDataSourceNameList } from '@/config/constants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
-import { initRewardsActionAsync, setRewardsDialogVisibleAction } from '@/store/actions';
+import {
+  initRewardsActionAsync,
+  setConnectWalletActionAsync,
+  setRewardsDialogVisibleAction,
+  connectWalletAsync,
+} from '@/store/actions';
 import { getAuthUserIdHash } from '@/utils/utils';
 
 import type { WALLETITEMTYPE } from '@/types/config';
@@ -54,25 +57,22 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const [searchParams] = useSearchParams();
     const NFTsProcess = searchParams.get('NFTsProcess');
     const exSources = useSelector((state: UserState) => state.exSources);
-  const kycSources = useSelector((state: UserState) => state.kycSources);
+    const kycSources = useSelector((state: UserState) => state.kycSources);
     const exList: ExDataList = useMemo(() => {
-    return Object.values({ ...exSources });
-  }, [exSources]);
-  const kycList: KYCDataList = useMemo(() => {
-    return Object.values({ ...kycSources });
-  }, [kycSources]);
-  const dataSourceList: SourceDataList = useMemo(() => {
-    return [
-      ...exList,
-      ...kycList,
-    ];
-  }, [exSources, kycList,]);
-  const holdSupportAttestDataSource = useMemo(() => {
-    return dataSourceList.some((i) =>
-      supportAttestDataSourceNameList.includes(i.name)
-    );
-  },[dataSourceList])
-    
+      return Object.values({ ...exSources });
+    }, [exSources]);
+    const kycList: KYCDataList = useMemo(() => {
+      return Object.values({ ...kycSources });
+    }, [kycSources]);
+    const dataSourceList: SourceDataList = useMemo(() => {
+      return [...exList, ...kycList];
+    }, [exList, kycList]);
+    const holdSupportAttestDataSource = useMemo(() => {
+      return dataSourceList.some((i) =>
+        supportAttestDataSourceNameList.includes(i.name)
+      );
+    }, [dataSourceList]);
+
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
 
@@ -94,6 +94,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       );
       return credArr;
     }, [credentialsFromStore]);
+    
 
     const [sourceList, sourceMap] = useAllSources();
     const hasSource = useMemo(() => {
@@ -109,7 +110,13 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     }, [credList]);
     const hadSendToChain = useMemo(() => {
       const hadFlag = credList.some(
-        (item) => item?.provided?.length && item?.provided?.length > 0
+        (item) => {
+          const p = item?.provided
+          if (item?.reqType !== 'web' && p?.length && p?.length > 0) {
+            return p.some((i) => i.chainName.indexOf('Linea') > -1);
+          }
+          return false
+        }
       );
       return hadFlag;
     }, [credList]);
@@ -125,6 +132,109 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
 
     const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
+    
+
+    const onSubmitActiveRequestDialog = useCallback(() => {
+      onSubmit();
+    }, [onSubmit]);
+
+    const handleBackConnectWallet = useCallback(() => {
+      setStep(1);
+    }, []);
+    const handleSubmitConnectWallet = useCallback(
+      async (wallet?: WALLETITEMTYPE) => {
+        // TODO!!!
+        let eventSingnature = '';
+        const activeNetworkName = CLAIMNFTNETWORKNAME;
+        const targetNetwork =
+          EASInfo[activeNetworkName as keyof typeof EASInfo];
+        const startFn = async () => {
+          setActiveRequest({
+            type: 'loading',
+            title: 'Processing',
+            desc: 'Please complete the transaction in your wallet.',
+          });
+          setStep(2);
+          const activeCred = credList[credList.length - 1];
+
+          const requestParams: any = {
+            rawParam: activeCred,
+            greaterThanBaseValue: true,
+            signature: activeCred.signature,
+          };
+
+          if (activeCred.type === 'IDENTIFICATION_PROOF') {
+            const authUseridHash = await getAuthUserIdHash();
+            const { source, type } = activeCred;
+            requestParams.dataToBeSigned = {
+              source: source,
+              type: type,
+              authUseridHash: authUseridHash,
+              recipient: connectedWallet?.address,
+              timestamp: +new Date() + '',
+              result: true,
+            };
+          }
+          const { rc, result } = await getEventSignature(requestParams);
+          if (rc === 0) {
+            eventSingnature = result.signature;
+          }
+        };
+        // startFn()
+
+        const errorFn = () => {
+          setActiveRequest({
+            type: 'error',
+            title: 'Failed',
+            desc: errorDescEl,
+          });
+        };
+        const sucFn = async ({ name, address, provider }: any) => {
+          const upChainParams = {
+            networkName: activeNetworkName,
+            metamaskprovider: provider,
+            receipt: address,
+            signature: '0x' + eventSingnature, // TODO
+          };
+          const mintRes = await mintWithSignature(upChainParams);
+          const nftInfo = await getNFTInfo(mintRes[1]);
+          const newRewards = { ...rewards };
+          newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
+          await chrome.storage.local.set({
+            rewards: JSON.stringify(newRewards),
+          });
+          await dispatch(initRewardsActionAsync());
+          // setActiveRequest({
+          //   type: 'suc',
+          //   title: 'Congratulations',
+          //   desc: 'Successfully get your rewards.',
+          // });
+          const eventInfo = {
+            eventType: 'EVENTS',
+            rawData: { name: 'Get on-boarding reward', issuer: 'PADO' },
+          };
+          eventReport(eventInfo);
+          dispatch(
+            setRewardsDialogVisibleAction({
+              visible: true,
+              tab: 'NFTs',
+            })
+          );
+          onSubmit();
+        };
+        dispatch(
+          connectWalletAsync(undefined, startFn, errorFn, sucFn, targetNetwork)
+        );
+      },
+      [
+        credList,
+        rewards,
+        dispatch,
+        errorDescEl,
+        onSubmit,
+        connectedWallet?.address,
+      ]
+    );
     const onSubmitClaimDialog = useCallback(() => {
       // 1.if participated (has nft reward)
       // 2.has on chain web proof
@@ -133,23 +243,29 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       // 4.web proof on chain add exchange data source
       // rewards;
       if (rewardList?.length > 0) {
-        dispatch(setRewardsDialogVisibleAction({
-          visible: true,
-          tab: 'NFTs'
-        }))
-        onClose()
+        dispatch(
+          setRewardsDialogVisibleAction({
+            visible: true,
+            tab: 'NFTs',
+          })
+        );
+        onClose();
       } else {
-        if (userPassword) {
-          if (holdSupportAttestDataSource) {
-            navigate('/cred?fromEvents=NFTs');
+        if (hadSendToChain) {
+          handleSubmitConnectWallet();
+        } else {
+          if (userPassword) {
+            if (holdSupportAttestDataSource) {
+              navigate('/cred?fromEvents=NFTs');
+            } else {
+              navigate('/datas?fromEvents=NFTs');
+            }
           } else {
             navigate('/datas?fromEvents=NFTs');
           }
-        } else {
-          navigate('/datas?fromEvents=NFTs')
         }
       }
-      return
+      return;
       if (!hasSource) {
         setActiveRequest({
           type: 'warn',
@@ -183,113 +299,18 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       //   desc: 'It may take a few seconds.',
       // });
       setStep(1.5);
-    }, [hasSource, hasCred]);
-
-    const onSubmitActiveRequestDialog = useCallback(() => {
-      if (!hasSource) {
-        navigate('/datas');
-        return;
-      }
-      if (!hasCred) {
-        navigate('/cred');
-        return;
-      }
-      if (!hadSendToChain) {
-        navigate('/cred');
-        return;
-      }
-      onSubmit();
-    }, [onSubmit, hasSource, hasCred, navigate]);
-    
-    
-    const handleBackConnectWallet = useCallback(() => {
-      setStep(1);
-    }, []);
-    const handleSubmitConnectWallet = useCallback(
-      async (wallet?: WALLETITEMTYPE) => {
-        // setActiveRequest({
-        //   type: 'loading',
-        //   title: 'Processing',
-        //   desc: 'It may take a few seconds.',
-        // });
-        setActiveRequest({
-          type: 'loading',
-          title: 'Processing',
-          desc: 'Please complete the transaction in your wallet.',
-        });
-        setStep(2);
-        let eventSingnature = '';
-        try {
-          const activeCred = credList[credList.length - 1];
-          const requestParams: any = {
-            rawParam: activeCred,
-            greaterThanBaseValue: true,
-            signature: activeCred.signature,
-          };
-          if (activeCred.type === 'IDENTIFICATION_PROOF') {
-            const authUseridHash = await getAuthUserIdHash();
-            const { source, type } = activeCred;
-            requestParams.dataToBeSigned = {
-              source: source,
-              type: type,
-              authUseridHash: authUseridHash,
-              recipient: connectedWallet?.address,
-              timestamp: +new Date() + '',
-              result: true,
-            };
-          }
-          const { rc, result } = await getEventSignature(requestParams);
-          if (rc === 0) {
-            eventSingnature = result.signature;
-          }
-        } catch {
-          alert('getEventSignature network error!');
-        }
-
-        const activeNetworkName = CLAIMNFTNETWORKNAME;
-        const targetNetwork =
-          EASInfo[activeNetworkName as keyof typeof EASInfo];
-        try {
-          const [accounts, chainId, provider] = await connectWallet(
-            targetNetwork
-          );
-          
-          const upChainParams = {
-            networkName: activeNetworkName,
-            metamaskprovider: provider,
-            receipt: connectedWallet?.address,
-            signature: '0x' + eventSingnature, // TODO
-          };
-          const mintRes = await mintWithSignature(upChainParams);
-          const nftInfo = await getNFTInfo(mintRes[1]);
-          const newRewards = { ...rewards };
-          newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
-          await chrome.storage.local.set({
-            rewards: JSON.stringify(newRewards),
-          });
-          await dispatch(initRewardsActionAsync());
-          setActiveRequest({
-            type: 'suc',
-            title: 'Congratulations',
-            desc: 'Successfully get your rewards.',
-          });
-
-          const eventInfo = {
-            eventType: 'EVENTS',
-            rawData: { name: 'Get on-boarding reward', issuer: 'PADO' },
-          };
-          eventReport(eventInfo);
-        } catch (e) {
-          console.log('mintWithSignature error:', e);
-          setActiveRequest({
-            type: 'error',
-            title: 'Failed',
-            desc: errorDescEl,
-          });
-        }
-      },
-      [credList, rewards, dispatch, connectedWallet?.address, errorDescEl]
-    );
+    }, [
+      hasSource,
+      hasCred,
+      hadSendToChain,
+      dispatch,
+      handleSubmitConnectWallet,
+      navigate,
+      onClose,
+      userPassword,
+      holdSupportAttestDataSource,
+      rewardList?.length,
+    ]);
     useEffect(() => {
       if (visible) {
         setStep(1);
@@ -321,7 +342,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
-            headerEl={<ClaimDialogHeaderDialog/>}
+            headerEl={<ClaimDialogHeaderDialog />}
           />
         )}
       </div>

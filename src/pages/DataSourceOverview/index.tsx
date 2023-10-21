@@ -303,7 +303,7 @@ const DataSourceOverview = memo(() => {
     dispatch(setSocialSourcesAsync());
   }, [dispatch]);
   const onSubmitAddSourceSucDialog = useCallback(() => {
-    if (!fromEvents) {
+    if (fromEvents) {
       navigate(`/cred?fromEvents=${fromEvents}`);
     } else {
       setActiveSource(undefined);

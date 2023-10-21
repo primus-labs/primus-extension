@@ -18,7 +18,7 @@ import Slider from 'react-slick';
 const EventsOverview = memo(() => {
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
-  const Badges = searchParams.get('Badges');
+  const NFTsProcess = searchParams.get('NFTsProcess');
   var settings = {
     dots: true,
     infinite: true,
@@ -53,9 +53,12 @@ const EventsOverview = memo(() => {
     navigate(`/cred?proofType=UNISWAP_PROOF`);
   }, [navigate]);
   
+  
   useEffect(() => {
-    !!Badges && setClaimMysteryBoxVisible(true);
-  }, [Badges]);
+    if (NFTsProcess) {
+      setClaimVisible(true);
+    }
+  }, [NFTsProcess]);
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">

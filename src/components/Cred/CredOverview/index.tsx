@@ -190,7 +190,7 @@ const CredOverview = memo(() => {
               })
             );
           } else if (fromEvents === 'NFTs') {
-            targetUrl = 'events/NFTsProcess=completeUpperChain';
+            targetUrl = '/events?NFTsProcess=completeUpperChain';
             navigate(targetUrl);
           }
         }

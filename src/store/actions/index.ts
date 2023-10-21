@@ -127,18 +127,18 @@ export const connectWalletAsync = (
         );
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
-          startFn && startFn();
-          sucFn && sucFn({ name: type, address, provider });
+          startFn && await startFn();
+          sucFn && await sucFn({ name: type, address, provider });
         } else {
           return;
         }
       } else {
-        startFn && startFn();
+        startFn && await startFn();
         await dispatch(setConnectWalletDialogVisibleAction(true));
         const timestamp: string = +new Date() + '';
         const signature = await requestSign(address, timestamp);
         if (!signature) {
-          errorFn && errorFn();
+          errorFn && await errorFn();
           return;
         }
         const res = await bindConnectedWallet({
@@ -153,7 +153,7 @@ export const connectWalletAsync = (
             setConnectWalletActionAsync({ name: type, address, provider })
           );
           await dispatch(setConnectWalletDialogVisibleAction(false));
-          sucFn && sucFn({ name: type, address, provider });
+          sucFn && await sucFn({ name: type, address, provider });
         }
       }
     } catch (e) {
