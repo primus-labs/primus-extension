@@ -7,7 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import dayjs from 'dayjs';
-import RewardItem from '@/components/events/RewardList/RewardItem';
+import RewardItem from '@/components/Events/RewardList/RewardItem';
 import PMask from '@/components/PMask';
 import PTabsNew from '@/components/PTabsNew';
 import mysteryBoxImg from '@/assets/img/events/mysteryBoxImg.svg';

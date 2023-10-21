@@ -226,7 +226,6 @@ const PageHeader = memo(() => {
         <RewardsDialog
           onClose={onCloseRewardsDialog}
           onSubmit={onCloseRewardsDialog}
-          tab={rewardsDialogVisible?.tab}
         ></RewardsDialog>
       </header>
     </div>
