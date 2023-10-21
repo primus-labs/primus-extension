@@ -21,6 +21,7 @@
       }
       &.disabled{
         cursor: not-allowed;
+        opacity: 0.4;
       }
       &.active{
         background-color: #FFFFFF;
