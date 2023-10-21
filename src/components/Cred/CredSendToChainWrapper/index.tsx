@@ -211,6 +211,18 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               credentials: JSON.stringify(cObj),
             });
             await initCredList();
+            if (curCredential.reqType === 'web') {
+              if (newProvided.length && newProvided.length > 0) {
+                const flag = newProvided.some(
+                  (i) => i.chainName.indexOf('Linea') > -1
+                );
+                if (flag) {
+                  await chrome.storage.local.set({
+                    mysteryBoxRewards: '1',
+                  });
+                }
+              }
+            }
             setActiveSendToChainRequest({
               type: 'suc',
               title: 'Congratulations',

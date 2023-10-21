@@ -1,4 +1,7 @@
 import request from '@/utils/request';
+type CheckLotteryResultsParams = {
+  event: string;
+};
 type GETUNISWAPPROOFPARAMS = {
   signature: string;
   address: string;
@@ -51,6 +54,15 @@ export const getUniswapProof = (data: GETUNISWAPPROOFPARAMS) => {
   return request({
     method: 'post',
     url: `/celer/nft/sign`,
+    data,
+  });
+};
+
+export const checkLotteryResults = (data: CheckLotteryResultsParams) => {
+  // https://api-dev.padolabs.org/event/reward/check
+  return request({
+    method: 'get',
+    url: `/event/reward/check`,
     data,
   });
 };

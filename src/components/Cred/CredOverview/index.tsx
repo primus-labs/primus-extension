@@ -181,7 +181,7 @@ const CredOverview = memo(() => {
         if (sucFlag) {
           if (fromEvents === 'Badges') {
             await chrome.storage.local.set({
-              mysteryBoxRewards: 'TODO',
+              mysteryBoxRewards: '1',
             });
             dispatch(
               setRewardsDialogVisibleAction({
