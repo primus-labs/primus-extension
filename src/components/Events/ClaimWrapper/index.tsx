@@ -18,12 +18,15 @@ import {
   ONCHAINLIST,
   PADOADDRESS,
   EASInfo,
-  CLAIMNFTNETWORKNAME
+  CLAIMNFTNETWORKNAME,
 } from '@/config/envConstants';
+import {
+  supportAttestDataSourceNameList,
+} from '@/config/constants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
-import { initRewardsActionAsync } from '@/store/actions';
+import { initRewardsActionAsync, setRewardsDialogVisibleAction } from '@/store/actions';
 import { getAuthUserIdHash } from '@/utils/utils';
 
 import type { WALLETITEMTYPE } from '@/types/config';
@@ -31,6 +34,12 @@ import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
 import type { Dispatch } from 'react';
+import type { RewardList } from '@/types/event';
+import type {
+  ExDataList,
+  KYCDataList,
+  SourceDataList,
+} from '@/types/dataSource';
 import { eventReport } from '@/services/api/usertracker';
 
 import './index.sass';
@@ -42,6 +51,26 @@ interface ClaimWrapperProps {
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit }) => {
+    const exSources = useSelector((state: UserState) => state.exSources);
+  const kycSources = useSelector((state: UserState) => state.kycSources);
+    const exList: ExDataList = useMemo(() => {
+    return Object.values({ ...exSources });
+  }, [exSources]);
+  const kycList: KYCDataList = useMemo(() => {
+    return Object.values({ ...kycSources });
+  }, [kycSources]);
+  const dataSourceList: SourceDataList = useMemo(() => {
+    return [
+      ...exList,
+      ...kycList,
+    ];
+  }, [exSources, kycList,]);
+  const holdSupportAttestDataSource = useMemo(() => {
+    return dataSourceList.some((i) =>
+      supportAttestDataSourceNameList.includes(i.name)
+    );
+  },[dataSourceList])
+    
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
 
@@ -49,6 +78,10 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       (state: UserState) => state.connectedWallet
     );
     const rewards = useSelector((state: UserState) => state.rewards);
+    const userPassword = useSelector((state: UserState) => state.userPassword);
+    const rewardList: RewardList = useMemo(() => {
+      return Object.values(rewards);
+    }, [rewards]);
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
@@ -90,8 +123,30 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
 
     const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
-
     const onSubmitClaimDialog = useCallback(() => {
+      // 1.if participated (has nft reward)
+      // 2.has on chain web proof
+      // 2.has connect wallet;
+      // 3.has web proof;
+      // 4.web proof on chain add exchange data source
+      // rewards;
+      if (rewardList?.length > 0) {
+        dispatch(setRewardsDialogVisibleAction({
+          visible: true,
+          tab: 'NFTs'
+        }))
+      } else {
+        if (userPassword) {
+          if (holdSupportAttestDataSource) {
+            navigate('/cred?fromEvents=NFTs');
+          } else {
+            navigate('/datas?fromEvents=NFTs');
+          }
+        } else {
+          navigate('/datas?fromEvents=NFTs')
+        }
+      }
+      return
       if (!hasSource) {
         setActiveRequest({
           type: 'warn',
@@ -199,8 +254,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           const [accounts, chainId, provider] = await connectWallet(
             targetNetwork
           );
-          const { keyStore } = await chrome.storage.local.get(['keyStore']);
-          const { address } = JSON.parse(keyStore);
+          
           const upChainParams = {
             networkName: activeNetworkName,
             metamaskprovider: provider,

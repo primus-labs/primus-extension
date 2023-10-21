@@ -67,13 +67,12 @@ interface CredAddWrapperType {
   visible?: boolean;
   activeCred?: CredTypeItemType;
   activeSource?: string;
-  onSubmit: (addSucFlag?:any) => void;
+  onSubmit: (addSucFlag?: any) => void;
   onClose: () => void;
   type?: string;
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
   ({ visible, activeCred, activeSource, onClose, onSubmit, type }) => {
-    console.log('222222CredAddWrapper', visible);
     const [credRequestId, setCredRequestId] = useState<string>();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -819,11 +818,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         }
       }
       if (visible && !!fromEvents) {
-        setStep(1);
-        setActiveAttestationType('IDENTIFICATION_PROOF');
+        if (fromEvents === 'Badges') {
+          setStep(1);
+          setActiveAttestationType('IDENTIFICATION_PROOF');
+        } else {
+          setStep(-1);
+          setActiveAttestationType('');
+          setActiveSourceName(undefined);
+          handleAdd();
+        }
       }
     }, [visible, activeSource, activeCred, fromEvents]);
-    
+
     useEffect(() => {
       if (!activeRequest?.type) {
         onClose();

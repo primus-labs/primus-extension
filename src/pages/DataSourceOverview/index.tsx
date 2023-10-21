@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import SetPwdDialog from '@/components/Home/SetPwdDialog';
 import PTabs from '@/components/PTabs';
@@ -55,6 +55,9 @@ export type ActiveRequestType = {
   desc: string;
 };
 const DataSourceOverview = memo(() => {
+  const [searchParams] = useSearchParams();
+  const fromEvents = searchParams.get('fromEvents');
+  const processStep = searchParams.get('processStep');
   const [step, setStep] = useState(0);
   const [activeSource, setActiveSource] = useState<ExchangeMeta>();
   const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
@@ -232,9 +235,8 @@ const DataSourceOverview = memo(() => {
     },
     [dispatch]
   );
-  const handleAdd = useCallback(async() => {
+  const handleAdd = useCallback(async () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
-    
     if (keyStore) {
       setStep(1);
     } else {
@@ -301,9 +303,13 @@ const DataSourceOverview = memo(() => {
     dispatch(setSocialSourcesAsync());
   }, [dispatch]);
   const onSubmitAddSourceSucDialog = useCallback(() => {
-    setActiveSource(undefined);
-    setStep(0);
-  }, []);
+    if (!fromEvents) {
+      navigate(`/cred?fromEvents=${fromEvents}`);
+    } else {
+      setActiveSource(undefined);
+      setStep(0);
+    }
+  }, [fromEvents, navigate]);
   const onSubmitActiveRequestDialog = useCallback(() => {
     if (activeRequest?.type === 'loading') {
       onSubmitAddSourceSucDialog();
@@ -322,6 +328,11 @@ const DataSourceOverview = memo(() => {
   useEffect(() => {
     step === 1 && setActiveSourceKeys(undefined);
   }, [step]);
+  useEffect(() => {
+    if (fromEvents) {
+      handleAdd();
+    }
+  }, [fromEvents, handleAdd]);
 
   return (
     <div className="pageDataSourceOverview">
@@ -370,6 +381,7 @@ const DataSourceOverview = memo(() => {
           onSubmit={onSubmitDataSourcesExplainDialog}
         />
       )}
+      {/* TODO!!! */}
       <ConnectWalletData
         visible={connectWalletDataDialogVisible}
         onClose={() => {

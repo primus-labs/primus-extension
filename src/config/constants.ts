@@ -280,3 +280,5 @@ export const schemaTypeMap = {
   IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
 };
 
+
+export const supportAttestDataSourceNameList = ['Binance','Coinbase','OKX','ZAN']

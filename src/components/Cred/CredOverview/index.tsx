@@ -250,7 +250,7 @@ const CredOverview = memo(() => {
     }
   }, [createFlag, proofType, fromEvents]);
   useEffect(() => {
-    if (fromEvents === 'Badges') {
+    if (fromEvents) {
       handleAdd();
     }
   }, [fromEvents, handleAdd]);

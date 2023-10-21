@@ -1,8 +1,11 @@
 import React, { FC, memo, useState, useMemo } from 'react';
-
+import { useSearchParams } from 'react-router-dom';
 import SourceGroup from './SourceGroup';
 import SourceGroupTypes from './SourceGroupTypes';
-import { DATASOURCEMAP } from '@/config/constants';
+import {
+  DATASOURCEMAP,
+  supportAttestDataSourceNameList,
+} from '@/config/constants';
 
 import type { ExchangeMeta } from '@/types/dataSource';
 
@@ -12,8 +15,9 @@ interface SourceGroupsProps {
   onChange: (item: ExchangeMeta) => void;
 }
 const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
+  const [searchParams] = useSearchParams();
+  const fromEvents = searchParams.get('fromEvents');
   const [activeTab, setActiveTab] = useState<string>('Assets');
-
   const handleChangeType = (item: string) => {
     setActiveTab(item);
   };
@@ -38,13 +42,26 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
     let activeList: ExchangeMeta[] = allSourcesList.filter(
       (i) => i.type === activeTab
     );
-    return activeList;
-  }, [allSourcesList, activeTab]);
+    if (!fromEvents) {
+      return activeList;
+    } else {
+      let newList = activeList.map((i) => {
+        i.disabled = !supportAttestDataSourceNameList.includes(i.name);
+        return i;
+      });
+      return newList;
+    }
+  }, [allSourcesList, activeTab, fromEvents]);
 
   return (
     <div className="SourceGroups">
       <SourceGroupTypes onChange={handleChangeType} />
-      <SourceGroup onChange={(a) => {onChange(a as ExchangeMeta);}} list={activeSourceList} />
+      <SourceGroup
+        onChange={(a) => {
+          onChange(a as ExchangeMeta);
+        }}
+        list={activeSourceList}
+      />
     </div>
   );
 });
