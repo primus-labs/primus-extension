@@ -40,7 +40,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                 <i>
                   <span></span>
                 </i>
-                <span>Submit at least one attestation on-chain</span>
+                <span>Submit at least one attestation to Linea mainnet</span>
               </li>
             </ul>
             <p className="desc">
