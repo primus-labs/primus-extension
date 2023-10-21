@@ -317,8 +317,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const handleClickNext = async () => {
       if (
         activeIdentityType === 'KYC Status' &&
-        !activeSource && !activeWebDataSource &&
-        activeConnectedSourceList.length === 0
+        !activeSource &&
+        !activeWebDataSource &&
+        activeConnectedSourceList.length === 0 &&
+        !fromEvents
       ) {
         navigate('/datas');
       }
