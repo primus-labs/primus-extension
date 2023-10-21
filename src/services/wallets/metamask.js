@@ -9,6 +9,12 @@ var provider;
 export const connectWallet = async (targetNetwork) => {
   console.log('connect metamask');
   try {
+    if (provider && provider.on) {
+      provider.removeListener('chainChanged', handleChainChanged);
+      provider.removeListener('accountsChanged', handleAccountsChanged);
+      provider.removeListener('connect', handleConnect);
+      provider.removeListener('disconnect', handleDisconnect);
+    }
     provider = createMetaMaskProvider();
     const [accounts, chainId] = await Promise.all([
       provider.request({
