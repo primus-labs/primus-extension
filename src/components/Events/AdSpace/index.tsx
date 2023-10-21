@@ -1,10 +1,10 @@
 import React, { FC, memo, useEffect } from 'react';
-import { useDispatch } from 'react-redux'
-import type {Dispatch} from 'react'
+import { useDispatch } from 'react-redux';
+import type { Dispatch } from 'react';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
 import nftIllstration from '@/assets/img/events/nftIllstration.svg';
 import './index.sass';
-import {setBadgeEventPeriodActionAsync} from '@/store/actions'
+import { setBadgeEventPeriodActionAsync } from '@/store/actions';
 
 interface AdSpaceProps {
   onClick: () => void;
@@ -26,7 +26,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
         </div>
       </div>
       <button className="right" onClick={onClick}>
-        <span>Join Now</span>
+        <span>Claim Now</span>
       </button>
     </div>
   );

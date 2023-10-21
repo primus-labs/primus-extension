@@ -22,12 +22,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     return +endTime;
   }, [badgeEventPeriod]);
   const formatEndTime = useMemo(() => {
-    if (endStamp) { 
-      dayjs.utc()
+    if (endStamp) {
+      dayjs.utc();
       const s = dayjs.utc(endStamp).format('DD-MMM-h-a');
       const arr = s.split('-');
       return arr;
-    } 
+    }
   }, [endStamp]);
   const hanldeSubmit = () => {
     onSubmit();
@@ -68,7 +68,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
             <p className="desc">
               The rewards will be announced in{' '}
               <b>
-                {formatEndTime[0]}th {formatEndTime[1]} ({formatEndTime[2]} 
+                {formatEndTime[0]}th {formatEndTime[1]} ({formatEndTime[2]}
                 {formatEndTime[3]} UTC time)
               </b>
               and you will find your lucky badge in the Rewards menu.
@@ -81,7 +81,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
         </main>
 
         <button className="nextBtn gray" onClick={hanldeSubmit}>
-          <span>Join Now</span>
+          <span>Claim Now</span>
         </button>
       </div>
     </PMask>
