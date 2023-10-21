@@ -1,15 +1,36 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import dayjs from 'dayjs';
+import utc from 'dayjs-plugin-utc';
+
 import PMask from '@/components/PMask';
 import ClaimDialogHeaderDialog from '../../ClaimWrapper/ClaimDialogHeader';
-import iconShield from '@/assets/img/events/iconShield.svg'
+import iconShield from '@/assets/img/events/iconShield.svg';
 import './index.sass';
+import { UserState } from '@/types/store';
 interface ClaimDialogProps {
   onClose: () => void;
   onSubmit: () => void;
 }
+dayjs.extend(utc);
 const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
+  const badgeEventPeriod = useSelector(
+    (state: UserState) => state.badgeEventPeriod
+  );
+  const endStamp = useMemo(() => {
+    const { startTime, endTime } = badgeEventPeriod;
+    return +endTime;
+  }, [badgeEventPeriod]);
+  const formatEndTime = useMemo(() => {
+    if (endStamp) { 
+      dayjs.utc()
+      const s = dayjs.utc(endStamp).format('DD-MMM-h-a');
+      const arr = s.split('-');
+      return arr;
+    } 
+  }, [endStamp]);
   const hanldeSubmit = () => {
-    onSubmit()
+    onSubmit();
   };
   return (
     <PMask onClose={onClose}>
@@ -45,7 +66,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
               <span>Each user can only claim one</span>)
             </p>
             <p className="desc">
-              The rewards will be announced in <b>29th Oct (4am UTC time)</b>{' '}
+              The rewards will be announced in{' '}
+              <b>
+                {formatEndTime[0]}th {formatEndTime[1]} ({formatEndTime[2]} 
+                {formatEndTime[3]} UTC time)
+              </b>
               and you will find your lucky badge in the Rewards menu.
             </p>
             <p className="specialTip">

@@ -87,8 +87,12 @@ const initState = {
   connectWalletDialogVisible: false,
   connectedWallet: null,
   rewardsDialogVisible: {
-    visible: false
-  }
+    visible: false,
+  },
+  badgeEventPeriod: {
+    startTime: '1698033600000',
+    endTime: '1698552000000',
+  },
 };
 
 // reducer
@@ -137,6 +141,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, connectedWallet: action.payload };
     case 'setRewardsDialogVisibleAction':
       return { ...state, rewardsDialogVisible: action.payload };
+    case 'setBadgeEventPeriodAction':
+      return { ...state, badgeEventPeriod: action.payload };
     default:
       return state;
   }

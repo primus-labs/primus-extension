@@ -3,6 +3,10 @@ import type { PROOFTYPEITEM, CREDENTIALS } from './cred';
 import type { ExDatas, SocialDatas, onChainAssetsDatas } from './dataSource';
 import type { SysConfigInfo } from './config';
 import type { Rewards } from './event';
+type BadgeEventPeriodType = {
+  startTime: string;
+  endTime: string;
+};
 type ConnectedWallet = {
   address: string;
   provider: any;
@@ -33,4 +37,5 @@ export type UserState = {
   connectWalletDialogVisible: boolean;
   connectedWallet: ConnectedWallet;
   rewardsDialogVisible: rewardsDialogVisibleType;
+  badgeEventPeriod: BadgeEventPeriodType;
 };

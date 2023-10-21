@@ -1,12 +1,19 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useEffect } from 'react';
+import { useDispatch } from 'react-redux'
+import type {Dispatch} from 'react'
 import iconRightArrow from '@/assets/img/rightArrow.svg';
 import nftIllstration from '@/assets/img/events/nftIllstration.svg';
 import './index.sass';
+import {setBadgeEventPeriodActionAsync} from '@/store/actions'
 
 interface AdSpaceProps {
   onClick: () => void;
 }
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
+  const dispatch: Dispatch<any> = useDispatch();
+  useEffect(() => {
+    dispatch(setBadgeEventPeriodActionAsync());
+  }, [dispatch]);
   return (
     <div className="adSpace adSpaceNft">
       <div className="left">

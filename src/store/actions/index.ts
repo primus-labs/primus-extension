@@ -10,6 +10,7 @@ import {
   bindConnectedWallet,
   checkIfBindConnectedWallet,
 } from '@/services/api/user';
+import { queryBadgeEventPeriod } from '@/services/api/event';
 
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
@@ -76,9 +77,12 @@ export const setConnectWalletAction = (values: any) => ({
   type: 'setConnectWallet',
   payload: values,
 });
-;
 export const setRewardsDialogVisibleAction = (values: any) => ({
   type: 'setRewardsDialogVisibleAction',
+  payload: values,
+});
+export const setBadgeEventPeriodAction = (values: any) => ({
+  type: 'setBadgeEventPeriodAction',
   payload: values,
 });
 export const setConnectWalletActionAsync = (values: any) => {
@@ -100,7 +104,7 @@ export const setConnectWalletActionAsync = (values: any) => {
   };
 };
 export const connectWalletAsync = (
-  connectObj?:any,
+  connectObj?: any,
   startFn?: any,
   errorFn?: any,
   sucFn?: any,
@@ -111,14 +115,14 @@ export const connectWalletAsync = (
       let address;
       let provider;
       if (connectObj) {
-        address = connectObj.address
+        address = connectObj.address;
         provider = connectObj.provider;
       } else {
         const connectRes = await connectWallet(network);
-        provider = connectRes[2]
+        provider = connectRes[2];
         address = (connectRes[0] as string[])[0];
       }
-        
+
       const type = 'metamask';
       const checkRes = await checkIfBindConnectedWallet({ address });
       if (checkRes.rc === 0 && checkRes.result) {
@@ -127,18 +131,18 @@ export const connectWalletAsync = (
         );
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
-          startFn && await startFn();
-          sucFn && await sucFn({ name: type, address, provider });
+          startFn && (await startFn());
+          sucFn && (await sucFn({ name: type, address, provider }));
         } else {
           return;
         }
       } else {
-        startFn && await startFn();
+        startFn && (await startFn());
         await dispatch(setConnectWalletDialogVisibleAction(true));
         const timestamp: string = +new Date() + '';
         const signature = await requestSign(address, timestamp);
         if (!signature) {
-          errorFn && await errorFn();
+          errorFn && (await errorFn());
           return;
         }
         const res = await bindConnectedWallet({
@@ -153,7 +157,7 @@ export const connectWalletAsync = (
             setConnectWalletActionAsync({ name: type, address, provider })
           );
           await dispatch(setConnectWalletDialogVisibleAction(false));
-          sucFn && await sucFn({ name: type, address, provider });
+          sucFn && (await sucFn({ name: type, address, provider }));
         }
       }
     } catch (e) {
@@ -169,6 +173,18 @@ export const initRewardsActionAsync = () => {
     if (rewards) {
       const rewardsObj = JSON.parse(rewards);
       dispatch(setRewardsAction(rewardsObj));
+    }
+  };
+};
+export const setBadgeEventPeriodActionAsync = () => {
+  return async (dispatch: any) => {
+    try {
+      const { rc, result } = await queryBadgeEventPeriod();
+      if (rc === 0) {
+        dispatch(setBadgeEventPeriodAction(result));
+      }
+    } catch (e) {
+      console.log('setBadgeEventPeriodActionAsync e:', e);
     }
   };
 };

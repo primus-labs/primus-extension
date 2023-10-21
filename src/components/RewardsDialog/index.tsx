@@ -19,7 +19,7 @@ import { setRewardsDialogVisibleAction } from '../../store/actions/index';
 import { useSelector } from 'react-redux';
 import useInterval from '@/hooks/useInterval';
 import { checkLotteryResults } from '@/services/api/event';
-import {BADGELOTTRYTIMESTR} from '@/config/constants'
+// import {BADGELOTTRYTIMESTR} from '@/config/constants'
 import type { UserState } from '@/types/store';
 import type { RewardList } from '@/types/event';
 interface ClaimDialogProps {
@@ -36,6 +36,14 @@ const tabList = [
 ];
 
 const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
+  const badgeEventPeriod = useSelector(
+    (state: UserState) => state.badgeEventPeriod
+  );
+  const BADGELOTTRYTIMESTR = useMemo(() => {
+    const { startTime, endTime } = badgeEventPeriod;
+    return +endTime;
+  }, [badgeEventPeriod]);
+
   const [diffTime, setDiffTime] = useState<any>();
   const [tickSwitchFlag, setTickSwitchFlag] = useState<boolean>(false);
   const [joinedBadgeFlag, setJoinedBadgeFlag] = useState<boolean>();

@@ -59,10 +59,16 @@ export const getUniswapProof = (data: GETUNISWAPPROOFPARAMS) => {
 };
 
 export const checkLotteryResults = (data: CheckLotteryResultsParams) => {
-  // https://api-dev.padolabs.org/event/reward/check
   return request({
     method: 'get',
     url: `/event/reward/check`,
     data,
+  });
+};
+
+export const queryBadgeEventPeriod = () => {
+  return request({
+    method: 'get',
+    url: `/event/time`,
   });
 };
