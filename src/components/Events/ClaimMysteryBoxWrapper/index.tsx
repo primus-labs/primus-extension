@@ -22,7 +22,10 @@ import {
 import { connectWallet } from '@/services/wallets/metamask';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
-import { initRewardsActionAsync, setRewardsDialogVisibleAction } from '@/store/actions';
+import {
+  initRewardsActionAsync,
+  setRewardsDialogVisibleAction,
+} from '@/store/actions';
 import { getAuthUserIdHash } from '@/utils/utils';
 import useAllSources from '@/hooks/useAllSources';
 import type { WALLETITEMTYPE } from '@/types/config';
@@ -42,7 +45,7 @@ interface ClaimWrapperProps {
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit }) => {
     const [searchParams] = useSearchParams();
-    const Badges = searchParams.get('Badges');
+    const BadgesProcess = searchParams.get('BadgesProcess');
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
 
@@ -98,7 +101,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       ),
       []
     );
-    
 
     const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
@@ -113,15 +115,17 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         'mysteryBoxRewards',
       ]);
       if (mysteryBoxRewards) {
-        dispatch(setRewardsDialogVisibleAction({
-          visible: true,
-          tab: 'Badges'
-        }))
-        onClose()
+        dispatch(
+          setRewardsDialogVisibleAction({
+            visible: true,
+            tab: 'Badges',
+          })
+        );
+        onClose();
       } else {
         navigate('/cred?fromEvents=Badges');
       }
-    }, [navigate,dispatch,onClose]);
+    }, [navigate, dispatch, onClose]);
 
     const onSubmitActiveRequestDialog = useCallback(() => {
       if (!hasSource) {
@@ -146,8 +150,16 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       if (visible) {
         setStep(1);
         setActiveRequest(undefined);
+        if (BadgesProcess === 'error') {
+          setStep(2);
+          setActiveRequest({
+            type: 'error',
+            title: 'Unable to proceed',
+            desc: errorDescEl,
+          });
+        }
       }
-    }, [visible, dispatch]);
+    }, [BadgesProcess, errorDescEl, visible]);
     // useEffect(() => {
     //    chrome.storage.local.remove(['mysteryBoxRewards']);
     // })
@@ -167,7 +179,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             headerEl={<ClaimDialogHeaderDialog />}
           />
         )}
-        
       </div>
     );
   }

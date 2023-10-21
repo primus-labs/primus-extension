@@ -21,6 +21,7 @@ const EventsOverview = memo(() => {
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
   const NFTsProcess = searchParams.get('NFTsProcess');
+  const BadgesProcess = searchParams.get('BadgesProcess');
   var settings = {
     dots: true,
     infinite: true,
@@ -45,13 +46,16 @@ const EventsOverview = memo(() => {
   const navigate = useNavigate();
   const onCloseClaimDialog = useCallback(() => {
     setClaimVisible(false);
-  }, []);
+    navigate('/events');
+  }, [navigate]);
   const handleClickClaim = useCallback(() => {
     setClaimVisible(true);
+    
   }, []);
   const onCloseClaimMysteryBoxDialog = useCallback(() => {
     setClaimMysteryBoxVisible(false);
-  }, []);
+    navigate('/events');
+  }, [navigate]);
   const handleClickMysterybox = useCallback(() => {
     setClaimMysteryBoxVisible(true);
   }, []);
@@ -64,6 +68,11 @@ const EventsOverview = memo(() => {
       setClaimVisible(true);
     }
   }, [NFTsProcess]);
+  useEffect(() => {
+    if (BadgesProcess) {
+      setClaimMysteryBoxVisible(true);
+    }
+  }, [BadgesProcess]);
   
   return (
     <div className="eventOverview">

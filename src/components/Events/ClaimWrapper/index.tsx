@@ -186,7 +186,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         const errorFn = () => {
           setActiveRequest({
             type: 'error',
-            title: 'Failed',
+            title: 'Unable to proceed',
             desc: errorDescEl,
           });
         };
@@ -277,17 +277,23 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       holdSupportAttestDataSource,
       rewardList?.length,
     ]);
+    
     useEffect(() => {
       if (visible) {
         setStep(1);
         setActiveRequest(undefined);
+        if (NFTsProcess === 'suc') {
+          handleSubmitConnectWallet();
+        } else if (NFTsProcess === 'error') {
+          setStep(2);
+          setActiveRequest({
+            type: 'error',
+            title: 'Unable to proceed',
+            desc: errorDescEl,
+          });
+        }
       }
-    }, [visible]);
-    useEffect(() => {
-      if (NFTsProcess) {
-        handleSubmitConnectWallet();
-      }
-    }, [NFTsProcess, handleSubmitConnectWallet]);
+    }, [NFTsProcess, handleSubmitConnectWallet, errorDescEl, visible]);
 
     return (
       <div className="claimWrapper">

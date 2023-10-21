@@ -627,7 +627,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (activeRequest?.type === 'suc') {
           onSubmit(credRequestId);
         } else {
-          onSubmit();
+          onSubmit(false);
         }
         return;
       }

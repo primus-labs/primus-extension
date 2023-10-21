@@ -162,22 +162,27 @@ const CredOverview = memo(() => {
     (addSucFlag?: any) => {
       setActiveSourceName(undefined);
       !fromEvents && setAddDialogVisible(false);
-      if (fromEvents && addSucFlag) {
-        // addSucFlag: requestid;
-        const activeC = credentialsFromStore[addSucFlag];
-        setActiveCred(activeC);
-        setAddDialogVisible(false);
-        setSendToChainDialogVisible(true);
+      if (fromEvents) {
+        if (addSucFlag) {
+          // addSucFlag: requestid;
+          const activeC = credentialsFromStore[addSucFlag];
+          setActiveCred(activeC);
+          setAddDialogVisible(false);
+          setSendToChainDialogVisible(true);
+        } else if (addSucFlag === false) {
+          const queryKey = `${fromEvents}Process`;
+          const targetUrl = `/events?${queryKey}=error`;
+          navigate(targetUrl);
+        }
       }
     },
-    [credentialsFromStore, fromEvents]
+    [credentialsFromStore, fromEvents, navigate]
   );
   const handleCloseSendToChainDialog = useCallback(
     async (sucFlag?: any) => {
       setSendToChainDialogVisible(false);
       if (fromEvents) {
         let targetUrl = '/events';
-        // TODO!!! NFTs
         if (sucFlag) {
           if (fromEvents === 'Badges') {
             await chrome.storage.local.set({
@@ -190,11 +195,15 @@ const CredOverview = memo(() => {
               })
             );
           } else if (fromEvents === 'NFTs') {
-            targetUrl = '/events?NFTsProcess=completeUpperChain';
-            navigate(targetUrl);
+            targetUrl = '/events?NFTsProcess=suc';
           }
+          navigate(targetUrl);
         }
-        navigate(targetUrl);
+        // else {
+        //   const queryKey = `${fromEvents}Process`;
+        //   targetUrl = `/events?${queryKey}=error`;
+        // }
+        // navigate(targetUrl);
       }
     },
     [fromEvents, navigate, dispatch]
