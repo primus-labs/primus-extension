@@ -183,7 +183,7 @@ const Layout = memo(() => {
   }, [initStoreData]);
 
   useEffect(() => {
-    if (pathname === '/datas') {
+    if (pathname === '/events') {
       updateAlgoUrl();
     }
   }, [pathname]);

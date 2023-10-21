@@ -50,7 +50,7 @@ const Home = memo(() => {
                   token: bearerToken,
                 }),
               });
-              navigate('/datas')
+              navigate('/events')
             }
           } catch (e) {
             console.log('handleClickStart error', e);

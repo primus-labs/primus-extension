@@ -25,7 +25,7 @@ const Lock = memo(() => {
           type: 'setUserPassword',
           payload: pwd,
         });
-        navigate('/datas');
+        navigate('/events');
       } else {
         setErrorMsg('Incorrect password');
       }
@@ -52,7 +52,7 @@ const Lock = memo(() => {
         postMsg(padoServicePort, msg);
       }
     } else {
-      navigate('/datas');
+      navigate('/events');
     }
   };
   const handleChangePwd = (val) => {
