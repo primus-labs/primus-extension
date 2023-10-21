@@ -176,19 +176,25 @@ const CredOverview = memo(() => {
     async (sucFlag?: any) => {
       setSendToChainDialogVisible(false);
       if (fromEvents) {
+        let targetUrl = '/events';
         // TODO!!! NFTs
         if (sucFlag) {
-          await chrome.storage.local.set({
-            mysteryBoxRewards: 'TODO',
-          });
-          dispatch(
-            setRewardsDialogVisibleAction({
-              visible: true,
-              tab: fromEvents,
-            })
-          );
+          if (fromEvents === 'Badges') {
+            await chrome.storage.local.set({
+              mysteryBoxRewards: 'TODO',
+            });
+            dispatch(
+              setRewardsDialogVisibleAction({
+                visible: true,
+                tab: fromEvents,
+              })
+            );
+          } else if (fromEvents === 'NFTs') {
+            targetUrl = 'events/NFTsProcess=completeUpperChain';
+            navigate(targetUrl);
+          }
         }
-        navigate('/events');
+        navigate(targetUrl);
       }
     },
     [fromEvents, navigate, dispatch]

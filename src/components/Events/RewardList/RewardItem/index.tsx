@@ -25,7 +25,7 @@ const RewardItem: React.FC<RewardItemProps> = memo(
         >
           <img src={iconOpenSea} alt="" />
           <span>OpenSea</span>
-          <img className="suffix" src={rightArrow} alt="" />
+          {/* <img className="suffix" src={rightArrow} alt="" /> */}
         </a>
       </div>
     );

@@ -7,6 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import dayjs from 'dayjs';
+import RewardItem from '@/components/events/RewardList/RewardItem';
 import PMask from '@/components/PMask';
 import PTabsNew from '@/components/PTabsNew';
 import mysteryBoxImg from '@/assets/img/events/mysteryBoxImg.svg';
@@ -17,7 +18,7 @@ import { setRewardsDialogVisibleAction } from '../../store/actions/index';
 import { useSelector } from 'react-redux';
 import useInterval from '@/hooks/useInterval'
 import type { UserState } from '@/types/store';
-
+import type { RewardList } from '@/types/event';
 interface ClaimDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -39,11 +40,13 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     (state: UserState) => state.rewardsDialogVisible
   );
   const rewards = useSelector((state: UserState) => state.rewards);
-  // console.log('rewards', rewards);
 
-  const joinedNFTsFlag = useMemo(() => {
-    return Object.values(rewards).length > 0;
+  const rewardList: RewardList = useMemo(() => {
+    return Object.values(rewards);
   }, [rewards]);
+  const joinedNFTsFlag = useMemo(() => {
+    return rewardList.length > 0;
+  }, [rewardList]);
   const emptyEl = useMemo(() => {
     return (
       <div className="emptyWrapper">
@@ -119,12 +122,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                 {activeTab === 'NFTs' && (
                   <>
                     {joinedNFTsFlag ? (
-                      <div className="rewardWrapper win">
-                        <img src={mysteryBoxReward} alt="" />
-                        <div className="descWrapper">
-                          1<sup>st</sup> Commemorative Badge
-                        </div>
-                      </div>
+                      <RewardItem item={rewardList[0]} />
                     ) : (
                       emptyEl
                     )}

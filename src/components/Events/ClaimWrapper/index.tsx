@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
@@ -51,6 +51,8 @@ interface ClaimWrapperProps {
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit }) => {
+    const [searchParams] = useSearchParams();
+    const NFTsProcess = searchParams.get('NFTsProcess');
     const exSources = useSelector((state: UserState) => state.exSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
     const exList: ExDataList = useMemo(() => {
@@ -135,6 +137,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           visible: true,
           tab: 'NFTs'
         }))
+        onClose()
       } else {
         if (userPassword) {
           if (holdSupportAttestDataSource) {
@@ -197,17 +200,13 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       }
       onSubmit();
     }, [onSubmit, hasSource, hasCred, navigate]);
-    useEffect(() => {
-      if (visible) {
-        setStep(1);
-        setActiveRequest(undefined);
-      }
-    }, [visible]);
+    
+    
     const handleBackConnectWallet = useCallback(() => {
       setStep(1);
     }, []);
     const handleSubmitConnectWallet = useCallback(
-      async (wallet: WALLETITEMTYPE) => {
+      async (wallet?: WALLETITEMTYPE) => {
         // setActiveRequest({
         //   type: 'loading',
         //   title: 'Processing',
@@ -291,6 +290,17 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       },
       [credList, rewards, dispatch, connectedWallet?.address, errorDescEl]
     );
+    useEffect(() => {
+      if (visible) {
+        setStep(1);
+        setActiveRequest(undefined);
+      }
+    }, [visible]);
+    useEffect(() => {
+      if (NFTsProcess) {
+        handleSubmitConnectWallet();
+      }
+    }, [NFTsProcess, handleSubmitConnectWallet]);
 
     return (
       <div className="claimWrapper">

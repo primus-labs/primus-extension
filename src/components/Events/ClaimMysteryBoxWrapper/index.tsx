@@ -22,7 +22,7 @@ import {
 import { connectWallet } from '@/services/wallets/metamask';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
-import { initRewardsActionAsync } from '@/store/actions';
+import { initRewardsActionAsync, setRewardsDialogVisibleAction } from '@/store/actions';
 import { getAuthUserIdHash } from '@/utils/utils';
 import useAllSources from '@/hooks/useAllSources';
 import type { WALLETITEMTYPE } from '@/types/config';
@@ -113,11 +113,15 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         'mysteryBoxRewards',
       ]);
       if (mysteryBoxRewards) {
-        setStep(3);
+        dispatch(setRewardsDialogVisibleAction({
+          visible: true,
+          tab: 'Badges'
+        }))
+        onClose()
       } else {
         navigate('/cred?fromEvents=Badges');
       }
-    }, [navigate]);
+    }, [navigate,dispatch,onClose]);
 
     const onSubmitActiveRequestDialog = useCallback(() => {
       if (!hasSource) {

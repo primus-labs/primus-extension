@@ -821,7 +821,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (fromEvents === 'Badges') {
           setStep(1);
           setActiveAttestationType('IDENTIFICATION_PROOF');
-        } else {
+        } else if (fromEvents === 'NFTs') {
           setStep(-1);
           setActiveAttestationType('');
           setActiveSourceName(undefined);
