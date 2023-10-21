@@ -33,8 +33,7 @@ const tabList = [
     text: 'NFTs',
   },
 ];
-// const BADGELOTTRYTIMESTR = '2023-10-29 12:00:00';
-const BADGELOTTRYTIMESTR = '2023-10-21 16:29:00';
+const BADGELOTTRYTIMESTR = '2023-10-29 12:00:00';
 const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
   const [diffTime, setDiffTime] = useState<any>();
   const [tickSwitchFlag, setTickSwitchFlag] = useState<boolean>(false);
