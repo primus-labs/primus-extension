@@ -149,12 +149,13 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         const targetNetwork =
           EASInfo[activeNetworkName as keyof typeof EASInfo];
         const startFn = async () => {
+          setStep(2);
           setActiveRequest({
             type: 'loading',
             title: 'Processing',
             desc: 'Please complete the transaction in your wallet.',
           });
-          setStep(2);
+          
           const activeCred = credList[credList.length - 1];
 
           const requestParams: any = {
@@ -266,42 +267,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         }
       }
       return;
-      if (!hasSource) {
-        setActiveRequest({
-          type: 'warn',
-          title: 'No required data',
-          desc: 'Please go to the Data page to add Assets and Identity data.',
-        });
-        setStep(2);
-        return;
-      }
-      if (!hasCred) {
-        setActiveRequest({
-          type: 'warn',
-          title: 'No proof is created',
-          desc: 'Please go to the Proofs page to generate.',
-        });
-        setStep(2);
-        return;
-      }
-      if (!hadSendToChain) {
-        setActiveRequest({
-          type: 'warn',
-          title: 'No proof is submitted',
-          desc: 'Please go to the Proofs page to submit to the blockchain.',
-        });
-        setStep(2);
-        return;
-      }
-      // setActiveRequest({
-      //   type: 'loading',
-      //   title: 'Processing',
-      //   desc: 'It may take a few seconds.',
-      // });
-      setStep(1.5);
     }, [
-      hasSource,
-      hasCred,
       hadSendToChain,
       dispatch,
       handleSubmitConnectWallet,

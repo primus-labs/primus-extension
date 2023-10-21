@@ -1,5 +1,5 @@
 import React, { useMemo, memo } from 'react';
-
+import { useSearchParams } from 'react-router-dom';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
@@ -22,7 +22,7 @@ interface AddSourceSucDialogProps {
   footerButton?: any;
   closeable?: boolean;
   tip?: any;
-  headerEl?: any
+  headerEl?: any;
 }
 
 const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
@@ -37,21 +37,34 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     headerType = 'dataSource',
     address,
     footerButton,
-    closeable = true,
+    closeable,
     tip,
   }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     footerButton = footerButton ?? (
       <button className="nextBtn" onClick={onSubmit}>
         <span>OK</span>
       </button>
     );
+    // TODO!!!
     const icon = activeSource?.icon;
 
     const formatHeaderEl = useMemo(() => {
       return headerEl ?? <Bridge endIcon={icon} />;
     }, [headerEl, icon]);
+    const formatCloseable = useMemo(() => {
+      if (closeable === undefined) {
+        if (fromEvents) {
+          return !fromEvents;
+        } else {
+          return true
+        }
+      }
+      return closeable
+    }, [closeable,fromEvents]);
     return (
-      <PMask onClose={onClose} closeable={closeable}>
+      <PMask onClose={onClose} closeable={formatCloseable}>
         <div className="padoDialog addDataSourceSucDialog">
           <main>
             {formatHeaderEl}

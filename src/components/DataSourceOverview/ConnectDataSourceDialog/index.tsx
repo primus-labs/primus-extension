@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo, useCallback ,useMemo} from 'react';
-
+import { useSearchParams } from 'react-router-dom'
+  
 import PControledInput from '@/components/PControledInput';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
@@ -45,6 +46,9 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
     onCancel,
     activeSourceKeys,
   }) => {
+    
+  const [searchParams] = useSearchParams();
+  const fromEvents = searchParams.get('fromEvents');
     const requirePassphase = activeSource?.requirePassphase;
     const icon = activeSource?.icon;
     const name = activeSource?.name ?? '';
@@ -106,7 +110,7 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
     }, [activeSourceKeys]);
 
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={!fromEvents}>
         <div className="padoDialog connectDataSourceDialog">
           <div className="iconBack" onClick={onCancel}></div>
           <main>

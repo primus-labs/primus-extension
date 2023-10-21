@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { WALLETLIST } from '@/config/constants'
+import { useSearchParams } from 'react-router-dom';
+import { WALLETLIST } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
@@ -41,6 +42,9 @@ const sourcesLabel = {
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
+
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -53,7 +57,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const walletAddress = useSelector(
       (state: UserState) => state.walletAddress
     );
-
 
     const navigate = useNavigate();
 
@@ -273,7 +276,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     };
     const handleClickData = (item: ConnectSourceType) => {
-    
       if (type === 'TOKEN_HOLDINGS' && !activeToken) {
         return;
       }
@@ -370,7 +372,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [baseValueArr]);
 
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={!fromEvents}>
         <div className="padoDialog attestationDialog">
           {!!onBack && <PBack onBack={onBack} />}
           <main>

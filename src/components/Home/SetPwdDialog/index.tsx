@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PInput from '@/components/PInput/index';
@@ -21,6 +22,8 @@ interface SetPwdDialogProps {
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onClose, onSubmit, onCancel }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const [accountAddr, setAccountAddr] = useState<any>();
     const [pwd, setPwd] = useState<string>();
     const [confirm, setConfirm] = useState<string>();
@@ -87,7 +90,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             }
           };
           padoServicePort.onMessage.addListener(padoServicePortListener);
-          
+
           postMsg(padoServicePort, {
             fullScreenType: 'padoService',
             reqMethodName: 'bindUserAddress',
@@ -120,9 +123,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       setConfirm(val);
     };
 
-
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={!fromEvents}>
         <div className="padoDialog setPwdDialog">
           <main>
             <h1>Set Password</h1>

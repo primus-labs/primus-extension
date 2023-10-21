@@ -40,7 +40,10 @@ const sourcesLabel = {
   IDENTIFICATION_PROOF: 'Identity',
   UNISWAP_PROOF: 'Assets',
 };
-
+const fromEventsMap = {
+  Badges: 'Webpage Data',
+  NFTs: 'APT Data',
+};
 const tabList: TabItem[] = [
   {
     text: 'API Data',
@@ -268,7 +271,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const formatTabList = useMemo(() => {
       if (fromEvents) {
         const newList = tabList.map(i => {
-          if (i.text !== 'Webpage Data') {
+          if (
+            i.text !== fromEventsMap[fromEvents as keyof typeof fromEventsMap]
+          ) {
             i.disabled = true;
           }
           return i
@@ -494,11 +499,12 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       if (baseValueArr.length === 1) setActiveBaseValue(baseValueArr[0]);
     }, [baseValueArr]);
     useEffect(() => {
-      fromEvents && setActiveTab('Webpage Data');
+      const aT = fromEventsMap[fromEvents as keyof typeof fromEventsMap];
+      setActiveTab(aT);
     },[fromEvents])
 
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={!fromEvents}>
         <div className="padoDialog attestationDialog">
           {!!onBack && <PBack onBack={onBack} />}
           <main>

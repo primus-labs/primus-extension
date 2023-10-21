@@ -1,7 +1,8 @@
-import React, { memo, useState, useCallback, useEffect } from 'react';
+import React, { memo, useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
+import dayjs from 'dayjs';
 import RewardsDialog from '@/components/RewardsDialog';
 import ClaimWrapper from '../ClaimWrapper';
 import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
@@ -11,6 +12,7 @@ import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
 import './index.sass';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { BADGELOTTRYTIMESTR } from '@/config/constants';
 import type { UserState } from '@/types/store';
 
 import Slider from 'react-slick';
@@ -36,6 +38,10 @@ const EventsOverview = memo(() => {
   const rewardsDialogVisible = useSelector(
     (state: UserState) => state.rewardsDialogVisible
   );
+  const badgeOpenFlag = useMemo(() => {
+    const diffStamp = dayjs(BADGELOTTRYTIMESTR).diff(dayjs());
+    return diffStamp > 0;
+  },[])
   const navigate = useNavigate();
   const onCloseClaimDialog = useCallback(() => {
     setClaimVisible(false);
@@ -52,18 +58,18 @@ const EventsOverview = memo(() => {
   const navToCred = useCallback(() => {
     navigate(`/cred?proofType=UNISWAP_PROOF`);
   }, [navigate]);
-  
-  
+
   useEffect(() => {
     if (NFTsProcess) {
       setClaimVisible(true);
     }
   }, [NFTsProcess]);
+  
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">
         {/* <Slider {...settings}> */}
-        <AdSpaceMysteryBox onClick={handleClickMysterybox} />
+        {badgeOpenFlag && <AdSpaceMysteryBox onClick={handleClickMysterybox} />}
         <AdSpace onClick={handleClickClaim} />
         {/* </Slider> */}
         {/* <section className="rewardsWrapper">

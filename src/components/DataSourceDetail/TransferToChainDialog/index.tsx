@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback, memo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
@@ -50,6 +51,8 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
     requireItem = true,
     address,
   }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const [activeName, setActiveName] = useState<string>();
     const [errorTip, setErrorTip] = useState<string>();
     const flag = useMemo(() => {
@@ -133,7 +136,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
       return defaultCN;
     }, [headerType]);
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={!fromEvents}>
         <div className={wrapperClassName}>
           {!!backable && <PBack onBack={handleClickBack} />}
           <main>

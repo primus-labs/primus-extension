@@ -19,6 +19,7 @@ import { setRewardsDialogVisibleAction } from '../../store/actions/index';
 import { useSelector } from 'react-redux';
 import useInterval from '@/hooks/useInterval';
 import { checkLotteryResults } from '@/services/api/event';
+import {BADGELOTTRYTIMESTR} from '@/config/constants'
 import type { UserState } from '@/types/store';
 import type { RewardList } from '@/types/event';
 interface ClaimDialogProps {
@@ -33,7 +34,7 @@ const tabList = [
     text: 'NFTs',
   },
 ];
-const BADGELOTTRYTIMESTR = '2023-10-29 12:00:00';
+
 const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
   const [diffTime, setDiffTime] = useState<any>();
   const [tickSwitchFlag, setTickSwitchFlag] = useState<boolean>(false);
