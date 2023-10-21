@@ -243,23 +243,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         {visible && step === 1 && (
           <ClaimDialog onClose={onClose} onSubmit={onSubmitClaimDialog} />
         )}
-        {/* {visible && step === 1.1 && (
-          <TransferToChainDialog
-            title="Provide Attestation"
-            desc="Send your proof to one of the following chain. Provide an on-chain attestation for dApps."
-            list={ONCHAINLIST}
-            tip="Please select one chain to provide attestation"
-            checked={false}
-            backable={false}
-            headerType={
-              activeCred?.did ? 'polygonIdAttestation' : 'attestation'
-            }
-            address={activeCred?.did as string}
-            onClose={handleCloseMask}
-            onSubmit={handleSubmitTransferToChain}
-            onCancel={handleCancelTransferToChain}
-          />
-        )} */}
         {visible && step === 1.5 && (
           <ConnectWalletDialog
             onClose={onClose}

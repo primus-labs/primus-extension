@@ -1,5 +1,6 @@
 @import '@/assets/css/pDialog.sass'
 @import '@/assets/css/pVars.sass'
+@import '@/assets/css/pFlex.sass'
 @import '@/assets/css/pDialog.sass'
 @import '@/components/Cred/QRCodeDialog/qrCode.sass'
 .padoDialog.claimDialog
@@ -30,13 +31,27 @@
           color: $colLBlack
           @extend .frsc
           >i
-            margin: 0 10.5px
-            width: 5.5px
-            height: 5.5px
-            border-radius: 50%
-            background-color: $colLBlack
-
-
+            @extend  .frcc
+            width: 14px
+            height: 22px
+            >span
+              display: flex
+              width: 5px
+              height: 5px
+              border-radius: 50%
+              background-color: #000
+      .specialTip
+        @extend .frsc
+        gap: 8px
+        color: #2EC57C
+        /* Body 2 */
+        font-family: Inter
+        font-size: 16px
+        font-style: normal
+        font-weight: 500
+        line-height: 22px /* 137.5% */
+        >img
+          width: 20px
 
 @media (max-width:1680px)
   .padoDialog.claimDialog
@@ -46,25 +61,61 @@
       .headerWrapper
         margin: 0 -42px
       .descContent
-       
+        width: 416px
+        margin: 0 auto
+        gap: 16px
+        padding-top: 16px
         .title
-          font-size: 18px
-          line-height: 26px
-          font-family: 'Inter-SemiBold'
-          
+          color: #000
+          font-family: Inter
+          font-size: 20px
+          font-style: normal
+          font-weight: 600
+          line-height: 28px /* 140% */
         .desc
+          color: rgba(0, 0, 0, 0.60)
+          /* Body 2 */
+          font-family: Inter
           font-size: 16px
-          line-height: 26px
+          font-style: normal
+          font-weight: 500
+          line-height: 22px /* 137.5% */
+          >span
+            color: rgba(0, 0, 0, 0.60)
+            /* Text 1 */
+            font-family: Inter
+            font-size: 14px
+            font-style: normal
+            font-weight: 400
+            line-height: 20px
+          >b
+            color: var(--Text-headline, #0A1214)
+            /* Body 2 */
+            font-family: Inter
+            font-size: 16px
+            font-style: normal
+            font-weight: 500
+            line-height: 22px
         .details
           >li
+            color: #000
+            /* Body 2 */
+            font-family: Inter
             font-size: 16px
-            line-height: 32px
-            font-family: 'Inter-SemiBold'
-            
+            font-style: normal
+            font-weight: 500
+            line-height: 22px /* 137.5% */
+            >span
+              flex: 1
             >i
-              margin: 0 9px
-              width: 5px
-              height: 5px
-
+              width: 14px
+              height: 22px
+              >span
+                display: flex
+                width: 5px
+                height: 5px
+                border-radius: 50%
+                background-color: #000
+ 
 
   

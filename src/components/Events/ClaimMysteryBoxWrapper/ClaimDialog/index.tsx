@@ -16,11 +16,13 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
       <div className="padoDialog claimMysteryBoxDialog">
         <main>
           <div className="headerWrapper">
-            <ClaimDialogHeaderDialog title="Product Officially Launch" />
+            <ClaimDialogHeaderDialog
+              title="Product Officially Launch"
+              illustration={true}
+            />
           </div>
           <div className="descContent">
             <p className="title">Commemorative Badge with $1000u Reward</p>
-
             <ul className="details">
               <li>
                 <i>

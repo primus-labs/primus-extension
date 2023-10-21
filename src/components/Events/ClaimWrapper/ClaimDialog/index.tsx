@@ -1,6 +1,7 @@
 import React, { FC, memo } from 'react';
 import PMask from '@/components/PMask';
 import ClaimDialogHeaderDialog from '../ClaimDialogHeader';
+import iconShield from '@/assets/img/events/iconShield.svg';
 import './index.sass';
 interface ClaimDialogProps {
   onClose: () => void;
@@ -15,22 +16,41 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
       <div className="padoDialog claimDialog">
         <main>
           <div className="headerWrapper">
-            <ClaimDialogHeaderDialog />
+            <ClaimDialogHeaderDialog
+              title="Early Bird NFT Reward"
+              illustration={false}
+            />
           </div>
           <div className="descContent">
-            <p className="title">PADO NFT REWARD for early birds!</p>
-            <p className="desc">Meet the following conditions to claim:</p>
+            <p className="title">Complete the following tasks to get:</p>
             <ul className="details">
               <li>
-                <i></i>Connected any data source before Nov 30, 2023
+                <i>
+                  <span></span>
+                </i>
+                <span>Connected API data</span>
               </li>
               <li>
-                <i></i>Generated one proof
+                <i>
+                  <span></span>
+                </i>
+                <span>Generate any attestation</span>
               </li>
               <li>
-                <i></i>Provided at least one on-chain attestation
+                <i>
+                  <span></span>
+                </i>
+                <span>Submit at least one attestation on-chain</span>
               </li>
             </ul>
+            <p className="desc">
+              You will have an Early Bird NFT after completing the event. (
+              <span>Each user can only claim one</span>)
+            </p>
+            <p className="specialTip">
+              <img src={iconShield} alt="" />
+              <span>PADO uses IZK to ensure your privacy</span>
+            </p>
           </div>
         </main>
 
