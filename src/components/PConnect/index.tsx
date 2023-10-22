@@ -60,7 +60,7 @@ const PConnect = memo(() => {
       const errorFn = () => {
         setActiveRequest({
           type: 'error',
-          title: 'Failed',
+          title: 'Unable to proceed',
           desc: errorDescEl,
         });
       };

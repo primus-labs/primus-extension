@@ -480,7 +480,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (!signature) {
           setActiveRequest({
             type: 'error',
-            title: 'Failed',
+            title: 'Unable to proceed',
             desc: errorDescEl,
           });
           return;
@@ -530,7 +530,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       } catch (e) {
         setActiveRequest({
           type: 'error',
-          title: 'Failed',
+          title: 'Unable to proceed',
           desc: errorDescEl,
         });
       }

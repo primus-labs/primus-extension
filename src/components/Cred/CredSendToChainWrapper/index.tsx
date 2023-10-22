@@ -132,7 +132,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         const errorFn = () => {
           setActiveSendToChainRequest({
             type: 'error',
-            title: 'Failed',
+            title: 'Unable to proceed',
             desc: errorDescEl,
           });
         };
@@ -253,7 +253,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           } else {
             setActiveSendToChainRequest({
               type: 'error',
-              title: 'Failed',
+              title: 'Unable to proceed',
               desc: errorDescEl,
             });
           }
