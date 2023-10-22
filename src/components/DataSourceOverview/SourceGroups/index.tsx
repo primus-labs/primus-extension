@@ -10,6 +10,7 @@ import {
 import type { ExchangeMeta } from '@/types/dataSource';
 
 import './index.sass';
+import { supportAttestDataSourceNameList } from '../../../config/constants';
 
 interface SourceGroupsProps {
   onChange: (item: ExchangeMeta) => void;
@@ -45,17 +46,24 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
     if (!fromEvents) {
       return activeList;
     } else {
-      let newList = activeList.map((i) => {
-        i.disabled = !supportAttestDataSourceNameList.includes(i.name);
-        return i;
+      let newList = activeList.filter((i) => {
+        return supportAttestDataSourceNameList.includes(i.name);
       });
       return newList;
     }
   }, [allSourcesList, activeTab, fromEvents]);
+  const activeTabList = useMemo(() => {
+    let supportAttestDataSourceTypeList = allSourcesList.filter((i) =>
+      supportAttestDataSourceNameList.includes(i.name)
+    );
+    let newL: string[] = supportAttestDataSourceTypeList.map((i) => i.type);
+    newL = [...new Set(newL)];
+    return newL;
+  }, [allSourcesList]);
 
   return (
     <div className="SourceGroups">
-      <SourceGroupTypes onChange={handleChangeType} />
+      <SourceGroupTypes onChange={handleChangeType} list={activeTabList} />
       <SourceGroup
         onChange={(a) => {
           onChange(a as ExchangeMeta);

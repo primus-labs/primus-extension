@@ -324,6 +324,10 @@ const DataSourceOverview = memo(() => {
   const handleCancelSetPwd = useCallback(() => {
     setStep(0);
   }, []);
+  const onCloseDataSourcesDialog = useCallback(() => {
+    navigate('/datas');
+    handleCloseMask();
+  }, [handleCloseMask, navigate]);
 
   useEffect(() => {
     step === 1 && setActiveSourceKeys(undefined);
@@ -370,7 +374,7 @@ const DataSourceOverview = memo(() => {
       )}
       {step === 1 && (
         <DataSourcesDialog
-          onClose={handleCloseMask}
+          onClose={onCloseDataSourcesDialog}
           onSubmit={onSubmitDataSourcesDialog}
           onCheck={onCheckDataSourcesDialog}
         />
