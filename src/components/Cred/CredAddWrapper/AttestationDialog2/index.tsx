@@ -87,6 +87,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }));
       return l;
     }, [activeWebProofTypes]);
+    useEffect(() => {
+      if (identityList.length === 1) {
+        setActiveIdentityType(identityList[0].value);
+      }
+    }, [identityList]);
     const webDataSourceList = useMemo(() => {
       let l: any = [];
       activeWebProofTypes.forEach((r) => {
