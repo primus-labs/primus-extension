@@ -530,7 +530,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [baseValueArr]);
     useEffect(() => {
       if (fromEvents) {
-        debugger
         const aT = fromEventsMap[fromEvents as keyof typeof fromEventsMap];
         setActiveTab(aT);
       }

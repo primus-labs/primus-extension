@@ -283,6 +283,12 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setStep(1);
         setActiveRequest(undefined);
         if (NFTsProcess === 'suc') {
+          setStep(2);
+          setActiveRequest({
+            type: 'loading',
+            title: 'Processing',
+            desc: 'Please complete the transaction in your wallet.',
+          });
           handleSubmitConnectWallet();
         } else if (NFTsProcess === 'error') {
           setStep(2);
