@@ -128,11 +128,14 @@ const PageHeader = memo(() => {
         icon: iconSetting,
         text: 'Setting',
       },
-      {
+      
+    ];
+    if (connectedWallet?.address || userPassword) {
+      arr.push({
         icon: iconRewards,
         text: 'Rewards',
-      },
-    ];
+      });
+    }
     if (connectedWallet?.address) {
       arr.push({
         icon: iconWallet,
@@ -207,7 +210,7 @@ const PageHeader = memo(() => {
               <PConnect />
             </div>
             {dorpdownVisible &&
-              (!!userPassword || !!connectedWallet?.address) && (
+               (
                 <div
                   className="dropdownWrapper"
                   onMouseEnter={handleEnterAvatar}

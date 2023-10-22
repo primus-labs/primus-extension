@@ -296,7 +296,6 @@ const CredOverview = memo(() => {
             setConnectDialogVisible(false);
           }}
           onSubmit={handleSubmitConnectWallet}
-          desc="Your have to connect a wallet before generate an attestation."
         />
       )}
       {connectTipDialogVisible && (

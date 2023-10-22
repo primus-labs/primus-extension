@@ -313,21 +313,30 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       navigate('/cred');
     }, [dispatch, onSubmitActiveSendToChainRequestDialog, navigate]);
     const footerButton = useMemo(() => {
-      if (fromEvents==='Badges' && activeSendToChainRequest?.type === 'suc') {
-        return (
-          <div className="claimEventsBtns">
-            <PButton text="Get Early Bird NFT" onClick={onClickClaimNFT} />
-            <PButton text="Check Rewards" onClick={onClickRewards} />
-          </div>
-        );
+      if (activeSendToChainRequest?.type === 'suc') {
+        if (fromEvents === 'Badges') {
+          return (
+            <div className="claimEventsBtns">
+              <PButton text="Get Early Bird NFT" onClick={onClickClaimNFT} />
+              <PButton text="Check Rewards" onClick={onClickRewards} />
+            </div>
+          );
+        } else {
+          return null;
+        }
       } else {
-        return null;
+        return (
+          <button className="nextBtn gray" onClick={handleCloseMask}>
+            <span>OK</span>
+          </button>
+        );
       }
     }, [
       fromEvents,
       activeSendToChainRequest?.type,
       onClickClaimNFT,
       onClickRewards,
+      handleCloseMask,
     ]);
      
     

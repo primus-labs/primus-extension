@@ -31,7 +31,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     onClose,
     onSubmit,
     onBack,
-    desc = 'Your wallet address will set as the login account.',
+    desc = 'Your wallet address will be set as the account.',
   }) => {
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
