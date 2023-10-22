@@ -8,8 +8,8 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
-
+import { useSearchParams,useNavigate } from 'react-router-dom';
+import PButton from '@/components/PButton'
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
@@ -32,6 +32,7 @@ import {
   setCredentialsAsync,
   setConnectWalletDialogVisibleAction,
   connectWalletAsync,
+  setRewardsDialogVisibleAction,
 } from '@/store/actions';
 import { compareVersions, getAuthUserIdHash } from '@/utils/utils';
 import { regenerateAttestation } from '@/services/api/cred';
@@ -53,6 +54,7 @@ interface CredSendToChainWrapperType {
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
+    const navigate = useNavigate()
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
     const [step, setStep] = useState(0);
@@ -228,6 +230,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               title: 'Congratulations',
               desc: 'Your attestation is recorded on-chain!',
             });
+            debugger
 
             let upChainType = upChainParams.type;
             if (upChainParams.type === 'web') {
@@ -296,6 +299,39 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         setStep(3);
       }
     }, [visible]);
+    const onClickClaimNFT = useCallback(() => {
+      onSubmitActiveSendToChainRequestDialog()
+      navigate('/events');
+    }, [navigate, onSubmitActiveSendToChainRequestDialog]);
+    const onClickRewards = useCallback(() => {
+      onSubmitActiveSendToChainRequestDialog();
+      dispatch(
+        setRewardsDialogVisibleAction({
+          visible: true,
+          tab: 'Badges',
+        })
+      );
+      navigate('/cred');
+    }, [dispatch, onSubmitActiveSendToChainRequestDialog, navigate]);
+    const footerButton = useMemo(() => {
+      if (fromEvents==='Badges' && activeSendToChainRequest?.type === 'suc') {
+        return (
+          <div className="claimEventsBtns">
+            <PButton text="Get Early Bird NFT" onClick={onClickClaimNFT} />
+            <PButton text="Check Rewards" onClick={onClickRewards} />
+          </div>
+        );
+      } else {
+        return null;
+      }
+    }, [
+      fromEvents,
+      activeSendToChainRequest?.type,
+      onClickClaimNFT,
+      onClickRewards,
+    ]);
+     
+    
     return (
       <div className="credSendToChainWrapper">
         {visible && step === 3 && (
@@ -330,6 +366,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             headerEl={
               <AddressInfoHeader address={activeCred?.address as string} />
             }
+            footerButton={footerButton}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveSendToChainRequestDialog}
           />

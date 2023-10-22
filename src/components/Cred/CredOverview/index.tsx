@@ -138,6 +138,7 @@ const CredOverview = memo(() => {
       if (connectedWallet?.address) {
         setAddDialogVisible(true);
       } else {
+        debugger
         setConnectDialogVisible(true);
       }
     },
@@ -149,6 +150,7 @@ const CredOverview = memo(() => {
     if (connectedWallet?.address) {
       setAddDialogVisible(true);
     } else {
+      debugger
       setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address]);
@@ -189,16 +191,10 @@ const CredOverview = memo(() => {
             await chrome.storage.local.set({
               mysteryBoxRewards: '1',
             });
-            dispatch(
-              setRewardsDialogVisibleAction({
-                visible: true,
-                tab: fromEvents,
-              })
-            );
           } else if (fromEvents === 'NFTs') {
             targetUrl = '/events?NFTsProcess=suc';
+            navigate(targetUrl);
           }
-          navigate(targetUrl);
         }
         // else {
         //   const queryKey = `${fromEvents}Process`;
@@ -207,7 +203,7 @@ const CredOverview = memo(() => {
         // navigate(targetUrl);
       }
     },
-    [fromEvents, navigate, dispatch]
+    [fromEvents, navigate]
   );
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
