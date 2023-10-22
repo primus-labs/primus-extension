@@ -153,6 +153,7 @@
             padding: 21px 10px
             background-color: #FFFFFF
             position: relative
+            border: 1PX solid var(--Line, #DFE0E0)
           &.disabled
             cursor: not-allowed
           &.active
@@ -163,6 +164,8 @@
             background-origin: padding-box, border-box
             background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
             position: relative
+            &:hover
+              border: 2PX solid transparent
           img
             width: 40px
           h6

@@ -32,6 +32,7 @@
       gap: 10px
       &.excitable,&:not(.disabled):hover
         background-color: #FFFFFF
+        border: 1PX solid var(--Line, #DFE0E0)
       &.disabled
         cursor: not-allowed
         opacity: 0.4
@@ -41,7 +42,8 @@
         background-clip: padding-box, border-box
         background-origin: padding-box, border-box
         background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-        
+        &:hover
+          border: 2PX solid transparent
       img
         width: 40px
       h6
