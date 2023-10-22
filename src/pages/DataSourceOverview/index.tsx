@@ -212,7 +212,7 @@ const DataSourceOverview = memo(() => {
             } else {
               setActiveRequest({
                 type: 'warn',
-                title: 'Oops...',
+                title: 'Ooops...',
                 desc: 'Something went wrong. Please try again later.',
               });
             }

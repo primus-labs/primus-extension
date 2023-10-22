@@ -755,7 +755,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           ) {
             requestResObj = {
               type: 'warn',
-              title: 'Oops',
+              title: 'Ooops',
               desc: 'Unstable internet connection. Please try again later.',
             };
           }
