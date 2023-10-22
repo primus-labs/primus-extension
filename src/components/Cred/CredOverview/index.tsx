@@ -229,6 +229,11 @@ const CredOverview = memo(() => {
     },
     [errorDescEl, dispatch]
   );
+  useEffect(() => {
+    if (connectedWallet?.address) {
+      setConnectDialogVisible(false);
+    }
+  },[connectedWallet?.address])
   // const onSubmitConnectTipDialog = useCallback(() => {
   //   setConnectTipDialogVisible(false);
   //   dispatch(setConnectWalletDialogVisibleAction(true));

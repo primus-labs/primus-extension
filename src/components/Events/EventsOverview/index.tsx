@@ -12,7 +12,7 @@ import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
 import './index.sass';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { BADGELOTTRYTIMESTR } from '@/config/constants';
+// import { BADGELOTTRYTIMESTR } from '@/config/constants';
 import type { UserState } from '@/types/store';
 
 import Slider from 'react-slick';
@@ -39,10 +39,18 @@ const EventsOverview = memo(() => {
   const rewardsDialogVisible = useSelector(
     (state: UserState) => state.rewardsDialogVisible
   );
+  
+  const badgeEventPeriod = useSelector(
+    (state: UserState) => state.badgeEventPeriod
+  );
+  const BADGELOTTRYTIMESTR = useMemo(() => {
+    const { startTime, endTime } = badgeEventPeriod;
+    return +endTime;
+  }, [badgeEventPeriod]);
   const badgeOpenFlag = useMemo(() => {
-    const diffStamp = dayjs(BADGELOTTRYTIMESTR).diff(dayjs());
-    return diffStamp > 0;
-  },[])
+    const flag = dayjs().isBefore(dayjs(BADGELOTTRYTIMESTR));
+    return flag;
+  }, [BADGELOTTRYTIMESTR]);
   const navigate = useNavigate();
   const onCloseClaimDialog = useCallback(() => {
     setClaimVisible(false);

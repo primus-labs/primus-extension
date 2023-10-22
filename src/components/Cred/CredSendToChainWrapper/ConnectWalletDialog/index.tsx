@@ -71,7 +71,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     };
 
     return (
-      <PMask onClose={onClose} closeable={!fromEvents}>
+      <PMask onClose={onClose}>
         <div className="padoDialog dataSourcesDialog connectWalletDialog">
           {!!onBack && <PBack onBack={handleClickBack} />}
           <main>
