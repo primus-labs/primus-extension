@@ -355,12 +355,7 @@ const processWalletReq = async (message, port) => {
         keyStore: JSON.stringify(encryptAccount),
       });
 
-      const transferRemoveMsg = {
-        fullScreenType: 'storage',
-        type: 'remove',
-        key: 'privateKey',
-      };
-      await processStorageReq(transferRemoveMsg, port);
+      await chrome.storage.local.remove(['privateKey', 'padoCreatedWalletAddress']);
       break;
     case 'clearUserPassword':
       USERPASSWORD = '';

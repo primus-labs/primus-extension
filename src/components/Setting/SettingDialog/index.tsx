@@ -62,6 +62,10 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
     const onChainAssetsSources = useSelector(
       (state: UserState) => state.onChainAssetsSources
     );
+   
+    const walletAddress = useSelector(
+      (state: UserState) => state.walletAddress
+    );
 
     const connectedSourceList: ConnectSourceType[] = useMemo(() => {
       const exArr = Object.keys(exSources).map((key) => {
@@ -121,16 +125,7 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
       return [...exArr, ...socialArr, ...kycArr, ...onChainArr];
     }, [exSources, socialSources, kycSources, onChainAssetsSources]);
 
-    const getUserInfo = async () => {
-      const res: any = await chrome.storage.local.get([ 'keyStore']);
-      const { keyStore } = res;
-      
-      if (keyStore) {
-        const parseKeystore = JSON.parse(keyStore);
-        const { address } = parseKeystore;
-        setAddress(address);
-      }
-    };
+    
     
     const formatModuleObj = useMemo(() => {
       let obj = [...moduleObj];
@@ -143,12 +138,8 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
       }
       return obj;
     }, [userPassword,connectedSourceList]);
-    const formatAddr = useMemo(() => {
-      return address ? formatAddress('0x' + address) : '';
-    }, [address]);
-    useEffect(() => {
-      getUserInfo();
-    }, []);
+   
+   
     const onClickSettingItem = (settingItem: any) => {
       const { settingType, link } = settingItem;
       if (link) {
@@ -172,7 +163,7 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
                 {/* TODO!!! connected wallet address */}
                 <div className="accountInfo">
                   <p>PADO Account</p>
-                  <p>{'0x' + address}</p>
+                  <p>{walletAddress}</p>
                 </div>
               </div>
             </header>

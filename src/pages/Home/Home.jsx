@@ -7,11 +7,10 @@ import AsideAnimation from '@/components/Layout/AsideAnimation';
 import { postMsg } from '@/utils/utils';
 import { requestSignTypedData } from '@/services/wallets/utils';
 import { getUserIdentity } from '@/services/api/user';
-
+import { initWalletAddressActionAsync } from '@/store/actions';
 import './Home.sass';
 
 const Home = memo(() => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -22,13 +21,13 @@ const Home = memo(() => {
       if (message.resMethodName === 'create') {
         console.log('page_get:create:', message.res);
         if (message.res) {
-          const { privateKey } = await chrome.storage.local.get([
-            'privateKey',
-          ]);
-          const privateKeyStr = privateKey?.substr(2)
+          const { privateKey } = await chrome.storage.local.get(['privateKey']);
+          const privateKeyStr = privateKey?.substr(2);
           // const address = message.res.toLowerCase();
           const address = message.res;
           const timestamp = +new Date() + '';
+          await chrome.storage.local.set({ padoCreatedWalletAddress: address });
+          await dispatch(initWalletAddressActionAsync());
 
           try {
             const signature = await requestSignTypedData(
@@ -50,7 +49,7 @@ const Home = memo(() => {
                   token: bearerToken,
                 }),
               });
-              navigate('/events')
+              navigate('/events');
             }
           } catch (e) {
             console.log('handleClickStart error', e);
@@ -69,9 +68,7 @@ const Home = memo(() => {
   }, [padoServicePort]);
 
   const checkActiveStep = useCallback(async () => {
-    let { userInfo } = await chrome.storage.local.get([
-      'userInfo',
-    ]);
+    let { userInfo } = await chrome.storage.local.get(['userInfo']);
     if (userInfo) {
       navigate('/lock');
       return true;

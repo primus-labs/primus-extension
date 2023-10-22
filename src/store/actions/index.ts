@@ -267,10 +267,13 @@ export const initUserInfoActionAsync = () => {
 };
 export const initWalletAddressActionAsync = () => {
   return async (dispatch: any) => {
-    const { keyStore } = await chrome.storage.local.get(['keyStore']);
+    const { keyStore, padoCreatedWalletAddress } =
+      await chrome.storage.local.get(['keyStore', 'padoCreatedWalletAddress']);
     if (keyStore) {
       const { address } = JSON.parse(keyStore);
       dispatch(setWalletAddressAction('0x' + address));
+    } else {
+      dispatch(setWalletAddressAction(padoCreatedWalletAddress));
     }
   };
 };
