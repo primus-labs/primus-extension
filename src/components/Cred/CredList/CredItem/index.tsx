@@ -39,7 +39,6 @@ interface CredTypeListProps {
 }
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
-    console.log('CredItem', item);
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
     const [expand, setExpand] = useState(false);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);

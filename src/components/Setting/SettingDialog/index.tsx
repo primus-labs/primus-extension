@@ -160,7 +160,6 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
               </div>
               <div className="baseInfo">
                 <h6>Hi</h6>
-                {/* TODO!!! connected wallet address */}
                 <div className="accountInfo">
                   <p>PADO Account</p>
                   <p>{walletAddress}</p>

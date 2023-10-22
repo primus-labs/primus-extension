@@ -52,13 +52,19 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
     }
   }, [allSourcesList, activeTab, fromEvents]);
   const activeTabList = useMemo(() => {
-    let supportAttestDataSourceTypeList = allSourcesList.filter((i) =>
-      supportAttestDataSourceNameList.includes(i.name)
-    );
-    let newL: string[] = supportAttestDataSourceTypeList.map((i) => i.type);
-    newL = [...new Set(newL)];
+    let newL: string[];
+    if (fromEvents) {
+      let supportAttestDataSourceTypeList = allSourcesList.filter((i) =>
+        supportAttestDataSourceNameList.includes(i.name)
+      );
+      newL = supportAttestDataSourceTypeList.map((i) => i.type);
+      newL = [...new Set(newL)];
+    } else {
+      newL = allSourcesList.map((i) => i.type);
+      newL = [...new Set(newL)];
+    }
     return newL;
-  }, [allSourcesList]);
+  }, [allSourcesList, fromEvents]);
 
   return (
     <div className="SourceGroups">
