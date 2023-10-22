@@ -98,7 +98,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
     }, [headerType]);
     const onChange = useCallback(
       (i: any) => {
-        console.log('222222onChange', i);
+        // console.log('222222onChange', i);
         if (!requireItem) {
           return;
         }
@@ -112,7 +112,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
           setErrorTip(undefined);
         }
       },
-      [activeName,requireItem]
+      [,requireItem]
     );
     return (
       <PMask onClose={onClose} closeable={!fromEvents}>

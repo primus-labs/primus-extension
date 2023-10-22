@@ -44,19 +44,23 @@
       width: 161px
       height: 56px
       border-radius: 100px
-      color: #fff
+      color: var(--Button-default, #515758)
       border-radius: 100px
-      background: var(--Button-default, #515758)
+      border: 1px solid var(--Button-default, #515758)
+      background-color: transparent
       @extend .frcc
-
       /* Headline 5 */
       font-family: Inter
       font-size: 16px
       font-style: normal
       font-weight: 600
       line-height: 24px /* 150% */
-      &:hover
-        background: var(--Button-active, #252C2E)
+      &:hover,&:active
+        border:0
+        background-color: var(--Button-active, #252C2E)
+        color: var(--bg-default, #FFF)
+      
+        
 @media (max-width:1680px)
   .adSpace
     padding: 0 60px
