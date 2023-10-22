@@ -40,6 +40,7 @@ export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
 const EASINFOMAP = {
   development: {
     'Linea Goerli': {
+      showName: 'Linea',
       icon: iconNetworkLinea,
       title: 'Linea Goerli',
       rpcUrl:
@@ -82,6 +83,7 @@ const EASINFOMAP = {
       transactionDetailUrl: 'https://goerli.lineascan.build/tx',
     },
     Sepolia: {
+      showName: 'Sepolia',
       icon: iconUpChainEthereum,
       title: 'Sepolia',
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
@@ -124,6 +126,7 @@ const EASINFOMAP = {
     },
 
     ArbitrumOne: {
+      showName: 'Arbitrum',
       icon: iconArbitrum,
       title: 'ArbitrumOne',
       disabled: true,
@@ -155,6 +158,7 @@ const EASINFOMAP = {
       blockExplorerUrls: ['https://arbiscan.io'],
     },
     Polygon: {
+      showName: 'Polygon',
       icon: iconPolygon,
       title: 'Polygon',
       disabled: true,
@@ -178,6 +182,7 @@ const EASINFOMAP = {
       },
     },
     BNB: {
+      showName: 'BNB',
       icon: iconBinance,
       title: 'BNB',
       disabled: true,
@@ -207,6 +212,7 @@ const EASINFOMAP = {
   },
   test: {
     Sepolia: {
+      showName: 'Sepolia',
       icon: iconUpChainEthereum,
       title: 'Sepolia',
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
@@ -239,6 +245,7 @@ const EASINFOMAP = {
       blockExplorerUrls: ['https://sepolia.etherscan.io'],
     },
     Polygon: {
+      showName: 'Polygon',
       icon: iconPolygon,
       title: 'Polygon',
       disabled: true,
@@ -262,6 +269,7 @@ const EASINFOMAP = {
       },
     },
     BNB: {
+      showName: 'BNB',
       icon: iconBinance,
       title: 'BNB',
       disabled: true,
@@ -291,6 +299,7 @@ const EASINFOMAP = {
   },
   production: {
     'Linea Goerli': {
+      showName: 'Linea',
       icon: iconNetworkLinea,
       title: 'Linea Goerli',
       rpcUrl: 'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
@@ -330,6 +339,7 @@ const EASINFOMAP = {
       transactionDetailUrl: 'https://lineascan.build/tx',
     },
     ArbitrumOne: {
+      showName: 'Arbitrum',
       icon: iconArbitrum,
       title: 'ArbitrumOne',
       rpcUrl: 'https://arb1.arbitrum.io/rpc',
@@ -370,6 +380,7 @@ const EASINFOMAP = {
     },
 
     Ethereum: {
+      showName: 'Ethereum',
       icon: iconUpChainEthereum,
       title: 'Ethereum',
       disabled: true,
@@ -386,6 +397,7 @@ const EASINFOMAP = {
       blockExplorerUrls: ['https://etherscan.io/'],
     },
     BNB: {
+      showName: 'BNB',
       icon: iconBinance,
       title: 'BNB',
       disabled: true,
@@ -413,6 +425,7 @@ const EASINFOMAP = {
       blockExplorerUrls: ['https://testnet.bscscan.com/'],
     },
     Polygon: {
+      showName: 'Polygon',
       icon: iconPolygon,
       title: 'Polygon',
       disabled: true,

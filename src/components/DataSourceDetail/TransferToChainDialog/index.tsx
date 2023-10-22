@@ -6,13 +6,15 @@ import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
+import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup';
 import rightArrow from '@/assets/img/rightArrow.svg';
 
 import './index.sass';
 
 type ToolItem = {
   icon: any;
-  title: any;
+  name: any;
+  value: any;
   disabled?: boolean;
 };
 interface TransferToChainDialogProps {
@@ -73,14 +75,22 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
         return list.filter((item, idx) => idx !== 0);
       }
     }, [list, flag]);
-
+    const activeSourceList = useMemo(() => {
+      const newL = list.map(i => {
+        const j:any= { ...i }
+        j.value = i.title
+        j.name = i.showName
+        return j
+      })
+      return newL
+    }, [list]);
     const liClassName = useCallback(
       (item: ToolItem) => {
         let liCN = 'networkItem';
         if (!requireItem) {
           liCN += ' forbid';
         }
-        if (item?.title === activeName) {
+        if (item?.value === activeName) {
           liCN += ' active';
         }
         if (item?.disabled) {
@@ -91,6 +101,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
       },
       [activeName, requireItem]
     );
+
     const handleClickBack = useCallback(() => {
       onCancel();
     }, [onCancel]);
@@ -113,10 +124,10 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
       if (item?.disabled) {
         return;
       }
-      if (item?.title === activeName) {
+      if (item?.value === activeName) {
         setActiveName(undefined);
       } else {
-        setActiveName(item?.title);
+        setActiveName(item?.value);
         setErrorTip(undefined);
       }
     };
@@ -135,6 +146,24 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
       }
       return defaultCN;
     }, [headerType]);
+    const onChange = useCallback(
+      (i: any) => {
+        console.log('222222onChange',i)
+        if (!requireItem) {
+          return;
+        }
+        if (i?.disabled) {
+          return;
+        }
+        if (i?.value === activeName) {
+          setActiveName(undefined);
+        } else {
+          setActiveName(i?.value);
+          setErrorTip(undefined);
+        }
+      },
+      [ requireItem]
+    );
     return (
       <PMask onClose={onClose} closeable={!fromEvents}>
         <div className={wrapperClassName}>
@@ -151,8 +180,12 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
             )}
             <h1>{title}</h1>
             <h2>{desc}</h2>
-            <h6>{listTitle}</h6>
-            <ul className="networkList">
+            <SourceGroup
+              onChange={
+                onChange}
+              list={activeSourceList}
+            />
+            {/* <ul className="networkList">
               {topList.map((item) => {
                 return (
                   <li
@@ -164,14 +197,14 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
                   </li>
                 );
               })}
-            </ul>
+            </ul> */}
             {/* <div
               className={liClassName(list[0])}
               onClick={() => handleClickNetwork(list[0])}
             >
               <img src={list[0]?.icon} alt="" />
             </div> */}
-            <div className="dividerWrapper">
+            {/* <div className="dividerWrapper">
               <i></i>
               <div className="divider">{listSeparator}</div>
               <i></i>
@@ -188,7 +221,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
                   </li>
                 );
               })}
-            </ul>
+            </ul> */}
           </main>
           <button className="nextBtn" onClick={handleClickNext}>
             {errorTip && (

@@ -335,10 +335,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       <div className="credSendToChainWrapper">
         {visible && step === 3 && (
           <TransferToChainDialog
-            title="Provide Attestation"
-            desc="Provide your attestation for on-chain applications."
+            title="Submit Attestation"
+            desc="Submit your attestation to one of the following blockchains."
             list={fromEvents ? formatChainList : ONCHAINLIST}
-            tip="Please select one chain to provide attestation"
+            tip="Please select one chain to submit attestation"
             checked={false}
             backable={false}
             headerType={

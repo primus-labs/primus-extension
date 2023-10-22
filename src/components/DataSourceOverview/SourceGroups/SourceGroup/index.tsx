@@ -15,6 +15,7 @@ interface ConnectDataSourceListProps {
 }
 const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
   ({ mutiple = false, onChange, list }) => {
+    console.log('222222ConnectDataSourceList',list);
     const [activeSource, setActiveSource] = useState<ListItem>();
     const [activeSources, setActiveSources] = useState<ListItem[]>([]);
 
