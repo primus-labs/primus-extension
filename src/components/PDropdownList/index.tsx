@@ -39,7 +39,7 @@ const PDropdownList: React.FC<DataSourcesDialogProps> = memo(
       onClick(item.text);
     };
     return (
-      <ul className="dropdown">
+      <ul className="padodropdown">
         {list.map((item) => {
           return (
             <li

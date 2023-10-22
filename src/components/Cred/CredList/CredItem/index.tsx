@@ -230,12 +230,14 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   ) : (
                     <div
                       className={
-                        item.reqType === 'web' ? 'iconWrapper disabled' : 'iconWrapper'
+                        item.reqType === 'web'
+                          ? 'iconWrapper disabled'
+                          : 'iconWrapper'
                       }
                     >
                       <img
                         src={iconBind}
-                        className='iconBind'
+                        className="iconBind"
                         alt=""
                         onClick={handleClickBind}
                       />
