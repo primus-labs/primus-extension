@@ -125,27 +125,27 @@ const PageHeader = memo(() => {
   const formatNavs = useMemo(() => {
     let arr: NavItem[] = [
       {
+        icon: iconSetting,
+        text: 'Setting',
+      },
+      {
         icon: iconRewards,
         text: 'Rewards',
       },
     ];
-    if (userPassword) {
-      arr.push(
-        {
-          icon: iconSetting,
-          text: 'Setting',
-        },
-        {
-          icon: iconLock,
-          text: 'Lock Account',
-        }
-      );
-    }
     if (connectedWallet?.address) {
       arr.push({
         icon: iconWallet,
         text: 'Disconnect',
       });
+    }
+    if (userPassword) {
+      arr.push(
+        {
+          icon: iconLock,
+          text: 'Lock Account',
+        }
+      );
     }
     return arr;
   }, [userPassword, connectedWallet]);
