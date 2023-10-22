@@ -830,11 +830,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       }
     }, [visible, activeSource, activeCred, fromEvents]);
 
-    useEffect(() => {
-      if (!activeRequest?.type) {
-        onClose();
-      }
-    }, [activeRequest?.type, onClose]);
+    // useEffect(() => {
+    //   if (!activeRequest?.type) {
+    //     onClose();
+    //   }
+    // }, [activeRequest?.type, onClose]);
     const startOfflineFn = useCallback(async () => {
       const padoUrl = await getPadoUrl();
       const proxyUrl = await getProxyUrl();

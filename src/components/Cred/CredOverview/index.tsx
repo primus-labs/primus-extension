@@ -157,7 +157,6 @@ const CredOverview = memo(() => {
     await initCredList();
     setBindPolygonidVisible(false);
   }, [initCredList]);
-
   const handleCloseAddDialog = useCallback(
     (addSucFlag?: any) => {
       setActiveSourceName(undefined);
@@ -173,6 +172,8 @@ const CredOverview = memo(() => {
           const queryKey = `${fromEvents}Process`;
           const targetUrl = `/events?${queryKey}=error`;
           navigate(targetUrl);
+        } else if (addSucFlag === undefined) {
+          navigate('/cred');
         }
       }
     },
