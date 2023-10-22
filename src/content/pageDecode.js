@@ -186,7 +186,7 @@ window.onload = () => {
         padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>Not eligible</span></p>`;
       } else if (result === 'warn') {
         const str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
-        const str2 = `<p class="warn-tip">Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
+        const str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
         padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
         const padoCenterBottomOKNode = createDomElement(
           `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
