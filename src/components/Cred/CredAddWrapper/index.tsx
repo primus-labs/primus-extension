@@ -754,8 +754,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             retdesc.indexOf('WebSocket On Error')
           ) {
             requestResObj = {
-              type: 'error',
-              title: 'Ooops',
+              type: 'warn',
+              title: 'Oops',
               desc: 'Unstable internet connection. Please try again later.',
             };
           }
