@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate,useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WALLETLIST } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import PTabsNew from '@/components/PTabsNew';
@@ -15,12 +15,15 @@ import iconGreater from '@/assets/img/iconGreater.svg';
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
 import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import iconWebDataSource from '@/assets/img/credit/iconWebDataSource.svg';
+import iconWebDataSourceBiance from '@/assets/img/credit/iconWebDataSourceBiance.svg';
+import iconWebDataSourceCoinbase from '@/assets/img/credit/iconWebDataSourceCoinbase.svg';
+import iconWebDataSourceOKX from '@/assets/img/credit/iconWebDataSourceOKX.svg';
 import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { UserState } from '@/types/store';
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { PROOFTYPEITEM, AttestionForm } from '@/types/cred';
-import type {TabItem} from '@/components/PTabsNew'
+import type { TabItem } from '@/components/PTabsNew';
 import './index.sass';
 
 interface AttestationDialogProps {
@@ -71,12 +74,13 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
     const walletAddress = useSelector(
-      (state: UserState) => state.walletAddress)
+      (state: UserState) => state.walletAddress
+    );
     const webProofTypes = useSelector(
       (state: UserState) => state.webProofTypes
     );
     const activeWebProofTypes = useMemo(() => {
-      return webProofTypes.filter(i => i.category === 'IDENTIFICATION_PROOF')
+      return webProofTypes.filter((i) => i.category === 'IDENTIFICATION_PROOF');
     }, [webProofTypes]);
 
     const navigate = useNavigate();
@@ -93,25 +97,44 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [identityList]);
     const webDataSourceList = useMemo(() => {
-      let l: any = [];
-      activeWebProofTypes.forEach((r) => {
-        const existObj = l.find((i: any) => i.name === r.dataSource);
-        if (!existObj) {
-          l.push({
-            name: r.dataSource,
-            icon: r.bgImg,
-          });
-        }
-      });
+      const l = [
+        {
+          name: 'binance',
+          icon: iconWebDataSourceBiance,
+          disabled: false,
+        },
+        {
+          name: 'coinbase',
+          icon: iconWebDataSourceCoinbase,
+          disabled: true,
+        },
+        {
+          name: 'okx',
+          icon: iconWebDataSourceOKX,
+          disabled: true,
+        },
+      ];
+      // let l: any = [];
+      // activeWebProofTypes.forEach((r) => {
+      //   const existObj = l.find((i: any) => i.name === r.dataSource);
+      //   if (!existObj) {
+      //     l.push({
+      //       name: r.dataSource,
+      //       icon: r.bgImg,
+      //     });
+      //   }
+      // });
       return l;
-    }, [activeWebProofTypes]);
+    }, []);
     const activeWebTemplate = useMemo(() => {
-      const aWT = activeWebProofTypes.find((i) => i.id === activeCred?.templateId);
+      const aWT = activeWebProofTypes.find(
+        (i) => i.id === activeCred?.templateId
+      );
       return aWT;
     }, [activeWebProofTypes, activeCred?.templateId]);
     const activeWebDataSourceObj = useMemo(() => {
       return webDataSourceList.find(
-        (i:any) => i.name === activeWebTemplate?.dataSource
+        (i: any) => i.name === activeWebTemplate?.dataSource
       );
     }, [activeWebTemplate, webDataSourceList]);
     const emptyCon = useMemo(() => {
@@ -275,19 +298,19 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [baseValueArr]);
     const formatTabList = useMemo(() => {
       if (fromEvents) {
-        const newList = tabList.map(i => {
+        const newList = tabList.map((i) => {
           if (
             i.text !== fromEventsMap[fromEvents as keyof typeof fromEventsMap]
           ) {
             i.disabled = true;
           }
-          return i
-        })
-        return newList
+          return i;
+        });
+        return newList;
       } else {
-        return [...tabList]
+        return [...tabList];
       }
-    },[fromEvents])
+    }, [fromEvents]);
 
     const handleChangeSelect = useCallback((val: string) => {
       if (!val) {
@@ -302,11 +325,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const handleChangeTab = useCallback((val: string) => {
       setActiveTab(val);
     }, []);
-    
+
     const onChangeWebDataSource = useCallback(
       (i: any) => {
         if (!activeIdentityType) {
-          setErrorTip('Please select the proof content first')
+          setErrorTip('Please select the proof content first');
         } else {
           setActiveWebDataSource(i.name);
         }
@@ -406,7 +429,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const handleClickData = (item: ConnectSourceType) => {
       if (!activeIdentityType) {
         setErrorTip('Please select the proof content first');
-      } 
+      }
       if (!activeIdentityType || activeCred) {
         return;
       }
@@ -506,9 +529,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       if (baseValueArr.length === 1) setActiveBaseValue(baseValueArr[0]);
     }, [baseValueArr]);
     useEffect(() => {
-      const aT = fromEventsMap[fromEvents as keyof typeof fromEventsMap];
-      setActiveTab(aT);
-    },[fromEvents])
+      if (fromEvents) {
+        const aT = fromEventsMap[fromEvents as keyof typeof fromEventsMap];
+        setActiveTab(aT);
+      }
+    }, [fromEvents]);
 
     return (
       <PMask onClose={onClose}>

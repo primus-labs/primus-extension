@@ -6,6 +6,7 @@ type DataSourceItemType = {
   icon: any;
   name: string;
   id?: string;
+  disabled?: boolean
 };
 interface ConnectDataSourceListProps {
   val?: any;
@@ -23,7 +24,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         if (activeSource?.name === item.name) {
           defaultClassName += ' active';
         }
-        if (allDisabled) {
+        if (allDisabled || item.disabled) {
           defaultClassName += ' disabled';
         }
         return defaultClassName;

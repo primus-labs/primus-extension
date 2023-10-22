@@ -924,7 +924,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               type={activeAttestationType}
               activeSourceName={activeSourceName}
               activeCred={activeCred}
-              onBack={onBackAttestationDialog}
+              onBack={
+                fromEvents === 'Badges' ? undefined : onBackAttestationDialog
+              }
               onClose={handleCloseMask}
               onSubmit={onSubmitAttestationDialog}
             />
