@@ -10,7 +10,6 @@ import {
 import type { ExchangeMeta } from '@/types/dataSource';
 
 import './index.sass';
-import { supportAttestDataSourceNameList } from '../../../config/constants';
 
 interface SourceGroupsProps {
   onChange: (item: ExchangeMeta) => void;

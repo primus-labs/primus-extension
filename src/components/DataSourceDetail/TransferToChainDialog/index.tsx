@@ -15,6 +15,8 @@ type ToolItem = {
   icon: any;
   name: any;
   value: any;
+  title: string;
+  showName: string;
   disabled?: boolean;
 };
 interface TransferToChainDialogProps {
@@ -57,24 +59,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
     const fromEvents = searchParams.get('fromEvents');
     const [activeName, setActiveName] = useState<string>();
     const [errorTip, setErrorTip] = useState<string>();
-    const flag = useMemo(() => {
-      const f = list.some((item, idx) => item.disabled);
-      return f;
-    }, [list]);
-    const topList = useMemo(() => {
-      if (flag) {
-        return list.filter((item, idx) => !item.disabled);
-      } else {
-        return list.filter((item, idx) => idx === 0);
-      }
-    }, [list, flag]);
-    const activeList = useMemo(() => {
-      if (flag) {
-        return list.filter((item, idx) => item.disabled);
-      } else {
-        return list.filter((item, idx) => idx !== 0);
-      }
-    }, [list, flag]);
+   
     const activeSourceList = useMemo(() => {
       const newL = list.map(i => {
         const j:any= { ...i }
@@ -84,23 +69,6 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
       })
       return newL
     }, [list]);
-    const liClassName = useCallback(
-      (item: ToolItem) => {
-        let liCN = 'networkItem';
-        if (!requireItem) {
-          liCN += ' forbid';
-        }
-        if (item?.value === activeName) {
-          liCN += ' active';
-        }
-        if (item?.disabled) {
-          liCN += ' forbid';
-          liCN += ' disabled';
-        }
-        return liCN;
-      },
-      [activeName, requireItem]
-    );
 
     const handleClickBack = useCallback(() => {
       onCancel();
@@ -117,25 +85,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
         onSubmit();
       }
     };
-    const handleClickNetwork = (item: ToolItem | undefined) => {
-      if (!requireItem) {
-        return;
-      }
-      if (item?.disabled) {
-        return;
-      }
-      if (item?.value === activeName) {
-        setActiveName(undefined);
-      } else {
-        setActiveName(item?.value);
-        setErrorTip(undefined);
-      }
-    };
-
-    // useEffect(() => {
-    // setActiveTool(list[0]);
-    // setActiveName(list[0].title)
-    // }, [list]);
+  
     const wrapperClassName = useMemo(() => {
       let defaultCN = 'padoDialog TransferToChainDialog';
       if (headerType === 'attestation') {
@@ -148,7 +98,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
     }, [headerType]);
     const onChange = useCallback(
       (i: any) => {
-        console.log('222222onChange',i)
+        console.log('222222onChange', i);
         if (!requireItem) {
           return;
         }
@@ -162,7 +112,7 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
           setErrorTip(undefined);
         }
       },
-      [ requireItem]
+      [activeName,requireItem]
     );
     return (
       <PMask onClose={onClose} closeable={!fromEvents}>
