@@ -132,8 +132,9 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
       if (!userPassword) {
         obj.splice(0, 1);
       } else {
+        
         if (connectedSourceList?.length === 0) {
-          obj[0] = obj[0].filter((i) => i.moduleType === 'data');
+          obj[0] = obj[0].filter((i) => i.moduleType === 'wallet');
         }
       }
       return obj;
