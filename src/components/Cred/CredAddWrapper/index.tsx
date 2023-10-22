@@ -907,7 +907,17 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         return null;
       }
     }, [activeRequest?.type]);
-
+    const footerButton = useMemo(() => {
+      if (fromEvents) {
+        return (
+          <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
+            <span>Submit</span>
+          </button>
+        );
+      } else {
+        return null;
+      }
+    }, [fromEvents, onSubmitActiveRequestDialog]);
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (
@@ -946,6 +956,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             title={activeRequest?.title}
             desc={activeRequest?.desc}
             headerEl={resultDialogHeaderEl}
+            footerButton={footerButton}
             tip={footerTip}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveRequestDialog}

@@ -337,6 +337,17 @@ const DataSourceOverview = memo(() => {
       handleAdd();
     }
   }, [fromEvents, handleAdd]);
+  const footerButton = useMemo(() => {
+    if (fromEvents === 'NFTs') {
+      return (
+        <button className="nextBtn" onClick={onSubmitAddSourceSucDialog}>
+          <span>Generate Attestation</span>
+        </button>
+      );
+    } else {
+      return null;
+    }
+  }, [fromEvents, onSubmitAddSourceSucDialog]);
 
   return (
     <div className="pageDataSourceOverview">
@@ -447,6 +458,7 @@ const DataSourceOverview = memo(() => {
           onSubmit={onSubmitAddSourceSucDialog}
           activeSource={activeSource}
           desc="Data Connected!"
+          footerButton={footerButton}
         />
       )}
       {activeSourceType !== 'All' && activeSourceType !== 'Identity' && (

@@ -45,7 +45,7 @@ const sourcesLabel = {
 };
 const fromEventsMap = {
   Badges: 'Webpage Data',
-  NFTs: 'APT Data',
+  NFTs: 'API Data',
 };
 const tabList: TabItem[] = [
   {
@@ -530,6 +530,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [baseValueArr]);
     useEffect(() => {
       if (fromEvents) {
+        debugger
         const aT = fromEventsMap[fromEvents as keyof typeof fromEventsMap];
         setActiveTab(aT);
       }

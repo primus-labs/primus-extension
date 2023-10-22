@@ -91,7 +91,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
             <h2>{desc}</h2>
           </main>
           {type !== 'loading' && footerButton}
-          {tip}
+          {type === 'loading' && tip}
         </div>
       </PMask>
     );
