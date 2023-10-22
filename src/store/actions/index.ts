@@ -221,7 +221,7 @@ const getChainAssets = async (signature: string,
 
     const eventInfo = {
       eventType: 'DATA_SOURCE_INIT',
-      rawData: {type: 'Assets', dataSource: 'onchain'},
+      rawData: {type: 'Assets-ConnectWallet', dataSource: 'onchain'},
     };
     eventReport(eventInfo);
   }
