@@ -37,7 +37,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
         </div>
       </div>
       <button className="right" onClick={onClick}>
-        <span>Claim Now</span>
+        <span>Join Now</span>
         <img src={iconRightArrow} alt="" className="suffix" />
       </button>
     </div>

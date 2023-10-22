@@ -53,9 +53,8 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
             </p>
           </div>
         </main>
-
         <button className="nextBtn gray" onClick={hanldeSubmit}>
-          <span>Claim</span>
+          <span>Claim Now</span>
         </button>
       </div>
     </PMask>

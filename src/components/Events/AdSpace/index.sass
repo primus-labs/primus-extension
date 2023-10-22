@@ -8,7 +8,6 @@
   padding: 0 53px 0 48px
   border-radius: 24px
   background: linear-gradient(270deg, #ABFFE1 0%, #78E1FB 100%)
-
   &.adSpaceNft
     background: var(--bg-60, rgba(255, 255, 255, 0.60))
     .left
@@ -45,10 +44,10 @@
       width: 161px
       height: 56px
       border-radius: 100px
-      border: 1px solid var(--Button-default, #515758)
-      background-color: transparent
+      color: #fff
+      border-radius: 100px
+      background: var(--Button-default, #515758)
       @extend .frcc
-      color: var(--Button-default, #515758)
 
       /* Headline 5 */
       font-family: Inter
@@ -57,9 +56,7 @@
       font-weight: 600
       line-height: 24px /* 150% */
       &:hover
-        background: #515758
-        border: 0
-        color: #fff
+        background: var(--Button-active, #252C2E)
 @media (max-width:1680px)
   .adSpace
     padding: 0 60px
@@ -73,7 +70,6 @@
           gap: 12px
           .ct
             color: #000
-
             /* Headline 3 */
             font-family: Inter
             font-size: 24px
@@ -90,6 +86,6 @@
             font-weight: 400
             line-height: 20px /* 142.857% */
       .right
-        width: 120px
+        width: 132px
         height: 48px
       
