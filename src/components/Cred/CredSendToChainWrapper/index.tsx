@@ -256,7 +256,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             setActiveSendToChainRequest({
               type: 'error',
               title: 'Unable to proceed',
-              desc: errorDescEl,
+              desc: 'Your balance may be insufficient',
             });
           }
         };
