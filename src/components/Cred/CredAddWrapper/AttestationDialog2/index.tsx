@@ -506,7 +506,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     },[fromEvents])
 
     return (
-      <PMask onClose={onClose} closeable={!fromEvents}>
+      <PMask onClose={onClose}>
         <div className="padoDialog attestationDialog">
           {!!onBack && <PBack onBack={onBack} />}
           <main>

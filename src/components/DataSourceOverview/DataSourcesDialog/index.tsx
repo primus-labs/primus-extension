@@ -39,7 +39,7 @@ const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
     };
 
     return (
-      <PMask onClose={onClose} closeable={!fromEvents}>
+      <PMask onClose={onClose}>
         <div className="padoDialog dataSourcesDialog">
           <main>
             <h1>

@@ -61,7 +61,7 @@ const fromEvents = searchParams.get('fromEvents');
       setActiveType(type);
     }, [type]);
     return (
-      <PMask onClose={onClose} closeable={!fromEvents}>
+      <PMask onClose={onClose}>
         <div className="padoDialog credTypesDialog">
           <main>
             <h1>Create Your Proof</h1>
