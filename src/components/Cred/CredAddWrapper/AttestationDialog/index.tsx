@@ -277,6 +277,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     };
     const handleClickData = (item: ConnectSourceType) => {
       if (type === 'TOKEN_HOLDINGS' && !activeToken) {
+        setErrorTip('Please select one data source');
         return;
       }
       if (activeSourceName) {
