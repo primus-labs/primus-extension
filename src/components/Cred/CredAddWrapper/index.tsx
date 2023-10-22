@@ -895,6 +895,19 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         chrome.runtime.onMessage.removeListener(listerFn);
       };
     }, [activeRequest?.type]);
+    const footerTip = useMemo(() => {
+      if (activeRequest?.type === 'loading') {
+        return (
+          <div className="safeTip">
+            <p>PADO will not access your private data.</p>
+            <p>We uses IZK to ensure your privacy.</p>
+          </div>
+        );
+      } else {
+        return null;
+      }
+    }, [activeRequest?.type]);
+
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (
@@ -931,6 +944,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             title={activeRequest?.title}
             desc={activeRequest?.desc}
             headerEl={resultDialogHeaderEl}
+            tip={footerTip}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveRequestDialog}
           />

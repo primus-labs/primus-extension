@@ -230,7 +230,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               title: 'Congratulations',
               desc: 'Your attestation is recorded on-chain!',
             });
-            debugger
 
             let upChainType = upChainParams.type;
             if (upChainParams.type === 'web') {

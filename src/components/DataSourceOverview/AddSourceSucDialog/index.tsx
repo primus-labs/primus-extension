@@ -23,6 +23,7 @@ interface AddSourceSucDialogProps {
   closeable?: boolean;
   tip?: any;
   headerEl?: any;
+  showBottom?: boolean;
 }
 
 const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
@@ -39,6 +40,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     footerButton,
     closeable,
     tip,
+    showBottom,
   }) => {
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -58,11 +60,18 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
         if (fromEvents) {
           return !fromEvents;
         } else {
-          return true
+          return true;
         }
       }
-      return closeable
-    }, [closeable,fromEvents]);
+      return closeable;
+    }, [closeable, fromEvents]);
+    const formatShowBottom = useMemo(() => {
+      if (showBottom) {
+        return showBottom;
+      } else {
+        return type !== 'loading';
+      }
+    }, [showBottom, type]);
     return (
       <PMask onClose={onClose} closeable={formatCloseable}>
         <div className="padoDialog addDataSourceSucDialog">

@@ -1,9 +1,19 @@
-
+@import '@/assets/css/pFlex.sass'
 .credAddWrapper
   .addDataSourceSucDialog
     main
       >h2
         width: 100%
+  .safeTip
+    @extend .fcsc
+    color: var(--Icon-default, #A7AAAA)
+    text-align: center
+    /* Text 2 */
+    font-family: Inter
+    font-size: 12px
+    font-style: normal
+    font-weight: 400
+    line-height: 16px /* 133.333% */
 @media (max-width: 1680px)
   .credAddWrapper
     .addDataSourceSucDialog

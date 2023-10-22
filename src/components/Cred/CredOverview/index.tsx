@@ -138,7 +138,6 @@ const CredOverview = memo(() => {
       if (connectedWallet?.address) {
         setAddDialogVisible(true);
       } else {
-        debugger
         setConnectDialogVisible(true);
       }
     },
@@ -150,7 +149,6 @@ const CredOverview = memo(() => {
     if (connectedWallet?.address) {
       setAddDialogVisible(true);
     } else {
-      debugger
       setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address]);
