@@ -162,6 +162,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             rawParam: activeCred,
             greaterThanBaseValue: true,
             signature: activeCred.signature,
+            metamaskAddress: connectedWallet?.address
           };
 
           if (activeCred.type === 'IDENTIFICATION_PROOF') {
