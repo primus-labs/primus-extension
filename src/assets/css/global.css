@@ -14,3 +14,22 @@ body {
   width: 1200px;
   margin: 0 auto;
 }
+
+:root{
+  --bg-default: #FFF;
+  --bg-60: rgba(255, 255, 255, 0.60);
+  --bg-80: rgba(255, 255, 255, 0.80);
+  --White-Linear: linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0.2%, rgba(255, 255, 255, 0.00) 100%);
+  --Badge: rgba(10, 18, 20, 0.05);
+  --Line: #DFE0E0;
+  --Text-headline: #0A1214;
+  --Text-body: #515758;
+  --Text-hint: #7B7F80;
+  --icon-active: #6C7172;
+  --Icon-default: #A7AAAA;
+  --Button-active: #252C2E;
+  --Button-default: #515758;
+  --Warning: #F42D2D;
+  --Info: #0BB4FE;
+  --Linear: linear-gradient(269deg, #70FFBA 0.52%, #78DEFF 100.71%);
+}
