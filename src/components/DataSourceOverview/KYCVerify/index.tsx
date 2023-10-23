@@ -86,7 +86,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
             }
             setPrivateKey(formatPrivate);
           } else {
-            alert('Failed to decrypt wallet');
+            //alert('Failed to decrypt wallet');
           }
           padoServicePort.onMessage.removeListener(padoServicePortListener);
         }
@@ -268,7 +268,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
       visible && privateKey && step === 1 && fetchConnectQrcodeValue();
     }, [privateKey, fetchConnectQrcodeValue, visible, step]);
     useEffect(() => {
-      decryptingKeyStore();
+       decryptingKeyStore();
     }, [decryptingKeyStore]);
     useEffect(() => {
       padoServicePort.onMessage.addListener(padoServicePortListener);

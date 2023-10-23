@@ -1,10 +1,20 @@
 import createMetaMaskProvider from 'metamask-extension-provider';
-
+import store from '@/store';
+import {
+  setConnectWalletActionAsync,
+  connectWalletAsync,
+} from '@/store/actions';
 var provider;
 
 export const connectWallet = async (targetNetwork) => {
   console.log('connect metamask');
   try {
+    if (provider && provider.on) {
+      provider.removeListener('chainChanged', handleChainChanged);
+      provider.removeListener('accountsChanged', handleAccountsChanged);
+      provider.removeListener('connect', handleConnect);
+      provider.removeListener('disconnect', handleDisconnect);
+    }
     provider = createMetaMaskProvider();
     const [accounts, chainId] = await Promise.all([
       provider.request({
@@ -29,7 +39,8 @@ export const connectWallet = async (targetNetwork) => {
     throw new Error(e);
   }
 };
-const switchChain = async (connectedChainId, targetNetwork) => {
+export const switchChain = async (connectedChainId, targetNetwork, p) => {
+  provider = p ?? provider;
   const { chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
     targetNetwork;
   const obj = {
@@ -118,10 +129,30 @@ const subscribeToEvents = () => {
 };
 
 const handleChainChanged = (chainId) => {
-  console.log('metamask chainId changes: ', chainId);
+  console.log('metamask chainId changes: ', chainId, provider);
+  const addr = provider.selectedAddress;
+  const name = store.getState().connectedWallet?.name;
+  store.dispatch(
+    setConnectWalletActionAsync({
+      name,
+      address: addr,
+      provider,
+    })
+  );
 };
 const handleAccountsChanged = (accounts) => {
-  console.log('metamask account changes: ', accounts);
+  console.log('metamask account changes: ', accounts, provider);
+  if (accounts.length > 0) {
+    const addr = provider.selectedAddress;
+    store.dispatch(
+      connectWalletAsync({
+        address: addr,
+        provider,
+      })
+    );
+  } else {
+    store.dispatch(setConnectWalletActionAsync(undefined));
+  }
 };
 const handleConnect = () => {
   console.log('metamask connected]');

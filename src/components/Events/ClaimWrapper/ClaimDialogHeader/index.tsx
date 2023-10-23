@@ -5,12 +5,15 @@ import './index.sass';
 
 interface ClaimDialogHeaderProps {
   title?: string;
+  illustration?: boolean;
 }
 const ClaimDialogHeaderDialog: FC<ClaimDialogHeaderProps> = memo(
-  ({ title = 'PADO Reward' }) => {
+  ({ title = 'PADO Reward', illustration = false }) => {
     return (
       <header className="claimDialogHeader">
-        <img className="illustration" src={bannerIllstration} alt="" />
+        {illustration && (
+          <img className="illustration" src={bannerIllstration} alt="" />
+        )}
         <span>{title}</span>
       </header>
     );

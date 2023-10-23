@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AttestationDialog from './AttestationDialog';
+import AttestationDialog2 from './AttestationDialog2';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
@@ -39,7 +40,6 @@ import {
   attestForPolygonId,
 } from '@/services/api/cred';
 import { submitUniswapTxProof } from '@/services/chains/erc721';
-
 
 import { DATASOURCEMAP } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
@@ -67,14 +67,18 @@ interface CredAddWrapperType {
   visible?: boolean;
   activeCred?: CredTypeItemType;
   activeSource?: string;
-  onSubmit: () => void;
+  onSubmit: (addSucFlag?: any) => void;
   onClose: () => void;
   type?: string;
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
-  ({ visible = true, activeCred, activeSource, onClose, onSubmit, type }) => {
+  ({ visible, activeCred, activeSource, onClose, onSubmit, type }) => {
+    const [credRequestId, setCredRequestId] = useState<string>();
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const [uniSwapProofParams, setUniSwapProofParams] = useState<any>({});
-    const [uniSwapProofRequestId, setUniSwapProofRequestId] = useState<string>('');
+    const [uniSwapProofRequestId, setUniSwapProofRequestId] =
+      useState<string>('');
     const [step, setStep] = useState(-1);
     const [activeAttestationType, setActiveAttestationType] =
       useState<string>('');
@@ -92,15 +96,36 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
+    const webProofTypes = useSelector(
+      (state: UserState) => state.webProofTypes
+    );
     const walletAddress = useSelector(
       (state: UserState) => state.walletAddress
     );
+    const connectedWallet = useSelector(
+      (state: UserState) => state.connectedWallet
+    );
 
-    const timeoutFn = useCallback(() => {
+    const timeoutFn = useCallback(async () => {
       console.log('120s timeout');
       if (activeRequest?.type === 'suc') {
         return;
       }
+      const { activeRequestAttestation } = await chrome.storage.local.get([
+        'activeRequestAttestation',
+      ]);
+      const parsedActiveRequestAttestation = activeRequestAttestation
+        ? JSON.parse(activeRequestAttestation)
+        : {};
+      if (parsedActiveRequestAttestation.reqType === 'web') {
+        chrome.runtime.sendMessage({
+          name: 'attestResult',
+          params: {
+            result: 'warn',
+          },
+        });
+      }
+
       setActiveRequest({
         type: 'warn',
         title: 'Something went wrong',
@@ -158,6 +183,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           }, BIGZERO);
         } else {
           const targetMap: AssetsMap = exSources[source].spotAccountTokenMap;
+
           totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
             const obj = targetMap[curr as keyof typeof targetMap];
             const curValue = obj.value;
@@ -315,9 +341,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               proof,
               salt,
               rootHash,
-              userIdentity: walletAddress,
+              userIdentity,
               source,
+              metamaskAddress: connectedWallet?.address,
               // sigFormat: 'EAS-BNB'
+              // TODO!!!
             };
             const {
               rc: rc2,
@@ -339,7 +367,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 requestid: activeRequestId + '',
                 source,
                 sourceUseridHash: '',
-                address: walletAddress,
+                address: connectedWallet?.address,
                 label,
                 credential,
                 ...result2,
@@ -379,8 +407,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         credentialsFromStore,
         requestConfigParams,
         initCredList,
-        walletAddress,
         activeCred?.requestid,
+        connectedWallet?.address,
       ]
     );
     const errorDescEl = useMemo(
@@ -394,7 +422,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     );
     const [pollingUniProofIntervalSwitch, setPollingUniProofIntervalSwitch] =
       useState<boolean>(false);
-    
+
     const pollingUniProofResult = useCallback(async () => {
       try {
         const { rc, result } = await getUniNFTResult({
@@ -407,7 +435,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           }
           // store nft & proof
           if (status === 'COMPLETE') {
-            const { transactionInput,proofWithPublicInputs, auxiBlkVerifyInfo } = proof;
+            const {
+              transactionInput,
+              proofWithPublicInputs,
+              auxiBlkVerifyInfo,
+            } = proof;
             // const { transactionHash } = uniSwapProofParams;
             const upperChainTxHash = await submitUniswapTxProof({
               txHash: transactionHash,
@@ -419,7 +451,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               ...uniSwapProofParams,
               timestamp: +new Date() + '',
               transactionHash: upperChainTxHash,
-              addressId: walletAddress,
+              addressId: connectedWallet?.address,
             });
             if (rc === 0) {
               // store result.result
@@ -429,7 +461,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       } catch {
       } finally {
       }
-    }, [uniSwapProofRequestId, uniSwapProofParams, walletAddress]);
+    }, [uniSwapProofRequestId, uniSwapProofParams, connectedWallet?.address]);
     useInterval(
       pollingUniProofResult,
       3000,
@@ -448,7 +480,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (!signature) {
           setActiveRequest({
             type: 'error',
-            title: 'Failed',
+            title: 'Unable to proceed',
             desc: errorDescEl,
           });
           return;
@@ -456,7 +488,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setUniSwapProofParams({
           signature,
           // address: curConnectedAddr,
-          address:'0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
+          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
           provider,
         });
         const { rc, result, msg } = await claimUniNFT({
@@ -498,7 +530,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       } catch (e) {
         setActiveRequest({
           type: 'error',
-          title: 'Failed',
+          title: 'Unable to proceed',
           desc: errorDescEl,
         });
       }
@@ -506,6 +538,28 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);
+        if (form?.proofClientType === 'Webpage Data') {
+          const currRequestObj = webProofTypes.find(
+            (r) => r.name === form.proofContent
+          );
+          if (form?.requestid) {
+            currRequestObj.requestid = form.requestid;
+          }
+          const currentWindowTabs = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+          });
+
+          await chrome.runtime.sendMessage({
+            type: 'pageDecode',
+            name: 'inject',
+            params: {
+              ...currRequestObj,
+            },
+            extensionTabId: currentWindowTabs[0].id,
+          });
+          return;
+        }
         setStep(2);
         let loadingObj = {
           type: 'loading',
@@ -556,6 +610,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         fetchAttestForAnt,
         activeCred?.did,
         fetchAttestForPolygonID,
+        webProofTypes,
       ]
     );
     const onBackAttestationDialog = useCallback(() => {
@@ -569,10 +624,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       ) {
         setStep(-1);
         initCredList();
-        onSubmit();
+        if (activeRequest?.type === 'suc') {
+          onSubmit(credRequestId);
+        } else {
+          onSubmit(false);
+        }
         return;
       }
-    }, [activeRequest?.type, initCredList, onSubmit]);
+    }, [activeRequest?.type, initCredList, onSubmit, credRequestId]);
 
     const clearFetchAttestationTimer = useCallback(() => {
       setIntervalSwitch(false);
@@ -608,16 +667,17 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, []);
     const getAttestationResultCallback = useCallback(
       async (res: any) => {
-        const { retcode, content } = JSON.parse(res);
+        const { retcode, content, retdesc } = JSON.parse(res);
+        const { activeRequestAttestation } = await chrome.storage.local.get([
+          'activeRequestAttestation',
+        ]);
+        const parsedActiveRequestAttestation = activeRequestAttestation
+          ? JSON.parse(activeRequestAttestation)
+          : {};
+
         if (retcode === '0') {
           clearFetchAttestationTimer();
           if (content.balanceGreaterThanBaseValue === 'true') {
-            const { activeRequestAttestation } = await chrome.storage.local.get(
-              ['activeRequestAttestation']
-            );
-            const parsedActiveRequestAttestation = activeRequestAttestation
-              ? JSON.parse(activeRequestAttestation)
-              : {};
             const activeRequestId = parsedActiveRequestAttestation.requestid;
             if (activeRequestId !== content?.requestid) {
               return;
@@ -633,8 +693,17 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               credentials: JSON.stringify(credentialsObj),
             });
             await chrome.storage.local.remove(['activeRequestAttestation']);
-
             await initCredList();
+            if (fullAttestation.reqType === 'web') {
+              await chrome.runtime.sendMessage({
+                type: 'pageDecode',
+                name: 'attestResult',
+                params: {
+                  result: 'success',
+                },
+              });
+            }
+            setCredRequestId(activeRequestId);
             setActiveRequest({
               type: 'suc',
               title: 'Congratulations',
@@ -643,10 +712,19 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           } else if (content.balanceGreaterThanBaseValue === 'false') {
             let descItem1 =
               'Your request did not meet the necessary requirements.';
-            if (activeAttestForm.type === 'ASSETS_PROOF') {
+            if (activeAttestForm?.type === 'ASSETS_PROOF') {
               descItem1 = `Insufficient assets in your ${
                 activeAttestForm.source === 'okx' ? 'Trading' : 'Spot'
               } Account.`;
+            }
+            if (parsedActiveRequestAttestation.reqType === 'web') {
+              await chrome.runtime.sendMessage({
+                type: 'pageDecode',
+                name: 'attestResult',
+                params: {
+                  result: 'fail',
+                },
+              });
             }
             setActiveRequest({
               type: 'warn',
@@ -666,11 +744,39 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             params: {},
           };
           postMsg(padoServicePort, msg);
-          setActiveRequest({
+          let requestResObj = {
             type: 'warn',
             title: 'Something went wrong',
             desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
-          });
+          };
+          if (
+            retdesc.indexOf('connect to proxy error') ||
+            retdesc.indexOf('WebSocket On Error')
+          ) {
+            requestResObj = {
+              type: 'warn',
+              title: 'Ooops',
+              desc: 'Unstable internet connection. Please try again later.',
+            };
+          }
+          setActiveRequest(requestResObj);
+          if (parsedActiveRequestAttestation.reqType === 'web') {
+            let failReason = '';
+            if (
+              retdesc.indexOf('connect to proxy error') ||
+              retdesc.indexOf('WebSocket On Error')
+            ) {
+              failReason = 'network';
+            }
+            await chrome.runtime.sendMessage({
+              type: 'pageDecode',
+              name: 'attestResult',
+              params: {
+                result: 'warn',
+                failReason,
+              },
+            });
+          }
         }
       },
       [
@@ -681,6 +787,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         activeAttestForm,
       ]
     );
+
     useAlgorithm(getAttestationCallback, getAttestationResultCallback);
 
     useEffect(() => {
@@ -694,7 +801,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [clearFetchAttestationTimer, activeRequest?.type]);
 
     useEffect(() => {
-      if (visible) {
+      if (visible && !fromEvents) {
         setStep(-1);
         setActiveAttestationType('');
         setActiveSourceName(undefined);
@@ -710,12 +817,24 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           handleAdd();
         }
       }
-    }, [visible, activeSource, activeCred]);
-    useEffect(() => {
-      if (!activeRequest?.type) {
-        onClose();
+      if (visible && !!fromEvents) {
+        if (fromEvents === 'Badges') {
+          setStep(1);
+          setActiveAttestationType('IDENTIFICATION_PROOF');
+        } else if (fromEvents === 'NFTs') {
+          setStep(-1);
+          setActiveAttestationType('');
+          setActiveSourceName(undefined);
+          handleAdd();
+        }
       }
-    }, [activeRequest?.type, onClose]);
+    }, [visible, activeSource, activeCred, fromEvents]);
+
+    // useEffect(() => {
+    //   if (!activeRequest?.type) {
+    //     onClose();
+    //   }
+    // }, [activeRequest?.type, onClose]);
     const startOfflineFn = useCallback(async () => {
       const padoUrl = await getPadoUrl();
       const proxyUrl = await getProxyUrl();
@@ -736,9 +855,82 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       return activeAttestForm?.source === 'metamask' ? (
         <Bridge endIcon={onChainObj.icon} />
       ) : (
-        <AddressInfoHeader />
+        <AddressInfoHeader address={connectedWallet?.address as string} />
       );
-    }, [activeAttestForm]);
+    }, [activeAttestForm, connectedWallet?.address]);
+    useEffect(() => {
+      const listerFn = (message: any) => {
+        if (message.type === 'pageDecode') {
+          if (message.name === 'cancelAttest') {
+            setStep(2);
+            setActiveRequest({
+              type: 'error',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
+            });
+          } else if (message.name === 'sendRequest') {
+            setStep(2);
+            setActiveRequest({
+              type: 'loading',
+              title: 'Attestation is processing',
+              desc: 'It may take a few seconds.',
+            });
+          } else if (message.name === 'abortAttest') {
+            if (activeRequest?.type === 'loading' || !activeRequest?.type) {
+              setStep(2);
+              setActiveRequest({
+                type: 'error',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
+            }
+            if (activeRequest?.type === 'loading') {
+              setIntervalSwitch(false);
+            }
+          }
+        }
+      };
+      chrome.runtime.onMessage.addListener(listerFn);
+      return () => {
+        chrome.runtime.onMessage.removeListener(listerFn);
+      };
+    }, [activeRequest?.type]);
+    const footerTip = useMemo(() => {
+      if (activeRequest?.type === 'loading') {
+        return (
+          <div className="safeTip">
+            <p>PADO will not access your private data.</p>
+            <p>We uses IZK to ensure your privacy.</p>
+          </div>
+        );
+      } else {
+        return null;
+      }
+    }, [activeRequest?.type]);
+    const footerButton = useMemo(() => {
+      if (activeRequest?.type === 'suc') {
+        if (fromEvents) {
+          return (
+            <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
+              <span>Submit</span>
+            </button>
+          );
+        } else {
+          return null;
+        }
+      } else {
+        return (
+          <button className="nextBtn gray" onClick={handleCloseMask}>
+            <span>OK</span>
+          </button>
+        );
+      }
+    }, [
+      fromEvents,
+      onSubmitActiveRequestDialog,
+      activeRequest?.type,
+      handleCloseMask,
+    ]);
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (
@@ -748,22 +940,37 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             type={type}
           />
         )}
-        {visible && step === 1 && (
-          <AttestationDialog
-            type={activeAttestationType}
-            activeSourceName={activeSourceName}
-            activeCred={activeCred}
-            onBack={onBackAttestationDialog}
-            onClose={handleCloseMask}
-            onSubmit={onSubmitAttestationDialog}
-          />
-        )}
+        {visible &&
+          step === 1 &&
+          (activeAttestationType === 'IDENTIFICATION_PROOF' ? (
+            <AttestationDialog2
+              type={activeAttestationType}
+              activeSourceName={activeSourceName}
+              activeCred={activeCred}
+              onBack={
+                fromEvents === 'Badges' ? undefined : onBackAttestationDialog
+              }
+              onClose={handleCloseMask}
+              onSubmit={onSubmitAttestationDialog}
+            />
+          ) : (
+            <AttestationDialog
+              type={activeAttestationType}
+              activeSourceName={activeSourceName}
+              activeCred={activeCred}
+              onBack={onBackAttestationDialog}
+              onClose={handleCloseMask}
+              onSubmit={onSubmitAttestationDialog}
+            />
+          ))}
         {visible && step === 2 && (
           <AddSourceSucDialog
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
             headerEl={resultDialogHeaderEl}
+            footerButton={footerButton}
+            tip={footerTip}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveRequestDialog}
           />

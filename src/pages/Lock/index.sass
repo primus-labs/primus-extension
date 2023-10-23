@@ -3,16 +3,6 @@
 @import '@/assets/css/pFlex.sass'
 @import '@/pages/Home/pageIndex.sass'
 
-// $contentWidth: 520px
-// $contentGap: 60px
-// $h1FontSize: 48px
-// $h1LineHeight: 58px
-// $btnHeight: 58px
-// $btnBorderRadius: 12px
-// $inputWrapperHeight: 60px
-// $inputBorderRadius: 12px
-// $contentWrapperPaddingRight: 360px
-
 .pageIndex.pageLock
   .appContent
     article
@@ -45,16 +35,26 @@
         width: 100%
         @extend .fcss
         gap: $xlGap
-
-        button.unLockBtn
-          width: 100%
-          height: 58px
-          background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-          border-radius: 12px
+        button.startBtn
+          width: 343px
+          height: 80px
+          border: 2PX solid $colLBlack
+          border-radius: 100px
           @extend .frcc
-          @extend .mLBlackBoldFont
+          gap: $xxsGap
+          color: $colLBlack  
+          @extend .lLBlackSemiBoldFont
           &:hover,&:active
-            background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+            border: 0
+            background: $colLBlack
+            color: #fff
+            .iconArrow
+              background-image: url("@/assets/img/rightArrowHover.svg")
+          .iconArrow
+            width: $mIconSize
+            height: $mIconSize
+            background-size: 100% 100%
+            background-image: url("@/assets/img/rightArrow.svg")
         >p
           @extend .mSBlackRegularFont
           color: rgba(0,0,0,0.4)
@@ -84,7 +84,14 @@
               width: 16px
         .articleFooter
           margin-top: 4px
-
+          button.startBtn
+            width: 256px
+            height: 64px
+            font-size: 18px
+            line-height: 22px
+            .iconArrow
+              width: 28px
+              height: 28px
         
         
    

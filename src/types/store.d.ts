@@ -3,6 +3,19 @@ import type { PROOFTYPEITEM, CREDENTIALS } from './cred';
 import type { ExDatas, SocialDatas, onChainAssetsDatas } from './dataSource';
 import type { SysConfigInfo } from './config';
 import type { Rewards } from './event';
+type BadgeEventPeriodType = {
+  startTime: string;
+  endTime: string;
+};
+type ConnectedWallet = {
+  address: string;
+  provider: any;
+  name: string;
+}
+type rewardsDialogVisibleType = {
+  visible: boolean;
+  tab?: string;
+}
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -14,10 +27,15 @@ export type UserState = {
   kycSources: any;
   sourceUpdateFrequency: string;
   proofTypes: PROOFTYPEITEM[];
+  webProofTypes: any[];
   credentials: CREDENTIALS;
   userInfo: UserInfoType;
   walletAddress: string;
   rewards: Rewards;
   effective: boolean;
   onChainAssetsSources: onChainAssetsDatas;
+  connectWalletDialogVisible: boolean;
+  connectedWallet: ConnectedWallet;
+  rewardsDialogVisible: rewardsDialogVisibleType;
+  badgeEventPeriod: BadgeEventPeriodType;
 };

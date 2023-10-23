@@ -109,7 +109,7 @@ const BindPolygonIDDialog: React.FC<BindPolygonIDDialogProps> = memo(
         <PMask onClose={onClose}>
           <div className="padoDialog qrcodeDialog bindPolygonidDialog">
             <main>
-              <AddressInfoHeader />
+              <AddressInfoHeader address={activeCred?.address as string} />
               <QRCodeMain
                 title="Bind your Polygon DID"
                 desc="Use your Polygon ID wallet to scan."

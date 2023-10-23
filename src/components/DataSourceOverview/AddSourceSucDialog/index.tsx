@@ -1,12 +1,8 @@
 import React, { useMemo, memo } from 'react';
-
+import { useSearchParams } from 'react-router-dom';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
-import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
-import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
-import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
-import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
 
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconError from '@/assets/img/iconError.svg';
@@ -26,7 +22,8 @@ interface AddSourceSucDialogProps {
   footerButton?: any;
   closeable?: boolean;
   tip?: any;
-  headerEl?: any
+  headerEl?: any;
+  showBottom?: boolean;
 }
 
 const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
@@ -41,21 +38,42 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     headerType = 'dataSource',
     address,
     footerButton,
-    closeable = true,
+    closeable,
     tip,
+    showBottom,
   }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     footerButton = footerButton ?? (
       <button className="nextBtn" onClick={onSubmit}>
         <span>OK</span>
       </button>
     );
+    // TODO!!!
     const icon = activeSource?.icon;
 
     const formatHeaderEl = useMemo(() => {
       return headerEl ?? <Bridge endIcon={icon} />;
     }, [headerEl, icon]);
+    const formatCloseable = useMemo(() => {
+      if (closeable === undefined) {
+        if (fromEvents) {
+          return !fromEvents;
+        } else {
+          return true;
+        }
+      }
+      return closeable;
+    }, [closeable, fromEvents]);
+    const formatShowBottom = useMemo(() => {
+      if (showBottom) {
+        return showBottom;
+      } else {
+        return type !== 'loading';
+      }
+    }, [showBottom, type]);
     return (
-      <PMask onClose={onClose} closeable={closeable}>
+      <PMask onClose={onClose} closeable={formatCloseable}>
         <div className="padoDialog addDataSourceSucDialog">
           <main>
             {formatHeaderEl}
@@ -73,7 +91,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
             <h2>{desc}</h2>
           </main>
           {type !== 'loading' && footerButton}
-          {tip}
+          {type === 'loading' && tip}
         </div>
       </PMask>
     );

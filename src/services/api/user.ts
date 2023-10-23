@@ -1,5 +1,18 @@
 import request from '@/utils/request';
-
+type CheckIfBindConnectedWalletParams = {
+  address?: string;
+};
+type BindConnectedWalletParams = {
+  signature: string;
+  timestamp: string;
+  address: string;
+  type: string;
+};
+type GrtUserIdentityParams = {
+  signature: string;
+  timestamp: string;
+  address: string;
+};
 type RefreshAuthDataParams = {
   userId?:string;
   uniqueId?:string;
@@ -69,12 +82,11 @@ export const getAllOAuthSources = () => {
 
 
 // Check login is finished with state.
-export const checkIsLogin = (params: CheckIsLoginParams, config: any) => {
+export const checkIsLogin = (params: CheckIsLoginParams) => {
   return request({
     method: 'get',
-    url: `/public/oauth/check`,
+    url: `/oauth2/check`,
     data: params,
-    config,
   });
 };
 
@@ -92,7 +104,33 @@ export const bindUserAddress = (data:BindUserAddressParams, config:any) => {
 export const refreshAuthData = (data:RefreshAuthDataParams) => {
   return request({
     method: 'get',
-    url: `/public/data/refresh`,
+    url: `/oauth2/data/refresh`,
     data
+  });
+};
+
+export const getUserIdentity = (data: GrtUserIdentityParams) => {
+  return request({
+    method: 'get',
+    url: `/public/pado/identity`,
+    data,
+  });
+};
+
+// bind  metamask wallet user connected
+export const bindConnectedWallet = (data: BindConnectedWalletParams) => {
+  return request({
+    method: 'get',
+    url: `/wallet/connect`,
+    data,
+  });
+};
+
+// check if hand bound  metamask wallet user connected
+export const checkIfBindConnectedWallet = (data: CheckIfBindConnectedWalletParams) => {
+  return request({
+    method: 'get',
+    url: `/wallet/connect/check`,
+    data,
   });
 };

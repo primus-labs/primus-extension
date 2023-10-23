@@ -30,33 +30,20 @@
           cursor: not-allowed
         &:not(.disabled)
           &:hover
-            background: #FFFFFF
-            border: 2PX solid transparent
-            background-clip: padding-box, border-box
-            background-origin: padding-box, border-box
-            background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-            position: relative
+            background-color: #FFFFFF
+            
         >img
           width: 36.27px
         &.disabled
           >img
             opacity: 0.4
         &.active
-          background: #FFFFFF
+          background-color: #FFFFFF
           border: 2PX solid transparent
           background-clip: padding-box, border-box
           background-origin: padding-box, border-box
           background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-          position: relative
-          &:after
-            position: absolute
-            content: ''
-            right: 3px
-            bottom: 3px
-            width: 10px
-            height: 10px
-            background: url('@/assets/img/iconSuc.svg')
-            background-size: 100% 100%
+          
     .dividerWrapper
       @extend .frbc
       margin: 57px 0 58px

@@ -8,14 +8,16 @@ import type { UserState } from '@/types/store';
 
 type UseAlgorithm = (
   getAttestationCallback: (res:any) => void,
-  getAttestationResultCallback: (res: any) => void
+  getAttestationResultCallback: (res: any) => void,
+  // cancelAttestationCallback?: (res:any) =>void
 ) => void;
 
 const useAlgorithm: UseAlgorithm = function useAlgorithm(
   getAttestationCallback,
-  getAttestationResultCallback
+  getAttestationResultCallback,
+  // cancelAttestationCallback
 ) {
-  const savedCallback = useRef((res:any) => {});
+  const savedCallback = useRef((res: any) => {});
   useEffect(() => {
     savedCallback.current = getAttestationCallback;
   });
@@ -23,12 +25,16 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   useEffect(() => {
     savedGetAttestationResultCallback.current = getAttestationResultCallback;
   });
+  // const savedCancelAttestationCallback = useRef((res: any) => {});
+  // useEffect(() => {
+  //   cancelAttestationCallback && (savedCancelAttestationCallback.current = cancelAttestationCallback);
+  // });
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
   const padoServicePortListener = useCallback(
     async function (message: any) {
-      const { resType, resMethodName, res,params } = message;
+      const { resType, resMethodName, res, params } = message;
       if (resType === 'algorithm') {
         console.log(`page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
@@ -82,6 +88,13 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
             console.log(`page_send:start request`);
           }
         }
+        // if (
+        //   message.type === 'pageDecode' &&
+        //   message.name === 'cancelAttest'
+        // ) {
+        //   const handler = () => savedCancelAttestationCallback.current(res);
+        //   handler();
+        // }
       }
     },
     [padoServicePort]

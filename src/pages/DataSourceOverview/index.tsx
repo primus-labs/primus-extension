@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import SetPwdDialog from '@/components/Home/SetPwdDialog';
 import PTabs from '@/components/PTabs';
 import DataSourceList from '@/components/DataSourceOverview/DataSourceList';
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog';
@@ -54,6 +55,9 @@ export type ActiveRequestType = {
   desc: string;
 };
 const DataSourceOverview = memo(() => {
+  const [searchParams] = useSearchParams();
+  const fromEvents = searchParams.get('fromEvents');
+  const processStep = searchParams.get('processStep');
   const [step, setStep] = useState(0);
   const [activeSource, setActiveSource] = useState<ExchangeMeta>();
   const [activeSourceKeys, setActiveSourceKeys] = useState<GetDataFormProps>();
@@ -171,7 +175,7 @@ const DataSourceOverview = memo(() => {
 
             const eventInfo = {
               eventType: 'DATA_SOURCE_INIT',
-              rawData: {type: 'Assets', dataSource: lowerCaseSourceName},
+              rawData: { type: 'Assets', dataSource: lowerCaseSourceName },
             };
             eventReport(eventInfo);
           } else {
@@ -208,7 +212,7 @@ const DataSourceOverview = memo(() => {
             } else {
               setActiveRequest({
                 type: 'warn',
-                title: 'Oops...',
+                title: 'Ooops...',
                 desc: 'Something went wrong. Please try again later.',
               });
             }
@@ -231,8 +235,13 @@ const DataSourceOverview = memo(() => {
     },
     [dispatch]
   );
-  const handleAdd = useCallback(() => {
-    setStep(1);
+  const handleAdd = useCallback(async () => {
+    let { keyStore } = await chrome.storage.local.get(['keyStore']);
+    if (keyStore) {
+      setStep(1);
+    } else {
+      setStep(0.5);
+    }
   }, []);
   const handleCheckDataSourceDetail = useCallback(
     (s: SourceData) => {
@@ -294,9 +303,13 @@ const DataSourceOverview = memo(() => {
     dispatch(setSocialSourcesAsync());
   }, [dispatch]);
   const onSubmitAddSourceSucDialog = useCallback(() => {
-    setActiveSource(undefined);
-    setStep(0);
-  }, []);
+    if (fromEvents) {
+      navigate(`/cred?fromEvents=${fromEvents}`);
+    } else {
+      setActiveSource(undefined);
+      setStep(0);
+    }
+  }, [fromEvents, navigate]);
   const onSubmitActiveRequestDialog = useCallback(() => {
     if (activeRequest?.type === 'loading') {
       onSubmitAddSourceSucDialog();
@@ -305,10 +318,36 @@ const DataSourceOverview = memo(() => {
       setStep(2);
     }
   }, [activeRequest?.type, onSubmitAddSourceSucDialog]);
+  const handleSubmitSetPwd = useCallback(() => {
+    setStep(1);
+  }, []);
+  const handleCancelSetPwd = useCallback(() => {
+    setStep(0);
+  }, []);
+  const onCloseDataSourcesDialog = useCallback(() => {
+    navigate('/datas');
+    handleCloseMask();
+  }, [handleCloseMask, navigate]);
 
   useEffect(() => {
     step === 1 && setActiveSourceKeys(undefined);
   }, [step]);
+  useEffect(() => {
+    if (fromEvents) {
+      handleAdd();
+    }
+  }, [fromEvents, handleAdd]);
+  const footerButton = useMemo(() => {
+    if (fromEvents === 'NFTs') {
+      return (
+        <button className="nextBtn" onClick={onSubmitAddSourceSucDialog}>
+          <span>Generate Attestation</span>
+        </button>
+      );
+    } else {
+      return null;
+    }
+  }, [fromEvents, onSubmitAddSourceSucDialog]);
 
   return (
     <div className="pageDataSourceOverview">
@@ -337,9 +376,16 @@ const DataSourceOverview = memo(() => {
           />
         )}
       </main>
+      {step === 0.5 && (
+        <SetPwdDialog
+          onClose={handleCloseMask}
+          onSubmit={handleSubmitSetPwd}
+          onCancel={handleCancelSetPwd}
+        />
+      )}
       {step === 1 && (
         <DataSourcesDialog
-          onClose={handleCloseMask}
+          onClose={onCloseDataSourcesDialog}
           onSubmit={onSubmitDataSourcesDialog}
           onCheck={onCheckDataSourcesDialog}
         />
@@ -350,6 +396,7 @@ const DataSourceOverview = memo(() => {
           onSubmit={onSubmitDataSourcesExplainDialog}
         />
       )}
+      {/* TODO!!! */}
       <ConnectWalletData
         visible={connectWalletDataDialogVisible}
         onClose={() => {
@@ -411,6 +458,7 @@ const DataSourceOverview = memo(() => {
           onSubmit={onSubmitAddSourceSucDialog}
           activeSource={activeSource}
           desc="Data Connected!"
+          footerButton={footerButton}
         />
       )}
       {activeSourceType !== 'All' && activeSourceType !== 'Identity' && (

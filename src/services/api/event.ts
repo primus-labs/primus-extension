@@ -1,4 +1,7 @@
 import request from '@/utils/request';
+type CheckLotteryResultsParams = {
+  event: string;
+};
 type GETUNISWAPPROOFPARAMS = {
   signature: string;
   address: string;
@@ -52,5 +55,20 @@ export const getUniswapProof = (data: GETUNISWAPPROOFPARAMS) => {
     method: 'post',
     url: `/celer/nft/sign`,
     data,
+  });
+};
+
+export const checkLotteryResults = (data: CheckLotteryResultsParams) => {
+  return request({
+    method: 'get',
+    url: `/event/reward/check`,
+    data,
+  });
+};
+
+export const queryBadgeEventPeriod = () => {
+  return request({
+    method: 'get',
+    url: `/event/time`,
   });
 };

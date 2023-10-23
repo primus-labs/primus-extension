@@ -8,70 +8,88 @@
   padding: 0 53px 0 48px
   border-radius: 24px
   background: linear-gradient(270deg, #ABFFE1 0%, #78E1FB 100%)
-  &.adSpace1
+  &.adSpaceNft
+    background: var(--bg-60, rgba(255, 255, 255, 0.60))
     .left
       >img
+        align-self: center
         width: 126px
-        position: relative
-        top: -47px
-  .left
-    @extend .frss
-    gap: 30px
-    height: 100%
-    
-    .bannerContent
-      align-self: center
-      @extend .fccs
-      gap: 16px
-      .ct
-        font-size: 32px
-        line-height: 39px
-        font-family: 'Inter-Bold'
-        color: #000
-      .cn
+    .left
+      @extend .frss
+      gap: 30px
+      height: 100%
+      
+      .bannerContent
         @extend .fccs
-        gap: 8px
-        font-size: 14px
-        line-height: 17px
-        font-family: 'Inter-Medium'
-        color: $colSBlack
-        >p
-          @extend .frsc
-          .lable
-            color: $colSBlack
-          .value
-            color: $colMBlack
-  .right
-    width: 161px
-    height: 56px
-    border-radius: 12px
-    background: #FFE603
-    @extend .frcc
-    gap:8px
-    font-size: 18px
-    line-height: 22px
-    font-family: 'Inter-SemiBold'
-    .suffix
-      width: 24px
-    &:hover
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.20) 100%), #FFE603
+        gap: 16px
+        .ct
+          font-size: 32px
+          line-height: 39px
+          font-family: 'Inter-Bold'
+          color: #000
+        .cn
+          @extend .fccs
+          gap: 8px
+          font-size: 14px
+          line-height: 17px
+          font-family: 'Inter-Medium'
+          color: $colSBlack
+          >p
+            @extend .frsc
+            .lable
+              color: $colSBlack
+            .value
+              color: $colMBlack
+    .right
+      width: 161px
+      height: 56px
+      border-radius: 100px
+      color: var(--Button-default, #515758)
+      border-radius: 100px
+      border: 1px solid var(--Button-default, #515758)
+      background-color: transparent
+      @extend .frcc
+      /* Headline 5 */
+      font-family: Inter
+      font-size: 16px
+      font-style: normal
+      font-weight: 600
+      line-height: 24px /* 150% */
+      &:hover,&:active
+        border:0
+        background-color: var(--Text-headline, #0A1214)
+        color: var(--bg-default, #FFF)
+      
+        
 @media (max-width:1680px)
   .adSpace
-    height: 154px
-    padding: 0 36px 0 37px
-    &.adSpace1
-      
+    padding: 0 60px
+    &.adSpaceNft
+      height: 138px
       .left
-        gap: 39.3px
+        gap: 40px
         >img
-          width: 92.69px
-          top: -33px
+          width: 60px
         .bannerContent
+          gap: 12px
           .ct
-            font-size: 28px
-            line-height: 34px
-            font-family: 'Inter-SemiBold'
+            color: #000
+            /* Headline 3 */
+            font-family: Inter
+            font-size: 24px
+            font-style: normal
+            font-weight: 600
+            line-height: 32px /* 133.333% */
+          .cn
+            color: var(--Text-body, #515758)
+
+            /* Text 1 */
+            font-family: Inter
+            font-size: 14px
+            font-style: normal
+            font-weight: 400
+            line-height: 20px /* 142.857% */
       .right
-        width: 173px
-        height: 56px
+        width: 132px
+        height: 48px
       

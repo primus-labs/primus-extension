@@ -34,6 +34,12 @@ export type CredTypeItemType = {
   schemaName?: string;
   credIdentifier?: string;
   credential?: string;
+  reqType?: string;
+  uiTemplate?: any;
+  host?: string;
+  sourceUseridHash?: string;
+  templateId?: string;
+  schemaType?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;
@@ -64,4 +70,6 @@ export type AttestionForm = {
   userIdentity?: string;
   verifyIdentity?: string;
   proofType?: string;
+  proofClientType?: string;
+  proofContent?: string;
 };

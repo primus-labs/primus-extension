@@ -1,8 +1,11 @@
-import React, { useState, useEffect, memo, useCallback ,useMemo} from 'react';
+import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import PControledInput from '@/components/PControledInput';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
+// import iconTooltip from '@/assets/img/credit/iconTooltip.svg'
+import IconTooltip from '@/components/Icons/IconTooltip'
 import './index.sass';
 
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
@@ -45,6 +48,8 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
     onCancel,
     activeSourceKeys,
   }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const requirePassphase = activeSource?.requirePassphase;
     const icon = activeSource?.icon;
     const name = activeSource?.name ?? '';
@@ -57,11 +62,11 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
 
     const activeGuideUrl = useMemo(() => {
       if (name) {
-        return guideMap[name as keyof typeof guideMap]
+        return guideMap[name as keyof typeof guideMap];
       } else {
-        return ''
+        return '';
       }
-    },[name])
+    }, [name]);
     const handleClickNext = () => {
       setSubmitted(true);
       if (loading) {
@@ -104,9 +109,12 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
         label && setLabel(label);
       }
     }, [activeSourceKeys]);
+    const onClickApiKeyTip = useCallback(() => {
+      window.open(activeGuideUrl);
+    }, [activeGuideUrl]);
 
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={!fromEvents}>
         <div className="padoDialog connectDataSourceDialog">
           <div className="iconBack" onClick={onCancel}></div>
           <main>
@@ -116,9 +124,11 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
               {!loading && (
                 <>
                   <h2>Please configure with your READ-ONLY API keys.</h2>
-
                   <div className="formItem firstFormItem">
-                    <h6>API Key</h6>
+                    <h6>
+                      <span>API Key</span>
+                      <IconTooltip onClick={onClickApiKeyTip} />
+                    </h6>
                     <PControledInput
                       key="apiKey"
                       type="text"

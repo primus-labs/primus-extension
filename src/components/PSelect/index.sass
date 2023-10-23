@@ -50,6 +50,8 @@ $sSelectInput: 48px
     color: rgba(0, 0, 0, 0.6)
     position: relative
     cursor: not-allowed
+    &.disabled
+      cursor: not-allowed
     .placeholder
       color: rgba(0, 0, 0, 0.4)
     &.active
@@ -67,6 +69,8 @@ $sSelectInput: 48px
       width: 24px
     .arrow
       transform: translateY(-50%)  rotate(-90deg)
+      &.open
+        transform: translateY(-50%)  rotate(-270deg)
   .selectOptionswrapper
     position: absolute
     width: 100%

@@ -222,6 +222,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
 };
 export default processNetworkReq;
 
+// port is unnecesary when you assemble algorithm params for page decode 
 export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const {
     source,
@@ -234,11 +235,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   } = form;
   const { baseName } = DATASOURCEMAP[source];
   const user = await assembleUserInfoParams();
-  const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(
-    form,
-    USERPASSWORD,
-    port
-  );
 
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   const { id: authUserId } = JSON.parse(userInfo);
@@ -263,27 +259,12 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     cipher: '', // TODO
     getdatatime: timeStampStr,
     credVersion: CredVersion,
-    exchange: {
-      apikey: 'xxx',
-      apisecret: 'xxx',
-      apipassword: 'xxx',
-    },
+    
     sigFormat: 'EAS-Ethereum', // TODO
     // sigFormat: 'EAS-BNB', // TODO
     // schemaType: 'exchange-balance', // TODO
     schemaType,
-    schema: [
-      // TODO
-      { name: 'source', type: 'string' },
-      { name: 'sourceUseridHash', type: 'string' },
-      { name: 'authUseridHash', type: 'string' },
-      { name: 'receipt', type: 'string' },
-      { name: 'getDataTime', type: 'string' },
-      { name: 'baseValue', type: 'string' },
-      { name: 'balanceGreaterThanBaseValue', type: 'string' },
-    ],
     user,
-
     // holdingToken // TODO
     authUseridHash,
   };
@@ -295,31 +276,56 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     if (source === 'binance') {
       calculationType = 'KEY_VALUES_SUM_X_A';
     } else if (source === 'coinbase') {
-      calculationType = 'SUM_OF__KEY_VALUES_SUM_X_A'
+      calculationType = 'SUM_OF__KEY_VALUES_SUM_X_A';
     }
   } else if (type === 'TOKEN_HOLDINGS') {
     params.baseValue = '0';
     params.holdingToken = holdingToken;
     calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
   }
-
-  let extRequestsOrder;
-  if (source === 'binance') {
-    extRequestsOrder = 'asset-balances';
-  } else {
-    extRequestsOrder = 'account-balance';
+  if (port) { // it's noneed for page decode
+    const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(
+      form,
+      USERPASSWORD,
+      port
+    );
+    let extRequestsOrder;
+    if (source === 'binance') {
+      extRequestsOrder = 'asset-balances';
+    } else {
+      extRequestsOrder = 'account-balance';
+    }
+    const ext = {
+      calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
+      extRequests: {
+        orders: [extRequestsOrder], // TODO
+        [extRequestsOrder]: extRequestsOrderInfo,
+      },
+      
+    };
+    Object.assign(params, {
+      ext,
+      exchange: {
+        apikey: 'xxx',
+        apisecret: 'xxx',
+        apipassword: 'xxx',
+      },
+      schema: [
+        // TODO
+        { name: 'source', type: 'string' },
+        { name: 'sourceUseridHash', type: 'string' },
+        { name: 'authUseridHash', type: 'string' },
+        { name: 'receipt', type: 'string' },
+        { name: 'getDataTime', type: 'string' },
+        { name: 'baseValue', type: 'string' },
+        { name: 'balanceGreaterThanBaseValue', type: 'string' },
+      ]
+    })
   }
-  const ext = {
-    calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-    extRequests: {
-      orders: [extRequestsOrder], // TODO
-      [extRequestsOrder]: extRequestsOrderInfo,
-    },
-  };
-  params.ext = ext;
 
   return params;
 }
+
 async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   const sourceLowerCaseName = form.source.toLowerCase();
   let extRequestsOrderInfo = {};
@@ -348,15 +354,16 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
         path: 'accounts',
         api: ['v2', 'private'],
         method: 'GET',
-        params: {limit: 100},
+        params: { limit: 100 },
       };
       if (form.type === 'TOKEN_HOLDINGS') {
         data.path = 'accounts/{account_id}';
-        data.params = {account_id: form.token};
+        data.params = { account_id: form.token };
       }
       signres = await sign('coinbase', data, USERPASSWORD, port);
       signres.headers['CB-VERSION'] = '2018-05-30';
-      signres.parseSchema = 'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
+      signres.parseSchema =
+        'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
       signres.decryptFlag = 'false';
       extRequestsOrderInfo = { ...signres };
       break;
@@ -407,15 +414,15 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   return extRequestsOrderInfo;
 }
 async function assembleUserInfoParams() {
-  const { keyStore, userInfo } = await chrome.storage.local.get([
-    'keyStore',
+  const { connectedWalletAddress, userInfo } = await chrome.storage.local.get([
+    'connectedWalletAddress',
     'userInfo',
   ]);
-  const { address } = JSON.parse(keyStore);
+  const { address } = JSON.parse(connectedWalletAddress);
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
     userid: id,
-    address: '0x' + address,
+    address: address,
     token: loginToken,
   };
   return user;

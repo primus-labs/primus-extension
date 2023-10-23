@@ -4,12 +4,13 @@ import './index.sass';
 interface SourceGroupTypesProps {
   onChange: (val: string) => void;
   value?: string;
+  list?: string[]
 }
 const tabList = ['Assets', 'Social', 'Identity'];
 
 const SourceGroupTypes: React.FC<SourceGroupTypesProps> = memo(
-  ({ onChange, value }) => {
-    const [activeTab, setActiveTab] = useState<string>(tabList[0]);
+  ({ onChange, value, list = tabList }) => {
+    const [activeTab, setActiveTab] = useState<string>(list[0]);
     const tabClassCb = useCallback(
       (item: string) => {
         let cN = 'tab';
@@ -33,7 +34,7 @@ const SourceGroupTypes: React.FC<SourceGroupTypesProps> = memo(
     return (
       <div className="sourceGroupTypes">
         <div className="tabs">
-          {tabList.map((item, idx) => {
+          {list.map((item, idx) => {
             return (
               <div
                 className={tabClassCb(item)}

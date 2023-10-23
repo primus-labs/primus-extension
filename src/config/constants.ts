@@ -57,7 +57,7 @@ export type WALLETITEMTYPE = {
 export const ExchangeStoreVersion = '1.0.0';
 export const SocailStoreVersion = '1.0.0';
 export const KYCStoreVersion = '1.0.0';
-export const padoExtensionVersion = '0.2.5';
+export const padoExtensionVersion = '0.2.6';
 export const CredVersion = '1.0.1';
 
 export const USDT = 'USDT';
@@ -280,3 +280,6 @@ export const schemaTypeMap = {
   IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
 };
 
+
+export const supportAttestDataSourceNameList = ['Binance', 'Coinbase', 'OKX', 'ZAN']
+export const BADGELOTTRYTIMESTR = '2023-10-29 12:00:00';

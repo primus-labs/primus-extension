@@ -176,12 +176,11 @@ export function base64ToHex(base64Str: string) {
 type AuthParams = {
   source: string;
   state: string;
-  invitationCode: string;
-  type: string;
+  token: string;
 };
 export function getAuthUrl(authParams: AuthParams) {
-  const { source, state,invitationCode,type } = authParams;
-  return `${PADOSERVERURL}/v2/public/render/${source}?state=${state}&invite-code=${invitationCode}&type=${type}`;
+  const { source, state,token } = authParams;
+  return `${PADOSERVERURL}/oauth2/render/${source}?state=${state}&pado-token=${token}`;
 }
 
 export async function assembleUserInfoParams() {

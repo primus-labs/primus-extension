@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { WALLETLIST } from '@/config/constants'
+import { useSearchParams } from 'react-router-dom';
+import { WALLETLIST } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
@@ -17,24 +18,10 @@ import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { UserState } from '@/types/store';
 import type { ConnectSourceType } from '@/types/dataSource';
-import type { PROOFTYPEITEM } from '@/types/cred';
+import type { PROOFTYPEITEM, AttestionForm } from '@/types/cred';
 
 import './index.sass';
 
-export type AttestionForm = {
-  token?: string;
-  baseValue?: string;
-  source: string;
-  type: string;
-  exUserId?: string;
-  label?: string;
-  requestid?: string;
-
-  credential?: string;
-  userIdentity?: string;
-  verifyIdentity?: string;
-  proofType?: string;
-};
 interface AttestationDialogProps {
   type: string;
   onClose: () => void;
@@ -55,6 +42,9 @@ const sourcesLabel = {
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
+
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -286,6 +276,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     };
     const handleClickData = (item: ConnectSourceType) => {
+      if (type === 'TOKEN_HOLDINGS' && !activeToken) {
+        setErrorTip('Please select one data source');
+        return;
+      }
       if (activeSourceName) {
         return;
       }
@@ -331,9 +325,19 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         if (activeSource?.name === item.name) {
           defaultClassName += ' active';
         }
+        if (type !== 'ASSETS_PROOF' && !activeToken) {
+          defaultClassName += ' disabled';
+        }
         return defaultClassName;
       },
-      [activeSource, activeSourceList, activeCred, activeSourceName]
+      [
+        activeSource,
+        activeSourceList,
+        activeCred,
+        activeSourceName,
+        activeToken,
+        type,
+      ]
     );
 
     useEffect(() => {

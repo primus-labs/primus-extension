@@ -1,6 +1,6 @@
 import React, { useState, useCallback, memo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-
+import { useSearchParams } from 'react-router-dom'
 import PMask from '@/components/PMask';
 
 import './index.sass';
@@ -16,6 +16,9 @@ interface CredTypesDialogProps {
 
 const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
   ({ onClose, onSubmit, type }) => {
+    const [searchParams] = useSearchParams();
+const fromEvents = searchParams.get('fromEvents');
+    
     const [errorTip, setErrorTip] = useState<string>();
     const [activeType, setActiveType] = useState<string>();
 
@@ -83,6 +86,13 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
               </ul>
             </div>
           </main>
+
+          {/* <button className="openPageDataSource" onClick={handlePageDecode}>
+            Binance KYC
+          </button>
+          <button className="openPageDataSource" onClick={handlePageDecode2}>
+            Binance Nationality
+          </button> */}
 
           <button className="nextBtn" onClick={handleClickNext}>
             {errorTip && (

@@ -6,7 +6,7 @@ const ErrorBoundary = () => {
   console.log('ErrorBoundary ', error);
   return (
     <div className="ErrorBoundary">
-      <p>Oops! Something went wrong</p>
+      <p>Ooops! Something went wrong</p>
       <button
         onClick={() => {
           window.location.reload();

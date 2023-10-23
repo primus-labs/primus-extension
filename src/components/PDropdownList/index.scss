@@ -1,0 +1,75 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+
+ul.padodropdown {
+  width: 100%;
+  @extend .fcss;
+  width: 180px;
+  padding: 8px 0px;
+  gap: 4px;
+  border-radius: var(--spacing-8, 8px);
+  background: var(--bg-80, rgba(255, 255, 255, 0.8));
+  box-shadow: 0px 4px 8px 0px rgba(9, 30, 66, 0.2);
+  li.dropdownItemWrapper {
+    @extend .frsc;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    height: var(--spacing-40, 40px);
+    padding: var(--spacing-8, 8px) var(--spacing-16, 16px);
+    gap: var(--spacing-8, 8px);
+    flex-shrink: 0;
+    &:not(.disabled):hover {
+      background: var(--Badge, rgba(10, 18, 20, 0.05));
+    }
+    &.disabled {
+      cursor: not-allowed;
+    }
+    .dropdownItem {
+      @extend .frsc;
+      gap: var(--spacing-16, 16px);
+      img {
+        width: 18px;
+      }
+      .desc {
+        color: var(--Text-headline, #0a1214);
+        /* Body 2 */
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px; /* 137.5% */
+      }
+    }
+  }
+}
+
+@media (max-width: 1680px) {
+}
+
+// .dropdown
+//           .dropdownItemWrapper
+//             padding: 8px
+//             border-bottom: 1PX solid rgba(0, 0, 0, 0.05)
+//             padding: 0
+//             .dropdownItem
+//               padding: 18px 16px
+//               gap: 12px
+//               img
+//                 width: 18px
+//               display: flex
+//               @extend .sFont
+//               font-family: 'Inter-Medium'
+//               color: $colLBlack
+//               cursor: pointer
+//               width: 214px
+//               padding: 18px 0 18px 16px
+//               >img
+//                 width: 18px
+//             &:last-child
+//               padding: 10px 0 0 0
+//               .dropdownItem
+//                 border-radius: 8px
+//               border-bottom: 0
+//               .dropdownItem
+//                 background: rgba(0, 0, 0, 0.05)

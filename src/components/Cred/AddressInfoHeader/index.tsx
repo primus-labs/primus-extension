@@ -1,30 +1,23 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, {  memo } from 'react';
 import iconMy from '@/assets/img/iconMy.svg';
-import './index.sass';
-
-const AddressInfoHeader = memo(() => {
-  const [accountAddr, setAccountAddr] = useState<any>();
-
-  const initPage = async () => {
-    const res = await chrome.storage.local.get(['keyStore']);
-    const keyStoreStr = res.keyStore;
-    const parseKeyStore = JSON.parse(keyStoreStr as string);
-    setAccountAddr('0x' + parseKeyStore.address);
-  };
-
-  useEffect(() => {
-    initPage();
-  }, []);
-  return (
-    <header className="addressInfoHeader">
-      <div className="content">
-        <div className="iconAddressWrapper">
-          <img className="avatar" src={iconMy} alt="" />
+import './index.scss';
+interface AddressInfoHeaderProps {
+  address: string;
+  icon?: any;
+}
+const AddressInfoHeader: React.FC<AddressInfoHeaderProps> = memo(
+  ({ address = '', icon = iconMy }) => {
+    return (
+      <header className="addressInfoHeader">
+        <div className="content">
+          <div className="iconAddressWrapper">
+            <img className="avatar" src={icon} alt="" />
+          </div>
+          <p className="address">{address}</p>
         </div>
-        <p className="address">{accountAddr}</p>
-      </div>
-    </header>
-  );
-});
+      </header>
+    );
+  }
+);
 
 export default AddressInfoHeader;

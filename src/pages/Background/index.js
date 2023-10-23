@@ -15,7 +15,8 @@ import {
   EXCHANGEINFO,
 } from './exData';
 import { eventReport } from '@/services/api/usertracker';
-
+import './pageDecode.js';
+import { pageDecodeMsgListener } from './pageDecode.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -137,6 +138,12 @@ const processAlgorithmReq = async (message, port) => {
         activeRequestAttestation: JSON.stringify(attestationParams),
       });
 
+      if (
+        attestationParams.source === 'binance' &&
+        process.env.NODE_ENV === 'production'
+      ) {
+        attestationParams.proxyUrl = 'wss://api.padolabs.org/algoproxy';
+      }
       console.log('attestationParams=', attestationParams);
       chrome.runtime.sendMessage({
         type: 'algorithm',
@@ -177,12 +184,18 @@ const processpadoServiceReq = async (message, port) => {
   const formatParams = { ...params };
   delete formatParams.password;
   try {
-    const { rc, result, mc } = await padoServices[reqMethodName](
-      { ...formatParams },
-      {
-        ...config,
-      }
-    );
+    let rc, result, mc;
+    if (reqMethodName !== 'bindUserAddress') {
+      const fetchRes = await padoServices[reqMethodName](
+        { ...formatParams },
+        {
+          ...config,
+        }
+      );
+      rc = fetchRes.rc;
+      result = fetchRes.result;
+      mc = fetchRes.mc;
+    }
     switch (reqMethodName) {
       case 'getAllOAuthSources':
         if (rc === 0) {
@@ -193,55 +206,6 @@ const processpadoServiceReq = async (message, port) => {
         break;
       case 'checkIsLogin':
         if (rc === 0) {
-          if (params.data_type === 'LOGIN') {
-            const { dataInfo, userInfo } = result;
-            if (userInfo) {
-              const formatUserInfo = { ...userInfo };
-              const lowerCaseSourceName = params.source.toLowerCase();
-              formatUserInfo.authSource = lowerCaseSourceName;
-              switch (lowerCaseSourceName) {
-                case 'google':
-                  formatUserInfo.formatUser = userInfo.email;
-                  break;
-                case 'x':
-                  formatUserInfo.formatUser = '@' + userInfo.nickName;
-                  break;
-                case 'github':
-                  formatUserInfo.formatUser = userInfo.userName;
-                  break;
-                case 'discord':
-                  formatUserInfo.formatUser = userInfo.nickName;
-                  break;
-                default:
-                  formatUserInfo.formatUser = userInfo.userName;
-                  break;
-              }
-              await chrome.storage.local.set({
-                userInfo: JSON.stringify(formatUserInfo),
-              });
-            }
-            // store datasourceInfo if authorize source is data source
-            if (dataInfo) {
-              const lowerCaseSourceName = params.source.toLowerCase();
-              const socialSourceData = {
-                ...dataInfo,
-                date: getCurrentDate(),
-                timestamp: +new Date(),
-                version: SocailStoreVersion,
-              };
-              await chrome.storage.local.set({
-                [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-              });
-            }
-            const resMsg = { resMethodName: reqMethodName, res: true };
-            if (dataInfo) {
-              resMsg.params = {
-                data_type: params.data_type,
-                source: params.source,
-              };
-            }
-            postMsg(port, resMsg);
-          } else if (params.data_type === 'DATASOURCE') {
             const { dataInfo, userInfo } = result;
             const lowerCaseSourceName = params.source.toLowerCase();
             const socialSourceData = {
@@ -257,20 +221,16 @@ const processpadoServiceReq = async (message, port) => {
               resMethodName: reqMethodName,
               res: true,
               params: {
-                data_type: params.data_type,
                 source: params.source,
-                // result: {
-                //   [lowerCaseSourceName]: socialSourceData,
-                // },
               },
             });
-          }
+          
         } else {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }
         break;
       case 'bindUserAddress':
-        if (rc === 0) {
+        try{
           const msg = {
             fullScreenType: 'wallet',
             reqMethodName: 'encrypt',
@@ -280,7 +240,7 @@ const processpadoServiceReq = async (message, port) => {
           };
           await processWalletReq(msg, port);
           postMsg(port, { resMethodName: reqMethodName, res: true });
-        } else {
+        } catch {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }
         break;
@@ -387,6 +347,7 @@ const processWalletReq = async (message, port) => {
     case 'encrypt':
       const pKRes = await chrome.storage.local.get(['privateKey']);
       let privateKey = pKRes.privateKey;
+      web3EthAccount = web3EthAccount || new Web3EthAccounts();
       const orignAccount = web3EthAccount.privateKeyToAccount(privateKey);
       const encryptAccount = orignAccount.encrypt(password);
       USERPASSWORD = password;
@@ -394,12 +355,7 @@ const processWalletReq = async (message, port) => {
         keyStore: JSON.stringify(encryptAccount),
       });
 
-      const transferRemoveMsg = {
-        fullScreenType: 'storage',
-        type: 'remove',
-        key: 'privateKey',
-      };
-      await processStorageReq(transferRemoveMsg, port);
+      await chrome.storage.local.remove(['privateKey', 'padoCreatedWalletAddress']);
       break;
     case 'clearUserPassword':
       USERPASSWORD = '';
@@ -482,5 +438,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('background onMessage message', message, fullscreenPort);
   if (message.resType === 'algorithm' && fullscreenPort) {
     postMsg(fullscreenPort, message);
+  }
+  if (message.type === 'pageDecode') {
+    pageDecodeMsgListener(
+      message,
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort
+    );
   }
 });

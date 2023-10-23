@@ -1,6 +1,6 @@
 {
   "name": "PADO",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "PADO Browser Extension",
   "license": "MIT",
   "repository": {
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@ethereum-attestation-service/eas-sdk": "^0.29.0",
+    "@metamask/eth-sig-util": "6.0.1",
     "@types/node": "^18.15.3",
     "@types/react-redux": "^7.1.25",
     "assert": "^2.0.0",
@@ -25,6 +26,8 @@
     "ccxt": "^3.0.78",
     "constants-browserify": "^1.0.0",
     "crypto-browserify": "^3.12.0",
+    "dayjs": "^1.11.10",
+    "dayjs-plugin-utc": "^0.1.2",
     "echarts": "^5.4.2",
     "echarts-for-react": "^3.0.2",
     "ethereumjs-util": "^7.1.5",

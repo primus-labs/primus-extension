@@ -1,18 +1,27 @@
 import React, { useState, useCallback, useMemo, useEffect, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import logo from '@/assets/img/logo.svg';
 import PAvatar from '@/components/PAvatar';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
+import iconWallet from '@/assets/img/layout/iconWallet.svg';
 import Setting from '@/components/Setting/Setting';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
+import iconRewards from '@/assets/img/layout/iconRewards.svg';
+import PConnect from '@/components/PConnect';
+import PDropdownList from '@/components/PDropdownList';
 
+import {
+  setConnectWalletActionAsync,
+  setRewardsDialogVisibleAction,
+} from '@/store/actions';
 import { debounce, throttle } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import './index.sass';
+import RewardsDialog from '@/components/RewardsDialog';
 
 type NavItem = {
   icon: any;
@@ -32,14 +41,28 @@ const navs: NavItem[] = [
     icon: iconLock,
     text: 'Lock Account',
   },
+  {
+    icon: iconWallet,
+    text: 'Disconnect',
+  },
 ];
 const PageHeader = memo(() => {
   const [isScroll, setIsScroll] = useState(false);
-
+  const dispatch: React.Dispatch<any> = useDispatch();
   const navigate = useNavigate();
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
     useState<boolean>(false);
+  const userPassword = useSelector((state: UserState) => state.userPassword);
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
+  const rewardsDialogVisible = useSelector(
+    (state: UserState) => state.rewardsDialogVisible
+  );
+  const connectWalletDialogVisible = useSelector(
+    (state: UserState) => state.connectWalletDialogVisible
+  );
   const handleClickAvatar = () => {
     setDorpdownVisible((visible) => !visible);
   };
@@ -49,14 +72,11 @@ const PageHeader = memo(() => {
   const handleLeaveAvatar = () => {
     setDorpdownVisible(false);
   };
-
   const handleClickDropdownItem = (text: string) => {
     switch (text) {
       case 'Logout':
-        // navigate('/')
         break;
       case 'My':
-        // navigate('/my')
         break;
       case 'Lock Account':
         navigate('/lock');
@@ -64,17 +84,37 @@ const PageHeader = memo(() => {
       case 'Setting':
         setSettingDialogVisible(true);
         break;
+      case 'Disconnect':
+        dispatch(setConnectWalletActionAsync(undefined));
+        break;
+      case 'Rewards':
+        dispatch(
+          setRewardsDialogVisibleAction({
+            visible: true,
+            tab: 'Badges',
+          })
+        );
+        break;
     }
+    setDorpdownVisible(false);
   };
   const onCloseSettingDialog = useCallback(() => {
     setSettingDialogVisible(false);
   }, []);
+  const onCloseRewardsDialog = useCallback(() => {
+    dispatch(
+      setRewardsDialogVisibleAction({
+        visible: false,
+      })
+    );
+  }, [dispatch]);
 
   const location = useLocation();
   const pathname = location.pathname;
   const activeSourceType = useSelector(
     (state: UserState) => state.activeSourceType
   );
+  
   const pageHeaderWrapperClassName = useMemo(() => {
     let activeClassName = 'pageHeaderWrapper';
     if (isScroll) {
@@ -82,6 +122,36 @@ const PageHeader = memo(() => {
     }
     return activeClassName;
   }, [isScroll]);
+  const formatNavs = useMemo(() => {
+    let arr: NavItem[] = [
+      {
+        icon: iconSetting,
+        text: 'Setting',
+      },
+      
+    ];
+    if (connectedWallet?.address || userPassword) {
+      arr.push({
+        icon: iconRewards,
+        text: 'Rewards',
+      });
+    }
+    if (connectedWallet?.address) {
+      arr.push({
+        icon: iconWallet,
+        text: 'Disconnect',
+      });
+    }
+    if (userPassword) {
+      arr.push(
+        {
+          icon: iconLock,
+          text: 'Lock Account',
+        }
+      );
+    }
+    return arr;
+  }, [userPassword, connectedWallet]);
   useEffect(() => {
     if (activeSourceType !== 'All') {
       setIsScroll(false);
@@ -107,15 +177,18 @@ const PageHeader = memo(() => {
       } else {
         setIsScroll(false);
       }
-    }
+    };
     // const tFn = debounce(fn, 500);
     const tFn = throttle(fn, 500);
-    
+
     window.addEventListener('scroll', tFn);
     return () => {
       window.removeEventListener('scroll', tFn);
     };
   }, [activeSourceType, pathname]);
+  useEffect(() => {
+    connectWalletDialogVisible && setDorpdownVisible(false);
+  }, [connectWalletDialogVisible]);
 
   return (
     <div className={pageHeaderWrapperClassName}>
@@ -130,37 +203,33 @@ const PageHeader = memo(() => {
               onMouseEnter={handleEnterAvatar}
               onMouseLeave={handleLeaveAvatar}
             >
-              <PAvatar />
-            </div>
-            {dorpdownVisible && (
-              <div
-                className="dropdownWrapper"
-                onMouseEnter={handleEnterAvatar}
-                onMouseLeave={handleLeaveAvatar}
-              >
-                <ul className="dropdown">
-                  {navs.map((item) => {
-                    return (
-                      <li
-                        key={item.text}
-                        className="dropdownItemWrapper"
-                        onClick={() => {
-                          handleClickDropdownItem(item.text);
-                        }}
-                      >
-                        <div className="dropdownItem">
-                          <img src={item.icon} alt="" />
-                          <span>{item.text}</span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+              {/* <PAvatar /> */}
+              <div className="iconMyWrapper">
+                <img src={iconMy} alt="" className="iconMy" />
               </div>
-            )}
+              <PConnect />
+            </div>
+            {dorpdownVisible &&
+               (
+                <div
+                  className="dropdownWrapper"
+                  onMouseEnter={handleEnterAvatar}
+                  onMouseLeave={handleLeaveAvatar}
+                >
+                  <PDropdownList
+                    list={formatNavs}
+                    onClick={handleClickDropdownItem}
+                  />
+                </div>
+              )}
           </div>
         </div>
         {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
+
+        <RewardsDialog
+          onClose={onCloseRewardsDialog}
+          onSubmit={onCloseRewardsDialog}
+        ></RewardsDialog>
       </header>
     </div>
   );

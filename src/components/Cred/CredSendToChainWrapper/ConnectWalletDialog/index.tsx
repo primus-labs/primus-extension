@@ -1,7 +1,8 @@
 import React, { useState, useCallback, memo } from 'react';
-
+import { useSearchParams } from 'react-router-dom'
+import WalletList from '@/components/WalletList';
 import PMask from '@/components/PMask';
-import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
+
 import PBack from '@/components/PBack';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 
@@ -9,7 +10,7 @@ import { WALLETLIST } from '@/config/constants';
 
 import type { WALLETITEMTYPE } from '@/config/constants';
 
-import './index.sass';
+import './index.scss';
 
 export type DataFieldItem = {
   icon: any;
@@ -22,10 +23,18 @@ interface DataSourcesDialogProps {
   onClose: () => void;
   onSubmit: (item: WALLETITEMTYPE) => void;
   onBack?: () => void;
+  desc?:string
 }
 
 const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
-  ({ onClose, onSubmit, onBack }) => {
+  ({
+    onClose,
+    onSubmit,
+    onBack,
+    desc = 'Your wallet address will be set as the account.',
+  }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
     // const list: DataFieldItem[] = WALLETLIST;
@@ -54,7 +63,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
       }
       onSubmit(activeItem);
     };
-    const handleClickData = (item: WALLETITEMTYPE) => {
+    const onChangeWallet = (item: WALLETITEMTYPE) => {
       if (!item.disabled) {
         setErrorTip(undefined);
         setActiveItem(item);
@@ -66,28 +75,9 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
         <div className="padoDialog dataSourcesDialog connectWalletDialog">
           {!!onBack && <PBack onBack={handleClickBack} />}
           <main>
-            <AddressInfoHeader />
-            <h1>
-              <span>Connect Wallet</span>
-            </h1>
-            <div className="scrollList">
-              <ul className="dataList">
-                {WALLETLIST.map((item) => {
-                  return (
-                    <li
-                      className={liClassName(item)}
-                      key={item.name}
-                      onClick={() => {
-                        handleClickData(item);
-                      }}
-                    >
-                      <img src={item.icon} alt="" />
-                      <div className="desc">{item.name}</div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            <h1>Connect Your Wallet</h1>
+            <h2>{desc}</h2>
+            <WalletList onClick={onChangeWallet} />
           </main>
           <button className="nextBtn" onClick={handleClickNext}>
             {errorTip && <PBottomErrorTip text={errorTip} />}

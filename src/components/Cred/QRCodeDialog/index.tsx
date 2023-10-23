@@ -2,9 +2,9 @@ import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import PMask from '@/components/PMask';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
-import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
 import QRCodeMain from '@/components/Cred/QRCodeDialog/QRCodeMain';
 import iconExport from '@/assets/img/iconExport.svg';
+import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import './index.sass';
 
 import { exportJson } from '@/utils/exportFile';
@@ -111,9 +111,12 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
         >
           <main>
             {isPolygonId ? (
-              <PolygonIdAddressInfoHeader address={activeCred?.did as string} />
+              <AddressInfoHeader
+                address={activeCred?.did as string}
+                icon={iconPolygonID}
+              />
             ) : (
-              <AddressInfoHeader />
+              <AddressInfoHeader address={activeCred?.address as string} />
             )}
             <QRCodeMain
               title="Present Your Proof"

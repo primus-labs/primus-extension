@@ -192,7 +192,9 @@ var options = {
             } else {
               let jsonobj = JSON.parse(content.toString());
               jsonobj.host_permissions.push('https://api-dev.padolabs.org/');
-              jsonobj.host_permissions.push('https://xuda-note.oss-cn-shanghai.aliyuncs.com/');
+              jsonobj.host_permissions.push(
+                'https://xuda-note.oss-cn-shanghai.aliyuncs.com/'
+              );
               return Buffer.from(
                 JSON.stringify({
                   description: process.env.npm_package_description,
@@ -272,6 +274,42 @@ var options = {
       patterns: [
         {
           from: 'src/services/algorithms/client_plugin.js',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/content/pageDecode.js',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/content/pageDecode.css',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/assets/img/content/iconExtension.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/assets/img/content/iconSuc.svg',
           to: path.join(__dirname, 'build'),
           force: true,
         },

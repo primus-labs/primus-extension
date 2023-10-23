@@ -1,36 +1,32 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import type { Dispatch } from 'react';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
-import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
+import nftIllstration from '@/assets/img/events/nftIllstration.svg';
 import './index.sass';
+import { setBadgeEventPeriodActionAsync } from '@/store/actions';
 
 interface AdSpaceProps {
   onClick: () => void;
 }
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
+  const dispatch: Dispatch<any> = useDispatch();
+  useEffect(() => {
+    dispatch(setBadgeEventPeriodActionAsync());
+  }, [dispatch]);
   return (
-    <div className="adSpace adSpace1">
+    <div className="adSpace adSpaceNft">
       <div className="left">
-        <img src={bannerIllstration} alt="" />
+        <img src={nftIllstration} alt="" />
         <div className="bannerContent">
-          <h3 className="ct">Get on-boarding reward! </h3>
+          <h3 className="ct">Early Bird NFT Rewards </h3>
           <div className="cn">
-            <p>
-              <span className="label">Issuer:&nbsp;</span>
-              <span className="value">PADO Labs</span>
-            </p>
-            <p>
-              <span className="label">Requirement:&nbsp;</span>
-              <span className="value">
-                Connect any data source, generate a proof, and provide it
-                on-chain!
-              </span>
-            </p>
+            <p>Connect API Data, make an attestation and submit it on-chain.</p>
           </div>
         </div>
       </div>
       <button className="right" onClick={onClick}>
         <span>Claim Now</span>
-        <img src={iconRightArrow} alt="" className="suffix" />
       </button>
     </div>
   );

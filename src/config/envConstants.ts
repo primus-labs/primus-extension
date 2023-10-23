@@ -39,46 +39,8 @@ export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
 
 const EASINFOMAP = {
   development: {
-    Sepolia: {
-      icon: iconUpChainEthereum,
-      title: 'Sepolia',
-      rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
-      easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
-      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
-      easProxyFeeContract: '0xb53F5BcB421B0aE0f0d2a16D3f7531A8d00f63aC',
-      schemas: {
-        EAS: {
-          schemaUid:
-            '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
-          schemaUidTokenHoldings:
-            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
-          schemaUidIdentification:
-            '0x871cb30613666b4349fe45b1e4af222e7da3c3f3b6487ef99b813a897470cb28',
-        },
-        PolygonID: {
-          schemaUid:
-            '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
-          schemaUidTokenHoldings:
-            '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
-          schemaUidIdentification:
-            '0xe08e249cc244e018cc56cb05938665fd16e373e77acc23d625e84cd4fe07cc48',
-        },
-      },
-      chainId: '0xaa36a7', // numToHex
-      chainName: 'Sepolia',
-      rpcUrls: [
-        'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      ],
-      blockExplorerUrls: ['https://sepolia.etherscan.io'],
-      nativeCurrency: {
-        name: 'ETH',
-        symbol: 'ETH',
-        decimals: 18,
-      },
-      transactionDetailUrl: 'https://sepolia.easscan.org/attestation/view',
-    },
     'Linea Goerli': {
+      showName: 'Linea',
       icon: iconNetworkLinea,
       title: 'Linea Goerli',
       rpcUrl:
@@ -95,6 +57,8 @@ const EASINFOMAP = {
             '0xC9992483A7DA0207213D34288B835094B48567290CECF044C48913D3F1472A3A',
           schemaUidIdentification:
             '0x26F9780B51AEFE9581802FF0B315DECB36701D39766FBB78DBD9B4596B6DA0BD',
+          schemaUidWeb:
+            '0x84FDF5748D9AF166503472FF5DEB0CD5F61F006169424805FD5554356AC6DF10',
         },
         PolygonID: {
           schemaUid:
@@ -118,7 +82,51 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://goerli.lineascan.build/tx',
     },
+    Sepolia: {
+      showName: 'Sepolia',
+      icon: iconUpChainEthereum,
+      title: 'Sepolia',
+      rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
+      easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
+      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
+      easProxyFeeContract: '0x140Bd8EaAa07d49FD98C73aad908e69a75867336',
+      schemas: {
+        EAS: {
+          schemaUid:
+            '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
+          schemaUidTokenHoldings:
+            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
+          schemaUidIdentification:
+            '0x871cb30613666b4349fe45b1e4af222e7da3c3f3b6487ef99b813a897470cb28',
+          schemaUidWeb:
+            '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
+        },
+        PolygonID: {
+          schemaUid:
+            '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
+          schemaUidTokenHoldings:
+            '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
+          schemaUidIdentification:
+            '0xe08e249cc244e018cc56cb05938665fd16e373e77acc23d625e84cd4fe07cc48',
+        },
+      },
+      chainId: '0xaa36a7', // numToHex
+      chainName: 'Sepolia',
+      rpcUrls: [
+        'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      ],
+      blockExplorerUrls: ['https://sepolia.etherscan.io'],
+      nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://sepolia.easscan.org/attestation/view',
+    },
+
     ArbitrumOne: {
+      showName: 'Arbitrum',
       icon: iconArbitrum,
       title: 'ArbitrumOne',
       disabled: true,
@@ -150,6 +158,7 @@ const EASINFOMAP = {
       blockExplorerUrls: ['https://arbiscan.io'],
     },
     Polygon: {
+      showName: 'Polygon',
       icon: iconPolygon,
       title: 'Polygon',
       disabled: true,
@@ -173,6 +182,7 @@ const EASINFOMAP = {
       },
     },
     BNB: {
+      showName: 'BNB',
       icon: iconBinance,
       title: 'BNB',
       disabled: true,
@@ -202,6 +212,7 @@ const EASINFOMAP = {
   },
   test: {
     Sepolia: {
+      showName: 'Sepolia',
       icon: iconUpChainEthereum,
       title: 'Sepolia',
       rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
@@ -234,6 +245,7 @@ const EASINFOMAP = {
       blockExplorerUrls: ['https://sepolia.etherscan.io'],
     },
     Polygon: {
+      showName: 'Polygon',
       icon: iconPolygon,
       title: 'Polygon',
       disabled: true,
@@ -257,6 +269,7 @@ const EASINFOMAP = {
       },
     },
     BNB: {
+      showName: 'BNB',
       icon: iconBinance,
       title: 'BNB',
       disabled: true,
@@ -285,7 +298,48 @@ const EASINFOMAP = {
     },
   },
   production: {
+    'Linea Goerli': {
+      showName: 'Linea',
+      icon: iconNetworkLinea,
+      title: 'Linea Goerli',
+      rpcUrl: 'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      erc721Contract: '',
+      easContact: '',
+      easProxyContrac: '',
+      easProxyFeeContract: '0x50bd377EB8D4236Bb587AB3FB1eeafd888AEeC58',
+      schemas: {
+        'Verax-Linea-Mainnet': {
+          schemaUid:
+            '0x5C136E30F599E1A646323513BFE92F52AE6CB7C69141B1F156B7E648062BB280',
+          schemaUidTokenHoldings:
+            '0xC9992483A7DA0207213D34288B835094B48567290CECF044C48913D3F1472A3A',
+          schemaUidIdentification:
+            '0x26F9780B51AEFE9581802FF0B315DECB36701D39766FBB78DBD9B4596B6DA0BD',
+          schemaUidWeb:
+            '0x84FDF5748D9AF166503472FF5DEB0CD5F61F006169424805FD5554356AC6DF10',
+        },
+        PolygonID: {
+          schemaUid:
+            '0x35E2EB198B2D9019F0D7C70EA2327C669A81B67721049D65CEC92EC5FA5E2905',
+          schemaUidTokenHoldings:
+            '0x640B7A045D305F646074AC038830AAA2E8EDFAAC069F7CC2BE53AE9034D13AD4',
+          schemaUidIdentification:
+            '0xF406CE092700219C3BE1729E52A0BC9539177E96B4A63D73D1E846CA20E1E900',
+        },
+      },
+      chainId: '0xe708', //59144
+      chainName: 'Linea',
+      rpcUrls: ['https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8'],
+      blockExplorerUrls: ['https://lineascan.build'],
+      nativeCurrency: {
+        name: 'LineaETH',
+        symbol: 'LineaETH',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://lineascan.build/tx',
+    },
     ArbitrumOne: {
+      showName: 'Arbitrum',
       icon: iconArbitrum,
       title: 'ArbitrumOne',
       rpcUrl: 'https://arb1.arbitrum.io/rpc',
@@ -301,6 +355,8 @@ const EASINFOMAP = {
             '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
           schemaUidIdentification:
             '0x871cb30613666b4349fe45b1e4af222e7da3c3f3b6487ef99b813a897470cb28',
+          schemaUidWeb:
+            '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
         },
         PolygonID: {
           schemaUid:
@@ -322,47 +378,9 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://arbitrum.easscan.org/attestation/view',
     },
-    'Linea Goerli': {
-      icon: iconNetworkLinea,
-      title: 'Linea Goerli',
-      rpcUrl:
-        'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      erc721Contract: '',
-      easContact: '',
-      easProxyContrac: '',
-      easProxyFeeContract: '0x50bd377EB8D4236Bb587AB3FB1eeafd888AEeC58',
-      schemas: {
-        'Verax-Linea-Mainnet': {
-          schemaUid:
-            '0x5C136E30F599E1A646323513BFE92F52AE6CB7C69141B1F156B7E648062BB280',
-          schemaUidTokenHoldings:
-            '0xC9992483A7DA0207213D34288B835094B48567290CECF044C48913D3F1472A3A',
-          schemaUidIdentification:
-            '0x26F9780B51AEFE9581802FF0B315DECB36701D39766FBB78DBD9B4596B6DA0BD',
-        },
-        PolygonID: {
-          schemaUid:
-            '0x35E2EB198B2D9019F0D7C70EA2327C669A81B67721049D65CEC92EC5FA5E2905',
-          schemaUidTokenHoldings:
-            '0x640B7A045D305F646074AC038830AAA2E8EDFAAC069F7CC2BE53AE9034D13AD4',
-          schemaUidIdentification:
-            '0xF406CE092700219C3BE1729E52A0BC9539177E96B4A63D73D1E846CA20E1E900',
-        },
-      },
-      chainId: '0xe708', //59144
-      chainName: 'Linea',
-      rpcUrls: [
-        'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      ],
-      blockExplorerUrls: ['https://lineascan.build'],
-      nativeCurrency: {
-        name: 'LineaETH',
-        symbol: 'LineaETH',
-        decimals: 18,
-      },
-      transactionDetailUrl: 'https://lineascan.build/tx',
-    },
+
     Ethereum: {
+      showName: 'Ethereum',
       icon: iconUpChainEthereum,
       title: 'Ethereum',
       disabled: true,
@@ -379,6 +397,7 @@ const EASINFOMAP = {
       blockExplorerUrls: ['https://etherscan.io/'],
     },
     BNB: {
+      showName: 'BNB',
       icon: iconBinance,
       title: 'BNB',
       disabled: true,
@@ -406,6 +425,7 @@ const EASINFOMAP = {
       blockExplorerUrls: ['https://testnet.bscscan.com/'],
     },
     Polygon: {
+      showName: 'Polygon',
       icon: iconPolygon,
       title: 'Polygon',
       disabled: true,
@@ -463,7 +483,7 @@ export const updateAlgoUrl = async () => {
   };*/
 
   console.log('updateAlgoUrl res=', res);
-  if (res.rc === 0) {
+  if (res?.rc === 0) {
     let isInited = false;
     res.result.forEach((item: any) => {
       let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);

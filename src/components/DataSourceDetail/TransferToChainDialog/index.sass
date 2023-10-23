@@ -8,78 +8,41 @@
   main
     width: 100%
     @extend .fcsc
-    padding: 0 40px
     h1
       @extend .xlLBlackBoldFont
       padding-top: 34px
     h2
+      width: 100%
       font-family: "Inter-Regular"
       color: rgba(0, 0, 0, 0.6)
       font-size: 16px
       line-height: 26px
       padding: 18px 0 70px 0
       text-align: center
-    h6
-      @extend .mFont
-      font-family: 'Inter-Bold'
-      color: $colSBlack
-      padding-bottom: 55px
-    .networkItem
-      width: 72px
-      height: 72px
-      border: 1PX solid rgba(0, 0, 0, 0.1)
-      border-radius: 50%
-      @extend .frcc
-      cursor: pointer
-      &:not(.forbid):hover
-        background: #FFFFFF
-        border: 2PX solid transparent
-        background-clip: padding-box, border-box
-        background-origin: padding-box, border-box
-        background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-      &.active
-        position: relative
-        background: #FFFFFF
-        border: 2PX solid transparent
-        background-clip: padding-box, border-box
-        background-origin: padding-box, border-box
-        background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-        &:after
-          position: absolute
-          content: ''
-          right: 2px
-          bottom: 2px
-          width: 14px
-          height: 14px
-          background: url('../../../assets/img/iconSuc.svg')
-          background-size: 100% 100%
-      &.forbid
-        cursor: default
-      &.disabled
-        cursor: not-allowed
-      &.disabled
-        cursor: not-allowed
-        >img
-          opacity: 0.4
-      img
-        width: 48.38px
-        border-radius: 50%
-    .dividerWrapper
-      @extend .frbc
-      margin: 25px 0 26px
-      width: 100%
-      i
-        flex: 1
-        height: 1PX
-        background-color: #D9D9D9
-      .divider
-        @extend .mSBlackRegularFont
-        width: 48px
-        line-height: 35px
-        text-align: center
-    ul.networkList
-      @extend .frac
-      gap: 18px
+    .sourceGroup
+      width:100%
+      &.scroll
+        width: 100%
+      ul.dataList 
+        gap: 22.66px
+        li
+          padding: 0
+          width: 87px
+          gap: 4px
+          @extend .fccc
+          color: var(--Text-headline, #0A1214)
+          text-align: center
+
+          /* Headline 6 */
+          font-family: Inter
+          font-size: 14px
+          font-style: normal
+          font-weight: 600
+          line-height: 20px /* 142.857% */
+          >img
+            width: 32px
+
+    
   button.nextBtn
     position: relative
     .tipWrapper
@@ -101,9 +64,9 @@
         color: rgba(0,0,0,0.4)
 @media (max-width: 1680px)
   .padoDialog.TransferToChainDialog
-    padding: 48px 42px 32px
+    padding: 36px 42px 32px
     &.attestationUpChainDialog
-      padding: 42px 42px 32px
+      padding: 36px 42px 32px
       main
         h1
           padding-top: 26px
@@ -112,40 +75,30 @@
           h1
             padding-top: 32px
     main
-      padding: 0 18px
       h1
-        padding-top: 31px
-        font-size: 26px
-        line-height: 31px
-        font-family: 'Inter-SemiBold'
+        padding-top: 28px
+        color: var(--Text-headline, #0A1214)
+        text-align: center
+
+        /* Headline 2 */
+        font-family: Inter
+        font-size: 28px
+        font-style: normal
+        font-weight: 600
+        line-height: 36px /* 128.571% */
       h2
-        font-size: 12px
-        line-height: 18px
-        padding: 12px 0 44px 0
-        width:302px
-      h6
+        padding: 16px 0 24px 0
+        color: var(--Text-body, #515758)
+        text-align: center
+
+        /* Text 1 */
+        font-family: Inter
         font-size: 14px
-        line-height: 17px
-        font-family: 'Inter-SemiBold'
-        padding-bottom: 10px
-      .networkItem
-        width: 55px
-        height: 55px
-        &.active
-          &:after
-            right: -1px
-            bottom: -2px
-            width: 12px
-            height: 12px
-        img
-          width: 36.95px
-      .dividerWrapper
-        margin: 10px 0
-        .divider
-          font-size: 12px
-          line-height:15px
-      ul.networkList
-        gap: $mGap
+        font-style: normal
+        font-weight: 400
+        line-height: 20px /* 142.857% */
+      
+      
     button.nextBtn
       height: 48px
       font-family: 'Inter-SemiBold'

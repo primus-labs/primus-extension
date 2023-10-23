@@ -1,6 +1,6 @@
 import { SETSYSCONFIG } from '../actions';
-import {
-  DEFAULTDATASOURCEPOLLINGTIMENUM,
+import { connectWallet } from '@/services/wallets/metamask';
+import {DEFAULTDATASOURCEPOLLINGTIMENUM,
 } from '@/config/constants';
 
 const DEFAULTCREDTYPELIST = [
@@ -24,7 +24,7 @@ const DEFAULTCREDTYPELIST = [
     id: '2',
     credIdentifier: 'TOKEN_HOLDINGS',
     credTitle: 'Token Holdings Proof',
-    credIntroduce: 'Token ownership in Binance, Coinbase, OKX',
+    credIntroduce: 'Ownership in Binance, Coinbase, OKX',
     credLogoUrl:
       'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredToken.svg',
     credDetails:
@@ -39,7 +39,7 @@ const DEFAULTCREDTYPELIST = [
     id: '3',
     credIdentifier: 'IDENTIFICATION_PROOF',
     credTitle: 'Identity Proof',
-    credIntroduce: 'Identity or membership',
+    credIntroduce: 'eKYC, Nationality, Membership',
     credLogoUrl:
       'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredCred.svg',
     credDetails:
@@ -77,12 +77,22 @@ const initState = {
   kycSources: {},
   sourceUpdateFrequency: DEFAULTDATASOURCEPOLLINGTIMENUM,
   proofTypes: DEFAULTCREDTYPELIST,
+  webProofTypes: [],
   credentials: {},
   userInfo: {},
   walletAddress: '',
   rewards: {},
   effective: true,
-  onChainAssetsSources:{}
+  onChainAssetsSources: {},
+  connectWalletDialogVisible: false,
+  connectedWallet: null,
+  rewardsDialogVisible: {
+    visible: false,
+  },
+  badgeEventPeriod: {
+    startTime: '1698033600000',
+    endTime: '1698552000000',
+  },
 };
 
 // reducer
@@ -107,6 +117,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, kycSources: action.payload };
     case 'setProofTypes':
       return { ...state, proofTypes: action.payload };
+    case 'setWebProofTypes':
+      return { ...state, webProofTypes: action.payload };
     case 'setCredentials':
       return { ...state, credentials: action.payload };
     case 'setSourceUpdateFrequency':
@@ -123,6 +135,14 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, onChainAssetsSources: action.payload };
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
+    case 'setConnectWalletDialogVisible':
+      return { ...state, connectWalletDialogVisible: action.payload }
+    case 'setConnectWallet':
+      return { ...state, connectedWallet: action.payload };
+    case 'setRewardsDialogVisibleAction':
+      return { ...state, rewardsDialogVisible: action.payload };
+    case 'setBadgeEventPeriodAction':
+      return { ...state, badgeEventPeriod: action.payload };
     default:
       return state;
   }

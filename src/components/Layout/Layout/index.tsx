@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import React, { useEffect, useCallback, useState, useMemo, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
@@ -29,7 +29,7 @@ import './index.sass';
 import LoseEfficacyDialog from '../LoseEfficacy';
 import { updateAlgoUrl } from '@/config/envConstants';
 
-const Layout = () => {
+const Layout = memo(() => {
   const location = useLocation();
   const pathname = location.pathname;
   const padoServicePort = useSelector(
@@ -158,25 +158,12 @@ const Layout = () => {
     };
   }, [padoServicePort]);
 
-  // useEffect(() => {
-  //   dispatch(setExSourcesAsync());
-  //   dispatch(setSocialSourcesAsync());
-  //   dispatch(setKYCsAsync());
-  //   dispatch(setProofTypesAsync());
-  //   dispatch(initSourceUpdateFrequencyActionAsync());
-  //   dispatch(initUserInfoActionAsync());
-  //   dispatch(setCredentialsAsync());
-  //   dispatch(initWalletAddressActionAsync());
-  //   dispatch(initRewardsActionAsync());
-  //   dispatch(setOnChainAssetsSourcesAsync());
-  //   (updateOnChainFn as () => void)();
-  // }, [dispatch, updateOnChainFn]);
   const initStoreData = useCallback(async () => {
-    // 
-    const { twitter } = await chrome.storage.local.get(['twitter'])
+    //
+    const { twitter } = await chrome.storage.local.get(['twitter']);
     if (twitter) {
       await chrome.storage.local.set({ x: twitter });
-      await chrome.storage.local.remove('twitter')
+      await chrome.storage.local.remove('twitter');
     }
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
@@ -188,6 +175,7 @@ const Layout = () => {
     dispatch(initWalletAddressActionAsync());
     dispatch(initRewardsActionAsync());
     dispatch(setOnChainAssetsSourcesAsync());
+    // dispatch(initConnectedWalletActionAsync());
     (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);
   useEffect(() => {
@@ -195,7 +183,7 @@ const Layout = () => {
   }, [initStoreData]);
 
   useEffect(() => {
-    if (pathname === '/datas') {
+    if (pathname === '/events') {
       updateAlgoUrl();
     }
   }, [pathname]);
@@ -210,6 +198,6 @@ const Layout = () => {
       <LoseEfficacyDialog />
     </div>
   );
-};
+});
 
 export default Layout;

@@ -79,7 +79,7 @@ const Setting: React.FC<SettingProps> = memo(({ onClose }) => {
       )}
       {resetPwdSucDialogVisible && (
         <AddSourceSucDialog
-          headerEl={<AuthInfoHeader checked={false} />}
+          headerEl={<div className="holderH"></div>}
           type="suc"
           title="Congratulations"
           desc="Your password has been setup."

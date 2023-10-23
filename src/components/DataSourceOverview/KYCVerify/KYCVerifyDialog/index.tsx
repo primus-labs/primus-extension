@@ -1,4 +1,6 @@
 import React, { memo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import QRCodeMain from '@/components/Cred/QRCodeDialog/QRCodeMain';
@@ -24,6 +26,8 @@ interface KYCVerifyDialogProps {
 
 const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
   ({ onClose, activeSource, onCancel, qrCodeVal }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const icon = activeSource?.icon;
     const descEl = (
       <>
@@ -32,7 +36,7 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
       </>
     );
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={!fromEvents}>
         <div className="padoDialog kycVerifyDialog">
           <PBack onBack={onCancel} />
           <main>

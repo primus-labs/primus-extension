@@ -33,31 +33,19 @@
       gap: 10px
       &.excitable,&:not(.disabled):hover
         padding: 21px 10px
-        background: #FFFFFF
-        border: 2PX solid transparent
-        background-clip: padding-box, border-box
-        background-origin: padding-box, border-box
-        background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-        position: relative
+        background-color: #FFFFFF
+        border: 1PX solid var(--Line, #DFE0E0)
       &.disabled
         cursor: not-allowed
       &.active
         padding: 21px 10px
-        background: #FFFFFF
+        background-color: #FFFFFF
         border: 2PX solid transparent
         background-clip: padding-box, border-box
         background-origin: padding-box, border-box
         background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA)
-        position: relative
-        &:after
-          position: absolute
-          content: ''
-          right: 4px
-          bottom: 4px
-          width: 18px
-          height: 18px
-          background: url('@/assets/img/iconSuc.svg')
-          background-size: 100% 100%
+        &:hover
+          border: 2PX solid transparent
       img
         width: 40px
       h6
@@ -83,17 +71,16 @@
   .connectedDataSourceList
     &.scroll
       // width: calc( 100% + 35px )
-      width: 451px
+      width: 415px
       height: 198px
       ul.dataList
-        column-gap: 21px
+        column-gap: 10px
         row-gap: 14px
         li
           cursor: pointer
-          width: 88px
-          height: 85px
-          padding: 18px 2px
-          gap: 6px
+          width: 87px
+          height: 88px
+          gap: 4px
           &.excitable,&:not(.disabled):hover
             padding: 16px 0
           &.active

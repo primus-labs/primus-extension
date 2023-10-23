@@ -1,5 +1,6 @@
 import React, { useState, memo } from 'react';
-
+import { useSearchParams } from 'react-router-dom'
+ 
 import SourceGroups from '../SourceGroups';
 import PMask from '@/components/PMask';
 import iconInfo from '@/assets/img/iconInfo.svg';
@@ -21,6 +22,9 @@ interface DataSourcesDialogProps {
 }
 const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
   ({ onClose, onSubmit, onCheck }) => {
+     
+  const [searchParams] = useSearchParams();
+  const fromEvents = searchParams.get('fromEvents');
     const [activeItem, setActiveItem] = useState<ExchangeMeta>();
 
     const handleClickNext = () => {
