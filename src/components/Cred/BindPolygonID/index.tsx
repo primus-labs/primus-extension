@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useCallback, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
+import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import BindPolygonIDDialog from './BindPolygonIDDialog';
 
@@ -11,6 +11,7 @@ import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 
+import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import './index.sass';
 
 
@@ -152,7 +153,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             title={activeRequest.title}
             desc={activeRequest.desc}
             headerEl={
-              <PolygonIdAddressInfoHeader address={did as string}/>
+              <AddressInfoHeader address={did as string} icon={iconPolygonID} />
             }
           />
         )}

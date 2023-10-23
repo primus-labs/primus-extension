@@ -5,9 +5,9 @@ import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
-import PolygonIdAddressInfoHeader from '@/components/Cred/PolygonIdAddressInfoHeader';
 import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup';
 import rightArrow from '@/assets/img/rightArrow.svg';
+import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 
 import './index.sass';
 
@@ -126,15 +126,14 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
               <AddressInfoHeader address={address as string} />
             )}
             {headerType === 'polygonIdAttestation' && (
-              <PolygonIdAddressInfoHeader address={address as string} />
+              <AddressInfoHeader
+                address={address as string}
+                icon={iconPolygonID}
+              />
             )}
             <h1>{title}</h1>
             <h2>{desc}</h2>
-            <SourceGroup
-              onChange={
-                onChange}
-              list={activeSourceList}
-            />
+            <SourceGroup onChange={onChange} list={activeSourceList} />
             {/* <ul className="networkList">
               {topList.map((item) => {
                 return (
