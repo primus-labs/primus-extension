@@ -1,11 +1,7 @@
 import React, { useState, useRef, useMemo, memo } from 'react';
-import iconCopy from '@/assets/img/iconCopy.svg';
-import iconCompleted from '@/assets/img/iconCompleted.svg';
-import iconEye from '@/assets/img/iconEye.svg';
-import iconCloseEye from '@/assets/img/iconCloseEye.svg';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 
-import './index.sass';
+import './index.scss';
 
 interface PInputProps {
   onChange: (val: string) => void;
@@ -14,6 +10,8 @@ interface PInputProps {
   copiable?: boolean;
   visible?: boolean;
   onSearch?: (val: string) => void;
+  label?: string;
+  labelExtra?: any;
 }
 
 const PInput: React.FC<PInputProps> = memo(
@@ -24,6 +22,8 @@ const PInput: React.FC<PInputProps> = memo(
     copiable = false,
     visible = false,
     onSearch,
+    label,
+    labelExtra,
   }) => {
     const inputEl = useRef<any>(null);
     const [copied, setCopied] = useState<boolean>(false);
@@ -58,30 +58,37 @@ const PInput: React.FC<PInputProps> = memo(
     };
     return (
       <div className="pInputWrapper">
-        <input
-          ref={inputEl}
-          type={activeType}
-          className="pInput"
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-        />
-        {copiable && (
-          <img
-            className="suffixIcon"
-            src={copied ? iconCompleted : iconCopy}
-            alt=""
-            onClick={handleCopy}
+        {label && <label>{label}</label>}
+        <div className="inputWrapper">
+          <input
+            ref={inputEl}
+            type={activeType}
+            className="pInput"
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
           />
-        )}
-        {visible && (
-          <img
-            className="suffixIcon"
-            src={activeType === 'password' ? iconCloseEye : iconEye}
-            alt=""
-            onClick={handleLookPwd}
-          />
-        )}
+          {copiable && (
+            <i
+              className={
+                copied
+                  ? 'iconfont icon-iconCompleted'
+                  : 'iconfont icon-iconCCCopy'
+              }
+              onClick={handleCopy}
+            ></i>
+          )}
+          {visible && (
+            <i
+              className={
+                activeType === 'password'
+                  ? 'iconfont icon-iconCloseEye'
+                  : 'iconfont icon-iconEye'
+              }
+              onClick={handleLookPwd}
+            ></i>
+          )}
+        </div>
       </div>
     );
   }

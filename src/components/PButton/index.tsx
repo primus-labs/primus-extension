@@ -16,9 +16,11 @@ const PButton: React.FC<PButtonProps> = memo(
     };
     return (
       <button className="pButton" onClick={handleClick}>
-        {prefix && <img className="prefix" src={prefix} alt="" />}
+        {/* {prefix && <img className="prefix" src={prefix} alt="" />} */}
+        {prefix}
         <span className="btnText">{text}</span>
-        {suffix && <img className="suffix" src={suffix} alt="" />}
+        {/* {suffix && <img className="suffix" src={suffix} alt="" />} */}
+        {suffix}
       </button>
     );
   }

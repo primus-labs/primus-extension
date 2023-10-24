@@ -26,7 +26,6 @@ import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 import './index.sass';
-import LoseEfficacyDialog from '../LoseEfficacy';
 import { updateAlgoUrl } from '@/config/envConstants';
 
 const Layout = memo(() => {
@@ -195,7 +194,6 @@ const Layout = memo(() => {
         <ActiveHeader />
         <Outlet />
       </div>
-      <LoseEfficacyDialog />
     </div>
   );
 });

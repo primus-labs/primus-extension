@@ -3,17 +3,16 @@ import { useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 
 import AsideAnimation from '@/components/Layout/AsideAnimation';
-
+import PButton from '@/components/PButton'
 import { postMsg } from '@/utils/utils';
 import { requestSignTypedData } from '@/services/wallets/utils';
 import { getUserIdentity } from '@/services/api/user';
 import { initWalletAddressActionAsync } from '@/store/actions';
-import './Home.sass';
+import './Home.scss';
 
 const Home = memo(() => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const padoServicePort = useSelector((state) => state.padoServicePort);
 
   const handleClickStart = useCallback(() => {
@@ -89,10 +88,11 @@ const Home = memo(() => {
             <h1>Welcome to PADO Attestation Service</h1>
             <p>Bringing all internet data into smart contracts.</p>
           </section>
-          <button className="startBtn" onClick={handleClickStart}>
-            <span>Click here to start</span>
-            <div className="iconArrow"></div>
-          </button>
+          <PButton
+            text="Click here to start"
+            suffix={<i className="iconfont icon-rightArrow"></i>}
+            onClick={handleClickStart}
+          />
         </article>
       </main>
     </div>

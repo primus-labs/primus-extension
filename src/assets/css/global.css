@@ -32,4 +32,12 @@ body {
   --Warning: #F42D2D;
   --Info: #0BB4FE;
   --Linear: linear-gradient(269deg, #70FFBA 0.52%, #78DEFF 100.71%);
+
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-24: 24px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  
+  --pHeaderHeight: 105px;
 }

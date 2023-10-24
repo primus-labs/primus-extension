@@ -1,0 +1,40 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFont.sass';
+@import '@/assets/css/pFlex.sass';
+@import '@/components/PButton/index.scss';
+.pageIndex {
+  @extend .frcc;
+  height: 100vh;
+  margin-top: calc(-1 * var(--pHeaderHeight, 105px));
+  .appContent {
+    @extend .frsc;
+    gap: 87px;
+    width: 1248px;
+    article {
+      @extend .fcss;
+      width: 515px;
+      gap: 88px;
+      .descWrapper {
+        @extend .fcss;
+        gap: var(--spacing-16, 16px);
+        h1 {
+          color: var(--Text-headline, #0a1214);
+          @extend .Headline1;
+        }
+        p {
+          color: var(--Text-body, #515758);
+          @extend .Body1;
+        }
+      }
+      .pButton {
+        @extend .buttonStyle1;
+        border-width: 2px !important;
+        width: 256px;
+        height: 60px;
+        .iconfont {
+          font-size: 28px;
+        }
+      }
+    }
+  }
+}

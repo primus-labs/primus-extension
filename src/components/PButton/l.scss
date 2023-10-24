@@ -1,0 +1,37 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/pVars.sass';
+
+button.pButton {
+  @extend .frcc;
+  box-sizing: border-box;
+  cursor: pointer;
+  width: 416px;
+  height: var(--spacing-48, 48px);
+  border-radius: var(--spacing-12, 12px);
+  gap: var(--spacing-8, 8px);
+  background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+  color: var(--Button-default, #515758);
+  /* Headline 5 */
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 150% */
+  &:hover,
+  &:active {
+    background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.2) 100%
+      ),
+      linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+    color: var(--Button-active, #252c2e);
+  }
+  .prefix,
+  .suffix {
+    width: var(--spacing-24, 24px);
+  }
+  .iconfont{
+    font-size: 24px;
+  }
+}

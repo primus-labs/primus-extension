@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import './index.sass';
+import './index.scss';
 import logo from '@/assets/img/logo.svg';
 const PHeader = memo(() => {
   return (

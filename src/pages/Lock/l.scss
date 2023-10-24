@@ -1,0 +1,21 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/pVars.sass';
+
+.pageIndex.pageLock {
+  .appContent {
+    article {
+      &.hadSetPwd{
+        gap: 32px;
+      }
+      .articleMain {
+        width: 417px;
+        @extend .fcss;
+        gap: $xxsGap;
+        .errorTip {
+          @extend .Text2;
+          color:  var(--Warning, #F42D2D);
+        }
+      }
+    }
+  }
+}

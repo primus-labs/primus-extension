@@ -163,35 +163,13 @@ const PageHeader = memo(() => {
       }
     }
   }, [activeSourceType]);
-  useEffect(() => {
-    const fn = () => {
-      if (activeSourceType !== 'All' || pathname !== '/datas') {
-        setIsScroll(false);
-        return;
-      }
-      var topScroll = document.documentElement.scrollTop || window.pageYOffset;
-      // var bodyHeight = document.body.offsetHeight;
-      // var docHeight = document.documentElement.scrollHeight;
-      if (topScroll >= 32) {
-        setIsScroll(true);
-      } else {
-        setIsScroll(false);
-      }
-    };
-    // const tFn = debounce(fn, 500);
-    const tFn = throttle(fn, 500);
-
-    window.addEventListener('scroll', tFn);
-    return () => {
-      window.removeEventListener('scroll', tFn);
-    };
-  }, [activeSourceType, pathname]);
+  
   useEffect(() => {
     connectWalletDialogVisible && setDorpdownVisible(false);
   }, [connectWalletDialogVisible]);
 
   return (
-    <div className={pageHeaderWrapperClassName}>
+    <div className="pageHeaderWrapper">
       <header className="pageHeader">
         <div className="pageHeaderInner">
           <img src={logo} className="pLogo" alt="" />
@@ -209,19 +187,18 @@ const PageHeader = memo(() => {
               </div>
               <PConnect />
             </div>
-            {dorpdownVisible &&
-               (
-                <div
-                  className="dropdownWrapper"
-                  onMouseEnter={handleEnterAvatar}
-                  onMouseLeave={handleLeaveAvatar}
-                >
-                  <PDropdownList
-                    list={formatNavs}
-                    onClick={handleClickDropdownItem}
-                  />
-                </div>
-              )}
+            {dorpdownVisible && (
+              <div
+                className="dropdownWrapper"
+                onMouseEnter={handleEnterAvatar}
+                onMouseLeave={handleLeaveAvatar}
+              >
+                <PDropdownList
+                  list={formatNavs}
+                  onClick={handleClickDropdownItem}
+                />
+              </div>
+            )}
           </div>
         </div>
         {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
