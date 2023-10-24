@@ -1,7 +1,5 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch, } from 'react-redux';
-import type {SyntheticEvent} from 'react'
-import useConnect from '@/hooks/useConnect';
 import {
   setConnectWalletDialogVisibleAction,
   connectWalletAsync,
@@ -9,7 +7,6 @@ import {
 import { formatAddress } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/constants';
 
-import iconWallet from '@/assets/img/layout/iconWallet.svg';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import PButton from '@/components/PButton';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
@@ -17,6 +14,7 @@ import './index.scss';
 import type { UserState } from '@/types/store';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ActiveRequestType } from '@/types/config';
+import iconWallet from '@/assets/img/layout/iconWallet.svg';
 
 const PConnect = memo(() => {
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
@@ -28,7 +26,7 @@ const PConnect = memo(() => {
     (state: UserState) => state.connectedWallet
   );
   const dispatch: React.Dispatch<any> = useDispatch();
-  // const connectFn = useConnect();
+  
   const errorDescEl = useMemo(
     () => (
       <>
@@ -88,7 +86,7 @@ const PConnect = memo(() => {
     <div className="PConnect">
       {connectedWallet?.address ? (
         <PButton
-          prefix={iconWallet}
+          prefix={<img src={iconWallet} alt=""/>}
           text={formatAddress(connectedWallet?.address, 4)}
           onClick={() => {}}
         />

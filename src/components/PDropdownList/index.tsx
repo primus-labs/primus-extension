@@ -8,7 +8,8 @@ import './index.scss';
 
 
 type NavItem = {
-  icon: any;
+  iconName?: string;
+  icon?: any;
   text: string;
 };
 interface DataSourcesDialogProps {
@@ -16,16 +17,12 @@ interface DataSourcesDialogProps {
   list?: NavItem[];
 }
 const navs: NavItem[] = [
-  // {
-  //   icon: iconMy,
-  //   text: 'My',
-  // },
   {
     icon: iconSetting,
     text: 'Setting',
   },
   {
-    icon: iconLock,
+    iconName: 'iconLock',
     text: 'Lock Account',
   },
   {
@@ -50,7 +47,11 @@ const PDropdownList: React.FC<DataSourcesDialogProps> = memo(
               }}
             >
               <div className="dropdownItem">
-                <img src={item.icon} alt="" />
+                {item.iconName ? (
+                  <i className={`iconfont ${item.iconName}`}></i>
+                ) : (
+                  <img src={item.icon} alt="" />
+                )}
                 <div className="desc">{item.text}</div>
               </div>
             </li>

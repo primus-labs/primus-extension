@@ -1,0 +1,72 @@
+@import './pFlex.sass';
+@import './padoM.scss';
+.padoDialog {
+  @extend .fcbc;
+  width: 500px;
+  height: 622px;
+  border-radius: var(--spacing-24, 24px);
+  background: var(--bg-80, rgba(255, 255, 255, 0.8));
+  backdrop-filter: blur(32px);
+  padding: 48px 42px 32px;
+  > main {
+    @extend .fcss;
+    width: 100%;
+    > header {
+      @extend .fcsc;
+      width: 100%;
+      gap: var(--spacing-16, 16px);
+      h1 {
+        @extend .fcss;
+        color: var(--Text-headline, #0a1214);
+        @extend .Headline2;
+      }
+      h2 {
+        color: var(--Text-body, #515758);
+        @extend .Text1;
+      }
+    }
+  }
+  footer {
+    position: relative;
+    width: 100%;
+    >.pButton{
+      width: 100%;
+      height: 48px;
+    }
+  }
+}
+
+// $dialogWidth: 600px
+// $dialogHeight: 800px
+// $dialogMBtnHeight: 58px
+// $dialogLBtnHeight: 60px
+
+// $sDialogWidth: 500px
+// $sDialogHeight: 622px
+
+// .padoDialog
+//   width: $dialogWidth
+//   height: $dialogHeight
+//   background: rgba(255, 255, 255, 0.8)
+//   backdrop-filter: blur(32px)
+//   border-radius: 24px
+//   @extend .fcbc
+//   button.nextBtn
+//     width: 100%
+//     height: $dialogLBtnHeight
+//     background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+//     border-radius: 12px
+//     @extend .frcc
+//     gap: $xxsGap
+//     @extend .mLBlackBoldFont
+//     &:hover,&:active
+//       background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
+//     img
+//       width: 24px
+// @media (max-width: 1680px)
+//   .padoDialog
+//     width: $sDialogWidth
+//     height: $sDialogHeight
+//     button.nextBtn
+//       height: 48px
+//       font-family: 'Inter-SemiBold'

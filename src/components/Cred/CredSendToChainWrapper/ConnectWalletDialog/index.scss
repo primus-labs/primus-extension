@@ -1,39 +1,4 @@
-@import '@/assets/css/pVars.sass';
-@import '@/assets/css/pDialog.sass';
-@import '@/components/DataSourceOverview/DataSourcesDialog/index.sass';
+@import '@/assets/css/padoDialog.scss';
+@import './xl.scss';
+@import './l.scss';
 
-.padoDialog.connectWalletDialog {
-  padding: 30px 50px 50px;
-  main {
-    gap: var(--spacing-32, 32px);
-    main {
-      h1 {
-        color: var(--Text-headline, #0a1214);
-        text-align: center;
-
-        /* Headline 2 */
-        font-family: Inter;
-        font-size: 28px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 36px; /* 128.571% */
-      }
-      h2 {
-        color: var(--Text-body, #515758);
-        text-align: center;
-        /* Text 1 */
-        font-family: Inter;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 20px; /* 142.857% */
-        padding-top: var(--spacing-16, 16px);
-      }
-    }
-  }
-}
-@media (max-width: 1680px) {
-  .padoDialog.connectWalletDialog {
-    padding: 48px 42px 32px;
-  }
-}

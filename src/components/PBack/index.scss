@@ -1,0 +1,16 @@
+.icon-iconArrowLeft2{
+  position: absolute;
+  content: '';
+  top: 40px;
+  left: 32px;
+  font-size: 32px;
+  color: var(--Icon-default, #A7AAAA);
+  &:hover{
+    color: var(--icon-active, #6C7172);
+  } 
+}
+  
+// @media (max-width:1680px)
+//   .icon-iconArrowLeft2
+//     top: 48px
+//     left: 32px

@@ -3,6 +3,7 @@
 
 button.pButton {
   @extend .frcc;
+  @extend .Headline5;
   box-sizing: border-box;
   cursor: pointer;
   width: 416px;
@@ -11,12 +12,6 @@ button.pButton {
   gap: var(--spacing-8, 8px);
   background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
   color: var(--Button-default, #515758);
-  /* Headline 5 */
-  font-family: Inter;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px; /* 150% */
   &:hover,
   &:active {
     background: linear-gradient(
@@ -27,8 +22,7 @@ button.pButton {
       linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
     color: var(--Button-active, #252c2e);
   }
-  .prefix,
-  .suffix {
+  >img {
     width: var(--spacing-24, 24px);
   }
   .iconfont{

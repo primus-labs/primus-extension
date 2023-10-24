@@ -1,15 +1,16 @@
 @import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/pFont.sass';
+@import '@/assets/css/padoM.scss';
 
 .PConnect {
-  .pButton {
+  >.pButton {
     width: 120px;
     height: 36px;
-    font-size: 14px;
-    line-height: 20px; /* 142.857% */
+    color: var(--Text-body, #515758);
+    @extend .Headline6;
     gap: var(--spacing-4, 4px);
-    .prefix{
+    >img{
       width: var(--spacing-16, 16px);
     }
   }

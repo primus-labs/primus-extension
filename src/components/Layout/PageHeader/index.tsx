@@ -1,13 +1,10 @@
 import React, { useState, useCallback, useMemo, useEffect, memo } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 
 import logo from '@/assets/img/logo.svg';
-import PAvatar from '@/components/PAvatar';
-import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 import Setting from '@/components/Setting/Setting';
-import iconMy from '@/assets/img/iconMy.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
 import iconLock from '@/assets/img/iconLock.svg';
 import iconRewards from '@/assets/img/layout/iconRewards.svg';
@@ -18,7 +15,6 @@ import {
   setConnectWalletActionAsync,
   setRewardsDialogVisibleAction,
 } from '@/store/actions';
-import { debounce, throttle } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import './index.sass';
 import RewardsDialog from '@/components/RewardsDialog';
@@ -47,7 +43,6 @@ const navs: NavItem[] = [
   },
 ];
 const PageHeader = memo(() => {
-  const [isScroll, setIsScroll] = useState(false);
   const dispatch: React.Dispatch<any> = useDispatch();
   const navigate = useNavigate();
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
@@ -56,9 +51,6 @@ const PageHeader = memo(() => {
   const userPassword = useSelector((state: UserState) => state.userPassword);
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
-  );
-  const rewardsDialogVisible = useSelector(
-    (state: UserState) => state.rewardsDialogVisible
   );
   const connectWalletDialogVisible = useSelector(
     (state: UserState) => state.connectWalletDialogVisible
@@ -109,19 +101,7 @@ const PageHeader = memo(() => {
     );
   }, [dispatch]);
 
-  const location = useLocation();
-  const pathname = location.pathname;
-  const activeSourceType = useSelector(
-    (state: UserState) => state.activeSourceType
-  );
   
-  const pageHeaderWrapperClassName = useMemo(() => {
-    let activeClassName = 'pageHeaderWrapper';
-    if (isScroll) {
-      activeClassName += ' scroll';
-    }
-    return activeClassName;
-  }, [isScroll]);
   const formatNavs = useMemo(() => {
     let arr: NavItem[] = [
       {
@@ -152,17 +132,7 @@ const PageHeader = memo(() => {
     }
     return arr;
   }, [userPassword, connectedWallet]);
-  useEffect(() => {
-    if (activeSourceType !== 'All') {
-      setIsScroll(false);
-      if (document.documentElement.scrollTop > 0) {
-        document.documentElement.scrollTo({
-          top: 0,
-          // behavior: 'smooth',
-        });
-      }
-    }
-  }, [activeSourceType]);
+ 
   
   useEffect(() => {
     connectWalletDialogVisible && setDorpdownVisible(false);
@@ -173,7 +143,6 @@ const PageHeader = memo(() => {
       <header className="pageHeader">
         <div className="pageHeaderInner">
           <img src={logo} className="pLogo" alt="" />
-          <DataSourceSearch />
           <div className="rightHeader">
             <div
               className="rightHeaderInner"
@@ -181,9 +150,8 @@ const PageHeader = memo(() => {
               onMouseEnter={handleEnterAvatar}
               onMouseLeave={handleLeaveAvatar}
             >
-              {/* <PAvatar /> */}
               <div className="iconMyWrapper">
-                <img src={iconMy} alt="" className="iconMy" />
+                <i className="iconfont icon-iconMy"></i>
               </div>
               <PConnect />
             </div>
@@ -198,16 +166,15 @@ const PageHeader = memo(() => {
                   onClick={handleClickDropdownItem}
                 />
               </div>
-            )}
+              )}
           </div>
         </div>
-        {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
-
-        <RewardsDialog
-          onClose={onCloseRewardsDialog}
-          onSubmit={onCloseRewardsDialog}
-        ></RewardsDialog>
       </header>
+      {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
+      <RewardsDialog
+        onClose={onCloseRewardsDialog}
+        onSubmit={onCloseRewardsDialog}
+      ></RewardsDialog>
     </div>
   );
 });

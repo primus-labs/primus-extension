@@ -2,7 +2,7 @@ import React, { useState, useCallback, memo } from 'react';
 import { WALLETLIST } from '@/config/constants';
 
 import type { WALLETITEMTYPE } from '@/config/constants';
-
+import type { SyntheticEvent } from 'react';
 import './index.scss';
 
 export type DataFieldItem = {
@@ -13,7 +13,7 @@ export type DataFieldItem = {
   requirePassphase?: boolean;
 };
 interface DataSourcesDialogProps {
-  onClick: (item: WALLETITEMTYPE) => void;
+  onClick: (item?: WALLETITEMTYPE) => void;
   list?: WALLETITEMTYPE[];
 }
 
@@ -22,7 +22,7 @@ const WalletList: React.FC<DataSourcesDialogProps> = memo(
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
     const liClassName = useCallback(
       (item: WALLETITEMTYPE) => {
-        let defaultClassName = 'walletItem';
+        let defaultClassName = 'pSelectOption walletItem';
         if (item.disabled) {
           defaultClassName += ' disabled';
         }
@@ -34,10 +34,17 @@ const WalletList: React.FC<DataSourcesDialogProps> = memo(
       [activeItem]
     );
 
-    const handleClickData = (item: WALLETITEMTYPE) => {
+    const handleClickData = (e: SyntheticEvent, item: WALLETITEMTYPE) => {
+     
+      e.stopPropagation();
       if (!item.disabled) {
-        setActiveItem(item);
-        onClick(item);
+        if (item.name === activeItem?.name) {
+          setActiveItem(undefined);
+          onClick(undefined);
+        } else {
+          setActiveItem(item);
+          onClick(item);
+        }
       }
     };
 
@@ -49,8 +56,8 @@ const WalletList: React.FC<DataSourcesDialogProps> = memo(
               <li
                 className={liClassName(item)}
                 key={item.name}
-                onClick={() => {
-                  handleClickData(item);
+                onClick={(e) => {
+                  handleClickData(e,item);
                 }}
               >
                 <div className="walletInfo">

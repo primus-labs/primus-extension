@@ -1,12 +1,9 @@
 import React, { useState, useCallback, memo } from 'react';
-import { useSearchParams } from 'react-router-dom'
 import WalletList from '@/components/WalletList';
 import PMask from '@/components/PMask';
-
+import PButton from '@/components/PButton'
 import PBack from '@/components/PBack';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
-
-import { WALLETLIST } from '@/config/constants';
 
 import type { WALLETITEMTYPE } from '@/config/constants';
 
@@ -33,8 +30,6 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     onBack,
     desc = 'Your wallet address will be set as the account.',
   }) => {
-    const [searchParams] = useSearchParams();
-    const fromEvents = searchParams.get('fromEvents');
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
     // const list: DataFieldItem[] = WALLETLIST;
@@ -42,19 +37,6 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     const handleClickBack = useCallback(() => {
       onBack && onBack();
     }, []);
-    const liClassName = useCallback(
-      (item: WALLETITEMTYPE) => {
-        let defaultClassName = 'networkItem';
-        if (item.disabled) {
-          defaultClassName += ' disabled';
-        }
-        if (activeItem?.name === item.name) {
-          defaultClassName += ' active';
-        }
-        return defaultClassName;
-      },
-      [activeItem]
-    );
 
     const handleClickNext = () => {
       if (!activeItem) {
@@ -63,8 +45,8 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
       }
       onSubmit(activeItem);
     };
-    const onChangeWallet = (item: WALLETITEMTYPE) => {
-      if (!item.disabled) {
+    const onChangeWallet = (item?: WALLETITEMTYPE) => {
+      if (!item?.disabled) {
         setErrorTip(undefined);
         setActiveItem(item);
       }
@@ -72,17 +54,19 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
 
     return (
       <PMask onClose={onClose}>
-        <div className="padoDialog dataSourcesDialog connectWalletDialog">
+        <div className="padoDialog connectWalletDialog">
           {!!onBack && <PBack onBack={handleClickBack} />}
           <main>
-            <h1>Connect Your Wallet</h1>
-            <h2>{desc}</h2>
+            <header>
+              <h1>Connect Your Wallet</h1>
+              <h2>{desc}</h2>
+            </header>
             <WalletList onClick={onChangeWallet} />
           </main>
-          <button className="nextBtn" onClick={handleClickNext}>
+          <footer>
+            <PButton text="Select" onClick={handleClickNext} />
             {errorTip && <PBottomErrorTip text={errorTip} />}
-            <span>Select</span>
-          </button>
+          </footer>
         </div>
       </PMask>
     );

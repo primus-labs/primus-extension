@@ -1,0 +1,44 @@
+.pageHeaderWrapper{
+  width: 100%;
+  .pageHeader{
+    .pageHeaderInner{
+      @extend .frbc;
+      width: 100%;
+      height: 76px;
+      padding: 0 43px 0 56px;
+      background: var(--White-Linear, linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0.2%, rgba(255, 255, 255, 0.00) 100%));
+      box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.05);
+      .pLogo{
+        width: 143px;
+      }
+      .rightHeader{
+        height: 100%;
+        position: relative;
+        .rightHeaderInner{
+          @extend .frsc;
+          height: 100%;
+          gap: var(--spacing-12, 12px);
+          .iconMyWrapper{
+            @extend .frcc;
+            cursor: pointer;
+            width: var(--spacing-24, 24px);
+            height: var(--spacing-24, 24px);
+            border-radius: 50%;
+            border: 1px solid var(--Text-body, #515758);
+            .iconfont{
+              font-size: 12px;
+            }
+          }
+        }
+        .dropdownWrapper{
+          position: absolute;
+          z-index: 1;
+          right: -5px;
+          top: 66px;
+        }
+      }
+    }
+  }
+}
+
+  
