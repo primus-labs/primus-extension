@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import SetPwdDialog from '@/components/Home/SetPwdDialog';
-import PTabs from '@/components/PTabs';
+
 import DataSourceList from '@/components/DataSourceOverview/DataSourceList';
 import DataSourcesDialog from '@/components/DataSourceOverview/DataSourcesDialog';
 import DataSourcesExplainDialog from '@/components/DataSourceOverview/DataSourcesExplainDialog';
@@ -224,17 +224,7 @@ const DataSourceOverview = memo(() => {
     },
     [padoServicePort, dispatch]
   );
-  const handleChangeTab = useCallback(
-    (val: string) => {
-      if (val === 'Data') {
-        dispatch({
-          type: 'setActiveSourceType',
-          payload: 'All',
-        });
-      }
-    },
-    [dispatch]
-  );
+  
   const handleAdd = useCallback(async () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
     if (keyStore) {
@@ -352,7 +342,7 @@ const DataSourceOverview = memo(() => {
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab} value="Data" />
+        
         <DataSourceSearch />
         {(activeSourceType === 'All' || activeSourceType === 'Identity') && (
           <DataSourceList

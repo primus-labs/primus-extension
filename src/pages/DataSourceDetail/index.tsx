@@ -14,17 +14,10 @@ const DataSourceDetail = memo(() => {
   const isOnChainData = useMemo(() => {
     return decodeURIComponent(searchName) === 'On-chain';
   }, [searchName]);
-  const handleChangeTab = useCallback(
-    (val: string) => {
-      navigate('/datas');
-    },
-    [navigate]
-  );
 
   return (
     <div className="pageDataSourceDetail">
       <main className="appContent">
-        <PTabs onChange={handleChangeTab} value="Data" />
         {isOnChainData ? <OnChainAssetsDetail /> : <AssetsDetail />}
         {/* <AssetsDetail /> */}
       </main>

@@ -10,7 +10,7 @@ import iconLock from '@/assets/img/iconLock.svg';
 import iconRewards from '@/assets/img/layout/iconRewards.svg';
 import PConnect from '@/components/PConnect';
 import PDropdownList from '@/components/PDropdownList';
-
+import PTabs from '@/components/PTabs';
 import {
   setConnectWalletActionAsync,
   setRewardsDialogVisibleAction,
@@ -132,6 +132,17 @@ const PageHeader = memo(() => {
     }
     return arr;
   }, [userPassword, connectedWallet]);
+  const handleChangeTab = useCallback(
+    (val: string) => {
+      if (val === 'Data') {
+        dispatch({
+          type: 'setActiveSourceType',
+          payload: 'All',
+        });
+      }
+    },
+    [dispatch]
+  );
  
   
   useEffect(() => {
@@ -143,6 +154,7 @@ const PageHeader = memo(() => {
       <header className="pageHeader">
         <div className="pageHeaderInner">
           <img src={logo} className="pLogo" alt="" />
+          <PTabs onChange={handleChangeTab} value="Data" />
           <div className="rightHeader">
             <div
               className="rightHeaderInner"
@@ -166,7 +178,7 @@ const PageHeader = memo(() => {
                   onClick={handleClickDropdownItem}
                 />
               </div>
-              )}
+            )}
           </div>
         </div>
       </header>
