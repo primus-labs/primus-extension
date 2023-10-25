@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router';
 
 import iconTooltip from '@/assets/img/credit/iconTooltip.svg';
 import iconTooltipActive from '@/assets/img/credit/iconTooltipActive.svg';
-import './index.sass';
+import './index.scss';
 
 export type TabItem = {
   icon?: any;
+  iconName?: any;
   tooltip?: string;
   text: string;
   disabled?: boolean;
@@ -77,12 +78,19 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value, list }) => {
             onMouseLeave={handleMouseLeave}
           >
             <div className="con">
-              {item.icon && <img src={item.icon} alt="" />}
+              {item.iconName ? (
+                <i className={`iconfont ${item.iconName}`}></i>
+              ) : item.icon ? (
+                <img src={item.icon} alt="" />
+              ) : (
+                ''
+              )}
+              
               <span>{item.text}</span>
               {item.tooltip && (
                 <img
                   className="iconTooltip"
-                  src={tooltipVisible?iconTooltipActive:iconTooltip}
+                  src={tooltipVisible ? iconTooltipActive : iconTooltip}
                   alt=""
                   onMouseEnter={handleEnterAvatar}
                   onMouseLeave={handleLeaveAvatar}

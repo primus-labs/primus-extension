@@ -1,0 +1,131 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+@import './xl.scss';
+@import './l.scss';
+
+.pTabsNewStyle1 {
+  gap: var(--spacing-28, 28px);
+  margin-bottom: -2px;
+  .tab {
+    padding: 0 2px;
+    &:not(.disabled):hover {
+      .con {
+        color: var(--Button-active, #252c2e);
+        .iconfont {
+          color: var(--Button-active, #252c2e);
+        }
+      }
+    }
+    &.activeTab {
+      .con {
+        color: var(--Button-active, #252c2e);
+        .iconfont {
+          color: var(--Button-active, #252c2e);
+        }
+      }
+    }
+    .con {
+      @extend .Body2;
+      color: var(--Text-hint, #7b7f80);
+      gap: var(--spacing-8, 8px);
+      height: 52px;
+
+      .borderB {
+        height: 4px;
+        border-radius: 2px;
+      }
+    }
+  }
+}
+.pTabsNew {
+  @extend .frsc;
+  gap: var(--spacing-4, 4px);
+  .tab {
+    cursor: pointer;
+    @extend .frsc;
+    padding: 0 var(--spacing-8, 8px);
+    position: relative;
+
+    &.disabled {
+      cursor: not-allowed;
+    }
+    &:not(.disabled):hover {
+      .con {
+        color: var(--Button-active, #252c2e);
+        .iconfont {
+          color: var(--Button-active, #252c2e);
+        }
+        .borderB {
+          background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+        }
+      }
+    }
+    &.activeTab {
+      .con {
+        color: var(--Button-active, #252c2e);
+        .iconfont {
+          color: var(--Button-active, #252c2e);
+        }
+        .borderB {
+          background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+        }
+      }
+    }
+    .con {
+      @extend .frcc;
+      @extend .Text1;
+      height: 25px;
+      gap: var(--spacing-4, 4px);
+      position: relative;
+      padding: 0 var(--spacing-4, 4px);
+      color: var(--Button-default, #515758);
+      .iconfont {
+        color: var(--Button-default, #515758);
+      }
+      .iconTooltip {
+        width: 12px;
+      }
+      .borderB {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        content: '';
+        width: 100%;
+        height: 1.5px;
+        border-radius: 0.75px;
+        // background: var(--Line, #DFE0E0);
+      }
+      > img {
+        width: 18px;
+      }
+      .iconfont {
+        font-size: 12px;
+      }
+    }
+
+    .tooltip {
+      @extend .Text2;
+      position: absolute;
+      bottom: -28px;
+      left: 0;
+      padding: 4px 20px;
+      border-radius: var(--spacing-12, 12px);
+      background: var(--Badge, rgba(10, 18, 20, 0.05));
+      backdrop-filter: blur(16px);
+      color: var(--Text-hint, #7b7f80);
+      text-align: center;
+      white-space: nowrap;
+      z-index: 3;
+    }
+  }
+}
+
+// @media (max-width: 1680px)
+//   .pTabsNew
+//     gap: 4px
+//     .tab
+//       height: 45px
+//       font-size: 16px
+//       line-height: 19px
+//       .con
+//         gap: 8px

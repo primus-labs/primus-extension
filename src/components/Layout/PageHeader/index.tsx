@@ -10,14 +10,18 @@ import iconLock from '@/assets/img/iconLock.svg';
 import iconRewards from '@/assets/img/layout/iconRewards.svg';
 import PConnect from '@/components/PConnect';
 import PDropdownList from '@/components/PDropdownList';
-import PTabs from '@/components/PTabs';
+import PTabsNew from '@/components/PTabsNew';
 import {
   setConnectWalletActionAsync,
   setRewardsDialogVisibleAction,
 } from '@/store/actions';
 import type { UserState } from '@/types/store';
-import './index.sass';
+import type { TabItem } from '@/components/PTabsNew';
+import './index.scss';
 import RewardsDialog from '@/components/RewardsDialog';
+import iconDataHover from '@/assets/img/iconDataHover.svg';
+import iconEventsHover from '@/assets/img/iconEventsHover.svg';
+import iconCredHover from '@/assets/img/iconCredHover.svg';
 
 type NavItem = {
   icon: any;
@@ -149,12 +153,38 @@ const PageHeader = memo(() => {
     connectWalletDialogVisible && setDorpdownVisible(false);
   }, [connectWalletDialogVisible]);
 
+  // icon?: any;
+  // tooltip?: string;
+  // text: string;
+  // disabled?: boolean;
+  // path?: string;
+const tabList: TabItem[] = [
+  {
+    icon: iconDataHover,
+    iconName: 'icon-iconDataHover',
+    text: 'Data',
+    path: '/datas',
+  },
+  {
+    icon: iconEventsHover,
+    iconName: 'icon-iconEventsHover',
+    text: 'Events',
+    path: '/events',
+  },
+  {
+    icon: iconCredHover,
+    iconName: 'icon-iconCredHover',
+    text: 'Proofs',
+    path: '/cred',
+  },
+];
+
   return (
     <div className="pageHeaderWrapper">
       <header className="pageHeader">
         <div className="pageHeaderInner">
           <img src={logo} className="pLogo" alt="" />
-          <PTabs onChange={handleChangeTab} value="Data" />
+          <PTabsNew onChange={handleChangeTab} value="Data" list={tabList} />
           <div className="rightHeader">
             <div
               className="rightHeaderInner"
