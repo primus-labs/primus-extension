@@ -1,6 +1,5 @@
-import React, { useState, useRef, useMemo, memo } from 'react';
+import React, { useState, useRef, useMemo, memo, useEffect } from 'react';
 import type { ChangeEvent, KeyboardEvent } from 'react';
-
 import './index.scss';
 
 interface PInputProps {
@@ -11,7 +10,9 @@ interface PInputProps {
   visible?: boolean;
   onSearch?: (val: string) => void;
   label?: string;
-  labelExtra?: any;
+  tooltip?: any;
+  value?: string;
+  errorTip?: any;
 }
 
 const PInput: React.FC<PInputProps> = memo(
@@ -23,9 +24,12 @@ const PInput: React.FC<PInputProps> = memo(
     visible = false,
     onSearch,
     label,
-    labelExtra,
+    tooltip,
+    value,
+    errorTip,
   }) => {
     const inputEl = useRef<any>(null);
+    const [val, setVal] = useState<string>('');
     const [copied, setCopied] = useState<boolean>(false);
     const [open, setOpen] = useState<boolean>(false);
     const activeType = useMemo(() => {
@@ -56,9 +60,31 @@ const PInput: React.FC<PInputProps> = memo(
         onSearch && onSearch(formatVal);
       }
     };
+    const onClickTooltip = () => {
+      if (tooltip?.link) {
+        if (tooltip.link.startsWith('http')) {
+          window.open(tooltip.link);
+        }
+      }
+    };
+    useEffect(() => {
+      if (value !== null && value !== undefined) {
+        setVal(value);
+      }
+    }, [value]);
     return (
       <div className="pInputWrapper">
-        {label && <label>{label}</label>}
+        {label && (
+          <label>
+            <span>{label}</span>
+            {tooltip && (
+              <i
+                className="iconfont icon-iconTooltip"
+                onClick={onClickTooltip}
+              />
+            )}
+          </label>
+        )}
         <div className="inputWrapper">
           <input
             ref={inputEl}
@@ -89,6 +115,7 @@ const PInput: React.FC<PInputProps> = memo(
             ></i>
           )}
         </div>
+        {errorTip && <div className="errorTip">{errorTip}</div>}
       </div>
     );
   }

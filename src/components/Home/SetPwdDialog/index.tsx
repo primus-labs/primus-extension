@@ -6,6 +6,7 @@ import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PInput from '@/components/PInput/index';
 import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';
+import PButton from '@/components/PButton';
 
 import { postMsg } from '@/utils/utils';
 import { initWalletAddressActionAsync } from '@/store/actions';
@@ -127,49 +128,53 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       <PMask onClose={onClose} closeable={!fromEvents}>
         <div className="padoDialog setPwdDialog">
           <main>
-            <h1>Set Password</h1>
-            <h2>
-              Set a password to protect local data and unlock your account.
-            </h2>
-            <h6>Setting</h6>
-            <PInput
-              type="password"
-              placeholder="Please enter your password"
-              onChange={handleChangePwd}
-              visible
-            />
-            <div className="validateWrapper">
-              <div className="descTitle">
-                The following combinations are recommended：
+            <header>
+              <h1>Set Password</h1>
+              <h2>
+                Set a password to protect local data and unlock your account.
+              </h2>
+            </header>
+            <div className="formWrapper">
+              <PInput
+                type="password"
+                placeholder="Please enter your password"
+                onChange={handleChangePwd}
+                visible
+                label="Setting"
+              />
+              <div className="validateWrapper">
+                <div className="descTitle">
+                  The following combinations are recommended：
+                </div>
+                <ul className="descItems">
+                  {pwdRules.map((i) => {
+                    return (
+                      <li
+                        key={i.desc}
+                        className={i.legal ? 'descItem checked' : 'descItem'}
+                      >
+                        {i.legal && <i className="iconfont icon-iconChecked" />}
+                        <p>{i.desc}</p>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
-              <ul className="descItems">
-                {pwdRules.map((i) => {
-                  return (
-                    <li
-                      key={i.desc}
-                      className={i.legal ? 'descItem checked' : 'descItem'}
-                    >
-                      {i.desc}
-                    </li>
-                  );
-                })}
-              </ul>
+              {/* <h6 className="reconfirmLabel">Reconfirm</h6> */}
+              <PInput
+                type="password"
+                placeholder="Please confirm your password"
+                onChange={handleChangeConfirm}
+                onSearch={handleClickNext}
+                visible
+                label="Reconfirm"
+              />
+              {errorTipVisible && (
+                <p className="errorTip">Entered passwords differ!</p>
+              )}
             </div>
-            <h6 className="reconfirmLabel">Reconfirm</h6>
-            <PInput
-              type="password"
-              placeholder="Please confirm your password"
-              onChange={handleChangeConfirm}
-              onSearch={handleClickNext}
-              visible
-            />
-            {errorTipVisible && (
-              <p className="errorTip">Entered passwords differ!</p>
-            )}
           </main>
-          <button className="nextBtn" onClick={handleClickNext}>
-            <span>OK</span>
-          </button>
+          <PButton text="OK" onClick={handleClickNext}></PButton>
         </div>
       </PMask>
     );

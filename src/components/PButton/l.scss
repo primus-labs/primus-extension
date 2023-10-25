@@ -12,6 +12,7 @@ button.pButton {
   gap: var(--spacing-8, 8px);
   background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
   color: var(--Button-default, #515758);
+
   &:hover,
   &:active {
     background: linear-gradient(
@@ -22,10 +23,16 @@ button.pButton {
       linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
     color: var(--Button-active, #252c2e);
   }
-  >img {
+  &.gray {
+    background: var(--Badge, rgba(10, 18, 20, 0.05));
+    &:hover {
+      background: var(--Badge, rgba(10, 18, 20, 0.05));
+    }
+  }
+  > img {
     width: var(--spacing-24, 24px);
   }
-  .iconfont{
+  .iconfont {
     font-size: 24px;
   }
 }

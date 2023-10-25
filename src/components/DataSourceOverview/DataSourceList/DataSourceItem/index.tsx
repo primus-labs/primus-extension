@@ -12,7 +12,7 @@ import type {
   onChainAssetsData,
 } from '@/types/dataSource';
 
-import './index.sass';
+import './index.scss';
 
 export type TokenMap = {
   symbol: string;

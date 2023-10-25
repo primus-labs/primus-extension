@@ -1,11 +1,12 @@
 import React, { useState, memo } from 'react';
-import { useSearchParams } from 'react-router-dom'
- 
+import { useSearchParams } from 'react-router-dom';
+
 import SourceGroups from '../SourceGroups';
 import PMask from '@/components/PMask';
+import PButton from '@/components/PButton';
 import iconInfo from '@/assets/img/iconInfo.svg';
 import type { ExchangeMeta } from '@/types/dataSource';
-import './index.sass';
+import './index.scss';
 
 export type DataFieldItem = {
   icon: any;
@@ -22,9 +23,8 @@ interface DataSourcesDialogProps {
 }
 const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
   ({ onClose, onSubmit, onCheck }) => {
-     
-  const [searchParams] = useSearchParams();
-  const fromEvents = searchParams.get('fromEvents');
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const [activeItem, setActiveItem] = useState<ExchangeMeta>();
 
     const handleClickNext = () => {
@@ -42,16 +42,17 @@ const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
       <PMask onClose={onClose}>
         <div className="padoDialog dataSourcesDialog">
           <main>
-            <h1>
-              <span>Data Sources</span>
-              <img src={iconInfo} alt="" onClick={onCheck} />
-            </h1>
-            <h2>PADO validates data authenticity through MPC-TLS.</h2>
+            <header>
+              <h1>
+                <span>Data Sources</span>
+                <i className="iconfont icon-iconInfo" onClick={onCheck}></i>
+                {/* <img src={iconInfo} alt="" onClick={onCheck} /> */}
+              </h1>
+              <h2>PADO validates data authenticity through MPC-TLS.</h2>
+            </header>
             <SourceGroups onChange={handleClickData} />
           </main>
-          <button className="nextBtn" onClick={handleClickNext}>
-            Select
-          </button>
+          <PButton text="Select" onClick={handleClickNext}></PButton>
         </div>
       </PMask>
     );

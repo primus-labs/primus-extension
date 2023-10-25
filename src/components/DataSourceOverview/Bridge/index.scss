@@ -1,0 +1,26 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+.bridgeWrapper{
+  @extend .frcc;
+  gap: var(--spacing-24, 24px);
+  .from,.to{
+    @extend .frcc;
+    width: 46px;
+    height: 46px;
+    background: var(--bg-default, #FFF);
+    border: 1PX solid var(--Line, #DFE0E0);
+    border-radius: 50%;
+  }
+  .from img{
+    width: 20.44px;
+  }
+  .to img{
+    width: 30.91px;
+  }
+    
+  .iconfont{
+    font-size: 24px;
+    color: var(--Icon-default)
+  }
+    
+}

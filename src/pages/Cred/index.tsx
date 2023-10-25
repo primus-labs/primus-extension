@@ -1,6 +1,5 @@
 import React, { useCallback, memo } from 'react';
 
-import PTabs from '@/components/PTabs';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import CresOverview from '@/components/Cred/CredOverview';
 

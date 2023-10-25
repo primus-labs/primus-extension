@@ -1,7 +1,7 @@
 import React, { FC, memo, useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SourceGroup from './SourceGroup';
-import SourceGroupTypes from './SourceGroupTypes';
+import PTabsNew from '@/components/PTabsNew'
 import {
   DATASOURCEMAP,
   supportAttestDataSourceNameList,
@@ -9,7 +9,7 @@ import {
 
 import type { ExchangeMeta } from '@/types/dataSource';
 
-import './index.sass';
+import './index.scss';
 
 interface SourceGroupsProps {
   onChange: (item: ExchangeMeta) => void;
@@ -52,23 +52,29 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
     }
   }, [allSourcesList, activeTab, fromEvents]);
   const activeTabList = useMemo(() => {
-    let newL: string[];
+    let newL: any[];
     if (fromEvents) {
       let supportAttestDataSourceTypeList = allSourcesList.filter((i) =>
         supportAttestDataSourceNameList.includes(i.name)
       );
       newL = supportAttestDataSourceTypeList.map((i) => i.type);
-      newL = [...new Set(newL)];
+      
     } else {
       newL = allSourcesList.map((i) => i.type);
-      newL = [...new Set(newL)];
+      
     }
+    newL = [...new Set(newL)].map(i => ({text:i}))
     return newL;
   }, [allSourcesList, fromEvents]);
 
   return (
     <div className="SourceGroups">
-      <SourceGroupTypes onChange={handleChangeType} list={activeTabList} />
+      {/* <SourceGroupTypes onChange={handleChangeType} list={activeTabList} /> */}
+      <PTabsNew
+        onChange={handleChangeType}
+        value={activeTab}
+        list={activeTabList}
+      />
       <SourceGroup
         onChange={(a) => {
           onChange(a as ExchangeMeta);

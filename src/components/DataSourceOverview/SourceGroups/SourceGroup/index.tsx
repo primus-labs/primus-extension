@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState, useEffect, memo } from 'react';
 
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
-import './index.sass';
+import './index.scss';
 
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { ExchangeMeta } from '@/types/dataSource';

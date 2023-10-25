@@ -22,6 +22,9 @@
         .iconfont {
           color: var(--Button-active, #252c2e);
         }
+        .borderB {
+          background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+        }
       }
     }
     .con {
@@ -33,7 +36,9 @@
       .borderB {
         height: 4px;
         border-radius: 2px;
+        background: transparent;
       }
+      
     }
   }
 }
@@ -55,9 +60,6 @@
         .iconfont {
           color: var(--Button-active, #252c2e);
         }
-        .borderB {
-          background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
-        }
       }
     }
     &.activeTab {
@@ -74,7 +76,7 @@
     .con {
       @extend .frcc;
       @extend .Text1;
-      height: 25px;
+      height: 27px;
       gap: var(--spacing-4, 4px);
       position: relative;
       padding: 0 var(--spacing-4, 4px);
@@ -93,7 +95,7 @@
         width: 100%;
         height: 1.5px;
         border-radius: 0.75px;
-        // background: var(--Line, #DFE0E0);
+        background: var(--Line, #DFE0E0);
       }
       > img {
         width: 18px;

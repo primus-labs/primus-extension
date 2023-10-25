@@ -2,6 +2,7 @@ import React, { useMemo, memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
+import PButton from '@/components/PButton';
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 
 import iconSuc from '@/assets/img/iconSuc.svg';
@@ -9,7 +10,7 @@ import iconError from '@/assets/img/iconError.svg';
 import iconLoading from '@/assets/img/iconLoading.svg';
 import iconInfoColorful from '@/assets/img/iconInfoColorful.svg';
 
-import './index.sass';
+import './index.scss';
 interface AddSourceSucDialogProps {
   onClose: () => void;
   activeSource?: DataFieldItem;
@@ -44,12 +45,18 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
   }) => {
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
-    footerButton = footerButton ?? (
-      <button className="nextBtn" onClick={onSubmit}>
-        <span>OK</span>
-      </button>
-    );
-    // TODO!!!
+   
+    const formatFooterButton = useMemo(() => {
+      if (footerButton) {
+        return footerButton;
+      } else {
+        if (type === 'suc') {
+          return <PButton text="OK" onClick={onSubmit}></PButton>;
+        } else {
+          return <PButton text="OK" className="gray" onClick={onClose}></PButton>;
+        }
+      }
+    }, [footerButton, type, onSubmit,onClose]);
     const icon = activeSource?.icon;
 
     const formatHeaderEl = useMemo(() => {
@@ -77,20 +84,24 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
         <div className="padoDialog addDataSourceSucDialog">
           <main>
             {formatHeaderEl}
-            {type === 'suc' && <img className="sucImg" src={iconSuc} alt="" />}
+            {type === 'suc' && (
+              <img className="processImg" src={iconSuc} alt="" />
+            )}
             {type === 'error' && (
-              <img className="sucImg" src={iconError} alt="" />
+              <img className="processImg" src={iconError} alt="" />
             )}
             {type === 'warn' && (
-              <img className="sucImg" src={iconInfoColorful} alt="" />
+              <img className="processImg" src={iconInfoColorful} alt="" />
             )}
             {type === 'loading' && (
-              <img className="loadingImg" src={iconLoading} alt="" />
+              <img className="processImg loadingImg" src={iconLoading} alt="" />
             )}
-            <h1>{title}</h1>
-            <h2>{desc}</h2>
+            <div className="processDesc">
+              <h1>{title}</h1>
+              <h2>{desc}</h2>
+            </div>
           </main>
-          {type !== 'loading' && footerButton}
+          {type !== 'loading' && formatFooterButton}
           {type === 'loading' && tip}
         </div>
       </PMask>

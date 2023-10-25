@@ -5,7 +5,19 @@
   width: 100%;
   label {
     @extend .Text1;
+    @extend .frsc;
+    gap: var(--spacing-4, 4px);
     color: var(--Text-headline, #0a1214);
+    &:hover{
+      >.iconfont{
+        color: var(--icon-active);
+      }
+    }
+    >.iconfont{
+      cursor: pointer;
+      width: 12px;
+      color: var(--Icon-default);
+    }
   }
   .inputWrapper {
     @extend .frsc;
@@ -30,5 +42,9 @@
       font-size: 16px;
       cursor: pointer;
     }
+  }
+  .errorTip{
+    @extend .Text2;
+    color:var(--Warning, #F42D2D);
   }
 }

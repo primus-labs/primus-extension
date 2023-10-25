@@ -1,7 +1,7 @@
 import React,{memo} from 'react';
 import iconUser from '@/assets/img/iconUser.svg';
 import iconConnect from '@/assets/img/iconConnect.svg';
-import './index.sass'
+import './index.scss'
 
 interface BridgeProps {
   startIcon?: any;
@@ -14,7 +14,8 @@ const Bridge: React.FC<BridgeProps> = memo(({ startIcon = iconUser, endIcon }) =
       <div className="from">
         <img src={startIcon} alt="" />
       </div>
-      <img className="connectSymbol" src={iconConnect} alt="" />
+      {/* <img className="connectSymbol" src={iconConnect} alt="" /> */}
+      <i className="iconfont icon-iconConnect"/>
       <div className="to">
         <img src={endIcon} alt="" />
       </div>

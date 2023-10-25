@@ -1,0 +1,19 @@
+@import '@/assets/css/padoDialog.scss';
+@import '@/assets/css/padoM.scss';
+
+.padoDialog.dataSourcesDialog {
+  main{
+    gap: var(--spacing-24, 24px);
+    h1{
+      position: relative;
+      .iconfont{
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        right: -32px;
+        transform: translateY(-50%);
+        font-size: 24px;
+      }
+    }
+  }
+}

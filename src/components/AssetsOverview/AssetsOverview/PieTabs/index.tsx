@@ -17,7 +17,7 @@ const pieTabList: TabItem[] = [
   { text: 'Token', icon: iconPieTabToken },
 ];
 
-const PTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
+const PieTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
   const [activeTab, setActiveTab] = useState<string>('Data');
 
   const handleClickTab = (item: TabItem) => {
@@ -58,4 +58,4 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value }) => {
   );
 });
 
-export default PTabs;
+export default PieTabs;

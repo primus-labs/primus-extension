@@ -1,7 +1,6 @@
 import React, { useCallback, memo, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import PTabs from '@/components/PTabs';
 import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail';
 import OnChainAssetsDetail from '@/components/DataSourceDetail/OnChainAssetsDetail';
 

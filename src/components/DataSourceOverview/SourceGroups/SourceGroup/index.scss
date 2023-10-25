@@ -1,0 +1,58 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+@import '@/assets/css/pSelectOption.scss';
+.sourceGroup {
+  width: 100%;
+  &.scroll {
+    // width: calc( 100% + 35px )
+    // width: 510px;
+    height: 316px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 200px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 100px;
+    }
+    ul.dataList {
+      @extend .frss;
+      width: 100%;
+      flex-wrap: wrap;
+      row-gap: var(--spacing-16, 16px);
+      column-gap: 22.66px;
+      li.networkItem {
+        @extend .pSelectOption;
+        @extend .fccc;
+        width: 87px;
+        height: 88px;
+        gap: var(--spacing-4, 4px);
+        > img {
+          width: var(--spacing-32, 32px);
+        }
+        > h6 {
+          color: var(--Text-headline, #0a1214);
+          @extend .Headline6;
+        }
+      }
+    }
+    .emptyContent {
+      @extend .fcsc;
+      width: 416px;
+      padding-top: 40px;
+      gap: 12px;
+      align-self: center;
+      > img {
+        width: 60px;
+      }
+      > h2 {
+        @extend .Text2;
+        color: var(--Text-hint, #7B7F80);
+        width: 289px;
+        text-align: center;
+      }
+    }
+  }
+}

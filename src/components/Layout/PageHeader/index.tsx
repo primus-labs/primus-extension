@@ -184,7 +184,7 @@ const tabList: TabItem[] = [
       <header className="pageHeader">
         <div className="pageHeaderInner">
           <img src={logo} className="pLogo" alt="" />
-          <PTabsNew onChange={handleChangeTab} value="Data" list={tabList} />
+          <PTabsNew onChange={handleChangeTab} value="Events" list={tabList} />
           <div className="rightHeader">
             <div
               className="rightHeaderInner"

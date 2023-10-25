@@ -2,11 +2,14 @@ import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import PControledInput from '@/components/PControledInput';
+import PInput from '@/components/PInput';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
+import PButton from '@/components/PButton';
+import PBack from '@/components/PBack';
 // import iconTooltip from '@/assets/img/credit/iconTooltip.svg'
-import IconTooltip from '@/components/Icons/IconTooltip'
-import './index.sass';
+import IconTooltip from '@/components/Icons/IconTooltip';
+import './index.scss';
 
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 
@@ -116,84 +119,66 @@ const ConnectDataDialog: React.FC<ConnectDataDialogProps> = memo(
     return (
       <PMask onClose={onClose} closeable={!fromEvents}>
         <div className="padoDialog connectDataSourceDialog">
-          <div className="iconBack" onClick={onCancel}></div>
+          <PBack onBack={onCancel} />
           <main>
-            <div className="scrollList scroll">
-              <Bridge endIcon={icon} />
+            <Bridge endIcon={icon} />
+            <header>
               <h1>Connect Your Data</h1>
-              {!loading && (
-                <>
-                  <h2>Please configure with your READ-ONLY API keys.</h2>
-                  <div className="formItem firstFormItem">
-                    <h6>
-                      <span>API Key</span>
-                      <IconTooltip onClick={onClickApiKeyTip} />
-                    </h6>
-                    <PControledInput
-                      key="apiKey"
-                      type="text"
-                      placeholder="Please enter your API Key"
-                      onChange={handleChangeApiKey}
-                      value={apiKey}
-                    />
-                  </div>
-                  {submitted && !apiKey && (
-                    <p className="errorTip">Please enter your API Key</p>
-                  )}
-                  <div className="formItem">
-                    <h6>Secret Key</h6>
-                    <PControledInput
-                      key="secretKey"
-                      type="password"
-                      placeholder="Please enter your Secret Key"
-                      onChange={handleChangeSecretKey}
-                      value={secretKey}
-                      visible
-                    />
-                  </div>
-                  {submitted && !secretKey && (
-                    <p className="errorTip">Please enter your Secret Key</p>
-                  )}
-                  {requirePassphase && (
-                    <>
-                      <div className="formItem">
-                        <h6>Passphrase</h6>
-                        <PControledInput
-                          key="passPhase"
-                          type="password"
-                          placeholder="Please enter your Passphrase"
-                          onChange={handleChangePassphase}
-                          value={passphase}
-                          visible
-                        />
-                      </div>
-                      {submitted && !passphase && (
-                        <p className="errorTip">Please enter your Passphrase</p>
-                      )}
-                    </>
-                  )}
-                  <div className="formItem lastFormItem">
-                    <h6>Label (Optional)</h6>
-                    <PControledInput
-                      key="label"
-                      placeholder="Please set your Label"
-                      onChange={handleChangeLabel}
-                      value={label}
-                    />
-                  </div>
-                  <div className="ctipWrapper">
-                    <span>How to get API Key & Secret key?</span>
-                    <a href={activeGuideUrl} target="_blank" rel="noreferrer">
-                      Click here
-                    </a>
-                  </div>
-                </>
+              <h2>Please configure with your READ-ONLY API keys.</h2>
+            </header>
+            <div className="scrollList scroll formContent">
+              <PInput
+                key="apiKey"
+                type="text"
+                placeholder="Please enter your API Key"
+                onChange={handleChangeApiKey}
+                value={apiKey}
+                label="API Key"
+                tooltip={{ link: activeGuideUrl }}
+                errorTip={
+                  submitted && !apiKey ? 'Please enter your API Key' : undefined
+                }
+              />
+              <PInput
+                key="secretKey"
+                type="password"
+                placeholder="Please enter your Secret Key"
+                onChange={handleChangeSecretKey}
+                value={secretKey}
+                visible
+                label="Secret Key"
+                errorTip={
+                  submitted && !secretKey
+                    ? 'Please enter your Secret Key'
+                    : undefined
+                }
+              />
+              {requirePassphase && (
+                <PInput
+                  key="passPhase"
+                  type="password"
+                  placeholder="Please enter your Passphrase"
+                  onChange={handleChangePassphase}
+                  value={passphase}
+                  visible
+                  label="Passphrase"
+                  errorTip={
+                    submitted && !passphase
+                      ? 'Please enter your Passphrase'
+                      : undefined
+                  }
+                />
               )}
+              <PInput
+                key="label"
+                placeholder="Please set your Label"
+                onChange={handleChangeLabel}
+                value={label}
+                label="Label (Optional)"
+              />
             </div>
           </main>
-          <button className="nextBtn" onClick={handleClickNext}>
-            Next
-          </button>
+          <PButton text="Next" onClick={handleClickNext}></PButton>
         </div>
       </PMask>
     );
