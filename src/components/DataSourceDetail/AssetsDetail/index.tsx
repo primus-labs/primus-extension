@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 
 import TokenTable from '@/components/TokenTable';
+import PButton from '@/components/PButton';
 import iconAvatar from '@/assets/img/iconAvatar.png';
 import iconCredCreate from '@/assets/img/iconCredCreate.svg';
 
 import { setExSourcesAsync } from '@/store/actions';
 import useUpdateAssetSource from '@/hooks/useUpdateAssetSources';
 import DataUpdateBar from '@/components/DataSourceOverview/DataUpdateBar';
+import PBack from '@/components/PBack';
 import { gte, div, formatNumeral, formatAddress } from '@/utils/utils';
 import { BTC } from '@/config/constants';
 import { getTokenPrice } from '@/services/api/dataSource';
@@ -18,7 +20,7 @@ import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { ExData, onChainAssetsData } from '@/types/dataSource';
 
-import './index.sass';
+import './index.scss';
 import { eventReport } from '@/services/api/usertracker';
 
 const AssetsDetail = memo(() => {
@@ -171,10 +173,11 @@ const AssetsDetail = memo(() => {
     return isOnChainData ? (
       <></>
     ) : (
-      <button className="tokenTableHeaderRight" onClick={navToCred}>
-        <img src={iconCredCreate} alt="" />
-        <span>Create Proof</span>
-      </button>
+      <PButton
+        text="Create Proof"
+        prefix={<i className="iconfont icon-iconCredCreate"></i>}
+        onClick={navToCred}
+      />
     );
   }, [navToCred, isOnChainData]);
   const formatAddr = useMemo(() => {
@@ -188,7 +191,7 @@ const AssetsDetail = memo(() => {
   const detailEventReport = () => {
     const eventInfo = {
       eventType: 'DATA_FETCH',
-      rawData: {type: "AssetsDetail", source: sourceName},
+      rawData: { type: 'AssetsDetail', source: sourceName },
     };
     eventReport(eventInfo);
   };
@@ -205,10 +208,10 @@ const AssetsDetail = memo(() => {
 
   return (
     <div className="assetsDetail">
-      <div className="iconBackWrapper" onClick={handleBack}></div>
+      <PBack onBack={handleBack} />
       <header>
         <img src={iconAvatar} alt="" className="avatar" />
-        {typeof dataSource === 'object' && dataSource?.label && <h3>{dataSource?.label}</h3>}
+        {typeof dataSource === 'object' && <h3>{dataSource?.label}</h3>}
         {typeof dataSource === 'object' && (
           <div className="descItems">
             <div className="descItem">

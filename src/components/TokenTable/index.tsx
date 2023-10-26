@@ -11,7 +11,7 @@ import type { UserState } from '@/types/store';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { Dispatch, ReactNode } from 'react';
 import type { ChainsAssetsMap, TokenMap } from '@/types/dataSource';
-import './index.sass';
+import './index.scss';
 
 interface TokenTableProps {
   list: TokenMap[] | DataSourceItemType[];
@@ -350,7 +350,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
           <span>Profile</span>
           {headerRightContent}
         </header>
-        <ul className="tokens">
+        <ul className="tokens tokensShadow">
           <li
             className={activeShowFilter ? 'tokenItem th new' : 'tokenItem th'}
             key="th"
@@ -373,6 +373,8 @@ const TokenTable: React.FC<TokenTableProps> = memo(
               </div>
             )}
           </li>
+        </ul>
+        <ul className="tokens">
           {(activeList as TokenMap[]).length > 0 ? (
             (activeList as TokenMap[]).map((item) => {
               return (
@@ -406,10 +408,12 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                     </div>
                   </div>
                   {name === 'binance' && filterAccount === 'All' && (
-                    <div
-                      className="arrowWrapper"
-                      onClick={() => handleCheckDetail(item.symbol)}
-                    ></div>
+                    <div className="arrowWrapper">
+                      <i
+                        className="iconfont icon-iconArrowLeft2"
+                        onClick={() => handleCheckDetail(item.symbol)}
+                      ></i>
+                    </div>
                   )}
                   {(spotAccountTokenMap?.[item.symbol] ||
                     flexibleAccountTokenMap?.[item.symbol]) &&

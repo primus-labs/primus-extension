@@ -1,0 +1,97 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/pFont.sass';
+@import '@/assets/css/padoM.scss';
+
+.tokenListWrapper {
+  @include backdropMixin;
+  width: 100%;
+  padding: 0 44px;
+  header {
+    border-bottom: 1px solid var(--Line, #dfe0e0);
+    box-sizing: border-box;
+    @extend .frbc;
+    height: 65px;
+    > span {
+      color: var(--Text-headline, #0a1214);
+      @extend .Headline4;
+    }
+  }
+  ul.tokens {
+    padding-bottom: 38px;
+    li.tokenItem {
+      .innerWrapper {
+        @extend .frbc;
+        @extend .Body2;
+        margin: 0 -44px;
+        > div {
+          text-align: right;
+        }
+        .token {
+          @extend .frsc;
+          gap: var(--spacing-8, 8px);
+          text-align: left;
+          > .defaultTokenImg {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.05);
+          }
+          > img {
+            width: 18px;
+            border-radius: 50%;
+          }
+        }
+      }
+
+      &.th {
+        color: var(--Text-body, #515758);
+        // margin: 0 -44px;
+        margin-bottom: 16px;
+        height: 46px !important;
+        border-bottom: 1px solid var(--Line, #dfe0e0);
+        .innerWrapper {
+          padding: 12px 44px;
+        }
+      }
+
+      &.tr {
+        color: #000;
+        margin-top: 4px;
+        position: relative;
+        .innerWrapper {
+          padding: 11px 44px 11px;
+        }
+      }
+
+      li.emptyContent {
+        width: 100%;
+        padding: 26px 0 32px 0;
+        text-align: center;
+        @extend .fcsc;
+        > img {
+          width: var(--spacing-28, 28px);
+        }
+        > h1 {
+          padding: 8px 0 4px 0;
+          color: rgba(0, 0, 0, 0.6);
+          text-align: center;
+          font-family: Inter;
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: normal;
+        }
+        > h2 {
+          color: rgba(0, 0, 0, 0.6);
+          text-align: center;
+          font-family: Inter;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px; /* 166.667% */
+        }
+      }
+    }
+  }
+}

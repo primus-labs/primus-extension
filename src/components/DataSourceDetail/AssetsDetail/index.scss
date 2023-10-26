@@ -1,0 +1,117 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+
+@import '@/assets/css/padoM.scss';
+@import '@/components/PButton/index.scss';
+.assetsDetail{
+  @extend .fcss;
+  width: $sCenterWidth;
+  gap: var(--spacing-24, 24px);
+  padding-bottom: 50px;
+  position: relative;
+  .pBack{
+    font-size: 24px ;
+    position: absolute;
+    top: 40px;
+    left: calc(24px/-2);
+  }
+  >header{
+    @extend .fcsc;
+    width: 100%;
+    padding-top: 40px;
+    
+    img.avatar{
+      width: var(--spacing-80, 80px);
+      border-radius: 50%;
+    }
+    
+    h3{
+      @extend .Body1;
+      margin: var(--spacing-12, 12px) 0 var(--spacing-8, 8px) 0;
+      color: var(--Text-headline, #0A1214);
+    }
+      
+    .descItems{
+      @extend .frsc;
+      gap: var(--spacing-16, 16px);
+      .descItem{
+         @extend .frsc;
+         @extend .Body2;
+        .sourceIcon{
+          width: 26px;
+          margin-right: 12px;
+        }
+        .label{
+          color: var(--Text-hint, #7B7F80);
+        }
+        .value{
+          color: var(--Text-headline, #0A1214);
+        }
+      }
+       
+    }
+      
+  }
+  .sourceStatisticsBar{
+    @extend .frbc;
+    width: 100%;
+    border-radius: var(--spacing-12, 12px);
+    background: var(--bg-60, rgba(255, 255, 255, 0.60));
+    backdrop-filter: blur(16px);
+    padding: 0 100px;
+    
+    .separtor{
+      width: 2px;
+      height: 63px;
+      background: var(--Line, #DFE0E0);
+    }
+    .descItem{
+      @extend .fccs;
+      height: 139px;
+      &:last-child{
+        .inner{
+          min-width: 135px;
+        }
+        &::after{
+          display: none;
+        }
+      }
+      &:nth-child(n+2){
+        align-items: center;
+      }
+        
+      &:nth-child(n+3){
+        align-items: flex-end;
+      }
+      .inner{
+        @extend .fcss;
+        gap: var(--spacing-8, 8px);
+        height: 91px;
+      } 
+      .label{
+        @extend .Text1;
+        color: var(--Text-body, #515758);
+      }
+      .value{
+        @extend .Headline2;
+        color: var(--Text-headline, #0A1214);
+      }
+      .btcValue{
+        @extend .Text1;
+        color: var(--Text-headline, #0A1214);
+      }
+    }  
+  }
+  .tokenListWrapper{
+    >header{
+      .pButton{
+        @extend .buttonStyle1;
+        .iconfont{
+          font-size: 14px;
+        }
+      }
+      
+    }
+  }
+  
+}

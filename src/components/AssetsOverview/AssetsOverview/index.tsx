@@ -3,8 +3,10 @@ import BigNumber from 'bignumber.js';
 
 import SourcesStatisticsBar from '../SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
+import PTabsNew from '@/components/PTabsNew'
 import PieChart from '../PieChart';
 import PieTabs from './PieTabs';
+
 import ChartOptionsDetailDialog from './ChartOptionsDetailDialog';
 import {
   add,
@@ -282,6 +284,16 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     const onChangePieTab = useCallback((tab: string) => {
       setPieTab(tab);
     }, []);
+    const tabList = [
+      {
+        iconName: 'icon-iconPieTabExchange',
+        text: 'Source',
+      },
+      {
+        iconName: 'icon-iconPieTabToken',
+        text: 'Token',
+      },
+    ];
 
     return (
       <div className="assetsOverview">
@@ -319,7 +331,12 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
           <div className="card cardR">
             <header>
               <span>Distribution</span>
-              <PieTabs onChange={onChangePieTab} value="Source" />
+              <PTabsNew
+                onChange={onChangePieTab}
+                value="Source"
+                list={tabList}
+              />
+              {/* <PieTabs onChange={onChangePieTab} value="Source" /> */}
             </header>
             <div className="cardCon pieChartFatherBox">
               <PieChart list={getShowChartData} others={getShowChartOthers} />
@@ -327,7 +344,15 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
             {getShowChartOthers}
           </div>
         </section>
-        {chartOptionsDetailVisible && <ChartOptionsDetailDialog type={pieTab}  list={getChartData} onClose={ () => {setChartOptionsDetailVisible(false)}} />}
+        {chartOptionsDetailVisible && (
+          <ChartOptionsDetailDialog
+            type={pieTab}
+            list={getChartData}
+            onClose={() => {
+              setChartOptionsDetailVisible(false);
+            }}
+          />
+        )}
         <SourcesStatisticsBar
           list={list}
           onSelect={handleSelectSource}

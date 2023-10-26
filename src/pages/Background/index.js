@@ -217,6 +217,7 @@ const processpadoServiceReq = async (message, port) => {
             await chrome.storage.local.set({
               [lowerCaseSourceName]: JSON.stringify(socialSourceData),
             });
+          debugger
             postMsg(port, {
               resMethodName: reqMethodName,
               res: true,

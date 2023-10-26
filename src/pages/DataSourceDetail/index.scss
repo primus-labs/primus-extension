@@ -1,0 +1,7 @@
+@import '@/pages/DataSourceOverview/index.sass';
+@import '@/assets/css/padoM.scss';
+.pageDataSourceDetail{
+  @extend .pageDataSourceOverview;
+}
+  
+  

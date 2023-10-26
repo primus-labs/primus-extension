@@ -10,6 +10,7 @@
   background: var(--bg-60, rgba(255, 255, 255, 0.6));
   backdrop-filter: blur(16px);
   transition: all 0.5s;
+  cursor: pointer;
   &:not(.deactive):hover {
     transform: translateY(-6px);
   }

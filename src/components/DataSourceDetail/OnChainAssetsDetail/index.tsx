@@ -36,7 +36,7 @@ import type {
   SourceDataList,
 } from '@/types/dataSource';
 
-import '../AssetsDetail/index.sass';
+import '../AssetsDetail/index.scss';
 import { eventReport } from '@/services/api/usertracker';
 
 const AssetsDetail = memo(() => {
@@ -240,7 +240,7 @@ const AssetsDetail = memo(() => {
       <div className="iconBackWrapper" onClick={handleBack}></div>
       <header>
         <img src={iconAvatar} alt="" className="avatar" />
-        {typeof dataSource === 'object' && dataSource?.label && (
+        {typeof dataSource === 'object' && (
           <h3>{dataSource?.label}</h3>
         )}
         {typeof dataSource === 'object' && (
@@ -296,7 +296,6 @@ const AssetsDetail = memo(() => {
         showFilter={false}
         headerRightContent={headerRightContent}
       />
-
       <DataUpdateBar
         type="Assets"
         onUpdate={() => {}}
