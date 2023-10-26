@@ -176,8 +176,6 @@ const Layout = memo(() => {
     dispatch(setOnChainAssetsSourcesAsync());
     // dispatch(initConnectedWalletActionAsync());
     (updateOnChainFn as () => void)();
-    const res = await chrome.storage.local.get('userInfo');
-    debugger
   }, [dispatch, updateOnChainFn]);
   useEffect(() => {
     initStoreData();

@@ -8,7 +8,7 @@ import PieChart from '../PieChart';
 import { add, formatNumeral } from '@/utils/utils';
 
 import type { SocialDataList, SocialData } from '@/types/dataSource';
-import '../AssetsOverview/index.sass';
+import '../AssetsOverview/index.scss';
 
 interface AssetsOverviewProps {
   filterSource: string | undefined;

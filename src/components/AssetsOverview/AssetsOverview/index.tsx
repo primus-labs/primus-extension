@@ -29,7 +29,7 @@ import type {
   AssetDataList,
   onChainAssetsData,
 } from '@/types/dataSource';
-import './index.sass';
+import './index.scss';
 
 interface AssetsOverviewProps {
   filterSource: string | undefined;

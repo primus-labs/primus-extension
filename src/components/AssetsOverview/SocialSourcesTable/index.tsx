@@ -3,7 +3,7 @@ import { sub, getCurrentDate, formatNumeral } from '@/utils/utils';
 import type { DataSourceItemType } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import type { SocialDataList, SocialData } from '@/types/dataSource';
 
-import './index.sass';
+import './index.scss';
 
 interface TokenTableProps {
   list: SocialDataList;

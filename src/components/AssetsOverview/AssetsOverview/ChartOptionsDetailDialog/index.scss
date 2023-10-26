@@ -1,0 +1,83 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/pFont.sass';
+@import '@/assets/css/padoM.scss';
+@import '@/assets/css/padoDialog.scss';
+.padoDialog.ChartOptionsDetailDialog {
+  padding: 48px 42px 80px;
+  > main {
+    gap: var(--spacing-32, 32px);
+    .formContent {
+      .descItems {
+        @extend .fcss;
+        width: 100%;
+        gap: var(--spacing-16, 16px);
+        &.tableHeader {
+          margin-bottom: var(--spacing-16, 16px);
+        }
+        &.tableCon {
+          width: calc(100% + 34px);
+          height: 364px;
+          overflow: auto;
+          // &::-webkit-scrollbar
+          //   position: relative
+          //   right: 30px
+          .descItem {
+            width: calc(100% - 34px);
+          }
+        }
+        .descItem {
+          @extend .frbc;
+          height: 22px;
+          width: 100%;
+          .token {
+            width: 148px;
+          }
+          .value {
+            width: 130px;
+            text-align: right;
+          }
+          .ratio {
+            width: 110px;
+            text-align: right;
+          }
+          .token,
+          .value,
+          .ratio {
+            flex-grow: 1;
+            flex-shrink: 1;
+          }
+
+          &.th {
+            height: 46px;
+            padding: 12px 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            .token,
+            .value,
+            .ratio {
+              @extend .Body2;
+              color: var(--Text-body, #515758);
+            }
+          }
+
+          &.tr {
+            .token,
+            .value,
+            .ratio {
+              @extend .Text1;
+              color: var(--Text-headline, #0a1214);
+            }
+            .token {
+              display: flex;
+              gap: var(--spacing-8, 8px);
+              > img {
+                width: var(--spacing-20, 20px);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

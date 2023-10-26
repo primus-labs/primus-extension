@@ -10,7 +10,7 @@ import type {
   onChainAssetsData,
 } from '@/types/dataSource';
 
-import './index.sass';
+import './index.scss';
 
 interface SourcesStatisticsBarProps {
   type?: string;

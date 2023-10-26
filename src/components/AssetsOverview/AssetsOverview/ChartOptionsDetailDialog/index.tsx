@@ -6,7 +6,7 @@ import PHeader from '@/components/Layout/PHeader';
 import iconChecked from '@/assets/img/iconChecked.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
 
-import './index.sass';
+import './index.scss';
 import BigNumber from 'bignumber.js';
 import { add, mul, div, gt, sub } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/constants';
@@ -63,28 +63,34 @@ const ChartOptionsDetailDialog: React.FC<SetSucDialogProps> = memo(
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog ChartOptionsDetailDialog">
-          <h1>{type} Details</h1>
-          <ul className="descItems tableHeader">
-            <li className="descItem th">
-              <div className="token">Token</div>
-              <div className="value">Value</div>
-              <div className="ratio">Ratio</div>
-            </li>
-          </ul>
-          <ul className="descItems tableCon">
-            {list.map((i: any) => {
-              return (
-                <li className="descItem tr" key={i.name}>
-                  <div className="token">
-                    <img src={getIcon(i.name)} alt="" />
-                    <span>{i.name}</span>
-                  </div>
-                  <div className="value">${i.value}</div>
-                  <div className="ratio">{formatPercent(i.value)} </div>
+          <main>
+            <header>
+              <h1>{type} Details</h1>
+            </header>
+            <div className="formContent">
+              <ul className="descItems tableHeader">
+                <li className="descItem th">
+                  <div className="token">Token</div>
+                  <div className="value">Value</div>
+                  <div className="ratio">Ratio</div>
                 </li>
-              );
-            })}
-          </ul>
+              </ul>
+              <ul className="descItems tableCon">
+                {list.map((i: any) => {
+                  return (
+                    <li className="descItem tr" key={i.name}>
+                      <div className="token">
+                        <img src={getIcon(i.name)} alt="" />
+                        <span>{i.name}</span>
+                      </div>
+                      <div className="value">${i.value}</div>
+                      <div className="ratio">{formatPercent(i.value)} </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </main>
         </div>
       </PMask>
     );
