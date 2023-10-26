@@ -1,0 +1,54 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+@import '@/components/PButton/index.scss';
+
+.adSpace{
+  @extend .frbc;
+  padding: 0 60px;
+  height: 138px;
+  width: 100%;
+  border-radius: var(--spacing-24, 24px);
+  .left{
+    @extend .frsc;
+    height: 100%;
+    .bannerContent{
+      @extend .fccs;
+      height: 100%;
+      .ct{
+        @extend .Headline3;
+        color: #000;
+      }
+      .cn{
+        @extend .Text1;
+        color: var(--Text-body, #515758);
+      }
+    }
+  }
+}
+.adSpace.adSpaceNft{
+  background: var(--bg-60, rgba(255, 255, 255, 0.60));
+  .left{
+    gap: 40px;
+     >img{
+       align-self: center;
+      width: 60px;
+     }
+    .bannerContent{
+      @extend .fccs;
+      gap: var(--spacing-12,12px);
+    } 
+  }
+  .pButton{
+    @extend .buttonStyle1;
+    /* Headline 5 */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px; /* 150% */
+    width: 132px;
+    height: 48px;
+    // @extend .Headline5;
+  }
+}

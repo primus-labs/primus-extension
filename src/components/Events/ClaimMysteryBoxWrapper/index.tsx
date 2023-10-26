@@ -6,11 +6,14 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
+import dayjs from 'dayjs';
+import utc from 'dayjs-plugin-utc';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
-import ClaimDialog from './ClaimDialog';
+// import ClaimDialog from './ClaimDialog';
+import ClaimDialog from '@/components/Events/ClaimWrapper/ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
 import {
@@ -35,8 +38,8 @@ import type { CredTypeItemType } from '@/types/cred';
 import type { Dispatch } from 'react';
 import { eventReport } from '@/services/api/usertracker';
 
-import './index.sass';
-
+import '@/components/Events/ClaimWrapper/index.scss';
+dayjs.extend(utc);
 interface ClaimWrapperProps {
   visible: boolean;
   onClose: () => void;
@@ -163,11 +166,60 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     // useEffect(() => {
     //    chrome.storage.local.remove(['mysteryBoxRewards']);
     // })
+    const ruleItems = [
+      'Create an attestation to confirm your humanity through your exchange accounts‘.',
+      'Submit your attestation to Linea mainnet',
+    ];
+    const descItem = (
+      <>
+        You will have a mystery box after completing the event. (
+        <span>Each user can only claim one</span>)
+      </>
+    );
+    const badgeEventPeriod = useSelector(
+      (state: UserState) => state.badgeEventPeriod
+    );
+    const endStamp = useMemo(() => {
+      const { startTime, endTime } = badgeEventPeriod;
+      return +endTime;
+    }, [badgeEventPeriod]);
+    const formatEndTime = useMemo(() => {
+      if (endStamp) {
+        dayjs.utc();
+        const s = dayjs.utc(endStamp).format('DD-MMM-h-a');
+        const arr = s.split('-');
+        return arr;
+      }
+    }, [endStamp]);
+    const extraEl = useMemo(() => {
+      return (
+        <>
+          The rewards will be announced in{' '}
+          <b>
+            {formatEndTime[0]}th {formatEndTime[1]} ({formatEndTime[2]}
+            {formatEndTime[3]} UTC time)
+          </b>
+          and you will find your lucky badge in the Rewards menu.
+        </>
+      );
+    }, [formatEndTime]);
 
     return (
       <div className="claimMysteryBoxWrapper">
-        {visible && step === 1 && (
+        {/* {visible && step === 1 && (
           <ClaimDialog onClose={onClose} onSubmit={onSubmitClaimDialog} />
+        )} */}
+        {visible && step === 1 && (
+          <ClaimDialog
+            onClose={onClose}
+            onSubmit={onSubmitClaimDialog}
+            title="Product Officially Launch"
+            titleIllustration={true}
+            subTitle="Commemorative Badge with $1000u Reward"
+            rules={ruleItems}
+            desc={descItem}
+            extra={extraEl}
+          />
         )}
         {visible && step === 2 && (
           <AddSourceSucDialog
@@ -176,7 +228,12 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
-            headerEl={<ClaimDialogHeaderDialog />}
+            headerEl={
+              <ClaimDialogHeaderDialog
+                title="Product Officially Launch"
+                illustration={true}
+              />
+            }
           />
         )}
       </div>

@@ -45,7 +45,7 @@ import type {
 } from '@/types/dataSource';
 import { eventReport } from '@/services/api/usertracker';
 
-import './index.sass';
+import './index.scss';
 
 interface ClaimWrapperProps {
   visible: boolean;
@@ -94,7 +94,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       );
       return credArr;
     }, [credentialsFromStore]);
-    
 
     const [sourceList, sourceMap] = useAllSources();
     const hasSource = useMemo(() => {
@@ -109,15 +108,13 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       return credList.length > 0;
     }, [credList]);
     const hadSendToChain = useMemo(() => {
-      const hadFlag = credList.some(
-        (item) => {
-          const p = item?.provided
-          if (item?.reqType !== 'web' && p?.length && p?.length > 0) {
-            return p.some((i) => i.chainName.indexOf('Linea') > -1);
-          }
-          return false
+      const hadFlag = credList.some((item) => {
+        const p = item?.provided;
+        if (item?.reqType !== 'web' && p?.length && p?.length > 0) {
+          return p.some((i) => i.chainName.indexOf('Linea') > -1);
         }
-      );
+        return false;
+      });
       return hadFlag;
     }, [credList]);
     const errorDescEl = useMemo(
@@ -132,7 +129,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
 
     const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
-    
 
     const onSubmitActiveRequestDialog = useCallback(() => {
       onSubmit();
@@ -155,14 +151,14 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             title: 'Processing',
             desc: 'Please complete the transaction in your wallet.',
           });
-          
+
           const activeCred = credList[credList.length - 1];
 
           const requestParams: any = {
             rawParam: activeCred,
             greaterThanBaseValue: true,
             signature: activeCred.signature,
-            metamaskAddress: connectedWallet?.address
+            metamaskAddress: connectedWallet?.address,
           };
 
           if (activeCred.type === 'IDENTIFICATION_PROOF') {
@@ -278,7 +274,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       holdSupportAttestDataSource,
       rewardList?.length,
     ]);
-    
+
     useEffect(() => {
       if (visible) {
         setStep(1);
@@ -321,7 +317,12 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
-            headerEl={<ClaimDialogHeaderDialog />}
+            headerEl={
+              <ClaimDialogHeaderDialog
+                title="Early Bird NFT Reward"
+                illustration={false}
+              />
+            }
           />
         )}
       </div>

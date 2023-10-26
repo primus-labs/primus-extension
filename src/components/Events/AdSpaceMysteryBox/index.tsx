@@ -2,9 +2,10 @@ import React, { FC, memo, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
+import PButton from '@/components/PButton';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
 import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
-import './index.sass';
+import './index.scss';
 import type { UserState } from '@/types/store';
 interface AdSpaceProps {
   onClick: () => void;
@@ -22,7 +23,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
   }, [badgeEventPeriod]);
 
   return (
-    <div className="adSpace adSpace1">
+    <div className="adSpace adSpaceBadge">
       <div className="left">
         <img src={bannerIllstration} alt="" />
         <div className="bannerContent">
@@ -36,10 +37,11 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           </div>
         </div>
       </div>
-      <button className="right" onClick={onClick}>
-        <span>Join Now</span>
-        <img src={iconRightArrow} alt="" className="suffix" />
-      </button>
+      <PButton
+        text="Join Now"
+        suffix={<i className="iconfont icon-rightArrow"></i>}
+        onClick={onClick}
+      />
     </div>
   );
 });

@@ -1,7 +1,7 @@
 import React, { FC, memo } from 'react';
 import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
 
-import './index.sass';
+import './index.scss';
 
 interface ClaimDialogHeaderProps {
   title?: string;

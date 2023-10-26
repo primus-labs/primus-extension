@@ -1,0 +1,32 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+.eventOverview {
+  width: 100%;
+  .eventOverviewContent {
+    width: 1032px;
+    margin: 62px auto 0;
+    @extend .fcss;
+    gap: 32px;
+    // .slick-slider {
+    //   .slick-list .slick-slide > div {
+    //     padding-top: 33px;
+    //   }
+    //   .slick-dots {
+    //     bottom: -12px;
+    //   }
+    // }
+    // .rewardsWrapper {
+    //   padding-top: 8px;
+    //   header {
+    //     @extend .frsc;
+    //     font-size: 24px;
+    //     line-height: 29px;
+    //     font-family: 'Inter-SemiBold';
+    //     color: $colLBlack;
+    //     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    //     padding-left: 37px;
+    //     height: 65px;
+    //   }
+    // }
+  }
+}

@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
 import nftIllstration from '@/assets/img/events/nftIllstration.svg';
-import './index.sass';
+import PButton from '@/components/PButton';
+import './index.scss';
 import { setBadgeEventPeriodActionAsync } from '@/store/actions';
 
 interface AdSpaceProps {
@@ -25,9 +26,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           </div>
         </div>
       </div>
-      <button className="right" onClick={onClick}>
-        <span>Claim Now</span>
-      </button>
+      <PButton text="Claim Now" onClick={onClick}/>
     </div>
   );
 });

@@ -1,0 +1,27 @@
+@import '@/assets/css/padoM.scss';
+.claimMysteryBoxWrapper {
+  width: 100%;
+  .padoDialog.claimDialog{
+    main{
+      gap: 36px;
+      .descContent{
+        gap: var(--spacing-16, 16px);
+      }
+    }
+  }
+  .addDataSourceSucDialog {
+    padding-top: 0;
+    .claimDialogHeader {
+      margin: 0 auto;
+    }
+    img.sucImg,
+    img.loadingImg {
+      margin-top: 62px;
+    }
+    main {
+      h2 {
+        width: 100%;
+      }
+    }
+  }
+}

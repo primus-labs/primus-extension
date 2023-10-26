@@ -1,0 +1,19 @@
+
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+.claimDialogHeader{
+  @extend .Headline2;
+  @extend .frcc;
+  width: 500px;
+  height: 100px;
+  color: #000;
+  border-radius: 24px 24px 0 0;
+  background: linear-gradient(270deg, #ABFFE1 0%, #78E1FB 100%);
+  .illustration{
+    left: 24px;
+    top: -20px;
+    width: 45.217px;
+    position: absolute;
+  }
+}
+    

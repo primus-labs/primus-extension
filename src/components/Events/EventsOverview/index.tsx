@@ -9,7 +9,7 @@ import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
 import RewardList from '../RewardList';
 import AdSpace from '../AdSpace';
 import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
-import './index.sass';
+import './index.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 // import { BADGELOTTRYTIMESTR } from '@/config/constants';
@@ -36,9 +36,6 @@ const EventsOverview = memo(() => {
   const [claimVisible, setClaimVisible] = useState<boolean>(false);
   const [claimMysteryBoxVisible, setClaimMysteryBoxVisible] =
     useState<boolean>(false);
-  const rewardsDialogVisible = useSelector(
-    (state: UserState) => state.rewardsDialogVisible
-  );
   
   const badgeEventPeriod = useSelector(
     (state: UserState) => state.badgeEventPeriod
@@ -104,12 +101,6 @@ const EventsOverview = memo(() => {
         onClose={onCloseClaimMysteryBoxDialog}
         onSubmit={onCloseClaimMysteryBoxDialog}
       />
-      {/* {rewardsDialogVisible && (
-        <RewardsDialog
-          onClose={onCloseRewardsDialog}
-          onSubmit={onCloseRewardsDialog}
-        />
-      )} */}
     </div>
   );
 });
