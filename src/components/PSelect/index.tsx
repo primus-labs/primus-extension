@@ -121,8 +121,17 @@ const PSelect: React.FC<PSelectProps> = memo(
             {val && prefix && prefix}
             {val ? val : 'Select'}
           </span>
-
-          {val && showIcon ? (
+          <img
+            ref={suffixIconEl}
+            className={
+              optionsVisible && !disabled
+                ? 'suffixIcon arrow open'
+                : 'suffixIcon arrow'
+            }
+            src={iconArrowBottom}
+            alt=""
+          />
+          {/* {val && showIcon ? (
             <img
               ref={suffixIconEl}
               className="suffixIcon"
@@ -134,12 +143,14 @@ const PSelect: React.FC<PSelectProps> = memo(
             <img
               ref={suffixIconEl}
               className={
-                optionsVisible && !disabled ? 'suffixIcon arrow open' : 'suffixIcon arrow'
+                optionsVisible && !disabled
+                  ? 'suffixIcon arrow open'
+                  : 'suffixIcon arrow'
               }
               src={iconArrowBottom}
               alt=""
             />
-          )}
+          )} */}
         </div>
         {optionsVisible && !disabled && activeOptions.length > 0 && (
           <div

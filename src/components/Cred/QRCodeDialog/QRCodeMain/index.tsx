@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import PQRCode from '@/components/PQRCode';
 import qrCodeDefault from '@/assets/img/loading-loop.svg';
-import './index.sass';
+import './index.scss';
 
 interface QRCodeMainProps {
   title: string;
@@ -15,8 +15,10 @@ const QRCodeMain: React.FC<QRCodeMainProps> = memo(
   ({ title, desc, qrcodeValue, qrcodeSize }) => {
     return (
       <div className="qrcodeMain">
-        <h1>{title}</h1>
-        <h2>{desc}</h2>
+        <header>
+          <h1>{title}</h1>
+          <h2>{desc}</h2>
+        </header>
         {qrcodeValue ? (
           <PQRCode value={qrcodeValue} size={qrcodeSize} />
         ) : (

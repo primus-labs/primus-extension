@@ -4,12 +4,14 @@ import { useSearchParams } from 'react-router-dom';
 import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';
+import PButton from '@/components/PButton';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup';
 import rightArrow from '@/assets/img/rightArrow.svg';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 
-import './index.sass';
+import './index.scss';
+import PBottomErrorTip from '@/components/PBottomErrorTip';
 
 type ToolItem = {
   icon: any;
@@ -131,8 +133,10 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
                 icon={iconPolygonID}
               />
             )}
-            <h1>{title}</h1>
-            <h2>{desc}</h2>
+            <header>
+              <h1>{title}</h1>
+              <h2>{desc}</h2>
+            </header>
             <SourceGroup onChange={onChange} list={activeSourceList} />
             {/* <ul className="networkList">
               {topList.map((item) => {
@@ -172,15 +176,10 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
               })}
             </ul> */}
           </main>
-          <button className="nextBtn" onClick={handleClickNext}>
-            {errorTip && (
-              <div className="tipWrapper">
-                <div className="errorTip">{errorTip}</div>
-              </div>
-            )}
-            <span>Next</span>
-            {showButtonSuffixIcon && <img src={rightArrow} alt="" />}
-          </button>
+          <footer>
+            <PButton text="Next" onClick={handleClickNext} />
+            {errorTip && <PBottomErrorTip text="errorTip" />}
+          </footer>
         </div>
       </PMask>
     );

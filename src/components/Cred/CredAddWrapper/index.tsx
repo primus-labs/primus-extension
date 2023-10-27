@@ -129,7 +129,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setActiveRequest({
         type: 'warn',
         title: 'Something went wrong',
-        desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+        desc: "The attestation process has been interrupted for some unknown reason.Please try again later."
+        ,
       });
       const msg = {
         fullScreenType: 'algorithm',
@@ -747,7 +748,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           let requestResObj = {
             type: 'warn',
             title: 'Something went wrong',
-            desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+            desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
           };
           if (
             retdesc.indexOf('connect to proxy error') ||

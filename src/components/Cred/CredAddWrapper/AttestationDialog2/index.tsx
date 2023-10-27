@@ -3,7 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WALLETLIST } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
+import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup';
 import PTabsNew from '@/components/PTabsNew';
+import PButton from '@/components/PButton';
 import WebDataSourceList from '@/components/WebDataSourceList';
 import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
@@ -24,7 +26,7 @@ import type { UserState } from '@/types/store';
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { PROOFTYPEITEM, AttestionForm } from '@/types/cred';
 import type { TabItem } from '@/components/PTabsNew';
-import './index.sass';
+import './index.scss';
 
 interface AttestationDialogProps {
   type: string;
@@ -142,26 +144,26 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       switch (type) {
         case 'ASSETS_PROOF':
           el = (
-            <>
+            <div className="emptyTips">
               <p>You haven’t connected data from Binance and OKX.</p>
               <p>Please go to the Data page to add.</p>
-            </>
+            </div>
           );
           break;
         case 'TOKEN_HOLDINGS':
           el = (
-            <>
+            <div className="emptyTips">
               <p>You haven’t connected data from Binance, Coinbase, and OKX.</p>
               <p>Please go to the Data page to add.</p>
-            </>
+            </div>
           );
           break;
         case 'IDENTIFICATION_PROOF':
           el = (
-            <>
+            <div className="emptyTips">
               <p>You haven’t connected any identity data.</p>
               <p>Please go to the Data page to add.</p>
-            </>
+            </div>
           );
           break;
       }
@@ -344,15 +346,13 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, []);
     const handleClickNext = async () => {
       if (
-        activeIdentityType === 'KYC Status' &&
-        !activeSource &&
-        !activeWebDataSource &&
+        activeTab === 'API Data' &&
+        !activeSource  &&
         activeConnectedSourceList.length === 0 &&
         !fromEvents
       ) {
         navigate('/datas');
       }
-
       if (activeTab === 'API Data') {
         if (activeConnectedSourceList.length > 0) {
           if (!activeSource) {
@@ -426,33 +426,35 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
       }
     };
-    const handleClickData = (item: ConnectSourceType) => {
-      if (!activeIdentityType) {
-        setErrorTip('Please select the proof content first');
-      }
-      if (!activeIdentityType || activeCred) {
-        return;
-      }
-      if (activeSourceName) {
-        return;
-      }
-      if ((activeCred || activeSourceName) && activeSource) {
-        if (activeSource?.name !== item.name) {
+    const handleClickData = useCallback(
+      (item: ConnectSourceType) => {
+        if (type === 'TOKEN_HOLDINGS' && !activeToken) {
+          setErrorTip('Please select one data source');
           return;
         }
-      }
+        if (activeSourceName) {
+          return;
+        }
+        if ((activeCred || activeSourceName) && activeSource) {
+          if (activeSource?.name !== item.name) {
+            return;
+          }
+        }
 
-      if (!activeCred && activeSource?.name === item.name) {
-        setActiveSource(undefined);
-        return;
-      }
-      if (
-        (activeSourceList.length > 0 && activeSourceList.includes(item.name)) ||
-        activeSourceList.length === 0
-      ) {
-        setActiveSource(item);
-      }
-    };
+        if (!activeCred && activeSource?.name === item.name) {
+          setActiveSource(undefined);
+          return;
+        }
+        if (
+          (activeSourceList.length > 0 &&
+            activeSourceList.includes(item.name)) ||
+          activeSourceList.length === 0
+        ) {
+          setActiveSource(item);
+        }
+      },
+      [activeCred, activeSourceList, activeToken, type, activeSourceName]
+    );
     const liClassNameCallback = useCallback(
       (item: ConnectSourceType) => {
         let defaultClassName = 'networkItem';
@@ -537,49 +539,17 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
 
     return (
       <PMask onClose={onClose}>
-        <div className="padoDialog attestationDialog">
+        <div className="padoDialog attestationDialog identityAttestationDialog">
           {!!onBack && <PBack onBack={onBack} />}
           <main>
-            <h1>{activeAttestationTypeInfo.credTitle}</h1>
-            {/* <h2>{activeAttestationTypeInfo.credDetails}</h2> */}
-            <div className="scrollList">
+            <header>
+              <h1>{activeAttestationTypeInfo.credTitle}</h1>
+              {/* <h2>{activeAttestationTypeInfo.credDetails}</h2> */}
+            </header>
+            <div className="formContent">
               <div className="contItem contItemNew">
                 <div className="label">Proof content</div>
                 <div className="value">
-                  {type === 'ASSETS_PROOF' && (
-                    <div
-                      className={
-                        baseValueArr.length === 1 ? 'con' : 'con conList'
-                      }
-                    >
-                      {/* formatNumeral(baseValueArr[0], {
-                          decimalPlaces: 0,
-                        }) */}
-
-                      {baseValueArr.length === 1 ? (
-                        '$' + baseValueArr[0]
-                      ) : (
-                        <div>
-                          <PSelect
-                            options={baseValueList}
-                            onChange={handleChangeSelectBaseValue}
-                            val={activeBaseValue}
-                            prefix="$"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {type === 'TOKEN_HOLDINGS' && (
-                    <div className="pSelectWrapper">
-                      <PSelect
-                        showIcon={true}
-                        options={tokenList}
-                        onChange={handleChangeSelect}
-                        val={activeToken}
-                      />
-                    </div>
-                  )}
                   {type === 'IDENTIFICATION_PROOF' && (
                     <div className="pSelectWrapper">
                       <PSelect
@@ -587,79 +557,69 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                         onChange={handleChangeSelectIdentityType}
                         val={activeIdentityType}
                         disabled={!!activeCred}
+                        placeholder="Select content"
                       />
                     </div>
                   )}
-                  {type === 'UNISWAP_PROOF' && (
-                    <div className="con uniswap">
-                      {activeAttestationTypeInfo.credProofConditions}
-                    </div>
-                  )}
                 </div>
-                {type === 'UNISWAP_PROOF' && (
-                  <div className="uniswapContentExtra">
-                    The largests swap transaction from Uniswap on Ethereum
-                  </div>
-                )}
               </div>
               <div className="contItem contItemAssets">
                 <div className="label">
                   Source of {sourcesLabel[type as keyof typeof sourcesLabel]}
                 </div>
-                <PTabsNew
-                  onChange={handleChangeTab}
-                  value={activeTab}
-                  list={formatTabList}
-                />
-                {activeTab === 'API Data' ? (
-                  <>
-                    {activeConnectedSourceList.length > 0 && (
-                      <ul className="dataList">
-                        {activeConnectedSourceList.map((item) => {
-                          return (
-                            <li
-                              className={liClassNameCallback(item)}
-                              key={item.name}
-                              onClick={() => {
-                                handleClickData(item);
-                              }}
-                            >
-                              <img src={item.icon} alt="" />
-                              <h6>{item.name}</h6>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                    {activeConnectedSourceList.length === 0 && (
-                      <div className="emptyContent">
-                        <img src={iconInfoGray} alt="" />
-                        <h2>{emptyCon}</h2>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <WebDataSourceList
-                    list={webDataSourceList}
-                    onChange={onChangeWebDataSource}
-                    disabled={!activeIdentityType || !!activeCred}
-                    val={activeWebDataSourceObj}
+                <div className="valueWrapper">
+                  <PTabsNew
+                    onChange={handleChangeTab}
+                    value={activeTab}
+                    list={formatTabList}
                   />
-                )}
+                  {activeTab === 'API Data' ? (
+                    <>
+                      {activeConnectedSourceList.length > 0 && (
+                        <SourceGroup
+                          onChange={(a) => {
+                            handleClickData(a as ExchangeMeta);
+                          }}
+                          list={activeConnectedSourceList}
+                        />
+                      )}
+                      {activeConnectedSourceList.length === 0 && (
+                        <div className="emptyContent">
+                          <img src={iconInfoGray} alt="" />
+                          <h2>{emptyCon}</h2>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <WebDataSourceList
+                      list={webDataSourceList}
+                      onChange={onChangeWebDataSource}
+                      disabled={!activeIdentityType || !!activeCred}
+                      val={activeWebDataSourceObj}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </main>
-          {activeConnectedSourceList.length === 0 &&
-          webDataSourceList.length === 0 ? (
-            <button className="nextBtn gray" onClick={handleClickNext}>
-              <span>OK</span>
-            </button>
-          ) : (
-            <button className="nextBtn" onClick={handleClickNext}>
-              {errorTip && <PBottomErrorTip text={errorTip} />}
-              <span>Next</span>
-            </button>
-          )}
+          <footer>
+            <PButton
+              text={
+                activeConnectedSourceList.length === 0 &&
+                webDataSourceList.length === 0
+                  ? 'OK'
+                  : 'Next'
+              }
+              className={
+                activeConnectedSourceList.length === 0 &&
+                webDataSourceList.length === 0
+                  ? 'gray'
+                  : undefined
+              }
+              onClick={handleClickNext}
+            />
+            {errorTip && <PBottomErrorTip text={errorTip} />}
+          </footer>
         </div>
       </PMask>
     );

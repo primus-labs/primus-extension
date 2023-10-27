@@ -1,0 +1,188 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+
+.credItem {
+  position: relative;
+  border-radius: var(--spacing-12, 12px);
+  background: var(--bg-60, rgba(255, 255, 255, 0.6));
+  &.expand {
+    box-shadow: 0px 5px 25px #0000000d;
+    border-radius: var(--spacing-12, 12px);
+  }
+  .main {
+    width: 328px;
+    height: 138px;
+    cursor: pointer;
+    position: relative;
+    border-radius: $sBorderRadius;
+    // background: var(--bg-60, rgba(255, 255, 255, 0.6));
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      background: url('@/assets/img/credItemBg.svg') no-repeat;
+      background-size: 100% 100%;
+    }
+    .mainContent {
+      @extend .frbs;
+      border-radius: var(--spacing-12, 12px);
+      height: 100%;
+      position: relative;
+      border-radius: var(--spacing-12, 12px);
+      width: 100%;
+      height: 100%;
+      padding: 24px 24px 30px;
+      border-radius: var(--spacing-12, 12px);
+      // background: var(--bg-60, rgba(255, 255, 255, 0.6));
+      backdrop-filter: blur(16px);
+      box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.3), inset -2px -2px 4px rgba(233, 233, 233, 0.1);
+     
+      &:hover {
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1),
+          inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+          inset -2px -2px 4px rgba(233, 233, 233, 0.1);
+      }
+      .con {
+        height: 100%;
+        @extend .fcbs;
+        .conl {
+          @extend .frsc;
+          @extend .Body1;
+          gap: var(--spacing-8, 8px);
+          color: var(--Text-headline, #0a1214);
+          > img {
+            width: 18px;
+          }
+        }
+        .conr {
+          @extend .fcss;
+          gap: 12px;
+          .conrItem {
+            width: 130px;
+            @extend .frsc;
+            gap: 8px;
+            .value {
+              color: var(--Text-body, #515758);
+              @extend .Body3;
+            }
+            > img {
+              width: 15px;
+            }
+          }
+        }
+      }
+      footer {
+        @extend .fcbc;
+        align-items: flex-end;
+        height: 100%;
+        .providedChains,
+        .operations {
+          @extend .frsc;
+          gap: 8px;
+        }
+        .providedChains {
+          > a {
+            display: flex;
+            img {
+              width: 22px;
+              cursor: pointer;
+              border-radius: 50%;
+            }
+          }
+        }
+        .operations {
+          img {
+            width: 22px;
+            opacity: 0.4;
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+          .iconOtherWrapper {
+            padding-bottom: 12px;
+            margin-bottom: -12px;
+            @extend .frcc;
+          }
+          .iconWrapper {
+            @extend .frcc;
+            position: relative;
+            &.disabled {
+              cursor: not-allowed;
+              > img {
+                cursor: not-allowed;
+                &:hover {
+                  opacity: 0.4;
+                }
+              }
+            }
+            &.iconPolygonIDWrapper {
+              width: 22px;
+              opacity: 0.8;
+              > img {
+                width: 14.66px;
+                opacity: 1;
+              }
+              &:hover {
+                opacity: 0.8;
+                > img {
+                  opacity: 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .extra{
+    padding: 12px 24px 16px;
+    @extend .fcss;
+    gap: 8px;
+    border-radius: 0px 0px 12px 12px;
+    .descItem{
+      width: 100%;
+      @extend .frbc;
+      gap: var(--spacing-8, 8px);
+      .label{
+        @extend .Text2;
+        color: var(--Text-body, #515758);
+      }
+      .value{
+        @extend .Body3;
+        @extend .frsc;
+        gap:8px;
+        color: var(--Text-headline, #0A1214);
+        >img{
+          width: 16px;
+        }
+      }
+    }
+      
+  }
+  .padodropdown{
+    position: absolute;
+    z-index: 9999;
+    right: 24px;
+    top: 116px;
+    gap: 0;
+    width: 110px;
+    .dropdownItemWrapper{
+      height: 30px;
+      .dropdownItem{
+        gap: 12px;
+        .desc{
+          @extend .Text1;
+          color: var(--Text-body, #515758);
+        }
+      }
+    }
+    
+
+  }
+    
+}

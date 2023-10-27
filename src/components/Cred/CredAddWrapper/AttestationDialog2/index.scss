@@ -1,0 +1,63 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pDialog.sass';
+@import '@/components/Cred/CredAddWrapper/AttestationDialog/index.scss';
+.padoDialog.attestationDialog.identityAttestationDialog {
+  main {
+    .formContent {
+      .contItem {
+        .value {
+          width: 100%;
+          .pSelectWrapper {
+            width: 100%;
+
+            .pSelect {
+              width: 417px;
+              height: 48px;
+              .selectInput {
+                @extend .Body2;
+                padding: 0 24px;
+                color: var(--Text-headline, #0a1214);
+                text-overflow: ellipsis;
+              }
+              .selectOptionswrapper {
+                padding-top: 8px;
+                .selectOptions {
+                  padding: 8px 0;
+                  border-radius: var(--spacing-8, 8px);
+                  background: var(--bg-default, #fff);
+                  box-shadow: 0px 2px 4px 0px rgba(9, 30, 66, 0.2);
+                  .selectOption {
+                    @extend .Text1;
+                    border-radius: 0;
+                    color: var(--Text-body, #515758);
+                    height: 40px;
+                    padding-left: 16px;
+                    gap: 0;
+                    > img {
+                      width: 0;
+                    }
+                    &:hover {
+                      background: var(--Badge, rgba(10, 18, 20, 0.05));
+                    }
+                  }
+                }
+              }
+            }
+          }
+          .valueWrapper {
+            @extend .fcss;
+            gap: var(--spacing-12, 12px);
+          }
+        }
+        .valueWrapper {
+          @extend .fcsc;
+          gap:var(--spacing, 16px);
+          width: 100%;
+          .pTabsNew{
+            align-self: flex-start;
+          }
+        }
+      }
+    }
+  }
+}

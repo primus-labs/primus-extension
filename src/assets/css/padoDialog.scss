@@ -1,5 +1,21 @@
 @import './pFlex.sass';
 @import './padoM.scss';
+.padoDialogHeaderStyle {
+  @extend .fcsc;
+  width: 100%;
+  gap: var(--spacing-16, 16px);
+  h1 {
+    @extend .fcss;
+    color: var(--Text-headline, #0a1214);
+    @extend .Headline2;
+    width: fit-content;
+  }
+  h2 {
+    color: var(--Text-body, #515758);
+    @extend .Text1;
+    width: fit-content;
+  }
+}
 .padoDialog {
   @extend .fcbc;
   width: 500px;
@@ -12,18 +28,7 @@
     @extend .fcss;
     width: 100%;
     > header {
-      @extend .fcsc;
-      width: 100%;
-      gap: var(--spacing-16, 16px);
-      h1 {
-        @extend .fcss;
-        color: var(--Text-headline, #0a1214);
-        @extend .Headline2;
-      }
-      h2 {
-        color: var(--Text-body, #515758);
-        @extend .Text1;
-      }
+      @extend .padoDialogHeaderStyle;
     }
   }
   > .pButton {

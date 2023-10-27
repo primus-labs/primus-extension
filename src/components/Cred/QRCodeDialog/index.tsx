@@ -1,11 +1,12 @@
 import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import PMask from '@/components/PMask';
+import PButton from '@/components/PButton';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import QRCodeMain from '@/components/Cred/QRCodeDialog/QRCodeMain';
-import iconExport from '@/assets/img/iconExport.svg';
+// import iconExport from '@/assets/img/iconExport.svg';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
-import './index.sass';
+import './index.scss';
 
 import { exportJson } from '@/utils/exportFile';
 import { PADOADDRESS } from '@/config/envConstants';
@@ -128,13 +129,11 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
               qrcodeValue={qrCodeVal}
             />
             <div className="exportWrapper" onClick={handleExport}>
-              <img className="exportIcon" src={iconExport} alt="" />
+              <i className="iconfont icon-iconExport"></i>
               <p>Export your proof</p>
             </div>
           </main>
-          <button className="nextBtn" onClick={handleClickNext}>
-            <span>OK</span>
-          </button>
+          <PButton text="OK" onClick={handleClickNext} />
         </div>
       </PMask>
     );

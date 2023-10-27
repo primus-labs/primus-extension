@@ -1,19 +1,110 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/padoDialog.scss';
-
 .padoDialog.attestationDialog {
   main {
     gap: var(--spacing-32, 32px);
     .formContent {
+      width: 100%;
       @extend .fcss;
       gap: var(--spacing-24, 24px);
       .contItem {
+        width: 100%;
         @extend .fcss;
         gap: var(--spacing-16, 16px);
         .label {
           @extend .Headline5;
           color: var(--Text-headline, #0a1214);
         }
+        .value {
+          .pSelectWrapper {
+            &::-webkit-scrollbar {
+              width: 2px;
+              height: 110px;
+              position: relative;
+              right: 5px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+              background: rgba(0, 0, 0, 0.2);
+              border-radius: 100px;
+              position: relative;
+              left: -15px;
+            }
+
+            .pSelect {
+              width: 130px;
+              height: 30px;
+              border-radius: var(--spacing-8, 8px);
+              background: var(--Badge, rgba(10, 18, 20, 0.05));
+              backdrop-filter: blur(16px);
+              .selectInput {
+                border-radius: var(--spacing-8, 8px);
+                @extend .Body2;
+                @extend .frsc;
+                gap: 12px;
+                background: transparent;
+                height: 100%;
+                line-height: 30px;
+                color: var(--Text-hint, #7b7f80);
+                padding: 0 var(--spacing-16, 16px);
+                .prefixIcon {
+                  width: 16px;
+                }
+                .suffixIcon {
+                  right: 16px;
+                }
+                .iconfont {
+                  color: var(Icon-default, #515758);
+                  font-size: 16px;
+                }
+              }
+              .selectOptionswrapper {
+                .selectOptions {
+                  padding: var(--spacing-8, 8px) 0;
+                  width: 100%;
+                  gap: 0;
+                  max-height: 176px;
+                  overflow-y: auto;
+                  .selectOption {
+                    @extend .Text1;
+                    @extend .frsc;
+                    height: 40px;
+                    line-height: 40px;
+                    padding: 0 var(--spacing-16, 16px);
+                    gap: var(--spacing-12, 12px);
+                    color: var(--Text-body, #515758);
+
+                    border-radius: 0;
+                    > img {
+                      width: 14px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        .emptyContent {
+          width: 100%;
+          @extend .fcsc;
+          gap: var(--spacing-16, 16px);
+          padding-top: 40px;
+          > img {
+            width: 45px;
+          }
+          .emptyTips {
+            @extend .Text2;
+            color: var(--Text-hint, #7b7f80);
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+}
+.padoDialog.attestationDialog.assetsAttestationDialog {
+  main {
+    .formContent {
+      .contItem {
         .value {
           @extend .frsc;
           gap: var(--spacing-16, 16px);
@@ -36,31 +127,6 @@
             border-radius: var(--spacing-8, 8px);
             background: var(--Badge, rgba(10, 18, 20, 0.05));
             backdrop-filter: blur(16px);
-          }
-          .pSelectWrapper {
-            .pSelect {
-              width: 130px;
-              height: 30px;
-              border-radius: var(--spacing-8, 8px);
-              background: var(--Badge, rgba(10, 18, 20, 0.05));
-              backdrop-filter: blur(16px);
-              .selectInput {
-                @extend .Body2;
-                @extend .frbc;
-                background: transparent;
-                height: 100%;
-                line-height: 30px;
-                color: var(--Text-hint, #7B7F80);
-                padding: 0 var(--spacing-16, 16px);
-                .suffixIcon {
-                  width: 16px;
-                }
-                .iconfont{
-                  color: var(Icon-default, #515758);
-                  font-size: 16px;
-                }
-              }
-            }
           }
         }
         &.contItemAssets {

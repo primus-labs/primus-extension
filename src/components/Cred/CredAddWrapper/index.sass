@@ -1,25 +1,8 @@
 @import '@/assets/css/pFlex.sass'
+@import '@/assets/css/padoM.scss'
 .credAddWrapper
-  .addDataSourceSucDialog
-    main
-      >h2
-        width: 100%
   .safeTip
     @extend .fcsc
+    @extend .Text2
     color: var(--Icon-default, #A7AAAA)
     text-align: center
-    /* Text 2 */
-    font-family: Inter
-    font-size: 12px
-    font-style: normal
-    font-weight: 400
-    line-height: 16px /* 133.333% */
-@media (max-width: 1680px)
-  .credAddWrapper
-    .addDataSourceSucDialog
-      padding: 42px 42px 32px
-      main
-        img.sucImg, img.loadingImg
-          margin-top: 68px
-        .pLoading
-          margin-top: 57px

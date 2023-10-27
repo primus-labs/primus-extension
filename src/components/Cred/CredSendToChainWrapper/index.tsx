@@ -44,7 +44,7 @@ import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
 import { eventReport } from '@/services/api/usertracker';
 
-import './index.sass';
+import './index.scss';
 
 interface CredSendToChainWrapperType {
   visible?: boolean;

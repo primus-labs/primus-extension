@@ -1,0 +1,23 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoDialog.scss';
+
+.qrcodeMain {
+  width: 100%;
+  @extend .fccc;
+  > header {
+    @extend .padoDialogHeaderStyle;
+  }
+  .pQRCodeWrapper,
+  .defaultImg {
+    margin-top: 24px;
+  }
+  .defaultImg {
+    width: 280px;
+    height: 280px;
+    background-color: #f2f2f2;
+    @extend .frcc;
+    > img {
+      width: 80px;
+    }
+  }
+}

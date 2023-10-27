@@ -67,26 +67,26 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       switch (type) {
         case 'ASSETS_PROOF':
           el = (
-            <>
+            <div className="emptyTips">
               <p>You haven’t connected data from Binance and OKX.</p>
               <p>Please go to the Data page to add.</p>
-            </>
+            </div>
           );
           break;
         case 'TOKEN_HOLDINGS':
           el = (
-            <>
+            <div className="emptyTips">
               <p>You haven’t connected data from Binance, Coinbase, and OKX.</p>
               <p>Please go to the Data page to add.</p>
-            </>
+            </div>
           );
           break;
         case 'IDENTIFICATION_PROOF':
           el = (
-            <>
+            <div className="emptyTips">
               <p>You haven’t connected any identity data.</p>
               <p>Please go to the Data page to add.</p>
-            </>
+            </div>
           );
           break;
       }
@@ -386,7 +386,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
 
     return (
       <PMask onClose={onClose}>
-        <div className="padoDialog attestationDialog">
+        <div className="padoDialog attestationDialog assetsAttestationDialog">
           {!!onBack && <PBack onBack={onBack} />}
           <main>
             <header>

@@ -1,0 +1,41 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+@import '@/assets/css/pSelectOption.scss';
+
+.webDataSourceListWrapper {
+  width: 100%;
+  &.scroll {
+    // width: calc( 100% + 35px )
+    width: 511px;
+    height: 238px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 100px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: $xxLBorderRadius;
+    }
+  }
+  ul.webDataSourceList {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    li {
+      @extend .pSelectOption;
+      @extend .frcc;
+      width: 128px;
+      height: 64px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      flex-shrink: 0;
+      img {
+        width: 100px;
+      }
+    }
+  }
+}

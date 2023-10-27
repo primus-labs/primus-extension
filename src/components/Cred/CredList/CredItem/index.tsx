@@ -12,7 +12,7 @@ import {
   formatAddress,
   formatTime,
 } from '@/utils/utils';
-
+import PDropdownList from '@/components/PDropdownList';
 import iconExpand from '@/assets/img/iconExpand.svg';
 import iconUpChain from '@/assets/img/iconUpChain.svg';
 import iconQRCode from '@/assets/img/iconQRCode.svg';
@@ -23,11 +23,13 @@ import iconMedalAssets from '@/assets/img/iconMedalAssets.svg';
 import iconMedalToken from '@/assets/img/iconMedalToken.svg';
 import iconMedalIdentification from '@/assets/img/iconMedalIdentification.svg';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
+import iconUpdate from '@/assets/img/credit/iconUpdate.svg';
+import iconClear from '@/assets/img/credit/iconClear.svg';
+
 import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 
-import './index.sass';
-import { div } from '../../../../utils/utils';
+import './index.scss';
 
 interface CredTypeListProps {
   item: CredTypeItemType;
@@ -37,6 +39,7 @@ interface CredTypeListProps {
   onUpdate: (item: CredTypeItemType) => void;
   onDelete: (item: CredTypeItemType) => void;
 }
+
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
@@ -49,9 +52,23 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     }, [sysConfig]);
     const otherOperations = useMemo(() => {
       if (item?.provided?.length && item?.provided?.length > 0) {
-        return ['Delete'];
+        return [
+          {
+            icon: iconClear,
+            text: 'Delete',
+          },
+        ];
       }
-      return ['Update', 'Delete'];
+      return [
+        {
+          icon: iconClear,
+          text: 'Delete',
+        },
+        {
+          icon: iconUpdate,
+          text: 'Update',
+        },
+      ];
     }, [item]);
     const activeTypeConfig = useMemo(() => {
       const obj = proofTypes.find(
@@ -177,7 +194,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="conl">
                 {/* <img src={credIcon} alt="" /> */}
 
-                {briefTypeName}
+                <span>{briefTypeName}</span>
+                {item.did && <img src={iconPolygonID} alt="" />}
               </div>
               <div className="conr">
                 <div className="conrItem">
@@ -216,33 +234,20 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   <img src={iconUpChain} alt="" onClick={handleUpChain} />
                 </div>
                 <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
-                <>
-                  {item.did ? (
-                    <div className="iconWrapper disabled iconPolygonIDWrapper">
-                      <img
-                        src={iconPolygonID}
-                        className="iconPolygonID"
-                        alt=""
-                        onClick={handleClickBind}
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      className={
-                        item.reqType === 'web'
-                          ? 'iconWrapper disabled'
-                          : 'iconWrapper'
-                      }
-                    >
-                      <img
-                        src={iconBind}
-                        className="iconBind"
-                        alt=""
-                        onClick={handleClickBind}
-                      />
-                    </div>
-                  )}
-                </>
+                <div
+                  className={
+                    item.reqType === 'web' || item.did
+                      ? 'iconWrapper disabled'
+                      : 'iconWrapper'
+                  }
+                >
+                  <img
+                    src={iconBind}
+                    className="iconBind"
+                    alt=""
+                    onClick={handleClickBind}
+                  />
+                </div>
                 <div
                   className="iconOtherWrapper"
                   onClick={handleClickOther}
@@ -256,38 +261,26 @@ const CredItem: React.FC<CredTypeListProps> = memo(
           </div>
         </div>
         {dorpdownVisible && (
-          <ul
-            className="dropdown"
-            onClick={handleEnterAvatar}
+          <div
+            className="dropdownWrapper"
             onMouseEnter={handleEnterAvatar}
             onMouseLeave={handleLeaveAvatar}
           >
-            {otherOperations.map((item) => {
-              return (
-                <li
-                  key={item}
-                  className="dropdownItem"
-                  onClick={() => {
-                    handleClickDropdownItem(item);
-                  }}
-                >
-                  {item}
-                </li>
-              );
-            })}
-          </ul>
+            <PDropdownList
+              list={otherOperations}
+              onClick={handleClickDropdownItem}
+            />
+          </div>
         )}
+
         {expand && (
           <div className="extra">
             <div className="descItem">
+              <div className="label">Proof Content</div>
               <div className="value">
-                <div className="desc">Proof Content</div>
-
-                {item.type === 'ASSETS_PROOF' && (
-                  <div className="con">Spot Amount</div>
-                )}
+                {item.type === 'ASSETS_PROOF' && <>Spot Amount</>}
                 {item.type === 'TOKEN_HOLDINGS' && (
-                  <div className="con">
+                  <div className="value">
                     {tokenLogoPrefix && (
                       <img
                         src={`${tokenLogoPrefix}icon${item.holdingToken}.png`}
@@ -300,107 +293,76 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 )}
                 {item.type === 'IDENTIFICATION_PROOF' && (
                   // TODO!!!
-                  <div className="con">
+                  <div className="value">
                     {item.reqType === 'web'
                       ? item.uiTemplate.proofContent
                       : 'KYC Status'}
                   </div>
                 )}
               </div>
-              {/* <div className="label">Proof Content</div> */}
+            </div>
+            <div className="descItem">
+              <div className="label">Proof Result</div>
               {item.type === 'ASSETS_PROOF' && (
                 <div className="value">
-                  <div className="desc">Proof Result</div>
-                  <div className="con">
-                    {/* <i className="greaterSymbol">&gt;</i> */}
-                    <img src={iconGreater} className="iconGreater" alt="" />$
-                    {item.baseValue
-                      ? formatNumeral(item.baseValue, {
-                          decimalPlaces: 0,
-                        })
-                      : ''}
-                  </div>
+                  <img src={iconGreater} className="iconGreater" alt="" />$
+                  {item.baseValue
+                    ? formatNumeral(item.baseValue, {
+                        decimalPlaces: 0,
+                      })
+                    : ''}
                 </div>
               )}
               {item.type === 'TOKEN_HOLDINGS' && (
                 <div className="value">
-                  <div className="desc">Proof Result</div>
-                  <div className="con">
-                    <img src={iconGreater} className="iconGreater" alt="" />
-                    <span>0</span>
-                  </div>
+                  <img src={iconGreater} className="iconGreater" alt="" />
+                  <span>0</span>
                 </div>
               )}
               {item.type === 'IDENTIFICATION_PROOF' &&
                 item.reqType === 'web' && (
                   <div className="value">
-                    <div className="desc">Proof Result</div>
-                    <div className="con">
-                      {item.uiTemplate.subProofContent &&
-                        item.uiTemplate.subProofContent + ' '}
-                      {item.uiTemplate.condition}
-                    </div>
+                    {item.uiTemplate.subProofContent &&
+                      item.uiTemplate.subProofContent + ' '}
+                    {item.uiTemplate.condition}
                   </div>
                 )}
               {item.type === 'IDENTIFICATION_PROOF' &&
                 item.reqType !== 'web' && (
-                  <div className="value">
-                    <div className="desc">Proof Result</div>
-                    <div className="con">{credProofConditions}</div>
-                  </div>
+                  <div className="value">{credProofConditions}</div>
                 )}
-
-              <div className="descItem">
-                <div className="value">
-                  <div className="desc">Data Source ID</div>
-                  <div className="con">
-                    {item?.sourceUseridHash
-                      ? formatAddress('0x' + item.sourceUseridHash, 6)
-                      : 'N/A'}
-                  </div>
-                </div>
+            </div>
+            <div className="descItem">
+              <div className="label">Data Source ID</div>
+              <div className="value">
+                {item?.sourceUseridHash
+                  ? formatAddress('0x' + item.sourceUseridHash, 6)
+                  : 'N/A'}
               </div>
-              {item.did ? (
-                <div className="descItem arow">
-                  <div className="label">Submit Account</div>
-                  <div className="value didWrapper">
-                    <img src={iconPolygonID} alt="" />
-                    <span>{formatAddress(item.did.toLowerCase(), 13)}</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="descItem arow">
-                  <div className="label">Submit Account</div>
-                  <div className="value">{formatAddress(item.address)}</div>
-                </div>
-              )}
-              <div className="descItem">
-                <div className="value">
-                  <div className="desc">Attested By PADO</div>
-                  {item.did ? (
-                    <div className="con didWrapper">
-                      <img
-                        src={iconPolygonID}
-                        alt=""
-                        className="iconPolygonID"
-                      />
-                      <span>
-                        {formatAddress(
-                          (item?.issuer?.toLowerCase() || '') as string,
-                          13
-                        )}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="con">{formatAddress(PADOADDRESS)}</div>
-                  )}
-                </div>
+            </div>
+            <div className="descItem">
+              <div className="label">Submit Account</div>
+              <div className="value">
+                {item.did
+                  ? formatAddress(item.did.toLowerCase(), 13)
+                  : formatAddress(item.address)}
               </div>
-              <div className="descItem arow">
-                <div className="label">Attested Time</div>
-                <div className="value">
-                  {formatTime(Number(item?.getDataTime))}
-                </div>
+            </div>
+            <div className="descItem">
+              <div className="label">Attested By PADO</div>
+              <div className="value">
+                {item.did
+                  ? formatAddress(
+                      (item?.issuer?.toLowerCase() || '') as string,
+                      13
+                    )
+                  : formatAddress(PADOADDRESS)}
+              </div>
+            </div>
+            <div className="descItem">
+              <div className="label">Attested Time</div>
+              <div className="value">
+                {formatTime(Number(item?.getDataTime))}
               </div>
             </div>
           </div>

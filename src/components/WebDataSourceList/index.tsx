@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState, useEffect, memo } from 'react';
 
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
-import './index.sass';
+import './index.scss';
 type DataSourceItemType = {
   icon: any;
   name: string;
@@ -69,12 +69,6 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
               );
             })}
           </ul>
-        )}
-        {list.length === 0 && (
-          <div className="emptyContent">
-            <img src={iconInfoGray} alt="" />
-            <h2>empty.</h2>
-          </div>
         )}
       </div>
     );
