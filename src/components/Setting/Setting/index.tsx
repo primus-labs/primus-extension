@@ -7,7 +7,7 @@ import ResetPasswordDialog from '@/components/Setting/ResetPasswordDialog';
 import ExportWalletDialog from '@/components/Setting/ExportWalletDialog';
 import ManageDataDialog from '@/components/Setting/ManageDataDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
-import './index.sass';
+import './index.scss';
 
 interface SettingProps {
   onClose: () => void;
@@ -69,7 +69,6 @@ const Setting: React.FC<SettingProps> = memo(({ onClose }) => {
   return (
     <div className='mySetting'>
       <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />
-
       {resetPwdDialogVisible && (
         <ResetPasswordDialog
           onClose={onCloseDialog}

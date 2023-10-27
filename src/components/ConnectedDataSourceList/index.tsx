@@ -9,7 +9,7 @@ import React, {
 import { useSelector } from 'react-redux';
 
 import iconInfoGray from '@/assets/img/iconInfoGray.svg';
-import './index.sass';
+import './index.scss';
 import { sub, formatAddress } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/constants';
 

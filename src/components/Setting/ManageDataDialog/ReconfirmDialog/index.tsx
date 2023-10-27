@@ -1,10 +1,11 @@
 import React, { useMemo, memo } from 'react';
 
 import PMask from '@/components/PMask';
+import PButton from '@/components/PButton';
 import PBack from '@/components/PBack';
 import iconInfoColorful from '@/assets/img/iconInfoColorful.svg';
 
-import './index.sass';
+import './index.scss';
 interface AddSourceSucDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -19,18 +20,19 @@ const ReconfirmDialog: React.FC<AddSourceSucDialogProps> = memo(
   }) => {
     return (
       <PMask onClose={onClose}>
-        <div className="padoDialog  reconfirmDialog">
+        <div className="padoDialog  addDataSourceSucDialog reconfirmDialog">
           <PBack onBack={onBack} />
           <main>
-            <img className="sucImg" src={iconInfoColorful} alt="" />
-            <h1>Are your sure to delete?</h1>
-            <h2>
-              To re-connect, you will need to go through the process again.
-            </h2>
+            <div className="holderH"></div>
+            <img className="processImg sucImg" src={iconInfoColorful} alt="" />
+            <header>
+              <h1>Sure to delete?</h1>
+              <h2>
+                You will need to go through the whole process to re-connect.
+              </h2>
+            </header>
           </main>
-          <button className="nextBtn" onClick={onSubmit}>
-            <span>Delete</span>
-          </button>
+          <PButton text="Delete" onClick={onSubmit} />
         </div>
       </PMask>
     );

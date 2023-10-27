@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import PMask from '@/components/PMask';
 import PRadio from '@/components/PRadio';
+import PButton from '@/components/PButton';
+import PBottomErrorTip from '@/components/PBottomErrorTip';
 import ConnectedDataSourceList from '@/components/ConnectedDataSourceList';
 import IconClear from '@/components/Icons/IconClear';
 import IconDownload from '@/components/Icons/IconDownload';
@@ -30,7 +32,7 @@ import type {
   AssetsMap,
 } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 
-import './index.sass';
+import './index.scss';
 
 interface ManageDataDialogProps {
   onClose: () => void;
@@ -561,21 +563,18 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           <div className="padoDialog manageDataDialog">
             <PBack onBack={onBack} />
             <main>
-              <h1>Manage Data</h1>
-              <div className="scrollList">
+              <header>
+                <h1>Manage Data</h1>
+              </header>
+              <div className="formContent scrollList">
                 <div className="contItem">
                   <div className="label">Update frequency</div>
                   <div className="value">
-                    <div className="desc">
-                      Choose a time frequency to updating your data:
-                    </div>
-                    <div className="con">
-                      <PRadio
-                        val={updateFrequency}
-                        onChange={setUpdateFrequency}
-                        options={updateFrequencyList}
-                      />
-                    </div>
+                    <PRadio
+                      val={updateFrequency}
+                      onChange={setUpdateFrequency}
+                      options={updateFrequencyList}
+                    />
                   </div>
                 </div>
                 <div className="contItem contItemAssets">
@@ -597,21 +596,10 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
                 </div>
               </div>
             </main>
-            <button className="nextBtn" onClick={onSubmitDialog}>
-              {errorTip && (
-                <div className="tipWrapper">
-                  <div className="errorTip">{errorTip}</div>
-                </div>
-              )}
-              <span>OK</span>
-            </button>
-
-            {/* {reconfirmVisible && (
-            <Reconfirm
-              onCancel={onCancelReconfirm}
-              onConfirm={onConfirmReconfirm}
-            />
-          )} */}
+            <footer>
+              <PButton text="OK" onClick={onSubmitDialog} />
+              {errorTip && <PBottomErrorTip text={errorTip} />}
+            </footer>
           </div>
         )}
 

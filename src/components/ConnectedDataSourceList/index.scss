@@ -1,0 +1,43 @@
+@import '@/assets/css/padoDialog.scss';
+@import '@/assets/css/pSelectOption.scss';
+@import '@/assets/css/pFlex.sass';
+.connectedDataSourceList {
+  width: 100%;
+  &.scroll {
+    width: calc( 100% + 35px );
+    // width: 511px;
+    height: 238px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 100px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 100px;
+    }
+  }
+  ul.dataList {
+    @extend .frss;
+    width: 100%;
+    flex-wrap: wrap;
+    row-gap: var(--spacing-16, 16px);
+    column-gap: 10px;
+    li.networkItem {
+      @extend .pSelectOption;
+      @extend .fccc;
+      width: 87px;
+      height: 88px;
+      gap: var(--spacing-4, 4px);
+      > img {
+        width: var(--spacing-32, 32px);
+      }
+      > h6 {
+        color: var(--Text-headline, #0a1214);
+        @extend .Headline6;
+      }
+    }
+  }
+}

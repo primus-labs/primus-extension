@@ -1,0 +1,15 @@
+@import '@/assets/css/padoDialog.scss';
+
+@import '@/assets/css/pFlex.sass';
+@import '@/components/Home/SetPwdDialog/index.scss';
+
+.padoDialog.setPwdDialog.resetPwdDialog {
+  padding: 48px 60px 56px;
+  main{
+    >header{
+      h2{
+        text-align: left;
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ import iconArrow from '@/assets/img/iconArrowLeft2.svg';
 import iconMy from '@/assets/img/iconMy.svg';
 import iconLoginFrom from '@/assets/img/iconLoginFrom.svg';
 import { padoExtensionVersion } from '@/config/constants';
-import './index.sass';
+import './index.scss';
 import { div } from '../../../utils/utils';
 
 import { DATASOURCEMAP } from '@/config/constants';
@@ -132,7 +132,6 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
       if (!userPassword) {
         obj.splice(0, 1);
       } else {
-        
         if (connectedSourceList?.length === 0) {
           obj[0] = obj[0].filter((i) => i.moduleType === 'wallet');
         }
@@ -181,7 +180,8 @@ const SettingDialog: React.FC<AddSourceSucDialogProps> = memo(
                           <div className="settingTitle">
                             {sItem.settingType}
                           </div>
-                          <img src={iconArrow} alt="" />
+                          <i className="iconfont icon-iconArrowLeft2" />
+                         
                         </div>
                       );
                     })}

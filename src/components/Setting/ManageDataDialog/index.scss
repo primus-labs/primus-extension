@@ -1,0 +1,26 @@
+@import '@/assets/css/padoDialog.scss';
+.padoDialog.manageDataDialog {
+  @extend .padoFormDialogStyle;
+  padding: 48px 60px 56px;
+  main {
+    .formContent {
+      .contItem {
+        .value {
+          width: 100%;
+          position: relative;
+          .operations {
+            position: absolute;
+            content: '';
+            right: 0;
+            top: -38px;
+            @extend .frsc;
+            gap: 12px;
+            .operationItem {
+              display: flex;
+            }
+          }
+        }
+      }
+    }
+  }
+}

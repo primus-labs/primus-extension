@@ -1,19 +1,9 @@
 @import '@/assets/css/padoDialog.scss';
 .padoDialog.attestationDialog {
+  @extend .padoFormDialogStyle;
   main {
-    gap: var(--spacing-32, 32px);
     .formContent {
-      width: 100%;
-      @extend .fcss;
-      gap: var(--spacing-24, 24px);
       .contItem {
-        width: 100%;
-        @extend .fcss;
-        gap: var(--spacing-16, 16px);
-        .label {
-          @extend .Headline5;
-          color: var(--Text-headline, #0a1214);
-        }
         .value {
           .pSelectWrapper {
             &::-webkit-scrollbar {
