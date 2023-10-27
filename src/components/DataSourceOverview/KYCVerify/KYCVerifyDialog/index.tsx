@@ -6,7 +6,7 @@ import PMask from '@/components/PMask';
 import QRCodeMain from '@/components/Cred/QRCodeDialog/QRCodeMain';
 import PBack from '@/components/PBack';
 
-import './index.sass';
+import './index.scss';
 
 import type { ExchangeMeta } from '@/types/dataSource';
 
@@ -24,6 +24,11 @@ interface KYCVerifyDialogProps {
   qrCodeVal: string;
 }
 
+const rules = [
+  'Prepare a valid government-issued ID',
+  'Check if your phone’s camera is working',
+  'Be prepared to take a selfie and photos of your ID',
+];
 const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
   ({ onClose, activeSource, onCancel, qrCodeVal }) => {
     const [searchParams] = useSearchParams();
@@ -36,7 +41,7 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
       </>
     );
     return (
-      <PMask onClose={onClose} closeable={!fromEvents}>
+      <PMask onClose={onClose}>
         <div className="padoDialog kycVerifyDialog">
           <PBack onBack={onCancel} />
           <main>
@@ -47,18 +52,19 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
               qrcodeValue={qrCodeVal}
               qrcodeSize={200}
             />
-            <div className="friendlyRemainer">
-              <h6>Before you start, please:</h6>
-              <ul>
-                <li>
-                  <i></i>Prepare a valid government-issued ID{' '}
-                </li>
-                <li>
-                  <i></i>Check if your phone’s camera is working
-                </li>
-                <li>
-                  <i></i>Be prepared to take a selfie and photos of your ID
-                </li>
+            <div className="descContent">
+              <p className="title">Before you start, please:</p>
+              <ul className="rules">
+                {rules.map((i, k) => {
+                  return (
+                    <li key={k}>
+                      <i>
+                        <span></span>
+                      </i>
+                      <span>{i}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </main>

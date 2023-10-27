@@ -21,7 +21,7 @@ import type { ActiveRequestType } from '@/types/config';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import iconExport2 from '@/assets/img/iconExport2.svg';
-import './index.sass';
+
 import { eventReport } from '@/services/api/usertracker';
 const POLLINGTIME = 3000;
 
@@ -311,7 +311,7 @@ const KYCVerify: React.FC<KYCVerifyProps> = memo(
     }, [activeRequest?.type, onClose]);
     const loadingTipEl = useMemo(() => {
       return (
-        <p className="kycLoadingTip">
+        <p className="footerTip kycLoadingTip">
           PADO never participates in the entire process
         </p>
       );

@@ -32,4 +32,11 @@
       }
     }
   }
+  .footerTip{
+    @extend .fcsc;
+    @extend .Text2;
+    color: var(--Icon-default, #A7AAAA);
+    text-align: center;
+  }
+    
 }

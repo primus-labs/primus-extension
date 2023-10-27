@@ -50,7 +50,6 @@ import type { UserState } from '@/types/store';
 import type { AssetsMap } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
-import './index.sass';
 import {
   claimUniNFT,
   getUniNFTResult,
@@ -899,7 +898,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const footerTip = useMemo(() => {
       if (activeRequest?.type === 'loading') {
         return (
-          <div className="safeTip">
+          <div className="footerTip safeTip">
             <p>PADO will not access your private data.</p>
             <p>We uses IZK to ensure your privacy.</p>
           </div>

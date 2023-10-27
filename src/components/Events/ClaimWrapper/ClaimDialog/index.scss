@@ -16,6 +16,7 @@
       gap: var(--spacing-24, 24px); //
       .title {
         color: #000;
+        @extend .Text1;
         font-family: Inter;
         font-size: 20px;
         font-style: normal;
@@ -24,10 +25,10 @@
       }
       .rules {
         @extend .fcss;
-        gap: var(--spacing-8, 8px);
+        gap: var(--spacing-4, 4px);
         > li {
           @extend .frss;
-          @extend .Body2;
+          @extend .Text2;
           color: #000;
           > i {
             @extend .frcc;

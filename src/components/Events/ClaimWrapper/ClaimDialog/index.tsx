@@ -69,16 +69,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
               <p className="desc">{desc}</p>
               {extra && <p className="extra">{extra}</p>}
               <p className="specialTip">
-                {/* <img src={iconShield} alt="" /> */}
                 <i className="iconfont icon-iconShield" />
                 <span>{tip}</span>
               </p>
             </div>
           </main>
           <PButton text="Claim Now" onClick={hanldeSubmit} />
-          {/* <button className="nextBtn gray" onClick={hanldeSubmit}>
-            <span>Claim Now</span>
-          </button> */}
         </div>
       </PMask>
     );
