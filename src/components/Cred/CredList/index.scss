@@ -1,0 +1,23 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+@import '@/assets/css/pFont.sass';
+.credListWrapper {
+  padding-bottom: 83px;
+  margin: 24px auto 0;
+  width: $sCenterWidth;
+  .credList {
+    @extend .frss;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .emptyDataSourceItem {
+    width: 328px;
+    height: 138px;
+    box-shadow: -2px -2px 4px 0px rgba(233, 233, 233, 0.1) inset,
+      2px 2px 4px 0px rgba(255, 255, 255, 0.3) inset;
+    .iconFont {
+      font-size: 18px;
+    }
+  }
+}

@@ -4,7 +4,7 @@ import EmptyDataSourceItem from '@/components/DataSourceOverview/DataSourceList/
 
 import type { CredTypeItemType } from '@/types/cred';
 
-import './index.sass';
+import './index.scss';
 
 interface CredListProps {
   onChange?: (item: CredTypeItemType) => void;

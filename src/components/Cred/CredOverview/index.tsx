@@ -23,7 +23,7 @@ import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 import type { WALLETITEMTYPE } from '@/types/config';
 import CredAddWrapper from '../CredAddWrapper';
-import './index.sass';
+import './index.scss';
 import ConnectWalletDialog from '../CredSendToChainWrapper/ConnectWalletDialog';
 
 const CredOverview = memo(() => {

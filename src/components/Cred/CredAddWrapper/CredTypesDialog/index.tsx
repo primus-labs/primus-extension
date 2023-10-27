@@ -3,10 +3,12 @@ import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom'
 import PMask from '@/components/PMask';
 
-import './index.sass';
+import './index.scss';
 
 import type { UserState } from '@/types/store';
 import type { PROOFTYPEITEM } from '@/types/cred';
+import PBottomErrorTip from '@/components/PBottomErrorTip';
+import PButton from '@/components/PButton'
 
 interface CredTypesDialogProps {
   onClose: () => void;
@@ -64,8 +66,10 @@ const fromEvents = searchParams.get('fromEvents');
       <PMask onClose={onClose}>
         <div className="padoDialog credTypesDialog">
           <main>
-            <h1>Create Your Proof</h1>
-            <h2>PADO uses interactive ZK protocol to attesting your data.</h2>
+            <header>
+              <h1>Create Your Proof</h1>
+              <h2>PADO uses interactive ZK protocol to attesting your data.</h2>
+            </header>
             <div className="scrollList">
               <ul className="credTypeList">
                 {proofTypes.map((item) => (
@@ -76,32 +80,22 @@ const fromEvents = searchParams.get('fromEvents');
                     }}
                     key={item.credTitle}
                   >
-                    <img className="icon" src={item.credLogoUrl} alt="" />
-                    <div className="con">
-                      <h5 className="title">{item.credTitle}</h5>
-                      <h6 className="desc">{item.credIntroduce}</h6>
+                    <div className="innerContent">
+                      <img className="icon" src={item.credLogoUrl} alt="" />
+                      <div className="con">
+                        <h5 className="title">{item.credTitle}</h5>
+                        <h6 className="desc">{item.credIntroduce}</h6>
+                      </div>
                     </div>
                   </li>
                 ))}
               </ul>
             </div>
           </main>
-
-          {/* <button className="openPageDataSource" onClick={handlePageDecode}>
-            Binance KYC
-          </button>
-          <button className="openPageDataSource" onClick={handlePageDecode2}>
-            Binance Nationality
-          </button> */}
-
-          <button className="nextBtn" onClick={handleClickNext}>
-            {errorTip && (
-              <div className="tipWrapper">
-                <div className="errorTip">{errorTip}</div>
-              </div>
-            )}
-            <span>Select</span>
-          </button>
+          <footer>
+            <PButton text="Select" onClick={handleClickNext} />
+            {errorTip && <PBottomErrorTip text={errorTip} />}
+          </footer>
         </div>
       </PMask>
     );

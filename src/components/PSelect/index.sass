@@ -40,6 +40,7 @@ $sSelectInput: 48px
 .pSelect
   @include pSelectMixin(1)
   position: relative
+  height: $sPSelectHeight
   .selectInput
     @include backdropMixin
     box-sizing: border-box
@@ -50,6 +51,7 @@ $sSelectInput: 48px
     color: rgba(0, 0, 0, 0.6)
     position: relative
     cursor: not-allowed
+    line-height: $sSelectInput
     &.disabled
       cursor: not-allowed
     .placeholder
@@ -91,8 +93,8 @@ $sSelectInput: 48px
       &:hover
         color: #000
         background-color: rgba(0, 0, 0, 0.03)
-@media (max-width: 1680px)
-  .pSelect
-    height: $sPSelectHeight
-    .selectInput
-      line-height: $sSelectInput
+// @media (max-width: 1680px)
+//   .pSelect
+//     height: $sPSelectHeight
+//     .selectInput
+//       line-height: $sSelectInput

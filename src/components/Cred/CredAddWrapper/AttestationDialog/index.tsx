@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { WALLETLIST } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
+import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup'
 import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
+import PButton from '@/components/PButton';
 import PSelect from '@/components/PSelect';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { DATASOURCEMAP } from '@/config/constants';
@@ -20,7 +22,7 @@ import type { UserState } from '@/types/store';
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { PROOFTYPEITEM, AttestionForm } from '@/types/cred';
 
-import './index.sass';
+import './index.scss';
 
 interface AttestationDialogProps {
   type: string;
@@ -275,31 +277,41 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
       }
     };
-    const handleClickData = (item: ConnectSourceType) => {
-      if (type === 'TOKEN_HOLDINGS' && !activeToken) {
-        setErrorTip('Please select one data source');
-        return;
-      }
-      if (activeSourceName) {
-        return;
-      }
-      if ((activeCred || activeSourceName) && activeSource) {
-        if (activeSource?.name !== item.name) {
+    const handleClickData = useCallback(
+      (item: ConnectSourceType) => {
+        if (type === 'TOKEN_HOLDINGS' && !activeToken) {
+          setErrorTip('Please select one data source');
           return;
         }
-      }
+        if (activeSourceName) {
+          return;
+        }
+        if ((activeCred || activeSourceName) && activeSource) {
+          if (activeSource?.name !== item.name) {
+            return;
+          }
+        }
 
-      if (!activeCred && activeSource?.name === item.name) {
-        setActiveSource(undefined);
-        return;
-      }
-      if (
-        (activeSourceList.length > 0 && activeSourceList.includes(item.name)) ||
-        activeSourceList.length === 0
-      ) {
-        setActiveSource(item);
-      }
-    };
+        if (!activeCred && activeSource?.name === item.name) {
+          setActiveSource(undefined);
+          return;
+        }
+        if (
+          (activeSourceList.length > 0 &&
+            activeSourceList.includes(item.name)) ||
+          activeSourceList.length === 0
+        ) {
+          setActiveSource(item);
+        }
+      },
+      [
+        activeCred,
+        activeSourceList,
+        activeToken,
+        type,
+        activeSourceName,
+      ]
+    );
     const liClassNameCallback = useCallback(
       (item: ConnectSourceType) => {
         let defaultClassName = 'networkItem';
@@ -377,18 +389,20 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         <div className="padoDialog attestationDialog">
           {!!onBack && <PBack onBack={onBack} />}
           <main>
-            <h1>{activeAttestationTypeInfo.credTitle}</h1>
-            {/* <h2>{activeAttestationTypeInfo.credDetails}</h2> */}
-            <div className="scrollList">
+            <header>
+              <h1>{activeAttestationTypeInfo.credTitle}</h1>
+              {/* <h2>{activeAttestationTypeInfo.credDetails}</h2> */}
+            </header>
+            <div className="formContent">
               <div className="contItem">
                 <div className="label">Proof content</div>
                 <div className="value">
                   <div className="desc">
                     {activeAttestationTypeInfo.credProofContent}
-                    {type === 'ASSETS_PROOF' && (
-                      <img src={iconGreater} className="iconGreater" alt="" />
-                    )}
                   </div>
+                  {type === 'ASSETS_PROOF' && (
+                    <i className="iconfont icon-iconArrowLeft2" />
+                  )}
                   {type === 'ASSETS_PROOF' && (
                     <div
                       className={
@@ -444,7 +458,13 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 <div className="label">
                   Source of {sourcesLabel[type as keyof typeof sourcesLabel]}
                 </div>
-                {activeConnectedSourceList.length > 0 && (
+                <SourceGroup
+                  onChange={(a) => {
+                    handleClickData(a as ExchangeMeta);
+                  }}
+                  list={activeConnectedSourceList}
+                />
+                {/* {activeConnectedSourceList.length > 0 && (
                   <ul className="dataList">
                     {activeConnectedSourceList.map((item) => {
                       return (
@@ -461,7 +481,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                       );
                     })}
                   </ul>
-                )}
+                )} */}
                 {activeConnectedSourceList.length === 0 && (
                   <div className="emptyContent">
                     <img src={iconInfoGray} alt="" />
@@ -471,16 +491,17 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
               </div>
             </div>
           </main>
-          {activeConnectedSourceList.length === 0 ? (
-            <button className="nextBtn gray" onClick={handleClickNext}>
-              <span>OK</span>
-            </button>
-          ) : (
-            <button className="nextBtn" onClick={handleClickNext}>
-              {errorTip && <PBottomErrorTip text={errorTip} />}
-              <span>Next</span>
-            </button>
-          )}
+
+          <footer>
+            <PButton
+              text={activeConnectedSourceList.length === 0 ? 'OK' : 'Next'}
+              className={
+                activeConnectedSourceList.length === 0 ? 'gray' : undefined
+              }
+              onClick={handleClickNext}
+            />
+            {errorTip && <PBottomErrorTip text={errorTip} />}
+          </footer>
         </div>
       </PMask>
     );
