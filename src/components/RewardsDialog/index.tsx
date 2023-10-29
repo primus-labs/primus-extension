@@ -138,7 +138,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
         <PMask onClose={onClose}>
           <div className="padoDialog mysteryBoxRewardsDialog">
             <main>
-              <h1>Rewards</h1>
+              <header>
+                <h1>Rewards</h1>
+              </header>
               <div className="content">
                 <PTabsNew
                   onChange={handleChangeTab}
@@ -160,7 +162,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                               </div>
                             ) : (
                               <div className="rewardWrapper">
-                                <img src={mysteryBoxFailImg} alt="" className=""/>
+                                <img
+                                  src={mysteryBoxFailImg}
+                                  alt=""
+                                  className=""
+                                />
                                 <div className="timeWrapper">00:00:00</div>
                               </div>
                             )}

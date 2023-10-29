@@ -1,25 +1,11 @@
-@import '@/assets/css/pDialog.sass';
-@import '@/assets/css/pVars.sass';
+
 @import '@/assets/css/pFlex.sass';
-@import '@/assets/css/pDialog.sass';
+@import '@/assets/css/padoDialog.scss';
+@import '@/assets/css/padoM.scss';
 .padoDialog.mysteryBoxRewardsDialog {
   padding: 48px 60px 56px;
   main {
-    width: 100%;
-    @extend .fcss;
-    align-items: flex-start;
-    gap: 32px;
-    h1 {
-      align-self: center;
-      color: var(--Text-headline, #0a1214);
-      text-align: center;
-      /* Headline 2 */
-      font-family: Inter;
-      font-size: 28px;
-      font-style: normal;
-      font-weight: 600;
-      line-height: 36px; /* 128.571% */
-    }
+    gap: var(--spacing-32, 32px);
     .content {
       width: 100%;
       @extend .fcss;
@@ -27,13 +13,11 @@
       .pTabsNew {
         .tab {
           .con {
+            @extend .Body2;
             height: 26px;
-            /* Body 2 */
-            font-family: Inter;
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 500;
-            line-height: 22px; /* 137.5% */
+            // &:hover,&.active{
+
+            // }
           }
         }
       }
@@ -50,12 +34,7 @@
           .descWrapper {
             width: 128px;
             color: #000;
-            /* Body 3 */
-            font-family: Inter;
-            font-size: 12px;
-            font-style: normal;
-            font-weight: 500;
-            line-height: 16px; /* 133.333% */
+            @extend .Body3;
           }
         }
         > img {
@@ -68,16 +47,11 @@
           );
         }
         .timeWrapper {
+          @extend .Body2;
           @extend .frcc;
           width: 100%;
           height: 22px;
           color: #000;
-          /* Body 2 */
-          font-family: Inter;
-          font-size: 16px;
-          font-style: normal;
-          font-weight: 500;
-          line-height: 22px; /* 137.5% */
         }
       }
       .emptyWrapper {
@@ -89,14 +63,9 @@
           width: 48px;
         }
         > p {
+          @extend .Text2;
           color: rgba(0, 0, 0, 0.4);
           text-align: center;
-          /* Text 2 */
-          font-family: Inter;
-          font-size: 12px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 16px; /* 133.333% */
         }
       }
     }
