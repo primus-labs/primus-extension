@@ -24,36 +24,49 @@
               width: 130px;
               height: 30px;
               border-radius: var(--spacing-8, 8px);
-              background: var(--Badge, rgba(10, 18, 20, 0.05));
-              backdrop-filter: blur(16px);
+              // background: var(--Badge, rgba(10, 18, 20, 0.05));
+              // backdrop-filter: blur(16px);
               .selectInput {
                 border-radius: var(--spacing-8, 8px);
-                @extend .Body2;
-                @extend .frsc;
+                // @extend .Body2;
+                // @extend .frsc;
                 gap: 12px;
                 background: transparent;
                 height: 100%;
                 line-height: 30px;
                 color: var(--Text-hint, #7b7f80);
                 padding: 0 var(--spacing-16, 16px);
-                .prefixIcon {
-                  width: 16px;
-                }
-                .suffixIcon {
-                  right: 16px;
-                }
-                .iconfont {
-                  color: var(Icon-default, #515758);
+                // .prefixIcon {
+                //   width: 16px;
+                // }
+                // .suffixIcon {
+                //   right: 16px;
+                // }
+                >.iconfont.arrow {
                   font-size: 16px;
                 }
               }
               .selectOptionswrapper {
+                .padodropdown{
+                  max-height: 176px;
+                  overflow-y: auto;
+                  .dropdownItem{
+                    > img {
+                      width: 14px;
+                    }
+                    .desc{
+                      @extend .Text1;
+
+                    }
+                  }
+                }
                 .selectOptions {
                   padding: var(--spacing-8, 8px) 0;
                   width: 100%;
                   gap: 0;
                   max-height: 176px;
                   overflow-y: auto;
+                  
                   .selectOption {
                     @extend .Text1;
                     @extend .frsc;
@@ -102,7 +115,7 @@
             @extend .Body2;
             color: var(--Text-body, #515758);
           }
-          .iconfont {
+          >.iconfont {
             color: var(--Text-body, #515758);
             font-size: 20px;
             transform: rotate(180deg);

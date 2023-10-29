@@ -106,6 +106,9 @@
     >header{
       .pButton{
         @extend .buttonStyle1;
+        width: 130px;
+        height: 36px;
+        @extend .Text1;
         .iconfont{
           font-size: 14px;
         }

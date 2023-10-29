@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import { useSelector } from 'react-redux';
-
+import PDropdownList from '@/components/PDropdownList';
 import iconArrowBottom from '@/assets/img/iconArrowLeft2.svg';
 import iconClear from '@/assets/img/iconClear.svg';
 
 import type { MouseEvent } from 'react';
 import type { UserState } from '@/types/store';
 
-import './index.sass';
+import './index.scss';
 
 type OptionItem = {
   text: string;
@@ -22,7 +22,7 @@ interface PSelectProps {
   showIcon?: boolean;
   prefix?: any;
   showSelf?: boolean;
-  disabled?:boolean
+  disabled?: boolean;
 }
 
 const PSelect: React.FC<PSelectProps> = memo(
@@ -34,7 +34,7 @@ const PSelect: React.FC<PSelectProps> = memo(
     showIcon,
     prefix,
     showSelf = true,
-    disabled = false
+    disabled = false,
   }) => {
     // const [activeOption, setActiveOption] = useState<OptionItem>();
     const [optionsVisible, setOptionsVisible] = useState(false);
@@ -60,6 +60,10 @@ const PSelect: React.FC<PSelectProps> = memo(
     const handleChange = (item: OptionItem | undefined) => {
       // setActiveOption(item)
       onChange(item?.value ?? '');
+    };
+    const handleClickDropdownItem = (itemText: string) => {
+      const targetV = activeOptions.find((i) => i.text === itemText);
+      onChange(targetV?.value ?? '');
     };
     const handleEnterAvatar = () => {
       setOptionsVisible(true);
@@ -108,20 +112,29 @@ const PSelect: React.FC<PSelectProps> = memo(
           onMouseEnter={handleEnterAvatar}
           onMouseLeave={handleLeaveAvatar}
         >
-          {val && showIcon && (
-            <img
-              ref={prefixIconEl}
-              className="prefixIcon"
-              src={`${tokenLogoPrefix}icon${val}.png`}
-              alt=""
-            />
-          )}
+          <div className="showCon">
+            {val && showIcon && (
+              <img
+                ref={prefixIconEl}
+                className="prefixIcon"
+                src={`${tokenLogoPrefix}icon${val}.png`}
+                alt=""
+              />
+            )}
 
-          <span ref={valEl} className={val ? '' : 'placeholder'}>
-            {val && prefix && prefix}
-            {val ? val : 'Select'}
-          </span>
-          <img
+            <span ref={valEl} className={val ? '' : 'placeholder'}>
+              {val && prefix && prefix}
+              {val ? val : 'Select'}
+            </span>
+          </div>
+
+          <i
+            ref={suffixIconEl}
+            className={`iconfont icon-iconArrowLeft2 suffixIcon arrow ${
+              optionsVisible && !disabled ? ' open' : ''
+            }`}
+          />
+          {/* <img
             ref={suffixIconEl}
             className={
               optionsVisible && !disabled
@@ -130,7 +143,7 @@ const PSelect: React.FC<PSelectProps> = memo(
             }
             src={iconArrowBottom}
             alt=""
-          />
+          /> */}
           {/* {val && showIcon ? (
             <img
               ref={suffixIconEl}
@@ -159,20 +172,10 @@ const PSelect: React.FC<PSelectProps> = memo(
             onMouseEnter={handleEnterAvatar}
             onMouseLeave={handleLeaveAvatar}
           >
-            <ul className="selectOptions">
-              {activeOptions.map((item) => {
-                return (
-                  <li
-                    className="selectOption"
-                    key={item.value}
-                    onClick={() => handleChange(item)}
-                  >
-                    {showIcon && <img src={item.icon} alt="" />}
-                    <span>{item.text}</span>
-                  </li>
-                );
-              })}
-            </ul>
+            <PDropdownList
+              list={activeOptions}
+              onClick={handleClickDropdownItem}
+            />
           </div>
         )}
       </div>

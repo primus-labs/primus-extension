@@ -3,13 +3,14 @@ import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import PControledInput from '@/components/PControledInput';
+import PInput from '@/components/PInput';
 import PSelect from '@/components/PSelect';
 
 import type { UserState } from '@/types/store';
 
 import type { Dispatch } from 'react';
 
-import './index.sass';
+import './index.scss';
 
 const DataSourceSearch = memo(() => {
   const location = useLocation();
@@ -122,7 +123,7 @@ const DataSourceSearch = memo(() => {
         showSelf={false}
       />
       <div className="pSearch">
-        <PControledInput
+        <PInput
           onChange={handleChangeInput}
           type="text"
           placeholder="Search"

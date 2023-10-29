@@ -1,0 +1,59 @@
+@import '@/assets/css/pVars.sass';
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+.pSelect {
+  width: 174px;
+  height: var(--spacing-48, 48px);
+  position: relative;
+  .selectInput {
+    @extend .Body2;
+    height: 100%;
+    @extend .frbc;
+    padding: 0 var(--spacing-24, 24px);
+    border-radius: var(--spacing-12, 12px);
+    background: var(--bg-60, rgba(255, 255, 255, 0.6));
+    backdrop-filter: blur(16px);
+    color: var(--icon-active, #6c7172);
+    // cursor: not-allowed;
+
+    &.disabled {
+      cursor: not-allowed;
+    }
+    .placeholder {
+      opacity: 0.4;
+    }
+    &.active {
+      cursor: pointer;
+      &:hover {
+        .arrow.iconfont {
+          color: var(--icon-active, #6c7172);
+        }
+      }
+    }
+    .showCon {
+      @extend .frsc;
+      gap: 12px;
+      .prefixIcon {
+        width: 16px;
+      }
+    }
+    .arrow.iconfont {
+      font-size: var(--spacing-24, 24px);
+      color: var(--Icon-default, #a7aaaa);
+      transform: rotate(-90deg);
+      &.open {
+        transform: rotate(90deg);
+      }
+    }
+  }
+  .selectOptionswrapper {
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+    padding-top: 8px;
+    width: 100%;
+    .padodropdown {
+      width: 100%;
+    }
+  }
+}
