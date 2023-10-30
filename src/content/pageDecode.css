@@ -21,7 +21,9 @@
   --value-color: #172b4d;
   --neutral-20: #d9ddea;
   --blue-40: #4d74ff;
-  --verifying-color: #172B4D;
+  --verifying-color: #172b4d;
+  --start-button-color: #fff;
+  --other-clickable: rgba(255,255,255,0);
 }
 #pado-mask.dark {
   background: #2b2930;
@@ -31,10 +33,12 @@
   --blue-b-400: #d0bcff;
   --neutral-light-n-70: #a5adba;
   --process-color: rgba(202, 196, 208, 0.6);
-  --value-color: #CAC4D0;
-  --neutral-20: rgba(202, 196, 208, 0.80);
-  --blue-40: #D0BCFF;
-  --verifying-color: rgba(202, 196, 208, 0.80);
+  --value-color: #cac4d0;
+  --neutral-20: rgba(202, 196, 208, 0.8);
+  --blue-40: #d0bcff;
+  --verifying-color: rgba(202, 196, 208, 0.8);
+  --start-button-color: #381E72;
+  --other-clickable: #A5ADBA;
 }
 
 .pado-left,
@@ -87,7 +91,7 @@
   color: var(--value-color, #172b4d);
   display: flex;
 }
-.pado-center .pado-center-center p span:last-child  img{
+.pado-center .pado-center-center p span:last-child img {
   width: 16px;
   margin-left: 8px;
 }
@@ -122,7 +126,7 @@
 }
 .pado-center .pado-center-bottom {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 .pado-center .pado-center-bottom button {
   background: none;
@@ -134,22 +138,24 @@
   font-style: normal;
   font-weight: 500;
   line-height: 16px; /* 133.333% */
+  padding: 0 6px;
+  border-radius: 3px;
 }
 .pado-center .pado-center-bottom button:first-child {
   cursor: pointer;
   padding-right: 4px;
-  color: var(--blue-b-400, #0052cc);
+  color: var(--start-button-color, #fff);
+  background: var(--blue-b-400, #0052cc);
 }
 .pado-center .pado-center-bottom button:nth-child(2) {
   cursor: pointer;
   padding: 0 4px;
-  color: var(--neutral-light-n-70, #a5adba);
+  color:var(--neutral-light-n-70, #A5ADBA);
 }
 .pado-center .pado-center-bottom button.startBtn.disabled {
   cursor: not-allowed;
   color: rgb(137, 137, 137);
 }
-
 
 .pado-right {
   color: var(--Text-hint, #7b7f80);
