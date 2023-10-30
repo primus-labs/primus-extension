@@ -1,6 +1,10 @@
 @import '@/components/PTabsNew/index.scss';
 .pageHeaderWrapper {
   width: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1;
   .pageHeader {
     .pageHeaderInner {
       @extend .frbc;
