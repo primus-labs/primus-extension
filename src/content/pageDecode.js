@@ -1,8 +1,9 @@
 
-window.onload = () => {
-  let dataSourcePageTabId = null
-  let intervalTimer = null
+  let dataSourcePageTabId = null;
+  let intervalTimer = null;
   let activeTemplate = {};
+  let moveFlag = false;
+  // let x, y;
   function createDomElement(html) {
     const dom = new DOMParser().parseFromString(html, 'text/html');
     return dom.body.firstElementChild;
@@ -16,7 +17,7 @@ window.onload = () => {
       type: 'pageDecode',
       name: 'injectionCompleted',
     },
-    (response, a,b) => {
+    (response, a, b) => {
       if (response.name === 'append') {
         activeTemplate = response.params;
         dataSourcePageTabId = response.dataSourcePageTabId;
@@ -48,10 +49,12 @@ window.onload = () => {
         const padoCenterBottomStartNode = createDomElement(
           padoCenterBottomStartStr
         );
-        const disabledPathList = ['login', 'register']
-        const isDisabled = disabledPathList.some(i => window.location.href.indexOf('login') > -1)
+        const disabledPathList = ['login', 'register'];
+        const isDisabled = disabledPathList.some(
+          (i) => window.location.href.indexOf('login') > -1
+        );
         if (isDisabled) {
-          padoCenterBottomStartNode.classList.add('disabled')
+          padoCenterBottomStartNode.classList.add('disabled');
         }
         const padoCenterBottomCancelNode = createDomElement(
           padoCenterBottomCancelStr
@@ -61,29 +64,59 @@ window.onload = () => {
           `<div class="pado-right">1/3</div>`
         );
         const padoMaskNode = createDomElement(padoMaskStr);
-        // padoMaskNode.onmousedown = function (event) {
-        //   let shiftX = event.clientX - padoMaskNode.getBoundingClientRect().left;
-        //   let shiftY = event.clientY - padoMaskNode.getBoundingClientRect().top;
-        //   padoMaskNode.style.position = 'absolute';
-        //   padoMaskNode.style.zIndex = 9999;
-        //   moveAt(event.pageX, event.pageY);
-        //   function moveAt(pageX, pageY) {
-        //     padoMaskNode.style.left = pageX - shiftX + 'px';
-        //     padoMaskNode.style.top = pageY - shiftY + 'px';
-        //   }
-        //   function onMouseMove(event) {
-        //     moveAt(event.pageX, event.pageY);
-        //   }
+        const onDrag = () => {
+          let x, y;
+          const mousemoveFn = (e) => {
+            let _h = window.innerHeight - padoMaskNode.offsetHeight;
+            let _w = window.innerWidth - padoMaskNode.offsetWidth;
+            let div_left = e.clientX - x;
+            let div_top = e.clientY - y;
+            div_left = Math.min(Math.max(0, div_left), _w);
+            div_top = Math.min(Math.max(0, div_top), _h);
+            if (moveFlag) {
+              padoMaskNode.style.left = div_left + 'px';
+              padoMaskNode.style.top = div_top + 'px';
+            }
+          };
+          const mousedownFn = (e) => {
+            moveFlag = true;
+            x = e.offsetX;
+            y = e.offsetY;
+            document.addEventListener('mousemove', mousemoveFn);
+          };
+          const mouseupFn = () => {
+            document.removeEventListener('mousemove', mousemoveFn);
+          };
 
-        //   document.addEventListener('mousemove', onMouseMove);
-        //   padoMaskNode.onmouseup = function () {
-        //     document.removeEventListener('mousemove', onMouseMove);
-        //     padoMaskNode.onmouseup = null;
-        //   };
+          padoMaskNode.addEventListener('mousedown', mousedownFn);
+          padoMaskNode.addEventListener('mouseup', mouseupFn);
+        };
+        onDrag();
+
+        // padoMaskNode.onmousedown = function (event) {
+
+        // let shiftX = event.clientX - padoMaskNode.getBoundingClientRect().left;
+        // let shiftY = event.clientY - padoMaskNode.getBoundingClientRect().top;
+        // padoMaskNode.style.position = 'absolute';
+        // padoMaskNode.style.zIndex = 9999;
+        // moveAt(event.pageX, event.pageY);
+        // function moveAt(pageX, pageY) {
+        //   padoMaskNode.style.left = pageX - shiftX + 'px';
+        //   padoMaskNode.style.top = pageY - shiftY + 'px';
+        // }
+        // function onMouseMove(event) {
+        //   moveAt(event.pageX, event.pageY);
+        // }
+
+        // document.addEventListener('mousemove', onMouseMove);
+        // padoMaskNode.onmouseup = function () {
+        //   document.removeEventListener('mousemove', onMouseMove);
+        //   padoMaskNode.onmouseup = null;
         // };
-        // padoMaskNode.ondragstart = function () {
-        //   return false;
         // };
+        padoMaskNode.ondragstart = function () {
+          return false;
+        };
         if (isThemeLight) {
           padoMaskNode.classList.add('light');
         } else {
@@ -119,7 +152,7 @@ window.onload = () => {
         };
         padoCenterBottomStartNode.onclick = () => {
           if (isDisabled) {
-            return
+            return;
           }
           padoRightNode.innerHTML = '2/3';
           padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
@@ -143,8 +176,7 @@ window.onload = () => {
             type: 'pageDecode',
             name: 'sendRequest',
           };
-          chrome.runtime.sendMessage(msgObj, (response) => {
-          });
+          chrome.runtime.sendMessage(msgObj, (response) => {});
         };
         document.body.appendChild(padoMaskNode);
       }
@@ -204,6 +236,3 @@ window.onload = () => {
     }
   });
 
-  
-  // var cookies = document.cookie;
-};

@@ -3,12 +3,15 @@
   bottom: 21px;
   right: 36px;
   z-index: 9999;
-  /* cursor: move; */
+  cursor: move;
   display: flex;
   padding: var(--spacing-12, 12px);
   border-radius: var(--spacing-24, 24px);
   align-items: flex-start;
   gap: var(--spacing-16, 16px);
+  width: 406px;
+  height: 120px;
+  box-sizing: border-box;
 }
 #pado-mask.light {
   background: rgba(235, 239, 244, 1);
