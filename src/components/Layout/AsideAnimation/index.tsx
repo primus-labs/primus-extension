@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import './index.sass'
+import './index.scss'
 import illustration2 from '@/assets/img/illustration2.svg';
 const BackgroundAnimation = () => {
   return (

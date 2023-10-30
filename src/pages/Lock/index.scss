@@ -1,7 +1,24 @@
-@import '@/assets/css/pVars.sass';
-@import '@/assets/css/pFont.sass';
-@import '@/assets/css/pFlex.sass';
 @import '@/pages/Home/pageIndex.scss';
 
-@import "./xl.scss";
-@import "./l.scss";
+.articleMain {
+  --articleMain-width: 2.8367rem;
+}
+@media (max-width: 1470px) {
+  .articleMain {
+    --articleMain-width: 417px;
+  }
+}
+
+.pageIndex.pageLock {
+  .appContent {
+    article {
+      &.hadSetPwd {
+        gap: var(--spacing-32, 32px);
+      }
+      .articleMain {
+        @extend .fcss;
+        width: var(--articleMain-width, 417px);
+      }
+    }
+  }
+}

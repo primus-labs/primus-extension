@@ -1,7 +1,58 @@
 @import '@/assets/css/pFlex.sass';
-@import "@/assets/css/pVars.sass";
-@import "@/assets/css/padoM.scss";
-@import "./xl.scss";
-@import "./l.scss";
+@import '@/assets/css/padoM.scss';
+.pInputWrapper {
+  --pInput-height: 0.3673rem;
+}
+@media (max-width: 1470px) {
+  .pInputWrapper {
+    --pInput-height: 54px;
+  }
+}
 
-
+.pInputWrapper {
+  @extend .fcss;
+  gap: var(--spacing-8, 8px);
+  width: 100%;
+  label {
+    @extend .Text1;
+    @extend .frsc;
+    gap: var(--spacing-4, 4px);
+    color: var(--Text-headline, #0a1214);
+    &:hover {
+      > .iconfont {
+        color: var(--icon-active);
+      }
+    }
+    > .iconfont {
+      cursor: pointer;
+      width: var(--spacing-12, 12px);
+      color: var(--Icon-default);
+    }
+  }
+  .inputWrapper {
+    @extend .frsc;
+    @extend .backFilter;
+    width: 100%;
+    height: var(--pInput-height, 54px);
+    padding: 0 var(--spacing-24, 24px);
+    .pInput {
+      @extend .Body2;
+      color: var(--Text-headline, #0a1214);
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      border: 0;
+      &::placeholder {
+        opacity: 0.4;
+      }
+    }
+    .iconfont {
+      font-size: var(--spacing-16, 16px);
+      cursor: pointer;
+    }
+  }
+  .errorTip {
+    @extend .Text2;
+    color: var(--Warning, #f42d2d);
+  }
+}

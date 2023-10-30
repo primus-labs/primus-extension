@@ -1,18 +1,52 @@
 @import '@/assets/css/pFlex.sass';
-@import "@/assets/css/pVars.sass";
 @import "@/assets/css/padoM.scss";
-@import "./xl.scss";
-@import "./l.scss";
+
 
 .buttonStyle1{
   @extend .Body1;
-  border-radius: 100px;
+  border-radius: var(--spacing-100, 100px);
   border: 1PX solid var(--Button-default, #515758);
   background: transparent;
   &:hover,&:active{
     border:0;
     background-color: var(--Text-headline, #0A1214);
     color: var(--bg-default, #FFF);
+  }
+}
+
+button.pButton {
+  @extend .frcc;
+  @extend .Headline5;
+  box-sizing: border-box;
+  cursor: pointer;
+  width: 100%;
+  height: var(--spacing-48, 48px);
+  border-radius: var(--spacing-12, 12px);
+  gap: var(--spacing-8, 8px);
+  background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+  color: var(--Button-default, #515758);
+
+  &:hover,
+  &:active {
+    background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.2) 100%
+      ),
+      linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+    color: var(--Button-active, #252c2e);
+  }
+  &.gray {
+    background: var(--Badge, rgba(10, 18, 20, 0.05));
+    &:hover {
+      background: var(--Badge, rgba(10, 18, 20, 0.05));
+    }
+  }
+  > img {
+    width: var(--spacing-24, 24px);
+  }
+  .iconfont {
+    font-size: var(--spacing-24, 24px);
   }
 }
 

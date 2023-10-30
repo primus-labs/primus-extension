@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import './index.sass';
+import './index.scss';
 
 const BackgroundAnimation = memo(() => {
   return (

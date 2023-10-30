@@ -90,7 +90,7 @@ const Lock = memo(() => {
     <div className="pageIndex pageLock">
       <main className="appContent">
         <AsideAnimation />
-        <article className={hadSetPwd? 'hadSetPwd': ''}>
+        <article className={hadSetPwd ? 'hadSetPwd' : ''}>
           <section className="descWrapper">
             <h1>Welcome Back！</h1>
             <p>Bringing all internet data into smart contracts.</p>
@@ -104,8 +104,8 @@ const Lock = memo(() => {
                 onChange={handleChangePwd}
                 onSearch={handleSubmitPwd}
                 visible
+                errorTip={errorMsg}
               />
-              {errorMsg && <div className="errorTip">{errorMsg}</div>}
             </main>
           )}
           <PButton

@@ -8,7 +8,7 @@ const setRem = function() {
       // console.log(docEl);
       function refreshRem(){
         //   var width = docEl.getBoundingClientRect().width>4600?docEl.getBoundingClientRect().width:4600
-          var width = docEl.getBoundingClientRect().width>4600?4600:docEl.getBoundingClientRect().width
+          var width = docEl.getBoundingClientRect().width>1920?1920:docEl.getBoundingClientRect().width
           var rem = width / 10;
           docEl.style.fontSize = rem + 'px';
       }

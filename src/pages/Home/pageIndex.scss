@@ -1,5 +1,3 @@
-@import '@/assets/css/pVars.sass';
-@import '@/assets/css/pFont.sass';
 @import '@/assets/css/pFlex.sass';
 @import '@/components/PButton/index.scss';
 .pageIndex {
@@ -8,12 +6,12 @@
   margin-top: calc(-1 * var(--pHeaderHeight, 105px));
   .appContent {
     @extend .frsc;
-    gap: 87px;
-    width: 1248px;
+    // gap: 87px;
+    // width: 1248px;
     article {
       @extend .fcss;
-      width: 515px;
-      gap: 88px;
+      // width: 515px;
+      // gap: 88px;
       .descWrapper {
         @extend .fcss;
         gap: var(--spacing-16, 16px);
@@ -28,13 +26,15 @@
       }
       .pButton {
         @extend .buttonStyle1;
-        border-width: 2px !important;
-        width: 256px;
-        height: 60px;
+        border-width: 2PX !important;
+        // width: 256px;
+        // height: 60px;
         .iconfont {
-          font-size: 28px;
+          font-size: var(--spacing-28, 28px);
         }
       }
     }
   }
 }
+@import './pageIndexXl.scss';
+@import './pageIndexL.scss';

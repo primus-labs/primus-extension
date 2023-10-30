@@ -1,0 +1,16 @@
+@media (max-width: 1470px) {
+  .pageIndex {
+    .appContent {
+      gap: 87px;
+      width: 1248px;
+      article {
+        width: 515px;
+        gap: 88px;
+        .pButton {
+          width: 256px;
+          height: 64px;
+        }
+      }
+    }
+  }
+}
