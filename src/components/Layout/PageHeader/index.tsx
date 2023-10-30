@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, memo } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 
 import logo from '@/assets/img/logo.svg';
@@ -46,9 +46,32 @@ const navs: NavItem[] = [
     text: 'Disconnect',
   },
 ];
+const tabList: TabItem[] = [
+  {
+    icon: iconDataHover,
+    iconName: 'icon-iconDataHover',
+    text: 'Data',
+    path: '/datas',
+  },
+  {
+    icon: iconEventsHover,
+    iconName: 'icon-iconEventsHover',
+    text: 'Events',
+    path: '/events',
+  },
+  {
+    icon: iconCredHover,
+    iconName: 'icon-iconCredHover',
+    text: 'Proofs',
+    path: '/cred',
+  },
+];
 const PageHeader = memo(() => {
+  const location = useLocation();
+  const pathname = location.pathname;
   const dispatch: React.Dispatch<any> = useDispatch();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<string>('Events');
   const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
   const [settingDialogVisible, setSettingDialogVisible] =
     useState<boolean>(false);
@@ -138,6 +161,7 @@ const PageHeader = memo(() => {
   }, [userPassword, connectedWallet]);
   const handleChangeTab = useCallback(
     (val: string) => {
+      setActiveTab(val)
       if (val === 'Data') {
         dispatch({
           type: 'setActiveSourceType',
@@ -158,33 +182,22 @@ const PageHeader = memo(() => {
   // text: string;
   // disabled?: boolean;
   // path?: string;
-const tabList: TabItem[] = [
-  {
-    icon: iconDataHover,
-    iconName: 'icon-iconDataHover',
-    text: 'Data',
-    path: '/datas',
-  },
-  {
-    icon: iconEventsHover,
-    iconName: 'icon-iconEventsHover',
-    text: 'Events',
-    path: '/events',
-  },
-  {
-    icon: iconCredHover,
-    iconName: 'icon-iconCredHover',
-    text: 'Proofs',
-    path: '/cred',
-  },
-];
+
+  useEffect(() => {
+    const currentTabInfo = tabList.find((i) => i.path === pathname);
+    setActiveTab(currentTabInfo?.text as string);
+  }, [pathname]);
 
   return (
     <div className="pageHeaderWrapper">
       <header className="pageHeader">
         <div className="pageHeaderInner">
           <img src={logo} className="pLogo" alt="" />
-          <PTabsNew onChange={handleChangeTab} value="Events" list={tabList} />
+          <PTabsNew
+            onChange={handleChangeTab}
+            value={activeTab}
+            list={tabList}
+          />
           <div className="rightHeader">
             <div
               className="rightHeaderInner"
