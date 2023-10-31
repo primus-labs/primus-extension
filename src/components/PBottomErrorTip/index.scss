@@ -1,20 +1,29 @@
 @import '@/assets/css/padoM.scss';
-.tipWrapper {
+.pBottomErrorTipWrapper {
+  --pBottomErrorTipWrapper-top: -0.2449rem;
+  --pBottomErrorTip-padding: 0.2721rem;
+}
+@media (max-width: 1470px) {
+  .pBottomErrorTipWrapper {
+    --pBottomErrorTipWrapper-top: -36px;
+    --pBottomErrorTip-padding: 40px;
+  }
+}
+.pBottomErrorTipWrapper {
   position: absolute;
   content: '';
-  top: -36px;
+  top: var(--pBottomErrorTipWrapper-top, -36px);
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   text-align: center;
   .errorTip {
     @extend .Text2;
+    @extend .backFilter;
+    border-radius: var(--spacing-12, 12px);
     color: var(--Text-hint, #7b7f80);
     width: fit-content;
     margin: 0 auto;
-    padding: 0 40px;
-    border-radius: var(--spacing-12, 12px);
-    background: var(--Badge, rgba(10, 18, 20, 0.05));
-    backdrop-filter: blur(16px);
+    padding: 0 var(--pBottomErrorTip-padding,40px);
   }
 }

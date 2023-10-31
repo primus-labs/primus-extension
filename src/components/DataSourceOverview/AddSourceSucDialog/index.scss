@@ -4,15 +4,26 @@
     transform: rotateZ(360deg);
   }
 }
-
 .padoDialog.addDataSourceSucDialog {
-  padding: 36px 42px 32px;
+  --addDataSourceSucDialog-padding: .2449rem .2857rem .2177rem;
+  --processImg-mt: .5306rem;
+  --processImg-width: .5442rem;
+}
+@media (max-width) {
+  .padoDialog.addDataSourceSucDialog {
+    --addDataSourceSucDialog-padding: 36px 42px 32px;
+    --processImg-mt: 78px;
+    --processImg-width: 80px;
+  }
+}
+.padoDialog.addDataSourceSucDialog {
+  padding: var(--addDataSourceSucDialog-padding, 36px 42px 32px);
   main {
     @extend .fcsc;
     .processImg {
-      margin-top: 78px;
+      margin-top: var(--processImg-mt, 78px);
       margin-bottom: var(--spacing-24, 24px);
-      width: 80px;
+      width: var(--processImg-width, 80px);
       &.loadingImg {
         animation: roll 2s linear infinite;
       }
@@ -32,11 +43,10 @@
       }
     }
   }
-  .footerTip{
+  .footerTip {
     @extend .fcsc;
     @extend .Text2;
-    color: var(--Icon-default, #A7AAAA);
+    color: var(--Icon-default, #a7aaaa);
     text-align: center;
   }
-    
 }

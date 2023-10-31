@@ -1,0 +1,21 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+.pageDataSourceOverview {
+  --appContent-pb: .5646rem;
+}
+@media (max-width: 1470px) {
+  .pageDataSourceOverview {
+    --appContent-pb: 83px;
+  }
+}
+.pageDataSourceOverview {
+  @extend .fcss;
+  main.appContent {
+    margin: 0 auto;
+    width: var(--pageCenter-width, 1032px);
+    padding-top: var(--spacing-32, 32px);
+    @extend .fcbc;
+    gap: var(--spacing-24, 24px);
+    padding-bottom: 83px;
+  }
+}

@@ -128,14 +128,12 @@ const PageHeader = memo(() => {
     );
   }, [dispatch]);
 
-  
   const formatNavs = useMemo(() => {
     let arr: NavItem[] = [
       {
         icon: iconSetting,
         text: 'Setting',
       },
-      
     ];
     if (connectedWallet?.address || userPassword) {
       arr.push({
@@ -150,18 +148,16 @@ const PageHeader = memo(() => {
       });
     }
     if (userPassword) {
-      arr.push(
-        {
-          icon: iconLock,
-          text: 'Lock Account',
-        }
-      );
+      arr.push({
+        icon: iconLock,
+        text: 'Lock Account',
+      });
     }
     return arr;
   }, [userPassword, connectedWallet]);
   const handleChangeTab = useCallback(
     (val: string) => {
-      setActiveTab(val)
+      setActiveTab(val);
       if (val === 'Data') {
         dispatch({
           type: 'setActiveSourceType',
@@ -171,8 +167,7 @@ const PageHeader = memo(() => {
     },
     [dispatch]
   );
- 
-  
+
   useEffect(() => {
     connectWalletDialogVisible && setDorpdownVisible(false);
   }, [connectWalletDialogVisible]);

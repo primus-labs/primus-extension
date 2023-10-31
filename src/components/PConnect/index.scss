@@ -4,18 +4,25 @@
 @import '@/assets/css/padoM.scss';
 
 .PConnect {
-  >.pButton {
-    width: 120px;
-    height: 36px;
-    color: var(--Text-body, #515758);
-    @extend .Headline6;
-    gap: var(--spacing-4, 4px);
-    >img{
-      width: var(--spacing-16, 16px);
-    }
+    --pButton-width: .8163rem;
+    --pButton-height: .2449rem;
+  }
+@media (max-width: 1470px) {
+  .PConnect {
+    --pButton-width: 120px;
+    --pButton-height: 36px;
   }
 }
 
-@media (max-width: 1680px) {
-
+.PConnect {
+  > .pButton {
+    width: var(--pButton-width, 120px);
+    height: var(--pButton-height, 36px);
+    color: var(--Text-body, #515758);
+    @extend .Headline6;
+    gap: var(--spacing-4, 4px);
+    > img {
+      width: var(--spacing-16, 16px);
+    }
+  }
 }

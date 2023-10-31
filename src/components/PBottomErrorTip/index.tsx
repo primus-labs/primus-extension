@@ -5,7 +5,7 @@ interface PBottomErrorTipProps {
 }
 const PBottomErrorTip: React.FC<PBottomErrorTipProps> = memo(({ text }) => {
   return (
-    <div className="tipWrapper">
+    <div className="pBottomErrorTipWrapper">
       <div className="errorTip">{text}</div>
     </div>
   );

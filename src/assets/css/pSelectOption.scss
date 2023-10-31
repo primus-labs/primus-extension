@@ -12,12 +12,12 @@
   }
   &.excitable,&:not(.disable):hover {
     border-radius: var(--spacing-12, 12px);
-    border: 1px solid var(--Line, #dfe0e0);
+    border: 1PX solid var(--Line, #dfe0e0);
     background-color: #fff;
   }
   &.active {
     border-radius: var(--spacing-12, 12px);
-    border: 2px solid transparent;
+    border: 2PX solid transparent;
     background-color: #fff;
     background-clip: padding-box, border-box;
     background-origin: padding-box, border-box;

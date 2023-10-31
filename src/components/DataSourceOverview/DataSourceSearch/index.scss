@@ -1,47 +1,61 @@
 @import '@/assets/css/pVars.sass';
-
 @import '@/assets/css/pFlex.sass';
-.dataSourceSearch{
+@import '@/assets/css/padoM.scss';
+.dataSourceSearch {
+  --pSelect-width: 1.1837rem;
+  --pInput-pl: 0.2993rem;
+}
+@media (max-width: 1470px) {
+  .dataSourceSearch {
+    --pSelect-width: 174px;
+    --pInput-pl: 44px;
+  }
+}
+.dataSourceSearch {
   width: 100%;
   display: flex;
-  gap: var(--spacing-24,24px);
-  padding-top: 32px;
-  .pSearch{
+  gap: var(--spacing-24, 24px);
+  .pSelect {
+    width: var(--pSelect-width, 174px);
+  }
+  .pSearch {
     flex: 1;
     display: flex;
     position: relative;
-    &:before{
+    &:before {
       position: absolute;
       z-index: 1;
       content: '';
       top: 50%;
-      left: 16px;
+      left: var(--spacing-16, 16px);
       transform: translateY(-50%);
-      width: 20px;
-      height: 20px;
+      width: var(--spacing-20, 20px);
+      height: var(--spacing-20, 20px);
       background: url('@/assets/img/iconSearch.svg');
       background-size: 100% 100%;
     }
-    .pInputWrapper{
-      @include backdropMixin;
+
+    .pInputWrapper {
       height: var(--spacing-48, 48px);
-      .inputWrapper{
+      .inputWrapper {
         padding: 0;
-        background: var(--bg-60, rgba(255, 255, 255, 0.60));
         border-radius: var(--spacing-12, 12px);
-      } 
-      .pInput{
-        padding-left: 44px;
-        border: 2PX solid transparent;
-        &:focus{
-          background: #FFFFFF;
+        background: var(--bg-60, rgba(255, 255, 255, 0.6));
+        backdrop-filter: blur(16px);
+      }
+      .pInput {
+        padding-left: var(--pInput-pl, 44px);
+        border: 2px solid transparent;
+        &:focus {
+          background: #ffffff;
           border-radius: var(--spacing-12, 12px);
-          border: 2PX solid transparent;
+          border: 2px solid transparent;
           background-clip: padding-box, border-box;
           background-origin: padding-box, border-box;
-          background-image: linear-gradient(to right, #fff, #fff), linear-gradient(to right, #78DEFF, #70FFBA);
+          background-image: linear-gradient(to right, #fff, #fff),
+            linear-gradient(to right, #78deff, #70ffba);
         }
       }
-    } 
-  }  
+    }
+  }
 }

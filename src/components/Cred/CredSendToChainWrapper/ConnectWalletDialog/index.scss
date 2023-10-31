@@ -1,4 +1,7 @@
 @import '@/assets/css/padoDialog.scss';
-@import './xl.scss';
-@import './l.scss';
 
+.padoDialog.connectWalletDialog {
+  main {
+    gap: var(--spacing-32, 32px);
+  }
+}

@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import AssetsDetail from '@/components/DataSourceDetail/AssetsDetail';
 import OnChainAssetsDetail from '@/components/DataSourceDetail/OnChainAssetsDetail';
 
-import './index.sass';
+import './index.scss';
 
 const DataSourceDetail = memo(() => {
   const navigate = useNavigate();

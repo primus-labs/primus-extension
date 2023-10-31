@@ -10,7 +10,7 @@ import type {
   SourceDataList,
   SourceData,
 } from '@/types/dataSource';
-import './index.sass';
+import './index.scss';
 
 export type DataSourceItemList = DataSourceItemType[];
 

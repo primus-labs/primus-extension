@@ -1,33 +1,40 @@
 @import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/pSelectOption.scss';
-.walletListWrapper{
-  ul.walletList{
+.walletListWrapper {
+  --pSelectOption-width: 1.3333rem;
+  --pSelectOption-inner-width: 1.1156rem;
+}
+@media (max-width: 1470px) {
+  .walletListWrapper {
+    --pSelectOption-width: 196px;
+    --pSelectOption-inner-width: 164px;
+  }
+}
+.walletListWrapper {
+  ul.walletList {
     @extend .frss;
     width: 100%;
     flex-wrap: wrap;
     gap: var(--spacing-24, 24px);
-    li.pSelectOption.walletItem{
+    li.pSelectOption.walletItem {
       @extend .frcc;
-      width: 196px;
+      width: var(--pSelectOption-width, 196px);
       height: var(--spacing-64, 64px);
-      .walletInfo{
-        width: 164px;
+      .walletInfo {
+        width: var(--pSelectOption-inner-width, 164px);
         gap: var(--spacing-16, 16px);
         @extend .frsc;
-        img{
+        img {
           width: var(--spacing-32, 32px);
         }
-        .desc{
+        .desc {
           @extend .Body2;
           overflow: hidden;
-          color: var(--Text-headline, #0A1214);
+          color: var(--Text-headline, #0a1214);
           text-overflow: ellipsis;
         }
       }
     }
   }
-}
-@media (max-width: 1680px){
-
 }

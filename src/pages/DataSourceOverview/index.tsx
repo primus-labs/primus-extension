@@ -38,7 +38,7 @@ import type {
   onChainAssetsData,
   onChainData,
 } from '@/types/dataSource';
-import './index.sass';
+import './index.scss';
 import { eventReport } from '@/services/api/usertracker';
 
 export type DataSourceStorages = {
@@ -342,7 +342,6 @@ const DataSourceOverview = memo(() => {
   return (
     <div className="pageDataSourceOverview">
       <main className="appContent">
-        
         <DataSourceSearch />
         {(activeSourceType === 'All' || activeSourceType === 'Identity') && (
           <DataSourceList

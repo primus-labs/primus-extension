@@ -1,22 +1,39 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
 @import '../EmptyDataSourceItem/index.scss';
 @import '@/assets/css/padoM.scss';
 .dataSourceItem {
+  --dataSourceCard-padding: 0.1633rem 0.1769rem;
+  --dataSourceCard-icon-width: 0.2993rem;
+  --dataSourceCard-desc-maxWidth: 1.0884rem;
+  --dataSourceCard-tag-height: 0.2041rem;
+  --dataSourceCard-date-width: 0.8639rem;
+  --dataSourceCard-date-pl: 0.034rem;
+  --dataSourceCard-descItem-padding: 0.1497rem 0.0204rem;
+  --dataSourceCard-descItem-bh: 0.1769rem;
+}
+@media (max-width: 1470px) {
+  .dataSourceItem {
+    --dataSourceCard-padding: 24px 26px;
+    --dataSourceCard-icon-width: 44px;
+    --dataSourceCard-desc-maxWidth: 160px;
+    --dataSourceCard-tag-height: 30px;
+    --dataSourceCard-date-width: 127px;
+    --dataSourceCard-date-pl: 5px;
+    --dataSourceCard-descItem-padding: 22px 3px;
+    --dataSourceCard-descItem-bh: 26px;
+  }
+}
+.dataSourceItem {
   @extend .fcss;
   @extend .emptyDataSourceItem;
-  border-radius: var(--spacing-12, 12px);
-  background: var(--bg-60, rgba(255, 255, 255, 0.6));
-  backdrop-filter: blur(16px);
-  gap: 20px;
+  gap: var(--spacing-20, 20px);
   position: relative;
-  padding: 24px 26px;
+  padding: var(--dataSourceCard-padding, 24px 26px);
   &.deactive {
     cursor: default;
   }
   .dataSourceItemT {
     @extend .frbc;
-    margin-right: -8px;
     width: 100%;
     .TLeft {
       @extend .frsc;
@@ -26,7 +43,7 @@
         align-items: center;
       }
       img {
-        width: 44px;
+        width: var(--dataSourceCard-icon-width, 44px);
       }
       .TLeftCon {
         @extend .fcss;
@@ -37,7 +54,7 @@
         }
         .desc {
           @extend .Text2;
-          max-width: 160px;
+          max-width: var(--dataSourceCard-desc-maxWidth, 160px);
           text-overflow: ellipsis;
           overflow: hidden;
           color: var(--Text-body, #515758);
@@ -54,22 +71,21 @@
       .tag {
         @extend .frcc;
         gap: var(--spacing-8, 8px);
-        height: 30px;
-        line-height: 30px;
+        height: var(--dataSourceCard-tag-height, 30px);
       }
       .dateWrapper {
         @extend .frsc;
         @extend .Body3;
         gap: var(--spacing-8, 8px);
-        border-radius: 100px;
+        border-radius: var(--spacing-100, 100px);
         border: 1px solid var(--Line, #dfe0e0);
-        width: 127px;
+        width: var(--dataSourceCard-date-width, 127px);
         box-sizing: border-box;
         position: relative;
-        padding-left: 5px;
+        padding-left: var(--dataSourceCard-date-pl, 5px);
         color: var(--Text-hint, #7b7f80);
         > img {
-          width: 20px;
+          width: var(--spacing-20, 20px);
         }
       }
       .tag {
@@ -79,8 +95,8 @@
           rgba(255, 230, 0, 0.2) 19.32%,
           rgba(255, 238, 84, 0.2) 83.47%
         );
-        border-radius: 100px;
-        padding: 0 16px;
+        border-radius: var(--spacing-100, 100px);
+        padding: 0 var(--spacing-16, 16px);
         @extend .Headline6;
         &.Social {
           color: #4172bb;
@@ -104,12 +120,11 @@
   .dataSourceItemC {
     @extend .frbs;
     width: 100%;
-    // gap: $sGap
     .descItem {
       @extend .fcsc;
       flex: 1;
       gap: var(--spacing-8, 8px);
-      padding: 22px 3px;
+      padding: var(--dataSourceCard-descItem-padding, 22px 3px);
       position: relative;
       .descT {
         @extend .Text2;
@@ -123,7 +138,7 @@
         position: absolute;
         content: '';
         width: 1px;
-        height: 26px;
+        height: var(--dataSourceCard-descItem-bh, 26px);
         background: var(--Line, #dfe0e0);
         top: 50%;
         right: 0;

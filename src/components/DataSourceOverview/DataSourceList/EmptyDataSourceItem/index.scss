@@ -1,26 +1,39 @@
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/padoM.scss';
-
+.emptyDataSourceItem {
+  --dataSourceCard-width: 3.4286rem;
+  --dataSourceCard-height: 1.415rem;
+ 
+  --dataSourceCard-hoverY: -0.0408rem;
+}
+@media (max-width: 1470px) {
+  .emptyDataSourceItem {
+    --dataSourceCard-width: 504px;
+    --dataSourceCard-height: 208px;
+  
+    --dataSourceCard-hoverY: -6px;
+  }
+}
 .emptyDataSourceItem {
   @extend .frcc;
-  width: 504px;
-  height: 208px;
-  margin-bottom: 24px;
   border-radius: var(--spacing-12, 12px);
   background: var(--bg-60, rgba(255, 255, 255, 0.6));
   backdrop-filter: blur(16px);
+  width: var(--dataSourceCard-width, 504px);
+  height: var(--dataSourceCard-height, 208px);
+  margin-bottom: var(--spacing-24, 24px);
   transition: all 0.5s;
   cursor: pointer;
   &:not(.deactive):hover {
-    transform: translateY(-6px);
+    transform: translateY(var(--dataSourceCard-hoverY, -6px));
   }
   .emptyDataSourceItemC {
     @extend .Headline4;
     @extend .frcc;
     gap: var(--spacing-4, 4px);
     color: var(--Button-active, #252c2e);
-    .iconFont{
-      font-size: 24px;
+    .iconFont {
+      font-size: var(--spacing-24, 24px);
     }
   }
 }

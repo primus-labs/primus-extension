@@ -49,16 +49,20 @@ body {
 }
 #app-container {
   --spacing-4: 0.0272rem;
-  --spacing-6: .034rem;
+  --spacing-6: 0.034rem;
   --spacing-8: 0.0544rem;
   --spacing-12: 0.0816rem;
+  --spacing-16: 0.1088rem;
+  --spacing-18: 0.1224rem;
+  --spacing-20: .1361rem;
   --spacing-24: 0.1633rem;
-  --spacing-28: .1905rem;
+  --spacing-28: 0.1905rem;
   --spacing-32: 0.2177rem;
   --spacing-40: 0.2721rem;
   --spacing-48: 0.3265rem;
   --spacing-100: 0.6803rem;
   --pHeaderHeight: 0.7143rem;
+  --pageCenter-width: 7.0204rem;
 }
 
 @media (max-width: 1470px) {
@@ -67,6 +71,9 @@ body {
     --spacing-6: 6px;
     --spacing-8: 8px;
     --spacing-12: 12px;
+    --spacing-16: 16px;
+    --spacing-18: 18px;
+    --spacing-20: 20px;
     --spacing-24: 24px;
     --spacing-28: 28px;
     --spacing-32: 32px;
@@ -74,5 +81,7 @@ body {
     --spacing-48: 48px;
     --spacing-100: 100px;
     --pHeaderHeight: 105px;
+
+    --pageCenter-width: 1032px;
   }
 }

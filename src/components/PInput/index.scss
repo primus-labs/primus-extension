@@ -31,7 +31,9 @@
   }
   .inputWrapper {
     @extend .frsc;
-    @extend .backFilter;
+    border-radius: var(--spacing-8, 8px);
+    background: var(--Badge, rgba(10, 18, 20, 0.05));
+    backdrop-filter: blur(16px);
     width: 100%;
     height: var(--pInput-height, 54px);
     padding: 0 var(--spacing-24, 24px);
