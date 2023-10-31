@@ -1,13 +1,13 @@
 .pBack {
   position: absolute;
   content: '';
-  top: 48px;
-  left: 32px;
-  width: 32px;
-  height: 32px;
+  top: var(--spacing-48, 48px);
+  left: var(--spacing-32, 32px);
+  width: var(--spacing-32, 32px);
+  height: var(--spacing-32, 32px);
   display: flex;
   .icon-iconArrowLeft2 {
-    font-size: 32px;
+    font-size: var(--spacing-32, 32px);
     cursor: pointer;
     color: var(--Icon-default, #a7aaaa);
     &:hover {
@@ -15,8 +15,3 @@
     }
   }
 }
-
-// @media (max-width:1680px)
-//   .icon-iconArrowLeft2
-//     top: 48px
-//     left: 32px

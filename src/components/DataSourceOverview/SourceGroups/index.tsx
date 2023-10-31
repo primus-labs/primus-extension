@@ -69,7 +69,6 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
 
   return (
     <div className="SourceGroups">
-      {/* <SourceGroupTypes onChange={handleChangeType} list={activeTabList} /> */}
       <PTabsNew
         onChange={handleChangeType}
         value={activeTab}

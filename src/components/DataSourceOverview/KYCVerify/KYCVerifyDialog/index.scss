@@ -1,13 +1,22 @@
 @import '@/assets/css/padoDialog.scss';
-.padoDialog.kycVerifyDialog{
-  padding: 36px 42px 32px;
-  main{
+.padoDialog.kycVerifyDialog {
+  --kycVerifyDialog-padding: 0.2449rem 0.2857rem 0.2177rem;
+  --dot-width: 0.034rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.kycVerifyDialog {
+    --kycVerifyDialog-padding: 36px 42px 32px;
+    --dot-width: 5px;
+  }
+}
+.padoDialog.kycVerifyDialog {
+  padding: var(--kycVerifyDialog-padding, 36px 42px 32px);
+  main {
     @extend .fcsc;
-    gap: var(--spacing-24, 24px);
-    gap: 20px;
-    .descContent{
+    gap: var(--spacing-20, 20px);
+    .descContent {
       @extend .fcss;
-      gap: var(--spacing-8,8px);
+      gap: var(--spacing-8, 8px);
       // gap: var(--spacing-24, 24px); //
       .title {
         color: #000;
@@ -22,12 +31,12 @@
           color: #000;
           > i {
             @extend .frcc;
-            width: 16px;
-            height: 16px;
+            width: var(--spacing-16, 16px);
+            height: var(--spacing-16, 16px);
             > span {
               display: flex;
-              width: 5px;
-              height: 5px;
+              width: var(--dot-width, 5px);
+              height: var(--dot-width, 5px);
               border-radius: 50%;
               background-color: #000;
             }
@@ -38,6 +47,5 @@
         }
       }
     }
-  
   }
 }

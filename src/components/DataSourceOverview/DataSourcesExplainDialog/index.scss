@@ -5,16 +5,16 @@
     ul.explainItemList{
       @extend .fcss;
       width: 100%;
-      padding: 0 22px;
+      padding: 0 var(--spacing-22,22px);
       gap: var(--spacing-32, 32px);
       li{
         @extend .frss;
-        gap: 10px;
+        gap: var(--spacing-10,10px);
         >img{
-          width: 28px;
+          width: var(--spacing-28,28px);
         }
         .iconfont{
-          font-size: 28px;
+          font-size: var(--spacing-28,28px);
         }
         .explainItemC{
           @extend .fcss;

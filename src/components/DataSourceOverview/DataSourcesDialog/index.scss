@@ -10,9 +10,9 @@
         cursor: pointer;
         position: absolute;
         top: 50%;
-        right: -32px;
+        right: calc(var(--spacing-32,32px) * -1);
         transform: translateY(-50%);
-        font-size: 24px;
+        font-size: var(--spacing-24,24px);
       }
     }
   }
