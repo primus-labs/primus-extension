@@ -3,10 +3,11 @@
 .eventOverview {
   width: 100%;
   .eventOverviewContent {
-    width: 1032px;
-    margin: 62px auto 0;
+    width: var(--pageCenter-width,1032px);
+    // margin: 62px auto 0;
+    margin: var(--spacing-32,32px) auto 0;
     @extend .fcss;
-    gap: 32px;
+    gap: var(--spacing-32,32px);
     // .slick-slider {
     //   .slick-list .slick-slide > div {
     //     padding-top: 33px;

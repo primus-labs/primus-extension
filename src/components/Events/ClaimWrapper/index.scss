@@ -1,10 +1,18 @@
 @import '@/assets/css/padoM.scss';
 .claimMysteryBoxWrapper {
+  --processImg-mt: 0.4218rem;
+}
+@media (max-width: 1470px) {
+  .claimMysteryBoxWrapper {
+    --processImg-mt: 62px;
+  }
+}
+.claimMysteryBoxWrapper {
   width: 100%;
-  .padoDialog.claimDialog{
-    main{
-      gap: 36px;
-      .descContent{
+  .padoDialog.claimDialog {
+    main {
+      gap: var(--spacing-36, 36px);
+      .descContent {
         gap: var(--spacing-16, 16px);
       }
     }
@@ -16,7 +24,7 @@
     }
     img.sucImg,
     img.loadingImg {
-      margin-top: 62px;
+      margin-top: var(--processImg-mt, 62px);
     }
     main {
       h2 {

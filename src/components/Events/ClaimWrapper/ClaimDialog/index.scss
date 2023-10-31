@@ -2,13 +2,27 @@
 @import '@/assets/css/pDialog.sass';
 @import '@/assets/css/padoDialog.scss';
 .padoDialog.claimDialog {
-  padding: 0 42px 32px;
+  --claimDialog-padding: 0 0.2857rem 0.2177rem;
+  --claimDialog-main-gap: 0.4082rem;
+  --headerWrapper-marginX: -0.2857rem;
+  --dot-width: 0.034rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.claimDialog {
+    --claimDialog-padding: 0 42px 32px;
+    --claimDialog-main-gap: 60px;
+    --headerWrapper-marginX: -42px;
+    --dot-width: 5px;
+  }
+}
+.padoDialog.claimDialog {
+  padding: var(--claimDialog-padding, 0 42px 32px);
   main {
-    gap: 60px; //
+    gap: var(--claimDialog-main-gap, 60px); //
     .headerWrapper {
       // width: 500px;
       // margin: 0 -44px;
-      margin: 0 -42px 0;
+      margin: 0 var(--headerWrapper-marginX, -42px) 0;
     }
     .descContent {
       @extend .fcss;
@@ -18,10 +32,10 @@
         color: #000;
         @extend .Text1;
         font-family: Inter;
-        font-size: 20px;
+        font-size: var(--spacing-20, 20px);
         font-style: normal;
         font-weight: 600;
-        line-height: 28px; /* 140% */
+        line-height: var(--spacing-28, 28px); /* 140% */
       }
       .rules {
         @extend .fcss;
@@ -32,12 +46,12 @@
           color: #000;
           > i {
             @extend .frcc;
-            width: 14px;
-            height: 22px;
+            width: var(--spacing-14, 14px);
+            height: var(--spacing-22, 22px);
             > span {
               display: flex;
-              width: 5px;
-              height: 5px;
+              width: var(--dot-width, 5px);
+              height: var(--dot-width, 5px);
               border-radius: 50%;
               background-color: #000;
             }
@@ -50,7 +64,7 @@
       .desc {
         color: rgba(0, 0, 0, 0.6);
         @extend .Body2;
-        >span{
+        > span {
           @extend .Text1;
         }
       }
@@ -64,13 +78,13 @@
       .specialTip {
         @extend .Body2;
         @extend .frsc;
-        gap: 8px;
+        gap: var(--spacing-8, 8px);
         color: #2ec57c;
         // >img{
         //   width: 20px;
         // }
         .iconfont {
-          font-size: 20px;
+          font-size: var(--spacing-20, 20px);
         }
       }
     }
