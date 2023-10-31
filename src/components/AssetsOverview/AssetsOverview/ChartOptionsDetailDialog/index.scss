@@ -1,10 +1,30 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
-@import '@/assets/css/pFont.sass';
 @import '@/assets/css/padoM.scss';
 @import '@/assets/css/padoDialog.scss';
 .padoDialog.ChartOptionsDetailDialog {
-  padding: 48px 42px 80px;
+  --ChartOptionsDetailDialog-padding: 0.3265rem 0.2857rem 0.5442rem;
+  --scrollBar-space: 0.2313rem;
+  --tableCon-height: 2.4762rem;
+  --descItem-height: 0.1497rem;
+  --descItem-token-width: 1.0068rem;
+  --descItem-value-width: 0.8844rem;
+  --descItem-ratio-width: 0.7483rem;
+  --table-th-height: 0.3129rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.ChartOptionsDetailDialog {
+    --ChartOptionsDetailDialog-padding: 48px 42px 80px;
+    --scrollBar-space: 34px;
+    --tableCon-height: 364px;
+    --descItem-height: 22px;
+    --descItem-token-width: 148px;
+    --descItem-value-width: 130px;
+    --descItem-ratio-width: 110px;
+    --table-th-height: 46px;
+  }
+}
+.padoDialog.ChartOptionsDetailDialog {
+  padding: var(--ChartOptionsDetailDialog-padding, 48px 42px 80px);
   > main {
     gap: var(--spacing-32, 32px);
     .formContent {
@@ -16,29 +36,29 @@
           margin-bottom: var(--spacing-16, 16px);
         }
         &.tableCon {
-          width: calc(100% + 34px);
-          height: 364px;
+          width: calc(100% + var(--scrollBar-space, 34px));
+          height: var(--tableCon-height, 364px);
           overflow: auto;
           // &::-webkit-scrollbar
           //   position: relative
           //   right: 30px
           .descItem {
-            width: calc(100% - 34px);
+            width: calc(100% - var(--scrollBar-space, 34px));
           }
         }
         .descItem {
           @extend .frbc;
-          height: 22px;
+          height: var(--descItem-height, 22px);
           width: 100%;
           .token {
-            width: 148px;
+            width: var(--descItem-token-width, 148px);
           }
           .value {
-            width: 130px;
+            width: var(--descItem-value-width, 130px);
             text-align: right;
           }
           .ratio {
-            width: 110px;
+            width: var(--descItem-ratio-width, 110px);
             text-align: right;
           }
           .token,
@@ -49,8 +69,8 @@
           }
 
           &.th {
-            height: 46px;
-            padding: 12px 0;
+            height: var(--table-th-height, 46px);
+            padding: var(--spacing-12, 12px) 0;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             .token,

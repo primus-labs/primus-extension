@@ -1,7 +1,7 @@
 import React, { useState, useCallback,memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
+
 import SettingDialog from '@/components/Setting/SettingDialog';
 import ResetPasswordDialog from '@/components/Setting/ResetPasswordDialog';
 import ExportWalletDialog from '@/components/Setting/ExportWalletDialog';

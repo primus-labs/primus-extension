@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback, memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';
 import PButton from '@/components/PButton';
@@ -121,9 +120,6 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
         <div className={wrapperClassName}>
           {!!backable && <PBack onBack={handleClickBack} />}
           <main>
-            {headerType === 'dataSource' && (
-              <AuthInfoHeader checked={checked} />
-            )}
             {headerType === 'attestation' && (
               <AddressInfoHeader address={address as string} />
             )}

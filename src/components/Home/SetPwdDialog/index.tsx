@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
-import AuthInfoHeader from '@/components/DataSourceDetail/AuthInfoHeader';
 import PInput from '@/components/PInput/index';
 import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';

@@ -1,136 +1,156 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
-@import '@/assets/css/pFont.sass';
 @import '@/assets/css/padoM.scss';
+.assetsOverview {
+  --assetsOverview-pb: 0.3401rem;
+  --card-width: 3.4286rem;
+  --card-height: 1.8776rem;
+  --card-paddingX: 0.2993rem;
 
-.sectionTitle{
-    @extend .Headline4;
-    border-bottom: 1px solid var(--Line, #DFE0E0);
-    color: var(--Text-headline, #0A1214);
+  --card-left-pb: 0.2721rem;
+  --chartOthersWrapper-bottom: 0.068rem;
+  --chartOthersWrapper-right: 0.381rem;
+  --chartOthersWrapper-label-ml: 0.0408rem;
+  --chartOthersWrapper-label-width: 0.7211rem;
+
+  --chartOthersWrapper-value-width: 0.4354rem;
+}
+@media (max-width: 1470px) {
+  .assetsOverview {
+    --assetsOverview-pb: 50px;
+    --card-width: 504px;
+    --card-height: 276px;
+    --card-paddingX: 44px;
+
+    --card-left-pb: 40px;
+    --chartOthersWrapper-bottom: 10px;
+    --chartOthersWrapper-right: 56px;
+    --chartOthersWrapper-label-ml: 6px;
+    --chartOthersWrapper-label-width: 106px;
+
+    --chartOthersWrapper-value-width: 64px;
   }
-.assetsOverview{
+}
+.sectionTitle {
+  @extend .Headline4;
+  border-bottom: 1px solid var(--Line, #dfe0e0);
+  color: var(--Text-headline, #0a1214);
+}
+.assetsOverview {
   width: 100%;
   @extend .fcss;
-  gap: var(--spacing-24,24px);
-  padding-bottom: 50px;;
-  padding-top: var(--spacing-24,24px);
-  .statisticsWrapper{
+  gap: var(--spacing-24, 24px);
+  padding-bottom: var(--assetsOverview-pb, 50px);
+  .statisticsWrapper {
     @extend .frbs;
-    gap: var(--spacing-24,24px);
+    gap: var(--spacing-24, 24px);
     width: 100%;
-    .card{
-      width: 504px;
-      height: 276px;
-      @include backdropMixin;
-      padding: 0 44px;
-      >header{
-        padding: 24px 0 12px 0;
+    .card {
+      width: var(--card-width, 504px);
+      height: var(--card-height, 276px);
+      border-radius: var(--spacing-12, 12px);
+      background: var(--bg-60, rgba(255, 255, 255, 0.6));
+      backdrop-filter: blur(16px);
+      padding: 0 var(--card-paddingX, 44px);
+      > header {
+        padding: var(--spacing-24, 24px) 0 var(--spacing-12, 12px) 0;
         @extend .sectionTitle;
       }
-      &.cardL{
-        .cardCon{
+      &.cardL {
+        .cardCon {
           @extend .fcss;
-          gap: var(--spacing-24,24px);
-          padding-top: var(--spacing-24,24px);
-          padding-bottom: 40px;
-          .descItem{
+          gap: var(--spacing-24, 24px);
+          padding-top: var(--spacing-24, 24px);
+          padding-bottom: var(--card-left-pb, 40px);
+          .descItem {
             @extend .fcss;
             gap: var(--spacing-8, 8px);
-            .label{
+            .label {
               color: var(--Text-body, #515758);
               @extend .Text1;
             }
-            .value{
+            .value {
               @extend .Headline3;
-              color: var(--Text-headline, #0A1214);
-              padding-right: 20px;
+              color: var(--Text-headline, #0a1214);
+              padding-right: var(--spacing-20, 20px);
             }
           }
-          .mainDescItem{
-            .value{
+          .mainDescItem {
+            .value {
               @extend .Headline2;
             }
           }
-          .descItemsWrapper{
+          .descItemsWrapper {
             @extend .frsc;
             width: 100%;
-            // gap: var(--spacing-64, 64px);
-            
-            .descItem{
+            .descItem {
               flex: 1;
-              .value{
+              .value {
                 @extend .frsc;
                 gap: var(--spacing-8, 8px);
-                .percent{
+                .percent {
                   @extend .Body2;
-                  &.raise{
+                  &.raise {
                     color: rgba(39, 194, 101, 0.8);
-                  }           
-                  &.fall{
-                    color: var(--red-red-400, #F42D2D);
+                  }
+                  &.fall {
+                    color: var(--red-red-400, #f42d2d);
                   }
                 }
-                  
               }
-                
             }
-          }           
+          }
         }
       }
-      &.cardR{
-        >header{
+      &.cardR {
+        > header {
           @extend .sectionTitle;
           @extend .frbc;
-         
-          .pTabsNew{
+          .pTabsNew {
             gap: var(--spacing-16, 16px);
-            .tab{
-              
+            .tab {
               padding: 0;
-              .con{
+              .con {
                 gap: var(--spacing-8, 8px);
                 padding: 0;
-                .iconfont{
-                  font-size: 14px;
+                .iconfont {
+                  font-size: var(--spacing-14, 14px);
                 }
-                .borderB{
+                .borderB {
                   display: none;
                 }
               }
             }
           }
-        }    
+        }
       }
-      
     }
-    .chartOthersWrapper{
+    .chartOthersWrapper {
       position: absolute;
-      bottom: 10px;
-      right: 56px;
+      bottom: var(--chartOthersWrapper-bottom, 10px);
+      right: var(--chartOthersWrapper-right, 56px);
       @extend .frsc;
-      
-      >i{
-         width: 14px;
-        height: 14px;
-        background-color: #8741E1;
+      > i {
+        width: var(--spacing-14, 14px);
+        height: var(--spacing-14, 14px);
+        background-color: #8741e1;
         border-radius: 50%;
       }
-       
+
       .label {
-        margin-left: 6px;
-        width: 106px;
+        margin-left: var(--chartOthersWrapper-label-ml, 6px);
+        width: var(--chartOthersWrapper-label-width, 106px);
         color: var(--Text-body, #515758);
         font-family: Inter;
-        font-size: 14px;
+        font-size: var(--spacing-14, 14px);
         font-style: normal;
         font-weight: 500;
         line-height: normal;
       }
-      .value{
+      .value {
         @extend .Body2;
         margin-left: 0px;
-        width: 64px;
-        color: var(--Text-hint, #7B7F80);
+        width: var(--chartOthersWrapper-value-width, 64px);
+        color: var(--Text-hint, #7b7f80);
         text-align: right;
         &:hover {
           color: #000;
@@ -138,6 +158,4 @@
       }
     }
   }
-    
-  
 }

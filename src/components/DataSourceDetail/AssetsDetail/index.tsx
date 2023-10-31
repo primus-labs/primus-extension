@@ -175,7 +175,6 @@ const AssetsDetail = memo(() => {
     ) : (
       <PButton
         text="Create Proof"
-        prefix={<i className="iconfont icon-iconCredCreate"></i>}
         onClick={navToCred}
       />
     );

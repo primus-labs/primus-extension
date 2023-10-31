@@ -1,12 +1,32 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
-@import '@/assets/css/pFont.sass';
 @import '@/assets/css/padoM.scss';
 
 .tokenListWrapper {
-  @include backdropMixin;
+  --header-paddingX: 0.2993rem;
+  --header-height: 0.4422rem;
+  --table-pb: 0.2585rem;
+  --table-th-height: 0.3129rem;
+  --table-tr-inner-paddingY: 0.0748rem;
+  --emptyContent-padding: 0.1769rem 0 0.2177rem 0;
+}
+
+@media (max-width: 1470px) {
+  .tokenListWrapper {
+    --header-paddingX: 44px;
+    --header-height: 65px;
+    --table-pb: 38px;
+    --table-th-height: 46px;
+
+    --table-tr-inner-paddingY: 11px;
+    --emptyContent-padding: 26px 0 32px 0;
+  }
+}
+.tokenListWrapper {
+  border-radius: var(--spacing-12, 12px);
+  background: var(--bg-60, rgba(255, 255, 255, 0.6));
+  backdrop-filter: blur(16px);
   width: 100%;
-  padding: 0 44px;
+  padding: 0 var(--card-paddingX, 44px);
   header {
     border-bottom: 1px solid var(--Line, #dfe0e0);
     box-sizing: border-box;
@@ -18,12 +38,12 @@
     }
   }
   ul.tokens {
-    padding-bottom: 38px;
+    padding-bottom: var(--table-pb, 38px);
     li.tokenItem {
       .innerWrapper {
         @extend .frbc;
         @extend .Body2;
-        margin: 0 -44px;
+        margin: 0 calc(-1 * var(--header-paddingX, 44px));
         > div {
           text-align: right;
         }
@@ -32,13 +52,13 @@
           gap: var(--spacing-8, 8px);
           text-align: left;
           > .defaultTokenImg {
-            width: 18px;
-            height: 18px;
+            width: var(--spacing-18, 18px);
+            height: var(--spacing-18, 18px);
             border-radius: 50%;
             background-color: rgba(0, 0, 0, 0.05);
           }
           > img {
-            width: 18px;
+            width: var(--spacing-18, 18px);
             border-radius: 50%;
           }
         }
@@ -46,51 +66,50 @@
 
       &.th {
         color: var(--Text-body, #515758);
-        // margin: 0 -44px;
-        margin-bottom: 16px;
-        height: 46px !important;
+        margin-bottom: var(--spacing-16, 16px);
+        height: var(--table-th-height, 46px) !important;
         border-bottom: 1px solid var(--Line, #dfe0e0);
         .innerWrapper {
-          padding: 12px 44px;
+          padding: var(--spacing-12, 12px) var(--header-paddingX);
         }
       }
 
       &.tr {
         color: #000;
-        margin-top: 4px;
+        margin-top: var(--spacing-4, 4px);
         position: relative;
         .innerWrapper {
-          padding: 11px 44px 11px;
+          padding: var(--table-tr-inner-paddingY, 11px)
+            var(--header-paddingX, 44px) var(--table-tr-inner-paddingY, 11px);
         }
       }
-
-      li.emptyContent {
-        width: 100%;
-        padding: 26px 0 32px 0;
+    }
+    li.emptyContent {
+      width: 100%;
+      padding: var(--emptyContent-padding, 26px 0 32px 0);
+      text-align: center;
+      @extend .fcsc;
+      > img {
+        width: var(--spacing-28, 28px);
+      }
+      > h1 {
+        padding: var(--spacing-8, 8px) 0 var(--spacing-4, 4px) 0;
+        color: rgba(0, 0, 0, 0.6);
         text-align: center;
-        @extend .fcsc;
-        > img {
-          width: var(--spacing-28, 28px);
-        }
-        > h1 {
-          padding: 8px 0 4px 0;
-          color: rgba(0, 0, 0, 0.6);
-          text-align: center;
-          font-family: Inter;
-          font-size: 18px;
-          font-style: normal;
-          font-weight: 600;
-          line-height: normal;
-        }
-        > h2 {
-          color: rgba(0, 0, 0, 0.6);
-          text-align: center;
-          font-family: Inter;
-          font-size: 12px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 20px; /* 166.667% */
-        }
+        font-family: Inter;
+        font-size: var(--spacing-18, 18px);
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+      }
+      > h2 {
+        color: rgba(0, 0, 0, 0.6);
+        text-align: center;
+        font-family: Inter;
+        font-size: var(--spacing-12, 12px);
+        font-style: normal;
+        font-weight: 400;
+        line-height: var(--spacing-20, 20px); /* 166.667% */
       }
     }
   }

@@ -1,6 +1,19 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/padoTable.scss';
+.tokenListWrapper.social {
+  --token-width: 0.8163rem;
+  --userName-width: 0.9048rem;
+  --following-width: 0.7483rem;
+  --posts-width: 0.6122rem;
+}
+@media (max-width: 1470px) {
+  .tokenListWrapper.social {
+    --token-width: 120px;
+    --userName-width: 133px;
+    --following-width: 110px;
+    --posts-width: 90px;
+  }
+}
 .tokenListWrapper.social {
   ul.tokens {
     &.social {
@@ -8,24 +21,24 @@
         gap: 0;
         .innerWrapper {
           .token {
-            width: 120px;
+            width: var(--token-width, 120px);
           }
           .userName,
           .createTime {
-            width: 133px;
+            width: var(--userName-width, 133px);
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
           }
           .verified {
-            width: 120px;
+            width: var(--token-width, 120px);
           }
           .followers,
           .following {
-            width: 110px;
+            width: var(--following-width, 110px);
           }
           .posts {
-            width: 90px;
+            width: var(--posts-width, 90px);
           }
         }
       }

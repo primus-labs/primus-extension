@@ -1,9 +1,44 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
-@import '@/assets/css/pFont.sass';
-
 @import '@/assets/css/padoTable.scss';
 @import '@/assets/css/padoM.scss';
+.tokenListWrapper.assets {
+  --tokenItem-height: 0.2585rem;
+  --descItem-div-width: 1.0068rem;
+  --descItem-token-width: 0.8707rem;
+  --arrowWrapper-top: 0.102rem;
+  --detailWrapper-top: 0.2857rem;
+  --detailWrapper-padding: 0.0476rem 0.3061rem 0.0748rem 0;
+  --detailWrapper-desc-mt: 0.0884rem;
+  --token-label-width: 0.3469rem;
+  --th-innerWrapper-padding: 0.0816rem 0.3401rem;
+  --thNew-innerWrapper-padding: 0.0816rem 0.6054rem 0.0816rem 0.3401rem;
+  --new-innerWrapper-padding: 0.0748rem 0.6463rem 0.0748rem 0.3401rem;
+  --tr-innerWrapper-padding: 0.0748rem 0.2993rem 0.0748rem;
+  --trNew-innerWrapper-padding: 0.0748rem 0.6054rem 0.0748rem 0.2993rem;
+  --expand-height: 0.5034rem;
+  --expandPlus-height: 0.7075rem;
+  --formItem-width: 0.8435rem;
+}
+@media (max-width: 1470px) {
+  .tokenListWrapper.assets {
+    --tokenItem-height: 38px;
+    --descItem-div-width: 148px;
+    --descItem-token-width: 128px;
+    --arrowWrapper-top: 15px;
+    --detailWrapper-top: 42px;
+    --detailWrapper-padding: 7px 45px 11px 0;
+    --detailWrapper-desc-mt: 13px;
+    --token-label-width: 51px;
+    --th-innerWrapper-padding: 12px 50px;
+    --thNew-innerWrapper-padding: 12px 89px 12px 50px;
+    --new-innerWrapper-padding: 11px 95px 11px 50px;
+    --tr-innerWrapper-padding: 11px 44px 11px;
+    --trNew-innerWrapper-padding: 11px 89px 11px 44px;
+    --expand-height: 74px;
+    --expandPlus-height: 104px;
+    --formItem-width: 124px;
+  }
+}
 
 .tokenListWrapper.assets {
   > header {
@@ -15,12 +50,12 @@
   ul.tokens {
     @extend .fcss;
     gap: var(--spacing-8, 8px);
-    &.tokensShadow{
+    &.tokensShadow {
       padding-bottom: 0;
     }
     li.tokenItem {
       position: relative;
-      height: 38px;
+      height: var(--tokenItem-height, 38px);
       width: 100%;
       .innerWrapper {
         @extend .frbc;
@@ -31,47 +66,47 @@
       }
       .innerWrapper > div,
       .detailWrapper .descItem > div {
-        width: 148px;
+        width: var(--descItem-div-width, 148px);
         text-align: right;
       }
       .innerWrapper > div.token,
       .detailWrapper .descItem > div.token {
-        width: 128px;
+        width: var(--descItem-token-width, 128px);
       }
       &.tr {
         .arrowWrapper {
           @extend .frcc;
           position: absolute;
           content: '';
-          top: 15px;
+          top: var(--arrowWrapper-top, 15px);
           transform: rotate(-90deg);
           right: 0;
-          font-size: 14px;
-          width:14px;
-          height: 14px;
+          font-size: var(--spacing-14, 14px);
+          width: var(--spacing-14, 14px);
+          height: var(--spacing-14, 14px);
           cursor: pointer;
           color: var(--Button-default);
           &:hover,
           &.active {
             color: var(--Button-active);
           }
-          .iconfont{
-            font-size: 14px;
+          .iconfont {
+            font-size: var(--spacing-14, 14px);
           }
         }
         .detailWrapper {
           position: absolute;
           content: '';
-          top: 42px;
+          top: var(--detailWrapper-top, 42px);
           left: 0;
-          padding: 7px 45px 11px 0;
+          padding: var(--detailWrapper-padding, 7px 45px 11px 0);
           width: 100%;
           .descItem {
             width: 100%;
             display: flex;
             color: var(--Text-body, #515758);
             @extend .Text1;
-            margin-top: 13px;
+            margin-top: var(--detailWrapper-desc-mt, 13px);
             text-align: right;
             &:first-child {
               margin-top: 0;
@@ -80,7 +115,7 @@
               display: flex;
               justify-content: flex-end;
               .label {
-                width: 51px;
+                width: var(--token-label-width, 51px);
                 text-align: left;
               }
             }
@@ -89,17 +124,17 @@
       }
       &.th {
         .innerWrapper {
-          padding: 12px 50px 12px 50px;
+          padding: var(--th-innerWrapper-padding, 12px 50px);
         }
         &.new {
           .innerWrapper {
-            padding: 12px 89px 12px 50px;
+            padding: var(--thNew-innerWrapper-padding, 12px 89px 12px 50px);
           }
         }
       }
       &.new {
         .innerWrapper {
-          padding: 11px 95px 11px 50px;
+          padding: var(--new-innerWrapper-padding, 11px 95px 11px 50px);
         }
         .accountFilterWrapper {
           position: absolute;
@@ -110,42 +145,42 @@
       }
       &.tr {
         .innerWrapper {
-          padding: 11px 44px 11px;
+          padding: var(--tr-innerWrapper-padding, 11px 44px 11px);
         }
         &.new {
           .innerWrapper {
-            padding: 11px 89px 11px 44px;
+            padding: var(--trNew-innerWrapper-padding, 11px 89px 11px 44px);
           }
         }
         .arrowWrapper {
-          top: 15px;
+          top: var(--arrowWrapper-top, 15px);
           right: 0;
-          width: 12px;
-          height: 12px;
+          width: var(--spacing-12, 12px);
+          height: var(--spacing-12, 12px);
         }
       }
       &.expand {
-        height: 74px;
+        height: var(--expand-height, 74px);
       }
       &.expandPlus {
-        height: 104px;
+        height: var(--expandPlus-height, 104px);
       }
       .token {
         .syntheticLogo {
           position: relative;
           // padding: 2px 0 0 2px
-          width: 18px;
-          height: 18px;
+          width: var(--spacing-18, 18px);
+          height: var(--spacing-18, 18px);
           box-sizing: border-box;
           display: flex;
           justify-content: flex-end;
           align-items: flex-end;
           .tokenLogo {
-            width: 16px;
+            width: var(--spacing-16, 16px);
           }
 
           .chainLogo {
-            width: 10px;
+            width: var(--spacing-10, 10px);
             position: absolute;
             top: 0;
             left: 0;
@@ -157,7 +192,7 @@
   }
   .moreWidthFilterWrapper {
     .pFilterContent .formItems .formItem {
-      width: 124px;
+      width: var(--formItem-width, 124px);
     }
   }
 }
