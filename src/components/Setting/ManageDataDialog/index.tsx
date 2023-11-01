@@ -602,7 +602,6 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
             </footer>
           </div>
         )}
-
         {reconfirmVisible && (
           <ReconfirmDialog
             onClose={onClose}

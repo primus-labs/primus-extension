@@ -4,7 +4,7 @@ import iconOpenSea from '@/assets/img/events/iconOpenSea.svg'
 import rightArrow from '@/assets/img/rightArrow.svg'
 import type { Reward } from '@/types/event';
 
-import './index.sass';
+import './index.scss';
 
 interface RewardItemProps {
   item: Reward;

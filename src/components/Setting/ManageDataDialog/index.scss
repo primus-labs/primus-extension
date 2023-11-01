@@ -1,7 +1,17 @@
 @import '@/assets/css/padoDialog.scss';
 .padoDialog.manageDataDialog {
+  --resetPwdDialog-padding: 0.3265rem 0.4082rem 0.381rem;
+  --operations-top: -0.2585rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.manageDataDialog {
+    --resetPwdDialog-padding: 48px 60px 56px;
+    --operations-top: -38px;
+  }
+}
+.padoDialog.manageDataDialog {
   @extend .padoFormDialogStyle;
-  padding: 48px 60px 56px;
+  padding: var(--resetPwdDialog-padding, 48px 60px 56px);
   main {
     .formContent {
       .contItem {
@@ -12,9 +22,9 @@
             position: absolute;
             content: '';
             right: 0;
-            top: -38px;
+            top: var(--operations-top,-38px);
             @extend .frsc;
-            gap: 12px;
+            gap: var(--spacing-12, 12px);
             .operationItem {
               display: flex;
             }

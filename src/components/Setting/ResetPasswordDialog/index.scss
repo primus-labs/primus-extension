@@ -2,12 +2,19 @@
 
 @import '@/assets/css/pFlex.sass';
 @import '@/components/Home/SetPwdDialog/index.scss';
-
 .padoDialog.setPwdDialog.resetPwdDialog {
-  padding: 48px 60px 56px;
-  main{
-    >header{
-      h2{
+  --resetPwdDialog-padding: 0.3265rem 0.4082rem 0.381rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.setPwdDialog.resetPwdDialog {
+    --resetPwdDialog-padding: 48px 60px 56px;
+  }
+}
+.padoDialog.setPwdDialog.resetPwdDialog {
+  padding: var(--resetPwdDialog-padding, 48px 60px 56px);
+  main {
+    > header {
+      h2 {
         text-align: left;
       }
     }

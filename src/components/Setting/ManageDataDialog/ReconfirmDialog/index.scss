@@ -1,5 +1,5 @@
 @import '@/assets/css/padoDialog.scss';
 @import '@/components/DataSourceOverview/AddSourceSucDialog/index.scss';
 .holderH{
-  height: 36px;
+  height: var(--spacing-36,36px);
 }

@@ -1,0 +1,47 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+.rewardItem {
+  --rewardItem-width: 1.0884rem;
+  --rewardItem-height: 1.415rem;
+  --rewardItem-img-width: 0.8163rem;
+  --rewardItem-img-height: 1.3605rem;
+}
+@media (max-width: 1470px) {
+  .rewardItem {
+    --rewardItem-width: 160px;
+    --rewardItem-height: 208px;
+    --rewardItem-img-width: 120px;
+    --rewardItem-img-height: 200px;
+  }
+}
+.rewardItem {
+  @extend .fcss;
+  width: var(--rewardItem-width, 160px);
+  height: var(--rewardItem-height, 208px);
+  padding: 0;
+  gap: var(--spacing-12, 12px);
+  border-radius: var(--spacing-8, 8px);
+  background: var(--Badge, rgba(10, 18, 20, 0.05));
+  padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
+  > img {
+    width: var(--rewardItem-img-width, 128px);
+    height: var(--rewardItem-img-height, 200px);
+  }
+  > .title {
+    color: var(--Text-headline, #0a1214);
+    @extend .Text2;
+  }
+
+  > .desc {
+    @extend .frsc;
+    gap: var(--spacing-8, 8px);
+    > img {
+      width: var(--spacing-16, 16px);
+    }
+
+    > span {
+      color: var(--Text-body, #515758);
+      @extend .Text2;
+    }
+  }
+}
