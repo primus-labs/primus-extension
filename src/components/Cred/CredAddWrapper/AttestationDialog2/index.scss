@@ -1,6 +1,12 @@
-@import '@/assets/css/pVars.sass';
-@import '@/assets/css/pDialog.sass';
 @import '@/components/Cred/CredAddWrapper/AttestationDialog/index.scss';
+.padoDialog.attestationDialog.identityAttestationDialog {
+  --identityAttestationDialog-sourceGroup-maxHeight: 1.5782rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.attestationDialog.identityAttestationDialog {
+    --identityAttestationDialog-sourceGroup-maxHeight: 232px;
+  }
+}
 .padoDialog.attestationDialog.identityAttestationDialog {
   main {
     .formContent {
@@ -9,20 +15,20 @@
           width: 100%;
           .pSelectWrapper {
             width: 100%;
-
             .pSelect {
-              width: 417px;
-              height: 48px;
+              // width: 417px;
+              width: 100%;
+              height: var(--spacing-48, 48px);
               .selectInput {
                 @extend .Body2;
-                padding: 0 24px;
+                padding: 0 var(--spacing-24, 24px);
                 color: var(--Text-headline, #0a1214);
                 text-overflow: ellipsis;
               }
               .selectOptionswrapper {
-                padding-top: 8px;
+                padding-top: var(--spacing-8, 8px);
                 .selectOptions {
-                  padding: 8px 0;
+                  padding: var(--spacing-8, 8px) 0;
                   border-radius: var(--spacing-8, 8px);
                   background: var(--bg-default, #fff);
                   box-shadow: 0px 2px 4px 0px rgba(9, 30, 66, 0.2);
@@ -30,8 +36,8 @@
                     @extend .Text1;
                     border-radius: 0;
                     color: var(--Text-body, #515758);
-                    height: 40px;
-                    padding-left: 16px;
+                    height: var(--spacing-40, 40px);
+                    padding-left: var(--spacing-16, 16px);
                     gap: 0;
                     > img {
                       width: 0;
@@ -51,12 +57,12 @@
         }
         .valueWrapper {
           @extend .fcsc;
-          gap:var(--spacing, 16px);
+          gap: var(--spacing, 16px);
           width: 100%;
-          .pTabsNew{
+          .pTabsNew {
             align-self: flex-start;
           }
-          .scroll.sourceGroup{
+          .scroll.sourceGroup {
             max-height: 232px;
           }
         }

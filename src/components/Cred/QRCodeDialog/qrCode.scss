@@ -1,5 +1,5 @@
 
 @import '@/assets/css/padoDialog.scss';
 .qrcodeDialog{
-  padding: 36px 42px 32px;
+  padding: var(--spacing-36,36px) var(--spacing-42,42px) var(--spacing-32,32px);
 }

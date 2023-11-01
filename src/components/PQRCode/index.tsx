@@ -2,7 +2,7 @@ import React, { memo, FC } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 
 
-import './index.sass';
+import './index.scss';
 
 interface PQRCodeProps {
   value: string;

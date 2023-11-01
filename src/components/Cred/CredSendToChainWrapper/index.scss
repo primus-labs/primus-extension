@@ -1,25 +1,32 @@
-
 @import '@/assets/css/pFlex.sass';
-.credSendToChainWrapper{
+.credSendToChainWrapper {
+  --claimEventsBtn-width: 1.3333rem;
+}
+@media (mac-width: 1470px) {
+  .credSendToChainWrapper {
+    --claimEventsBtn-width: 196px;
+  }
+}
+.credSendToChainWrapper {
   width: 100%;
   height: 100%;
-  .claimEventsBtns{
+  .claimEventsBtns {
     @extend .frbc;
     width: 100%;
-    .pButton{
-      width: 196px;
+    .pButton {
+      width: var(--claimEventsBtn-width, 196px);
       height: var(--spacing-48, 48px);
-      &:last-child{
+      &:last-child {
         background: var(--Badge, rgba(10, 18, 20, 0.05));
-        &:hover{
-          background: linear-gradient(0deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.20) 100%), var(--Badge, rgba(10, 18, 20, 0.05));
+        &:hover {
+          background: linear-gradient(
+              0deg,
+              rgba(255, 255, 255, 0.2) 0%,
+              rgba(255, 255, 255, 0.2) 100%
+            ),
+            var(--Badge, rgba(10, 18, 20, 0.05));
         }
-          
       }
-        
     }
-      
-      
   }
-   
 }

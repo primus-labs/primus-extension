@@ -12,7 +12,7 @@ import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
-import './index.sass';
+import './index.scss';
 
 
 interface BindPolygonIDProps {

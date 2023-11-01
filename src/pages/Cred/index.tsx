@@ -3,7 +3,7 @@ import React, { useCallback, memo } from 'react';
 import DataSourceSearch from '@/components/DataSourceOverview/DataSourceSearch';
 import CresOverview from '@/components/Cred/CredOverview';
 
-import './index.sass';
+import './index.scss';
 
 const Cred = memo(() => {
   return (

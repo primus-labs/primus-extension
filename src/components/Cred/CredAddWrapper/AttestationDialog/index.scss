@@ -1,5 +1,29 @@
 @import '@/assets/css/padoDialog.scss';
 .padoDialog.attestationDialog {
+  --scrollbar-width: 0.0136rem;
+  --scrollbar-height: 0.7483rem;
+  --scrollbar-right: 0.034rem;
+  --scrollbar-thumb-left: -0.102rem;
+  --attestationDialog-pSelect-width: 0.8844rem;
+  --attestationDialog-padodropdown-maxHeight: 1.1973rem;
+  --attestationDialog-emptyContent-img-width: 0.3061rem;
+  --assetsAttestationDialog-contItem-con-width: 0.5986rem;
+  --assetsAttestationDialog-sourceGroup-maxHeight: 1.7143rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.attestationDialog {
+    --scrollbar-width: 2px;
+    --scrollbar-height: 110px;
+    --scrollbar-right: 5px;
+    --scrollbar-thumb-left: -15px;
+    --attestationDialog-pSelect-width: 130px;
+    --attestationDialog-padodropdown-maxHeight: 176px;
+    --attestationDialog-emptyContent-img-width: 45px;
+    --assetsAttestationDialog-contItem-con-width: 88px;
+    --assetsAttestationDialog-sourceGroup-maxHeight: 252px;
+  }
+}
+.padoDialog.attestationDialog {
   @extend .padoFormDialogStyle;
   main {
     .formContent {
@@ -7,22 +31,22 @@
         .value {
           .pSelectWrapper {
             &::-webkit-scrollbar {
-              width: 2px;
-              height: 110px;
+              width: var(--scrollbar-width, 2px);
+              height: var(--scrollbar-height, 110px);
               position: relative;
-              right: 5px;
+              right: var(--scrollbar-right, 5px);
             }
 
             &::-webkit-scrollbar-thumb {
               background: rgba(0, 0, 0, 0.2);
-              border-radius: 100px;
+              border-radius: var(--spacing-100, 100px);
               position: relative;
-              left: -15px;
+              left: var(--scrollbar-thumb-left, -15px);
             }
 
             .pSelect {
-              width: 130px;
-              height: 30px;
+              width: var(--attestationDialog-pSelect-width, 130px);
+              height: var(--spacing-30, 30px);
               border-radius: var(--spacing-8, 8px);
               // background: var(--Badge, rgba(10, 18, 20, 0.05));
               // backdrop-filter: blur(16px);
@@ -30,10 +54,10 @@
                 border-radius: var(--spacing-8, 8px);
                 // @extend .Body2;
                 // @extend .frsc;
-                gap: 12px;
+                gap: var(--spacing-12, 12px);
                 background: transparent;
                 height: 100%;
-                line-height: 30px;
+                line-height: var(--spacing-30, 30px);
                 color: var(--Text-hint, #7b7f80);
                 padding: 0 var(--spacing-16, 16px);
                 // .prefixIcon {
@@ -42,21 +66,20 @@
                 // .suffixIcon {
                 //   right: 16px;
                 // }
-                >.iconfont.arrow {
-                  font-size: 16px;
+                > .iconfont.arrow {
+                  font-size: var(--spacing-16, 16px);
                 }
               }
               .selectOptionswrapper {
-                .padodropdown{
-                  max-height: 176px;
+                .padodropdown {
+                  max-height: var(--attestationDialog-padodropdown-maxHeight,176px);
                   overflow-y: auto;
-                  .dropdownItem{
+                  .dropdownItem {
                     > img {
-                      width: 14px;
+                      width: var(--spacing-14, 14px);
                     }
-                    .desc{
+                    .desc {
                       @extend .Text1;
-
                     }
                   }
                 }
@@ -64,21 +87,18 @@
                   padding: var(--spacing-8, 8px) 0;
                   width: 100%;
                   gap: 0;
-                  max-height: 176px;
-                  overflow-y: auto;
-                  
                   .selectOption {
                     @extend .Text1;
                     @extend .frsc;
-                    height: 40px;
-                    line-height: 40px;
+                    height: var(--spacing-40, 40px);
+                    line-height: var(--spacing-40, 40px);
                     padding: 0 var(--spacing-16, 16px);
                     gap: var(--spacing-12, 12px);
                     color: var(--Text-body, #515758);
 
                     border-radius: 0;
                     > img {
-                      width: 14px;
+                      width: var(--spacing-14, 14px);
                     }
                   }
                 }
@@ -90,9 +110,9 @@
           width: 100%;
           @extend .fcsc;
           gap: var(--spacing-16, 16px);
-          padding-top: 40px;
+          padding-top: var(--spacing-40, 40px);
           > img {
-            width: 45px;
+            width: var(--attestationDialog-emptyContent-img-width, 45px);
           }
           .emptyTips {
             @extend .Text2;
@@ -115,9 +135,9 @@
             @extend .Body2;
             color: var(--Text-body, #515758);
           }
-          >.iconfont {
+          > .iconfont {
             color: var(--Text-body, #515758);
-            font-size: 20px;
+            font-size: var(--spacing-20, 20px);
             transform: rotate(180deg);
           }
           .con {
@@ -125,8 +145,8 @@
             @extend .Headline5;
             color: var(--Text-headline, #0a1214);
 
-            width: 88px;
-            height: 32px;
+            width: var(--assetsAttestationDialog-contItem-con-width, 88px);
+            height: var(--spacing-32, 32px);
             border-radius: var(--spacing-8, 8px);
             background: var(--Badge, rgba(10, 18, 20, 0.05));
             backdrop-filter: blur(16px);
@@ -134,7 +154,10 @@
         }
         &.contItemAssets {
           .sourceGroup {
-            max-height: 252px;
+            max-height: var(
+              --assetsAttestationDialog-sourceGroup-maxHeight,
+              252px
+            );
           }
         }
       }

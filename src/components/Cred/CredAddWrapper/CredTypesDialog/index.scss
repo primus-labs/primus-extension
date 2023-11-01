@@ -1,47 +1,55 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/padoDialog.scss';
 @import '@/assets/css/padoM.scss';
 @import '@/assets/css/pSelectOption.scss';
-.padoDialog.credTypesDialog{
-  main{
-    gap: var(--spacing-24,24px);
-    .scrollList{
+.padoDialog.credTypesDialog {
+  --credTypeItem-height: 0.5442rem;
+  --credTypeItem-inner-width: 2.5034rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.credTypesDialog {
+    --credTypeItem-height: 80px;
+    --credTypeItem-inner-width: 368px;
+  }
+}
+
+.padoDialog.credTypesDialog {
+  main {
+    gap: var(--spacing-24, 24px);
+    .scrollList {
       width: 100%;
-      ul.credTypeList{
+      ul.credTypeList {
         @extend .fcss;
         width: 100%;
         gap: var(--spacing-20, 20px);
-        li{
+        li {
           @extend .pSelectOption;
           @extend .frcc;
           width: 100%;
-          height: 80px;
-          .innerContent{
+          height: var(--credTypeItem-height, 80px);
+          .innerContent {
             @extend .frsc;
             gap: var(--spacing-24, 24px);
-            width: 368px;
-            height: 48px;
-            .icon{
-              width: 36px;
+            width: var(--credTypeItem-inner-width, 368px);
+            height: var(--spacing-48, 48px);
+            .icon {
+              width: var(--spacing-36, 36px);
             }
-            .con{
+            .con {
               @extend .fcss;
-              gap: var(--spacing-8,8px);
+              gap: var(--spacing-8, 8px);
               flex: 1;
-              .title{
+              .title {
                 @extend .Headline5;
-                color: var(--Text-headline, #0A1214);      
+                color: var(--Text-headline, #0a1214);
               }
-              .desc{
+              .desc {
                 @extend .Text2;
-                color: var(--Text-hint, #7B7F80);
+                color: var(--Text-hint, #7b7f80);
               }
-
             }
           }
-        } 
+        }
       }
     }
-      
   }
 }

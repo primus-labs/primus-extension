@@ -1,0 +1,9 @@
+@import '@/assets/css/padoDialog.scss';
+
+@import '@/components/Cred/QRCodeDialog/qrCode.scss';
+.padoDialog.qrcodeDialog.bindPolygonidDialog {
+  padding: var(--spacing-36,36px) var(--spacing-42,42px) var(--spacing-32,32px);
+  main {
+    gap: var(--spacing-24, 24px);
+  }
+}

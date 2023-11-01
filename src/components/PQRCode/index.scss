@@ -1,0 +1,16 @@
+@import '@/assets/css/pFlex.sass';
+.pQRCodeWrapper {
+  --pQRCodeWrapper-svg-width: 1.7007rem;
+}
+@media (max-width: 1470px) {
+  .pQRCodeWrapper {
+    --pQRCodeWrapper-svg-width: 250px;
+  }
+}
+.pQRCodeWrapper {
+  @extend .frcc;
+  > svg {
+    width: var(--pQRCodeWrapper-svg-width, 250px);
+    height: var(--pQRCodeWrapper-svg-width, 250px);
+  }
+}

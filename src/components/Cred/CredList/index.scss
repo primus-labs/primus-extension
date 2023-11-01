@@ -1,23 +1,37 @@
-@import '@/assets/css/pVars.sass';
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/padoM.scss';
-@import '@/assets/css/pFont.sass';
 .credListWrapper {
-  padding-bottom: 83px;
-  margin: 24px auto 0;
-  width: $sCenterWidth;
+  --credListWrapper-pb: 0.5646rem;
+  --credCard-width: 2.2313rem;
+  --credCard-height: 0.9388rem;
+}
+@media (max-width: 1470px) {
+  .credListWrapper {
+    --credListWrapper-pb: 83px;
+    --credCard-width: 328px;
+    --credCard-height: 138px;
+  }
+}
+.credListWrapper {
+  padding-bottom: var(--credListWrapper-pb, 83px);
+  margin: var(--spacing-24, 24px) auto 0;
+  width: var(--pageCenter-width, 1032px);
   .credList {
     @extend .frss;
     flex-wrap: wrap;
-    gap: 24px;
+    gap: var(--spacing-24, 24px);
   }
   .emptyDataSourceItem {
-    width: 328px;
-    height: 138px;
+    width: var(--credCard-width, 328px);
+    height: var(--credCard-height, 138px);
+    border-radius: var(--spacing-12, 12px);
+    background: var(--bg-60, rgba(255, 255, 255, 0.6));
     box-shadow: -2px -2px 4px 0px rgba(233, 233, 233, 0.1) inset,
       2px 2px 4px 0px rgba(255, 255, 255, 0.3) inset;
+    backdrop-filter: blur(16px);
+
     .iconFont {
-      font-size: 18px;
+      font-size: var(--spacing-18, 18px);
     }
   }
 }

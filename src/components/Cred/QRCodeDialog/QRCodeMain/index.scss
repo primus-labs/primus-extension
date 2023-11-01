@@ -1,23 +1,30 @@
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/padoDialog.scss';
-
+.qrcodeMain {
+    --qrcodeMain-defaultImgWrapper-width: 1.7007rem;
+    --qrcodeMain-defaultImg-width: .5442rem;
+  }
+@media (max-width:1470px) {
+  .qrcodeMain {
+    --qrcodeMain-defaultImgWrapper-width: 250px;
+    --qrcodeMain-defaultImg-width: 80px;
+  }
+}
 .qrcodeMain {
   width: 100%;
   @extend .fccc;
+  gap: var(--spacing-24,24px);
   > header {
     @extend .padoDialogHeaderStyle;
   }
-  .pQRCodeWrapper,
+  
   .defaultImg {
-    margin-top: 24px;
-  }
-  .defaultImg {
-    width: 280px;
-    height: 280px;
+    width: var(--qrcodeMain-defaultImg-width,250px);
+    height: var(--qrcodeMain-defaultImg-width,250px);
     background-color: #f2f2f2;
     @extend .frcc;
     > img {
-      width: 80px;
+      width: var(--qrcodeMain-defaultImg-width,80px);
     }
   }
 }
