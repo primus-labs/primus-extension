@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, memo } from 'react';
+import React, { useState, useRef, useEffect, memo ,useCallback} from 'react';
 import type { ChangeEvent } from 'react';
-import './index.sass';
+import './index.scss';
 import type {FilterOptionList} from '@/types/config'
 
 interface TokenTableProps {
@@ -31,38 +31,47 @@ const PFilterContent: React.FC<TokenTableProps> = memo(
     // useEffect(() => {
     //   setActiveItem('All');
     // }, [])
+    const formatIconClassName = useCallback((item:any) => {
+      let defaultCN = 'iconfont icon-iconCheckbox';
+      if (item.disabled) {
+        defaultCN += 'iconfont icon-iconCheckbox disabled';
+      }
+      if (activeItem === item.label) {
+        defaultCN = 'iconfont icon-iconCheckboxActive checked';
+      }
+      return defaultCN;
+    }, [activeItem]);
 
     return (
       <section
         className={visible ? 'pFilterContent visible' : 'pFilterContent'}
         ref={willCloseEl}
       >
-        <ul className="formItems">
+        <ul className="formItems padodropdown">
           {list &&
             list.map((item) => {
               return (
-                <label className="formItem" key={item.label}>
-                  <input
-                    className="checkbox"
-                    name="proof"
-                    type="radio"
-                    defaultChecked={item.defaultValue}
-                    disabled={item.disabled}
-                    onChange={(e) => handleChange(e, item.label)}
-                  />
-                  <div
+                <li className="dropdownItemWrapper">
+                  <label
                     className={
-                      item.disabled
-                        ? 'iconCheckedWrapper disabled'
-                        : activeItem === item.label
-                        ? 'iconCheckedWrapper checked'
-                        : 'iconCheckedWrapper'
+                      activeItem === item.label
+                        ? 'formItem dropdownItem checked'
+                        : 'formItem dropdownItem'
                     }
-                  ></div>
-                  <div className="descItem">
-                    <div className="label">{item.label}</div>
-                  </div>
-                </label>
+                    key={item.label}
+                  >
+                    <input
+                      className="checkbox"
+                      name="proof"
+                      type="radio"
+                      defaultChecked={item.defaultValue}
+                      disabled={item.disabled}
+                      onChange={(e) => handleChange(e, item.label)}
+                    />
+                    <i className={formatIconClassName(item)}></i>
+                    <div className="desc">{item.label}</div>
+                  </label>
+                </li>
               );
             })}
         </ul>

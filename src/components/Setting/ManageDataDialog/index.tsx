@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import PRadioNew from '@/components/PRadioNew';
 import PMask from '@/components/PMask';
 import PRadio from '@/components/PRadio';
 import PButton from '@/components/PButton';
@@ -39,10 +39,26 @@ interface ManageDataDialogProps {
   onSubmit: () => void;
   onBack: () => void;
 }
-
+const updateFrequencyListNew = [
+  {
+    label: '1min',
+    disabled: false,
+    defaultValue: false,
+  },
+  {
+    label: '3min',
+    disabled: false,
+    defaultValue: true,
+  },
+  {
+    label: '5min',
+    disabled: false,
+    defaultValue: false,
+  },
+];
 const updateFrequencyList = [
   {
-    text: '1min',
+    label: '1min',
     value: '1',
   },
   {
@@ -556,6 +572,13 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       }
       onSubmit();
     };
+    const handleChange = useCallback((label: string | undefined) => {
+      // label && setUpdateFrequency(label);
+      if (label) {
+        const num = label.charAt(0);
+        setUpdateFrequency(num);
+      }
+    }, []);
 
     return (
       <PMask onClose={onClose}>
@@ -570,10 +593,14 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
                 <div className="contItem">
                   <div className="label">Update frequency</div>
                   <div className="value">
-                    <PRadio
+                    {/* <PRadio
                       val={updateFrequency}
                       onChange={setUpdateFrequency}
                       options={updateFrequencyList}
+                    /> */}
+                    <PRadioNew
+                      onChange={handleChange}
+                      list={updateFrequencyListNew}
                     />
                   </div>
                 </div>

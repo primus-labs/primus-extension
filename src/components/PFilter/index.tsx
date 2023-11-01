@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
 import PfilterContent from './PfilterContent';
 import type { MouseEvent } from 'react';
 import type {FilterOptionList} from '@/types/config'
-import './index.sass';
+import './index.scss';
 
 interface TokenTableProps {
   onChange: (label: string | undefined) => void;
@@ -10,7 +10,7 @@ interface TokenTableProps {
 }
 
 const PFilter: React.FC<TokenTableProps> = memo(({ onChange,list }) => {
-  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
+  const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);//TODO!!!
   const [activeItem, setActiveItem] = useState<string>();
 
   const willCloseEl = useRef(null);

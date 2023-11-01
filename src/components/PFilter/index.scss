@@ -1,0 +1,32 @@
+@import '@/assets/css/padoM.scss';
+.pFilter {
+  --pFilter-pt: .2517rem;
+}
+@media (max-width: 1470px) {
+  .pFilter {
+    --pFilter-pt: 37px;
+  }
+}
+.pFilter {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--pFilter-pt, 37px);
+  .filterIconWrapper {
+    position: absolute;
+    content: '';
+    top: var(--spacing-16, 16px);
+    right: 0;
+    width: var(--spacing-16, 16px);
+    height: var(--spacing-16, 16px);
+    background: url('@/assets/img/iconFilter.svg');
+    background-size: 100% 100%;
+    cursor: pointer;
+    &:hover {
+      background-image: url('../../assets/img/iconFilterActive.svg');
+    }
+    &.active,
+    &.active:hover {
+      background-image: url('../../assets/img/iconFilteredActive.svg');
+    }
+  }
+}

@@ -1,0 +1,48 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/components/PDropdownList';
+.pFilterContent {
+  --padodropdown-width: 1.0884rem;
+}
+@media (max-width: 1470px) {
+  .pFilterContent {
+    --padodropdown-width: 160px;
+  }
+}
+.pFilterContent {
+  display: none;
+  &.visible {
+    display: block;
+  }
+  .padodropdown.formItems {
+    width: var(--padodropdown-width, 160px);
+    box-shadow: 0px 2px 4px 0px rgba(9, 30, 66, 0.2);
+    gap: 0;
+    .dropdownItemWrapper {
+      .dropdownItem.formItem {
+        color: var(--Text-body, #515758);
+        &:hover {
+          color: var(--Text-headeline, #0a1214);
+          .iconfont {
+            color: var(--Text-headeline, #0a1214);
+          }
+        }
+        &.checked {
+          color: var(--Text-body, #515758);
+          .iconfont {
+            color: var(--Text-headeline, #0a1214);
+          }
+        }
+        .iconfont {
+          font-size: var(--spacing-14, 14px);
+          color: #515758;
+        }
+        .checkbox {
+          display: none;
+        }
+        .desc {
+          @extend .Text1;
+        }
+      }
+    }
+  }
+}

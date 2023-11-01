@@ -1,6 +1,16 @@
 @import '../../assets/css/pVars.sass';
 @import '../../assets/css/pFlex.sass';
 .pMask {
+  --mask-iconClose-top: 0.6122rem;
+  --mask-iconClose-right: 1.4898rem;
+}
+@media (max-width: 1470px) {
+  .pMask {
+    --mask-iconClose-top: 90px;
+    --mask-iconClose-right: 219px;
+  }
+}
+.pMask {
   position: fixed;
   z-index: 2;
   top: 0;
@@ -23,5 +33,3 @@
     }
   }
 }
-
-// @media (max-width: 1680px) .pMask .closeBtn position: absolute top: 90px right: 219px width: $mIconSize height: $mIconSize;
