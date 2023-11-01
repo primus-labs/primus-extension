@@ -593,11 +593,6 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
                 <div className="contItem">
                   <div className="label">Update frequency</div>
                   <div className="value">
-                    {/* <PRadio
-                      val={updateFrequency}
-                      onChange={setUpdateFrequency}
-                      options={updateFrequencyList}
-                    /> */}
                     <PRadioNew
                       onChange={handleChange}
                       list={updateFrequencyListNew}

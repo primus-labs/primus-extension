@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect, memo ,useCallback} from 'react';
+import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
 import type { ChangeEvent } from 'react';
 import './index.scss';
 import type {FilterOptionList} from '@/types/config'
-
+import PRadioNew from '@/components/PRadioNew';
 interface TokenTableProps {
   onChange: (label: string | undefined) => void;
   visible: boolean;
@@ -14,16 +14,7 @@ const PFilterContent: React.FC<TokenTableProps> = memo(
     const willCloseEl = useRef(null);
     const [activeItem, setActiveItem] = useState<string | undefined>('All');
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>, label: string) => {
-      // console.log(e, label)
-      const curChecked = e.target.checked;
-      if (curChecked) {
-        const activeI = activeItem === label ? undefined : label;
-        setActiveItem(activeI);
-      } else {
-        setActiveItem(undefined);
-      }
-    };
+    
     useEffect(() => {
       onChange(activeItem);
     }, [activeItem]);
@@ -47,34 +38,7 @@ const PFilterContent: React.FC<TokenTableProps> = memo(
         className={visible ? 'pFilterContent visible' : 'pFilterContent'}
         ref={willCloseEl}
       >
-        <ul className="formItems padodropdown">
-          {list &&
-            list.map((item) => {
-              return (
-                <li className="dropdownItemWrapper">
-                  <label
-                    className={
-                      activeItem === item.label
-                        ? 'formItem dropdownItem checked'
-                        : 'formItem dropdownItem'
-                    }
-                    key={item.label}
-                  >
-                    <input
-                      className="checkbox"
-                      name="proof"
-                      type="radio"
-                      defaultChecked={item.defaultValue}
-                      disabled={item.disabled}
-                      onChange={(e) => handleChange(e, item.label)}
-                    />
-                    <i className={formatIconClassName(item)}></i>
-                    <div className="desc">{item.label}</div>
-                  </label>
-                </li>
-              );
-            })}
-        </ul>
+        <PRadioNew onChange={setActiveItem} list={list} />
       </section>
     );
   }
