@@ -33,12 +33,15 @@
     "https://contract.mexc.com/",
     "https://api.gateio.ws/",
     "https://pado-online.s3.ap-northeast-1.amazonaws.com/",
-    "https://www.binance.com/"
+    "https://www.binance.com/",
+    "https://api.twitter.com/",
+    "https://twitter.com/"
+
   ],
   "web_accessible_resources": [
     {
       "resources": ["iconExtension.svg","iconSuc.svg"],
-      "matches": ["https://www.binance.com/*"]
+      "matches": ["https://www.binance.com/*","https://twitter.com/*"]
     }
   ]
 }

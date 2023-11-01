@@ -10,7 +10,7 @@
   }
 
   const themeRootEl = document.querySelector('.theme-root');
-  const isThemeLight = themeRootEl.classList.contains('light');
+  const isThemeLight = !!themeRootEl && themeRootEl.classList.contains('light');
 
   chrome.runtime.sendMessage(
     {
