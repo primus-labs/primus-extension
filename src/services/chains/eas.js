@@ -366,6 +366,106 @@ export async function attestByDelegationProxyFee(params) {
   }
 }
 
+export async function bulkAttest(params) {
+  let {
+    networkName,
+    metamaskprovider,
+    items/*: [{
+      data,
+      attesteraddr,
+      receipt,
+      signature,
+      type,
+      schemaName,
+    }]*/
+  } = params;
+  console.log('eas bulkAttest params', params);
+  const easProxyFeeContractAddress = EASInfo[networkName].easProxyFeeContract;
+  let provider = new ethers.providers.Web3Provider(metamaskprovider);
+  await provider.send('eth_requestAccounts', []);
+  let signer = provider.getSigner();
+  let contract;
+  if (networkName.startsWith('Linea')) {
+    contract = new ethers.Contract(
+      easProxyFeeContractAddress,
+      lineaportalabi,
+      signer
+    );
+  } else {
+    contract = new ethers.Contract(
+      easProxyFeeContractAddress,
+      proxyabi,
+      signer
+    );
+  }
+
+  let bulkParams = [];
+  for (const item of items) {
+    const splitsignature = utils.splitSignature(item.signature);
+    const formatSignature = {
+      v: splitsignature.v,
+      r: splitsignature.r,
+      s: splitsignature.s,
+    };
+    let schemauid;
+    const activeSchemaInfo = EASInfo[networkName].schemas[item.schemaName];
+    if (item.type === 'ASSETS_PROOF') {
+      schemauid = activeSchemaInfo.schemaUid;
+    } else if (item.type === 'TOKEN_HOLDINGS') {
+      schemauid = activeSchemaInfo.schemaUidTokenHoldings;
+    } else if (item.type === 'IDENTIFICATION_PROOF') {
+      schemauid = activeSchemaInfo.schemaUidIdentification;
+    } else if (item.type === 'web') {// TODO
+      schemauid = activeSchemaInfo.schemaUidWeb;
+    }
+    console.log('bulkAttest schemauid=', schemauid);
+
+    const paramsobj = {
+      schema: schemauid,
+      data: {
+        recipient: item.receipt,
+        expirationTime: 0,
+        revocable: true,
+        refUID: ZERO_BYTES32,
+        data: item.data,
+        value: 0n,
+      },
+      signature: formatSignature,
+      attester: item.attesteraddr,
+      deadline: 0,
+    };
+    bulkParams.push(paramsobj);
+  }
+
+  const fee = await getFee(networkName, metamaskprovider);
+  const bulkFee = fee * bulkParams.length;
+  let tx;
+  try {
+    tx = await contract.bulkAttest(bulkParams, { value: bulkFee });
+  } catch (er) {
+    try {
+        tx = await contract.callStatic.bulkAttest(bulkParams, { value: bulkFee });
+    } catch (error) {
+      console.log("eas bulkAttest caught error:\n", error);
+    }
+    return;
+  }
+
+  console.log('eas bulkAttest tx=', tx);
+  const txreceipt = await tx.wait();
+  console.log('eas bulkAttest txreceipt=', txreceipt);
+  if (networkName.startsWith('Linea')) {
+    return txreceipt.transactionHash;
+  } else {
+    let newAttestationUIDs = [];
+    for (let i=0; i<bulkParams.length; i++) {
+      const attestationUID = txreceipt.logs[txreceipt.logs.length - bulkParams.length + i].data;
+      newAttestationUIDs.push(attestationUID);
+    }
+    return newAttestationUIDs;
+  }
+}
+
 export function getAttestInfoByEncodeDdata(schemaStr, encodeD) {
   const schemaEncoder = new SchemaEncoder(schemaStr);
   let encodedData = schemaEncoder.decodeData(encodeD);
