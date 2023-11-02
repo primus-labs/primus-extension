@@ -93,11 +93,12 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
       let innerRadius = 60;
       let outerRadius = 82;
       let cLeft = 8;
-      let legendItemLabelWidth = 109; // 94
-      let legendItemValueWidth = 71; // 88
+      let legendItemLabelWidth = 101; // 94
+      let legendItemValueWidth = 78; // 88
       let legendItemValueFontSize = 20;
       let legendItemHeight = 27;
-      let legendItemLeft = 263;
+      // let legendItemLeft = 263;
+      let legendItemRight = 20;
       let legendTop = others ? '32' : 'center';
       if (document.documentElement.getBoundingClientRect().width <= 1680) {
         legendTop = others ? '12' : 'center';
@@ -108,7 +109,8 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
         legendItemValueWidth = 57; // 81
         legendItemValueFontSize = 16;
         legendItemHeight = 27;
-        legendItemLeft = 209;
+        // legendItemLeft = 209;
+        legendItemRight = 10;
       }
     
       return {
@@ -127,8 +129,9 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
           // pageIconSize: 15,
           // pageButtonGap: 32,
           top: legendTop,
-          // right: legendItemRight,
-          left: legendItemLeft,
+          right: legendItemRight,
+          // left: legendItemLeft,
+         
           // backgroundColor: 'rgba(0, 0, 0, 0.05)',
           // borderRadius: '8px',
           orient: 'vertical',
@@ -159,16 +162,16 @@ const PPieChart: React.FC<PPieChartProps> = memo(({ list, others }) => {
             // height: 41,
             rich: {
               name: {
-                fontFamily: 'Inter-Medium',
-                color: 'rgba(0,0,0,0.6)',
+                fontFamily: 'Inter',
+                color: '#515758',
                 fontSize: 14,
                 height: legendItemHeight,
                 lineHeight: legendItemHeight,
                 width: legendItemLabelWidth,
               },
               value: {
-                fontFamily: 'Inter-Medium',
-                color: 'rgb(0,0,0)',
+                fontFamily: 'Inter',
+                color: '#0A1214',
                 fontSize: legendItemValueFontSize,
                 height: legendItemHeight,
                 lineHeight: legendItemHeight,

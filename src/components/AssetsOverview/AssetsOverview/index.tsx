@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 
 import SourcesStatisticsBar from '../SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
-import PTabsNew from '@/components/PTabsNew'
+import PTabsNew from '@/components/PTabsNew';
 import PieChart from '../PieChart';
 import PieTabs from './PieTabs';
 
@@ -101,7 +101,6 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
     }, [totalPnl, totalAssetsBalance]);
     const totalAssetsMap: AssetsMap = useMemo(() => {
-     
       const reduceF: (
         prev: AssetsMap,
         curr: DataSourceItemType
@@ -190,7 +189,6 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
       }
     }, [list, activeSourceName]);
     const getChartData = useMemo(() => {
-      
       if (pieTab === 'Token') {
         let formatArr: any = [];
         // let othersTotalBalance: any = new BigNumber(0);
@@ -210,7 +208,7 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
             });
           }
         );
-        
+
         return formatArr;
       } else {
         const chartData = list.map(({ name, totalBalance, address }) => {
@@ -232,9 +230,10 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
     const getShowChartData = useMemo(() => {
       const len = getChartData.length;
       if (len > 6) {
-        const orderedList = getChartData.sort((a:any, b:any) =>
-            sub(Number(b.value), Number(a.value)).toNumber())
-          
+        const orderedList = getChartData.sort((a: any, b: any) =>
+          sub(Number(b.value), Number(a.value)).toNumber()
+        );
+
         // console.log('getChartData', getChartData, getChartData.slice(0, 6));
         return orderedList.slice(0, 6);
       }
@@ -340,8 +339,8 @@ const AssetsOverview: React.FC<AssetsOverviewProps> = memo(
             </header>
             <div className="cardCon pieChartFatherBox">
               <PieChart list={getShowChartData} others={getShowChartOthers} />
+              {getShowChartOthers}
             </div>
-            {getShowChartOthers}
           </div>
         </section>
         {chartOptionsDetailVisible && (
