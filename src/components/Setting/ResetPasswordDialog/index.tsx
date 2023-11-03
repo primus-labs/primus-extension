@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import PButton from '@/components/PButton';
 import PInput from '@/components/PInput';
 import PMask from '@/components/PMask';
-import SetPassword from './SetPassword';
+
 import PBack from '@/components/PBack';
 
 import { postMsg } from '@/utils/utils';

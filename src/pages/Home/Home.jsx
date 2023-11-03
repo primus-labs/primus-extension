@@ -8,7 +8,7 @@ import { postMsg } from '@/utils/utils';
 import { requestSignTypedData } from '@/services/wallets/utils';
 import { getUserIdentity } from '@/services/api/user';
 import { initWalletAddressActionAsync } from '@/store/actions';
-import './Home.scss';
+import './home.scss';
 
 const Home = memo(() => {
   const dispatch = useDispatch();

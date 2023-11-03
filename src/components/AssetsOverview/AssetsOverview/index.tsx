@@ -5,7 +5,7 @@ import SourcesStatisticsBar from '../SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
 import PTabsNew from '@/components/PTabsNew';
 import PieChart from '../PieChart';
-import PieTabs from './PieTabs';
+
 
 import ChartOptionsDetailDialog from './ChartOptionsDetailDialog';
 import {
