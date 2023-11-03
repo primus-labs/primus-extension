@@ -1,7 +1,7 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch, } from 'react-redux';
 import {
-  setConnectWalletDialogVisibleAction,
+  // setConnectWalletDialogVisible1,
   connectWalletAsync,
 } from '@/store/actions';
 import { formatAddress } from '@/utils/utils';
@@ -17,6 +17,7 @@ import type { ActiveRequestType } from '@/types/config';
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 
 const PConnect = memo(() => {
+  const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] = useState<boolean>(false);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [step, setStep] = useState<number>(1);
   const connectWalletDialogVisible = useSelector(
@@ -38,13 +39,13 @@ const PConnect = memo(() => {
   );
   const handleConnect = useCallback(
     () => {
-      dispatch(setConnectWalletDialogVisibleAction(true));
+      setConnectWalletDialogVisible1(true)
     },
-    [dispatch]
+    []
   );
   const handleCloseMask = useCallback(() => {
-    dispatch(setConnectWalletDialogVisibleAction(false));
-  }, [dispatch]);
+    setConnectWalletDialogVisible1(false)
+  }, []);
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       const startFn = () => {
@@ -69,8 +70,8 @@ const PConnect = memo(() => {
   );
   const onSubmitProcessDialog = useCallback(() => {
     setStep(1);
-    dispatch(setConnectWalletDialogVisibleAction(false));
-  }, [dispatch]);
+    setConnectWalletDialogVisible1(false)
+  }, []);
   const checkIfHadBound = useCallback(async () => {
     const { connectedWalletAddress } = await chrome.storage.local.get([
       'connectedWalletAddress',
@@ -86,20 +87,20 @@ const PConnect = memo(() => {
     <div className="PConnect">
       {connectedWallet?.address ? (
         <PButton
-          prefix={<img src={iconWallet} alt=""/>}
+          prefix={<img src={iconWallet} alt="" />}
           text={formatAddress(connectedWallet?.address, 4)}
           onClick={() => {}}
         />
       ) : (
         <PButton text="Connect Wallet" onClick={handleConnect} />
       )}
-      {connectWalletDialogVisible && step === 1 && (
+      {connectWalletDialogVisible1 && step === 1 && (
         <ConnectWalletDialog
           onClose={handleCloseMask}
           onSubmit={handleSubmitConnectWallet}
         />
       )}
-      {connectWalletDialogVisible && step === 2 && (
+      {connectWalletDialogVisible1 && step === 2 && (
         <AddSourceSucDialog
           type={activeRequest?.type}
           title={activeRequest?.title}

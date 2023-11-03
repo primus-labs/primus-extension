@@ -205,6 +205,7 @@ const CredOverview = memo(() => {
   );
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
+      setConnectDialogVisible(false)
       const startFn = () => {
         setActiveRequest({
           type: 'loading',

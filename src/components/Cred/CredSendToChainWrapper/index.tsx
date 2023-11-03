@@ -30,7 +30,6 @@ import {
 } from '@/services/chains/eas.js';
 import {
   setCredentialsAsync,
-  setConnectWalletDialogVisibleAction,
   connectWalletAsync,
   setRewardsDialogVisibleAction,
 } from '@/store/actions';
