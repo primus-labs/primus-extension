@@ -19,16 +19,13 @@ const QRCodeMain: React.FC<QRCodeMainProps> = memo(
           <h1>{title}</h1>
           <h2>{desc}</h2>
         </header>
-        {/* {qrcodeValue ? (
+        {qrcodeValue ? (
           <PQRCode value={qrcodeValue} size={qrcodeSize} />
         ) : (
           <div className="defaultImg">
             <img src={qrCodeDefault} alt="" />
           </div>
-        )} */}
-        <div className="defaultImg">
-          <img src={qrCodeDefault} alt="" />
-        </div>
+        )}
       </div>
     );
   }

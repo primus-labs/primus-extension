@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../index.sass';
+import '../index.scss';
 interface IconProps {
   color?: string;
   hoverColor?: string;

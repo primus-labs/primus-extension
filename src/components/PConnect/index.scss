@@ -4,9 +4,9 @@
 @import '@/assets/css/padoM.scss';
 
 .PConnect {
-    --pButton-width: .8163rem;
-    --pButton-height: .2449rem;
-  }
+  --pButton-width: 0.8163rem;
+  --pButton-height: 0.2449rem;
+}
 @media (max-width: 1470px) {
   .PConnect {
     --pButton-width: 120px;
@@ -24,5 +24,9 @@
     > img {
       width: var(--spacing-16, 16px);
     }
+  }
+  .padoDialog.addDataSourceSucDialog {
+    padding-left: var(--spacing-60, 60px);
+    padding-right: var(--spacing-60, 60px);
   }
 }

@@ -148,7 +148,19 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
     }, [])
     const onBackBindPolygonIDDialog = useCallback(() => {
       setStep(1)
-    },[])
+    }, [])
+    const footerTip = useMemo(() => {
+      if (activeRequest?.type === 'loading') {
+        return (
+          <div className="footerTip safeTip">
+            <p>PADO will not access your private data.</p>
+            <p>We uses IZK to ensure your privacy.</p>
+          </div>
+        );
+      } else {
+        return null;
+      }
+    }, [activeRequest?.type]);
     useEffect(() => {
       if (visible) {
         setDid(undefined);
@@ -191,6 +203,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             headerEl={
               <AddressInfoHeader address={did as string} icon={iconPolygonID} />
             }
+            tip={footerTip}
           />
         )}
       </div>

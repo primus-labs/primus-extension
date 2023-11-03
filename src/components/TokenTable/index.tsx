@@ -341,7 +341,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
       }
     }, []);
     useEffect(() => {
-      setFilterAccount(undefined);
+      setFilterAccount('All');
     }, [name]);
 
     return (

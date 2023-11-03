@@ -3,7 +3,7 @@ import PfilterContent from './PfilterContent';
 import type { MouseEvent } from 'react';
 import type {FilterOptionList} from '@/types/config'
 import './index.scss';
-
+import IconFilter from '@/components/Icons/IconFilter'
 interface TokenTableProps {
   onChange: (label: string | undefined) => void;
   list: FilterOptionList;
@@ -43,18 +43,31 @@ const PFilter: React.FC<TokenTableProps> = memo(({ onChange,list }) => {
     };
   }, []);
   return (
-    <section className="pFilter" ref={willCloseEl} onMouseEnter={handleEnterAvatar}  onMouseLeave={handleLeaveAvatar}>
+    <section
+      className="pFilter"
+      ref={willCloseEl}
+      onMouseEnter={handleEnterAvatar}
+      onMouseLeave={handleLeaveAvatar}
+    >
       <div
         className={
-          activeItem !== undefined && activeItem !== 'All' ? 'filterIconWrapper active' : 'filterIconWrapper'
+          activeItem !== undefined && activeItem !== 'All'
+            ? 'filterIconWrapper active'
+            : 'filterIconWrapper'
         }
         onClick={() => {
           setDorpdownVisible((i) => !i);
         }}
         ref={iconEl}
         onMouseEnter={handleEnterAvatar}
-      ></div>
-      <PfilterContent onChange={handleChange} visible={dorpdownVisible} list={list} />
+      >
+        {/* <IconFilter /> */}
+      </div>
+      <PfilterContent
+        onChange={handleChange}
+        visible={dorpdownVisible}
+        list={list}
+      />
     </section>
   );
 });
