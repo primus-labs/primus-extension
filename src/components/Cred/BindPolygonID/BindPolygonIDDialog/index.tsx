@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useCallback, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
 import QRCodeMain from '@/components/Cred/QRCodeDialog/QRCodeMain';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
@@ -18,7 +19,9 @@ interface BindPolygonIDDialogProps {
   onClose: () => void;
   onSubmit: (uuid: string, did: string) => void;
   activeCred?: CredTypeItemType;
+  onBack: () => void;
 }
+
 type requestConfigParamsType = {
   extraHeader?: {
     'user-id': string;
@@ -27,7 +30,7 @@ type requestConfigParamsType = {
 };
 const POLLINGTIME = 3000;
 const BindPolygonIDDialog: React.FC<BindPolygonIDDialogProps> = memo(
-  ({ onClose, onSubmit, activeCred }) => {
+  ({ onClose, onSubmit, activeCred,onBack }) => {
     const [qrcodeVal, setQrcodeVal] = useState<string>('');
     const [connectFlag, setConnectFlag] = useState<boolean>(false);
     const [requestConfigParams, setRequestConfigParams] =
@@ -109,9 +112,10 @@ const BindPolygonIDDialog: React.FC<BindPolygonIDDialogProps> = memo(
         <PMask onClose={onClose}>
           <div className="padoDialog qrcodeDialog bindPolygonidDialog">
             <main>
+              <PBack onBack={onBack} />
               <AddressInfoHeader address={activeCred?.address as string} />
               <QRCodeMain
-                title="Bind your Polygon DID"
+                title="Bind to Polygon ID"
                 desc="Use your Polygon ID wallet to scan."
                 qrcodeValue={qrcodeVal}
               />

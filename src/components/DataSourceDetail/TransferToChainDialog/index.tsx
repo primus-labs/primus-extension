@@ -134,47 +134,10 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
               <h2>{desc}</h2>
             </header>
             <SourceGroup onChange={onChange} list={activeSourceList} />
-            {/* <ul className="networkList">
-              {topList.map((item) => {
-                return (
-                  <li
-                    className={liClassName(item)}
-                    key={item.title}
-                    onClick={() => handleClickNetwork(item)}
-                  >
-                    <img src={item.icon} alt="" />
-                  </li>
-                );
-              })}
-            </ul> */}
-            {/* <div
-              className={liClassName(list[0])}
-              onClick={() => handleClickNetwork(list[0])}
-            >
-              <img src={list[0]?.icon} alt="" />
-            </div> */}
-            {/* <div className="dividerWrapper">
-              <i></i>
-              <div className="divider">{listSeparator}</div>
-              <i></i>
-            </div>
-            <ul className="networkList">
-              {activeList.map((item) => {
-                return (
-                  <li
-                    className={liClassName(item)}
-                    key={item.title}
-                    onClick={() => handleClickNetwork(item)}
-                  >
-                    <img src={item.icon} alt="" />
-                  </li>
-                );
-              })}
-            </ul> */}
           </main>
           <footer>
-            <PButton text="Next" onClick={handleClickNext} />
-            {errorTip && <PBottomErrorTip text="errorTip" />}
+            <PButton text="Select" onClick={handleClickNext} />
+            {errorTip && <PBottomErrorTip text={errorTip} />}
           </footer>
         </div>
       </PMask>

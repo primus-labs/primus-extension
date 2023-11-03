@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useCallback, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
+import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog'
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import BindPolygonIDDialog from './BindPolygonIDDialog';
@@ -12,6 +13,7 @@ import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
+
 import './index.scss';
 
 
@@ -21,7 +23,16 @@ interface BindPolygonIDProps {
   onSubmit: () => void;
   activeCred?: CredTypeItemType;
 }
-
+const sourceList = [
+  //name value
+  {
+    title: 'Polyon ID',
+    showName: 'Polyon ID',
+    icon: iconPolygonID,
+    name: 'Polyon ID',
+    value: 'Polyon ID',
+  },
+];
 const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
   ({ visible, onClose, onSubmit, activeCred }) => {
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>({
@@ -29,6 +40,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
       title: 'A new attestation is processing',
       desc: 'It may take a few seconds.',
     });
+    const [step, setStep] = useState<number>(0);
     const [did, setDid] = useState<string>();
     const connectFlag = useMemo(() => {
       return !!did;
@@ -38,6 +50,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
       async (uuid: string, didp: string) => {
         console.log('handleSubmitBindPolygonid');
         setDid(didp);
+        setStep(3)
         try {
           const { id, token } = userInfo;
           const requestConfigParams = {
@@ -130,22 +143,45 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
       },
       [activeCred, userInfo]
     );
+    const handleSubmitTransferToChain = useCallback((item:any) => {
+      setStep(2)
+    }, [])
+    const onBackBindPolygonIDDialog = useCallback(() => {
+      setStep(1)
+    },[])
     useEffect(() => {
       if (visible) {
         setDid(undefined);
+        setStep(1)
       }
     }, [visible]);
 
     return (
       <div className={visible ? 'bindPolygonId' : 'bindPolygonId hidden'}>
-        {visible && !connectFlag && (
+        {visible && step === 1 && (
+          <TransferToChainDialog
+            title="Bind to Your DID"
+            desc="Bind your attestation to one of the following on-chain identity."
+            list={sourceList}
+            tip="Please select one on-chain identity"
+            checked={false}
+            backable={false}
+            headerType={'attestation'}
+            address={activeCred?.address}
+            onClose={onClose}
+            onSubmit={handleSubmitTransferToChain}
+            onCancel={onClose}
+          />
+        )}
+        {visible && step === 2 && (
           <BindPolygonIDDialog
             activeCred={activeCred}
             onClose={onClose}
             onSubmit={handleSubmitBindPolygonid}
+            onBack={onBackBindPolygonIDDialog}
           />
         )}
-        {visible && connectFlag && (
+        {visible && step === 3 && (
           <AddSourceSucDialog
             onClose={onClose}
             onSubmit={onSubmit}
