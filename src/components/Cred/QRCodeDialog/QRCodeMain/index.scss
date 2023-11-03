@@ -2,12 +2,12 @@
 @import '@/assets/css/padoDialog.scss';
 .qrcodeMain {
     --qrcodeMain-defaultImgWrapper-width: 1.7007rem;
-    // --qrcodeMain-defaultImg-width: .5442rem;
+    --qrcodeMain-defaultImg-width: .6803rem;
   }
 @media (max-width:1470px) {
   .qrcodeMain {
     --qrcodeMain-defaultImgWrapper-width: 250px;
-    // --qrcodeMain-defaultImg-width: 80px;
+    --qrcodeMain-defaultImg-width: 100px;
   }
 }
 .qrcodeMain {
@@ -24,7 +24,7 @@
     background-color: #f2f2f2;
     @extend .frcc;
     > img {
-      width: 100%;
+      width: var(--qrcodeMain-defaultImg-width,100px);
     }
   }
 }

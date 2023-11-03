@@ -527,7 +527,9 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           activeExSourceNameArr.includes(credentialObj[key].source) ||
           activeKYCSourceNameArr.includes(credentialObj[key].source)
         ) {
-          delete newCredentialObj[key];
+          if (newCredentialObj[key].reqType !== 'web') {
+            delete newCredentialObj[key];
+          }
         }
       });
       await chrome.storage.local.set({
@@ -581,50 +583,8 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
     }, []);
 
     return (
-      <PMask onClose={onClose}>
-        {!reconfirmVisible && (
-          <div className="padoDialog manageDataDialog">
-            <PBack onBack={onBack} />
-            <main>
-              <header>
-                <h1>Manage Data</h1>
-              </header>
-              <div className="formContent scrollList">
-                <div className="contItem">
-                  <div className="label">Update frequency</div>
-                  <div className="value">
-                    <PRadioNew
-                      onChange={handleChange}
-                      list={updateFrequencyListNew}
-                    />
-                  </div>
-                </div>
-                <div className="contItem contItemAssets">
-                  <div className="label">Data Connected</div>
-                  <div className="value">
-                    <div className="operations">
-                      <div className="operationItem" onClick={onDownload}>
-                        <IconDownload />
-                      </div>
-                      <div className="operationItem" onClick={onClear}>
-                        <IconClear />
-                      </div>
-                    </div>
-                    <ConnectedDataSourceList
-                      mutiple
-                      onChange={onChangeDataSource}
-                    />
-                  </div>
-                </div>
-              </div>
-            </main>
-            <footer>
-              <PButton text="OK" onClick={onSubmitDialog} />
-              {errorTip && <PBottomErrorTip text={errorTip} />}
-            </footer>
-          </div>
-        )}
-        {reconfirmVisible && (
+      <>
+        {reconfirmVisible ? (
           <ReconfirmDialog
             onClose={onClose}
             onSubmit={onConfirmReconfirm}
@@ -632,8 +592,51 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
               setReconfirmVisible(false);
             }}
           />
+        ) : (
+          <PMask onClose={onClose}>
+            <div className="padoDialog manageDataDialog">
+              <PBack onBack={onBack} />
+              <main>
+                <header>
+                  <h1>Manage Data</h1>
+                </header>
+                <div className="formContent scrollList">
+                  <div className="contItem">
+                    <div className="label">Update Frequency</div>
+                    <div className="value">
+                      <PRadioNew
+                        onChange={handleChange}
+                        list={updateFrequencyListNew}
+                      />
+                    </div>
+                  </div>
+                  <div className="contItem contItemAssets">
+                    <div className="label">Data Connected</div>
+                    <div className="value">
+                      <div className="operations">
+                        <div className="operationItem" onClick={onDownload}>
+                          <IconDownload />
+                        </div>
+                        <div className="operationItem" onClick={onClear}>
+                          <IconClear />
+                        </div>
+                      </div>
+                      <ConnectedDataSourceList
+                        mutiple
+                        onChange={onChangeDataSource}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </main>
+              <footer>
+                <PButton text="OK" onClick={onSubmitDialog} />
+                {errorTip && <PBottomErrorTip text={errorTip} />}
+              </footer>
+            </div>
+          </PMask>
         )}
-      </PMask>
+      </>
     );
   }
 );

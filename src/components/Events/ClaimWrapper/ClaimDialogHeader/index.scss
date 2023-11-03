@@ -3,16 +3,18 @@
 @import '@/assets/css/padoM.scss';
 .claimDialogHeader {
     --claimDialogHeader-illustration-width: .3076rem;
+    --claimDialogHeader-width: 3.4014rem;
 }
 @media (max-width:1470px) {
   .claimDialogHeader {
     --claimDialogHeader-illustration-width: 45.217px;
+    --claimDialogHeader-width: 500px;
   }
 }
 .claimDialogHeader{
   @extend .Headline2;
   @extend .frcc;
-  width: 500px;
+  width: var(--claimDialogHeader-width,500px);
   height: var(--spacing-100,100px);
   color: #000;
   border-radius: var(--spacing-24,24px) var(--spacing-24,24px) 0 0;

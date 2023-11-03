@@ -395,7 +395,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             </header>
             <div className="formContent">
               <div className="contItem">
-                <div className="label">Proof content</div>
+                <div className="label">Proof Content</div>
                 <div className="value">
                   <div className="desc">
                     {activeAttestationTypeInfo.credProofContent}
@@ -464,30 +464,12 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                   }}
                   list={activeConnectedSourceList}
                 />
-                {/* {activeConnectedSourceList.length > 0 && (
-                  <ul className="dataList">
-                    {activeConnectedSourceList.map((item) => {
-                      return (
-                        <li
-                          className={liClassNameCallback(item)}
-                          key={item.name}
-                          onClick={() => {
-                            handleClickData(item);
-                          }}
-                        >
-                          <img src={item.icon} alt="" />
-                          <h6>{item.name}</h6>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )} */}
-                {activeConnectedSourceList.length === 0 && (
+                {/* {activeConnectedSourceList.length === 0 && (
                   <div className="emptyContent">
                     <img src={iconInfoGray} alt="" />
                     <h2>{emptyCon}</h2>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </main>

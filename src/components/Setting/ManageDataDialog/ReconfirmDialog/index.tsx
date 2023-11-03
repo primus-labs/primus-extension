@@ -20,7 +20,7 @@ const ReconfirmDialog: React.FC<AddSourceSucDialogProps> = memo(
   }) => {
     return (
       <PMask onClose={onClose}>
-        <div className="padoDialog  addDataSourceSucDialog reconfirmDialog">
+        <div className="padoDialog addDataSourceSucDialog reconfirmDialog">
           <PBack onBack={onBack} />
           <main>
             <div className="holderH"></div>

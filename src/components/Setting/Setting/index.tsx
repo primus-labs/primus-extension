@@ -67,8 +67,14 @@ const Setting: React.FC<SettingProps> = memo(({ onClose }) => {
   }, []);
 
   return (
-    <div className='mySetting'>
-      <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />
+    <div className="mySetting">
+      {!resetPwdDialogVisible &&
+        !resetPwdSucDialogVisible &&
+        !exportAddressDialogVisible &&
+        !manageDataDialogVisible && (
+          <SettingDialog onClose={onCloseSettingDialog} onChange={onChange} />
+        )}
+
       {resetPwdDialogVisible && (
         <ResetPasswordDialog
           onClose={onCloseDialog}

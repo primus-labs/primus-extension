@@ -5,8 +5,8 @@
 .pTabsNewStyle1 {
   --pTabsNew-mb: -0.0136rem;
   --pTabsNew-tab-p: 0 0.0136rem;
-  --pTabsNew-tab-height: .3503rem;
-  --pTabsNew-tab-bbh: .0204rem;
+  --pTabsNew-tab-height: 0.3503rem;
+  --pTabsNew-tab-bbh: 0.0204rem;
 }
 .pTabsNew {
   --pTabsNew-tab-height: 0.1837rem;
@@ -40,26 +40,36 @@
         .iconfont {
           color: var(--Button-active, #252c2e);
         }
+        .borderB {
+          background: var(--Line, #dfe0e0);
+        }
       }
     }
     &.activeTab {
+      &:hover {
+        .con {
+          .borderB {
+            background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+          }
+        }
+      }
       .con {
         color: var(--Button-active, #252c2e);
         .iconfont {
           color: var(--Button-active, #252c2e);
         }
-        // .borderB {
-        //   background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
-        // }
+        .borderB {
+          background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+        }
       }
     }
     .con {
       @extend .Body2;
       color: var(--Text-hint, #7b7f80);
       gap: var(--spacing-8, 8px);
-      // .borderB {
-      //   background: transparent;
-      // }
+      .borderB {
+        background: transparent;
+      }
       .iconfont {
         font-size: var(--spacing-18, 18px);
       }
@@ -83,6 +93,9 @@
         color: var(--Button-active, #252c2e);
         .iconfont {
           color: var(--Button-active, #252c2e);
+        }
+        .borderB {
+          background: var(--Line, #dfe0e0);
         }
       }
     }
@@ -120,6 +133,7 @@
         height: var(--pTabsNew-tab-bbh, 1.5px);
         border-radius: calc(var(--pTabsNew-tab-bbh, 1.5px) / 2);
         background: var(--Line, #dfe0e0);
+        background: transparent;
       }
       > img {
         width: var(--spacing-18, 18px);

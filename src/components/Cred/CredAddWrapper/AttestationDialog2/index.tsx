@@ -548,7 +548,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             </header>
             <div className="formContent">
               <div className="contItem contItemNew">
-                <div className="label">Proof content</div>
+                <div className="label">Proof Content</div>
                 <div className="value">
                   {type === 'IDENTIFICATION_PROOF' && (
                     <div className="pSelectWrapper">

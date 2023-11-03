@@ -55,9 +55,11 @@
       border-radius: var(--spacing-12, 12px);
       // background: var(--bg-60, rgba(255, 255, 255, 0.6));
       backdrop-filter: blur(16px);
-      box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.3),
-        inset -2px -2px 4px rgba(233, 233, 233, 0.1);
-
+      // box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+      //   inset -2px -2px 4px rgba(233, 233, 233, 0.1);
+      box-shadow: -2px -2px 4px 0px rgba(233, 233, 233, 0.1) inset,
+        2px 2px 4px 0px rgba(255, 255, 255, 0.3) inset,
+        0px 1px 2px 0px rgba(10, 18, 20, 0.1);
       &:hover {
         box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1),
           inset 2px 2px 4px rgba(255, 255, 255, 0.3),
