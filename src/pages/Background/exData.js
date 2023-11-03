@@ -295,14 +295,28 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     } else {
       extRequestsOrder = 'account-balance';
     }
-    const ext = {
-      calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-      extRequests: {
-        orders: [extRequestsOrder], // TODO
-        [extRequestsOrder]: extRequestsOrderInfo,
-      },
-      
-    };
+
+    let ext;
+    if (source === 'binance' || source === 'okx') {
+      const extUidHashRequestsInfo = await assembleUidHashRequestsParams(form, USERPASSWORD, port);
+      ext = {
+        calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
+          extRequests: {
+          orders: ["uid-hash", extRequestsOrder], // TODO
+          "uid-hash": extUidHashRequestsInfo,
+          [extRequestsOrder]: extRequestsOrderInfo,
+        },
+      };
+    } else {
+      ext = {
+        calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
+          extRequests: {
+            orders: [extRequestsOrder], // TODO
+            [extRequestsOrder]: extRequestsOrderInfo,
+        },
+      };
+    }
+
     Object.assign(params, {
       ext,
       exchange: {
@@ -324,6 +338,44 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   }
 
   return params;
+}
+
+async function assembleUidHashRequestsParams(form, USERPASSWORD, port) {
+  const sourceLowerCaseName = form.source.toLowerCase();
+  let extRequestsOrderInfo = {};
+  let data = {};
+  let signres = null;
+  switch (sourceLowerCaseName) {
+    case 'binance':
+      data = {
+        path: 'account',
+        api: 'private',
+        method: 'GET',
+        params: { recvWindow: 60 * 1000 },
+      };
+      signres = await sign('binance', data, USERPASSWORD, port);
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag=\"uid\"::end_tag=}';
+      signres.decryptFlag = 'false';
+      signres.calculationType = 'A_VALUE_HASH';
+      extRequestsOrderInfo = { ...signres };
+      break;
+    case 'okx':
+      data = {
+        path: 'account/config',
+        api: 'private',
+        method: 'GET',
+        params: {},
+      };
+      signres = await sign('okx', data, USERPASSWORD, port);
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag=\"mainUid\":\":end_tag=\"';
+      signres.decryptFlag = 'false';
+      signres.calculationType = 'A_VALUE_HASH';
+      extRequestsOrderInfo = { ...signres };
+      break;
+    default:
+      break;
+  }
+  return extRequestsOrderInfo;
 }
 
 async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {

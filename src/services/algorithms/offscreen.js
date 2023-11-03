@@ -172,6 +172,11 @@ function call(str) {
         switch(source) {
             case 'binance':
                 signParams = {recvWindow: 60 * 1000};
+                if (jsonParams.params.url.startsWith('https://api.binance.com/api/v3/account')) {
+                    res = exchange.sign('account', 'private', 'GET', signParams);
+                    console.log('offscreen call binance uid res=', res);
+                    return JSON.stringify(res);
+                }
                 if (jsonParams.params.schemaType === 'Token Holdings') {
                     signParams.asset = jsonParams.params.holdingToken;
                 }
@@ -180,6 +185,11 @@ function call(str) {
                 return JSON.stringify(res);
             case 'okx':
                 signParams = {};
+                if(jsonParams.params.url.startsWith('https://www.okx.com/api/v5/account/config')) {
+                    res = exchange.sign('account/config', 'private', 'GET', signParams);
+                    console.log('offscreen call okx uid res=', res);
+                    return JSON.stringify(res);
+                }
                 if (jsonParams.params.schemaType === 'Token Holdings') {
                     signParams.ccy = jsonParams.params.holdingToken;
                 }
