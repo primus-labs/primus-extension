@@ -40,7 +40,7 @@ const DataSourcesExplainDialog: React.FC<DataSourcesExplainDialogProps> = memo(
           <PBack onBack={onSubmit} />
           <main>
             <header>
-              <h1>Under your control</h1>
+              <h1>Under Your Control</h1>
             </header>
             <ul className="explainItemList">
               {list.map((item) => {

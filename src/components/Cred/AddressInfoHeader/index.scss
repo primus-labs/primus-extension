@@ -21,7 +21,7 @@
     .iconAddressWrapper {
       border-radius: 50%;
       @extend .frcc;
-      background: var(--bg-80, rgba(255, 255, 255, 0.8));
+      background: var(--bg-90, rgba(255, 255, 255, 0.9));
       width: var(--addressInfoHeader-width, 38px); //width: 39.027px;
       height: var(--addressInfoHeader-width, 38px);
       img.avatar {

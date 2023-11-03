@@ -5,8 +5,8 @@
 .pTabsNewStyle1 {
   --pTabsNew-mb: -0.0136rem;
   --pTabsNew-tab-p: 0 0.0136rem;
-  --pTabsNew-tab-height: 0.3537rem;
-  --pTabsNew-tab-bbh: 0.0272rem;
+  --pTabsNew-tab-height: .3503rem;
+  --pTabsNew-tab-bbh: .0204rem;
 }
 .pTabsNew {
   --pTabsNew-tab-height: 0.1837rem;
@@ -18,8 +18,8 @@
   .pTabsNewStyle1 {
     --pTabsNew-mb: -2px;
     --pTabsNew-tab-p: 0 2px;
-    --pTabsNew-tab-height: 52px;
-    --pTabsNew-tab-bbh: 4px;
+    --pTabsNew-tab-height: 51.5px;
+    --pTabsNew-tab-bbh: 3px;
   }
   .pTabsNew {
     --pTabsNew-tab-height: 27px;
@@ -48,18 +48,18 @@
         .iconfont {
           color: var(--Button-active, #252c2e);
         }
-        .borderB {
-          background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
-        }
+        // .borderB {
+        //   background: linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%);
+        // }
       }
     }
     .con {
       @extend .Body2;
       color: var(--Text-hint, #7b7f80);
       gap: var(--spacing-8, 8px);
-      .borderB {
-        background: transparent;
-      }
+      // .borderB {
+      //   background: transparent;
+      // }
       .iconfont {
         font-size: var(--spacing-18, 18px);
       }

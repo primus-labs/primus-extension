@@ -25,7 +25,7 @@ import { postMsg } from '@/utils/utils';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
-import './index.sass';
+
 import { updateAlgoUrl } from '@/config/envConstants';
 
 const Layout = memo(() => {

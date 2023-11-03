@@ -10,7 +10,7 @@
   }
 }
 .padoDialog.settingDialog {
-  padding: var(--settingDialog-padding,61px 60px 30px);
+  padding: var(--settingDialog-padding, 61px 60px 30px);
   main {
     gap: var(--spacing-24, 24px);
     header {
@@ -73,7 +73,7 @@
           &:hover {
             background: var(--Badge, rgba(10, 18, 20, 0.05));
             .iconfont {
-              color: var(--icon-active);
+              color: var(--Icon-active);
             }
           }
           .iconfont {

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router';
 
+import IconTooltip from '@/components/Icons/IconTooltip'
 import iconTooltip from '@/assets/img/credit/iconTooltip.svg';
 import iconTooltipActive from '@/assets/img/credit/iconTooltipActive.svg';
 import './index.scss';
@@ -85,9 +86,8 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value, list }) => {
               ) : (
                 ''
               )}
-              
               <span>{item.text}</span>
-              {item.tooltip && (
+              {/* {item.tooltip && (
                 <img
                   className="iconTooltip"
                   src={tooltipVisible ? iconTooltipActive : iconTooltip}
@@ -95,6 +95,18 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value, list }) => {
                   onMouseEnter={handleEnterAvatar}
                   onMouseLeave={handleLeaveAvatar}
                 />
+              )} */}
+              {item.tooltip && (
+                <div
+                  onMouseEnter={handleEnterAvatar}
+                  onMouseLeave={handleLeaveAvatar}
+                >
+                  <IconTooltip
+                    color="#a7aaaa"
+                    hoverColor="#6c7172"
+                    width="12px"
+                  />
+                </div>
               )}
               <i className="borderB"></i>
             </div>

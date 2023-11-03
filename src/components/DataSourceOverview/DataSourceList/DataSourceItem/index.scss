@@ -47,19 +47,21 @@
       }
       .TLeftCon {
         @extend .fcss;
-        gap: var(--spacing-12, 12px);
+        gap: var(--spacing-4, 4px);
         > h6 {
           @extend .Headline3;
+          line-height: var(--spacing-28,28px);
           color: var(--Text-headline, #0a1214);
         }
         .desc {
           @extend .Text2;
+          line-height: var(--spacing-12,12px);
           max-width: var(--dataSourceCard-desc-maxWidth, 160px);
           text-overflow: ellipsis;
           overflow: hidden;
-          color: var(--Text-body, #515758);
+          color: rgba(0, 0, 0, 0.60);
           .value {
-            color: var(--Text-headline, #0a1214);
+            color: rgba(0, 0, 0, 0.80);
           }
         }
       }

@@ -4,7 +4,8 @@ import { useSearchParams } from 'react-router-dom';
 import SourceGroups from '../SourceGroups';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton';
-import iconInfo from '@/assets/img/iconInfo.svg';
+import IconTooltip from '@/components/Icons/IconTooltip';
+// import iconInfo from '@/assets/img/iconInfo.svg';
 import type { ExchangeMeta } from '@/types/dataSource';
 import './index.scss';
 
@@ -45,8 +46,14 @@ const DataSourcesDialog: React.FC<DataSourcesDialogProps> = memo(
             <header>
               <h1>
                 <span>Data Sources</span>
-                <i className="iconfont icon-iconInfo" onClick={onCheck}></i>
-                {/* <img src={iconInfo} alt="" onClick={onCheck} /> */}
+
+                <IconTooltip
+                  color="#a7aaaa"
+                  hoverColor="#6c7172"
+                  width="20px"
+                  onClick={onCheck}
+                />
+                {/* <i className="iconfont icon-iconTooltip1" onClick={onCheck}></i> */}
               </h1>
               <h2>PADO validates data authenticity through MPC-TLS.</h2>
             </header>

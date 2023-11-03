@@ -46,28 +46,24 @@ const KYCVerifyDialog: React.FC<KYCVerifyDialogProps> = memo(
           <PBack onBack={onCancel} />
           <main>
             <Bridge endIcon={icon} />
+            {/* <header>
+              <h1>Verify Your Identity</h1>
+              <h2>
+                Use your phone to scan the QR code and initiate an identity
+                verification process through ZAN's POV service.
+              </h2>
+            </header> */}
             <QRCodeMain
-              title="Get You Verified"
-              desc={descEl}
+              title="Verify Your Identity"
+              desc="Use your phone to scan the QR code and initiate an identity
+                verification process through ZAN's POV service."
               qrcodeValue={qrCodeVal}
               qrcodeSize={200}
             />
-            <div className="descContent">
-              <p className="title">Before you start, please:</p>
-              <ul className="rules">
-                {rules.map((i, k) => {
-                  return (
-                    <li key={k}>
-                      <i>
-                        <span></span>
-                      </i>
-                      <span>{i}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
           </main>
+          <div className="bottomSafeTip">
+            PADO never participates in the entire process.
+          </div>
         </div>
       </PMask>
     );

@@ -18,7 +18,7 @@ body {
 :root {
   --bg-default: #fff;
   --bg-60: rgba(255, 255, 255, 0.6);
-  --bg-80: rgba(255, 255, 255, 0.8);
+  --bg-90: rgba(255, 255, 255, 0.9);
   --White-Linear: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.3) 0.2%,
@@ -29,7 +29,7 @@ body {
   --Text-headline: #0a1214;
   --Text-body: #515758;
   --Text-hint: #7b7f80;
-  --icon-active: #6c7172;
+  --Icon-active: #6c7172;
   --Icon-default: #a7aaaa;
   --Button-active: #252c2e;
   --Button-default: #515758;
@@ -66,7 +66,7 @@ body {
   --spacing-40: 0.2721rem;
   --spacing-42: 0.2857rem;
   --spacing-48: 0.3265rem;
-   --spacing-64: .4354rem;
+  --spacing-64: 0.4354rem;
   --spacing-80: 0.5442rem;
   --spacing-100: 0.6803rem;
   --pHeaderHeight: 0.7143rem;

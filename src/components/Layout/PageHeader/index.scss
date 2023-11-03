@@ -32,14 +32,6 @@
       width: 100%;
       height: var(--pageHeader-height, 0.517rem);
       padding: var(--pageHeader-padding);
-      // background: var(
-      //   --White-Linear,
-      //   linear-gradient(
-      //     90deg,
-      //     rgba(255, 255, 255, 0.3) 0.2%,
-      //     rgba(255, 255, 255, 0) 100%
-      //   )
-      // );
       background: linear-gradient(182deg, #ecf9fb -47.42%, #fbfefe 273.68%);
       box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.05);
       .pLogo {
@@ -78,7 +70,7 @@
           top: var(--pageHeader-dropdown-top, 66px);
           ul.padodropdown {
             width: var(--pageHeader-dropdown-width, 180px);
-            background: var(--bg-80, rgba(255, 255, 255, 0.8));
+            background: var(--bg-90, rgba(255, 255, 255, 0.9));
           }
         }
       }

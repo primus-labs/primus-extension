@@ -2,13 +2,13 @@
 @import '@/assets/css/padoM.scss';
 .credListWrapper {
   --credListWrapper-pb: 0.5646rem;
-  --credCard-width: 2.2313rem;
+  --credCard-width: calc((var(--pageCenter-width,1032px) - var(--spacing-24, 24px)*2) /3);
   --credCard-height: 0.9388rem;
 }
 @media (max-width: 1470px) {
   .credListWrapper {
     --credListWrapper-pb: 83px;
-    --credCard-width: 328px;
+    
     --credCard-height: 138px;
   }
 }

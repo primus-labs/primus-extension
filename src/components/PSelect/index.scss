@@ -14,7 +14,7 @@
     background: var(--bg-60, rgba(255, 255, 255, 0.6));
     backdrop-filter: blur(16px);
     padding: 0 var(--spacing-24, 24px);
-    color: var(--icon-active, #6c7172);
+    color: var(--Icon-active, #6c7172);
     // cursor: not-allowed;
 
     &.disabled {
@@ -27,7 +27,7 @@
       cursor: pointer;
       &:hover {
         .arrow.iconfont {
-          color: var(--icon-active, #6c7172);
+          color: var(--Icon-active, #6c7172);
         }
       }
     }

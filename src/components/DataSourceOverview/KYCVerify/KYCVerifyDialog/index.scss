@@ -13,7 +13,7 @@
   padding: var(--kycVerifyDialog-padding, 36px 42px 32px);
   main {
     @extend .fcsc;
-    gap: var(--spacing-20, 20px);
+    gap: var(--spacing-24, 24px);
     .descContent {
       @extend .fcss;
       gap: var(--spacing-8, 8px);
@@ -47,5 +47,10 @@
         }
       }
     }
+  }
+  .bottomSafeTip {
+    @extend .Text2;
+    color: var(--Icon-default, #a7aaaa);
+    text-align: center;
   }
 }

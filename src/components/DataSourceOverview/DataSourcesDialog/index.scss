@@ -2,17 +2,29 @@
 @import '@/assets/css/padoM.scss';
 
 .padoDialog.dataSourcesDialog {
-  main{
+  main {
     gap: var(--spacing-24, 24px);
-    h1{
+    h1 {
       position: relative;
-      .iconfont{
+      // @extend .frsc;
+      > svg {
+        position: absolute;
+        top: 50%;
+        right: calc(var(--spacing-28, 28px) * -1);
+        transform: translateY(-50%);
+      }
+      .iconfont {
         cursor: pointer;
         position: absolute;
         top: 50%;
-        right: calc(var(--spacing-32,32px) * -1);
+        right: calc(var(--spacing-32, 32px) * -1);
         transform: translateY(-50%);
-        font-size: var(--spacing-24,24px);
+        font-size: var(--spacing-24, 24px);
+        color: var(--Icon-default, #a7aaaa);
+        &:hover,
+        &.active {
+          color: var(--Icon-active, #6c7172);
+        }
       }
     }
   }
