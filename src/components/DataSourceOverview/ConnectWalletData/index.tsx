@@ -15,7 +15,7 @@ import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { WALLETITEMTYPE } from '@/config/constants';
 
-import './index.sass';
+
 
 import { ChainAssetsMap, TokenMap } from '@/types/dataSource';
 import { eventReport } from '@/services/api/usertracker';

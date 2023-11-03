@@ -2,13 +2,16 @@ import React, { useState, useEffect, memo, useCallback } from 'react';
 import { WALLETLIST } from '@/config/constants';
 
 import PControledInput from '@/components/PControledInput';
+import PInput from '@/components/PInput';
+import PButton from '@/components/PButton';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import PMask from '@/components/PMask';
 import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import PBack from '@/components/PBack';
-import './index.sass';
+import WalletList from '@/components/WalletList';
+import './index.scss';
 
 import type { DataFieldItem } from '@/components/DataSourceOverview/DataSourcesDialog';
 import type { WALLETITEMTYPE } from '@/config/constants';
@@ -17,7 +20,7 @@ export type GetDataFormProps = {
 };
 interface ConnectWalletDataDialogProps {
   onClose: () => void;
-  onSubmit: (item: WALLETITEMTYPE,label?:string) => void;
+  onSubmit: (item: WALLETITEMTYPE, label?: string) => void;
   onCancel: () => void;
 }
 
@@ -27,9 +30,15 @@ const ConnectWalletDataDialog: React.FC<ConnectWalletDataDialogProps> = memo(
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
     const [label, setLabel] = useState<string>();
 
-    const onChangeWallet = (item: WALLETITEMTYPE) => {
-      console.log('onChangeWallet', item);
-      setActiveItem(item);
+    const onChangeWallet = (item: WALLETITEMTYPE | undefined) => {
+      if (item) {
+        console.log('onChangeWallet', item);
+        if (!item?.disabled) {
+          setErrorTip(undefined);
+          setActiveItem(item);
+        }
+      }
+      
     };
     const handleClickNext = () => {
       if (!activeItem) {
@@ -49,26 +58,31 @@ const ConnectWalletDataDialog: React.FC<ConnectWalletDataDialogProps> = memo(
           <PBack onBack={onCancel} />
           <main>
             <Bridge endIcon={iconDataSourceOnChainAssets} />
-            <h1>Connect Your Data</h1>
-            <h2>Please confirm your on-chain address. </h2>
-            <div className="formItem ">
-              <h6>Select your wallet to confirm</h6>
-              <SourceGroup onChange={onChangeWallet} list={WALLETLIST} />
-            </div>
-            <div className="formItem lastFormItem">
-              <h6>Label (Optional)</h6>
-              <PControledInput
-                key="label"
-                placeholder="Please set your Label"
-                onChange={handleChangeLabel}
-                value={label}
-              />
+            <header>
+              <h1>Connect Your Data</h1>
+            </header>
+            <div className="formContent">
+              <div className="contItem ">
+                <div className="label">Select Wallet</div>
+                <WalletList onClick={onChangeWallet} />
+                {/* <SourceGroup onChange={onChangeWallet} list={WALLETLIST} /> */}
+              </div>
+              <div className="contItem ">
+                {/* <div className="label">Label (Optional)</div> */}
+                <PInput
+                  key="label"
+                  placeholder="Please set your Label"
+                  onChange={handleChangeLabel}
+                  value={label}
+                  label="Label (Optional)"
+                />
+              </div>
             </div>
           </main>
-          <button className="nextBtn" onClick={handleClickNext}>
+          <footer>
+            <PButton text="Next" onClick={handleClickNext} />
             {errorTip && <PBottomErrorTip text={errorTip} />}
-            <span>Next</span>
-          </button>
+          </footer>
         </div>
       </PMask>
     );

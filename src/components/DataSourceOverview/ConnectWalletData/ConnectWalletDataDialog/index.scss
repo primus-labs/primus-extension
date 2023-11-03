@@ -1,0 +1,22 @@
+@import '@/assets/css/padoDialog.scss';
+.padoDialog.connectWalletDataDialog {
+  --connectWalletDataDialog-padding: 0.2449rem 0.2857rem 0.2177rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.connectWalletDataDialog {
+    padding: 36px 42px 32px;
+  }
+}
+.padoDialog.connectWalletDataDialog {
+  padding: var(--connectWalletDataDialog-padding,36px 42px 32px);
+  @extend .padoFormDialogStyle;
+  > main {
+    .bridgeWrapper {
+      align-self: center;
+      margin-bottom: -12px;
+    }
+    .formContent {
+      gap: var(--spacing-28, 28px);
+    }
+  }
+}

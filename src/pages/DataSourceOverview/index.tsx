@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
+import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import SetPwdDialog from '@/components/Home/SetPwdDialog';
 
 import DataSourceList from '@/components/DataSourceOverview/DataSourceList';
@@ -79,7 +79,9 @@ const DataSourceOverview = memo(() => {
     (state: UserState) => state.activeSourceType
   );
   const filterWord = useSelector((state: UserState) => state.filterWord);
-
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   const dispatch: Dispatch<any> = useDispatch();
   const authorize = useAuthorization();
   const navigate = useNavigate();
@@ -224,7 +226,7 @@ const DataSourceOverview = memo(() => {
     },
     [padoServicePort, dispatch]
   );
-  
+
   const handleAdd = useCallback(async () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
     if (keyStore) {
@@ -257,12 +259,18 @@ const DataSourceOverview = memo(() => {
   const handleCloseMask = useCallback(() => {
     setStep(0);
   }, []);
+  // useEffect(() => {
+  //   if (connectedWallet?.address) {
+  //     setConnectDialogVisible(false);
+  //   }
+  // }, [connectedWallet?.address]);
   const onSubmitDataSourcesDialog = useCallback(
     async (item: ExchangeMeta) => {
       if (item.type === 'Assets') {
         if (item.name === 'On-chain') {
           setConnectWalletDataDialogVisible(true);
           setStep(0);
+          
         } else {
           setActiveSource(item);
           setStep(2);
@@ -279,7 +287,7 @@ const DataSourceOverview = memo(() => {
         setKYCDialogVisible(true);
       }
     },
-    [authorize, dispatch]
+    [authorize, dispatch, connectedWallet?.address]
   );
   const onCheckDataSourcesDialog = useCallback(() => {
     setStep(1.5);
@@ -385,7 +393,6 @@ const DataSourceOverview = memo(() => {
           onSubmit={onSubmitDataSourcesExplainDialog}
         />
       )}
-      {/* TODO!!! */}
       <ConnectWalletData
         visible={connectWalletDataDialogVisible}
         onClose={() => {
