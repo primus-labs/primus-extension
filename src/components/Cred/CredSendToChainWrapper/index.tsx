@@ -324,18 +324,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           return null;
         }
       } else {
-        return (
-          <button className="nextBtn gray" onClick={handleCloseMask}>
-            <span>OK</span>
-          </button>
-        );
+        return null
       }
     }, [
       fromEvents,
       activeSendToChainRequest?.type,
       onClickClaimNFT,
       onClickRewards,
-      handleCloseMask,
     ]);
      
     
