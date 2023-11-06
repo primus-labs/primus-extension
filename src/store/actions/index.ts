@@ -403,6 +403,13 @@ export const setProofTypesAsync = () => {
         type: 'web_cred',
       });
       if (rc2 === 0) {
+        // let newArr:any[] = []
+        // result2.forEach((r:any) => {
+        //   const existObj = newArr.find(i => i.name === r.name)
+        //   if (!existObj) {
+        //     newArr.push(r);
+        //   }
+        // })
         dispatch(setWebProofTypesAction(result2));
       } else {
         // alert('getProofTypes network error');

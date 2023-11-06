@@ -13,7 +13,7 @@
   height: 120px;
   box-sizing: border-box;
 }
-#pado-mask.light {
+#pado-mask {
   background: rgba(235, 239, 244, 1);
   box-shadow: 0px 4px 8px 0px rgba(115, 122, 132, 0.4);
   --label-color: rgba(23, 43, 77, 0.6);
@@ -77,6 +77,8 @@
   gap: 8px;
 }
 .pado-center .pado-center-center p {
+  margin: 0;
+  padding: 0;
   display: flex;
   gap: 12px;
   font-family: Inter;

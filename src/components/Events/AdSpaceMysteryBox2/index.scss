@@ -1,0 +1,36 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/padoM.scss';
+
+.adSpace.adSpaceBadge {
+  background: var(--Linear, linear-gradient(269deg, #70FFBA 0.52%, #78DEFF 100.71%));
+  .left {
+    gap: 40.87px;
+    
+    >img {
+      width: 79.13px;
+      top: -18px;
+      position: relative;
+    }
+    .bannerContent {
+      gap: var(--spacing-16,16px);
+      .cn {
+        @extend .fcss;
+        gap: var(--spacing-4, 4px);
+      }
+    }
+  }
+  .pButton {
+    width: 132px;
+    height: 48px;
+    @extend .Headline5;
+    border-radius: var(--spacing-12, 12px);
+    background: var(--yellow-y-300, #ffe603);
+    .iconfont {
+      font-size: 20px;
+      color: var(--Text-headline, #0a1214);
+    }
+    &:hover,&.active {
+      background: var(--yellow-y-200, #ffea2e);
+    }
+  }
+}

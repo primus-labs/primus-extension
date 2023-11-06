@@ -40,8 +40,10 @@ export const pageDecodeMsgListener = async (
         ...currRequestObj,
         headers: formatHeader,
       };
+      const formatUrlKey = encodeURIComponent(currRequestUrl);
+      console.log('222222listen', currRequestUrl);
       await chrome.storage.local.set({
-        [currRequestUrl]: JSON.stringify(newCurrRequestObj),
+        [formatUrlKey]: JSON.stringify(newCurrRequestObj),
       });
     }
   };
@@ -137,6 +139,7 @@ export const pageDecodeMsgListener = async (
       prev[name] = value;
       return prev;
     }, {});*/
+    // debugger
     const { category } = activeTemplate;
     const form = {
       source: dataSource,
@@ -152,12 +155,15 @@ export const pageDecodeMsgListener = async (
     const formatRequests = [];
     for (const r of requests) {
       const { headers, cookies, body, url } = r;
-      const requestInfoObj = await chrome.storage.local.get([url]);
-
-      const { headers: curRequestHeader, body: curRequestBody } = JSON.parse(
+      const formatUrlKey = decodeURIComponent(url);
+      const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
+     
+      const { headers: curRequestHeader, body: curRequestBody } = (requestInfoObj[url] && JSON.parse(
         requestInfoObj[url]
-      );
-      const cookiesObj = parseCookie(curRequestHeader.Cookie);
+      )) || {};
+      // debugger
+      const cookiesObj =
+        curRequestHeader? parseCookie(curRequestHeader.Cookie): {};
       let formateHeader = {},
         formateCookie = {},
         formateBody = {};

@@ -537,10 +537,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, []);
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
+        // debugger
         setActiveAttestForm(form);
         if (form?.proofClientType === 'Webpage Data') {
           const currRequestObj = webProofTypes.find(
-            (r) => r.name === form.proofContent
+            (r) => r.name === form.proofContent && r.dataSource === form.source
           );
           if (form?.requestid) {
             currRequestObj.requestid = form.requestid;
@@ -750,8 +751,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
           };
           if (
-            retdesc.indexOf('connect to proxy error') ||
-            retdesc.indexOf('WebSocket On Error')
+            retdesc.indexOf('connect to proxy error') > -1 ||
+            retdesc.indexOf('WebSocket On Error') > -1
           ) {
             requestResObj = {
               type: 'warn',
@@ -919,17 +920,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           return null;
         }
       } else {
-        return (
-          <button className="nextBtn gray" onClick={handleCloseMask}>
-            <span>OK</span>
-          </button>
-        );
+        return null
       }
     }, [
       fromEvents,
       onSubmitActiveRequestDialog,
       activeRequest?.type,
-      handleCloseMask,
     ]);
     return (
       <div className={'credAddWrapper'}>

@@ -6,9 +6,11 @@ import dayjs from 'dayjs';
 import RewardsDialog from '@/components/RewardsDialog';
 import ClaimWrapper from '../ClaimWrapper';
 import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
+import ClaimMysteryBoxWrapper2 from '../ClaimMysteryBoxWrapper2';
 import RewardList from '../RewardList';
 import AdSpace from '../AdSpace';
 import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
+import AdSpaceMysteryBox2 from '../AdSpaceMysteryBox2';
 import './index.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -36,6 +38,8 @@ const EventsOverview = memo(() => {
   const [claimVisible, setClaimVisible] = useState<boolean>(false);
   const [claimMysteryBoxVisible, setClaimMysteryBoxVisible] =
     useState<boolean>(false);
+  const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
+    useState<boolean>(false);
   
   const badgeEventPeriod = useSelector(
     (state: UserState) => state.badgeEventPeriod
@@ -61,8 +65,15 @@ const EventsOverview = memo(() => {
     setClaimMysteryBoxVisible(false);
     navigate('/events');
   }, [navigate]);
+  const onCloseClaimMysteryBoxDialog2 = useCallback(() => {
+    setClaimMysteryBoxVisible2(false);
+    navigate('/events');
+  }, [navigate]);
   const handleClickMysterybox = useCallback(() => {
     setClaimMysteryBoxVisible(true);
+  }, []);
+  const handleClickMysterybox2 = useCallback(() => {
+    setClaimMysteryBoxVisible2(true);
   }, []);
   const navToCred = useCallback(() => {
     navigate(`/cred?proofType=UNISWAP_PROOF`);
@@ -83,8 +94,9 @@ const EventsOverview = memo(() => {
     <div className="eventOverview">
       <div className="eventOverviewContent">
         {/* <Slider {...settings}> */}
-        {badgeOpenFlag && <AdSpaceMysteryBox onClick={handleClickMysterybox} />}
+        <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />
         <AdSpace onClick={handleClickClaim} />
+        <AdSpaceMysteryBox onClick={handleClickMysterybox} />
         {/* </Slider> */}
         {/* <section className="rewardsWrapper">
           <header>Rewards</header>
@@ -100,6 +112,11 @@ const EventsOverview = memo(() => {
         visible={claimMysteryBoxVisible}
         onClose={onCloseClaimMysteryBoxDialog}
         onSubmit={onCloseClaimMysteryBoxDialog}
+      />
+      <ClaimMysteryBoxWrapper2
+        visible={claimMysteryBoxVisible2}
+        onClose={onCloseClaimMysteryBoxDialog2}
+        onSubmit={onCloseClaimMysteryBoxDialog2}
       />
     </div>
   );
