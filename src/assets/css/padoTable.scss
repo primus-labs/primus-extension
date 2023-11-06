@@ -6,7 +6,7 @@
   --header-height: 0.4422rem;
   --table-pb: 0.2585rem;
   --table-th-height: 0.3129rem;
-  --table-tr-inner-paddingY: 0.0748rem;
+  --table-tr-inner-paddingY: .0544rem;
   --emptyContent-padding: 0.1769rem 0 0.2177rem 0;
 }
 
@@ -17,7 +17,7 @@
     --table-pb: 38px;
     --table-th-height: 46px;
 
-    --table-tr-inner-paddingY: 11px;
+    --table-tr-inner-paddingY: 8px;
     --emptyContent-padding: 26px 0 32px 0;
   }
 }
@@ -38,6 +38,8 @@
     }
   }
   ul.tokens {
+    @extend .fcss;
+     gap: var(--spacing-8, 8px);
     padding-bottom: var(--table-pb, 38px);
     li.tokenItem {
       .innerWrapper {
@@ -76,11 +78,10 @@
 
       &.tr {
         color: #000;
-        margin-top: var(--spacing-4, 4px);
         position: relative;
         .innerWrapper {
-          padding: var(--table-tr-inner-paddingY, 11px)
-            var(--header-paddingX, 44px) var(--table-tr-inner-paddingY, 11px);
+          padding: var(--table-tr-inner-paddingY, 8px)
+            var(--header-paddingX, 44px);
         }
       }
     }

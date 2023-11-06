@@ -7,16 +7,16 @@
   --descItem-token-width: 0.8707rem;
   --arrowWrapper-top: 0.102rem;
   --detailWrapper-top: 0.2857rem;
-  --detailWrapper-padding: 0.0476rem 0.3061rem 0.0748rem 0;
-  --detailWrapper-desc-mt: 0.0884rem;
+  --detailWrapper-padding: 0 0.3061rem .0816rem 0;
+  --detailWrapper-desc-mt: .0816rem;
   --token-label-width: 0.3469rem;
   --th-innerWrapper-padding: 0.0816rem 0.3401rem;
-  --thNew-innerWrapper-padding: 0.0816rem 0.6054rem 0.0816rem 0.3401rem;
-  --new-innerWrapper-padding: 0.0748rem 0.6463rem 0.0748rem 0.3401rem;
-  --tr-innerWrapper-padding: 0.0748rem 0.2993rem 0.0748rem;
-  --trNew-innerWrapper-padding: 0.0748rem 0.6054rem 0.0748rem 0.2993rem;
-  --expand-height: 0.5034rem;
-  --expandPlus-height: 0.7075rem;
+  --thNew-innerWrapper-padding: .0544rem 0.6054rem .0544rem 0.3401rem;
+  --new-innerWrapper-padding: .0544rem 0.6463rem .0544rem 0.3401rem;
+  --tr-innerWrapper-padding: .0544rem 0.2993rem ;
+  --trNew-innerWrapper-padding: .0544rem 0.6054rem .0544rem 0.2993rem;
+  --expand-height: .5306rem;
+  --expandPlus-height: .7211rem;
   --formItem-width: 0.8435rem;
 }
 @media (max-width: 1470px) {
@@ -26,16 +26,16 @@
     --descItem-token-width: 128px;
     --arrowWrapper-top: 15px;
     --detailWrapper-top: 42px;
-    --detailWrapper-padding: 7px 45px 11px 0;
-    --detailWrapper-desc-mt: 13px;
+    --detailWrapper-padding: 0 45px 12px 0;
+    --detailWrapper-desc-mt: 12px;
     --token-label-width: 51px;
     --th-innerWrapper-padding: 12px 50px;
-    --thNew-innerWrapper-padding: 12px 89px 12px 50px;
-    --new-innerWrapper-padding: 11px 95px 11px 50px;
-    --tr-innerWrapper-padding: 11px 44px 11px;
-    --trNew-innerWrapper-padding: 11px 89px 11px 44px;
-    --expand-height: 74px;
-    --expandPlus-height: 104px;
+    --thNew-innerWrapper-padding: 8px 89px 8px 50px;
+    --new-innerWrapper-padding: 8px 95px 8px 50px;
+    --tr-innerWrapper-padding: 8px 44px;
+    --trNew-innerWrapper-padding: 8px 89px 8px 44px;
+    --expand-height: 78px;
+    --expandPlus-height: 106px;
     --formItem-width: 124px;
   }
 }
@@ -49,7 +49,7 @@
   }
   ul.tokens {
     @extend .fcss;
-    gap: var(--spacing-8, 8px);
+   
     &.tokensShadow {
       padding-bottom: 0;
     }
@@ -59,7 +59,7 @@
       width: 100%;
       .innerWrapper {
         @extend .frbc;
-        height: 100%;
+        // height: 100%;
       }
       .detailWrapper .descItem {
         @extend .frbc;
@@ -99,18 +99,18 @@
           content: '';
           top: var(--detailWrapper-top, 42px);
           left: 0;
-          padding: var(--detailWrapper-padding, 7px 45px 11px 0);
+          padding: var(--detailWrapper-padding, 0 45px 12px 0);
           width: 100%;
           .descItem {
             width: 100%;
             display: flex;
             color: var(--Text-body, #515758);
             @extend .Text1;
-            margin-top: var(--detailWrapper-desc-mt, 13px);
+            margin-top: var(--detailWrapper-desc-mt, 12px);
             text-align: right;
-            &:first-child {
-              margin-top: 0;
-            }
+            // &:first-child {
+            //   margin-top: 0;
+            // }
             > .token {
               display: flex;
               justify-content: flex-end;
@@ -134,7 +134,7 @@
       }
       &.new {
         .innerWrapper {
-          padding: var(--new-innerWrapper-padding, 11px 95px 11px 50px);
+          padding: var(--new-innerWrapper-padding, 8px 95px 8px 50px);
         }
         .accountFilterWrapper {
           position: absolute;
@@ -145,11 +145,11 @@
       }
       &.tr {
         .innerWrapper {
-          padding: var(--tr-innerWrapper-padding, 11px 44px 11px);
+          padding: var(--tr-innerWrapper-padding, 8px 44px 8px);
         }
         &.new {
           .innerWrapper {
-            padding: var(--trNew-innerWrapper-padding, 11px 89px 11px 44px);
+            padding: var(--trNew-innerWrapper-padding, 8px 89px 8px 44px);
           }
         }
         .arrowWrapper {
@@ -160,10 +160,10 @@
         }
       }
       &.expand {
-        height: var(--expand-height, 74px);
+        height: var(--expand-height, 78px);
       }
       &.expandPlus {
-        height: var(--expandPlus-height, 104px);
+        height: var(--expandPlus-height, 106px);
       }
       .token {
         .syntheticLogo {

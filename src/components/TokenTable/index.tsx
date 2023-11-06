@@ -461,7 +461,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
                                 )}
                             </div>
                           </div>
-                        )}
+                       )}
                       </div>
                     )}
                 </li>
