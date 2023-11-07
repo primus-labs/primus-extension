@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import PButton from '@/components/PButton';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
-import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
+import bannerIllstration from '@/assets/img/events/luckyDrawIllstration.svg';
 import './index.scss';
 import type { UserState } from '@/types/store';
 interface AdSpaceProps {
@@ -22,8 +22,17 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     return `${s}~${e}`;
   }, [badgeEventPeriod]);
 
+  const BADGELOTTRYTIMESTR = useMemo(() => {
+    const { startTime, endTime } = badgeEventPeriod;
+    return +endTime;
+  }, [badgeEventPeriod]);
+  const badgeOpenFlag = useMemo(() => {
+    const flag = dayjs().isBefore(dayjs(BADGELOTTRYTIMESTR));
+    return flag;
+  }, [BADGELOTTRYTIMESTR]);
+
   return (
-    <div className="adSpace adSpaceBadge">
+    <div className={`adSpace luckyDraw ${badgeOpenFlag ? '' : ' disabled'}`}>
       <div className="left">
         <img src={bannerIllstration} alt="" />
         <div className="bannerContent">
@@ -37,11 +46,15 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           </div>
         </div>
       </div>
-      <PButton
-        text="Join Now"
-        suffix={<i className="iconfont icon-rightArrow"></i>}
-        onClick={onClick}
-      />
+      {badgeOpenFlag ? (
+        <PButton
+          text="Join Now"
+          suffix={<i className="iconfont icon-rightArrow"></i>}
+          onClick={onClick}
+        />
+      ) : (
+        <PButton text="Close" className="disabled" onClick={() => {}} />
+      )}
     </div>
   );
 });

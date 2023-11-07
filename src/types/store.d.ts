@@ -38,4 +38,5 @@ export type UserState = {
   connectedWallet: ConnectedWallet;
   rewardsDialogVisible: rewardsDialogVisibleType;
   badgeEventPeriod: BadgeEventPeriodType;
+  scrollEventPeriod: BadgeEventPeriodType;
 };

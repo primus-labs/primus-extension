@@ -13,7 +13,7 @@ interface AdSpaceProps {
 dayjs.extend(utc);
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
   const badgeEventPeriod = useSelector(
-    (state: UserState) => state.badgeEventPeriod
+    (state: UserState) => state.scrollEventPeriod
   );
   const formatPeriod = useMemo(() => {
     const { startTime, endTime } = badgeEventPeriod;
@@ -27,11 +27,9 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
       <div className="left">
         <img src={bannerIllstration} alt="" />
         <div className="bannerContent">
-          <h3 className="ct">Linea ****</h3>
+          <h3 className="ct">Scroll Humanity Attestation</h3>
           <div className="cn">
-            <p>
-              Limited commemorative badges for the 1st group PADO loyal members
-            </p>
+            <p>Limited partnership badges for users.</p>
             {/* <p>2023.10.23~2023.10.29</p> */}
             <p>{formatPeriod}</p>
           </div>

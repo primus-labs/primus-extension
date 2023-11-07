@@ -206,16 +206,13 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
 
     return (
       <div className="claimMysteryBoxWrapper">
-        {/* {visible && step === 1 && (
-          <ClaimDialog onClose={onClose} onSubmit={onSubmitClaimDialog} />
-        )} */}
         {visible && step === 1 && (
           <ClaimDialog
             onClose={onClose}
             onSubmit={onSubmitClaimDialog}
             title="Linea Campaign"
             titleIllustration={true}
-            subTitle="Commemorative Badge with $1000u Reward"
+            subTitle="Complete the following tasks to submit an entry to this campaign."
             rules={ruleItems}
             desc={descItem}
             extra={extraEl}

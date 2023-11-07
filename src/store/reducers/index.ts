@@ -1,7 +1,6 @@
 import { SETSYSCONFIG } from '../actions';
 import { connectWallet } from '@/services/wallets/metamask';
-import {DEFAULTDATASOURCEPOLLINGTIMENUM,
-} from '@/config/constants';
+import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 
 const DEFAULTCREDTYPELIST = [
   {
@@ -93,6 +92,10 @@ const initState = {
     startTime: '1698033600000',
     endTime: '1698552000000',
   },
+  scrollEventPeriod: {
+    startTime: '1699243200000',
+    endTime: '1700971200000',
+  },
 };
 
 // reducer
@@ -136,13 +139,15 @@ const reducer: any = function (state = initState, action: any) {
     case SETSYSCONFIG:
       return { ...state, sysConfig: action.payload };
     case 'setConnectWalletDialogVisible':
-      return { ...state, connectWalletDialogVisible: action.payload }
+      return { ...state, connectWalletDialogVisible: action.payload };
     case 'setConnectWallet':
       return { ...state, connectedWallet: action.payload };
     case 'setRewardsDialogVisibleAction':
       return { ...state, rewardsDialogVisible: action.payload };
     case 'setBadgeEventPeriodAction':
       return { ...state, badgeEventPeriod: action.payload };
+    case 'setScrollEventPeriodAction':
+      return { ...state, scrollEventPeriod: action.payload };
     default:
       return state;
   }

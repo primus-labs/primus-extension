@@ -211,6 +211,7 @@ export const pageDecodeMsgListener = async (
     await chrome.storage.local.set({
       activeRequestAttestation: JSON.stringify(aligorithmParams),
     });
+    console.log('222222pageDecode-aligorithmParams', aligorithmParams);
     chrome.runtime.sendMessage({
       type: 'algorithm',
       method: 'getAttestation',

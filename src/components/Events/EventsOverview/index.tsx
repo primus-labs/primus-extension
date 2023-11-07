@@ -59,7 +59,6 @@ const EventsOverview = memo(() => {
   }, [navigate]);
   const handleClickClaim = useCallback(() => {
     setClaimVisible(true);
-    
   }, []);
   const onCloseClaimMysteryBoxDialog = useCallback(() => {
     setClaimMysteryBoxVisible(false);

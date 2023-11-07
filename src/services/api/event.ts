@@ -1,6 +1,7 @@
 import request from '@/utils/request';
+
 type CheckLotteryResultsParams = {
-  event: string;
+  event?: string;
 };
 type GETUNISWAPPROOFPARAMS = {
   signature: string;
@@ -66,9 +67,10 @@ export const checkLotteryResults = (data: CheckLotteryResultsParams) => {
   });
 };
 
-export const queryBadgeEventPeriod = () => {
+export const queryBadgeEventPeriod = (data?: CheckLotteryResultsParams) => {
   return request({
     method: 'get',
     url: `/event/time`,
+    data,
   });
 };

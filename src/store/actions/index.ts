@@ -88,6 +88,10 @@ export const setBadgeEventPeriodAction = (values: any) => ({
   type: 'setBadgeEventPeriodAction',
   payload: values,
 });
+export const setScrollEventPeriodAction = (values: any) => ({
+  type: 'setScrollEventPeriodAction',
+  payload: values,
+});
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {
@@ -172,15 +176,22 @@ export const connectWalletAsync = (
   };
 };
 
-const getChainAssets = async (signature: string,
-  timestamp: string, curConnectedAddr: string, dispatch: any) => {
-  const { rc, result, msg } = await getAssetsOnChains({
-    signature,
-    timestamp,
-    address: curConnectedAddr,
-  }, {
-    timeout: ONEMINUTE
-  });
+const getChainAssets = async (
+  signature: string,
+  timestamp: string,
+  curConnectedAddr: string,
+  dispatch: any
+) => {
+  const { rc, result, msg } = await getAssetsOnChains(
+    {
+      signature,
+      timestamp,
+      address: curConnectedAddr,
+    },
+    {
+      timeout: ONEMINUTE,
+    }
+  );
 
   if (rc === 0) {
     const res = getStatisticalData(result);
@@ -201,8 +212,7 @@ const getChainAssets = async (signature: string,
       ? JSON.parse(lastOnChainAssetsMapStr)
       : {};
     if (curConnectedAddr in lastOnChainAssetsMap) {
-      const lastCurConnectedAddrInfo =
-        lastOnChainAssetsMap[curConnectedAddr];
+      const lastCurConnectedAddrInfo = lastOnChainAssetsMap[curConnectedAddr];
       const pnl = sub(
         curAccOnChainAssetsItem.totalBalance,
         lastCurConnectedAddrInfo.totalBalance
@@ -221,11 +231,11 @@ const getChainAssets = async (signature: string,
 
     const eventInfo = {
       eventType: 'DATA_SOURCE_INIT',
-      rawData: {type: 'Assets', dataSource: 'onchain-ConnectWallet'},
+      rawData: { type: 'Assets', dataSource: 'onchain-ConnectWallet' },
     };
     eventReport(eventInfo);
   }
-}
+};
 
 export const initRewardsActionAsync = () => {
   return async (dispatch: any) => {
@@ -239,10 +249,24 @@ export const initRewardsActionAsync = () => {
 export const setBadgeEventPeriodActionAsync = () => {
   return async (dispatch: any) => {
     try {
-      const { rc, result } = await queryBadgeEventPeriod();
-      if (rc === 0) {
-        dispatch(setBadgeEventPeriodAction(result));
-      }
+      const eventPeriodRes = await Promise.all([
+        queryBadgeEventPeriod(),
+        queryBadgeEventPeriod({
+          event: 'SCROLL_DEFI_VOYAGE',
+        }),
+      ]);
+      eventPeriodRes.forEach((i, k) => {
+        const { rc, result } = i;
+        if (k === 0) {
+          if (rc === 0) {
+            dispatch(setBadgeEventPeriodAction(result));
+          }
+        } else if (k === 1) {
+          if (rc === 0) {
+            dispatch(setScrollEventPeriodAction(result));
+          }
+        }
+      });
     } catch (e) {
       console.log('setBadgeEventPeriodActionAsync e:', e);
     }
