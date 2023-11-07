@@ -160,7 +160,6 @@ const CredOverview = memo(() => {
   const handleCloseAddDialog = useCallback(
     (addSucFlag?: any) => {
       setActiveSourceName(undefined);
-      !fromEvents && setAddDialogVisible(false);
       if (fromEvents) {
         if (addSucFlag) {
           // addSucFlag: requestid;
@@ -175,6 +174,8 @@ const CredOverview = memo(() => {
         } else if (addSucFlag === undefined) {
           navigate('/cred');
         }
+      } else {
+        setAddDialogVisible(false);
       }
     },
     [credentialsFromStore, fromEvents, navigate]
@@ -205,7 +206,7 @@ const CredOverview = memo(() => {
   );
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
-      setConnectDialogVisible(false)
+      setConnectDialogVisible(false);
       const startFn = () => {
         setActiveRequest({
           type: 'loading',
@@ -234,7 +235,7 @@ const CredOverview = memo(() => {
     if (connectedWallet?.address) {
       setConnectDialogVisible(false);
     }
-  },[connectedWallet?.address])
+  }, [connectedWallet?.address]);
   // const onSubmitConnectTipDialog = useCallback(() => {
   //   setConnectTipDialogVisible(false);
   //   dispatch(setConnectWalletDialogVisibleAction(true));
@@ -267,9 +268,23 @@ const CredOverview = memo(() => {
   }, [createFlag, proofType, fromEvents]);
   useEffect(() => {
     if (fromEvents) {
-      handleAdd();
+      if (fromEvents === 'Scroll') {
+        let credArr = Object.values(credList);
+        const haveXProof = credArr.find(
+          (i) => i.event === 'LINEA_DEFI_VOYAGE' && i.source === 'x'
+        );
+        const haveBinanceProof = credArr.find(
+          (i) => i?.event === 'LINEA_DEFI_VOYAGE' && i.source === 'binance'
+        );
+        const proofsFlag = !!haveXProof && !!haveBinanceProof;
+        if (proofsFlag) {
+          handleUpChain(haveXProof);
+        }
+      } else {
+        handleAdd();
+      }
     }
-  }, [fromEvents, handleAdd]);
+  }, [fromEvents, handleAdd, credList, handleUpChain]);
 
   useEffect(() => {
     return () => {

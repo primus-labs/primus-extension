@@ -40,6 +40,7 @@ export type CredTypeItemType = {
   sourceUseridHash?: string;
   templateId?: string;
   schemaType?: string;
+  event?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

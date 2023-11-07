@@ -762,7 +762,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           }
           setActiveRequest(requestResObj);
           if (parsedActiveRequestAttestation.reqType === 'web') {
-            debugger
             let failReason = '';
             if (
               retdesc.indexOf('connect to proxy error') ||

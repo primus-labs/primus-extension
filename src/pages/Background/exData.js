@@ -259,7 +259,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     cipher: '', // TODO
     getdatatime: timeStampStr,
     credVersion: CredVersion,
-    
+
     sigFormat: 'EAS-Ethereum', // TODO
     // sigFormat: 'EAS-BNB', // TODO
     // schemaType: 'exchange-balance', // TODO
@@ -267,6 +267,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     user,
     // holdingToken // TODO
     authUseridHash,
+    event: 'LINEA_DEFI_VOYAGE', // TODO!!!
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
@@ -300,10 +301,11 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     if (source === 'binance' || source === 'okx') {
       const extUidHashRequestsInfo = await assembleUidHashRequestsParams(form, USERPASSWORD, port);
       ext = {
+        event: 'LINEA_DEFI_VOYAGE', // TODO!!!
         calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-          extRequests: {
-          orders: ["uid-hash", extRequestsOrder], // TODO
-          "uid-hash": extUidHashRequestsInfo,
+        extRequests: {
+          orders: ['uid-hash', extRequestsOrder], // TODO
+          'uid-hash': extUidHashRequestsInfo,
           [extRequestsOrder]: extRequestsOrderInfo,
         },
       };

@@ -25,6 +25,7 @@
       margin: 0 var(--headerWrapper-marginX, -42px) 0;
     }
     .descContent {
+      width: 100%;
       @extend .fcss;
       // gap: var(--spacing-16,16px);//
       gap: var(--spacing-24, 24px); //

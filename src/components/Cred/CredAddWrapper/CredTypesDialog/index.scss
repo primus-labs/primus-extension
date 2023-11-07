@@ -11,45 +11,44 @@
     --credTypeItem-inner-width: 368px;
   }
 }
-
+ul.credTypeList {
+  @extend .fcss;
+  width: 100%;
+  gap: var(--spacing-20, 20px);
+  li {
+    @extend .pSelectOption;
+    @extend .frcc;
+    width: 100%;
+    height: var(--credTypeItem-height, 80px);
+    .innerContent {
+      @extend .frsc;
+      gap: var(--spacing-24, 24px);
+      width: var(--credTypeItem-inner-width, 368px);
+      height: var(--spacing-48, 48px);
+      .icon {
+        width: var(--spacing-36, 36px);
+      }
+      .con {
+        @extend .fcss;
+        gap: var(--spacing-8, 8px);
+        flex: 1;
+        .title {
+          @extend .Headline5;
+          color: var(--Text-headline, #0a1214);
+        }
+        .desc {
+          @extend .Text2;
+          color: var(--Text-hint, #7b7f80);
+        }
+      }
+    }
+  }
+}
 .padoDialog.credTypesDialog {
   main {
     gap: var(--spacing-24, 24px);
     .scrollList {
       width: 100%;
-      ul.credTypeList {
-        @extend .fcss;
-        width: 100%;
-        gap: var(--spacing-20, 20px);
-        li {
-          @extend .pSelectOption;
-          @extend .frcc;
-          width: 100%;
-          height: var(--credTypeItem-height, 80px);
-          .innerContent {
-            @extend .frsc;
-            gap: var(--spacing-24, 24px);
-            width: var(--credTypeItem-inner-width, 368px);
-            height: var(--spacing-48, 48px);
-            .icon {
-              width: var(--spacing-36, 36px);
-            }
-            .con {
-              @extend .fcss;
-              gap: var(--spacing-8, 8px);
-              flex: 1;
-              .title {
-                @extend .Headline5;
-                color: var(--Text-headline, #0a1214);
-              }
-              .desc {
-                @extend .Text2;
-                color: var(--Text-hint, #7b7f80);
-              }
-            }
-          }
-        }
-      }
     }
   }
 }

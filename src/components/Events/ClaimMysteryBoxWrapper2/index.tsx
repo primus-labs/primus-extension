@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 // import ClaimDialog from './ClaimDialog';
-import ClaimDialog from '@/components/Events/ClaimWrapper/ClaimDialog';
+import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
 import {
@@ -114,21 +114,22 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       // 2.has connect wallet;
       // 3.has web proof;
       // 4.web proof on chain add exchange data source
-      const { mysteryBoxRewards } = await chrome.storage.local.get([
-        'mysteryBoxRewards',
-      ]);
-      if (mysteryBoxRewards) {
-        dispatch(
-          setRewardsDialogVisibleAction({
-            visible: true,
-            tab: 'Badges',
-          })
-        );
-        onClose();
-      } else {
-        navigate('/cred?fromEvents=Badges');
-      }
-    }, [navigate, dispatch, onClose]);
+      // const { mysteryBoxRewards } = await chrome.storage.local.get([
+      //   'mysteryBoxRewards',
+      // ]);
+      // if (mysteryBoxRewards) {
+      //   dispatch(
+      //     setRewardsDialogVisibleAction({
+      //       visible: true,
+      //       tab: 'Badges',
+      //     })
+      //   );
+      //   onClose();
+      // } else {
+        navigate('/cred?fromEvents=Scroll');
+      // }
+    }, [navigate]);
+    // }, [navigate, dispatch, onClose]);
 
     const onSubmitActiveRequestDialog = useCallback(() => {
       if (!hasSource) {

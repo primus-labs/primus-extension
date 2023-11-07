@@ -1,0 +1,20 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/pDialog.sass';
+@import '@/assets/css/padoDialog.scss';
+@import '@/components/Events/ClaimWrapper/index.scss';
+
+.padoDialog.claimDialog.claimScrollEventDialog {
+  main {
+    gap: var(--spacing-20,20px);
+    .descContent {
+      .credTypeList{
+        .credTypeItem{
+          width: 100%;
+        }
+      }
+      .descWrapper{
+        font-size: 12px;
+      }
+    }
+  }
+}
