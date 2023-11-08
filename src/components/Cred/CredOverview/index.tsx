@@ -9,6 +9,8 @@ import QRCodeDialog from '@/components/Cred/QRCodeDialog';
 import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import BindPolygonID from '@/components/Cred/BindPolygonID';
 import CredSendToChainWrapper from '../CredSendToChainWrapper';
+import ClaimMysteryBoxWrapper2 from '@/components/Events/ClaimMysteryBoxWrapper2';
+
 import {
   setCredentialsAsync,
   setConnectWalletDialogVisibleAction,
@@ -28,6 +30,9 @@ import ConnectWalletDialog from '../CredSendToChainWrapper/ConnectWalletDialog';
 
 const CredOverview = memo(() => {
   const navigate = useNavigate();
+  const [eventSource, setEventSource] = useState<string>();
+  const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
+    useState<boolean>(false);
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
@@ -152,7 +157,40 @@ const CredOverview = memo(() => {
       setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address]);
-
+  const handleJoinScrollEvent = useCallback(async () => {
+    if (connectedWallet?.address) {
+      setClaimMysteryBoxVisible2(true);
+    } else {
+      setConnectDialogVisible(true);
+    }
+  }, [connectedWallet?.address]);
+  const onSubmitClaimMysteryBoxDialog2 = useCallback(() => {
+    // onSubmit
+    let credArr = Object.values(credList);
+    const haveXProof = credArr.find(
+      (i) => i.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'x'
+    );
+    const haveBinanceProof = credArr.find(
+      (i) => i?.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'binance'
+    );
+    const proofsFlag = !!haveXProof && !!haveBinanceProof;
+    
+    if (proofsFlag) {
+      setClaimMysteryBoxVisible2(false)
+      handleUpChain(haveXProof);
+    }
+  }, [credList, handleUpChain]);
+  const onChangeClaimMysteryBoxDialog2 = (step: number) => {
+    if (step === 2) {
+      // x
+      setEventSource('x');
+    } else if (step === 3) {
+      // binance
+      setEventSource('binance');
+    }
+    // setClaimMysteryBoxVisible2(false);
+    setAddDialogVisible(true);
+  };
   const handleSubmitBindPolygonid = useCallback(async () => {
     await initCredList();
     setBindPolygonidVisible(false);
@@ -161,18 +199,24 @@ const CredOverview = memo(() => {
     (addSucFlag?: any) => {
       setActiveSourceName(undefined);
       if (fromEvents) {
-        if (addSucFlag) {
-          // addSucFlag: requestid;
-          const activeC = credentialsFromStore[addSucFlag];
-          setActiveCred(activeC);
+        if (fromEvents === 'Sroll') {
           setAddDialogVisible(false);
-          setSendToChainDialogVisible(true);
-        } else if (addSucFlag === false) {
-          const queryKey = `${fromEvents}Process`;
-          const targetUrl = `/events?${queryKey}=error`;
-          navigate(targetUrl);
-        } else if (addSucFlag === undefined) {
-          navigate('/cred');
+          setEventSource('');
+          setClaimMysteryBoxVisible2(true);
+        } else {
+          if (addSucFlag) {
+            // addSucFlag: requestid;
+            const activeC = credentialsFromStore[addSucFlag];
+            setActiveCred(activeC);
+            setAddDialogVisible(false);
+            setSendToChainDialogVisible(true);
+          } else if (addSucFlag === false) {
+            const queryKey = `${fromEvents}Process`;
+            const targetUrl = `/events?${queryKey}=error`;
+            navigate(targetUrl);
+          } else if (addSucFlag === undefined) {
+            navigate('/cred');
+          }
         }
       } else {
         setAddDialogVisible(false);
@@ -192,6 +236,9 @@ const CredOverview = memo(() => {
             });
           } else if (fromEvents === 'NFTs') {
             targetUrl = '/events?NFTsProcess=suc';
+            navigate(targetUrl);
+          } else if (fromEvents === 'Scroll') {
+            targetUrl = '/events?ScrollProcess=suc';
             navigate(targetUrl);
           }
         }
@@ -224,12 +271,19 @@ const CredOverview = memo(() => {
         setActiveCred(undefined);
       };
       const sucFn = async (walletObj: any) => {
-        setAddDialogVisible(true);
-        setConnectTipDialogVisible(false);
+        if (fromEvents === 'Scroll') {
+          
+          setClaimMysteryBoxVisible2(true);
+          setEventSource('');
+          setConnectTipDialogVisible(false);
+        } else {
+          setAddDialogVisible(true);
+          setConnectTipDialogVisible(false);
+        }
       };
       dispatch(connectWalletAsync(undefined, startFn, errorFn, sucFn));
     },
-    [errorDescEl, dispatch]
+    [errorDescEl, dispatch, fromEvents]
   );
   useEffect(() => {
     if (connectedWallet?.address) {
@@ -269,23 +323,26 @@ const CredOverview = memo(() => {
   useEffect(() => {
     if (fromEvents) {
       if (fromEvents === 'Scroll') {
-        let credArr = Object.values(credList);
-        const haveXProof = credArr.find(
-          (i) => i.event === 'LINEA_DEFI_VOYAGE' && i.source === 'x'
-        );
-        const haveBinanceProof = credArr.find(
-          (i) => i?.event === 'LINEA_DEFI_VOYAGE' && i.source === 'binance'
-        );
-        const proofsFlag = !!haveXProof && !!haveBinanceProof;
-        if (proofsFlag) {
-          handleUpChain(haveXProof);
-        }
+        handleJoinScrollEvent();
       } else {
         handleAdd();
       }
     }
-  }, [fromEvents, handleAdd, credList, handleUpChain]);
-
+  }, [fromEvents, handleAdd, credList, handleUpChain, handleJoinScrollEvent]);
+useEffect(() => {
+  const listerFn = (message: any) => {
+    if (message.type === 'pageDecode') {
+      if (message.name === 'sendRequest') {
+        setClaimMysteryBoxVisible2(false)
+        // setAddDialogVisible(true)
+      }
+    }
+  };
+  chrome.runtime.onMessage.addListener(listerFn);
+  return () => {
+    chrome.runtime.onMessage.removeListener(listerFn);
+  };
+}, [activeRequest?.type]);
   useEffect(() => {
     return () => {
       const msg = {
@@ -300,6 +357,7 @@ const CredOverview = memo(() => {
       postMsg(padoServicePort, msg);
     };
   }, [padoServicePort]);
+
   return (
     <div className="credOverview">
       <CredList
@@ -338,6 +396,7 @@ const CredOverview = memo(() => {
         onClose={handleCloseAddDialog}
         onSubmit={handleCloseAddDialog}
         type={proofType}
+        eventSource={eventSource}
       />
       <CredSendToChainWrapper
         visible={sendToChainDialogVisible}
@@ -359,6 +418,14 @@ const CredOverview = memo(() => {
         activeCred={activeCred}
         onClose={handleCloseBindPolygonid}
         onSubmit={handleSubmitBindPolygonid}
+      />
+      <ClaimMysteryBoxWrapper2
+        visible={claimMysteryBoxVisible2}
+        onClose={() => {
+          setClaimMysteryBoxVisible2(false);
+        }}
+        onSubmit={onSubmitClaimMysteryBoxDialog2}
+        onChange={onChangeClaimMysteryBoxDialog2}
       />
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>

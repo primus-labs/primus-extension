@@ -1,11 +1,11 @@
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/padoM.scss';
 .adSpace.adSpaceBadge {
-    --left-gap: .278rem;
-    --left-img-width: .5383rem;
-    --left-img-top: -0.1224rem;
-  }
-@media (max-width:1470px) {
+  --left-gap: 0.278rem;
+  --left-img-width: 0.5383rem;
+  --left-img-top: -0.1224rem;
+}
+@media (max-width: 1470px) {
   .adSpace.adSpaceBadge {
     --left-gap: 40.87px;
     --left-img-width: 79.13px;
@@ -13,16 +13,19 @@
   }
 }
 .adSpace.adSpaceBadge {
-  background: var(--Linear, linear-gradient(269deg, #70FFBA 0.52%, #78DEFF 100.71%));
+  background: var(
+    --Linear,
+    linear-gradient(269deg, #70ffba 0.52%, #78deff 100.71%)
+  );
   .left {
-    gap: var(--left-gap,40.87px);
-    >img {
-      width: var(--left-img-width,79.13px);
-      top: var(--left-img-top,-18px);
+    gap: var(--left-gap, 40.87px);
+    > img {
+      width: var(--left-img-width, 79.13px);
+      top: var(--left-img-top, -18px);
       position: relative;
     }
     .bannerContent {
-      gap: var(--spacing-16,16px);
+      gap: var(--spacing-16, 16px);
       .cn {
         @extend .fcss;
         gap: var(--spacing-4, 4px);
@@ -34,11 +37,16 @@
     border-radius: var(--spacing-12, 12px);
     background: var(--yellow-y-300, #ffe603);
     .iconfont {
-      font-size: var(--spacing-20,20px);
-      color: var(--Text-headline, #0a1214);
+      font-size: var(--spacing-20, 20px);
+      // color: var(--Text-headline, #0a1214);
     }
-    &:hover,&.active {
+    &:hover,
+    &.active {
       background: var(--yellow-y-200, #ffea2e);
+      color: var(--Text-headline, #0a1214);
+      .iconfont {
+        color: var(--Text-headline, #0a1214);
+      }
     }
   }
 }

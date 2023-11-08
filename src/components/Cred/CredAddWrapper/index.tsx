@@ -69,9 +69,18 @@ interface CredAddWrapperType {
   onSubmit: (addSucFlag?: any) => void;
   onClose: () => void;
   type?: string;
+  eventSource?: string;
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
-  ({ visible, activeCred, activeSource, onClose, onSubmit, type }) => {
+  ({
+    visible,
+    activeCred,
+    activeSource,
+    onClose,
+    onSubmit,
+    type,
+    eventSource,
+  }) => {
     const [credRequestId, setCredRequestId] = useState<string>();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -128,8 +137,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setActiveRequest({
         type: 'warn',
         title: 'Something went wrong',
-        desc: "The attestation process has been interrupted for some unknown reason.Please try again later."
-        ,
+        desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
       });
       const msg = {
         fullScreenType: 'algorithm',
@@ -537,7 +545,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, []);
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
-        // debugger
         setActiveAttestForm(form);
         if (form?.proofClientType === 'Webpage Data') {
           const currRequestObj = webProofTypes.find(
@@ -827,9 +834,25 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           setActiveAttestationType('');
           setActiveSourceName(undefined);
           handleAdd();
+        } else if (fromEvents === 'Scroll') {
+          const from = {
+            proofClientType: 'Webpage Data',
+            proofContent: 'Account Ownership',
+            source: eventSource as string,
+            type: 'IDENTIFICATION_PROOF',
+            event: 'SCROLL_LAUNCH_CAMPAIGN',
+          };
+          onSubmitAttestationDialog(from);
         }
       }
-    }, [visible, activeSource, activeCred, fromEvents]);
+    }, [
+      visible,
+      activeSource,
+      activeCred,
+      fromEvents,
+      onSubmitAttestationDialog,
+      eventSource,
+    ]);
 
     // useEffect(() => {
     //   if (!activeRequest?.type) {
@@ -920,13 +943,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           return null;
         }
       } else {
-        return null
+        return null;
       }
-    }, [
-      fromEvents,
-      onSubmitActiveRequestDialog,
-      activeRequest?.type,
-    ]);
+    }, [fromEvents, onSubmitActiveRequestDialog, activeRequest?.type]);
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (

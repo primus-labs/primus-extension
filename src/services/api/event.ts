@@ -74,3 +74,11 @@ export const queryBadgeEventPeriod = (data?: CheckLotteryResultsParams) => {
     data,
   });
 };
+
+export const queryEventDetail = (data?: CheckLotteryResultsParams) => {
+  return request({
+    method: 'get',
+    url: `/event/detail`,
+    data,
+  });
+};

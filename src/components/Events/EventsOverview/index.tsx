@@ -11,19 +11,28 @@ import RewardList from '../RewardList';
 import AdSpace from '../AdSpace';
 import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
 import AdSpaceMysteryBox2 from '../AdSpaceMysteryBox2';
+import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
+import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import './index.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 // import { BADGELOTTRYTIMESTR } from '@/config/constants';
 import type { UserState } from '@/types/store';
-
+import type { ActiveRequestType } from '@/types/config';
 import Slider from 'react-slick';
-
+import { DATASOURCEMAP } from '@/config/constants';
+import {
+  setRewardsDialogVisibleAction,
+} from '@/store/actions';
 const EventsOverview = memo(() => {
+  const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
+  const [processDialogVisible, setProcessDialogVisible] = useState<boolean>();
+  const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
   const NFTsProcess = searchParams.get('NFTsProcess');
   const BadgesProcess = searchParams.get('BadgesProcess');
+  const ScrollProcess = searchParams.get('ScrollProcess');
   var settings = {
     dots: true,
     infinite: true,
@@ -40,7 +49,9 @@ const EventsOverview = memo(() => {
     useState<boolean>(false);
   const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
     useState<boolean>(false);
-  
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   const badgeEventPeriod = useSelector(
     (state: UserState) => state.badgeEventPeriod
   );
@@ -72,11 +83,51 @@ const EventsOverview = memo(() => {
     setClaimMysteryBoxVisible(true);
   }, []);
   const handleClickMysterybox2 = useCallback(() => {
-    setClaimMysteryBoxVisible2(true);
-  }, []);
+    // if (connectedWallet?.address) {
+    //   setClaimMysteryBoxVisible2(true);
+    // } else {
+    //   setConnectDialogVisible(true);
+    // }
+    navigate(`/cred?fromEvents=Scroll`);
+  }, [navigate]);
   const navToCred = useCallback(() => {
     navigate(`/cred?proofType=UNISWAP_PROOF`);
   }, [navigate]);
+  // const handleSubmitConnectWallet = useCallback(
+  //   async (wallet?: WALLETITEMTYPE) => {
+  //     setConnectDialogVisible(false);
+  //     const startFn = () => {
+  //       setActiveRequest({
+  //         type: 'loading',
+  //         title: 'Processing',
+  //         desc: 'Please complete the transaction in your wallet.',
+  //       });
+  //       setConnectTipDialogVisible(true);
+  //     };
+  //     const errorFn = () => {
+  //       setActiveRequest({
+  //         type: 'error',
+  //         title: 'Unable to proceed',
+  //         desc: errorDescEl,
+  //       });
+  //       setActiveCred(undefined);
+  //     };
+  //     const sucFn = async (walletObj: any) => {
+  //       setAddDialogVisible(true);
+  //       setConnectTipDialogVisible(false);
+  //     };
+  //     dispatch(connectWalletAsync(undefined, startFn, errorFn, sucFn));
+  //   },
+  //   [errorDescEl, dispatch]
+  // );
+  const handleCloseMask = useCallback(() => {
+    setProcessDialogVisible(false);
+  }, []);
+  const onSubmitProcessDialog = useCallback(() => {
+    setConnectDialogVisible(false);
+    setProcessDialogVisible(false);
+    setClaimMysteryBoxVisible2(true);
+  }, []);
 
   useEffect(() => {
     if (NFTsProcess) {
@@ -88,7 +139,19 @@ const EventsOverview = memo(() => {
       setClaimMysteryBoxVisible(true);
     }
   }, [BadgesProcess]);
-  
+  useEffect(() => {
+    if (ScrollProcess) {
+      if (ScrollProcess === 'suc')
+        dispatch(
+          setRewardsDialogVisibleAction({
+            visible: true,
+            tab: 'Badges',
+          })
+        );
+      setClaimMysteryBoxVisible2(true);
+    }
+  }, [ScrollProcess]);
+
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">
@@ -112,11 +175,26 @@ const EventsOverview = memo(() => {
         onClose={onCloseClaimMysteryBoxDialog}
         onSubmit={onCloseClaimMysteryBoxDialog}
       />
-      <ClaimMysteryBoxWrapper2
-        visible={claimMysteryBoxVisible2}
-        onClose={onCloseClaimMysteryBoxDialog2}
-        onSubmit={onCloseClaimMysteryBoxDialog2}
-      />
+      
+      {/* {connectDialogVisible && (
+        <ConnectWalletDialog
+          onClose={() => {
+            setConnectDialogVisible(false);
+          }}
+          onSubmit={handleSubmitConnectWallet}
+        />
+      )}
+
+      {processDialogVisible && (
+        <AddSourceSucDialog
+          type={activeRequest?.type}
+          title={activeRequest?.title}
+          desc={activeRequest?.desc}
+          activeSource={DATASOURCEMAP['onChain']}
+          onClose={handleCloseMask}
+          onSubmit={onSubmitProcessDialog}
+        />
+      )} */}
     </div>
   );
 });

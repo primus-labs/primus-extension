@@ -2,17 +2,7 @@
 @import "@/assets/css/padoM.scss";
 
 
-.buttonStyle1{
-  @extend .Body1;
-  border-radius: var(--spacing-100, 100px);
-  border: 1PX solid var(--Button-default, #515758);
-  background: transparent;
-  &:hover,&:active{
-    border:0;
-    background-color: var(--Text-headline, #0A1214);
-    color: var(--bg-default, #FFF);
-  }
-}
+
 
 button.pButton {
   @extend .frcc;
@@ -50,3 +40,14 @@ button.pButton {
   }
 }
 
+.buttonStyle1{
+  @extend .Body1;
+  border-radius: var(--spacing-100, 100px);
+  border: 1PX solid var(--Button-default, #515758);
+  background: transparent;
+  &:hover,&:active{
+    border:0;
+    background-color: var(--Text-headline, #0A1214);
+    color: var(--bg-default, #FFF);
+  }
+}

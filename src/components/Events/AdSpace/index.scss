@@ -30,10 +30,13 @@
     background: var(--bg-40, rgba(167, 170, 170, 0.1)) !important;
     .pButton.disabled {
       background: transparent !important;
-      border-radius: var(--spacing-100,100px);
-      color: var(--Text-hint, #7B7F80);
-      border-color: var(--Text-hint, #7B7F80);
+      border-radius: var(--spacing-100, 100px);
+      color: var(--Text-hint, #7b7f80);
+      border-color: var(--Text-hint, #7b7f80);
       cursor: pointer;
+      &:hover{
+        border: 1px solid var(--Text-hint, #7b7f80);
+      }
     }
   }
   .left {
@@ -69,6 +72,10 @@
     height: var(--adSpace-pButton-height, 48px);
     // @extend .Headline5;
     // border:0;
+    // background: transparent;
+    // &:hover{
+    //   background: transparent;
+    // }
   }
 }
 .adSpace.adSpaceNft {
@@ -81,5 +88,13 @@
   }
   .pButton {
     color: var(--Text-headline, #0a1214);
+    border: 1px solid var(--Text-headline, #0a1214);
+    background-color: transparent;
+    &:hover,
+    &:active {
+      background-color: transparent;
+      background: var(--Text-headline, #0a1214);
+      color: var(--bg-default, #fff);
+    }
   }
 }

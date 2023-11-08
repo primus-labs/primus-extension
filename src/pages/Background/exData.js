@@ -222,7 +222,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
 };
 export default processNetworkReq;
 
-// port is unnecesary when you assemble algorithm params for page decode 
+// port is unnecesary when you assemble algorithm params for page decode
 export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const {
     source,
@@ -232,6 +232,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     label,
     exUserId,
     requestid: prevRequestid,
+    event = 'SCROLL_LAUNCH_CAMPAIGN', // TODO!!!
   } = form;
   const { baseName } = DATASOURCEMAP[source];
   const user = await assembleUserInfoParams();
@@ -267,7 +268,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     user,
     // holdingToken // TODO
     authUseridHash,
-    event: 'LINEA_DEFI_VOYAGE', // TODO!!!
+    event,
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
@@ -284,7 +285,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     params.holdingToken = holdingToken;
     calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
   }
-  if (port) { // it's noneed for page decode
+  if (port) {
+    // it's noneed for page decode
     const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(
       form,
       USERPASSWORD,
@@ -299,9 +301,12 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
     let ext;
     if (source === 'binance' || source === 'okx') {
-      const extUidHashRequestsInfo = await assembleUidHashRequestsParams(form, USERPASSWORD, port);
+      const extUidHashRequestsInfo = await assembleUidHashRequestsParams(
+        form,
+        USERPASSWORD,
+        port
+      );
       ext = {
-        event: 'LINEA_DEFI_VOYAGE', // TODO!!!
         calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
         extRequests: {
           orders: ['uid-hash', extRequestsOrder], // TODO
@@ -312,12 +317,13 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     } else {
       ext = {
         calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-          extRequests: {
-            orders: [extRequestsOrder], // TODO
-            [extRequestsOrder]: extRequestsOrderInfo,
+        extRequests: {
+          orders: [extRequestsOrder], // TODO
+          [extRequestsOrder]: extRequestsOrderInfo,
         },
       };
     }
+    ext.event = event;
 
     Object.assign(params, {
       ext,
@@ -335,8 +341,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
         { name: 'getDataTime', type: 'string' },
         { name: 'baseValue', type: 'string' },
         { name: 'balanceGreaterThanBaseValue', type: 'string' },
-      ]
-    })
+      ],
+    });
   }
 
   return params;
@@ -356,7 +362,7 @@ async function assembleUidHashRequestsParams(form, USERPASSWORD, port) {
         params: { recvWindow: 60 * 1000 },
       };
       signres = await sign('binance', data, USERPASSWORD, port);
-      signres.parseSchema = 'A_PURE_NUMBER:beg_tag=\"uid\"::end_tag=}';
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag="uid"::end_tag=}';
       signres.decryptFlag = 'false';
       signres.calculationType = 'A_VALUE_HASH';
       extRequestsOrderInfo = { ...signres };
@@ -369,7 +375,7 @@ async function assembleUidHashRequestsParams(form, USERPASSWORD, port) {
         params: {},
       };
       signres = await sign('okx', data, USERPASSWORD, port);
-      signres.parseSchema = 'A_PURE_NUMBER:beg_tag=\"mainUid\":\":end_tag=\"';
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag="mainUid":":end_tag="';
       signres.decryptFlag = 'false';
       signres.calculationType = 'A_VALUE_HASH';
       extRequestsOrderInfo = { ...signres };

@@ -44,11 +44,12 @@ interface ClaimWrapperProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: () => void;
+  onChange: (step: number) => void;
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
-  ({ visible, onClose, onSubmit }) => {
+  ({ visible, onClose, onSubmit, onChange }) => {
     const [searchParams] = useSearchParams();
-    const BadgesProcess = searchParams.get('BadgesProcess');
+    const BadgesProcess = searchParams.get('ScrollProcess');
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
 
@@ -109,6 +110,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const navigate = useNavigate();
 
     const onSubmitClaimDialog = useCallback(async () => {
+      onSubmit();
       // 1.if participated
       // 2.has on chain web proof
       // 2.has connect wallet;
@@ -126,9 +128,9 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       //   );
       //   onClose();
       // } else {
-        navigate('/cred?fromEvents=Scroll');
+      // navigate('/cred?fromEvents=Scroll');
       // }
-    }, [navigate]);
+    }, []);
     // }, [navigate, dispatch, onClose]);
 
     const onSubmitActiveRequestDialog = useCallback(() => {
@@ -164,19 +166,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         }
       }
     }, [BadgesProcess, errorDescEl, visible]);
-    // useEffect(() => {
-    //    chrome.storage.local.remove(['mysteryBoxRewards']);
-    // })
-    const ruleItems = [
-      'Create an attestation to confirm your humanity through your exchange accounts‘.',
-      'Submit your attestation to Linea mainnet',
-    ];
-    const descItem = (
-      <>
-        You will have a mystery box after completing the event. (
-        <span>Each user can only claim one</span>)
-      </>
-    );
+
     const badgeEventPeriod = useSelector(
       (state: UserState) => state.badgeEventPeriod
     );
@@ -211,12 +201,10 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           <ClaimDialog
             onClose={onClose}
             onSubmit={onSubmitClaimDialog}
-            title="Linea Campaign"
+            onChange={onChange}
+            title="Scroll zkAttestation Tasks"
             titleIllustration={true}
             subTitle="Complete the following tasks to submit an entry to this campaign."
-            rules={ruleItems}
-            desc={descItem}
-            extra={extraEl}
           />
         )}
         {visible && step === 2 && (
@@ -228,7 +216,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             desc={activeRequest?.desc}
             headerEl={
               <ClaimDialogHeaderDialog
-                title="Product Officially Launch"
+                title="Scroll zkAttestation Tasks"
                 illustration={true}
               />
             }

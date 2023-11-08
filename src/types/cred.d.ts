@@ -73,4 +73,5 @@ export type AttestionForm = {
   proofType?: string;
   proofClientType?: string;
   proofContent?: string;
+  event?: string;
 };

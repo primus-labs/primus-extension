@@ -1,5 +1,5 @@
-import React, { FC, memo, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import React, { FC, memo, useEffect, useMemo, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import PButton from '@/components/PButton';
@@ -7,11 +7,14 @@ import iconRightArrow from '@/assets/img/rightArrow.svg';
 import bannerIllstration from '@/assets/img/events/luckyDrawIllstration.svg';
 import './index.scss';
 import type { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
+import { setRewardsDialogVisibleAction } from '@/store/actions';
 interface AdSpaceProps {
   onClick: () => void;
 }
 dayjs.extend(utc);
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
+  const dispatch: Dispatch<any> = useDispatch();
   const badgeEventPeriod = useSelector(
     (state: UserState) => state.badgeEventPeriod
   );
@@ -30,6 +33,18 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     const flag = dayjs().isBefore(dayjs(BADGELOTTRYTIMESTR));
     return flag;
   }, [BADGELOTTRYTIMESTR]);
+  const handleOnClick = useCallback(() => {
+    if (!badgeOpenFlag) {
+      dispatch(
+        setRewardsDialogVisibleAction({
+          visible: true,
+          tab: 'Badges',
+        })
+      );
+    } else {
+      onClick();
+    }
+  }, [badgeOpenFlag, onClick]);
 
   return (
     <div className={`adSpace luckyDraw ${badgeOpenFlag ? '' : ' disabled'}`}>
@@ -53,7 +68,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           onClick={onClick}
         />
       ) : (
-        <PButton text="Close" className="disabled" onClick={() => {}} />
+        <PButton text="Close" className="disabled" onClick={handleOnClick} />
       )}
     </div>
   );

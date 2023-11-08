@@ -153,10 +153,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         ) => {
           let credArr = Object.values(credentialsFromStore);
           const XProof = credArr.find(
-            (i) => i.event === 'LINEA_DEFI_VOYAGE' && i.source === 'x'
+            (i) => i.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'x'
           ) as CredTypeItemType;
           const BinanceProof = credArr.find(
-            (i) => i?.event === 'LINEA_DEFI_VOYAGE' && i.source === 'binance'
+            (i) =>
+              i?.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'binance'
           ) as CredTypeItemType;
           const upChainPX: any = {
             data: XProof?.encodedData,
@@ -235,9 +236,19 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             });
 
             await initCredList();
-            await chrome.storage.local.set({
-              joinScrollEvent: '1',
+            
+
+            const { scrollEvent } = await chrome.storage.local.get([
+              'scrollEvent',
+            ]);
+            const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+            Object.assign(scrollEventObj, {
+              finishFlag: '1'
             });
+            chrome.storage.local.set({
+              scrollEvent: JSON.stringify(scrollEventObj),
+            });
+
             setActiveSendToChainRequest({
               type: 'suc',
               title: 'Congratulations',
@@ -297,7 +308,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               LineaSchemaName = 'EAS';
             }
             if (fromEvents === 'Scroll') {
-             
               scrollEventFn(walletObj, LineaSchemaName);
             } else {
               let upChainParams = {

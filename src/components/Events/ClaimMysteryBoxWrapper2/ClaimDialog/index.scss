@@ -2,18 +2,67 @@
 @import '@/assets/css/pDialog.sass';
 @import '@/assets/css/padoDialog.scss';
 @import '@/components/Events/ClaimWrapper/index.scss';
-
+.padoDialog.claimDialog.claimScrollEventDialog {
+  --con-width: 1.5782rem;
+}
+@media (max-width: 1470px) {
+  .padoDialog.claimDialog.claimScrollEventDialog {
+    --con-width: 232px;
+  }
+}
 .padoDialog.claimDialog.claimScrollEventDialog {
   main {
-    gap: var(--spacing-20,20px);
+    gap: var(--spacing-20, 20px);
+
     .descContent {
-      .credTypeList{
-        .credTypeItem{
-          width: 100%;
+      @extend .fcss;
+      gap: var(--spacing-8, 8px);
+      .tipWrapper {
+        @extend .fcss;
+        gap: var(--spacing-8, 8px);
+        color: #000;
+        @extend .Text1;
+        > p {
+          height: var(--spacing-20, 20px);
+        }
+        span {
+          color: var(--gradientgreen-g-400, #4eb382);
+          @extend .Body2;
         }
       }
-      .descWrapper{
-        font-size: 12px;
+      .credTypeList {
+        gap: var(--spacing-8, 8px);
+        .credTypeItem {
+          width: 100%;
+          height: var(--spacing-60, 60px);
+
+          .innerContent {
+            .con {
+              width: var(--con-width, 232px);
+              .desc {
+                width: var(--con-width, 232px);
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+            }
+            >img{
+              width: var(--spacing-24,24px);
+            }
+          }
+
+          .innerContent {
+            .con {
+              gap: var(--spacing-4, 4px);
+            }
+          }
+        }
+      }
+      .descWrapper {
+        color: var(--Text-hint, #7b7f80);
+        @extend .Text1;
+        > a {
+          color: var(--Text-hint, #7b7f80);
+        }
       }
     }
   }

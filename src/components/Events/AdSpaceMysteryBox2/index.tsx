@@ -17,9 +17,12 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
   );
   const formatPeriod = useMemo(() => {
     const { startTime, endTime } = badgeEventPeriod;
-    const s = dayjs.utc(+startTime).format('YYYY.MM.DD');
-    const e = dayjs.utc(+endTime).format('YYYY.MM.DD');
-    return `${s}~${e}`;
+    const s = dayjs.utc(+startTime).format('YYYY.MM.DD-h-a');
+    const e = dayjs.utc(+endTime).format('YYYY.MM.DD-h-a');
+   
+    const sArr = s.split('-');
+    const eArr = e.split('-');
+    return `${sArr[0]} ${sArr[1]}${sArr[2]}~${eArr[0]} ${eArr[1]}${eArr[2]}`;
   }, [badgeEventPeriod]);
 
   return (
@@ -27,10 +30,9 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
       <div className="left">
         <img src={bannerIllstration} alt="" />
         <div className="bannerContent">
-          <h3 className="ct">Scroll Humanity Attestation</h3>
+          <h3 className="ct">Scroll zkAttestation Launch Campaign</h3>
           <div className="cn">
-            <p>Limited partnership badges for users.</p>
-            {/* <p>2023.10.23~2023.10.29</p> */}
+            <p>Limited badge for attestation participants</p>
             <p>{formatPeriod}</p>
           </div>
         </div>

@@ -40,7 +40,8 @@ export const pageDecodeMsgListener = async (
         ...currRequestObj,
         headers: formatHeader,
       };
-      const formatUrlKey = encodeURIComponent(currRequestUrl);
+     
+      const formatUrlKey = currRequestUrl;
       console.log('222222listen', currRequestUrl);
       await chrome.storage.local.set({
         [formatUrlKey]: JSON.stringify(newCurrRequestObj),
@@ -155,7 +156,7 @@ export const pageDecodeMsgListener = async (
     const formatRequests = [];
     for (const r of requests) {
       const { headers, cookies, body, url } = r;
-      const formatUrlKey = decodeURIComponent(url);
+      const formatUrlKey = url
       const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
      
       const { headers: curRequestHeader, body: curRequestBody } = (requestInfoObj[url] && JSON.parse(
