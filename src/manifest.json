@@ -35,13 +35,13 @@
     "https://pado-online.s3.ap-northeast-1.amazonaws.com/",
     "https://www.binance.com/",
     "https://api.twitter.com/",
-    "https://twitter.com/"
-
+    "https://twitter.com/",
+    "https://www.coinbase.com/"
   ],
   "web_accessible_resources": [
     {
       "resources": ["iconExtension.svg","iconSuc.svg"],
-      "matches": ["https://www.binance.com/*","https://twitter.com/*"]
+      "matches": ["https://www.binance.com/*","https://twitter.com/*", "https://www.okx.com/*", "https://www.coinbase.com/*"]
     }
   ]
 }
