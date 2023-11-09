@@ -180,14 +180,18 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           };
           if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
             const requestParamsX: any = {
-              rawParam: Object.assign(XProof,{}),
+              rawParam: Object.assign(XProof, {
+                ext: { event: 'SCROLL_LAUNCH_CAMPAIGN' },
+              }),
               greaterThanBaseValue: true,
               signature: XProof?.signature,
               newSigFormat: LineaSchemaName,
               sourceUseridHash: XProof?.sourceUseridHash,
             };
             const requestParamsBinance: any = {
-              rawParam: Object.assign(BinanceProof, {  }),
+              rawParam: Object.assign(BinanceProof, {
+                ext: { event: 'SCROLL_LAUNCH_CAMPAIGN' },
+              }),
               greaterThanBaseValue: true,
               signature: BinanceProof?.signature,
               newSigFormat: LineaSchemaName,
