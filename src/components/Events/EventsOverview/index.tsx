@@ -21,9 +21,7 @@ import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 import Slider from 'react-slick';
 import { DATASOURCEMAP } from '@/config/constants';
-import {
-  setRewardsDialogVisibleAction,
-} from '@/store/actions';
+import { setRewardsDialogVisibleAction } from '@/store/actions';
 const EventsOverview = memo(() => {
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [processDialogVisible, setProcessDialogVisible] = useState<boolean>();
@@ -82,14 +80,26 @@ const EventsOverview = memo(() => {
   const handleClickMysterybox = useCallback(() => {
     setClaimMysteryBoxVisible(true);
   }, []);
-  const handleClickMysterybox2 = useCallback(() => {
+  const handleClickMysterybox2 = useCallback(async () => {
     // if (connectedWallet?.address) {
     //   setClaimMysteryBoxVisible2(true);
     // } else {
     //   setConnectDialogVisible(true);
     // }
-    navigate(`/cred?fromEvents=Scroll`);
-  }, [navigate]);
+    const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
+    const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+   
+    if (scrollEventObj?.finishFlag) {
+      dispatch(
+        setRewardsDialogVisibleAction({
+          visible: true,
+          tab: 'Badges',
+        })
+      );
+    } else {
+      navigate(`/cred?fromEvents=Scroll`);
+    }
+  }, [navigate, dispatch]);
   const navToCred = useCallback(() => {
     navigate(`/cred?proofType=UNISWAP_PROOF`);
   }, [navigate]);
@@ -141,16 +151,21 @@ const EventsOverview = memo(() => {
   }, [BadgesProcess]);
   useEffect(() => {
     if (ScrollProcess) {
-      if (ScrollProcess === 'suc')
+      if (ScrollProcess === 'suc') {
         dispatch(
           setRewardsDialogVisibleAction({
             visible: true,
             tab: 'Badges',
           })
         );
-      setClaimMysteryBoxVisible2(true);
+      } else {
+        setClaimMysteryBoxVisible2(true);
+      }
     }
-  }, [ScrollProcess]);
+  }, [ScrollProcess, dispatch]);
+  // useEffect(() => {
+  //   chrome.storage.local.remove(['scrollEvent']);
+  // }, []);
 
   return (
     <div className="eventOverview">
@@ -175,7 +190,7 @@ const EventsOverview = memo(() => {
         onClose={onCloseClaimMysteryBoxDialog}
         onSubmit={onCloseClaimMysteryBoxDialog}
       />
-      
+
       {/* {connectDialogVisible && (
         <ConnectWalletDialog
           onClose={() => {
