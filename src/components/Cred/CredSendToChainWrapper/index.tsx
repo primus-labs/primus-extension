@@ -23,7 +23,7 @@ import {
   SCROLLSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
-import { CredVersion } from '@/config/constants';
+import { CredVersion, SCROLLEVENTNAME } from '@/config/constants';
 import { connectWallet, switchChain } from '@/services/wallets/metamask';
 import {
   attestByDelegationProxy,
@@ -153,11 +153,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         ) => {
           let credArr = Object.values(credentialsFromStore);
           const XProof = credArr.find(
-            (i) => i.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'x'
+            (i) => i.event === SCROLLEVENTNAME && i.source === 'x'
           ) as CredTypeItemType;
           const BinanceProof = credArr.find(
-            (i) =>
-              i?.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'binance'
+            (i) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
           ) as CredTypeItemType;
           const upChainPX: any = {
             data: XProof?.encodedData,
@@ -181,7 +180,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
             const requestParamsX: any = {
               rawParam: Object.assign(XProof, {
-                ext: { event: 'SCROLL_LAUNCH_CAMPAIGN' },
+                ext: { event: SCROLLEVENTNAME },
               }),
               greaterThanBaseValue: true,
               signature: XProof?.signature,
@@ -190,7 +189,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             };
             const requestParamsBinance: any = {
               rawParam: Object.assign(BinanceProof, {
-                ext: { event: 'SCROLL_LAUNCH_CAMPAIGN' },
+                ext: { event: SCROLLEVENTNAME },
               }),
               greaterThanBaseValue: true,
               signature: BinanceProof?.signature,

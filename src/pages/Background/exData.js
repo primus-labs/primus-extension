@@ -232,7 +232,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     label,
     exUserId,
     requestid: prevRequestid,
-    event = 'SCROLL_LAUNCH_CAMPAIGN', // TODO!!!
+    event,
   } = form;
   const { baseName } = DATASOURCEMAP[source];
   const user = await assembleUserInfoParams();
@@ -342,6 +342,10 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
         { name: 'baseValue', type: 'string' },
         { name: 'balanceGreaterThanBaseValue', type: 'string' },
       ],
+    });
+  } else {
+    Object.assign(params, {
+      ext: { event },
     });
   }
 

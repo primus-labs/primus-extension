@@ -20,6 +20,8 @@ import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconQuestN from '@/assets/img/events/iconQuestN.svg';
 import { queryEventDetail } from '@/services/api/event';
+import { SCROLLEVENTNAME } from '@/config/constants';
+import PBottomErrorTip from '@/components/PBottomErrorTip';
 interface ClaimDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -75,6 +77,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     titleIllustration = false,
     subTitle = '',
   }) => {
+    const [errorTip, setErrorTip] = useState<string>();
     const [eventDetail, setEventDetail] = useState<any>();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     // compaignQuestnCheckPageCheckFlag compaignCheckpageFlag
@@ -85,14 +88,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const proofX = useMemo(() => {
       let credArr = Object.values(credentialsFromStore);
       const haveXProof = credArr.find(
-        (i) => i.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'x'
+        (i) => i.event === SCROLLEVENTNAME && i.source === 'x'
       );
       return haveXProof;
     }, [credentialsFromStore]);
     const proofBinance = useMemo(() => {
       let credArr = Object.values(credentialsFromStore);
       const haveBinanceProof = credArr.find(
-        (i) => i?.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'binance'
+        (i) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
       );
       return haveBinanceProof;
     }, [credentialsFromStore]);
@@ -129,14 +132,21 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     ]);
 
     const hanldeSubmit = useCallback(() => {
-      if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
-        return;
+      if (
+        !proofX ||
+        !proofBinance ||
+        !scrollEventHistoryObj?.campaignPageCheckFlag
+      ) {
+        setErrorTip('Please complete the task above first.');
       } else {
-        if (btnCN === '') {
-          onSubmit();
-        }
+        onSubmit();
       }
-    }, [scrollEventHistoryObj?.campaignPageCheckFlag, onSubmit, btnCN]);
+    }, [
+      scrollEventHistoryObj?.campaignPageCheckFlag,
+      proofX,
+      proofBinance,
+      onSubmit,
+    ]);
     const openWindow = (url: string) => {
       window.open(url);
     };
@@ -191,7 +201,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     );
     const fetchEventDetail = useCallback(async () => {
       const res = await queryEventDetail({
-        event: 'SCROLL_LAUNCH_CAMPAIGN',
+        event: SCROLLEVENTNAME,
       });
       const { rc, result } = res;
       if (rc === 0) {
@@ -294,6 +304,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
           </main>
           <footer>
             <PButton className={btnCN} text="Submit" onClick={hanldeSubmit} />
+            {errorTip && <PBottomErrorTip text={errorTip} />}
           </footer>
         </div>
       </PMask>

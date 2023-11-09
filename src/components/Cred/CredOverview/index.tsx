@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { DATASOURCEMAP } from '@/config/constants';
+import { DATASOURCEMAP, SCROLLEVENTNAME } from '@/config/constants';
 
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredList from '@/components/Cred/CredList';
@@ -102,7 +102,22 @@ const CredOverview = memo(() => {
     }
     return activeList;
   }, [credList, activeSourceType, filterWord, proofTypes]);
-
+  const proofX = useMemo(() => {
+    let credArr = Object.values(credentialsFromStore);
+    
+    const haveXProof = credArr.find(
+      (i) => i.event === SCROLLEVENTNAME && i.source === 'x'
+    );
+    return haveXProof;
+  }, [credentialsFromStore]);
+  const proofBinance = useMemo(() => {
+    let credArr = Object.values(credentialsFromStore);
+    console.log('2222229', credArr);
+    const haveBinanceProof = credArr.find(
+      (i) => i?.event === SCROLLEVENTNAME && i.source === "binance"
+    );
+    return haveBinanceProof;
+  }, [credentialsFromStore]);
   const initCredList = useCallback(async () => {
     await dispatch(setCredentialsAsync());
   }, [dispatch]);
@@ -159,27 +174,33 @@ const CredOverview = memo(() => {
   }, [connectedWallet?.address]);
   const handleJoinScrollEvent = useCallback(async () => {
     if (connectedWallet?.address) {
+      console.log('2222228');
       setClaimMysteryBoxVisible2(true);
     } else {
       setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address]);
-  const onSubmitClaimMysteryBoxDialog2 = useCallback(() => {
+  const onSubmitClaimMysteryBoxDialog2 = useCallback(async() => {
     // onSubmit
-    let credArr = Object.values(credList);
-    const haveXProof = credArr.find(
-      (i) => i.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'x'
+    const { credentials } = await chrome.storage.local.get('credentials');
+    let credArrNew = Object.values(JSON.parse(credentials));
+
+    const haveXProof = credArrNew.find(
+      (i:any) => i.event === SCROLLEVENTNAME && i.source === 'x'
     );
-    const haveBinanceProof = credArr.find(
-      (i) => i?.event === 'SCROLL_LAUNCH_CAMPAIGN' && i.source === 'binance'
+    const haveBinanceProof = credArrNew.find(
+      (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
     );
+    // console.log('22222210', credcredArrNewArr, JSON.parse(credentials));
+
     const proofsFlag = !!haveXProof && !!haveBinanceProof;
-    
+    // const proofsFlag = !!proofX && !!proofBinance;
+
     if (proofsFlag) {
-      setClaimMysteryBoxVisible2(false)
-      handleUpChain(haveXProof);
+      setClaimMysteryBoxVisible2(false);
+      handleUpChain(proofX);
     }
-  }, [credList, handleUpChain]);
+  }, [proofX, proofBinance,handleUpChain]);
   const onChangeClaimMysteryBoxDialog2 = (step: number) => {
     if (step === 2) {
       // x
@@ -199,9 +220,8 @@ const CredOverview = memo(() => {
     (addSucFlag?: any) => {
       setActiveSourceName(undefined);
       if (fromEvents) {
-        if (fromEvents === 'Sroll') {
+        if (fromEvents === 'Scroll') {
           setAddDialogVisible(false);
-          setEventSource('');
           setClaimMysteryBoxVisible2(true);
         } else {
           if (addSucFlag) {
@@ -272,7 +292,7 @@ const CredOverview = memo(() => {
       };
       const sucFn = async (walletObj: any) => {
         if (fromEvents === 'Scroll') {
-          
+          // debugger
           setClaimMysteryBoxVisible2(true);
           setEventSource('');
           setConnectTipDialogVisible(false);
@@ -328,21 +348,21 @@ const CredOverview = memo(() => {
         handleAdd();
       }
     }
-  }, [fromEvents, handleAdd, credList, handleUpChain, handleJoinScrollEvent]);
-useEffect(() => {
-  const listerFn = (message: any) => {
-    if (message.type === 'pageDecode') {
-      if (message.name === 'sendRequest') {
-        setClaimMysteryBoxVisible2(false)
-        // setAddDialogVisible(true)
+  }, [fromEvents, handleAdd, handleJoinScrollEvent]);
+  useEffect(() => {
+    const listerFn = (message: any) => {
+      if (message.type === 'pageDecode') {
+        if (message.name === 'sendRequest') {
+          setClaimMysteryBoxVisible2(false);
+          // setAddDialogVisible(true)
+        }
       }
-    }
-  };
-  chrome.runtime.onMessage.addListener(listerFn);
-  return () => {
-    chrome.runtime.onMessage.removeListener(listerFn);
-  };
-}, [activeRequest?.type]);
+    };
+    chrome.runtime.onMessage.addListener(listerFn);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listerFn);
+    };
+  }, [activeRequest?.type]);
   useEffect(() => {
     return () => {
       const msg = {

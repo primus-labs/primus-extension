@@ -5,7 +5,10 @@ import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
 import type { PROOFTYPEITEM } from '@/types/cred';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
-import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import {
+  DEFAULTDATASOURCEPOLLINGTIMENUM,
+  SCROLLEVENTNAME,
+} from '@/config/constants';
 import {
   bindConnectedWallet,
   checkIfBindConnectedWallet,
@@ -252,7 +255,7 @@ export const setBadgeEventPeriodActionAsync = () => {
       const eventPeriodRes = await Promise.all([
         queryBadgeEventPeriod(),
         queryBadgeEventPeriod({
-          event: 'SCROLL_DEFI_VOYAGE',
+          event: SCROLLEVENTNAME,
         }),
       ]);
       eventPeriodRes.forEach((i, k) => {

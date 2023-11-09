@@ -29,6 +29,7 @@ import {
   ONESECOND,
   ONEMINUTE,
   CredVersion,
+  SCROLLEVENTNAME,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -293,6 +294,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),
           });
+          
           await initCredList();
           setActiveRequest({
             type: 'suc',
@@ -553,6 +555,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (form?.requestid) {
             currRequestObj.requestid = form.requestid;
           }
+          if (form?.event) {
+            currRequestObj.event = form.event;
+          }
           const currentWindowTabs = await chrome.tabs.query({
             active: true,
             currentWindow: true,
@@ -619,6 +624,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         activeCred?.did,
         fetchAttestForPolygonID,
         webProofTypes,
+        fetchAttestForUni,
       ]
     );
     const onBackAttestationDialog = useCallback(() => {
@@ -809,6 +815,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [clearFetchAttestationTimer, activeRequest?.type]);
 
     useEffect(() => {
+      
       if (visible && !fromEvents) {
         setStep(-1);
         setActiveAttestationType('');
@@ -834,13 +841,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           setActiveAttestationType('');
           setActiveSourceName(undefined);
           handleAdd();
-        } else if (fromEvents === 'Scroll') {
+        } else if (fromEvents === 'Scroll' && eventSource) {
           const from = {
             proofClientType: 'Webpage Data',
             proofContent: 'Account Ownership',
             source: eventSource as string,
             type: 'IDENTIFICATION_PROOF',
-            event: 'SCROLL_LAUNCH_CAMPAIGN',
+            event: SCROLLEVENTNAME,
           };
           onSubmitAttestationDialog(from);
         }
@@ -850,7 +857,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       activeSource,
       activeCred,
       fromEvents,
-      onSubmitAttestationDialog,
       eventSource,
     ]);
 

@@ -1,4 +1,5 @@
 import { assembleAlgorithmParams } from './exData';
+import { SCROLLEVENTNAME } from '@/config/constants';
 
 let tabCreatedByPado;
 let activeTemplate = {};
@@ -20,6 +21,7 @@ export const pageDecodeMsgListener = async (
     datasourceTemplate: { host, requests, responses },
     uiTemplate,
     id,
+    event,
   } = activeTemplate;
   const requestUrlList = requests.map((r) => r.url);
   const onBeforeSendHeadersFn = async (details) => {
@@ -40,7 +42,7 @@ export const pageDecodeMsgListener = async (
         ...currRequestObj,
         headers: formatHeader,
       };
-     
+
       const formatUrlKey = currRequestUrl;
       console.log('222222listen', currRequestUrl);
       await chrome.storage.local.set({
@@ -111,7 +113,7 @@ export const pageDecodeMsgListener = async (
         injectFn();
       }
     });
-   
+
     chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
       if (tabId === tabCreatedByPado.id) {
         chrome.runtime.sendMessage({
@@ -140,7 +142,7 @@ export const pageDecodeMsgListener = async (
       prev[name] = value;
       return prev;
     }, {});*/
-    // debugger
+   
     const { category } = activeTemplate;
     const form = {
       source: dataSource,
@@ -148,6 +150,10 @@ export const pageDecodeMsgListener = async (
       label: null, // TODO
       exUserId: null,
     };
+    // console.log(WorkerGlobalScope.location)
+    if (event) {
+      form.event = event;
+    }
     if (activeTemplate.requestid) {
       form.requestid = activeTemplate.requestid;
     }
@@ -156,15 +162,15 @@ export const pageDecodeMsgListener = async (
     const formatRequests = [];
     for (const r of requests) {
       const { headers, cookies, body, url } = r;
-      const formatUrlKey = url
+      const formatUrlKey = url;
       const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-     
-      const { headers: curRequestHeader, body: curRequestBody } = (requestInfoObj[url] && JSON.parse(
-        requestInfoObj[url]
-      )) || {};
-      // debugger
-      const cookiesObj =
-        curRequestHeader? parseCookie(curRequestHeader.Cookie): {};
+
+      const { headers: curRequestHeader, body: curRequestBody } =
+        (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
+      
+      const cookiesObj = curRequestHeader
+        ? parseCookie(curRequestHeader.Cookie)
+        : {};
       let formateHeader = {},
         formateCookie = {},
         formateBody = {};
@@ -220,11 +226,13 @@ export const pageDecodeMsgListener = async (
     });
   }
 
-
   if (name === 'attestResult') {
     // to send back your response  to the current tab
-    chrome.tabs.sendMessage(tabCreatedByPado.id, request, function (response) {
-    });
+    chrome.tabs.sendMessage(
+      tabCreatedByPado.id,
+      request,
+      function (response) {}
+    );
     chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
     chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
   }
@@ -238,11 +246,11 @@ export const pageDecodeMsgListener = async (
   }
 };
 
-const parseCookie = str =>
+const parseCookie = (str) =>
   str
-  .split(';')
-  .map(v => v.split('='))
-  .reduce((acc, v) => {
-    acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
-    return acc;
-  }, {});
+    .split(';')
+    .map((v) => v.split('='))
+    .reduce((acc, v) => {
+      acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+      return acc;
+    }, {});

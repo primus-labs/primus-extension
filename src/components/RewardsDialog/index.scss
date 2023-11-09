@@ -89,6 +89,11 @@
           text-align: center;
         }
       }
+      .BadgesList{
+        width: 100%;
+        @extend .frsc;
+        gap: var(--spacing-60, 60px)
+      }
     }
   }
 }
