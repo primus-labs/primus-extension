@@ -104,7 +104,7 @@ const CredOverview = memo(() => {
   }, [credList, activeSourceType, filterWord, proofTypes]);
   const proofX = useMemo(() => {
     let credArr = Object.values(credentialsFromStore);
-    
+
     const haveXProof = credArr.find(
       (i) => i.event === SCROLLEVENTNAME && i.source === 'x'
     );
@@ -114,7 +114,7 @@ const CredOverview = memo(() => {
     let credArr = Object.values(credentialsFromStore);
     console.log('2222229', credArr);
     const haveBinanceProof = credArr.find(
-      (i) => i?.event === SCROLLEVENTNAME && i.source === "binance"
+      (i) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
     );
     return haveBinanceProof;
   }, [credentialsFromStore]);
@@ -180,13 +180,13 @@ const CredOverview = memo(() => {
       setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address]);
-  const onSubmitClaimMysteryBoxDialog2 = useCallback(async() => {
+  const onSubmitClaimMysteryBoxDialog2 = useCallback(async () => {
     // onSubmit
     const { credentials } = await chrome.storage.local.get('credentials');
     let credArrNew = Object.values(JSON.parse(credentials));
 
     const haveXProof = credArrNew.find(
-      (i:any) => i.event === SCROLLEVENTNAME && i.source === 'x'
+      (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
     );
     const haveBinanceProof = credArrNew.find(
       (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
@@ -200,7 +200,7 @@ const CredOverview = memo(() => {
       setClaimMysteryBoxVisible2(false);
       handleUpChain(proofX);
     }
-  }, [proofX, proofBinance,handleUpChain]);
+  }, [proofX, proofBinance, handleUpChain]);
   const onChangeClaimMysteryBoxDialog2 = (step: number) => {
     if (step === 2) {
       // x
@@ -275,11 +275,19 @@ const CredOverview = memo(() => {
     async (wallet?: WALLETITEMTYPE) => {
       setConnectDialogVisible(false);
       const startFn = () => {
-        setActiveRequest({
-          type: 'loading',
-          title: 'Processing',
-          desc: 'Please complete the transaction in your wallet.',
-        });
+        if (connectedWallet?.address) {
+          setActiveRequest({
+            type: 'loading',
+            title: 'Processing',
+            desc: 'Please complete the transaction in your wallet.',
+          });
+        } else {
+          setActiveRequest({
+            type: 'loading',
+            title: 'Requesting Connection',
+            desc: 'Check MetaMask to confirm the connection.',
+          });
+        }
         setConnectTipDialogVisible(true);
       };
       const errorFn = () => {
@@ -303,7 +311,7 @@ const CredOverview = memo(() => {
       };
       dispatch(connectWalletAsync(undefined, startFn, errorFn, sucFn));
     },
-    [errorDescEl, dispatch, fromEvents]
+    [errorDescEl, dispatch, fromEvents, connectedWallet]
   );
   useEffect(() => {
     if (connectedWallet?.address) {

@@ -137,16 +137,26 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         },
       ];
       webProofTypes.forEach((r) => {
-        const existObj = l.find((i: any) => i.name === r.dataSource);
-        if (!existObj) {
+        const existIdx = l.findIndex((i: any) => i.name === r.dataSource);
+        if (existIdx < 0) {
           l.unshift({
             name: r.dataSource,
             icon: r.bgImg,
             disabled: r.name !== activeIdentityType,
           });
+        } else {
+          if (l[existIdx].disabled) {
+            l.splice(existIdx, 1);
+            l.unshift({
+              name: r.dataSource,
+              icon: r.bgImg,
+              disabled: r.name !== activeIdentityType,
+            });
+          }
         }
       });
-      l = l.sort((i:any) => i.disabled)
+      // l = [...new Set(l)]
+      l = l.sort((a:any,b:any) => a.disabled - b.disabled)
       return l;
     }, [webProofTypes, activeIdentityType]);
     const activeWebTemplate = useMemo(() => {

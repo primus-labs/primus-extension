@@ -4,6 +4,7 @@ import {
   CredVersion,
   ExchangeStoreVersion,
   schemaTypeMap,
+  SCROLLEVENTNAME,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
@@ -235,7 +236,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     event,
   } = form;
   const { baseName } = DATASOURCEMAP[source];
-  const user = await assembleUserInfoParams();
+  const user = await assembleUserInfoParams(form);
 
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   const { id: authUserId } = JSON.parse(userInfo);
@@ -477,18 +478,29 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   }
   return extRequestsOrderInfo;
 }
-async function assembleUserInfoParams() {
+async function assembleUserInfoParams(form) {
+  const { event } = form;
   const { connectedWalletAddress, userInfo } = await chrome.storage.local.get([
     'connectedWalletAddress',
     'userInfo',
   ]);
+  let formatAddress;
   const { address } = JSON.parse(connectedWalletAddress);
+  formatAddress = address;
+  if (event === SCROLLEVENTNAME) {
+    const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
+    const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+    if (scrollEventObj.address) {
+      formatAddress = scrollEventObj.address;
+    }
+  }
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
     userid: id,
-    address: address,
+    address: formatAddress,
     token: loginToken,
   };
+
   return user;
 }
 

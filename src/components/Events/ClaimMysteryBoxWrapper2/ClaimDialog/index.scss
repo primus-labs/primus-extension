@@ -76,6 +76,8 @@
         @extend .Text1;
         > a {
           color: var(--Text-hint, #7b7f80);
+
+          border-bottom: 1px solid var(--Text-hint, #7b7f80);
         }
       }
       .pRadioNew .pRadioItemWrapper .pRadioItem {

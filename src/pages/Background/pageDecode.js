@@ -1,5 +1,5 @@
 import { assembleAlgorithmParams } from './exData';
-import { SCROLLEVENTNAME } from '@/config/constants';
+
 
 let tabCreatedByPado;
 let activeTemplate = {};
@@ -205,10 +205,10 @@ export const pageDecodeMsgListener = async (
       }
       formatRequests.push(r);
     }
-
+    
     Object.assign(aligorithmParams, {
       reqType: 'web',
-      host,
+      host: host,
       schemaType,
       requests: formatRequests,
       responses,

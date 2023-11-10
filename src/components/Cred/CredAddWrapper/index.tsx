@@ -685,6 +685,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
         ]);
+        
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};

@@ -112,9 +112,21 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       );
       return haveBinanceProof;
     }, [credentialsFromStore]);
+    const addressForScrollEvent = useMemo(() => {
+      let addr = '';
+      if (!!proofX) {
+        addr = proofX.address;
+      }
+      if (!!proofBinance) {
+        addr = proofBinance.address;
+      }
+      return addr;
+    }, [proofX, proofBinance]);
     const formatStepList: StepItem[] = useMemo(() => {
-      if (connectedWallet?.address) {
+      if (!proofX && !proofBinance && connectedWallet?.address) {
         stepList[0].subTitle = connectedWallet?.address;
+      } else {
+        stepList[0].subTitle = addressForScrollEvent;
       }
       if (!!proofX) {
         stepList[1].finished = true;
@@ -131,6 +143,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       proofBinance,
       scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
       connectedWallet?.address,
+      addressForScrollEvent,
     ]);
     const btnCN = useMemo(() => {
       if (
@@ -148,11 +161,18 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
     ]);
     const isSwitchable = useMemo(() => {
-      const haveProof = [formatStepList[1], formatStepList[2]].some(
-        (i) => i.finished
-      );
-      return !haveProof;
-    }, [formatStepList]);
+      if (!scrollEventHistoryObj.campaignPageCheckFlag) {
+        return false;
+      }
+      if (!!proofBinance) {
+        return false;
+      }
+      if (!!proofX) {
+        return false;
+      }
+
+      return true;
+    }, [proofX, proofBinance, scrollEventHistoryObj.campaignPageCheckFlag]);
 
     const hanldeSubmit = useCallback(() => {
       if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
@@ -174,6 +194,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const handleChange = useCallback(
       async (item: StepItem) => {
         if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
+          setErrorTip('Please check the checkbox to proceed with the tasks.');
           return;
         }
         if (item.id === 1) {
@@ -181,13 +202,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         }
         switch (item.id) {
           case 2:
-            if (!item.finished) {
-                onChange(2);
-            }
-            break;
           case 3:
             if (!item.finished) {
-              onChange(3);
+              onChange(item.id);
+              if (errorTip === 'Please complete the task above first.') {
+                setErrorTip('');
+              }
             }
             break;
           case 4:
@@ -201,7 +221,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                 setErrorTip('Please complete the task above first.');
               }
             }
-
             break;
         }
         setActiveStep(item.id);
@@ -212,6 +231,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         proofBinance,
         scrollEventHistoryObj,
         eventDetail?.ext?.compaignQuestnCheckPageUrl,
+        errorTip,
       ]
     );
 
@@ -254,17 +274,33 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       openWindow(eventDetail?.ext?.campaignPageUrl);
     };
     const onSwitchAccount = useCallback(() => {
+      if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
+        setErrorTip('Please check the checkbox to proceed with the tasks.');
+        return;
+      }
       if (isSwitchable) {
         switchAccount(connectedWallet?.provider);
       }
-    }, [connectedWallet, isSwitchable]);
-    const handleChangeAgree = useCallback((label: string | undefined) => {
-      if (label && label !== 'All') {
-        setScrollEventHistoryFn({
-          campaignPageCheckFlag: 1,
-        });
-      }
-    }, []);
+    }, [
+      connectedWallet,
+      isSwitchable,
+      scrollEventHistoryObj?.campaignPageCheckFlag,
+    ]);
+    const handleChangeAgree = useCallback(
+      (label: string | undefined) => {
+        if (label && label !== 'All') {
+          setScrollEventHistoryFn({
+            campaignPageCheckFlag: 1,
+          });
+          if (
+            errorTip === 'Please check the checkbox to proceed with the tasks.'
+          ) {
+            setErrorTip('');
+          }
+        }
+      },
+      [errorTip]
+    );
 
     useEffect(() => {
       setScrollEventHistoryFn({});
@@ -272,6 +308,13 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     useEffect(() => {
       fetchEventDetail();
     }, [fetchEventDetail]);
+    useEffect(() => {
+      if (addressForScrollEvent) {
+        setScrollEventHistoryFn({
+          address: addressForScrollEvent,
+        });
+      }
+    }, [addressForScrollEvent]);
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog claimDialog claimScrollEventDialog">
@@ -293,7 +336,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                   <PRadioNew
                     onChange={handleChangeAgree}
                     list={agreeList}
-                    type="checkbox"
+                    
                   />
                 </div>
               </div>
@@ -314,7 +357,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                       </div>
                       {item.id === 1 ? (
                         <PButton
-                          className={isSwitchable ? 'switchBtn' : 'switchBtn disabled'}
+                          className={
+                            isSwitchable ? 'switchBtn' : 'switchBtn disabled'
+                          }
                           text="Switch"
                           onClick={onSwitchAccount}
                         />

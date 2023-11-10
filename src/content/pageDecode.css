@@ -157,6 +157,11 @@
   padding: 0 4px;
   color:var(--neutral-light-n-70, #A5ADBA);
 }
+.pado-center .pado-center-bottom button:first-child.okBtn {
+  padding: 0;
+  background: none;
+  color: var(--blue-b-400, #0052cc);
+}
 .pado-center .pado-center-bottom button.startBtn.disabled {
   cursor: not-allowed;
   color: rgb(137, 137, 137);
