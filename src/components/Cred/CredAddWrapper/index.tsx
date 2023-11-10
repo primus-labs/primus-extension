@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-
+import PButton from '@/components/PButton';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AttestationDialog from './AttestationDialog';
@@ -294,7 +294,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),
           });
-          
+
           await initCredList();
           setActiveRequest({
             type: 'suc',
@@ -815,7 +815,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [clearFetchAttestationTimer, activeRequest?.type]);
 
     useEffect(() => {
-      
       if (visible && !fromEvents) {
         setStep(-1);
         setActiveAttestationType('');
@@ -852,13 +851,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           onSubmitAttestationDialog(from);
         }
       }
-    }, [
-      visible,
-      activeSource,
-      activeCred,
-      fromEvents,
-      eventSource,
-    ]);
+    }, [visible, activeSource, activeCred, fromEvents, eventSource]);
 
     // useEffect(() => {
     //   if (!activeRequest?.type) {
@@ -941,9 +934,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {
           return (
-            <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
-              <span>Submit</span>
-            </button>
+            <PButton
+              text={fromEvents === 'Scroll' ? 'OK' : 'Submit'}
+              onClick={onSubmitActiveRequestDialog}
+            />
           );
         } else {
           return null;

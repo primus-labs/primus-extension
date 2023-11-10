@@ -3,11 +3,15 @@
 @import '@/assets/css/pSelectOption.scss';
 .padoDialog.credTypesDialog {
   --credTypeItem-height: 0.5442rem;
+}
+ul.credTypeList {
   --credTypeItem-inner-width: 2.5034rem;
 }
 @media (max-width: 1470px) {
   .padoDialog.credTypesDialog {
     --credTypeItem-height: 80px;
+  }
+  ul.credTypeList {
     --credTypeItem-inner-width: 368px;
   }
 }

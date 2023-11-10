@@ -499,6 +499,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               <PButton text="Check Rewards" onClick={onClickRewards} />
             </div>
           );
+        } else if (fromEvents === 'Scroll') {
+          return (
+            <PButton
+              text="Check Rewards"
+              onClick={onSubmitActiveSendToChainRequestDialog}
+            />
+          );
         } else {
           return null;
         }

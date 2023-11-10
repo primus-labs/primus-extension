@@ -22,12 +22,11 @@ chrome.runtime.sendMessage(
       dataSourcePageTabId = response.dataSourcePageTabId;
       const {
         jumpTo,
-        uiTemplate: { proofContent, condition, subProofContent },
+        uiTemplate: { condition, subProofContent },
+        processUiTemplate: { proofContent ,},
       } = activeTemplate;
       const aactiveOrigin = new URL(jumpTo).origin;
-      const aactiveDesc = `${proofContent ?? ''} ${subProofContent ?? ''} ${
-        condition ?? ''
-      }`;
+      const aactiveDesc = proofContent;
       const padoLeftStr = `<img class="pado-left"></img>`;
       const padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
       const padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
@@ -172,10 +171,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const padoCenterEl = document.querySelector('.pado-center');
     const {
       jumpTo,
-      uiTemplate: { proofContent, condition, subProofContent },
+      uiTemplate: { condition, subProofContent },
+      processUiTemplate: { proofContent, successMsg, failedMsg },
     } = activeTemplate;
     const aactiveOrigin = new URL(jumpTo).origin;
-    const aactiveDesc = `${subProofContent ?? ''} ${condition ?? ''}`;
+    let aactiveDesc = successMsg;
     if (result === 'success') {
       padoRightEl.innerHTML = '3/3';
       const iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
@@ -193,8 +193,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       };
       padoCenterEl.appendChild(padoCenterBottomOKNode);
     } else if (result === 'fail') {
+      aactiveDesc = failedMsg;
       padoRightEl.innerHTML = '3/3';
-      padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>Not eligible</span></p>`;
+      padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}</span></p>`;
     } else if (result === 'warn') {
       const str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
       const str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;

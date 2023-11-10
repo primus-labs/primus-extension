@@ -55,7 +55,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
 
   const [diffTime, setDiffTime] = useState<any>();
   const [tickSwitchFlag, setTickSwitchFlag] = useState<boolean>(false);
-  const [joinedBadgeFlag, setJoinedBadgeFlag] = useState<boolean>();
+  const [joinedBadgeFlag, setJoinedBadgeFlag] = useState<boolean>(false);
+  const [joinedScrollFlag, setJoinedScrollFlag] = useState<boolean>(false);
+  
   const [BadgeLottryResult, setBadgeLottryResult] = useState<any>();
   const [scrollLottryResult, setScrollLottryResult] = useState<any>();
   const [activeTab, setActiveTab] = useState<string>('Badges');
@@ -103,14 +105,19 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     setActiveTab(val);
   }, []);
   const queryIfJoined = async () => {
-    const { mysteryBoxRewards } = await chrome.storage.local.get([
+    const { mysteryBoxRewards, scrollEvent } = await chrome.storage.local.get([
       'mysteryBoxRewards',
+      'scrollEvent',
     ]);
     setJoinedBadgeFlag(!!mysteryBoxRewards);
+    const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+    const joinFlag = !!scrollEventObj?.finishFlag;
+    setJoinedScrollFlag(!!joinFlag);
+
+
   };
-  const fetchLotteryResults = async () => {
-    const diffStamp = dayjs(+badgeEventPeriod.endTime).diff(dayjs());
-    if (diffStamp <= 0) {
+  const fetchLotteryResults = useCallback(async () => {
+    if (dayjs().isAfter(dayjs(+badgeEventPeriod.endTime))) {
       const { rc, result } = await checkLotteryResults({
         event: 'PRODUCT_DEBUT',
       });
@@ -121,8 +128,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
         });
       }
     }
-    const diffStamp2 = dayjs(+scrollEventPeriod.endTime).diff(dayjs());
-    if (diffStamp2 <= 0) {
+    if (dayjs().isAfter(dayjs(+scrollEventPeriod.endTime))) {
       const { rc, result } = await checkLotteryResults({
         event: SCROLLEVENTNAME,
       });
@@ -133,31 +139,30 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
         });
       }
     }
-  };
+  }, [badgeEventPeriod.endTime, scrollEventPeriod.endTime]);
   useEffect(() => {
     if (rewardsDialogVisible?.visible) {
-      queryIfJoined();
+      // queryIfJoined();
       rewardsDialogVisible?.tab && setActiveTab(rewardsDialogVisible?.tab);
       setTickSwitchFlag(true);
     }
   }, [rewardsDialogVisible]);
   useEffect(() => {
-    !tickSwitchFlag && fetchLotteryResults();
-  }, [tickSwitchFlag]);
-  useEffect(() => {
-    if (BadgeLottryResult) {
-      if (!BadgeLottryResult?.result) {
-        return () => {
-          chrome.storage.local.remove(['mysteryBoxRewards']);
-        };
-      }
-    }
-  }, [BadgeLottryResult]);
+    fetchLotteryResults();
+  }, [fetchLotteryResults]);
+
   const showBadgeFn = useCallback(
-    (startTime: number, endTime: number, result: boolean) => {
+    (
+      joinFlag: boolean,
+      startTime: number,
+      endTime: number,
+      result: boolean
+    ) => {
       // Started but not ended
       const flag1 =
-        dayjs().isAfter(dayjs(startTime)) && dayjs().isBefore(dayjs(endTime));
+        joinFlag &&
+        dayjs().isAfter(dayjs(startTime)) &&
+        dayjs().isBefore(dayjs(endTime));
       const flag2 = dayjs().isAfter(dayjs(endTime)) && result;
       // const flag3 = dayjs().isAfter(dayjs(endTime)) && !result;
       if (flag1) {
@@ -173,23 +178,24 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     },
     []
   );
-  const showItemFlag = useMemo(() => {
+  const showItemFlag = useMemo( () => {
     const flagNum = showBadgeFn(
+      joinedBadgeFlag,
       +badgeEventPeriod.startTime,
       +badgeEventPeriod.endTime,
       BadgeLottryResult?.result
     );
     return flagNum;
-  }, [badgeEventPeriod, BadgeLottryResult, showBadgeFn]);
-  const showItemFlag2 = useMemo(() => {
+  }, [badgeEventPeriod, BadgeLottryResult, showBadgeFn, joinedBadgeFlag]);
+  const showItemFlag2 = useMemo( () => {
     const flagNum = showBadgeFn(
+      joinedScrollFlag,
       +scrollEventPeriod.startTime,
       +scrollEventPeriod.endTime,
       scrollLottryResult?.result
     );
     return flagNum;
-  }, [scrollEventPeriod, scrollLottryResult, showBadgeFn]);
-  // console.log('222222showItemFlag', showItemFlag);
+  }, [scrollEventPeriod, scrollLottryResult, showBadgeFn, joinedScrollFlag]);
 
   return (
     <>

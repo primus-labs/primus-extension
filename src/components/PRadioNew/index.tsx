@@ -6,12 +6,13 @@ import type { FilterOptionList } from '@/types/config';
 interface TokenTableProps {
   onChange: (label: string | undefined) => void;
   list: FilterOptionList;
+  type?: string;
 }
 
-const PRadioNew: React.FC<TokenTableProps> = memo(({ onChange, list }) => {
+const PRadioNew: React.FC<TokenTableProps> = memo(({ onChange, list,type ="radio"}) => {
   const [activeItem, setActiveItem] = useState<string | undefined>('All');
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, label: string) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, label?: string) => {
     // console.log(e, label)
     const curChecked = e.target.checked;
     if (curChecked) {
@@ -25,9 +26,11 @@ const PRadioNew: React.FC<TokenTableProps> = memo(({ onChange, list }) => {
     onChange(activeItem);
   }, [activeItem, onChange]);
   useEffect(() => {
-    const f:any = list.find(i => i.defaultValue === true)
-    setActiveItem(f.label)
-  },[list])
+    const f: any = list.find((i) => i.defaultValue === true);
+    if (f) {
+      setActiveItem(f.label);
+    }
+  }, [list]);
 
   const formatIconClassName = useCallback(
     (item: any) => {
@@ -60,10 +63,10 @@ const PRadioNew: React.FC<TokenTableProps> = memo(({ onChange, list }) => {
                 <input
                   className="checkbox"
                   name="proof"
-                  type="radio"
+                  type={type}
                   defaultChecked={item.defaultValue}
                   disabled={item.disabled}
-                  onChange={(e) => handleChange(e, item.label)}
+                  onChange={(e) => handleChange(e, item?.label)}
                 />
                 <i className={formatIconClassName(item)}></i>
                 <div className="desc">{item.label}</div>

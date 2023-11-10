@@ -7,6 +7,7 @@ import React, {
   useEffect,
 } from 'react';
 import { useSelector } from 'react-redux';
+import PRadioNew from '@/components/PRadioNew';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
@@ -22,6 +23,7 @@ import iconQuestN from '@/assets/img/events/iconQuestN.svg';
 import { queryEventDetail } from '@/services/api/event';
 import { SCROLLEVENTNAME } from '@/config/constants';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
+import { switchAccount } from '@/services/wallets/metamask';
 interface ClaimDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -38,12 +40,20 @@ type StepItem = {
   subTitle: string;
   finished?: boolean;
 };
+
+const agreeList = [
+  {
+    label: 'Fully acknowledged.',
+    disabled: false,
+    defaultValue: false,
+  },
+];
 const stepList: StepItem[] = [
   {
     id: 1,
     icon: iconDataSourceOnChainAssets,
     title: 'Connected to',
-    subTitle: '0x4EeF39D1c9f3c8928c8c289c3Dd55e579115221e',
+    subTitle: '',
     finished: true,
   },
   {
@@ -85,6 +95,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
+    const connectedWallet = useSelector(
+      (state: UserState) => state.connectedWallet
+    );
     const proofX = useMemo(() => {
       let credArr = Object.values(credentialsFromStore);
       const haveXProof = credArr.find(
@@ -100,6 +113,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       return haveBinanceProof;
     }, [credentialsFromStore]);
     const formatStepList: StepItem[] = useMemo(() => {
+      if (connectedWallet?.address) {
+        stepList[0].subTitle = connectedWallet?.address;
+      }
       if (!!proofX) {
         stepList[1].finished = true;
       }
@@ -114,6 +130,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       proofX,
       proofBinance,
       scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
+      connectedWallet?.address,
     ]);
     const btnCN = useMemo(() => {
       if (
@@ -130,13 +147,17 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       proofBinance,
       scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
     ]);
+    const isSwitchable = useMemo(() => {
+      const haveProof = [formatStepList[1], formatStepList[2]].some(
+        (i) => i.finished
+      );
+      return !haveProof;
+    }, [formatStepList]);
 
     const hanldeSubmit = useCallback(() => {
-      if (
-        !proofX ||
-        !proofBinance ||
-        !scrollEventHistoryObj?.campaignPageCheckFlag
-      ) {
+      if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
+        setErrorTip('Please check the checkbox to proceed with the tasks.');
+      } else if (!proofX || !proofBinance) {
         setErrorTip('Please complete the task above first.');
       } else {
         onSubmit();
@@ -160,10 +181,15 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         }
         switch (item.id) {
           case 2:
-            onChange(2);
+            if (!item.finished) {
+                onChange(2);
+            }
+            
             break;
           case 3:
-            onChange(3);
+            if (!item.finished) {
+              onChange(3);
+            }
             break;
           case 4:
             if (!scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag) {
@@ -224,16 +250,20 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       setScrollEventHistoryObj(scrollEventObj);
     };
     const onClickPage = async () => {
-      if (
-        scrollEventHistoryObj &&
-        !scrollEventHistoryObj?.campaignPageCheckFlag
-      ) {
-        openWindow(eventDetail?.ext?.campaignPageUrl);
+      openWindow(eventDetail?.ext?.campaignPageUrl);
+    };
+    const onSwitchAccount = useCallback(() => {
+      if (isSwitchable) {
+        switchAccount(connectedWallet?.provider);
+      }
+    }, [connectedWallet, isSwitchable]);
+    const handleChangeAgree = useCallback((label: string | undefined) => {
+      if (label && label !== 'All') {
         setScrollEventHistoryFn({
           campaignPageCheckFlag: 1,
         });
       }
-    };
+    }, []);
 
     useEffect(() => {
       setScrollEventHistoryFn({});
@@ -243,10 +273,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [fetchEventDetail]);
     return (
       <PMask onClose={onClose}>
-        <div
-          className="padoDialog claimDialog claimScrollEventDialog"
-          onClick={onClickPage}
-        >
+        <div className="padoDialog claimDialog claimScrollEventDialog">
           <main>
             <div className="headerWrapper">
               <ClaimDialogHeaderDialog
@@ -256,11 +283,18 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             </div>
             <div className="descContent">
               <div className="tipWrapper">
-                <p>The giveaway will be distributed through QuestN. </p>
-                <p>
-                  Check the <span>CAMPAIGN PAGE</span> first!
+                <p onClick={onClickPage}>
+                  The giveaway will be distributed through QuestN. Please check
+                  the <span>CAMPAIGN PAGE</span> and make sure that your
+                  connected address is the same!{' '}
                 </p>
-                <p>Complete the following tasks to win your rewards!</p>
+                <div className="aggreeWrapper">
+                  <PRadioNew
+                    onChange={handleChangeAgree}
+                    list={agreeList}
+                    type="checkbox"
+                  />
+                </div>
               </div>
               <ul className="credTypeList">
                 {formatStepList.map((item) => (
@@ -277,7 +311,15 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                         <h5 className="title">{item.title}</h5>
                         <h6 className="desc">{item.subTitle}</h6>
                       </div>
-                      {item.finished && <img src={iconSuc} alt="" />}
+                      {item.id === 1 ? (
+                        <PButton
+                          className={isSwitchable ? 'switchBtn' : 'switchBtn disabled'}
+                          text="Switch"
+                          onClick={onSwitchAccount}
+                        />
+                      ) : (
+                        item.finished && <img src={iconSuc} alt="" />
+                      )}
                     </div>
                   </li>
                 ))}

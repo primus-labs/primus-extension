@@ -1,4 +1,11 @@
-import React, { FC, memo, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  FC,
+  memo,
+  useEffect,
+  useMemo,
+  useCallback,
+  useState,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
@@ -9,11 +16,13 @@ import './index.scss';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import { setRewardsDialogVisibleAction } from '@/store/actions';
+import { checkLotteryResults } from '@/services/api/event';
 interface AdSpaceProps {
   onClick: () => void;
 }
 dayjs.extend(utc);
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
+  const [BadgeLottryResult, setBadgeLottryResult] = useState<any>();
   const dispatch: Dispatch<any> = useDispatch();
   const badgeEventPeriod = useSelector(
     (state: UserState) => state.badgeEventPeriod
@@ -34,17 +43,32 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     return flag;
   }, [BADGELOTTRYTIMESTR]);
   const handleOnClick = useCallback(() => {
-    if (!badgeOpenFlag) {
+    if (BadgeLottryResult?.result) {
       dispatch(
         setRewardsDialogVisibleAction({
           visible: true,
           tab: 'Badges',
         })
       );
-    } else {
-      onClick();
     }
-  }, [badgeOpenFlag, onClick]);
+  }, [BadgeLottryResult?.result, dispatch]);
+  const fetchLotteryResults = useCallback(async () => {
+    if (dayjs().isAfter(dayjs(BADGELOTTRYTIMESTR))) {
+      const { rc, result } = await checkLotteryResults({
+        event: 'PRODUCT_DEBUT',
+      });
+      if (rc === 0) {
+        setBadgeLottryResult({
+          result: result.result,
+          icon: result.iconUrl,
+        });
+      }
+    }
+  }, [BADGELOTTRYTIMESTR]);
+
+  useEffect(() => {
+    fetchLotteryResults();
+  }, [fetchLotteryResults]);
 
   return (
     <div className={`adSpace luckyDraw ${badgeOpenFlag ? '' : ' disabled'}`}>
@@ -68,7 +92,11 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           onClick={onClick}
         />
       ) : (
-        <PButton text="Close" className="disabled" onClick={handleOnClick} />
+        <PButton
+          text={BadgeLottryResult?.result ? 'Rewards' : 'Closed'}
+          className={BadgeLottryResult?.result ? '' : 'disabled'}
+          onClick={handleOnClick}
+        />
       )}
     </div>
   );

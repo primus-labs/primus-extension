@@ -1,30 +1,33 @@
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/pDialog.sass';
 @import '@/assets/css/padoDialog.scss';
+@import '@/components/PButton/index.scss';
 @import '@/components/Events/ClaimWrapper/index.scss';
+@import '@/assets/css/pSelectOption.scss';
 .padoDialog.claimDialog.claimScrollEventDialog {
   --con-width: 1.5782rem;
+  --switchBtn-width: 0.381rem;
 }
 @media (max-width: 1470px) {
   .padoDialog.claimDialog.claimScrollEventDialog {
     --con-width: 232px;
+    --switchBtn-width: 56px;
   }
 }
 .padoDialog.claimDialog.claimScrollEventDialog {
   main {
-    gap: var(--spacing-20, 20px);
-
+    gap: var(--spacing-20, 20px) !important;
     .descContent {
       @extend .fcss;
-      gap: var(--spacing-8, 8px);
+      gap: var(--spacing-12, 12px);
       .tipWrapper {
         @extend .fcss;
         gap: var(--spacing-8, 8px);
         color: #000;
         @extend .Text1;
-        > p {
-          height: var(--spacing-20, 20px);
-        }
+        // > p {
+        //   height: var(--spacing-20, 20px);
+        // }
         span {
           color: var(--gradientgreen-g-400, #4eb382);
           @extend .Body2;
@@ -35,24 +38,35 @@
         .credTypeItem {
           width: 100%;
           height: var(--spacing-60, 60px);
-
+          @extend .pSelectOptionStyle2;
           .innerContent {
             .con {
               width: var(--con-width, 232px);
+              gap: var(--spacing-4, 4px);
               .desc {
                 width: var(--con-width, 232px);
                 overflow: hidden;
                 text-overflow: ellipsis;
               }
             }
-            >img{
-              width: var(--spacing-24,24px);
+            > img {
+              width: var(--spacing-24, 24px);
             }
-          }
-
-          .innerContent {
-            .con {
-              gap: var(--spacing-4, 4px);
+            .pButton.switchBtn {
+              @extend .buttonStyle1;
+              @extend .Body3;
+              width: var(--switchBtn-width, 56px);
+              height: var(--spacing-24, 24px);
+              &.disabled {
+                border: 1px solid var(--Text-hint, #7b7f80);
+                color: var(--Text-hint, #7b7f80);
+                cursor: not-allowed;
+                &:hover {
+                  border: 1px solid var(--Text-hint, #7b7f80);
+                  color: var(--Text-hint, #7b7f80);
+                  background: transparent;
+                }
+              }
             }
           }
         }
@@ -62,6 +76,16 @@
         @extend .Text1;
         > a {
           color: var(--Text-hint, #7b7f80);
+        }
+      }
+      .pRadioNew .pRadioItemWrapper .pRadioItem {
+        gap: var(--spacing-8, 8px);
+        .iconfont {
+          width: var(--spacing-18, 18px);
+        }
+        .desc {
+          @extend .Text1;
+          color: #000;
         }
       }
     }

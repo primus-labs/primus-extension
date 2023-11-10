@@ -163,9 +163,7 @@ const EventsOverview = memo(() => {
       }
     }
   }, [ScrollProcess, dispatch]);
-  // useEffect(() => {
-  //   chrome.storage.local.remove(['scrollEvent']);
-  // }, []);
+  
 
   return (
     <div className="eventOverview">

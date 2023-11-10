@@ -1,6 +1,29 @@
 @import './pFlex.sass';
 @import './padoM.scss';
+.pSelectOptionStyle2 {
+  border-radius: var(--spacing-12, 12px);
+  border: 1px solid var(--Line, #dfe0e0);
+  background-color: #fff;
 
+  &.excitable,
+  &:not(.disable):hover {
+    border-radius: var(--spacing-12, 12px);
+    border: 2px solid transparent;
+    background-color: #fff;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(to right, #fff, #fff),
+      linear-gradient(to right, #78deff, #70ffba);
+    &:hover {
+      border: 2px solid transparent;
+    }
+  }
+  &.active {
+    border-radius: var(--spacing-12, 12px);
+    border: 1px solid var(--Line, #dfe0e0);
+    background-color: #fff;
+  }
+}
 .pSelectOption {
   border-radius: var(--spacing-12, 12px);
   background-color: var(--Badge, rgba(10, 18, 20, 0.05));
@@ -10,14 +33,15 @@
     cursor: not-allowed;
     opacity: 0.4;
   }
-  &.excitable,&:not(.disable):hover {
+  &.excitable,
+  &:not(.disable):hover {
     border-radius: var(--spacing-12, 12px);
-    border: 1PX solid var(--Line, #dfe0e0);
+    border: 1px solid var(--Line, #dfe0e0);
     background-color: #fff;
   }
   &.active {
     border-radius: var(--spacing-12, 12px);
-    border: 2PX solid transparent;
+    border: 2px solid transparent;
     background-color: #fff;
     background-clip: padding-box, border-box;
     background-origin: padding-box, border-box;
