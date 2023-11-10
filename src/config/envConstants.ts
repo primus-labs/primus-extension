@@ -339,6 +339,46 @@ const EASINFOMAP = {
     },
   },
   production: {
+    'Scroll Mainnet': {
+      showName: 'Scroll',
+      icon: iconNetworkScroll,
+      title: 'Scroll Mainnet',
+      rpcUrl: 'https://rpc.scroll.io',
+      erc721Contract: '',
+      easContact: '',
+      easProxyContrac: '',
+      easProxyFeeContract: '0x1A58B9E0Aae7990466eA70d6791876EDcab67Ea7',
+      schemas: {
+        'Verax-Scroll-Mainnet': {
+          schemaUid:
+            '0x5C136E30F599E1A646323513BFE92F52AE6CB7C69141B1F156B7E648062BB280',
+          schemaUidTokenHoldings:
+            '0xc9992483a7da0207213d34288b835094b48567290cecf044c48913d3f1472a3a',
+          schemaUidIdentification:
+            '0x26f9780b51aefe9581802ff0b315decb36701d39766fbb78dbd9b4596b6da0bd',
+          schemaUidWeb:
+            '0x84fdf5748d9af166503472ff5deb0cd5f61f006169424805fd5554356ac6df10',
+        },
+        PolygonID: {
+          schemaUid:
+            '0x35E2EB198B2D9019F0D7C70EA2327C669A81B67721049D65CEC92EC5FA5E2905',
+          schemaUidTokenHoldings:
+            '0x640B7A045D305F646074AC038830AAA2E8EDFAAC069F7CC2BE53AE9034D13AD4',
+          schemaUidIdentification:
+            '0xF406CE092700219C3BE1729E52A0BC9539177E96B4A63D73D1E846CA20E1E900',
+        },
+      },
+      chainId: '0x82750', //534352
+      chainName: 'Scroll Mainnet',
+      rpcUrls: ['https://rpc.scroll.io'],
+      blockExplorerUrls: ['https://scrollscan.com'],
+      nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://scrollscan.com/tx',
+    },
     'Linea Goerli': {
       showName: 'Linea',
       icon: iconNetworkLinea,
