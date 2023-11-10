@@ -27,7 +27,7 @@
   //     background: var(--yellow-y-200, #ffea2e);
   //   }
   // }
-  .pButton:not(.disabled) {
+  .pButton.simple:not(.disabled) {
     color: var(--Text-headline, #0a1214);
     border: 1px solid var(--Text-headline, #0a1214);
     background-color: transparent;

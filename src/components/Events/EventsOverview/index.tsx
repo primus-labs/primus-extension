@@ -47,20 +47,24 @@ const EventsOverview = memo(() => {
     useState<boolean>(false);
   const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
     useState<boolean>(false);
-  const connectedWallet = useSelector(
-    (state: UserState) => state.connectedWallet
+ 
+  const scrollEventPeriod = useSelector(
+    (state: UserState) => state.scrollEventPeriod
   );
-  const badgeEventPeriod = useSelector(
-    (state: UserState) => state.badgeEventPeriod
-  );
-  const BADGELOTTRYTIMESTR = useMemo(() => {
-    const { startTime, endTime } = badgeEventPeriod;
-    return +endTime;
-  }, [badgeEventPeriod]);
-  const badgeOpenFlag = useMemo(() => {
-    const flag = dayjs().isBefore(dayjs(BADGELOTTRYTIMESTR));
-    return flag;
-  }, [BADGELOTTRYTIMESTR]);
+  
+  const scrollEventActiveFlag = useMemo(() => {
+    const { startTime, endTime } = scrollEventPeriod;
+    const isActive = dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
+    const isEnd = dayjs().isAfter(dayjs(+endTime))
+    if (isActive) {
+      return 1
+    }
+    if (isEnd) {
+      return 2
+    }
+    return 0
+  }, [scrollEventPeriod]);
+    
   const navigate = useNavigate();
   const onCloseClaimDialog = useCallback(() => {
     setClaimVisible(false);
@@ -73,19 +77,12 @@ const EventsOverview = memo(() => {
     setClaimMysteryBoxVisible(false);
     navigate('/events');
   }, [navigate]);
-  const onCloseClaimMysteryBoxDialog2 = useCallback(() => {
-    setClaimMysteryBoxVisible2(false);
-    navigate('/events');
-  }, [navigate]);
+  
   const handleClickMysterybox = useCallback(() => {
     setClaimMysteryBoxVisible(true);
   }, []);
   const handleClickMysterybox2 = useCallback(async () => {
-    // if (connectedWallet?.address) {
-    //   setClaimMysteryBoxVisible2(true);
-    // } else {
-    //   setConnectDialogVisible(true);
-    // }
+    
     const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
     const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
    
@@ -100,44 +97,8 @@ const EventsOverview = memo(() => {
       navigate(`/cred?fromEvents=Scroll`);
     }
   }, [navigate, dispatch]);
-  const navToCred = useCallback(() => {
-    navigate(`/cred?proofType=UNISWAP_PROOF`);
-  }, [navigate]);
-  // const handleSubmitConnectWallet = useCallback(
-  //   async (wallet?: WALLETITEMTYPE) => {
-  //     setConnectDialogVisible(false);
-  //     const startFn = () => {
-  //       setActiveRequest({
-  //         type: 'loading',
-  //         title: 'Processing',
-  //         desc: 'Please complete the transaction in your wallet.',
-  //       });
-  //       setConnectTipDialogVisible(true);
-  //     };
-  //     const errorFn = () => {
-  //       setActiveRequest({
-  //         type: 'error',
-  //         title: 'Unable to proceed',
-  //         desc: errorDescEl,
-  //       });
-  //       setActiveCred(undefined);
-  //     };
-  //     const sucFn = async (walletObj: any) => {
-  //       setAddDialogVisible(true);
-  //       setConnectTipDialogVisible(false);
-  //     };
-  //     dispatch(connectWalletAsync(undefined, startFn, errorFn, sucFn));
-  //   },
-  //   [errorDescEl, dispatch]
-  // );
-  const handleCloseMask = useCallback(() => {
-    setProcessDialogVisible(false);
-  }, []);
-  const onSubmitProcessDialog = useCallback(() => {
-    setConnectDialogVisible(false);
-    setProcessDialogVisible(false);
-    setClaimMysteryBoxVisible2(true);
-  }, []);
+  
+  
 
   useEffect(() => {
     if (NFTsProcess) {
@@ -169,8 +130,9 @@ const EventsOverview = memo(() => {
     <div className="eventOverview">
       <div className="eventOverviewContent">
         {/* <Slider {...settings}> */}
-        <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />
+        {scrollEventActiveFlag === 1 && <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />}
         <AdSpace onClick={handleClickClaim} />
+        {scrollEventActiveFlag === 2 && <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />}
         <AdSpaceMysteryBox onClick={handleClickMysterybox} />
         {/* </Slider> */}
         {/* <section className="rewardsWrapper">

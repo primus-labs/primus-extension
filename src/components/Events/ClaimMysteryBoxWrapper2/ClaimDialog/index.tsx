@@ -24,6 +24,7 @@ import { queryEventDetail } from '@/services/api/event';
 import { SCROLLEVENTNAME } from '@/config/constants';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { switchAccount } from '@/services/wallets/metamask';
+import { useNavigate } from 'react-router-dom';
 interface ClaimDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -87,6 +88,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     titleIllustration = false,
     subTitle = '',
   }) => {
+    const [detaultAgree, setDetaultAgree] = useState<boolean>();
     const [errorTip, setErrorTip] = useState<string>();
     const [eventDetail, setEventDetail] = useState<any>();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
@@ -263,8 +265,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, []);
     const setScrollEventHistoryFn = async (obj: object) => {
       const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
+      
       const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
       Object.assign(scrollEventObj, obj);
+
       chrome.storage.local.set({
         scrollEvent: JSON.stringify(scrollEventObj),
       });
@@ -288,6 +292,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     ]);
     const handleChangeAgree = useCallback(
       (label: string | undefined) => {
+      
         if (label && label !== 'All') {
           setScrollEventHistoryFn({
             campaignPageCheckFlag: 1,
@@ -315,6 +320,13 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         });
       }
     }, [addressForScrollEvent]);
+
+    useEffect(() => {
+    
+      if (scrollEventHistoryObj?.campaignPageCheckFlag) {
+        agreeList[0].defaultValue = true;
+      }
+    }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog claimDialog claimScrollEventDialog">
@@ -336,6 +348,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                   <PRadioNew
                     onChange={handleChangeAgree}
                     list={agreeList}
+                    val={
+                      scrollEventHistoryObj.campaignPageCheckFlag
+                        ? agreeList[0].label
+                        : undefined
+                    }
                   />
                 </div>
               </div>

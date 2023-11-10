@@ -88,13 +88,14 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
       {badgeOpenFlag ? (
         <PButton
           text="Join Now"
+          className="simple"
           suffix={<i className="iconfont icon-rightArrow"></i>}
           onClick={onClick}
         />
       ) : (
         <PButton
           text={BadgeLottryResult?.result ? 'Rewards' : 'Closed'}
-          className={BadgeLottryResult?.result ? '' : 'disabled'}
+          className={BadgeLottryResult?.result ? 'simple' : 'disabled'}
           onClick={handleOnClick}
         />
       )}

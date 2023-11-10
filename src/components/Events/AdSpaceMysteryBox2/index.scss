@@ -49,4 +49,16 @@
       }
     }
   }
+  .pButton.simple:not(.disabled) {
+    color: var(--Text-headline, #0a1214);
+    border: 1px solid var(--Text-headline, #0a1214);
+    background-color: transparent;
+    &:hover,
+    &:active {
+      background-color: transparent;
+      background: var(--Text-headline, #0a1214);
+      color: var(--bg-default, #fff);
+    }
+    
+  }
 }
