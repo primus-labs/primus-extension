@@ -318,7 +318,6 @@ const CredOverview = memo(() => {
       };
       const sucFn = async (walletObj: any) => {
         if (fromEvents === 'Scroll') {
-          // debugger
           setClaimMysteryBoxVisible2(true);
           setEventSource('');
           setConnectTipDialogVisible(false);

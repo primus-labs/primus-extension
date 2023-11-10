@@ -134,7 +134,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           },
         });
       }
-
+     
       setActiveRequest({
         type: 'warn',
         title: 'Something went wrong',
@@ -759,6 +759,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             params: {},
           };
           postMsg(padoServicePort, msg);
+         
           let requestResObj = {
             type: 'warn',
             title: 'Something went wrong',
@@ -778,8 +779,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (parsedActiveRequestAttestation.reqType === 'web') {
             let failReason = '';
             if (
-              retdesc.indexOf('connect to proxy error') ||
-              retdesc.indexOf('WebSocket On Error')
+              retdesc.indexOf('connect to proxy error')> -1 ||
+              retdesc.indexOf('WebSocket On Error') >-1
             ) {
               failReason = 'network';
             }
