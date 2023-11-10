@@ -180,6 +180,12 @@ const CredOverview = memo(() => {
       setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address]);
+  const onCancelClaimMysteryBoxDialog2 = useCallback(() => {
+    setClaimMysteryBoxVisible2(false);
+    if (fromEvents === 'Scroll') {
+      navigate('/events');
+    }
+  }, [fromEvents, navigate]);
   const onSubmitClaimMysteryBoxDialog2 = useCallback(async () => {
     // onSubmit
     const { credentials } = await chrome.storage.local.get('credentials');
@@ -261,6 +267,11 @@ const CredOverview = memo(() => {
             targetUrl = '/events?ScrollProcess=suc';
             navigate(targetUrl);
           }
+        } else {
+          if (fromEvents === 'Scroll') {
+            targetUrl = '/events';
+            navigate(targetUrl);
+          }
         }
         // else {
         //   const queryKey = `${fromEvents}Process`;
@@ -274,7 +285,14 @@ const CredOverview = memo(() => {
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       setConnectDialogVisible(false);
+      setActiveRequest({
+        type: 'loading',
+        title: 'Requesting Connection',
+        desc: 'Check MetaMask to confirm the connection.',
+      });
+      setConnectTipDialogVisible(true);
       const startFn = () => {
+        
         if (connectedWallet?.address) {
           setActiveRequest({
             type: 'loading',
@@ -313,6 +331,12 @@ const CredOverview = memo(() => {
     },
     [errorDescEl, dispatch, fromEvents, connectedWallet]
   );
+  const handleCloseConnectWallet = useCallback(() => {
+    setConnectDialogVisible(false);
+    if (fromEvents === 'Scroll') {
+      navigate('/events');
+    }
+  }, [fromEvents, navigate]);
   useEffect(() => {
     if (connectedWallet?.address) {
       setConnectDialogVisible(false);
@@ -399,9 +423,7 @@ const CredOverview = memo(() => {
       />
       {connectDialogVisible && (
         <ConnectWalletDialog
-          onClose={() => {
-            setConnectDialogVisible(false);
-          }}
+          onClose={handleCloseConnectWallet}
           onSubmit={handleSubmitConnectWallet}
         />
       )}
@@ -449,9 +471,7 @@ const CredOverview = memo(() => {
       />
       <ClaimMysteryBoxWrapper2
         visible={claimMysteryBoxVisible2}
-        onClose={() => {
-          setClaimMysteryBoxVisible2(false);
-        }}
+        onClose={onCancelClaimMysteryBoxDialog2}
         onSubmit={onSubmitClaimMysteryBoxDialog2}
         onChange={onChangeClaimMysteryBoxDialog2}
       />

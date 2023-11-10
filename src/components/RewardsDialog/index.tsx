@@ -57,7 +57,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
   const [tickSwitchFlag, setTickSwitchFlag] = useState<boolean>(false);
   const [joinedBadgeFlag, setJoinedBadgeFlag] = useState<boolean>(false);
   const [joinedScrollFlag, setJoinedScrollFlag] = useState<boolean>(false);
-  
+
   const [BadgeLottryResult, setBadgeLottryResult] = useState<any>();
   const [scrollLottryResult, setScrollLottryResult] = useState<any>();
   const [activeTab, setActiveTab] = useState<string>('Badges');
@@ -113,8 +113,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
     const joinFlag = !!scrollEventObj?.finishFlag;
     setJoinedScrollFlag(!!joinFlag);
-
-
   };
   const fetchLotteryResults = useCallback(async () => {
     if (dayjs().isAfter(dayjs(+badgeEventPeriod.endTime))) {
@@ -165,6 +163,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
         dayjs().isBefore(dayjs(endTime));
       const flag2 = dayjs().isAfter(dayjs(endTime)) && result;
       // const flag3 = dayjs().isAfter(dayjs(endTime)) && !result;
+     
       if (flag1) {
         return 1;
       }
@@ -178,7 +177,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     },
     []
   );
-  const showItemFlag = useMemo( () => {
+  const showItemFlag = useMemo(() => {
     const flagNum = showBadgeFn(
       joinedBadgeFlag,
       +badgeEventPeriod.startTime,
@@ -187,7 +186,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     );
     return flagNum;
   }, [badgeEventPeriod, BadgeLottryResult, showBadgeFn, joinedBadgeFlag]);
-  const showItemFlag2 = useMemo( () => {
+  const showItemFlag2 = useMemo(() => {
     const flagNum = showBadgeFn(
       joinedScrollFlag,
       +scrollEventPeriod.startTime,
@@ -196,7 +195,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     );
     return flagNum;
   }, [scrollEventPeriod, scrollLottryResult, showBadgeFn, joinedScrollFlag]);
-
+  useEffect(() => {
+    rewardsDialogVisible?.visible && queryIfJoined();
+  }, [rewardsDialogVisible?.visible]);
   return (
     <>
       {rewardsDialogVisible?.visible && (

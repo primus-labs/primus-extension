@@ -115,8 +115,12 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
       },
       [,requireItem]
     );
+    const closeable = useMemo(() => {
+      
+      return !fromEvents || fromEvents === 'Scroll';
+    }, [fromEvents]);
     return (
-      <PMask onClose={onClose} closeable={!fromEvents}>
+      <PMask onClose={onClose} closeable={closeable}>
         <div className={wrapperClassName}>
           {!!backable && <PBack onBack={handleClickBack} />}
           <main>

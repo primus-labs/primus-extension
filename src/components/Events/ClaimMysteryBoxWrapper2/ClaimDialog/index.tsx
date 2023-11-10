@@ -336,7 +336,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                   <PRadioNew
                     onChange={handleChangeAgree}
                     list={agreeList}
-                    
                   />
                 </div>
               </div>

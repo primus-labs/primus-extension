@@ -74,8 +74,8 @@ const EASINFOMAP = {
       rpcUrls: ['https://sepolia-rpc.scroll.io'],
       blockExplorerUrls: ['https://sepolia.scrollscan.com'],
       nativeCurrency: {
-        name: 'ScrollETH',
-        symbol: 'ScrollETH',
+        name: 'ETH',
+        symbol: 'ETH',
         decimals: 18,
       },
       transactionDetailUrl: 'https://sepolia.scrollscan.com/tx',

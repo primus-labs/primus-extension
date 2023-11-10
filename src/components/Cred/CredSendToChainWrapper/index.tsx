@@ -85,7 +85,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const formatChainList = useMemo(() => {
       const newList = ONCHAINLIST.map((i) => {
         if (fromEvents === 'Scroll') {
-          if (i.title.indexOf('Scroll')>-1) {
+          if (i.title.indexOf('Scroll') > -1) {
             // TODO!!!
             i.disabled = false;
             return { ...i };
@@ -217,6 +217,19 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           let upChainRes = await bulkAttest(upChainParams);
 
           if (upChainRes) {
+            if (upChainRes.error === 1) {
+              setActiveSendToChainRequest({
+                type: 'error',
+                title: 'Unable to proceed',
+                desc: 'Your balance is insufficient',
+              });
+            } else if (upChainRes.error === 2) {
+              setActiveSendToChainRequest({
+                type: 'error',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
+            }
             const currentChainObj: any = ONCHAINLIST.find(
               (i) => formatNetworkName === i.title
             );
@@ -239,14 +252,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             });
 
             await initCredList();
-            
 
             const { scrollEvent } = await chrome.storage.local.get([
               'scrollEvent',
             ]);
             const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
             Object.assign(scrollEventObj, {
-              finishFlag: '1'
+              finishFlag: '1',
             });
             chrome.storage.local.set({
               scrollEvent: JSON.stringify(scrollEventObj),
@@ -293,7 +305,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             setActiveSendToChainRequest({
               type: 'error',
               title: 'Unable to proceed',
-              desc: 'Your balance may be insufficient',
+              desc: 'Please try again later.',
             });
           }
         };
@@ -368,6 +380,23 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 upChainRes = await attestByDelegationProxyFee(upChainParams);
               }
               if (upChainRes) {
+                if (upChainRes.error) {
+                  if (upChainRes.error === 1) {
+                    setActiveSendToChainRequest({
+                      type: 'error',
+                      title: 'Unable to proceed',
+                      desc: 'Your balance is insufficient',
+                    });
+                  } else if (upChainRes.error === 2) {
+                    setActiveSendToChainRequest({
+                      type: 'error',
+                      title: 'Unable to proceed',
+                      desc: 'Please try again later.',
+                    });
+                  }
+
+                  return;
+                }
                 const newProvided = curCredential.provided ?? [];
                 const currentChainObj: any = ONCHAINLIST.find(
                   (i) => formatNetworkName === i.title
@@ -429,12 +458,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 setActiveSendToChainRequest({
                   type: 'error',
                   title: 'Unable to proceed',
-                  desc: 'Your balance may be insufficient',
+                  desc: 'Please try again later.',
                 });
               }
             }
           } catch (e) {
             console.log('upper chain error:', e);
+            console.dir(e);
           }
         };
         const formatNetworkName = activeNetworkName ?? networkName;

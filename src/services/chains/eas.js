@@ -290,7 +290,7 @@ export async function attestByDelegationProxyFee(params) {
   await provider.send('eth_requestAccounts', []);
   let signer = provider.getSigner();
   let contract;
-  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll')>-1) {
+  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
     contract = new ethers.Contract(
       easProxyFeeContractAddress,
       lineaportalabi,
@@ -347,9 +347,12 @@ export async function attestByDelegationProxyFee(params) {
       );
     }
   } catch (er) {
-    //console.log('eas attestByDelegationProxyFee attest failed', er);
+    console.log('222222eas attestByDelegationProxyFee attest failed', er);
     try {
-      if (networkName.startsWith('Linea') || networkName.indexOf('Scroll')>-1) {
+      if (
+        networkName.startsWith('Linea') ||
+        networkName.indexOf('Scroll') > -1
+      ) {
         tx = await contract.callStatic.attest(paramsobj, { value: fee });
       } else {
         tx = await contract.callStatic.attestByDelegation(paramsobj, {
@@ -359,9 +362,23 @@ export async function attestByDelegationProxyFee(params) {
     } catch (error) {
       console.log('eas attestByDelegationProxyFee caught error:\n', error);
     }
+   
+    // console.dir(er)
+    if (er.data && er.data.message.indexOf('insufficient funds')) {
+      return {
+        error: 1,
+        message: 'insufficient funds',
+      };
+    } else if (er.ACTION_REJECTED === 'ACTION_REJECTED') {
+      return {
+        error: 2,
+        message: 'user rejected transaction',
+      };
+    }
+    // throw new Error(er);
+    
     return;
   }
-
   console.log('eas attestByDelegationProxyFee tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
@@ -456,6 +473,18 @@ export async function bulkAttest(params) {
     } catch (error) {
       console.log('eas bulkAttest caught error:\n', error);
     }
+    if (er.data && er.data.message.indexOf('insufficient funds')) {
+      return {
+        error: 1,
+        message: 'insufficient funds',
+      };
+    } else if (er.ACTION_REJECTED === 'ACTION_REJECTED') {
+      return {
+        error: 2,
+        message: 'user rejected transaction',
+      };
+    }
+    // throw new Error(er);
     return;
   }
 
