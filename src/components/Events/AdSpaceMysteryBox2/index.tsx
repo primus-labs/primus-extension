@@ -22,7 +22,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
    
     const sArr = s.split('-');
     const eArr = e.split('-');
-    return `${sArr[0]} ${sArr[1]}${sArr[2]}~${eArr[0]} ${eArr[1]}${eArr[2]}`;
+    return `${sArr[0]} ${sArr[1]}${sArr[2]} UTC ~ ${eArr[0]} ${eArr[1]}${eArr[2]} UTC`;
   }, [badgeEventPeriod]);
 
   return (

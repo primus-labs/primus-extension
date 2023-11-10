@@ -184,7 +184,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             if (!item.finished) {
                 onChange(2);
             }
-            
             break;
           case 3:
             if (!item.finished) {
@@ -198,6 +197,8 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                 setScrollEventHistoryFn({
                   compaignQuestnCheckPageCheckFlag: 1,
                 });
+              } else {
+                setErrorTip('Please complete the task above first.');
               }
             }
 

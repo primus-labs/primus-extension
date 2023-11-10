@@ -142,12 +142,13 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           l.unshift({
             name: r.dataSource,
             icon: r.bgImg,
+            disabled: r.name !== activeIdentityType,
           });
         }
       });
-
+      l = l.sort((i:any) => i.disabled)
       return l;
-    }, [webProofTypes]);
+    }, [webProofTypes, activeIdentityType]);
     const activeWebTemplate = useMemo(() => {
       const aWT = activeWebProofTypes.find(
         (i) => i.id === activeCred?.templateId
