@@ -164,8 +164,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     }, []);
     const nameCallback = useCallback((item: CredTypeItemType) => {
       if (item.reqType === 'web') {
-        const idx = item?.host.indexOf('.');
-        const formatHost = item?.host.substring(idx + 1);
+        const idx = item?.host?.indexOf('.');
+        const formatHost = item?.host?.substring((idx as number) + 1);
         return formatHost;
       }
       if (item.exUserId) {
