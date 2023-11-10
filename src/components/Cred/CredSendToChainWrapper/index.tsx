@@ -55,6 +55,7 @@ interface CredSendToChainWrapperType {
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
+    
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');

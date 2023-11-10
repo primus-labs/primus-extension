@@ -112,7 +112,6 @@ const CredOverview = memo(() => {
   }, [credentialsFromStore]);
   const proofBinance = useMemo(() => {
     let credArr = Object.values(credentialsFromStore);
-    console.log('2222229', credArr);
     const haveBinanceProof = credArr.find(
       (i) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
     );
@@ -174,7 +173,6 @@ const CredOverview = memo(() => {
   }, [connectedWallet?.address]);
   const handleJoinScrollEvent = useCallback(async () => {
     if (connectedWallet?.address) {
-      console.log('2222228');
       setClaimMysteryBoxVisible2(true);
     } else {
       setConnectDialogVisible(true);
@@ -197,14 +195,13 @@ const CredOverview = memo(() => {
     const haveBinanceProof = credArrNew.find(
       (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
     );
-    // console.log('22222210', credcredArrNewArr, JSON.parse(credentials));
-
+    
     const proofsFlag = !!haveXProof && !!haveBinanceProof;
     // const proofsFlag = !!proofX && !!proofBinance;
 
     if (proofsFlag) {
       setClaimMysteryBoxVisible2(false);
-      handleUpChain(proofX);
+      handleUpChain(haveXProof as CredTypeItemType);
     }
   }, [proofX, proofBinance, handleUpChain]);
   const onChangeClaimMysteryBoxDialog2 = (step: number) => {
