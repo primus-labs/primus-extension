@@ -149,7 +149,7 @@ chrome.runtime.sendMessage(
           barEl.style.width = `${progressPercentage}%`;
           // progress.innerHTML = `${progressPercentage}%`;
         }
-        intervalTimer = setInterval(simulateFileUpload, (100 / 110) * 1000); // algorithm timeout
+        intervalTimer = setInterval(simulateFileUpload, (100 / 120) * 1000); // algorithm timeout
         const msgObj = {
           type: 'pageDecode',
           name: 'sendRequest',

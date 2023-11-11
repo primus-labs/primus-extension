@@ -88,7 +88,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     titleIllustration = false,
     subTitle = '',
   }) => {
-    const [detaultAgree, setDetaultAgree] = useState<boolean>();
     const [errorTip, setErrorTip] = useState<string>();
     const [eventDetail, setEventDetail] = useState<any>();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
@@ -97,6 +96,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
+
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
@@ -130,15 +130,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       } else {
         stepList[0].subTitle = addressForScrollEvent;
       }
-      if (!!proofX) {
-        stepList[1].finished = true;
-      }
-      if (!!proofBinance) {
-        stepList[2].finished = true;
-      }
-      if (scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag) {
-        stepList[3].finished = true;
-      }
+
+      stepList[1].finished = !!proofX;
+
+      stepList[2].finished = !!proofBinance;
+
+      stepList[3].finished =
+        scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag;
+
       return stepList;
     }, [
       proofX,
@@ -271,12 +270,31 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       (item: StepItem) => {
         let defaultCN = 'credTypeItem';
 
-        if (item.id === activeStep) {
-          defaultCN += ' active';
+        // if (item.id === activeStep) {
+        //   defaultCN += ' active';
+        // }
+        if (item.id === 1) {
+          isSwitchable && (defaultCN += ' clickable');
+        }
+        if (item.id === 2) {
+          !proofX && (defaultCN += ' clickable');
+        }
+        if (item.id === 3) {
+          !proofBinance && (defaultCN += ' clickable');
+        }
+        if (item.id === 4) {
+          // if (!!proofX && !!proofBinance) {
+          defaultCN += ' clickable';
+          // }
         }
         return defaultCN;
       },
-      [activeStep]
+      [
+        isSwitchable,
+        proofX,
+        proofBinance,
+        scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
+      ]
     );
     const fetchEventDetail = useCallback(async () => {
       try {

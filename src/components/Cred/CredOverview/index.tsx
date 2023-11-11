@@ -279,6 +279,12 @@ const CredOverview = memo(() => {
     },
     [fromEvents, navigate]
   );
+  const handleCloseConnectTipDialog = useCallback(() => {
+    setConnectTipDialogVisible(false);
+    if (fromEvents === 'Scroll') {
+      navigate('/events');
+    }
+  }, [fromEvents, navigate]);
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       setConnectDialogVisible(false);
@@ -344,7 +350,7 @@ const CredOverview = memo(() => {
   // }, [dispatch]);
   useEffect(() => {
     initCredList();
-  }, []);
+  }, [initCredList]);
   useEffect(() => {
     dispatch({
       type: 'setActiveSourceType',
@@ -429,9 +435,7 @@ const CredOverview = memo(() => {
           title={activeRequest?.title}
           desc={activeRequest?.desc}
           activeSource={DATASOURCEMAP['onChain']}
-          onClose={() => {
-            setConnectTipDialogVisible(false);
-          }}
+          onClose={handleCloseConnectTipDialog}
           onSubmit={() => {}}
         />
       )}

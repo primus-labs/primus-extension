@@ -410,7 +410,7 @@ export const setCredentialsAsync = () => {
       'credentials',
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-    dispatch(setCredentialsAction(credentialObj));
+    await dispatch(setCredentialsAction(credentialObj));
   };
 };
 

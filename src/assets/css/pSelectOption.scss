@@ -6,7 +6,7 @@
   background-color: #fff;
 
   &.excitable,
-  &:not(.disable):hover {
+  &:not(.disable).clickable:hover {
     border-radius: var(--spacing-12, 12px);
     border: 2px solid transparent;
     background-color: #fff;

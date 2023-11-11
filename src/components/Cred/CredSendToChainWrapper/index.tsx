@@ -217,18 +217,22 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           let upChainRes = await bulkAttest(upChainParams);
 
           if (upChainRes) {
-            if (upChainRes.error === 1) {
-              setActiveSendToChainRequest({
-                type: 'error',
-                title: 'Unable to proceed',
-                desc: 'Your balance is insufficient',
-              });
-            } else if (upChainRes.error === 2) {
-              setActiveSendToChainRequest({
-                type: 'error',
-                title: 'Unable to proceed',
-                desc: 'Please try again later.',
-              });
+            if (upChainRes.error) {
+              if (upChainRes.error === 1) {
+                setActiveSendToChainRequest({
+                  type: 'error',
+                  title: 'Unable to proceed',
+                  desc: 'Your balance is insufficient',
+                });
+              } else if (upChainRes.error === 2) {
+                setActiveSendToChainRequest({
+                  type: 'error',
+                  title: 'Unable to proceed',
+                  desc: 'Please try again later.',
+                });
+              }
+
+              return;
             }
             const currentChainObj: any = ONCHAINLIST.find(
               (i) => formatNetworkName === i.title
