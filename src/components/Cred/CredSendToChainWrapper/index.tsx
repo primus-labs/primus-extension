@@ -55,7 +55,6 @@ interface CredSendToChainWrapperType {
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
-    
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -240,10 +239,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             [XProof, BinanceProof].forEach((i) => {
               const newProvided = i.provided ?? [];
               // TODO!!!
-              const existIndex = newProvided.findIndex(
-                (i) => i.title === formatNetworkName
-              );
-              existIndex < 0 && newProvided.push(currentChainObj);
+              // const existIndex = newProvided.findIndex(
+              //   (i) => i.title === formatNetworkName
+              // );
+              // existIndex < 0 &&
+              newProvided.push(currentChainObj);
               credentialsFromStore[i.requestid] = Object.assign(i, {
                 provided: newProvided,
               });
@@ -404,10 +404,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 );
                 currentChainObj.attestationUID = upChainRes;
                 currentChainObj.submitAddress = walletObj.address;
-                const existIndex = newProvided.findIndex(
-                  (i) => i.title === formatNetworkName
-                );
-                existIndex < 0 && newProvided.push(currentChainObj);
+                // const existIndex = newProvided.findIndex(
+                //   (i) => i.title === formatNetworkName
+                // );
+                // existIndex < 0 &&
+                newProvided.push(currentChainObj);
 
                 cObj[curRequestid] = Object.assign(curCredential, {
                   provided: newProvided,

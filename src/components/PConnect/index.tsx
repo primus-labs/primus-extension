@@ -90,6 +90,12 @@ const PConnect = memo(() => {
   useEffect(() => {
     checkIfHadBound();
   }, [checkIfHadBound]);
+  useEffect(() => {
+    if (connectedWallet?.address) {
+      setConnectWalletDialogVisible1(false)
+      setStep(1)
+    }
+  }, [connectedWallet?.address]);
   return (
     <div className="PConnect">
       {connectedWallet?.address ? (

@@ -2,7 +2,7 @@ import React, { FC, memo, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
-import nftIllstration from '@/assets/img/events/nftIllstration.svg';
+import nftIllstration from '@/assets/img/events/nftIllstration.png';
 import PButton from '@/components/PButton';
 import './index.scss';
 import { setBadgeEventPeriodActionAsync } from '@/store/actions';

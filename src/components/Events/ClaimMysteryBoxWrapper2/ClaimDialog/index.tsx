@@ -175,17 +175,47 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
 
       return true;
     }, [proofX, proofBinance, scrollEventHistoryObj.campaignPageCheckFlag]);
-
+    const formatAgreeList = useMemo(() => {
+      if (scrollEventHistoryObj?.campaignPageCheckFlag) {
+        // debugger;
+        // agreeList[0].defaultValue = true;
+        return [
+          {
+            label: 'Fully acknowledged.',
+            disabled: false,
+            defaultValue: true,
+          },
+        ];
+      }
+      return [
+        {
+          label: 'Fully acknowledged.',
+          disabled: false,
+          defaultValue: false,
+        },
+      ];
+    }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
+    // useEffect(() => {
+    //   if (scrollEventHistoryObj?.campaignPageCheckFlag) {
+    //     debugger;
+    //     agreeList[0].defaultValue = true;
+    //   }
+    // }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
     const hanldeSubmit = useCallback(() => {
       if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
         setErrorTip('Please check the checkbox to proceed with the tasks.');
-      } else if (!proofX || !proofBinance) {
+      } else if (
+        !proofX ||
+        !proofBinance ||
+        !scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag
+      ) {
         setErrorTip('Please complete the task above first.');
       } else {
         onSubmit();
       }
     }, [
       scrollEventHistoryObj?.campaignPageCheckFlag,
+      scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
       proofX,
       proofBinance,
       onSubmit,
@@ -249,23 +279,25 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       [activeStep]
     );
     const fetchEventDetail = useCallback(async () => {
-      const res = await queryEventDetail({
-        event: SCROLLEVENTNAME,
-      });
-      const { rc, result } = res;
-      if (rc === 0) {
-        setEventDetail(result);
-        //     "startTime": "1699819200000",
-        // "endTime": "1700942400000",
-        // "ext": {
-        //   "campaignPageUrl": "https://padolabs.org",
-        //   "compaignQuestnCheckPageUrl": "https://padolabs.org"
-        // }
-      }
+      try {
+        const res = await queryEventDetail({
+          event: SCROLLEVENTNAME,
+        });
+        const { rc, result } = res;
+        if (rc === 0) {
+          setEventDetail(result);
+          //     "startTime": "1699819200000",
+          // "endTime": "1700942400000",
+          // "ext": {
+          //   "campaignPageUrl": "https://padolabs.org",
+          //   "compaignQuestnCheckPageUrl": "https://padolabs.org"
+          // }
+        }
+      } catch {}
     }, []);
     const setScrollEventHistoryFn = async (obj: object) => {
       const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
-      
+
       const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
       Object.assign(scrollEventObj, obj);
 
@@ -292,7 +324,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     ]);
     const handleChangeAgree = useCallback(
       (label: string | undefined) => {
-      
         if (label && label !== 'All') {
           setScrollEventHistoryFn({
             campaignPageCheckFlag: 1,
@@ -321,12 +352,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       }
     }, [addressForScrollEvent]);
 
-    useEffect(() => {
-    
-      if (scrollEventHistoryObj?.campaignPageCheckFlag) {
-        agreeList[0].defaultValue = true;
-      }
-    }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog claimDialog claimScrollEventDialog">
@@ -347,7 +372,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                 <div className="aggreeWrapper">
                   <PRadioNew
                     onChange={handleChangeAgree}
-                    list={agreeList}
+                    list={formatAgreeList}
                     val={
                       scrollEventHistoryObj.campaignPageCheckFlag
                         ? agreeList[0].label
