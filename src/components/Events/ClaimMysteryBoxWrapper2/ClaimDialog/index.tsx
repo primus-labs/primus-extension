@@ -208,7 +208,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         !proofBinance ||
         !scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag
       ) {
-        setErrorTip('Please complete the task above first.');
+        setErrorTip('Please complete the tasks above first.');
       } else {
         onSubmit();
       }
@@ -236,7 +236,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
           case 3:
             if (!item.finished) {
               onChange(item.id);
-              if (errorTip === 'Please complete the task above first.') {
+              if (errorTip === 'Please complete the tasks above first.') {
                 setErrorTip('');
               }
             }
@@ -249,7 +249,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                   compaignQuestnCheckPageCheckFlag: 1,
                 });
               } else {
-                setErrorTip('Please complete the task above first.');
+                setErrorTip('Please complete the tasks above first.');
               }
             }
             break;
@@ -283,9 +283,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
           !proofBinance && (defaultCN += ' clickable');
         }
         if (item.id === 4) {
-          // if (!!proofX && !!proofBinance) {
-          defaultCN += ' clickable';
-          // }
+          if (!scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag) {
+            defaultCN += ' clickable';
+          }
         }
         return defaultCN;
       },

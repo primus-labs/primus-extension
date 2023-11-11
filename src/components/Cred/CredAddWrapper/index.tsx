@@ -51,6 +51,7 @@ import type { UserState } from '@/types/store';
 import type { AssetsMap } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
+
 import {
   claimUniNFT,
   getUniNFTResult,
@@ -82,6 +83,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     type,
     eventSource,
   }) => {
+    const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     const [credRequestId, setCredRequestId] = useState<string>();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -134,12 +136,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           },
         });
       }
-     
+
       setActiveRequest({
         type: 'warn',
         title: 'Something went wrong',
         desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
       });
+      
       const msg = {
         fullScreenType: 'algorithm',
         reqMethodName: 'stop',
@@ -685,7 +688,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
         ]);
-        
+
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
@@ -759,7 +762,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             params: {},
           };
           postMsg(padoServicePort, msg);
-         
+
           let requestResObj = {
             type: 'warn',
             title: 'Something went wrong',
@@ -779,8 +782,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (parsedActiveRequestAttestation.reqType === 'web') {
             let failReason = '';
             if (
-              retdesc.indexOf('connect to proxy error')> -1 ||
-              retdesc.indexOf('WebSocket On Error') >-1
+              retdesc.indexOf('connect to proxy error') > -1 ||
+              retdesc.indexOf('WebSocket On Error') > -1
             ) {
               failReason = 'network';
             }
@@ -876,13 +879,31 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     useEffect(() => {
       visible && startOfflineFn();
     }, [visible, startOfflineFn]);
-    const resultDialogHeaderEl = useMemo(() => {
+    const setScrollEventHistoryFn = useCallback(async () => {
+      const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
+      const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+      
+      setScrollEventHistoryObj(scrollEventObj);
+    },[]);
+    useEffect(() => {
+      fromEvents === 'Scroll' && setScrollEventHistoryFn();
+    }, [fromEvents, setScrollEventHistoryFn]);
+    const resultDialogHeaderEl = useMemo( () => {
+      let formatAddress = connectedWallet?.address;
+      // debugger
+      if (scrollEventHistoryObj?.address) {
+        formatAddress = scrollEventHistoryObj?.address;
+      }
       return activeAttestForm?.source === 'metamask' ? (
         <Bridge endIcon={onChainObj.icon} />
       ) : (
-        <AddressInfoHeader address={connectedWallet?.address as string} />
+        <AddressInfoHeader address={formatAddress as string} />
       );
-    }, [activeAttestForm, connectedWallet?.address]);
+    }, [
+      activeAttestForm,
+      connectedWallet?.address,
+      scrollEventHistoryObj?.address,
+    ]);
     useEffect(() => {
       const listerFn = (message: any) => {
         if (message.type === 'pageDecode') {

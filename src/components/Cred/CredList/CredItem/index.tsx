@@ -344,7 +344,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               </div>
             </div>
             <div className="descItem">
-              <div className="label">Submit Account</div>
+              <div className="label">Connected Account</div>
               <div className="value">
                 {item.did
                   ? formatAddress(item.did.toLowerCase(), 13)
