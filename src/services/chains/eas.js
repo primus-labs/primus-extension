@@ -362,9 +362,11 @@ export async function attestByDelegationProxyFee(params) {
     } catch (error) {
       console.log('eas attestByDelegationProxyFee caught error:\n', error);
     }
-   
-    // console.dir(er)
-    if (er.data && er.data.message.indexOf('insufficient funds')>-1) {
+    if (
+      (er.data && er.data.message.indexOf('insufficient funds') > -1) ||
+      er.message.indexOf('insufficient funds') > -1
+    ) {
+      
       return {
         error: 1,
         message: 'insufficient funds',
@@ -376,7 +378,7 @@ export async function attestByDelegationProxyFee(params) {
       };
     }
     // throw new Error(er);
-    
+
     return;
   }
   console.log('eas attestByDelegationProxyFee tx=', tx);
@@ -473,7 +475,7 @@ export async function bulkAttest(params) {
     } catch (error) {
       console.log('eas bulkAttest caught error:\n', error);
     }
-    if (er.data && er.data.message.indexOf('insufficient funds')>-1) {
+    if (er.data && er.data.message.indexOf('insufficient funds') > -1) {
       return {
         error: 1,
         message: 'insufficient funds',

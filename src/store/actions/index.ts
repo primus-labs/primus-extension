@@ -124,6 +124,7 @@ export const connectWalletAsync = (
     try {
       let address;
       let provider;
+      startFn && (await startFn());
       if (connectObj) {
         address = connectObj.address;
         provider = connectObj.provider;
@@ -141,13 +142,13 @@ export const connectWalletAsync = (
         );
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
-          startFn && (await startFn());
+          // startFn && (await startFn());
           sucFn && (await sucFn({ name: type, address, provider }));
         } else {
           return;
         }
       } else {
-        startFn && (await startFn());
+        // startFn && (await startFn());
         await dispatch(setConnectWalletDialogVisibleAction(true));
         const timestamp: string = +new Date() + '';
         const signature = await requestSign(address, timestamp);

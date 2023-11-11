@@ -33,10 +33,12 @@ export const connectWallet = async (targetNetwork) => {
     if (e.code === 4001) {
       // User rejected the request.
       return [undefined, undefined, undefined, e];
+    } else if (e.message === '4001'){
+      throw new Error(e);
     } else {
       return [];
     }
-    throw new Error(e);
+    
   }
 };
 export const switchChain = async (connectedChainId, targetNetwork, p) => {
@@ -67,7 +69,6 @@ export const switchChain = async (connectedChainId, targetNetwork, p) => {
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = e;
-    console.log(err);
     if (err.code === 4902) {
       try {
         // add network
@@ -78,6 +79,8 @@ export const switchChain = async (connectedChainId, targetNetwork, p) => {
       } catch (addError) {
         console.error(addError);
       }
+    } else if (err.code === 4001) {
+      throw new Error(err.code);
     } else {
     }
     return true;
