@@ -1,15 +1,15 @@
-let dataSourcePageTabId = null;
-let intervalTimer = null;
-let activeTemplate = {};
-let moveFlag = false;
-// let x, y;
+var dataSourcePageTabId = null;
+var intervalTimer = null;
+var activeTemplate = {};
+var moveFlag = false;
+// var x, y;
 function createDomElement(html) {
-  const dom = new DOMParser().parseFromString(html, 'text/html');
+  var dom = new DOMParser().parseFromString(html, 'text/html');
   return dom.body.firstElementChild;
 }
 
-const themeRootEl = document.querySelector('.theme-root');
-const isThemeLight = !!themeRootEl && themeRootEl.classList.contains('light');
+var themeRootEl = document.querySelector('.theme-root');
+var isThemeLight = !!themeRootEl && themeRootEl.classList.contains('light');
 
 chrome.runtime.sendMessage(
   {
@@ -20,55 +20,55 @@ chrome.runtime.sendMessage(
     if (response.name === 'append') {
       activeTemplate = response.params;
       dataSourcePageTabId = response.dataSourcePageTabId;
-      const {
+      var {
         jumpTo,
         uiTemplate: { condition, subProofContent },
         processUiTemplate: { proofContent ,},
       } = activeTemplate;
-      const aactiveOrigin = new URL(jumpTo).origin;
-      const aactiveDesc = proofContent;
-      const padoLeftStr = `<img class="pado-left"></img>`;
-      const padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
-      const padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
+      var aactiveOrigin = new URL(jumpTo).origin;
+      var aactiveDesc = proofContent;
+      var padoLeftStr = `<img class="pado-left"></img>`;
+      var padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
+      var padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
 
-      const padoCenterBottomStartStr = `<button class="startBtn" > Start</button>`;
-      const padoCenterBottomCancelStr = `<button class="cancelBtn">Cancel</button>`;
-      const padoCenterCenterStr = `<div class="pado-center-center"><p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Content</span><span>${aactiveDesc}</span></p></div>`;
-      const padoCenterStr = `<div class="pado-center"></div>`;
-      const padoRightStr = `<div class="pado-right">1/3</div>`;
-      const padoMaskStr = '<div id="pado-mask"></div > ';
-      const padoleftNode = createDomElement(padoLeftStr);
-      const padoCenterNode = createDomElement(padoCenterStr);
-      const padoCenterTopNode = createDomElement(padoCenterTopStr);
-      let padoCenterBottomNode = createDomElement(padoCenterBottomStr);
-      const padoCenterBottomOKNode = createDomElement(
+      var padoCenterBottomStartStr = `<button class="startBtn" > Start</button>`;
+      var padoCenterBottomCancelStr = `<button class="cancelBtn">Cancel</button>`;
+      var padoCenterCenterStr = `<div class="pado-center-center"><p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Content</span><span>${aactiveDesc}</span></p></div>`;
+      var padoCenterStr = `<div class="pado-center"></div>`;
+      var padoRightStr = `<div class="pado-right">1/3</div>`;
+      var padoMaskStr = '<div id="pado-mask"></div > ';
+      var padoleftNode = createDomElement(padoLeftStr);
+      var padoCenterNode = createDomElement(padoCenterStr);
+      var padoCenterTopNode = createDomElement(padoCenterTopStr);
+      var padoCenterBottomNode = createDomElement(padoCenterBottomStr);
+      var padoCenterBottomOKNode = createDomElement(
         `<button class="okBtn">OK</button>`
       );
-      const padoCenterBottomStartNode = createDomElement(
+      var padoCenterBottomStartNode = createDomElement(
         padoCenterBottomStartStr
       );
-      const disabledPathList = ['login', 'register'];
-      const isDisabled = disabledPathList.some(
+      var disabledPathList = ['login', 'register'];
+      var isDisabled = disabledPathList.some(
         (i) => window.location.href.indexOf('login') > -1
       );
       if (isDisabled) {
         padoCenterBottomStartNode.classList.add('disabled');
       }
-      const padoCenterBottomCancelNode = createDomElement(
+      var padoCenterBottomCancelNode = createDomElement(
         padoCenterBottomCancelStr
       );
-      let padoCenterCenterNode = createDomElement(padoCenterCenterStr);
-      const padoRightNode = createDomElement(
+      var padoCenterCenterNode = createDomElement(padoCenterCenterStr);
+      var padoRightNode = createDomElement(
         `<div class="pado-right">1/3</div>`
       );
-      const padoMaskNode = createDomElement(padoMaskStr);
-      const onDrag = () => {
-        let x, y;
-        const mousemoveFn = (e) => {
-          let _h = window.innerHeight - padoMaskNode.offsetHeight;
-          let _w = window.innerWidth - padoMaskNode.offsetWidth;
-          let div_left = e.clientX - x;
-          let div_top = e.clientY - y;
+      var padoMaskNode = createDomElement(padoMaskStr);
+      var onDrag = () => {
+        var x, y;
+        var mousemoveFn = (e) => {
+          var _h = window.innerHeight - padoMaskNode.offsetHeight;
+          var _w = window.innerWidth - padoMaskNode.offsetWidth;
+          var div_left = e.clientX - x;
+          var div_top = e.clientY - y;
           div_left = Math.min(Math.max(0, div_left), _w);
           div_top = Math.min(Math.max(0, div_top), _h);
           if (moveFlag) {
@@ -76,13 +76,13 @@ chrome.runtime.sendMessage(
             padoMaskNode.style.top = div_top + 'px';
           }
         };
-        const mousedownFn = (e) => {
+        var mousedownFn = (e) => {
           moveFlag = true;
           x = e.offsetX;
           y = e.offsetY;
           document.addEventListener('mousemove', mousemoveFn);
         };
-        const mouseupFn = () => {
+        var mouseupFn = () => {
           document.removeEventListener('mousemove', mousemoveFn);
         };
 
@@ -136,9 +136,9 @@ chrome.runtime.sendMessage(
         padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
 
         padoCenterBottomNode.remove();
-        // const progress = document.querySelector('.percent');
-        const barEl = document.querySelector('.bar');
-        let progressPercentage = 0;
+        // var progress = document.querySelector('.percent');
+        var barEl = document.querySelector('.bar');
+        var progressPercentage = 0;
 
         function simulateFileUpload() {
           progressPercentage += 1;
@@ -150,7 +150,7 @@ chrome.runtime.sendMessage(
           // progress.innerHTML = `${progressPercentage}%`;
         }
         intervalTimer = setInterval(simulateFileUpload, (100 / 120) * 1000); // algorithm timeout
-        const msgObj = {
+        var msgObj = {
           type: 'pageDecode',
           name: 'sendRequest',
         };
@@ -161,26 +161,26 @@ chrome.runtime.sendMessage(
   }
 );
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  const {
+  var {
     name,
     params: { result, failReason },
   } = request;
   if (name === 'attestResult') {
-    const padoRightEl = document.querySelector('.pado-right');
-    const padoCenterCenterEl = document.querySelector('.pado-center-center');
-    const padoCenterEl = document.querySelector('.pado-center');
-    const {
+    var padoRightEl = document.querySelector('.pado-right');
+    var padoCenterCenterEl = document.querySelector('.pado-center-center');
+    var padoCenterEl = document.querySelector('.pado-center');
+    var {
       jumpTo,
       uiTemplate: { condition, subProofContent },
       processUiTemplate: { proofContent, successMsg, failedMsg },
     } = activeTemplate;
-    const aactiveOrigin = new URL(jumpTo).origin;
-    let aactiveDesc = successMsg;
+    var aactiveOrigin = new URL(jumpTo).origin;
+    var aactiveDesc = successMsg;
     if (result === 'success') {
       padoRightEl.innerHTML = '3/3';
-      const iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
+      var iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
       padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
-      const padoCenterBottomOKNode = createDomElement(
+      var padoCenterBottomOKNode = createDomElement(
         `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
       );
       padoCenterBottomOKNode.onclick = () => {
@@ -197,10 +197,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       padoRightEl.innerHTML = '3/3';
       padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}</span></p>`;
     } else if (result === 'warn') {
-      const str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
-      const str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
+      var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
+      var str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
       padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
-      const padoCenterBottomOKNode = createDomElement(
+      var padoCenterBottomOKNode = createDomElement(
         `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
       );
       padoCenterBottomOKNode.onclick = () => {

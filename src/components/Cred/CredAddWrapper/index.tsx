@@ -129,7 +129,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         ? JSON.parse(activeRequestAttestation)
         : {};
       if (parsedActiveRequestAttestation.reqType === 'web') {
-        chrome.runtime.sendMessage({
+        await chrome.runtime.sendMessage({
+          type: 'pageDecode',
           name: 'attestResult',
           params: {
             result: 'warn',

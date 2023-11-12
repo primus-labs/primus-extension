@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, memo, useCallback, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
+import PBack from '@/components/PBack';
 import ConnectWalletData from '@/components/DataSourceOverview/ConnectWalletData';
 import SourcesStatisticsBar from '@/components/AssetsOverview/SourcesStatisticsBar';
 import TokenTable from '@/components/TokenTable';
@@ -237,12 +238,10 @@ const AssetsDetail = memo(() => {
 
   return (
     <div className="assetsDetail onChainAssetsDetail">
-      <div className="iconBackWrapper" onClick={handleBack}></div>
+      <PBack onBack={handleBack} />
       <header>
         <img src={iconAvatar} alt="" className="avatar" />
-        {typeof dataSource === 'object' && (
-          <h3>{dataSource?.label}</h3>
-        )}
+        {typeof dataSource === 'object' && <h3>{dataSource?.label}</h3>}
         {typeof dataSource === 'object' && (
           <div className="descItems">
             <div className="descItem">
