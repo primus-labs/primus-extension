@@ -51,7 +51,6 @@ import type { UserState } from '@/types/store';
 import type { AssetsMap } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
-
 import {
   claimUniNFT,
   getUniNFTResult,
@@ -143,7 +142,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         title: 'Something went wrong',
         desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
       });
-      
+
       const msg = {
         fullScreenType: 'algorithm',
         reqMethodName: 'stop',
@@ -884,13 +883,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const setScrollEventHistoryFn = useCallback(async () => {
       const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
       const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
-      
+
       setScrollEventHistoryObj(scrollEventObj);
-    },[]);
+    }, []);
     useEffect(() => {
       fromEvents === 'Scroll' && setScrollEventHistoryFn();
     }, [fromEvents, setScrollEventHistoryFn]);
-    const resultDialogHeaderEl = useMemo( () => {
+    const resultDialogHeaderEl = useMemo(() => {
       let formatAddress = connectedWallet?.address;
       // debugger
       if (scrollEventHistoryObj?.address) {
