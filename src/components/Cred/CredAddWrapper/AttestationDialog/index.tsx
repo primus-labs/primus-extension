@@ -343,7 +343,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             defaultClassName += ' disabled';
           }
         } else {
-          if (activeSourceList.length > 0) {
+          if (activeSourceList && activeSourceList.length > 0) {
             // if (activeSourceList.includes(item.name)) {
             //   defaultClassName += ' excitable';
             // }
@@ -352,7 +352,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             }
           }
         }
-        if (activeSourceList.length > 0) {
+        if (activeSourceList && activeSourceList.length > 0) {
           if (activeSourceList.includes(item.name)) {
             defaultClassName += ' excitable';
           }
