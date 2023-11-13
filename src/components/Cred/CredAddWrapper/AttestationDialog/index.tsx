@@ -142,17 +142,16 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         l = connectedExSourceList.filter((i) =>
           supportTokenCredList.includes(i.name.toLowerCase())
         );
+        if (!activeToken) {
+          l = l.map((i) => Object.assign(i, { disabled: true }));
+        } else {
+          l = l.map((i) => Object.assign(i, { disabled: false }));
+        }
       } else if (type === 'UNISWAP_PROOF') {
         l = WALLETLIST.filter((i: WALLETITEMTYPE) => !i.disabled);
       } else {
         l = connectedExSourceList;
       }
-      if (!activeToken) {
-        l = l.map((i) => Object.assign(i, { disabled: true }));
-      } else {
-        l = l.map((i) => Object.assign(i, { disabled: false }));
-      }
-      
       if (activeCred) {
         l = l.map((i) =>
           Object.assign(i, { disabled: activeCred?.source !== i.name.toLowerCase() })
@@ -199,7 +198,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       return formatList;
     }, [exSources, activeSource, tokenLogoPrefix, type]);
     const activeSourceList = useMemo(() => {
-      if (activeToken) {
+      if (type === 'TOKEN_HOLDINGS' && activeToken) {
         const reduceF = (prev: string[], curr: any) => {
           const { tokenListMap, name } = curr;
           const curTokenList = Object.keys(tokenListMap);
@@ -211,9 +210,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         const alist = Object.values(exSources).reduce(reduceF, []);
         return alist;
       } else {
-        return [];
+        return undefined;
       }
-    }, [exSources, activeToken]);
+    }, [exSources, activeToken,type]);
     const baseValueArr = useMemo(() => {
       if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
         const baseValArr = JSON.parse(
@@ -320,14 +319,21 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           return;
         }
         if (
-          (activeSourceList.length > 0 &&
+          (activeSourceList &&
+            activeSourceList.length > 0 &&
             activeSourceList.includes(item.name)) ||
-          activeSourceList.length === 0
+          !activeSourceList
         ) {
           setActiveSource(item);
         }
       },
-      [activeCred, activeSourceList, activeToken, type, activeSourceName]
+      [
+        activeCred,
+        activeSourceList,
+        activeToken,
+        type,
+        activeSourceName,
+      ]
     );
     const liClassNameCallback = useCallback(
       (item: ConnectSourceType) => {
@@ -398,7 +404,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [activeAttestationTypeInfo]);
     useEffect(() => {
-      if (baseValueArr.length === 1) setActiveBaseValue(baseValueArr[0]);
+      if (baseValueArr.length === 1) { setActiveBaseValue(baseValueArr[0]) }
     }, [baseValueArr]);
 
     return (

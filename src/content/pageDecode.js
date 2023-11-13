@@ -193,7 +193,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return;
       };
-      padoCenterEl.appendChild(padoCenterBottomOKNode);
+      if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
+        padoCenterEl.appendChild(padoCenterBottomOKNode);
+      }
     } else if (result === 'fail') {
       aactiveDesc = failedMsg;
       padoRightEl.innerHTML = '3/3';
@@ -213,7 +215,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return;
       };
-      console.dir(padoCenterEl);
       if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
         padoCenterEl.appendChild(padoCenterBottomOKNode);
       }

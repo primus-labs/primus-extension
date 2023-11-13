@@ -42,6 +42,7 @@
      gap: var(--spacing-8, 8px);
     padding-bottom: var(--table-pb, 38px);
     li.tokenItem {
+      width:100%;
       .innerWrapper {
         @extend .frbc;
         @extend .Body2;

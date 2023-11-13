@@ -770,7 +770,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           };
           if (
             retdesc.indexOf('connect to proxy error') > -1 ||
-            retdesc.indexOf('WebSocket On Error') > -1
+            retdesc.indexOf('WebSocket On Error') > -1 ||
+            retdesc.indexOf('connection error') > -1
           ) {
             requestResObj = {
               type: 'warn',
@@ -783,7 +784,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             let failReason = '';
             if (
               retdesc.indexOf('connect to proxy error') > -1 ||
-              retdesc.indexOf('WebSocket On Error') > -1
+              retdesc.indexOf('WebSocket On Error') > -1 ||
+              retdesc.indexOf('connection error') > -1
             ) {
               failReason = 'network';
             }
