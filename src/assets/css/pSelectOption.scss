@@ -29,17 +29,14 @@
   background-color: var(--Badge, rgba(10, 18, 20, 0.05));
   cursor: pointer;
   box-sizing: border-box;
-  &.disabled {
-    cursor: not-allowed;
-    opacity: 0.4;
-  }
+  
   &.excitable,
   &:not(.disable):hover {
     border-radius: var(--spacing-12, 12px);
     border: 1px solid var(--Line, #dfe0e0);
     background-color: #fff;
   }
-  &.active {
+  &:not(.disabled).active {
     border-radius: var(--spacing-12, 12px);
     border: 2px solid transparent;
     background-color: #fff;
@@ -50,5 +47,9 @@
     &:hover {
       border: 2px solid transparent;
     }
+  }
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
   }
 }

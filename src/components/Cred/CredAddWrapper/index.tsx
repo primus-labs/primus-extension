@@ -566,7 +566,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             active: true,
             currentWindow: true,
           });
-          console.log('22222200', 'cred-inject');
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',
@@ -947,7 +946,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         return (
           <div className="footerTip safeTip">
             <p>PADO will not access your private data.</p>
-            <p>We uses IZK to ensure your privacy.</p>
+            <p>We use IZK to ensure your privacy.</p>
           </div>
         );
       } else {

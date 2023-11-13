@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { WALLETLIST } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
-import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup'
+import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup';
 import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton';
@@ -33,6 +33,7 @@ interface AttestationDialogProps {
   activeSourceName?: string;
   onBack?: () => void;
 }
+
 const supportAssetCredList = ['binance', 'okx'];
 const supportTokenCredList = ['binance', 'okx', 'coinbase'];
 const sourcesLabel = {
@@ -130,44 +131,66 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       });
     }, [kycSources]);
     const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
+      let l = [];
       if (type === 'IDENTIFICATION_PROOF') {
-        return connectedKYCSourceList;
+        l = connectedKYCSourceList;
       } else if (type === 'ASSETS_PROOF') {
-        return connectedExSourceList.filter((i) =>
+        l = connectedExSourceList.filter((i) =>
           supportAssetCredList.includes(i.name.toLowerCase())
         );
       } else if (type === 'TOKEN_HOLDINGS') {
-        return connectedExSourceList.filter((i) =>
+        l = connectedExSourceList.filter((i) =>
           supportTokenCredList.includes(i.name.toLowerCase())
         );
       } else if (type === 'UNISWAP_PROOF') {
-        return WALLETLIST.filter((i: WALLETITEMTYPE) => !i.disabled);
+        l = WALLETLIST.filter((i: WALLETITEMTYPE) => !i.disabled);
       } else {
-        return connectedExSourceList;
+        l = connectedExSourceList;
       }
-    }, [connectedExSourceList, connectedKYCSourceList, type]);
+      if (!activeToken) {
+        l = l.map((i) => Object.assign(i, { disabled: true }));
+      } else {
+        l = l.map((i) => Object.assign(i, { disabled: false }));
+      }
+      
+      if (activeCred) {
+        l = l.map((i) =>
+          Object.assign(i, { disabled: activeCred?.source !== i.name.toLowerCase() })
+        );
+      }
+      
+      return l;
+    }, [
+      connectedExSourceList,
+      connectedKYCSourceList,
+      type,
+      activeToken,
+      activeCred,
+    ]);
     const tokenList = useMemo(() => {
       let list: string[] = [];
       if (type !== 'TOKEN_HOLDINGS') {
         return [];
       }
-      if (!activeSource?.name) {
-        const reduceF = (prev: string[], curr: any) => {
-          const { tokenListMap } = curr;
-          const curTokenList = Object.keys(tokenListMap);
-          prev.concat([...curTokenList]);
-          curTokenList.forEach((token) => {
-            if (!prev.includes(token)) {
-              prev.push(token);
-            }
-          });
-          return prev;
-        };
-        list = Object.values(exSources).reduce(reduceF, []);
-      } else {
-        const sourceLowerCaseName = activeSource.name.toLowerCase();
-        list = Object.keys(exSources[sourceLowerCaseName].tokenListMap);
-      }
+      // if (!activeSource?.name) {
+      // debugger
+      const reduceF = (prev: string[], curr: any) => {
+        const { tokenListMap } = curr;
+        const curTokenList = Object.keys(tokenListMap);
+        prev.concat([...curTokenList]);
+        curTokenList.forEach((token) => {
+          if (!prev.includes(token)) {
+            prev.push(token);
+          }
+        });
+        return prev;
+      };
+      list = Object.values(exSources).reduce(reduceF, []);
+      // } else {
+      //   debugger
+      //   const sourceLowerCaseName = activeSource.name.toLowerCase();
+      //   list = Object.keys(exSources[sourceLowerCaseName].tokenListMap);
+      // }
       const formatList = list.map((i) => ({
         text: i,
         value: i,
@@ -304,13 +327,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           setActiveSource(item);
         }
       },
-      [
-        activeCred,
-        activeSourceList,
-        activeToken,
-        type,
-        activeSourceName,
-      ]
+      [activeCred, activeSourceList, activeToken, type, activeSourceName]
     );
     const liClassNameCallback = useCallback(
       (item: ConnectSourceType) => {
@@ -434,6 +451,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                         options={tokenList}
                         onChange={handleChangeSelect}
                         val={activeToken}
+                        disabled={!!activeCred}
                       />
                     </div>
                   )}
@@ -463,6 +481,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                     handleClickData(a as ExchangeMeta);
                   }}
                   list={activeConnectedSourceList}
+                  activeList={activeSourceList}
+                  val={activeSource}
                 />
                 {/* {activeConnectedSourceList.length === 0 && (
                   <div className="emptyContent">
@@ -473,7 +493,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
               </div>
             </div>
           </main>
-
           <footer>
             <PButton
               text={activeConnectedSourceList.length === 0 ? 'OK' : 'Next'}
