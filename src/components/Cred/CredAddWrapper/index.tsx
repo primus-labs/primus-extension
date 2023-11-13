@@ -566,7 +566,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             active: true,
             currentWindow: true,
           });
-
+          console.log('22222200', 'cred-inject');
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',

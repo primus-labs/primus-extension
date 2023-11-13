@@ -122,7 +122,7 @@ export const pageDecodeMsgListener = async (
         });
       }
     });
-    injectFn();
+    // injectFn();
   }
   if (name === 'injectionCompleted') {
     sendResponse({

@@ -18,12 +18,16 @@ chrome.runtime.sendMessage(
   },
   (response, a, b) => {
     if (response.name === 'append') {
+      var pMaskEl = document.querySelector('#pado-mask');
+      if (pMaskEl) {
+        return;
+      }
       activeTemplate = response.params;
       dataSourcePageTabId = response.dataSourcePageTabId;
       var {
         jumpTo,
         uiTemplate: { condition, subProofContent },
-        processUiTemplate: { proofContent ,},
+        processUiTemplate: { proofContent },
       } = activeTemplate;
       var aactiveOrigin = new URL(jumpTo).origin;
       var aactiveDesc = proofContent;
@@ -58,9 +62,7 @@ chrome.runtime.sendMessage(
         padoCenterBottomCancelStr
       );
       var padoCenterCenterNode = createDomElement(padoCenterCenterStr);
-      var padoRightNode = createDomElement(
-        `<div class="pado-right">1/3</div>`
-      );
+      var padoRightNode = createDomElement(`<div class="pado-right">1/3</div>`);
       var padoMaskNode = createDomElement(padoMaskStr);
       var onDrag = () => {
         var x, y;
@@ -200,7 +202,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
       var str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
       padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
-      var padoCenterBottomOKNode = createDomElement(
+      padoCenterBottomOKNode = createDomElement(
         `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
       );
       padoCenterBottomOKNode.onclick = () => {
@@ -211,7 +213,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return;
       };
-      padoCenterEl.appendChild(padoCenterBottomOKNode);
+      console.dir(padoCenterEl);
+      if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
+        padoCenterEl.appendChild(padoCenterBottomOKNode);
+      }
     }
   }
 });
