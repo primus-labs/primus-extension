@@ -180,12 +180,12 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceYoutube,
   },*/
-  zan: {
-    name: 'ZAN',
-    type: 'Identity',
-    icon: iconDataSourceZan,
-    // desc: 'by Antchain',
-  },
+  // zan: {
+  //   name: 'ZAN',
+  //   type: 'Identity',
+  //   icon: iconDataSourceZan,
+  //   // desc: 'by Antchain',
+  // },
 };
 export const WALLETLIST: WALLETITEMTYPE[] = [
   {

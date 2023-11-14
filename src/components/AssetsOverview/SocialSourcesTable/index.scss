@@ -1,17 +1,17 @@
 @import '@/assets/css/pFlex.sass';
 @import '@/assets/css/padoTable.scss';
 .tokenListWrapper.social {
-  --token-width: 0.8163rem;
-  --userName-width: 0.9048rem;
-  --following-width: 0.7483rem;
-  --posts-width: 0.6122rem;
+  --token-width: .9524rem;
+  --userName-width: 1.0204rem;
+  --following-width: .6803rem;
+  --verified-width: .8844rem;
 }
 @media (max-width: 1470px) {
   .tokenListWrapper.social {
-    --token-width: 120px;
-    --userName-width: 133px;
-    --following-width: 110px;
-    --posts-width: 90px;
+    --token-width: 140px;
+    --userName-width: 150px;
+    --following-width: 100px;
+    --verified-width: 130px;
   }
 }
 .tokenListWrapper.social {
@@ -20,26 +20,27 @@
       li.tokenItem {
         gap: 0;
         .innerWrapper {
-          .token {
-            width: var(--token-width, 120px);
+          .token,.userName {
+            width: var(--token-width, 140px);
           }
           .userName,
           .createTime {
-            width: var(--userName-width, 133px);
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
           }
+          .createTime {
+            width: var(--userName-width, 150px);
+          }
           .verified {
-            width: var(--token-width, 120px);
+            width: var(--verified-width, 130px);
           }
           .followers,
-          .following {
-            width: var(--following-width, 110px);
+          .following ,
+          .posts{
+            width: var(--following-width, 100px);
           }
-          .posts {
-            width: var(--posts-width, 90px);
-          }
+          
         }
       }
     }

@@ -19,11 +19,11 @@ chrome.runtime.sendMessage(
   (response, a, b) => {
     if (response.name === 'append') {
       var pMaskEl = document.querySelector('#pado-mask');
+      activeTemplate = response.params;
+      dataSourcePageTabId = response.dataSourcePageTabId;
       if (pMaskEl) {
         return;
       }
-      activeTemplate = response.params;
-      dataSourcePageTabId = response.dataSourcePageTabId;
       var {
         jumpTo,
         uiTemplate: { condition, subProofContent },
@@ -148,13 +148,16 @@ chrome.runtime.sendMessage(
             progressPercentage = 100;
             clearInterval(intervalTimer);
             if (padoRightNode.innerHTML !== '3/3') {
-              padoRightNode.innerHTML ='3/3';
+              padoRightNode.innerHTML = '3/3';
               var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
               padoCenterCenterNode.innerHTML = str1;
               padoCenterBottomOKNode = createDomElement(
                 `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
               );
               padoCenterBottomOKNode.onclick = () => {
+                const padoMaskNode = document.querySelector('#pado-mask');
+
+                document.body.removeChild(padoMaskNode);
                 chrome.runtime.sendMessage({
                   type: 'pageDecode',
                   name: 'closeDataSourcePage',
@@ -166,12 +169,11 @@ chrome.runtime.sendMessage(
                 padoCenterNode.appendChild(padoCenterBottomOKNode);
               }
             }
-            
           }
           barEl.style.width = `${progressPercentage}%`;
           // progress.innerHTML = `${progressPercentage}%`;
         }
-        intervalTimer = setInterval(simulateFileUpload, (130/100) * 1000); // algorithm timeout
+        intervalTimer = setInterval(simulateFileUpload, (123 / 100) * 1000); // algorithm timeout
         var msgObj = {
           type: 'pageDecode',
           name: 'sendRequest',
