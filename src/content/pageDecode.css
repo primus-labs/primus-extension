@@ -10,10 +10,12 @@
   align-items: flex-start;
   gap: var(--spacing-16, 16px);
   width: 406px;
-  height: 120px;
+  /* height: 120px; */
+  height: fit-content;
+  min-height: 120px;
   box-sizing: border-box;
 }
-#pado-mask.light {
+#pado-mask {
   background: rgba(235, 239, 244, 1);
   box-shadow: 0px 4px 8px 0px rgba(115, 122, 132, 0.4);
   --label-color: rgba(23, 43, 77, 0.6);
@@ -26,7 +28,7 @@
   --blue-40: #4d74ff;
   --verifying-color: #172b4d;
   --start-button-color: #fff;
-  --other-clickable: rgba(255,255,255,0);
+  --other-clickable: rgba(255, 255, 255, 0);
 }
 #pado-mask.dark {
   background: #2b2930;
@@ -40,8 +42,8 @@
   --neutral-20: rgba(202, 196, 208, 0.8);
   --blue-40: #d0bcff;
   --verifying-color: rgba(202, 196, 208, 0.8);
-  --start-button-color: #381E72;
-  --other-clickable: #A5ADBA;
+  --start-button-color: #381e72;
+  --other-clickable: #a5adba;
 }
 
 .pado-left,
@@ -77,6 +79,8 @@
   gap: 8px;
 }
 .pado-center .pado-center-center p {
+  margin: 0;
+  padding: 0;
   display: flex;
   gap: 12px;
   font-family: Inter;
@@ -129,7 +133,7 @@
 }
 .pado-center .pado-center-bottom {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 .pado-center .pado-center-bottom button {
   background: none;
@@ -146,14 +150,19 @@
 }
 .pado-center .pado-center-bottom button:first-child {
   cursor: pointer;
-  padding-right: 4px;
+  /* padding-right: 4px; */
   color: var(--start-button-color, #fff);
   background: var(--blue-b-400, #0052cc);
 }
 .pado-center .pado-center-bottom button:nth-child(2) {
   cursor: pointer;
   padding: 0 4px;
-  color:var(--neutral-light-n-70, #A5ADBA);
+  color: var(--neutral-light-n-70, #a5adba);
+}
+.pado-center .pado-center-bottom button:first-child.okBtn {
+  padding: 0;
+  background: none;
+  color: var(--blue-b-400, #0052cc);
 }
 .pado-center .pado-center-bottom button.startBtn.disabled {
   cursor: not-allowed;

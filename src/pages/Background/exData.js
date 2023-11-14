@@ -4,6 +4,7 @@ import {
   CredVersion,
   ExchangeStoreVersion,
   schemaTypeMap,
+  SCROLLEVENTNAME,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
@@ -222,7 +223,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
 };
 export default processNetworkReq;
 
-// port is unnecesary when you assemble algorithm params for page decode 
+// port is unnecesary when you assemble algorithm params for page decode
 export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const {
     source,
@@ -232,9 +233,10 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     label,
     exUserId,
     requestid: prevRequestid,
+    event,
   } = form;
   const { baseName } = DATASOURCEMAP[source];
-  const user = await assembleUserInfoParams();
+  const user = await assembleUserInfoParams(form);
 
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   const { id: authUserId } = JSON.parse(userInfo);
@@ -259,7 +261,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     cipher: '', // TODO
     getdatatime: timeStampStr,
     credVersion: CredVersion,
-    
+
     sigFormat: 'EAS-Ethereum', // TODO
     // sigFormat: 'EAS-BNB', // TODO
     // schemaType: 'exchange-balance', // TODO
@@ -267,6 +269,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     user,
     // holdingToken // TODO
     authUseridHash,
+    event,
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
@@ -283,7 +286,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     params.holdingToken = holdingToken;
     calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
   }
-  if (port) { // it's noneed for page decode
+  if (port) {
+    // it's noneed for page decode
     const extRequestsOrderInfo = await assembleAccountBalanceRequestParams(
       form,
       USERPASSWORD,
@@ -298,24 +302,29 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
     let ext;
     if (source === 'binance' || source === 'okx') {
-      const extUidHashRequestsInfo = await assembleUidHashRequestsParams(form, USERPASSWORD, port);
+      const extUidHashRequestsInfo = await assembleUidHashRequestsParams(
+        form,
+        USERPASSWORD,
+        port
+      );
       ext = {
         calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-          extRequests: {
-          orders: ["uid-hash", extRequestsOrder], // TODO
-          "uid-hash": extUidHashRequestsInfo,
+        extRequests: {
+          orders: ['uid-hash', extRequestsOrder], // TODO
+          'uid-hash': extUidHashRequestsInfo,
           [extRequestsOrder]: extRequestsOrderInfo,
         },
       };
     } else {
       ext = {
         calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
-          extRequests: {
-            orders: [extRequestsOrder], // TODO
-            [extRequestsOrder]: extRequestsOrderInfo,
+        extRequests: {
+          orders: [extRequestsOrder], // TODO
+          [extRequestsOrder]: extRequestsOrderInfo,
         },
       };
     }
+    ext.event = event;
 
     Object.assign(params, {
       ext,
@@ -333,8 +342,12 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
         { name: 'getDataTime', type: 'string' },
         { name: 'baseValue', type: 'string' },
         { name: 'balanceGreaterThanBaseValue', type: 'string' },
-      ]
-    })
+      ],
+    });
+  } else {
+    Object.assign(params, {
+      ext: { event },
+    });
   }
 
   return params;
@@ -354,7 +367,7 @@ async function assembleUidHashRequestsParams(form, USERPASSWORD, port) {
         params: { recvWindow: 60 * 1000 },
       };
       signres = await sign('binance', data, USERPASSWORD, port);
-      signres.parseSchema = 'A_PURE_NUMBER:beg_tag=\"uid\"::end_tag=}';
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag="uid"::end_tag=}';
       signres.decryptFlag = 'false';
       signres.calculationType = 'A_VALUE_HASH';
       extRequestsOrderInfo = { ...signres };
@@ -367,7 +380,7 @@ async function assembleUidHashRequestsParams(form, USERPASSWORD, port) {
         params: {},
       };
       signres = await sign('okx', data, USERPASSWORD, port);
-      signres.parseSchema = 'A_PURE_NUMBER:beg_tag=\"mainUid\":\":end_tag=\"';
+      signres.parseSchema = 'A_PURE_NUMBER:beg_tag="mainUid":":end_tag="';
       signres.decryptFlag = 'false';
       signres.calculationType = 'A_VALUE_HASH';
       extRequestsOrderInfo = { ...signres };
@@ -465,18 +478,29 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   }
   return extRequestsOrderInfo;
 }
-async function assembleUserInfoParams() {
+async function assembleUserInfoParams(form) {
+  const { event } = form;
   const { connectedWalletAddress, userInfo } = await chrome.storage.local.get([
     'connectedWalletAddress',
     'userInfo',
   ]);
+  let formatAddress;
   const { address } = JSON.parse(connectedWalletAddress);
+  formatAddress = address;
+  if (event === SCROLLEVENTNAME) {
+    const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
+    const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+    if (scrollEventObj.address) {
+      formatAddress = scrollEventObj.address;
+    }
+  }
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
     userid: id,
-    address: address,
+    address: formatAddress,
     token: loginToken,
   };
+
   return user;
 }
 

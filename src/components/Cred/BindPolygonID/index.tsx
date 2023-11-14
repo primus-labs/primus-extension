@@ -154,7 +154,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
         return (
           <div className="footerTip safeTip">
             <p>PADO will not access your private data.</p>
-            <p>We uses IZK to ensure your privacy.</p>
+            <p>We use IZK to ensure your privacy.</p>
           </div>
         );
       } else {

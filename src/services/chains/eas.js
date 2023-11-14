@@ -290,7 +290,7 @@ export async function attestByDelegationProxyFee(params) {
   await provider.send('eth_requestAccounts', []);
   let signer = provider.getSigner();
   let contract;
-  if (networkName.startsWith('Linea')) {
+  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
     contract = new ethers.Contract(
       easProxyFeeContractAddress,
       lineaportalabi,
@@ -312,10 +312,15 @@ export async function attestByDelegationProxyFee(params) {
     schemauid = activeSchemaInfo.schemaUidTokenHoldings;
   } else if (type === 'IDENTIFICATION_PROOF') {
     schemauid = activeSchemaInfo.schemaUidIdentification;
-  } else if (type === 'web') {// TODO
+  } else if (type === 'web') {
+    // TODO
     schemauid = activeSchemaInfo.schemaUidWeb;
   }
-  console.log('attestByDelegationProxyFee schemauid=', schemauid);
+  console.log(
+    'attestByDelegationProxyFee schemauid=',
+    schemauid,
+    easProxyFeeContractAddress
+  );
   const fee = await getFee(networkName, metamaskprovider);
   const paramsobj = {
     schema: schemauid,
@@ -332,7 +337,7 @@ export async function attestByDelegationProxyFee(params) {
     deadline: 0,
   };
   try {
-    if (networkName.startsWith('Linea')) {
+    if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
       tx = await contract.attest(paramsobj, { value: fee });
     } else {
       tx = await contract.attestByDelegation(
@@ -342,23 +347,44 @@ export async function attestByDelegationProxyFee(params) {
       );
     }
   } catch (er) {
-    //console.log('eas attestByDelegationProxyFee attest failed', er);
+    console.log('222222eas attestByDelegationProxyFee attest failed', er);
     try {
-      if (networkName.startsWith('Linea')) {
+      if (
+        networkName.startsWith('Linea') ||
+        networkName.indexOf('Scroll') > -1
+      ) {
         tx = await contract.callStatic.attest(paramsobj, { value: fee });
       } else {
-        tx = await contract.callStatic.attestByDelegation(paramsobj, { value: fee });
+        tx = await contract.callStatic.attestByDelegation(paramsobj, {
+          value: fee,
+        });
       }
     } catch (error) {
-      console.log("eas attestByDelegationProxyFee caught error:\n", error);
+      console.log('eas attestByDelegationProxyFee caught error:\n', error);
     }
+    if (
+      (er.data && er.data.message.indexOf('insufficient funds') > -1) ||
+      er.message.indexOf('insufficient funds') > -1
+    ) {
+      
+      return {
+        error: 1,
+        message: 'insufficient funds',
+      };
+    } else if (er.ACTION_REJECTED === 'ACTION_REJECTED') {
+      return {
+        error: 2,
+        message: 'user rejected transaction',
+      };
+    }
+    // throw new Error(er);
+
     return;
   }
-
   console.log('eas attestByDelegationProxyFee tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
-  if (networkName.startsWith('Linea')) {
+  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
     return txreceipt.transactionHash;
   } else {
     const newAttestationUID = txreceipt.logs[txreceipt.logs.length - 1].data;
@@ -370,14 +396,14 @@ export async function bulkAttest(params) {
   let {
     networkName,
     metamaskprovider,
-    items/*: [{
+    items /*: [{
       data,
       attesteraddr,
       receipt,
       signature,
       type,
       schemaName,
-    }]*/
+    }]*/,
   } = params;
   console.log('eas bulkAttest params', params);
   const easProxyFeeContractAddress = EASInfo[networkName].easProxyFeeContract;
@@ -385,7 +411,7 @@ export async function bulkAttest(params) {
   await provider.send('eth_requestAccounts', []);
   let signer = provider.getSigner();
   let contract;
-  if (networkName.startsWith('Linea')) {
+  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
     contract = new ethers.Contract(
       easProxyFeeContractAddress,
       lineaportalabi,
@@ -415,7 +441,8 @@ export async function bulkAttest(params) {
       schemauid = activeSchemaInfo.schemaUidTokenHoldings;
     } else if (item.type === 'IDENTIFICATION_PROOF') {
       schemauid = activeSchemaInfo.schemaUidIdentification;
-    } else if (item.type === 'web') {// TODO
+    } else if (item.type === 'web') {
+      // TODO
       schemauid = activeSchemaInfo.schemaUidWeb;
     }
     console.log('bulkAttest schemauid=', schemauid);
@@ -428,7 +455,7 @@ export async function bulkAttest(params) {
         revocable: true,
         refUID: ZERO_BYTES32,
         data: item.data,
-        value: 0n,
+        value: 0,
       },
       signature: formatSignature,
       attester: item.attesteraddr,
@@ -444,22 +471,35 @@ export async function bulkAttest(params) {
     tx = await contract.bulkAttest(bulkParams, { value: bulkFee });
   } catch (er) {
     try {
-        tx = await contract.callStatic.bulkAttest(bulkParams, { value: bulkFee });
+      tx = await contract.callStatic.bulkAttest(bulkParams, { value: bulkFee });
     } catch (error) {
-      console.log("eas bulkAttest caught error:\n", error);
+      console.log('eas bulkAttest caught error:\n', error);
     }
+    if (er.data && er.data.message.indexOf('insufficient funds') > -1) {
+      return {
+        error: 1,
+        message: 'insufficient funds',
+      };
+    } else if (er.ACTION_REJECTED === 'ACTION_REJECTED') {
+      return {
+        error: 2,
+        message: 'user rejected transaction',
+      };
+    }
+    // throw new Error(er);
     return;
   }
 
   console.log('eas bulkAttest tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas bulkAttest txreceipt=', txreceipt);
-  if (networkName.startsWith('Linea')) {
+  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
     return txreceipt.transactionHash;
   } else {
     let newAttestationUIDs = [];
-    for (let i=0; i<bulkParams.length; i++) {
-      const attestationUID = txreceipt.logs[txreceipt.logs.length - bulkParams.length + i].data;
+    for (let i = 0; i < bulkParams.length; i++) {
+      const attestationUID =
+        txreceipt.logs[txreceipt.logs.length - bulkParams.length + i].data;
       newAttestationUIDs.push(attestationUID);
     }
     return newAttestationUIDs;

@@ -40,6 +40,7 @@ const PConnect = memo(() => {
   const handleConnect = useCallback(
     () => {
       setConnectWalletDialogVisible1(true)
+      setStep(1)
     },
     []
   );
@@ -48,6 +49,12 @@ const PConnect = memo(() => {
   }, []);
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
+      setActiveRequest({
+        type: 'loading',
+        title: 'Requesting Connection',
+        desc: 'Check MetaMask to confirm the connection.',
+      });
+      setStep(2);
       const startFn = () => {
         setActiveRequest({
           type: 'loading',
@@ -83,6 +90,12 @@ const PConnect = memo(() => {
   useEffect(() => {
     checkIfHadBound();
   }, [checkIfHadBound]);
+  useEffect(() => {
+    if (connectedWallet?.address) {
+      setConnectWalletDialogVisible1(false)
+      setStep(1)
+    }
+  }, [connectedWallet?.address]);
   return (
     <div className="PConnect">
       {connectedWallet?.address ? (

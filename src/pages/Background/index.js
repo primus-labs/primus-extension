@@ -144,6 +144,7 @@ const processAlgorithmReq = async (message, port) => {
       ) {
         attestationParams.proxyUrl = 'wss://api.padolabs.org/algoproxy';
       }
+     
       console.log('attestationParams=', attestationParams);
       chrome.runtime.sendMessage({
         type: 'algorithm',

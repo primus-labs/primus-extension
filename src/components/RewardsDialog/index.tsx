@@ -7,6 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import dayjs from 'dayjs';
+import PButton from '@/components/PButton';
 import RewardItem from '@/components/Events/RewardList/RewardItem';
 import PMask from '@/components/PMask';
 import PTabsNew from '@/components/PTabsNew';
@@ -19,7 +20,7 @@ import { setRewardsDialogVisibleAction } from '../../store/actions/index';
 import { useSelector } from 'react-redux';
 import useInterval from '@/hooks/useInterval';
 import { checkLotteryResults } from '@/services/api/event';
-// import {BADGELOTTRYTIMESTR} from '@/config/constants'
+import { SCROLLEVENTNAME } from '@/config/constants';
 import type { UserState } from '@/types/store';
 import type { RewardList } from '@/types/event';
 interface ClaimDialogProps {
@@ -39,15 +40,26 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
   const badgeEventPeriod = useSelector(
     (state: UserState) => state.badgeEventPeriod
   );
+  const scrollEventPeriod = useSelector(
+    (state: UserState) => state.scrollEventPeriod
+  );
+
   const BADGELOTTRYTIMESTR = useMemo(() => {
-    const { startTime, endTime } = badgeEventPeriod;
+    const { startTime, endTime } = scrollEventPeriod;
     return +endTime;
-  }, [badgeEventPeriod]);
+  }, [scrollEventPeriod]);
+  // const badgeOpenFlag = useMemo(() => {
+  //   const flag = dayjs().isBefore(dayjs(BADGELOTTRYTIMESTR));
+  //   return flag;
+  // }, [BADGELOTTRYTIMESTR]);
 
   const [diffTime, setDiffTime] = useState<any>();
   const [tickSwitchFlag, setTickSwitchFlag] = useState<boolean>(false);
-  const [joinedBadgeFlag, setJoinedBadgeFlag] = useState<boolean>();
+  const [joinedBadgeFlag, setJoinedBadgeFlag] = useState<boolean>(false);
+  const [joinedScrollFlag, setJoinedScrollFlag] = useState<boolean>(false);
+
   const [BadgeLottryResult, setBadgeLottryResult] = useState<any>();
+  const [scrollLottryResult, setScrollLottryResult] = useState<any>();
   const [activeTab, setActiveTab] = useState<string>('Badges');
   const rewardsDialogVisible = useSelector(
     (state: UserState) => state.rewardsDialogVisible
@@ -93,45 +105,99 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     setActiveTab(val);
   }, []);
   const queryIfJoined = async () => {
-    const { mysteryBoxRewards } = await chrome.storage.local.get([
+    const { mysteryBoxRewards, scrollEvent } = await chrome.storage.local.get([
       'mysteryBoxRewards',
+      'scrollEvent',
     ]);
     setJoinedBadgeFlag(!!mysteryBoxRewards);
+    const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+    const joinFlag = !!scrollEventObj?.finishFlag;
+    setJoinedScrollFlag(!!joinFlag);
   };
-  const fetchLotteryResults = async () => {
-    const diffStamp = dayjs(BADGELOTTRYTIMESTR).diff(dayjs());
-    if (diffStamp <= 0) {
-        const { rc, result } = await checkLotteryResults({
-          event: 'PRODUCT_DEBUT',
+  const fetchLotteryResults = useCallback(async () => {
+    if (dayjs().isAfter(dayjs(+badgeEventPeriod.endTime))) {
+      const { rc, result } = await checkLotteryResults({
+        event: 'PRODUCT_DEBUT',
+      });
+      if (rc === 0) {
+        setBadgeLottryResult({
+          result: result.result,
+          icon: result.iconUrl,
         });
-        if (rc === 0) {
-          setBadgeLottryResult({
-            result: result.result,
-            icon: result.iconUrl
-          });
-        }
+      }
     }
-  };
+    if (dayjs().isAfter(dayjs(+scrollEventPeriod.endTime))) {
+      const { rc, result } = await checkLotteryResults({
+        event: SCROLLEVENTNAME,
+      });
+      if (rc === 0) {
+        setScrollLottryResult({
+          result: result.result,
+          icon: result.iconUrl,
+        });
+      }
+    }
+  }, [badgeEventPeriod.endTime, scrollEventPeriod.endTime]);
   useEffect(() => {
     if (rewardsDialogVisible?.visible) {
-      queryIfJoined();
+      // queryIfJoined();
       rewardsDialogVisible?.tab && setActiveTab(rewardsDialogVisible?.tab);
       setTickSwitchFlag(true);
     }
   }, [rewardsDialogVisible]);
   useEffect(() => {
-    !tickSwitchFlag && fetchLotteryResults();
-  }, [tickSwitchFlag]);
-  useEffect(() => {
-    if (BadgeLottryResult) {
-      if (!BadgeLottryResult.result) {
-        return () => {
-          chrome.storage.local.remove(['mysteryBoxRewards']);
-        }
-      }
-    }
-  }, [BadgeLottryResult]);
+    fetchLotteryResults();
+  }, [fetchLotteryResults]);
 
+  const showBadgeFn = useCallback(
+    (
+      joinFlag: boolean,
+      startTime: number,
+      endTime: number,
+      result: boolean
+    ) => {
+      // Started but not ended
+      const flag1 =
+        joinFlag &&
+        dayjs().isAfter(dayjs(startTime)) &&
+        dayjs().isBefore(dayjs(endTime));
+      const flag2 = dayjs().isAfter(dayjs(endTime)) && result;
+      // const flag3 = dayjs().isAfter(dayjs(endTime)) && !result;
+     
+      if (flag1) {
+        return 1;
+      }
+      if (flag2) {
+        return 2;
+      }
+      // if (flag3) {
+      //   return 3;
+      // }
+      return 0;
+    },
+    []
+  );
+  const showItemFlag = useMemo(() => {
+    const flagNum = showBadgeFn(
+      joinedBadgeFlag,
+      +badgeEventPeriod.startTime,
+      +badgeEventPeriod.endTime,
+      BadgeLottryResult?.result
+    );
+    return flagNum;
+  }, [badgeEventPeriod, BadgeLottryResult, showBadgeFn, joinedBadgeFlag]);
+  const showItemFlag2 = useMemo(() => {
+    const flagNum = showBadgeFn(
+      joinedScrollFlag,
+      +scrollEventPeriod.startTime,
+      +scrollEventPeriod.endTime,
+      scrollLottryResult?.result
+    );
+    return flagNum;
+  }, [scrollEventPeriod, scrollLottryResult, showBadgeFn, joinedScrollFlag]);
+  useEffect(() => {
+    rewardsDialogVisible?.visible && queryIfJoined();
+  }, [rewardsDialogVisible?.visible]);
   return (
     <>
       {rewardsDialogVisible?.visible && (
@@ -148,40 +214,57 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                   list={tabList}
                 />
                 {activeTab === 'Badges' && (
-                  <>
-                    {joinedBadgeFlag ? (
-                      <>
-                        {BadgeLottryResult ? (
-                          <>
-                            {BadgeLottryResult.result ? (
-                              <div className="rewardWrapper win">
-                                <img src={BadgeLottryResult.icon} alt="" />
-                                <div className="descWrapper">
-                                  1<sup>st</sup> Commemorative Badge
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="rewardWrapper">
-                                <img
-                                  src={mysteryBoxFailImg}
-                                  alt=""
-                                  className=""
-                                />
-                                <div className="timeWrapper">00:00:00</div>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="rewardWrapper">
+                  <ul className="BadgesList">
+                    {!!showItemFlag && (
+                      <li>
+                        {showItemFlag === 1 && (
+                          <div className="rewardWrapper a">
                             <img src={mysteryBoxImg} alt="" />
                             <div className="timeWrapper">{diffTime}</div>
                           </div>
                         )}
-                      </>
-                    ) : (
-                      emptyEl
+                        {showItemFlag === 2 && (
+                          <div className="rewardWrapper win a">
+                            <img src={BadgeLottryResult.icon} alt="" />
+                            <div className="descWrapper">
+                              1<sup>st</sup> Commemorative Badge
+                            </div>
+                          </div>
+                        )}
+                        {/* {showItemFlag === 3 && (
+                          <div className="rewardWrapper fail a">
+                            <img src={mysteryBoxFailImg} alt="" className="" />
+                            <div className="timeWrapper">00:00:00</div>
+                          </div>
+                        )} */}
+                      </li>
                     )}
-                  </>
+                    {!!showItemFlag2 && (
+                      <li>
+                        {showItemFlag2 === 1 && (
+                          <div className="rewardWrapper d">
+                            <img src={mysteryBoxImg} alt="" />
+                            <div className="timeWrapper">{diffTime}</div>
+                          </div>
+                        )}
+                        {showItemFlag2 === 2 && (
+                          <div className="rewardWrapper win d">
+                            <img src={scrollLottryResult.icon} alt="" />
+                            <div className="descWrapper">
+                              Scroll zkAttestation Medal
+                            </div>
+                          </div>
+                        )}
+                        {/* {showItemFlag2 === 3 && (
+                          <div className="rewardWrapper fail d">
+                            <img src={mysteryBoxFailImg} alt="" className="" />
+                            <div className="timeWrapper">00:00:00</div>
+                          </div>
+                        )} */}
+                      </li>
+                    )}
+                    {!showItemFlag && !showItemFlag2 && emptyEl}
+                  </ul>
                 )}
                 {activeTab === 'NFTs' && (
                   <>
@@ -194,9 +277,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                 )}
               </div>
             </main>
-            <button className="nextBtn" onClick={handleSubmit}>
-              <span>OK</span>
-            </button>
+            <PButton text="OK" onClick={handleSubmit} />
           </div>
         </PMask>
       )}

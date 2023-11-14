@@ -12,9 +12,12 @@ interface ConnectDataSourceListProps {
   mutiple?: boolean;
   onChange: (source: ListItem) => void;
   list: ListItem[];
+  activeList?: string[];
+  val?: ListItem;
 }
+
 const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
-  ({ mutiple = false, onChange, list }) => {
+  ({ mutiple = false, onChange, list, activeList, val }) => {
     const [activeSource, setActiveSource] = useState<ListItem>();
     const [activeSources, setActiveSources] = useState<ListItem[]>([]);
 
@@ -27,9 +30,17 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         if (!mutiple && !item?.disabled && activeSource?.name === item.name) {
           defaultClassName += ' active';
         }
+        if (activeList && activeList?.length > 0) {
+          if (activeList.includes(item.name)) {
+            defaultClassName += ' excitable';
+          } else {
+            defaultClassName += ' disabled';
+          }
+        }
         if (item?.disabled) {
           defaultClassName += ' disabled';
         }
+        
         if (mutiple) {
           const flag = activeSources.find((i) => i.name === item.name);
           if (flag) {
@@ -38,12 +49,15 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         }
         return defaultClassName;
       },
-      [activeSource, activeSources, mutiple]
+      [activeSource, activeSources, mutiple, activeList]
     );
 
     const handleClickData = (item: ListItem) => {
       if (item?.disabled) {
         return;
+      }
+      if (val && val.name === item.name) {
+        return
       }
       if (!mutiple) {
         if (activeSource?.name === item.name) {
@@ -76,6 +90,10 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         onChange(activeSource);
       }
     }, [activeSource, onChange]);
+    useEffect(() => {
+      val && setActiveSource(val);
+    }, [val]);
+  
 
     return (
       <div className="scroll sourceGroup">

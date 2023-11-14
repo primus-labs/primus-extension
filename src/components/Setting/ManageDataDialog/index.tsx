@@ -527,7 +527,8 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           activeExSourceNameArr.includes(credentialObj[key].source) ||
           activeKYCSourceNameArr.includes(credentialObj[key].source)
         ) {
-          if (newCredentialObj[key].reqType !== 'web') {
+          const curCred = newCredentialObj[key]
+          if (curCred.reqType !== 'web' && !curCred.provided) {
             delete newCredentialObj[key];
           }
         }

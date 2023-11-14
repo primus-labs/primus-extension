@@ -25,9 +25,28 @@
   height: var(--adSpace-height, 138px);
   width: 100%;
   border-radius: var(--spacing-24, 24px);
+  &.disabled {
+    // border-radius: var(--spacing-24, 24px);
+    background: var(--bg-40, rgba(167, 170, 170, 0.1)) !important;
+    .pButton.disabled {
+      background: transparent !important;
+      border-radius: var(--spacing-100, 100px);
+      color: var(--Text-hint, #7b7f80);
+      border-color: var(--Text-hint, #7b7f80);
+      cursor: not-allowed;
+      &:hover{
+        border: 1px solid var(--Text-hint, #7b7f80);
+      }
+    }
+  }
   .left {
     @extend .frsc;
     height: 100%;
+    gap: var(--adSpace-left-gap, 40px);
+    > img {
+      align-self: center;
+      width: var(--adSpace-left-img-width, 60px);
+    }
     .bannerContent {
       @extend .fccs;
       height: 100%;
@@ -41,20 +60,6 @@
       }
     }
   }
-}
-.adSpace.adSpaceNft {
-  background: var(--bg-60, rgba(255, 255, 255, 0.6));
-  .left {
-    gap: var(--adSpace-left-gap, 40px);
-    > img {
-      align-self: center;
-      width: var(--adSpace-left-img-width, 60px);
-    }
-    .bannerContent {
-      @extend .fccs;
-      gap: var(--spacing-12, 12px);
-    }
-  }
   .pButton {
     @extend .buttonStyle1;
     /* Headline 5 */
@@ -66,5 +71,30 @@
     width: var(--adSpace-pButton-width, 132px);
     height: var(--adSpace-pButton-height, 48px);
     // @extend .Headline5;
+    // border:0;
+    // background: transparent;
+    // &:hover{
+    //   background: transparent;
+    // }
+  }
+}
+.adSpace.adSpaceNft {
+  background: var(--bg-60, rgba(255, 255, 255, 0.6));
+  .left {
+    .bannerContent {
+      @extend .fccs;
+      gap: var(--spacing-12, 12px);
+    }
+  }
+  .pButton {
+    color: var(--Text-headline, #0a1214);
+    border: 1px solid var(--Text-headline, #0a1214);
+    background-color: transparent;
+    &:hover,
+    &:active {
+      background-color: transparent;
+      background: var(--Text-headline, #0a1214);
+      color: var(--bg-default, #fff);
+    }
   }
 }

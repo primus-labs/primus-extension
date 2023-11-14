@@ -1,238 +1,246 @@
+var dataSourcePageTabId = null;
+var intervalTimer = null;
+var activeTemplate = {};
+var moveFlag = false;
+// var x, y;
+function createDomElement(html) {
+  var dom = new DOMParser().parseFromString(html, 'text/html');
+  return dom.body.firstElementChild;
+}
 
-  let dataSourcePageTabId = null;
-  let intervalTimer = null;
-  let activeTemplate = {};
-  let moveFlag = false;
-  // let x, y;
-  function createDomElement(html) {
-    const dom = new DOMParser().parseFromString(html, 'text/html');
-    return dom.body.firstElementChild;
-  }
+var themeRootEl = document.querySelector('.theme-root');
+var isThemeLight = !!themeRootEl && themeRootEl.classList.contains('light');
 
-  const themeRootEl = document.querySelector('.theme-root');
-  const isThemeLight = !!themeRootEl && themeRootEl.classList.contains('light');
+chrome.runtime.sendMessage(
+  {
+    type: 'pageDecode',
+    name: 'injectionCompleted',
+  },
+  (response, a, b) => {
+    if (response.name === 'append') {
+      var pMaskEl = document.querySelector('#pado-mask');
+      activeTemplate = response.params;
+      dataSourcePageTabId = response.dataSourcePageTabId;
+      if (pMaskEl) {
+        return;
+      }
+      var {
+        jumpTo,
+        uiTemplate: { condition, subProofContent },
+        processUiTemplate: { proofContent },
+      } = activeTemplate;
+      var aactiveOrigin = new URL(jumpTo).origin;
+      var aactiveDesc = proofContent;
+      var padoLeftStr = `<img class="pado-left"></img>`;
+      var padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
+      var padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
 
-  chrome.runtime.sendMessage(
-    {
-      type: 'pageDecode',
-      name: 'injectionCompleted',
-    },
-    (response, a, b) => {
-      if (response.name === 'append') {
-        activeTemplate = response.params;
-        dataSourcePageTabId = response.dataSourcePageTabId;
-        const {
-          jumpTo,
-          uiTemplate: { proofContent, condition, subProofContent },
-        } = activeTemplate;
-        const aactiveOrigin = new URL(jumpTo).origin;
-        const aactiveDesc = `${proofContent ?? ''} ${subProofContent ?? ''} ${
-          condition ?? ''
-        }`;
-        const padoLeftStr = `<img class="pado-left"></img>`;
-        const padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
-        const padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
-
-        const padoCenterBottomStartStr = `<button class="startBtn" > Start</button>`;
-        const padoCenterBottomCancelStr = `<button class="cancelBtn">Cancel</button>`;
-        const padoCenterCenterStr = `<div class="pado-center-center"><p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Content</span><span>${aactiveDesc}</span></p></div>`;
-        const padoCenterStr = `<div class="pado-center"></div>`;
-        const padoRightStr = `<div class="pado-right">1/3</div>`;
-        const padoMaskStr = '<div id="pado-mask"></div > ';
-        const padoleftNode = createDomElement(padoLeftStr);
-        const padoCenterNode = createDomElement(padoCenterStr);
-        const padoCenterTopNode = createDomElement(padoCenterTopStr);
-        let padoCenterBottomNode = createDomElement(padoCenterBottomStr);
-        const padoCenterBottomOKNode = createDomElement(
-          `<button class="okBtn">OK</button>`
-        );
-        const padoCenterBottomStartNode = createDomElement(
-          padoCenterBottomStartStr
-        );
-        const disabledPathList = ['login', 'register'];
-        const isDisabled = disabledPathList.some(
-          (i) => window.location.href.indexOf('login') > -1
-        );
-        if (isDisabled) {
-          padoCenterBottomStartNode.classList.add('disabled');
-        }
-        const padoCenterBottomCancelNode = createDomElement(
-          padoCenterBottomCancelStr
-        );
-        let padoCenterCenterNode = createDomElement(padoCenterCenterStr);
-        const padoRightNode = createDomElement(
-          `<div class="pado-right">1/3</div>`
-        );
-        const padoMaskNode = createDomElement(padoMaskStr);
-        const onDrag = () => {
-          let x, y;
-          const mousemoveFn = (e) => {
-            let _h = window.innerHeight - padoMaskNode.offsetHeight;
-            let _w = window.innerWidth - padoMaskNode.offsetWidth;
-            let div_left = e.clientX - x;
-            let div_top = e.clientY - y;
-            div_left = Math.min(Math.max(0, div_left), _w);
-            div_top = Math.min(Math.max(0, div_top), _h);
-            if (moveFlag) {
-              padoMaskNode.style.left = div_left + 'px';
-              padoMaskNode.style.top = div_top + 'px';
-            }
-          };
-          const mousedownFn = (e) => {
-            moveFlag = true;
-            x = e.offsetX;
-            y = e.offsetY;
-            document.addEventListener('mousemove', mousemoveFn);
-          };
-          const mouseupFn = () => {
-            document.removeEventListener('mousemove', mousemoveFn);
-          };
-
-          padoMaskNode.addEventListener('mousedown', mousedownFn);
-          padoMaskNode.addEventListener('mouseup', mouseupFn);
+      var padoCenterBottomStartStr = `<button class="startBtn" > Start</button>`;
+      var padoCenterBottomCancelStr = `<button class="cancelBtn">Cancel</button>`;
+      var padoCenterCenterStr = `<div class="pado-center-center"><p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Content</span><span>${aactiveDesc}</span></p></div>`;
+      var padoCenterStr = `<div class="pado-center"></div>`;
+      var padoRightStr = `<div class="pado-right">1/3</div>`;
+      var padoMaskStr = '<div id="pado-mask"></div > ';
+      var padoleftNode = createDomElement(padoLeftStr);
+      var padoCenterNode = createDomElement(padoCenterStr);
+      var padoCenterTopNode = createDomElement(padoCenterTopStr);
+      var padoCenterBottomNode = createDomElement(padoCenterBottomStr);
+      var padoCenterBottomOKNode = createDomElement(
+        `<button class="okBtn">OK</button>`
+      );
+      var padoCenterBottomStartNode = createDomElement(
+        padoCenterBottomStartStr
+      );
+      var disabledPathList = ['login', 'register'];
+      var isDisabled = disabledPathList.some(
+        (i) => window.location.href.indexOf('login') > -1
+      );
+      if (isDisabled) {
+        padoCenterBottomStartNode.classList.add('disabled');
+      }
+      var padoCenterBottomCancelNode = createDomElement(
+        padoCenterBottomCancelStr
+      );
+      var padoCenterCenterNode = createDomElement(padoCenterCenterStr);
+      var padoRightNode = createDomElement(`<div class="pado-right">1/3</div>`);
+      var padoMaskNode = createDomElement(padoMaskStr);
+      var onDrag = () => {
+        var x, y;
+        var mousemoveFn = (e) => {
+          var _h = window.innerHeight - padoMaskNode.offsetHeight;
+          var _w = window.innerWidth - padoMaskNode.offsetWidth;
+          var div_left = e.clientX - x;
+          var div_top = e.clientY - y;
+          div_left = Math.min(Math.max(0, div_left), _w);
+          div_top = Math.min(Math.max(0, div_top), _h);
+          if (moveFlag) {
+            padoMaskNode.style.left = div_left + 'px';
+            padoMaskNode.style.top = div_top + 'px';
+          }
         };
-        onDrag();
-
-        // padoMaskNode.onmousedown = function (event) {
-
-        // let shiftX = event.clientX - padoMaskNode.getBoundingClientRect().left;
-        // let shiftY = event.clientY - padoMaskNode.getBoundingClientRect().top;
-        // padoMaskNode.style.position = 'absolute';
-        // padoMaskNode.style.zIndex = 9999;
-        // moveAt(event.pageX, event.pageY);
-        // function moveAt(pageX, pageY) {
-        //   padoMaskNode.style.left = pageX - shiftX + 'px';
-        //   padoMaskNode.style.top = pageY - shiftY + 'px';
-        // }
-        // function onMouseMove(event) {
-        //   moveAt(event.pageX, event.pageY);
-        // }
-
-        // document.addEventListener('mousemove', onMouseMove);
-        // padoMaskNode.onmouseup = function () {
-        //   document.removeEventListener('mousemove', onMouseMove);
-        //   padoMaskNode.onmouseup = null;
-        // };
-        // };
-        padoMaskNode.ondragstart = function () {
-          return false;
+        var mousedownFn = (e) => {
+          moveFlag = true;
+          x = e.offsetX;
+          y = e.offsetY;
+          document.addEventListener('mousemove', mousemoveFn);
         };
+        var mouseupFn = () => {
+          document.removeEventListener('mousemove', mousemoveFn);
+        };
+
+        padoMaskNode.addEventListener('mousedown', mousedownFn);
+        padoMaskNode.addEventListener('mouseup', mouseupFn);
+      };
+      onDrag();
+      padoMaskNode.ondragstart = function () {
+        return false;
+      };
+      if (themeRootEl) {
         if (isThemeLight) {
           padoMaskNode.classList.add('light');
         } else {
           padoMaskNode.classList.add('dark');
         }
-        padoleftNode.src = chrome.runtime.getURL(`iconExtension.svg`);
+      }
+      padoleftNode.src = chrome.runtime.getURL(`iconExtension.svg`);
 
-        padoCenterNode.appendChild(padoCenterTopNode);
-        padoCenterNode.appendChild(padoCenterCenterNode);
-        padoCenterNode.appendChild(padoCenterBottomNode);
+      padoCenterNode.appendChild(padoCenterTopNode);
+      padoCenterNode.appendChild(padoCenterCenterNode);
+      padoCenterNode.appendChild(padoCenterBottomNode);
 
-        padoCenterBottomNode.appendChild(padoCenterBottomStartNode);
-        padoCenterBottomNode.appendChild(padoCenterBottomCancelNode);
+      padoCenterBottomNode.appendChild(padoCenterBottomStartNode);
+      padoCenterBottomNode.appendChild(padoCenterBottomCancelNode);
 
-        padoMaskNode.appendChild(padoleftNode);
-        padoMaskNode.appendChild(padoCenterNode);
-        padoMaskNode.appendChild(padoRightNode);
+      padoMaskNode.appendChild(padoleftNode);
+      padoMaskNode.appendChild(padoCenterNode);
+      padoMaskNode.appendChild(padoRightNode);
 
-        padoCenterBottomOKNode.onclick = () => {
-          chrome.runtime.sendMessage({
-            type: 'pageDecode',
-            name: 'closeDataSourcePage',
-            dataSourcePageTabId,
-          });
+      padoCenterBottomOKNode.onclick = () => {
+        chrome.runtime.sendMessage({
+          type: 'pageDecode',
+          name: 'closeDataSourcePage',
+          dataSourcePageTabId,
+        });
+        return;
+      };
+      padoCenterBottomCancelNode.onclick = () => {
+        chrome.runtime.sendMessage({
+          type: 'pageDecode',
+          name: 'cancelAttest',
+          dataSourcePageTabId,
+        });
+      };
+      padoCenterBottomStartNode.onclick = () => {
+        if (isDisabled) {
           return;
-        };
-        padoCenterBottomCancelNode.onclick = () => {
-          chrome.runtime.sendMessage({
-            type: 'pageDecode',
-            name: 'cancelAttest',
-            dataSourcePageTabId,
-          });
-        };
-        padoCenterBottomStartNode.onclick = () => {
-          if (isDisabled) {
-            return;
-          }
-          padoRightNode.innerHTML = '2/3';
-          padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
+        }
+        padoRightNode.innerHTML = '2/3';
+        padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
 
-          padoCenterBottomNode.remove();
-          // const progress = document.querySelector('.percent');
-          const barEl = document.querySelector('.bar');
-          let progressPercentage = 0;
+        padoCenterBottomNode.remove();
+        // var progress = document.querySelector('.percent');
+        var barEl = document.querySelector('.bar');
+        var progressPercentage = 0;
 
-          function simulateFileUpload() {
-            progressPercentage += 1;
-            if (progressPercentage > 100) {
-              progressPercentage = 100;
-              clearInterval(intervalTimer);
+        function simulateFileUpload() {
+          progressPercentage += 1;
+          if (progressPercentage > 100) {
+            progressPercentage = 100;
+            clearInterval(intervalTimer);
+            if (padoRightNode.innerHTML !== '3/3') {
+              padoRightNode.innerHTML = '3/3';
+              var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
+              padoCenterCenterNode.innerHTML = str1;
+              padoCenterBottomOKNode = createDomElement(
+                `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
+              );
+              padoCenterBottomOKNode.onclick = () => {
+                const padoMaskNode = document.querySelector('#pado-mask');
+
+                document.body.removeChild(padoMaskNode);
+                chrome.runtime.sendMessage({
+                  type: 'pageDecode',
+                  name: 'closeDataSourcePage',
+                  dataSourcePageTabId,
+                });
+                return;
+              };
+              if (padoCenterNode.lastChild.className !== 'pado-center-bottom') {
+                padoCenterNode.appendChild(padoCenterBottomOKNode);
+              }
             }
-            barEl.style.width = `${progressPercentage}%`;
-            // progress.innerHTML = `${progressPercentage}%`;
           }
-          intervalTimer = setInterval(simulateFileUpload, (100 / 110) * 1000); // algorithm timeout
-          const msgObj = {
-            type: 'pageDecode',
-            name: 'sendRequest',
-          };
-          chrome.runtime.sendMessage(msgObj, (response) => {});
+          barEl.style.width = `${progressPercentage}%`;
+          // progress.innerHTML = `${progressPercentage}%`;
+        }
+        intervalTimer = setInterval(simulateFileUpload, (123 / 100) * 1000); // algorithm timeout
+        var msgObj = {
+          type: 'pageDecode',
+          name: 'sendRequest',
         };
-        document.body.appendChild(padoMaskNode);
-      }
+        chrome.runtime.sendMessage(msgObj, (response) => {});
+      };
+      document.body.appendChild(padoMaskNode);
     }
-  );
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    const {
-      name,
-      params: { result, failReason },
-    } = request;
-    if (name === 'attestResult') {
-      const padoRightEl = document.querySelector('.pado-right');
-      const padoCenterCenterEl = document.querySelector('.pado-center-center');
-      const padoCenterEl = document.querySelector('.pado-center');
-      const {
-        jumpTo,
-        uiTemplate: { proofContent, condition, subProofContent },
-      } = activeTemplate;
-      const aactiveOrigin = new URL(jumpTo).origin;
-      const aactiveDesc = `${subProofContent ?? ''} ${condition ?? ''}`;
-      if (result === 'success') {
-        padoRightEl.innerHTML = '3/3';
-        const iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
-        padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
-        const padoCenterBottomOKNode = createDomElement(
-          `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
-        );
-        padoCenterBottomOKNode.onclick = () => {
-          chrome.runtime.sendMessage({
-            type: 'pageDecode',
-            name: 'closeDataSourcePage',
-            dataSourcePageTabId,
-          });
-          return;
-        };
-        padoCenterEl.appendChild(padoCenterBottomOKNode);
-      } else if (result === 'fail') {
-        padoRightEl.innerHTML = '3/3';
-        padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>Not eligible</span></p>`;
-      } else if (result === 'warn') {
-        const str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
-        const str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
-        padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
-        const padoCenterBottomOKNode = createDomElement(
-          `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
-        );
-        padoCenterBottomOKNode.onclick = () => {
-          chrome.runtime.sendMessage({
-            type: 'pageDecode',
-            name: 'closeDataSourcePage',
-            dataSourcePageTabId,
-          });
-          return;
-        };
+  }
+);
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  var {
+    name,
+    params: { result, failReason },
+  } = request;
+  if (name === 'attestResult') {
+    var padoRightEl = document.querySelector('.pado-right');
+    var padoCenterCenterEl = document.querySelector('.pado-center-center');
+    var padoCenterEl = document.querySelector('.pado-center');
+    var {
+      jumpTo,
+      uiTemplate: { condition, subProofContent },
+      processUiTemplate: { proofContent, successMsg, failedMsg },
+    } = activeTemplate;
+    var aactiveOrigin = new URL(jumpTo).origin;
+    var aactiveDesc = successMsg;
+    if (result === 'success') {
+      padoRightEl.innerHTML = '3/3';
+      var iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
+      padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
+      var padoCenterBottomOKNode = createDomElement(
+        `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
+      );
+      padoCenterBottomOKNode.onclick = () => {
+        chrome.runtime.sendMessage({
+          type: 'pageDecode',
+          name: 'closeDataSourcePage',
+          dataSourcePageTabId,
+        });
+        return;
+      };
+      if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
         padoCenterEl.appendChild(padoCenterBottomOKNode);
       }
+    } else if (result === 'fail') {
+      aactiveDesc = failedMsg;
+      padoRightEl.innerHTML = '3/3';
+      padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}</span></p>`;
+    } else if (result === 'warn') {
+      padoRightEl.innerHTML = '3/3';
+      var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
+      var str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
+      padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
+      padoCenterBottomOKNode = createDomElement(
+        `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
+      );
+      padoCenterBottomOKNode.onclick = () => {
+        chrome.runtime.sendMessage({
+          type: 'pageDecode',
+          name: 'closeDataSourcePage',
+          dataSourcePageTabId,
+        });
+        return;
+      };
+      if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
+        padoCenterEl.appendChild(padoCenterBottomOKNode);
+      }
     }
-  });
-
+  }
+});

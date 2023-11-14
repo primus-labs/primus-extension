@@ -180,12 +180,12 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceYoutube,
   },*/
-  zan: {
-    name: 'ZAN',
-    type: 'Identity',
-    icon: iconDataSourceZan,
-    // desc: 'by Antchain',
-  },
+  // zan: {
+  //   name: 'ZAN',
+  //   type: 'Identity',
+  //   icon: iconDataSourceZan,
+  //   // desc: 'by Antchain',
+  // },
 };
 export const WALLETLIST: WALLETITEMTYPE[] = [
   {
@@ -283,3 +283,4 @@ export const schemaTypeMap = {
 
 export const supportAttestDataSourceNameList = ['Binance', 'Coinbase', 'OKX', 'ZAN']
 export const BADGELOTTRYTIMESTR = '2023-10-29 12:00:00';
+export const SCROLLEVENTNAME = 'SCROLL_LAUNCH_CAMPAIGN';

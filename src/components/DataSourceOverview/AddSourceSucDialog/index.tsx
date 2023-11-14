@@ -65,7 +65,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     const formatCloseable = useMemo(() => {
       if (closeable === undefined) {
         if (fromEvents) {
-          return !fromEvents;
+          return !fromEvents || fromEvents === 'Scroll';
         } else {
           return true;
         }

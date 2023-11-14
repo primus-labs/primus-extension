@@ -82,7 +82,15 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       (state: UserState) => state.webProofTypes
     );
     const activeWebProofTypes = useMemo(() => {
-      return webProofTypes.filter((i) => i.category === 'IDENTIFICATION_PROOF');
+      // return webProofTypes.filter((i) => i.category === 'IDENTIFICATION_PROOF');
+      let newArr:any[] = []
+      webProofTypes.forEach((r: any) => {
+        const existObj = newArr.find((i) => i.name === r.name);
+        if (!existObj && r.category === 'IDENTIFICATION_PROOF') {
+          newArr.push(r);
+        }
+      });
+      return newArr
     }, [webProofTypes]);
 
     const navigate = useNavigate();
@@ -99,12 +107,24 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [identityList]);
     const webDataSourceList = useMemo(() => {
-      const l = [
-        {
-          name: 'binance',
-          icon: iconWebDataSourceBiance,
-          disabled: false,
-        },
+      // const l = [
+      //   {
+      //     name: 'binance',
+      //     icon: iconWebDataSourceBiance,
+      //     disabled: false,
+      //   },
+      //   {
+      //     name: 'coinbase',
+      //     icon: iconWebDataSourceCoinbase,
+      //     disabled: true,
+      //   },
+      //   {
+      //     name: 'okx',
+      //     icon: iconWebDataSourceOKX,
+      //     disabled: true,
+      //   },
+      // ];
+      let l: any = [
         {
           name: 'coinbase',
           icon: iconWebDataSourceCoinbase,
@@ -116,18 +136,29 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           disabled: true,
         },
       ];
-      // let l: any = [];
-      // activeWebProofTypes.forEach((r) => {
-      //   const existObj = l.find((i: any) => i.name === r.dataSource);
-      //   if (!existObj) {
-      //     l.push({
-      //       name: r.dataSource,
-      //       icon: r.bgImg,
-      //     });
-      //   }
-      // });
+      webProofTypes.forEach((r) => {
+        const existIdx = l.findIndex((i: any) => i.name === r.dataSource);
+        if (existIdx < 0) {
+          l.unshift({
+            name: r.dataSource,
+            icon: r.bgImg,
+            disabled: r.name !== activeIdentityType,
+          });
+        } else {
+          if (l[existIdx].disabled) {
+            l.splice(existIdx, 1);
+            l.unshift({
+              name: r.dataSource,
+              icon: r.bgImg,
+              disabled: r.name !== activeIdentityType,
+            });
+          }
+        }
+      });
+      // l = [...new Set(l)]
+      l = l.sort((a:any,b:any) => a.disabled - b.disabled)
       return l;
-    }, []);
+    }, [webProofTypes, activeIdentityType]);
     const activeWebTemplate = useMemo(() => {
       const aWT = activeWebProofTypes.find(
         (i) => i.id === activeCred?.templateId
@@ -347,7 +378,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const handleClickNext = async () => {
       if (
         activeTab === 'API Data' &&
-        !activeSource  &&
+        !activeSource &&
         activeConnectedSourceList.length === 0 &&
         !fromEvents
       ) {

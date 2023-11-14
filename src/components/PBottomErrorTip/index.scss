@@ -24,6 +24,6 @@
     color: var(--Text-hint, #7b7f80);
     width: fit-content;
     margin: 0 auto;
-    padding: 0 var(--pBottomErrorTip-padding,40px);
+    padding: var(--spacing-4,4px) var(--pBottomErrorTip-padding,40px);
   }
 }

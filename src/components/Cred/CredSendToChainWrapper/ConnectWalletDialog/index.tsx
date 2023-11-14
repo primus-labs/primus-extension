@@ -49,6 +49,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
       if (!item?.disabled) {
         setErrorTip(undefined);
         setActiveItem(item);
+        onSubmit(item as WALLETITEMTYPE);
       }
     };
 
@@ -63,10 +64,10 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
             </header>
             <WalletList onClick={onChangeWallet} />
           </main>
-          <footer>
+          {/* <footer>
             <PButton text="Select" onClick={handleClickNext} />
             {errorTip && <PBottomErrorTip text={errorTip} />}
-          </footer>
+          </footer> */}
         </div>
       </PMask>
     );

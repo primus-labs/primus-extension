@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-
+import PButton from '@/components/PButton';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AttestationDialog from './AttestationDialog';
@@ -29,6 +29,7 @@ import {
   ONESECOND,
   ONEMINUTE,
   CredVersion,
+  SCROLLEVENTNAME,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -69,9 +70,19 @@ interface CredAddWrapperType {
   onSubmit: (addSucFlag?: any) => void;
   onClose: () => void;
   type?: string;
+  eventSource?: string;
 }
 const CredAddWrapper: FC<CredAddWrapperType> = memo(
-  ({ visible, activeCred, activeSource, onClose, onSubmit, type }) => {
+  ({
+    visible,
+    activeCred,
+    activeSource,
+    onClose,
+    onSubmit,
+    type,
+    eventSource,
+  }) => {
+    const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     const [credRequestId, setCredRequestId] = useState<string>();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -117,7 +128,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         ? JSON.parse(activeRequestAttestation)
         : {};
       if (parsedActiveRequestAttestation.reqType === 'web') {
-        chrome.runtime.sendMessage({
+        await chrome.runtime.sendMessage({
+          type: 'pageDecode',
           name: 'attestResult',
           params: {
             result: 'warn',
@@ -128,9 +140,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setActiveRequest({
         type: 'warn',
         title: 'Something went wrong',
-        desc: "The attestation process has been interrupted for some unknown reason.Please try again later."
-        ,
+        desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
       });
+
       const msg = {
         fullScreenType: 'algorithm',
         reqMethodName: 'stop',
@@ -285,6 +297,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),
           });
+
           await initCredList();
           setActiveRequest({
             type: 'suc',
@@ -540,16 +553,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setActiveAttestForm(form);
         if (form?.proofClientType === 'Webpage Data') {
           const currRequestObj = webProofTypes.find(
-            (r) => r.name === form.proofContent
+            (r) => r.name === form.proofContent && r.dataSource === form.source
           );
           if (form?.requestid) {
             currRequestObj.requestid = form.requestid;
+          }
+          if (form?.event) {
+            currRequestObj.event = form.event;
           }
           const currentWindowTabs = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
-
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',
@@ -611,6 +626,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         activeCred?.did,
         fetchAttestForPolygonID,
         webProofTypes,
+        fetchAttestForUni,
       ]
     );
     const onBackAttestationDialog = useCallback(() => {
@@ -671,6 +687,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
         ]);
+
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
@@ -744,14 +761,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             params: {},
           };
           postMsg(padoServicePort, msg);
+
           let requestResObj = {
             type: 'warn',
             title: 'Something went wrong',
             desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
           };
           if (
-            retdesc.indexOf('connect to proxy error') ||
-            retdesc.indexOf('WebSocket On Error')
+            retdesc.indexOf('connect to proxy error') > -1 ||
+            retdesc.indexOf('WebSocket On Error') > -1 ||
+            retdesc.indexOf('connection error') > -1
           ) {
             requestResObj = {
               type: 'warn',
@@ -763,8 +782,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (parsedActiveRequestAttestation.reqType === 'web') {
             let failReason = '';
             if (
-              retdesc.indexOf('connect to proxy error') ||
-              retdesc.indexOf('WebSocket On Error')
+              retdesc.indexOf('connect to proxy error') > -1 ||
+              retdesc.indexOf('WebSocket On Error') > -1 ||
+              retdesc.indexOf('connection error') > -1
             ) {
               failReason = 'network';
             }
@@ -826,9 +846,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           setActiveAttestationType('');
           setActiveSourceName(undefined);
           handleAdd();
+        } else if (fromEvents === 'Scroll' && eventSource) {
+          const from = {
+            proofClientType: 'Webpage Data',
+            proofContent: 'Account Ownership',
+            source: eventSource as string,
+            type: 'IDENTIFICATION_PROOF',
+            event: SCROLLEVENTNAME,
+          };
+          onSubmitAttestationDialog(from);
         }
       }
-    }, [visible, activeSource, activeCred, fromEvents]);
+    }, [visible, activeSource, activeCred, fromEvents, eventSource]);
 
     // useEffect(() => {
     //   if (!activeRequest?.type) {
@@ -851,13 +880,31 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     useEffect(() => {
       visible && startOfflineFn();
     }, [visible, startOfflineFn]);
+    const setScrollEventHistoryFn = useCallback(async () => {
+      const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
+      const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+
+      setScrollEventHistoryObj(scrollEventObj);
+    }, []);
+    useEffect(() => {
+      fromEvents === 'Scroll' && setScrollEventHistoryFn();
+    }, [fromEvents, setScrollEventHistoryFn]);
     const resultDialogHeaderEl = useMemo(() => {
+      let formatAddress = connectedWallet?.address;
+      // debugger
+      if (scrollEventHistoryObj?.address) {
+        formatAddress = scrollEventHistoryObj?.address;
+      }
       return activeAttestForm?.source === 'metamask' ? (
         <Bridge endIcon={onChainObj.icon} />
       ) : (
-        <AddressInfoHeader address={connectedWallet?.address as string} />
+        <AddressInfoHeader address={formatAddress as string} />
       );
-    }, [activeAttestForm, connectedWallet?.address]);
+    }, [
+      activeAttestForm,
+      connectedWallet?.address,
+      scrollEventHistoryObj?.address,
+    ]);
     useEffect(() => {
       const listerFn = (message: any) => {
         if (message.type === 'pageDecode') {
@@ -900,7 +947,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         return (
           <div className="footerTip safeTip">
             <p>PADO will not access your private data.</p>
-            <p>We uses IZK to ensure your privacy.</p>
+            <p>We use IZK to ensure your privacy.</p>
           </div>
         );
       } else {
@@ -911,26 +958,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {
           return (
-            <button className="nextBtn" onClick={onSubmitActiveRequestDialog}>
-              <span>Submit</span>
-            </button>
+            <PButton
+              text={fromEvents === 'Scroll' ? 'OK' : 'Submit'}
+              onClick={onSubmitActiveRequestDialog}
+            />
           );
         } else {
           return null;
         }
       } else {
-        return (
-          <button className="nextBtn gray" onClick={handleCloseMask}>
-            <span>OK</span>
-          </button>
-        );
+        return null;
       }
-    }, [
-      fromEvents,
-      onSubmitActiveRequestDialog,
-      activeRequest?.type,
-      handleCloseMask,
-    ]);
+    }, [fromEvents, onSubmitActiveRequestDialog, activeRequest?.type]);
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (

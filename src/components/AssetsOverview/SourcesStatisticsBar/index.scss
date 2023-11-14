@@ -8,7 +8,7 @@
   --social-value-line-height: 0.2041rem;
   --social-img-width: 0.2585rem;
   --social-tip-mt: -0.102rem;
-  --social-tip-ml: 0.2721rem;
+  --social-tip-ml: .3129rem;
 }
 @media (max-width) {
   .sourcesStatisticsBar {
@@ -18,7 +18,7 @@
     --social-value-line-height: 30px;
     --social-img-width: 38px;
     --social-tip-mt: -15px;
-    --social-tip-ml: 40px;
+    --social-tip-ml: 46px;
   }
 }
 .sourcesStatisticsBar {
@@ -69,7 +69,7 @@
           @extend .Text2;
           color: var(--neutral-l-grey, #89939e);
           margin-top: var(--social-tip-mt, -15px);
-          margin-left: var(--social-tip-ml, 40px);
+          margin-left: var(--social-tip-ml, 46px);
         }
       }
       &:nth-child(4n+4) {

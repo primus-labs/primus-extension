@@ -33,10 +33,12 @@ export const connectWallet = async (targetNetwork) => {
     if (e.code === 4001) {
       // User rejected the request.
       return [undefined, undefined, undefined, e];
+    } else if (e.message === '4001'){
+      throw new Error(e);
     } else {
       return [];
     }
-    throw new Error(e);
+    
   }
 };
 export const switchChain = async (connectedChainId, targetNetwork, p) => {
@@ -67,7 +69,6 @@ export const switchChain = async (connectedChainId, targetNetwork, p) => {
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = e;
-    console.log(err);
     if (err.code === 4902) {
       try {
         // add network
@@ -78,6 +79,8 @@ export const switchChain = async (connectedChainId, targetNetwork, p) => {
       } catch (addError) {
         console.error(addError);
       }
+    } else if (err.code === 4001) {
+      throw new Error(err.code);
     } else {
     }
     return true;
@@ -143,7 +146,10 @@ const handleChainChanged = (chainId) => {
 const handleAccountsChanged = (accounts) => {
   console.log('metamask account changes: ', accounts, provider);
   if (accounts.length > 0) {
+    // const newAddr = accounts[accounts.length-1];
     const addr = provider.selectedAddress;
+    // const addr = newAddr;
+    // provider.selectedAddress = addr;
     store.dispatch(
       connectWalletAsync({
         address: addr,
@@ -160,4 +166,25 @@ const handleConnect = () => {
 const handleDisconnect = () => {
   // provider = null;
   console.log('metamask disconnected');
+};
+export const switchAccount = async (provider) => {
+  try {
+    const permissions = await provider.request({
+      method: 'wallet_requestPermissions',
+      params: [{ eth_accounts: {} }],
+    });
+    const accountsPermission = permissions.find(
+      (permission) => permission.parentCapability === 'eth_accounts'
+    );
+    if (accountsPermission) {
+      console.log('eth_accounts permission successfully requested!');
+    }
+  } catch (error) {
+    if (error.code === 4001) {
+      // EIP-1193 userRejectedRequest error
+      console.log('Permissions needed to continue.');
+    } else {
+      console.error(error);
+    }
+  }
 };

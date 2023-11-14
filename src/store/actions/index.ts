@@ -5,7 +5,10 @@ import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
 import type { PROOFTYPEITEM } from '@/types/cred';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
-import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import {
+  DEFAULTDATASOURCEPOLLINGTIMENUM,
+  SCROLLEVENTNAME,
+} from '@/config/constants';
 import {
   bindConnectedWallet,
   checkIfBindConnectedWallet,
@@ -88,6 +91,10 @@ export const setBadgeEventPeriodAction = (values: any) => ({
   type: 'setBadgeEventPeriodAction',
   payload: values,
 });
+export const setScrollEventPeriodAction = (values: any) => ({
+  type: 'setScrollEventPeriodAction',
+  payload: values,
+});
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {
@@ -117,6 +124,7 @@ export const connectWalletAsync = (
     try {
       let address;
       let provider;
+      startFn && (await startFn());
       if (connectObj) {
         address = connectObj.address;
         provider = connectObj.provider;
@@ -134,13 +142,13 @@ export const connectWalletAsync = (
         );
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
-          startFn && (await startFn());
+          // startFn && (await startFn());
           sucFn && (await sucFn({ name: type, address, provider }));
         } else {
           return;
         }
       } else {
-        startFn && (await startFn());
+        // startFn && (await startFn());
         await dispatch(setConnectWalletDialogVisibleAction(true));
         const timestamp: string = +new Date() + '';
         const signature = await requestSign(address, timestamp);
@@ -172,15 +180,22 @@ export const connectWalletAsync = (
   };
 };
 
-const getChainAssets = async (signature: string,
-  timestamp: string, curConnectedAddr: string, dispatch: any) => {
-  const { rc, result, msg } = await getAssetsOnChains({
-    signature,
-    timestamp,
-    address: curConnectedAddr,
-  }, {
-    timeout: ONEMINUTE
-  });
+const getChainAssets = async (
+  signature: string,
+  timestamp: string,
+  curConnectedAddr: string,
+  dispatch: any
+) => {
+  const { rc, result, msg } = await getAssetsOnChains(
+    {
+      signature,
+      timestamp,
+      address: curConnectedAddr,
+    },
+    {
+      timeout: ONEMINUTE,
+    }
+  );
 
   if (rc === 0) {
     const res = getStatisticalData(result);
@@ -201,8 +216,7 @@ const getChainAssets = async (signature: string,
       ? JSON.parse(lastOnChainAssetsMapStr)
       : {};
     if (curConnectedAddr in lastOnChainAssetsMap) {
-      const lastCurConnectedAddrInfo =
-        lastOnChainAssetsMap[curConnectedAddr];
+      const lastCurConnectedAddrInfo = lastOnChainAssetsMap[curConnectedAddr];
       const pnl = sub(
         curAccOnChainAssetsItem.totalBalance,
         lastCurConnectedAddrInfo.totalBalance
@@ -221,11 +235,11 @@ const getChainAssets = async (signature: string,
 
     const eventInfo = {
       eventType: 'DATA_SOURCE_INIT',
-      rawData: {type: 'Assets', dataSource: 'onchain-ConnectWallet'},
+      rawData: { type: 'Assets', dataSource: 'onchain-ConnectWallet' },
     };
     eventReport(eventInfo);
   }
-}
+};
 
 export const initRewardsActionAsync = () => {
   return async (dispatch: any) => {
@@ -239,10 +253,24 @@ export const initRewardsActionAsync = () => {
 export const setBadgeEventPeriodActionAsync = () => {
   return async (dispatch: any) => {
     try {
-      const { rc, result } = await queryBadgeEventPeriod();
-      if (rc === 0) {
-        dispatch(setBadgeEventPeriodAction(result));
-      }
+      const eventPeriodRes = await Promise.all([
+        queryBadgeEventPeriod(),
+        queryBadgeEventPeriod({
+          event: SCROLLEVENTNAME,
+        }),
+      ]);
+      eventPeriodRes.forEach((i, k) => {
+        const { rc, result } = i;
+        if (k === 0) {
+          if (rc === 0) {
+            dispatch(setBadgeEventPeriodAction(result));
+          }
+        } else if (k === 1) {
+          if (rc === 0) {
+            dispatch(setScrollEventPeriodAction(result));
+          }
+        }
+      });
     } catch (e) {
       console.log('setBadgeEventPeriodActionAsync e:', e);
     }
@@ -383,7 +411,7 @@ export const setCredentialsAsync = () => {
       'credentials',
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-    dispatch(setCredentialsAction(credentialObj));
+    await dispatch(setCredentialsAction(credentialObj));
   };
 };
 
@@ -403,6 +431,13 @@ export const setProofTypesAsync = () => {
         type: 'web_cred',
       });
       if (rc2 === 0) {
+        // let newArr:any[] = []
+        // result2.forEach((r:any) => {
+        //   const existObj = newArr.find(i => i.name === r.name)
+        //   if (!existObj) {
+        //     newArr.push(r);
+        //   }
+        // })
         dispatch(setWebProofTypesAction(result2));
       } else {
         // alert('getProofTypes network error');

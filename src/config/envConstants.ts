@@ -4,6 +4,7 @@ import iconBinance from '@/assets/img/iconBinance.png';
 import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
 import { getAlgoUrl } from '@/services/api/algorithm';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
+import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
 
 type ENVTYPE = 'development' | 'test' | 'production';
 
@@ -39,6 +40,46 @@ export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
 
 const EASINFOMAP = {
   development: {
+    'Scroll Sepolia': {
+      showName: 'Scroll',
+      icon: iconNetworkScroll,
+      title: 'Scroll Sepolia',
+      rpcUrl: 'https://sepolia-rpc.scroll.io',
+      erc721Contract: '',
+      easContact: '',
+      easProxyContrac: '',
+      easProxyFeeContract: '0x8A047d2FbcEC425D7A28de7bce3630f38eC497c6',
+      schemas: {
+        'Verax-Scroll-Sepolia': {
+          schemaUid:
+            '0x89c0a9424f9d62c6cde9feb83653033899fe5df952beab024e38a13c3aae3ee9',
+          schemaUidTokenHoldings:
+            '0xc9992483a7da0207213d34288b835094b48567290cecf044c48913d3f1472a3a',
+          schemaUidIdentification:
+            '0x26f9780b51aefe9581802ff0b315decb36701d39766fbb78dbd9b4596b6da0bd',
+          schemaUidWeb:
+            '0xea3441099f6764cd494e7076d797b439aaf88f0693608a0557e389dfebcff8e9',
+        },
+        PolygonID: {
+          schemaUid:
+            '0x35e2eb198b2d9019f0d7c70ea2327c669a81b67721049d65cec92ec5fa5e2905',
+          schemaUidTokenHoldings:
+            '0x640b7a045d305f646074ac038830aaa2e8edfaac069f7cc2be53ae9034d13ad4',
+          schemaUidIdentification:
+            '0xf406ce092700219c3be1729e52a0bc9539177e96b4a63d73d1e846ca20e1e900',
+        },
+      },
+      chainId: '0x8274F', //534351
+      chainName: 'Scroll Sepolia',
+      rpcUrls: ['https://sepolia-rpc.scroll.io'],
+      blockExplorerUrls: ['https://sepolia.scrollscan.com'],
+      nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://sepolia.scrollscan.com/tx',
+    },
     'Linea Goerli': {
       showName: 'Linea',
       icon: iconNetworkLinea,
@@ -298,6 +339,46 @@ const EASINFOMAP = {
     },
   },
   production: {
+    'Scroll Mainnet': {
+      showName: 'Scroll',
+      icon: iconNetworkScroll,
+      title: 'Scroll Mainnet',
+      rpcUrl: 'https://rpc.scroll.io',
+      erc721Contract: '',
+      easContact: '',
+      easProxyContrac: '',
+      easProxyFeeContract: '0x1A58B9E0Aae7990466eA70d6791876EDcab67Ea7',
+      schemas: {
+        'Verax-Scroll-Mainnet': {
+          schemaUid:
+            '0x5C136E30F599E1A646323513BFE92F52AE6CB7C69141B1F156B7E648062BB280',
+          schemaUidTokenHoldings:
+            '0xc9992483a7da0207213d34288b835094b48567290cecf044c48913d3f1472a3a',
+          schemaUidIdentification:
+            '0x26f9780b51aefe9581802ff0b315decb36701d39766fbb78dbd9b4596b6da0bd',
+          schemaUidWeb:
+            '0x84fdf5748d9af166503472ff5deb0cd5f61f006169424805fd5554356ac6df10',
+        },
+        PolygonID: {
+          schemaUid:
+            '0x35E2EB198B2D9019F0D7C70EA2327C669A81B67721049D65CEC92EC5FA5E2905',
+          schemaUidTokenHoldings:
+            '0x640B7A045D305F646074AC038830AAA2E8EDFAAC069F7CC2BE53AE9034D13AD4',
+          schemaUidIdentification:
+            '0xF406CE092700219C3BE1729E52A0BC9539177E96B4A63D73D1E846CA20E1E900',
+        },
+      },
+      chainId: '0x82750', //534352
+      chainName: 'Scroll Mainnet',
+      rpcUrls: ['https://rpc.scroll.io'],
+      blockExplorerUrls: ['https://scrollscan.com'],
+      nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://scrollscan.com/tx',
+    },
     'Linea Goerli': {
       showName: 'Linea',
       icon: iconNetworkLinea,
@@ -534,6 +615,12 @@ const LINEASCHEMANAMEMAP = {
   production: 'Verax-Linea-Mainnet',
 };
 export let LINEASCHEMANAME = LINEASCHEMANAMEMAP[CURENV];
+const SCROLLSCHEMANAMEMAP = {
+  development: 'Verax-Scroll-Sepolia',
+  test: 'Verax-Scroll-Sepolia',
+  production: 'Verax-Scroll-Mainnet',
+};
+export let SCROLLSCHEMANAME = SCROLLSCHEMANAMEMAP[CURENV];
 const FIRSTVERSIONSUPPORTEDNETWORKNAMEMAP = {
   development: 'Sepolia',
   test: 'Sepolia',

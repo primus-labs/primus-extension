@@ -42,6 +42,7 @@ interface CredTypeListProps {
 
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
+    console.log('CredItem', item);
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
     const [expand, setExpand] = useState(false);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -163,7 +164,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     }, []);
     const nameCallback = useCallback((item: CredTypeItemType) => {
       if (item.reqType === 'web') {
-        return item.host;
+        const idx = item?.host?.indexOf('.');
+        const formatHost = item?.host?.substring((idx as number) + 1);
+        return formatHost;
       }
       if (item.exUserId) {
         return `ID: ${item.exUserId}`;
@@ -341,7 +344,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               </div>
             </div>
             <div className="descItem">
-              <div className="label">Submit Account</div>
+              <div className="label">Connected Account</div>
               <div className="value">
                 {item.did
                   ? formatAddress(item.did.toLowerCase(), 13)

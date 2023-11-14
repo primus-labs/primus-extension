@@ -2,7 +2,7 @@ import React, { FC, memo, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
-import nftIllstration from '@/assets/img/events/nftIllstration.svg';
+import nftIllstration from '@/assets/img/events/nftIllstration.png';
 import PButton from '@/components/PButton';
 import './index.scss';
 import { setBadgeEventPeriodActionAsync } from '@/store/actions';
@@ -26,7 +26,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           </div>
         </div>
       </div>
-      <PButton text="Claim Now" onClick={onClick}/>
+      <PButton className="claimBtn" text="Claim Now" onClick={onClick}/>
     </div>
   );
 });
