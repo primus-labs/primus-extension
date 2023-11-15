@@ -57,7 +57,7 @@ export type WALLETITEMTYPE = {
 export const ExchangeStoreVersion = '1.0.0';
 export const SocailStoreVersion = '1.0.0';
 export const KYCStoreVersion = '1.0.0';
-export const padoExtensionVersion = '0.2.7';
+export const padoExtensionVersion = '0.2.8';
 export const CredVersion = '1.0.2';
 
 export const USDT = 'USDT';
@@ -180,12 +180,13 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceYoutube,
   },*/
-  // zan: {
-  //   name: 'ZAN',
-  //   type: 'Identity',
-  //   icon: iconDataSourceZan,
-  //   // desc: 'by Antchain',
-  // },
+  zan: {
+    name: 'ZAN',
+    type: 'Identity',
+    icon: iconDataSourceZan,
+    // desc: 'by Antchain',
+    disabled: true,
+  },
 };
 export const WALLETLIST: WALLETITEMTYPE[] = [
   {

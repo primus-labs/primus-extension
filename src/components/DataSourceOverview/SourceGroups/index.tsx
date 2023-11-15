@@ -25,7 +25,7 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
     return Object.keys(DATASOURCEMAP).map((key) => {
       const sourceInfo: ExchangeMeta =
         DATASOURCEMAP[key as keyof typeof DATASOURCEMAP];
-      const { name, icon, type, requirePassphase, desc, iconWithCircle } =
+      const { name, icon, type, requirePassphase, desc, iconWithCircle,disabled } =
         sourceInfo;
       const infoObj: ExchangeMeta = {
         name,
@@ -34,7 +34,9 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
         desc,
         requirePassphase,
         iconWithCircle,
+        disabled,
       };
+      
       return infoObj;
     });
   }, []);
@@ -42,6 +44,7 @@ const SourceGroups: FC<SourceGroupsProps> = memo(({ onChange }) => {
     let activeList: ExchangeMeta[] = allSourcesList.filter(
       (i) => i.type === activeTab
     );
+    
     if (!fromEvents) {
       return activeList;
     } else {
