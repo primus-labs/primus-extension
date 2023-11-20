@@ -8,6 +8,7 @@
   --attestationDialog-padodropdown-maxHeight: 1.1973rem;
   --attestationDialog-emptyContent-img-width: 0.3061rem;
   --assetsAttestationDialog-contItem-con-width: 0.5986rem;
+  --uniswapAttestationDialog-contItem-con-width: .9524rem;
   --assetsAttestationDialog-sourceGroup-maxHeight: 1.7143rem;
 }
 @media (max-width: 1470px) {
@@ -20,6 +21,7 @@
     --attestationDialog-padodropdown-maxHeight: 176px;
     --attestationDialog-emptyContent-img-width: 45px;
     --assetsAttestationDialog-contItem-con-width: 88px;
+    --uniswapAttestationDialog-contItem-con-width: 140px;
     --assetsAttestationDialog-sourceGroup-maxHeight: 252px;
   }
 }
@@ -72,7 +74,10 @@
               }
               .selectOptionswrapper {
                 .padodropdown {
-                  max-height: var(--attestationDialog-padodropdown-maxHeight,176px);
+                  max-height: var(
+                    --attestationDialog-padodropdown-maxHeight,
+                    176px
+                  );
                   overflow-y: auto;
                   .dropdownItem {
                     > img {
@@ -150,7 +155,13 @@
             border-radius: var(--spacing-8, 8px);
             background: var(--Badge, rgba(10, 18, 20, 0.05));
             backdrop-filter: blur(16px);
+            &.uniswap{
+              width: var(--uniswapAttestationDialog-contItem-con-width, 140px);
+            }
           }
+        }
+        .uniswapContentExtra {
+          @extend .Text1;
         }
         &.contItemAssets {
           .sourceGroup {
