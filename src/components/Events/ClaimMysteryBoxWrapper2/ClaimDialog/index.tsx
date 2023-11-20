@@ -75,7 +75,7 @@ const stepList: StepItem[] = [
     id: 4,
     icon: iconQuestN,
     title: 'Campaign check',
-    subTitle: 'Finished all the PADO quests on QuestN',
+    subTitle: 'Remember to complete all quests after submitting',
     finished: false,
   },
 ];
