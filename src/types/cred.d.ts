@@ -41,6 +41,7 @@ export type CredTypeItemType = {
   templateId?: string;
   schemaType?: string;
   event?: string;
+  sigFormat?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

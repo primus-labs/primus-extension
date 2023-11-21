@@ -18,7 +18,7 @@ import AttestationDialog2 from './AttestationDialog2';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
-import { postMsg, strToHex, base64ToHex } from '@/utils/utils';
+import { postMsg, strToHex, base64ToHex, strToHexSha256 } from '@/utils/utils';
 import useTimeout from '@/hooks/useTimeout';
 import useInterval from '@/hooks/useInterval';
 import useAlgorithm from '@/hooks/useAlgorithm';
@@ -30,6 +30,7 @@ import {
   ONEMINUTE,
   CredVersion,
   SCROLLEVENTNAME,
+  schemaTypeMap,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -56,13 +57,10 @@ import {
   getUniNFTResult,
   getUniswapProof,
 } from '@/services/api/event';
+import { eventReport } from '@/services/api/usertracker';
 
 const onChainObj: any = DATASOURCEMAP.onChain;
-const schemaTypeMap = {
-  ASSETS_PROOF: 'Assets Proof',
-  TOKEN_HOLDINGS: 'Token Holdings',
-  IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
-};
+
 interface CredAddWrapperType {
   visible?: boolean;
   activeCred?: CredTypeItemType;
@@ -127,6 +125,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       const parsedActiveRequestAttestation = activeRequestAttestation
         ? JSON.parse(activeRequestAttestation)
         : {};
+
       if (parsedActiveRequestAttestation.reqType === 'web') {
         await chrome.runtime.sendMessage({
           type: 'pageDecode',
@@ -142,6 +141,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         title: 'Something went wrong',
         desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
       });
+      var eventInfo: any = {
+        eventType: 'ATTESTATION_GENERATE',
+        rawData: {
+          source: parsedActiveRequestAttestation.source,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          // attestationId: uniqueId,
+          status: 'FAILED',
+          reason: 'timeout',
+        },
+      };
+      eventReport(eventInfo);
 
       const msg = {
         fullScreenType: 'algorithm',
@@ -236,22 +247,23 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       return rCParams;
     }, [userInfo]);
     const fetchAttestForPolygonID = useCallback(async () => {
+      const { id } = userInfo;
+      const {
+        type,
+        signature,
+        source,
+        getDataTime,
+        address,
+        baseValue,
+        balanceGreaterThanBaseValue,
+        exUserId,
+        holdingToken,
+        requestid, // last sessionId
+        did,
+        schemaType,
+        sigFormat,
+      } = activeCred as CredTypeItemType;
       try {
-        const { id } = userInfo;
-        const {
-          type,
-          signature,
-          source,
-          getDataTime,
-          address,
-          baseValue,
-          balanceGreaterThanBaseValue,
-          exUserId,
-          holdingToken,
-          requestid, // last sessionId
-          did,
-        } = activeCred as CredTypeItemType;
-
         const params: any = {
           sessionId: requestid,
           credType: schemaTypeMap[type as keyof typeof schemaTypeMap],
@@ -304,12 +316,37 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             title: 'Congratulations',
             desc: 'A new attestation with Polygon DID is successfully granted!',
           });
+          const uniqueId = strToHexSha256(fullAttestation.signature);
+          var eventInfo: any = {
+            eventType: 'ATTESTATION_GENERATE',
+            rawData: {
+              source,
+              schemaType,
+              sigFormat,
+              attestationId: uniqueId,
+              status: 'SUCCESS',
+              reason: '',
+            },
+          };
+          eventReport(eventInfo);
         } else {
           setActiveRequest({
             type: 'error',
             title: 'Failed',
             desc: 'Failed to grant new authentication to Polygon DID!',
           });
+          const eventInfo: any = {
+            eventType: 'ATTESTATION_GENERATE',
+            rawData: {
+              source,
+              schemaType,
+              sigFormat,
+              // attestationId: '',
+              status: 'FAILED',
+              reason: 'attestForPolygonId error',
+            },
+          };
+          eventReport(eventInfo);
           alert('attestForPolygonId network error');
         }
       } catch {
@@ -318,6 +355,19 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           title: 'Failed',
           desc: 'Failed to grant new authentication to Polygon DID!',
         });
+        const eventInfo: any = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData: {
+            source,
+            schemaType,
+            sigFormat,
+            // attestationId: '',
+            status: 'FAILED',
+            reason: 'fetchAttestForPolygonID error',
+          },
+        };
+        eventReport(eventInfo);
+
         alert('attestForPolygonId network error');
       }
     }, [activeCred, userInfo, initCredList, requestConfigParams]);
@@ -338,6 +388,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           userIdentity,
           verifyIdentity,
           proofType,
+        };
+        const schemaType = schemaTypeMap[type as keyof typeof schemaTypeMap];
+        const eventInfo: any = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData: {
+            source,
+            schemaType,
+            sigFormat: 'EAS-Ethereum',
+            // attestationId: '',
+            // status: 'FAILED',
+            // reason: 'attestForPolygonId error',
+          },
         };
         try {
           const { rc, result, msg } = await attestForAnt(
@@ -401,19 +463,44 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 title: 'Congratulations',
                 desc: 'Your proof is created!',
               });
+              const uniqueId = strToHexSha256(credentialsObj[activeRequestId].signature);
+              eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                attestationId: uniqueId,
+                status: 'SUCCESS',
+                reason: '',
+              });
+              eventReport(eventInfo);
             } else {
               setActiveRequest(undefined);
               alert(msg2);
+              eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                // attestationId: uniqueId,
+                status: 'FAILED',
+                reason: msg2,
+              });
+              eventReport(eventInfo);
             }
           } else {
             setActiveRequest(undefined);
             setStep(-1);
             alert(msg);
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              // attestationId: uniqueId,
+              status: 'FAILED',
+              reason: msg,
+            });
+            eventReport(eventInfo);
           }
         } catch {
           setStep(-1);
           setActiveRequest(undefined);
           alert('attestForAnt network error');
+          eventInfo.rawData = Object.assign(eventInfo.rawData, {
+            // attestationId: uniqueId,
+            status: 'FAILED',
+            reason: 'attestForAnt network error',
+          });
+          eventReport(eventInfo);
         }
       },
       [
@@ -691,6 +778,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
+        var eventInfo: any = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData: {
+            source: parsedActiveRequestAttestation.source,
+            schemaType: parsedActiveRequestAttestation.schemaType,
+            sigFormat: parsedActiveRequestAttestation.sigFormat,
+          },
+        };
 
         if (retcode === '0') {
           clearFetchAttestationTimer();
@@ -726,6 +821,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               title: 'Congratulations',
               desc: 'Your proof is created!',
             });
+
+            const uniqueId = strToHexSha256(fullAttestation.signature);
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              attestationId: uniqueId,
+              status: 'SUCCESS',
+              reason: '',
+            });
+            eventReport(eventInfo);
           } else if (content.balanceGreaterThanBaseValue === 'false') {
             let descItem1 =
               'Your request did not meet the necessary requirements.';
@@ -753,6 +856,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 </>
               ),
             });
+
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              status: 'FAILED',
+              reason: 'Not met the requirements',
+            });
+            eventReport(eventInfo);
           }
         } else if (retcode === '2') {
           const msg = {
@@ -761,7 +870,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             params: {},
           };
           postMsg(padoServicePort, msg);
-
+          var eventInfoMsg = 'Something went wrong';
           let requestResObj = {
             type: 'warn',
             title: 'Something went wrong',
@@ -777,8 +886,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               title: 'Ooops',
               desc: 'Unstable internet connection. Please try again later.',
             };
+            eventInfoMsg = 'Unstable internet connection';
           }
           setActiveRequest(requestResObj);
+          eventInfo.rawData = Object.assign(eventInfo.rawData, {
+            status: 'FAILED',
+            reason: eventInfoMsg,
+          });
+          eventReport(eventInfo);
           if (parsedActiveRequestAttestation.reqType === 'web') {
             let failReason = '';
             if (

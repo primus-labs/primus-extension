@@ -9,6 +9,7 @@ import React, {
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { strToHexSha256 } from '@/utils/utils';
 import PButton from '@/components/PButton';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
@@ -215,6 +216,39 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             items: [upChainPX, upChainPBiance],
           };
           let upChainRes = await bulkAttest(upChainParams);
+          // burying point
+          let upChainType = upChainParams.items[0].type;
+          if (upChainType === 'web') {
+            upChainType = XProof?.schemaType;
+          }
+          const eventType = `${upChainType}-${upChainParams.items[0].schemaName}`;
+          let upchainNetwork = upChainParams.networkName;
+          if (
+            process.env.NODE_ENV === 'production' &&
+            upChainParams.networkName === 'Linea Goerli'
+          ) {
+            upchainNetwork = 'Linea Mainnet';
+          }
+          const uniqueIdX = strToHexSha256(XProof?.signature);
+          const uniqueIdBinance = strToHexSha256(BinanceProof?.signature);
+          var eventInfoX: any = {
+            eventType: 'UPPER_CHAIN',
+            rawData: {
+              network: upchainNetwork,
+              type: eventType,
+              source: XProof.source,
+              attestationId: uniqueIdX,
+            },
+          };
+          const eventInfoBinance: any = {
+            eventType: 'UPPER_CHAIN',
+            rawData: {
+              network: upchainNetwork,
+              type: eventType,
+              source: BinanceProof.source,
+              attestationId: uniqueIdBinance,
+            },
+          };
 
           if (upChainRes) {
             if (upChainRes.error) {
@@ -231,7 +265,19 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   desc: 'Please try again later.',
                 });
               }
-
+              eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
+                status: 'FAILED',
+                reason: upChainRes.message,
+              });
+              eventInfoBinance.rawData = Object.assign(
+                eventInfoBinance.rawData,
+                {
+                  status: 'FAILED',
+                  reason: upChainRes.message,
+                }
+              );
+              eventReport(eventInfoX);
+              eventReport(eventInfoBinance);
               return;
             }
             const currentChainObj: any = ONCHAINLIST.find(
@@ -274,36 +320,14 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               title: 'Congratulations',
               desc: 'Your attestation is recorded on-chain!',
             });
-
-            let upChainType = upChainParams.items[0].type;
-            if (upChainType === 'web') {
-              upChainType = XProof?.schemaType;
-            }
-            const eventType = `${upChainType}-${upChainParams.items[0].schemaName}`;
-            let upchainNetwork = upChainParams.networkName;
-            if (
-              process.env.NODE_ENV === 'production' &&
-              upChainParams.networkName === 'Linea Goerli'
-            ) {
-              upchainNetwork = 'Linea Mainnet';
-            }
-            const eventInfoX = {
-              eventType: 'UPPER_CHAIN',
-              rawData: {
-                network: upchainNetwork,
-                type: eventType,
-                source: XProof.source,
-              },
-            };
-
-            const eventInfoBinance = {
-              eventType: 'UPPER_CHAIN',
-              rawData: {
-                network: upchainNetwork,
-                type: eventType,
-                source: BinanceProof.source,
-              },
-            };
+            eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
+              status: 'SUCCESS',
+              reason: '',
+            });
+            eventInfoBinance.rawData = Object.assign(eventInfoBinance.rawData, {
+              status: 'SUCCESS',
+              reason: '',
+            });
             eventReport(eventInfoX);
             eventReport(eventInfoBinance);
           } else {
@@ -312,6 +336,16 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               title: 'Unable to proceed',
               desc: 'Please try again later.',
             });
+            eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
+              status: 'FAILED',
+              reason: 'attestByDelegationProxyFee error',
+            });
+            eventInfoBinance.rawData = Object.assign(eventInfoBinance.rawData, {
+              status: 'FAILED',
+              reason: 'attestByDelegationProxyFee error',
+            });
+            eventReport(eventInfoX);
+            eventReport(eventInfoBinance);
           }
         };
         const sucFn = async (walletObj: any) => {
@@ -384,6 +418,32 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               } else {
                 upChainRes = await attestByDelegationProxyFee(upChainParams);
               }
+
+              // burying point
+              let upChainType = upChainParams.type;
+              if (upChainParams.type === 'web') {
+                upChainType = activeCred?.schemaType;
+              }
+              const eventType = `${upChainType}-${upChainParams.schemaName}`;
+              let upchainNetwork = upChainParams.networkName;
+              if (
+                process.env.NODE_ENV === 'production' &&
+                upChainParams.networkName === 'Linea Goerli'
+              ) {
+                upchainNetwork = 'Linea Mainnet';
+              }
+              const uniqueId = strToHexSha256(
+                upChainParams.signature as string
+              );
+              var eventInfo: any = {
+                eventType: 'UPPER_CHAIN',
+                rawData: {
+                  network: upchainNetwork,
+                  type: eventType,
+                  source: curCredential.source,
+                  attestationId: uniqueId,
+                },
+              };
               if (upChainRes) {
                 if (upChainRes.error) {
                   if (upChainRes.error === 1) {
@@ -399,7 +459,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                       desc: 'Please try again later.',
                     });
                   }
-
+                  eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                    status: 'FAILED',
+                    reason: upChainRes.message,
+                  });
+                  eventReport(eventInfo);
                   return;
                 }
                 const newProvided = curCredential.provided ?? [];
@@ -438,27 +502,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   title: 'Congratulations',
                   desc: 'Your attestation is recorded on-chain!',
                 });
-
-                let upChainType = upChainParams.type;
-                if (upChainParams.type === 'web') {
-                  upChainType = activeCred?.schemaType;
-                }
-                const eventType = `${upChainType}-${upChainParams.schemaName}`;
-                let upchainNetwork = upChainParams.networkName;
-                if (
-                  process.env.NODE_ENV === 'production' &&
-                  upChainParams.networkName === 'Linea Goerli'
-                ) {
-                  upchainNetwork = 'Linea Mainnet';
-                }
-                const eventInfo = {
-                  eventType: 'UPPER_CHAIN',
-                  rawData: {
-                    network: upchainNetwork,
-                    type: eventType,
-                    source: curCredential.source,
-                  },
-                };
+                eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                  status: 'SUCCESS',
+                  reason: '',
+                });
                 eventReport(eventInfo);
               } else {
                 setActiveSendToChainRequest({
@@ -466,10 +513,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   title: 'Unable to proceed',
                   desc: 'Please try again later.',
                 });
+                eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                  status: 'FAILED',
+                  reason: 'attestByDelegationProxyFee error',
+                });
+                eventReport(eventInfo);
               }
             }
           } catch (e) {
             console.log('upper chain error:', e);
+            // eventInfo.rawData = Object.assign(eventInfo.rawData, {
+            //   status: 'FAILED',
+            //   reason: e,
+            // });
+            // eventReport(eventInfo);
             console.dir(e);
           }
         };
