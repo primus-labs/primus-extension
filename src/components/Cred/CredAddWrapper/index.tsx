@@ -272,7 +272,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           credentialSubject: {
             id: did,
             source,
-            sourceUserId: exUserId,
+            sourceUserId: sourceUseridHash || '',
             authUserId: id,
             getDataTime,
             recipient: address,
@@ -283,9 +283,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         };
         if (type === 'TOKEN_HOLDINGS') {
           params.credentialSubject.asset = holdingToken;
-        }
-        if (sourceUseridHash) {
-          params.credentialSubject.sourceUserId = sourceUseridHash;
         }
           const res = await attestForPolygonId(params, requestConfigParams);
         if (res?.getDataTime) {

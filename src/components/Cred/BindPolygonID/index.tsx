@@ -11,10 +11,12 @@ import { CredVersion, schemaTypeMap } from '@/config/constants';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
+import { eventReport } from '@/services/api/usertracker';
 
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 
 import './index.scss';
+import { strToHexSha256 } from '@/utils/utils';
 
 
 interface BindPolygonIDProps {
@@ -51,6 +53,20 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
         console.log('handleSubmitBindPolygonid');
         setDid(didp);
         setStep(3)
+        const {
+          type,
+          signature,
+          source,
+          getDataTime,
+          address,
+          baseValue,
+          balanceGreaterThanBaseValue,
+          exUserId,
+          holdingToken,
+          sourceUseridHash,
+          schemaType,
+          sigFormat,
+        } = activeCred as CredTypeItemType;
         try {
           const { id, token } = userInfo;
           const requestConfigParams = {
@@ -59,17 +75,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               Authorization: `Bearer ${token}`,
             },
           };
-          const {
-            type,
-            signature,
-            source,
-            getDataTime,
-            address,
-            baseValue,
-            balanceGreaterThanBaseValue,
-            exUserId,
-            holdingToken,
-          } = activeCred as CredTypeItemType;
+          
           const formatType = `${
             schemaTypeMap[type as keyof typeof schemaTypeMap]
           }_POLYGON`;
@@ -80,7 +86,7 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             credentialSubject: {
               id: didp,
               source,
-              sourceUserId: exUserId,
+              sourceUserId: sourceUseridHash || undefined,
               authUserId: id,
               getDataTime,
               recipient: address,
@@ -124,6 +130,19 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               title: 'Congratulations',
               desc: 'A new attestation with Polygon DID is successfully granted!',
             });
+            const uniqueId = strToHexSha256(signature);
+            var eventInfo: any = {
+              eventType: 'ATTESTATION_GENERATE',
+              rawData: {
+                source: fullAttestation.source,
+                schemaType: fullAttestation.schemaType,
+                sigFormat: fullAttestation.sigFormat,
+                attestationId: uniqueId,
+                status: 'SUCCESS',
+                reason: '',
+              },
+            };
+            eventReport(eventInfo);
           } else {
             setActiveRequest({
               type: 'error',
@@ -131,6 +150,18 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
               desc: 'Failed to grant new authentication to Polygon DID!',
             });
             alert('attestForPolygonId network error');
+            const eventInfo: any = {
+              eventType: 'ATTESTATION_GENERATE',
+              rawData: {
+                source: source,
+                schemaType: schemaType,
+                sigFormat: sigFormat,
+                // attestationId: uniqueId,
+                status: 'FAILED',
+                reason: 'attestForPolygonId error',
+              },
+            };
+            eventReport(eventInfo);
           }
         } catch {
           setActiveRequest({
@@ -139,6 +170,18 @@ const BindPolygonID: React.FC<BindPolygonIDProps> = memo(
             desc: 'Failed to grant new authentication to Polygon DID!',
           });
           alert('attestForPolygonId network error');
+          const eventInfo: any = {
+            eventType: 'ATTESTATION_GENERATE',
+            rawData: {
+              source: source,
+              schemaType: schemaType,
+              sigFormat: sigFormat,
+              // attestationId: uniqueId,
+              status: 'FAILED',
+              reason: 'fetchAttestForPolygonID error',
+            },
+          };
+          eventReport(eventInfo);
         }
       },
       [activeCred, userInfo]
