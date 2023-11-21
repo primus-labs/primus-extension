@@ -262,6 +262,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         did,
         schemaType,
         sigFormat,
+        sourceUseridHash,
       } = activeCred as CredTypeItemType;
       try {
         const params: any = {
@@ -283,7 +284,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (type === 'TOKEN_HOLDINGS') {
           params.credentialSubject.asset = holdingToken;
         }
-        const res = await attestForPolygonId(params, requestConfigParams);
+        if (sourceUseridHash) {
+          params.credentialSubject.sourceUserId = sourceUseridHash;
+        }
+          const res = await attestForPolygonId(params, requestConfigParams);
         if (res?.getDataTime) {
           const newRequestId = requestid;
           const fullAttestation = {
