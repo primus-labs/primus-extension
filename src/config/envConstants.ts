@@ -383,11 +383,11 @@ const EASINFOMAP = {
       showName: 'Linea',
       icon: iconNetworkLinea,
       title: 'Linea Goerli',
-      rpcUrl: 'https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      rpcUrl: 'https://linea-mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       erc721Contract: '',
       easContact: '',
       easProxyContrac: '',
-      easProxyFeeContract: '0x50bd377EB8D4236Bb587AB3FB1eeafd888AEeC58',
+      easProxyFeeContract: '0xc4B7dCba12866f6f8181b949ca443232C4e94334',
       schemas: {
         'Verax-Linea-Mainnet': {
           schemaUid:
@@ -410,7 +410,7 @@ const EASINFOMAP = {
       },
       chainId: '0xe708', //59144
       chainName: 'Linea',
-      rpcUrls: ['https://linea.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8'],
+      rpcUrls: ['https://linea-mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8'],
       blockExplorerUrls: ['https://lineascan.build'],
       nativeCurrency: {
         name: 'LineaETH',
