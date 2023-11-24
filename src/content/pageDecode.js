@@ -200,10 +200,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } = activeTemplate;
     var aactiveOrigin = new URL(jumpTo).origin;
     var aactiveDesc = successMsg;
-    if (result === 'success') {
-      padoRightEl.innerHTML = '3/3';
-      var iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
-      padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
+    var fn = () => {
       var padoCenterBottomOKNode = createDomElement(
         `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
       );
@@ -218,29 +215,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
         padoCenterEl.appendChild(padoCenterBottomOKNode);
       }
+    };
+    if (result === 'success') {
+      padoRightEl.innerHTML = '3/3';
+      var iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
+      padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
+      fn()
     } else if (result === 'fail') {
       aactiveDesc = failedMsg;
       padoRightEl.innerHTML = '3/3';
       padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}</span></p>`;
+      fn();
     } else if (result === 'warn') {
       padoRightEl.innerHTML = '3/3';
       var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
       var str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
       padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
-      padoCenterBottomOKNode = createDomElement(
-        `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
-      );
-      padoCenterBottomOKNode.onclick = () => {
-        chrome.runtime.sendMessage({
-          type: 'pageDecode',
-          name: 'closeDataSourcePage',
-          dataSourcePageTabId,
-        });
-        return;
-      };
-      if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
-        padoCenterEl.appendChild(padoCenterBottomOKNode);
-      }
+      fn();
     }
   }
 });

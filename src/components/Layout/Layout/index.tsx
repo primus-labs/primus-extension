@@ -200,10 +200,10 @@ const Layout = memo(() => {
   }, [initStoreData]);
 
   useEffect(() => {
-    if (pathname === '/events') {
+    
       updateAlgoUrl();
-    }
-  }, [pathname]);
+    
+  }, []);
 
   return (
     <div className="pageApp">

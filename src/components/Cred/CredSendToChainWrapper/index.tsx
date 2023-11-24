@@ -606,7 +606,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         } else if (fromEvents === 'LINEA_DEFI_VOYAGE') {
           return (
             <PButton
-              text="Check your campaign status"
+              text="Back to event"
               onClick={onSubmitActiveSendToChainRequestDialog}
             />
           ); //Check your campaign status
