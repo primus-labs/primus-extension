@@ -790,7 +790,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
 
         if (retcode === '0') {
           clearFetchAttestationTimer();
-          if (content.balanceGreaterThanBaseValue === 'true') {
+          if (
+            content.balanceGreaterThanBaseValue === 'true' &&
+            content.signature
+          ) {
             const activeRequestId = parsedActiveRequestAttestation.requestid;
             if (activeRequestId !== content?.requestid) {
               return;
@@ -830,7 +833,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               reason: '',
             });
             eventReport(eventInfo);
-          } else if (content.balanceGreaterThanBaseValue === 'false') {
+          } else if (
+            !content.signature || content.balanceGreaterThanBaseValue === 'false'
+          ) {
             let descItem1 =
               'Your request did not meet the necessary requirements.';
             if (activeAttestForm?.type === 'ASSETS_PROOF') {
@@ -954,7 +959,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         }
       }
       if (visible && !!fromEvents) {
-        if (fromEvents === 'Badges') {
+        if (fromEvents === 'Badges' || fromEvents === 'LINEA_DEFI_VOYAGE') {
           setStep(1);
           setActiveAttestationType('IDENTIFICATION_PROOF');
         } else if (fromEvents === 'NFTs') {

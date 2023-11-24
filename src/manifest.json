@@ -40,8 +40,19 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["iconExtension.svg","iconSuc.svg"],
-      "matches": ["https://www.binance.com/*","https://twitter.com/*", "https://www.okx.com/*", "https://www.coinbase.com/*"]
+      "resources": ["iconExtension.svg", "iconSuc.svg"],
+      "matches": [
+        "https://www.binance.com/*",
+        "https://twitter.com/*",
+        "https://www.okx.com/*",
+        "https://www.coinbase.com/*"
+      ]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:3001/*"],
+      "js": ["padoWebsite.js"]
     }
   ]
 }

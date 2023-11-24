@@ -263,6 +263,9 @@ const CredOverview = memo(() => {
           } else if (fromEvents === 'Scroll') {
             targetUrl = '/events?ScrollProcess=suc';
             navigate(targetUrl);
+          } else if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+            window.open('https://www.intract.io/linea');
+            navigate('/cred');
           }
         } else {
           if (fromEvents === 'Scroll') {
@@ -295,7 +298,6 @@ const CredOverview = memo(() => {
       });
       setConnectTipDialogVisible(true);
       const startFn = () => {
-        
         if (connectedWallet?.address) {
           setActiveRequest({
             type: 'loading',

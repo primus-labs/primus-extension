@@ -538,7 +538,7 @@ export const updateAlgoUrl = async () => {
     console.log('updateAlgoUrl store first');
     const algojsonobj = {
       padoUrl: PADOURL,
-      proxyUrl: PROXYURL
+      proxyUrl: PROXYURL,
     };
     await chrome.storage.local.set({
       algorithmUrl: JSON.stringify(algojsonobj),
@@ -568,7 +568,7 @@ export const updateAlgoUrl = async () => {
     let isInited = false;
     res.result.forEach((item: any) => {
       let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);
-      ws.onopen = async function(e) {
+      ws.onopen = async function (e) {
         console.log('updateAlgoUrl onopen url=', item.algoProxyDomain);
         if (!isInited) {
           console.log('updateAlgoUrl onopen update url new');
@@ -576,38 +576,52 @@ export const updateAlgoUrl = async () => {
           PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
           const jsonobj = {
             padoUrl: PADOURL,
-            proxyUrl: PROXYURL
+            proxyUrl: PROXYURL,
           };
-          await chrome.storage.local.set({
-            algorithmUrl: JSON.stringify(jsonobj),
-          });
-          isInited = true;
+          if (jsonobj) {
+            await chrome.storage.local.set({
+              algorithmUrl: JSON.stringify(jsonobj),
+            });
+            isInited = true;
+          }
         }
         ws.close();
       };
-      ws.onerror = function(e) {
+      ws.onerror = function (e) {
         console.log('updateAlgoUrl ws onerror', e);
-      }
-      ws.onclose = function(e) {
+      };
+      ws.onclose = function (e) {
         console.log('updateAlgoUrl ws onclose', e);
-      }
+      };
     });
   }
 };
 
-export const getPadoUrl = async() => {
+export const getPadoUrl = async () => {
   const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
-  const algorithmUrlObj = JSON.parse(algorithmUrl);
-  console.log('updateAlgoUrl getPadoUrl PADOURL=', algorithmUrlObj.padoUrl);
-  return algorithmUrlObj.padoUrl;
-}
+  if (algorithmUrl) {
+    const algorithmUrlObj = JSON.parse(algorithmUrl);
+    console.log('updateAlgoUrl getPadoUrl PADOURL=', algorithmUrlObj.padoUrl);
+    return algorithmUrlObj.padoUrl;
+  } else {
+    return '';
+  }
+};
 
-export const getProxyUrl = async() => {
+export const getProxyUrl = async () => {
   const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
-  const algorithmUrlObj = JSON.parse(algorithmUrl);
-  console.log('updateAlgoUrl getProxyUrl PROXYURL=', algorithmUrlObj.proxyUrl);
-  return algorithmUrlObj.proxyUrl;
-}
+
+  if (algorithmUrl) {
+    const algorithmUrlObj = JSON.parse(algorithmUrl);
+    console.log(
+      'updateAlgoUrl getProxyUrl PROXYURL=',
+      algorithmUrlObj.proxyUrl
+    );
+    return algorithmUrlObj.proxyUrl;
+  } else {
+    return ''
+  }
+};
 
 const LINEASCHEMANAMEMAP = {
   development: 'Verax-Linea-Goerli',

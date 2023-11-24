@@ -30,7 +30,7 @@ import { updateAlgoUrl } from '@/config/envConstants';
 
 const Layout = memo(() => {
   const location = useLocation();
-  const pathname = location.pathname;
+  const { pathname, search } = location;
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -97,12 +97,30 @@ const Layout = memo(() => {
               payload: message.res,
             });
           }
-          let { keyStore } = await chrome.storage.local.get(['keyStore']);
+          let { keyStore, privateKey } = await chrome.storage.local.get([
+            'keyStore',
+            'privateKey',
+          ]);
+          const encodeReturnUrl = decodeURIComponent(pathname + search);
           if (keyStore) {
+          
             if (!message.res) {
-              navigate('/lock');
+              if (search) {
+                navigate(`/lock?backUrl=${encodeReturnUrl}`);
+              } else {
+                navigate(`/lock`);
+              }
             } else {
               // navigate('/datas');
+            }
+          } else if (privateKey) {
+            
+          } else {
+            
+            if (search) {
+              navigate(`/?backUrl=${encodeReturnUrl}`);
+            } else {
+              navigate(`/`);
             }
           }
         } else {
@@ -186,7 +204,6 @@ const Layout = memo(() => {
       updateAlgoUrl();
     }
   }, [pathname]);
-  
 
   return (
     <div className="pageApp">

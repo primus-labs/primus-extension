@@ -144,7 +144,7 @@ const processAlgorithmReq = async (message, port) => {
       ) {
         attestationParams.proxyUrl = 'wss://api.padolabs.org/algoproxy';
       }
-     
+
       console.log('attestationParams=', attestationParams);
       chrome.runtime.sendMessage({
         type: 'algorithm',
@@ -207,31 +207,30 @@ const processpadoServiceReq = async (message, port) => {
         break;
       case 'checkIsLogin':
         if (rc === 0) {
-            const { dataInfo, userInfo } = result;
-            const lowerCaseSourceName = params.source.toLowerCase();
-            const socialSourceData = {
-              ...dataInfo,
-              date: getCurrentDate(),
-              timestamp: +new Date(),
-              version: SocailStoreVersion,
-            };
-            await chrome.storage.local.set({
-              [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-            });
-            postMsg(port, {
-              resMethodName: reqMethodName,
-              res: true,
-              params: {
-                source: params.source,
-              },
-            });
-          
+          const { dataInfo, userInfo } = result;
+          const lowerCaseSourceName = params.source.toLowerCase();
+          const socialSourceData = {
+            ...dataInfo,
+            date: getCurrentDate(),
+            timestamp: +new Date(),
+            version: SocailStoreVersion,
+          };
+          await chrome.storage.local.set({
+            [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+          });
+          postMsg(port, {
+            resMethodName: reqMethodName,
+            res: true,
+            params: {
+              source: params.source,
+            },
+          });
         } else {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }
         break;
       case 'bindUserAddress':
-        try{
+        try {
           const msg = {
             fullScreenType: 'wallet',
             reqMethodName: 'encrypt',
@@ -356,7 +355,10 @@ const processWalletReq = async (message, port) => {
         keyStore: JSON.stringify(encryptAccount),
       });
 
-      await chrome.storage.local.remove(['privateKey', 'padoCreatedWalletAddress']);
+      await chrome.storage.local.remove([
+        'privateKey',
+        'padoCreatedWalletAddress',
+      ]);
       break;
     case 'clearUserPassword':
       USERPASSWORD = '';
@@ -448,5 +450,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       USERPASSWORD,
       fullscreenPort
     );
+  }
+  if (message.type === 'padoWebsite') {
+    const {
+      name,
+      params: { eventName },
+    } = message;
+    if (name === 'createTab') {
+      let url = chrome.runtime.getURL(
+        `home.html#/cred?fromEvents=${eventName}`
+      );
+      chrome.tabs.create({ url });
+    }
   }
 });

@@ -48,6 +48,7 @@ const sourcesLabel = {
 const fromEventsMap = {
   Badges: 'Webpage Data',
   NFTs: 'API Data',
+  LINEA_DEFI_VOYAGE: 'Webpage Data',
 };
 const tabList: TabItem[] = [
   {
@@ -83,24 +84,32 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     );
     const activeWebProofTypes = useMemo(() => {
       // return webProofTypes.filter((i) => i.category === 'IDENTIFICATION_PROOF');
-      let newArr:any[] = []
+      let newArr: any[] = [];
       webProofTypes.forEach((r: any) => {
         const existObj = newArr.find((i) => i.name === r.name);
         if (!existObj && r.category === 'IDENTIFICATION_PROOF') {
           newArr.push(r);
         }
       });
-      return newArr
+      return newArr;
     }, [webProofTypes]);
 
     const navigate = useNavigate();
     const identityList = useMemo(() => {
-      const l = activeWebProofTypes.map((r) => ({
-        value: r.name,
-        text: r.name,
-      }));
+      const l = activeWebProofTypes.map((r) => {
+        let obj: any = {
+          value: r.name,
+          text: r.name,
+        };
+        if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+          if (r.name !== 'KYC Status') {
+            obj.disabled = true;
+          }
+        }
+        return obj;
+      });
       return l;
-    }, [activeWebProofTypes]);
+    }, [activeWebProofTypes, fromEvents]);
     useEffect(() => {
       if (identityList.length === 1) {
         setActiveIdentityType(identityList[0].value);
@@ -156,15 +165,18 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
       });
       // l = [...new Set(l)]
-      l = l.sort((a:any,b:any) => a.disabled - b.disabled)
+      l = l.sort((a: any, b: any) => a.disabled - b.disabled);
       return l;
     }, [webProofTypes, activeIdentityType]);
     const activeWebTemplate = useMemo(() => {
-      const aWT = activeWebProofTypes.find(
-        (i) => i.id === activeCred?.templateId
-      );
+      const aWT = activeWebProofTypes.find((i) => {
+        if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+          return i.id === '1'; // binance KYC
+        }
+        return i.id === activeCred?.templateId;
+      });
       return aWT;
-    }, [activeWebProofTypes, activeCred?.templateId]);
+    }, [activeWebProofTypes, activeCred?.templateId, fromEvents]);
     const activeWebDataSourceObj = useMemo(() => {
       return webDataSourceList.find(
         (i: any) => i.name === activeWebTemplate?.dataSource
@@ -449,6 +461,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           proofContent: activeIdentityType,
           proofClientType: activeTab,
         };
+        if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+          form.event = 'LINEA_DEFI_VOYAGE';
+        }
         if (activeCred?.requestid) {
           form.requestid = activeCred?.requestid;
           onSubmit(form);
@@ -565,11 +580,16 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       if (fromEvents) {
         const aT = fromEventsMap[fromEvents as keyof typeof fromEventsMap];
         setActiveTab(aT);
+        // TODO
+        if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+          setActiveIdentityType('KYC Status');
+          setActiveWebDataSource('binance');
+        }
       }
     }, [fromEvents]);
 
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={fromEvents !== 'LINEA_DEFI_VOYAGE'}>
         <div className="padoDialog attestationDialog identityAttestationDialog">
           {!!onBack && <PBack onBack={onBack} />}
           <main>

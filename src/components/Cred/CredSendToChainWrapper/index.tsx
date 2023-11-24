@@ -84,22 +84,26 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       []
     );
     const formatChainList = useMemo(() => {
-      const newList = ONCHAINLIST.map((i) => {
-        if (fromEvents === 'Scroll') {
-          if (i.title.indexOf('Scroll') > -1) {
-            // TODO!!!
-            i.disabled = false;
-            return { ...i };
+      if (fromEvents) {
+        const newList = ONCHAINLIST.map((i) => {
+          if (fromEvents === 'Scroll') {
+            if (i.title.indexOf('Scroll') > -1) {
+              // TODO!!!
+              i.disabled = false;
+              return { ...i };
+            }
+          } else {
+            if (i.title === 'Linea Goerli') {
+              i.disabled = false;
+              return { ...i };
+            }
           }
-        } else {
-          if (i.title === 'Linea Goerli') {
-            i.disabled = false;
-            return { ...i };
-          }
-        }
-        return { ...i, disabled: true };
-      });
-      return newList;
+          return { ...i, disabled: true };
+        });
+        return newList;
+      } else {
+        return ONCHAINLIST;
+      }
     }, [fromEvents]);
 
     const initCredList = useCallback(async () => {
@@ -598,7 +602,14 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               text="Check Rewards"
               onClick={onSubmitActiveSendToChainRequestDialog}
             />
-          );
+          ); 
+        } else if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+          return (
+            <PButton
+              text="Check your campaign status"
+              onClick={onSubmitActiveSendToChainRequestDialog}
+            />
+          ); //Check your campaign status
         } else {
           return null;
         }
@@ -618,7 +629,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           <TransferToChainDialog
             title="Submit Attestation"
             desc="Submit your attestation to one of the following blockchains."
-            list={fromEvents ? formatChainList : ONCHAINLIST}
+            list={formatChainList}
             tip="Please select one chain to submit attestation"
             checked={false}
             backable={false}

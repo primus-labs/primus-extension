@@ -1,4 +1,4 @@
-import React, {  memo } from 'react';
+import React, { memo } from 'react';
 
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 import iconSetting from '@/assets/img/iconSetting.svg';
@@ -6,12 +6,12 @@ import iconLock from '@/assets/img/iconLock.svg';
 
 import './index.scss';
 
-
 type NavItem = {
   value?: any;
   iconName?: string;
   icon?: any;
   text: string;
+  disabled?: boolean;
 };
 interface DataSourcesDialogProps {
   onClick?: (name: string) => void;
@@ -34,6 +34,9 @@ const navs: NavItem[] = [
 const PDropdownList: React.FC<DataSourcesDialogProps> = memo(
   ({ onClick = () => {}, list = navs }) => {
     const handleClickData = (item: NavItem) => {
+      if (item.disabled) {
+        return;
+      }
       onClick(item.text);
     };
     return (
@@ -41,7 +44,11 @@ const PDropdownList: React.FC<DataSourcesDialogProps> = memo(
         {list.map((item) => {
           return (
             <li
-              className="dropdownItemWrapper"
+              className={
+                item.disabled
+                  ? 'dropdownItemWrapper disabled'
+                  : 'dropdownItemWrapper'
+              }
               key={item.text}
               onClick={() => {
                 handleClickData(item);
@@ -50,9 +57,9 @@ const PDropdownList: React.FC<DataSourcesDialogProps> = memo(
               <div className="dropdownItem">
                 {item.iconName ? (
                   <i className={`iconfont ${item.iconName}`}></i>
-                ) : item.icon?(
+                ) : item.icon ? (
                   <img src={item.icon} alt="" />
-                ): undefined}
+                ) : undefined}
                 <div className="desc">{item.text}</div>
               </div>
             </li>

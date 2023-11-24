@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import PInput from '@/components/PInput/index';
 import PButton from '@/components/PButton';
@@ -8,6 +8,9 @@ import { postMsg } from '@/utils/utils';
 import './index.scss';
 
 const Lock = memo(() => {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const backUrl = searchParams.get('backUrl');
   const [hadSetPwd, setHadSetPwd] = useState();
   const dispatch = useDispatch();
   const padoServicePort = useSelector((state) => state.padoServicePort);
@@ -23,7 +26,8 @@ const Lock = memo(() => {
           type: 'setUserPassword',
           payload: pwd,
         });
-        navigate('/events');
+        const targetUrl = backUrl? decodeURIComponent(backUrl) : '/events';
+        navigate(targetUrl);
       } else {
         setErrorMsg('Incorrect password');
       }
@@ -50,7 +54,8 @@ const Lock = memo(() => {
         postMsg(padoServicePort, msg);
       }
     } else {
-      navigate('/events');
+      const targetUrl = backUrl ? decodeURIComponent(backUrl) : '/events';
+      navigate(targetUrl);
     }
   };
   const handleChangePwd = (val) => {

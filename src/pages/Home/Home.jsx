@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import AsideAnimation from '@/components/Layout/AsideAnimation';
@@ -11,6 +11,8 @@ import { initWalletAddressActionAsync } from '@/store/actions';
 import './home.scss';
 
 const Home = memo(() => {
+  const [searchParams] = useSearchParams();
+  const backUrl = searchParams.get('backUrl');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const padoServicePort = useSelector((state) => state.padoServicePort);
@@ -48,7 +50,10 @@ const Home = memo(() => {
                   token: bearerToken,
                 }),
               });
-              navigate('/events');
+              const targetUrl = backUrl
+                ? decodeURIComponent(backUrl)
+                : '/events';
+              navigate(targetUrl);
             }
           } catch (e) {
             console.log('handleClickStart error', e);
@@ -66,18 +71,19 @@ const Home = memo(() => {
     postMsg(padoServicePort, msg);
   }, [padoServicePort]);
 
-  const checkActiveStep = useCallback(async () => {
-    let { userInfo } = await chrome.storage.local.get(['userInfo']);
-    if (userInfo) {
-      navigate('/lock');
-      return true;
-    }
-    return false;
-  }, [navigate]);
+  // const checkActiveStep = useCallback(async () => {
+  //   let { userInfo } = await chrome.storage.local.get(['userInfo']);
+  //   if (userInfo) {
+  //     debugger
+  //     navigate('/lock');
+  //     return true;
+  //   }
+  //   return false;
+  // }, [navigate]);
 
-  useEffect(() => {
-    checkActiveStep();
-  }, [checkActiveStep]);
+  // useEffect(() => {
+  //   checkActiveStep();
+  // }, [checkActiveStep]);
 
   return (
     <div className="pageIndex pageHome">

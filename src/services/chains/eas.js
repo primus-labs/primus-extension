@@ -330,7 +330,7 @@ export async function attestByDelegationProxyFee(params) {
       revocable: true,
       refUID: ZERO_BYTES32,
       data: data,
-      value: 0n,
+      value: 0,
     },
     signature: formatSignature,
     attester: attesteraddr,
