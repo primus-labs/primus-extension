@@ -113,7 +113,17 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const handleCloseMask = useCallback(() => {
       setStep(0);
       onClose();
-    }, [onClose]);
+      if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+        navigate('/cred');
+      }
+    }, [onClose, fromEvents, navigate]);
+    const handleCloseTransferToChain = useCallback(() => {
+      setStep(0);
+      onClose();
+      if (fromEvents === '') {
+        navigate('/cred');
+      }
+    }, [onClose, fromEvents, navigate]);
 
     const onSubmitActiveSendToChainRequestDialog = useCallback(() => {
       if (
@@ -589,6 +599,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     }, [dispatch, onSubmitActiveSendToChainRequestDialog, navigate]);
     const footerButton = useMemo(() => {
       if (activeSendToChainRequest?.type === 'suc') {
+        const isFromEventLINEA_DEFI_VOYAGE = activeCred?.event === 'LINEA_DEFI_VOYAGE' && activeNetworkName === 'Linea Goerli'
+
         if (fromEvents === 'Badges') {
           return (
             <div className="claimEventsBtns">
@@ -602,14 +614,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               text="Check Rewards"
               onClick={onSubmitActiveSendToChainRequestDialog}
             />
-          ); 
-        } else if (fromEvents === 'LINEA_DEFI_VOYAGE') {
-          return (
-            <PButton
-              text="Back to event"
-              onClick={onSubmitActiveSendToChainRequestDialog}
-            />
-          ); //Check your campaign status
+          );
+        } else if (isFromEventLINEA_DEFI_VOYAGE || fromEvents === 'LINEA_DEFI_VOYAGE') {
+          const fn = () => {
+            window.open('https://www.intract.io/linea');
+            onSubmitActiveSendToChainRequestDialog()
+          }
+          return <PButton text="Back to event" onClick={fn} />; //Check your campaign status
         } else {
           return null;
         }
@@ -660,6 +671,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             footerButton={footerButton}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveSendToChainRequestDialog}
+            closeable={
+              !fromEvents ||
+              fromEvents === 'Scroll' ||
+              fromEvents === 'LINEA_DEFI_VOYAGE'
+            }
           />
         )}
       </div>

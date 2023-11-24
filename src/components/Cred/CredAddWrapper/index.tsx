@@ -1121,7 +1121,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               activeSourceName={activeSourceName}
               activeCred={activeCred}
               onBack={
-                fromEvents === 'Badges' ? undefined : onBackAttestationDialog
+                fromEvents === 'Badges' || fromEvents === 'LINEA_DEFI_VOYAGE'
+                  ? undefined
+                  : onBackAttestationDialog
               }
               onClose={handleCloseMask}
               onSubmit={onSubmitAttestationDialog}
@@ -1146,6 +1148,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             tip={footerTip}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveRequestDialog}
+            closeable={!fromEvents || fromEvents === 'Scroll'}
           />
         )}
       </div>

@@ -264,7 +264,7 @@ const CredOverview = memo(() => {
             targetUrl = '/events?ScrollProcess=suc';
             navigate(targetUrl);
           } else if (fromEvents === 'LINEA_DEFI_VOYAGE') {
-            window.open('https://www.intract.io/linea');
+            
             navigate('/cred');
           }
         } else {

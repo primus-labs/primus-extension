@@ -71,19 +71,18 @@ const Home = memo(() => {
     postMsg(padoServicePort, msg);
   }, [padoServicePort]);
 
-  // const checkActiveStep = useCallback(async () => {
-  //   let { userInfo } = await chrome.storage.local.get(['userInfo']);
-  //   if (userInfo) {
-  //     debugger
-  //     navigate('/lock');
-  //     return true;
-  //   }
-  //   return false;
-  // }, [navigate]);
+  const checkActiveStep = useCallback(async () => {
+    let { userInfo } = await chrome.storage.local.get(['userInfo']);
+    if (userInfo) {
+      navigate('/lock');
+      return true;
+    }
+    return false;
+  }, [navigate]);
 
-  // useEffect(() => {
-  //   checkActiveStep();
-  // }, [checkActiveStep]);
+  useEffect(() => {
+    checkActiveStep();
+  }, [checkActiveStep]);
 
   return (
     <div className="pageIndex pageHome">
