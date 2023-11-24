@@ -65,7 +65,11 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     const formatCloseable = useMemo(() => {
       if (closeable === undefined) {
         if (fromEvents) {
-          return !fromEvents || fromEvents === 'Scroll';
+          return (
+            !fromEvents ||
+            fromEvents === 'Scroll' ||
+            fromEvents === 'LINEA_DEFI_VOYAGE'
+          );
         } else {
           return true;
         }

@@ -15,6 +15,7 @@ import { SCROLLEVENTNAME } from '@/config/constants';
 import PButton from '@/components/PButton';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
 import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
+import disabledBannerIllstration from '@/assets/img/events/luckyDrawIllstration.svg';
 import './index.scss';
 import type { UserState } from '@/types/store';
 import type {Dispatch} from 'react'
@@ -89,7 +90,15 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           }
         >
           <div className="left">
-            <img src={bannerIllstration} alt="" />
+            {scrollEventActiveFlag === 2 ? (
+              <img
+                className="disabledImg"
+                src={disabledBannerIllstration}
+                alt=""
+              />
+            ) : (
+              <img className="activeImg" src={bannerIllstration} alt="" />
+            )}
             <div className="bannerContent">
               <h3 className="ct">Scroll zkAttestation Launch Campaign</h3>
               <div className="cn">

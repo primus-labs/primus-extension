@@ -20,9 +20,11 @@
   .left {
     gap: var(--left-gap, 40.87px);
     > img {
-      width: var(--left-img-width, 79.13px);
-      top: var(--left-img-top, -18px);
-      position: relative;
+      &.activeImg {
+        width: var(--left-img-width, 79.13px);
+        top: var(--left-img-top, -18px);
+        position: relative;
+      }
     }
     .bannerContent {
       gap: var(--spacing-16, 16px);
@@ -48,12 +50,13 @@
         color: var(--Text-headline, #0a1214);
       }
     }
-  }
-  .pButton.simple {
     &.disabled {
       color: var(--Text-hint, #7b7f80);
       border: 1px solid var(--Text-hint, #7b7f80);
     }
+  }
+  .pButton.simple {
+    
     &:not(.disabled) {
       color: var(--Text-headline, #0a1214);
       border: 1px solid var(--Text-headline, #0a1214);
@@ -67,4 +70,5 @@
       }
     }
   }
+  
 }

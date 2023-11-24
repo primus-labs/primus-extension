@@ -284,7 +284,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (type === 'TOKEN_HOLDINGS') {
           params.credentialSubject.asset = holdingToken;
         }
-          const res = await attestForPolygonId(params, requestConfigParams);
+        const res = await attestForPolygonId(params, requestConfigParams);
         if (res?.getDataTime) {
           const newRequestId = requestid;
           const fullAttestation = {
@@ -464,7 +464,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 title: 'Congratulations',
                 desc: 'Your proof is created!',
               });
-              const uniqueId = strToHexSha256(credentialsObj[activeRequestId].signature);
+              const uniqueId = strToHexSha256(
+                credentialsObj[activeRequestId].signature
+              );
               eventInfo.rawData = Object.assign(eventInfo.rawData, {
                 attestationId: uniqueId,
                 status: 'SUCCESS',
@@ -834,7 +836,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             });
             eventReport(eventInfo);
           } else if (
-            !content.signature || content.balanceGreaterThanBaseValue === 'false'
+            !content.signature ||
+            content.balanceGreaterThanBaseValue === 'false'
           ) {
             let descItem1 =
               'Your request did not meet the necessary requirements.';
@@ -843,7 +846,22 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 activeAttestForm.source === 'okx' ? 'Trading' : 'Spot'
               } Account.`;
             }
+            let descEl = (
+              <>
+                <p>{descItem1}</p>
+                <p>Please confirm and try again later.</p>
+              </>
+            );
+
             if (parsedActiveRequestAttestation.reqType === 'web') {
+              if (!content.signature && content.encodedData) {
+                descEl = (
+                  <p>
+                    You have already participated, please do not participate
+                    again.
+                  </p>
+                );
+              }
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
                 name: 'attestResult',
@@ -855,12 +873,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             setActiveRequest({
               type: 'warn',
               title: 'Not met the requirements',
-              desc: (
-                <>
-                  <p>{descItem1}</p>
-                  <p>Please confirm and try again later.</p>
-                </>
-              ),
+              desc: descEl,
             });
 
             eventInfo.rawData = Object.assign(eventInfo.rawData, {
