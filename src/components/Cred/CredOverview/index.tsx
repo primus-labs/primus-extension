@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { DATASOURCEMAP, SCROLLEVENTNAME } from '@/config/constants';
 
+import PButton from '@/components/PButton';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredList from '@/components/Cred/CredList';
 import QRCodeDialog from '@/components/Cred/QRCodeDialog';
@@ -117,6 +118,39 @@ const CredOverview = memo(() => {
     );
     return haveBinanceProof;
   }, [credentialsFromStore]);
+  const handleCloseConnectTipDialog = useCallback(() => {
+    setConnectTipDialogVisible(false);
+    if (fromEvents === 'Scroll') {
+      navigate('/events');
+    }
+    if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+      navigate('/cred');
+    }
+  }, [fromEvents, navigate]);
+  
+  const LINEA_DEFI_VOYAGETryAgainFn = useCallback(() => {
+    // handleCloseConnectTipDialog();
+    navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
+    window.location.reload();
+    
+  }, [ navigate]);
+  const footerButton = useMemo(() => {
+    if (activeRequest?.type !== 'suc') {
+      if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+        return (
+          <PButton text="Try again" className="gray" onClick={LINEA_DEFI_VOYAGETryAgainFn} />
+        );
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }, [
+    fromEvents,
+    activeRequest?.type,
+    LINEA_DEFI_VOYAGETryAgainFn,
+  ]);
   const initCredList = useCallback(async () => {
     await dispatch(setCredentialsAsync());
   }, [dispatch]);
@@ -282,12 +316,7 @@ const CredOverview = memo(() => {
     },
     [fromEvents, navigate]
   );
-  const handleCloseConnectTipDialog = useCallback(() => {
-    setConnectTipDialogVisible(false);
-    if (fromEvents === 'Scroll') {
-      navigate('/events');
-    }
-  }, [fromEvents, navigate]);
+  
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       setConnectDialogVisible(false);
@@ -339,6 +368,9 @@ const CredOverview = memo(() => {
     setConnectDialogVisible(false);
     if (fromEvents === 'Scroll') {
       navigate('/events');
+    }
+    if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+      navigate('/cred');
     }
   }, [fromEvents, navigate]);
   useEffect(() => {
@@ -439,6 +471,7 @@ const CredOverview = memo(() => {
           activeSource={DATASOURCEMAP['onChain']}
           onClose={handleCloseConnectTipDialog}
           onSubmit={() => {}}
+          footerButton={footerButton}
         />
       )}
       <CredAddWrapper

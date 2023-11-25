@@ -38,7 +38,7 @@ import {
 } from '@/store/actions';
 import { compareVersions, getAuthUserIdHash } from '@/utils/utils';
 import { regenerateAttestation } from '@/services/api/cred';
-
+import { queryEventDetail } from '@/services/api/event';
 import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -60,6 +60,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
     const [step, setStep] = useState(0);
+    const [eventDetail, setEventDetail] = useState<any>({});
     const [activeNetworkName, setActiveNetworkName] = useState<string>();
     // const [activeCred, setActiveCred] = useState<CredTypeItemType>();
     const [activeSendToChainRequest, setActiveSendToChainRequest] =
@@ -599,7 +600,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     }, [dispatch, onSubmitActiveSendToChainRequestDialog, navigate]);
     const footerButton = useMemo(() => {
       if (activeSendToChainRequest?.type === 'suc') {
-        const isFromEventLINEA_DEFI_VOYAGE = activeCred?.event === 'LINEA_DEFI_VOYAGE' && activeNetworkName === 'Linea Goerli'
+        const isFromEventLINEA_DEFI_VOYAGE =
+          activeCred?.event === 'LINEA_DEFI_VOYAGE' &&
+          activeNetworkName === 'Linea Goerli';
 
         if (fromEvents === 'Badges') {
           return (
@@ -615,11 +618,16 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               onClick={onSubmitActiveSendToChainRequestDialog}
             />
           );
-        } else if (isFromEventLINEA_DEFI_VOYAGE || fromEvents === 'LINEA_DEFI_VOYAGE') {
+        } else if (
+          isFromEventLINEA_DEFI_VOYAGE ||
+          fromEvents === 'LINEA_DEFI_VOYAGE'
+        ) {
           const fn = () => {
-            window.open('https://www.intract.io/linea');
-            onSubmitActiveSendToChainRequestDialog()
-          }
+            const targetUrl =
+              eventDetail?.ext?.intractUrl || 'https://padolabs.org/events';
+            window.open(targetUrl);
+            onSubmitActiveSendToChainRequestDialog();
+          };
           return <PButton text="Back to event" onClick={fn} />; //Check your campaign status
         } else {
           return null;
@@ -632,7 +640,27 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       activeSendToChainRequest?.type,
       onClickClaimNFT,
       onClickRewards,
+      eventDetail?.ext?.intractUrl,
     ]);
+    const fetchEventDetail = useCallback(async () => {
+      try {
+        const res = await queryEventDetail({
+          event: 'LINEA_DEFI_VOYAGE',
+        });
+        const { rc, result } = res;
+        if (rc === 0) {
+          setEventDetail(result);
+          //     "startTime": "1699819200000",
+          // "endTime": "1700942400000",
+          //   "ext": {
+          //     "intractUrl": "https://www.intract.io/linea"
+          // }
+        }
+      } catch {}
+    }, []);
+    useEffect(() => {
+      fromEvents === 'LINEA_DEFI_VOYAGE' && fetchEventDetail();
+    }, [fromEvents, fetchEventDetail]);
 
     return (
       <div className="credSendToChainWrapper">

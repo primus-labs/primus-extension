@@ -607,7 +607,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                         options={identityList}
                         onChange={handleChangeSelectIdentityType}
                         val={activeIdentityType}
-                        disabled={!!activeCred}
+                        disabled={
+                          !!activeCred || fromEvents === 'LINEA_DEFI_VOYAGE'
+                        }
                         placeholder="Select content"
                       />
                     </div>

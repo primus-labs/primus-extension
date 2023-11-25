@@ -1,4 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
+import {useSearchParams} from 'react-router-dom'
 import WalletList from '@/components/WalletList';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton'
@@ -30,6 +31,8 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     onBack,
     desc = 'Your wallet address will be set as the account.',
   }) => {
+    const [searchParams] = useSearchParams();
+    const fromEvents = searchParams.get('fromEvents');
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
     // const list: DataFieldItem[] = WALLETLIST;
@@ -54,7 +57,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     };
 
     return (
-      <PMask onClose={onClose}>
+      <PMask onClose={onClose} closeable={fromEvents !== 'LINEA_DEFI_VOYAGE'}>
         <div className="padoDialog connectWalletDialog">
           {!!onBack && <PBack onBack={handleClickBack} />}
           <main>

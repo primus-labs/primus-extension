@@ -197,18 +197,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       jumpTo,
       uiTemplate: { condition, subProofContent },
       processUiTemplate: { proofContent, successMsg, failedMsg },
+      event
     } = activeTemplate;
     var aactiveOrigin = new URL(jumpTo).origin;
     var aactiveDesc = successMsg;
-    var fn = () => {
+    var fn = (tryFlag) => {
+      var btnTxt = tryFlag ? 'Try again' : 'OK';
       var padoCenterBottomOKNode = createDomElement(
-        `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
+        `<div class="pado-center-bottom"><button class="okBtn">${btnTxt}</button></div>`
       );
       padoCenterBottomOKNode.onclick = () => {
         chrome.runtime.sendMessage({
           type: 'pageDecode',
           name: 'closeDataSourcePage',
           dataSourcePageTabId,
+          tryFlag,
         });
         return;
       };
@@ -225,13 +228,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       aactiveDesc = failedMsg;
       padoRightEl.innerHTML = '3/3';
       padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}</span></p>`;
-      fn();
+      fn(event === 'LINEA_DEFI_VOYAGE');
     } else if (result === 'warn') {
       padoRightEl.innerHTML = '3/3';
       var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
       var str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
       padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
-      fn();
+      fn(event === 'LINEA_DEFI_VOYAGE');
     }
   }
 });

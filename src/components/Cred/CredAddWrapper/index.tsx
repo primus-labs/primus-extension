@@ -6,6 +6,7 @@ import React, {
   useEffect,
   memo,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
@@ -80,6 +81,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     type,
     eventSource,
   }) => {
+    const navigate = useNavigate();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     const [credRequestId, setCredRequestId] = useState<string>();
     const [searchParams] = useSearchParams();
@@ -655,6 +657,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             active: true,
             currentWindow: true,
           });
+          
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',
@@ -1011,6 +1014,53 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         },
       });
     }, [padoServicePort]);
+    const footerTip = useMemo(() => {
+      if (activeRequest?.type === 'loading') {
+        return (
+          <div className="footerTip safeTip">
+            <p>PADO will not access your private data.</p>
+            <p>We use IZK to ensure your privacy.</p>
+          </div>
+        );
+      } else {
+        return null;
+      }
+    }, [activeRequest?.type]);
+    const LINEA_DEFI_VOYAGETryAgainFn = useCallback(() => {
+      navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
+      window.location.reload();
+    }, [navigate]);
+    const footerButton = useMemo(() => {
+      if (activeRequest?.type === 'suc') {
+        if (fromEvents) {
+          return (
+            <PButton
+              text={fromEvents === 'Scroll' ? 'OK' : 'Submit'}
+              onClick={onSubmitActiveRequestDialog}
+            />
+          );
+        } else {
+          return null;
+        }
+      } else {
+        if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+          return (
+            <PButton
+              text="Try again"
+              className="gray"
+              onClick={LINEA_DEFI_VOYAGETryAgainFn}
+            />
+          );
+        } else {
+          return null;
+        }
+      }
+    }, [
+      fromEvents,
+      onSubmitActiveRequestDialog,
+      activeRequest?.type,
+      LINEA_DEFI_VOYAGETryAgainFn,
+    ]);
     useEffect(() => {
       visible && startOfflineFn();
     }, [visible, startOfflineFn]);
@@ -1068,6 +1118,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             if (activeRequest?.type === 'loading') {
               setIntervalSwitch(false);
             }
+          } else if (message.name === 'closeDataSourcePage' && message.tryFlag) {
+            LINEA_DEFI_VOYAGETryAgainFn();
           }
         }
       };
@@ -1075,35 +1127,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       return () => {
         chrome.runtime.onMessage.removeListener(listerFn);
       };
-    }, [activeRequest?.type]);
-    const footerTip = useMemo(() => {
-      if (activeRequest?.type === 'loading') {
-        return (
-          <div className="footerTip safeTip">
-            <p>PADO will not access your private data.</p>
-            <p>We use IZK to ensure your privacy.</p>
-          </div>
-        );
-      } else {
-        return null;
-      }
-    }, [activeRequest?.type]);
-    const footerButton = useMemo(() => {
-      if (activeRequest?.type === 'suc') {
-        if (fromEvents) {
-          return (
-            <PButton
-              text={fromEvents === 'Scroll' ? 'OK' : 'Submit'}
-              onClick={onSubmitActiveRequestDialog}
-            />
-          );
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    }, [fromEvents, onSubmitActiveRequestDialog, activeRequest?.type]);
+    }, [activeRequest?.type, LINEA_DEFI_VOYAGETryAgainFn]);
+    
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (
