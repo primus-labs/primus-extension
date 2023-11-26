@@ -1118,12 +1118,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             if (activeRequest?.type === 'loading') {
               setIntervalSwitch(false);
             }
-          } else if (
-            message.name === 'closeDataSourcePage' &&
-            message.tryFlag
-          ) {
-            LINEA_DEFI_VOYAGETryAgainFn();
           }
+          // else if (
+          //   message.name === 'closeDataSourcePage' &&
+          //   message.tryFlag
+          // ) {
+          //   LINEA_DEFI_VOYAGETryAgainFn();
+          // }
         }
       };
       chrome.runtime.onMessage.addListener(listerFn);
