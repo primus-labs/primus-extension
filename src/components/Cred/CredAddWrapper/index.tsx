@@ -1058,8 +1058,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       LINEA_DEFI_VOYAGETryAgainFn,
     ]);
     useEffect(() => {
-      visible && startOfflineFn();
-    }, [visible, startOfflineFn]);
+      visible && !fromEvents && startOfflineFn();
+    }, [visible, startOfflineFn, fromEvents]);
     const setScrollEventHistoryFn = useCallback(async () => {
       const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
       const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
