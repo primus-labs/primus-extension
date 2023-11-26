@@ -7,14 +7,16 @@ import {STARTOFFLINETIMEOUT} from '@/config/constants'
 import type { UserState } from '@/types/store';
 
 type UseAlgorithm = (
-  getAttestationCallback: (res:any) => void,
+  getAttestationCallback: (res: any) => void,
   getAttestationResultCallback: (res: any) => void,
+  cancelCallStartOfflineFlag?: boolean
   // cancelAttestationCallback?: (res:any) =>void
 ) => void;
 
 const useAlgorithm: UseAlgorithm = function useAlgorithm(
   getAttestationCallback,
   getAttestationResultCallback,
+  cancelCallStartOfflineFlag = false
   // cancelAttestationCallback
 ) {
   const savedCallback = useRef((res: any) => {});
@@ -50,17 +52,19 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         if (resMethodName === `init`) {
           if (res) {
             // algorithm is ready
-            const padoUrl = await getPadoUrl();
-            const proxyUrl = await getProxyUrl();
-            postMsg(padoServicePort, {
-              fullScreenType: 'algorithm',
-              reqMethodName: 'startOffline',
-              params: {
-                offlineTimeout: STARTOFFLINETIMEOUT,
-                padoUrl,
-                proxyUrl,
-              },
-            });
+            if (!cancelCallStartOfflineFlag) {
+              const padoUrl = await getPadoUrl();
+              const proxyUrl = await getProxyUrl();
+              postMsg(padoServicePort, {
+                fullScreenType: 'algorithm',
+                reqMethodName: 'startOffline',
+                params: {
+                  offlineTimeout: STARTOFFLINETIMEOUT,
+                  padoUrl,
+                  proxyUrl,
+                },
+              });
+            }
           }
         }
         if (resMethodName === `getAttestation`) {

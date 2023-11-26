@@ -941,7 +941,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       ]
     );
 
-    useAlgorithm(getAttestationCallback, getAttestationResultCallback);
+    useAlgorithm(
+      getAttestationCallback,
+      getAttestationResultCallback,
+      fromEvents === 'LINEA_DEFI_VOYAGE'
+    );
 
     useEffect(() => {
       if (
