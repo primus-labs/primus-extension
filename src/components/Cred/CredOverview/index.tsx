@@ -376,6 +376,13 @@ const CredOverview = memo(() => {
   useEffect(() => {
     if (connectedWallet?.address) {
       setConnectDialogVisible(false);
+    } else {
+      setConnectDialogVisible(true);
+      setClaimMysteryBoxVisible2(false)
+      // bindPolygonidVisible;
+      // qrcodeVisible;
+      // sendToChainDialogVisible;
+      setAddDialogVisible(false);
     }
   }, [connectedWallet?.address]);
   // const onSubmitConnectTipDialog = useCallback(() => {

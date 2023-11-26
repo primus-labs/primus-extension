@@ -838,6 +838,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             !content.signature ||
             content.balanceGreaterThanBaseValue === 'false'
           ) {
+            var titleItem1 = 'Not met the requirements';
             let descItem1 =
               'Your request did not meet the necessary requirements.';
             if (activeAttestForm?.type === 'ASSETS_PROOF') {
@@ -854,10 +855,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
 
             if (parsedActiveRequestAttestation.reqType === 'web') {
               if (!content.signature && content.encodedData) {
+                titleItem1 = 'Unable to proceed';
                 descEl = (
                   <p>
-                    You have already participated, please do not participate
-                    again.
+                    Your Binance authentication zkAttestation has already been created.
                   </p>
                 );
               }
@@ -871,7 +872,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             }
             setActiveRequest({
               type: 'warn',
-              title: 'Not met the requirements',
+              title: titleItem1,
               desc: descEl,
             });
 
