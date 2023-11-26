@@ -647,17 +647,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           const currRequestObj = webProofTypes.find(
             (r) => r.name === form.proofContent && r.dataSource === form.source
           );
-          if (form?.requestid) {
-            currRequestObj.requestid = form.requestid;
-          }
-          if (form?.event) {
-            currRequestObj.event = form.event;
-          }
+          currRequestObj.requestid = form.requestid;
+          currRequestObj.event = form.event;
           const currentWindowTabs = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
-          
+
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',
@@ -1118,7 +1114,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             if (activeRequest?.type === 'loading') {
               setIntervalSwitch(false);
             }
-          } else if (message.name === 'closeDataSourcePage' && message.tryFlag) {
+          } else if (
+            message.name === 'closeDataSourcePage' &&
+            message.tryFlag
+          ) {
             LINEA_DEFI_VOYAGETryAgainFn();
           }
         }
@@ -1128,7 +1127,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         chrome.runtime.onMessage.removeListener(listerFn);
       };
     }, [activeRequest?.type, LINEA_DEFI_VOYAGETryAgainFn]);
-    
+
     return (
       <div className={'credAddWrapper'}>
         {visible && step === 0 && (
