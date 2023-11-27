@@ -230,10 +230,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}</span></p>`;
       fn();
     } else if (result === 'warn') {
-      padoRightEl.innerHTML = '3/3';
+      padoRightEl.innerHTML = '2/3';
       var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
       var str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
-      padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : str1;
+      var str3 = `<p>Unable to proceed</p><p>The zkAttestation has already been created</p>`;
+      padoCenterCenterEl.innerHTML = failReason === 'network' ? str2 : failReason === 'The zkAttestation has already been created'? str3:str1;
       fn();
     }
   }

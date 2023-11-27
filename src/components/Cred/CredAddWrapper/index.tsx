@@ -852,28 +852,43 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 <p>Please confirm and try again later.</p>
               </>
             );
+            let btnTxt = undefined;
 
             if (parsedActiveRequestAttestation.reqType === 'web') {
+              let failReason = '';
               if (!content.signature && content.encodedData) {
                 titleItem1 = 'Unable to proceed';
                 descEl = (
                   <p>
-                    Your Binance authentication zkAttestation has already been created.
+                    Your Binance authentication zkAttestation has already been
+                    created.
                   </p>
                 );
+                failReason = 'The zkAttestation has already been created';
+                btnTxt = '';
+                await chrome.runtime.sendMessage({
+                  type: 'pageDecode',
+                  name: 'attestResult',
+                  params: {
+                    result: 'warn',
+                    failReason,
+                  },
+                });
+              } else {
+                await chrome.runtime.sendMessage({
+                  type: 'pageDecode',
+                  name: 'attestResult',
+                  params: {
+                    result: 'fail',
+                  },
+                });
               }
-              await chrome.runtime.sendMessage({
-                type: 'pageDecode',
-                name: 'attestResult',
-                params: {
-                  result: 'fail',
-                },
-              });
             }
             setActiveRequest({
               type: 'warn',
               title: titleItem1,
               desc: descEl,
+              btnTxt,
             });
 
             eventInfo.rawData = Object.assign(eventInfo.rawData, {
@@ -1052,7 +1067,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           return null;
         }
       } else {
-        if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+        if (
+          fromEvents === 'LINEA_DEFI_VOYAGE' &&
+          activeRequest?.btnTxt !== ''
+        ) {
           return (
             <PButton
               text="Try again"
@@ -1186,7 +1204,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             tip={footerTip}
             onClose={handleCloseMask}
             onSubmit={onSubmitActiveRequestDialog}
-            closeable={!fromEvents || fromEvents === 'Scroll'}
+            closeable={
+              !fromEvents ||
+              fromEvents === 'Scroll' ||
+              (fromEvents === 'LINEA_DEFI_VOYAGE' &&
+                activeRequest?.type !== 'suc')
+            }
           />
         )}
       </div>
