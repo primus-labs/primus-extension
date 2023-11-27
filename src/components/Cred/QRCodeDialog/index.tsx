@@ -76,20 +76,41 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = memo(
             baseValue,
             balanceGreaterThanBaseValue,
             signature,
+            type,
+            uiTemplate,
+            sourceUseridHash,
           } = activeCred;
+          let schemaData: any = {
+            source,
+            // useridhash,
+            // sourceUseridHash: '',
+            authUseridHash,
+            receipt: address,
+            getDataTime,
+            baseValue,
+            balanceGreaterThanBaseValue,
+          };
+          if (activeCred.reqType === 'web') {
+            const { condition, proofContent, title } = uiTemplate;
+            schemaData = {
+              // source,
+              // sourceUseridHash: '',
+              authUseridHash,
+              receipt: address,
+              // getDataTime,
+              Source: source,
+              ProofType: type,
+              Content: proofContent,
+              Condition: condition,
+              SourceUserIdHash: sourceUseridHash,
+              Result: balanceGreaterThanBaseValue,
+              Timestamp: getDataTime,
+            };
+          }
           jsonStr = JSON.stringify(
             {
               attester: PADOADDRESS,
-              schemaData: {
-                source,
-                // useridhash,
-                // sourceUseridHash: '',
-                authUseridHash,
-                receipt: address,
-                getDataTime,
-                baseValue,
-                balanceGreaterThanBaseValue,
-              },
+              schemaData,
               signature,
             },
             null,
