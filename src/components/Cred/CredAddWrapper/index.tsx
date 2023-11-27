@@ -858,13 +858,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               let failReason = '';
               if (!content.signature && content.encodedData) {
                 titleItem1 = 'Unable to proceed';
-                descEl = (
-                  <p>
-                    Your Binance authentication zkAttestation has already been
-                    created.
-                  </p>
-                );
-                failReason = 'The zkAttestation has already been created';
+                descEl = <p>Not meeting the uniqueness requirement.</p>;
+                failReason = 'Not meeting the uniqueness requirement.';
                 btnTxt = '';
                 await chrome.runtime.sendMessage({
                   type: 'pageDecode',
