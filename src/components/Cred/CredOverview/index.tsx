@@ -130,10 +130,17 @@ const CredOverview = memo(() => {
   
   const LINEA_DEFI_VOYAGETryAgainFn = useCallback(() => {
     // handleCloseConnectTipDialog();
+    const msg = {
+      fullScreenType: 'algorithm',
+      reqMethodName: 'stop',
+      params: {
+        noRestart: true,
+      },
+    };
+    postMsg(padoServicePort, msg);
     navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
     window.location.reload();
-    
-  }, [ navigate]);
+  }, [navigate, padoServicePort]);
   const footerButton = useMemo(() => {
     if (activeRequest?.type !== 'suc') {
       if (fromEvents === 'LINEA_DEFI_VOYAGE') {

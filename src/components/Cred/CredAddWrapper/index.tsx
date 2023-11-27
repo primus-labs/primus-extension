@@ -1028,9 +1028,17 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       }
     }, [activeRequest?.type]);
     const LINEA_DEFI_VOYAGETryAgainFn = useCallback(() => {
+      const msg = {
+        fullScreenType: 'algorithm',
+        reqMethodName: 'stop',
+        params: {
+          noRestart: true,
+        },
+      };
+      postMsg(padoServicePort, msg);
       navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
       window.location.reload();
-    }, [navigate]);
+    }, [navigate, padoServicePort]);
     const footerButton = useMemo(() => {
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {
