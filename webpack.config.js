@@ -195,6 +195,7 @@ var options = {
               jsonobj.host_permissions.push(
                 'https://xuda-note.oss-cn-shanghai.aliyuncs.com/'
               );
+              jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:5100/*");
               return Buffer.from(
                 JSON.stringify({
                   description: process.env.npm_package_description,
