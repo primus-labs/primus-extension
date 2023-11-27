@@ -21,11 +21,12 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
     const liClassNameCallback = useCallback(
       (item: DataSourceItemType) => {
         let defaultClassName = 'webDataSourceItem';
-        if (activeSource?.name === item.name) {
-          defaultClassName += ' active';
-        }
+        
         if (allDisabled || item.disabled) {
-          defaultClassName += ' disabled';
+          defaultClassName += 'webDataSourceItem disabled';
+        }
+        if (activeSource?.name === item.name) {
+          defaultClassName = 'webDataSourceItem active';
         }
         return defaultClassName;
       },

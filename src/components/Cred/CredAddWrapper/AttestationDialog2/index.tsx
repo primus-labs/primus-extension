@@ -86,16 +86,18 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       // return webProofTypes.filter((i) => i.category === 'IDENTIFICATION_PROOF');
       let newArr: any[] = [];
       webProofTypes.forEach((r: any) => {
-        const existObj = newArr.find((i) => i.name === r.name);
+        const existObj = newArr.find((i) => i.id === r.id);
         if (!existObj && r.category === 'IDENTIFICATION_PROOF') {
           newArr.push(r);
         }
       });
+      // debugger
       return newArr;
     }, [webProofTypes]);
 
     const navigate = useNavigate();
     const identityList = useMemo(() => {
+      const newArr: any = [];
       const l = activeWebProofTypes.map((r) => {
         let obj: any = {
           value: r.name,
@@ -106,9 +108,14 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             obj.disabled = true;
           }
         }
+        const isExist = newArr.find((i: any) => i.value === obj.value);
+        if (!isExist) {
+          newArr.push(obj);
+        }
         return obj;
       });
-      return l;
+
+      return newArr;
     }, [activeWebProofTypes, fromEvents]);
     useEffect(() => {
       if (identityList.length === 1) {
@@ -353,9 +360,23 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         });
         return newList;
       } else {
-        return [...tabList];
+        const newList = tabList.map((i) => {
+          if (activeCred) {
+            if (activeCred?.reqType === 'web') {
+              if (i.text !== 'Webpage Data') {
+                i.disabled = true;
+              }
+            } else {
+              if (i.text === 'Webpage Data') {
+                i.disabled = true;
+              }
+            }
+          }
+          return i;
+        });
+        return newList;
       }
-    }, [fromEvents]);
+    }, [fromEvents, activeCred]);
 
     const handleChangeSelect = useCallback((val: string) => {
       if (!val) {
