@@ -468,12 +468,12 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           label: 'AccountID',
           value: id + '\t',
         },
+        // {
+        //   label: 'OAuthMethod',
+        //   value: `${authSource}Account`,
+        // },
         {
-          label: 'OAuthMethod',
-          value: `${authSource}Account`,
-        },
-        {
-          label: 'OnchainAddress',
+          label: 'PADO Account',
           value: address,
         },
         {
