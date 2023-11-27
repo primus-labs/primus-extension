@@ -104,19 +104,20 @@ const processAlgorithmReq = async (message, port) => {
   const matchedClients = await clients.matchAll();
   console.log('matchedClients', matchedClients);
   let { reqMethodName, params = {} } = message;
+  console.log(`${(new Date()).toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`);
   switch (reqMethodName) {
     case 'start':
       const offscreenDocumentPath = 'offscreen.html';
       if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
-        console.log('create offscreen document...........');
+        console.log(`${(new Date()).toLocaleString()} create offscreen document...........`);
         await chrome.offscreen.createDocument({
           url: chrome.runtime.getURL(offscreenDocumentPath),
           reasons: ['IFRAME_SCRIPTING'],
           justification: 'WORKERS for needing the document',
         });
-        console.log('offscreen document created');
+        console.log(`${(new Date()).toLocaleString()} offscreen document created`);
       } else {
-        console.log('offscreen document has already created');
+        console.log(`${(new Date()).toLocaleString()} offscreen document has already created`);
       }
       break;
     case 'init':
@@ -172,6 +173,7 @@ const processAlgorithmReq = async (message, port) => {
         resType: 'algorithm',
         resMethodName: 'stop',
         res: { retcode: 0 },
+        params,
       });
       break;
     case 'lineaEventStartOffline':
