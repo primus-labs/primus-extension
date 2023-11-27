@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import { postMsg } from '@/utils/utils';
 import { useSelector } from 'react-redux';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
-import {STARTOFFLINETIMEOUT} from '@/config/constants'
+import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import type { UserState } from '@/types/store';
 
 type UseAlgorithm = (
@@ -36,7 +36,12 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   );
   const padoServicePortListener = useCallback(
     async function (message: any) {
-      const { resType, resMethodName, res, params } = message;
+      const {
+        resType,
+        resMethodName,
+        res,
+        params,
+      } = message;
       if (resType === 'algorithm') {
         console.log(`page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
@@ -92,6 +97,21 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
             console.log(`page_send:start request`);
           }
         }
+        if (resMethodName === 'lineaEventStartOffline') {
+          if (cancelCallStartOfflineFlag) {
+            const padoUrl = await getPadoUrl();
+            const proxyUrl = await getProxyUrl();
+            postMsg(padoServicePort, {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'startOffline',
+              params: {
+                offlineTimeout: STARTOFFLINETIMEOUT,
+                padoUrl,
+                proxyUrl,
+              },
+            });
+          }
+        }
         // if (
         //   message.type === 'pageDecode' &&
         //   message.name === 'cancelAttest'
@@ -101,7 +121,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         // }
       }
     },
-    [padoServicePort]
+    [padoServicePort, cancelCallStartOfflineFlag]
   );
   const initAlgorithm = useCallback(() => {
     const msg: any = {

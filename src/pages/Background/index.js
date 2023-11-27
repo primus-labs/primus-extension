@@ -103,7 +103,6 @@ async function hasOffscreenDocument(path) {
 const processAlgorithmReq = async (message, port) => {
   const matchedClients = await clients.matchAll();
   console.log('matchedClients', matchedClients);
-
   let { reqMethodName, params = {} } = message;
   switch (reqMethodName) {
     case 'start':
@@ -173,6 +172,13 @@ const processAlgorithmReq = async (message, port) => {
         resType: 'algorithm',
         resMethodName: 'stop',
         res: { retcode: 0 },
+      });
+      break;
+    case 'lineaEventStartOffline':
+      postMsg(fullscreenPort, {
+        resType: 'algorithm',
+        resMethodName: 'lineaEventStartOffline',
+        res: { },
       });
       break;
     default:

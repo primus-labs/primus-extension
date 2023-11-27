@@ -5,7 +5,9 @@ import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
 import { getAlgoUrl } from '@/services/api/algorithm';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
-
+import { postMsg } from '@/utils/utils';
+import store from '@/store';
+import type {UserState} from '@/types/store'
 type ENVTYPE = 'development' | 'test' | 'production';
 
 const CURENV = process.env.NODE_ENV as ENVTYPE;
@@ -583,6 +585,13 @@ export const updateAlgoUrl = async () => {
               algorithmUrl: JSON.stringify(jsonobj),
             });
             isInited = true;
+            const padoServicePort = (store.getState() as UserState)
+              .padoServicePort;
+            postMsg(padoServicePort, {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'lineaEventStartOffline',
+              params: {},
+            });
           }
         }
         ws.close();
