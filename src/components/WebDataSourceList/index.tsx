@@ -41,7 +41,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
       if (activeSource?.name === item.name) {
         setActiveSource(undefined);
       } else {
-        setActiveSource(item);
+        !item.disabled && setActiveSource(item);
       }
       onChange(item);
     };
