@@ -1,6 +1,5 @@
 import { assembleAlgorithmParams } from './exData';
 
-
 let tabCreatedByPado;
 let activeTemplate = {};
 let currExtentionId;
@@ -24,17 +23,44 @@ export const pageDecodeMsgListener = async (
     event,
   } = activeTemplate;
   const requestUrlList = requests.map((r) => r.url);
+  const isUrlWithQueryFn = (url, queryKeyArr) => {
+    const urlStrArr = url.split('?');
+    const queryStr = urlStrArr[1];
+    console.log('222123', url, queryKeyArr);
+    const queryStrArr = queryStr.split('&');
+    const isUrlWithQuery = queryKeyArr.every((tQItem) => {
+      return queryStrArr.some((qItem) => {
+        return qItem.split('=')[0] === tQItem;
+      });
+    });
+    return isUrlWithQuery;
+  };
   const onBeforeSendHeadersFn = async (details) => {
     const { url: currRequestUrl, requestHeaders } = details;
-    if (requestUrlList.includes(currRequestUrl)) {
+    let formatUrlKey = currRequestUrl;
+    const isTarget = requests.some((r) => {
+      if (r.queryParams && r.queryParams[0]) {
+        const urlStrArr = currRequestUrl.split('?');
+        const hostUrl = urlStrArr[0];
+        let curUrlWithQuery = r.url === hostUrl;
+        if (r.url === hostUrl) {
+          curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
+        }
+        formatUrlKey = hostUrl;
+        return curUrlWithQuery;
+      } else {
+        return r.url === currRequestUrl;
+      }
+    });
+    if (isTarget) {
       let formatHeader = requestHeaders.reduce((prev, curr) => {
         const { name, value } = curr;
         prev[name] = value;
         return prev;
       }, {});
       // const requestHeadersObj = JSON.stringify(formatHeader);
-      const storageObj = await chrome.storage.local.get([currRequestUrl]);
-      const currRequestUrlStorage = storageObj[currRequestUrl];
+      const storageObj = await chrome.storage.local.get([formatUrlKey]);
+      const currRequestUrlStorage = storageObj[formatUrlKey];
       const currRequestObj = currRequestUrlStorage
         ? JSON.parse(currRequestUrlStorage)
         : {};
@@ -43,8 +69,7 @@ export const pageDecodeMsgListener = async (
         headers: formatHeader,
       };
 
-      const formatUrlKey = currRequestUrl;
-      console.log('222222listen', currRequestUrl);
+      console.log('222222listen', formatUrlKey);
       await chrome.storage.local.set({
         [formatUrlKey]: JSON.stringify(newCurrRequestObj),
       });
@@ -52,7 +77,22 @@ export const pageDecodeMsgListener = async (
   };
   const onBeforeRequestFn = async (subDetails) => {
     const { url: currRequestUrl, requestBody } = subDetails;
-    if (requestUrlList.includes(currRequestUrl)) {
+    let formatUrlKey = currRequestUrl;
+    const isTarget = requests.some((r) => {
+      if (r.queryParams && r.queryParams[0]) {
+        const urlStrArr = currRequestUrl.split('?');
+        const hostUrl = urlStrArr[0];
+        let curUrlWithQuery = r.url === hostUrl;
+        if (r.url === hostUrl) {
+          curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
+        }
+        formatUrlKey = hostUrl;
+        return curUrlWithQuery;
+      } else {
+        return r.url === currRequestUrl;
+      }
+    });
+    if (isTarget) {
       if (requestBody && requestBody.raw) {
         const rawBody = requestBody.raw[0];
         if (rawBody && rawBody.bytes) {
@@ -62,8 +102,8 @@ export const pageDecodeMsgListener = async (
             `url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
           );
 
-          const storageObj = await chrome.storage.local.get([currRequestUrl]);
-          const currRequestUrlStorage = storageObj[currRequestUrl];
+          const storageObj = await chrome.storage.local.get([formatUrlKey]);
+          const currRequestUrlStorage = storageObj[formatUrlKey];
           const currRequestObj = currRequestUrlStorage
             ? JSON.parse(currRequestUrlStorage)
             : {};
@@ -72,7 +112,7 @@ export const pageDecodeMsgListener = async (
             body: JSON.parse(bodyText),
           };
           await chrome.storage.local.set({
-            [currRequestUrl]: JSON.stringify(newCurrRequestObj),
+            [formatUrlKey]: JSON.stringify(newCurrRequestObj),
           });
         }
       }
@@ -142,7 +182,7 @@ export const pageDecodeMsgListener = async (
       prev[name] = value;
       return prev;
     }, {});*/
-   
+
     const { category } = activeTemplate;
     const form = {
       source: dataSource,
@@ -167,7 +207,7 @@ export const pageDecodeMsgListener = async (
 
       const { headers: curRequestHeader, body: curRequestBody } =
         (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
-      
+
       const cookiesObj = curRequestHeader
         ? parseCookie(curRequestHeader.Cookie)
         : {};
@@ -203,9 +243,12 @@ export const pageDecodeMsgListener = async (
           body: formateBody,
         });
       }
+      if ('queryParams' in r) {
+        delete r.queryParams;
+      }
       formatRequests.push(r);
     }
-    
+
     Object.assign(aligorithmParams, {
       reqType: 'web',
       host: host,
@@ -247,7 +290,7 @@ export const pageDecodeMsgListener = async (
 };
 
 const parseCookie = (str) => {
-  str = str || ''
+  str = str || '';
   return str
     .split(';')
     .map((v) => v.split('='))
@@ -255,8 +298,7 @@ const parseCookie = (str) => {
       if (v[0] && v[1]) {
         acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
       }
-        
+
       return acc;
     }, {});
-}
-  
+};
