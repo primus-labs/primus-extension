@@ -51,7 +51,7 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://padolabs.org/*", "http://api-dev.padolabs.org:5100/*"],
+      "matches": ["https://padolabs.org/*", "https://www.padolabs.org/*", "http://api-dev.padolabs.org:5100/*"],
       "js": ["padoWebsite.js"]
     }
   ]
