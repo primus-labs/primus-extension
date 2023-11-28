@@ -394,13 +394,21 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
 
     const onChangeWebDataSource = useCallback(
       (i: any) => {
-        if (!activeIdentityType) {
-          setErrorTip('Please select the proof content first');
+        if (activeCred) {
+          return;
         } else {
-          setActiveWebDataSource(i.name);
+          if (!activeIdentityType) {
+            setErrorTip('Please select the proof content first');
+          } else {
+            if (i) {
+              setActiveWebDataSource(i?.name);
+            } else {
+              setActiveWebDataSource('');
+            }
+          }
         }
       },
-      [activeIdentityType]
+      [activeIdentityType, activeCred]
     );
     const handleChangeSelectBaseValue = useCallback((val: string) => {
       if (!val) {

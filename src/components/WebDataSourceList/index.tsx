@@ -35,15 +35,19 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
 
     const handleClickData = (item: DataSourceItemType) => {
       if (allDisabled) {
-        onChange(item);
         return;
       }
       if (activeSource?.name === item.name) {
         setActiveSource(undefined);
+        onChange(undefined);
       } else {
-        !item.disabled && setActiveSource(item);
+        if (!item.disabled) {
+          setActiveSource(item);
+          onChange(item);
+        } else {
+          setActiveSource(undefined);
+        }
       }
-      onChange(item);
     };
 
     useEffect(() => {
