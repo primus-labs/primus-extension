@@ -6,7 +6,7 @@ type DataSourceItemType = {
   icon: any;
   name: string;
   id?: string;
-  disabled?: boolean
+  disabled?: boolean;
 };
 interface ConnectDataSourceListProps {
   val?: any;
@@ -21,7 +21,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
     const liClassNameCallback = useCallback(
       (item: DataSourceItemType) => {
         let defaultClassName = 'webDataSourceItem';
-        
+
         if (allDisabled || item.disabled) {
           defaultClassName += 'webDataSourceItem disabled';
         }
@@ -35,20 +35,23 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
 
     const handleClickData = (item: DataSourceItemType) => {
       if (allDisabled) {
-        onChange(item);
+        return;
+      }
+      if (item.disabled) {
         return;
       }
       if (activeSource?.name === item.name) {
         setActiveSource(undefined);
+        onChange(undefined);
       } else {
-        !item.disabled && setActiveSource(item);
+        setActiveSource(item);
+        onChange(item);
       }
-      onChange(item);
     };
 
     useEffect(() => {
       if (val) {
-        setActiveSource(val)
+        setActiveSource(val);
       }
     }, [val]);
     return (
