@@ -62,6 +62,7 @@ const tabList: TabItem[] = [
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
   ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
+    const [refreshWebList, setRefreshWebList] =useState<boolean>(false);
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
     const [activeWebDataSource, setActiveWebDataSource] = useState<string>('');
@@ -387,6 +388,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, []);
     const handleChangeSelectIdentityType = useCallback((val: string) => {
       setActiveIdentityType(val);
+      setActiveWebDataSource('');
+      setRefreshWebList((f) => !f)
     }, []);
     const handleChangeTab = useCallback((val: string) => {
       setActiveTab(val);
@@ -678,6 +681,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                       onChange={onChangeWebDataSource}
                       disabled={!activeIdentityType || !!activeCred}
                       val={activeWebDataSourceObj}
+                      refresh={refreshWebList}
                     />
                   )}
                 </div>

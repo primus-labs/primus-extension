@@ -13,9 +13,10 @@ interface ConnectDataSourceListProps {
   disabled?: boolean;
   list: DataSourceItemType[];
   onChange: (source: DataSourceItemType | undefined) => void;
+  refresh?: boolean;
 }
 const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
-  ({ onChange, list, disabled: allDisabled = false, val }) => {
+  ({ onChange, list, disabled: allDisabled = false, val, refresh }) => {
     const [activeSource, setActiveSource] = useState<DataSourceItemType>();
 
     const liClassNameCallback = useCallback(
@@ -52,8 +53,13 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
     useEffect(() => {
       if (val) {
         setActiveSource(val);
+      } else {
+        setActiveSource(undefined);
       }
     }, [val]);
+    useEffect(() => {
+      setActiveSource(undefined);
+    }, [refresh]);
     return (
       <div className="webDataSourceListWrapper">
         {list.length > 0 && (
