@@ -26,18 +26,18 @@ export const pageDecodeMsgListener = async (
   const isUrlWithQueryFn = (url, queryKeyArr) => {
     const urlStrArr = url.split('?');
     const queryStr = urlStrArr[1];
-    console.log('222123', url, queryKeyArr);
     const queryStrArr = queryStr.split('&');
     const isUrlWithQuery = queryKeyArr.every((tQItem) => {
       return queryStrArr.some((qItem) => {
         return qItem.split('=')[0] === tQItem;
       });
     });
-    return isUrlWithQuery;
+    return isUrlWithQuery ? queryStr : false;
   };
   const onBeforeSendHeadersFn = async (details) => {
     const { url: currRequestUrl, requestHeaders } = details;
     let formatUrlKey = currRequestUrl;
+    let addQueryStr = '';
     const isTarget = requests.some((r) => {
       if (r.queryParams && r.queryParams[0]) {
         const urlStrArr = currRequestUrl.split('?');
@@ -46,8 +46,11 @@ export const pageDecodeMsgListener = async (
         if (r.url === hostUrl) {
           curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
         }
+        if (curUrlWithQuery) {
+          addQueryStr = curUrlWithQuery;
+        }
         formatUrlKey = hostUrl;
-        return curUrlWithQuery;
+        return !!curUrlWithQuery;
       } else {
         return r.url === currRequestUrl;
       }
@@ -68,11 +71,14 @@ export const pageDecodeMsgListener = async (
         ...currRequestObj,
         headers: formatHeader,
       };
-
+      if (addQueryStr) {
+        newCurrRequestObj.queryString = addQueryStr;
+      }
       console.log('222222listen', formatUrlKey);
       await chrome.storage.local.set({
         [formatUrlKey]: JSON.stringify(newCurrRequestObj),
       });
+      checkWebRequestIsReadyFn();
     }
   };
   const onBeforeRequestFn = async (subDetails) => {
@@ -118,6 +124,49 @@ export const pageDecodeMsgListener = async (
       }
     }
   };
+  const checkWebRequestIsReadyFn = async () => {
+    const checkReadyStatusFn = async () => {
+      const interceptorRequests = requests.filter((r) => r.name !== 'first');
+      const interceptorUrlArr = interceptorRequests.map((i) => i.url);
+      const storageObj = await chrome.storage.local.get(interceptorUrlArr);
+      const storageArr = Object.values(storageObj);
+      if (storageArr.length === interceptorUrlArr.length) {
+        
+        const f = interceptorRequests.every((r) => {
+          // const storageR = Object.keys(storageObj).find(
+          //   (sRKey) => sRKey === r.url
+          // );
+          const sRrequestObj = storageObj[r.url]
+            ? JSON.parse(storageObj[r.url])
+            : {};
+          const headersFlag =
+            !r.headers || (!!r.headers && !!sRrequestObj.headers);
+          const bodyFlag = !r.body || (!!r.body && !!sRrequestObj.body);
+          const cookieFlag =
+            !r.cookies ||
+            (!!r.cookies &&
+              !!sRrequestObj.headers &&
+              !!sRrequestObj.headers.Cookie);
+          return headersFlag && bodyFlag && cookieFlag;
+        });
+        return f;
+      } else {
+        return false;
+      }
+    };
+    const isReady = await checkReadyStatusFn();
+    chrome.tabs.sendMessage(
+      tabCreatedByPado.id,
+      {
+        type: 'pageDecode',
+        name: 'webRequestIsReady',
+        params: {
+          isReady,
+        },
+      },
+      function (response) {}
+    );
+  };
 
   if (name === 'inject') {
     const { extensionTabId } = request;
@@ -148,9 +197,11 @@ export const pageDecodeMsgListener = async (
         files: ['pageDecode.css'],
       });
     };
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    
+    chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       if (tabId === tabCreatedByPado.id && changeInfo.url) {
-        injectFn();
+        await injectFn();
+        checkWebRequestIsReadyFn()
       }
     });
 
@@ -205,8 +256,11 @@ export const pageDecodeMsgListener = async (
       const formatUrlKey = url;
       const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
 
-      const { headers: curRequestHeader, body: curRequestBody } =
-        (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
+      const {
+        headers: curRequestHeader,
+        body: curRequestBody,
+        queryString,
+      } = (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
 
       const cookiesObj = curRequestHeader
         ? parseCookie(curRequestHeader.Cookie)
@@ -243,9 +297,15 @@ export const pageDecodeMsgListener = async (
           body: formateBody,
         });
       }
+      if (queryString) {
+        Object.assign(r, {
+          url: r.url + '?' + queryString,
+        });
+      }
       if ('queryParams' in r) {
         delete r.queryParams;
       }
+
       formatRequests.push(r);
     }
 
