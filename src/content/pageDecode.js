@@ -56,7 +56,8 @@ chrome.runtime.sendMessage(
         (i) => window.location.href.indexOf(i) > -1
       );
       if (isDisabled) {
-        padoCenterBottomStartNode.classList.add('disabled');
+        // padoCenterBottomStartNode.classList.add('disabled');
+        return
       }
       var padoCenterBottomCancelNode = createDomElement(
         padoCenterBottomCancelStr
