@@ -20,33 +20,12 @@
     "scripting"
   ],
   "host_permissions": [
-    "https://api.padolabs.org/",
-    "https://www.okx.com/",
-    "https://api.binance.com/",
-    "https://api.kucoin.com/",
-    "https://api.coinbase.com/",
-    "https://api.huobi.pro/",
-    "https://api.hbdm.com/",
-    "https://api.bitget.com/",
-    "https://api.bybit.com/",
-    "https://api.mexc.com/",
-    "https://contract.mexc.com/",
-    "https://api.gateio.ws/",
-    "https://pado-online.s3.ap-northeast-1.amazonaws.com/",
-    "https://www.binance.com/",
-    "https://api.twitter.com/",
-    "https://twitter.com/",
-    "https://www.coinbase.com/"
+    "<all_urls>"
   ],
   "web_accessible_resources": [
     {
       "resources": ["iconExtension.svg", "iconSuc.svg"],
-      "matches": [
-        "https://www.binance.com/*",
-        "https://twitter.com/*",
-        "https://www.okx.com/*",
-        "https://www.coinbase.com/*"
-      ]
+      "matches": ["<all_urls>"]
     }
   ],
   "content_scripts": [
