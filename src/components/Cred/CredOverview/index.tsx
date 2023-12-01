@@ -123,7 +123,7 @@ const CredOverview = memo(() => {
     if (fromEvents === 'Scroll') {
       navigate('/events');
     }
-    if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+    if (fromEvents === 'LINEA_DEFI_VOYAGE' || fromEvents === 'NFTs') {
       navigate('/cred');
     }
   }, [fromEvents, navigate]);
@@ -279,9 +279,13 @@ const CredOverview = memo(() => {
             setAddDialogVisible(false);
             setSendToChainDialogVisible(true);
           } else if (addSucFlag === false) {
-            const queryKey = `${fromEvents}Process`;
-            const targetUrl = `/events?${queryKey}=error`;
-            navigate(targetUrl);
+            if (fromEvents === 'NFTs') {
+              const queryKey = `${fromEvents}Process`;
+              const targetUrl = `/events?${queryKey}=error`;
+              navigate(targetUrl);
+            } else {
+              navigate('/cred');
+            }
           } else if (addSucFlag === undefined) {
             navigate('/cred');
           }
@@ -315,6 +319,8 @@ const CredOverview = memo(() => {
           if (fromEvents === 'Scroll') {
             targetUrl = '/events';
             navigate(targetUrl);
+          } else {
+            navigate('/cred');
           }
         }
         // else {
@@ -379,7 +385,7 @@ const CredOverview = memo(() => {
     if (fromEvents === 'Scroll') {
       navigate('/events');
     }
-    if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+    if (fromEvents === 'LINEA_DEFI_VOYAGE' || fromEvents === 'NFTs') {
       navigate('/cred');
     }
   }, [fromEvents, navigate]);
