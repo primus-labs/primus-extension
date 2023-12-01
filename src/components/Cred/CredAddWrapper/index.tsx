@@ -16,6 +16,7 @@ import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AttestationDialog from './AttestationDialog';
 import AttestationDialog2 from './AttestationDialog2';
+import AttestationDialogUniSwap from './AttestationDialogUniSwap';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
@@ -579,10 +580,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       try {
         const curRequestId = uuidv4();
         setUniSwapProofRequestId(curRequestId);
-        const [accounts, chainId, provider] = await connectWallet();
-        const curConnectedAddr = (accounts as string[])[0];
+        const curConnectedAddr = connectedWallet?.address;
         const timestamp: string = +new Date() + '';
-
         const signature = await requestSign(curConnectedAddr, timestamp);
         if (!signature) {
           setActiveRequest({
@@ -592,18 +591,17 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           });
           return;
         }
-        setUniSwapProofParams({
+        const proofParams = {
           signature,
-          // address: curConnectedAddr,
-          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
-          provider,
-        });
+          address: curConnectedAddr,
+          provider: connectedWallet?.provider,
+        };
+        setUniSwapProofParams(proofParams);
         const { rc, result, msg } = await claimUniNFT({
-          signature,
-          timestamp,
-          // address: curConnectedAddr,
-          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
           requestId: curRequestId,
+          signature,
+          address: curConnectedAddr,
+          timestamp,
         });
 
         if (rc === 0 && result) {
@@ -672,22 +670,23 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           title: 'Attestation is processing',
           desc: 'It may take a few seconds.',
         };
-        if (form.source === 'metamask') {
-          loadingObj = {
-            type: 'loading',
-            title: 'Processing',
-            desc: 'Please complete the transaction in your wallet.',
-          };
-          setActiveRequest(loadingObj);
-          fetchAttestForUni();
-          return;
-        }
+        // if (form.source === 'metamask') {
+        //   loadingObj = {
+        //     type: 'loading',
+        //     title: 'Processing',
+        //     desc: 'Please complete the transaction in your wallet.',
+        //   };
+        //   setActiveRequest(loadingObj);
+        //   fetchAttestForUni();
+        //   return;
+        // }
         setActiveRequest(loadingObj);
         if (activeCred?.did) {
           fetchAttestForPolygonID();
         } else {
           if (form.type === 'UNISWAP_PROOF') {
             // TODO
+            fetchAttestForUni();
           } else if (form.type === 'IDENTIFICATION_PROOF') {
             fetchAttestForAnt(form);
           } else {
@@ -1199,6 +1198,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                   ? undefined
                   : onBackAttestationDialog
               }
+              onClose={handleCloseMask}
+              onSubmit={onSubmitAttestationDialog}
+            />
+          ) : activeAttestationType === 'UNISWAP_PROOF' ? (
+            <AttestationDialogUniSwap
+              type={activeAttestationType}
+              activeSourceName={activeSourceName}
+              activeType={activeIdentityType}
+              activeCred={activeCred}
+              onBack={onBackAttestationDialog}
               onClose={handleCloseMask}
               onSubmit={onSubmitAttestationDialog}
             />

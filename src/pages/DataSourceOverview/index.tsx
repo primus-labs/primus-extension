@@ -68,9 +68,11 @@ const DataSourceOverview = memo(() => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
+  
   const onChainAssetsSources = useSelector(
     (state: UserState) => state.onChainAssetsSources
   );
+  console.log('222123', onChainAssetsSources);
 
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
