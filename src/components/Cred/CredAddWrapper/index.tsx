@@ -584,7 +584,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const signature = await requestSign(curConnectedAddr, timestamp);
         if (!signature) {
           setActiveRequest({
-            type: 'error',
+            type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
@@ -634,7 +634,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         }
       } catch (e) {
         setActiveRequest({
-          type: 'error',
+          type: 'warn',
           title: 'Unable to proceed',
           desc: errorDescEl,
         });
@@ -1117,7 +1117,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (message.name === 'cancelAttest') {
             setStep(2);
             setActiveRequest({
-              type: 'error',
+              type: 'warn',
               title: 'Unable to proceed',
               desc: 'Please try again later.',
             });
@@ -1132,7 +1132,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             if (activeRequest?.type === 'loading' || !activeRequest?.type) {
               setStep(2);
               setActiveRequest({
-                type: 'error',
+                type: 'warn',
                 title: 'Unable to proceed',
                 desc: 'Please try again later.',
               });

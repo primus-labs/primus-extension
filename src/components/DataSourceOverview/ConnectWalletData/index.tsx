@@ -98,7 +98,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
           const signature = await requestSign(curConnectedAddr, timestamp);
           if (!signature) {
             setActiveRequest({
-              type: 'error',
+              type: 'warn',
               title: 'Unable to proceed',
               desc: errorDescEl,
             });
@@ -169,7 +169,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
           }
         } catch (e) {
           setActiveRequest({
-            type: 'error',
+            type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });

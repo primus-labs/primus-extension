@@ -182,7 +182,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
 
         const errorFn = () => {
           setActiveRequest({
-            type: 'error',
+            type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
@@ -290,7 +290,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         } else if (NFTsProcess === 'error') {
           setStep(2);
           setActiveRequest({
-            type: 'error',
+            type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
