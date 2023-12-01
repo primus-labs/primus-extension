@@ -183,7 +183,7 @@ const DataSourceOverview = memo(() => {
           } else {
             if (message.msg === 'AuthenticationError') {
               setActiveRequest({
-                type: 'warn',
+                type: 'error',
                 title: 'Invalid input',
                 desc: 'Please check your API Key or Secret Key.',
               });
