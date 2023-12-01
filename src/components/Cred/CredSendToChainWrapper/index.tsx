@@ -158,7 +158,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         };
         const errorFn = () => {
           setActiveSendToChainRequest({
-            type: 'error',
+            type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
@@ -269,13 +269,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             if (upChainRes.error) {
               if (upChainRes.error === 1) {
                 setActiveSendToChainRequest({
-                  type: 'error',
+                  type: 'warn',
                   title: 'Unable to proceed',
                   desc: 'Your balance is insufficient',
                 });
               } else if (upChainRes.error === 2) {
                 setActiveSendToChainRequest({
-                  type: 'error',
+                  type: 'warn',
                   title: 'Unable to proceed',
                   desc: 'Please try again later.',
                 });
@@ -347,7 +347,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             eventReport(eventInfoBinance);
           } else {
             setActiveSendToChainRequest({
-              type: 'error',
+              type: 'warn',
               title: 'Unable to proceed',
               desc: 'Please try again later.',
             });
@@ -463,13 +463,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 if (upChainRes.error) {
                   if (upChainRes.error === 1) {
                     setActiveSendToChainRequest({
-                      type: 'error',
+                      type: 'warn',
                       title: 'Unable to proceed',
                       desc: 'Your balance is insufficient',
                     });
                   } else if (upChainRes.error === 2) {
                     setActiveSendToChainRequest({
-                      type: 'error',
+                      type: 'warn',
                       title: 'Unable to proceed',
                       desc: 'Please try again later.',
                     });
@@ -524,7 +524,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 eventReport(eventInfo);
               } else {
                 setActiveSendToChainRequest({
-                  type: 'error',
+                  type: 'warn',
                   title: 'Unable to proceed',
                   desc: 'Please try again later.',
                 });

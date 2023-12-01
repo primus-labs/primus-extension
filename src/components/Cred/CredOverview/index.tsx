@@ -351,7 +351,7 @@ const CredOverview = memo(() => {
       };
       const errorFn = () => {
         setActiveRequest({
-          type: 'error',
+          type: 'warn',
           title: 'Unable to proceed',
           desc: errorDescEl,
         });

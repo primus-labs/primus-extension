@@ -81,6 +81,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     type,
     eventSource,
   }) => {
+    const [activeIdentityType, setActiveIdentityType] =
+      useState<string>('');
     const navigate = useNavigate();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     const [credRequestId, setCredRequestId] = useState<string>();
@@ -584,7 +586,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const signature = await requestSign(curConnectedAddr, timestamp);
         if (!signature) {
           setActiveRequest({
-            type: 'error',
+            type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
@@ -634,7 +636,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         }
       } catch (e) {
         setActiveRequest({
-          type: 'error',
+          type: 'warn',
           title: 'Unable to proceed',
           desc: errorDescEl,
         });
@@ -1049,6 +1051,21 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
       window.location.reload();
     }, [navigate, padoServicePort]);
+    const tryAgainFn = useCallback(() => {
+      if (
+        activeAttestForm.type === 'IDENTIFICATION_PROOF' &&
+        activeAttestForm.proofClientType === 'Webpage Data'
+      ) {
+        setActiveSourceName(activeAttestForm?.source);
+        setActiveIdentityType(activeAttestForm?.proofContent);
+        setStep(1);
+      } else {
+        onSubmitAttestationDialog(activeAttestForm);
+      }
+    }, [
+      onSubmitAttestationDialog,
+      activeAttestForm,
+    ]);
     const footerButton = useMemo(() => {
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {
@@ -1064,17 +1081,21 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       } else {
         if (
           fromEvents === 'LINEA_DEFI_VOYAGE' &&
-          activeRequest?.btnTxt !== ''
+          activeRequest?.btnTxt === ''
         ) {
+          return null;
+        } else {
           return (
             <PButton
               text="Try again"
               className="gray"
-              onClick={LINEA_DEFI_VOYAGETryAgainFn}
+              onClick={
+                fromEvents === 'LINEA_DEFI_VOYAGE'
+                  ? LINEA_DEFI_VOYAGETryAgainFn
+                  : tryAgainFn
+              }
             />
           );
-        } else {
-          return null;
         }
       }
     }, [
@@ -1082,6 +1103,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       onSubmitActiveRequestDialog,
       activeRequest?.type,
       LINEA_DEFI_VOYAGETryAgainFn,
+      tryAgainFn,
     ]);
     useEffect(() => {
       visible && !fromEvents && startOfflineFn();
@@ -1117,7 +1139,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (message.name === 'cancelAttest') {
             setStep(2);
             setActiveRequest({
-              type: 'error',
+              type: 'warn',
               title: 'Unable to proceed',
               desc: 'Please try again later.',
             });
@@ -1132,7 +1154,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             if (activeRequest?.type === 'loading' || !activeRequest?.type) {
               setStep(2);
               setActiveRequest({
-                type: 'error',
+                type: 'warn',
                 title: 'Unable to proceed',
                 desc: 'Please try again later.',
               });
@@ -1170,6 +1192,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             <AttestationDialog2
               type={activeAttestationType}
               activeSourceName={activeSourceName}
+              activeType={activeIdentityType}
               activeCred={activeCred}
               onBack={
                 fromEvents === 'Badges' || fromEvents === 'LINEA_DEFI_VOYAGE'
