@@ -1,13 +1,15 @@
 @import '@/assets/css/padoM.scss';
 .claimMysteryBoxWrapper {
   --processImg-mt: 0.4218rem;
+   --headerWrapper-marginX: -0.2857rem;
 }
 @media (max-width: 1470px) {
   .claimMysteryBoxWrapper {
     --processImg-mt: 62px;
+     --headerWrapper-marginX: -42px;
   }
 }
-.claimMysteryBoxWrapper {
+.claimWrapper {
   width: 100%;
   .padoDialog.claimDialog {
     main {
@@ -20,7 +22,9 @@
   .addDataSourceSucDialog {
     padding-top: 0;
     .claimDialogHeader {
-      margin: 0 auto;
+      margin: calc(-1 * var(--spacing-36, 36px)) var(--headerWrapper-marginX, -42px) 0;
+      width: calc(100% + -2*var(--headerWrapper-marginX, -42px));
+      justify-content: center;
     }
     img.sucImg,
     img.loadingImg {
