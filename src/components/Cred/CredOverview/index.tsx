@@ -127,7 +127,7 @@ const CredOverview = memo(() => {
       navigate('/cred');
     }
   }, [fromEvents, navigate]);
-  
+
   const LINEA_DEFI_VOYAGETryAgainFn = useCallback(() => {
     // handleCloseConnectTipDialog();
     const msg = {
@@ -145,7 +145,11 @@ const CredOverview = memo(() => {
     if (activeRequest?.type !== 'suc') {
       if (fromEvents === 'LINEA_DEFI_VOYAGE') {
         return (
-          <PButton text="Try again" className="gray" onClick={LINEA_DEFI_VOYAGETryAgainFn} />
+          <PButton
+            text="Try again"
+            className="gray"
+            onClick={LINEA_DEFI_VOYAGETryAgainFn}
+          />
         );
       } else {
         return null;
@@ -153,11 +157,7 @@ const CredOverview = memo(() => {
     } else {
       return null;
     }
-  }, [
-    fromEvents,
-    activeRequest?.type,
-    LINEA_DEFI_VOYAGETryAgainFn,
-  ]);
+  }, [fromEvents, activeRequest?.type, LINEA_DEFI_VOYAGETryAgainFn]);
   const initCredList = useCallback(async () => {
     await dispatch(setCredentialsAsync());
   }, [dispatch]);
@@ -205,13 +205,17 @@ const CredOverview = memo(() => {
   );
 
   const handleAdd = useCallback(async () => {
+    if (fromEvents === 'NFTs' && activeCred) {
+      return;
+    }
     setActiveCred(undefined);
+
     if (connectedWallet?.address) {
       setAddDialogVisible(true);
     } else {
       setConnectDialogVisible(true);
     }
-  }, [connectedWallet?.address]);
+  }, [connectedWallet?.address, fromEvents]);
   const handleJoinScrollEvent = useCallback(async () => {
     if (connectedWallet?.address) {
       setClaimMysteryBoxVisible2(true);
@@ -236,7 +240,7 @@ const CredOverview = memo(() => {
     const haveBinanceProof = credArrNew.find(
       (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
     );
-    
+
     const proofsFlag = !!haveXProof && !!haveBinanceProof;
     // const proofsFlag = !!proofX && !!proofBinance;
 
@@ -305,7 +309,6 @@ const CredOverview = memo(() => {
             targetUrl = '/events?ScrollProcess=suc';
             navigate(targetUrl);
           } else if (fromEvents === 'LINEA_DEFI_VOYAGE') {
-            
             navigate('/cred');
           }
         } else {
@@ -323,7 +326,7 @@ const CredOverview = memo(() => {
     },
     [fromEvents, navigate]
   );
-  
+
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       setConnectDialogVisible(false);
@@ -385,7 +388,7 @@ const CredOverview = memo(() => {
       setConnectDialogVisible(false);
     } else {
       setConnectDialogVisible(true);
-      setClaimMysteryBoxVisible2(false)
+      setClaimMysteryBoxVisible2(false);
       // bindPolygonidVisible;
       // qrcodeVisible;
       // sendToChainDialogVisible;
