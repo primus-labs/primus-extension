@@ -710,7 +710,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                       onChange={onChangeWebDataSource}
                       disabled={!activeIdentityType || !!activeCred}
                       val={activeWebDataSourceObj}
-                      refresh={refreshWebList}
                     />
                   )}
                 </div>
