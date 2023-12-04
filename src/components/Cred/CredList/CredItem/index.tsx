@@ -137,7 +137,11 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     };
     const handleClickBind = (e: SyntheticEvent) => {
       e.stopPropagation();
-      if (item.did || item.reqType === 'web') {
+      if (
+        item.did ||
+        item.reqType === 'web' ||
+        item.type === 'UNISWAP_PROOF'
+      ) {
         return;
       }
       onBindPolygonID(item);
@@ -246,7 +250,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 <img src={iconQRCode} alt="" onClick={handleViewQrcode} />
                 <div
                   className={
-                    item.reqType === 'web' || item.did
+                    item.reqType === 'web' ||
+                    item.did ||
+                    item.type === 'UNISWAP_PROOF'
                       ? 'iconWrapper disabled'
                       : 'iconWrapper'
                   }

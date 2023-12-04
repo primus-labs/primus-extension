@@ -658,16 +658,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         }
         const proofParams = {
           signature,
-          // address: curConnectedAddr,// TODO DEL!!!
-          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
+          address: curConnectedAddr,// TODO DEL!!!
+          // address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
           provider: connectedWallet?.provider,
         };
         setUniSwapProofParams(proofParams);
         const { rc, result, msg } = await claimUniNFT({
           requestId: curRequestId,
           signature,
-          // address: curConnectedAddr,// TODO DEL!!!
-          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
+          address: curConnectedAddr,// TODO DEL!!!
+          // address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
           timestamp,
         });
 
@@ -713,21 +713,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           return;
         }
         setStep(2);
-        let loadingObj = {
-          type: 'loading',
-          title: 'Attestation is processing',
-          desc: 'It may take a few seconds.',
-        };
-        // if (form.source === 'metamask') {
         //   loadingObj = {
         //     type: 'loading',
         //     title: 'Processing',
         //     desc: 'Please complete the transaction in your wallet.',
         //   };
-        //   setActiveRequest(loadingObj);
-        //   fetchAttestForUni();
-        //   return;
-        // }
+        let loadingObj = {
+          type: 'loading',
+          title: 'Attestation is processing',
+          desc: 'It may take a few seconds.',
+        };
         setActiveRequest(loadingObj);
         if (activeCred?.did) {
           fetchAttestForPolygonID();
