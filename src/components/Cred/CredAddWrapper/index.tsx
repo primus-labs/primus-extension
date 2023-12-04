@@ -43,6 +43,7 @@ import {
   validateAttestationForAnt,
   attestForPolygonId,
 } from '@/services/api/cred';
+import {initRewardsActionAsync} from '@/store/actions/index'
 import { submitUniswapTxProof } from '@/services/chains/erc721';
 
 import { DATASOURCEMAP } from '@/config/constants';
@@ -82,8 +83,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     type,
     eventSource,
   }) => {
-    const [activeIdentityType, setActiveIdentityType] =
-      useState<string>('');
+    const [activeIdentityType, setActiveIdentityType] = useState<string>('');
     const navigate = useNavigate();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     const [credRequestId, setCredRequestId] = useState<string>();
@@ -537,33 +537,98 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           requestId: uniSwapProofRequestId,
         });
         if (rc === 0) {
-          const { status, reason, transactionHash, proof } = result;
+          const {
+            status,
+            reason,
+            nft,
+            transactionHash,
+            swapSizeDollars,
+            signatureInfo,
+            signatureRawInfo,
+          } = result;
           if (status === 'COMPLETE' || status === 'ERROR') {
             setPollingUniProofIntervalSwitch(false);
           }
           // store nft & proof
           if (status === 'COMPLETE') {
-            const {
-              transactionInput,
-              proofWithPublicInputs,
-              auxiBlkVerifyInfo,
-            } = proof;
-            // const { transactionHash } = uniSwapProofParams;
-            const upperChainTxHash = await submitUniswapTxProof({
-              txHash: transactionHash,
-              proof: base64ToHex(proofWithPublicInputs),
-              auxiBlkVerifyInfo: base64ToHex(auxiBlkVerifyInfo),
-              metamaskprovider: uniSwapProofParams.provider,
+            // store nft & credit
+            // await chrome.storage.local.set({
+            //   rewards: JSON.stringify(newRewards),
+            // });
+            // await dispatch(initRewardsActionAsync());
+            const { rewards } = await chrome.storage.local.get(['rewards']);
+            const newRewardsObj = rewards ? JSON.parse(rewards) : {};
+            newRewardsObj['brevis'] = {
+              name: nft.nftName,
+              image: nft.image,
+              type: 'Badge',
+              event: 'brevis',
+            };
+            await chrome.storage.local.set({
+              rewards: JSON.stringify(newRewardsObj),
             });
-            const { rc, result } = await getUniswapProof({
-              ...uniSwapProofParams,
-              timestamp: +new Date() + '',
-              transactionHash: upperChainTxHash,
-              addressId: connectedWallet?.address,
+            await dispatch(initRewardsActionAsync());
+            const fullAttestation = {
+              ...signatureInfo,
+              ...signatureRawInfo,
+              nft,
+              address: connectedWallet?.address,
+              ...activeAttestForm,
+              version: CredVersion,
+              requestid: uniSwapProofRequestId,
+            };
+            const credentialsObj = { ...credentialsFromStore };
+            credentialsObj[uniSwapProofRequestId] = fullAttestation;
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(credentialsObj),
             });
-            if (rc === 0) {
-              // store result.result
-            }
+            await initCredList();
+            // setActiveRequest({
+            //   type: 'suc',
+            //   title: 'Congratulations',
+            //   desc: 'Successfully get your rewards.',
+            // });
+            setActiveRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'Your proof is created!',
+            });
+            // const {
+            //   transactionInput,
+            //   proofWithPublicInputs,
+            //   auxiBlkVerifyInfo,
+            // } = proof;
+            // // const { transactionHash } = uniSwapProofParams;
+            // const upperChainTxHash = await submitUniswapTxProof({
+            //   txHash: transactionHash,
+            //   proof: base64ToHex(proofWithPublicInputs),
+            //   auxiBlkVerifyInfo: base64ToHex(auxiBlkVerifyInfo),
+            //   metamaskprovider: uniSwapProofParams.provider,
+            // });
+            // const { rc, result } = await getUniswapProof({
+            //   ...uniSwapProofParams,
+            //   timestamp: +new Date() + '',
+            //   transactionHash: upperChainTxHash,
+            //   addressId: connectedWallet?.address,
+            // });
+            // if (rc === 0) {
+            //   // store result.result
+            // }
+          }
+          if (status === 'ERROR') {
+            //         const resonMap = {
+            //           SIGNATURE_WRONG: 签名错误
+            // NO_ELIGIBILITY：没有资格
+            // INTERNAL_ERROR：调用celer接口出错
+            // TRANSACTION_ERROR: 获取交易信息失败
+            // UNKNOWN：后端服务抛出异常
+            // SUCCESS：成功
+            //         }
+            setActiveRequest({
+              type: 'error',
+              title: 'Failed',
+              desc: reason,
+            });
           }
         }
       } catch {
@@ -593,38 +658,21 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         }
         const proofParams = {
           signature,
-          address: curConnectedAddr,
+          // address: curConnectedAddr,// TODO DEL!!!
+          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
           provider: connectedWallet?.provider,
         };
         setUniSwapProofParams(proofParams);
         const { rc, result, msg } = await claimUniNFT({
           requestId: curRequestId,
           signature,
-          address: curConnectedAddr,
+          // address: curConnectedAddr,// TODO DEL!!!
+          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
           timestamp,
         });
 
         if (rc === 0 && result) {
           setPollingUniProofIntervalSwitch(true);
-          // store nft & credit
-          // await chrome.storage.local.set({
-          //   rewards: JSON.stringify(newRewards),
-          // });
-          // await dispatch(initRewardsActionAsync());
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Successfully get your rewards.',
-          // });
-          // await chrome.storage.local.set({
-          //   credentials: JSON.stringify(credentialsObj),
-          // });
-          // await initCredList();
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Your proof is created!',
-          // });
         } else {
           setActiveRequest({
             type: 'error',
@@ -685,7 +733,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           fetchAttestForPolygonID();
         } else {
           if (form.type === 'UNISWAP_PROOF') {
-            // TODO
             fetchAttestForUni();
           } else if (form.type === 'IDENTIFICATION_PROOF') {
             fetchAttestForAnt(form);
@@ -764,11 +811,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setIntervalSwitch(true);
       } else if (retcode === '2') {
         // algorithm is not initialized
-        setActiveRequest({
-          type: 'error',
-          title: 'Failed',
-          desc: retdesc,
-        });
       }
     }, []);
     const getAttestationResultCallback = useCallback(
@@ -1061,10 +1103,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       } else {
         onSubmitAttestationDialog(activeAttestForm);
       }
-    }, [
-      onSubmitAttestationDialog,
-      activeAttestForm,
-    ]);
+    }, [onSubmitAttestationDialog, activeAttestForm]);
     const footerButton = useMemo(() => {
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {

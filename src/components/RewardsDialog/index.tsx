@@ -70,8 +70,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     return Object.values(rewards);
   }, [rewards]);
   const joinedNFTsFlag = useMemo(() => {
-    return rewardList.length > 0;
+    return rewardList.find((r) => !r.type);
   }, [rewardList]);
+  const joinedBrevisFlag = useMemo(() => {
+    return rewardList.find((r) => r?.event === 'brevis');
+  }, [rewardList]);
+  
   const emptyEl = useMemo(() => {
     return (
       <div className="emptyWrapper">
@@ -263,13 +267,24 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                         )} */}
                       </li>
                     )}
-                    {!showItemFlag && !showItemFlag2 && emptyEl}
+                    {!!joinedBrevisFlag && (
+                      <li>
+                        <div className="rewardWrapper win d">
+                          <img src={joinedBrevisFlag.image} alt="" />
+                          <div className="descWrapper">BrevisUniNFT Badge</div>
+                        </div>
+                      </li>
+                    )}
+                    {!showItemFlag &&
+                      !showItemFlag2 &&
+                      !joinedBrevisFlag &&
+                      emptyEl}
                   </ul>
                 )}
                 {activeTab === 'NFTs' && (
                   <>
-                    {joinedNFTsFlag ? (
-                      <RewardItem item={rewardList[0]} />
+                    {!!joinedNFTsFlag ? (
+                      <RewardItem item={joinedNFTsFlag} />
                     ) : (
                       emptyEl
                     )}

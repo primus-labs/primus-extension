@@ -240,7 +240,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       // 3.has web proof;
       // 4.web proof on chain add exchange data source
       // rewards;
-      if (rewardList?.length > 0) {
+      const nftFlag = rewardList.find(r => !r.type)
+      if (nftFlag) {
         dispatch(
           setRewardsDialogVisibleAction({
             visible: true,
@@ -272,7 +273,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       onClose,
       userPassword,
       holdSupportAttestDataSource,
-      rewardList?.length,
+      rewardList,
     ]);
 
     useEffect(() => {

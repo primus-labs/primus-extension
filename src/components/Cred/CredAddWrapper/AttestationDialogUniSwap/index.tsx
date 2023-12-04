@@ -153,16 +153,16 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           setErrorTip('Please select one data source');
           return;
         }
-        debugger;
         const form: AttestionForm = {
-          source: activeSource.name.toLowerCase(),
+          source: 'brevis',
           type,
           exUserId: activeSource?.exUserId,
           label: activeSource?.label,
         };
         if (type === 'UNISWAP_PROOF') {
           // TODO
-          form.source = activeSource?.address?.toLowerCase() as string;
+          form.sourceUseridHash =
+            activeSource?.address?.toLowerCase() as string;
         }
         if (activeCred?.requestid) {
           form.requestid = activeCred?.requestid;

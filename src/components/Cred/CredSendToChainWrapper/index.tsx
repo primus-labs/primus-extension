@@ -382,7 +382,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               let upChainParams = {
                 networkName: formatNetworkName,
                 metamaskprovider: walletObj.provider,
-                receipt: activeCred?.address,
+                receipt: activeCred?.address,// TODO DEL!!!
+                // receipt: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
                 attesteraddr: PADOADDRESS,
                 data: activeCred?.encodedData,
                 signature: activeCred?.signature,
@@ -400,11 +401,17 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               const curCredential = cObj[curRequestid];
               if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
                 const requestParams: any = {
-                  rawParam: Object.assign(curCredential, { ext: null }),
+                  rawParam:
+                    curCredential.type === 'UNISWAP_PROOF'
+                      ? curCredential.rawParam
+                      : Object.assign(curCredential, {
+                          ext: null,
+                        }),
                   greaterThanBaseValue: true,
                   signature: curCredential.signature,
                   newSigFormat: LineaSchemaName,
-                  sourceUseridHash: curCredential.sourceUseridHash,
+                  sourceUseridHash: curCredential.type === 'UNISWAP_PROOF'
+                      ? undefined: curCredential.sourceUseridHash,
                 };
                 if (activeCred?.source === 'zan') {
                   const authUseridHash = await getAuthUserIdHash();
@@ -416,6 +423,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                     timestamp: +new Date() + '',
                     result: true,
                   };
+                }
+                if (activeCred?.type === 'UNISWAP_PROOF') {
+                  requestParams.dataToBeSigned =  activeCred?.dataToBeSigned
                 }
                 const { rc, result } = await regenerateAttestation(
                   requestParams

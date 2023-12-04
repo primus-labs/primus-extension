@@ -25,6 +25,7 @@ import iconMedalIdentification from '@/assets/img/iconMedalIdentification.svg';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import iconUpdate from '@/assets/img/credit/iconUpdate.svg';
 import iconClear from '@/assets/img/credit/iconClear.svg';
+import iconUniswap from '@/assets/img/credit/iconUniswap.svg';
 
 import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -47,7 +48,6 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     const [expand, setExpand] = useState(false);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const proofTypes = useSelector((state: UserState) => state.proofTypes);
-
     const tokenLogoPrefix = useMemo(() => {
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
@@ -156,13 +156,20 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     }, [item]);
     const iconCallback = useCallback((item: CredTypeItemType) => {
       const sourceName = item?.source;
+
       if (sourceName) {
+        if (sourceName === 'brevis') {
+          return iconUniswap;
+        }
         const sourceLowerCaseName = item.source.toLowerCase();
         return DATASOURCEMAP[sourceLowerCaseName].icon;
       }
       return null;
     }, []);
     const nameCallback = useCallback((item: CredTypeItemType) => {
+      if (item.type === 'UNISWAP_PROOF') {
+        return `Uniswap`;
+      }
       if (item.reqType === 'web') {
         const idx = item?.host?.indexOf('.');
         const formatHost = item?.host?.substring((idx as number) + 1);
@@ -302,6 +309,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                       : 'KYC Status'}
                   </div>
                 )}
+                {item.type === 'UNISWAP_PROOF' && (
+                  <div className="value">Largest ETH/USDC Swap Size</div>
+                )}
               </div>
             </div>
             <div className="descItem">
@@ -334,12 +344,20 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 item.reqType !== 'web' && (
                   <div className="value">{credProofConditions}</div>
                 )}
+              {item.type === 'UNISWAP_PROOF' && (
+                <div className="value">$100~$1,000</div>
+              )}
             </div>
             <div className="descItem">
               <div className="label">Data Source ID</div>
               <div className="value">
                 {item?.sourceUseridHash
-                  ? formatAddress('0x' + item.sourceUseridHash, 6)
+                  ? formatAddress(
+                      item.sourceUseridHash.startsWith('0x')
+                        ? item.sourceUseridHash
+                        : '0x' + item.sourceUseridHash,
+                      6
+                    )
                   : 'N/A'}
               </div>
             </div>
