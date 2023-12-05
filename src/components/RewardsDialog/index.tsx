@@ -73,9 +73,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     return rewardList.find((r) => !r.type);
   }, [rewardList]);
   const joinedBrevisFlag = useMemo(() => {
-    return rewardList.find((r) => r?.event === 'brevis');
+    return rewardList.find((r) => r?.event === 'brevis' && r.type === 'NFT');
   }, [rewardList]);
-  
+
   const emptyEl = useMemo(() => {
     return (
       <div className="emptyWrapper">
@@ -167,7 +167,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
         dayjs().isBefore(dayjs(endTime));
       const flag2 = dayjs().isAfter(dayjs(endTime)) && result;
       // const flag3 = dayjs().isAfter(dayjs(endTime)) && !result;
-     
+
       if (flag1) {
         return 1;
       }
@@ -267,28 +267,32 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                         )} */}
                       </li>
                     )}
-                    {!!joinedBrevisFlag && (
-                      <li>
-                        <div className="rewardWrapper win d">
-                          <img src={joinedBrevisFlag.image} alt="" />
-                          <div className="descWrapper">BrevisUniNFT Badge</div>
-                        </div>
-                      </li>
-                    )}
                     {!showItemFlag &&
                       !showItemFlag2 &&
                       !joinedBrevisFlag &&
                       emptyEl}
                   </ul>
                 )}
+
                 {activeTab === 'NFTs' && (
-                  <>
-                    {!!joinedNFTsFlag ? (
-                      <RewardItem item={joinedNFTsFlag} />
-                    ) : (
-                      emptyEl
+                  <ul className="BadgesList">
+                    {!!joinedNFTsFlag && (
+                      <li>
+                        <RewardItem item={joinedNFTsFlag} />
+                      </li>
                     )}
-                  </>
+                    {!!joinedBrevisFlag && (
+                      <li>
+                        <div className="rewardWrapper win d">
+                          <div className="imgWrapper">
+                            <img src={joinedBrevisFlag.image} alt="" />
+                          </div>
+                          <div className="descWrapper">BrevisUniNFT Badge</div>
+                        </div>
+                      </li>
+                    )}
+                    {!joinedNFTsFlag && !joinedBrevisFlag && emptyEl}
+                  </ul>
                 )}
               </div>
             </main>

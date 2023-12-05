@@ -103,7 +103,6 @@ const Layout = memo(() => {
           ]);
           const encodeReturnUrl = decodeURIComponent(pathname + search);
           if (keyStore) {
-          
             if (!message.res) {
               if (search) {
                 navigate(`/lock?backUrl=${encodeReturnUrl}`);
@@ -114,9 +113,7 @@ const Layout = memo(() => {
               // navigate('/datas');
             }
           } else if (privateKey) {
-            
           } else {
-            
             if (search) {
               navigate(`/?backUrl=${encodeReturnUrl}`);
             } else {
@@ -198,11 +195,8 @@ const Layout = memo(() => {
   useEffect(() => {
     initStoreData();
   }, [initStoreData]);
-
   useEffect(() => {
-    
-      updateAlgoUrl();
-    
+    updateAlgoUrl();
   }, []);
 
   return (

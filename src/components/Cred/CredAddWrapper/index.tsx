@@ -552,10 +552,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           // store nft & proof
           if (status === 'COMPLETE') {
             // store nft & credit
-            // await chrome.storage.local.set({
-            //   rewards: JSON.stringify(newRewards),
-            // });
-            // await dispatch(initRewardsActionAsync());
             const { rewards } = await chrome.storage.local.get(['rewards']);
             const newRewardsObj = rewards ? JSON.parse(rewards) : {};
             newRewardsObj['brevis'] = {
@@ -658,7 +654,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         }
         const proofParams = {
           signature,
-          address: curConnectedAddr,// TODO DEL!!!
+          address: curConnectedAddr, // TODO DEL!!!
           // address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
           provider: connectedWallet?.provider,
         };
@@ -666,7 +662,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const { rc, result, msg } = await claimUniNFT({
           requestId: curRequestId,
           signature,
-          address: curConnectedAddr,// TODO DEL!!!
+          address: curConnectedAddr, // TODO DEL!!!
           // address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
           timestamp,
         });
@@ -687,7 +683,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           desc: errorDescEl,
         });
       }
-    }, []);
+    }, [connectedWallet?.address, connectedWallet?.provider,errorDescEl]);
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);

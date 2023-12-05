@@ -7,6 +7,9 @@
   --rewardWrapper-width: 1.0884rem;
   --rewardWrapper-height: 1.415rem;
   --descWrapper-width: 0.8707rem;
+  --descWrapper-height: 0.2244rem;
+  --imgWrapper-height: 0.5804rem;
+  --imgWrapper-img-width: 0.5034rem;
   --br-7: 0.0476rem;
   --emptyWrapper-pt: 0.5714rem;
 }
@@ -18,6 +21,9 @@
     --rewardWrapper-width: 160px;
     --rewardWrapper-height: 208px;
     --descWrapper-width: 128px;
+    --descWrapper-height: 33px;
+    --imgWrapper-height: 85.333px;
+    --imgWrapper-img-width: 74px;
     --br-7: 7px;
     --emptyWrapper-pt: 84px;
   }
@@ -54,6 +60,7 @@
           border-radius: var(--spacing-4, 4px);
           .descWrapper {
             width: var(--descWrapper-width, 128px);
+            height: var(--descWrapper-height, 33px);
             color: #000;
             @extend .Body3;
           }
@@ -66,6 +73,17 @@
             #86e3ce 15.48%,
             rgba(204, 171, 216, 0.8) 95.68%
           );
+        }
+        .imgWrapper {
+          width: var(--descWrapper-width, 128px);
+          height: var(--imgWrapper-height,85.333px);
+          flex-shrink: 0;
+          border-radius: var(--spacing-4, 4px);
+          background: linear-gradient(0deg, #f1f2b5 0.2%, #90f2ff 99.8%);
+          @extend .frcc;
+          >img{
+            width: var(--imgWrapper-img-width,74px);
+          }
         }
         .timeWrapper {
           @extend .Body2;
@@ -89,10 +107,10 @@
           text-align: center;
         }
       }
-      .BadgesList{
+      .BadgesList {
         width: 100%;
         @extend .frsc;
-        gap: var(--spacing-60, 60px)
+        gap: var(--spacing-60, 60px);
       }
     }
   }
