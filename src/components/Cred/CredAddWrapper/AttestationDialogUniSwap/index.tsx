@@ -99,17 +99,19 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       } else {
         l = connectedOnChainSourceList;
       }
-      // if (activeCred) {
-      //   l = l.map((i) =>
-      //     Object.assign(i, { disabled: activeCred?.source !== i.name.toLowerCase() })
-      //   );
-      // }
+      if (activeCred) {
+        l = l.map((i) =>
+          Object.assign(i, {
+            disabled: activeCred?.sourceUseridHash !== i.address?.toLowerCase(),
+          })
+        );
+      }
 
       return l;
-    }, [connectedOnChainSourceList, type]);
+    }, [connectedOnChainSourceList, type, activeCred]);
 
     const activeSourceList = useMemo(() => {
-      if (type === 'TOKEN_HOLDINGS' && activeToken) {
+      if (type === 'UNISWAP_PROOF' && activeToken) {
         const reduceF = (prev: string[], curr: any) => {
           const { tokenListMap, name } = curr;
           const curTokenList = Object.keys(tokenListMap);
@@ -174,10 +176,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     };
     const handleClickData = useCallback(
       (item: ConnectSourceType) => {
-        if (type === 'TOKEN_HOLDINGS' && !activeToken) {
-          setErrorTip('Please select one data source');
-          return;
-        }
+        
         if (activeSourceName) {
           return;
         }
@@ -203,33 +202,24 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       [activeCred, activeSourceList, activeToken, type, activeSourceName]
     );
 
-    useEffect(() => {
-      if (activeSourceName) {
-        const sourceInfo = activeConnectedSourceList.find(
-          (i) => i.name.toLowerCase() === activeSourceName.toLowerCase()
-        );
-        setActiveSource(sourceInfo);
-      }
-    }, [activeSourceName, activeConnectedSourceList]);
+    
     useEffect(() => {
       if (activeCred) {
         const sourceInfo = activeConnectedSourceList.find(
-          (i) => i.name.toLowerCase() === activeCred.source.toLowerCase()
+          (i) =>
+            i.address?.toLowerCase() === activeCred.sourceUseridHash?.toLowerCase()
         );
         setActiveSource(sourceInfo);
-        if (type === 'TOKEN_HOLDINGS') {
-          activeCred.holdingToken && setActiveToken(activeCred.holdingToken);
-        }
       }
     }, [activeCred, type, activeConnectedSourceList]);
-    useEffect(() => {
-      if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
-        const baseValArr = JSON.parse(
-          activeAttestationTypeInfo.credProofConditions
-        );
-        if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
-      }
-    }, [activeAttestationTypeInfo]);
+    // useEffect(() => {
+    //   if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
+    //     const baseValArr = JSON.parse(
+    //       activeAttestationTypeInfo.credProofConditions
+    //     );
+    //     if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
+    //   }
+    // }, [activeAttestationTypeInfo]);
     useEffect(() => {
       if (identityList.length === 1) {
         setActiveIdentityType(identityList[0].value);
@@ -254,6 +244,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                       onChange={handleChangeSelectIdentityType}
                       val={activeIdentityType}
                       placeholder="Select content"
+                      disabled={
+                        !!activeCred
+                      }
                     />
                   </div>
                 </div>
@@ -267,7 +260,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                     handleClickData(a as ExchangeMeta);
                   }}
                   list={activeConnectedSourceList}
-                  activeList={activeSourceList}
                   val={activeSource}
                 />
               </div>

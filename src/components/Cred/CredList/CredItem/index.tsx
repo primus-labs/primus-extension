@@ -60,6 +60,14 @@ const CredItem: React.FC<CredTypeListProps> = memo(
           },
         ];
       }
+      if (item.type === 'UNISWAP_PROOF') {
+        return [
+          {
+            icon: iconClear,
+            text: 'Delete',
+          },
+        ];
+      }
       return [
         {
           icon: iconClear,
@@ -137,11 +145,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     };
     const handleClickBind = (e: SyntheticEvent) => {
       e.stopPropagation();
-      if (
-        item.did ||
-        item.reqType === 'web' ||
-        item.type === 'UNISWAP_PROOF'
-      ) {
+      if (item.did || item.reqType === 'web' || item.type === 'UNISWAP_PROOF') {
         return;
       }
       onBindPolygonID(item);
@@ -339,19 +343,21 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 </div>
               )}
               {item.type === 'IDENTIFICATION_PROOF' &&
-                item.reqType === 'web' && (
+                (item.reqType === 'web' ? (
                   <div className="value">
                     {item.uiTemplate.subProofContent &&
                       item.uiTemplate.subProofContent + ' '}
                     {item.uiTemplate.condition}
                   </div>
-                )}
-              {item.type === 'IDENTIFICATION_PROOF' &&
+                ) : (
+                  <div className="value">{credProofConditions}</div>
+                ))}
+              {/* {item.type === 'IDENTIFICATION_PROOF' &&
                 item.reqType !== 'web' && (
                   <div className="value">{credProofConditions}</div>
-                )}
+                )} */}
               {item.type === 'UNISWAP_PROOF' && (
-                <div className="value">$100~$1,000</div>
+                <div className="value">{item.dataToBeSigned.content}</div>
               )}
             </div>
             <div className="descItem">
