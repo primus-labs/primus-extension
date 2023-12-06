@@ -61,6 +61,7 @@ import {
   getUniswapProof,
 } from '@/services/api/event';
 import { eventReport } from '@/services/api/usertracker';
+import { switchAccount } from '@/services/wallets/metamask';
 
 const onChainObj: any = DATASOURCEMAP.onChain;
 
@@ -683,64 +684,69 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       pollingUniProofIntervalSwitch,
       false
     );
-    const fetchAttestForUni = useCallback(async () => {
-      try {
-        const curRequestId = uuidv4();
-        setUniSwapProofRequestId(curRequestId);
-        const curConnectedAddr = connectedWallet?.address;
-        const timestamp: string = +new Date() + '';
+    const fetchAttestForUni = useCallback(
+      async (form: AttestionForm) => {
+        try {
+          const curRequestId = uuidv4();
+          setUniSwapProofRequestId(curRequestId);
+          const curConnectedAddr = connectedWallet?.address;
+          // const curConnectedAddr = '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07'; // TODO DEL!!!
+          const timestamp: string = +new Date() + '';
+          if (curConnectedAddr.toLowerCase() !== form?.sourceUseridHash?.toLowerCase()) {
+            await switchAccount(connectedWallet?.provider);
+          }
+          // const signature = await requestSign(curConnectedAddr, timestamp);
+          // debugger;
+          const signature = await requestSign(
+            form?.sourceUseridHash,
+            timestamp
+          ); // TODO DEL !!!
+          if (!signature) {
+            setActiveRequest({
+              type: 'warn',
+              title: 'Unable to proceed',
+              desc: errorDescEl,
+            });
+            return;
+          }
+          const proofParams = {
+            signature,
+            address: curConnectedAddr,
+            provider: connectedWallet?.provider,
+          };
+          setUniSwapProofParams(proofParams);
+          const { rc, result, msg } = await claimUniNFT({
+            requestId: curRequestId,
+            signature,
+            address: curConnectedAddr,
+            timestamp,
+          });
 
-        const signature = await requestSign(curConnectedAddr, timestamp);
-        // debugger;
-        // const signature = await requestSign(
-        //   activeAttestForm?.sourceUseridHash,
-        //   timestamp
-        // ); // TODO DEL !!!
-        if (!signature) {
+          if (rc === 0 && result) {
+            setPollingUniProofIntervalSwitch(true);
+          } else {
+            setActiveRequest({
+              type: 'error',
+              title: 'Failed',
+              desc: msg,
+            });
+          }
+        } catch (e) {
           setActiveRequest({
             type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
-          return;
         }
-        const proofParams = {
-          signature,
-          address: curConnectedAddr, // TODO DEL!!!
-          // address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
-          provider: connectedWallet?.provider,
-        };
-        setUniSwapProofParams(proofParams);
-        const { rc, result, msg } = await claimUniNFT({
-          requestId: curRequestId,
-          signature,
-          address: curConnectedAddr, // TODO DEL!!!
-          // address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07',
-          timestamp,
-        });
-
-        if (rc === 0 && result) {
-          setPollingUniProofIntervalSwitch(true);
-        } else {
-          setActiveRequest({
-            type: 'error',
-            title: 'Failed',
-            desc: msg,
-          });
-        }
-      } catch (e) {
-        setActiveRequest({
-          type: 'warn',
-          title: 'Unable to proceed',
-          desc: errorDescEl,
-        });
-      }
-    }, [
-      connectedWallet?.address,
-      connectedWallet?.provider,
-      errorDescEl,
-      activeAttestForm?.sourceUseridHash,
-    ]);
+      },
+      [
+        connectedWallet?.address,
+        connectedWallet?.provider,
+        errorDescEl,
+        // activeAttestForm?.sourceUseridHash,
+        activeAttestForm,
+      ]
+    );
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);
@@ -781,7 +787,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           fetchAttestForPolygonID();
         } else {
           if (form.type === 'UNISWAP_PROOF') {
-            fetchAttestForUni();
+            fetchAttestForUni(form);
           } else if (form.type === 'IDENTIFICATION_PROOF') {
             fetchAttestForAnt(form);
           } else {

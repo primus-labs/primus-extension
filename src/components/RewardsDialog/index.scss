@@ -9,7 +9,7 @@
   --descWrapper-width: 0.8707rem;
   --descWrapper-height: 0.2244rem;
   --imgWrapper-height: 0.5804rem;
-  --imgWrapper-img-width: 0.5034rem;
+  --imgWrapper-img-width: 0.6122rem;
   --br-7: 0.0476rem;
   --emptyWrapper-pt: 0.5714rem;
   --badgesList-height: 2.3809rem;
@@ -24,7 +24,7 @@
     --descWrapper-width: 128px;
     --descWrapper-height: 33px;
     --imgWrapper-height: 85.333px;
-    --imgWrapper-img-width: 74px;
+    --imgWrapper-img-width: 90px;
     --br-7: 7px;
     --emptyWrapper-pt: 84px;
     --badgesList-height: 350px;
@@ -62,7 +62,7 @@
           border-radius: var(--spacing-4, 4px);
           .descWrapper {
             width: var(--descWrapper-width, 128px);
-            height: var(--descWrapper-height, 33px);
+            // height: var(--descWrapper-height, 33px);
             color: #000;
             @extend .Body3;
           }
@@ -76,23 +76,50 @@
             rgba(204, 171, 216, 0.8) 95.68%
           );
         }
-        .imgWrapper {
-          width: var(--descWrapper-width, 128px);
-          height: var(--imgWrapper-height,85.333px);
-          flex-shrink: 0;
-          border-radius: var(--spacing-4, 4px);
-          background: linear-gradient(0deg, #f1f2b5 0.2%, #90f2ff 99.8%);
-          @extend .frcc;
-          >img{
-            width: var(--imgWrapper-img-width,74px);
-          }
-        }
+
         .timeWrapper {
           @extend .Body2;
           @extend .frcc;
           width: 100%;
           height: var(--spacing-22, 22px);
           color: #000;
+        }
+      }
+      .nftWrapper {
+        @extend .fccc;
+        width: var(--rewardWrapper-width, 160px);
+        height: var(--rewardWrapper-height, 208px);
+        gap: var(--spacing-12, 12px);
+        border-radius: var(--spacing-8, 8px);
+        background: var(--Badge, rgba(10, 18, 20, 0.05));
+        .imgWrapper {
+          width: var(--descWrapper-width, 128px);
+          height: var(--descWrapper-width, 128px);
+          flex-shrink: 0;
+          @extend .frcc;
+          border-radius: var(--spacing-4, 4px);
+          background: linear-gradient(
+            147deg,
+            rgba(142, 158, 171, 0.5) -21.29%,
+            rgba(238, 242, 243, 0.5) 111.12%
+          );
+          > img {
+            width: var(--imgWrapper-img-width, 90px);
+          }
+        }
+        .descWrapper {
+          width: var(--descWrapper-width, 128px);
+          @extend .fcss;
+          // align-self: flex-start;
+          text-align: left;
+          gap: var(--spacing-4, 4px);
+          @extend .Text2;
+          .label {
+            color: #000;
+          }
+          .value {
+            color: var(--Text-body, #515758);
+          }
         }
       }
       .emptyWrapper {
@@ -111,7 +138,7 @@
       }
       .BadgesList {
         width: 100%;
-        max-height: var(--badgesList-height,350px);
+        max-height: var(--badgesList-height, 350px);
         overflow-y: auto;
         @extend .frbc;
         flex-wrap: wrap;

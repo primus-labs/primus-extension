@@ -283,11 +283,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                     )}
                     {!!joinedBrevisFlag && (
                       <li>
-                        <div className="rewardWrapper win d">
+                        <div className="nftWrapper">
                           <div className="imgWrapper">
                             <img src={joinedBrevisFlag.image} alt="" />
                           </div>
-                          <div className="descWrapper">BrevisUniNFT Badge</div>
+                          <div className="descWrapper">
+                            <div className="label">BrevisUniNFT</div>
+                            <div className="value">Stone</div>
+                          </div>
                         </div>
                       </li>
                     )}
