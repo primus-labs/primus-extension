@@ -546,6 +546,17 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             signatureInfo,
             signatureRawInfo,
           } = result;
+          var eventInfo: any = {
+            eventType: 'ATTESTATION_GENERATE',
+            rawData: {
+              source: 'brevis',
+              schemaType: 'UNISWAP_PROOF',
+              sigFormat: 'EAS-Ethereum',
+              attestationId: uniSwapProofRequestId,
+              // status: 'SUCCESS',
+              // reason: '',
+            },
+          };
           if (status === 'COMPLETE' || status === 'ERROR') {
             setPollingUniProofIntervalSwitch(false);
           }
@@ -579,16 +590,19 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               credentials: JSON.stringify(credentialsObj),
             });
             await initCredList();
-            // setActiveRequest({
-            //   type: 'suc',
-            //   title: 'Congratulations',
-            //   desc: 'Successfully get your rewards.',
-            // });
-            setActiveRequest({
-              type: 'suc',
-              title: 'Congratulations',
-              desc: 'Your proof is created!',
-            });
+            eventInfo.rawData.status = 'SUCCESS';
+            eventInfo.rawData.reason = '';
+            eventReport(eventInfo);
+              // setActiveRequest({
+              //   type: 'suc',
+              //   title: 'Congratulations',
+              //   desc: 'Successfully get your rewards.',
+              // });
+              setActiveRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your proof is created!',
+              });
             // const {
             //   transactionInput,
             //   proofWithPublicInputs,
@@ -620,17 +634,49 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             // UNKNOWN：后端服务抛出异常
             // SUCCESS：成功
             //         }
-            setActiveRequest({
-              type: 'error',
-              title: 'Failed',
-              desc: reason,
-            });
+            
+            if (reason === 'NO_ELIGIBILITY') {
+              setActiveRequest({
+                type: 'warn',
+                title: 'Not meet the requirements',
+                desc: 'Do not have an eligible transaction. ',
+                btnTxt: ''
+              });
+            } else if (reason === 'UNKNOWN') {
+              setActiveRequest({
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Some transaction error occurs. Please try again later.',
+                btnTxt: '',
+              });
+            } else {
+              setActiveRequest({
+                type: 'warn',
+                title: 'Something went wrong',
+                desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+              });
+            }
+            eventInfo.rawData.status = 'FAILED';
+            eventInfo.rawData.reason = reason;
+            eventReport(eventInfo);
           }
         }
       } catch {
+        setActiveRequest({
+          type: 'warn',
+          title: 'Something went wrong',
+          desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+        });
       } finally {
       }
-    }, [uniSwapProofRequestId, uniSwapProofParams, connectedWallet?.address]);
+    }, [
+      uniSwapProofRequestId,
+      connectedWallet?.address,
+      activeAttestForm,
+      credentialsFromStore,
+      initCredList,
+      dispatch,
+    ]);
     useInterval(
       pollingUniProofResult,
       3000,
@@ -643,7 +689,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setUniSwapProofRequestId(curRequestId);
         const curConnectedAddr = connectedWallet?.address;
         const timestamp: string = +new Date() + '';
+
         const signature = await requestSign(curConnectedAddr, timestamp);
+        // debugger;
+        // const signature = await requestSign(
+        //   activeAttestForm?.sourceUseridHash,
+        //   timestamp
+        // ); // TODO DEL !!!
         if (!signature) {
           setActiveRequest({
             type: 'warn',
@@ -683,7 +735,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           desc: errorDescEl,
         });
       }
-    }, [connectedWallet?.address, connectedWallet?.provider,errorDescEl]);
+    }, [
+      connectedWallet?.address,
+      connectedWallet?.provider,
+      errorDescEl,
+      activeAttestForm?.sourceUseridHash,
+    ]);
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);
@@ -1113,6 +1170,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           activeRequest?.btnTxt === ''
         ) {
           return null;
+        } else if (
+          activeAttestForm?.type === 'UNISWAP_PROOF' &&
+          activeRequest?.btnTxt === ''
+        ) {
+          return null;
         } else {
           return (
             <PButton
@@ -1133,6 +1195,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       activeRequest?.type,
       LINEA_DEFI_VOYAGETryAgainFn,
       tryAgainFn,
+      activeRequest?.btnTxt,
     ]);
     useEffect(() => {
       visible && !fromEvents && startOfflineFn();

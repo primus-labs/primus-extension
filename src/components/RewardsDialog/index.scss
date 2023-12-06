@@ -12,6 +12,7 @@
   --imgWrapper-img-width: 0.5034rem;
   --br-7: 0.0476rem;
   --emptyWrapper-pt: 0.5714rem;
+  --badgesList-height: 2.3809rem;
 }
 
 @media (max-width: 1470px) {
@@ -26,6 +27,7 @@
     --imgWrapper-img-width: 74px;
     --br-7: 7px;
     --emptyWrapper-pt: 84px;
+    --badgesList-height: 350px;
   }
 }
 .padoDialog.mysteryBoxRewardsDialog {
@@ -109,8 +111,12 @@
       }
       .BadgesList {
         width: 100%;
-        @extend .frsc;
-        gap: var(--spacing-60, 60px);
+        max-height: var(--badgesList-height,350px);
+        overflow-y: auto;
+        @extend .frbc;
+        flex-wrap: wrap;
+        row-gap: var(--spacing-16, 16px);
+        // gap: var(--spacing-60, 60px);
       }
     }
   }
