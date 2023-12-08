@@ -766,7 +766,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setActiveRequest({
           type: 'error',
           title: 'Failed',
-          desc: retdesc,
+          desc: (
+            <>
+              <p>The algorithm has not been initialized.</p>
+              <p>Please try again later.</p>
+            </>
+          ),
         });
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
