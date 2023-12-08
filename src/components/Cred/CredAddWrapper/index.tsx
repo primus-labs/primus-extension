@@ -756,7 +756,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setStep(0);
     }, [activeRequest?.type]);
 
-    const getAttestationCallback = useCallback((res: any) => {
+    const getAttestationCallback = useCallback(async(res: any) => {
       const { retcode, retdesc } = JSON.parse(res);
       if (retcode === '0') {
         setTimeoutSwitch(true);
@@ -768,6 +768,24 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           title: 'Failed',
           desc: retdesc,
         });
+        const { activeRequestAttestation } = await chrome.storage.local.get([
+          'activeRequestAttestation',
+        ]);
+        const parsedActiveRequestAttestation = activeRequestAttestation
+          ? JSON.parse(activeRequestAttestation)
+          : {};
+        var eventInfo: any = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData: {
+            source: parsedActiveRequestAttestation.source,
+            schemaType: parsedActiveRequestAttestation.schemaType,
+            sigFormat: parsedActiveRequestAttestation.sigFormat,
+            // attestationId: uniqueId,
+            status: 'FAILED',
+            reason: 'algorithm is not initialized',
+          },
+        };
+        eventReport(eventInfo);
       }
     }, []);
     const getAttestationResultCallback = useCallback(
