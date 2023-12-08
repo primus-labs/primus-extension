@@ -69,12 +69,17 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
   const rewardList: RewardList = useMemo(() => {
     return Object.values(rewards);
   }, [rewards]);
+  // console.log('222123', rewards);
   const joinedNFTsFlag = useMemo(() => {
     return rewardList.find((r) => !r.type);
   }, [rewardList]);
-  const joinedBrevisFlag = useMemo(() => {
-    return rewardList.find((r) => r?.event === 'brevis' && r.type === 'NFT');
+  
+  const joinedBrevisRewardList = useMemo(() => {
+    return rewardList.filter((r) => r?.event === 'brevis' && r.type === 'NFT');
   }, [rewardList]);
+  const joinedBrevisFlag = useMemo(() => {
+    return joinedBrevisRewardList.length > 0
+  }, [joinedBrevisRewardList]);
 
   const emptyEl = useMemo(() => {
     return (
@@ -281,19 +286,22 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                         <RewardItem item={joinedNFTsFlag} />
                       </li>
                     )}
-                    {!!joinedBrevisFlag && (
-                      <li>
-                        <div className="nftWrapper">
-                          <div className="imgWrapper">
-                            <img src={joinedBrevisFlag.image} alt="" />
-                          </div>
-                          <div className="descWrapper">
-                            <div className="label">BrevisUniNFT</div>
-                            <div className="value">Stone</div>
-                          </div>
-                        </div>
-                      </li>
-                    )}
+                    {!!joinedBrevisFlag &&
+                      joinedBrevisRewardList.map(r => {
+                        return (
+                          <li>
+                            <div className="nftWrapper">
+                              <div className="imgWrapper">
+                                <img src={r.image} alt="" />
+                              </div>
+                              <div className="descWrapper">
+                                <div className="label">{r.title}</div>
+                                <div className="value">{r.name}</div>
+                              </div>
+                            </div>
+                          </li>
+                        );
+                      }) }
                     {/* <li>
                       <div className="rewardWrapper win d">
                         <div className="imgWrapper">

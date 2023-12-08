@@ -43,7 +43,7 @@ import {
   validateAttestationForAnt,
   attestForPolygonId,
 } from '@/services/api/cred';
-import {initRewardsActionAsync} from '@/store/actions/index'
+import { initRewardsActionAsync } from '@/store/actions/index';
 import { submitUniswapTxProof } from '@/services/chains/erc721';
 
 import { DATASOURCEMAP } from '@/config/constants';
@@ -566,10 +566,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             // store nft & credit
             const { rewards } = await chrome.storage.local.get(['rewards']);
             const newRewardsObj = rewards ? JSON.parse(rewards) : {};
-            newRewardsObj['brevis'] = {
+            newRewardsObj['brevis' + uniSwapProofRequestId] = {
+              title: nft.nftTitle,
               name: nft.nftName,
               image: nft.image,
-              type: 'Badge',
+              nftAddress: nft.nftAddress,
+              accountAddress: activeAttestForm?.sourceUseridHash,
+              type: 'NFT',
               event: 'brevis',
             };
             await chrome.storage.local.set({
@@ -594,16 +597,16 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             eventInfo.rawData.status = 'SUCCESS';
             eventInfo.rawData.reason = '';
             eventReport(eventInfo);
-              // setActiveRequest({
-              //   type: 'suc',
-              //   title: 'Congratulations',
-              //   desc: 'Successfully get your rewards.',
-              // });
-              setActiveRequest({
-                type: 'suc',
-                title: 'Congratulations',
-                desc: 'Your proof is created!',
-              });
+            // setActiveRequest({
+            //   type: 'suc',
+            //   title: 'Congratulations',
+            //   desc: 'Successfully get your rewards.',
+            // });
+            setActiveRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'Your proof is created!',
+            });
             // const {
             //   transactionInput,
             //   proofWithPublicInputs,
@@ -635,13 +638,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             // UNKNOWN：后端服务抛出异常
             // SUCCESS：成功
             //         }
-            
+
             if (reason === 'NO_ELIGIBILITY') {
               setActiveRequest({
                 type: 'warn',
                 title: 'Not meet the requirements',
                 desc: 'Do not have an eligible transaction. ',
-                btnTxt: ''
+                btnTxt: '',
               });
             } else if (reason === 'UNKNOWN') {
               setActiveRequest({
@@ -690,10 +693,21 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           const curRequestId = uuidv4();
           setUniSwapProofRequestId(curRequestId);
           const curConnectedAddr = connectedWallet?.address;
-          // const curConnectedAddr = '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07'; // TODO DEL!!!
+          // const curConnectedAddr = '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07'; // stone TODO DEL!!!
+
           const timestamp: string = +new Date() + '';
-          if (curConnectedAddr.toLowerCase() !== form?.sourceUseridHash?.toLowerCase()) {
-            await switchAccount(connectedWallet?.provider);
+          // TODO DEL!!!
+          if (
+            curConnectedAddr.toLowerCase() !==
+            form?.sourceUseridHash?.toLowerCase()
+          ) {
+            setActiveRequest({
+              type: 'warn',
+              title: 'Unable to proceed',
+              desc: `Please switch to account ${form?.sourceUseridHash}`,
+              btnTxt: 'Switch Account',
+            });
+            return;
           }
           // const signature = await requestSign(curConnectedAddr, timestamp);
           // debugger;
@@ -739,13 +753,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           });
         }
       },
-      [
-        connectedWallet?.address,
-        connectedWallet?.provider,
-        errorDescEl,
-        // activeAttestForm?.sourceUseridHash,
-        activeAttestForm,
-      ]
+      [connectedWallet?.address, connectedWallet?.provider, errorDescEl]
     );
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
@@ -1158,6 +1166,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         onSubmitAttestationDialog(activeAttestForm);
       }
     }, [onSubmitAttestationDialog, activeAttestForm]);
+    const switchAccountFn = useCallback(async () => {
+      await switchAccount(connectedWallet?.provider);
+      await fetchAttestForUni(activeAttestForm);
+    }, [connectedWallet?.provider, fetchAttestForUni, activeAttestForm]);
     const footerButton = useMemo(() => {
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {
@@ -1181,6 +1193,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           activeRequest?.btnTxt === ''
         ) {
           return null;
+        } else if (activeRequest?.btnTxt === 'Switch Account') {
+          return <PButton text="Switch Account" onClick={switchAccountFn} />;
         } else {
           return (
             <PButton

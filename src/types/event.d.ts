@@ -5,6 +5,9 @@ export type Reward = {
   tokenId?: string;
   type?: string;
   event?: string;
+  title?: string;
+  nftAddress: string;
+  accountAddress: string;
 };
 export type Rewards = {
   [propName: string]: Reward;

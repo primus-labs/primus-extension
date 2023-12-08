@@ -73,6 +73,10 @@
           @extend .Body1;
           gap: var(--spacing-8, 8px);
           color: var(--Text-headline, #0a1214);
+          width: var(--conrItem-width, 130px);
+          >span{
+            white-space: nowrap;
+          }
           > img {
             width: var(--spacing-18, 18px);
           }
