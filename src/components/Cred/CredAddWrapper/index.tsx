@@ -694,7 +694,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           setUniSwapProofRequestId(curRequestId);
           const curConnectedAddr = connectedWallet?.address;
           // const curConnectedAddr = '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07'; // stone TODO DEL!!!
-
           const timestamp: string = +new Date() + '';
           // TODO DEL!!!
           if (
@@ -1166,10 +1165,30 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         onSubmitAttestationDialog(activeAttestForm);
       }
     }, [onSubmitAttestationDialog, activeAttestForm]);
+    const submitUniswapProofAfterSwitchAccountFn = useCallback(() => {
+      let loadingObj = {
+        type: 'loading',
+        title: 'Attestation is processing',
+        desc: 'It may take a few seconds.',
+      };
+      setActiveRequest(loadingObj);
+      fetchAttestForUni(activeAttestForm);
+    }, [activeAttestForm, fetchAttestForUni]);
     const switchAccountFn = useCallback(async () => {
+      setActiveRequest({
+        type: 'loading',
+        title: 'Requesting Connection',
+        desc: 'Check MetaMask to confirm the connection.',
+      });
       await switchAccount(connectedWallet?.provider);
-      await fetchAttestForUni(activeAttestForm);
-    }, [connectedWallet?.provider, fetchAttestForUni, activeAttestForm]);
+      setActiveRequest({
+        type: 'suc',
+        title: 'Congratulations',
+        desc: `Account switch successful`,
+        btnTxt: 'Account switch successful',
+      });
+      // await fetchAttestForUni(activeAttestForm);
+    }, [connectedWallet?.provider]);
     const footerButton = useMemo(() => {
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {
@@ -1177,6 +1196,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             <PButton
               text={fromEvents === 'Scroll' ? 'OK' : 'Submit'}
               onClick={onSubmitActiveRequestDialog}
+            />
+          );
+        } else if (activeRequest?.btnTxt === 'Account switch successful') {
+          return (
+            <PButton
+              text="Next"
+              onClick={submitUniswapProofAfterSwitchAccountFn}
             />
           );
         } else {
@@ -1216,6 +1242,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       LINEA_DEFI_VOYAGETryAgainFn,
       tryAgainFn,
       activeRequest?.btnTxt,
+      switchAccountFn,
+      // activeAttestForm?.type,
+      
+      activeAttestForm,
+      submitUniswapProofAfterSwitchAccountFn,
     ]);
     useEffect(() => {
       visible && !fromEvents && startOfflineFn();

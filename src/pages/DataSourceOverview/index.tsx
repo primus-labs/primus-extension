@@ -72,7 +72,6 @@ const DataSourceOverview = memo(() => {
   const onChainAssetsSources = useSelector(
     (state: UserState) => state.onChainAssetsSources
   );
-  console.log('222123', onChainAssetsSources);
 
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort

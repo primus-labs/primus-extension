@@ -69,7 +69,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
   const rewardList: RewardList = useMemo(() => {
     return Object.values(rewards);
   }, [rewards]);
-  // console.log('222123', rewards);
   const joinedNFTsFlag = useMemo(() => {
     return rewardList.find((r) => !r.type);
   }, [rewardList]);
