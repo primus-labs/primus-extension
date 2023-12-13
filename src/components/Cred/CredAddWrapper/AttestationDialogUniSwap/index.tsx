@@ -177,9 +177,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const handleClickData = useCallback(
       (item: ConnectSourceType) => {
         
-        if (activeSourceName) {
-          return;
-        }
+        // if (activeSourceName) {
+        //   return;
+        // }
         if ((activeCred || activeSourceName) && activeSource) {
           if (activeSource?.name !== item.name) {
             return;
@@ -207,11 +207,18 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       if (activeCred) {
         const sourceInfo = activeConnectedSourceList.find(
           (i) =>
-            i.address?.toLowerCase() === activeCred.sourceUseridHash?.toLowerCase()
+            i.address?.toLowerCase() ===
+            activeCred.sourceUseridHash?.toLowerCase()
         );
         setActiveSource(sourceInfo);
       }
-    }, [activeCred, type, activeConnectedSourceList]);
+      if (activeSourceName) {
+        const sourceInfo = activeConnectedSourceList.find(
+          (i) => i.address?.toLowerCase() === activeSourceName?.toLowerCase()
+        );
+        setActiveSource(sourceInfo);
+      }
+    }, [activeCred, type, activeConnectedSourceList, activeSourceName]);
     // useEffect(() => {
     //   if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
     //     const baseValArr = JSON.parse(

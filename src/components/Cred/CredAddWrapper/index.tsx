@@ -47,6 +47,7 @@ import { initRewardsActionAsync } from '@/store/actions/index';
 import { submitUniswapTxProof } from '@/services/chains/erc721';
 
 import { DATASOURCEMAP } from '@/config/constants';
+import {formatAddress} from '@/utils/utils'
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 import type { Dispatch } from 'react';
@@ -190,9 +191,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setStep(1);
     }, []);
     const handleCloseMask = useCallback(() => {
+      if (
+        activeRequest?.desc?.startsWith('Check MetaMask to confirm the connection with')
+      ) {
+        setActiveRequest(undefined);
+      }
       setStep(-1);
       onClose();
-    }, [onClose]);
+    }, [onClose, activeRequest?.desc]);
     const validateBaseInfo = useCallback(
       (form: AttestionForm) => {
         const { source, baseValue } = form;
@@ -695,21 +701,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           const curConnectedAddr = connectedWallet?.address;
           // const curConnectedAddr = '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07'; // stone TODO DEL!!!
           const timestamp: string = +new Date() + '';
-          // TODO DEL!!!
+          // if did‘t connected with the selected account
           if (
             curConnectedAddr.toLowerCase() !==
             form?.sourceUseridHash?.toLowerCase()
           ) {
-            setActiveRequest({
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: `Please switch to account ${form?.sourceUseridHash}`,
-              btnTxt: 'Switch Account',
-            });
+            switchAccountFn(form);
             return;
           }
-          // const signature = await requestSign(curConnectedAddr, timestamp);
-          // debugger;
           const signature = await requestSign(
             form?.sourceUseridHash,
             timestamp
@@ -1130,7 +1129,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       });
     }, [padoServicePort]);
     const footerTip = useMemo(() => {
-      if (activeRequest?.type === 'loading') {
+      if (
+        activeRequest?.type === 'loading' &&
+        !activeRequest?.desc?.startsWith(
+          'Check MetaMask to confirm the connection with'
+        )
+      ) {
         return (
           <div className="footerTip safeTip">
             <p>PADO will not access your private data.</p>
@@ -1174,21 +1178,21 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setActiveRequest(loadingObj);
       fetchAttestForUni(activeAttestForm);
     }, [activeAttestForm, fetchAttestForUni]);
-    const switchAccountFn = useCallback(async () => {
-      setActiveRequest({
-        type: 'loading',
-        title: 'Requesting Connection',
-        desc: 'Check MetaMask to confirm the connection.',
-      });
-      await switchAccount(connectedWallet?.provider);
-      setActiveRequest({
-        type: 'suc',
-        title: 'Congratulations',
-        desc: `Account switch successful`,
-        btnTxt: 'Account switch successful',
-      });
-      // await fetchAttestForUni(activeAttestForm);
-    }, [connectedWallet?.provider]);
+    const switchAccountFn = useCallback(
+      async (form: AttestionForm) => {
+        const formatAddr = formatAddress(form?.sourceUseridHash || '', 6,6, '......');
+        setActiveRequest({
+          type: 'loading',
+          title: 'Requesting Connection',
+          desc: `Check MetaMask to confirm the connection with ${formatAddr}`,
+        });
+        await switchAccount(connectedWallet?.provider);
+        setActiveRequest(undefined);
+        setActiveSourceName(form?.sourceUseridHash);
+        setStep(1);
+      },
+      [connectedWallet?.provider]
+    );
     const footerButton = useMemo(() => {
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {
@@ -1196,13 +1200,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             <PButton
               text={fromEvents === 'Scroll' ? 'OK' : 'Submit'}
               onClick={onSubmitActiveRequestDialog}
-            />
-          );
-        } else if (activeRequest?.btnTxt === 'Account switch successful') {
-          return (
-            <PButton
-              text="Next"
-              onClick={submitUniswapProofAfterSwitchAccountFn}
             />
           );
         } else {
@@ -1219,8 +1216,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           activeRequest?.btnTxt === ''
         ) {
           return null;
-        } else if (activeRequest?.btnTxt === 'Switch Account') {
-          return <PButton text="Switch Account" onClick={switchAccountFn} />;
         } else {
           return (
             <PButton
@@ -1242,11 +1237,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       LINEA_DEFI_VOYAGETryAgainFn,
       tryAgainFn,
       activeRequest?.btnTxt,
-      switchAccountFn,
-      // activeAttestForm?.type,
-      
       activeAttestForm,
-      submitUniswapProofAfterSwitchAccountFn,
     ]);
     useEffect(() => {
       visible && !fromEvents && startOfflineFn();
@@ -1266,15 +1257,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       if (scrollEventHistoryObj?.address) {
         formatAddress = scrollEventHistoryObj?.address;
       }
-      return activeAttestForm?.source === 'metamask' ? (
+      return activeRequest?.desc?.startsWith('Check MetaMask to confirm the connection with')? (
         <Bridge endIcon={onChainObj.icon} />
       ) : (
         <AddressInfoHeader address={formatAddress as string} />
       );
     }, [
-      activeAttestForm,
       connectedWallet?.address,
       scrollEventHistoryObj?.address,
+      activeRequest?.desc
     ]);
     useEffect(() => {
       const listerFn = (message: any) => {
