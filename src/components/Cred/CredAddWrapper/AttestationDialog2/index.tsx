@@ -152,11 +152,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       //   },
       // ];
       let l: any = [
-        {
-          name: 'coinbase',
-          icon: iconWebDataSourceCoinbase,
-          disabled: true,
-        },
+        // {
+        //   name: 'coinbase',
+        //   icon: iconWebDataSourceCoinbase,
+        //   disabled: true,
+        // },
         {
           name: 'okx',
           icon: iconWebDataSourceOKX,

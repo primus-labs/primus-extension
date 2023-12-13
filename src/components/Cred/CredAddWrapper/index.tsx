@@ -1169,15 +1169,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         onSubmitAttestationDialog(activeAttestForm);
       }
     }, [onSubmitAttestationDialog, activeAttestForm]);
-    const submitUniswapProofAfterSwitchAccountFn = useCallback(() => {
-      let loadingObj = {
-        type: 'loading',
-        title: 'Attestation is processing',
-        desc: 'It may take a few seconds.',
-      };
-      setActiveRequest(loadingObj);
-      fetchAttestForUni(activeAttestForm);
-    }, [activeAttestForm, fetchAttestForUni]);
     const switchAccountFn = useCallback(
       async (form: AttestionForm) => {
         const formatAddr = formatAddress(form?.sourceUseridHash || '', 6,6, '......');
