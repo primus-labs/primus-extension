@@ -118,7 +118,8 @@ export const connectWalletAsync = (
   startFn?: any,
   errorFn?: any,
   sucFn?: any,
-  network?: any
+  network?: any,
+  label?:string
 ) => {
   return async (dispatch: any) => {
     try {
@@ -168,9 +169,15 @@ export const connectWalletAsync = (
             setConnectWalletActionAsync({ name: type, address, provider })
           );
           await dispatch(setConnectWalletDialogVisibleAction(false));
-          sucFn && (await sucFn({ name: type, address, provider }));
-
-          getChainAssets(signature, timestamp, address, dispatch);
+          await getChainAssets(signature, timestamp, address, dispatch, label);
+          sucFn &&
+            (await sucFn({
+              name: type,
+              address,
+              provider,
+              signature,
+              timestamp,
+            }));
         }
       }
     } catch (e) {
@@ -180,11 +187,12 @@ export const connectWalletAsync = (
   };
 };
 
-const getChainAssets = async (
+export const getChainAssets = async (
   signature: string,
   timestamp: string,
   curConnectedAddr: string,
-  dispatch: any
+  dispatch: any,
+  label?:string
 ) => {
   const { rc, result, msg } = await getAssetsOnChains(
     {
@@ -201,7 +209,7 @@ const getChainAssets = async (
     const res = getStatisticalData(result);
     const curAccOnChainAssetsItem: any = {
       address: curConnectedAddr,
-      label: '',
+      label: label || '',
       date: getCurrentDate(),
       timestamp,
       signature,
