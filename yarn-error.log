@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add day.js -S
+  /usr/local/bin/node /usr/local/bin/yarn run start
 
 PATH: 
   /opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/homebrew/sbin
@@ -14,22 +14,21 @@ Platform:
   darwin arm64
 
 Trace: 
-  Error: https://registry.npmjs.org/day.js: Not found
-      at params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66145:18)
-      at self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140890:22)
-      at Request.emit (node:events:513:28)
-      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141862:10)
-      at Request.emit (node:events:513:28)
-      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141784:12)
-      at Object.onceWrapper (node:events:627:28)
-      at IncomingMessage.emit (node:events:525:35)
-      at endReadableNT (node:internal/streams/readable:1359:12)
-      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+  SyntaxError: /Users/yangshenmeng/Documents/bd/pado-extension/package.json: Unexpected token < in JSON at position 20
+      at JSON.parse (<anonymous>)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:1629:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:321:13
 
 npm manifest: 
   {
     "name": "PADO",
-    "version": "0.2.6",
+  <<<<<<< HEAD
+    "version": "0.2.13",
+  =======
+    "version": "0.2.14",
+  >>>>>>> main
     "description": "PADO Browser Extension",
     "license": "MIT",
     "repository": {
@@ -55,6 +54,8 @@ npm manifest:
       "ccxt": "^3.0.78",
       "constants-browserify": "^1.0.0",
       "crypto-browserify": "^3.12.0",
+      "dayjs": "^1.11.10",
+      "dayjs-plugin-utc": "^0.1.2",
       "echarts": "^5.4.2",
       "echarts-for-react": "^3.0.2",
       "ethereumjs-util": "^7.1.5",
@@ -4026,6 +4027,16 @@ Lockfile:
     integrity sha512-jyweV/k0rbv2WK4r9KLayuBrSh2Py0tNmV7LBoSMH4hMQyrG8OPyIOWB2VEx4DJKXWmK4lopYMVvORlDt2S8Aw==
     dependencies:
       number-is-nan "^1.0.0"
+  
+  dayjs-plugin-utc@^0.1.2:
+    version "0.1.2"
+    resolved "https://registry.yarnpkg.com/dayjs-plugin-utc/-/dayjs-plugin-utc-0.1.2.tgz#48e552407024143922d6499a40f6c765f8c93d03"
+    integrity sha512-ExERH5o3oo6jFOdkvMP3gytTCQ9Ksi5PtylclJWghr7k7m3o2U5QrwtdiJkOxLOH4ghr0EKhpqGefzGz1VvVJg==
+  
+  dayjs@^1.11.10:
+    version "1.11.10"
+    resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
+    integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
   
   debug@2.6.9, debug@^2.2.0:
     version "2.6.9"

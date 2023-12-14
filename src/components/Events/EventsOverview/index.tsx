@@ -11,6 +11,7 @@ import RewardList from '../RewardList';
 import AdSpace from '../AdSpace';
 import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
 import AdSpaceMysteryBox2 from '../AdSpaceMysteryBox2';
+import AdSpaceLineaDeFiVoyage from '../AdSpaceLineaDeFiVoyage';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import './index.scss';
@@ -97,6 +98,11 @@ const EventsOverview = memo(() => {
       navigate(`/cred?fromEvents=Scroll`);
     }
   }, [navigate, dispatch]);
+  const handleClickAdSpaceLineaDeFiVoyage = useCallback(async () => {
+    navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
+  }, [
+    navigate,
+  ]);
   
   
 
@@ -130,9 +136,14 @@ const EventsOverview = memo(() => {
     <div className="eventOverview">
       <div className="eventOverviewContent">
         {/* <Slider {...settings}> */}
-        {scrollEventActiveFlag === 1 && <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />}
+        <AdSpaceLineaDeFiVoyage onClick={handleClickAdSpaceLineaDeFiVoyage} />
+        {scrollEventActiveFlag === 1 && (
+          <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />
+        )}
         <AdSpace onClick={handleClickClaim} />
-        {scrollEventActiveFlag === 2 && <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />}
+        {scrollEventActiveFlag === 2 && (
+          <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />
+        )}
         <AdSpaceMysteryBox onClick={handleClickMysterybox} />
         {/* </Slider> */}
         {/* <section className="rewardsWrapper">

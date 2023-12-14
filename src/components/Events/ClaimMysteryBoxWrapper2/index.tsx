@@ -154,7 +154,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         if (BadgesProcess === 'error') {
           setStep(2);
           setActiveRequest({
-            type: 'error',
+            type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
