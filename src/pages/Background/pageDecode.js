@@ -155,6 +155,7 @@ export const pageDecodeMsgListener = async (
       }
     };
     const isReady = await checkReadyStatusFn();
+    console.log('web requests are captured');
     chrome.tabs.sendMessage(
       tabCreatedByPado.id,
       {
@@ -198,6 +199,7 @@ export const pageDecodeMsgListener = async (
       });
     };
     await injectFn();
+    checkWebRequestIsReadyFn();
     chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       if (tabId === tabCreatedByPado.id && changeInfo.url) {
         await injectFn();

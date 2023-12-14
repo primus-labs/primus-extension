@@ -134,23 +134,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [identityList]);
     const webDataSourceList = useMemo(() => {
-      // const l = [
-      //   {
-      //     name: 'binance',
-      //     icon: iconWebDataSourceBiance,
-      //     disabled: false,
-      //   },
-      //   {
-      //     name: 'coinbase',
-      //     icon: iconWebDataSourceCoinbase,
-      //     disabled: true,
-      //   },
-      //   {
-      //     name: 'okx',
-      //     icon: iconWebDataSourceOKX,
-      //     disabled: true,
-      //   },
-      // ];
       let l: any = [
         // {
         //   name: 'coinbase',
@@ -165,11 +148,13 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       ];
       webProofTypes.forEach((r) => {
         const existIdx = l.findIndex((i: any) => i.name === r.dataSource);
+        const isFromLINEA_DEFI_VOYAGE =
+          fromEvents === 'LINEA_DEFI_VOYAGE' && r.dataSource === 'binance';
         if (existIdx < 0) {
           l.unshift({
             name: r.dataSource,
             icon: r.bgImg,
-            disabled: r.name !== activeIdentityType,
+            disabled: fromEvents === 'LINEA_DEFI_VOYAGE' ? r.dataSource !== 'binance' :r.name !== activeIdentityType,
           });
         } else {
           if (l[existIdx].disabled) {
@@ -177,7 +162,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             l.unshift({
               name: r.dataSource,
               icon: r.bgImg,
-              disabled: r.name !== activeIdentityType,
+              disabled:
+                fromEvents === 'LINEA_DEFI_VOYAGE'
+                  ? r.dataSource !== 'binance'
+                  : r.name !== activeIdentityType,
             });
           }
         }
@@ -189,7 +177,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         .filter((a: any) => !a.disabled)
         .sort((a: any, b: any) => (a.name + '').localeCompare(b.name + ''));
       return [...abledArr,...disabledArr];
-    }, [webProofTypes, activeIdentityType]);
+    }, [webProofTypes, activeIdentityType, fromEvents]);
     const activeWebTemplate = useMemo(() => {
       const aWT = activeWebProofTypes.find((i) => {
         if (fromEvents === 'LINEA_DEFI_VOYAGE') {
