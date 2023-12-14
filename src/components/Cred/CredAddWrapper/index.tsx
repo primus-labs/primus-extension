@@ -16,6 +16,7 @@ import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AttestationDialog from './AttestationDialog';
 import AttestationDialog2 from './AttestationDialog2';
+import AttestationDialogUniSwap from './AttestationDialogUniSwap';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
@@ -42,9 +43,11 @@ import {
   validateAttestationForAnt,
   attestForPolygonId,
 } from '@/services/api/cred';
+import { initRewardsActionAsync } from '@/store/actions/index';
 import { submitUniswapTxProof } from '@/services/chains/erc721';
 
 import { DATASOURCEMAP } from '@/config/constants';
+import {formatAddress} from '@/utils/utils'
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 import type { Dispatch } from 'react';
@@ -59,6 +62,7 @@ import {
   getUniswapProof,
 } from '@/services/api/event';
 import { eventReport } from '@/services/api/usertracker';
+import { switchAccount } from '@/services/wallets/metamask';
 
 const onChainObj: any = DATASOURCEMAP.onChain;
 
@@ -81,6 +85,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     type,
     eventSource,
   }) => {
+    const [activeIdentityType, setActiveIdentityType] = useState<string>('');
     const navigate = useNavigate();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     const [credRequestId, setCredRequestId] = useState<string>();
@@ -186,9 +191,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setStep(1);
     }, []);
     const handleCloseMask = useCallback(() => {
+      if (
+        activeRequest?.desc?.startsWith('Check MetaMask to confirm the connection with')
+      ) {
+        setActiveRequest(undefined);
+      }
       setStep(-1);
       onClose();
-    }, [onClose]);
+    }, [onClose, activeRequest?.desc]);
     const validateBaseInfo = useCallback(
       (form: AttestionForm) => {
         const { source, baseValue } = form;
@@ -534,112 +544,215 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           requestId: uniSwapProofRequestId,
         });
         if (rc === 0) {
-          const { status, reason, transactionHash, proof } = result;
+          const {
+            status,
+            reason,
+            nft,
+            transactionHash,
+            swapSizeDollars,
+            signatureInfo,
+            signatureRawInfo,
+          } = result;
+          var eventInfo: any = {
+            eventType: 'ATTESTATION_GENERATE',
+            rawData: {
+              source: 'brevis',
+              schemaType: 'UNISWAP_PROOF',
+              sigFormat: 'EAS-Ethereum',
+              attestationId: uniSwapProofRequestId,
+              // status: 'SUCCESS',
+              // reason: '',
+            },
+          };
           if (status === 'COMPLETE' || status === 'ERROR') {
             setPollingUniProofIntervalSwitch(false);
           }
           // store nft & proof
           if (status === 'COMPLETE') {
-            const {
-              transactionInput,
-              proofWithPublicInputs,
-              auxiBlkVerifyInfo,
-            } = proof;
-            // const { transactionHash } = uniSwapProofParams;
-            const upperChainTxHash = await submitUniswapTxProof({
-              txHash: transactionHash,
-              proof: base64ToHex(proofWithPublicInputs),
-              auxiBlkVerifyInfo: base64ToHex(auxiBlkVerifyInfo),
-              metamaskprovider: uniSwapProofParams.provider,
+            // store nft & credit
+            const { rewards } = await chrome.storage.local.get(['rewards']);
+            const newRewardsObj = rewards ? JSON.parse(rewards) : {};
+            newRewardsObj['brevis' + uniSwapProofRequestId] = {
+              title: nft.nftTitle,
+              name: nft.nftName,
+              image: nft.image,
+              nftAddress: nft.nftAddress,
+              accountAddress: activeAttestForm?.sourceUseridHash,
+              type: 'NFT',
+              event: 'brevis',
+            };
+            await chrome.storage.local.set({
+              rewards: JSON.stringify(newRewardsObj),
             });
-            const { rc, result } = await getUniswapProof({
-              ...uniSwapProofParams,
-              timestamp: +new Date() + '',
-              transactionHash: upperChainTxHash,
-              addressId: connectedWallet?.address,
+            await dispatch(initRewardsActionAsync());
+            const fullAttestation = {
+              ...signatureInfo,
+              ...signatureRawInfo,
+              nft,
+              address: connectedWallet?.address,
+              ...activeAttestForm,
+              version: CredVersion,
+              requestid: uniSwapProofRequestId,
+            };
+            const credentialsObj = { ...credentialsFromStore };
+            credentialsObj[uniSwapProofRequestId] = fullAttestation;
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(credentialsObj),
             });
-            if (rc === 0) {
-              // store result.result
+            await initCredList();
+            eventInfo.rawData.status = 'SUCCESS';
+            eventInfo.rawData.reason = '';
+            eventReport(eventInfo);
+            // setActiveRequest({
+            //   type: 'suc',
+            //   title: 'Congratulations',
+            //   desc: 'Successfully get your rewards.',
+            // });
+            setActiveRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'Your proof is created!',
+            });
+            // const {
+            //   transactionInput,
+            //   proofWithPublicInputs,
+            //   auxiBlkVerifyInfo,
+            // } = proof;
+            // // const { transactionHash } = uniSwapProofParams;
+            // const upperChainTxHash = await submitUniswapTxProof({
+            //   txHash: transactionHash,
+            //   proof: base64ToHex(proofWithPublicInputs),
+            //   auxiBlkVerifyInfo: base64ToHex(auxiBlkVerifyInfo),
+            //   metamaskprovider: uniSwapProofParams.provider,
+            // });
+            // const { rc, result } = await getUniswapProof({
+            //   ...uniSwapProofParams,
+            //   timestamp: +new Date() + '',
+            //   transactionHash: upperChainTxHash,
+            //   addressId: connectedWallet?.address,
+            // });
+            // if (rc === 0) {
+            //   // store result.result
+            // }
+          }
+          if (status === 'ERROR') {
+            //         const resonMap = {
+            //           SIGNATURE_WRONG: 签名错误
+            // NO_ELIGIBILITY：没有资格
+            // INTERNAL_ERROR：调用celer接口出错
+            // TRANSACTION_ERROR: 获取交易信息失败
+            // UNKNOWN：后端服务抛出异常
+            // SUCCESS：成功
+            //         }
+
+            if (reason === 'NO_ELIGIBILITY') {
+              setActiveRequest({
+                type: 'warn',
+                title: 'Not meet the requirements',
+                desc: 'Do not have an eligible transaction. ',
+                btnTxt: '',
+              });
+            } else if (reason === 'UNKNOWN') {
+              setActiveRequest({
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Some transaction error occurs. Please try again later.',
+                btnTxt: '',
+              });
+            } else {
+              setActiveRequest({
+                type: 'warn',
+                title: 'Something went wrong',
+                desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+              });
             }
+            eventInfo.rawData.status = 'FAILED';
+            eventInfo.rawData.reason = reason;
+            eventReport(eventInfo);
           }
         }
       } catch {
+        setActiveRequest({
+          type: 'warn',
+          title: 'Something went wrong',
+          desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+        });
       } finally {
       }
-    }, [uniSwapProofRequestId, uniSwapProofParams, connectedWallet?.address]);
+    }, [
+      uniSwapProofRequestId,
+      connectedWallet?.address,
+      activeAttestForm,
+      credentialsFromStore,
+      initCredList,
+      dispatch,
+    ]);
     useInterval(
       pollingUniProofResult,
       3000,
       pollingUniProofIntervalSwitch,
       false
     );
-    const fetchAttestForUni = useCallback(async () => {
-      try {
-        const curRequestId = uuidv4();
-        setUniSwapProofRequestId(curRequestId);
-        const [accounts, chainId, provider] = await connectWallet();
-        const curConnectedAddr = (accounts as string[])[0];
-        const timestamp: string = +new Date() + '';
+    const fetchAttestForUni = useCallback(
+      async (form: AttestionForm) => {
+        try {
+          const curRequestId = uuidv4();
+          setUniSwapProofRequestId(curRequestId);
+          const curConnectedAddr = connectedWallet?.address;
+          // const curConnectedAddr = '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07'; // stone TODO DEL!!!
+          const timestamp: string = +new Date() + '';
+          // if did‘t connected with the selected account
+          if (
+            curConnectedAddr.toLowerCase() !==
+            form?.sourceUseridHash?.toLowerCase()
+          ) {
+            switchAccountFn(form);
+            return;
+          }
+          const signature = await requestSign(
+            form?.sourceUseridHash,
+            timestamp
+          ); // TODO DEL !!!
+          if (!signature) {
+            setActiveRequest({
+              type: 'warn',
+              title: 'Unable to proceed',
+              desc: errorDescEl,
+            });
+            return;
+          }
+          const proofParams = {
+            signature,
+            address: curConnectedAddr,
+            provider: connectedWallet?.provider,
+          };
+          setUniSwapProofParams(proofParams);
+          const { rc, result, msg } = await claimUniNFT({
+            requestId: curRequestId,
+            signature,
+            address: curConnectedAddr,
+            timestamp,
+          });
 
-        const signature = await requestSign(curConnectedAddr, timestamp);
-        if (!signature) {
+          if (rc === 0 && result) {
+            setPollingUniProofIntervalSwitch(true);
+          } else {
+            setActiveRequest({
+              type: 'error',
+              title: 'Failed',
+              desc: msg,
+            });
+          }
+        } catch (e) {
           setActiveRequest({
             type: 'warn',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
-          return;
         }
-        setUniSwapProofParams({
-          signature,
-          // address: curConnectedAddr,
-          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
-          provider,
-        });
-        const { rc, result, msg } = await claimUniNFT({
-          signature,
-          timestamp,
-          // address: curConnectedAddr,
-          address: '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07', // TODO!!!
-          requestId: curRequestId,
-        });
-
-        if (rc === 0 && result) {
-          setPollingUniProofIntervalSwitch(true);
-          // store nft & credit
-          // await chrome.storage.local.set({
-          //   rewards: JSON.stringify(newRewards),
-          // });
-          // await dispatch(initRewardsActionAsync());
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Successfully get your rewards.',
-          // });
-          // await chrome.storage.local.set({
-          //   credentials: JSON.stringify(credentialsObj),
-          // });
-          // await initCredList();
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Your proof is created!',
-          // });
-        } else {
-          setActiveRequest({
-            type: 'error',
-            title: 'Failed',
-            desc: msg,
-          });
-        }
-      } catch (e) {
-        setActiveRequest({
-          type: 'warn',
-          title: 'Unable to proceed',
-          desc: errorDescEl,
-        });
-      }
-    }, []);
+      },
+      [connectedWallet?.address, connectedWallet?.provider, errorDescEl]
+    );
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
         setActiveAttestForm(form);
@@ -665,27 +778,22 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           return;
         }
         setStep(2);
+        //   loadingObj = {
+        //     type: 'loading',
+        //     title: 'Processing',
+        //     desc: 'Please complete the transaction in your wallet.',
+        //   };
         let loadingObj = {
           type: 'loading',
           title: 'Attestation is processing',
           desc: 'It may take a few seconds.',
         };
-        if (form.source === 'metamask') {
-          loadingObj = {
-            type: 'loading',
-            title: 'Processing',
-            desc: 'Please complete the transaction in your wallet.',
-          };
-          setActiveRequest(loadingObj);
-          fetchAttestForUni();
-          return;
-        }
         setActiveRequest(loadingObj);
         if (activeCred?.did) {
           fetchAttestForPolygonID();
         } else {
           if (form.type === 'UNISWAP_PROOF') {
-            // TODO
+            fetchAttestForUni(form);
           } else if (form.type === 'IDENTIFICATION_PROOF') {
             fetchAttestForAnt(form);
           } else {
@@ -1049,7 +1157,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       });
     }, [padoServicePort]);
     const footerTip = useMemo(() => {
-      if (activeRequest?.type === 'loading') {
+      if (
+        activeRequest?.type === 'loading' &&
+        !activeRequest?.desc?.startsWith(
+          'Check MetaMask to confirm the connection with'
+        )
+      ) {
         return (
           <div className="footerTip safeTip">
             <p>PADO will not access your private data.</p>
@@ -1072,6 +1185,33 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
       window.location.reload();
     }, [navigate, padoServicePort]);
+    const tryAgainFn = useCallback(() => {
+      if (
+        activeAttestForm.type === 'IDENTIFICATION_PROOF' &&
+        activeAttestForm.proofClientType === 'Webpage Data'
+      ) {
+        setActiveSourceName(activeAttestForm?.source);
+        setActiveIdentityType(activeAttestForm?.proofContent);
+        setStep(1);
+      } else {
+        onSubmitAttestationDialog(activeAttestForm);
+      }
+    }, [onSubmitAttestationDialog, activeAttestForm]);
+    const switchAccountFn = useCallback(
+      async (form: AttestionForm) => {
+        const formatAddr = formatAddress(form?.sourceUseridHash || '', 6,6, '......');
+        setActiveRequest({
+          type: 'loading',
+          title: 'Requesting Connection',
+          desc: `Check MetaMask to confirm the connection with ${formatAddr}`,
+        });
+        await switchAccount(connectedWallet?.provider);
+        setActiveRequest(undefined);
+        setActiveSourceName(form?.sourceUseridHash);
+        setStep(1);
+      },
+      [connectedWallet?.provider]
+    );
     const footerButton = useMemo(() => {
       if (activeRequest?.type === 'suc') {
         if (fromEvents) {
@@ -1087,17 +1227,26 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       } else {
         if (
           fromEvents === 'LINEA_DEFI_VOYAGE' &&
-          activeRequest?.btnTxt !== ''
+          activeRequest?.btnTxt === ''
         ) {
+          return null;
+        } else if (
+          activeAttestForm?.type === 'UNISWAP_PROOF' &&
+          activeRequest?.btnTxt === ''
+        ) {
+          return null;
+        } else {
           return (
             <PButton
               text="Try again"
               className="gray"
-              onClick={LINEA_DEFI_VOYAGETryAgainFn}
+              onClick={
+                fromEvents === 'LINEA_DEFI_VOYAGE'
+                  ? LINEA_DEFI_VOYAGETryAgainFn
+                  : tryAgainFn
+              }
             />
           );
-        } else {
-          return null;
         }
       }
     }, [
@@ -1105,6 +1254,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       onSubmitActiveRequestDialog,
       activeRequest?.type,
       LINEA_DEFI_VOYAGETryAgainFn,
+      tryAgainFn,
+      activeRequest?.btnTxt,
+      activeAttestForm,
     ]);
     useEffect(() => {
       visible && !fromEvents && startOfflineFn();
@@ -1124,15 +1276,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       if (scrollEventHistoryObj?.address) {
         formatAddress = scrollEventHistoryObj?.address;
       }
-      return activeAttestForm?.source === 'metamask' ? (
+      return activeRequest?.desc?.startsWith('Check MetaMask to confirm the connection with')? (
         <Bridge endIcon={onChainObj.icon} />
       ) : (
         <AddressInfoHeader address={formatAddress as string} />
       );
     }, [
-      activeAttestForm,
       connectedWallet?.address,
       scrollEventHistoryObj?.address,
+      activeRequest?.desc
     ]);
     useEffect(() => {
       const listerFn = (message: any) => {
@@ -1193,12 +1345,23 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             <AttestationDialog2
               type={activeAttestationType}
               activeSourceName={activeSourceName}
+              activeType={activeIdentityType}
               activeCred={activeCred}
               onBack={
                 fromEvents === 'Badges' || fromEvents === 'LINEA_DEFI_VOYAGE'
                   ? undefined
                   : onBackAttestationDialog
               }
+              onClose={handleCloseMask}
+              onSubmit={onSubmitAttestationDialog}
+            />
+          ) : activeAttestationType === 'UNISWAP_PROOF' ? (
+            <AttestationDialogUniSwap
+              type={activeAttestationType}
+              activeSourceName={activeSourceName}
+              activeType={activeIdentityType}
+              activeCred={activeCred}
+              onBack={onBackAttestationDialog}
               onClose={handleCloseMask}
               onSubmit={onSubmitAttestationDialog}
             />

@@ -52,10 +52,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
 
-    const connectedWallet = useSelector(
-      (state: UserState) => state.connectedWallet
-    );
-    const rewards = useSelector((state: UserState) => state.rewards);
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );

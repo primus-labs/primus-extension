@@ -31,7 +31,6 @@ const padoServices = {
 };
 
 let USERPASSWORD = '';
-
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     showIndex();

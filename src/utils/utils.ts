@@ -174,7 +174,7 @@ export function strToHexSha256(str: string) {
 }
 export function base64ToHex(base64Str: string) {
   const value = Buffer.from(base64Str, 'base64');
-  const returnValue = ethereumjsUtil.bufferToHex(value);
+  const returnValue = "0x" + value.toString();
   return returnValue;
 }
 

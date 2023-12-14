@@ -95,18 +95,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       return credArr;
     }, [credentialsFromStore]);
 
-    const [sourceList, sourceMap] = useAllSources();
-    const hasSource = useMemo(() => {
-      const exLen =
-        (sourceMap.exSources && Object.keys(sourceMap.exSources).length) ?? 0;
-      const kycLen =
-        (sourceMap.kycSources && Object.keys(sourceMap.kycSources).length) ?? 0;
-      const totalLen = exLen + kycLen;
-      return totalLen > 0;
-    }, [sourceMap]);
-    const hasCred = useMemo(() => {
-      return credList.length > 0;
-    }, [credList]);
+   
     const hadSendToChain = useMemo(() => {
       const hadFlag = credList.some((item) => {
         const p = item?.provided;
@@ -240,7 +229,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       // 3.has web proof;
       // 4.web proof on chain add exchange data source
       // rewards;
-      if (rewardList?.length > 0) {
+      const nftFlag = rewardList.find(r => !r.type)
+      if (nftFlag) {
         dispatch(
           setRewardsDialogVisibleAction({
             visible: true,
@@ -272,7 +262,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       onClose,
       userPassword,
       holdSupportAttestDataSource,
-      rewardList?.length,
+      rewardList,
     ]);
 
     useEffect(() => {

@@ -35,7 +35,7 @@ chrome.runtime.sendMessage(
       var padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
       var padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
 
-      var padoCenterBottomStartStr = `<button class="startBtn" > Start</button>`;
+      var padoCenterBottomStartStr = `<button class="startBtn disabled" > Start</button>`;
       var padoCenterBottomCancelStr = `<button class="cancelBtn">Cancel</button>`;
       var padoCenterCenterStr = `<div class="pado-center-center"><p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Content</span><span>${aactiveDesc}</span></p></div>`;
       var padoCenterStr = `<div class="pado-center"></div>`;
@@ -53,10 +53,11 @@ chrome.runtime.sendMessage(
       );
       var disabledPathList = ['login', 'register'];
       var isDisabled = disabledPathList.some(
-        (i) => window.location.href.indexOf('login') > -1
+        (i) => window.location.href.indexOf(i) > -1
       );
       if (isDisabled) {
-        padoCenterBottomStartNode.classList.add('disabled');
+        // padoCenterBottomStartNode.classList.add('disabled');
+        return
       }
       var padoCenterBottomCancelNode = createDomElement(
         padoCenterBottomCancelStr
@@ -131,8 +132,11 @@ chrome.runtime.sendMessage(
         });
       };
       padoCenterBottomStartNode.onclick = () => {
-        if (isDisabled) {
-          return;
+        // if (isDisabled) {
+        //   return;
+        // }
+        if (padoCenterBottomStartNode.classList.contains('disabled')) {
+          return
         }
         padoRightNode.innerHTML = '2/3';
         padoCenterCenterNode.innerHTML = `<p>Verifying...</p><div class="progress"><div class="progress-bar"><div class="bar"></div></div></div >`;
@@ -187,7 +191,7 @@ chrome.runtime.sendMessage(
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   var {
     name,
-    params: { result, failReason },
+    params: { result, failReason, isReady },
   } = request;
   if (name === 'attestResult') {
     var padoRightEl = document.querySelector('.pado-right');
@@ -197,7 +201,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       jumpTo,
       uiTemplate: { condition, subProofContent },
       processUiTemplate: { proofContent, successMsg, failedMsg },
-      event
+      event,
     } = activeTemplate;
     var aactiveOrigin = new URL(jumpTo).origin;
     var aactiveDesc = successMsg;
@@ -223,7 +227,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       padoRightEl.innerHTML = '3/3';
       var iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
       padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
-      fn()
+      fn();
     } else if (result === 'fail') {
       aactiveDesc = failedMsg;
       padoRightEl.innerHTML = '3/3';
@@ -233,7 +237,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       padoRightEl.innerHTML = '2/3';
       var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
       var str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
-      var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been generated, or your address may already have a zkAttestation.</p>`;
+      var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a zkAttestation with another Binance account.</p>`;
       padoCenterCenterEl.innerHTML =
         failReason === 'network'
           ? str2
@@ -241,6 +245,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           ? str3
           : str1;
       fn();
+    }
+  }
+  if (name === 'webRequestIsReady') {
+    let padoCenterBottomStartNode = document.querySelector('.startBtn');
+    if (isReady) {
+      const isDisabled =
+        padoCenterBottomStartNode.classList.contains('disabled');
+      if (isDisabled) {
+        padoCenterBottomStartNode.classList.remove('disabled');
+      }
     }
   }
 });
