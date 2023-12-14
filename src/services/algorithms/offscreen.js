@@ -154,8 +154,8 @@ okx:
 function call(str) {
     console.log("offscreen call str=", str);
     const jsonParams = JSON.parse(str);
-    console.log("offscreen call source info=", EXCHANGEINFO[jsonParams.params.source]);
     if (jsonParams.method === "getSign") {
+        console.log("offscreen call source info=", EXCHANGEINFO[jsonParams.params.source]);
         const source = jsonParams.params.source;
         const apiKey = EXCHANGEINFO[source].apiKey;
         const secretKey = EXCHANGEINFO[source].secretKey;
