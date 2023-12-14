@@ -480,7 +480,7 @@ const CredOverview = memo(() => {
         onUpdate={handleUpdateCred}
         onAdd={handleAdd}
       />
-      {connectDialogVisible && (
+      {!sendToChainDialogVisible && connectDialogVisible && (
         <ConnectWalletDialog
           onClose={handleCloseConnectWallet}
           onSubmit={handleSubmitConnectWallet}

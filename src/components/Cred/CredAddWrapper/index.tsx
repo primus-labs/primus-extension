@@ -47,7 +47,7 @@ import { initRewardsActionAsync } from '@/store/actions/index';
 import { submitUniswapTxProof } from '@/services/chains/erc721';
 
 import { DATASOURCEMAP } from '@/config/constants';
-import {formatAddress} from '@/utils/utils'
+import { formatAddress } from '@/utils/utils';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 import type { Dispatch } from 'react';
@@ -192,8 +192,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, []);
     const handleCloseMask = useCallback(() => {
       if (
-        activeRequest?.desc?.startsWith('Check MetaMask to confirm the connection with')
-      ) {
+          activeRequest?.desc?.startsWith &&
+          activeRequest?.desc?.startsWith(
+            'Check MetaMask to confirm the connection with')) {
         setActiveRequest(undefined);
       }
       setStep(-1);
@@ -699,7 +700,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           const curRequestId = uuidv4();
           setUniSwapProofRequestId(curRequestId);
           const curConnectedAddr = connectedWallet?.address;
-          // const curConnectedAddr = '0x2A46883d79e4Caf14BCC2Fbf18D9f12A8bB18D07'; // stone TODO DEL!!!
+          // const curConnectedAddr = '0xd4b69e8d62c880e9dd55d419d5e07435c3538342'; // stone TODO DEL!!!222123
           const timestamp: string = +new Date() + '';
           // if did‘t connected with the selected account
           if (
@@ -864,7 +865,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       setStep(0);
     }, [activeRequest?.type]);
 
-    const getAttestationCallback = useCallback(async(res: any) => {
+    const getAttestationCallback = useCallback(async (res: any) => {
       const { retcode, retdesc } = JSON.parse(res);
       if (retcode === '0') {
         setTimeoutSwitch(true);
@@ -1159,8 +1160,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const footerTip = useMemo(() => {
       if (
         activeRequest?.type === 'loading' &&
-        !activeRequest?.desc?.startsWith(
-          'Check MetaMask to confirm the connection with'
+        !(
+          activeRequest?.desc?.startsWith &&
+          activeRequest?.desc?.startsWith(
+            'Check MetaMask to confirm the connection with'
+          )
         )
       ) {
         return (
@@ -1199,7 +1203,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [onSubmitAttestationDialog, activeAttestForm]);
     const switchAccountFn = useCallback(
       async (form: AttestionForm) => {
-        const formatAddr = formatAddress(form?.sourceUseridHash || '', 6,6, '......');
+        const formatAddr = formatAddress(
+          form?.sourceUseridHash || '',
+          6,
+          6,
+          '......'
+        );
         setActiveRequest({
           type: 'loading',
           title: 'Requesting Connection',
@@ -1276,7 +1285,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       if (scrollEventHistoryObj?.address) {
         formatAddress = scrollEventHistoryObj?.address;
       }
-      return activeRequest?.desc?.startsWith('Check MetaMask to confirm the connection with')? (
+      return activeRequest?.desc?.startsWith &&
+        activeRequest?.desc?.startsWith(
+          'Check MetaMask to confirm the connection with'
+        ) ? (
         <Bridge endIcon={onChainObj.icon} />
       ) : (
         <AddressInfoHeader address={formatAddress as string} />
@@ -1284,7 +1296,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [
       connectedWallet?.address,
       scrollEventHistoryObj?.address,
-      activeRequest?.desc
+      activeRequest?.desc,
     ]);
     useEffect(() => {
       const listerFn = (message: any) => {

@@ -167,6 +167,7 @@
 .pado-center .pado-center-bottom button.startBtn.disabled {
   cursor: not-allowed;
   color: rgb(137, 137, 137);
+  background: none;
 }
 
 .pado-right {

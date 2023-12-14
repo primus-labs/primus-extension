@@ -197,7 +197,7 @@ export const pageDecodeMsgListener = async (
         files: ['pageDecode.css'],
       });
     };
-    
+    await injectFn();
     chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       if (tabId === tabCreatedByPado.id && changeInfo.url) {
         await injectFn();

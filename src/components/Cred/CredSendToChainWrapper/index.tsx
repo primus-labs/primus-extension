@@ -383,7 +383,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 networkName: formatNetworkName,
                 metamaskprovider: walletObj.provider,
                 receipt: activeCred?.address, // TODO DEL!!!
-                // receipt: '0xc33fcef624699f9a64ab62491613a969434af287',
+                // receipt: '0xd4b69e8d62c880e9dd55d419d5e07435c3538342',
                 attesteraddr: PADOADDRESS,
                 data: activeCred?.encodedData,
                 signature: activeCred?.signature,

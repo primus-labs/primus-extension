@@ -184,7 +184,11 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       });
       // l = [...new Set(l)]
       l = l.sort((a: any, b: any) => a.disabled - b.disabled);
-      return l;
+      const disabledArr = l.filter((a: any) => a.disabled).sort((a: any, b: any) => (a.name + '').localeCompare(b.name + ''));
+      const abledArr = l
+        .filter((a: any) => !a.disabled)
+        .sort((a: any, b: any) => (a.name + '').localeCompare(b.name + ''));
+      return [...abledArr,...disabledArr];
     }, [webProofTypes, activeIdentityType]);
     const activeWebTemplate = useMemo(() => {
       const aWT = activeWebProofTypes.find((i) => {
