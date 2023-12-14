@@ -205,7 +205,11 @@ const CredOverview = memo(() => {
   );
 
   const handleAdd = useCallback(async () => {
-    if (fromEvents === 'NFTs' && activeCred) {
+    if (
+      (fromEvents === 'NFTs' ||
+      fromEvents === 'LINEA_DEFI_VOYAGE') &&
+      activeCred
+    ) {
       return;
     }
     setActiveCred(undefined);

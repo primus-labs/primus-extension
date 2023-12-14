@@ -192,9 +192,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, []);
     const handleCloseMask = useCallback(() => {
       if (
-          activeRequest?.desc?.startsWith &&
-          activeRequest?.desc?.startsWith(
-            'Check MetaMask to confirm the connection with')) {
+        activeRequest?.desc?.startsWith &&
+        activeRequest?.desc?.startsWith(
+          'Check MetaMask to confirm the connection with'
+        )
+      ) {
         setActiveRequest(undefined);
       }
       setStep(-1);
@@ -984,7 +986,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 <p>Please confirm and try again later.</p>
               </>
             );
-            let btnTxt = undefined;
+            let btnTxt =
+              titleItem1 === 'Not met the requirements' ? '' : undefined;
 
             if (parsedActiveRequestAttestation.reqType === 'web') {
               let failReason = '';
