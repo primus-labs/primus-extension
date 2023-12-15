@@ -6,10 +6,10 @@ import React, {
   useCallback,
   useState,
 } from 'react';
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
-import { setRewardsDialogVisibleAction } from '@/store/actions'
+import { setRewardsDialogVisibleAction } from '@/store/actions';
 import { checkLotteryResults } from '@/services/api/event';
 import { SCROLLEVENTNAME } from '@/config/constants';
 import PButton from '@/components/PButton';
@@ -18,7 +18,7 @@ import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
 import disabledBannerIllstration from '@/assets/img/events/luckyDrawIllstration.svg';
 import './index.scss';
 import type { UserState } from '@/types/store';
-import type {Dispatch} from 'react'
+import type { Dispatch } from 'react';
 interface AdSpaceProps {
   onClick: () => void;
 }
@@ -38,7 +38,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     const eArr = e.split('-');
     return `${sArr[0]} ${sArr[1]}${sArr[2]} UTC ~ ${eArr[0]} ${eArr[1]}${eArr[2]} UTC`;
   }, [scrollEventPeriod]);
-  
+
   const scrollEventActiveFlag = useMemo(() => {
     const { startTime, endTime } = scrollEventPeriod;
     const isActive =
@@ -63,16 +63,20 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     }
   }, [BadgeLottryResult?.result, dispatch]);
   const fetchLotteryResults = useCallback(async () => {
-    if (dayjs().isAfter(dayjs(+scrollEventPeriod.endTime))) {
-      const { rc, result } = await checkLotteryResults({
-        event: SCROLLEVENTNAME,
-      });
-      if (rc === 0) {
-        setBadgeLottryResult({
-          result: result.result,
-          icon: result.iconUrl,
+    try {
+      if (dayjs().isAfter(dayjs(+scrollEventPeriod.endTime))) {
+        const { rc, result } = await checkLotteryResults({
+          event: SCROLLEVENTNAME,
         });
+        if (rc === 0) {
+          setBadgeLottryResult({
+            result: result.result,
+            icon: result.iconUrl,
+          });
+        }
       }
+    } catch (e) {
+      console.log('fetchLotteryResults catch e=', e);
     }
   }, [scrollEventPeriod]);
 

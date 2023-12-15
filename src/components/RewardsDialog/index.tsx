@@ -72,12 +72,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
   const joinedNFTsFlag = useMemo(() => {
     return rewardList.find((r) => !r.type);
   }, [rewardList]);
-  
+
   const joinedBrevisRewardList = useMemo(() => {
     return rewardList.filter((r) => r?.event === 'brevis' && r.type === 'NFT');
   }, [rewardList]);
   const joinedBrevisFlag = useMemo(() => {
-    return joinedBrevisRewardList.length > 0
+    return joinedBrevisRewardList.length > 0;
   }, [joinedBrevisRewardList]);
 
   const emptyEl = useMemo(() => {
@@ -123,27 +123,31 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     setJoinedScrollFlag(!!joinFlag);
   };
   const fetchLotteryResults = useCallback(async () => {
-    if (dayjs().isAfter(dayjs(+badgeEventPeriod.endTime))) {
-      const { rc, result } = await checkLotteryResults({
-        event: 'PRODUCT_DEBUT',
-      });
-      if (rc === 0) {
-        setBadgeLottryResult({
-          result: result.result,
-          icon: result.iconUrl,
+    try {
+      if (dayjs().isAfter(dayjs(+badgeEventPeriod.endTime))) {
+        const { rc, result } = await checkLotteryResults({
+          event: 'PRODUCT_DEBUT',
         });
+        if (rc === 0) {
+          setBadgeLottryResult({
+            result: result.result,
+            icon: result.iconUrl,
+          });
+        }
       }
-    }
-    if (dayjs().isAfter(dayjs(+scrollEventPeriod.endTime))) {
-      const { rc, result } = await checkLotteryResults({
-        event: SCROLLEVENTNAME,
-      });
-      if (rc === 0) {
-        setScrollLottryResult({
-          result: result.result,
-          icon: result.iconUrl,
+      if (dayjs().isAfter(dayjs(+scrollEventPeriod.endTime))) {
+        const { rc, result } = await checkLotteryResults({
+          event: SCROLLEVENTNAME,
         });
+        if (rc === 0) {
+          setScrollLottryResult({
+            result: result.result,
+            icon: result.iconUrl,
+          });
+        }
       }
+    } catch (e) {
+      console.log('fetchLotteryResults catch e=', e);
     }
   }, [badgeEventPeriod.endTime, scrollEventPeriod.endTime]);
   useEffect(() => {
@@ -286,7 +290,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                       </li>
                     )}
                     {!!joinedBrevisFlag &&
-                      joinedBrevisRewardList.map(r => {
+                      joinedBrevisRewardList.map((r) => {
                         return (
                           <li>
                             <div className="nftWrapper">
@@ -300,7 +304,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                             </div>
                           </li>
                         );
-                      }) }
+                      })}
                     {/* <li>
                       <div className="rewardWrapper win d">
                         <div className="imgWrapper">

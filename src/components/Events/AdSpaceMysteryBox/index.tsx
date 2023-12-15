@@ -53,17 +53,22 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     }
   }, [BadgeLottryResult?.result, dispatch]);
   const fetchLotteryResults = useCallback(async () => {
-    if (dayjs().isAfter(dayjs(BADGELOTTRYTIMESTR))) {
-      const { rc, result } = await checkLotteryResults({
-        event: 'PRODUCT_DEBUT',
-      });
-      if (rc === 0) {
-        setBadgeLottryResult({
-          result: result.result,
-          icon: result.iconUrl,
+    try { 
+      if (dayjs().isAfter(dayjs(BADGELOTTRYTIMESTR))) {
+        const { rc, result } = await checkLotteryResults({
+          event: 'PRODUCT_DEBUT',
         });
+        if (rc === 0) {
+          setBadgeLottryResult({
+            result: result.result,
+            icon: result.iconUrl,
+          });
+        }
       }
+    } catch (e) {
+      console.log('fetchLotteryResults catch e=', e);
     }
+    
   }, [BADGELOTTRYTIMESTR]);
 
   useEffect(() => {
