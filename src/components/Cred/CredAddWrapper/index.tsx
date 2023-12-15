@@ -557,7 +557,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             signatureRawInfo,
           } = result;
           var eventInfo: any = {
-            eventType: 'ATTESTATION_GENERATE',
+            eventType: 'API_ATTESTATION_GENERATE',
             rawData: {
               source: 'brevis',
               schemaType: 'UNISWAP_PROOF',
@@ -616,36 +616,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               title: 'Congratulations',
               desc: 'Your proof is created!',
             });
-            // const {
-            //   transactionInput,
-            //   proofWithPublicInputs,
-            //   auxiBlkVerifyInfo,
-            // } = proof;
-            // // const { transactionHash } = uniSwapProofParams;
-            // const upperChainTxHash = await submitUniswapTxProof({
-            //   txHash: transactionHash,
-            //   proof: base64ToHex(proofWithPublicInputs),
-            //   auxiBlkVerifyInfo: base64ToHex(auxiBlkVerifyInfo),
-            //   metamaskprovider: uniSwapProofParams.provider,
-            // });
-            // const { rc, result } = await getUniswapProof({
-            //   ...uniSwapProofParams,
-            //   timestamp: +new Date() + '',
-            //   transactionHash: upperChainTxHash,
-            //   addressId: connectedWallet?.address,
-            // });
-            // if (rc === 0) {
-            //   // store result.result
-            // }
           }
           if (status === 'ERROR') {
             //         const resonMap = {
-            //           SIGNATURE_WRONG: 签名错误
-            // NO_ELIGIBILITY：没有资格
-            // INTERNAL_ERROR：调用celer接口出错
-            // TRANSACTION_ERROR: 获取交易信息失败
-            // UNKNOWN：后端服务抛出异常
-            // SUCCESS：成功
+            //           SIGNATURE_WRONG
+            // NO_ELIGIBILITY：
+            // INTERNAL_ERROR：
+            // TRANSACTION_ERROR: 
+            // UNKNOWN：
+            // SUCCESS：
             //         }
 
             if (reason === 'NO_ELIGIBILITY') {
