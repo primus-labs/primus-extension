@@ -622,7 +622,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             //           SIGNATURE_WRONG
             // NO_ELIGIBILITY：
             // INTERNAL_ERROR：
-            // TRANSACTION_ERROR: 
+            // TRANSACTION_ERROR:
             // UNKNOWN：
             // SUCCESS：
             //         }
@@ -1216,15 +1216,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           return null;
         }
       } else {
-        if (
-          fromEvents === 'LINEA_DEFI_VOYAGE' &&
-          activeRequest?.btnTxt === ''
-        ) {
-          return null;
-        } else if (
-          activeAttestForm?.type === 'UNISWAP_PROOF' &&
-          activeRequest?.btnTxt === ''
-        ) {
+        if (activeRequest?.btnTxt === '') {
           return null;
         } else {
           return (
@@ -1247,7 +1239,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       LINEA_DEFI_VOYAGETryAgainFn,
       tryAgainFn,
       activeRequest?.btnTxt,
-      activeAttestForm,
     ]);
     useEffect(() => {
       visible && !fromEvents && startOfflineFn();
