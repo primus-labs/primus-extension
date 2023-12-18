@@ -118,7 +118,8 @@ export const connectWalletAsync = (
   startFn?: any,
   errorFn?: any,
   sucFn?: any,
-  network?: any
+  network?: any,
+  label?: string
 ) => {
   return async (dispatch: any) => {
     try {
@@ -168,9 +169,15 @@ export const connectWalletAsync = (
             setConnectWalletActionAsync({ name: type, address, provider })
           );
           await dispatch(setConnectWalletDialogVisibleAction(false));
-          sucFn && (await sucFn({ name: type, address, provider }));
-
-          getChainAssets(signature, timestamp, address, dispatch);
+          await getChainAssets(signature, timestamp, address, dispatch, label);
+          sucFn &&
+            (await sucFn({
+              name: type,
+              address,
+              provider,
+              signature,
+              timestamp,
+            }));
         }
       }
     } catch (e) {
@@ -180,64 +187,69 @@ export const connectWalletAsync = (
   };
 };
 
-const getChainAssets = async (
+export const getChainAssets = async (
   signature: string,
   timestamp: string,
   curConnectedAddr: string,
-  dispatch: any
+  dispatch: any,
+  label?: string
 ) => {
-  const { rc, result, msg } = await getAssetsOnChains(
-    {
-      signature,
-      timestamp,
-      address: curConnectedAddr,
-    },
-    {
-      timeout: ONEMINUTE,
+  try {
+    const { rc, result, msg } = await getAssetsOnChains(
+      {
+        signature,
+        timestamp,
+        address: curConnectedAddr,
+      },
+      {
+        timeout: ONEMINUTE,
+      }
+    );
+
+    if (rc === 0) {
+      const res = getStatisticalData(result);
+      const curAccOnChainAssetsItem: any = {
+        address: curConnectedAddr,
+        label: label || '',
+        date: getCurrentDate(),
+        timestamp,
+        signature,
+        ...res,
+        ...DATASOURCEMAP['onChain'],
+      };
+
+      const { onChainAssetsSources: lastOnChainAssetsMapStr } =
+        await chrome.storage.local.get(['onChainAssetsSources']);
+
+      const lastOnChainAssetsMap = lastOnChainAssetsMapStr
+        ? JSON.parse(lastOnChainAssetsMapStr)
+        : {};
+      if (curConnectedAddr in lastOnChainAssetsMap) {
+        const lastCurConnectedAddrInfo = lastOnChainAssetsMap[curConnectedAddr];
+        const pnl = sub(
+          curAccOnChainAssetsItem.totalBalance,
+          lastCurConnectedAddrInfo.totalBalance
+        ).toFixed();
+
+        curAccOnChainAssetsItem.pnl = pnl;
+        curAccOnChainAssetsItem.time = pnl;
+      }
+      lastOnChainAssetsMap[curConnectedAddr] = curAccOnChainAssetsItem;
+
+      await chrome.storage.local.set({
+        onChainAssetsSources: JSON.stringify(lastOnChainAssetsMap),
+      });
+
+      await dispatch(setOnChainAssetsSourcesAsync());
+
+      const eventInfo = {
+        eventType: 'DATA_SOURCE_INIT',
+        rawData: { type: 'Assets', dataSource: 'onchain-ConnectWallet' },
+      };
+      eventReport(eventInfo);
     }
-  );
-
-  if (rc === 0) {
-    const res = getStatisticalData(result);
-    const curAccOnChainAssetsItem: any = {
-      address: curConnectedAddr,
-      label: '',
-      date: getCurrentDate(),
-      timestamp,
-      signature,
-      ...res,
-      ...DATASOURCEMAP['onChain'],
-    };
-
-    const { onChainAssetsSources: lastOnChainAssetsMapStr } =
-      await chrome.storage.local.get(['onChainAssetsSources']);
-
-    const lastOnChainAssetsMap = lastOnChainAssetsMapStr
-      ? JSON.parse(lastOnChainAssetsMapStr)
-      : {};
-    if (curConnectedAddr in lastOnChainAssetsMap) {
-      const lastCurConnectedAddrInfo = lastOnChainAssetsMap[curConnectedAddr];
-      const pnl = sub(
-        curAccOnChainAssetsItem.totalBalance,
-        lastCurConnectedAddrInfo.totalBalance
-      ).toFixed();
-
-      curAccOnChainAssetsItem.pnl = pnl;
-      curAccOnChainAssetsItem.time = pnl;
-    }
-    lastOnChainAssetsMap[curConnectedAddr] = curAccOnChainAssetsItem;
-
-    await chrome.storage.local.set({
-      onChainAssetsSources: JSON.stringify(lastOnChainAssetsMap),
-    });
-
-    await dispatch(setOnChainAssetsSourcesAsync());
-
-    const eventInfo = {
-      eventType: 'DATA_SOURCE_INIT',
-      rawData: { type: 'Assets', dataSource: 'onchain-ConnectWallet' },
-    };
-    eventReport(eventInfo);
+  } catch (e) {
+    console.log('getChainAssets catch e=', e);
   }
 };
 

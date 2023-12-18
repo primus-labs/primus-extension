@@ -68,6 +68,7 @@ const DataSourceOverview = memo(() => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
+  
   const onChainAssetsSources = useSelector(
     (state: UserState) => state.onChainAssetsSources
   );

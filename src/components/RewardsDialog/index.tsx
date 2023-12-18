@@ -70,8 +70,16 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     return Object.values(rewards);
   }, [rewards]);
   const joinedNFTsFlag = useMemo(() => {
-    return rewardList.length > 0;
+    return rewardList.find((r) => !r.type);
   }, [rewardList]);
+
+  const joinedBrevisRewardList = useMemo(() => {
+    return rewardList.filter((r) => r?.event === 'brevis' && r.type === 'NFT');
+  }, [rewardList]);
+  const joinedBrevisFlag = useMemo(() => {
+    return joinedBrevisRewardList.length > 0;
+  }, [joinedBrevisRewardList]);
+
   const emptyEl = useMemo(() => {
     return (
       <div className="emptyWrapper">
@@ -115,27 +123,31 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
     setJoinedScrollFlag(!!joinFlag);
   };
   const fetchLotteryResults = useCallback(async () => {
-    if (dayjs().isAfter(dayjs(+badgeEventPeriod.endTime))) {
-      const { rc, result } = await checkLotteryResults({
-        event: 'PRODUCT_DEBUT',
-      });
-      if (rc === 0) {
-        setBadgeLottryResult({
-          result: result.result,
-          icon: result.iconUrl,
+    try {
+      if (dayjs().isAfter(dayjs(+badgeEventPeriod.endTime))) {
+        const { rc, result } = await checkLotteryResults({
+          event: 'PRODUCT_DEBUT',
         });
+        if (rc === 0) {
+          setBadgeLottryResult({
+            result: result.result,
+            icon: result.iconUrl,
+          });
+        }
       }
-    }
-    if (dayjs().isAfter(dayjs(+scrollEventPeriod.endTime))) {
-      const { rc, result } = await checkLotteryResults({
-        event: SCROLLEVENTNAME,
-      });
-      if (rc === 0) {
-        setScrollLottryResult({
-          result: result.result,
-          icon: result.iconUrl,
+      if (dayjs().isAfter(dayjs(+scrollEventPeriod.endTime))) {
+        const { rc, result } = await checkLotteryResults({
+          event: SCROLLEVENTNAME,
         });
+        if (rc === 0) {
+          setScrollLottryResult({
+            result: result.result,
+            icon: result.iconUrl,
+          });
+        }
       }
+    } catch (e) {
+      console.log('fetchLotteryResults catch e=', e);
     }
   }, [badgeEventPeriod.endTime, scrollEventPeriod.endTime]);
   useEffect(() => {
@@ -163,7 +175,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
         dayjs().isBefore(dayjs(endTime));
       const flag2 = dayjs().isAfter(dayjs(endTime)) && result;
       // const flag3 = dayjs().isAfter(dayjs(endTime)) && !result;
-     
+
       if (flag1) {
         return 1;
       }
@@ -263,17 +275,49 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(({ onClose, onSubmit }) => {
                         )} */}
                       </li>
                     )}
-                    {!showItemFlag && !showItemFlag2 && emptyEl}
+                    {!showItemFlag &&
+                      !showItemFlag2 &&
+                      !joinedBrevisFlag &&
+                      emptyEl}
                   </ul>
                 )}
+
                 {activeTab === 'NFTs' && (
-                  <>
-                    {joinedNFTsFlag ? (
-                      <RewardItem item={rewardList[0]} />
-                    ) : (
-                      emptyEl
+                  <ul className="BadgesList">
+                    {!!joinedNFTsFlag && (
+                      <li>
+                        <RewardItem item={joinedNFTsFlag} />
+                      </li>
                     )}
-                  </>
+                    {!!joinedBrevisFlag &&
+                      joinedBrevisRewardList.map((r) => {
+                        return (
+                          <li>
+                            <div className="nftWrapper">
+                              <div className="imgWrapper">
+                                <img src={r.image} alt="" />
+                              </div>
+                              <div className="descWrapper">
+                                <div className="label">{r.title}</div>
+                                <div className="value">{r.name}</div>
+                              </div>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    {/* <li>
+                      <div className="rewardWrapper win d">
+                        <div className="imgWrapper">
+                          <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbVMU2RsActgZNrBwdUw-hcESNDB0xqWixiA&usqp=CAU"
+                            alt=""
+                          />
+                        </div>
+                        <div className="descWrapper">BrevisUniNFT Badge</div>
+                      </div>
+                    </li> */}
+                    {!joinedNFTsFlag && !joinedBrevisFlag && emptyEl}
+                  </ul>
                 )}
               </div>
             </main>

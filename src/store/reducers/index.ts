@@ -49,19 +49,19 @@ const DEFAULTCREDTYPELIST = [
     display: 0,
     enabled: 0,
   },
-  // {
-  //   id: '4',
-  //   credIdentifier: 'UNISWAP_PROOF',
-  //   credTitle: 'UniSwap Proof',
-  //   credIntroduce: 'ETH/USDC transaction, powered by Brevis',
-  //   credLogoUrl: '',
-  //   credDetails: '',
-  //   credProofContent: 'ETH/USDC transaction',
-  //   credProofConditions: 'since Jun 6 2023',
-  //   simplifiedName: 'UniSwap',
-  //   display: 0,
-  //   enabled: 0,
-  // },
+  {
+    id: '4',
+    credIdentifier: 'UNISWAP_PROOF',
+    credTitle: 'Uniswap Transaction Proof',
+    credIntroduce: 'Largest transaction, Volum - powered by Brevis',
+    credLogoUrl: '',
+    credDetails: '',
+    credProofContent: 'Largest ETH/USDC Swap Size',
+    credProofConditions: '$100~$1,000',
+    simplifiedName: 'Uniswap Transaction',
+    display: 0,
+    enabled: 0,
+  },
 ];
 
 // initial state

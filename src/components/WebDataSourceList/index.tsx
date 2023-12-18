@@ -15,7 +15,12 @@ interface ConnectDataSourceListProps {
   onChange: (source: DataSourceItemType | undefined) => void;
 }
 const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
-  ({ onChange, list, disabled: allDisabled = false, val }) => {
+  ({
+    onChange,
+    list,
+    disabled: allDisabled = false,
+    val,
+  }) => {
     const [activeSource, setActiveSource] = useState<DataSourceItemType>();
 
     const liClassNameCallback = useCallback(
@@ -52,6 +57,8 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
     useEffect(() => {
       if (val) {
         setActiveSource(val);
+      } else {
+        setActiveSource(undefined);
       }
     }, [val]);
     return (
@@ -63,6 +70,7 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
                 <li
                   className={liClassNameCallback(item)}
                   key={item.name}
+                  id={item.name}
                   onClick={() => {
                     handleClickData(item);
                   }}

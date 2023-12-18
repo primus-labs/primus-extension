@@ -36,6 +36,7 @@ interface AttestationDialogProps {
   activeCred?: CredTypeItemType;
   activeSourceName?: string;
   onBack?: () => void;
+  activeType?: string;
 }
 const supportAssetCredList = ['binance', 'okx'];
 const supportTokenCredList = ['binance', 'okx', 'coinbase'];
@@ -61,12 +62,23 @@ const tabList: TabItem[] = [
 ];
 
 const AttestationDialog: React.FC<AttestationDialogProps> = memo(
-  ({ type, onClose, onSubmit, activeCred, activeSourceName, onBack }) => {
+  ({
+    type,
+    onClose,
+    onSubmit,
+    activeCred,
+    activeSourceName = '',
+    onBack,
+    activeType = '',
+  }) => {
+    const [refreshWebList, setRefreshWebList] = useState<boolean>(false);
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
-    const [activeWebDataSource, setActiveWebDataSource] = useState<string>('');
+    const [activeWebDataSource, setActiveWebDataSource] =
+      useState<string>(activeSourceName);
     const [activeTab, setActiveTab] = useState<string>('API Data');
-    const [activeIdentityType, setActiveIdentityType] = useState<string>('');
+    const [activeIdentityType, setActiveIdentityType] =
+      useState<string>(activeType);
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
     const [activeBaseValue, setActiveBaseValue] = useState<string>('');
@@ -91,7 +103,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           newArr.push(r);
         }
       });
-      // debugger
       return newArr;
     }, [webProofTypes]);
 
@@ -123,29 +134,12 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [identityList]);
     const webDataSourceList = useMemo(() => {
-      // const l = [
-      //   {
-      //     name: 'binance',
-      //     icon: iconWebDataSourceBiance,
-      //     disabled: false,
-      //   },
-      //   {
-      //     name: 'coinbase',
-      //     icon: iconWebDataSourceCoinbase,
-      //     disabled: true,
-      //   },
-      //   {
-      //     name: 'okx',
-      //     icon: iconWebDataSourceOKX,
-      //     disabled: true,
-      //   },
-      // ];
       let l: any = [
-        {
-          name: 'coinbase',
-          icon: iconWebDataSourceCoinbase,
-          disabled: true,
-        },
+        // {
+        //   name: 'coinbase',
+        //   icon: iconWebDataSourceCoinbase,
+        //   disabled: true,
+        // },
         {
           name: 'okx',
           icon: iconWebDataSourceOKX,
@@ -154,11 +148,13 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       ];
       webProofTypes.forEach((r) => {
         const existIdx = l.findIndex((i: any) => i.name === r.dataSource);
+        const isFromLINEA_DEFI_VOYAGE =
+          fromEvents === 'LINEA_DEFI_VOYAGE' && r.dataSource === 'binance';
         if (existIdx < 0) {
           l.unshift({
             name: r.dataSource,
             icon: r.bgImg,
-            disabled: r.name !== activeIdentityType,
+            disabled: fromEvents === 'LINEA_DEFI_VOYAGE' ? r.dataSource !== 'binance' :r.name !== activeIdentityType,
           });
         } else {
           if (l[existIdx].disabled) {
@@ -166,28 +162,48 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             l.unshift({
               name: r.dataSource,
               icon: r.bgImg,
-              disabled: r.name !== activeIdentityType,
+              disabled:
+                fromEvents === 'LINEA_DEFI_VOYAGE'
+                  ? r.dataSource !== 'binance'
+                  : r.name !== activeIdentityType,
             });
           }
         }
       });
       // l = [...new Set(l)]
       l = l.sort((a: any, b: any) => a.disabled - b.disabled);
-      return l;
-    }, [webProofTypes, activeIdentityType]);
+      const disabledArr = l.filter((a: any) => a.disabled).sort((a: any, b: any) => (a.name + '').localeCompare(b.name + ''));
+      const abledArr = l
+        .filter((a: any) => !a.disabled)
+        .sort((a: any, b: any) => (a.name + '').localeCompare(b.name + ''));
+      return [...abledArr,...disabledArr];
+    }, [webProofTypes, activeIdentityType, fromEvents]);
     const activeWebTemplate = useMemo(() => {
       const aWT = activeWebProofTypes.find((i) => {
         if (fromEvents === 'LINEA_DEFI_VOYAGE') {
           return i.id === '1'; // binance KYC
         }
-        return i.id === activeCred?.templateId;
+        if (activeCred) {
+          return i.id === activeCred?.templateId;
+        }
+        if (activeType && activeWebDataSource) {
+          return i.name === activeType && i.dataSource === activeWebDataSource;
+        }
+        return false;
       });
       return aWT;
-    }, [activeWebProofTypes, activeCred?.templateId, fromEvents]);
+    }, [
+      activeWebProofTypes,
+      activeCred,
+      fromEvents,
+      activeType,
+      activeWebDataSource,
+    ]);
     const activeWebDataSourceObj = useMemo(() => {
-      return webDataSourceList.find(
+      const obj = webDataSourceList.find(
         (i: any) => i.name === activeWebTemplate?.dataSource
       );
+      return obj
     }, [activeWebTemplate, webDataSourceList]);
     const emptyCon = useMemo(() => {
       let el;
@@ -387,6 +403,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, []);
     const handleChangeSelectIdentityType = useCallback((val: string) => {
       setActiveIdentityType(val);
+      setActiveWebDataSource('');
+      setRefreshWebList((f) => !f);
     }, []);
     const handleChangeTab = useCallback((val: string) => {
       setActiveTab(val);
@@ -616,6 +634,12 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
       }
     }, [fromEvents]);
+    useEffect(() => {
+      if (activeType) {
+        setActiveTab('Webpage Data');
+      }
+      
+    }, [activeType])
 
     return (
       <PMask onClose={onClose} closeable={fromEvents !== 'LINEA_DEFI_VOYAGE'}>

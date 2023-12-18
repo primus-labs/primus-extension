@@ -252,7 +252,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     source,
     requestid: prevRequestid || timeStampStr,
-    version: CredVersion,
+    //version: CredVersion,
     baseName, // host, such as "api.binance.com"
     padoUrl: padoUrl, // client <----> pado-server // TODO
     proxyUrl: proxyUrl, // TODO
