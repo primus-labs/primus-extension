@@ -232,10 +232,14 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="providedChains">
                 {item.provided?.map((i, k) => (
                   <a
-                    href={`${
-                      (EASInfo[i.title as keyof typeof EASInfo] as any)
-                        ?.transactionDetailUrl
-                    }/${i.attestationUID}`}
+                    href={
+                      item.fromWalletAddress
+                        ? `https://icscan.io/transaction/${i.txHash}`
+                        : `${
+                            (EASInfo[i.title as keyof typeof EASInfo] as any)
+                              ?.transactionDetailUrl
+                          } /${i.attestationUID}`
+                    }
                     target="_blank"
                     rel="noreferrer"
                     key={k}
@@ -376,7 +380,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
             <div className="descItem">
               <div className="label">Connected Account</div>
               <div className="value">
-                {item.did
+                {item.fromWalletAddress
+                  ? formatAddress(item.fromWalletAddress.toLowerCase(), 13)
+                  : item.did
                   ? formatAddress(item.did.toLowerCase(), 13)
                   : formatAddress(item.address)}
               </div>

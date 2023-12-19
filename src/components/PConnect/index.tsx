@@ -1,5 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
-import { useSelector, useDispatch, } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import {
   // setConnectWalletDialogVisible1,
   connectWalletAsync,
@@ -17,7 +18,11 @@ import type { ActiveRequestType } from '@/types/config';
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 
 const PConnect = memo(() => {
-  const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] = useState<boolean>(false);
+  const [searchParams] = useSearchParams();
+  const fromWallet = searchParams.get('fromWallet');
+  const fromWalletAddress = searchParams.get('fromWalletAddress');
+  const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =
+    useState<boolean>(false);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [step, setStep] = useState<number>(1);
   const connectWalletDialogVisible = useSelector(
@@ -27,7 +32,7 @@ const PConnect = memo(() => {
     (state: UserState) => state.connectedWallet
   );
   const dispatch: React.Dispatch<any> = useDispatch();
-  
+
   const errorDescEl = useMemo(
     () => (
       <>
@@ -37,15 +42,12 @@ const PConnect = memo(() => {
     ),
     []
   );
-  const handleConnect = useCallback(
-    () => {
-      setConnectWalletDialogVisible1(true)
-      setStep(1)
-    },
-    []
-  );
+  const handleConnect = useCallback(() => {
+    setConnectWalletDialogVisible1(true);
+    setStep(1);
+  }, []);
   const handleCloseMask = useCallback(() => {
-    setConnectWalletDialogVisible1(false)
+    setConnectWalletDialogVisible1(false);
   }, []);
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
@@ -71,13 +73,13 @@ const PConnect = memo(() => {
         });
       };
       // connectFn(startFn, errorFn);
-      dispatch(connectWalletAsync(undefined,startFn, errorFn));
+      dispatch(connectWalletAsync(undefined, startFn, errorFn));
     },
-    [dispatch,errorDescEl]
+    [dispatch, errorDescEl]
   );
   const onSubmitProcessDialog = useCallback(() => {
     setStep(1);
-    setConnectWalletDialogVisible1(false)
+    setConnectWalletDialogVisible1(false);
   }, []);
   const checkIfHadBound = useCallback(async () => {
     const { connectedWalletAddress } = await chrome.storage.local.get([
@@ -88,12 +90,14 @@ const PConnect = memo(() => {
     }
   }, [handleSubmitConnectWallet]);
   useEffect(() => {
-    checkIfHadBound();
-  }, [checkIfHadBound]);
+    if (!fromWalletAddress) {
+      checkIfHadBound();
+    }
+  }, [checkIfHadBound, fromWalletAddress]);
   useEffect(() => {
     if (connectedWallet?.address) {
-      setConnectWalletDialogVisible1(false)
-      setStep(1)
+      setConnectWalletDialogVisible1(false);
+      setStep(1);
     }
   }, [connectedWallet?.address]);
   return (

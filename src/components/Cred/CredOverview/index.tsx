@@ -164,7 +164,20 @@ const CredOverview = memo(() => {
 
   const handleUpChain = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
-    setSendToChainDialogVisible(true);
+
+    if (item.fromWalletAddress) {
+      // inform icp to upper chain
+      console.log('2221', 'upperChain-from cred page');
+      chrome.runtime.sendMessage({
+        type: 'icp',
+        name: 'upperChain',
+        params: {
+          requestid: item.requestid,
+        },
+      });
+    } else {
+      setSendToChainDialogVisible(true);
+    }
   }, []);
   const handleViewQrcode = useCallback((item: CredTypeItemType) => {
     setActiveCred(item);
@@ -206,8 +219,7 @@ const CredOverview = memo(() => {
 
   const handleAdd = useCallback(async () => {
     if (
-      (fromEvents === 'NFTs' ||
-      fromEvents === 'LINEA_DEFI_VOYAGE') &&
+      (fromEvents === 'NFTs' || fromEvents === 'LINEA_DEFI_VOYAGE') &&
       activeCred
     ) {
       return;

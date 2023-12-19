@@ -15,6 +15,7 @@ import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
 import ConnectWalletDialog from './ConnectWalletDialog';
+import iconAdd from '@/assets/img/iconAdd.svg'
 
 import {
   ONCHAINLIST,
@@ -671,6 +672,48 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     useEffect(() => {
       fromEvents === 'LINEA_DEFI_VOYAGE' && fetchEventDetail();
     }, [fromEvents, fetchEventDetail]);
+
+    useEffect(() => {
+      const listerFn = async(message: any) => {
+        if (message.type === 'icp') {
+          if (message.name === 'upperChainRes') {
+            setStep(5);
+            const { txHash, requestid } = message.params;
+            const cObj = { ...credentialsFromStore };
+            // const curRequestid = activeCred?.requestid as string;
+            const curRequestid = requestid as string;
+            const curCredential = cObj[curRequestid];
+
+            const newProvided = curCredential.provided ?? [];
+            const currentChainObj: any = {
+              title: 'icp',
+              icon: iconAdd,
+              txHash,
+            };
+            newProvided.push(currentChainObj);
+
+            cObj[curRequestid] = Object.assign(curCredential, {
+              provided: newProvided,
+            });
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(cObj),
+            });
+            await initCredList();
+
+            setActiveSendToChainRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'Your attestation is recorded on-chain!',
+            });
+          }
+        }
+      };
+      chrome.runtime.onMessage.addListener(listerFn);
+      return () => {
+        chrome.runtime.onMessage.removeListener(listerFn);
+      };
+    }, [credentialsFromStore, initCredList]);
+
 
     return (
       <div className="credSendToChainWrapper">

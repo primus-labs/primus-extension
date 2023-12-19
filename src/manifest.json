@@ -32,6 +32,10 @@
     {
       "matches": ["https://padolabs.org/*", "https://www.padolabs.org/*", "http://api-dev.padolabs.org:5100/*"],
       "js": ["padoWebsite.js"]
+    },
+    {
+      "matches": ["http://localhost:3001/*", "https://bupby-pqaaa-aaaam-abykq-cai.icp0.io/*"],
+      "js": ["icp.js"]
     }
   ]
 }

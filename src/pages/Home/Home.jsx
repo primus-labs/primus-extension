@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams ,useLocation} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import AsideAnimation from '@/components/Layout/AsideAnimation';
@@ -13,6 +13,7 @@ import './home.scss';
 const Home = memo(() => {
   const [searchParams] = useSearchParams();
   const backUrl = searchParams.get('backUrl');
+  const location = useLocation()
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const padoServicePort = useSelector((state) => state.padoServicePort);

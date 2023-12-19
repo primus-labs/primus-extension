@@ -6,7 +6,7 @@ import {
   schemaTypeMap,
   SCROLLEVENTNAME,
 } from '@/config/constants';
-import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
+import { getPadoUrl, getProxyUrl, PADOADDRESS } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
 
 export let EXCHANGEINFO = {
@@ -234,6 +234,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     requestid: prevRequestid,
     event,
+    fromWalletAddress,
   } = form;
   const { baseName } = DATASOURCEMAP[source];
   const user = await assembleUserInfoParams(form);
@@ -270,6 +271,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     // holdingToken // TODO
     authUseridHash,
     event,
+    fromWalletAddress,
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
@@ -479,7 +481,7 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   return extRequestsOrderInfo;
 }
 async function assembleUserInfoParams(form) {
-  const { event } = form;
+  const { event, fromWalletAddress } = form;
   const { connectedWalletAddress, userInfo } = await chrome.storage.local.get([
     'connectedWalletAddress',
     'userInfo',
@@ -493,6 +495,13 @@ async function assembleUserInfoParams(form) {
     if (scrollEventObj.address) {
       formatAddress = scrollEventObj.address;
     }
+  }
+  console.log('22212345', fromWalletAddress);
+  if (fromWalletAddress) {
+    const { padoCreatedWalletAddress } = await chrome.storage.local.get([
+      'padoCreatedWalletAddress',
+    ]);
+    formatAddress = padoCreatedWalletAddress;
   }
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {

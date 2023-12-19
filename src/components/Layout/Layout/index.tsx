@@ -1,6 +1,11 @@
 import React, { useEffect, useCallback, useState, useMemo, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Outlet,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom';
 
 import ActiveHeader from '@/components/Layout/ActiveHeader';
 import BackgroundAnimation from '@/components/Layout/BackgroundAnimation';
@@ -17,6 +22,7 @@ import {
   initWalletAddressActionAsync,
   initRewardsActionAsync,
   setOnChainAssetsSourcesAsync,
+  setConnectWalletActionAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
@@ -29,6 +35,9 @@ import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 import { updateAlgoUrl } from '@/config/envConstants';
 
 const Layout = memo(() => {
+  const [searchParams] = useSearchParams();
+  const fromWallet = searchParams.get('fromWallet');
+  const fromWalletAddress = searchParams.get('fromWalletAddress');
   const location = useLocation();
   const { pathname, search } = location;
   const padoServicePort = useSelector(
@@ -101,7 +110,7 @@ const Layout = memo(() => {
             'keyStore',
             'privateKey',
           ]);
-          const encodeReturnUrl = decodeURIComponent(pathname + search);
+          const encodeReturnUrl = encodeURIComponent(pathname + search);
           if (keyStore) {
             if (!message.res) {
               if (search) {
@@ -115,6 +124,7 @@ const Layout = memo(() => {
           } else if (privateKey) {
           } else {
             if (search) {
+              console.log(2221234, pathname, search, encodeReturnUrl);
               navigate(`/?backUrl=${encodeReturnUrl}`);
             } else {
               navigate(`/`);
@@ -198,6 +208,17 @@ const Layout = memo(() => {
   useEffect(() => {
     updateAlgoUrl();
   }, []);
+  useEffect(() => {
+    if (fromWallet) {
+      dispatch(
+        setConnectWalletActionAsync({
+          name: fromWallet,
+          address: fromWalletAddress,
+          provider: null,
+        })
+      );
+    }
+  }, [fromWallet, fromWalletAddress, dispatch]);
 
   return (
     <div className="pageApp">

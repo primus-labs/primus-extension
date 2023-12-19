@@ -17,6 +17,7 @@ import {
 import { eventReport } from '@/services/api/usertracker';
 import './pageDecode.js';
 import { pageDecodeMsgListener } from './pageDecode.js';
+import { icpMsgListener } from './icp.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -469,5 +470,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       );
       chrome.tabs.create({ url });
     }
+  }
+  if (message.type === 'icp') {
+    icpMsgListener(
+      message,
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort
+    );
   }
 });
