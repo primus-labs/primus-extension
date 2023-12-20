@@ -2,9 +2,13 @@ import React, {
   FC,
   memo,
   useMemo,
+  useCallback,
+  useEffect,
+  useState,
 } from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
+import { queryEventDetail } from '@/services/api/event';
 import PButton from '@/components/PButton';
 import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
 import './index.scss';
@@ -13,12 +17,10 @@ interface AdSpaceProps {
 }
 dayjs.extend(utc);
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
-  const scrollEventPeriod = useMemo(() => {
-    return {
-      startTime: '1701864000000',
-      endTime: '1702987200000',
-    };
-  }, []);
+  const [scrollEventPeriod, setScrollEventPeriod] = useState({
+    startTime: '1701864000000',
+    endTime: '1702987200000',
+  });
   const formatPeriod = useMemo(() => {
     // return '2023.12.06 ~ 2023.12.19';
     const { startTime, endTime } = scrollEventPeriod;
@@ -43,8 +45,30 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     }
     return 0;
   }, [scrollEventPeriod]);
-  
-  
+  const fetchEventDetail = useCallback(async () => {
+    try {
+      const res = await queryEventDetail({
+        event: 'LINEA_DEFI_VOYAGE',
+      });
+      const { rc, result } = res;
+      if (rc === 0) {
+        setScrollEventPeriod({
+          startTime: result.startTime,
+          endTime: result.endTime,
+        });
+
+        //     "startTime": "1699819200000",
+        // "endTime": "1700942400000",
+        //   "ext": {
+        //     "intractUrl": "https://www.intract.io/linea"
+        // }
+      }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    fetchEventDetail();
+  }, [fetchEventDetail]);
+
   return (
     <>
       {scrollEventActiveFlag === 1 ? (
