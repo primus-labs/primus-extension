@@ -19,7 +19,7 @@ dayjs.extend(utc);
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
   const [scrollEventPeriod, setScrollEventPeriod] = useState({
     startTime: '1701864000000',
-    endTime: '1702987200000',
+    endTime: '1703075400000',
   });
   const formatPeriod = useMemo(() => {
     // return '2023.12.06 ~ 2023.12.19';
