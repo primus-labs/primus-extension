@@ -6,24 +6,27 @@ var padoStr = `<div id="pado-extension-inject-el"></div>`;
 var injectEl = createDomElement(padoStr);
 var queryTimer = null;
 document.body.appendChild(injectEl);
-console.log('222123icp');
+console.log('pado-extension-content inject');
 // window.PADO = 'pado'
 const fn = () => {
   var entranceEl = document.querySelector('#ConnectPadoNav');
   console.log('pado-extension-entranceEl', entranceEl, entranceEl.title);
   if (entranceEl) {
     entranceEl.onclick = (e) => {
-      e.preventDefault();
-      console.log('plug wallet', entranceEl.title);
-      chrome.runtime.sendMessage({
-        type: 'icp',
-        name: 'createTab',
-        params: {
-          fromWallet: 'icp',
-          fromWalletAddress: entranceEl.title,
-        },
-      });
-      return;
+      var entranceEl = document.querySelector('#ConnectPadoNav');
+      console.log('click', entranceEl.title, e);
+      if (entranceEl.title) {
+        console.log('plug wallet', entranceEl.title);
+        chrome.runtime.sendMessage({
+          type: 'icp',
+          name: 'createTab',
+          params: {
+            fromWallet: 'icp',
+            fromWalletAddress: entranceEl.title,
+          },
+        });
+      } else {
+      }
     };
   }
 };
@@ -38,6 +41,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     console.log('2221', 'upperChain-from extention');
     // const balance = await window.ic?.plug?.requestBalance();
     var entranceEl = document.querySelector('#UpperChainNav');
+    console.log('22212', entranceEl);
     entranceEl.requestid = requestid;
     await entranceEl.click();
     queryTimer = setInterval(() => {
