@@ -23,7 +23,4 @@ export const icpMsgListener = async (
     // console.log('upperChain-from bg2', icpPageTabId);
     chrome.tabs.sendMessage(icpPageTabId, request, function (response) {});
   }
-  if (name === 'upperChainRes') {
-    console.log('222123upperChainRes', txHash, extra);
-  }
 };

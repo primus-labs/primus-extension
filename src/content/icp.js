@@ -35,26 +35,25 @@ fn();
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   var {
     name,
-    params: { requestid },
+    params: { requestid, source, content, result },
   } = request;
   if (name === 'upperChain') {
-    console.log('2221', 'upperChain-from extention');
     // const balance = await window.ic?.plug?.requestBalance();
     var entranceEl = document.querySelector('#UpperChainNav');
-    console.log('22212', entranceEl);
     entranceEl.requestid = requestid;
+    localStorage.setItem(
+      'padoUpperChainInfo',
+      JSON.stringify({ source, content, result })
+    );
     await entranceEl.click();
     queryTimer = setInterval(() => {
       if (entranceEl.title) {
-        const icpBalance = localStorage.getItem('icpBalance');
         clearInterval(queryTimer);
-        console.log('22212', icpBalance, entranceEl.title);
         var msgObj = {
           type: 'icp',
           name: 'upperChainRes',
           params: {
             txHash: entranceEl.title,
-            extra: icpBalance,
             requestid,
           },
         };

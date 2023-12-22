@@ -234,7 +234,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   <a
                     href={
                       item.fromWalletAddress
-                        ? `https://icscan.io/transaction/${i.txHash}`
+                        ? i.txHash
                         : `${
                             (EASInfo[i.title as keyof typeof EASInfo] as any)
                               ?.transactionDetailUrl

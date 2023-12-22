@@ -173,6 +173,9 @@ const CredOverview = memo(() => {
         name: 'upperChain',
         params: {
           requestid: item.requestid,
+          source: item.source,
+          content: item.uiTemplate.proofContent,
+          result: item.uiTemplate.condition,
         },
       });
     } else {

@@ -15,7 +15,7 @@ import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import TransferToChainDialog from '@/components/DataSourceDetail/TransferToChainDialog';
 import ConnectWalletDialog from './ConnectWalletDialog';
-import iconAdd from '@/assets/img/iconAdd.svg'
+import iconIcp from '@/assets/img/credit/iconIcp.svg'
 
 import {
   ONCHAINLIST,
@@ -687,7 +687,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             const newProvided = curCredential.provided ?? [];
             const currentChainObj: any = {
               title: 'icp',
-              icon: iconAdd,
+              icon: 'https://internetcomputer.org/img/favicon-32x32.png',
               txHash,
             };
             newProvided.push(currentChainObj);
