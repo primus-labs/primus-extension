@@ -41,7 +41,7 @@
   }
   ul.dataList {
     @extend .frss;
-    width: var(--scroll-width,380px);
+    width: var(--scroll-width, 380px);
     flex-wrap: wrap;
     // row-gap: var(--spacing-16, 16px);
     // column-gap: var(--spacing-10, 10px);
@@ -65,6 +65,20 @@
         color: var(--Text-headline, #0a1214);
         @extend .Headline6;
       }
+    }
+  }
+  .emptyContent {
+    width: calc(100% - var(--spacing-36, 36px));
+    @extend .fcsc;
+    gap: var(--spacing-16, 16px);
+    padding-top: var(--spacing-40, 40px);
+    > img {
+      width: var(--attestationDialog-emptyContent-img-width, 45px);
+    }
+    >h2 {
+      @extend .Text2;
+      color: var(--Text-hint, #7b7f80);
+      text-align: center;
     }
   }
 }

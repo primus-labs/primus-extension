@@ -22,6 +22,7 @@ import {
 import { setSourceUpdateFrequencyActionAsync } from '@/store/actions';
 import { add } from '@/utils/utils';
 import { exportCsv } from '@/utils/exportFile';
+import { eventReport } from '@/services/api/usertracker';
 
 import type { ConnectSourceType } from '@/types/dataSource';
 import type { Dispatch } from 'react';
@@ -515,6 +516,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
         ...activeExSourceCipherNameArr,
         ...activeKYCSourceNameArr,
       ];
+      
       await chrome.storage.local.remove(removeStorageKeyArr);
       // Delete credentials related to the exchange
       const { credentials: credentialsStr } = await chrome.storage.local.get([
@@ -527,7 +529,7 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
           activeExSourceNameArr.includes(credentialObj[key].source) ||
           activeKYCSourceNameArr.includes(credentialObj[key].source)
         ) {
-          const curCred = newCredentialObj[key]
+          const curCred = newCredentialObj[key];
           if (curCred.reqType !== 'web' && !curCred.provided) {
             delete newCredentialObj[key];
           }
@@ -561,6 +563,29 @@ const ManageDataDialog: React.FC<ManageDataDialogProps> = memo(
       dispatch(setCredentialsAsync());
 
       setReconfirmVisible(false);
+      const pArr = activeSourceNameArr.map((i) => {
+        if (i.startsWith('0x')) {
+          return eventReport({
+            eventType: 'DATA_SOURCE_DELETE',
+            rawData: {
+              type: 'Assets',
+              dataSource: 'onchain-ConnectWallet',
+            },
+          });
+        } else {
+          return eventReport({
+            eventType: 'DATA_SOURCE_DELETE',
+            rawData: { type: DATASOURCEMAP[i].type, dataSource: i },
+          });
+        }
+      });
+      const pArr2 = activeKYCSourceNameArr.map((i) => {
+        return eventReport({
+          eventType: 'DATA_SOURCE_DELETE',
+          rawData: { type: DATASOURCEMAP[i].type, dataSource: i },
+        });
+      });
+      await Promise.all([...pArr, ...pArr2]);
     }, [
       dispatch,
       activeSourceNameArr,
