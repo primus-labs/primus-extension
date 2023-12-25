@@ -365,7 +365,6 @@ export async function attestByDelegationProxyFee(params) {
       (er.data && er.data.message.indexOf('insufficient funds') > -1) ||
       er.message.indexOf('insufficient funds') > -1
     ) {
-      
       return {
         error: 1,
         message: 'insufficient funds',

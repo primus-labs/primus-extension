@@ -22,6 +22,7 @@ import {
   EASInfo,
   LINEASCHEMANAME,
   SCROLLSCHEMANAME,
+  BNBSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
 import { CredVersion, SCROLLEVENTNAME } from '@/config/constants';
@@ -368,6 +369,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             let LineaSchemaName;
             if (formatNetworkName?.startsWith('Linea')) {
               LineaSchemaName = LINEASCHEMANAME;
+            } else if (
+              formatNetworkName &&
+              formatNetworkName.indexOf('BNB') > -1
+            ) {
+              LineaSchemaName = BNBSCHEMANAME;
             } else if (
               formatNetworkName &&
               formatNetworkName.indexOf('Scroll') > -1

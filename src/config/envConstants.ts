@@ -167,6 +167,38 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://sepolia.easscan.org/attestation/view',
     },
+    BNB: {
+      showName: 'BNB',
+      icon: iconBinance,
+      title: 'BNB',
+      rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
+      easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
+      easProxyFeeContract: '0x620e84546d71A775A82491e1e527292e94a7165A',
+      schemas: {
+        'BAS-BSC-Testnet': {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+          schemaUidWeb:
+            '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
+        },
+        PolygonID: {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+        },
+      },
+      chainId: '0x61', // 97
+      chainName: 'BNB Smart Chain Testnet',
+      rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545/'],
+      blockExplorerUrls: ['https://testnet.bscscan.com/'],
+      nativeCurrency: {
+        name: 'BNB',
+        symbol: 'BNB',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://test.bascan.io/attestation',
+    },
 
     ArbitrumOne: {
       showName: 'Arbitrum',
@@ -223,34 +255,6 @@ const EASINFOMAP = {
         symbol: 'MATIC',
         decimals: 18,
       },
-    },
-    BNB: {
-      showName: 'BNB',
-      icon: iconBinance,
-      title: 'BNB',
-      disabled: true,
-      rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
-      easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
-      easProxyContrac: '0x2884E43B48c2Cc623A19c0c3d260DD8f398fd5F3',
-      schemas: {
-        EAS: {
-          schemaUid:
-            '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
-          schemaUidTokenHoldings:
-            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
-          schemaUidIdentification:
-            '0xe2b389fef1bd8887415ac6079090e2ed6377eca6235cb5c5f691ba71cd2ca456',
-        },
-        PolygonID: {
-          schemaUid: '',
-          schemaUidTokenHoldings: '',
-          schemaUidIdentification: '',
-        },
-      },
-      chainId: '0x61', // numToHex
-      chainName: 'BNB Smart Chain Testnet',
-      rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545/'],
-      blockExplorerUrls: ['https://testnet.bscscan.com/'],
     },
   },
   test: {
@@ -385,7 +389,8 @@ const EASINFOMAP = {
       showName: 'Linea',
       icon: iconNetworkLinea,
       title: 'Linea Goerli',
-      rpcUrl: 'https://linea-mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      rpcUrl:
+        'https://linea-mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
       erc721Contract: '',
       easContact: '',
       easProxyContrac: '',
@@ -412,7 +417,9 @@ const EASINFOMAP = {
       },
       chainId: '0xe708', //59144
       chainName: 'Linea',
-      rpcUrls: ['https://linea-mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8'],
+      rpcUrls: [
+        'https://linea-mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+      ],
       blockExplorerUrls: ['https://lineascan.build'],
       nativeCurrency: {
         name: 'LineaETH',
@@ -644,6 +651,12 @@ const SCROLLSCHEMANAMEMAP = {
   production: 'Verax-Scroll-Mainnet',
 };
 export let SCROLLSCHEMANAME = SCROLLSCHEMANAMEMAP[CURENV];
+const BNBSCHEMANAMEMAP = {
+  development: 'BAS-BSC-Testnet',
+  test: 'BAS-BSC-Testnet',
+  production: 'BAS-BSC-Mainnet',
+};
+export let BNBSCHEMANAME = BNBSCHEMANAMEMAP[CURENV];
 const FIRSTVERSIONSUPPORTEDNETWORKNAMEMAP = {
   development: 'Sepolia',
   test: 'Sepolia',
