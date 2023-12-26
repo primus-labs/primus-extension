@@ -169,8 +169,13 @@ const PageHeader = memo(() => {
     [dispatch]
   );
   const onConnectUniSat = useCallback(async () => {
-    const newPort = await chrome.runtime.connect('dlgikoddnhdhbdmbddnacbdockpdfgej');
+    const newPort = await chrome.runtime.connect(
+      'dlgikoddnhdhbdmbddnacbdockpdfgej'
+    );
     console.log('222123unisat port', newPort);
+    newPort.onDisconnect.addListener((port) => {
+      console.log('222123unisat port disconnect', port);
+    });
     setTimeout(() => {
       newPort.postMessage({
         _type_: 'UNISAT_WALLET_request',
