@@ -11,6 +11,7 @@ import iconRewards from '@/assets/img/layout/iconRewards.svg';
 import PConnect from '@/components/PConnect';
 import PDropdownList from '@/components/PDropdownList';
 import PTabsNew from '@/components/PTabsNew';
+import PButton from '@/components/PButton';
 import {
   setConnectWalletActionAsync,
   setRewardsDialogVisibleAction,
@@ -167,6 +168,21 @@ const PageHeader = memo(() => {
     },
     [dispatch]
   );
+  const onConnectUniSat = useCallback(async () => {
+    const newPort = await chrome.runtime.connect('dlgikoddnhdhbdmbddnacbdockpdfgej');
+    console.log('222123unisat port', newPort);
+    setTimeout(() => {
+      newPort.postMessage({
+        _type_: 'UNISAT_WALLET_request',
+        data: {
+          data: {
+            method: 'requestAccounts',
+          },
+          ident: 500,
+        },
+      });
+    }, 1000);
+  }, []);
 
   useEffect(() => {
     connectWalletDialogVisible && setDorpdownVisible(false);
@@ -218,6 +234,7 @@ const PageHeader = memo(() => {
               </div>
             )}
           </div>
+          <PButton text="connect UniSat" onClick={onConnectUniSat} />
         </div>
       </header>
       {settingDialogVisible && <Setting onClose={onCloseSettingDialog} />}
