@@ -235,7 +235,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     requestid: prevRequestid,
     event,
   } = form;
-  const { baseName } = DATASOURCEMAP[source];
+  // const { baseName } = DATASOURCEMAP[source];
+  const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName;
   const user = await assembleUserInfoParams(form);
 
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
