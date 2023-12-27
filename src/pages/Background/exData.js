@@ -236,7 +236,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     event,
   } = form;
   // const { baseName } = DATASOURCEMAP[source];
-  const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName;
+  const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName; // unnecessary for web proof
   const user = await assembleUserInfoParams(form);
 
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
@@ -271,9 +271,13 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     // holdingToken // TODO
     authUseridHash,
     event,
+    setHostName: "true"
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
+  if (source === 'tiktok') {
+    params.setHostName= "false"
+  }
   if (type === 'ASSETS_PROOF') {
     params.baseValue = baseValue;
     calculationType = `SUM_OF_ALL`;
