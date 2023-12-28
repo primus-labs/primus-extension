@@ -26,6 +26,8 @@ import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import iconUpdate from '@/assets/img/credit/iconUpdate.svg';
 import iconClear from '@/assets/img/credit/iconClear.svg';
 import iconUniswap from '@/assets/img/credit/iconUniswap.svg';
+import iconTikTok from '@/assets/img/credit/iconTikTok.svg';
+
 
 import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -168,6 +170,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       if (sourceName) {
         if (sourceName === 'brevis') {
           return iconUniswap;
+        } else if (sourceName === 'tiktok') {
+          return iconTikTok;
         }
         const sourceLowerCaseName = item.source.toLowerCase();
         return DATASOURCEMAP[sourceLowerCaseName].icon;
