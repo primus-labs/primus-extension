@@ -4,9 +4,15 @@ import {
   useWeb3Modal,
   useWeb3ModalProvider,
   useWeb3ModalAccount,
+  useDisconnect,
+  useWeb3ModalState,
+  useWeb3ModalEvents,
 } from '@web3modal/ethers5/react';
+import { EASInfo } from '@/config/envConstants';
 
 import { ethers } from 'ethers';
+import { connectWallet, switchChain } from '@/services/wallets/metamask';
+
 import {
   // setConnectWalletDialogVisible1,
   connectWalletAsync,
@@ -32,6 +38,9 @@ const PConnect = memo(() => {
     isConnected,
   } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
+  const { open: isOpen, selectedNetworkId } = useWeb3ModalState();
+  const events = useWeb3ModalEvents();
+  const { disconnect } = useDisconnect();
 
   const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =
     useState<boolean>(false);
@@ -94,7 +103,7 @@ const PConnect = memo(() => {
           desc: 'Check Your wallet to confirm the connection.',
         });
         setStep(2);
-        open({view: 'WalletConnect'});
+        open();
       }
     },
     [dispatch, errorDescEl, open]
@@ -123,26 +132,69 @@ const PConnect = memo(() => {
   const signFn = useCallback(async () => {
     try {
       const provider = new ethers.providers.Web3Provider(walletProvider);
-      console.log('222123provider', provider);
+      console.log('222123provider', provider, EASInfo);
+      const a = await switchChain('0x1', EASInfo.ArbitrumOne, provider);
+      // const signer = provider.getSigner();
+      // console.log('222123signer', signer);
+      // // const signature = await signer?.signMessage('PADO Labs');
+      // // console.log('222123signature', signature);
+      // const timestamp = new Date() + '';
+      // const address = walletConnectAddress;
+      // const typedData = {
+      //   types: {
+      //     // EIP712Domain: [{ name: 'name', type: 'string' }],
+      //     Request: [
+      //       { name: 'desc', type: 'string' },
+      //       { name: 'address', type: 'string' },
+      //       { name: 'timestamp', type: 'string' },
+      //     ],
+      //   },
+      //   primaryType: 'Request',
+      //   domain: {
+      //     name: 'PADO Labs',
+      //   },
+      //   message: {
+      //     desc: 'PADO Labs',
+      //     address,
+      //     timestamp,
+      //   },
+      // };
+      // // const signRes = walletProvider.sendAsync({
+      // //   method: 'eth_signTypedData_v4',
+      // //   params: [address, typedData],
+      // // });
+      // const signRes = await signer._signTypedData(
+      //   typedData.domain,
+      //   typedData.types,
+      //   typedData.message
+      // );
 
-      const signer = provider.getSigner();
-      console.log('222123signer', provider);
-      const signature = await signer?.signMessage('PADO Labs');
-      console.log('222123signature', signature);
+      // console.log('222123eth_signTypedData_v4', signRes);
     } catch (e) {
       console.log('e', e);
     }
-  }, [walletProvider]);
+  }, [walletProvider, walletConnectAddress]);
   useEffect(() => {
     console.log(
       '222123',
       walletConnectAddress,
       chainId,
       isConnected,
-      walletProvider
+      walletProvider,
+      selectedNetworkId
     );
     isConnected && signFn();
-  }, [walletConnectAddress, signFn, chainId, isConnected, walletProvider]);
+  }, [
+    walletConnectAddress,
+    signFn,
+    chainId,
+    isConnected,
+    walletProvider,
+    selectedNetworkId,
+  ]);
+  // useEffect(() => {
+  //   console.log('222123', events)
+  // },[events])
   return (
     <div className="PConnect">
       {connectedWallet?.address ? (
