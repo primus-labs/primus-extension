@@ -35,9 +35,9 @@ const PConnect = memo(() => {
   const {
     address: walletConnectAddress,
     chainId,
-    isConnected,
+    isConnected: walletConnectIsConnect,
   } = useWeb3ModalAccount();
-  const { walletProvider } = useWeb3ModalProvider();
+  const { walletProvider: walletConnectProvider } = useWeb3ModalProvider();
   const { open: isOpen, selectedNetworkId } = useWeb3ModalState();
   const events = useWeb3ModalEvents();
   const { disconnect } = useDisconnect();
@@ -70,6 +70,27 @@ const PConnect = memo(() => {
   const handleCloseMask = useCallback(() => {
     setConnectWalletDialogVisible1(false);
   }, []);
+  const connectWalletAsyncFn = useCallback(
+    (connectObj?: any) => {
+      const startFn = () => {
+        setActiveRequest({
+          type: 'loading',
+          title: 'Sign the message',
+          desc: "PADO uses this signature to verify that you're the owner of this address.",
+        });
+        setStep(2);
+      };
+      const errorFn = () => {
+        setActiveRequest({
+          type: 'warn',
+          title: 'Unable to proceed',
+          desc: errorDescEl,
+        });
+      };
+      dispatch(connectWalletAsync(connectObj, startFn, errorFn));
+    },
+    [dispatch, errorDescEl]
+  );
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       if (wallet?.name === 'MetaMask') {
@@ -79,34 +100,12 @@ const PConnect = memo(() => {
           desc: 'Check MetaMask to confirm the connection.',
         });
         setStep(2);
-        const startFn = () => {
-          setActiveRequest({
-            type: 'loading',
-            title: 'Sign the message',
-            desc: "PADO uses this signature to verify that you're the owner of this address.",
-          });
-          setStep(2);
-        };
-        const errorFn = () => {
-          setActiveRequest({
-            type: 'warn',
-            title: 'Unable to proceed',
-            desc: errorDescEl,
-          });
-        };
-        // connectFn(startFn, errorFn);
-        dispatch(connectWalletAsync(undefined, startFn, errorFn));
+        connectWalletAsyncFn(undefined);
       } else if (wallet?.name === 'WalletConnect') {
-        setActiveRequest({
-          type: 'loading',
-          title: 'Requesting Connection',
-          desc: 'Check Your wallet to confirm the connection.',
-        });
-        setStep(2);
         open();
       }
     },
-    [dispatch, errorDescEl, open]
+    [open, connectWalletAsyncFn]
   );
   const onSubmitProcessDialog = useCallback(() => {
     setStep(1);
@@ -120,77 +119,28 @@ const PConnect = memo(() => {
       handleSubmitConnectWallet();
     }
   }, [handleSubmitConnectWallet]);
-  useEffect(() => {
-    checkIfHadBound();
-  }, [checkIfHadBound]);
+  // useEffect(() => {
+  //   checkIfHadBound();
+  // }, [checkIfHadBound]); // TODO!!!
   useEffect(() => {
     if (connectedWallet?.address) {
       setConnectWalletDialogVisible1(false);
       setStep(1);
     }
   }, [connectedWallet?.address]);
-  const signFn = useCallback(async () => {
-    try {
-      const provider = new ethers.providers.Web3Provider(walletProvider);
-      console.log('222123provider', provider, EASInfo);
-      const a = await switchChain('0x1', EASInfo.ArbitrumOne, provider);
-      // const signer = provider.getSigner();
-      // console.log('222123signer', signer);
-      // // const signature = await signer?.signMessage('PADO Labs');
-      // // console.log('222123signature', signature);
-      // const timestamp = new Date() + '';
-      // const address = walletConnectAddress;
-      // const typedData = {
-      //   types: {
-      //     // EIP712Domain: [{ name: 'name', type: 'string' }],
-      //     Request: [
-      //       { name: 'desc', type: 'string' },
-      //       { name: 'address', type: 'string' },
-      //       { name: 'timestamp', type: 'string' },
-      //     ],
-      //   },
-      //   primaryType: 'Request',
-      //   domain: {
-      //     name: 'PADO Labs',
-      //   },
-      //   message: {
-      //     desc: 'PADO Labs',
-      //     address,
-      //     timestamp,
-      //   },
-      // };
-      // // const signRes = walletProvider.sendAsync({
-      // //   method: 'eth_signTypedData_v4',
-      // //   params: [address, typedData],
-      // // });
-      // const signRes = await signer._signTypedData(
-      //   typedData.domain,
-      //   typedData.types,
-      //   typedData.message
-      // );
-
-      // console.log('222123eth_signTypedData_v4', signRes);
-    } catch (e) {
-      console.log('e', e);
-    }
-  }, [walletProvider, walletConnectAddress]);
   useEffect(() => {
-    console.log(
-      '222123',
-      walletConnectAddress,
-      chainId,
-      isConnected,
-      walletProvider,
-      selectedNetworkId
-    );
-    isConnected && signFn();
+    if (walletConnectIsConnect) {
+      connectWalletAsyncFn({
+        name: 'walletconnect',
+        provider: walletConnectProvider,
+        address: walletConnectAddress,
+      });
+    }
   }, [
+    walletConnectProvider,
     walletConnectAddress,
-    signFn,
-    chainId,
-    isConnected,
-    walletProvider,
-    selectedNetworkId,
+    walletConnectIsConnect,
+    connectWalletAsyncFn,
   ]);
   // useEffect(() => {
   //   console.log('222123', events)
