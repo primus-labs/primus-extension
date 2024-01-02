@@ -2,6 +2,13 @@ import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import BigNumber from 'bignumber.js';
+import {
+  useWeb3Modal,
+  useWeb3ModalState,
+  useWeb3ModalAccount,
+  useWeb3ModalProvider,
+} from '@web3modal/ethers5/react';
+import {setConnectWalletActionAsync} from '@/store/actions'
 import ConnectWalletDataDialog from './ConnectWalletDataDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import { setOnChainAssetsSourcesAsync } from '@/store/actions';
@@ -54,8 +61,15 @@ type Erc20TokenOnChainsMap = {
 };
 const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
   ({ onClose, onSubmit, onCancel, visible = true }) => {
+    const [walletLabel, setWalletLabel] = useState<string>();
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
     const [step, setStep] = useState<number>(1);
+    const { open } = useWeb3Modal();
+    const {
+      address: walletConnectAddress,
+      isConnected: walletConnectIsConnect,
+    } = useWeb3ModalAccount();
+    const { walletProvider: walletConnectProvider } = useWeb3ModalProvider();
 
     const errorDescEl = useMemo(
       () => (
@@ -80,9 +94,8 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
     const onCloseStatusDialog = useCallback(() => {
       onClose();
     }, [onClose]);
-
-    const onSubmitConnectWalletDataDialog = useCallback(
-      async (item: WALLETITEMTYPE, label?: string) => {
+    const connectWalletAsyncFn = useCallback(
+      (connectObj?: any) => {
         // 1112
         const startFn = () => {
           setActiveRequest({
@@ -102,10 +115,20 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
         const sucFn = async (walletObj: any) => {
           try {
             var { signature, timestamp, address: curConnectedAddr } = walletObj;
-            
             if (!signature && !timestamp) {
               timestamp = +new Date() + '';
-              signature = await requestSign(curConnectedAddr, timestamp);
+              const walletInfo =
+                connectObj?.name === 'walletconnect'
+                  ? {
+                      walletName: connectObj?.name,
+                      walletProvider: connectObj.provider,
+                    }
+                  : undefined;
+              signature = await requestSign(
+                curConnectedAddr,
+                timestamp,
+                walletInfo
+              );
               if (!signature) {
                 setActiveRequest({
                   type: 'error',
@@ -119,7 +142,7 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
                 timestamp,
                 curConnectedAddr,
                 dispatch,
-                label
+                walletLabel
               );
             }
             setActiveRequest({
@@ -135,10 +158,47 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
             });
           }
         };
-        dispatch(connectWalletAsync(undefined, startFn, errorFn, sucFn,undefined,label));
+        dispatch(
+          connectWalletAsync(
+            connectObj,
+            startFn,
+            errorFn,
+            sucFn,
+            undefined,
+            walletLabel
+          )
+        );
       },
-      [errorDescEl, dispatch]
+      [dispatch, errorDescEl, walletLabel]
     );
+    const onSubmitConnectWalletDataDialog = useCallback(
+      async (item: WALLETITEMTYPE, label?: string) => {
+        setWalletLabel(label);
+        if (item?.name === 'MetaMask') {
+          connectWalletAsyncFn(undefined);
+        } else if (item?.name === 'WalletConnect') {
+          open();
+        }
+      },
+      [connectWalletAsyncFn, open]
+    );
+    useEffect(() => {
+      if (walletConnectIsConnect) {
+        connectWalletAsyncFn({
+          name: 'walletconnect',
+          provider: walletConnectProvider,
+          address: walletConnectAddress,
+        });
+      } else {
+        dispatch(setConnectWalletActionAsync(undefined));
+      }
+    }, [
+      walletConnectProvider,
+      walletConnectAddress,
+      walletConnectIsConnect,
+      connectWalletAsyncFn,
+      dispatch
+    ]);
     useEffect(() => {
       setActiveRequest(undefined);
       setStep(1);

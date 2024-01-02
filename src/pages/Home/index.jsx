@@ -16,26 +16,27 @@ const projectId = '0dabe09aae6ef261e2a469af9ccb9b76';
 // 2. Set chains
 const chains = [
   {
-    chainId: 1,
-    name: 'Ethereum',
-    currency: 'ETH',
-    explorerUrl: 'https://etherscan.io',
-    rpcUrl: 'https://cloudflare-eth.com',
-  },
-  {
     chainId: 534351,
     name: 'Sepolia',
     currency: 'ETH',
     explorerUrl: 'https://sepolia.scrollscan.com',
     rpcUrl: 'https://sepolia-rpc.scroll.io',
   },
-  // {
-  //   chainId: 42161,
-  //   name: 'Arbitrum',
-  //   currency: 'ETH',
-  //   explorerUrl: 'https://arbiscan.io',
-  //   rpcUrl: 'https://arb1.arbitrum.io/rpc',
-  // },
+  {
+    chainId: 1,
+    name: 'Ethereum',
+    currency: 'ETH',
+    explorerUrl: 'https://etherscan.io',
+    rpcUrl: 'https://cloudflare-eth.com',
+  },
+
+  {
+    chainId: 42161,
+    name: 'Arbitrum',
+    currency: 'ETH',
+    explorerUrl: 'https://arbiscan.io',
+    rpcUrl: 'https://arb1.arbitrum.io/rpc',
+  },
 ];
 
 // 3. Create modal

@@ -197,6 +197,7 @@ async function getFee(networkName, metamaskprovider) {
   const abi = ['function fee() public view returns(uint256)'];
   let provider = new ethers.providers.Web3Provider(metamaskprovider);
   const contract = new ethers.Contract(contractAddress, abi, provider);
+  console.log('get contract=', contract);
   const fee = await contract.fee();
   console.log('get fee=', fee);
   return fee;

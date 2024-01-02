@@ -8,10 +8,11 @@ import {
   useWeb3ModalState,
   useWeb3ModalEvents,
 } from '@web3modal/ethers5/react';
-import { EASInfo } from '@/config/envConstants';
+import { setConnectWalletActionAsync } from '@/store/actions';
+// import { EASInfo } from '@/config/envConstants';
 
-import { ethers } from 'ethers';
-import { connectWallet, switchChain } from '@/services/wallets/metamask';
+// import { ethers } from 'ethers';
+// import { connectWallet, switchChain } from '@/services/wallets/metamask';
 
 import {
   // setConnectWalletDialogVisible1,
@@ -38,9 +39,9 @@ const PConnect = memo(() => {
     isConnected: walletConnectIsConnect,
   } = useWeb3ModalAccount();
   const { walletProvider: walletConnectProvider } = useWeb3ModalProvider();
-  const { open: isOpen, selectedNetworkId } = useWeb3ModalState();
-  const events = useWeb3ModalEvents();
-  const { disconnect } = useDisconnect();
+  // const { open: isOpen, selectedNetworkId } = useWeb3ModalState();
+  // const events = useWeb3ModalEvents();
+  // const { disconnect } = useDisconnect();
 
   const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =
     useState<boolean>(false);
@@ -135,12 +136,15 @@ const PConnect = memo(() => {
         provider: walletConnectProvider,
         address: walletConnectAddress,
       });
+    } else {
+      dispatch(setConnectWalletActionAsync(undefined));
     }
   }, [
     walletConnectProvider,
     walletConnectAddress,
     walletConnectIsConnect,
     connectWalletAsyncFn,
+    dispatch
   ]);
   // useEffect(() => {
   //   console.log('222123', events)

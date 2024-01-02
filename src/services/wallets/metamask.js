@@ -195,6 +195,7 @@ const handleAccountsChanged = async (accounts) => {
       connectWalletAsync({
         address: addr,
         provider,
+        name: 'metamask'
       })
     );
   } else {

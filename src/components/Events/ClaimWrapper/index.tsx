@@ -26,7 +26,6 @@ import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
 import {
   initRewardsActionAsync,
-  setConnectWalletActionAsync,
   setRewardsDialogVisibleAction,
   connectWalletAsync,
 } from '@/store/actions';
