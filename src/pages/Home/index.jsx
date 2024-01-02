@@ -16,11 +16,19 @@ const projectId = '0dabe09aae6ef261e2a469af9ccb9b76';
 // 2. Set chains
 const chains = [
   {
-    chainId: 534351,
+    chainId: 59140,
+    name: 'Linea Goerli',
+    currency: 'LineaETH',
+    explorerUrl: 'https://goerli.lineascan.build',
+    rpcUrl:
+      'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+  },
+  {
+    chainId: 11155111,
     name: 'Sepolia',
     currency: 'ETH',
-    explorerUrl: 'https://sepolia.scrollscan.com',
-    rpcUrl: 'https://sepolia-rpc.scroll.io',
+    explorerUrl: 'https://sepolia.etherscan.io',
+    rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
   },
   {
     chainId: 1,
@@ -36,6 +44,13 @@ const chains = [
     currency: 'ETH',
     explorerUrl: 'https://arbiscan.io',
     rpcUrl: 'https://arb1.arbitrum.io/rpc',
+  },
+  {
+    chainId: 97,
+    name: 'BAS-BSC-Testnet',
+    currency: 'BNB',
+    explorerUrl: 'https://testnet.bscscan.com/',
+    rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
   },
 ];
 

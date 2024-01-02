@@ -144,8 +144,16 @@ const PConnect = memo(() => {
     walletConnectAddress,
     walletConnectIsConnect,
     connectWalletAsyncFn,
-    dispatch
+    dispatch,
   ]);
+  useEffect(() => {
+    console.log('222123', walletConnectProvider, chainId);
+    if (walletConnectProvider) {
+      walletConnectProvider.on('chainChanged', (chainId: number) => {
+        console.log('2221234', chainId);
+      });
+    }
+  }, [walletConnectProvider, chainId]);
   // useEffect(() => {
   //   console.log('222123', events)
   // },[events])
