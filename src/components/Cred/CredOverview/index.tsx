@@ -11,12 +11,9 @@ import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import BindPolygonID from '@/components/Cred/BindPolygonID';
 import CredSendToChainWrapper from '../CredSendToChainWrapper';
 import ClaimMysteryBoxWrapper2 from '@/components/Events/ClaimMysteryBoxWrapper2';
-
+import useWallet from '@/hooks/useWallet'
 import {
   setCredentialsAsync,
-  setConnectWalletDialogVisibleAction,
-  connectWalletAsync,
-  setRewardsDialogVisibleAction,
 } from '@/store/actions';
 
 import { postMsg } from '@/utils/utils';
@@ -80,9 +77,10 @@ const CredOverview = memo(() => {
     []
   );
   const credList: CredTypeItemType[] = useMemo(() => {
-    let credArr = Object.values(credentialsFromStore);
+    let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
     credArr = credArr.sort(
-      (a, b) => Number(a.getDataTime) - Number(b.getDataTime)
+      (a: CredTypeItemType, b: CredTypeItemType) =>
+        Number(a.getDataTime) - Number(b.getDataTime)
     );
     return credArr;
   }, [credentialsFromStore]);
@@ -91,7 +89,7 @@ const CredOverview = memo(() => {
     if (activeSourceType && activeSourceType !== 'All') {
       activeList = activeList.filter((i) => {
         const curProofTypeItem = proofTypes.find(
-          (j) => j.credIdentifier === i.type
+          (j:any) => j.credIdentifier === i.type
         );
         return curProofTypeItem?.simplifiedName === activeSourceType;
       });
@@ -107,14 +105,14 @@ const CredOverview = memo(() => {
     let credArr = Object.values(credentialsFromStore);
 
     const haveXProof = credArr.find(
-      (i) => i.event === SCROLLEVENTNAME && i.source === 'x'
+      (i:any) => i.event === SCROLLEVENTNAME && i.source === 'x'
     );
     return haveXProof;
   }, [credentialsFromStore]);
   const proofBinance = useMemo(() => {
     let credArr = Object.values(credentialsFromStore);
     const haveBinanceProof = credArr.find(
-      (i) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
+      (i:any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
     );
     return haveBinanceProof;
   }, [credentialsFromStore]);
@@ -336,7 +334,44 @@ const CredOverview = memo(() => {
     },
     [fromEvents, navigate]
   );
-
+  const startFn = useCallback(() => {
+    if (connectedWallet?.address) {
+      setActiveRequest({
+        type: 'loading',
+        title: 'Processing',
+        desc: 'Please complete the transaction in your wallet.',
+      });
+    } else {
+      setActiveRequest({
+        type: 'loading',
+        title: 'Requesting Connection',
+        desc: 'Check MetaMask to confirm the connection.',
+      });
+    }
+    setConnectTipDialogVisible(true);
+  }, [connectedWallet?.address]);
+  const errorFn = useCallback(() => {
+    setActiveRequest({
+      type: 'warn',
+      title: 'Unable to proceed',
+      desc: errorDescEl,
+    });
+    setActiveCred(undefined);
+  }, [errorDescEl]);
+  const sucFn = useCallback(
+    async (walletObj: any) => {
+      if (fromEvents === 'Scroll') {
+        setClaimMysteryBoxVisible2(true);
+        setEventSource('');
+        setConnectTipDialogVisible(false);
+      } else {
+        setAddDialogVisible(true);
+        setConnectTipDialogVisible(false);
+      }
+    },
+    [fromEvents]
+  );
+  const { connect } = useWallet();
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       setConnectDialogVisible(false);
@@ -346,43 +381,9 @@ const CredOverview = memo(() => {
         desc: 'Check MetaMask to confirm the connection.',
       });
       setConnectTipDialogVisible(true);
-      const startFn = () => {
-        if (connectedWallet?.address) {
-          setActiveRequest({
-            type: 'loading',
-            title: 'Processing',
-            desc: 'Please complete the transaction in your wallet.',
-          });
-        } else {
-          setActiveRequest({
-            type: 'loading',
-            title: 'Requesting Connection',
-            desc: 'Check MetaMask to confirm the connection.',
-          });
-        }
-        setConnectTipDialogVisible(true);
-      };
-      const errorFn = () => {
-        setActiveRequest({
-          type: 'warn',
-          title: 'Unable to proceed',
-          desc: errorDescEl,
-        });
-        setActiveCred(undefined);
-      };
-      const sucFn = async (walletObj: any) => {
-        if (fromEvents === 'Scroll') {
-          setClaimMysteryBoxVisible2(true);
-          setEventSource('');
-          setConnectTipDialogVisible(false);
-        } else {
-          setAddDialogVisible(true);
-          setConnectTipDialogVisible(false);
-        }
-      };
-      dispatch(connectWalletAsync(undefined, startFn, errorFn, sucFn));
+      connect(wallet?.name, startFn, errorFn, sucFn);
     },
-    [errorDescEl, dispatch, fromEvents, connectedWallet]
+    [connect, startFn, errorFn, sucFn]
   );
   const handleCloseConnectWallet = useCallback(() => {
     setConnectDialogVisible(false);
@@ -397,6 +398,7 @@ const CredOverview = memo(() => {
     if (connectedWallet?.address) {
       setConnectDialogVisible(false);
     } else {
+      
       setConnectDialogVisible(true);
       setClaimMysteryBoxVisible2(false);
       // bindPolygonidVisible;

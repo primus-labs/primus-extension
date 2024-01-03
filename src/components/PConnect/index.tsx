@@ -1,23 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  useWeb3Modal,
-  useWeb3ModalProvider,
-  useWeb3ModalAccount,
-  useDisconnect,
-  useWeb3ModalState,
-  useWeb3ModalEvents,
-} from '@web3modal/ethers5/react';
-import { setConnectWalletActionAsync } from '@/store/actions';
-// import { EASInfo } from '@/config/envConstants';
-
-// import { ethers } from 'ethers';
-// import { connectWallet, switchChain } from '@/services/wallets/metamask';
-
-import {
-  // setConnectWalletDialogVisible1,
-  connectWalletAsync,
-} from '@/store/actions';
+import useWallet from '@/hooks/useWallet';
 import { formatAddress } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/constants';
 
@@ -31,18 +14,6 @@ import type { ActiveRequestType } from '@/types/config';
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 
 const PConnect = memo(() => {
-  // 4. Use modal hook
-  const { open } = useWeb3Modal();
-  const {
-    address: walletConnectAddress,
-    chainId,
-    isConnected: walletConnectIsConnect,
-  } = useWeb3ModalAccount();
-  const { walletProvider: walletConnectProvider } = useWeb3ModalProvider();
-  // const { open: isOpen, selectedNetworkId } = useWeb3ModalState();
-  // const events = useWeb3ModalEvents();
-  // const { disconnect } = useDisconnect();
-
   const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =
     useState<boolean>(false);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
@@ -71,27 +42,22 @@ const PConnect = memo(() => {
   const handleCloseMask = useCallback(() => {
     setConnectWalletDialogVisible1(false);
   }, []);
-  const connectWalletAsyncFn = useCallback(
-    (connectObj?: any) => {
-      const startFn = () => {
-        setActiveRequest({
-          type: 'loading',
-          title: 'Sign the message',
-          desc: "PADO uses this signature to verify that you're the owner of this address.",
-        });
-        setStep(2);
-      };
-      const errorFn = () => {
-        setActiveRequest({
-          type: 'warn',
-          title: 'Unable to proceed',
-          desc: errorDescEl,
-        });
-      };
-      dispatch(connectWalletAsync(connectObj, startFn, errorFn));
-    },
-    [dispatch, errorDescEl]
-  );
+  const startFn = () => {
+    setActiveRequest({
+      type: 'loading',
+      title: 'Sign the message',
+      desc: "PADO uses this signature to verify that you're the owner of this address.",
+    });
+    setStep(2);
+  };
+  const errorFn = useCallback(() => {
+    setActiveRequest({
+      type: 'warn',
+      title: 'Unable to proceed',
+      desc: errorDescEl,
+    });
+  }, [errorDescEl]);
+  const { connect } = useWallet();
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
       if (wallet?.name === 'MetaMask') {
@@ -101,12 +67,10 @@ const PConnect = memo(() => {
           desc: 'Check MetaMask to confirm the connection.',
         });
         setStep(2);
-        connectWalletAsyncFn(undefined);
-      } else if (wallet?.name === 'WalletConnect') {
-        open();
       }
+      connect(wallet?.name, startFn, errorFn);
     },
-    [open, connectWalletAsyncFn]
+    [connect, errorFn]
   );
   const onSubmitProcessDialog = useCallback(() => {
     setStep(1);
@@ -129,34 +93,6 @@ const PConnect = memo(() => {
       setStep(1);
     }
   }, [connectedWallet?.address]);
-  useEffect(() => {
-    if (walletConnectIsConnect) {
-      connectWalletAsyncFn({
-        name: 'walletconnect',
-        provider: walletConnectProvider,
-        address: walletConnectAddress,
-      });
-    } else {
-      dispatch(setConnectWalletActionAsync(undefined));
-    }
-  }, [
-    walletConnectProvider,
-    walletConnectAddress,
-    walletConnectIsConnect,
-    connectWalletAsyncFn,
-    dispatch,
-  ]);
-  useEffect(() => {
-    console.log('222123', walletConnectProvider, chainId);
-    if (walletConnectProvider) {
-      walletConnectProvider.on('chainChanged', (chainId: number) => {
-        console.log('2221234', chainId);
-      });
-    }
-  }, [walletConnectProvider, chainId]);
-  // useEffect(() => {
-  //   console.log('222123', events)
-  // },[events])
   return (
     <div className="PConnect">
       {connectedWallet?.address ? (

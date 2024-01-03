@@ -131,7 +131,6 @@ export const connectWalletAsync = (
         provider = connectObj.provider;
       } else {
         const connectRes = await connectWallet(network);
-        debugger;
         provider = connectRes[2];
         address = (connectRes[0] as string[])[0];
       }
@@ -145,7 +144,7 @@ export const connectWalletAsync = (
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
           // startFn && (await startFn());
-          sucFn && (await sucFn({ name: type, address, provider }));
+          sucFn && (await sucFn({ name: type, address, provider },));
         } else {
           return;
         }

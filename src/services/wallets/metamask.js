@@ -8,7 +8,7 @@ import {
 var provider;
 
 export const connectWallet = async (targetNetwork) => {
-  console.log('connect metamask');
+  console.log('connect metamask', targetNetwork);
   try {
     if (provider && provider.on) {
       provider.removeListener('chainChanged', handleChainChanged);

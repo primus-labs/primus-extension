@@ -8,13 +8,7 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import {
-  useWeb3Modal,
-  useWeb3ModalProvider,
-  useWeb3ModalAccount,
-  useDisconnect,
-  useWeb3ModalState,
-} from '@web3modal/ethers5/react';
+import useWallet from '@/hooks/useWallet';
 import { setConnectWalletActionAsync } from '@/store/actions';
 import { strToHexSha256 } from '@/utils/utils';
 import PButton from '@/components/PButton';
@@ -64,13 +58,6 @@ interface CredSendToChainWrapperType {
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
-    const { open } = useWeb3Modal();
-    const {
-      address: walletConnectAddress,
-      chainId,
-      isConnected: walletConnectIsConnect,
-    } = useWeb3ModalAccount();
-    const { walletProvider: walletConnectProvider } = useWeb3ModalProvider();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -169,10 +156,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       ) => {
         let credArr = Object.values(credentialsFromStore);
         const XProof = credArr.find(
-          (i) => i.event === SCROLLEVENTNAME && i.source === 'x'
+          (i:any) => i.event === SCROLLEVENTNAME && i.source === 'x'
         ) as CredTypeItemType;
         const BinanceProof = credArr.find(
-          (i) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
+          (i:any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
         ) as CredTypeItemType;
         const upChainPX: any = {
           data: XProof?.encodedData,
@@ -363,7 +350,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       [credentialsFromStore, initCredList]
     );
     const sucFn = useCallback(
-      async (walletObj: any, formatNetworkName?: string) => {
+      async (walletObj: any, formatNetworkName?:string) => {
+        // const formatNetworkName = activeNetworkName;
+        // debugger
         try {
           let LineaSchemaName;
           if (formatNetworkName?.startsWith('Linea')) {
@@ -569,10 +558,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         initCredList,
         scrollEventFn,
         fromEvents,
+        // activeNetworkName,
       ]
     );
     const startFn = useCallback(() => {
-      debugger;
       setActiveSendToChainRequest({
         type: 'loading',
         title: 'Processing',
@@ -580,88 +569,68 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       });
       setStep(5);
     }, []);
-    const upperChainFn = useCallback(
-      (networkName?: string) => {
-        startFn();
-        sucFn(
-          {
-            name: connectedWallet?.name, // walletconnect
-            provider: connectedWallet?.provider,
-            address: connectedWallet?.address,
-          },
-          networkName
-        );
-      },
-      [startFn, sucFn, connectedWallet]
-    );
-    const connectWalletAsyncFn = useCallback(
-      (connectObj?: any, networkName?: string) => {
-        const errorFn = () => {
-          setActiveSendToChainRequest({
-            type: 'warn',
-            title: 'Unable to proceed',
-            desc: errorDescEl,
-          });
-        };
-        const formatNetworkName = activeNetworkName ?? networkName;
-        const targetNetwork =
-          EASInfo[formatNetworkName as keyof typeof EASInfo];
-        debugger;
-        dispatch(
-          connectWalletAsync(
-            connectObj,
-            startFn,
-            errorFn,
-            (walletObj: any) => {
-              sucFn(walletObj, formatNetworkName);
-            },
-            targetNetwork
-          )
-        );
-      },
-      [dispatch, errorDescEl, sucFn, activeNetworkName]
-    );
+    const errorFn = useCallback(() => {
+      setActiveSendToChainRequest({
+        type: 'warn',
+        title: 'Unable to proceed',
+        desc: errorDescEl,
+      });
+    }, [errorDescEl]);
+    const { connect } = useWallet();
+    // const upperChainFn = useCallback(
+    //   (networkName?: string) => {
+    //     startFn();
+    //     sucFn(
+    //       {
+    //         name: connectedWallet?.name, // walletconnect
+    //         provider: connectedWallet?.provider,
+    //         address: connectedWallet?.address,
+    //       },
+    //       networkName
+    //     );
+    //   },
+    //   [startF
     const handleSubmitConnectWallet = useCallback(
       async (wallet?: WALLETITEMTYPE, networkName?: string) => {
-        if (wallet) {
-          debugger;
-          if (wallet?.name?.toLowerCase() === 'walletconnect') {
-            debugger;
-            if (connectedWallet?.address) {
-              debugger;
-              upperChainFn(networkName);
-            } else {
-              debugger;
-              open();
-            }
-          }
-          // if (wallet?.name === 'metamask')
-          else {
-            debugger;
-            connectWalletAsyncFn(undefined, networkName);
-          }
-        } else {
-          if (
-            connectedWallet?.address &&
-            connectedWallet?.name === 'walletconnect'
-          ) {
-            upperChainFn(networkName);
-          } else {
-            connectWalletAsyncFn(undefined, networkName);
-          }
-        }
+        const formatNetworkName = activeNetworkName ?? networkName;
+        connect(wallet?.name, startFn, errorFn, sucFn, formatNetworkName);
+        // if (wallet) {
+
+        //   if (wallet?.name?.toLowerCase() === 'walletconnect') {
+
+        //     if (connectedWallet?.address) {
+
+        //       upperChainFn(networkName);
+        //     } else {
+
+        //       open();
+        //     }
+        //   }
+        //   // if (wallet?.name === 'metamask')
+        //   else {
+
+        //     connectWalletAsyncFn(undefined, networkName);
+        //   }
+        // } else {
+        //   if (
+        //     connectedWallet?.address &&
+        //     connectedWallet?.name === 'walletconnect'
+        //   ) {
+        //     upperChainFn(networkName);
+        //   } else {
+        //     connectWalletAsyncFn(undefined, networkName);
+        //   }
+        // }
       },
-      [connectWalletAsyncFn, open, connectedWallet, upperChainFn]
+      [connect, startFn, sucFn, errorFn, activeNetworkName]
     );
     const handleSubmitTransferToChain = useCallback(
       async (networkName?: string) => {
-        debugger;
         if (networkName) {
           await setActiveNetworkName(networkName);
         } else {
           return;
         }
-        debugger;
         if (connectedWallet?.address) {
           handleSubmitConnectWallet(undefined, networkName);
         } else {
@@ -754,29 +723,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     useEffect(() => {
       fromEvents === 'LINEA_DEFI_VOYAGE' && fetchEventDetail();
     }, [fromEvents, fetchEventDetail]);
-    useEffect(() => {
-      if (walletConnectIsConnect) {
-        debugger;
-        // connectWalletAsyncFn({
-        //   name: 'walletconnect',
-        //   provider: walletConnectProvider,
-        //   address: walletConnectAddress,
-        // });
-        if (activeNetworkName) {
-          upperChainFn(activeNetworkName);
-        }
-      } else {
-        dispatch(setConnectWalletActionAsync(undefined));
-      }
-    }, [
-      walletConnectProvider,
-      walletConnectAddress,
-      walletConnectIsConnect,
-      connectWalletAsyncFn,
-      dispatch,
-      activeNetworkName,
-      upperChainFn
-    ]);
 
     return (
       <div className="credSendToChainWrapper">

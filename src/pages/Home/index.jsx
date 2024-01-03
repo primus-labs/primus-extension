@@ -56,9 +56,9 @@ const chains = [
 
 // 3. Create modal
 const metadata = {
-  name: 'My Website',
-  description: 'My Website description',
-  url: 'https://mywebsite.com',
+  name: 'PADO',
+  description: 'The Decentralized zkAttestation and Computation Network',
+  url: 'https://padolabs.org/',
   icons: ['https://avatars.mywebsite.com/'],
 };
 

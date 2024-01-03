@@ -97,7 +97,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const activeAttestationTypeInfo = useMemo(() => {
-      const obj = proofTypes.find((i) => i.credIdentifier === type);
+      const obj = proofTypes.find((i:any) => i.credIdentifier === type);
       return obj as PROOFTYPEITEM;
     }, [type, proofTypes]);
     const connectedExSourceList: ConnectSourceType[] = useMemo(() => {

@@ -740,7 +740,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setActiveAttestForm(form);
         if (form?.proofClientType === 'Webpage Data') {
           const currRequestObj = webProofTypes.find(
-            (r) => r.name === form.proofContent && r.dataSource === form.source
+            (r:any) => r.name === form.proofContent && r.dataSource === form.source
           );
           currRequestObj.requestid = form.requestid;
           currRequestObj.event = form.event;

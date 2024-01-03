@@ -56,7 +56,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       (state: UserState) => state.credentials
     );
     const credList: CredTypeItemType[] = useMemo(() => {
-      let credArr = Object.values(credentialsFromStore);
+      let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
       credArr = credArr.sort(
         (a, b) => Number(a.getDataTime) - Number(b.getDataTime)
       );

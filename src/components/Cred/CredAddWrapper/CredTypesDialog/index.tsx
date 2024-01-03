@@ -72,7 +72,7 @@ const fromEvents = searchParams.get('fromEvents');
             </header>
             <div className="scrollList">
               <ul className="credTypeList">
-                {proofTypes.map((item) => (
+                {proofTypes.map((item:any) => (
                   <li
                     className={liClassName(item)}
                     onClick={() => {

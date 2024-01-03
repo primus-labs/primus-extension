@@ -109,8 +109,8 @@ const DataSourceOverview = memo(() => {
   // console.log('onChainAssetsList====', onChainAssetsList);
 
   const dataSourceList: SourceDataList = useMemo(() => {
-    const exList = Object.values(exSources);
-    const socialList = Object.values(socialSources);
+    const exList: SourceDataList = Object.values(exSources);
+    const socialList: SourceDataList = Object.values(socialSources);
     const orderedExList = exList.sort((a, b) =>
       sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
     );
