@@ -101,14 +101,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       (state: UserState) => state.connectedWallet
     );
     const proofX = useMemo(() => {
-      let credArr = Object.values(credentialsFromStore);
+      let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
       const haveXProof = credArr.find(
-        (i:any) => i.event === SCROLLEVENTNAME && i.source === 'x'
+        (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
       );
       return haveXProof;
     }, [credentialsFromStore]);
     const proofBinance = useMemo(() => {
-      let credArr = Object.values(credentialsFromStore);
+      let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
       const haveBinanceProof = credArr.find(
         (i:any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
       );

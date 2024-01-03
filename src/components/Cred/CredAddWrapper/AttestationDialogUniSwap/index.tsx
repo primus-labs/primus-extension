@@ -93,7 +93,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [onChainAssetsSources]);
 
     const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
-      let l = [];
+      let l:any[] = [];
       if (type === 'UNISWAP_PROOF') {
         l = connectedOnChainSourceList.filter((i: any) => !i.disabled);
       } else {

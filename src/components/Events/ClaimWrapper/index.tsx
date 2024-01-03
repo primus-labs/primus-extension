@@ -86,8 +86,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
-    const credList: CredTypeItemType[] = useMemo(() => {
-      let credArr = Object.values(credentialsFromStore);
+    const credList = useMemo(() => {
+      let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
       credArr = credArr.sort(
         (a, b) => Number(a.getDataTime) - Number(b.getDataTime)
       );

@@ -131,7 +131,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       });
     }, [kycSources]);
     const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
-      let l = [];
+      let l:any[] = [];
       if (type === 'IDENTIFICATION_PROOF') {
         l = connectedKYCSourceList;
       } else if (type === 'ASSETS_PROOF') {

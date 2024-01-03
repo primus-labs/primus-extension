@@ -71,7 +71,7 @@ const useWallet: UseWalletType = function useWallet() {
       walletName?: string,
       startFn?: () => void,
       errorFn?: () => void,
-      sucFn?: (walletObj: any) => void,
+      sucFn?: (walletObj: any, network?:string,label?:string,) => void,
       network?: any,
       label?: string
     ) => {

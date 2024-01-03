@@ -1,6 +1,4 @@
 import React, { useRef, useEffect } from 'react';
-
-
 import {
   useWeb3Modal,
   useWeb3ModalProvider,
