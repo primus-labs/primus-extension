@@ -89,3 +89,19 @@ export const regenerateAttestation = (data: any, config?: any) => {
     config,
   });
 };
+
+type GETAUTHATTESTATIONParams = {
+  state: string;
+  source: string;
+  schemaType: string;
+  address: string;
+};
+export const getAuthAttestation = (
+  data: GETAUTHATTESTATIONParams,
+) => {
+  return request({
+    method: 'get',
+    url: `/oauth2/attestation`,
+    data
+  });
+};

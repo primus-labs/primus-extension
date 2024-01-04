@@ -20,6 +20,7 @@ import iconWebDataSource from '@/assets/img/credit/iconWebDataSource.svg';
 import iconWebDataSourceBiance from '@/assets/img/credit/iconWebDataSourceBiance.svg';
 import iconWebDataSourceCoinbase from '@/assets/img/credit/iconWebDataSourceCoinbase.svg';
 import iconWebDataSourceOKX from '@/assets/img/credit/iconWebDataSourceOKX.svg';
+import iconGoogle from '@/assets/img/iconGoogle.svg';
 import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { UserState } from '@/types/store';
@@ -154,7 +155,10 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           l.unshift({
             name: r.dataSource,
             icon: r.bgImg,
-            disabled: fromEvents === 'LINEA_DEFI_VOYAGE' ? r.dataSource !== 'binance' :r.name !== activeIdentityType,
+            disabled:
+              fromEvents === 'LINEA_DEFI_VOYAGE'
+                ? r.dataSource !== 'binance'
+                : r.name !== activeIdentityType,
           });
         } else {
           if (l[existIdx].disabled) {
@@ -172,11 +176,13 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       });
       // l = [...new Set(l)]
       l = l.sort((a: any, b: any) => a.disabled - b.disabled);
-      const disabledArr = l.filter((a: any) => a.disabled).sort((a: any, b: any) => (a.name + '').localeCompare(b.name + ''));
+      const disabledArr = l
+        .filter((a: any) => a.disabled)
+        .sort((a: any, b: any) => (a.name + '').localeCompare(b.name + ''));
       const abledArr = l
         .filter((a: any) => !a.disabled)
         .sort((a: any, b: any) => (a.name + '').localeCompare(b.name + ''));
-      return [...abledArr,...disabledArr];
+      return [...abledArr, ...disabledArr];
     }, [webProofTypes, activeIdentityType, fromEvents]);
     const activeWebTemplate = useMemo(() => {
       const aWT = activeWebProofTypes.find((i) => {
@@ -203,7 +209,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       const obj = webDataSourceList.find(
         (i: any) => i.name === activeWebTemplate?.dataSource
       );
-      return obj
+      return obj;
     }, [activeWebTemplate, webDataSourceList]);
     const emptyCon = useMemo(() => {
       let el;
@@ -274,13 +280,27 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [kycSources]);
     const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
       if (type === 'IDENTIFICATION_PROOF') {
-        if (
-          !activeIdentityType ||
-          (activeIdentityType && activeIdentityType === 'KYC Status')
-        ) {
-          return connectedKYCSourceList;
+        const googleArr = [
+          {
+            icon: iconGoogle,
+            name: 'G Account',
+          },
+        ];
+        const DisableGoogleArr = googleArr.map((i) => ({
+          ...i,
+          disabled: true,
+        }));
+
+        if (activeIdentityType) {
+          if (activeIdentityType === 'KYC Status') {
+            return connectedKYCSourceList;
+          } else if (activeIdentityType === 'Account Ownership') {
+            return googleArr;
+          } else {
+            return connectedKYCSourceList.concat(DisableGoogleArr);
+          }
         } else {
-          return [];
+          return connectedKYCSourceList.concat(DisableGoogleArr);
         }
       } else if (type === 'ASSETS_PROOF') {
         return connectedExSourceList.filter((i) =>
@@ -394,13 +414,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [fromEvents, activeCred]);
 
-    const handleChangeSelect = useCallback((val: string) => {
-      if (!val) {
-        setActiveSource(undefined);
-      }
-      setActiveToken(val);
-      // setActiveSource(undefined);
-    }, []);
     const handleChangeSelectIdentityType = useCallback((val: string) => {
       setActiveIdentityType(val);
       setActiveWebDataSource('');
@@ -476,8 +489,15 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           if (type === 'IDENTIFICATION_PROOF') {
             // credential?: string;
             const sourceLowerCaseName = activeSource.name.toLowerCase();
+            if (activeSource.name === 'G Account') {
+              form.source = 'google';
+              form.proofContent = activeIdentityType;
+              form.proofClientType = activeTab;
+            }
             const res = await chrome.storage.local.get([sourceLowerCaseName]);
-            form.credential = JSON.parse(res[sourceLowerCaseName]).credential;
+            form.credential =
+              res[sourceLowerCaseName] &&
+              JSON.parse(res[sourceLowerCaseName]).credential;
             form.userIdentity = walletAddress;
             form.verifyIdentity = walletAddress;
             form.proofType = type;
@@ -589,25 +609,44 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
 
     useEffect(() => {
       if (activeSourceName) {
-        const sourceInfo = activeConnectedSourceList.find(
+        let sourceInfo = activeConnectedSourceList.find(
           (i) => i.name.toLowerCase() === activeSourceName.toLowerCase()
         );
+        if (activeSourceName === 'google') {
+          sourceInfo = {
+            icon: iconGoogle,
+            name: 'G Account',
+          };
+        }
         setActiveSource(sourceInfo);
       }
     }, [activeSourceName, activeConnectedSourceList]);
     useEffect(() => {
       if (activeCred) {
-        const sourceInfo = activeConnectedSourceList.find(
+        let sourceInfo = activeConnectedSourceList.find(
           (i) => i.name.toLowerCase() === activeCred.source.toLowerCase()
         );
+        if (activeCred.source === 'google') {
+          sourceInfo = {
+            icon: iconGoogle,
+            name: 'G Account',
+          };
+        }
         setActiveSource(sourceInfo);
         if (type === 'TOKEN_HOLDINGS') {
           activeCred.holdingToken && setActiveToken(activeCred.holdingToken);
         }
-        if (type === 'IDENTIFICATION_PROOF' && activeCred?.reqType === 'web') {
-          setActiveIdentityType(activeWebTemplate?.name);
-          setActiveTab('Webpage Data');
-          setActiveWebDataSource(activeWebTemplate?.dataSource);
+        if (type === 'IDENTIFICATION_PROOF') {
+          if (activeCred?.reqType === 'web') {
+            setActiveIdentityType(activeWebTemplate?.name);
+            setActiveTab('Webpage Data');
+            setActiveWebDataSource(activeWebTemplate?.dataSource);
+          } else {
+            if (activeCred.source === 'google') {
+              setActiveIdentityType('Account Ownership');
+              setActiveTab('API Data');
+            }
+          }
         }
       }
     }, [activeCred, type, activeConnectedSourceList, activeWebTemplate]);
@@ -638,8 +677,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       if (activeType) {
         setActiveTab('Webpage Data');
       }
-      
-    }, [activeType])
+    }, [activeType]);
+     
+
 
     return (
       <PMask onClose={onClose} closeable={fromEvents !== 'LINEA_DEFI_VOYAGE'}>
@@ -687,6 +727,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                             handleClickData(a as ExchangeMeta);
                           }}
                           list={activeConnectedSourceList}
+                          val={activeSource}
                         />
                       )}
                       {activeConnectedSourceList.length === 0 && (

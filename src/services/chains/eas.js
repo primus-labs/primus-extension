@@ -312,7 +312,10 @@ export async function attestByDelegationProxyFee(params) {
     schemauid = activeSchemaInfo.schemaUidTokenHoldings;
   } else if (type === 'IDENTIFICATION_PROOF') {
     schemauid = activeSchemaInfo.schemaUidIdentification;
-  } else if (type === 'web' || type === 'UNISWAP_PROOF') {
+  } else if (
+    type === 'web' ||
+    type === 'UNISWAP_PROOF'
+  ) {
     schemauid = activeSchemaInfo.schemaUidWeb;
   }
   console.log(

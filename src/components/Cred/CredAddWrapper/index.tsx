@@ -63,6 +63,7 @@ import {
 } from '@/services/api/event';
 import { eventReport } from '@/services/api/usertracker';
 import { switchAccount } from '@/services/wallets/metamask';
+import useAuthorization2 from '@/hooks/useAuthorization2';
 
 const onChainObj: any = DATASOURCEMAP.onChain;
 
@@ -387,6 +388,79 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         alert('attestForPolygonId network error');
       }
     }, [activeCred, userInfo, initCredList, requestConfigParams]);
+    const authorize = useAuthorization2();
+    const fetchAttestForGoogle = useCallback(
+      async (form: AttestionForm) => {
+        const {
+          credential,
+          userIdentity,
+          verifyIdentity,
+          proofType,
+          source,
+          type,
+          exUserId,
+          label,
+          requestid,
+        } = form;
+        // const schemaType = schemaTypeMap[type as keyof typeof schemaTypeMap];
+        const schemaType = 'GOOGLE_ACCOUNT_OWNER';
+        const attestationId = requestid ?? uuidv4();
+        const eventInfo: any = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData: {
+            source,
+            schemaType,
+            sigFormat: 'EAS-Ethereum',
+            attestationId: attestationId,
+            // status: 'FAILED',
+            // reason: 'attestForPolygonId error',
+          },
+        };
+        const storeGoogleCred = async (res: any) => {
+          //w
+          const { signatureInfo, signatureRawInfo } = res;
+          const fullAttestation = {
+            ...signatureInfo,
+            ...signatureRawInfo,
+            address: connectedWallet?.address,
+            ...form,
+            version: CredVersion,
+            requestid: attestationId,
+            sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
+          };
+          const credentialsObj = { ...credentialsFromStore };
+          credentialsObj[attestationId] = fullAttestation;
+          await chrome.storage.local.set({
+            credentials: JSON.stringify(credentialsObj),
+          });
+          await initCredList();
+          setActiveRequest({
+            type: 'suc',
+            title: 'Congratulations',
+            desc: 'Your proof is created!',
+          });
+          eventInfo.rawData.status = 'SUCCESS';
+          eventInfo.rawData.reason = '';
+          eventReport(eventInfo);
+          //w
+        };
+
+        try {
+          authorize(form.source.toUpperCase(), storeGoogleCred);
+        } catch {
+          setStep(-1);
+          setActiveRequest(undefined);
+          alert('attestForGoogle network error');
+          eventInfo.rawData = Object.assign(eventInfo.rawData, {
+            // attestationId: uniqueId,
+            status: 'FAILED',
+            reason: 'attestForGoogle network error',
+          });
+          eventReport(eventInfo);
+        }
+      },
+      [credentialsFromStore, initCredList, connectedWallet?.address, authorize]
+    );
     const fetchAttestForAnt = useCallback(
       async (form: AttestionForm) => {
         const {
@@ -777,7 +851,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (form.type === 'UNISWAP_PROOF') {
             fetchAttestForUni(form);
           } else if (form.type === 'IDENTIFICATION_PROOF') {
-            fetchAttestForAnt(form);
+            if (form.source === 'zan') {
+              fetchAttestForAnt(form);
+            } else if (form.source === 'google') {
+              fetchAttestForGoogle(form);
+            }
           } else {
             if (form.type === 'ASSETS_PROOF') {
               // fetch balance first

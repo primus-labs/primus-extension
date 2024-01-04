@@ -388,14 +388,15 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               let upChainParams = {
                 networkName: formatNetworkName,
                 metamaskprovider: walletObj.provider,
-                receipt: activeCred?.address, // TODO DEL!!!
+                receipt: activeCred?.address, // TODO DEL!!! for uniswap proof
                 // receipt: '0xd4b69e8d62c880e9dd55d419d5e07435c3538342',
                 attesteraddr: PADOADDRESS,
                 data: activeCred?.encodedData,
                 signature: activeCred?.signature,
                 type:
-                  activeCred?.reqType === 'web'
-                    ? activeCred?.reqType
+                  activeCred?.reqType === 'web' ||
+                  activeCred?.source === 'google'
+                    ? 'web'
                     : activeCred?.type,
                 schemaName: activeCred?.schemaName ?? LineaSchemaName,
               };
@@ -408,7 +409,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
                 const requestParams: any = {
                   rawParam:
-                    curCredential.type === 'UNISWAP_PROOF'
+                    curCredential.type === 'UNISWAP_PROOF' ||
+                    curCredential.source === 'google'
                       ? curCredential.rawParam
                       : Object.assign(curCredential, {
                           ext: null,
@@ -416,8 +418,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   greaterThanBaseValue: true,
                   signature: curCredential.signature,
                   newSigFormat: LineaSchemaName,
-                  sourceUseridHash: curCredential.type === 'UNISWAP_PROOF'
-                      ? undefined: curCredential.sourceUseridHash,
+                  sourceUseridHash:
+                    curCredential.type === 'UNISWAP_PROOF'
+                      ? undefined
+                      : curCredential.sourceUseridHash,
                 };
                 if (activeCred?.source === 'zan') {
                   const authUseridHash = await getAuthUserIdHash();
@@ -431,7 +435,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   };
                 }
                 if (activeCred?.type === 'UNISWAP_PROOF') {
-                  requestParams.dataToBeSigned =  activeCred?.dataToBeSigned
+                  requestParams.dataToBeSigned = activeCred?.dataToBeSigned;
                 }
                 const { rc, result } = await regenerateAttestation(
                   requestParams
