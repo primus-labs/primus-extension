@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { ethers } from 'ethers';
 import useWalletConnect from './useWalletConnect';
 import {
   connectWalletAsync,
@@ -7,38 +8,12 @@ import {
 } from '@/store/actions';
 import { EASInfo } from '@/config/envConstants';
 
-type UseWalletType = () => // metamaskCallback: () => void,
-// walletConnectCallback: () => void,
-// startFn: () => void,
-// errorFn: () => void,
-// sucFn?: (walletObj: any) => void,
-// network?: any,
-// label?: string
-any;
+type UseWalletType = () => any;
 const useWallet: UseWalletType = function useWallet() {
-  // metaMaskCallback,
-  // walletConnectCallback,
-  // startFn,
-  // errorFn,
-  // sucFn,
-  // network,
-  // label
   const dispatch: React.Dispatch<any> = useDispatch();
   const [wallet, setWallet] = useState<string>();
   const savedConnectInfo = useRef<any>();
-  // const savedMetaMaskCallback = useRef(() => {});
-  // const savedWalletConnectCallback = useRef(() => { });
-  // const savedStartFn = useRef(() => {});
-  // const savedErrorFn = useRef(() => {});
-  // const savedSucFn = useRef((walletObj: any) => {});
 
-  // useEffect(() => {
-  //   // savedMetaMaskCallback.current = metaMaskCallback;
-  //   // savedWalletConnectCallback.current = walletConnectCallback;
-  //   savedStartFn.current = startFn;
-  //   savedErrorFn.current = errorFn;
-  //   sucFn && (savedSucFn.current = sucFn);
-  // });
   const {
     openWalletConnectDialog,
     disconnectWalletConnect,
@@ -49,29 +24,59 @@ const useWallet: UseWalletType = function useWallet() {
     walletConnectNetworkId,
   } = useWalletConnect();
   const connectWalletAsyncFn = useCallback(
-    (connectObj?: any) => {
+    async (connectObj?: any) => {
       const { startFn, errorFn, sucFn, network, label } =
         savedConnectInfo.current;
       const targetNetwork = EASInfo[network as keyof typeof EASInfo];
-      dispatch(
-        connectWalletAsync(
-          connectObj,
-          startFn,
-          errorFn,
-          sucFn,
-          targetNetwork,
-          label
-        )
-      );
+      if (
+        walletConnectProvider &&
+        network &&
+        parseInt(targetNetwork?.chainId) !== walletConnectChainId
+      ) {
+        const res = await walletConnectProvider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: targetNetwork.chainId }],
+        });
+        dispatch(
+          connectWalletAsync(
+            {
+              name: 'walletconnect',
+              provider: walletConnectProvider,
+              address: walletConnectAddress,
+            },
+            startFn,
+            errorFn,
+            sucFn,
+            targetNetwork,
+            label
+          )
+        );
+      } else {
+        dispatch(
+          connectWalletAsync(
+            connectObj,
+            startFn,
+            errorFn,
+            sucFn,
+            targetNetwork,
+            label
+          )
+        );
+      }
     },
-    [dispatch]
+    [
+      dispatch,
+      walletConnectAddress,
+      walletConnectProvider,
+      walletConnectChainId,
+    ]
   );
   const connect = useCallback(
-    (
+    async (
       walletName?: string,
       startFn?: () => void,
       errorFn?: () => void,
-      sucFn?: (walletObj: any, network?:string,label?:string,) => void,
+      sucFn?: (walletObj: any, network?: string, label?: string) => void,
       network?: any,
       label?: string
     ) => {
@@ -88,7 +93,17 @@ const useWallet: UseWalletType = function useWallet() {
       let formatWalletName = walletName ? walletName.toLowerCase() : undefined;
       setWallet(formatWalletName);
       if (formatWalletName === 'walletconnect') {
-        openWalletConnectDialog();
+        const targetNetwork = EASInfo[network as keyof typeof EASInfo];
+        if (walletConnectProvider && network) {
+          if (parseInt(targetNetwork?.chainId) !== walletConnectChainId) {
+            const res = await walletConnectProvider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: targetNetwork.chainId }],
+            });
+          }
+        } else {
+          openWalletConnectDialog();
+        }
       } else if (formatWalletName === 'metamask') {
         // savedMetaMaskCallback.current();
         connectWalletAsyncFn(undefined);
@@ -97,10 +112,19 @@ const useWallet: UseWalletType = function useWallet() {
         connectWalletAsyncFn(undefined);
       }
     },
-    [openWalletConnectDialog, connectWalletAsyncFn]
+    [
+      openWalletConnectDialog,
+      connectWalletAsyncFn,
+      walletConnectProvider,
+      walletConnectChainId,
+    ]
   );
   useEffect(() => {
-    if (wallet === 'walletconnect' && walletConnectIsConnect) {
+    if (
+      wallet === 'walletconnect' &&
+      walletConnectIsConnect &&
+      walletConnectProvider
+    ) {
       // savedWalletConnectCallback.current();
       connectWalletAsyncFn({
         name: 'walletconnect',
@@ -119,16 +143,56 @@ const useWallet: UseWalletType = function useWallet() {
     walletConnectAddress,
     dispatch,
   ]);
-  useEffect(() => {
-    console.log('222123walletConnectChainId+walletConnectChainId');
-  }, [walletConnectChainId, walletConnectChainId]);
+  // useEffect(() => {
+  //   console.log('walletConnectChainId', walletConnectChainId);
+  // }, [walletConnectChainId]);
   useEffect(() => {
     if (walletConnectProvider) {
       walletConnectProvider.on('chainChanged', (chainId: number) => {
-        console.log('222walletconnect chainChanged', chainId);
+        console.log(
+          '222walletConnectProvider chainChanged',
+          parseInt(chainId + ''),
+          walletConnectProvider
+        );
+        // dispatch(
+        //   setConnectWalletActionAsync({
+        //     name: 'walletconnect',
+        //     address: walletConnectAddress,
+        //     provider: walletConnectProvider,
+        //   })
+        // );
       });
+      // walletConnectProvider.on('networkChanged', (chainId: number) => {
+      //   console.log(
+      //     '222walletConnectProvider networkChanged',
+      //     parseInt(chainId + '')
+      //   );
+      // });
+      // walletConnectProvider.on('accountsChanged', (accounts: string[]) => {
+      //   console.log('222walletConnect accountsChanged', accounts);
+      // });
+      // setTimeout(() => {
+      // walletConnectProvider.switchNetwork({
+      // openWalletConnectDialog({ view: 'Networks' });
+      // })
+      // walletConnectProvider.request({
+      //   method: 'wallet_switchEthereumChain',
+      //   params: [{ chainId: '0x8274F' }],
+      // });
+      // }, 4000);
+      // setTimeout(() => {
+      // walletConnectProvider.switchNetwork({
+      // openWalletConnectDialog({ view: 'Networks' });
+      // })
+      // }, 10000);
+      // const newProvider = new ethers.providers.Web3Provider(
+      //   walletConnectProvider
+      // );
+      // newProvider.on('chainChanged', (chainId: number) => {
+      //   console.log('222newProvider chainChanged', parseInt(chainId + ''));
+      // });
     }
-  }, [walletConnectProvider]);
+  }, [walletConnectProvider, walletConnectAddress, dispatch]);
 
   return {
     connect,

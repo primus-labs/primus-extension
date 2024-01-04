@@ -99,13 +99,7 @@ export const requestSign = async (
   try {
     if (walletName === 'walletconnect') {
       const provider = new ethers.providers.Web3Provider(walletProvider);
-      // console.log('222123provider', provider, EASInfo);
-      // const a = await switchChain('0x1', EASInfo.ArbitrumOne, provider);
-      const signer = provider.getSigner();
-      console.log('222123signer', signer);
-      // // const signature = await signer?.signMessage('PADO Labs');
-      // // console.log('222123signature', signature);
-      
+      const signer = provider.getSigner();  
       const typedData = {
         types: {
           // EIP712Domain: [{ name: 'name', type: 'string' }],

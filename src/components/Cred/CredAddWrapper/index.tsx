@@ -1254,7 +1254,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [fromEvents, setScrollEventHistoryFn]);
     const resultDialogHeaderEl = useMemo(() => {
       let formatAddress = connectedWallet?.address;
-      // debugger
       if (scrollEventHistoryObj?.address) {
         formatAddress = scrollEventHistoryObj?.address;
       }

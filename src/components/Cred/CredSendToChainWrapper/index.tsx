@@ -9,6 +9,7 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import useWallet from '@/hooks/useWallet';
+import { WALLETLIST } from '@/config/constants';
 import { setConnectWalletActionAsync } from '@/store/actions';
 import { strToHexSha256 } from '@/utils/utils';
 import PButton from '@/components/PButton';
@@ -156,10 +157,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       ) => {
         let credArr = Object.values(credentialsFromStore);
         const XProof = credArr.find(
-          (i:any) => i.event === SCROLLEVENTNAME && i.source === 'x'
+          (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
         ) as CredTypeItemType;
         const BinanceProof = credArr.find(
-          (i:any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
+          (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
         ) as CredTypeItemType;
         const upChainPX: any = {
           data: XProof?.encodedData,
@@ -350,9 +351,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       [credentialsFromStore, initCredList]
     );
     const sucFn = useCallback(
-      async (walletObj: any, formatNetworkName?:string) => {
+      async (walletObj: any, formatNetworkName?: string) => {
         // const formatNetworkName = activeNetworkName;
-        // debugger
         try {
           let LineaSchemaName;
           if (formatNetworkName?.startsWith('Linea')) {
@@ -632,12 +632,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           return;
         }
         if (connectedWallet?.address) {
-          handleSubmitConnectWallet(undefined, networkName);
+          const walletConnectItem = WALLETLIST.find(
+            (i) => i.name.toLowerCase() === 'walletconnect'
+          );
+          handleSubmitConnectWallet(
+            connectedWallet?.name === 'walletconnect'
+              ? walletConnectItem
+              : undefined,
+            networkName
+          );
         } else {
           setStep(4);
         }
       },
-      [connectedWallet?.address, handleSubmitConnectWallet]
+      [connectedWallet, handleSubmitConnectWallet]
     );
 
     useEffect(() => {

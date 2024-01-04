@@ -172,7 +172,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return [];
       }
       // if (!activeSource?.name) {
-      // debugger
       const reduceF = (prev: string[], curr: any) => {
         const { tokenListMap } = curr;
         const curTokenList = Object.keys(tokenListMap);
@@ -186,7 +185,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       };
       list = Object.values(exSources).reduce(reduceF, []);
       // } else {
-      //   debugger
       //   const sourceLowerCaseName = activeSource.name.toLowerCase();
       //   list = Object.keys(exSources[sourceLowerCaseName].tokenListMap);
       // }

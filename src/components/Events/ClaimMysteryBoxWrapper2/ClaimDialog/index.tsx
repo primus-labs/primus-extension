@@ -176,7 +176,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [proofX, proofBinance, scrollEventHistoryObj.campaignPageCheckFlag]);
     const formatAgreeList = useMemo(() => {
       if (scrollEventHistoryObj?.campaignPageCheckFlag) {
-        // debugger;
         // agreeList[0].defaultValue = true;
         return [
           {
@@ -196,7 +195,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
     // useEffect(() => {
     //   if (scrollEventHistoryObj?.campaignPageCheckFlag) {
-    //     debugger;
     //     agreeList[0].defaultValue = true;
     //   }
     // }, [scrollEventHistoryObj?.campaignPageCheckFlag]);

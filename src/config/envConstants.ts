@@ -154,7 +154,7 @@ const EASINFOMAP = {
             '0xe08e249cc244e018cc56cb05938665fd16e373e77acc23d625e84cd4fe07cc48',
         },
       },
-      chainId: '0xaa36a7', // numToHex
+      chainId: '0xaa36a7', // 11155111
       chainName: 'Sepolia',
       rpcUrls: [
         'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
