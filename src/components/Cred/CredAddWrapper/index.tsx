@@ -406,7 +406,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const schemaType = 'GOOGLE_ACCOUNT_OWNER';
         const attestationId = requestid ?? uuidv4();
         const eventInfo: any = {
-          eventType: 'ATTESTATION_GENERATE',
+          eventType: 'API_ATTESTATION_GENERATE',
           rawData: {
             source,
             schemaType,

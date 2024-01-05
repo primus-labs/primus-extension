@@ -503,7 +503,7 @@ const EASINFOMAP = {
         symbol: 'BNB',
         decimals: 18,
       },
-      transactionDetailUrl: 'https://bascan.io/attestation',
+      transactionDetailUrl: 'https://www.bascan.io/attestation',
     },
 
     Ethereum: {

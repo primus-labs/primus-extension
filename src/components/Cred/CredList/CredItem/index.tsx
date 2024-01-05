@@ -165,7 +165,6 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       }
     }, [item]);
     const txDetailUrlFn = useCallback((item: any) => {
-      ;
       let chainShowName = item.title;
       if (item.title === 'BNB') {
         chainShowName = 'BNB';
@@ -220,7 +219,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         if (DATASOURCEMAP[sourceLowerCaseName]) {
           return DATASOURCEMAP[sourceLowerCaseName].name;
         } else {
-          if (sourceName === 'google') { 
+          if (sourceName === 'google') {
             return 'Google Account';
           } else {
             return sourceName;
@@ -345,6 +344,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   <div className="value">
                     {item.reqType === 'web'
                       ? item.uiTemplate.proofContent
+                      : item.source === 'google'
+                      ? item.proofContent
                       : 'KYC Status'}
                   </div>
                 )}
