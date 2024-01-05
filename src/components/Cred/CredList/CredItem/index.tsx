@@ -164,6 +164,18 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         setExpand(true);
       }
     }, [item]);
+    const txDetailUrlFn = useCallback((item: any) => {
+      ;
+      let chainShowName = item.title;
+      if (item.title === 'BNB') {
+        chainShowName = 'BNB';
+      }
+      if (item.title === 'ArbitrumOne') {
+        chainShowName = 'Arbitrum';
+      }
+      const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
+      return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
+    }, []);
     const iconCallback = useCallback((item: CredTypeItemType) => {
       const sourceName = item?.source;
 
@@ -252,10 +264,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
               <div className="providedChains">
                 {item.provided?.map((i, k) => (
                   <a
-                    href={`${
-                      (EASInfo[i.title as keyof typeof EASInfo] as any)
-                        ?.transactionDetailUrl
-                    }/${i.attestationUID}`}
+                    href={txDetailUrlFn(i)}
                     target="_blank"
                     rel="noreferrer"
                     key={k}
