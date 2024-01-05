@@ -276,7 +276,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
   if (source === 'tiktok') {
-    params.setHostName= "false"
+    params.cipher = "ECDHE-ECDSA-AES128-GCM-SHA256";
+    params.setHostName= "true";
   }
   if (type === 'ASSETS_PROOF') {
     params.baseValue = baseValue;

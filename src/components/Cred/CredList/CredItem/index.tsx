@@ -26,11 +26,13 @@ import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import iconUpdate from '@/assets/img/credit/iconUpdate.svg';
 import iconClear from '@/assets/img/credit/iconClear.svg';
 import iconUniswap from '@/assets/img/credit/iconUniswap.svg';
+import iconTikTok from '@/assets/img/credit/iconTikTok.svg';
 
 import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
 
 import './index.scss';
+import iconGoogle from '@/assets/img/iconGoogle.svg';
 
 interface CredTypeListProps {
   item: CredTypeItemType;
@@ -168,9 +170,19 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       if (sourceName) {
         if (sourceName === 'brevis') {
           return iconUniswap;
+        } else if (sourceName === 'tiktok') {
+          return iconTikTok;
+        } else if (sourceName === 'google') {
+          return iconGoogle;
+        } else {
+          const sourceLowerCaseName = item.source.toLowerCase();
+
+          if (DATASOURCEMAP[sourceLowerCaseName]) {
+            return DATASOURCEMAP[sourceLowerCaseName].icon;
+          } else {
+            return iconUniswap;
+          }
         }
-        const sourceLowerCaseName = item.source.toLowerCase();
-        return DATASOURCEMAP[sourceLowerCaseName].icon;
       }
       return null;
     }, []);
@@ -193,7 +205,15 @@ const CredItem: React.FC<CredTypeListProps> = memo(
 
       if (sourceName) {
         const sourceLowerCaseName = item.source.toLowerCase();
-        return DATASOURCEMAP[sourceLowerCaseName].name;
+        if (DATASOURCEMAP[sourceLowerCaseName]) {
+          return DATASOURCEMAP[sourceLowerCaseName].name;
+        } else {
+          if (sourceName === 'google') { 
+            return 'Google Account';
+          } else {
+            return sourceName;
+          }
+        }
       }
 
       return null;

@@ -352,7 +352,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     );
     const sucFn = useCallback(
       async (walletObj: any, formatNetworkName?: string) => {
-        // const formatNetworkName = activeNetworkName;
         try {
           let LineaSchemaName;
           if (formatNetworkName?.startsWith('Linea')) {
@@ -371,19 +370,19 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             LineaSchemaName = 'EAS';
           }
           if (fromEvents === 'Scroll') {
-            scrollEventFn(walletObj, LineaSchemaName, formatNetworkName);
+            scrollEventFn(walletObj, LineaSchemaName);
           } else {
             let upChainParams = {
               networkName: formatNetworkName,
               metamaskprovider: walletObj.provider,
-              receipt: activeCred?.address, // TODO DEL!!!
+              receipt: activeCred?.address, // TODO DEL!!! for uniswap proof
               // receipt: '0xd4b69e8d62c880e9dd55d419d5e07435c3538342',
               attesteraddr: PADOADDRESS,
               data: activeCred?.encodedData,
               signature: activeCred?.signature,
               type:
-                activeCred?.reqType === 'web'
-                  ? activeCred?.reqType
+                activeCred?.reqType === 'web' || activeCred?.source === 'google'
+                  ? 'web'
                   : activeCred?.type,
               schemaName: activeCred?.schemaName ?? LineaSchemaName,
             };
@@ -396,7 +395,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
               const requestParams: any = {
                 rawParam:
-                  curCredential.type === 'UNISWAP_PROOF'
+                  curCredential.type === 'UNISWAP_PROOF' ||
+                  curCredential.source === 'google'
                     ? curCredential.rawParam
                     : Object.assign(curCredential, {
                         ext: null,
