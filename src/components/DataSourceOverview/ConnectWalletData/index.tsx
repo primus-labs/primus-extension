@@ -1,23 +1,16 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import BigNumber from 'bignumber.js';
+import useWallet from '@/hooks/useWallet';
 import ConnectWalletDataDialog from './ConnectWalletDataDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
-import { setOnChainAssetsSourcesAsync } from '@/store/actions';
-import { div, mul, gt, add, sub, getStatisticalData } from '@/utils/utils';
-import { getAssetsOnChains } from '@/services/api/dataSource';
+
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import { DATASOURCEMAP, ONEMINUTE } from '@/config/constants';
-import { getCurrentDate } from '@/utils/utils';
 import { connectWalletAsync, getChainAssets } from '@/store/actions/index';
 import type { ActiveRequestType } from '@/types/config';
 import type { Dispatch } from 'react';
-import type { UserState } from '@/types/store';
 import type { WALLETITEMTYPE } from '@/config/constants';
-
-import { ChainAssetsMap, TokenMap } from '@/types/dataSource';
-import { eventReport } from '@/services/api/usertracker';
 
 export type GetDataFormProps = {
   name: string;
@@ -54,8 +47,10 @@ type Erc20TokenOnChainsMap = {
 };
 const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
   ({ onClose, onSubmit, onCancel, visible = true }) => {
+    const [walletLabel, setWalletLabel] = useState<string>();
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
     const [step, setStep] = useState<number>(1);
+    const { connect } = useWallet();
 
     const errorDescEl = useMemo(
       () => (
@@ -80,64 +75,81 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
     const onCloseStatusDialog = useCallback(() => {
       onClose();
     }, [onClose]);
-
-    const onSubmitConnectWalletDataDialog = useCallback(
-      async (item: WALLETITEMTYPE, label?: string) => {
-        // 1112
-        const startFn = () => {
+    const startFn = () => {
+      setActiveRequest({
+        type: 'loading',
+        title: 'Processing',
+        desc: 'Please complete the transaction in your wallet.',
+      });
+      setStep(2);
+    };
+    const errorFn = useCallback(() => {
+      setActiveRequest({
+        type: 'warn',
+        title: 'Unable to proceed',
+        desc: errorDescEl,
+      });
+    }, [errorDescEl]);
+    const sucFn = useCallback(
+      async (
+        walletObj: any,
+        network?: string,
+        walletLabel?: string,
+      ) => {
+        try {
+          var { signature, timestamp, address: curConnectedAddr } = walletObj;
+          if (!signature && !timestamp) {
+            timestamp = +new Date() + '';
+            const walletInfo =
+              walletObj?.name === 'walletconnect'
+                ? {
+                    walletName: walletObj?.name,
+                    walletProvider: walletObj.provider,
+                  }
+                : undefined;
+            signature = await requestSign(
+              curConnectedAddr,
+              timestamp,
+              walletInfo
+            );
+            if (!signature) {
+              setActiveRequest({
+                type: 'error',
+                title: 'Unable to proceed',
+                desc: errorDescEl,
+              });
+              return;
+            }
+            await getChainAssets(
+              signature,
+              timestamp,
+              curConnectedAddr,
+              dispatch,
+              walletLabel
+            );
+          }
           setActiveRequest({
-            type: 'loading',
-            title: 'Processing',
-            desc: 'Please complete the transaction in your wallet.',
+            type: 'suc',
+            title: 'Congratulations',
+            desc: 'Data Connected!',
           });
-          setStep(2);
-        };
-        const errorFn = () => {
+        } catch {
           setActiveRequest({
-            type: 'warn',
+            type: 'error',
             title: 'Unable to proceed',
             desc: errorDescEl,
           });
-        };
-        const sucFn = async (walletObj: any) => {
-          try {
-            var { signature, timestamp, address: curConnectedAddr } = walletObj;
-            
-            if (!signature && !timestamp) {
-              timestamp = +new Date() + '';
-              signature = await requestSign(curConnectedAddr, timestamp);
-              if (!signature) {
-                setActiveRequest({
-                  type: 'error',
-                  title: 'Unable to proceed',
-                  desc: errorDescEl,
-                });
-                return;
-              }
-              await getChainAssets(
-                signature,
-                timestamp,
-                curConnectedAddr,
-                dispatch,
-                label
-              );
-            }
-            setActiveRequest({
-              type: 'suc',
-              title: 'Congratulations',
-              desc: 'Data Connected!',
-            });
-          } catch {
-            setActiveRequest({
-              type: 'error',
-              title: 'Unable to proceed',
-              desc: errorDescEl,
-            });
-          }
-        };
-        dispatch(connectWalletAsync(undefined, startFn, errorFn, sucFn,undefined,label));
+        }
       },
       [errorDescEl, dispatch]
+    );
+
+    const onSubmitConnectWalletDataDialog = useCallback(
+      async (item: WALLETITEMTYPE, label?: string) => {
+        setWalletLabel(label);
+        connect(item?.name, startFn, errorFn, sucFn, undefined, label);
+      },
+      [connect, errorFn, sucFn]
     );
     useEffect(() => {
       setActiveRequest(undefined);

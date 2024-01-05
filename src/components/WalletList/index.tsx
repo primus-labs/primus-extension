@@ -38,13 +38,13 @@ const WalletList: React.FC<DataSourcesDialogProps> = memo(
      
       e.stopPropagation();
       if (!item.disabled) {
-        if (item.name === activeItem?.name) {
-          setActiveItem(undefined);
-          onClick(undefined);
-        } else {
+        // if (item.name === activeItem?.name) {
+        //   setActiveItem(undefined);
+        //   onClick(undefined);
+        // } else {
           setActiveItem(item);
           onClick(item);
-        }
+        // }
       }
     };
 

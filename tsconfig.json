@@ -20,7 +20,8 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["chrome", "@types/chrome", "node"]
+    "types": ["chrome", "@types/chrome", "node"],
+    "noImplicitAny": false,
   },
   "include": ["src"],
   "exclude": ["build", "node_modules"]

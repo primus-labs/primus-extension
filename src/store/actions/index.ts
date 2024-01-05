@@ -126,7 +126,7 @@ export const connectWalletAsync = (
       let address;
       let provider;
       startFn && (await startFn());
-      if (connectObj) {
+      if (connectObj?.address) {
         address = connectObj.address;
         provider = connectObj.provider;
       } else {
@@ -135,7 +135,7 @@ export const connectWalletAsync = (
         address = (connectRes[0] as string[])[0];
       }
 
-      const type = 'metamask';
+      const type = connectObj?.name ?? 'metamask';
       const checkRes = await checkIfBindConnectedWallet({ address });
       if (checkRes.rc === 0 && checkRes.result) {
         await dispatch(
@@ -144,7 +144,7 @@ export const connectWalletAsync = (
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
           // startFn && (await startFn());
-          sucFn && (await sucFn({ name: type, address, provider }));
+          sucFn && (await sucFn({ name: type, address, provider },));
         } else {
           return;
         }
@@ -152,7 +152,14 @@ export const connectWalletAsync = (
         // startFn && (await startFn());
         await dispatch(setConnectWalletDialogVisibleAction(true));
         const timestamp: string = +new Date() + '';
-        const signature = await requestSign(address, timestamp);
+        const walletInfo =
+          connectObj?.name === 'walletconnect'
+            ? {
+                walletName: connectObj?.name,
+                walletProvider: connectObj.provider,
+              }
+            : undefined;
+        const signature = await requestSign(address, timestamp, walletInfo);
         if (!signature) {
           errorFn && (await errorFn());
           return;

@@ -37,13 +37,13 @@ const DataSourceSearch = memo(() => {
     if (pathname === '/cred') {
       const credentialList = Object.values(credentials);
       const assetsProofList = credentialList.filter(
-        (i) => i.type === 'ASSETS_PROOF'
+        (i:any) => i.type === 'ASSETS_PROOF'
       );
       const tokenHoldingsList = credentialList.filter(
-        (i) => i.type === 'TOKEN_HOLDINGS'
+        (i: any) => i.type === 'TOKEN_HOLDINGS'
       );
       const qualificationsList = credentialList.filter(
-        (i) => i.type === 'IDENTIFICATION_PROOF'
+        (i: any) => i.type === 'IDENTIFICATION_PROOF'
       );
       if (assetsProofList.length > 0) {
         defaultList.push({

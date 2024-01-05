@@ -101,16 +101,16 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       (state: UserState) => state.connectedWallet
     );
     const proofX = useMemo(() => {
-      let credArr = Object.values(credentialsFromStore);
+      let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
       const haveXProof = credArr.find(
-        (i) => i.event === SCROLLEVENTNAME && i.source === 'x'
+        (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
       );
       return haveXProof;
     }, [credentialsFromStore]);
     const proofBinance = useMemo(() => {
-      let credArr = Object.values(credentialsFromStore);
+      let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
       const haveBinanceProof = credArr.find(
-        (i) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
+        (i:any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
       );
       return haveBinanceProof;
     }, [credentialsFromStore]);
@@ -176,7 +176,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [proofX, proofBinance, scrollEventHistoryObj.campaignPageCheckFlag]);
     const formatAgreeList = useMemo(() => {
       if (scrollEventHistoryObj?.campaignPageCheckFlag) {
-        // debugger;
         // agreeList[0].defaultValue = true;
         return [
           {
@@ -196,7 +195,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
     // useEffect(() => {
     //   if (scrollEventHistoryObj?.campaignPageCheckFlag) {
-    //     debugger;
     //     agreeList[0].defaultValue = true;
     //   }
     // }, [scrollEventHistoryObj?.campaignPageCheckFlag]);

@@ -97,7 +97,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const activeAttestationTypeInfo = useMemo(() => {
-      const obj = proofTypes.find((i) => i.credIdentifier === type);
+      const obj = proofTypes.find((i:any) => i.credIdentifier === type);
       return obj as PROOFTYPEITEM;
     }, [type, proofTypes]);
     const connectedExSourceList: ConnectSourceType[] = useMemo(() => {
@@ -131,7 +131,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       });
     }, [kycSources]);
     const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
-      let l = [];
+      let l:any[] = [];
       if (type === 'IDENTIFICATION_PROOF') {
         l = connectedKYCSourceList;
       } else if (type === 'ASSETS_PROOF') {
@@ -172,7 +172,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return [];
       }
       // if (!activeSource?.name) {
-      // debugger
       const reduceF = (prev: string[], curr: any) => {
         const { tokenListMap } = curr;
         const curTokenList = Object.keys(tokenListMap);
@@ -186,7 +185,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       };
       list = Object.values(exSources).reduce(reduceF, []);
       // } else {
-      //   debugger
       //   const sourceLowerCaseName = activeSource.name.toLowerCase();
       //   list = Object.keys(exSources[sourceLowerCaseName].tokenListMap);
       // }

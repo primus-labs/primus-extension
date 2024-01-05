@@ -255,7 +255,7 @@ const TokenTable: React.FC<TokenTableProps> = memo(
 
     const onChainTokenLogoFn = useCallback(
       (item: TokenMap) => {
-        let activeImg = null;
+        let activeImg:any;
         if (name) {
           if (name === 'on-chain' || showFilter) {
             if (item?.isNative) {

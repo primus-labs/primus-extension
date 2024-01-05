@@ -196,7 +196,7 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
   {
     icon: iconWalletWalletConnect,
     name: 'WalletConnect',
-    disabled: true,
+    // disabled: true,
   },
   {
     icon: iconWalletCoinbaseWallet,

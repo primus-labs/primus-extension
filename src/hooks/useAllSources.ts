@@ -17,15 +17,15 @@ const useAllSources = (flag = false) => {
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
   
-  const exList: ExDataList = useMemo(() => {
-    const sourceArr = Object.values({ ...exSources });
+  const exList = useMemo(() => {
+    const sourceArr: ExDataList = Object.values({ ...exSources });
     const orderedExList = sourceArr.sort((a, b) =>
       sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
     );
     return orderedExList;
   }, [exSources]);
-  const socialList: SocialDataList = useMemo(() => {
-    const sourceArr = Object.values({ ...socialSources });
+  const socialList = useMemo(() => {
+    const sourceArr: SocialDataList = Object.values({ ...socialSources });
     const orderedSocialList = sourceArr.sort((a, b) =>
       sub(Number(b.followers), Number(a.followers)).toNumber()
     );

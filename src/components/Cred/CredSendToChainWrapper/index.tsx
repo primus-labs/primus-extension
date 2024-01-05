@@ -6,9 +6,11 @@ import React, {
   useEffect,
   memo,
 } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import useWallet from '@/hooks/useWallet';
+import { WALLETLIST } from '@/config/constants';
+import { setConnectWalletActionAsync } from '@/store/actions';
 import { strToHexSha256 } from '@/utils/utils';
 import PButton from '@/components/PButton';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
@@ -147,440 +149,480 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const handleBackConnectWallet = useCallback(() => {
       setStep(3);
     }, []);
-    const handleSubmitConnectWallet = useCallback(
-      async (wallet?: WALLETITEMTYPE, networkName?: string) => {
-        const startFn = () => {
-          setActiveSendToChainRequest({
-            type: 'loading',
-            title: 'Processing',
-            desc: 'Please complete the transaction in your wallet.',
-          });
-          setStep(5);
+    const scrollEventFn = useCallback(
+      async (
+        walletObj: any,
+        LineaSchemaName: string,
+        formatNetworkName?: string
+      ) => {
+        let credArr = Object.values(credentialsFromStore);
+        const XProof = credArr.find(
+          (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
+        ) as CredTypeItemType;
+        const BinanceProof = credArr.find(
+          (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
+        ) as CredTypeItemType;
+        const upChainPX: any = {
+          data: XProof?.encodedData,
+          signature: XProof?.signature,
+          attesteraddr: PADOADDRESS,
+          receipt: XProof?.address,
+          type: XProof?.reqType === 'web' ? XProof?.reqType : XProof?.type,
+          schemaName: XProof?.schemaName ?? LineaSchemaName,
         };
-        const errorFn = () => {
+        const upChainPBiance: any = {
+          attesteraddr: PADOADDRESS,
+          receipt: BinanceProof?.address,
+          data: BinanceProof?.encodedData,
+          signature: BinanceProof?.signature,
+          type:
+            BinanceProof?.reqType === 'web'
+              ? BinanceProof?.reqType
+              : BinanceProof?.type,
+          schemaName: BinanceProof?.schemaName ?? LineaSchemaName,
+        };
+        if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
+          const requestParamsX: any = {
+            rawParam: Object.assign(XProof, {
+              ext: { event: SCROLLEVENTNAME },
+            }),
+            greaterThanBaseValue: true,
+            signature: XProof?.signature,
+            newSigFormat: LineaSchemaName,
+            sourceUseridHash: XProof?.sourceUseridHash,
+          };
+          const requestParamsBinance: any = {
+            rawParam: Object.assign(BinanceProof, {
+              ext: { event: SCROLLEVENTNAME },
+            }),
+            greaterThanBaseValue: true,
+            signature: BinanceProof?.signature,
+            newSigFormat: LineaSchemaName,
+            sourceUseridHash: BinanceProof?.sourceUseridHash,
+          };
+          const signResArr = await Promise.all([
+            regenerateAttestation(requestParamsX),
+            regenerateAttestation(requestParamsBinance),
+          ]);
+          signResArr.forEach((i, k) => {
+            const { rc, result } = i;
+            const arr = [upChainPX, upChainPBiance];
+            if (rc === 0) {
+              arr[k].signature = result.result.signature;
+              arr[k].data = result.result.encodedData;
+            }
+          });
+        }
+        const upChainParams = {
+          networkName: formatNetworkName,
+          metamaskprovider: walletObj.provider,
+          items: [upChainPX, upChainPBiance],
+        };
+        let upChainRes = await bulkAttest(upChainParams);
+        // burying point
+        let upChainType = upChainParams.items[0].type;
+        if (upChainType === 'web') {
+          upChainType = XProof?.schemaType;
+        }
+        const eventType = `${upChainType}-${upChainParams.items[0].schemaName}`;
+        let upchainNetwork = upChainParams.networkName;
+        if (
+          process.env.NODE_ENV === 'production' &&
+          upChainParams.networkName === 'Linea Goerli'
+        ) {
+          upchainNetwork = 'Linea Mainnet';
+        }
+        const uniqueIdX = strToHexSha256(XProof?.signature);
+        const uniqueIdBinance = strToHexSha256(BinanceProof?.signature);
+        var eventInfoX: any = {
+          eventType: 'UPPER_CHAIN',
+          rawData: {
+            network: upchainNetwork,
+            type: eventType,
+            source: XProof.source,
+            attestationId: uniqueIdX,
+          },
+        };
+        const eventInfoBinance: any = {
+          eventType: 'UPPER_CHAIN',
+          rawData: {
+            network: upchainNetwork,
+            type: eventType,
+            source: BinanceProof.source,
+            attestationId: uniqueIdBinance,
+          },
+        };
+
+        if (upChainRes) {
+          if (upChainRes.error) {
+            if (upChainRes.error === 1) {
+              setActiveSendToChainRequest({
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Your balance is insufficient',
+              });
+            } else if (upChainRes.error === 2) {
+              setActiveSendToChainRequest({
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
+            }
+            eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
+              status: 'FAILED',
+              reason: upChainRes.message,
+            });
+            eventInfoBinance.rawData = Object.assign(eventInfoBinance.rawData, {
+              status: 'FAILED',
+              reason: upChainRes.message,
+            });
+            eventReport(eventInfoX);
+            eventReport(eventInfoBinance);
+            return;
+          }
+          const currentChainObj: any = ONCHAINLIST.find(
+            (i) => formatNetworkName === i.title
+          );
+          currentChainObj.attestationUID = upChainRes;
+          // TODO???
+          currentChainObj.submitAddress = walletObj.address;
+          [XProof, BinanceProof].forEach((i) => {
+            const newProvided = i.provided ?? [];
+            // TODO!!!
+            // const existIndex = newProvided.findIndex(
+            //   (i) => i.title === formatNetworkName
+            // );
+            // existIndex < 0 &&
+            newProvided.push(currentChainObj);
+            credentialsFromStore[i.requestid] = Object.assign(i, {
+              provided: newProvided,
+            });
+          });
+          await chrome.storage.local.set({
+            credentials: JSON.stringify(credentialsFromStore),
+          });
+
+          await initCredList();
+
+          const { scrollEvent } = await chrome.storage.local.get([
+            'scrollEvent',
+          ]);
+          const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+          Object.assign(scrollEventObj, {
+            finishFlag: '1',
+          });
+          chrome.storage.local.set({
+            scrollEvent: JSON.stringify(scrollEventObj),
+          });
+
+          setActiveSendToChainRequest({
+            type: 'suc',
+            title: 'Congratulations',
+            desc: 'Your attestation is recorded on-chain!',
+          });
+          eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
+            status: 'SUCCESS',
+            reason: '',
+          });
+          eventInfoBinance.rawData = Object.assign(eventInfoBinance.rawData, {
+            status: 'SUCCESS',
+            reason: '',
+          });
+          eventReport(eventInfoX);
+          eventReport(eventInfoBinance);
+        } else {
           setActiveSendToChainRequest({
             type: 'warn',
             title: 'Unable to proceed',
-            desc: errorDescEl,
+            desc: 'Please try again later.',
           });
-        };
-        const scrollEventFn = async (
-          walletObj: any,
-          LineaSchemaName: string
-        ) => {
-          let credArr = Object.values(credentialsFromStore);
-          const XProof = credArr.find(
-            (i) => i.event === SCROLLEVENTNAME && i.source === 'x'
-          ) as CredTypeItemType;
-          const BinanceProof = credArr.find(
-            (i) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
-          ) as CredTypeItemType;
-          const upChainPX: any = {
-            data: XProof?.encodedData,
-            signature: XProof?.signature,
-            attesteraddr: PADOADDRESS,
-            receipt: XProof?.address,
-            type: XProof?.reqType === 'web' ? XProof?.reqType : XProof?.type,
-            schemaName: XProof?.schemaName ?? LineaSchemaName,
-          };
-          const upChainPBiance: any = {
-            attesteraddr: PADOADDRESS,
-            receipt: BinanceProof?.address,
-            data: BinanceProof?.encodedData,
-            signature: BinanceProof?.signature,
-            type:
-              BinanceProof?.reqType === 'web'
-                ? BinanceProof?.reqType
-                : BinanceProof?.type,
-            schemaName: BinanceProof?.schemaName ?? LineaSchemaName,
-          };
-          if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
-            const requestParamsX: any = {
-              rawParam: Object.assign(XProof, {
-                ext: { event: SCROLLEVENTNAME },
-              }),
-              greaterThanBaseValue: true,
-              signature: XProof?.signature,
-              newSigFormat: LineaSchemaName,
-              sourceUseridHash: XProof?.sourceUseridHash,
-            };
-            const requestParamsBinance: any = {
-              rawParam: Object.assign(BinanceProof, {
-                ext: { event: SCROLLEVENTNAME },
-              }),
-              greaterThanBaseValue: true,
-              signature: BinanceProof?.signature,
-              newSigFormat: LineaSchemaName,
-              sourceUseridHash: BinanceProof?.sourceUseridHash,
-            };
-            const signResArr = await Promise.all([
-              regenerateAttestation(requestParamsX),
-              regenerateAttestation(requestParamsBinance),
-            ]);
-            signResArr.forEach((i, k) => {
-              const { rc, result } = i;
-              const arr = [upChainPX, upChainPBiance];
-              if (rc === 0) {
-                arr[k].signature = result.result.signature;
-                arr[k].data = result.result.encodedData;
-              }
-            });
-          }
-          const upChainParams = {
-            networkName: formatNetworkName,
-            metamaskprovider: walletObj.provider,
-            items: [upChainPX, upChainPBiance],
-          };
-          let upChainRes = await bulkAttest(upChainParams);
-          // burying point
-          let upChainType = upChainParams.items[0].type;
-          if (upChainType === 'web') {
-            upChainType = XProof?.schemaType;
-          }
-          const eventType = `${upChainType}-${upChainParams.items[0].schemaName}`;
-          let upchainNetwork = upChainParams.networkName;
-          if (
-            process.env.NODE_ENV === 'production' &&
-            upChainParams.networkName === 'Linea Goerli'
+          eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
+            status: 'FAILED',
+            reason: 'attestByDelegationProxyFee error',
+          });
+          eventInfoBinance.rawData = Object.assign(eventInfoBinance.rawData, {
+            status: 'FAILED',
+            reason: 'attestByDelegationProxyFee error',
+          });
+          eventReport(eventInfoX);
+          eventReport(eventInfoBinance);
+        }
+      },
+      [credentialsFromStore, initCredList]
+    );
+    const sucFn = useCallback(
+      async (walletObj: any, formatNetworkName?: string) => {
+        try {
+          let LineaSchemaName;
+          if (formatNetworkName?.startsWith('Linea')) {
+            LineaSchemaName = LINEASCHEMANAME;
+          } else if (
+            formatNetworkName &&
+            formatNetworkName.indexOf('BNB') > -1
           ) {
-            upchainNetwork = 'Linea Mainnet';
+            LineaSchemaName = BNBSCHEMANAME;
+          } else if (
+            formatNetworkName &&
+            formatNetworkName.indexOf('Scroll') > -1
+          ) {
+            LineaSchemaName = SCROLLSCHEMANAME;
+          } else {
+            LineaSchemaName = 'EAS';
           }
-          const uniqueIdX = strToHexSha256(XProof?.signature);
-          const uniqueIdBinance = strToHexSha256(BinanceProof?.signature);
-          var eventInfoX: any = {
-            eventType: 'UPPER_CHAIN',
-            rawData: {
-              network: upchainNetwork,
-              type: eventType,
-              source: XProof.source,
-              attestationId: uniqueIdX,
-            },
-          };
-          const eventInfoBinance: any = {
-            eventType: 'UPPER_CHAIN',
-            rawData: {
-              network: upchainNetwork,
-              type: eventType,
-              source: BinanceProof.source,
-              attestationId: uniqueIdBinance,
-            },
-          };
+          if (fromEvents === 'Scroll') {
+            scrollEventFn(walletObj, LineaSchemaName);
+          } else {
+            let upChainParams = {
+              networkName: formatNetworkName,
+              metamaskprovider: walletObj.provider,
+              receipt: activeCred?.address, // TODO DEL!!! for uniswap proof
+              // receipt: '0xd4b69e8d62c880e9dd55d419d5e07435c3538342',
+              attesteraddr: PADOADDRESS,
+              data: activeCred?.encodedData,
+              signature: activeCred?.signature,
+              type:
+                activeCred?.reqType === 'web' || activeCred?.source === 'google'
+                  ? 'web'
+                  : activeCred?.type,
+              schemaName: activeCred?.schemaName ?? LineaSchemaName,
+            };
+            let versionForComparison = activeCred?.version ?? '';
 
-          if (upChainRes) {
-            if (upChainRes.error) {
-              if (upChainRes.error === 1) {
-                setActiveSendToChainRequest({
-                  type: 'warn',
-                  title: 'Unable to proceed',
-                  desc: 'Your balance is insufficient',
-                });
-              } else if (upChainRes.error === 2) {
-                setActiveSendToChainRequest({
-                  type: 'warn',
-                  title: 'Unable to proceed',
-                  desc: 'Please try again later.',
-                });
+            let upChainRes;
+            const cObj = { ...credentialsFromStore };
+            const curRequestid = activeCred?.requestid as string;
+            const curCredential = cObj[curRequestid];
+            if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
+              const requestParams: any = {
+                rawParam:
+                  curCredential.type === 'UNISWAP_PROOF' ||
+                  curCredential.source === 'google'
+                    ? curCredential.rawParam
+                    : Object.assign(curCredential, {
+                        ext: null,
+                      }),
+                greaterThanBaseValue: true,
+                signature: curCredential.signature,
+                newSigFormat: LineaSchemaName,
+                sourceUseridHash:
+                  curCredential.type === 'UNISWAP_PROOF'
+                    ? undefined
+                    : curCredential.sourceUseridHash,
+              };
+              if (activeCred?.source === 'zan') {
+                const authUseridHash = await getAuthUserIdHash();
+                requestParams.dataToBeSigned = {
+                  source: activeCred?.source,
+                  type: activeCred?.type,
+                  authUseridHash: authUseridHash,
+                  recipient: activeCred?.address,
+                  timestamp: +new Date() + '',
+                  result: true,
+                };
               }
-              eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
-                status: 'FAILED',
-                reason: upChainRes.message,
-              });
-              eventInfoBinance.rawData = Object.assign(
-                eventInfoBinance.rawData,
-                {
+              if (activeCred?.type === 'UNISWAP_PROOF') {
+                requestParams.dataToBeSigned = activeCred?.dataToBeSigned;
+              }
+              const { rc, result } = await regenerateAttestation(requestParams);
+              if (rc === 0) {
+                upChainParams.signature = result.result.signature;
+                upChainParams.data = result.result.encodedData;
+              }
+              versionForComparison = CredVersion;
+            }
+            const compareRes = compareVersions('1.0.0', versionForComparison);
+            if (compareRes > -1) {
+              // old version <= 1.0.0
+              upChainRes = await attestByDelegationProxy(upChainParams);
+            } else {
+              upChainRes = await attestByDelegationProxyFee(upChainParams);
+            }
+
+            // burying point
+            let upChainType = upChainParams.type;
+            if (upChainParams.type === 'web') {
+              upChainType = activeCred?.schemaType;
+            }
+            const eventType = `${upChainType}-${upChainParams.schemaName}`;
+            let upchainNetwork = upChainParams.networkName;
+            if (
+              process.env.NODE_ENV === 'production' &&
+              upChainParams.networkName === 'Linea Goerli'
+            ) {
+              upchainNetwork = 'Linea Mainnet';
+            }
+            const uniqueId = strToHexSha256(upChainParams.signature as string);
+            var eventInfo: any = {
+              eventType: 'UPPER_CHAIN',
+              rawData: {
+                network: upchainNetwork,
+                type: eventType,
+                source: curCredential.source,
+                attestationId: uniqueId,
+              },
+            };
+            if (upChainRes) {
+              if (upChainRes.error) {
+                if (upChainRes.error === 1) {
+                  setActiveSendToChainRequest({
+                    type: 'warn',
+                    title: 'Unable to proceed',
+                    desc: 'Your balance is insufficient',
+                  });
+                } else if (upChainRes.error === 2) {
+                  setActiveSendToChainRequest({
+                    type: 'warn',
+                    title: 'Unable to proceed',
+                    desc: 'Please try again later.',
+                  });
+                }
+                eventInfo.rawData = Object.assign(eventInfo.rawData, {
                   status: 'FAILED',
                   reason: upChainRes.message,
-                }
+                });
+                eventReport(eventInfo);
+                return;
+              }
+              const newProvided = curCredential.provided ?? [];
+              const currentChainObj: any = ONCHAINLIST.find(
+                (i) => formatNetworkName === i.title
               );
-              eventReport(eventInfoX);
-              eventReport(eventInfoBinance);
-              return;
-            }
-            const currentChainObj: any = ONCHAINLIST.find(
-              (i) => formatNetworkName === i.title
-            );
-            currentChainObj.attestationUID = upChainRes;
-            // TODO???
-            currentChainObj.submitAddress = walletObj.address;
-            [XProof, BinanceProof].forEach((i) => {
-              const newProvided = i.provided ?? [];
-              // TODO!!!
+              currentChainObj.attestationUID = upChainRes;
+              currentChainObj.submitAddress = walletObj.address;
               // const existIndex = newProvided.findIndex(
               //   (i) => i.title === formatNetworkName
               // );
               // existIndex < 0 &&
               newProvided.push(currentChainObj);
-              credentialsFromStore[i.requestid] = Object.assign(i, {
+
+              cObj[curRequestid] = Object.assign(curCredential, {
                 provided: newProvided,
               });
-            });
-            await chrome.storage.local.set({
-              credentials: JSON.stringify(credentialsFromStore),
-            });
-
-            await initCredList();
-
-            const { scrollEvent } = await chrome.storage.local.get([
-              'scrollEvent',
-            ]);
-            const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
-            Object.assign(scrollEventObj, {
-              finishFlag: '1',
-            });
-            chrome.storage.local.set({
-              scrollEvent: JSON.stringify(scrollEventObj),
-            });
-
-            setActiveSendToChainRequest({
-              type: 'suc',
-              title: 'Congratulations',
-              desc: 'Your attestation is recorded on-chain!',
-            });
-            eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
-              status: 'SUCCESS',
-              reason: '',
-            });
-            eventInfoBinance.rawData = Object.assign(eventInfoBinance.rawData, {
-              status: 'SUCCESS',
-              reason: '',
-            });
-            eventReport(eventInfoX);
-            eventReport(eventInfoBinance);
-          } else {
-            setActiveSendToChainRequest({
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: 'Please try again later.',
-            });
-            eventInfoX.rawData = Object.assign(eventInfoX.rawData, {
-              status: 'FAILED',
-              reason: 'attestByDelegationProxyFee error',
-            });
-            eventInfoBinance.rawData = Object.assign(eventInfoBinance.rawData, {
-              status: 'FAILED',
-              reason: 'attestByDelegationProxyFee error',
-            });
-            eventReport(eventInfoX);
-            eventReport(eventInfoBinance);
-          }
-        };
-        const sucFn = async (walletObj: any) => {
-          try {
-            let LineaSchemaName;
-            if (formatNetworkName?.startsWith('Linea')) {
-              LineaSchemaName = LINEASCHEMANAME;
-            } else if (
-              formatNetworkName &&
-              formatNetworkName.indexOf('BNB') > -1
-            ) {
-              LineaSchemaName = BNBSCHEMANAME;
-            } else if (
-              formatNetworkName &&
-              formatNetworkName.indexOf('Scroll') > -1
-            ) {
-              LineaSchemaName = SCROLLSCHEMANAME;
-            } else {
-              LineaSchemaName = 'EAS';
-            }
-            if (fromEvents === 'Scroll') {
-              scrollEventFn(walletObj, LineaSchemaName);
-            } else {
-              let upChainParams = {
-                networkName: formatNetworkName,
-                metamaskprovider: walletObj.provider,
-                receipt: activeCred?.address, // TODO DEL!!! for uniswap proof
-                // receipt: '0xd4b69e8d62c880e9dd55d419d5e07435c3538342',
-                attesteraddr: PADOADDRESS,
-                data: activeCred?.encodedData,
-                signature: activeCred?.signature,
-                type:
-                  activeCred?.reqType === 'web' ||
-                  activeCred?.source === 'google'
-                    ? 'web'
-                    : activeCred?.type,
-                schemaName: activeCred?.schemaName ?? LineaSchemaName,
-              };
-              let versionForComparison = activeCred?.version ?? '';
-
-              let upChainRes;
-              const cObj = { ...credentialsFromStore };
-              const curRequestid = activeCred?.requestid as string;
-              const curCredential = cObj[curRequestid];
-              if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
-                const requestParams: any = {
-                  rawParam:
-                    curCredential.type === 'UNISWAP_PROOF' ||
-                    curCredential.source === 'google'
-                      ? curCredential.rawParam
-                      : Object.assign(curCredential, {
-                          ext: null,
-                        }),
-                  greaterThanBaseValue: true,
-                  signature: curCredential.signature,
-                  newSigFormat: LineaSchemaName,
-                  sourceUseridHash:
-                    curCredential.type === 'UNISWAP_PROOF'
-                      ? undefined
-                      : curCredential.sourceUseridHash,
-                };
-                if (activeCred?.source === 'zan') {
-                  const authUseridHash = await getAuthUserIdHash();
-                  requestParams.dataToBeSigned = {
-                    source: activeCred?.source,
-                    type: activeCred?.type,
-                    authUseridHash: authUseridHash,
-                    recipient: activeCred?.address,
-                    timestamp: +new Date() + '',
-                    result: true,
-                  };
-                }
-                if (activeCred?.type === 'UNISWAP_PROOF') {
-                  requestParams.dataToBeSigned = activeCred?.dataToBeSigned;
-                }
-                const { rc, result } = await regenerateAttestation(
-                  requestParams
-                );
-                if (rc === 0) {
-                  upChainParams.signature = result.result.signature;
-                  upChainParams.data = result.result.encodedData;
-                }
-                versionForComparison = CredVersion;
-              }
-              const compareRes = compareVersions('1.0.0', versionForComparison);
-              if (compareRes > -1) {
-                // old version <= 1.0.0
-                upChainRes = await attestByDelegationProxy(upChainParams);
-              } else {
-                upChainRes = await attestByDelegationProxyFee(upChainParams);
-              }
-
-              // burying point
-              let upChainType = upChainParams.type;
-              if (upChainParams.type === 'web') {
-                upChainType = activeCred?.schemaType;
-              }
-              const eventType = `${upChainType}-${upChainParams.schemaName}`;
-              let upchainNetwork = upChainParams.networkName;
-              if (
-                process.env.NODE_ENV === 'production' &&
-                upChainParams.networkName === 'Linea Goerli'
-              ) {
-                upchainNetwork = 'Linea Mainnet';
-              }
-              const uniqueId = strToHexSha256(
-                upChainParams.signature as string
-              );
-              var eventInfo: any = {
-                eventType: 'UPPER_CHAIN',
-                rawData: {
-                  network: upchainNetwork,
-                  type: eventType,
-                  source: curCredential.source,
-                  attestationId: uniqueId,
-                },
-              };
-              if (upChainRes) {
-                if (upChainRes.error) {
-                  if (upChainRes.error === 1) {
-                    setActiveSendToChainRequest({
-                      type: 'warn',
-                      title: 'Unable to proceed',
-                      desc: 'Your balance is insufficient',
-                    });
-                  } else if (upChainRes.error === 2) {
-                    setActiveSendToChainRequest({
-                      type: 'warn',
-                      title: 'Unable to proceed',
-                      desc: 'Please try again later.',
+              await chrome.storage.local.set({
+                credentials: JSON.stringify(cObj),
+              });
+              await initCredList();
+              if (curCredential.reqType === 'web') {
+                if (newProvided.length && newProvided.length > 0) {
+                  const flag = newProvided.some(
+                    (i) => i.chainName.indexOf('Linea') > -1
+                  );
+                  if (flag) {
+                    await chrome.storage.local.set({
+                      mysteryBoxRewards: '1',
                     });
                   }
-                  eventInfo.rawData = Object.assign(eventInfo.rawData, {
-                    status: 'FAILED',
-                    reason: upChainRes.message,
-                  });
-                  eventReport(eventInfo);
-                  return;
                 }
-                const newProvided = curCredential.provided ?? [];
-                const currentChainObj: any = ONCHAINLIST.find(
-                  (i) => formatNetworkName === i.title
-                );
-                currentChainObj.attestationUID = upChainRes;
-                currentChainObj.submitAddress = walletObj.address;
-                // const existIndex = newProvided.findIndex(
-                //   (i) => i.title === formatNetworkName
-                // );
-                // existIndex < 0 &&
-                newProvided.push(currentChainObj);
-
-                cObj[curRequestid] = Object.assign(curCredential, {
-                  provided: newProvided,
-                });
-                await chrome.storage.local.set({
-                  credentials: JSON.stringify(cObj),
-                });
-                await initCredList();
-                if (curCredential.reqType === 'web') {
-                  if (newProvided.length && newProvided.length > 0) {
-                    const flag = newProvided.some(
-                      (i) => i.chainName.indexOf('Linea') > -1
-                    );
-                    if (flag) {
-                      await chrome.storage.local.set({
-                        mysteryBoxRewards: '1',
-                      });
-                    }
-                  }
-                }
-                setActiveSendToChainRequest({
-                  type: 'suc',
-                  title: 'Congratulations',
-                  desc: 'Your attestation is recorded on-chain!',
-                });
-                eventInfo.rawData = Object.assign(eventInfo.rawData, {
-                  status: 'SUCCESS',
-                  reason: '',
-                });
-                eventReport(eventInfo);
-              } else {
-                setActiveSendToChainRequest({
-                  type: 'warn',
-                  title: 'Unable to proceed',
-                  desc: 'Please try again later.',
-                });
-                eventInfo.rawData = Object.assign(eventInfo.rawData, {
-                  status: 'FAILED',
-                  reason: 'attestByDelegationProxyFee error',
-                });
-                eventReport(eventInfo);
               }
+              setActiveSendToChainRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your attestation is recorded on-chain!',
+              });
+              eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                status: 'SUCCESS',
+                reason: '',
+              });
+              eventReport(eventInfo);
+            } else {
+              setActiveSendToChainRequest({
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
+              eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                status: 'FAILED',
+                reason: 'attestByDelegationProxyFee error',
+              });
+              eventReport(eventInfo);
             }
-          } catch (e) {
-            console.log('upper chain error:', e);
-            // eventInfo.rawData = Object.assign(eventInfo.rawData, {
-            //   status: 'FAILED',
-            //   reason: e,
-            // });
-            // eventReport(eventInfo);
-            console.dir(e);
           }
-        };
-        const formatNetworkName = activeNetworkName ?? networkName;
-        const targetNetwork =
-          EASInfo[formatNetworkName as keyof typeof EASInfo];
-        dispatch(
-          connectWalletAsync(undefined, startFn, errorFn, sucFn, targetNetwork)
-        );
+        } catch (e) {
+          setActiveSendToChainRequest({
+            type: 'warn',
+            title: 'Unable to proceed',
+            desc: 'Please try again later.',
+          });
+          console.log('upper chain error:', e);
+          // eventInfo.rawData = Object.assign(eventInfo.rawData, {
+          //   status: 'FAILED',
+          //   reason: e,
+          // });
+          // eventReport(eventInfo);
+          console.dir(e);
+        }
       },
       [
         activeCred,
-        activeNetworkName,
         credentialsFromStore,
         initCredList,
-        errorDescEl,
-        dispatch,
+        scrollEventFn,
         fromEvents,
+        // activeNetworkName,
       ]
+    );
+    const startFn = useCallback(() => {
+      setActiveSendToChainRequest({
+        type: 'loading',
+        title: 'Processing',
+        desc: 'Please complete the transaction in your wallet.',
+      });
+      setStep(5);
+    }, []);
+    const errorFn = useCallback(() => {
+      setActiveSendToChainRequest({
+        type: 'warn',
+        title: 'Unable to proceed',
+        desc: errorDescEl,
+      });
+    }, [errorDescEl]);
+    const { connect } = useWallet();
+    // const upperChainFn = useCallback(
+    //   (networkName?: string) => {
+    //     startFn();
+    //     sucFn(
+    //       {
+    //         name: connectedWallet?.name, // walletconnect
+    //         provider: connectedWallet?.provider,
+    //         address: connectedWallet?.address,
+    //       },
+    //       networkName
+    //     );
+    //   },
+    //   [startF
+    const handleSubmitConnectWallet = useCallback(
+      async (wallet?: WALLETITEMTYPE, networkName?: string) => {
+        const formatNetworkName = activeNetworkName ?? networkName;
+        connect(wallet?.name, startFn, errorFn, sucFn, formatNetworkName);
+        // if (wallet) {
+
+        //   if (wallet?.name?.toLowerCase() === 'walletconnect') {
+
+        //     if (connectedWallet?.address) {
+
+        //       upperChainFn(networkName);
+        //     } else {
+
+        //       open();
+        //     }
+        //   }
+        //   // if (wallet?.name === 'metamask')
+        //   else {
+
+        //     connectWalletAsyncFn(undefined, networkName);
+        //   }
+        // } else {
+        //   if (
+        //     connectedWallet?.address &&
+        //     connectedWallet?.name === 'walletconnect'
+        //   ) {
+        //     upperChainFn(networkName);
+        //   } else {
+        //     connectWalletAsyncFn(undefined, networkName);
+        //   }
+        // }
+      },
+      [connect, startFn, sucFn, errorFn, activeNetworkName]
     );
     const handleSubmitTransferToChain = useCallback(
       async (networkName?: string) => {
@@ -590,12 +632,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           return;
         }
         if (connectedWallet?.address) {
-          handleSubmitConnectWallet(undefined, networkName);
+          const walletConnectItem = WALLETLIST.find(
+            (i) => i.name.toLowerCase() === 'walletconnect'
+          );
+          handleSubmitConnectWallet(
+            connectedWallet?.name === 'walletconnect'
+              ? walletConnectItem
+              : undefined,
+            networkName
+          );
         } else {
           setStep(4);
         }
       },
-      [connectedWallet?.address, handleSubmitConnectWallet]
+      [connectedWallet, handleSubmitConnectWallet]
     );
 
     useEffect(() => {

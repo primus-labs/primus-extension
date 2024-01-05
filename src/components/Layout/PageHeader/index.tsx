@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useMemo, useEffect, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-
+import {
+  useDisconnect
+} from '@web3modal/ethers5/react';
 import logo from '@/assets/img/logo.svg';
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 import Setting from '@/components/Setting/Setting';
@@ -67,6 +69,7 @@ const tabList: TabItem[] = [
   },
 ];
 const PageHeader = memo(() => {
+  const { disconnect } = useDisconnect();
   const location = useLocation();
   const pathname = location.pathname;
   const dispatch: React.Dispatch<any> = useDispatch();
@@ -104,6 +107,9 @@ const PageHeader = memo(() => {
         setSettingDialogVisible(true);
         break;
       case 'Disconnect':
+        if (connectedWallet.name === 'walletconnect') {
+          disconnect()
+        }
         dispatch(setConnectWalletActionAsync(undefined));
         break;
       case 'Rewards':

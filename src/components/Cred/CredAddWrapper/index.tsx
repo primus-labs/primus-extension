@@ -814,7 +814,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setActiveAttestForm(form);
         if (form?.proofClientType === 'Webpage Data') {
           const currRequestObj = webProofTypes.find(
-            (r) => r.name === form.proofContent && r.dataSource === form.source
+            (r:any) => r.name === form.proofContent && r.dataSource === form.source
           );
           currRequestObj.requestid = form.requestid;
           currRequestObj.event = form.event;
@@ -1332,7 +1332,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [fromEvents, setScrollEventHistoryFn]);
     const resultDialogHeaderEl = useMemo(() => {
       let formatAddress = connectedWallet?.address;
-      // debugger
       if (scrollEventHistoryObj?.address) {
         formatAddress = scrollEventHistoryObj?.address;
       }

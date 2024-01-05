@@ -1,4 +1,5 @@
 import createMetaMaskProvider from 'metamask-extension-provider';
+import { ethers } from 'ethers';
 import store from '@/store';
 import {
   setConnectWalletActionAsync,
@@ -7,7 +8,7 @@ import {
 var provider;
 
 export const connectWallet = async (targetNetwork) => {
-  console.log('connect metamask');
+  console.log('connect metamask', targetNetwork);
   try {
     if (provider && provider.on) {
       provider.removeListener('chainChanged', handleChainChanged);
@@ -33,12 +34,11 @@ export const connectWallet = async (targetNetwork) => {
     if (e.code === 4001) {
       // User rejected the request.
       return [undefined, undefined, undefined, e];
-    } else if (e.message === '4001'){
+    } else if (e.message === '4001') {
       throw new Error(e);
     } else {
       return [];
     }
-    
   }
 };
 export const switchChain = async (connectedChainId, targetNetwork, p) => {
@@ -90,32 +90,66 @@ export const getProvider = () => {
   return provider;
 };
 
-export const requestSign = async (address, timestamp) => {
-  const typedData = {
-    types: {
-      EIP712Domain: [{ name: 'name', type: 'string' }],
-      Request: [
-        { name: 'desc', type: 'string' },
-        { name: 'address', type: 'string' },
-        { name: 'timestamp', type: 'string' },
-      ],
-    },
-    primaryType: 'Request',
-    domain: {
-      name: 'PADO Labs',
-    },
-    message: {
-      desc: 'PADO Labs',
-      address,
-      timestamp,
-    },
-  };
+export const requestSign = async (
+  address,
+  timestamp,
+  { walletName, walletProvider } = {}
+) => {
   let res = '';
   try {
-    res = await provider.request({
-      method: 'eth_signTypedData_v4',
-      params: [address, typedData],
-    });
+    if (walletName === 'walletconnect') {
+      const provider = new ethers.providers.Web3Provider(walletProvider);
+      const signer = provider.getSigner();  
+      const typedData = {
+        types: {
+          // EIP712Domain: [{ name: 'name', type: 'string' }],
+          Request: [
+            { name: 'desc', type: 'string' },
+            { name: 'address', type: 'string' },
+            { name: 'timestamp', type: 'string' },
+          ],
+        },
+        primaryType: 'Request',
+        domain: {
+          name: 'PADO Labs',
+        },
+        message: {
+          desc: 'PADO Labs',
+          address,
+          timestamp,
+        },
+      };
+      res = await signer._signTypedData(
+        typedData.domain,
+        typedData.types,
+        typedData.message
+      );
+      console.log('walletConnect eth_signTypedData_v4', res);
+    } else {
+      const typedData = {
+        types: {
+          EIP712Domain: [{ name: 'name', type: 'string' }],
+          Request: [
+            { name: 'desc', type: 'string' },
+            { name: 'address', type: 'string' },
+            { name: 'timestamp', type: 'string' },
+          ],
+        },
+        primaryType: 'Request',
+        domain: {
+          name: 'PADO Labs',
+        },
+        message: {
+          desc: 'PADO Labs',
+          address,
+          timestamp,
+        },
+      };
+      res = await provider.request({
+        method: 'eth_signTypedData_v4',
+        params: [address, typedData],
+      });
+    }
   } catch (e) {
     console.log('requestSign error: ', e);
   }
@@ -143,7 +177,7 @@ const handleChainChanged = (chainId) => {
     })
   );
 };
-const handleAccountsChanged = async(accounts) => {
+const handleAccountsChanged = async (accounts) => {
   console.log('metamask account changes: ', accounts, provider);
   if (accounts.length > 0) {
     // const newAddr = accounts[accounts.length-1];
@@ -155,6 +189,7 @@ const handleAccountsChanged = async(accounts) => {
       connectWalletAsync({
         address: addr,
         provider,
+        name: 'metamask'
       })
     );
   } else {

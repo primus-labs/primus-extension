@@ -35,6 +35,7 @@ import type {
   ExchangeMeta,
   onChainAssetsDataList,
   ExData,
+  SocialData,
   onChainAssetsData,
   onChainData,
 } from '@/types/dataSource';
@@ -109,8 +110,8 @@ const DataSourceOverview = memo(() => {
   // console.log('onChainAssetsList====', onChainAssetsList);
 
   const dataSourceList: SourceDataList = useMemo(() => {
-    const exList = Object.values(exSources);
-    const socialList = Object.values(socialSources);
+    const exList: ExData[] = Object.values(exSources);
+    const socialList: SocialData[] = Object.values(socialSources);
     const orderedExList = exList.sort((a, b) =>
       sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
     );

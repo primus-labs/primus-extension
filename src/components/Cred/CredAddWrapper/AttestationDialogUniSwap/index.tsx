@@ -74,7 +74,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     const navigate = useNavigate();
 
     const activeAttestationTypeInfo = useMemo(() => {
-      const obj = proofTypes.find((i) => i.credIdentifier === type);
+      const obj = proofTypes.find((i:any) => i.credIdentifier === type);
       return obj as PROOFTYPEITEM;
     }, [type, proofTypes]);
 
@@ -93,7 +93,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [onChainAssetsSources]);
 
     const activeConnectedSourceList: ConnectSourceType[] = useMemo(() => {
-      let l = [];
+      let l:any[] = [];
       if (type === 'UNISWAP_PROOF') {
         l = connectedOnChainSourceList.filter((i: any) => !i.disabled);
       } else {

@@ -1,9 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
-import { useSelector, useDispatch, } from 'react-redux';
-import {
-  // setConnectWalletDialogVisible1,
-  connectWalletAsync,
-} from '@/store/actions';
+import { useSelector, useDispatch } from 'react-redux';
+import useWallet from '@/hooks/useWallet';
 import { formatAddress } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/constants';
 
@@ -17,7 +14,8 @@ import type { ActiveRequestType } from '@/types/config';
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 
 const PConnect = memo(() => {
-  const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] = useState<boolean>(false);
+  const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =
+    useState<boolean>(false);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [step, setStep] = useState<number>(1);
   const connectWalletDialogVisible = useSelector(
@@ -27,7 +25,7 @@ const PConnect = memo(() => {
     (state: UserState) => state.connectedWallet
   );
   const dispatch: React.Dispatch<any> = useDispatch();
-  
+
   const errorDescEl = useMemo(
     () => (
       <>
@@ -37,47 +35,46 @@ const PConnect = memo(() => {
     ),
     []
   );
-  const handleConnect = useCallback(
-    () => {
-      setConnectWalletDialogVisible1(true)
-      setStep(1)
-    },
-    []
-  );
-  const handleCloseMask = useCallback(() => {
-    setConnectWalletDialogVisible1(false)
+  const handleConnect = useCallback(() => {
+    setConnectWalletDialogVisible1(true);
+    setStep(1);
   }, []);
+  const handleCloseMask = useCallback(() => {
+    setConnectWalletDialogVisible1(false);
+  }, []);
+  const startFn = () => {
+    setActiveRequest({
+      type: 'loading',
+      title: 'Sign the message',
+      desc: "PADO uses this signature to verify that you're the owner of this address.",
+    });
+    setStep(2);
+  };
+  const errorFn = useCallback(() => {
+    setActiveRequest({
+      type: 'warn',
+      title: 'Unable to proceed',
+      desc: errorDescEl,
+    });
+  }, [errorDescEl]);
+  const { connect } = useWallet();
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
-      setActiveRequest({
-        type: 'loading',
-        title: 'Requesting Connection',
-        desc: 'Check MetaMask to confirm the connection.',
-      });
-      setStep(2);
-      const startFn = () => {
+      if (wallet?.name === 'MetaMask') {
         setActiveRequest({
           type: 'loading',
-          title: 'Sign the message',
-          desc: "PADO uses this signature to verify that you're the owner of this address.",
+          title: 'Requesting Connection',
+          desc: 'Check MetaMask to confirm the connection.',
         });
         setStep(2);
-      };
-      const errorFn = () => {
-        setActiveRequest({
-          type: 'warn',
-          title: 'Unable to proceed',
-          desc: errorDescEl,
-        });
-      };
-      // connectFn(startFn, errorFn);
-      dispatch(connectWalletAsync(undefined,startFn, errorFn));
+      }
+      connect(wallet?.name, startFn, errorFn);
     },
-    [dispatch,errorDescEl]
+    [connect, errorFn]
   );
   const onSubmitProcessDialog = useCallback(() => {
     setStep(1);
-    setConnectWalletDialogVisible1(false)
+    setConnectWalletDialogVisible1(false);
   }, []);
   const checkIfHadBound = useCallback(async () => {
     const { connectedWalletAddress } = await chrome.storage.local.get([
@@ -87,13 +84,13 @@ const PConnect = memo(() => {
       handleSubmitConnectWallet();
     }
   }, [handleSubmitConnectWallet]);
-  useEffect(() => {
-    checkIfHadBound();
-  }, [checkIfHadBound]);
+  // useEffect(() => {
+  //   checkIfHadBound();
+  // }, [checkIfHadBound]); // TODO!!!
   useEffect(() => {
     if (connectedWallet?.address) {
-      setConnectWalletDialogVisible1(false)
-      setStep(1)
+      setConnectWalletDialogVisible1(false);
+      setStep(1);
     }
   }, [connectedWallet?.address]);
   return (
