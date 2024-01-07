@@ -17,6 +17,7 @@ interface AddSourceSucDialogProps {
   onSubmit: () => void;
   desc?: any;
   title?: string;
+  code?: string;
   type?: string;
   headerType?: string;
   address?: string;
@@ -35,6 +36,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     onSubmit,
     title = 'Congratulations',
     desc = '',
+    code = '',
     type = 'suc',
     headerType = 'dataSource',
     address,
@@ -43,9 +45,10 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     tip,
     showBottom,
   }) => {
+    console.log('222123', code);
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
-   
+
     const formatFooterButton = useMemo(() => {
       if (footerButton) {
         return footerButton;
@@ -53,10 +56,12 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
         if (type === 'suc') {
           return <PButton text="OK" onClick={onSubmit}></PButton>;
         } else {
-          return <PButton text="OK" className="gray" onClick={onClose}></PButton>;
+          return (
+            <PButton text="OK" className="gray" onClick={onClose}></PButton>
+          );
         }
       }
-    }, [footerButton, type, onSubmit,onClose]);
+    }, [footerButton, type, onSubmit, onClose]);
     const icon = activeSource?.icon;
 
     const formatHeaderEl = useMemo(() => {
@@ -103,6 +108,7 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
             <div className="processDesc">
               <h1>{title}</h1>
               <h2>{desc}</h2>
+              {code && <h3>{code}</h3>}
             </div>
           </main>
           {type !== 'loading' && formatFooterButton}

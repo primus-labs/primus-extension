@@ -247,15 +247,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       fn();
     } else if (result === 'warn') {
       padoRightEl.innerHTML = '2/3';
-      var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
-      var str2 = `<p>Ooops...</p><p>Unstable internet connection. Please try again later.</p>`;
-      var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a zkAttestation with another Binance account.</p>`;
+     var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a zkAttestation with another Binance account.</p>`;
       padoCenterCenterEl.innerHTML =
-        failReason === 'network'
-          ? str2
-          : failReason === 'Not meeting the uniqueness requirement.'
+        failReason === 'Not meeting the uniqueness requirement.'
           ? str3
-          : str1;
+          : `<p class="warn-tip">${failReason.title}</p><p>${failReason.desc}</p>`;
       fn();
     }
   }

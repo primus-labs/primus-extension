@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { ethers } from 'ethers';
+import { useDispatch } from 'react-redux';
 import useWalletConnect from './useWalletConnect';
 import {
   connectWalletAsync,
@@ -154,43 +153,7 @@ const useWallet: UseWalletType = function useWallet() {
           parseInt(chainId + ''),
           walletConnectProvider
         );
-        // dispatch(
-        //   setConnectWalletActionAsync({
-        //     name: 'walletconnect',
-        //     address: walletConnectAddress,
-        //     provider: walletConnectProvider,
-        //   })
-        // );
       });
-      // walletConnectProvider.on('networkChanged', (chainId: number) => {
-      //   console.log(
-      //     '222walletConnectProvider networkChanged',
-      //     parseInt(chainId + '')
-      //   );
-      // });
-      // walletConnectProvider.on('accountsChanged', (accounts: string[]) => {
-      //   console.log('222walletConnect accountsChanged', accounts);
-      // });
-      // setTimeout(() => {
-      // walletConnectProvider.switchNetwork({
-      // openWalletConnectDialog({ view: 'Networks' });
-      // })
-      // walletConnectProvider.request({
-      //   method: 'wallet_switchEthereumChain',
-      //   params: [{ chainId: '0x8274F' }],
-      // });
-      // }, 4000);
-      // setTimeout(() => {
-      // walletConnectProvider.switchNetwork({
-      // openWalletConnectDialog({ view: 'Networks' });
-      // })
-      // }, 10000);
-      // const newProvider = new ethers.providers.Web3Provider(
-      //   walletConnectProvider
-      // );
-      // newProvider.on('chainChanged', (chainId: number) => {
-      //   console.log('222newProvider chainChanged', parseInt(chainId + ''));
-      // });
     }
   }, [walletConnectProvider, walletConnectAddress, dispatch]);
 

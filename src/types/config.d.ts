@@ -13,6 +13,7 @@ export type ActiveRequestType = {
   title: string;
   desc: any;
   btnTxt?: string;
+  code?: string;
 };
 
 export type FilterOption = {

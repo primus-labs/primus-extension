@@ -146,8 +146,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
 
       setActiveRequest({
         type: 'warn',
-        title: 'Something went wrong',
-        desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
+        title: 'Request Timed Out',
+        desc: 'The service did not respond within the expected time. Please try again later.',
       });
       var eventInfo: any = {
         eventType: 'ATTESTATION_GENERATE',
@@ -814,7 +814,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setActiveAttestForm(form);
         if (form?.proofClientType === 'Webpage Data') {
           const currRequestObj = webProofTypes.find(
-            (r:any) => r.name === form.proofContent && r.dataSource === form.source
+            (r: any) =>
+              r.name === form.proofContent && r.dataSource === form.source
           );
           currRequestObj.requestid = form.requestid;
           currRequestObj.event = form.event;
@@ -963,7 +964,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, []);
     const getAttestationResultCallback = useCallback(
       async (res: any) => {
-        const { retcode, content, retdesc } = JSON.parse(res);
+        const { retcode, content, retdesc, details } = JSON.parse(res);
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
         ]);
@@ -1085,6 +1086,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             eventReport(eventInfo);
           }
         } else if (retcode === '2') {
+          const {
+            errlog: { code, desc },
+          } = details;
           const msg = {
             fullScreenType: 'algorithm',
             reqMethodName: 'stop',
@@ -1092,38 +1096,129 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           };
           postMsg(padoServicePort, msg);
           var eventInfoMsg = 'Something went wrong';
-          let requestResObj = {
+          let requestResObj: ActiveRequestType = {
             type: 'warn',
             title: 'Something went wrong',
-            desc: 'The attestation process has been interrupted for some unknown reason.Please try again later.',
+            desc: 'Please try again later.',
           };
+
+          switch (code * 1) {
+            case 10001:
+              requestResObj = {
+                type: 'warn',
+                title: 'Unstable Internet Connection',
+                desc: 'Looks like your internet condition is not stable enough to complete the zkAttestation flow. Please try again later.',
+                code: `Error code: ${code}`,
+              };
+              break;
+            case 10002:
+              requestResObj = {
+                type: 'warn',
+                title: 'Connection broken',
+                desc: 'The attestation process has been interrupted due to some unkown network error. Please try again later.',
+                code: `Error code: ${code}`,
+              };
+              break;
+            case 10003:
+              requestResObj = {
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: "Can't connect attestation servier due to unstable internet condition. Please try again later.",
+                code: `Error code: ${code}`,
+              };
+              break;
+            case 10004:
+              requestResObj = {
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: "Can't connect data source servier due to untable internet condition. Please try again later.",
+                code: `Error code: ${code}`,
+              };
+              break;
+
+            case 20005:
+              requestResObj = {
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: "Can't complete the attestation due to some workflow error. Please try again later.",
+                code: `Error code: ${code}`,
+              };
+              break;
+            case 30002:
+              requestResObj = {
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: "Can't complete the attestation flow due to some data source error. Please try again later.",
+                code: `Error code: ${code}`,
+              };
+              break;
+            case 30003:
+            case 30004:
+              requestResObj = {
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: "Can't complete the attestation flow due to some data source error. Please try again later.",
+                code: `Error code: ${code}`,
+              };
+              break;
+            case 40004:
+            case 40005:
+              requestResObj = {
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+                code: `Error code: ${code}`,
+              };
+              break;
+            case 20001:
+            case 20002:
+            case 20003:
+            case 20004:
+            case 30001:
+            case 40001:
+            case 40002:
+            case 40003:
+            case 99999:
+              requestResObj = {
+                type: 'warn',
+                title: 'Something went wrong',
+                desc: 'Please try again later.',
+                code: `Error code: ${code}`,
+              };
+              break;
+            default: 
+              requestResObj = {
+                type: 'warn',
+                title: 'Something went wrong',
+                desc: 'Please try again later.',
+                code: `Error code: ${code}`,
+              };
+              break;
+          }
           if (
             retdesc.indexOf('connect to proxy error') > -1 ||
             retdesc.indexOf('WebSocket On Error') > -1 ||
             retdesc.indexOf('connection error') > -1
           ) {
-            requestResObj = {
-              type: 'warn',
-              title: 'Ooops',
-              desc: 'Unstable internet connection. Please try again later.',
-            };
             eventInfoMsg = 'Unstable internet connection';
           }
+          debugger
           setActiveRequest(requestResObj);
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
             status: 'FAILED',
             reason: eventInfoMsg,
+            detail: {
+              code,
+              desc,
+            },
           });
           eventReport(eventInfo);
           if (parsedActiveRequestAttestation.reqType === 'web') {
-            let failReason = '';
-            if (
-              retdesc.indexOf('connect to proxy error') > -1 ||
-              retdesc.indexOf('WebSocket On Error') > -1 ||
-              retdesc.indexOf('connection error') > -1
-            ) {
-              failReason = 'network';
-            }
+            let failReason = {
+              title: requestResObj.title,
+              desc: requestResObj.desc,
+            };
+
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
               name: 'attestResult',
@@ -1442,6 +1537,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             type={activeRequest?.type}
             title={activeRequest?.title}
             desc={activeRequest?.desc}
+            code={activeRequest?.code}
             headerEl={resultDialogHeaderEl}
             footerButton={footerButton}
             tip={footerTip}

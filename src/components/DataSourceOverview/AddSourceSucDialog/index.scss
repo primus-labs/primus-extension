@@ -36,11 +36,12 @@
         color: var(--Text-headline, #0a1214);
         @extend .Headline3;
       }
-      h2 {
+      h2,h3 {
         color: var(--Text-hint, #7b7f80);
         @extend .Text1;
         text-align: center;
       }
+     
     }
   }
   .footerTip {
