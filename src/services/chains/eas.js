@@ -413,19 +413,19 @@ export async function bulkAttest(params) {
   await provider.send('eth_requestAccounts', []);
   let signer = provider.getSigner();
   let contract;
-  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
-    contract = new ethers.Contract(
-      easProxyFeeContractAddress,
-      lineaportalabi,
-      signer
-    );
-  } else {
+  //if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
+  contract = new ethers.Contract(
+    easProxyFeeContractAddress,
+    lineaportalabi,
+    signer
+  );
+  /*} else {
     contract = new ethers.Contract(
       easProxyFeeContractAddress,
       proxyabi,
       signer
     );
-  }
+  }*/
 
   let bulkParams = [];
   for (const item of items) {
