@@ -168,7 +168,7 @@ const EASINFOMAP = {
       transactionDetailUrl: 'https://sepolia.easscan.org/attestation/view',
     },
     BSC: {
-      showName: 'BSC',
+      showName: 'BNB Chain',
       icon: iconBinance,
       title: 'BSC',
       rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',

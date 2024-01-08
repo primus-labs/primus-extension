@@ -358,7 +358,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             LineaSchemaName = LINEASCHEMANAME;
           } else if (
             formatNetworkName &&
-            formatNetworkName.indexOf('BNB') > -1
+            formatNetworkName.indexOf('BSC') > -1
           ) {
             LineaSchemaName = BNBSCHEMANAME;
           } else if (
