@@ -1202,7 +1202,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           ) {
             eventInfoMsg = 'Unstable internet connection';
           }
-          debugger
           setActiveRequest(requestResObj);
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
             status: 'FAILED',
