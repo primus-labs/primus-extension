@@ -102,9 +102,20 @@ const EventsOverview = memo(() => {
   }, [navigate, dispatch]);
   const handleClickClaimBAS = useCallback(async () => {
     await chrome.storage.local.set({
-      [BASEVENTNAME]: {
-        status: 0, //  0:start 1:end(suc)
-      },
+      [BASEVENTNAME]: JSON.stringify({
+        // status: 0, //  0:start 1:end(suc)
+        steps: [
+          {
+            status: 0,
+          },
+          {
+            status: 0,
+          },
+          {
+            status: 0,
+          },
+        ],
+      }),
     });
     navigate(`/cred?fromEvents=${BASEVENTNAME}`);
   }, [navigate]);

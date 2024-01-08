@@ -221,13 +221,17 @@ const CredOverview = memo(() => {
       setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address, fromEvents]);
-  const handleJoinScrollEvent = useCallback(async () => {
+  const handleJoinEvent = useCallback(async () => {
     if (connectedWallet?.address) {
-      setClaimMysteryBoxVisible2(true);
+      if (fromEvents === 'Scroll') {
+        setClaimMysteryBoxVisible2(true);
+      } else if (fromEvents === BASEVENTNAME) {
+        setClaimEventBASVisible(true);
+      }
     } else {
       setConnectDialogVisible(true);
     }
-  }, [connectedWallet?.address]);
+  }, [connectedWallet?.address, fromEvents]);
   const onCancelClaimMysteryBoxDialog2 = useCallback(() => {
     setClaimMysteryBoxVisible2(false);
     if (fromEvents === 'Scroll') {
@@ -482,13 +486,13 @@ const CredOverview = memo(() => {
   }, [createFlag, proofType, fromEvents]);
   useEffect(() => {
     if (fromEvents) {
-      if (fromEvents === 'Scroll') {
-        handleJoinScrollEvent();
+      if (fromEvents === 'Scroll' || fromEvents === BASEVENTNAME) {
+        handleJoinEvent();
       } else {
         handleAdd();
       }
     }
-  }, [fromEvents, handleAdd, handleJoinScrollEvent]);
+  }, [fromEvents, handleAdd, handleJoinEvent]);
   useEffect(() => {
     const listerFn = (message: any) => {
       if (message.type === 'pageDecode') {

@@ -7,7 +7,6 @@ import React, {
   useEffect,
 } from 'react';
 import { useSelector } from 'react-redux';
-import PRadioNew from '@/components/PRadioNew';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
@@ -16,8 +15,9 @@ import './index.scss';
 import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
 import iconSuc from '@/assets/img/iconSuc.svg';
-import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
+import iconStep1 from '@/assets/img/events/iconStep1.svg';
+import iconStep2 from '@/assets/img/events/iconStep2.svg';
+import iconStep3 from '@/assets/img/events/iconStep3.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconQuestN from '@/assets/img/events/iconQuestN.svg';
 import { queryEventDetail } from '@/services/api/event';
@@ -25,6 +25,7 @@ import { SCROLLEVENTNAME } from '@/config/constants';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { switchAccount } from '@/services/wallets/metamask';
 import { useNavigate } from 'react-router-dom';
+import { BASEVENTNAME } from '@/config/constants';
 interface ClaimDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -59,23 +60,23 @@ const stepList: StepItem[] = [
   },
   {
     id: 2,
-    icon: iconDataSourceTwitter,
-    title: 'Owns X account',
-    subTitle: 'Connect your account to attest',
+    icon: iconStep1,
+    title: 'Follow @padolabs',
+    subTitle: 'Authorize twitter and follow @padolabs',
     finished: false,
   },
   {
     id: 3,
-    icon: iconDataSourceBinance,
-    title: 'Owns Binance account',
-    subTitle: 'Connect your account to attest',
+    icon: iconStep2,
+    title: 'Complete Attestation',
+    subTitle: 'Choose POH tasks to attest',
     finished: false,
   },
   {
     id: 4,
-    icon: iconQuestN,
-    title: 'Campaign check',
-    subTitle: 'Remember to complete all quests after submitting',
+    icon: iconStep3,
+    title: 'Submit Attestation ',
+    subTitle: 'Submit to BSC or Greenfield',
     finished: false,
   },
 ];
@@ -88,6 +89,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     titleIllustration = false,
     subTitle = '',
   }) => {
+    const [stepObj, setStepObj] = useState<any>({
+      step1: 0,
+      step2: 0,
+      step3: 0,
+    });
     const [errorTip, setErrorTip] = useState<string>();
     const [eventDetail, setEventDetail] = useState<any>();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
@@ -131,12 +137,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         stepList[0].subTitle = addressForScrollEvent;
       }
 
-      stepList[1].finished = !!proofX;
+      stepList[1].finished = stepObj.step1 === 1;
 
-      stepList[2].finished = !!proofBinance;
+      stepList[2].finished = stepObj.step2 === 1;
 
-      stepList[3].finished =
-        scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag;
+      stepList[3].finished = stepObj.step3 === 1;
 
       return stepList;
     }, [
@@ -145,6 +150,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
       connectedWallet?.address,
       addressForScrollEvent,
+      stepObj,
     ]);
     const btnCN = useMemo(() => {
       if (
@@ -193,6 +199,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         },
       ];
     }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
+
     // useEffect(() => {
     //   if (scrollEventHistoryObj?.campaignPageCheckFlag) {
     //     agreeList[0].defaultValue = true;
@@ -222,16 +229,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     };
     const handleChange = useCallback(
       async (item: StepItem) => {
-        if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
-          setErrorTip('Please check the checkbox to proceed with the tasks.');
-          return;
-        }
+        
         if (item.id === 1) {
           return;
         }
         switch (item.id) {
           case 2:
           case 3:
+            debugger
             if (!item.finished) {
               onChange(item.id);
               if (errorTip === 'Please complete the tasks above first.') {
@@ -326,33 +331,67 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       openWindow(eventDetail?.ext?.campaignPageUrl);
     };
     const onSwitchAccount = useCallback(() => {
-      if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
-        setErrorTip('Please check the checkbox to proceed with the tasks.');
-        return;
-      }
       if (isSwitchable) {
         switchAccount(connectedWallet?.provider);
       }
-    }, [
-      connectedWallet,
-      isSwitchable,
-      scrollEventHistoryObj?.campaignPageCheckFlag,
-    ]);
-    const handleChangeAgree = useCallback(
-      (label: string | undefined) => {
-        if (label && label !== 'All') {
-          setScrollEventHistoryFn({
-            campaignPageCheckFlag: 1,
-          });
-          if (
-            errorTip === 'Please check the checkbox to proceed with the tasks.'
-          ) {
-            setErrorTip('');
-          }
+    }, [connectedWallet, isSwitchable]);
+    const onFollowX = useCallback(async () => {
+      window.open('https://twitter.com/intent/follow?screen_name=padolabs');
+      const res = await chrome.storage.local.get([BASEVENTNAME]);
+      if (res[BASEVENTNAME]) {
+        const lastInfo = JSON.parse(res[BASEVENTNAME]);
+        lastInfo.steps[0].status = 1;
+        setStepObj((obj) => ({ ...obj, step1: 1 }));
+      }
+    }, []);
+    const onAttest = useCallback(() => {}, []);
+    const onUpperChain = useCallback(() => {}, []);
+    const optionButton = useCallback(
+      (item) => {
+        let btn;
+        switch (item.id) {
+          case 1:
+            btn = (
+              <PButton
+                className={isSwitchable ? 'switchBtn' : 'switchBtn disabled'}
+                text="Switch"
+                onClick={onSwitchAccount}
+              />
+            );
+            break;
+          case 2:
+            btn = (
+              <PButton
+                className={'switchBtn'}
+                text="Follow"
+                onClick={onFollowX}
+              />
+            );
+            break;
+          case 3:
+            btn = (
+              <PButton
+                className={'switchBtn'}
+                text="Attest"
+                onClick={() => {handleChange(item);}}
+              />
+            );
+            break;
+          case 4:
+            btn = (
+              <PButton
+                className={'switchBtn'}
+                text="Submit"
+                onClick={onUpperChain}
+              />
+            );
+            break;
         }
+        return btn;
       },
-      [errorTip]
+      [isSwitchable, onAttest, onFollowX, onSwitchAccount, onUpperChain]
     );
+    
 
     useEffect(() => {
       setScrollEventHistoryFn({});
@@ -367,10 +406,22 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         });
       }
     }, [addressForScrollEvent]);
+    useEffect(() => {
+      chrome.storage.local.get([BASEVENTNAME], (res) => {
+        if (res[BASEVENTNAME]) {
+          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          const newObj = lastInfo.steps.reduce((prev, curr, currK) => {
+            prev[`step${currK + 1}`] = curr.status;
+            return prev;
+          }, {});
+          setStepObj(newObj);
+        }
+      });
+    }, []);
 
     return (
       <PMask onClose={onClose}>
-        <div className="padoDialog claimDialog claimScrollEventDialog">
+        <div className="padoDialog claimDialog claimScrollEventDialog claimBASEventDialog">
           <main>
             <div className="headerWrapper">
               <ClaimDialogHeaderDialog
@@ -397,39 +448,16 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                         <h5 className="title">{item.title}</h5>
                         <h6 className="desc">{item.subTitle}</h6>
                       </div>
-                      {item.id === 1 ? (
-                        <PButton
-                          className={
-                            isSwitchable ? 'switchBtn' : 'switchBtn disabled'
-                          }
-                          text="Switch"
-                          onClick={onSwitchAccount}
-                        />
+                      {/* {item.id === 1 && optionButton(item)} */}
+                      {item.id !== 1 && item.finished ? (
+                        <img src={iconSuc} alt="" />
                       ) : (
-                        item.finished && <img src={iconSuc} alt="" />
+                        optionButton(item)
                       )}
                     </div>
                   </li>
                 ))}
               </ul>
-              <div className="descWrapper">
-                Bridge your ETH here:{' '}
-                <a
-                  href="https://scroll.io/bridge"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Scroll Bridge
-                </a>{' '}
-                or&nbsp;
-                <a
-                  href="https://www.orbiter.finance/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Orbiter Finance
-                </a>
-              </div>
             </div>
           </main>
           <footer>

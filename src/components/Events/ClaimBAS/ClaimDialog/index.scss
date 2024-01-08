@@ -4,59 +4,36 @@
 @import '@/components/PButton/index.scss';
 @import '@/components/Events/ClaimWrapper/index.scss';
 @import '@/assets/css/pSelectOption.scss';
-.padoDialog.claimDialog.claimScrollEventDialog {
-  --con-width: 1.5782rem;
-  --con2-width: 1.7007rem;
-  --switchBtn-width: 0.381rem;
-}
-@media (max-width: 1470px) {
-  .padoDialog.claimDialog.claimScrollEventDialog {
-    --con-width: 232px;
-    --con2-width: 250px;
-    --switchBtn-width: 56px;
-  }
-}
-.padoDialog.claimDialog.claimScrollEventDialog {
+
+.padoDialog.claimDialog.claimBASEventDialog {
   main {
-    gap: var(--spacing-20, 20px) !important;
+    gap: var(--spacing-28, 28px) !important;
     .descContent {
       @extend .fcss;
-      gap: var(--spacing-12, 12px);
-      .tipWrapper {
-        @extend .fcss;
-        gap: var(--spacing-8, 8px);
-        color: #000;
-        @extend .Text1;
-        // > p {
-        //   height: var(--spacing-20, 20px);
-        // }
-        span {
-          color: var(--gradientgreen-g-400, #4eb382);
-          @extend .Body2;
-        }
-      }
+      gap: var(--spacing-20, 20px);
+
       .credTypeList {
-        gap: var(--spacing-8, 8px);
+        gap: var(--spacing-20, 20px);
         .credTypeItem {
           width: 100%;
           height: var(--spacing-60, 60px);
           @extend .pSelectOptionStyle2;
-          &:first-child {
-            .innerContent {
-              .con {
-                width: var(--con-width, 232px);
-              }
+
+          .innerContent {
+            .con {
+              width: var(--con-width, 232px);
             }
           }
-          &:last-child {
-            .innerContent {
-              .con {
-                .desc {
-                  letter-spacing: -0.408px;
-                }
-              }
-            }
-          }
+
+          // &:last-child {
+          //   .innerContent {
+          //     .con {
+          //       .desc {
+          //         letter-spacing: -0.408px;
+          //       }
+          //     }
+          //   }
+          // }
           .innerContent {
             .con {
               width: var(--con2-width, 250px);
@@ -68,7 +45,7 @@
               }
             }
             > img {
-              width: var(--spacing-24, 24px);
+              width: var(--spacing-28, 28px);
             }
             .pButton.switchBtn {
               @extend .buttonStyle1;
@@ -89,15 +66,7 @@
           }
         }
       }
-      .descWrapper {
-        color: var(--Text-hint, #7b7f80);
-        @extend .Text1;
-        > a {
-          color: var(--Text-hint, #7b7f80);
 
-          border-bottom: 1px solid var(--Text-hint, #7b7f80);
-        }
-      }
       .pRadioNew .pRadioItemWrapper .pRadioItem {
         gap: var(--spacing-8, 8px);
         .iconfont {
@@ -107,6 +76,11 @@
           @extend .Text1;
           color: #000;
         }
+      }
+
+      .attensionTip {
+        color: #000;
+        @extend .Headline6;
       }
     }
   }

@@ -15,7 +15,7 @@ import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/Connec
 // import ClaimDialog from './ClaimDialog';
 import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
-
+import CredTypesDialog from './CredTypesDialog';
 import useAllSources from '@/hooks/useAllSources';
 import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
@@ -89,7 +89,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const navigate = useNavigate();
 
     const onSubmitClaimDialog = useCallback(async () => {
-      onSubmit();
+      
       // 1.if participated
       // 2.has on chain web proof
       // 2.has connect wallet;
@@ -158,6 +158,15 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         return arr;
       }
     }, [endStamp]);
+    const onChangeFn = useCallback((itemId) => {
+      debugger
+      if (itemId === 3) {
+        debugger
+        setStep(2)
+      } else {
+        onChange(itemId);
+      }
+    },[onChange])
    
 
     return (
@@ -166,13 +175,15 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           <ClaimDialog
             onClose={onClose}
             onSubmit={onSubmitClaimDialog}
-            onChange={onChange}
+            onChange={onChangeFn}
+            
             title="Scroll zkAttestation Tasks"
             titleIllustration={true}
             subTitle=""
           />
         )}
-        {visible && step === 2 && (
+        {visible && step === 2 && <CredTypesDialog onClose={ } onSubmit={ onSubmit} />}
+        {visible && step === 3 && (
           <AddSourceSucDialog
             onClose={onClose}
             onSubmit={onSubmitActiveRequestDialog}
