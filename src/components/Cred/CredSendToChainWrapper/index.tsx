@@ -688,18 +688,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               onClick={onSubmitActiveSendToChainRequestDialog}
             />
           );
-        } else if (
-          isFromEventLINEA_DEFI_VOYAGE ||
-          fromEvents === 'LINEA_DEFI_VOYAGE'
-        ) {
-          const fn = () => {
-            const targetUrl =
-              eventDetail?.ext?.intractUrl || 'https://padolabs.org/events';
-            window.open(targetUrl);
-            onSubmitActiveSendToChainRequestDialog();
-          };
-          return <PButton text="Back to event" onClick={fn} />; //Check your campaign status
-        } else {
+        }
+        // else if (
+        //   isFromEventLINEA_DEFI_VOYAGE ||
+        //   fromEvents === 'LINEA_DEFI_VOYAGE'
+        // ) {
+        //   const fn = () => {
+        //     const targetUrl =
+        //       eventDetail?.ext?.intractUrl || 'https://padolabs.org/events';
+        //     window.open(targetUrl);
+        //     onSubmitActiveSendToChainRequestDialog();
+        //   };
+        //   return <PButton text="OK" onClick={fn} />; //Check your campaign status  Back to event => OK
+        // }
+        else {
           return null;
         }
       } else {
@@ -710,7 +712,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       activeSendToChainRequest?.type,
       onClickClaimNFT,
       onClickRewards,
-      eventDetail?.ext?.intractUrl,
+      // eventDetail?.ext?.intractUrl,
     ]);
     const fetchEventDetail = useCallback(async () => {
       try {
