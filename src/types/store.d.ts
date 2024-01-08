@@ -39,4 +39,5 @@ export type UserState = {
   rewardsDialogVisible: rewardsDialogVisibleType;
   badgeEventPeriod: BadgeEventPeriodType;
   scrollEventPeriod: BadgeEventPeriodType;
+  BASEventPeriod: BadgeEventPeriodType;
 };

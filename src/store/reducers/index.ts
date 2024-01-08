@@ -96,6 +96,10 @@ const initState = {
     startTime: '1699243200000',
     endTime: '1700971200000',
   },
+  BASEventPeriod: {
+    startTime: '1699243200000',
+    endTime: '1700971200000',
+  },
 };
 
 // reducer
@@ -148,6 +152,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, badgeEventPeriod: action.payload };
     case 'setScrollEventPeriodAction':
       return { ...state, scrollEventPeriod: action.payload };
+    case 'setBASEventPeriodAction':
+      return { ...state, BASEventPeriod: action.payload };
     default:
       return state;
   }

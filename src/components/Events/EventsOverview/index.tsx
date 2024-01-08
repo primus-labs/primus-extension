@@ -9,8 +9,10 @@ import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
 import ClaimMysteryBoxWrapper2 from '../ClaimMysteryBoxWrapper2';
 import RewardList from '../RewardList';
 import AdSpace from '../AdSpace';
+import AdSpaceBAS from '../AdSpaceBAS';
 import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
 import AdSpaceMysteryBox2 from '../AdSpaceMysteryBox2';
+import AdSpaceMysteryBAS from '../AdSpaceMysteryBAS';
 import AdSpaceLineaDeFiVoyage from '../AdSpaceLineaDeFiVoyage';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
@@ -21,7 +23,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 import Slider from 'react-slick';
-import { DATASOURCEMAP } from '@/config/constants';
+import { BASEVENTNAME, DATASOURCEMAP } from '@/config/constants';
 import { setRewardsDialogVisibleAction } from '@/store/actions';
 const EventsOverview = memo(() => {
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
@@ -48,24 +50,25 @@ const EventsOverview = memo(() => {
     useState<boolean>(false);
   const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
     useState<boolean>(false);
- 
+
   const scrollEventPeriod = useSelector(
     (state: UserState) => state.scrollEventPeriod
   );
-  
+
   const scrollEventActiveFlag = useMemo(() => {
     const { startTime, endTime } = scrollEventPeriod;
-    const isActive = dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
-    const isEnd = dayjs().isAfter(dayjs(+endTime))
+    const isActive =
+      dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
+    const isEnd = dayjs().isAfter(dayjs(+endTime));
     if (isActive) {
-      return 1
+      return 1;
     }
     if (isEnd) {
-      return 2
+      return 2;
     }
-    return 0
+    return 0;
   }, [scrollEventPeriod]);
-    
+
   const navigate = useNavigate();
   const onCloseClaimDialog = useCallback(() => {
     setClaimVisible(false);
@@ -78,15 +81,14 @@ const EventsOverview = memo(() => {
     setClaimMysteryBoxVisible(false);
     navigate('/events');
   }, [navigate]);
-  
+
   const handleClickMysterybox = useCallback(() => {
     setClaimMysteryBoxVisible(true);
   }, []);
   const handleClickMysterybox2 = useCallback(async () => {
-    
     const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
     const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
-   
+
     if (scrollEventObj?.finishFlag) {
       dispatch(
         setRewardsDialogVisibleAction({
@@ -98,13 +100,17 @@ const EventsOverview = memo(() => {
       navigate(`/cred?fromEvents=Scroll`);
     }
   }, [navigate, dispatch]);
+  const handleClickClaimBAS = useCallback(async () => {
+    await chrome.storage.local.set({
+      [BASEVENTNAME]: {
+        status: 0, //  0:start 1:end(suc)
+      },
+    });
+    navigate(`/cred?fromEvents=${BASEVENTNAME}`);
+  }, [navigate]);
   const handleClickAdSpaceLineaDeFiVoyage = useCallback(async () => {
     navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
-  }, [
-    navigate,
-  ]);
-  
-  
+  }, [navigate]);
 
   useEffect(() => {
     if (NFTsProcess) {
@@ -130,11 +136,12 @@ const EventsOverview = memo(() => {
       }
     }
   }, [ScrollProcess, dispatch]);
-  
 
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">
+        <AdSpaceMysteryBAS onClick={handleClickClaimBAS} />
+        {/* <AdSpaceBAS onClick={handleClickClaimBAS} /> */}
         {/* <Slider {...settings}> */}
         <AdSpaceLineaDeFiVoyage onClick={handleClickAdSpaceLineaDeFiVoyage} />
         {scrollEventActiveFlag === 1 && (

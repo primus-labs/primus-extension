@@ -8,6 +8,7 @@ import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import {
   DEFAULTDATASOURCEPOLLINGTIMENUM,
   SCROLLEVENTNAME,
+  BASEVENTNAME,
 } from '@/config/constants';
 import {
   bindConnectedWallet,
@@ -93,6 +94,10 @@ export const setBadgeEventPeriodAction = (values: any) => ({
 });
 export const setScrollEventPeriodAction = (values: any) => ({
   type: 'setScrollEventPeriodAction',
+  payload: values,
+});
+export const setBASEventPeriodAction = (values: any) => ({
+  type: 'setBASEventPeriodAction',
   payload: values,
 });
 export const setConnectWalletActionAsync = (values: any) => {
@@ -277,6 +282,9 @@ export const setBadgeEventPeriodActionAsync = () => {
         queryBadgeEventPeriod({
           event: SCROLLEVENTNAME,
         }),
+        queryBadgeEventPeriod({
+          event: BASEVENTNAME,
+        }),
       ]);
       eventPeriodRes.forEach((i, k) => {
         const { rc, result } = i;
@@ -287,6 +295,10 @@ export const setBadgeEventPeriodActionAsync = () => {
         } else if (k === 1) {
           if (rc === 0) {
             dispatch(setScrollEventPeriodAction(result));
+          }
+        } else if (k === 2) {
+          if (rc === 0) {
+            dispatch(setBASEventPeriodAction(result));
           }
         }
       });
