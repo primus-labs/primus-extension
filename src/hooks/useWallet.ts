@@ -6,13 +6,17 @@ import {
   setConnectWalletActionAsync,
 } from '@/store/actions';
 import { EASInfo } from '@/config/envConstants';
+import { useSelector } from 'react-redux';
+import type { UserState } from '@/types/store';
 
 type UseWalletType = () => any;
 const useWallet: UseWalletType = function useWallet() {
   const dispatch: React.Dispatch<any> = useDispatch();
   const [wallet, setWallet] = useState<string>();
   const savedConnectInfo = useRef<any>();
-
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   const {
     openWalletConnectDialog,
     disconnectWalletConnect,
@@ -131,7 +135,7 @@ const useWallet: UseWalletType = function useWallet() {
         address: walletConnectAddress,
       });
     }
-    if (!walletConnectIsConnect) {
+    if (connectedWallet?.name === 'walletconnect' && !walletConnectIsConnect) {
       dispatch(setConnectWalletActionAsync(undefined));
     }
   }, [
@@ -141,6 +145,7 @@ const useWallet: UseWalletType = function useWallet() {
     walletConnectProvider,
     walletConnectAddress,
     dispatch,
+    connectedWallet,
   ]);
   // useEffect(() => {
   //   console.log('walletConnectChainId', walletConnectChainId);
