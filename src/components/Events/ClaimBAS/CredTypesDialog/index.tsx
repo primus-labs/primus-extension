@@ -8,16 +8,18 @@ import './index.scss';
 import iconGoogle from '@/assets/img/iconGoogle.svg';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
+import iconSuc from '@/assets/img/iconSuc.svg';
 
 import type { UserState } from '@/types/store';
 import type { PROOFTYPEITEM } from '@/types/cred';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import PButton from '@/components/PButton';
+import { BASEVENTNAME } from '@/config/constants';
 
 interface CredTypesDialogProps {
   onClose: () => void;
   onSubmit: () => void;
-  onChange: (proofId: number) => void;
+  onChange: (proofId: string) => void;
   onBack: () => void;
 }
 
@@ -27,28 +29,28 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
     const fromEvents = searchParams.get('fromEvents');
 
     const [errorTip, setErrorTip] = useState<string>();
-    const [activeType, setActiveType] = useState<number>();
-    const [proofStatusArr, setProofStatusArr] = useState<any>([]);
+    const [activeType, setActiveType] = useState<string>();
+    const [proofStatusObj, setProofStatusObj] = useState<any>({});
 
     const formatProofTypes = useMemo(() => {
       // proofTypes;
       const proofTypes = [
         {
-          id: 1,
+          id: '5', // TODO!!!
           credTitle: 'Owns Google Account',
           score: '+80xp',
           credLogoUrl: iconGoogle,
           credIntroduce: 'Proof of Account Ownership',
         },
         {
-          id: 2,
+          id: '3',
           credTitle: 'Owns Twitter Account',
           score: '+50xp',
           credLogoUrl: iconDataSourceTwitter,
           credIntroduce: 'Proof of Account Ownership',
         },
         {
-          id: 3,
+          id: '2',
           credTitle: 'Owns Binance Account',
           score: '+30xp',
           credLogoUrl: iconDataSourceBinance,
@@ -56,10 +58,10 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         },
       ];
       const newArr = proofTypes.map((i, k) => {
-        return { ...i, finished: proofStatusArr[k] === 1 };
+        return { ...i, finished: !!proofStatusObj[i.id] };
       });
       return newArr;
-    }, [proofStatusArr]);
+    }, [proofStatusObj]);
     const isComplete = useMemo(() => {
       const hasProof = formatProofTypes.some((i) => i.finished);
       return hasProof;
@@ -70,6 +72,9 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
 
     const handleChange = useCallback(
       (item: any) => {
+        if (item.finished) {
+          return;
+        }
         setActiveType(item.id);
         onChange(item.id);
       },
@@ -77,11 +82,11 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
     );
     const handleClickNext = useCallback(() => {
       if (!isComplete) {
-        return 
+        return;
       } else {
         onSubmit();
       }
-    },[]);
+    }, [isComplete, onSubmit]);
     const liClassName = useCallback(
       (item: any) => {
         let defaultCN = 'credTypeItem';
@@ -92,6 +97,17 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
       },
       [activeType]
     );
+    useEffect(() => {
+      chrome.storage.local.get([BASEVENTNAME], (res) => {
+        if (res[BASEVENTNAME]) {
+          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          const lastProofInfo = lastInfo.steps[1];
+          if (lastProofInfo.tasks) {
+            setProofStatusObj(lastProofInfo.tasks);
+          }
+        }
+      });
+    }, []);
 
     return (
       <PMask onClose={onClose}>
@@ -121,6 +137,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
                         </h5>
                         <h6 className="desc">{item.credIntroduce}</h6>
                       </div>
+                      {item.finished && <img src={iconSuc} alt="" />}
                     </div>
                   </li>
                 ))}
@@ -133,7 +150,6 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
               text="Complete"
               onClick={handleClickNext}
             />
-            {/* {errorTip && <PBottomErrorTip text={errorTip} />} */}
           </footer>
         </div>
       </PMask>

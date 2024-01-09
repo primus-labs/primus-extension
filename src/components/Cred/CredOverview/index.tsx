@@ -34,7 +34,8 @@ const CredOverview = memo(() => {
   const [eventSource, setEventSource] = useState<string>();
   const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
     useState<boolean>(false);
-  const [claimEventBASVisible, setClaimEventBASVisible] = useState<boolean>(false);
+  const [claimEventBASVisible, setClaimEventBASVisible] =
+    useState<boolean>(false);
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
@@ -270,46 +271,49 @@ const CredOverview = memo(() => {
     setAddDialogVisible(true);
   };
 
-   const onCancelClaimEventBAS = useCallback(() => {
-     setClaimEventBASVisible(false);
-     if (fromEvents === BASEVENTNAME) {
-       navigate('/events');
-     }
-   }, [fromEvents, navigate]);
-   const onSubmitClaimEventBAS = useCallback(async () => {
-     // onSubmit
-     const { credentials } = await chrome.storage.local.get('credentials');
-     let credArrNew = Object.values(JSON.parse(credentials));
+  const onCancelClaimEventBAS = useCallback(() => {
+    setClaimEventBASVisible(false);
+    if (fromEvents === BASEVENTNAME) {
+      navigate('/events');
+    }
+  }, [fromEvents, navigate]);
+  const onSubmitClaimEventBAS = useCallback(async () => {
+    // onSubmit
+    const { credentials } = await chrome.storage.local.get('credentials');
+    let credArrNew = Object.values(JSON.parse(credentials));
 
-     const haveXProof = credArrNew.find(
-       (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
-     );
-     const haveBinanceProof = credArrNew.find(
-       (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
-     );
+    const haveXProof = credArrNew.find(
+      (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
+    );
+    const haveBinanceProof = credArrNew.find(
+      (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
+    );
 
-     const proofsFlag = !!haveXProof && !!haveBinanceProof;
-     // const proofsFlag = !!proofX && !!proofBinance;
+    const proofsFlag = !!haveXProof && !!haveBinanceProof;
+    // const proofsFlag = !!proofX && !!proofBinance;
 
-     if (proofsFlag) {
-       setClaimMysteryBoxVisible2(false);
-       handleUpChain(haveXProof as CredTypeItemType);
-     }
-   }, [proofX, proofBinance, handleUpChain]);
-   const onChangeClaimEventBAS = (step: number) => {
-     if (step === 2) {
-       // x
-       setEventSource('x');
-     } else if (step === 3) {
-       // binance
-       setEventSource('binance');
-     }
-     // setClaimMysteryBoxVisible2(false);
-     setAddDialogVisible(true);
-   };
-  const onClaimEventBASAttest = () => {}
-  
-  
+    if (proofsFlag) {
+      setClaimMysteryBoxVisible2(false);
+      handleUpChain(haveXProof as CredTypeItemType);
+    }
+  }, [proofX, proofBinance, handleUpChain]);
+  const onChangeClaimEventBAS = (step: number) => {
+    if (step === 2) {
+      // x
+      setEventSource('x');
+    } else if (step === 3) {
+      // binance
+      setEventSource('binance');
+    }
+    // setClaimMysteryBoxVisible2(false);
+    setAddDialogVisible(true);
+  };
+  const onClaimEventBASAttest = (attestId: string) => {
+    setEventSource(attestId);
+    setAddDialogVisible(true);
+    setClaimEventBASVisible(false);
+  };
+
   const handleSubmitBindPolygonid = useCallback(async () => {
     await initCredList();
     setBindPolygonidVisible(false);
@@ -321,6 +325,9 @@ const CredOverview = memo(() => {
         if (fromEvents === 'Scroll') {
           setAddDialogVisible(false);
           setClaimMysteryBoxVisible2(true);
+        } else if (fromEvents === BASEVENTNAME) {
+          setAddDialogVisible(false);
+          setClaimEventBASVisible(true);
         } else {
           if (addSucFlag) {
             // addSucFlag: requestid;

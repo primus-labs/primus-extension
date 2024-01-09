@@ -33,6 +33,7 @@ import {
   CredVersion,
   SCROLLEVENTNAME,
   schemaTypeMap,
+  BASEVENTNAME,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -391,17 +392,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const authorize = useAuthorization2();
     const fetchAttestForGoogle = useCallback(
       async (form: AttestionForm) => {
-        const {
-          credential,
-          userIdentity,
-          verifyIdentity,
-          proofType,
-          source,
-          type,
-          exUserId,
-          label,
-          requestid,
-        } = form;
+        const { source, requestid } = form;
         // const schemaType = schemaTypeMap[type as keyof typeof schemaTypeMap];
         const schemaType = 'GOOGLE_ACCOUNT_OWNER';
         const attestationId = requestid ?? uuidv4();
@@ -427,7 +418,22 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             version: CredVersion,
             requestid: attestationId,
             sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
+            event: fromEvents,
           };
+          if (fromEvents === BASEVENTNAME) {
+            const res = await chrome.storage.local.get([BASEVENTNAME]);
+            if (res[BASEVENTNAME]) {
+              const lastInfo = JSON.parse(res[BASEVENTNAME]);
+              const lastTasks = lastInfo.steps[1].tasks ?? {};
+              lastInfo.steps[1].tasks = {
+                ...lastTasks,
+                '5': fullAttestation.requestid,
+              };
+              await chrome.storage.local.set({
+                [BASEVENTNAME]: JSON.stringify(lastInfo),
+              });
+            }
+          }
           const credentialsObj = { ...credentialsFromStore };
           credentialsObj[attestationId] = fullAttestation;
           await chrome.storage.local.set({
@@ -459,7 +465,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           eventReport(eventInfo);
         }
       },
-      [credentialsFromStore, initCredList, connectedWallet?.address, authorize]
+      [
+        credentialsFromStore,
+        initCredList,
+        connectedWallet?.address,
+        authorize,
+        fromEvents,
+      ]
     );
     const fetchAttestForAnt = useCallback(
       async (form: AttestionForm) => {
@@ -1004,6 +1016,21 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             await chrome.storage.local.remove(['activeRequestAttestation']);
             await initCredList();
             if (fullAttestation.reqType === 'web') {
+              if (fromEvents === BASEVENTNAME) {
+                const res = await chrome.storage.local.get([BASEVENTNAME]);
+                if (res[BASEVENTNAME]) {
+                  const lastInfo = JSON.parse(res[BASEVENTNAME]);
+                  const lastTasks = lastInfo.steps[1].tasks ?? {}
+                  lastInfo.steps[1].tasks = {
+                    ...lastTasks,
+                    [parsedActiveRequestAttestation.templateId]: parsedActiveRequestAttestation.requestid,
+                  };
+                  await chrome.storage.local.set({
+                    [BASEVENTNAME]: JSON.stringify(lastInfo),
+                  });
+                }
+              }
+
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
                 name: 'attestResult',
@@ -1186,7 +1213,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 code: `Error code: ${code}`,
               };
               break;
-            default: 
+            default:
               requestResObj = {
                 type: 'warn',
                 title: 'Something went wrong',
@@ -1289,6 +1316,45 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             event: SCROLLEVENTNAME,
           };
           onSubmitAttestationDialog(from);
+        } else if (fromEvents === BASEVENTNAME && eventSource) {
+          let form: AttestionForm = {
+            source: eventSource,
+            type: 'IDENTIFICATION_PROOF',
+          };
+          switch (eventSource) {
+            case '5':
+              form = {
+                source: 'google',
+                type: 'IDENTIFICATION_PROOF',
+                exUserId: '',
+                label: '',
+                proofContent: 'Account Ownership',
+                proofClientType: 'API Data',
+                proofType: 'IDENTIFICATION_PROOF',
+                event: BASEVENTNAME,
+              };
+
+              break;
+            case '3':
+              form = {
+                source: 'x',
+                type: 'IDENTIFICATION_PROOF',
+                proofContent: 'Account Ownership',
+                proofClientType: 'Webpage Data',
+                event: BASEVENTNAME,
+              };
+              break;
+            case '2':
+              form = {
+                source: 'binance',
+                type: 'IDENTIFICATION_PROOF',
+                proofContent: 'Account Ownership',
+                proofClientType: 'Webpage Data',
+                event: BASEVENTNAME,
+              };
+              break;
+          }
+          onSubmitAttestationDialog(form);
         }
       }
     }, [visible, activeSource, activeCred, fromEvents, eventSource]);
@@ -1380,7 +1446,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (fromEvents) {
           return (
             <PButton
-              text={fromEvents === 'Scroll' ? 'OK' : 'Submit'}
+              text={fromEvents === 'Scroll' || fromEvents === BASEVENTNAME ? 'OK' : 'Submit'}
               onClick={onSubmitActiveRequestDialog}
             />
           );

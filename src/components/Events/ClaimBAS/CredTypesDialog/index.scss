@@ -21,6 +21,9 @@
               }
             }
           }
+          > img {
+              width: var(--spacing-28, 28px);
+            }
         }
       }
     }

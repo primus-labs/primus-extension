@@ -30,7 +30,7 @@ interface ClaimWrapperProps {
   onClose: () => void;
   onSubmit: () => void;
   onChange: (step: number) => void;
-  onAttest: (attestId: number) => void;
+  onAttest: (attestId: string) => void;
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit, onChange, onAttest }) => {
@@ -184,10 +184,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       setStep(1);
     }, []);
 
-    // useEffect(() => {
-    //   chrome.storage.local.remove([BASEVENTNAME]);
-    // });
-
     return (
       <div className="claimMysteryBoxWrapper">
         {visible && step === 1 && (
@@ -202,7 +198,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         )}
         {visible && step === 2 && (
           <CredTypesDialog
-            onClose={}
+            onClose={onClose}
             onSubmit={onCredTypeDialogSubmit}
             onChange={onAttest}
             onBack={onCredTypesDialogBack}
