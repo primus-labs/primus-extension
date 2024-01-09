@@ -470,4 +470,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.tabs.create({ url });
     }
   }
+  if (message.type === 'xFollow') {
+    const {
+      name
+    } = message;
+    if (name === 'follow') {
+      
+    }
+  }
 });

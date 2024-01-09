@@ -26,13 +26,14 @@ import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { switchAccount } from '@/services/wallets/metamask';
 import { useNavigate } from 'react-router-dom';
 import { BASEVENTNAME } from '@/config/constants';
+import useAuthorization from '@/hooks/useAuthorization';
 interface ClaimDialogProps {
   onClose: () => void;
   onSubmit: () => void;
   onChange: (step: number) => void;
   title?: string;
   titleIllustration?: boolean;
-  subTitle?: string
+  subTitle?: string;
 }
 
 type StepItem = {
@@ -89,6 +90,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     titleIllustration = false,
     subTitle = '',
   }) => {
+    const [xTabId, setXTabId] = useState<number>();
     const [stepObj, setStepObj] = useState<any>({
       step1: 0,
       step2: 0,
@@ -99,6 +101,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     // compaignQuestnCheckPageCheckFlag compaignCheckpageFlag
     const [activeStep, setActiveStep] = useState<number>();
+    const kycSources = useSelector((state: UserState) => state.kycSources);
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
@@ -180,31 +183,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
 
       return true;
     }, [proofX, proofBinance, scrollEventHistoryObj.campaignPageCheckFlag]);
-    const formatAgreeList = useMemo(() => {
-      if (scrollEventHistoryObj?.campaignPageCheckFlag) {
-        // agreeList[0].defaultValue = true;
-        return [
-          {
-            label: 'Fully acknowledged.',
-            disabled: false,
-            defaultValue: true,
-          },
-        ];
-      }
-      return [
-        {
-          label: 'Fully acknowledged.',
-          disabled: false,
-          defaultValue: false,
-        },
-      ];
-    }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
 
-    // useEffect(() => {
-    //   if (scrollEventHistoryObj?.campaignPageCheckFlag) {
-    //     agreeList[0].defaultValue = true;
-    //   }
-    // }, [scrollEventHistoryObj?.campaignPageCheckFlag]);
+    const authorize = useAuthorization();
+
     const hanldeSubmit = useCallback(() => {
       if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
         setErrorTip('Please check the checkbox to proceed with the tasks.');
@@ -224,47 +205,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       proofBinance,
       onSubmit,
     ]);
-    const openWindow = (url: string) => {
-      window.open(url);
-    };
-    const handleChange = useCallback(
-      async (item: StepItem) => {
-        if (item.id === 1) {
-          return;
-        }
-        switch (item.id) {
-          case 2:
-          case 3:
-            debugger;
-            if (!item.finished) {
-              onChange(item.id);
-              if (errorTip === 'Please complete the tasks above first.') {
-                setErrorTip('');
-              }
-            }
-            break;
-          case 4:
-            if (!scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag) {
-              if (proofX && proofBinance) {
-                openWindow(eventDetail?.ext?.compaignQuestnCheckPageUrl);
-                
-              } else {
-                setErrorTip('Please complete the tasks above first.');
-              }
-            }
-            break;
-        }
-        setActiveStep(item.id);
-      },
-      [
-        onChange,
-        proofX,
-        proofBinance,
-        scrollEventHistoryObj,
-        eventDetail?.ext?.compaignQuestnCheckPageUrl,
-        errorTip,
-      ]
-    );
 
     const liClassName = useCallback(
       (item: StepItem) => {
@@ -313,27 +253,52 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         }
       } catch {}
     }, []);
-   
-    const onClickPage = async () => {
-      openWindow(eventDetail?.ext?.campaignPageUrl);
-    };
+
     const onSwitchAccount = useCallback(() => {
       if (isSwitchable) {
         switchAccount(connectedWallet?.provider);
       }
     }, [connectedWallet, isSwitchable]);
     const onFollowX = useCallback(async () => {
-      window.open('https://twitter.com/intent/follow?screen_name=padolabs');
-      const res = await chrome.storage.local.get([BASEVENTNAME]);
-      if (res[BASEVENTNAME]) {
-        const lastInfo = JSON.parse(res[BASEVENTNAME]);
-        lastInfo.steps[0].status = 1;
-        await chrome.storage.local.set({ [BASEVENTNAME]: lastInfo });
-        setStepObj((obj) => ({ ...obj, step1: 1 }));
+      const targetUrl =
+        'https://twitter.com/intent/follow?screen_name=padolabs';
+      const openXUrlFn = async () => {
+        const tabCreatedByPado = await chrome.tabs.create({
+          url: targetUrl,
+        });
+        console.log('222123 create tab', tabCreatedByPado.id);
+        setXTabId(tabCreatedByPado.id);
+      };
+      if (kycSources['x']) {
+        await openXUrlFn();
+      } else {
+        authorize('X', async () => {
+          await openXUrlFn();
+        });
       }
-    }, []);
+    }, [kycSources, authorize]);
     const onAttest = useCallback(() => {}, []);
     const onUpperChain = useCallback(() => {}, []);
+    const handleChange = useCallback(
+      async (item: StepItem) => {
+        if (item.id === 1) {
+          return;
+        }
+        switch (item.id) {
+          case 2:
+            onFollowX();
+            break;
+          case 3:
+          case 4:
+            if (!item.finished) {
+              onChange(item.id);
+            }
+            break;
+        }
+        setActiveStep(item.id);
+      },
+      [onChange, onFollowX]
+    );
     const optionButton = useCallback(
       (item) => {
         let btn;
@@ -352,7 +317,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
               <PButton
                 className={'switchBtn'}
                 text="Follow"
-                onClick={onFollowX}
+                onClick={() => {
+                  handleChange(item);
+                }}
               />
             );
             break;
@@ -379,13 +346,13 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         }
         return btn;
       },
-      [isSwitchable, onAttest, onFollowX, onSwitchAccount, onUpperChain]
+      [isSwitchable, onSwitchAccount, onUpperChain, handleChange]
     );
 
     useEffect(() => {
       fetchEventDetail();
     }, [fetchEventDetail]);
-   
+
     useEffect(() => {
       chrome.storage.local.get([BASEVENTNAME], (res) => {
         if (res[BASEVENTNAME]) {
@@ -398,6 +365,29 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         }
       });
     }, []);
+
+    useEffect(() => {
+      const listerFn = async (message, sender, sendResponse) => {
+        console.log('ClaimBAS onMessage message', message);
+        if (message.type === 'xFollow' && message.name === 'follow') {
+          const res = await chrome.storage.local.get([BASEVENTNAME]);
+          if (res[BASEVENTNAME]) {
+            const lastInfo = JSON.parse(res[BASEVENTNAME]);
+            lastInfo.steps[0].status = 1;
+            await chrome.storage.local.set({
+              [BASEVENTNAME]: JSON.stringify(lastInfo),
+            });
+            setStepObj((obj) => ({ ...obj, step1: 1 }));
+            console.log('222123tabdId', xTabId);
+            await chrome.tabs.remove(xTabId as number);
+          }
+        }
+      };
+      chrome.runtime.onMessage.addListener(listerFn);
+      return () => {
+        chrome.runtime.onMessage.removeListener(listerFn);
+      };
+    }, [xTabId]);
 
     return (
       <PMask onClose={onClose}>
