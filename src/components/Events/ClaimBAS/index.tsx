@@ -161,9 +161,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     }, [endStamp]);
     const onChangeFn = useCallback(
       (itemId) => {
-        debugger;
         if (itemId === 3) {
-          debugger;
           setStep(2);
         } else {
           onChange(itemId);
@@ -179,10 +177,16 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       if (res[BASEVENTNAME]) {
         const lastInfo = JSON.parse(res[BASEVENTNAME]);
         lastInfo.steps[1].status = 1;
-        await chrome.storage.local.set({ [BASEVENTNAME]: lastInfo });
+        await chrome.storage.local.set({
+          [BASEVENTNAME]: JSON.stringify(lastInfo),
+        });
       }
       setStep(1);
     }, []);
+
+    // useEffect(() => {
+    //   chrome.storage.local.remove([BASEVENTNAME]);
+    // });
 
     return (
       <div className="claimMysteryBoxWrapper">

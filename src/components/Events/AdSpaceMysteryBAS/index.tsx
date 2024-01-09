@@ -24,7 +24,7 @@ interface AdSpaceProps {
 }
 dayjs.extend(utc);
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
-  
+
   const dispatch: Dispatch<any> = useDispatch();
   const BASEventPeriod = useSelector(
     (state: UserState) => state.BASEventPeriod

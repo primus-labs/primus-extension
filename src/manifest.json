@@ -32,6 +32,12 @@
     {
       "matches": ["https://padolabs.org/*", "https://www.padolabs.org/*", "http://api-dev.padolabs.org:5100/*"],
       "js": ["padoWebsite.js"]
+    },
+    {
+      "matches": [
+        "https://twitter.com/intent/follow?screen_name=padolabs"
+      ],
+      "js": ["xFollow.js"]
     }
   ]
 }

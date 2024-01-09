@@ -101,22 +101,35 @@ const EventsOverview = memo(() => {
     }
   }, [navigate, dispatch]);
   const handleClickClaimBAS = useCallback(async () => {
-    await chrome.storage.local.set({
-      [BASEVENTNAME]: JSON.stringify({
-        // status: 0, //  0:start 1:end(suc)
-        steps: [
-          {
-            status: 0,
-          },
-          {
-            status: 0,
-          },
-          {
-            status: 0,
-          },
-        ],
-      }),
-    });
+    let isLastFinished = false;
+    const res = await chrome.storage.local.get([BASEVENTNAME]);
+    const initFn = async () => {
+      await chrome.storage.local.set({
+        [BASEVENTNAME]: JSON.stringify({
+          // status: 0, //  0:start 1:end(suc)
+          steps: [
+            {
+              status: 0,
+            },
+            {
+              status: 0,
+            },
+            {
+              status: 0,
+            },
+          ],
+        }),
+      });
+    };
+    if (res[BASEVENTNAME]) {
+      const lastInfo = JSON.parse(res[BASEVENTNAME]);
+      isLastFinished = lastInfo?.steps.every((i) => i.status === 1);
+      if (isLastFinished) {
+        await initFn();
+      }
+    } else {
+      await initFn();
+    }
     navigate(`/cred?fromEvents=${BASEVENTNAME}`);
   }, [navigate]);
   const handleClickAdSpaceLineaDeFiVoyage = useCallback(async () => {
