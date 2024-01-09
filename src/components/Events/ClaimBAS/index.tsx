@@ -17,6 +17,7 @@ import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
 import useAllSources from '@/hooks/useAllSources';
+import { BASEVENTNAME } from '@/config/constants';
 import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
@@ -29,9 +30,10 @@ interface ClaimWrapperProps {
   onClose: () => void;
   onSubmit: () => void;
   onChange: (step: number) => void;
+  onAttest: (attestId: number) => void;
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
-  ({ visible, onClose, onSubmit, onChange }) => {
+  ({ visible, onClose, onSubmit, onChange, onAttest }) => {
     const [searchParams] = useSearchParams();
     const BadgesProcess = searchParams.get('ScrollProcess');
     const [step, setStep] = useState<number>(0);
@@ -89,7 +91,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const navigate = useNavigate();
 
     const onSubmitClaimDialog = useCallback(async () => {
-      
       // 1.if participated
       // 2.has on chain web proof
       // 2.has connect wallet;
@@ -158,16 +159,30 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         return arr;
       }
     }, [endStamp]);
-    const onChangeFn = useCallback((itemId) => {
-      debugger
-      if (itemId === 3) {
-        debugger
-        setStep(2)
-      } else {
-        onChange(itemId);
+    const onChangeFn = useCallback(
+      (itemId) => {
+        debugger;
+        if (itemId === 3) {
+          debugger;
+          setStep(2);
+        } else {
+          onChange(itemId);
+        }
+      },
+      [onChange]
+    );
+    const onCredTypesDialogBack = useCallback(() => {
+      setStep(1);
+    }, []);
+    const onCredTypeDialogSubmit = useCallback(async () => {
+      const res = await chrome.storage.local.get([BASEVENTNAME]);
+      if (res[BASEVENTNAME]) {
+        const lastInfo = JSON.parse(res[BASEVENTNAME]);
+        lastInfo.steps[1].status = 1;
+        await chrome.storage.local.set({ [BASEVENTNAME]: lastInfo });
       }
-    },[onChange])
-   
+      setStep(1);
+    }, []);
 
     return (
       <div className="claimMysteryBoxWrapper">
@@ -176,13 +191,19 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             onClose={onClose}
             onSubmit={onSubmitClaimDialog}
             onChange={onChangeFn}
-            
             title="Scroll zkAttestation Tasks"
             titleIllustration={true}
             subTitle=""
           />
         )}
-        {visible && step === 2 && <CredTypesDialog onClose={ } onSubmit={ onSubmit} />}
+        {visible && step === 2 && (
+          <CredTypesDialog
+            onClose={}
+            onSubmit={onCredTypeDialogSubmit}
+            onChange={onAttest}
+            onBack={onCredTypesDialogBack}
+          />
+        )}
         {visible && step === 3 && (
           <AddSourceSucDialog
             onClose={onClose}

@@ -32,7 +32,7 @@ interface ClaimDialogProps {
   onChange: (step: number) => void;
   title?: string;
   titleIllustration?: boolean;
-  subTitle?: string;
+  subTitle?: string
 }
 
 type StepItem = {
@@ -229,14 +229,13 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     };
     const handleChange = useCallback(
       async (item: StepItem) => {
-        
         if (item.id === 1) {
           return;
         }
         switch (item.id) {
           case 2:
           case 3:
-            debugger
+            debugger;
             if (!item.finished) {
               onChange(item.id);
               if (errorTip === 'Please complete the tasks above first.') {
@@ -248,9 +247,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             if (!scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag) {
               if (proofX && proofBinance) {
                 openWindow(eventDetail?.ext?.compaignQuestnCheckPageUrl);
-                setScrollEventHistoryFn({
-                  compaignQuestnCheckPageCheckFlag: 1,
-                });
+                
               } else {
                 setErrorTip('Please complete the tasks above first.');
               }
@@ -316,17 +313,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         }
       } catch {}
     }, []);
-    const setScrollEventHistoryFn = async (obj: object) => {
-      const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
-
-      const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
-      Object.assign(scrollEventObj, obj);
-
-      chrome.storage.local.set({
-        scrollEvent: JSON.stringify(scrollEventObj),
-      });
-      setScrollEventHistoryObj(scrollEventObj);
-    };
+   
     const onClickPage = async () => {
       openWindow(eventDetail?.ext?.campaignPageUrl);
     };
@@ -341,6 +328,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       if (res[BASEVENTNAME]) {
         const lastInfo = JSON.parse(res[BASEVENTNAME]);
         lastInfo.steps[0].status = 1;
+        await chrome.storage.local.set({ [BASEVENTNAME]: lastInfo });
         setStepObj((obj) => ({ ...obj, step1: 1 }));
       }
     }, []);
@@ -373,7 +361,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
               <PButton
                 className={'switchBtn'}
                 text="Attest"
-                onClick={() => {handleChange(item);}}
+                onClick={() => {
+                  handleChange(item);
+                }}
               />
             );
             break;
@@ -391,21 +381,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       },
       [isSwitchable, onAttest, onFollowX, onSwitchAccount, onUpperChain]
     );
-    
 
-    useEffect(() => {
-      setScrollEventHistoryFn({});
-    }, []);
     useEffect(() => {
       fetchEventDetail();
     }, [fetchEventDetail]);
-    useEffect(() => {
-      if (addressForScrollEvent) {
-        setScrollEventHistoryFn({
-          address: addressForScrollEvent,
-        });
-      }
-    }, [addressForScrollEvent]);
+   
     useEffect(() => {
       chrome.storage.local.get([BASEVENTNAME], (res) => {
         if (res[BASEVENTNAME]) {

@@ -1,62 +1,28 @@
 @import '@/assets/css/padoDialog.scss';
 @import '@/assets/css/padoM.scss';
 @import '@/assets/css/pSelectOption.scss';
-.padoDialog.credTypesDialog {
-  --credTypeItem-height: 0.5442rem;
-}
-ul.credTypeList {
-  --credTypeItem-inner-width: 2.5034rem;
-}
-@media (max-width: 1470px) {
-  .padoDialog.credTypesDialog {
-    --credTypeItem-height: 80px;
-  }
-  ul.credTypeList {
-    --credTypeItem-inner-width: 368px;
-  }
-}
-ul.credTypeList {
-  @extend .fcss;
-  width: 100%;
-  gap: var(--spacing-20, 20px);
-  li {
-    @extend .pSelectOption;
-    @extend .frcc;
-    width: 100%;
-    height: var(--credTypeItem-height, 80px);
-    .innerContent {
-      @extend .frsc;
-      gap: var(--spacing-24, 24px);
-      width: var(--credTypeItem-inner-width, 368px);
-      height: var(--spacing-48, 48px);
-      .icon {
-        width: var(--spacing-32, 32px);
-      }
-      .con {
-        @extend .fcss;
-        gap: var(--spacing-8, 8px);
-        flex: 1;
-        .title {
-          @extend .frsc;
-          gap: var(--spacing-12, 12px);
-          @extend .Headline5;
-          color: var(--Text-headline, #0a1214);
-          .score{
-            color: var(--Text-body, #515758);
-            @extend .Body3;
-          }
-        }
-        .desc {
-          @extend .Text2;
-          color: var(--Text-hint, #7b7f80);
-        }
-      }
-    }
-  }
-}
+@import '@/components/Cred/CredAddWrapper/CredTypesDialog/index.scss';
 .padoDialog.credTypesDialog.basCredDialog {
   main {
     gap: var(--spacing-32, 32px);
-
+    ul.credTypeList {
+      li {
+        .innerContent {
+          .icon {
+            width: var(--spacing-32, 32px);
+          }
+          .con {
+            .title {
+              @extend .frsc;
+              gap: var(--spacing-12, 12px);
+              .score {
+                color: var(--Text-body, #515758);
+                @extend .Body3;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

@@ -307,6 +307,7 @@ const CredOverview = memo(() => {
      // setClaimMysteryBoxVisible2(false);
      setAddDialogVisible(true);
    };
+  const onClaimEventBASAttest = () => {}
   
   
   const handleSubmitBindPolygonid = useCallback(async () => {
@@ -591,6 +592,7 @@ const CredOverview = memo(() => {
         onClose={onCancelClaimEventBAS}
         onSubmit={onSubmitClaimEventBAS}
         onChange={onChangeClaimEventBAS}
+        onAttest={onClaimEventBASAttest}
       />
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>

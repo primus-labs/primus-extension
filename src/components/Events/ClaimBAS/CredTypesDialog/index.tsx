@@ -1,7 +1,8 @@
-import React, { useState, useCallback, memo, useEffect } from 'react';
+import React, { useState, useCallback, memo, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom';
 import PMask from '@/components/PMask';
+import PBack from '@/components/PBack';
 
 import './index.scss';
 import iconGoogle from '@/assets/img/iconGoogle.svg';
@@ -11,90 +12,99 @@ import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
 import type { UserState } from '@/types/store';
 import type { PROOFTYPEITEM } from '@/types/cred';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
-import PButton from '@/components/PButton'
+import PButton from '@/components/PButton';
 
 interface CredTypesDialogProps {
   onClose: () => void;
-  onSubmit: (type: string) => void;
-  type?: string;
+  onSubmit: () => void;
+  onChange: (proofId: number) => void;
+  onBack: () => void;
 }
 
 const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
-  ({ onClose, onSubmit, type }) => {
+  ({ onClose, onSubmit, onChange, onBack }) => {
     const [searchParams] = useSearchParams();
-const fromEvents = searchParams.get('fromEvents');
-    
-    const [errorTip, setErrorTip] = useState<string>();
-    const [activeType, setActiveType] = useState<string>();
+    const fromEvents = searchParams.get('fromEvents');
 
-    const proofTypes = [
-      {
-        credTitle: 'Owns Google Account',
-        score: '+80xp',
-        credLogoUrl: iconGoogle,
-        credIntroduce: 'Proof of Account Ownership',
-      },
-      {
-        credTitle: 'Owns Twitter Account',
-        score: '+50xp',
-        credLogoUrl: iconDataSourceTwitter,
-        credIntroduce: 'Proof of Account Ownership',
-      },
-      {
-        credTitle: 'Owns Binance Account',
-        score: '+30xp',
-        credLogoUrl: iconDataSourceBinance,
-        credIntroduce: 'Proof of Account Ownership',
-      },
-    ];
+    const [errorTip, setErrorTip] = useState<string>();
+    const [activeType, setActiveType] = useState<number>();
+    const [proofStatusArr, setProofStatusArr] = useState<any>([]);
+
+    const formatProofTypes = useMemo(() => {
+      // proofTypes;
+      const proofTypes = [
+        {
+          id: 1,
+          credTitle: 'Owns Google Account',
+          score: '+80xp',
+          credLogoUrl: iconGoogle,
+          credIntroduce: 'Proof of Account Ownership',
+        },
+        {
+          id: 2,
+          credTitle: 'Owns Twitter Account',
+          score: '+50xp',
+          credLogoUrl: iconDataSourceTwitter,
+          credIntroduce: 'Proof of Account Ownership',
+        },
+        {
+          id: 3,
+          credTitle: 'Owns Binance Account',
+          score: '+30xp',
+          credLogoUrl: iconDataSourceBinance,
+          credIntroduce: 'Proof of Account Ownership',
+        },
+      ];
+      const newArr = proofTypes.map((i, k) => {
+        return { ...i, finished: proofStatusArr[k] === 1 };
+      });
+      return newArr;
+    }, [proofStatusArr]);
+    const isComplete = useMemo(() => {
+      const hasProof = formatProofTypes.some((i) => i.finished);
+      return hasProof;
+    }, [formatProofTypes]);
+    const btnCN = useMemo(() => {
+      return isComplete ? '' : 'gray';
+    }, [isComplete]);
 
     const handleChange = useCallback(
-      (item: PROOFTYPEITEM) => {
-        if (item.enabled === 1) {
-          return;
-        }
-        if (type && type !== item.credIdentifier) {
-          return
-        }
-        setErrorTip('');
-        setActiveType(item.credIdentifier);
+      (item: any) => {
+        setActiveType(item.id);
+        onChange(item.id);
       },
-      [type]
+      [onChange]
     );
-    const handleClickNext = () => {
-      if (activeType) {
-        onSubmit(activeType);
+    const handleClickNext = useCallback(() => {
+      if (!isComplete) {
+        return 
       } else {
-        setErrorTip('Please select one proof type');
+        onSubmit();
       }
-    };
+    },[]);
     const liClassName = useCallback(
-      (item: PROOFTYPEITEM) => {
+      (item: any) => {
         let defaultCN = 'credTypeItem';
-        if (item.enabled === 1 || (type && type !== item.credIdentifier)) {
-          defaultCN += ' disabled';
-        }
-        if (item.credIdentifier === activeType) {
+        if (item.id === activeType) {
           defaultCN += ' active';
         }
         return defaultCN;
       },
-      [activeType, type]
+      [activeType]
     );
-    useEffect(() => {
-      setActiveType(type);
-    }, [type]);
+
     return (
       <PMask onClose={onClose}>
         <div className="padoDialog credTypesDialog basCredDialog">
           <main>
+            <PBack onBack={onBack} />
             <header>
               <h1>Proof of Humanity</h1>
               <h2>Choose one of tasks below to make your POH attestation.</h2>
             </header>
             <div className="scrollList">
               <ul className="credTypeList">
-                {proofTypes.map((item: any) => (
+                {formatProofTypes.map((item: any) => (
                   <li
                     className={liClassName(item)}
                     onClick={() => {
@@ -118,7 +128,11 @@ const fromEvents = searchParams.get('fromEvents');
             </div>
           </main>
           <footer>
-            <PButton text="Complete" onClick={handleClickNext} />
+            <PButton
+              className={btnCN}
+              text="Complete"
+              onClick={handleClickNext}
+            />
             {/* {errorTip && <PBottomErrorTip text={errorTip} />} */}
           </footer>
         </div>
