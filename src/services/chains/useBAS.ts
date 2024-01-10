@@ -6,7 +6,7 @@ import {address} from "hardhat/internal/core/config/config-validation";
 import axios, {AxiosResponse} from "axios";
 import {Offchain} from "@ethereum-attestation-service/eas-sdk";
 import {GreenFieldClient} from "@bnb-attestation-service/bas-sdk/dist/greenFieldClient";
-
+import {CustomGreenFieldClient} from "./CustomGreenFieldClient";
 
 const base64ToHex = (base64: string) => {
     const raw = atob(base64);
@@ -42,6 +42,7 @@ export function encodeAddrToBucketName(addr: string) {
 };
 
 
+//Demo url : https://github.com/xudean/bas-greenfield-demo
 
 // BNB Greenfield Testnet:
 // networkName: BNB Greenfield Testnet
@@ -59,21 +60,25 @@ export function encodeAddrToBucketName(addr: string) {
 // chainScan: https://greenfieldscan.com
 // endpointUrl: https://greenfield-sp.bnbchain.org
 
+export const EASContractAddress = "0x620e84546d71A775A82491e1e527292e94a7165A"; //  BNB BAS
 
 // Initialize the sdk with the address of the EAS Schema contract address
 let bas: BAS;
 
 export const useBAS = () => {
 
-    let greenFieldClient: GreenFieldClient;
+    let greenFieldClient: CustomGreenFieldClient;
     let endpointUrlParam: string
     const initClient = async (address: any, contractAddress: any, chainId: any, rpcUrl: any, endpointUrl: any) => {
         bas = new BAS(contractAddress, rpcUrl, chainId);
-        greenFieldClient = bas.greenFieldClient
+        debugger
+        greenFieldClient = new CustomGreenFieldClient(rpcUrl,chainId)
+        bas.greenFieldClient = greenFieldClient
         greenFieldClient.init(address, chainId)
         endpointUrlParam = endpointUrl
+
     }
-    const attestOffChainWithGreenFieldWithFixValue = async (address: any, provider: any, eip712MessageRawDataWithSignature: any,schemaUid: any, getDataTime: any) => {
+    const attestOffChainWithGreenFieldWithFixValue = async (address: any, provider: any, attestationInfo: any) => {
         if (!address) return;
         if (!bas) {
             console.log("please init client first")
@@ -106,30 +111,42 @@ export const useBAS = () => {
         BigInt.prototype.toJSON = function () {
             return this.toString();
         };
-
-        const str = JSON.stringify(eip712MessageRawDataWithSignature);
-        const bytes = new TextEncoder().encode(str);
-        const blob = new Blob([bytes], {
-            type: "application/json;charset=utf-8",
-        });
-        let objectInfo
+        let files=[]
+        let resp = []
+        for (let i = 0; i < attestationInfo.length; i++) {
+            const str = JSON.stringify(attestationInfo.eip712MessageRawDataWithSignature);
+            const bytes = new TextEncoder().encode(str);
+            const blob = new Blob([bytes], {
+                type: "application/json;charset=utf-8",
+            });
+            const attestationUid = await getAttestationUid(attestationInfo[i].eip712MessageRawDataWithSignature,attestationInfo[i].getDataTime)
+            // @ts-ignore
+            files[i] = new File([blob], `${attestationInfo[i].schemaUid}.${attestationUid}`)
+            // @ts-ignore
+            resp[i] = {
+                eip712MessageRawDataWithSignature:attestationInfo.eip712MessageRawDataWithSignature,
+                attestationUid:attestationUid
+            }
+        }
         const isPrivate = false
-        const attestationUid = await getAttestationUid(eip712MessageRawDataWithSignature,getDataTime)
         try {
-            objectInfo = await greenFieldClient.createObject(
+            await greenFieldClient.createObjects(
                 provider,
-                new File([blob], `${schemaUid}.${attestationUid}`),
+                files,
                 isPrivate
             );
         } catch (err: any) {
             if (err.statusCode === 404) {
                 return "notfound";
             }
+            if(err.message ==="repeated object"){
+                return "repeated object"
+            }
             console.log(err);
             alert(err.message);
         }
 
-        return {...eip712MessageRawDataWithSignature, objectInfo: objectInfo,attestationUid:attestationUid};
+        return resp;
     };
 
     const decodeHexData = (dataRaw: string, schemaStr: string) => {
@@ -161,7 +178,7 @@ export const useBAS = () => {
         // })
         const res = await greenFieldClient.client.bucket.listBuckets({
             address: address,
-            endpoint: "https://gnfd-testnet-sp1.bnbchain.org"
+            endpoint: endpointUrlParam
         })
 
         debugger
@@ -205,8 +222,27 @@ export const useBAS = () => {
         return Offchain.getOffchainUID(param);
     }
 
+    const getNewSignature = async (requestBody : any) => {
+        const header = {
+            "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJwYWRvbGFicy5vcmciLCJzdWIiOiIweGMxYTdGNmYzOTdkNUM3OTNhNzg2MTNDZjM2NGEwNjkxNDZkZDcxZjciLCJleHAiOjQ4NTM2MTgxNjcsInVzZXItaWQiOjE3MjQ2MjczMTIwOTczNjE5MjAsInNjb3BlIjoiYXV0aCJ9.MHRWNwh1v4PFrLrvkZrRJDmXdkVcIuKxf9Onu7UKLgHZcdSlWq6m8IV3Eq-wJjVwbBpv5zHh9jCh8uQG7GAFacVvwuUNAcquWS8xmK669ANQvSMerq6G0L2kv7iUWz6KEimq0M1btdphZuwIPDa3epHeTHRZJlDCo35gGRSV2qcoPgdoyidUKOMhSCdvPqs-df3r7Is32Xtrn3AvFPWAiQWwcW2rSnbv-5KCEMIGS7jcIXlwDIpm3-HfXsynwnbOfsLQ0WOExiXseObZHaAdTGu925Cv0c6L4TzXj9NmWPB201wgwg_KxqXFHcChCMBUbHW0ChN9xc1VqlkgfBjROg"
+        }
+        // const url = "https://api-dev.padolabs.org/credential/re-generate?newSigFormat=Verax-Scroll-Sepolia";
+        const url = "https://api-dev.padolabs.org/credential/re-generate?newSigFormat=BAS-BSC-Testnet";
+        const body = JSON.parse(requestBody)
+        const response: AxiosResponse = await axios.post(url, body, {
+            headers: header
+        });
+        let eip712MessageRawDataWithSignature = response.data.result.eip712MessageRawDataWithSignature
+        return {
+            eip712MessageRawDataWithSignature: eip712MessageRawDataWithSignature,
+            getDataTime: response.data.result.result.getDataTime,
+            schemaUid: response.data.result.schemaUid
+        }
+    }
+
 
     return {
+        getNewSignature,
         attestOffChainWithGreenFieldWithFixValue,
         createBASBuckect,
         listBASBuckect,
