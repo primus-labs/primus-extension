@@ -25,6 +25,7 @@ import {
   LINEASCHEMANAME,
   SCROLLSCHEMANAME,
   BNBSCHEMANAME,
+  BNBGREENFIELDSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
 import { CredVersion, SCROLLEVENTNAME } from '@/config/constants';
@@ -97,7 +98,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               return { ...i };
             }
           } else if (fromEvents === BASEVENTNAME) {
-            if (i.title.indexOf('BSC') > -1) {
+            if (
+              i.title.indexOf('BSC') > -1 ||
+              i.title.indexOf('BNB Greenfield') > -1
+            ) {
               i.disabled = false;
               return { ...i };
             }
@@ -109,7 +113,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           }
           return { ...i, disabled: true };
         });
-
+        if (fromEvents === BASEVENTNAME) {
+          newList = newList.filter((i) => !i.disabled);
+        }
         return newList;
       } else {
         return ONCHAINLIST;
@@ -308,7 +314,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               await chrome.storage.local.set({
                 [BASEVENTNAME]: JSON.stringify(lastInfo),
               });
-             
+
               setActiveSendToChainRequest({
                 type: 'suc',
                 title: 'Congratulations',
@@ -565,11 +571,13 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             formatNetworkName.indexOf('BSC') > -1
           ) {
             LineaSchemaName = BNBSCHEMANAME;
+          } else if (formatNetworkName && formatNetworkName.indexOf('Scroll') > -1) {
+            LineaSchemaName = SCROLLSCHEMANAME;
           } else if (
             formatNetworkName &&
-            formatNetworkName.indexOf('Scroll') > -1
+            formatNetworkName.indexOf('BNB Greenfield') > -1
           ) {
-            LineaSchemaName = SCROLLSCHEMANAME;
+            LineaSchemaName = BNBGREENFIELDSCHEMANAME;
           } else {
             LineaSchemaName = 'EAS';
           }

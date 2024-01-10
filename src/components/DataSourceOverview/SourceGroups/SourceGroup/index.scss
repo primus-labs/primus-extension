@@ -2,15 +2,15 @@
 @import '@/assets/css/padoM.scss';
 @import '@/assets/css/pSelectOption.scss';
 .sourceGroup {
-    --scroll-height: 2.1497rem;
-    --scrollBar-width: .0272rem;
-    --scrollBar-height: 1.3605rem;
-    --column-gap: .1565rem;
-    --item-height: .5986rem;
-    --emptyContent-pt: .2721rem;
-    --emptyContent-img-width: .4082rem;
-    --emptyContent-h2-width: 1.966rem;
-  }
+  --scroll-height: 2.1497rem;
+  --scrollBar-width: 0.0272rem;
+  --scrollBar-height: 1.3605rem;
+  --column-gap: 0.1565rem;
+  --item-height: 0.5986rem;
+  --emptyContent-pt: 0.2721rem;
+  --emptyContent-img-width: 0.4082rem;
+  --emptyContent-h2-width: 1.966rem;
+}
 @media (max-width: 1470px) {
   .sourceGroup {
     --scroll-height: 316px;
@@ -60,12 +60,18 @@
         &:nth-child(4n + 4) {
           margin-right: 0;
         }
+        &.lh1 {
+          > h6 {
+            line-height: var(--spacing-14, 14px);
+          }
+        }
         > img {
           width: var(--spacing-32, 32px);
         }
         > h6 {
           color: var(--Text-headline, #0a1214);
           @extend .Headline6;
+          text-align: center;
         }
       }
     }
