@@ -5,7 +5,7 @@ import {hashMessage} from "viem";
 import {address} from "hardhat/internal/core/config/config-validation";
 import axios, {AxiosResponse} from "axios";
 import {Offchain} from "@ethereum-attestation-service/eas-sdk";
-import { GreenFieldClient } from "@bnb-attestation-service/bas-sdk/dist/greenFieldClient";
+import {GreenFieldClient} from "@bnb-attestation-service/bas-sdk/dist/greenFieldClient";
 
 export const GRPC_URL =
     "https://gnfd-testnet-fullnode-tendermint-ap.bnbchain.org";
@@ -51,10 +51,12 @@ let bas: BAS;
 export const useBAS = () => {
 
     let greenFieldClient: GreenFieldClient;
-    const initClient = async (address: any, chainId: any, rpcUrl: any) => {
-        bas = new BAS(EASContractAddress, rpcUrl, chainId);
+    let endpointUrlParam: string
+    const initClient = async (address: any, contractAddress: any, chainId: any, rpcUrl: any, endpointUrl: any) => {
+        bas = new BAS(contractAddress, rpcUrl, chainId);
         greenFieldClient = bas.greenFieldClient
-        greenFieldClient.init(address,chainId)
+        greenFieldClient.init(address, chainId)
+        endpointUrlParam = endpointUrl
     }
     const attestOffChainWithGreenFieldWithFixValue = async (address: any, provider: any, eip712MessageRawDataWithSignature: any, schemaUid: any) => {
         debugger
@@ -66,7 +68,7 @@ export const useBAS = () => {
 
         const listBucketRes = await greenFieldClient.client.bucket.listBuckets({
             address: address,
-            endpoint: "https://gnfd-testnet-sp1.bnbchain.org"
+            endpoint: endpointUrlParam,
         })
         let bucketExists = false;
         // @ts-ignore
@@ -180,32 +182,6 @@ export const useBAS = () => {
         const res = await greenFieldClient.createBucket(provider, encodeAddrToBucketName(address));
         console.log(res)
     }
-
-    const getNewSignature = async () => {
-        const header = {
-            "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJwYWRvbGFicy5vcmciLCJzdWIiOiIweGMxYTdGNmYzOTdkNUM3OTNhNzg2MTNDZjM2NGEwNjkxNDZkZDcxZjciLCJleHAiOjQ4NTM2MTgxNjcsInVzZXItaWQiOjE3MjQ2MjczMTIwOTczNjE5MjAsInNjb3BlIjoiYXV0aCJ9.MHRWNwh1v4PFrLrvkZrRJDmXdkVcIuKxf9Onu7UKLgHZcdSlWq6m8IV3Eq-wJjVwbBpv5zHh9jCh8uQG7GAFacVvwuUNAcquWS8xmK669ANQvSMerq6G0L2kv7iUWz6KEimq0M1btdphZuwIPDa3epHeTHRZJlDCo35gGRSV2qcoPgdoyidUKOMhSCdvPqs-df3r7Is32Xtrn3AvFPWAiQWwcW2rSnbv-5KCEMIGS7jcIXlwDIpm3-HfXsynwnbOfsLQ0WOExiXseObZHaAdTGu925Cv0c6L4TzXj9NmWPB201wgwg_KxqXFHcChCMBUbHW0ChN9xc1VqlkgfBjROg"
-        }
-        // const url = "https://api-dev.padolabs.org/credential/re-generate?newSigFormat=Verax-Scroll-Sepolia";
-        const url = "https://api-dev.padolabs.org/credential/re-generate?newSigFormat=BAS-BSC-Testnet";
-        const body = JSON.parse("{\"rawParam\":{\"requestid\":\"eda20d37-3adb-4932-95a2-a2205a907e9d\",\"version\":null,\"credVersion\":\"0.2.11\",\"source\":\"GOOGLE\",\"baseName\":null,\"holdingToken\":null,\"baseUrl\":null,\"padoUrl\":null,\"proxyUrl\":null,\"cipher\":null,\"getDataTime\":\"1704419840652\",\"exchange\":null,\"sigFormat\":\"EAS-Ethereum\",\"schemaType\":\"GOOGLE_ACCOUNT_OWNER\",\"schema\":null,\"user\":{\"userid\":\"1724627312097361920\",\"address\":\"0x024e45d7f868c41f3723b13fd7ae03aa5a181362\",\"token\":null},\"baseValue\":null,\"greaterThanBaseValue\":null,\"sourceUseridHash\":\"25deb5f92761aa19e8f8b872f11a9e08b6b8d9bf58aef0365a0ccde9bb92eab9\",\"ext\":null,\"issuer\":null,\"did\":null},\"greaterThanBaseValue\":true,\"signature\":\"0x422d31e0517c5de6e73710537f0834c0b1336e6e1868527624ade50675da7b912a1208e2a0cf57c49198aacd368286a781a768170ed4d82567bebf6ee9f55eac1b\",\"newSigFormat\":\"BAS-BSC-Testnet\",\"sourceUseridHash\":\"25deb5f92761aa19e8f8b872f11a9e08b6b8d9bf58aef0365a0ccde9bb92eab9\"}")
-        const response: AxiosResponse = await axios.post(url, body, {
-            headers: header
-        });
-        console.log(response.data.result.result.getDataTime)
-        let param = response.data.result.eip712MessageRawDataWithSignature.message
-        param["time"] = response.data.result.result.getDataTime
-        // param["data"] = response.data.result.typeData
-        param["data"] = "0x" + param["data"]
-        const uid = Offchain.getOffchainUID(param)
-        console.log(uid)
-        let eip712MessageRawDataWithSignature = response.data.result.eip712MessageRawDataWithSignature
-        eip712MessageRawDataWithSignature["uid"] = uid
-        return {
-            eip712MessageRawDataWithSignature: eip712MessageRawDataWithSignature,
-            schemaUid: response.data.result.schemaUid
-        }
-    }
-
 
     return {
         getNewSignature,
