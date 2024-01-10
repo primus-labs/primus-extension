@@ -1020,10 +1020,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
                 const res = await chrome.storage.local.get([BASEVENTNAME]);
                 if (res[BASEVENTNAME]) {
                   const lastInfo = JSON.parse(res[BASEVENTNAME]);
-                  const lastTasks = lastInfo.steps[1].tasks ?? {}
+                  const lastTasks = lastInfo.steps[1].tasks ?? {};
                   lastInfo.steps[1].tasks = {
                     ...lastTasks,
-                    [parsedActiveRequestAttestation.templateId]: parsedActiveRequestAttestation.requestid,
+                    [parsedActiveRequestAttestation.templateId]:
+                      parsedActiveRequestAttestation.requestid,
                   };
                   await chrome.storage.local.set({
                     [BASEVENTNAME]: JSON.stringify(lastInfo),
@@ -1320,9 +1321,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           let form: AttestionForm = {
             source: eventSource,
             type: 'IDENTIFICATION_PROOF',
+            proofContent: 'Account Ownership',
+            proofClientType: 'Webpage Data',
+            event: BASEVENTNAME,
           };
           switch (eventSource) {
-            case '5':
+            case '100':// TODO!!!
               form = {
                 source: 'google',
                 type: 'IDENTIFICATION_PROOF',
@@ -1336,22 +1340,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
 
               break;
             case '3':
-              form = {
-                source: 'x',
-                type: 'IDENTIFICATION_PROOF',
-                proofContent: 'Account Ownership',
-                proofClientType: 'Webpage Data',
-                event: BASEVENTNAME,
-              };
+              form.source = 'x';
               break;
             case '2':
-              form = {
-                source: 'binance',
-                type: 'IDENTIFICATION_PROOF',
-                proofContent: 'Account Ownership',
-                proofClientType: 'Webpage Data',
-                event: BASEVENTNAME,
-              };
+              form.source = 'binance';
+              break;
+            case '6':
+              form.source = 'tiktok';
               break;
           }
           onSubmitAttestationDialog(form);
@@ -1446,7 +1441,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         if (fromEvents) {
           return (
             <PButton
-              text={fromEvents === 'Scroll' || fromEvents === BASEVENTNAME ? 'OK' : 'Submit'}
+              text={
+                fromEvents === 'Scroll' || fromEvents === BASEVENTNAME
+                  ? 'OK'
+                  : 'Submit'
+              }
               onClick={onSubmitActiveRequestDialog}
             />
           );
