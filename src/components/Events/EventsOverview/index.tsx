@@ -123,7 +123,7 @@ const EventsOverview = memo(() => {
     };
     if (res[BASEVENTNAME]) {
       const lastInfo = JSON.parse(res[BASEVENTNAME]);
-      isLastFinished = lastInfo?.steps.every((i) => i.status === 1);
+      isLastFinished = lastInfo.status === 1
       if (isLastFinished) {
         await initFn();
       }

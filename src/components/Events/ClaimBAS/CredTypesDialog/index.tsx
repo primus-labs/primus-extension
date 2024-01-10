@@ -15,6 +15,7 @@ import type { PROOFTYPEITEM } from '@/types/cred';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import PButton from '@/components/PButton';
 import { BASEVENTNAME } from '@/config/constants';
+import iconTikTok from '@/assets/img/credit/iconTikTok.svg';
 
 interface CredTypesDialogProps {
   onClose: () => void;
@@ -36,13 +37,6 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
       // proofTypes;
       const proofTypes = [
         {
-          id: '5', // TODO!!!
-          credTitle: 'Owns Google Account',
-          score: '+80xp',
-          credLogoUrl: iconGoogle,
-          credIntroduce: 'Proof of Account Ownership',
-        },
-        {
           id: '3',
           credTitle: 'Owns Twitter Account',
           score: '+50xp',
@@ -54,6 +48,21 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
           credTitle: 'Owns Binance Account',
           score: '+30xp',
           credLogoUrl: iconDataSourceBinance,
+          credIntroduce: 'Proof of Account Ownership',
+        },
+
+        {
+          id: '100', // TODO!!!
+          credTitle: 'Owns Google Account',
+          score: '+80xp',
+          credLogoUrl: iconGoogle,
+          credIntroduce: 'Proof of Account Ownership',
+        },
+        {
+          id: '6',
+          credTitle: 'Owns TikTok Account',
+          score: '+50xp',
+          credLogoUrl: iconTikTok,
           credIntroduce: 'Proof of Account Ownership',
         },
       ];

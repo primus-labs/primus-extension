@@ -199,10 +199,6 @@ const Layout = memo(() => {
   useEffect(() => {
     updateAlgoUrl();
   }, []);
-  // TODO DEL!!!
-  // useEffect(() => {
-  //   chrome.storage.local.remove([BASEVENTNAME]);
-  // }, []);
 
   return (
     <div className="pageApp">

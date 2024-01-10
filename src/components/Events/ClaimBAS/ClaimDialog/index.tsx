@@ -7,6 +7,8 @@ import React, {
   useEffect,
 } from 'react';
 import { useSelector } from 'react-redux';
+import dayjs from 'dayjs';
+import utc from 'dayjs-plugin-utc';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
@@ -27,6 +29,8 @@ import { switchAccount } from '@/services/wallets/metamask';
 import { useNavigate } from 'react-router-dom';
 import { BASEVENTNAME } from '@/config/constants';
 import useAuthorization from '@/hooks/useAuthorization';
+
+dayjs.extend(utc);
 interface ClaimDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -102,6 +106,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     // compaignQuestnCheckPageCheckFlag compaignCheckpageFlag
     const [activeStep, setActiveStep] = useState<number>();
     const kycSources = useSelector((state: UserState) => state.kycSources);
+
+    const BASEventPeriod = useSelector(
+      (state: UserState) => state.BASEventPeriod
+    );
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
@@ -109,6 +117,19 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
+    const eventActiveFlag = useMemo(() => {
+      const { startTime, endTime } = BASEventPeriod;
+      const isActive =
+        dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
+      const isEnd = dayjs().isAfter(dayjs(+endTime));
+      if (isActive) {
+        return 1;
+      }
+      if (isEnd) {
+        return 2;
+      }
+      return 0;
+    }, [BASEventPeriod]);
     const proofX = useMemo(() => {
       let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
       const haveXProof = credArr.find(
@@ -145,31 +166,29 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       stepList[2].finished = stepObj.step2 === 1;
 
       stepList[3].finished = stepObj.step3 === 1;
-
       return stepList;
     }, [
       proofX,
       proofBinance,
-      scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
       connectedWallet?.address,
       addressForScrollEvent,
       stepObj,
     ]);
+    const isComplete = useMemo(() => {
+      const hasComplete = formatStepList.every((i) => i.id === 1 || i.finished);
+      return hasComplete;
+    }, [formatStepList]);
     const btnCN = useMemo(() => {
-      if (
-        !!proofX &&
-        !!proofBinance &&
-        !!scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag
-      ) {
-        return '';
+      return isComplete ? '' : 'gray';
+    }, [isComplete]);
+    const btcTxt = useMemo(() => {
+      if (eventActiveFlag === 1) {
+        return 'Claim your points';
       } else {
-        return 'gray';
+        return 'Complete';
       }
-    }, [
-      proofX,
-      proofBinance,
-      scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
-    ]);
+    }, [eventActiveFlag]);
+
     const isSwitchable = useMemo(() => {
       if (!scrollEventHistoryObj.campaignPageCheckFlag) {
         return false;
@@ -187,24 +206,15 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const authorize = useAuthorization();
 
     const hanldeSubmit = useCallback(() => {
-      if (!scrollEventHistoryObj?.campaignPageCheckFlag) {
-        setErrorTip('Please check the checkbox to proceed with the tasks.');
-      } else if (
-        !proofX ||
-        !proofBinance ||
-        !scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag
-      ) {
+      if (!isComplete) {
         setErrorTip('Please complete the tasks above first.');
       } else {
+        if (eventActiveFlag === 1) {
+          window.open('https://translate.google.com/'); // TODO!!!
+        }
         onSubmit();
       }
-    }, [
-      scrollEventHistoryObj?.campaignPageCheckFlag,
-      scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
-      proofX,
-      proofBinance,
-      onSubmit,
-    ]);
+    }, [isComplete, onSubmit, eventActiveFlag]);
 
     const liClassName = useCallback(
       (item: StepItem) => {
@@ -277,14 +287,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         });
       }
     }, [kycSources, authorize]);
-    const onAttest = useCallback(() => {}, []);
-    const onUpperChain = useCallback(() => {}, []);
     const handleChange = useCallback(
       async (item: StepItem) => {
-        if (item.id === 1) {
-          return;
-        }
         switch (item.id) {
+          case 1:
+            break;
           case 2:
             onFollowX();
             break;
@@ -339,14 +346,16 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
               <PButton
                 className={'switchBtn'}
                 text="Submit"
-                onClick={onUpperChain}
+                onClick={() => {
+                  handleChange(item);
+                }}
               />
             );
             break;
         }
         return btn;
       },
-      [isSwitchable, onSwitchAccount, onUpperChain, handleChange]
+      [isSwitchable, onSwitchAccount, handleChange]
     );
 
     useEffect(() => {
@@ -357,6 +366,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       chrome.storage.local.get([BASEVENTNAME], (res) => {
         if (res[BASEVENTNAME]) {
           const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          // console.log('222111', lastInfo);
           const newObj = lastInfo.steps.reduce((prev, curr, currK) => {
             prev[`step${currK + 1}`] = curr.status;
             return prev;
@@ -431,7 +441,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             </div>
           </main>
           <footer>
-            <PButton className={btnCN} text="Submit" onClick={hanldeSubmit} />
+            <PButton
+              className={btnCN}
+              text={btcTxt}
+              suffix={
+                isComplete && <i className="iconfont icon-rightArrow"></i>
+              }
+              onClick={hanldeSubmit}
+            />
             {errorTip && <PBottomErrorTip text={errorTip} />}
           </footer>
         </div>
