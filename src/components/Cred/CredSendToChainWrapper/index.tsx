@@ -9,7 +9,7 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import useWallet from '@/hooks/useWallet';
-import { WALLETLIST } from '@/config/constants';
+import { BASEVENTNAME, WALLETLIST } from '@/config/constants';
 import { setConnectWalletActionAsync } from '@/store/actions';
 import { strToHexSha256 } from '@/utils/utils';
 import PButton from '@/components/PButton';
@@ -89,10 +89,15 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     );
     const formatChainList = useMemo(() => {
       if (fromEvents) {
-        const newList = ONCHAINLIST.map((i) => {
+        let newList = ONCHAINLIST.map((i) => {
           if (fromEvents === 'Scroll') {
             if (i.title.indexOf('Scroll') > -1) {
               // TODO!!!
+              i.disabled = false;
+              return { ...i };
+            }
+          } else if (fromEvents === BASEVENTNAME) {
+            if (i.title.indexOf('BSC') > -1) {
               i.disabled = false;
               return { ...i };
             }
@@ -104,6 +109,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           }
           return { ...i, disabled: true };
         });
+
         return newList;
       } else {
         return ONCHAINLIST;
@@ -149,6 +155,204 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const handleBackConnectWallet = useCallback(() => {
       setStep(3);
     }, []);
+    const BASEventFn = useCallback(
+      async (
+        walletObj: any,
+        LineaSchemaName: string,
+        formatNetworkName?: string
+      ) => {
+        let credArrNew = Object.values(credentialsFromStore);
+
+        const res = await chrome.storage.local.get([BASEVENTNAME]);
+        if (res[BASEVENTNAME]) {
+          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          const lastTasks = lastInfo.steps[1].tasks ?? {};
+          const toBeUpperChainCredRequestids = Object.values(lastTasks);
+          const toBeUpperChainCreds = credArrNew.filter((c: any) =>
+            toBeUpperChainCredRequestids.includes(c.requestid)
+          );
+          const upChainItems = toBeUpperChainCreds.map((i: any) => {
+            return {
+              data: i?.encodedData,
+              signature: i?.signature,
+              attesteraddr: PADOADDRESS,
+              receipt: i?.address,
+              type:
+                i?.reqType === 'web' || i?.source === 'google'
+                  ? 'web'
+                  : i?.type,
+              schemaName: i?.schemaName ?? LineaSchemaName,
+            };
+          });
+          const firstToBeUpperChainCred = toBeUpperChainCreds[0];
+          if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
+            const regenerateAttestationParamsArr = toBeUpperChainCreds.map(
+              (i: any) => {
+                return {
+                  rawParam:
+                    i.source === 'google'
+                      ? i.rawParam
+                      : Object.assign(i, {
+                          ext: { event: SCROLLEVENTNAME },
+                        }),
+                  greaterThanBaseValue: true,
+                  signature: i?.signature,
+                  newSigFormat: LineaSchemaName,
+                  sourceUseridHash: i?.sourceUseridHash,
+                };
+              }
+            );
+            const requestArr = regenerateAttestationParamsArr.map((i) => {
+              return regenerateAttestation(i);
+            });
+            const signResArr = await Promise.all(requestArr);
+            signResArr.forEach((i, k) => {
+              const { rc, result } = i;
+              if (rc === 0) {
+                upChainItems[k].signature = result.result.signature;
+                upChainItems[k].data = result.result.encodedData;
+              }
+            });
+          }
+          const upChainParams = {
+            networkName: formatNetworkName,
+            metamaskprovider: walletObj.provider,
+            items: upChainItems,
+          };
+          let upChainRes = await bulkAttest(upChainParams);
+          // burying point
+          let upChainType = upChainParams.items[0].type;
+          if (upChainType === 'web') {
+            upChainType = firstToBeUpperChainCred?.schemaType;
+          }
+          const eventType = `${upChainType}-${upChainParams.items[0].schemaName}`;
+          let upchainNetwork = upChainParams.networkName;
+          if (
+            process.env.NODE_ENV === 'production' &&
+            upChainParams.networkName === 'Linea Goerli'
+          ) {
+            upchainNetwork = 'Linea Mainnet';
+          }
+          let eventInfoArr = toBeUpperChainCreds.map((i: any) => {
+            const uniqueId = strToHexSha256(i?.signature);
+            var eventInfo: any = {
+              eventType: 'UPPER_CHAIN',
+              rawData: {
+                network: upchainNetwork,
+                type: eventType,
+                source: i.source,
+                attestationId: uniqueId,
+              },
+            };
+            return eventInfo;
+          }, []);
+
+          if (upChainRes) {
+            if (upChainRes.error) {
+              if (upChainRes.error === 1) {
+                setActiveSendToChainRequest({
+                  type: 'warn',
+                  title: 'Unable to proceed',
+                  desc: 'Your balance is insufficient',
+                });
+              } else if (upChainRes.error === 2) {
+                setActiveSendToChainRequest({
+                  type: 'warn',
+                  title: 'Unable to proceed',
+                  desc: 'Please try again later.',
+                });
+              }
+              eventInfoArr = eventInfoArr.map((i) => {
+                return {
+                  ...i,
+                  rawData: Object.assign(i.rawData, {
+                    status: 'FAILED',
+                    reason: upChainRes.message,
+                  }),
+                };
+              });
+              const requestArr = eventInfoArr.map((i) => {
+                return eventReport(i);
+              });
+              await Promise.all(requestArr);
+              return;
+            }
+            const currentChainObj: any = ONCHAINLIST.find(
+              (i) => formatNetworkName === i.title
+            );
+            currentChainObj.attestationUID = upChainRes;
+            // TODO???
+            currentChainObj.submitAddress = walletObj.address;
+            toBeUpperChainCreds.forEach((i) => {
+              const newProvided = i.provided ?? [];
+              // TODO!!!
+              // const existIndex = newProvided.findIndex(
+              //   (i) => i.title === formatNetworkName
+              // );
+              // existIndex < 0 &&
+              newProvided.push(currentChainObj);
+              credentialsFromStore[i.requestid] = Object.assign(i, {
+                provided: newProvided,
+              });
+            });
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(credentialsFromStore),
+            });
+
+            await initCredList();
+
+            const res = await chrome.storage.local.get([BASEVENTNAME]);
+            if (res[BASEVENTNAME]) {
+              const lastInfo = JSON.parse(res[BASEVENTNAME]);
+              lastInfo.steps[2].status = 1;
+              await chrome.storage.local.set({
+                [BASEVENTNAME]: JSON.stringify(lastInfo),
+              });
+             
+              setActiveSendToChainRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your attestation is recorded on-chain!',
+              });
+
+              eventInfoArr = eventInfoArr.map((i) => {
+                return {
+                  ...i,
+                  rawData: Object.assign(i.rawData, {
+                    status: 'SUCCESS',
+                    reason: '',
+                  }),
+                };
+              });
+              const requestArr = eventInfoArr.map((i) => {
+                return eventReport(i);
+              });
+              await Promise.all(requestArr);
+            }
+          } else {
+            setActiveSendToChainRequest({
+              type: 'warn',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
+            });
+            eventInfoArr = eventInfoArr.map((i) => {
+              return {
+                ...i,
+                rawData: Object.assign(i.rawData, {
+                  status: 'FAILED',
+                  reason: 'attestByDelegationProxyFee error',
+                }),
+              };
+            });
+            const requestArr = eventInfoArr.map((i) => {
+              return eventReport(i);
+            });
+            await Promise.all(requestArr);
+          }
+        }
+      },
+      [credentialsFromStore, initCredList]
+    );
     const scrollEventFn = useCallback(
       async (
         walletObj: any,
@@ -371,6 +575,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           }
           if (fromEvents === 'Scroll') {
             scrollEventFn(walletObj, LineaSchemaName);
+          } else if (fromEvents === BASEVENTNAME) {
+            BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
           } else {
             let upChainParams = {
               networkName: formatNetworkName,
