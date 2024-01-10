@@ -1,14 +1,13 @@
 "use client";
 
-import {BAS, SchemaEncoder, SchemaRegistry} from "@bnb-attestation-service/bas-sdk";
+import {BAS, SchemaEncoder} from "@bnb-attestation-service/bas-sdk";
 import {hashMessage} from "viem";
 import {address} from "hardhat/internal/core/config/config-validation";
 import axios, {AxiosResponse} from "axios";
 import {Offchain} from "@ethereum-attestation-service/eas-sdk";
 import {GreenFieldClient} from "@bnb-attestation-service/bas-sdk/dist/greenFieldClient";
 
-export const GRPC_URL =
-    "https://gnfd-testnet-fullnode-tendermint-ap.bnbchain.org";
+
 const base64ToHex = (base64: string) => {
     const raw = atob(base64);
     let result = "0x";
@@ -43,7 +42,23 @@ export function encodeAddrToBucketName(addr: string) {
 };
 
 
-export const EASContractAddress = "0x620e84546d71A775A82491e1e527292e94a7165A"; //  BNB BAS
+
+// BNB Greenfield Testnet:
+// networkName: BNB Greenfield Testnet
+// rpcUrl: https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org
+// chainId: 5600
+// symbol: tBNB
+// chainScan: https://testnet.greenfieldscan.com
+// endpointUrl: https://gnfd-testnet-sp1.bnbchain.org
+//
+// BNB Greenfield Mainnet:
+// networkName: BNB Greenfield Mainnet
+// rpcUrl: https://greenfield-chain.bnbchain.org
+// chainId: 1017
+// symbol: BNB
+// chainScan: https://greenfieldscan.com
+// endpointUrl: https://greenfield-sp.bnbchain.org
+
 
 // Initialize the sdk with the address of the EAS Schema contract address
 let bas: BAS;
@@ -58,8 +73,7 @@ export const useBAS = () => {
         greenFieldClient.init(address, chainId)
         endpointUrlParam = endpointUrl
     }
-    const attestOffChainWithGreenFieldWithFixValue = async (address: any, provider: any, eip712MessageRawDataWithSignature: any, schemaUid: any) => {
-        debugger
+    const attestOffChainWithGreenFieldWithFixValue = async (address: any, provider: any, eip712MessageRawDataWithSignature: any,schemaUid: any, getDataTime: any) => {
         if (!address) return;
         if (!bas) {
             console.log("please init client first")
@@ -68,7 +82,7 @@ export const useBAS = () => {
 
         const listBucketRes = await greenFieldClient.client.bucket.listBuckets({
             address: address,
-            endpoint: endpointUrlParam,
+            endpoint: endpointUrlParam
         })
         let bucketExists = false;
         // @ts-ignore
@@ -100,11 +114,11 @@ export const useBAS = () => {
         });
         let objectInfo
         const isPrivate = false
+        const attestationUid = await getAttestationUid(eip712MessageRawDataWithSignature,getDataTime)
         try {
-            debugger
             objectInfo = await greenFieldClient.createObject(
                 provider,
-                new File([blob], `${schemaUid}.${eip712MessageRawDataWithSignature["uid"]}`),
+                new File([blob], `${schemaUid}.${attestationUid}`),
                 isPrivate
             );
         } catch (err: any) {
@@ -115,7 +129,7 @@ export const useBAS = () => {
             alert(err.message);
         }
 
-        return {...eip712MessageRawDataWithSignature, objectInfo: objectInfo};
+        return {...eip712MessageRawDataWithSignature, objectInfo: objectInfo,attestationUid:attestationUid};
     };
 
     const decodeHexData = (dataRaw: string, schemaStr: string) => {
@@ -183,8 +197,16 @@ export const useBAS = () => {
         console.log(res)
     }
 
+    const getAttestationUid = async (eip712MessageRawDataWithSignature: any, getDataTime: any)=>{
+        let param = eip712MessageRawDataWithSignature.message
+        param["time"] = getDataTime
+        // param["data"] = response.data.result.typeData
+        param["data"] = "0x" + param["data"]
+        return Offchain.getOffchainUID(param);
+    }
+
+
     return {
-        getNewSignature,
         attestOffChainWithGreenFieldWithFixValue,
         createBASBuckect,
         listBASBuckect,
