@@ -15,6 +15,7 @@ import type { PROOFTYPEITEM } from '@/types/cred';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import PButton from '@/components/PButton';
 import { BASEVENTNAME } from '@/config/constants';
+import { queryEventDetail } from '@/services/api/event';
 import iconTikTok from '@/assets/img/credit/iconTikTok.svg';
 
 interface CredTypesDialogProps {
@@ -28,25 +29,39 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
   ({ onClose, onSubmit, onChange, onBack }) => {
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
-
+    const [eventDetail, setEventDetail] = useState<any>({ext:{}});
     const [errorTip, setErrorTip] = useState<string>();
     const [activeType, setActiveType] = useState<string>();
     const [proofStatusObj, setProofStatusObj] = useState<any>({});
-
+    const taskScoreObj = useMemo(() => {
+      const scoreKeyMap = {
+        GOOGLE_ACCOUNT: '100',
+        TIKTOK_ACCOUNT: '6',
+        TWITTER_ACCOUNT: '3',
+        BINANCE_ACCOUNT: '2',
+      };
+      const obj = eventDetail.ext.scoreList.reduce((prev, curr) => {
+        const { source, score } = curr;
+        prev[scoreKeyMap[source]] = score;
+        return prev;
+      }, {});
+      return obj;
+    }, [eventDetail.ext.scoreList]);
     const formatProofTypes = useMemo(() => {
       // proofTypes;
+
       const proofTypes = [
         {
           id: '3',
           credTitle: 'Owns Twitter Account',
-          score: '+50xp',
+          // score: '+50xp',
           credLogoUrl: iconDataSourceTwitter,
           credIntroduce: 'Proof of Account Ownership',
         },
         {
           id: '2',
           credTitle: 'Owns Binance Account',
-          score: '+30xp',
+          // score: '+30xp',
           credLogoUrl: iconDataSourceBinance,
           credIntroduce: 'Proof of Account Ownership',
         },
@@ -54,23 +69,27 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         {
           id: '100', // TODO!!!
           credTitle: 'Owns Google Account',
-          score: '+80xp',
+          // score: '+80xp',
           credLogoUrl: iconGoogle,
           credIntroduce: 'Proof of Account Ownership',
         },
         {
           id: '6',
           credTitle: 'Owns TikTok Account',
-          score: '+50xp',
+          // score: '+50xp',
           credLogoUrl: iconTikTok,
           credIntroduce: 'Proof of Account Ownership',
         },
       ];
       const newArr = proofTypes.map((i, k) => {
-        return { ...i, finished: !!proofStatusObj[i.id] };
+        return {
+          ...i,
+          finished: !!proofStatusObj[i.id],
+          score: `+${taskScoreObj[i.id]}xp`,
+        };
       });
       return newArr;
-    }, [proofStatusObj]);
+    }, [proofStatusObj, taskScoreObj]);
     const isComplete = useMemo(() => {
       const hasProof = formatProofTypes.some((i) => i.finished);
       return hasProof;
@@ -117,6 +136,25 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         }
       });
     }, []);
+    const fetchEventDetail = useCallback(async () => {
+      try {
+        const res = await queryEventDetail({
+          event: BASEVENTNAME,
+        });
+        const { rc, result } = res;
+        if (rc === 0) {
+          setEventDetail(result);
+          //     "startTime": "1699819200000",
+          // "endTime": "1700942400000",
+          //   "ext": {
+          //     "intractUrl": "https://www.intract.io/linea"
+          // }
+        }
+      } catch {}
+    }, []);
+    useEffect(() => {
+      fetchEventDetail();
+    }, [fetchEventDetail]);
 
     return (
       <PMask onClose={onClose}>

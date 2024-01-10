@@ -21,12 +21,10 @@ import iconStep1 from '@/assets/img/events/iconStep1.svg';
 import iconStep2 from '@/assets/img/events/iconStep2.svg';
 import iconStep3 from '@/assets/img/events/iconStep3.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
-import iconQuestN from '@/assets/img/events/iconQuestN.svg';
 import { queryEventDetail } from '@/services/api/event';
 import { SCROLLEVENTNAME } from '@/config/constants';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { switchAccount } from '@/services/wallets/metamask';
-import { useNavigate } from 'react-router-dom';
 import { BASEVENTNAME } from '@/config/constants';
 import useAuthorization from '@/hooks/useAuthorization';
 
@@ -48,13 +46,7 @@ type StepItem = {
   finished?: boolean;
 };
 
-const agreeList = [
-  {
-    label: 'Fully acknowledged.',
-    disabled: false,
-    defaultValue: false,
-  },
-];
+
 const stepList: StepItem[] = [
   {
     id: 1,
@@ -92,7 +84,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     onChange,
     title = '',
     titleIllustration = false,
-    subTitle = '',
   }) => {
     const [xTabId, setXTabId] = useState<number>();
     const [stepObj, setStepObj] = useState<any>({
@@ -101,7 +92,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       step3: 0,
     });
     const [errorTip, setErrorTip] = useState<string>();
-    const [eventDetail, setEventDetail] = useState<any>();
+    const [eventDetail, setEventDetail] = useState<any>({ext:{}});
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     // compaignQuestnCheckPageCheckFlag compaignCheckpageFlag
     const [activeStep, setActiveStep] = useState<number>();
@@ -210,11 +201,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         setErrorTip('Please complete the tasks above first.');
       } else {
         if (eventActiveFlag === 1) {
-          window.open('https://translate.google.com/'); // TODO!!!
+          window.open(eventDetail.ext.claimPointsUrl); // TODO!!!
         }
         onSubmit();
       }
-    }, [isComplete, onSubmit, eventActiveFlag]);
+    }, [isComplete, onSubmit, eventActiveFlag, eventDetail.ext.claimPointsUrl]);
 
     const liClassName = useCallback(
       (item: StepItem) => {
@@ -249,16 +240,17 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const fetchEventDetail = useCallback(async () => {
       try {
         const res = await queryEventDetail({
-          event: SCROLLEVENTNAME,
+          event: BASEVENTNAME,
         });
         const { rc, result } = res;
         if (rc === 0) {
+          debugger;
           setEventDetail(result);
           //     "startTime": "1699819200000",
           // "endTime": "1700942400000",
           // "ext": {
-          //   "campaignPageUrl": "https://padolabs.org",
-          //   "compaignQuestnCheckPageUrl": "https://padolabs.org"
+          //   "claimPointsUrl": "https://padolabs.org",
+          //   "scoreList": "https://padolabs.org"
           // }
         }
       } catch {}

@@ -19,6 +19,7 @@ import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDial
 import CredTypesDialog from './CredTypesDialog';
 import useAllSources from '@/hooks/useAllSources';
 import { BASEVENTNAME } from '@/config/constants';
+import {queryEventDetail} from '@/services/api/event'
 
 import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
@@ -140,6 +141,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       }
       setStep(1);
     }, []);
+
+   
 
     return (
       <div className="claimMysteryBoxWrapper">
