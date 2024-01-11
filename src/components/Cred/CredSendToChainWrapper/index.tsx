@@ -410,8 +410,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   greaterThanBaseValue: true,
                   signature: curCredential.signature,
                   newSigFormat: LineaSchemaName,
-                  sourceUseridHash: curCredential.type === 'UNISWAP_PROOF'
-                      ? undefined: curCredential.sourceUseridHash,
+                  sourceUseridHash:
+                    curCredential.type === 'UNISWAP_PROOF'
+                      ? undefined
+                      : curCredential.sourceUseridHash,
                 };
                 if (activeCred?.source === 'zan') {
                   const authUseridHash = await getAuthUserIdHash();
@@ -425,7 +427,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   };
                 }
                 if (activeCred?.type === 'UNISWAP_PROOF') {
-                  requestParams.dataToBeSigned =  activeCred?.dataToBeSigned
+                  requestParams.dataToBeSigned = activeCred?.dataToBeSigned;
                 }
                 const { rc, result } = await regenerateAttestation(
                   requestParams
@@ -628,18 +630,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               onClick={onSubmitActiveSendToChainRequestDialog}
             />
           );
-        } else if (
-          isFromEventLINEA_DEFI_VOYAGE ||
-          fromEvents === 'LINEA_DEFI_VOYAGE'
-        ) {
-          const fn = () => {
-            const targetUrl =
-              eventDetail?.ext?.intractUrl || 'https://padolabs.org/events';
-            window.open(targetUrl);
-            onSubmitActiveSendToChainRequestDialog();
-          };
-          return <PButton text="Back to event" onClick={fn} />; //Check your campaign status
-        } else {
+        }
+        // else if (
+        //   isFromEventLINEA_DEFI_VOYAGE ||
+        //   fromEvents === 'LINEA_DEFI_VOYAGE'
+        // ) {
+        //   const fn = () => {
+        //     const targetUrl =
+        //       eventDetail?.ext?.intractUrl || 'https://padolabs.org/events';
+        //     window.open(targetUrl);
+        //     onSubmitActiveSendToChainRequestDialog();
+        //   };
+        //   return <PButton text="Back to event" onClick={fn} />; //Check your campaign status
+        // }
+        else {
           return null;
         }
       } else {
