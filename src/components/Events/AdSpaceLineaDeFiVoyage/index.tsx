@@ -98,7 +98,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
         <div className="left">
           <img className={formatImgCN} src={formatImgSrc} alt="" />
           <div className="bannerContent">
-            <h3 className="ct">Linea Voyage : Proof of Humanity</h3>
+            <h3 className="ct">The Linea Voyage : Proof of Humanity</h3>
             <div className="cn">
               <p>Get an attestation with a KYCed account on Binance</p>
               {scrollEventActiveFlag === 1 && <p>{formatPeriod}</p>}
