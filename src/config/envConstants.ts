@@ -204,7 +204,7 @@ const EASINFOMAP = {
       icon: iconBinance,
       title: 'BNB Greenfield',
       rpcUrl: 'https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org',
-      easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
+      easContact: '0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD',
       easProxyFeeContract: '0x620e84546d71A775A82491e1e527292e94a7165A',
       schemas: {
         'BNB Greenfield Testnet': {
@@ -542,7 +542,7 @@ const EASINFOMAP = {
       icon: iconBinance,
       title: 'BNB Greenfield',
       rpcUrl: 'https://greenfield-chain.bnbchain.org',
-      easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
+      easContact: '0x247Fe62d887bc9410c3848DF2f322e52DA9a51bC',
       easProxyFeeContract: '0x620e84546d71A775A82491e1e527292e94a7165A',
       schemas: {
         'BNB Greenfield Mainnet': {

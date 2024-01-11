@@ -50,6 +50,7 @@ import type { UserState } from '@/types/store';
 import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
 import { eventReport } from '@/services/api/usertracker';
+import { useBAS } from '@/services/chains/useBAS';
 
 import './index.scss';
 
@@ -61,6 +62,7 @@ interface CredSendToChainWrapperType {
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
+    const { initClient } = useBAS();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -80,7 +82,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const events = useSelector((state: UserState) => state.events);
 
     const dispatch: Dispatch<any> = useDispatch();
-    
+
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const errorDescEl = useMemo(
       () => (
@@ -170,6 +172,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         LineaSchemaName: string,
         formatNetworkName?: string
       ) => {
+        // debugger
         let credArrNew = Object.values(credentialsFromStore);
 
         const res = await chrome.storage.local.get([BASEVENTNAME]);
@@ -194,6 +197,22 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             };
           });
           const firstToBeUpperChainCred = toBeUpperChainCreds[0];
+          //
+          if (formatNetworkName === 'BNB Greenfield') {
+            const chainInfo = EASInfo[formatNetworkName];
+            const endpointUrl = 'https://gnfd-testnet-sp1.bnbchain.org';
+            debugger
+            // await initClient(
+            //   connectedWallet.address,
+            //   chainInfo.easContact,
+            //   parseInt(chainInfo.chainId),
+            //   chainInfo.rpcUrl,
+            //   endpointUrl
+            // );
+            debugger
+          }
+
+          debugger
           if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
             const regenerateAttestationParamsArr = toBeUpperChainCreds.map(
               (i: any) => {
@@ -215,6 +234,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               return regenerateAttestation(i);
             });
             const signResArr = await Promise.all(requestArr);
+            debugger
             signResArr.forEach((i, k) => {
               const { rc, result } = i;
               if (rc === 0) {
@@ -229,8 +249,14 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             items: upChainItems,
             eventSchemauid: BASEventDetail?.ext?.schemaUid,
           };
+          // if (formatNetworkName === 'BNB Greenfield') {
+          //   attestOffChainWithGreenFieldWithFixValue(
+          //     walletObj.address,
+          //     walletObj.provider,
 
-          let upChainRes = await bulkAttest(upChainParams);
+          //   );
+          // }
+            let upChainRes = await bulkAttest(upChainParams);
           // burying point
           let upChainType = upChainParams.items[0].type;
           if (upChainType === 'web') {
@@ -584,7 +610,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           } else if (
             formatNetworkName &&
             formatNetworkName.indexOf('BNB Greenfield') > -1
-          ) {
+          ){
             LineaSchemaName = BNBGREENFIELDSCHEMANAME;
           } else {
             LineaSchemaName = 'EAS';
@@ -799,50 +825,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       });
     }, [errorDescEl]);
     const { connect } = useWallet();
-    // const upperChainFn = useCallback(
-    //   (networkName?: string) => {
-    //     startFn();
-    //     sucFn(
-    //       {
-    //         name: connectedWallet?.name, // walletconnect
-    //         provider: connectedWallet?.provider,
-    //         address: connectedWallet?.address,
-    //       },
-    //       networkName
-    //     );
-    //   },
-    //   [startF
     const handleSubmitConnectWallet = useCallback(
       async (wallet?: WALLETITEMTYPE, networkName?: string) => {
         const formatNetworkName = activeNetworkName ?? networkName;
         connect(wallet?.name, startFn, errorFn, sucFn, formatNetworkName);
-        // if (wallet) {
-
-        //   if (wallet?.name?.toLowerCase() === 'walletconnect') {
-
-        //     if (connectedWallet?.address) {
-
-        //       upperChainFn(networkName);
-        //     } else {
-
-        //       open();
-        //     }
-        //   }
-        //   // if (wallet?.name === 'metamask')
-        //   else {
-
-        //     connectWalletAsyncFn(undefined, networkName);
-        //   }
-        // } else {
-        //   if (
-        //     connectedWallet?.address &&
-        //     connectedWallet?.name === 'walletconnect'
-        //   ) {
-        //     upperChainFn(networkName);
-        //   } else {
-        //     connectWalletAsyncFn(undefined, networkName);
-        //   }
-        // }
       },
       [connect, startFn, sucFn, errorFn, activeNetworkName]
     );
