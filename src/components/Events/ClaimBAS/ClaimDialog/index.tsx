@@ -6,7 +6,8 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useNavigate, useDispatch } from 'react-redux';
+
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import PMask from '@/components/PMask';
@@ -27,7 +28,8 @@ import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { switchAccount } from '@/services/wallets/metamask';
 import { BASEVENTNAME } from '@/config/constants';
 import useAuthorization from '@/hooks/useAuthorization';
-
+import { setSocialSourcesAsync } from '@/store/actions';
+import type { Dispatch } from 'react';
 dayjs.extend(utc);
 interface ClaimDialogProps {
   onClose: () => void;
@@ -45,7 +47,6 @@ type StepItem = {
   subTitle: string;
   finished?: boolean;
 };
-
 
 const stepList: StepItem[] = [
   {
@@ -78,13 +79,7 @@ const stepList: StepItem[] = [
   },
 ];
 const ClaimDialog: FC<ClaimDialogProps> = memo(
-  ({
-    onClose,
-    onSubmit,
-    onChange,
-    title = '',
-    titleIllustration = false,
-  }) => {
+  ({ onClose, onSubmit, onChange, title = '', titleIllustration = false }) => {
     const [xTabId, setXTabId] = useState<number>();
     const [stepObj, setStepObj] = useState<any>({
       step1: 0,
@@ -92,11 +87,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       step3: 0,
     });
     const [errorTip, setErrorTip] = useState<string>();
-    const [eventDetail, setEventDetail] = useState<any>({ext:{}});
+    const [eventDetail, setEventDetail] = useState<any>({ ext: {} });
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
     // compaignQuestnCheckPageCheckFlag compaignCheckpageFlag
     const [activeStep, setActiveStep] = useState<number>();
-    const kycSources = useSelector((state: UserState) => state.kycSources);
+    const dispatch: Dispatch<any> = useDispatch();
+    const socialSources = useSelector(
+      (state: UserState) => state.socialSources
+    );
 
     const BASEventPeriod = useSelector(
       (state: UserState) => state.BASEventPeriod
@@ -244,7 +242,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         });
         const { rc, result } = res;
         if (rc === 0) {
-          debugger;
           setEventDetail(result);
           //     "startTime": "1699819200000",
           // "endTime": "1700942400000",
@@ -262,6 +259,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       }
     }, [connectedWallet, isSwitchable]);
     const onFollowX = useCallback(async () => {
+      if (xTabId) {
+        await chrome.tabs.update(xTabId as number, {
+          active: true,
+        });
+        return;
+      }
       const targetUrl =
         'https://twitter.com/intent/follow?screen_name=padolabs';
       const openXUrlFn = async () => {
@@ -271,16 +274,20 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         console.log('222123 create tab', tabCreatedByPado.id);
         setXTabId(tabCreatedByPado.id);
       };
-      if (kycSources['x']) {
+      if (socialSources['x']) {
         await openXUrlFn();
       } else {
         authorize('X', async () => {
+          dispatch(setSocialSourcesAsync());
           await openXUrlFn();
         });
       }
-    }, [kycSources, authorize]);
+    }, [socialSources, authorize, dispatch]);
     const handleChange = useCallback(
       async (item: StepItem) => {
+        if (item.finished) {
+          return;
+        }
         switch (item.id) {
           case 1:
             break;
@@ -381,7 +388,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             });
             setStepObj((obj) => ({ ...obj, step1: 1 }));
             console.log('222123tabdId', xTabId);
-            await chrome.tabs.remove(xTabId as number);
+            const xTab = await chrome.tabs.get(xTabId as number);
+            if (xTab) {
+              setXTabId(undefined)
+              await chrome.tabs.remove(xTabId as number);
+            }
           }
         }
       };

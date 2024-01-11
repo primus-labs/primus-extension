@@ -20,7 +20,6 @@ export class CustomGreenFieldClient extends GreenFieldClient {
             return;
         }
         let txss = []
-        debugger
         for (let i = 0; i < files.length; i++) {
             const file = files[i]
             const fileBytes = await file.arrayBuffer();
@@ -48,7 +47,7 @@ export class CustomGreenFieldClient extends GreenFieldClient {
             });
             txss[i] = tx
         }
-        debugger
+        
 
         const txs = await this.client.txClient.multiTx(txss);
         const simulateInfo = await txs.simulate({
