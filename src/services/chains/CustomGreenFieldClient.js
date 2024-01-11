@@ -25,28 +25,35 @@ export class CustomGreenFieldClient extends GreenFieldClient {
             const file = files[i]
             const fileBytes = await file.arrayBuffer();
             const hashResult = await window.FileHandle.getCheckSums(new Uint8Array(fileBytes));
-            const { contentLength, expectCheckSums } = hashResult;
+            const {contentLength, expectCheckSums} = hashResult;
             console.log(hashResult);
             console.log("offChainData", offChainData);
             console.log("hashResult", hashResult);
-            const tx = await this.client.object.createObject({
-                bucketName: encodeAddrToBucketName(this.address),
-                objectName: file.name,
-                creator: this.address,
-                visibility: isPrivate
-                    ? "VISIBILITY_TYPE_PRIVATE"
-                    : "VISIBILITY_TYPE_PUBLIC_READ",
-                fileType: "json",
-                redundancyType: "REDUNDANCY_EC_TYPE",
-                contentLength: contentLength,
-                expectCheckSums: JSON.parse(expectCheckSums),
-            }, {
-                type: "EDDSA",
-                domain: window.location.origin,
-                seed: offChainData.seedString,
-                address: this.address,
-            });
-            txss[i] = tx
+            try {
+                const tx = await this.client.object.createObject({
+
+                    bucketName: encodeAddrToBucketName(this.address),
+                    objectName: file.name,
+                    creator: this.address,
+                    visibility: isPrivate
+                        ? "VISIBILITY_TYPE_PRIVATE"
+                        : "VISIBILITY_TYPE_PUBLIC_READ",
+                    fileType: "json",
+                    redundancyType: "REDUNDANCY_EC_TYPE",
+                    contentLength: contentLength,
+                    expectCheckSums: JSON.parse(expectCheckSums),
+                }, {
+                    type: "EDDSA",
+                    domain: window.location.origin,
+                    seed: offChainData.seedString,
+                    address: this.address,
+                });
+                txss[i] = tx
+            } catch (e) {
+                if (e.message === "repeated object") {
+                    console.log(`repeated object:${files[i].name}`)
+                }
+            }
         }
         debugger
 
@@ -58,7 +65,7 @@ export class CustomGreenFieldClient extends GreenFieldClient {
         console.log('simulateInfo', simulateInfo);
         console.log(simulateInfo);
 
-        const { transactionHash } = await txs.broadcast({
+        const {transactionHash} = await txs.broadcast({
             denom: "BNB",
             gasLimit: Number(simulateInfo.gasLimit),
             gasPrice: simulateInfo.gasPrice,
@@ -75,19 +82,27 @@ export class CustomGreenFieldClient extends GreenFieldClient {
         let allUploadRes = [];
 
         for (let i = 0; i < files.length; i++) {
-            const uploadRes = await this.client.object.uploadObject({
-                bucketName: encodeAddrToBucketName(this.address),
-                objectName: files[i].name,
-                body: files[i],
-                txnHash: transactionHash,
-            }, {
-                type: "EDDSA",
-                domain: window.location.origin,
-                seed: offChainData.seedString,
-                address: this.address,
-            });
-            console.log(uploadRes)
-            allUploadRes[i] = uploadRes
+            try {
+                debugger
+                const uploadRes = await this.client.object.uploadObject({
+                    bucketName: encodeAddrToBucketName(this.address),
+                    objectName: files[i].name,
+                    body: files[i],
+                    txnHash: transactionHash,
+                }, {
+                    type: "EDDSA",
+                    domain: window.location.origin,
+                    seed: offChainData.seedString,
+                    address: this.address,
+                });
+                console.log(uploadRes)
+                allUploadRes[i] = uploadRes
+            } catch (e) {
+                if (e.message === "repeated object") {
+                    console.log(`repeated object:${files[i].name}`)
+                }
+            }
+
         }
 
         return allUploadRes;
