@@ -17,6 +17,7 @@ import {
   initWalletAddressActionAsync,
   initRewardsActionAsync,
   setOnChainAssetsSourcesAsync,
+  setEventsActionAsync,
 } from '@/store/actions';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
@@ -190,6 +191,7 @@ const Layout = memo(() => {
     dispatch(initWalletAddressActionAsync());
     dispatch(initRewardsActionAsync());
     dispatch(setOnChainAssetsSourcesAsync());
+    dispatch(setEventsActionAsync());
     // dispatch(initConnectedWalletActionAsync());
     (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);

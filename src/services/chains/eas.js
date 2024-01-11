@@ -313,10 +313,7 @@ export async function attestByDelegationProxyFee(params) {
     schemauid = activeSchemaInfo.schemaUidTokenHoldings;
   } else if (type === 'IDENTIFICATION_PROOF') {
     schemauid = activeSchemaInfo.schemaUidIdentification;
-  } else if (
-    type === 'web' ||
-    type === 'UNISWAP_PROOF'
-  ) {
+  } else if (type === 'web' || type === 'UNISWAP_PROOF') {
     schemauid = activeSchemaInfo.schemaUidWeb;
   }
   console.log(
@@ -406,6 +403,7 @@ export async function bulkAttest(params) {
       type,
       schemaName,
     }]*/,
+    eventSchemauid,
   } = params;
   console.log('eas bulkAttest params', params);
   const easProxyFeeContractAddress = EASInfo[networkName].easProxyFeeContract;
@@ -446,6 +444,9 @@ export async function bulkAttest(params) {
     } else if (item.type === 'web') {
       // TODO
       schemauid = activeSchemaInfo.schemaUidWeb;
+    }
+    if (eventSchemauid) {
+      schemauid = eventSchemauid;
     }
     console.log('bulkAttest schemauid=', schemauid);
 

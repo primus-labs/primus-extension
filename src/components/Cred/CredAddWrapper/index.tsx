@@ -392,9 +392,12 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const authorize = useAuthorization2();
     const fetchAttestForGoogle = useCallback(
       async (form: AttestionForm) => {
-        const { source, requestid } = form;
+        const { source, requestid,event } = form;
         // const schemaType = schemaTypeMap[type as keyof typeof schemaTypeMap];
-        const schemaType = 'GOOGLE_ACCOUNT_OWNER';
+        const schemaType =
+          event === BASEVENTNAME
+            ? 'BAS_EVENT_PROOF_OF_HUMANITY'
+            : 'GOOGLE_ACCOUNT_OWNER';
         const attestationId = requestid ?? uuidv4();
         const eventInfo: any = {
           eventType: 'API_ATTESTATION_GENERATE',
@@ -835,6 +838,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             active: true,
             currentWindow: true,
           });
+          if (form.event === BASEVENTNAME) {
+            currRequestObj.schemaType = 'BAS_EVENT_PROOF_OF_HUMANITY';
+          }
 
           await chrome.runtime.sendMessage({
             type: 'pageDecode',

@@ -5,6 +5,7 @@ import {
   ExchangeStoreVersion,
   schemaTypeMap,
   SCROLLEVENTNAME,
+  BASEVENTNAME,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
@@ -244,7 +245,10 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const authUseridHash = strToHex(authUserId);
 
   const timeStampStr = (+new Date()).toString();
-  const schemaType = schemaTypeMap[type];
+  let schemaType = schemaTypeMap[type];
+  // if (event === BASEVENTNAME) {
+  //   schemaType = 'BAS_EVENT_PROOF_OF_HUMANITY';
+  // }
   const padoUrl = await getPadoUrl();
   const proxyUrl = await getProxyUrl();
   const params = {
@@ -264,8 +268,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     credVersion: CredVersion,
 
     sigFormat: 'EAS-Ethereum', // TODO
-    // sigFormat: 'EAS-BNB', // TODO
-    // schemaType: 'exchange-balance', // TODO
     schemaType,
     user,
     // holdingToken // TODO

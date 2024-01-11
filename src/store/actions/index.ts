@@ -14,7 +14,7 @@ import {
   bindConnectedWallet,
   checkIfBindConnectedWallet,
 } from '@/services/api/user';
-import { queryBadgeEventPeriod } from '@/services/api/event';
+import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
 import { getAssetsOnChains } from '@/services/api/dataSource';
 import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
@@ -100,6 +100,10 @@ export const setBASEventPeriodAction = (values: any) => ({
   type: 'setBASEventPeriodAction',
   payload: values,
 });
+export const setEventsAction = (values: any) => ({
+  type: 'setEventsAction',
+  payload: values,
+});
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {
@@ -149,7 +153,7 @@ export const connectWalletAsync = (
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
           // startFn && (await startFn());
-          sucFn && (await sucFn({ name: type, address, provider },));
+          sucFn && (await sucFn({ name: type, address, provider }));
         } else {
           return;
         }
@@ -304,6 +308,29 @@ export const setBadgeEventPeriodActionAsync = () => {
       });
     } catch (e) {
       console.log('setBadgeEventPeriodActionAsync e:', e);
+    }
+  };
+};
+export const setEventsActionAsync = () => {
+  return async (dispatch: any) => {
+    try {
+      const eventNameArr = [BASEVENTNAME];
+      const requestArr = eventNameArr.map((r) => {
+        return queryEventDetail({
+          event: r,
+        });
+      });
+      const resArr = await Promise.all(requestArr);
+      const obj = resArr.reduce((prev, curr, currK) => {
+        const { rc, result } = curr;
+        if (rc === 0) {
+          prev[eventNameArr[currK]] = result;
+        }
+        return prev;
+      }, {});
+      dispatch(setBASEventPeriodAction(obj));
+    } catch (e) {
+      console.log('setEventsActionAsync e:', e);
     }
   };
 };

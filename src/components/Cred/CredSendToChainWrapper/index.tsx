@@ -76,9 +76,15 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
+    const events = useSelector((state: UserState) => state.events);
 
     const dispatch: Dispatch<any> = useDispatch();
-
+    const BASeventDetail = useMemo(() => {
+      if (events[BASEVENTNAME]) {
+        return events[BASEVENTNAME];
+      }
+      return {};
+    }, [events]);
     const errorDescEl = useMemo(
       () => (
         <>
@@ -224,7 +230,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             networkName: formatNetworkName,
             metamaskprovider: walletObj.provider,
             items: upChainItems,
+            eventSchemauid: BASeventDetail?.ext?.schemaUid,
           };
+
           let upChainRes = await bulkAttest(upChainParams);
           // burying point
           let upChainType = upChainParams.items[0].type;
@@ -571,7 +579,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             formatNetworkName.indexOf('BSC') > -1
           ) {
             LineaSchemaName = BNBSCHEMANAME;
-          } else if (formatNetworkName && formatNetworkName.indexOf('Scroll') > -1) {
+          } else if (
+            formatNetworkName &&
+            formatNetworkName.indexOf('Scroll') > -1
+          ) {
             LineaSchemaName = SCROLLSCHEMANAME;
           } else if (
             formatNetworkName &&

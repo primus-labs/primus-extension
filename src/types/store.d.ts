@@ -3,6 +3,14 @@ import type { PROOFTYPEITEM, CREDENTIALS } from './cred';
 import type { ExDatas, SocialDatas, onChainAssetsDatas } from './dataSource';
 import type { SysConfigInfo } from './config';
 import type { Rewards } from './event';
+type EventDetailType = {
+  startTime: string;
+  endTime: string;
+  ext: any
+};
+type EventsType = {
+  [propName: string]:EventDetailType
+};
 type BadgeEventPeriodType = {
   startTime: string;
   endTime: string;
@@ -40,4 +48,5 @@ export type UserState = {
   badgeEventPeriod: BadgeEventPeriodType;
   scrollEventPeriod: BadgeEventPeriodType;
   BASEventPeriod: BadgeEventPeriodType;
+  events: EventsType;
 };

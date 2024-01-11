@@ -29,7 +29,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
   ({ onClose, onSubmit, onChange, onBack }) => {
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
-    const [eventDetail, setEventDetail] = useState<any>({ext:{}});
+    const [eventDetail, setEventDetail] = useState<any>({ ext: {} });
     const [errorTip, setErrorTip] = useState<string>();
     const [activeType, setActiveType] = useState<string>();
     const [proofStatusObj, setProofStatusObj] = useState<any>({});
@@ -40,11 +40,15 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         TWITTER_ACCOUNT: '3',
         BINANCE_ACCOUNT: '2',
       };
-      const obj = eventDetail.ext.scoreList.reduce((prev, curr) => {
-        const { source, score } = curr;
-        prev[scoreKeyMap[source]] = score;
-        return prev;
-      }, {});
+      let obj = {};
+      if (eventDetail.ext.scoreList) {
+        obj = eventDetail.ext.scoreList.reduce((prev, curr) => {
+          const { source, score } = curr;
+          prev[scoreKeyMap[source]] = score;
+          return prev;
+        }, {});
+      }
+
       return obj;
     }, [eventDetail.ext.scoreList]);
     const formatProofTypes = useMemo(() => {
