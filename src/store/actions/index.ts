@@ -328,7 +328,7 @@ export const setEventsActionAsync = () => {
         }
         return prev;
       }, {});
-      dispatch(setBASEventPeriodAction(obj));
+      dispatch(setEventsAction(obj));
     } catch (e) {
       console.log('setEventsActionAsync e:', e);
     }

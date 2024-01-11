@@ -246,9 +246,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
   const timeStampStr = (+new Date()).toString();
   let schemaType = schemaTypeMap[type];
-  // if (event === BASEVENTNAME) {
-  //   schemaType = 'BAS_EVENT_PROOF_OF_HUMANITY';
-  // }
   const padoUrl = await getPadoUrl();
   const proxyUrl = await getProxyUrl();
   const params = {

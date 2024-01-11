@@ -365,16 +365,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return [];
       }
     }, [exSources, activeToken]);
-    const baseValueArr = useMemo(() => {
-      if (activeAttestationTypeInfo?.credIdentifier === 'ASSETS_PROOF') {
-        const baseValArr = JSON.parse(
-          activeAttestationTypeInfo.credProofConditions
-        );
-        return baseValArr;
-      } else {
-        return [];
-      }
-    }, [activeAttestationTypeInfo]);
+   
     
     const formatTabList = useMemo(() => {
       if (fromEvents) {

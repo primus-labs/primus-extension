@@ -34,6 +34,7 @@ import {
   SCROLLEVENTNAME,
   schemaTypeMap,
   BASEVENTNAME,
+  GOOGLEWEBPROOFID,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -49,6 +50,7 @@ import { submitUniswapTxProof } from '@/services/chains/erc721';
 
 import { DATASOURCEMAP } from '@/config/constants';
 import { formatAddress } from '@/utils/utils';
+import useEventDetail from '@/hooks/useEventDetail'
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 import type { Dispatch } from 'react';
@@ -87,6 +89,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     type,
     eventSource,
   }) => {
+    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const [activeIdentityType, setActiveIdentityType] = useState<string>('');
     const navigate = useNavigate();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
@@ -392,11 +395,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const authorize = useAuthorization2();
     const fetchAttestForGoogle = useCallback(
       async (form: AttestionForm) => {
-        const { source, requestid,event } = form;
+        const { source, requestid, event } = form;
         // const schemaType = schemaTypeMap[type as keyof typeof schemaTypeMap];
         const schemaType =
           event === BASEVENTNAME
-            ? 'BAS_EVENT_PROOF_OF_HUMANITY'
+            ? BASEventDetail?.ext?.schemaType
             : 'GOOGLE_ACCOUNT_OWNER';
         const attestationId = requestid ?? uuidv4();
         const eventInfo: any = {
@@ -430,7 +433,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               const lastTasks = lastInfo.steps[1].tasks ?? {};
               lastInfo.steps[1].tasks = {
                 ...lastTasks,
-                '5': fullAttestation.requestid,
+                [GOOGLEWEBPROOFID]: fullAttestation.requestid,
               };
               await chrome.storage.local.set({
                 [BASEVENTNAME]: JSON.stringify(lastInfo),
@@ -474,6 +477,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         connectedWallet?.address,
         authorize,
         fromEvents,
+        BASEventDetail?.ext?.schemaType,
       ]
     );
     const fetchAttestForAnt = useCallback(
@@ -839,7 +843,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             currentWindow: true,
           });
           if (form.event === BASEVENTNAME) {
-            currRequestObj.schemaType = 'BAS_EVENT_PROOF_OF_HUMANITY';
+            currRequestObj.schemaType = BASEventDetail?.ext?.schemaType;
           }
 
           await chrome.runtime.sendMessage({
@@ -903,6 +907,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         fetchAttestForPolygonID,
         webProofTypes,
         fetchAttestForUni,
+        BASEventDetail?.ext?.schemaType,
+        fetchAttestForGoogle,
       ]
     );
     const onBackAttestationDialog = useCallback(() => {
@@ -1332,7 +1338,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             event: BASEVENTNAME,
           };
           switch (eventSource) {
-            case '100':// TODO!!!
+            case GOOGLEWEBPROOFID:
               form = {
                 source: 'google',
                 type: 'IDENTIFICATION_PROOF',

@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuthAttestation } from '@/services/api/cred';
 import type { UserState } from '@/types/store';
 import { postMsg, getAuthUrl } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
 import useInterval from './useInterval';
-
+import { BASEVENTNAME } from '@/config/constants';
+import useEventDetail from './useEventDetail'
+import { schemaTypeMap } from '../config/constants';
 type CreateAuthWindowCallBack = (
   state: string,
   source: string,
@@ -15,6 +18,9 @@ type CreateAuthWindowCallBack = (
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 const useAuthorization2 = () => {
+  const [BASEventDetail] = useEventDetail(BASEVENTNAME);
+  const [searchParams] = useSearchParams();
+  const fromEvents = searchParams.get('fromEvents');
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
   const connectedWallet = useSelector(
@@ -41,7 +47,10 @@ const useAuthorization2 = () => {
           state,
           source,
           address: connectedWallet.address,
-          schemaType: 'GOOGLE_ACCOUNT_OWNER',
+          schemaType:
+            fromEvents === BASEVENTNAME
+              ? BASEventDetail?.ext?.schemaType
+              : 'GOOGLE_ACCOUNT_OWNER',
         });
         if (res.rc === 0 && res.result) {
           setAuthWindowId(undefined);
@@ -59,7 +68,7 @@ const useAuthorization2 = () => {
       }, 1000);
       setCheckIsAuthDialogTimer(timer);
     },
-    [connectedWallet?.address]
+    [connectedWallet?.address, BASEventDetail?.ext?.schemaType, fromEvents]
   );
   const handleClickOAuthSource: OauthFn = useCallback(
     async (source, onSubmit) => {

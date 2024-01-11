@@ -9,6 +9,7 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import useWallet from '@/hooks/useWallet';
+import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, WALLETLIST } from '@/config/constants';
 import { setConnectWalletActionAsync } from '@/store/actions';
 import { strToHexSha256 } from '@/utils/utils';
@@ -79,12 +80,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const events = useSelector((state: UserState) => state.events);
 
     const dispatch: Dispatch<any> = useDispatch();
-    const BASeventDetail = useMemo(() => {
-      if (events[BASEVENTNAME]) {
-        return events[BASEVENTNAME];
-      }
-      return {};
-    }, [events]);
+    
+    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const errorDescEl = useMemo(
       () => (
         <>
@@ -230,7 +227,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             networkName: formatNetworkName,
             metamaskprovider: walletObj.provider,
             items: upChainItems,
-            eventSchemauid: BASeventDetail?.ext?.schemaUid,
+            eventSchemauid: BASEventDetail?.ext?.schemaUid,
           };
 
           let upChainRes = await bulkAttest(upChainParams);
@@ -365,7 +362,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           }
         }
       },
-      [credentialsFromStore, initCredList]
+      [credentialsFromStore, initCredList, BASEventDetail?.ext?.schemaUid]
     );
     const scrollEventFn = useCallback(
       async (

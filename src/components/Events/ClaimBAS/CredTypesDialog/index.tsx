@@ -14,7 +14,7 @@ import type { UserState } from '@/types/store';
 import type { PROOFTYPEITEM } from '@/types/cred';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import PButton from '@/components/PButton';
-import { BASEVENTNAME } from '@/config/constants';
+import { BASEVENTNAME, GOOGLEWEBPROOFID } from '@/config/constants';
 import { queryEventDetail } from '@/services/api/event';
 import iconTikTok from '@/assets/img/credit/iconTikTok.svg';
 
@@ -35,7 +35,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
     const [proofStatusObj, setProofStatusObj] = useState<any>({});
     const taskScoreObj = useMemo(() => {
       const scoreKeyMap = {
-        GOOGLE_ACCOUNT: '100',
+        GOOGLE_ACCOUNT: GOOGLEWEBPROOFID,
         TIKTOK_ACCOUNT: '6',
         TWITTER_ACCOUNT: '3',
         BINANCE_ACCOUNT: '2',
@@ -71,7 +71,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         },
 
         {
-          id: '100', // TODO!!!
+          id: GOOGLEWEBPROOFID,
           credTitle: 'Owns Google Account',
           // score: '+80xp',
           credLogoUrl: iconGoogle,

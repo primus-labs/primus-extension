@@ -212,7 +212,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [exSources, activeToken,type]);
     const baseValueArr = useMemo(() => {
-      if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
+      if (activeAttestationTypeInfo?.credIdentifier === 'ASSETS_PROOF') {
         const baseValArr = JSON.parse(
           activeAttestationTypeInfo.credProofConditions
         );

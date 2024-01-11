@@ -82,7 +82,6 @@ export class CustomGreenFieldClient extends GreenFieldClient {
 
         for (let i = 0; i < files.length; i++) {
             try {
-                debugger
                 const uploadRes = await this.client.object.uploadObject({
                     bucketName: encodeAddrToBucketName(this.address),
                     objectName: files[i].name,
