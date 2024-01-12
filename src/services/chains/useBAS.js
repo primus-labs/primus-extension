@@ -1,34 +1,14 @@
-"use client";
 
 import {BAS, SchemaEncoder} from "@bnb-attestation-service/bas-sdk";
 import {hashMessage} from "viem";
 import {address} from "hardhat/internal/core/config/config-validation";
 import axios, {AxiosResponse} from "axios";
 import {Offchain} from "@ethereum-attestation-service/eas-sdk";
-import {GreenFieldClient} from "@bnb-attestation-service/bas-sdk/dist/greenFieldClient";
+// import {GreenFieldClient} from "@bnb-attestation-service/bas-sdk/dist/greenFieldClient";
 import {CustomGreenFieldClient} from "./CustomGreenFieldClient";
 
-const base64ToHex = (base64: string) => {
-    const raw = atob(base64);
-    let result = "0x";
-    for (let i = 0; i < raw.length; i++) {
-        const hex = raw.charCodeAt(i).toString(16);
-        result += hex.length === 2 ? hex : "0" + hex;
-    }
-    return result;
-};
 
-
-enum VisibilityType {
-    VISIBILITY_TYPE_UNSPECIFIED = 0,
-    VISIBILITY_TYPE_PUBLIC_READ = 1,
-    VISIBILITY_TYPE_PRIVATE = 2,
-    /** VISIBILITY_TYPE_INHERIT - If the bucket Visibility is inherit, it's finally set to private. If the object Visibility is inherit, it's the same as bucket. */
-    VISIBILITY_TYPE_INHERIT = 3,
-    UNRECOGNIZED = -1,
-}
-
-const formatValue = ({value, type}: any) => {
+const formatValue = ({value, type}) => {
     if (type === "boolean" || type === "string") {
         return [value];
     }
@@ -38,7 +18,7 @@ const formatValue = ({value, type}: any) => {
     return [value?.toString?.() || ""];
 };
 
-export function encodeAddrToBucketName(addr: string) {
+export function encodeAddrToBucketName(addr) {
     return `bas-${hashMessage(addr).substring(2, 42)}`;
 };
 
@@ -64,13 +44,13 @@ export function encodeAddrToBucketName(addr: string) {
 export const EASContractAddress = "0x620e84546d71A775A82491e1e527292e94a7165A"; //  BNB BAS
 
 // Initialize the sdk with the address of the EAS Schema contract address
-let bas: BAS;
+let bas;
 
 export const useBAS = () => {
 
-    let greenFieldClient: CustomGreenFieldClient;
-    let endpointUrlParam: string
-    const initClient = async (address: any, contractAddress: any, chainId: any, rpcUrl: any, endpointUrl: any) => {
+    let greenFieldClient;
+    let endpointUrlParam;
+    const initClient = async (address, contractAddress, chainId, rpcUrl, endpointUrl) => {
         bas = new BAS(contractAddress, rpcUrl, chainId);
         greenFieldClient = new CustomGreenFieldClient(rpcUrl,chainId)
         bas.greenFieldClient = greenFieldClient
@@ -78,7 +58,7 @@ export const useBAS = () => {
         endpointUrlParam = endpointUrl
 
     }
-    const attestOffChainWithGreenFieldWithFixValue = async (address: any, provider: any, attestationInfo: any) => {
+    const attestOffChainWithGreenFieldWithFixValue = async (address, provider, attestationInfo) => {
         if (!address) return;
         if (!bas) {
             console.log("please init client first")
@@ -107,10 +87,7 @@ export const useBAS = () => {
             const res = await createBASBuckect(provider, encodeAddrToBucketName(address));
             console.log("create bucket successfully!")
         }
-        //@ts-ignore
-        BigInt.prototype.toJSON = function () {
-            return this.toString();
-        };
+        
         let files =[]
         let resp = []
         for (let i = 0; i < attestationInfo.length; i++) {
@@ -135,7 +112,7 @@ export const useBAS = () => {
                 files,
                 isPrivate
             );
-        } catch (err: any) {
+        } catch (err) {
             if (err.statusCode === 404) {
                 return "notfound";
             }
@@ -149,11 +126,11 @@ export const useBAS = () => {
         return resp;
     };
 
-    const decodeHexData = (dataRaw: string, schemaStr: string) => {
+    const decodeHexData = (dataRaw, schemaStr) => {
         const schemaEncoder = new SchemaEncoder(schemaStr);
         let res = schemaEncoder.decodeData(dataRaw);
         console.log({res});
-        res = res.map((e: any) => ({
+        res = res.map((e) => ({
             ...e,
             value: formatValue(e.value),
             // typeof e.value.type === "boolean" || typeof e.value.type === "string"
@@ -166,7 +143,7 @@ export const useBAS = () => {
     };
 
 
-    const listBASBuckect = async (provider: any, address: any) => {
+    const listBASBuckect = async (provider, address) => {
         if (!address) {
             console.log('address is null')
             return
@@ -196,7 +173,7 @@ export const useBAS = () => {
         return bucketExists;
     };
 
-    const createBASBuckect = async (provider: any, bucketName: string) => {
+    const createBASBuckect = async (provider, bucketName) => {
         if (!address) return;
         // await shouldSwitchNetwork(chains[0].id);
         const res = await greenFieldClient.createBucket(provider, bucketName);
@@ -204,13 +181,13 @@ export const useBAS = () => {
         return res;
     };
 
-    const createBASBuckectDefault = async (provider: any, address: any) => {
+    const createBASBuckectDefault = async (provider, address) => {
         if (!address) return;
         const res = await greenFieldClient.createBucket(provider, encodeAddrToBucketName(address));
         console.log(res)
     }
 
-    const getAttestationUid = async (eip712MessageRawDataWithSignature: any, getDataTime: any)=>{
+    const getAttestationUid = async (eip712MessageRawDataWithSignature, getDataTime)=>{
         let param = eip712MessageRawDataWithSignature.message
         param["time"] = getDataTime
         // param["data"] = response.data.result.typeData
@@ -218,14 +195,14 @@ export const useBAS = () => {
         return Offchain.getOffchainUID(param);
     }
 
-    const getNewSignature = async (requestBody : any) => {
+    const getNewSignature = async (requestBody ) => {
         const header = {
             "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJwYWRvbGFicy5vcmciLCJzdWIiOiIweGMxYTdGNmYzOTdkNUM3OTNhNzg2MTNDZjM2NGEwNjkxNDZkZDcxZjciLCJleHAiOjQ4NTM2MTgxNjcsInVzZXItaWQiOjE3MjQ2MjczMTIwOTczNjE5MjAsInNjb3BlIjoiYXV0aCJ9.MHRWNwh1v4PFrLrvkZrRJDmXdkVcIuKxf9Onu7UKLgHZcdSlWq6m8IV3Eq-wJjVwbBpv5zHh9jCh8uQG7GAFacVvwuUNAcquWS8xmK669ANQvSMerq6G0L2kv7iUWz6KEimq0M1btdphZuwIPDa3epHeTHRZJlDCo35gGRSV2qcoPgdoyidUKOMhSCdvPqs-df3r7Is32Xtrn3AvFPWAiQWwcW2rSnbv-5KCEMIGS7jcIXlwDIpm3-HfXsynwnbOfsLQ0WOExiXseObZHaAdTGu925Cv0c6L4TzXj9NmWPB201wgwg_KxqXFHcChCMBUbHW0ChN9xc1VqlkgfBjROg"
         }
         // const url = "https://api-dev.padolabs.org/credential/re-generate?newSigFormat=Verax-Scroll-Sepolia";
         const url = "https://api-dev.padolabs.org/credential/re-generate?newSigFormat=BAS-BSC-Testnet";
         const body = JSON.parse(requestBody)
-        const response: AxiosResponse = await axios.post(url, body, {
+        const response = await axios.post(url, body, {
             headers: header
         });
         let eip712MessageRawDataWithSignature = response.data.result.eip712MessageRawDataWithSignature
@@ -247,33 +224,3 @@ export const useBAS = () => {
         initClient
     };
 };
-console.log(111);
-console.log(222, base64ToHex);
-console.log(333, useBAS);
-console.log(444, window);
-
- window.addEventListener('message', function (event) {
-     const command = event.data.command;
-     console.log('ifram receive:', event)
-//    const template = templates[event.data.templateName],
-  const   result = 'invalid request';
-
-   // if we don't know the templateName requested, return an error message
-//    if (template) {
-//      switch (command) {
-//        case 'render':
-//          result = template(event.data.context);
-//          break;
-//        // you could even do dynamic compilation, by accepting a command
-//        // to compile a new template instead of using static ones, for example:
-//        // case 'new':
-//        //   template = Handlebars.compile(event.data.templateSource);
-//        //   result = template(event.data.context);
-//        //   break;
-//      }
-//    } else {
-//      result = 'Unknown template: ' + event.data.templateName;
-//    }
-   event.source.postMessage({ result: result }, event.origin);
- });
-    

@@ -37,6 +37,7 @@ var options = {
     home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
+    sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },
   chromeExtensionBoilerplate: {
     notHotReload: ['background'],
@@ -329,6 +330,15 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/content/iconSuc.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/pages/sandbox.html',
           to: path.join(__dirname, 'build'),
           force: true,
         },
