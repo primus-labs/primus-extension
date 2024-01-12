@@ -941,21 +941,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     useEffect(() => {
       fromEvents === 'LINEA_DEFI_VOYAGE' && fetchEventDetail();
     }, [fromEvents, fetchEventDetail]);
-    useEffect(() => {
-      let message = {
-        command: 'render',
-        templateName: 'sample-template-' + 1,
-        context: { counter: 1 },
-      };
-      console.log('111222')
-      document
-        .getElementById('theFrame')
-        .contentWindow.postMessage(message, '*');
-      
-    }, []);
-    window.addEventListener('message', function (event) {
-      console.log('extension receive:', event);
-    });
+    
 
     return (
       <div className="credSendToChainWrapper">
