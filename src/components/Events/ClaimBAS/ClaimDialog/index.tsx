@@ -88,8 +88,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     });
     const [errorTip, setErrorTip] = useState<string>();
     const [eventDetail, setEventDetail] = useState<any>({ ext: {} });
-    const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
-    // compaignQuestnCheckPageCheckFlag compaignCheckpageFlag
+    
     const [activeStep, setActiveStep] = useState<number>();
     const dispatch: Dispatch<any> = useDispatch();
     const socialSources = useSelector(
@@ -149,13 +148,13 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       } else {
         stepList[0].subTitle = addressForScrollEvent;
       }
-
       stepList[1].finished = stepObj.step1 === 1;
 
       stepList[2].finished = stepObj.step2 === 1;
 
       stepList[3].finished = stepObj.step3 === 1;
-      return stepList;
+      const newArr = [...stepList];
+      return newArr;
     }, [
       proofX,
       proofBinance,
@@ -179,18 +178,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [eventActiveFlag]);
 
     const isSwitchable = useMemo(() => {
-      if (!scrollEventHistoryObj.campaignPageCheckFlag) {
-        return false;
-      }
-      if (!!proofBinance) {
-        return false;
-      }
-      if (!!proofX) {
-        return false;
-      }
+      
 
       return true;
-    }, [proofX, proofBinance, scrollEventHistoryObj.campaignPageCheckFlag]);
+    }, []);
 
     const authorize = useAuthorization();
 
@@ -216,23 +207,19 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
           isSwitchable && (defaultCN += ' clickable');
         }
         if (item.id === 2) {
-          !proofX && (defaultCN += ' clickable');
+          !formatStepList[1].finished && (defaultCN += ' clickable');
         }
         if (item.id === 3) {
-          !proofBinance && (defaultCN += ' clickable');
+          !formatStepList[2].finished && (defaultCN += ' clickable');
         }
         if (item.id === 4) {
-          if (!scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag) {
-            defaultCN += ' clickable';
-          }
+          !formatStepList[3].finished && (defaultCN += ' clickable');
         }
         return defaultCN;
       },
       [
         isSwitchable,
-        proofX,
-        proofBinance,
-        scrollEventHistoryObj?.compaignQuestnCheckPageCheckFlag,
+        formatStepList
       ]
     );
     const fetchEventDetail = useCallback(async () => {
@@ -370,6 +357,8 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [fetchEventDetail]);
 
     useEffect(() => {
+      console.log('222ClaimDialog useEffect');
+
       chrome.storage.local.get([BASEVENTNAME], (res) => {
         if (res[BASEVENTNAME]) {
           const lastInfo = JSON.parse(res[BASEVENTNAME]);
@@ -398,7 +387,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             console.log('222123tabdId', xTabId);
             const xTab = await chrome.tabs.get(xTabId as number);
             if (xTab) {
-              setXTabId(undefined)
+              setXTabId(undefined);
               await chrome.tabs.remove(xTabId as number);
             }
           }

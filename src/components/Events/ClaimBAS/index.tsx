@@ -19,7 +19,7 @@ import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDial
 import CredTypesDialog from './CredTypesDialog';
 import useAllSources from '@/hooks/useAllSources';
 import { BASEVENTNAME } from '@/config/constants';
-import {queryEventDetail} from '@/services/api/event'
+import { queryEventDetail } from '@/services/api/event';
 
 import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
@@ -147,6 +147,9 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setStep(2);
       }
     }, [activeStep]);
+    useEffect(() => {
+      console.log('222ClaimBAS useEffect');
+    }, []);
 
     return (
       <div className="claimMysteryBoxWrapper">

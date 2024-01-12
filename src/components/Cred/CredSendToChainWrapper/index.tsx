@@ -351,7 +351,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             return regenerateAttestation(i);
           });
           const signResArr = await Promise.all(requestArr);
-          debugger;
           signResArr.forEach((i, k) => {
             const { rc, result } = i;
             if (rc === 0) {
@@ -366,6 +365,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           items: upChainItems,
           eventSchemauid: BASEventDetail?.ext?.schemaUid,
         };
+        
         // if (formatNetworkName === 'BNB Greenfield') {
         //   attestOffChainWithGreenFieldWithFixValue(
         //     walletObj.address,
@@ -375,6 +375,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         // }
         let upChainRes = await bulkAttest(upChainParams);
         // burying point
+        console.log('222123upChainParams.items', upChainParams.items);
         let upChainType = upChainParams.items[0].type;
         if (upChainType === 'web') {
           upChainType = firstToBeUpperChainCred?.schemaType;
@@ -1051,7 +1052,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           const { success } = result;
           if (success) {
             // regenarate
-            debugger;
             await regeneratAttestationsBASFn();
           }
         } else if (name === '') {
