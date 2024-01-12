@@ -201,6 +201,23 @@ const Layout = memo(() => {
   useEffect(() => {
     updateAlgoUrl();
   }, []);
+  useEffect(() => {
+    const fn = () => {
+      console.log('111222');
+      let message = {
+        command: 'render',
+      };
+
+      document
+        .getElementById('theFrame')
+        .contentWindow.postMessage(message, '*');
+      window.addEventListener('message', function () {
+        console.log('111page receive:', event);
+      });
+    };
+    fn();
+    // document.addEventListener('DOMContentLoaded', fn);
+  }, []);
 
   return (
     <div className="pageApp">

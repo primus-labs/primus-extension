@@ -19,9 +19,7 @@
     "webRequest",
     "scripting"
   ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
       "resources": ["iconExtension.svg", "iconSuc.svg"],
@@ -30,14 +28,19 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://padolabs.org/*", "https://www.padolabs.org/*", "http://api-dev.padolabs.org:5100/*"],
+      "matches": [
+        "https://padolabs.org/*",
+        "https://www.padolabs.org/*",
+        "http://api-dev.padolabs.org:5100/*"
+      ],
       "js": ["padoWebsite.js"]
     },
     {
-      "matches": [
-        "https://twitter.com/intent/follow?screen_name=padolabs"
-      ],
+      "matches": ["https://twitter.com/intent/follow?screen_name=padolabs"],
       "js": ["xFollow.js"]
     }
-  ]
+  ],
+  "sandbox": {
+    "pages": ["sandbox.html"]
+  }
 }

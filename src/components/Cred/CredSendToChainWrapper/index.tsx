@@ -50,7 +50,7 @@ import type { UserState } from '@/types/store';
 import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
 import { eventReport } from '@/services/api/usertracker';
-import { useBAS } from '@/services/chains/useBAS';
+// import { useBAS } from '@/services/chains/useBAS';
 
 import './index.scss';
 
@@ -201,7 +201,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           if (formatNetworkName === 'BNB Greenfield') {
             const chainInfo = EASInfo[formatNetworkName];
             const endpointUrl = 'https://gnfd-testnet-sp1.bnbchain.org';
-            debugger
+            debugger;
             // await initClient(
             //   connectedWallet.address,
             //   chainInfo.easContact,
@@ -209,10 +209,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             //   chainInfo.rpcUrl,
             //   endpointUrl
             // );
-            debugger
+            debugger;
           }
 
-          debugger
+          debugger;
           if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
             const regenerateAttestationParamsArr = toBeUpperChainCreds.map(
               (i: any) => {
@@ -234,7 +234,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               return regenerateAttestation(i);
             });
             const signResArr = await Promise.all(requestArr);
-            debugger
+            debugger;
             signResArr.forEach((i, k) => {
               const { rc, result } = i;
               if (rc === 0) {
@@ -256,7 +256,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
 
           //   );
           // }
-            let upChainRes = await bulkAttest(upChainParams);
+          let upChainRes = await bulkAttest(upChainParams);
           // burying point
           let upChainType = upChainParams.items[0].type;
           if (upChainType === 'web') {
@@ -610,7 +610,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           } else if (
             formatNetworkName &&
             formatNetworkName.indexOf('BNB Greenfield') > -1
-          ){
+          ) {
             LineaSchemaName = BNBGREENFIELDSCHEMANAME;
           } else {
             LineaSchemaName = 'EAS';
@@ -941,6 +941,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     useEffect(() => {
       fromEvents === 'LINEA_DEFI_VOYAGE' && fetchEventDetail();
     }, [fromEvents, fetchEventDetail]);
+    
 
     return (
       <div className="credSendToChainWrapper">
