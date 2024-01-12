@@ -36,6 +36,8 @@ const CredOverview = memo(() => {
     useState<boolean>(false);
   const [claimEventBASVisible, setClaimEventBASVisible] =
     useState<boolean>(false);
+  const [claimEventBASStep, setClaimEventBASStep] = useState<number>(1);
+  ;
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
@@ -326,6 +328,7 @@ const CredOverview = memo(() => {
         } else if (fromEvents === BASEVENTNAME) {
           setAddDialogVisible(false);
           setClaimEventBASVisible(true);
+          setClaimEventBASStep(2);
         } else {
           if (addSucFlag) {
             // addSucFlag: requestid;
@@ -603,6 +606,7 @@ const CredOverview = memo(() => {
         onSubmit={onSubmitClaimEventBAS}
         onChange={onChangeClaimEventBAS}
         onAttest={onClaimEventBASAttest}
+        activeStep={claimEventBASStep}
       />
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>

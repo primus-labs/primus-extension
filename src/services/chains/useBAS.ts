@@ -2,7 +2,7 @@
 
 import { BAS, SchemaEncoder } from '@bnb-attestation-service/bas-sdk';
 import { hashMessage } from 'viem';
-import { address } from 'hardhat/internal/core/config/config-validation';
+// import { address } from 'hardhat/internal/core/config/config-validation';
 import axios, { AxiosResponse } from 'axios';
 import { Offchain } from '@ethereum-attestation-service/eas-sdk';
 import { GreenFieldClient } from '@bnb-attestation-service/bas-sdk/dist/greenFieldClient';

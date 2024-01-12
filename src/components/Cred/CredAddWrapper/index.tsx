@@ -836,6 +836,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             (r: any) =>
               r.name === form.proofContent && r.dataSource === form.source
           );
+          debugger
           currRequestObj.requestid = form.requestid;
           currRequestObj.event = form.event;
           const currentWindowTabs = await chrome.tabs.query({

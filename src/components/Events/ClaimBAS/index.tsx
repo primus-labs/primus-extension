@@ -34,9 +34,10 @@ interface ClaimWrapperProps {
   onSubmit: () => void;
   onChange: (step: number) => void;
   onAttest: (attestId: string) => void;
+  activeStep: number;
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
-  ({ visible, onClose, onSubmit, onChange, onAttest }) => {
+  ({ visible, onClose, onSubmit, onChange, onAttest, activeStep }) => {
     const [searchParams] = useSearchParams();
     const BadgesProcess = searchParams.get('ScrollProcess');
     const [step, setStep] = useState<number>(0);
@@ -141,8 +142,11 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       }
       setStep(1);
     }, []);
-
-   
+    useEffect(() => {
+      if (activeStep === 2) {
+        setStep(2);
+      }
+    }, [activeStep]);
 
     return (
       <div className="claimMysteryBoxWrapper">
