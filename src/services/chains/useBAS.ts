@@ -1,5 +1,5 @@
 'use client';
-
+import createMetaMaskProvider from 'metamask-extension-provider';
 import { BAS, SchemaEncoder } from '@bnb-attestation-service/bas-sdk';
 import { hashMessage } from 'viem';
 // import { address } from 'hardhat/internal/core/config/config-validation';
@@ -82,9 +82,13 @@ export const useBAS = () => {
   };
   const attestOffChainWithGreenFieldWithFixValue = async (
     address: any,
-    provider: any,
+    // provider: any,
     attestationInfo: any
   ) => {
+    console.log('111attestOffChainWithGreenFieldWithFixValue');
+
+    const provider = createMetaMaskProvider();
+    console.log('111provider:', provider)
     if (!address) return;
     if (!bas) {
       console.log('please init client first');
@@ -278,8 +282,32 @@ console.log(222, base64ToHex);
 console.log(333, useBAS);
 console.log(444, window);
 
-window.addEventListener('message', function (event) {
+window.addEventListener('message', async (event) => {
   console.log('111sandbox receive:', event);
   const result = 'invalid request';
-  event.source.postMessage({ result: result }, event.origin);
+  const { name, params } = event.data;
+  const { initClient, attestOffChainWithGreenFieldWithFixValue } = useBAS();
+  if (name === 'initClient') {
+    const { address, easContact, chainId, rpcUrl, endpointUrl } = params;
+    await initClient(address, easContact, chainId, rpcUrl, endpointUrl);
+    event.source.postMessage(
+      { name: 'initClient', result: { success: true } },
+      event.origin
+    );
+  } else if (name === 'attestOffChainWithGreenFieldWithFixValue') {
+    const { address, attestationInfo } = params;
+
+    console.log('111windowParent', window.parent);
+    const res = await attestOffChainWithGreenFieldWithFixValue(
+      address,
+      attestationInfo
+    );
+    event.source.postMessage(
+      {
+        name: 'attestOffChainWithGreenFieldWithFixValue',
+        result: { success: true , res},
+      },
+      event.origin
+    );
+  }
 });
