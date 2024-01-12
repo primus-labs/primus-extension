@@ -288,22 +288,30 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         if (item.finished) {
           return;
         }
-        switch (item.id) {
-          case 1:
-            break;
-          case 2:
-            onFollowX();
-            break;
-          case 3:
-          case 4:
-            if (!item.finished) {
-              onChange(item.id);
-            }
-            break;
+        if (item.id === 1) {
+          return;
+        } else if (item.id === 2) {
+          onFollowX();
+        } else if (item.id === 3) {
+          if (!formatStepList[1].finished) {
+            setErrorTip('Please complete the tasks above first.');
+            return;
+          }
+          if (!item.finished) {
+            onChange(item.id);
+          }
+        } else if (item.id === 4) {
+          if (!formatStepList[2].finished) {
+            setErrorTip('Please complete the tasks above first.');
+            return;
+          }
+          if (!item.finished) {
+            onChange(item.id);
+          }
         }
         setActiveStep(item.id);
       },
-      [onChange, onFollowX]
+      [onChange, onFollowX, formatStepList]
     );
     const optionButton = useCallback(
       (item) => {
