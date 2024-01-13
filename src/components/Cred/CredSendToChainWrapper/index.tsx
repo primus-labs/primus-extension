@@ -234,11 +234,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                     }),
               greaterThanBaseValue: true,
               signature: i?.signature,
-              newSigFormat: LineaSchemaNameFn(),
+              newSigFormat: LineaSchemaNameFn('BNB Greenfield'),
               sourceUseridHash: i?.sourceUseridHash,
             };
           }
         );
+        console.log('222newSigFormat', LineaSchemaNameFn(), activeNetworkName);
         const requestArr = regenerateAttestationParamsArr.map((i) => {
           return regenerateAttestation(i);
         });
@@ -260,23 +261,27 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             };
           }
         });
-
-        let message = {
-          name: 'attestOffChainWithGreenFieldWithFixValue',
+        console.log('222connectedWallet', connectedWallet);
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'upperChain',
           params: {
-            address: connectedWallet.address,
-            // provider: connectedWallet.provider,
+            operation: 'upperChain',
             attestationInfo: upChainItems,
           },
-        };
-        // window.yProvider = connectedWallet.provider;
-        // document.getElementById('theFrame').yProvider =
-        //   connectedWallet.provider;
-        // document.getElementById('theFrame').contentWindow.yProvider =
-        //   connectedWallet.provider;
-        document
-          .getElementById('theFrame')
-          .contentWindow.postMessage(message, '*');
+        });
+
+        // let message = {
+        //   name: 'attestOffChainWithGreenFieldWithFixValue',
+        //   params: {
+        //     address: connectedWallet.address,
+        //     // provider: connectedWallet.provider,
+        //     attestationInfo: upChainItems,
+        //   },
+        // };
+        // document
+        //   .getElementById('theFrame')
+        //   .contentWindow.postMessage(message, '*');
       }
     }, [
       LineaSchemaNameFn,
@@ -305,28 +310,34 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         });
         const firstToBeUpperChainCred = toBeUpperChainCreds[0];
         if (formatNetworkName === 'BNB Greenfield') {
-          const chainInfo = EASInfo[formatNetworkName];
-          const endpointUrl = 'https://gnfd-testnet-sp1.bnbchain.org';
-          let message = {
-            name: 'initClient',
+          const { easContact, chainId, rpcUrl, endpointUrl } =
+            EASInfo[formatNetworkName];
+          chrome.runtime.sendMessage({
+            type: 'padoWebsite',
+            name: 'upperChain',
             params: {
-              address: walletObj.address,
-              easContact: chainInfo.easContact,
-              chainId: parseInt(chainInfo.chainId),
-              rpcUrl: chainInfo.rpcUrl,
+              operation: 'openPadoWebsite',
+              eventName: BASEVENTNAME,
+              chainName: formatNetworkName,
+              easContact,
+              chainId: parseInt(chainId),
+              rpcUrl,
               endpointUrl,
             },
-          };
-          document
-            .getElementById('theFrame')
-            .contentWindow.postMessage(message, '*');
-          // await initClient(
-          //   connectedWallet.address,
-          //   chainInfo.easContact,
-          //   parseInt(chainInfo.chainId),
-          //   chainInfo.rpcUrl,
-          //   endpointUrl
-          // );
+          });
+          // let message = {
+          //   name: 'initClient',
+          //   params: {
+          //     address: walletObj.address,
+          //     easContact: chainInfo.easContact,
+          //     chainId: parseInt(chainInfo.chainId),
+          //     rpcUrl: chainInfo.rpcUrl,
+          //     endpointUrl: chainInfo.endpointUrl,
+          //   },
+          // };
+          // document
+          //   .getElementById('theFrame')
+          //   .contentWindow.postMessage(message, '*');
           return;
         }
 
@@ -365,7 +376,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           items: upChainItems,
           eventSchemauid: BASEventDetail?.ext?.schemaUid,
         };
-        
+
         // if (formatNetworkName === 'BNB Greenfield') {
         //   attestOffChainWithGreenFieldWithFixValue(
         //     walletObj.address,
@@ -1044,28 +1055,68 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     useEffect(() => {
       fromEvents === 'LINEA_DEFI_VOYAGE' && fetchEventDetail();
     }, [fromEvents, fetchEventDetail]);
+    // useEffect(() => {
+    //   const msgFn = async () => {
+    //     console.log('111page receive:', event);
+    //     const { name, result } = event.data;
+    //     if (name === 'initClient') {
+    //       const { success } = result;
+    //       if (success) {
+    //         // regenarate
+    //         await regeneratAttestationsBASFn();
+    //       }
+    //     } else if (name === '') {
+    //       const { success } = result;
+    //       if (success) {
+    //         // store cred chain
+    //       }
+    //     }
+    //   };
+    //   window.addEventListener('message', msgFn);
+    //   return () => {
+    //     window.removeEventListener('message', msgFn);
+    //   };
+    // }, [regeneratAttestationsBASFn]);
+    // useEffect(() => {
+    //   const msgFn = async () => {
+    //     console.log('111page receive:', event);
+    //     const { name, result } = event.data;
+    //     if (name === 'initClient') {
+    //       const { success } = result;
+    //       if (success) {
+    //         // regenarate
+    //         await regeneratAttestationsBASFn();
+    //       }
+    //     } else if (name === '') {
+    //       const { success } = result;
+    //       if (success) {
+    //         // store cred chain
+    //       }
+    //     }
+    //   };
+    //   window.addEventListener('message', msgFn);
+    //   return () => {
+    //     window.removeEventListener('message', msgFn);
+    //   };
+    // }, [regeneratAttestationsBASFn]);
+
     useEffect(() => {
-      const msgFn = async () => {
-        console.log('111page receive:', event);
-        const { name, result } = event.data;
-        if (name === 'initClient') {
-          const { success } = result;
-          if (success) {
-            // regenarate
-            await regeneratAttestationsBASFn();
-          }
-        } else if (name === '') {
-          const { success } = result;
-          if (success) {
-            // store cred chain
+      const listerFn = async(message: any) => {
+        if (message.type === "padoWebsite") {
+          if (message.name === 'upperChain') {
+            if (message.params.operation === 'regenerate') {
+              console.log('222extentsion receive regenerate');
+              await regeneratAttestationsBASFn();
+            }
           }
         }
       };
-      window.addEventListener('message', msgFn);
+      chrome.runtime.onMessage.addListener(listerFn);
       return () => {
-        window.removeEventListener('message', msgFn);
+        chrome.runtime.onMessage.removeListener(listerFn);
       };
-    }, [regeneratAttestationsBASFn]);
+    }, []);
+
     useEffect(() => {
       fromEvents === BASEVENTNAME && getBASInfoFromChromeStore();
     }, [getBASInfoFromChromeStore, fromEvents]);

@@ -230,6 +230,7 @@ const EASINFOMAP = {
         decimals: 18,
       },
       transactionDetailUrl: 'https://testnet.greenfieldscan.com/tx',
+      endpointUrl: 'https://gnfd-testnet-sp1.bnbchain.org',
     },
     Arbitrum: {
       showName: 'Arbitrum',
@@ -568,6 +569,7 @@ const EASINFOMAP = {
         decimals: 18,
       },
       transactionDetailUrl: 'https://greenfieldscan.com/tx',
+      endpointUrl: 'https://greenfield-sp.bnbchain.org',
     },
 
     Ethereum: {

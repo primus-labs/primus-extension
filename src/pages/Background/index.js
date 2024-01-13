@@ -17,6 +17,7 @@ import {
 import { eventReport } from '@/services/api/usertracker';
 import './pageDecode.js';
 import { pageDecodeMsgListener } from './pageDecode.js';
+import { PadoWebsiteMsgListener } from './pageWebsite.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -103,20 +104,28 @@ const processAlgorithmReq = async (message, port) => {
   const matchedClients = await clients.matchAll();
   console.log('matchedClients', matchedClients);
   let { reqMethodName, params = {} } = message;
-  console.log(`${(new Date()).toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`);
+  console.log(
+    `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
+  );
   switch (reqMethodName) {
     case 'start':
       const offscreenDocumentPath = 'offscreen.html';
       if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
-        console.log(`${(new Date()).toLocaleString()} create offscreen document...........`);
+        console.log(
+          `${new Date().toLocaleString()} create offscreen document...........`
+        );
         await chrome.offscreen.createDocument({
           url: chrome.runtime.getURL(offscreenDocumentPath),
           reasons: ['IFRAME_SCRIPTING'],
           justification: 'WORKERS for needing the document',
         });
-        console.log(`${(new Date()).toLocaleString()} offscreen document created`);
+        console.log(
+          `${new Date().toLocaleString()} offscreen document created`
+        );
       } else {
-        console.log(`${(new Date()).toLocaleString()} offscreen document has already created`);
+        console.log(
+          `${new Date().toLocaleString()} offscreen document has already created`
+        );
       }
       break;
     case 'init':
@@ -179,7 +188,7 @@ const processAlgorithmReq = async (message, port) => {
       postMsg(fullscreenPort, {
         resType: 'algorithm',
         resMethodName: 'lineaEventStartOffline',
-        res: { },
+        res: {},
       });
       break;
     default:
@@ -459,23 +468,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     );
   }
   if (message.type === 'padoWebsite') {
-    const {
-      name,
-      params: { eventName },
-    } = message;
-    if (name === 'createTab') {
-      let url = chrome.runtime.getURL(
-        `home.html#/cred?fromEvents=${eventName}`
-      );
-      chrome.tabs.create({ url });
-    }
+    PadoWebsiteMsgListener(message, sender, sendResponse);
   }
   if (message.type === 'xFollow') {
-    const {
-      name
-    } = message;
+    const { name } = message;
     if (name === 'follow') {
-      
     }
   }
 });
