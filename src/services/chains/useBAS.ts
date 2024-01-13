@@ -123,10 +123,6 @@ export const useBAS = () => {
       );
       console.log('create bucket successfully!');
     }
-    //@ts-ignore
-    BigInt.prototype.toJSON = function () {
-      return this.toString();
-    };
     let files = [];
     let resp = [];
     for (let i = 0; i < attestationInfo.length; i++) {
@@ -219,7 +215,7 @@ export const useBAS = () => {
   };
 
   const createBASBuckect = async (provider: any, bucketName: string) => {
-    if (!address) return;
+    if (!bucketName) return;
     // await shouldSwitchNetwork(chains[0].id);
     const res = await greenFieldClient.createBucket(provider, bucketName);
     console.log('create bucket res', res);
