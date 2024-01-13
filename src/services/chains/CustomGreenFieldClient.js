@@ -49,6 +49,7 @@ export class CustomGreenFieldClient extends GreenFieldClient {
                 });
                 txss[i] = tx
             } catch (e) {
+                console.log(e)
                 if (e.message === "repeated object") {
                     console.log(`repeated object:${files[i].name}`)
                 }
