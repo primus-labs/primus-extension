@@ -14,7 +14,7 @@
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
-    "@bnb-attestation-service/bas-sdk": "^0.0.8-alpha",
+    "@bnb-attestation-service/bas-sdk": "^0.0.7-alpha",
     "@bnb-chain/greenfield-js-sdk": "^1.2.0",
     "@ethereum-attestation-service/eas-sdk": "^0.29.0",
     "@metamask/eth-sig-util": "6.0.1",
