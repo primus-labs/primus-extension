@@ -14,6 +14,7 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
     if (operation === 'openPadoWebsite') {
       tabCreatedByPado = await chrome.tabs.create({
         url: 'http://localhost:3001/other/BNBGreenfield', // TODO
+        // url: 'http://localhost:3001', // TODO
       });
       icpPageTabId = sender.tab.id;
       console.log('22212345', icpPageTabId, tabCreatedByPado);

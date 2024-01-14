@@ -1,6 +1,7 @@
 var padoExtenstionTabId = null;
-var regenerateEl ;
+var regenerateEl;
 var upperChainEl;
+var completeUpperChainEl;
 function createDomElement(html) {
   var dom = new DOMParser().parseFromString(html, 'text/html');
   return dom.body.firstElementChild;
@@ -42,6 +43,7 @@ if (EventsNavEl) {
 const regenerateFn = () => {
   regenerateEl = document.querySelector('#regenerate');
   upperChainEl = document.querySelector('#upperChain');
+  completeUpperChainEl = document.querySelector('#completeChain');
   console.log('222pado-extension-regenerateEl', regenerateEl, upperChainEl);
   if (regenerateEl) {
     regenerateEl.onclick = (e) => {
@@ -58,6 +60,45 @@ const regenerateFn = () => {
       return;
     };
   }
+  if (completeUpperChainEl) {
+    completeUpperChainEl.onclick = (e) => {
+      console.log('222completeUpperChainEl clicked');
+      const resStr = localStorage.geItem(
+        'attestOffChainWithGreenFieldWithFixValueRes'
+      );
+      if (resStr) {
+        const resObj = JSON.parse(resStr);
+        const attestationUidArr = resObj.map((i) => i.attestationUid);
+        const recipient =
+          attestationUidArr[0].eip712MessageRawDataWithSignature.message
+            .recipient;
+
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'upperChain',
+          params: {
+            operation: 'completeUpperChain',
+            eventName: 'BAS_EVENT_PROOF_OF_HUMANITY',
+            attestationUidArr,
+            recipient,
+            result: true,
+          },
+        });
+      } else {
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'upperChain',
+          params: {
+            operation: 'completeUpperChain',
+            eventName: 'BAS_EVENT_PROOF_OF_HUMANITY',
+            result: false,
+          },
+        });
+      }
+
+      return;
+    };
+  }
 };
 regenerateFn();
 setTimeout(() => {
@@ -65,11 +106,7 @@ setTimeout(() => {
 }, 300);
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  var {
-    type,
-    name,
-    params,
-  } = request;
+  var { type, name, params } = request;
   const { operation } = params;
   if (type === 'padoWebsite') {
     if (name === 'upperChain') {
@@ -79,7 +116,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           JSON.stringify(params)
         );
         console.log('222 content receive upperChain', params);
-        upperChainEl.click()
+        upperChainEl.click();
       }
     }
   }
