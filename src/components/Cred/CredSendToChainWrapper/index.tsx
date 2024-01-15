@@ -178,7 +178,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     }, []);
 
     const toBeUpperChainCredsFn = useCallback(async () => {
-      let credArrNew = Object.values(credentialsFromStore);
+      let credArrNew: CredTypeItemType[] = Object.values(credentialsFromStore);
       const lastBASInfoObj = (await getBASInfoFn()) as any;
       // del
       console.log(
@@ -233,7 +233,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         const { result, attestationUidArr, recipient, bucketName } = params;
         const formatNetworkName = 'BNB Greenfield';
         const LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
-        const toBeUpperChainCreds = await toBeUpperChainCredsFn();
+        const toBeUpperChainCreds:CredTypeItemType[] = await toBeUpperChainCredsFn();
         const firstToBeUpperChainCred = toBeUpperChainCreds[0];
 
         let upChainType = firstToBeUpperChainCred?.schemaType;

@@ -47,9 +47,9 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     if (isActive) {
       return 1;
     }
-    // if (isEnd) {
-    //   return 2;
-    // }
+    if (isEnd) {
+      return 2;
+    }
     return 0;
   }, [BASEventPeriod]);
 
