@@ -181,8 +181,8 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [eventActiveFlag]);
 
     const isSwitchable = useMemo(() => {
-      return true;
-    }, []);
+      return credNum === 0;
+    }, [credNum]);
 
     const authorize = useAuthorization();
 

@@ -431,6 +431,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             if (res[BASEVENTNAME]) {
               const lastInfo = JSON.parse(res[BASEVENTNAME]);
               const lastTasks = lastInfo.steps[1].tasks ?? {};
+              lastInfo.address = connectedWallet?.address;
               lastInfo.steps[1].status = 1;
               lastInfo.steps[1].tasks = {
                 ...lastTasks,
@@ -1501,13 +1502,21 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       visible && !fromEvents && startOfflineFn();
     }, [visible, startOfflineFn, fromEvents]);
     const setScrollEventHistoryFn = useCallback(async () => {
-      const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
-      const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+      if (fromEvents === 'Scroll') {
+        const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
+        const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
 
-      setScrollEventHistoryObj(scrollEventObj);
-    }, []);
+        setScrollEventHistoryObj(scrollEventObj);
+      } else if (fromEvents === BASEVENTNAME) {
+        const res = await chrome.storage.local.get([BASEVENTNAME]);
+        if (res[BASEVENTNAME]) {
+          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          setScrollEventHistoryObj(lastInfo);
+        }
+      }
+    }, [fromEvents]);
     useEffect(() => {
-      fromEvents === 'Scroll' && setScrollEventHistoryFn();
+      !!fromEvents && setScrollEventHistoryFn();
     }, [fromEvents, setScrollEventHistoryFn]);
     const resultDialogHeaderEl = useMemo(() => {
       let formatAddress = connectedWallet?.address;
