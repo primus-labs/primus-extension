@@ -13,15 +13,20 @@
       gap: var(--spacing-20, 20px);
 
       .credTypeList {
-        gap: var(--spacing-20, 20px);
+        gap: var(--spacing-16, 16px);
+
         .credTypeItem {
           width: 100%;
-          height: var(--spacing-60, 60px);
+          height: var(--spacing-68, 68px);
           @extend .pSelectOptionStyle2;
 
           .innerContent {
             .con {
               width: var(--con-width, 232px);
+            }
+            .title{
+              @extend .frsc;
+              gap: var(--spacing-8,8px);
             }
           }
 

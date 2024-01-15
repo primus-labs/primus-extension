@@ -46,6 +46,7 @@ type StepItem = {
   title: string;
   subTitle: string;
   finished?: boolean;
+  extra?: string;
 };
 
 const stepList: StepItem[] = [
@@ -81,6 +82,7 @@ const stepList: StepItem[] = [
 const ClaimDialog: FC<ClaimDialogProps> = memo(
   ({ onClose, onSubmit, onChange, title = '', titleIllustration = false }) => {
     const [xTabId, setXTabId] = useState<number>();
+    const [credNum, setCredNum] = useState<number>(0);
     const [stepObj, setStepObj] = useState<any>({
       step1: 0,
       step2: 0,
@@ -151,7 +153,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       stepList[1].finished = stepObj.step1 === 1;
 
       stepList[2].finished = stepObj.step2 === 1;
-
+      stepList[2].extra = `${credNum}/4`;
       stepList[3].finished = stepObj.step3 === 1;
       const newArr = [...stepList];
       return newArr;
@@ -161,6 +163,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       connectedWallet?.address,
       addressForScrollEvent,
       stepObj,
+      credNum,
     ]);
     const isComplete = useMemo(() => {
       const hasComplete = formatStepList.every((i) => i.id === 1 || i.finished);
@@ -362,6 +365,8 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             return prev;
           }, {});
           setStepObj(newObj);
+
+          setCredNum(Object.values(lastInfo.steps[1].tasks).length);
         }
       });
     }, []);
@@ -423,7 +428,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                     <div className="innerContent">
                       <img className="icon" src={item.icon} alt="" />
                       <div className="con">
-                        <h5 className="title">{item.title}</h5>
+                        <h5 className="title">
+                          <span>{item.title}</span>
+                          {item.extra && <span>{item.extra}</span>}
+                        </h5>
                         <h6 className="desc">{item.subTitle}</h6>
                       </div>
                       {/* {item.id === 1 && optionButton(item)} */}
