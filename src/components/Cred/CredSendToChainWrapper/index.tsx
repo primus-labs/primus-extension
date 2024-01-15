@@ -63,8 +63,6 @@ interface CredSendToChainWrapperType {
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
-    // const { initClient } = useBAS();
-    const [lastBASInfo, setLastBASInfo] = useState<any>({});
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -168,30 +166,39 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const handleBackConnectWallet = useCallback(() => {
       setStep(3);
     }, []);
-    const getBASInfoFromChromeStore = useCallback(async () => {
+
+    const getBASInfoFn = useCallback(async () => {
       const res = await chrome.storage.local.get([BASEVENTNAME]);
       if (res[BASEVENTNAME]) {
         const lastInfo = JSON.parse(res[BASEVENTNAME]);
-        setLastBASInfo(lastInfo);
+        return lastInfo;
       } else {
-        setLastBASInfo({});
+        return {};
       }
     }, []);
 
     const toBeUpperChainCredsFn = useCallback(async () => {
       let credArrNew = Object.values(credentialsFromStore);
-      if (lastBASInfo?.steps && lastBASInfo.steps[1]) {
-        const lastTasks = lastBASInfo.steps[1].tasks ?? {};
+      const lastBASInfoObj = (await getBASInfoFn()) as any;
+      // del
+      console.log(
+        '222toBeUpperChainCredsFn-credArrNew:',
+        credArrNew,
+        lastBASInfoObj
+      );
+      // del
+      if (lastBASInfoObj?.steps && lastBASInfoObj.steps[1]) {
+        const lastTasks = lastBASInfoObj.steps[1].tasks ?? {};
         const toBeUpperChainCredRequestids = Object.values(lastTasks);
         const Creds = credArrNew.filter((c: any) =>
           toBeUpperChainCredRequestids.includes(c.requestid)
         );
-        console.log('222toBeUpperChainCreds:', Creds, credArrNew, lastTasks);
+        console.log('222toBeUpperChainCreds:', Creds, lastTasks);
         return Creds;
       } else {
         return [];
       }
-    }, [credentialsFromStore, lastBASInfo]);
+    }, [credentialsFromStore, getBASInfoFn]);
     const LineaSchemaNameFn = useCallback(
       (networkName?: string) => {
         const formatNetworkName = networkName ?? activeNetworkName;
@@ -1001,6 +1008,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const handleSubmitConnectWallet = useCallback(
       async (wallet?: WALLETITEMTYPE, networkName?: string) => {
         const formatNetworkName = activeNetworkName ?? networkName;
+
         connect(wallet?.name, startFn, errorFn, sucFn, formatNetworkName);
       },
       [connect, startFn, sucFn, errorFn, activeNetworkName]
@@ -1133,10 +1141,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         chrome.runtime.onMessage.removeListener(listerFn);
       };
     }, [regeneratAttestationsBASFn, completeUpperChainBASFn]);
-
-    useEffect(() => {
-      fromEvents === BASEVENTNAME && getBASInfoFromChromeStore();
-    }, [getBASInfoFromChromeStore, fromEvents]);
 
     return (
       <div className="credSendToChainWrapper">

@@ -88,7 +88,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     });
     const [errorTip, setErrorTip] = useState<string>();
     const [eventDetail, setEventDetail] = useState<any>({ ext: {} });
-    
+
     const [activeStep, setActiveStep] = useState<number>();
     const dispatch: Dispatch<any> = useDispatch();
     const socialSources = useSelector(
@@ -178,8 +178,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [eventActiveFlag]);
 
     const isSwitchable = useMemo(() => {
-      
-
       return true;
     }, []);
 
@@ -217,10 +215,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         }
         return defaultCN;
       },
-      [
-        isSwitchable,
-        formatStepList
-      ]
+      [isSwitchable, formatStepList]
     );
     const fetchEventDetail = useCallback(async () => {
       try {
@@ -272,7 +267,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [socialSources, authorize, dispatch]);
     const handleChange = useCallback(
       async (item: StepItem) => {
-        if (item.finished) {
+        if (item.finished && item.id !== 3) {
           return;
         }
         if (item.id === 1) {
@@ -284,9 +279,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             setErrorTip('Please complete the tasks above first.');
             return;
           }
-          if (!item.finished) {
-            onChange(item.id);
-          }
+          // if (!item.finished) {
+          onChange(item.id);
+          // }
         } else if (item.id === 4) {
           if (!formatStepList[2].finished) {
             setErrorTip('Please complete the tasks above first.');
@@ -357,11 +352,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [fetchEventDetail]);
 
     useEffect(() => {
-      console.log('222ClaimDialog useEffect');
-
       chrome.storage.local.get([BASEVENTNAME], (res) => {
         if (res[BASEVENTNAME]) {
           const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          console.log('222ClaimDialog useEffect', lastInfo);
           // console.log('222111', lastInfo);
           const newObj = lastInfo.steps.reduce((prev, curr, currK) => {
             prev[`step${currK + 1}`] = curr.status;
@@ -385,11 +379,15 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             });
             setStepObj((obj) => ({ ...obj, step1: 1 }));
             console.log('222123tabdId', xTabId);
-            const xTab = await chrome.tabs.get(xTabId as number);
-            if (xTab) {
-              setXTabId(undefined);
-              await chrome.tabs.remove(xTabId as number);
-            }
+            try {
+              if (xTabId) {
+                const xTab = await chrome.tabs.get(xTabId as number);
+                if (xTab) {
+                  setXTabId(undefined);
+                  await chrome.tabs.remove(xTabId as number);
+                }
+              }
+            } catch {}
           }
         }
       };

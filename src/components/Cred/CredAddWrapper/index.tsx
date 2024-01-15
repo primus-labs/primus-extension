@@ -431,6 +431,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             if (res[BASEVENTNAME]) {
               const lastInfo = JSON.parse(res[BASEVENTNAME]);
               const lastTasks = lastInfo.steps[1].tasks ?? {};
+              lastInfo.steps[1].status = 1;
               lastInfo.steps[1].tasks = {
                 ...lastTasks,
                 [GOOGLEWEBPROOFID]: fullAttestation.requestid,
@@ -1370,7 +1371,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       activeCred,
       fromEvents,
       eventSource,
-      onSubmitAttestationDialog,
+      
     ]);
 
     // useEffect(() => {

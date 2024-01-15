@@ -105,14 +105,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       if (visible) {
         setStep(1);
         setActiveRequest(undefined);
-        if (BadgesProcess === 'error') {
-          setStep(2);
-          setActiveRequest({
-            type: 'warn',
-            title: 'Unable to proceed',
-            desc: errorDescEl,
-          });
-        }
+        
       }
     }, [BadgesProcess, errorDescEl, visible]);
 
@@ -132,14 +125,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       setStep(1);
     }, []);
     const onCredTypeDialogSubmit = useCallback(async () => {
-      const res = await chrome.storage.local.get([BASEVENTNAME]);
-      if (res[BASEVENTNAME]) {
-        const lastInfo = JSON.parse(res[BASEVENTNAME]);
-        lastInfo.steps[1].status = 1;
-        await chrome.storage.local.set({
-          [BASEVENTNAME]: JSON.stringify(lastInfo),
-        });
-      }
       setStep(1);
     }, []);
     useEffect(() => {

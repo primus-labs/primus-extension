@@ -7,20 +7,21 @@ var injectEl = createDomElement(padoStr);
 document.body.appendChild(injectEl);
 
 window.onload = () => {
-  console.log('onload');
-  setTimeout(() => {
+  let checkFollowElTimer = null;
+  checkFollowElTimer = setInterval(() => {
     var element = document.querySelector(
       "[data-testid='confirmationSheetConfirm']"
     );
-    console.log('222123element', element);
+    console.log('222x follow btn', element);
     if (element) {
       element.addEventListener('click', () => {
-        console.log('222123click');
+        console.log('222x follow btn clicked');
         chrome.runtime.sendMessage({
           type: 'xFollow',
           name: 'follow',
         });
       });
+      clearInterval(checkFollowElTimer);
     }
-  }, 1000);
+  }, 200);
 };
