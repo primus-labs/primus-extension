@@ -41,8 +41,5 @@
       "matches": ["https://twitter.com/intent/follow?screen_name=padolabs"],
       "js": ["xFollow.js"]
     }
-  ],
-  "sandbox": {
-    "pages": ["sandbox.html"]
-  }
+  ]
 }

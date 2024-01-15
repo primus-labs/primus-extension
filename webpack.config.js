@@ -37,7 +37,7 @@ var options = {
     home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
-    sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
+    //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },
   chromeExtensionBoilerplate: {
     notHotReload: ['background'],
@@ -335,7 +335,7 @@ var options = {
         },
       ],
     }),
-    new CopyWebpackPlugin({
+    /*new CopyWebpackPlugin({
       patterns: [
         {
           from: 'src/pages/sandbox.html',
@@ -343,7 +343,7 @@ var options = {
           force: true,
         },
       ],
-    }),
+    }),*/
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'Home', 'index.html'),
       filename: 'home.html',

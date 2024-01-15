@@ -14,8 +14,6 @@
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
-    "@bnb-attestation-service/bas-sdk": "^0.0.7-alpha",
-    "@bnb-chain/greenfield-js-sdk": "^1.2.0",
     "@ethereum-attestation-service/eas-sdk": "^0.29.0",
     "@metamask/eth-sig-util": "6.0.1",
     "@types/node": "^18.15.3",
@@ -57,7 +55,6 @@
     "stream-browserify": "^3.0.0",
     "util": "^0.12.5",
     "uuid": "^9.0.0",
-    "wagmi": "^1.4.12",
     "web3-eth-accounts": "^1.8.2"
   },
   "devDependencies": {
