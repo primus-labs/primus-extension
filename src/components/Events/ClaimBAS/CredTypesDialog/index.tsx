@@ -85,13 +85,14 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
           credIntroduce: 'Proof of Account Ownership',
         },
       ];
-      const newArr = proofTypes.map((i, k) => {
+      let newArr = proofTypes.map((i, k) => {
         return {
           ...i,
           finished: !!proofStatusObj[i.id],
-          score: `+${taskScoreObj[i.id]}xp`,
+          score: `${taskScoreObj[i.id]}`,
         };
       });
+      newArr = newArr.sort((a:any, b: any) => b.score - a.score);
       return newArr;
     }, [proofStatusObj, taskScoreObj]);
     const isComplete = useMemo(() => {
@@ -184,7 +185,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
                       <div className="con">
                         <h5 className="title">
                           <span>{item.credTitle}</span>
-                          <div className="score">{item.score}</div>
+                          <div className="score">+{item.score}xp</div>
                         </h5>
                         <h6 className="desc">{item.credIntroduce}</h6>
                       </div>

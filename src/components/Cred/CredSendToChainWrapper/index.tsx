@@ -63,6 +63,7 @@ interface CredSendToChainWrapperType {
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit }) => {
+    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -83,7 +84,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
 
     const dispatch: Dispatch<any> = useDispatch();
 
-    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const errorDescEl = useMemo(
       () => (
         <>
@@ -123,7 +123,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         }
         return newList;
       } else {
-        return ONCHAINLIST;
+        const filterdList = ONCHAINLIST.filter(
+          (i) => i.title !== 'BNB Greenfield'
+        );
+        return filterdList;
       }
     }, [fromEvents]);
 
@@ -812,14 +815,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 activeCred?.reqType === 'web' || activeCred?.source === 'google'
                   ? 'web'
                   : activeCred?.type,
-              schemaName: activeCred?.schemaName ?? LineaSchemaName,
+              schemaName: activeCred?.schemaName ?? LineaSchemaName, // TODO-basevent
+              
             };
+            
             let versionForComparison = activeCred?.version ?? '';
 
             let upChainRes;
             const cObj = { ...credentialsFromStore };
             const curRequestid = activeCred?.requestid as string;
             const curCredential = cObj[curRequestid];
+            // if (curCredential?.event === BASEVENTNAME ) {
+            //   upChainParams.eventSchemauid =
+            //     BASEventDetail?.ext?.schemaUidInfo[0].schemaUid;
+            // } // TODO-basevent
             if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
               const requestParams: any = {
                 rawParam:
@@ -831,7 +840,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                       }),
                 greaterThanBaseValue: true,
                 signature: curCredential.signature,
-                newSigFormat: LineaSchemaName,
+                newSigFormat: LineaSchemaName, // TODO-basevent
                 sourceUseridHash:
                   curCredential.type === 'UNISWAP_PROOF'
                     ? undefined

@@ -278,6 +278,7 @@ export async function attestByDelegationProxyFee(params) {
     metamaskprovider,
     type,
     schemaName,
+    eventSchemauid,
   } = params;
   const splitsignature = utils.splitSignature(signature);
   const formatSignature = {
@@ -315,6 +316,9 @@ export async function attestByDelegationProxyFee(params) {
     schemauid = activeSchemaInfo.schemaUidIdentification;
   } else if (type === 'web' || type === 'UNISWAP_PROOF') {
     schemauid = activeSchemaInfo.schemaUidWeb;
+  }
+  if (eventSchemauid) {
+    schemauid = eventSchemauid;
   }
   console.log(
     'attestByDelegationProxyFee schemauid=',
