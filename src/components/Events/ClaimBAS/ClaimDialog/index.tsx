@@ -411,7 +411,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             </div>
             <div className="descContent">
               <p className="attensionTip">
-                Follow the 3 steps to enjoy your BAS campaign.
+                Follow the 3 steps to enjoy your campaign.
               </p>
               <ul className="credTypeList">
                 {formatStepList.map((item) => (

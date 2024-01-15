@@ -599,7 +599,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           {!!onBack && <PBack onBack={onBack} />}
           <main>
             <header>
-              <h1>{activeAttestationTypeInfo.credTitle}</h1>
+              <h1>{activeAttestationTypeInfo?.credTitle}</h1>
               {/* <h2>{activeAttestationTypeInfo.credDetails}</h2> */}
             </header>
             <div className="formContent">

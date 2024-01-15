@@ -49,7 +49,7 @@ const useAuthorization2 = () => {
           address: connectedWallet.address,
           schemaType:
             fromEvents === BASEVENTNAME
-              ? BASEventDetail?.ext?.schemaType
+              ? (BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY')
               : 'GOOGLE_ACCOUNT_OWNER',
         });
         if (res.rc === 0 && res.result) {

@@ -1364,7 +1364,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           onSubmitAttestationDialog(form);
         }
       }
-    }, [visible, activeSource, activeCred, fromEvents, eventSource]);
+    }, [
+      visible,
+      activeSource,
+      activeCred,
+      fromEvents,
+      eventSource,
+      onSubmitAttestationDialog,
+    ]);
 
     // useEffect(() => {
     //   if (!activeRequest?.type) {

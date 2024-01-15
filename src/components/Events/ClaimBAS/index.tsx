@@ -147,10 +147,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setStep(2);
       }
     }, [activeStep]);
-    useEffect(() => {
-      console.log('222ClaimBAS useEffect');
-    }, []);
-
+    
     return (
       <div className="claimMysteryBoxWrapper">
         {visible && step === 1 && (
@@ -158,7 +155,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             onClose={onClose}
             onSubmit={onSubmitClaimDialog}
             onChange={onChangeFn}
-            title="Scroll zkAttestation Tasks"
+            title="BNBChain Attestation Tasks "
             titleIllustration={true}
             subTitle=""
           />

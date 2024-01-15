@@ -166,7 +166,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
           <main>
             <PBack onBack={onBack} />
             <header>
-              <h1>Proof of Humanity</h1>
+              <h1>Attestation Tasks</h1>
               <h2>Choose one of tasks below to make your POH attestation.</h2>
             </header>
             <div className="scrollList">

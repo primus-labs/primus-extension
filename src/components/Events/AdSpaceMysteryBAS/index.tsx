@@ -24,7 +24,6 @@ interface AdSpaceProps {
 }
 dayjs.extend(utc);
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
-
   const dispatch: Dispatch<any> = useDispatch();
   const BASEventPeriod = useSelector(
     (state: UserState) => state.BASEventPeriod
@@ -36,24 +35,24 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
 
     const sArr = s.split('-');
     const eArr = e.split('-');
-    return `${sArr[0]} ~ ${eArr[0]}`;
+    return `${sArr[0]} ~ `;
   }, [BASEventPeriod]);
 
   const eventActiveFlag = useMemo(() => {
     const { startTime, endTime } = BASEventPeriod;
-    const isActive =
-      dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
+    // const isActive =
+    //   dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
+    const isActive = dayjs().isAfter(dayjs(+startTime));
     const isEnd = dayjs().isAfter(dayjs(+endTime));
     if (isActive) {
       return 1;
     }
-    if (isEnd) {
-      return 2;
-    }
+    // if (isEnd) {
+    //   return 2;
+    // }
     return 0;
   }, [BASEventPeriod]);
-  
-  
+
   return (
     <>
       {!!eventActiveFlag ? (
@@ -75,9 +74,12 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
               <img className="activeImg" src={bannerIllstration} alt="" />
             )}
             <div className="bannerContent">
-              <h3 className="ct">BAS Event: Proof of Humanity</h3>
+              <h3 className="ct">BNBChain Attestation Alliance</h3>
               <div className="cn">
-                <p>Get an attestation with ....</p>
+                <p>
+                  Bringing more traditional data attestations to the BNB
+                  ecosystem.
+                </p>
                 <p>{formatPeriod}</p>
               </div>
             </div>
