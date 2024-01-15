@@ -1,3 +1,4 @@
+import { BNBGREENFIELDSCHEMANAME } from '@/config/envConstants';
 let tabCreatedByPado;
 let icpPageTabId;
 
@@ -13,8 +14,7 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
   } else if (name === 'upperChain') {
     if (operation === 'openPadoWebsite') {
       tabCreatedByPado = await chrome.tabs.create({
-        url: 'http://localhost:3001/other/BNBGreenfield', // TODO
-        // url: 'http://localhost:3001', // TODO
+        url: BNBGREENFIELDSCHEMANAME, // TODO
       });
       icpPageTabId = sender.tab.id;
       console.log('22212345', icpPageTabId, tabCreatedByPado);

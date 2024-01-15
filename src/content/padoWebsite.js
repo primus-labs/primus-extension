@@ -43,8 +43,13 @@ if (EventsNavEl) {
 const regenerateFn = () => {
   regenerateEl = document.querySelector('#regenerate');
   upperChainEl = document.querySelector('#upperChain');
-  completeUpperChainEl = document.querySelector('#completeChain');
-  console.log('222pado-extension-regenerateEl', regenerateEl, upperChainEl);
+  completeUpperChainEl = document.querySelector('#completeUpperChain');
+  console.log(
+    '222pado-extension-regenerateEl',
+    regenerateEl,
+    upperChainEl,
+    completeUpperChainEl
+  );
   if (regenerateEl) {
     regenerateEl.onclick = (e) => {
       e.preventDefault();
@@ -63,16 +68,15 @@ const regenerateFn = () => {
   if (completeUpperChainEl) {
     completeUpperChainEl.onclick = (e) => {
       console.log('222completeUpperChainEl clicked');
-      const resStr = localStorage.geItem(
+      const resStr = localStorage.getItem(
         'attestOffChainWithGreenFieldWithFixValueRes'
       );
       if (resStr) {
         const resObj = JSON.parse(resStr);
         const attestationUidArr = resObj.map((i) => i.attestationUid);
         const recipient =
-          attestationUidArr[0].eip712MessageRawDataWithSignature.message
-            .recipient;
-
+          resObj[0].eip712MessageRawDataWithSignature.message.recipient;
+        const {bucketName} = resObj[0]
         chrome.runtime.sendMessage({
           type: 'padoWebsite',
           name: 'upperChain',
@@ -82,6 +86,7 @@ const regenerateFn = () => {
             attestationUidArr,
             recipient,
             result: true,
+            bucketName,
           },
         });
       } else {

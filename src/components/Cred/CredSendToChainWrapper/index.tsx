@@ -223,7 +223,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     );
     const completeUpperChainBASFn = useCallback(
       async (params: any) => {
-        const { result, attestationUidArr, recipient } = params;
+        const { result, attestationUidArr, recipient,bucketName } = params;
         const formatNetworkName = 'BNB Greenfield';
         const LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
         const toBeUpperChainCreds = await toBeUpperChainCredsFn();
@@ -249,8 +249,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           const currentChainObj: any = ONCHAINLIST.find(
             (i) => formatNetworkName === i.title
           );
-          currentChainObj.attestationUID = attestationUidArr[0];
+          // currentChainObj.attestationUID = attestationUidArr[0];
+          currentChainObj.attestationUID = bucketName;
           currentChainObj.submitAddress = recipient;
+         
           toBeUpperChainCreds.forEach((i) => {
             const newProvided = i.provided ?? [];
             newProvided.push(currentChainObj);
@@ -935,7 +937,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       return () => {
         chrome.runtime.onMessage.removeListener(listerFn);
       };
-    }, [regeneratAttestationsBASFn]);
+    }, [regeneratAttestationsBASFn, completeUpperChainBASFn]);
 
     useEffect(() => {
       fromEvents === BASEVENTNAME && getBASInfoFromChromeStore();

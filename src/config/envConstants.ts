@@ -231,6 +231,7 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://testnet.greenfieldscan.com/tx',
       endpointUrl: 'https://gnfd-testnet-sp1.bnbchain.org',
+      bucketDetailUrl: 'https://testnet.dcellar.io/buckets',
     },
     Arbitrum: {
       showName: 'Arbitrum',
@@ -570,6 +571,7 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://greenfieldscan.com/tx',
       endpointUrl: 'https://greenfield-sp.bnbchain.org',
+      bucketDetailUrl: 'https://dcellar.io/buckets',
     },
 
     Ethereum: {
@@ -733,11 +735,17 @@ const BNBSCHEMANAMEMAP = {
 };
 export let BNBSCHEMANAME = BNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDSCHEMANAMEMAP = {
+  development: 'http://api-dev.padolabs.org:9095/',
+  test: 'http://api-dev.padolabs.org:9095/',
+  production: 'https://events.padolabs.org/',
+};
+export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
+const BNBGREENFIELDURLMAP = {
   development: 'BNB Greenfield Testnet',
   test: 'BNB Greenfield Testnet',
   production: 'BNB Greenfield Mainnet',
 };
-export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
+export let BNBGREENFIELDURL = BNBGREENFIELDURLMAP[CURENV];
 const FIRSTVERSIONSUPPORTEDNETWORKNAMEMAP = {
   development: 'Sepolia',
   test: 'Sepolia',

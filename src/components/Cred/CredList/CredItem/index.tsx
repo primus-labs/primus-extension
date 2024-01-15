@@ -172,6 +172,11 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       if (item.title === 'ArbitrumOne') {
         chainShowName = 'Arbitrum';
       }
+      if (item.title === 'BNB Greenfield') {
+        // TODO !!!
+        const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
+        return `https://testnet.dcellar.io/buckets/${item.attestationUID}`;
+      }
       const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
       return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
     }, []);
