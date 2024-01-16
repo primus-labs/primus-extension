@@ -367,7 +367,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             upChainItems[k] = {
               eip712MessageRawDataWithSignature,
               getDataTime: resultResult.getDataTime,
-              schemaUid: schemaUid,
+              schemaUid,
             };
           }
         });
@@ -387,6 +387,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       toBeUpperChainCredsFn,
       connectedWallet,
     ]);
+    const BASEventDetailExt = useMemo(() => {
+      return BASEventDetail?.ext;
+    }, [BASEventDetail]);
     const BASEventFn = useCallback(
       async (
         walletObj: any,
@@ -452,9 +455,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             networkName: formatNetworkName,
             metamaskprovider: walletObj.provider,
             items: upChainItems,
-            eventSchemauid: BASEventDetail?.ext?.schemaUid,
+            eventSchemauid: BASEventDetailExt?.schemaUid,
           };
-          
+
           let upChainRes = await bulkAttest(upChainParams);
           // burying point
           console.log('222123upChainParams.items', upChainParams.items);
@@ -589,7 +592,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       },
       [
         activeNetworkName,
-        BASEventDetail?.ext?.schemaUid,
+        BASEventDetailExt,
         credentialsFromStore,
         initCredList,
         toBeUpperChainCredsFn,
@@ -828,7 +831,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             const curRequestid = activeCred?.requestid as string;
             const curCredential = cObj[curRequestid];
             if (curCredential?.event === BASEVENTNAME) {
-              const schemaUidObj = BASEventDetail?.ext?.schemaUidInfo.find(
+              const schemaUidObj = BASEventDetailExt?.schemaUidInfo.find(
                 (i) => i.sigFormat === LineaSchemaName
               );
               upChainParams.eventSchemauid = schemaUidObj.schemaUid;
@@ -999,7 +1002,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         initCredList,
         scrollEventFn,
         fromEvents,
+        BASEventDetailExt,
         // activeNetworkName,
+        BASEventFn,
+        LineaSchemaNameFn,
       ]
     );
     const startFn = useCallback(() => {

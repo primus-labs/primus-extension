@@ -10,13 +10,13 @@ import {
   SCROLLEVENTNAME,
   BASEVENTNAME,
 } from '@/config/constants';
+import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import {
   bindConnectedWallet,
   checkIfBindConnectedWallet,
 } from '@/services/api/user';
 import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
 import { getAssetsOnChains } from '@/services/api/dataSource';
-import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
 
 export const SETSYSCONFIG = 'SETSYSCONFIG';

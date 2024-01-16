@@ -3,6 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import dayjs from 'dayjs';
+import {
+  setEventsActionAsync,
+} from '@/store/actions';
+
 import RewardsDialog from '@/components/RewardsDialog';
 import ClaimWrapper from '../ClaimWrapper';
 import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
@@ -123,7 +127,7 @@ const EventsOverview = memo(() => {
     };
     if (res[BASEVENTNAME]) {
       const lastInfo = JSON.parse(res[BASEVENTNAME]);
-      isLastFinished = lastInfo.status === 1
+      isLastFinished = lastInfo.status === 1;
       if (isLastFinished) {
         await initFn();
       }
@@ -160,6 +164,9 @@ const EventsOverview = memo(() => {
       }
     }
   }, [ScrollProcess, dispatch]);
+  useEffect(() => {
+    dispatch(setEventsActionAsync());
+  }, [dispatch]);
 
   return (
     <div className="eventOverview">
