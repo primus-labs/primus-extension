@@ -6,14 +6,14 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import { useSelector, useNavigate, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
-// import iconShield from '@/assets/img/events/iconShield.svg';
 import './index.scss';
 import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
@@ -22,13 +22,10 @@ import iconStep1 from '@/assets/img/events/iconStep1.svg';
 import iconStep2 from '@/assets/img/events/iconStep2.svg';
 import iconStep3 from '@/assets/img/events/iconStep3.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
-import { queryEventDetail } from '@/services/api/event';
 import { SCROLLEVENTNAME } from '@/config/constants';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { switchAccount } from '@/services/wallets/metamask';
 import { BASEVENTNAME } from '@/config/constants';
-import useAuthorization from '@/hooks/useAuthorization';
-import { setSocialSourcesAsync } from '@/store/actions';
 import type { Dispatch } from 'react';
 import useEventDetail from '@/hooks/useEventDetail';
 dayjs.extend(utc);
@@ -82,6 +79,7 @@ const stepList: StepItem[] = [
 ];
 const ClaimDialog: FC<ClaimDialogProps> = memo(
   ({ onClose, onSubmit, onChange, title = '', titleIllustration = false }) => {
+    const navigate = useNavigate();
     const [xTabId, setXTabId] = useState<number>();
     const [credNum, setCredNum] = useState<number>(0);
     const [credAddress, setCredAddress] = useState<string>();
@@ -92,19 +90,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     });
     const [errorTip, setErrorTip] = useState<string>();
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
-    const [activeStep, setActiveStep] = useState<number>();
-    const dispatch: Dispatch<any> = useDispatch();
-    const socialSources = useSelector(
-      (state: UserState) => state.socialSources
-    );
-
     const BASEventPeriod = useSelector(
       (state: UserState) => state.BASEventPeriod
     );
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
-
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
@@ -121,30 +112,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       }
       return 0;
     }, [BASEventPeriod]);
-    const proofX = useMemo(() => {
-      let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
-      const haveXProof = credArr.find(
-        (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
-      );
-      return haveXProof;
-    }, [credentialsFromStore]);
-    const proofBinance = useMemo(() => {
-      let credArr: CredTypeItemType[] = Object.values(credentialsFromStore);
-      const haveBinanceProof = credArr.find(
-        (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
-      );
-      return haveBinanceProof;
-    }, [credentialsFromStore]);
-    const addressForScrollEvent = useMemo(() => {
-      let addr = '';
-      if (!!proofX) {
-        addr = proofX.address;
-      }
-      if (!!proofBinance) {
-        addr = proofBinance.address;
-      }
-      return addr;
-    }, [proofX, proofBinance]);
+
     const formatStepList: StepItem[] = useMemo(() => {
       if (credAddress) {
         stepList[0].subTitle = credAddress;
@@ -181,8 +149,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       return BASEventDetail?.ext?.claimPointsUrl;
     }, [BASEventDetail]);
 
-    const authorize = useAuthorization();
-
     const hanldeSubmit = useCallback(() => {
       if (!isComplete) {
         setErrorTip('Please complete the tasks above first.');
@@ -191,8 +157,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
           window.open(eventPlateUrl); // TODO-basevent
         }
         onSubmit();
+        navigate('/cred', { replace: true });
       }
-    }, [isComplete, onSubmit, eventActiveFlag, eventPlateUrl]);
+    }, [isComplete, onSubmit, eventActiveFlag, eventPlateUrl, navigate]);
 
     const liClassName = useCallback(
       (item: StepItem) => {
@@ -224,12 +191,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       }
     }, [connectedWallet, isSwitchable]);
     const onFollowX = useCallback(async () => {
-      if (xTabId) {
-        await chrome.tabs.update(xTabId as number, {
-          active: true,
-        });
-        return;
-      }
       const targetUrl =
         'https://twitter.com/intent/follow?screen_name=padolabs';
       const openXUrlFn = async () => {
@@ -239,6 +200,17 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         console.log('222123 create tab', tabCreatedByPado.id);
         setXTabId(tabCreatedByPado.id);
       };
+      if (xTabId) {
+        try {
+          await chrome.tabs.update(xTabId as number, {
+            active: true,
+          });
+          return;
+        } catch {
+          await openXUrlFn();
+          return
+        }
+      }
       await openXUrlFn();
     }, [xTabId]);
     const handleChange = useCallback(
@@ -268,7 +240,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             onChange(item.id);
           }
         }
-        setActiveStep(item.id);
       },
       [onChange, onFollowX, formatStepList]
     );
