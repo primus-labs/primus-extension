@@ -60,9 +60,10 @@ interface CredSendToChainWrapperType {
   activeCred?: CredTypeItemType;
   onSubmit: (sucFlag?: any) => void;
   onClose: () => void;
+  handleBackToBASEvent?: () => void;
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
-  ({ visible = true, activeCred, onClose, onSubmit }) => {
+  ({ visible = true, activeCred, onClose, onSubmit, handleBackToBASEvent }) => {
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -140,6 +141,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       if (fromEvents === 'LINEA_DEFI_VOYAGE') {
         navigate('/cred');
       }
+      if (fromEvents === BASEVENTNAME) {
+        navigate('/cred', { replace: true });
+      }
     }, [onClose, fromEvents, navigate]);
     const handleCloseTransferToChain = useCallback(() => {
       setStep(0);
@@ -165,7 +169,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       }
     }, [activeSendToChainRequest?.type, onSubmit]);
 
-    const handleCancelTransferToChain = useCallback(() => {}, []);
+    const handleCancelTransferToChain = useCallback(() => {
+      if (fromEvents === BASEVENTNAME) {
+        handleBackToBASEvent && handleBackToBASEvent();
+      }
+    }, [fromEvents, handleBackToBASEvent]);
     const handleBackConnectWallet = useCallback(() => {
       setStep(3);
     }, []);
@@ -1170,7 +1178,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             list={formatChainList}
             tip="Please select one chain to submit attestation"
             checked={false}
-            backable={false}
+            backable={fromEvents === BASEVENTNAME}
             headerType={
               activeCred?.did ? 'polygonIdAttestation' : 'attestation'
             }

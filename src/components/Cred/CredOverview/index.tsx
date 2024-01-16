@@ -310,9 +310,8 @@ const CredOverview = memo(() => {
   );
   const onClaimEventBASAttest = (attestId: string) => {
     setEventSource(attestId);
-     setAddDialogVisible(true);
+    setAddDialogVisible(true);
     if (attestId === GOOGLEWEBPROOFID) {
-     
       setClaimEventBASVisible(false);
     }
   };
@@ -321,7 +320,6 @@ const CredOverview = memo(() => {
       if (message.type === 'pageDecode') {
         if (message.name === 'sendRequest') {
           if (fromEvents === BASEVENTNAME && eventSource !== GOOGLEWEBPROOFID) {
-            
             setClaimEventBASVisible(false);
           }
         }
@@ -350,7 +348,7 @@ const CredOverview = memo(() => {
             setClaimEventBASVisible(true);
             setClaimEventBASStep(2);
           } else {
-            navigate('/cred', {replace: true})
+            navigate('/cred', { replace: true });
           }
         } else {
           if (addSucFlag) {
@@ -418,6 +416,10 @@ const CredOverview = memo(() => {
     },
     [fromEvents, navigate]
   );
+  const handleBackToBASEvent = useCallback(() => {
+    setClaimEventBASVisible(true);
+    setSendToChainDialogVisible(false)
+  }, []);
   const startFn = useCallback(() => {
     if (connectedWallet?.address) {
       setActiveRequest({
@@ -600,6 +602,7 @@ const CredOverview = memo(() => {
         activeCred={activeCred}
         onClose={handleCloseSendToChainDialog}
         onSubmit={handleCloseSendToChainDialog}
+        handleBackToBASEvent={handleBackToBASEvent}
       />
       {qrcodeVisible && (
         <QRCodeDialog
