@@ -90,12 +90,11 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         return {
           ...i,
           finished: !!proofStatusObj[i.id],
-          score: `${taskScoreObj[i.id]}`,
         };
       });
       newArr = newArr.sort((a: any, b: any) => b.score - a.score);
       return newArr;
-    }, [proofStatusObj, taskScoreObj]);
+    }, [proofStatusObj]);
     const isComplete = useMemo(() => {
       const hasProof = formatProofTypes.some((i) => i.finished);
       return hasProof;

@@ -225,7 +225,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         ) {
           Name = BNBGREENFIELDSCHEMANAME;
         } else {
-          Name = 'EAS';
+          // Name = 'EAS';
+          Name = 'EAS-Ethereum';
         }
         return Name;
       },
@@ -236,7 +237,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         const { result, attestationUidArr, recipient, bucketName } = params;
         const formatNetworkName = 'BNB Greenfield';
         const LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
-        const toBeUpperChainCreds:CredTypeItemType[] = await toBeUpperChainCredsFn();
+        const toBeUpperChainCreds: CredTypeItemType[] =
+          await toBeUpperChainCredsFn();
         const firstToBeUpperChainCred = toBeUpperChainCreds[0];
 
         let upChainType = firstToBeUpperChainCred?.schemaType;
@@ -803,7 +805,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           } else if (fromEvents === BASEVENTNAME) {
             BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
           } else {
-            let upChainParams = {
+            let upChainParams: any = {
               networkName: formatNetworkName,
               metamaskprovider: walletObj.provider,
               receipt: activeCred?.address, // TODO DEL!!! for uniswap proof
@@ -816,19 +818,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   ? 'web'
                   : activeCred?.type,
               schemaName: activeCred?.schemaName ?? LineaSchemaName, // TODO-basevent
-              
             };
-            
+
             let versionForComparison = activeCred?.version ?? '';
 
             let upChainRes;
             const cObj = { ...credentialsFromStore };
             const curRequestid = activeCred?.requestid as string;
             const curCredential = cObj[curRequestid];
-            // if (curCredential?.event === BASEVENTNAME ) {
-            //   upChainParams.eventSchemauid =
-            //     BASEventDetail?.ext?.schemaUidInfo[0].schemaUid;
-            // } // TODO-basevent
+            if (curCredential?.event === BASEVENTNAME) {
+              const schemaUidObj = BASEventDetail?.ext?.schemaUidInfo.find(
+                (i) => i.sigFormat === LineaSchemaName
+              );
+              upChainParams.eventSchemauid = schemaUidObj.schemaUid;
+            } // TODO-basevent
             if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
               const requestParams: any = {
                 rawParam:

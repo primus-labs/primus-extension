@@ -259,15 +259,16 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         console.log('222123 create tab', tabCreatedByPado.id);
         setXTabId(tabCreatedByPado.id);
       };
-      if (socialSources['x']) {
-        await openXUrlFn();
-      } else {
-        authorize('X', async () => {
-          dispatch(setSocialSourcesAsync());
-          await openXUrlFn();
-        });
-      }
-    }, [socialSources, authorize, dispatch]);
+      await openXUrlFn();
+      // if (socialSources['x']) {
+      //   await openXUrlFn();
+      // } else {
+      //   authorize('X', async () => {
+      //     dispatch(setSocialSourcesAsync());
+      //     await openXUrlFn();
+      //   });
+      // }
+    }, [xTabId]);
     const handleChange = useCallback(
       async (item: StepItem) => {
         if (item.finished && item.id !== 3) {

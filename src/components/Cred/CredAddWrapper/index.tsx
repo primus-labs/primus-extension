@@ -50,7 +50,7 @@ import { submitUniswapTxProof } from '@/services/chains/erc721';
 
 import { DATASOURCEMAP } from '@/config/constants';
 import { formatAddress } from '@/utils/utils';
-import useEventDetail from '@/hooks/useEventDetail'
+import useEventDetail from '@/hooks/useEventDetail';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import type { ATTESTFORANTPARAMS } from '@/services/api/cred';
 import type { Dispatch } from 'react';
@@ -393,6 +393,28 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       }
     }, [activeCred, userInfo, initCredList, requestConfigParams]);
     const authorize = useAuthorization2();
+    const storeBASEventInfoFn = useCallback(
+      async (outerExtraInfo: any, taskExtraInfo: any) => {
+        if (fromEvents === BASEVENTNAME) {
+          const res = await chrome.storage.local.get([BASEVENTNAME]);
+          if (res[BASEVENTNAME]) {
+            const lastInfo = JSON.parse(res[BASEVENTNAME]);
+            const lastTasks = lastInfo.steps[1].tasks ?? {};
+            // lastInfo.address = connectedWallet?.address;
+            Object.assign(lastInfo, outerExtraInfo); // outerExtraInfo:{address: ...}
+            lastInfo.steps[1].status = 1;
+            lastInfo.steps[1].tasks = {
+              ...lastTasks,
+              ...taskExtraInfo, //taskExtraInfo: {[GOOGLEWEBPROOFID]: fullAttestation.requestid,}
+            };
+            await chrome.storage.local.set({
+              [BASEVENTNAME]: JSON.stringify(lastInfo),
+            });
+          }
+        }
+      },
+      [fromEvents]
+    );
     const fetchAttestForGoogle = useCallback(
       async (form: AttestionForm) => {
         const { source, requestid, event } = form;
@@ -426,22 +448,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
             event: fromEvents,
           };
-          if (fromEvents === BASEVENTNAME) {
-            const res = await chrome.storage.local.get([BASEVENTNAME]);
-            if (res[BASEVENTNAME]) {
-              const lastInfo = JSON.parse(res[BASEVENTNAME]);
-              const lastTasks = lastInfo.steps[1].tasks ?? {};
-              lastInfo.address = connectedWallet?.address;
-              lastInfo.steps[1].status = 1;
-              lastInfo.steps[1].tasks = {
-                ...lastTasks,
-                [GOOGLEWEBPROOFID]: fullAttestation.requestid,
-              };
-              await chrome.storage.local.set({
-                [BASEVENTNAME]: JSON.stringify(lastInfo),
-              });
-            }
-          }
+          await storeBASEventInfoFn(
+            { address: connectedWallet?.address },
+            { [GOOGLEWEBPROOFID]: fullAttestation.requestid }
+          );
+
           const credentialsObj = { ...credentialsFromStore };
           credentialsObj[attestationId] = fullAttestation;
           await chrome.storage.local.set({
@@ -480,6 +491,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         authorize,
         fromEvents,
         BASEventDetail?.ext?.schemaType,
+        storeBASEventInfoFn,
       ]
     );
     const fetchAttestForAnt = useCallback(
@@ -845,7 +857,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             currentWindow: true,
           });
           if (form.event === BASEVENTNAME) {
-            currRequestObj.schemaType = BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY';
+            currRequestObj.schemaType =
+              BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY';
             // TODO basevent
           }
 
@@ -1031,22 +1044,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             await chrome.storage.local.remove(['activeRequestAttestation']);
             await initCredList();
             if (fullAttestation.reqType === 'web') {
-              if (fromEvents === BASEVENTNAME) {
-                const res = await chrome.storage.local.get([BASEVENTNAME]);
-                if (res[BASEVENTNAME]) {
-                  const lastInfo = JSON.parse(res[BASEVENTNAME]);
-                  const lastTasks = lastInfo.steps[1].tasks ?? {};
-                  lastInfo.steps[1].tasks = {
-                    ...lastTasks,
-                    [parsedActiveRequestAttestation.templateId]:
-                      parsedActiveRequestAttestation.requestid,
-                  };
-                  await chrome.storage.local.set({
-                    [BASEVENTNAME]: JSON.stringify(lastInfo),
-                  });
+              storeBASEventInfoFn(
+                { address: parsedActiveRequestAttestation.address },
+                {
+                  [parsedActiveRequestAttestation.templateId]:
+                    parsedActiveRequestAttestation.requestid,
                 }
-              }
-
+              );
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
                 name: 'attestResult',
@@ -1367,14 +1371,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           onSubmitAttestationDialog(form);
         }
       }
-    }, [
-      visible,
-      activeSource,
-      activeCred,
-      fromEvents,
-      eventSource,
-      
-    ]);
+    }, [visible, activeSource, activeCred, fromEvents, eventSource]);
 
     // useEffect(() => {
     //   if (!activeRequest?.type) {
