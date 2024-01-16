@@ -56,32 +56,33 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
 
       const proofTypes = [
         {
-          id: '3',
-          credTitle: 'Owns Twitter Account',
-          // score: '+50xp',
-          credLogoUrl: iconDataSourceTwitter,
+          id: '2',
+          credTitle: 'Owns Binance Account',
+          score: 100,
+          credLogoUrl: iconDataSourceBinance,
           credIntroduce: 'Proof of Account Ownership',
         },
         {
-          id: '2',
-          credTitle: 'Owns Binance Account',
-          // score: '+30xp',
-          credLogoUrl: iconDataSourceBinance,
+          id: '6',
+          credTitle: 'Owns TikTok Account',
+          score: 80,
+          credLogoUrl: iconTikTok,
           credIntroduce: 'Proof of Account Ownership',
         },
 
         {
           id: GOOGLEWEBPROOFID,
           credTitle: 'Owns Google Account',
-          // score: '+80xp',
+          score: 60,
           credLogoUrl: iconGoogle,
           credIntroduce: 'Proof of Account Ownership',
         },
+
         {
-          id: '6',
-          credTitle: 'Owns TikTok Account',
-          // score: '+50xp',
-          credLogoUrl: iconTikTok,
+          id: '3',
+          credTitle: 'Owns Twitter Account',
+          score: 60,
+          credLogoUrl: iconDataSourceTwitter,
           credIntroduce: 'Proof of Account Ownership',
         },
       ];
@@ -92,7 +93,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
           score: `${taskScoreObj[i.id]}`,
         };
       });
-      newArr = newArr.sort((a:any, b: any) => b.score - a.score);
+      newArr = newArr.sort((a: any, b: any) => b.score - a.score);
       return newArr;
     }, [proofStatusObj, taskScoreObj]);
     const isComplete = useMemo(() => {
