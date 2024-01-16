@@ -30,6 +30,7 @@ import { BASEVENTNAME } from '@/config/constants';
 import useAuthorization from '@/hooks/useAuthorization';
 import { setSocialSourcesAsync } from '@/store/actions';
 import type { Dispatch } from 'react';
+import useEventDetail from '@/hooks/useEventDetail';
 dayjs.extend(utc);
 interface ClaimDialogProps {
   onClose: () => void;
@@ -83,14 +84,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
   ({ onClose, onSubmit, onChange, title = '', titleIllustration = false }) => {
     const [xTabId, setXTabId] = useState<number>();
     const [credNum, setCredNum] = useState<number>(0);
+    const [credAddress, setCredAddress] = useState<string>();
     const [stepObj, setStepObj] = useState<any>({
       step1: 0,
       step2: 0,
       step3: 0,
     });
     const [errorTip, setErrorTip] = useState<string>();
-    const [eventDetail, setEventDetail] = useState<any>({ ext: {} });
-
+    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const [activeStep, setActiveStep] = useState<number>();
     const dispatch: Dispatch<any> = useDispatch();
     const socialSources = useSelector(
@@ -145,10 +146,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       return addr;
     }, [proofX, proofBinance]);
     const formatStepList: StepItem[] = useMemo(() => {
-      if (!proofX && !proofBinance && connectedWallet?.address) {
-        stepList[0].subTitle = connectedWallet?.address;
+      if (credAddress) {
+        stepList[0].subTitle = credAddress;
       } else {
-        stepList[0].subTitle = addressForScrollEvent;
+        stepList[0].subTitle = connectedWallet?.address;
       }
       stepList[1].finished = stepObj.step1 === 1;
 
@@ -157,14 +158,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       stepList[3].finished = stepObj.step3 === 1;
       const newArr = [...stepList];
       return newArr;
-    }, [
-      proofX,
-      proofBinance,
-      connectedWallet?.address,
-      addressForScrollEvent,
-      stepObj,
-      credNum,
-    ]);
+    }, [connectedWallet?.address, stepObj, credNum, credAddress]);
     const isComplete = useMemo(() => {
       const hasComplete = formatStepList.every((i) => i.id === 1 || i.finished);
       return hasComplete;
@@ -183,6 +177,9 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     const isSwitchable = useMemo(() => {
       return credNum === 0;
     }, [credNum]);
+    const eventPlateUrl = useMemo(() => {
+      return BASEventDetail?.ext?.claimPointsUrl;
+    }, [BASEventDetail]);
 
     const authorize = useAuthorization();
 
@@ -191,11 +188,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         setErrorTip('Please complete the tasks above first.');
       } else {
         if (eventActiveFlag === 1) {
-          window.open(eventDetail.ext.claimPointsUrl); // TODO!!!
+          window.open(eventPlateUrl); // TODO-basevent
         }
         onSubmit();
       }
-    }, [isComplete, onSubmit, eventActiveFlag, eventDetail.ext.claimPointsUrl]);
+    }, [isComplete, onSubmit, eventActiveFlag, eventPlateUrl]);
 
     const liClassName = useCallback(
       (item: StepItem) => {
@@ -220,23 +217,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       },
       [isSwitchable, formatStepList]
     );
-    const fetchEventDetail = useCallback(async () => {
-      try {
-        const res = await queryEventDetail({
-          event: BASEVENTNAME,
-        });
-        const { rc, result } = res;
-        if (rc === 0) {
-          setEventDetail(result);
-          //     "startTime": "1699819200000",
-          // "endTime": "1700942400000",
-          // "ext": {
-          //   "claimPointsUrl": "https://padolabs.org",
-          //   "scoreList": "https://padolabs.org"
-          // }
-        }
-      } catch {}
-    }, []);
 
     const onSwitchAccount = useCallback(() => {
       if (isSwitchable) {
@@ -260,14 +240,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
         setXTabId(tabCreatedByPado.id);
       };
       await openXUrlFn();
-      // if (socialSources['x']) {
-      //   await openXUrlFn();
-      // } else {
-      //   authorize('X', async () => {
-      //     dispatch(setSocialSourcesAsync());
-      //     await openXUrlFn();
-      //   });
-      // }
     }, [xTabId]);
     const handleChange = useCallback(
       async (item: StepItem) => {
@@ -283,9 +255,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             setErrorTip('Please complete the tasks above first.');
             return;
           }
-          // if (!item.finished) {
+          if (formatStepList[3].finished) {
+            return;
+          }
           onChange(item.id);
-          // }
         } else if (item.id === 4) {
           if (!formatStepList[2].finished) {
             setErrorTip('Please complete the tasks above first.');
@@ -352,22 +325,17 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     );
 
     useEffect(() => {
-      fetchEventDetail();
-    }, [fetchEventDetail]);
-
-    useEffect(() => {
       chrome.storage.local.get([BASEVENTNAME], (res) => {
         if (res[BASEVENTNAME]) {
           const lastInfo = JSON.parse(res[BASEVENTNAME]);
           console.log('222ClaimDialog useEffect', lastInfo);
-          // console.log('222111', lastInfo);
           const newObj = lastInfo.steps.reduce((prev, curr, currK) => {
             prev[`step${currK + 1}`] = curr.status;
             return prev;
           }, {});
           setStepObj(newObj);
-
           setCredNum(Object.values(lastInfo.steps[1].tasks).length);
+          setCredAddress(lastInfo.address);
         }
       });
     }, []);

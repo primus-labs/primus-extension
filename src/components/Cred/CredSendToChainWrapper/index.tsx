@@ -454,6 +454,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             items: upChainItems,
             eventSchemauid: BASEventDetail?.ext?.schemaUid,
           };
+          
           let upChainRes = await bulkAttest(upChainParams);
           // burying point
           console.log('222123upChainParams.items', upChainParams.items);

@@ -859,7 +859,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (form.event === BASEVENTNAME) {
             currRequestObj.schemaType =
               BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY';
-            // TODO basevent
+            // TODO-basevent
           }
 
           await chrome.runtime.sendMessage({
@@ -1045,7 +1045,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             await initCredList();
             if (fullAttestation.reqType === 'web') {
               storeBASEventInfoFn(
-                { address: parsedActiveRequestAttestation.address },
+                { address: content.address },
                 {
                   [parsedActiveRequestAttestation.templateId]:
                     parsedActiveRequestAttestation.requestid,

@@ -498,6 +498,15 @@ async function assembleUserInfoParams(form) {
     if (scrollEventObj.address) {
       formatAddress = scrollEventObj.address;
     }
+  } else if (event === BASEVENTNAME) {
+    const res = await chrome.storage.local.get([BASEVENTNAME]);
+    if (res[BASEVENTNAME]) {
+      const lastInfo = JSON.parse(res[BASEVENTNAME]);
+      const lastCredAddress = lastInfo.address;
+      if (lastCredAddress) {
+        formatAddress = lastCredAddress;
+      }
+    }
   }
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
