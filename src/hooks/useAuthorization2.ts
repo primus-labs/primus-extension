@@ -8,13 +8,13 @@ import { postMsg, getAuthUrl } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
 import useInterval from './useInterval';
 import { BASEVENTNAME } from '@/config/constants';
-import useEventDetail from './useEventDetail'
+import useEventDetail from './useEventDetail';
 import { schemaTypeMap } from '../config/constants';
 type CreateAuthWindowCallBack = (
   state: string,
   source: string,
   window?: chrome.windows.Window | undefined,
-  onSubmit?: (p: any) => void,
+  onSubmit?: (p: any) => void
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 const useAuthorization2 = () => {
@@ -42,6 +42,19 @@ const useAuthorization2 = () => {
     (state, source, res, onSubmit) => {
       const newWindowId = res?.id;
       setAuthWindowId(newWindowId);
+      chrome.windows.onRemoved.addListener((windowId) => {
+        if (windowId === newWindowId) {
+          if (timer) {
+            chrome.runtime.sendMessage({
+              type: 'googleAuth',
+              name: 'cancelAttest',
+            });
+            clearInterval(timer);
+            timer = null
+          }
+        }
+      });
+
       const pollingResultFn = async (state: string, source: string) => {
         const res = await getAuthAttestation({
           state,
@@ -49,21 +62,24 @@ const useAuthorization2 = () => {
           address: connectedWallet.address,
           schemaType:
             fromEvents === BASEVENTNAME
-              ? (BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY')
+              ? BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY'
               : 'GOOGLE_ACCOUNT_OWNER',
         });
         if (res.rc === 0 && res.result) {
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
           setAuthWindowId(undefined);
           newWindowId &&
             chrome.windows.get(newWindowId, {}, (win) => {
               win?.id && chrome.windows.remove(newWindowId);
             });
-          timer && clearInterval(timer);
           onSubmit && onSubmit(res.result);
         } else {
         }
       };
-      const timer = setInterval(() => {
+      let timer:any = setInterval(() => {
         pollingResultFn(state, source);
       }, 1000);
       setCheckIsAuthDialogTimer(timer);
@@ -72,45 +88,53 @@ const useAuthorization2 = () => {
   );
   const handleClickOAuthSource: OauthFn = useCallback(
     async (source, onSubmit) => {
+      const fn = async () => {
+        const state = uuidv4();
+        var width = 520;
+        var height = 620;
+        const windowScreen: Screen = window.screen;
+        var left = Math.round(windowScreen.width / 2 - width / 2);
+        var top = Math.round(windowScreen.height / 2 - height / 2);
+        const { userInfo } = await chrome.storage.local.get(['userInfo']);
+        const parseUserInfo = JSON.parse(userInfo);
+        const authUrl = getAuthUrl({
+          source,
+          state,
+          token: parseUserInfo.token,
+        });
+
+        const windowOptions: chrome.windows.CreateData = {
+          url: authUrl,
+          type: 'popup',
+          focused: true,
+          // setSelfAsOpener: false,
+          top,
+          left,
+          width,
+          height,
+        };
+        chrome.windows.create(windowOptions, (window) => {
+          createAuthWindowCallBack(state, source, window, onSubmit);
+        });
+      };
       // If the authorization window is open,focus on it
       if (authWindowId) {
-        chrome.windows.update(authWindowId, {
-          focused: true,
-        });
-        return;
+        try {
+          chrome.windows.get(authWindowId, {}, (win) => {
+            if (win?.id) {
+              chrome.windows.update(authWindowId, {
+                focused: true,
+              });
+              return;
+            } else {
+              fn();
+              return;
+            }
+          });
+          return;
+        } catch {}
       }
-      const state = uuidv4();
-      var width = 520;
-      var height = 620;
-      const windowScreen: Screen = window.screen;
-      var left = Math.round(windowScreen.width / 2 - width / 2);
-      var top = Math.round(windowScreen.height / 2 - height / 2);
-      const { userInfo } = await chrome.storage.local.get(['userInfo']);
-      const parseUserInfo = JSON.parse(userInfo);
-      const authUrl = getAuthUrl({
-        source,
-        state,
-        token: parseUserInfo.token,
-      });
-
-      const windowOptions: chrome.windows.CreateData = {
-        url: authUrl,
-        type: 'popup',
-        focused: true,
-        // setSelfAsOpener: false,
-        top,
-        left,
-        width,
-        height,
-      };
-      chrome.windows.create(windowOptions, (window) => {
-        createAuthWindowCallBack(
-          state,
-          source,
-          window,
-          onSubmit
-        );
-      });
+      fn();
     },
     [authWindowId, createAuthWindowCallBack]
   );

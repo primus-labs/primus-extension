@@ -20,6 +20,7 @@ import useWallet from '@/hooks/useWallet';
 import { setCredentialsAsync } from '@/store/actions';
 
 import { postMsg } from '@/utils/utils';
+import { GOOGLEWEBPROOFID } from '@/config/constants';
 import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -37,7 +38,6 @@ const CredOverview = memo(() => {
   const [claimEventBASVisible, setClaimEventBASVisible] =
     useState<boolean>(false);
   const [claimEventBASStep, setClaimEventBASStep] = useState<number>(1);
-  ;
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
@@ -310,9 +310,28 @@ const CredOverview = memo(() => {
   );
   const onClaimEventBASAttest = (attestId: string) => {
     setEventSource(attestId);
-    setAddDialogVisible(true);
-    setClaimEventBASVisible(false);
+     setAddDialogVisible(true);
+    if (attestId === GOOGLEWEBPROOFID) {
+     
+      setClaimEventBASVisible(false);
+    }
   };
+  useEffect(() => {
+    const listerFn = (message: any) => {
+      if (message.type === 'pageDecode') {
+        if (message.name === 'sendRequest') {
+          if (fromEvents === BASEVENTNAME && eventSource !== GOOGLEWEBPROOFID) {
+            
+            setClaimEventBASVisible(false);
+          }
+        }
+      }
+    };
+    chrome.runtime.onMessage.addListener(listerFn);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listerFn);
+    };
+  }, [fromEvents, eventSource]);
 
   const handleSubmitBindPolygonid = useCallback(async () => {
     await initCredList();
@@ -326,9 +345,13 @@ const CredOverview = memo(() => {
           setAddDialogVisible(false);
           setClaimMysteryBoxVisible2(true);
         } else if (fromEvents === BASEVENTNAME) {
-          setAddDialogVisible(false);
-          setClaimEventBASVisible(true);
-          setClaimEventBASStep(2);
+          if (addSucFlag) {
+            setAddDialogVisible(false);
+            setClaimEventBASVisible(true);
+            setClaimEventBASStep(2);
+          } else {
+            navigate('/cred', {replace: true})
+          }
         } else {
           if (addSucFlag) {
             // addSucFlag: requestid;
@@ -374,7 +397,7 @@ const CredOverview = memo(() => {
             navigate('/cred');
           } else if (fromEvents === BASEVENTNAME) {
             setSendToChainDialogVisible(false);
-            setClaimEventBASVisible(true)
+            setClaimEventBASVisible(true);
           }
         } else {
           if (fromEvents === 'Scroll') {
@@ -512,7 +535,6 @@ const CredOverview = memo(() => {
       if (message.type === 'pageDecode') {
         if (message.name === 'sendRequest') {
           setClaimMysteryBoxVisible2(false);
-          // setAddDialogVisible(true)
         }
       }
     };

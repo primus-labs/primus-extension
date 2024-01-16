@@ -475,4 +475,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (name === 'follow') {
     }
   }
+  if (message.type === 'googleAuth') {
+    const { name } = message;
+    if (name === 'cancelAttest') {
+      chrome.runtime.sendMessage(message);
+    }
+  }
 });

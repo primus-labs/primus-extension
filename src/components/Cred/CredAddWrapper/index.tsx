@@ -1570,6 +1570,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           // ) {
           //   LINEA_DEFI_VOYAGETryAgainFn();
           // }
+        } else if (message.type === 'googleAuth') {
+          if (message.name === 'cancelAttest') {
+            setStep(2);
+            setActiveRequest({
+              type: 'warn',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
+            });
+          }
         }
       };
       chrome.runtime.onMessage.addListener(listerFn);
@@ -1638,7 +1647,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               !fromEvents ||
               fromEvents === 'Scroll' ||
               (fromEvents === 'LINEA_DEFI_VOYAGE' &&
-                activeRequest?.type !== 'suc')
+                activeRequest?.type !== 'suc') ||
+              fromEvents === BASEVENTNAME
             }
           />
         )}

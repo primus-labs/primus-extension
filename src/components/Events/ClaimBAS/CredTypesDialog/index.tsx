@@ -27,30 +27,26 @@ interface CredTypesDialogProps {
 
 const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
   ({ onClose, onSubmit, onChange, onBack }) => {
-    const [searchParams] = useSearchParams();
-    const fromEvents = searchParams.get('fromEvents');
-    const [eventDetail, setEventDetail] = useState<any>({ ext: {} });
-    const [errorTip, setErrorTip] = useState<string>();
     const [activeType, setActiveType] = useState<string>();
     const [proofStatusObj, setProofStatusObj] = useState<any>({});
-    const taskScoreObj = useMemo(() => {
-      const scoreKeyMap = {
-        GOOGLE_ACCOUNT: GOOGLEWEBPROOFID,
-        TIKTOK_ACCOUNT: '6',
-        TWITTER_ACCOUNT: '3',
-        BINANCE_ACCOUNT: '2',
-      };
-      let obj = {};
-      if (eventDetail.ext.scoreList) {
-        obj = eventDetail.ext.scoreList.reduce((prev, curr) => {
-          const { source, score } = curr;
-          prev[scoreKeyMap[source]] = score;
-          return prev;
-        }, {});
-      }
+    // const taskScoreObj = useMemo(() => {
+    //   const scoreKeyMap = {
+    //     GOOGLE_ACCOUNT: GOOGLEWEBPROOFID,
+    //     TIKTOK_ACCOUNT: '6',
+    //     TWITTER_ACCOUNT: '3',
+    //     BINANCE_ACCOUNT: '2',
+    //   };
+    //   let obj = {};
+    //   if (eventDetail.ext.scoreList) {
+    //     obj = eventDetail.ext.scoreList.reduce((prev, curr) => {
+    //       const { source, score } = curr;
+    //       prev[scoreKeyMap[source]] = score;
+    //       return prev;
+    //     }, {});
+    //   }
 
-      return obj;
-    }, [eventDetail.ext.scoreList]);
+    //   return obj;
+    // }, [eventDetail.ext.scoreList]);
     const formatProofTypes = useMemo(() => {
       // proofTypes;
 
@@ -126,6 +122,9 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         if (item.id === activeType) {
           defaultCN += ' active';
         }
+        if (item.finished) {
+          defaultCN += ' excitable';
+        }
         return defaultCN;
       },
       [activeType]
@@ -141,25 +140,6 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         }
       });
     }, []);
-    const fetchEventDetail = useCallback(async () => {
-      try {
-        const res = await queryEventDetail({
-          event: BASEVENTNAME,
-        });
-        const { rc, result } = res;
-        if (rc === 0) {
-          setEventDetail(result);
-          //     "startTime": "1699819200000",
-          // "endTime": "1700942400000",
-          //   "ext": {
-          //     "intractUrl": "https://www.intract.io/linea"
-          // }
-        }
-      } catch {}
-    }, []);
-    useEffect(() => {
-      fetchEventDetail();
-    }, [fetchEventDetail]);
 
     return (
       <PMask onClose={onClose}>
