@@ -320,7 +320,11 @@ const CredOverview = memo(() => {
       if (message.type === 'pageDecode') {
         if (message.name === 'sendRequest') {
           if (fromEvents === BASEVENTNAME && eventSource !== GOOGLEWEBPROOFID) {
-            setClaimEventBASVisible(false);
+            
+            if (eventSource !== GOOGLEWEBPROOFID) {
+              setClaimEventBASVisible(false);
+              setAddDialogVisible(true)
+            }
           }
         }
       }
@@ -343,13 +347,13 @@ const CredOverview = memo(() => {
           setAddDialogVisible(false);
           setClaimMysteryBoxVisible2(true);
         } else if (fromEvents === BASEVENTNAME) {
-          if (addSucFlag) {
+          // if (addSucFlag) {
             setAddDialogVisible(false);
             setClaimEventBASVisible(true);
             setClaimEventBASStep(2);
-          } else {
-            navigate('/cred', { replace: true });
-          }
+          // } else {
+          //   navigate('/cred', { replace: true });
+          // }
         } else {
           if (addSucFlag) {
             // addSucFlag: requestid;

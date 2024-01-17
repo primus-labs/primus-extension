@@ -527,17 +527,41 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             const currentChainObj: any = ONCHAINLIST.find(
               (i) => formatNetworkName === i.title
             );
-            currentChainObj.attestationUID = upChainRes;
+            // currentChainObj.attestationUID = upChainRes;
             // TODO???
             currentChainObj.submitAddress = walletObj.address;
-            toBeUpperChainCreds.forEach((i) => {
+            
+            // for (let i = 0; i < toBeUpperChainCreds.length; i++) {
+            //   const cred = toBeUpperChainCreds[i];
+            //   const newProvided = cred.provided ?? [];
+            //   // currentChainObj.attestationUID = upChainRes[i];
+            //   newProvided.push({
+            //     ...currentChainObj,
+            //     attestationUID: upChainRes[i],
+            //   });
+            //   cred.provided = newProvided;
+            //   credentialsFromStore[cred.requestid] = cred;
+            //   console.log(
+            //     '222add chain provider attestationUID:',
+            //     upChainRes[i],
+            //     newProvided
+            //   );
+            //   console.log(
+            //     '222after add chain provider cred:',
+            //     credentialsFromStore[cred.requestid].provided,
+            //     cred.provided
+            //   );
+            // }
+            toBeUpperChainCreds.forEach(async (i, k) => {
               const newProvided = i.provided ?? [];
-              // TODO!!!
               // const existIndex = newProvided.findIndex(
               //   (i) => i.title === formatNetworkName
               // );
               // existIndex < 0 &&
-              newProvided.push(currentChainObj);
+              newProvided.push({
+                ...currentChainObj,
+                attestationUID: upChainRes[k],
+              });
               credentialsFromStore[i.requestid] = Object.assign(i, {
                 provided: newProvided,
               });

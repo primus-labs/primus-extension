@@ -173,9 +173,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         chainShowName = 'Arbitrum';
       }
       if (item.title === 'BNB Greenfield') {
-        // TODO !!!
+        // TODO-basevent
         const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
-        return `https://testnet.dcellar.io/buckets/${item.attestationUID}`;
+        return `${chainInfo.bucketDetailUrl}/${item.attestationUID}`;
       }
       const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
       return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;

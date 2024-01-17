@@ -1424,6 +1424,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       window.location.reload();
     }, [navigate, padoServicePort]);
     const tryAgainFn = useCallback(() => {
+      if (fromEvents === BASEVENTNAME) {
+        onSubmitAttestationDialog(activeAttestForm);
+        onSubmit();
+        return;
+      }
       if (
         activeAttestForm.type === 'IDENTIFICATION_PROOF' &&
         activeAttestForm.proofClientType === 'Webpage Data'
@@ -1434,7 +1439,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       } else {
         onSubmitAttestationDialog(activeAttestForm);
       }
-    }, [onSubmitAttestationDialog, activeAttestForm]);
+    }, [onSubmitAttestationDialog, activeAttestForm, fromEvents, onSubmit]);
     const switchAccountFn = useCallback(
       async (form: AttestionForm) => {
         const formatAddr = formatAddress(
