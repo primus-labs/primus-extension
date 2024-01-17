@@ -1,3 +1,5 @@
+const BASEVENTNAME = 'BAS_EVENT_PROOF_OF_HUMANITY';
+
 var padoExtenstionTabId = null;
 var regenerateEl;
 var upperChainEl;
@@ -76,7 +78,7 @@ const regenerateFn = () => {
         const attestationUidArr = resObj.map((i) => i.attestationUid);
         const recipient =
           resObj[0].eip712MessageRawDataWithSignature.message.recipient;
-        const {bucketName} = resObj[0]
+        const { bucketName } = resObj[0];
         chrome.runtime.sendMessage({
           type: 'padoWebsite',
           name: 'upperChain',
@@ -128,3 +130,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   }
 });
+
+let checkBASEventEntranceElTimer = null;
+
+checkBASEventEntranceElTimer = setInterval(() => {
+  var BASEventEntranceEl = document.querySelector(
+    '#BAS_EVENT_PROOF_OF_HUMANITY_entrance'
+  );
+  console.log(
+    '222 BAS_EVENT_PROOF_OF_HUMANITY_entrance btn',
+    BASEventEntranceEl
+  );
+  if (BASEventEntranceEl) {
+    BASEventEntranceEl.onclick = (e) => {
+      console.log('222 BASEventEntranceEl clicked ----');
+      e.preventDefault();
+      chrome.runtime.sendMessage({
+        type: 'padoWebsite',
+        name: 'createTab',
+        params: {
+          eventName: BASEVENTNAME,
+        },
+      });
+      return;
+    };
+
+    clearInterval(checkBASEventEntranceElTimer);
+  }
+}, 200);

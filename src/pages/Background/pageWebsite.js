@@ -1,16 +1,21 @@
+import { BASEVENTNAME } from '@/config/constants';
 import { BNBGREENFIELDSCHEMANAME } from '@/config/envConstants';
 let tabCreatedByPado;
 let icpPageTabId;
 
 export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
-  const {
-    name,
-    params,
-  } = request;
+  const { name, params } = request;
   const { eventName, operation } = params;
   if (name === 'createTab') {
-    let url = chrome.runtime.getURL(`home.html#/cred?fromEvents=${eventName}`);
-    chrome.tabs.create({ url });
+    if (eventName === 'LINEA_DEFI_VOYAGE') {
+      let url = chrome.runtime.getURL(
+        `home.html#/cred?fromEvents=${eventName}`
+      );
+      chrome.tabs.create({ url });
+    } else if (eventName === BASEVENTNAME) {
+      let url = chrome.runtime.getURL(`home.html#/events`);
+      chrome.tabs.create({ url });
+    }
   } else if (name === 'upperChain') {
     if (operation === 'openPadoWebsite') {
       tabCreatedByPado = await chrome.tabs.create({
@@ -24,7 +29,7 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
         request,
         function (response) {}
       );
-    } 
+    }
 
     // else if () {
 
