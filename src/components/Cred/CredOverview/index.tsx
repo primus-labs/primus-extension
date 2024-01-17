@@ -189,8 +189,37 @@ const CredOverview = memo(() => {
     async (item: CredTypeItemType) => {
       const curRequestid = item.requestid;
       const cObj = { ...credentialsFromStore };
+      if (cObj[curRequestid]?.event === BASEVENTNAME) {
+        const res = await chrome.storage.local.get([BASEVENTNAME]);
+        if (res[BASEVENTNAME]) {
+          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          const { steps } = lastInfo;
+          if (steps[3]?.status !== 1) {
+            let newInfo = { ...lastInfo };
+            const credTasks = steps[1]?.tasks;
+            let newCredTasks = { ...credTasks };
+            let newCredTasksStatus = steps[1]?.status;
+            let webTemplateId;
+            Object.keys(credTasks).forEach((k) => {
+              if (credTasks[k] === item.requestid) {
+                webTemplateId = k;
+              }
+            });
+
+            delete newCredTasks[webTemplateId];
+            newCredTasksStatus = Object.values(newCredTasks).length > 0 ? 1 : 0;
+            newInfo.steps[1] = {
+              status: newCredTasksStatus,
+              tasks: newCredTasks,
+            };
+            await chrome.storage.local.set({
+              [BASEVENTNAME]: JSON.stringify(newInfo),
+            });
+          }
+        }
+      }
       delete cObj[curRequestid];
-      chrome.storage.local.set({
+      await chrome.storage.local.set({
         credentials: JSON.stringify(cObj),
       });
       await initCredList();
@@ -320,10 +349,9 @@ const CredOverview = memo(() => {
       if (message.type === 'pageDecode') {
         if (message.name === 'sendRequest') {
           if (fromEvents === BASEVENTNAME && eventSource !== GOOGLEWEBPROOFID) {
-            
             if (eventSource !== GOOGLEWEBPROOFID) {
               setClaimEventBASVisible(false);
-              setAddDialogVisible(true)
+              setAddDialogVisible(true);
             }
           }
         }
@@ -348,9 +376,9 @@ const CredOverview = memo(() => {
           setClaimMysteryBoxVisible2(true);
         } else if (fromEvents === BASEVENTNAME) {
           // if (addSucFlag) {
-            setAddDialogVisible(false);
-            setClaimEventBASVisible(true);
-            setClaimEventBASStep(2);
+          setAddDialogVisible(false);
+          setClaimEventBASVisible(true);
+          setClaimEventBASStep(2);
           // } else {
           //   navigate('/cred', { replace: true });
           // }
@@ -422,7 +450,7 @@ const CredOverview = memo(() => {
   );
   const handleBackToBASEvent = useCallback(() => {
     setClaimEventBASVisible(true);
-    setSendToChainDialogVisible(false)
+    setSendToChainDialogVisible(false);
   }, []);
   const startFn = useCallback(() => {
     if (connectedWallet?.address) {
