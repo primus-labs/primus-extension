@@ -194,7 +194,7 @@ const CredOverview = memo(() => {
         if (res[BASEVENTNAME]) {
           const lastInfo = JSON.parse(res[BASEVENTNAME]);
           const { steps } = lastInfo;
-          if (steps[3]?.status !== 1) {
+          if (steps[2]?.status !== 1) {
             let newInfo = { ...lastInfo };
             const credTasks = steps[1]?.tasks;
             let newCredTasks = { ...credTasks };

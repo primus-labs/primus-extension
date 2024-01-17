@@ -89,6 +89,8 @@ const regenerateFn = () => {
             bucketName,
           },
         });
+        localStorage.removeItem('attestOffChainWithGreenFieldWithFixValue');
+        localStorage.removeItem('attestOffChainWithGreenFieldWithFixValueRes');
       } else {
         chrome.runtime.sendMessage({
           type: 'padoWebsite',
