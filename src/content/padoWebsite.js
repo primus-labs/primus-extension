@@ -68,7 +68,7 @@ const regenerateFn = () => {
     };
   }
   if (completeUpperChainEl) {
-    completeUpperChainEl.onclick = (e) => {
+    completeUpperChainEl.onclick = async (e) => {
       console.log('222completeUpperChainEl clicked');
       const resStr = localStorage.getItem(
         'attestOffChainWithGreenFieldWithFixValueRes'
@@ -79,7 +79,7 @@ const regenerateFn = () => {
         const recipient =
           resObj[0].eip712MessageRawDataWithSignature.message.recipient;
         const { bucketName } = resObj[0];
-        chrome.runtime.sendMessage({
+        await chrome.runtime.sendMessage({
           type: 'padoWebsite',
           name: 'upperChain',
           params: {
@@ -132,29 +132,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 let checkBASEventEntranceElTimer = null;
+if (window.location.pathname === '/basevent') {
+  checkBASEventEntranceElTimer = setInterval(() => {
+    var BASEventEntranceEl = document.querySelector(
+      '#BAS_EVENT_PROOF_OF_HUMANITY_entrance'
+    );
+    console.log(
+      '222 BAS_EVENT_PROOF_OF_HUMANITY_entrance btn',
+      BASEventEntranceEl
+    );
+    if (BASEventEntranceEl) {
+      BASEventEntranceEl.onclick = (e) => {
+        console.log('222 BASEventEntranceEl clicked ----');
+        e.preventDefault();
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'createTab',
+          params: {
+            eventName: BASEVENTNAME,
+          },
+        });
+        return;
+      };
 
-checkBASEventEntranceElTimer = setInterval(() => {
-  var BASEventEntranceEl = document.querySelector(
-    '#BAS_EVENT_PROOF_OF_HUMANITY_entrance'
-  );
-  console.log(
-    '222 BAS_EVENT_PROOF_OF_HUMANITY_entrance btn',
-    BASEventEntranceEl
-  );
-  if (BASEventEntranceEl) {
-    BASEventEntranceEl.onclick = (e) => {
-      console.log('222 BASEventEntranceEl clicked ----');
-      e.preventDefault();
-      chrome.runtime.sendMessage({
-        type: 'padoWebsite',
-        name: 'createTab',
-        params: {
-          eventName: BASEVENTNAME,
-        },
-      });
-      return;
-    };
-
-    clearInterval(checkBASEventEntranceElTimer);
-  }
-}, 200);
+      clearInterval(checkBASEventEntranceElTimer);
+    }
+  }, 200);
+}

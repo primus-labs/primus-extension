@@ -1,7 +1,7 @@
 import { BASEVENTNAME } from '@/config/constants';
-import { BNBGREENFIELDSCHEMANAME } from '@/config/envConstants';
+import { BNBGREENFIELDURL } from '@/config/envConstants';
 let tabCreatedByPado;
-let icpPageTabId;
+let currExtentionId;
 
 export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
   const { name, params } = request;
@@ -19,22 +19,21 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
   } else if (name === 'upperChain') {
     if (operation === 'openPadoWebsite') {
       tabCreatedByPado = await chrome.tabs.create({
-        url: BNBGREENFIELDSCHEMANAME, // TODO
+        url: BNBGREENFIELDURL, // TODO
       });
-      icpPageTabId = sender.tab.id;
-      console.log('22212345', icpPageTabId, tabCreatedByPado);
+      currExtentionId = sender.tab.id;
+      console.log('22212345', currExtentionId, tabCreatedByPado);
     } else if (operation === 'upperChain') {
       chrome.tabs.sendMessage(
         tabCreatedByPado.id,
         request,
         function (response) {}
       );
+    } else if (operation === 'completeUpperChain') {
+      await chrome.tabs.update(currExtentionId, {
+        active: true,
+      });
+      await chrome.tabs.remove(tabCreatedByPado.id);
     }
-
-    // else if () {
-
-    // }
-
-    // chrome.tabs.sendMessage(icpPageTabId, request, function (response) {});
   }
 };

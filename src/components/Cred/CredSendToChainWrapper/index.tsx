@@ -326,6 +326,26 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             await Promise.all(requestArr);
             return;
           }
+        } else {
+          setActiveSendToChainRequest({
+            type: 'warn',
+            title: 'Unable to proceed',
+            desc: 'Please try again later.',
+          });
+          eventInfoArr = eventInfoArr.map((i) => {
+            return {
+              ...i,
+              rawData: Object.assign(i.rawData, {
+                status: 'FAILED',
+                reason: '',
+              }),
+            };
+          });
+          const requestArr = eventInfoArr.map((i) => {
+            return eventReport(i);
+          });
+          await Promise.all(requestArr);
+          return;
         }
       },
       [
