@@ -344,29 +344,6 @@ const CredOverview = memo(() => {
       setClaimEventBASVisible(false);
     }
   };
-  useEffect(() => {
-    const listerFn = (message: any) => {
-      if (message.type === 'pageDecode') {
-        if (message.name === 'sendRequest') {
-          if (fromEvents === BASEVENTNAME && eventSource !== GOOGLEWEBPROOFID) {
-            if (eventSource !== GOOGLEWEBPROOFID) {
-              setClaimEventBASVisible(false);
-              setAddDialogVisible(true);
-            }
-          }
-        } else if (
-            message.name === 'cancelAttest' ||
-            message.name === 'abortAttest'
-          ) {
-            setEventSource(undefined);
-          }
-      }
-    };
-    chrome.runtime.onMessage.addListener(listerFn);
-    return () => {
-      chrome.runtime.onMessage.removeListener(listerFn);
-    };
-  }, [fromEvents, eventSource]);
 
   const handleSubmitBindPolygonid = useCallback(async () => {
     await initCredList();
@@ -575,7 +552,25 @@ const CredOverview = memo(() => {
     const listerFn = (message: any) => {
       if (message.type === 'pageDecode') {
         if (message.name === 'sendRequest') {
-          setClaimMysteryBoxVisible2(false);
+          if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+            setClaimMysteryBoxVisible2(false);
+          }
+          if (fromEvents === BASEVENTNAME && eventSource !== GOOGLEWEBPROOFID) {
+            if (eventSource !== GOOGLEWEBPROOFID) {
+              setClaimEventBASVisible(false);
+              setAddDialogVisible(true);
+            }
+          }
+        } else if (
+          message.name === 'cancelAttest' ||
+          message.name === 'abortAttest'
+        ) {
+          if (fromEvents === BASEVENTNAME) {
+            // setAddDialogVisible(false);
+            setEventSource(undefined);
+            // setClaimEventBASVisible(true);
+            // setClaimEventBASStep(2);
+          }
         }
       }
     };
@@ -583,7 +578,8 @@ const CredOverview = memo(() => {
     return () => {
       chrome.runtime.onMessage.removeListener(listerFn);
     };
-  }, [activeRequest?.type]);
+  }, [fromEvents, eventSource]);
+
   useEffect(() => {
     return () => {
       const msg = {

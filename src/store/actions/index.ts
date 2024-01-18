@@ -140,8 +140,7 @@ export const connectWalletAsync = (
         provider = connectObj.provider;
       } else {
         let connectRes;
-
-        if (network === 'BNB Greenfield') {
+        if (network?.title === 'BNB Greenfield') {
           connectRes = await connectWallet();
         } else {
           connectRes = await connectWallet(network);
