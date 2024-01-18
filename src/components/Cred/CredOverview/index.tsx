@@ -354,7 +354,12 @@ const CredOverview = memo(() => {
               setAddDialogVisible(true);
             }
           }
-        }
+        } else if (
+            message.name === 'cancelAttest' ||
+            message.name === 'abortAttest'
+          ) {
+            setEventSource(undefined);
+          }
       }
     };
     chrome.runtime.onMessage.addListener(listerFn);

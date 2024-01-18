@@ -140,6 +140,23 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
         }
       });
     }, []);
+    useEffect(() => {
+      const listerFn = (message: any) => {
+        if (message.type === 'pageDecode') {
+          if (
+            message.name === 'cancelAttest' ||
+            message.name === 'abortAttest'
+          ) {
+            setActiveType(undefined);
+          }
+        }
+      };
+      chrome.runtime.onMessage.addListener(listerFn);
+      return () => {
+        chrome.runtime.onMessage.removeListener(listerFn);
+      };
+    }, []);
+
 
     return (
       <PMask onClose={onClose}>
