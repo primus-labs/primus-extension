@@ -428,12 +428,14 @@ const CredOverview = memo(() => {
           } else if (fromEvents === BASEVENTNAME) {
             setSendToChainDialogVisible(false);
             setClaimEventBASVisible(true);
+            navigate('/cred', { replace: true });
           }
         } else {
           if (fromEvents === 'Scroll') {
             targetUrl = '/events';
             navigate(targetUrl);
           } else if (fromEvents === BASEVENTNAME) {
+            setSendToChainDialogVisible(false);
             setClaimEventBASVisible(true);
           } else {
             navigate('/cred');

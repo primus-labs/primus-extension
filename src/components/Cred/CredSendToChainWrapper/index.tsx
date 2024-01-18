@@ -141,9 +141,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       if (fromEvents === 'LINEA_DEFI_VOYAGE') {
         navigate('/cred');
       }
-      if (fromEvents === BASEVENTNAME) {
-        navigate('/cred', { replace: true });
-      }
+      
     }, [onClose, fromEvents, navigate]);
     const handleCloseTransferToChain = useCallback(() => {
       setStep(0);
@@ -1233,7 +1231,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             closeable={
               !fromEvents ||
               fromEvents === 'Scroll' ||
-              fromEvents === 'LINEA_DEFI_VOYAGE'
+              fromEvents === 'LINEA_DEFI_VOYAGE' ||
+              fromEvents === BASEVENTNAME
             }
           />
         )}
