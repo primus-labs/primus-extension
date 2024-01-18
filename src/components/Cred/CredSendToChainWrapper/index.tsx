@@ -1160,7 +1160,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         //     window.open(targetUrl);
         //     onSubmitActiveSendToChainRequestDialog();
         //   };
-        //   return <PButton text="OK" onClick={fn} />; //Check your campaign status  Back to event => OK
+        //   return <PButton text="Back to event" onClick={fn} />; //Check your campaign status
         // }
         else {
           return null;

@@ -11,6 +11,7 @@ import utc from 'dayjs-plugin-utc';
 import { queryEventDetail } from '@/services/api/event';
 import PButton from '@/components/PButton';
 import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
+import nftIllstration from '@/assets/img/events/nftIllstration.png';
 import './index.scss';
 interface AdSpaceProps {
   onClick: () => void;
@@ -33,18 +34,40 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
   }, [scrollEventPeriod]);
 
   const scrollEventActiveFlag = useMemo(() => {
-    const { startTime, endTime } = scrollEventPeriod;
-    const isActive =
-      dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
-    const isEnd = dayjs().isAfter(dayjs(+endTime));
-    if (isActive) {
-      return 1;
+    // const { startTime, endTime } = scrollEventPeriod;
+    // const isActive =
+    //   dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
+    // const isEnd = dayjs().isAfter(dayjs(+endTime));
+    // if (isActive) {
+    //   return 1;
+    // }
+    // if (isEnd) {
+    //   return 2;
+    // }
+    // return 0;
+    return 2
+  }, []);
+  const formatCN = useMemo(() => {
+    if (scrollEventActiveFlag === 1) {
+      return 'adSpace adSpaceBadge';
+    } else {
+      return 'adSpace adSpaceNft';
     }
-    if (isEnd) {
-      return 2;
+  }, [scrollEventActiveFlag]);
+  const formatImgCN = useMemo(() => {
+    if (scrollEventActiveFlag === 1) {
+      return 'activeImg';
+    } else {
+      return ;
     }
-    return 0;
-  }, [scrollEventPeriod]);
+  }, [scrollEventActiveFlag]);
+  const formatImgSrc = useMemo(() => {
+    if (scrollEventActiveFlag === 1) {
+      return bannerIllstration;
+    } else {
+      return nftIllstration;
+    }
+  }, [scrollEventActiveFlag]);
   const fetchEventDetail = useCallback(async () => {
     try {
       const res = await queryEventDetail({
@@ -71,28 +94,27 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
 
   return (
     <>
-      {scrollEventActiveFlag === 1 ? (
-        <div className={'adSpace adSpaceBadge'}>
-          <div className="left">
-            <img className="activeImg" src={bannerIllstration} alt="" />
-
-            <div className="bannerContent">
-              <h3 className="ct">Linea DeFi Voyage : Proof of Humanity</h3>
-              <div className="cn">
-                <p>Get an attestation with a KYCed account on Binance</p>
-                <p>{formatPeriod}</p>
-              </div>
+      <div className={formatCN}>
+        <div className="left">
+          <img className={formatImgCN} src={formatImgSrc} alt="" />
+          <div className="bannerContent">
+            <h3 className="ct">The Linea Voyage : Proof of Humanity</h3>
+            <div className="cn">
+              <p>Get an attestation with a KYCed account on Binance</p>
+              {scrollEventActiveFlag === 1 && <p>{formatPeriod}</p>}
             </div>
           </div>
-          <PButton
-            text="Join Now"
-            suffix={<i className="iconfont icon-rightArrow"></i>}
-            onClick={onClick}
-          />
         </div>
-      ) : (
-        <></>
-      )}
+        <PButton
+          text="Join Now"
+          suffix={
+            scrollEventActiveFlag === 1 && (
+              <i className="iconfont icon-rightArrow"></i>
+            )
+          }
+          onClick={onClick}
+        />
+      </div>
     </>
   );
 });
