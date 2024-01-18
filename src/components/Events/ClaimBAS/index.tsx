@@ -121,17 +121,14 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       },
       [onChange]
     );
-    const onCredTypesDialogBack = useCallback(() => {
-      setStep(1);
-    }, []);
     const onCredTypeDialogSubmit = useCallback(async () => {
       setStep(1);
     }, []);
     useEffect(() => {
-      if (activeStep === 2) {
+      if (visible && activeStep === 2) {
         setStep(2);
       }
-    }, [activeStep]);
+    }, [activeStep, visible]);
     
     return (
       <div className="claimMysteryBoxWrapper">
@@ -150,7 +147,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             onClose={onClose}
             onSubmit={onCredTypeDialogSubmit}
             onChange={onAttest}
-            onBack={onCredTypesDialogBack}
+            onBack={onCredTypeDialogSubmit}
           />
         )}
         {visible && step === 3 && (

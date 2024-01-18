@@ -394,14 +394,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [activeCred, userInfo, initCredList, requestConfigParams]);
     const authorize = useAuthorization2();
     const storeBASEventInfoFn = useCallback(
-      async (outerExtraInfo: any, taskExtraInfo: any) => {
+      async (address: any, taskExtraInfo: any) => {
         if (fromEvents === BASEVENTNAME) {
           const res = await chrome.storage.local.get([BASEVENTNAME]);
           if (res[BASEVENTNAME]) {
             const lastInfo = JSON.parse(res[BASEVENTNAME]);
             const lastTasks = lastInfo.steps[1].tasks ?? {};
-            // lastInfo.address = connectedWallet?.address;
-            Object.assign(lastInfo, outerExtraInfo); // outerExtraInfo:{address: ...}
+            if (!lastInfo.address) {
+              lastInfo.address = address;
+            }
             lastInfo.steps[1].status = 1;
             lastInfo.steps[1].tasks = {
               ...lastTasks,
@@ -463,10 +464,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
             event: fromEvents,
           };
-          await storeBASEventInfoFn(
-            { address: connectedWallet?.address },
-            { [GOOGLEWEBPROOFID]: fullAttestation.requestid }
-          );
+          await storeBASEventInfoFn(connectedWallet?.address, {
+            [GOOGLEWEBPROOFID]: fullAttestation.requestid,
+          });
 
           const credentialsObj = { ...credentialsFromStore };
           credentialsObj[attestationId] = fullAttestation;
@@ -874,7 +874,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (form.event === BASEVENTNAME) {
             currRequestObj.schemaType =
               BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY';
-            
           }
 
           await chrome.runtime.sendMessage({
@@ -1059,13 +1058,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             await chrome.storage.local.remove(['activeRequestAttestation']);
             await initCredList();
             if (fullAttestation.reqType === 'web') {
-              storeBASEventInfoFn(
-                { address: content.address },
-                {
-                  [parsedActiveRequestAttestation.templateId]:
-                    parsedActiveRequestAttestation.requestid,
-                }
-              );
+              storeBASEventInfoFn(content.address, {
+                [parsedActiveRequestAttestation.templateId]:
+                  parsedActiveRequestAttestation.requestid,
+              });
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
                 name: 'attestResult',
@@ -1383,10 +1379,18 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               form.source = 'tiktok';
               break;
           }
-          onSubmitAttestationDialog(form);
+          if (activeRequest?.type !== 'loading') {
+            onSubmitAttestationDialog(form);
+          }
         }
       }
-    }, [visible, activeSource, activeCred, fromEvents, eventSource]);
+    }, [
+      visible,
+      activeSource,
+      activeCred,
+      fromEvents,
+      eventSource,
+    ]);
 
     // useEffect(() => {
     //   if (!activeRequest?.type) {
@@ -1441,6 +1445,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const tryAgainFn = useCallback(() => {
       if (fromEvents === BASEVENTNAME) {
         onSubmit();
+        onSubmitAttestationDialog(activeAttestForm)
         return;
       }
       if (

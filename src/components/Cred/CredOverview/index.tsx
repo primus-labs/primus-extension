@@ -555,7 +555,7 @@ const CredOverview = memo(() => {
           if (fromEvents === 'LINEA_DEFI_VOYAGE') {
             setClaimMysteryBoxVisible2(false);
           }
-          if (fromEvents === BASEVENTNAME && eventSource !== GOOGLEWEBPROOFID) {
+          if (fromEvents === BASEVENTNAME ) {
             if (eventSource !== GOOGLEWEBPROOFID) {
               setClaimEventBASVisible(false);
               setAddDialogVisible(true);
