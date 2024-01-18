@@ -435,13 +435,28 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             // reason: 'attestForPolygonId error',
           },
         };
+        const getCredAddrFn = async () => {
+          let credAddress = connectedWallet?.address;
+          if (form.event === BASEVENTNAME) {
+            const res = await chrome.storage.local.get([BASEVENTNAME]);
+            if (res[BASEVENTNAME]) {
+              const lastInfo = JSON.parse(res[BASEVENTNAME]);
+              const lastCredAddress = lastInfo.address;
+              if (lastCredAddress) {
+                credAddress = lastCredAddress;
+              }
+            }
+          }
+          return credAddress;
+        };
         const storeGoogleCred = async (res: any) => {
           //w
           const { signatureInfo, signatureRawInfo } = res;
+          const credAddress = await getCredAddrFn();
           const fullAttestation = {
             ...signatureInfo,
             ...signatureRawInfo,
-            address: connectedWallet?.address,
+            address: credAddress,
             ...form,
             version: CredVersion,
             requestid: attestationId,
