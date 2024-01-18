@@ -141,7 +141,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       if (fromEvents === 'LINEA_DEFI_VOYAGE') {
         navigate('/cred');
       }
-      
     }, [onClose, fromEvents, navigate]);
     const handleCloseTransferToChain = useCallback(() => {
       setStep(0);
@@ -268,12 +267,16 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             (i) => formatNetworkName === i.title
           );
           // currentChainObj.attestationUID = attestationUidArr[0];
-          currentChainObj.attestationUID = bucketName;
+
+          currentChainObj.bucketName = bucketName;
           currentChainObj.submitAddress = recipient;
 
-          toBeUpperChainCreds.forEach((i) => {
+          toBeUpperChainCreds.forEach((i, k) => {
             const newProvided = i.provided ?? [];
-            newProvided.push(currentChainObj);
+            newProvided.push({
+              ...currentChainObj,
+              attestationUID: attestationUidArr[k],
+            });
             credentialsFromStore[i.requestid] = Object.assign(i, {
               provided: newProvided,
             });
@@ -548,7 +551,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             // currentChainObj.attestationUID = upChainRes;
             // TODO???
             currentChainObj.submitAddress = walletObj.address;
-            
+
             // for (let i = 0; i < toBeUpperChainCreds.length; i++) {
             //   const cred = toBeUpperChainCreds[i];
             //   const newProvided = cred.provided ?? [];

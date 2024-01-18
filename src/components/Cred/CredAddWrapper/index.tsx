@@ -874,7 +874,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (form.event === BASEVENTNAME) {
             currRequestObj.schemaType =
               BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY';
-            // TODO-basevent
+            
           }
 
           await chrome.runtime.sendMessage({

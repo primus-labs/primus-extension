@@ -30,10 +30,12 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
         function (response) {}
       );
     } else if (operation === 'completeUpperChain') {
-      await chrome.tabs.update(currExtentionId, {
-        active: true,
-      });
-      await chrome.tabs.remove(tabCreatedByPado.id);
+      setTimeout(async () => {
+        await chrome.tabs.update(currExtentionId, {
+          active: true,
+        });
+        await chrome.tabs.remove(tabCreatedByPado.id);
+      }, 2000);
     }
   }
 };
