@@ -1425,7 +1425,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     }, [navigate, padoServicePort]);
     const tryAgainFn = useCallback(() => {
       if (fromEvents === BASEVENTNAME) {
-        onSubmitAttestationDialog(activeAttestForm);
         onSubmit();
         return;
       }
