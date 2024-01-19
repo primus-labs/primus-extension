@@ -192,7 +192,7 @@ var options = {
               );
             } else {
               let jsonobj = JSON.parse(content.toString());
-              jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
+              //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
               jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9095/*");
               return Buffer.from(
                 JSON.stringify({

@@ -31,7 +31,8 @@
       "matches": [
         "https://padolabs.org/*",
         "https://www.padolabs.org/*",
-        "https://events.padolabs.org/*"
+        "https://events.padolabs.org/*",
+        "http://api-dev.padolabs.org:9094/*"
       ],
       "js": ["padoWebsite.js"]
     },
