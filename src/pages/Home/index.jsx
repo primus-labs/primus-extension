@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 import '@/assets/css/global.css';
+import '@/assets/newCss/global.css';
 import routes from '@/router';
 import { Provider } from 'react-redux';
 import store from '@/store/index';
@@ -89,7 +90,7 @@ console.log('Page initialization');
 
 // TODO
 root.render(
-  <div className="pageOuterWrapper">
+  <div className="pageOuterWrapper light">
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>

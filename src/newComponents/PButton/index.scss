@@ -1,0 +1,95 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+@mixin Button {
+  color: var(--Text-Tokens-text-inverse, #fff);
+  text-align: center;
+
+  /* Button */
+  font-family: 'IBM Plex Sans';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 128.571% */
+  letter-spacing: 0.16px;
+}
+button.PButton {
+  @include frcc;
+  @include Button;
+  box-sizing: border-box;
+  cursor: pointer;
+  width: 100%;
+  &.disable {
+    cursor: not-allowed;
+  }
+  &.primary,
+  &.secondary {
+    border-radius: var(--Radius-radius-xs, 4px);
+    width: 108px;
+    &.m {
+      height: 40px;
+    }
+    &.s {
+      height: 32px;
+    }
+  }
+  &.primary {
+    background: var(--Button-Tokens-button-primary, #161616);
+    color: var(--Text-Tokens-text-inverse, #fff);
+    &:not(.disable):hover {
+      color: var(--Text-Tokens-text-hover, #c6c6c6);
+    }
+    &.disable {
+      color: var(--text-button-disabled, #a8a8a8);
+      background: var(--Button-Tokens-button-disabled, #e0e0e0);
+    }
+  }
+  &.secondary {
+    border: 1px solid var(--Button-Tokens-button-primary, #161616);
+    color: var(--Button-Tokens-button-primary, #161616);
+    &:not(.disable):hover {
+      color: var(--Text-Tokens-text-secondary, #525252);
+    }
+    &.disable {
+      color: var(--text-button-disabled, #a8a8a8);
+      border: 1px solid var(--Button-Tokens-button-disabled, #e0e0e0);
+    }
+  }
+  &.text {
+    @include frcc;
+    gap: 4px;
+    color: var(--Text-Tokens-text-primary, #161616);
+    .iconfont {
+      font-size: 16px;
+      color: var(--icon-tokens-icon-primary);
+    }
+    &:not(.disable):hover {
+      color: var(--Text-Tokens-text-secondary, #525252);
+      .iconfont {
+        color: var(--icon-tokens-icon-secondary);
+      }
+    }
+    &.disable {
+      color: var(--Text-Tokens-text-disabled, #c6c6c6);
+      .iconfont {
+        color: var(--icon-tokens-icon-disabled);
+      }
+    }
+  }
+  &.icon {
+    .iconfont {
+      font-size: 16px;
+      color: var(--icon-tokens-icon-primary);
+    }
+    &:not(.disable):hover {
+      .iconfont {
+        color: var(--button-tokens-button-primary-hover);
+      }
+    }
+    .disable {
+      .iconfont {
+        color: var(--icon-tokens-icon-disabled);
+      }
+    }
+  }
+}
