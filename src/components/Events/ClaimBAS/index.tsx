@@ -20,6 +20,7 @@ import CredTypesDialog from './CredTypesDialog';
 import useAllSources from '@/hooks/useAllSources';
 import { BASEVENTNAME } from '@/config/constants';
 import { queryEventDetail } from '@/services/api/event';
+import useEventDetail from '@/hooks/useEventDetail';
 
 import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
@@ -38,13 +39,22 @@ interface ClaimWrapperProps {
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit, onChange, onAttest, activeStep }) => {
+    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const [searchParams] = useSearchParams();
     const BadgesProcess = searchParams.get('ScrollProcess');
     const [step, setStep] = useState<number>(0);
     const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
-    const BASEventPeriod = useSelector(
-      (state: UserState) => state.BASEventPeriod
-    );
+    const BASEventPeriod = useMemo(() => {
+      if (BASEventDetail?.startTime) {
+        const { startTime, endTime } = BASEventDetail;
+        return {
+          startTime,
+          endTime,
+        };
+      } else {
+        return {};
+      }
+    }, [BASEventDetail]);
     const eventActiveFlag = useMemo(() => {
       const { startTime, endTime } = BASEventPeriod;
       const isActive =
@@ -105,7 +115,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       if (visible) {
         setStep(1);
         setActiveRequest(undefined);
-        
       }
     }, [BadgesProcess, errorDescEl, visible]);
 
@@ -129,7 +138,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         setStep(2);
       }
     }, [activeStep, visible]);
-    
+
     return (
       <div className="claimMysteryBoxWrapper">
         {visible && step === 1 && (

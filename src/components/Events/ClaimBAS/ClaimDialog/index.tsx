@@ -90,9 +90,17 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     });
     const [errorTip, setErrorTip] = useState<string>();
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
-    const BASEventPeriod = useSelector(
-      (state: UserState) => state.BASEventPeriod
-    );
+    const BASEventPeriod = useMemo(() => {
+      if (BASEventDetail?.startTime) {
+        const { startTime, endTime } = BASEventDetail;
+        return {
+          startTime,
+          endTime,
+        };
+      } else {
+        return {};
+      }
+    }, [BASEventDetail]);
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );

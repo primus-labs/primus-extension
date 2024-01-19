@@ -9,6 +9,7 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
+import useEventDetail from '@/hooks/useEventDetail'
 import { setRewardsDialogVisibleAction } from '@/store/actions';
 import { checkLotteryResults } from '@/services/api/event';
 import { BASEVENTNAME } from '@/config/constants';
@@ -25,9 +26,18 @@ interface AdSpaceProps {
 dayjs.extend(utc);
 const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
   const dispatch: Dispatch<any> = useDispatch();
-  const BASEventPeriod = useSelector(
-    (state: UserState) => state.BASEventPeriod
-  );
+  const [BASEventDetail] = useEventDetail(BASEVENTNAME);
+  const BASEventPeriod = useMemo(() => {
+    if (BASEventDetail?.startTime) {
+      const { startTime, endTime } = BASEventDetail;
+      return {
+        startTime,
+        endTime,
+      };
+    } else {
+      return {};
+    }
+  }, [BASEventDetail]);
   const formatPeriod = useMemo(() => {
     const { startTime, endTime } = BASEventPeriod;
     const s = dayjs.utc(+startTime).format('YYYY.MM.DD-h-a');
