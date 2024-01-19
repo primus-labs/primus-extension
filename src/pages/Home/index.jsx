@@ -89,9 +89,9 @@ console.log('Page initialization');
 
 // TODO
 root.render(
-  <>
+  <div className="pageOuterWrapper">
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </>
+  </div>
 );
