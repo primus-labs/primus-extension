@@ -96,10 +96,7 @@ export const setScrollEventPeriodAction = (values: any) => ({
   type: 'setScrollEventPeriodAction',
   payload: values,
 });
-export const setBASEventPeriodAction = (values: any) => ({
-  type: 'setBASEventPeriodAction',
-  payload: values,
-});
+
 export const setEventsAction = (values: any) => ({
   type: 'setEventsAction',
   payload: values,
@@ -291,9 +288,6 @@ export const setBadgeEventPeriodActionAsync = () => {
         queryBadgeEventPeriod({
           event: SCROLLEVENTNAME,
         }),
-        queryBadgeEventPeriod({
-          event: BASEVENTNAME,
-        }),
       ]);
       eventPeriodRes.forEach((i, k) => {
         const { rc, result } = i;
@@ -305,11 +299,8 @@ export const setBadgeEventPeriodActionAsync = () => {
           if (rc === 0) {
             dispatch(setScrollEventPeriodAction(result));
           }
-        } else if (k === 2) {
-          if (rc === 0) {
-            dispatch(setBASEventPeriodAction(result));
-          }
         }
+        
       });
     } catch (e) {
       console.log('setBadgeEventPeriodActionAsync e:', e);
@@ -333,10 +324,26 @@ export const setEventsActionAsync = () => {
         }
         return prev;
       }, {});
+      await chrome.storage.local.set({
+        eventsDetail: JSON.stringify(obj),
+      });
       dispatch(setEventsAction(obj));
     } catch (e) {
       console.log('setEventsActionAsync e:', e);
     }
+  };
+};
+export const initEventsActionAsync = () => {
+  return async (dispatch: any) => {
+    const { eventsDetail: eventsDetailStr } = await chrome.storage.local.get([
+      'eventsDetail',
+    ]);
+    if (eventsDetailStr) {
+      const eventsDetailObj = JSON.parse(eventsDetailStr);
+      await dispatch(setEventsAction(eventsDetailObj));
+      
+    }
+    await dispatch(setEventsActionAsync());
   };
 };
 // export const setUserInfoActionAsync = (value: string) => {

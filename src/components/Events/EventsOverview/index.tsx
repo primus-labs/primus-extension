@@ -3,9 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import dayjs from 'dayjs';
-import {
-  setEventsActionAsync,
-} from '@/store/actions';
+import { setEventsActionAsync, initEventsActionAsync } from '@/store/actions';
 
 import RewardsDialog from '@/components/RewardsDialog';
 import ClaimWrapper from '../ClaimWrapper';
@@ -165,7 +163,7 @@ const EventsOverview = memo(() => {
     }
   }, [ScrollProcess, dispatch]);
   useEffect(() => {
-    dispatch(setEventsActionAsync());
+    dispatch(initEventsActionAsync())
   }, [dispatch]);
 
   return (
