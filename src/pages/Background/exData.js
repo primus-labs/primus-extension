@@ -5,6 +5,7 @@ import {
   ExchangeStoreVersion,
   schemaTypeMap,
   SCROLLEVENTNAME,
+  BASEVENTNAME,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
@@ -244,7 +245,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const authUseridHash = strToHex(authUserId);
 
   const timeStampStr = (+new Date()).toString();
-  const schemaType = schemaTypeMap[type];
+  let schemaType = schemaTypeMap[type];
   const padoUrl = await getPadoUrl();
   const proxyUrl = await getProxyUrl();
   const params = {
@@ -264,8 +265,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     credVersion: CredVersion,
 
     sigFormat: 'EAS-Ethereum', // TODO
-    // sigFormat: 'EAS-BNB', // TODO
-    // schemaType: 'exchange-balance', // TODO
     schemaType,
     user,
     // holdingToken // TODO
@@ -498,6 +497,15 @@ async function assembleUserInfoParams(form) {
     const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
     if (scrollEventObj.address) {
       formatAddress = scrollEventObj.address;
+    }
+  } else if (event === BASEVENTNAME) {
+    const res = await chrome.storage.local.get([BASEVENTNAME]);
+    if (res[BASEVENTNAME]) {
+      const lastInfo = JSON.parse(res[BASEVENTNAME]);
+      const lastCredAddress = lastInfo.address;
+      if (lastCredAddress) {
+        formatAddress = lastCredAddress;
+      }
     }
   }
   const { id, token: loginToken } = JSON.parse(userInfo);

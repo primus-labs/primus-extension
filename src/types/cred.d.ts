@@ -44,6 +44,7 @@ export type CredTypeItemType = {
   sigFormat?: string;
   rawParam?: any;
   dataToBeSigned?: any;
+  proofContent?: any
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

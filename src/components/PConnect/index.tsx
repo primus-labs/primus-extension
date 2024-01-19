@@ -60,7 +60,7 @@ const PConnect = memo(() => {
   const { connect } = useWallet();
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
-      if (wallet?.name === 'MetaMask') {
+      if (wallet?.name && wallet?.name?.toLowerCase() === 'metamsk') {
         setActiveRequest({
           type: 'loading',
           title: 'Requesting Connection',
@@ -81,12 +81,13 @@ const PConnect = memo(() => {
       'connectedWalletAddress',
     ]);
     if (connectedWalletAddress) {
-      handleSubmitConnectWallet();
+      const lastConnectedInfo = JSON.parse(connectedWalletAddress);
+      handleSubmitConnectWallet(lastConnectedInfo);
     }
   }, [handleSubmitConnectWallet]);
-  // useEffect(() => {
-  //   checkIfHadBound();
-  // }, [checkIfHadBound]); // TODO!!!
+  useEffect(() => {
+    checkIfHadBound();
+  }, []);
   useEffect(() => {
     if (connectedWallet?.address) {
       setConnectWalletDialogVisible1(false);

@@ -212,7 +212,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       }
     }, [exSources, activeToken,type]);
     const baseValueArr = useMemo(() => {
-      if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
+      if (activeAttestationTypeInfo?.credIdentifier === 'ASSETS_PROOF') {
         const baseValArr = JSON.parse(
           activeAttestationTypeInfo.credProofConditions
         );
@@ -394,7 +394,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [activeCred, type, activeConnectedSourceList]);
 
     useEffect(() => {
-      if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
+      if (activeAttestationTypeInfo?.credIdentifier === 'ASSETS_PROOF') {
         const baseValArr = JSON.parse(
           activeAttestationTypeInfo.credProofConditions
         );
@@ -411,7 +411,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           {!!onBack && <PBack onBack={onBack} />}
           <main>
             <header>
-              <h1>{activeAttestationTypeInfo.credTitle}</h1>
+              <h1>{activeAttestationTypeInfo?.credTitle}</h1>
               {/* <h2>{activeAttestationTypeInfo.credDetails}</h2> */}
             </header>
             <div className="formContent">
@@ -419,7 +419,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
                 <div className="label">Proof Content</div>
                 <div className="value">
                   <div className="desc">
-                    {activeAttestationTypeInfo.credProofContent}
+                    {activeAttestationTypeInfo?.credProofContent}
                   </div>
                   {type === 'ASSETS_PROOF' && (
                     <i className="iconfont icon-iconArrowLeft2" />

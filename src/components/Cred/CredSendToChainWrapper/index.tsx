@@ -9,7 +9,8 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import useWallet from '@/hooks/useWallet';
-import { WALLETLIST } from '@/config/constants';
+import useEventDetail from '@/hooks/useEventDetail';
+import { BASEVENTNAME, WALLETLIST } from '@/config/constants';
 import { setConnectWalletActionAsync } from '@/store/actions';
 import { strToHexSha256 } from '@/utils/utils';
 import PButton from '@/components/PButton';
@@ -25,6 +26,7 @@ import {
   LINEASCHEMANAME,
   SCROLLSCHEMANAME,
   BNBSCHEMANAME,
+  BNBGREENFIELDSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
 import { CredVersion, SCROLLEVENTNAME } from '@/config/constants';
@@ -48,17 +50,21 @@ import type { UserState } from '@/types/store';
 import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
 import { eventReport } from '@/services/api/usertracker';
+// import { useBAS } from '@/services/chains/useBAS';
 
 import './index.scss';
+import { ObjectEncodingOptions } from 'fs';
 
 interface CredSendToChainWrapperType {
   visible?: boolean;
   activeCred?: CredTypeItemType;
   onSubmit: (sucFlag?: any) => void;
   onClose: () => void;
+  handleBackToBASEvent?: () => void;
 }
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
-  ({ visible = true, activeCred, onClose, onSubmit }) => {
+  ({ visible = true, activeCred, onClose, onSubmit, handleBackToBASEvent }) => {
+    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -75,6 +81,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
+    const events = useSelector((state: UserState) => state.events);
 
     const dispatch: Dispatch<any> = useDispatch();
 
@@ -89,10 +96,18 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     );
     const formatChainList = useMemo(() => {
       if (fromEvents) {
-        const newList = ONCHAINLIST.map((i) => {
+        let newList = ONCHAINLIST.map((i) => {
           if (fromEvents === 'Scroll') {
             if (i.title.indexOf('Scroll') > -1) {
               // TODO!!!
+              i.disabled = false;
+              return { ...i };
+            }
+          } else if (fromEvents === BASEVENTNAME) {
+            if (
+              i.title.indexOf('BSC') > -1 ||
+              i.title.indexOf('BNB Greenfield') > -1
+            ) {
               i.disabled = false;
               return { ...i };
             }
@@ -104,9 +119,15 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           }
           return { ...i, disabled: true };
         });
+        if (fromEvents === BASEVENTNAME) {
+          newList = newList.filter((i) => !i.disabled);
+        }
         return newList;
       } else {
-        return ONCHAINLIST;
+        const filterdList = ONCHAINLIST.filter(
+          (i) => i.title !== 'BNB Greenfield'
+        );
+        return filterdList;
       }
     }, [fromEvents]);
 
@@ -145,10 +166,491 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       }
     }, [activeSendToChainRequest?.type, onSubmit]);
 
-    const handleCancelTransferToChain = useCallback(() => {}, []);
+    const handleCancelTransferToChain = useCallback(() => {
+      if (fromEvents === BASEVENTNAME) {
+        handleBackToBASEvent && handleBackToBASEvent();
+      }
+    }, [fromEvents, handleBackToBASEvent]);
     const handleBackConnectWallet = useCallback(() => {
       setStep(3);
     }, []);
+
+    const getBASInfoFn = useCallback(async () => {
+      const res = await chrome.storage.local.get([BASEVENTNAME]);
+      if (res[BASEVENTNAME]) {
+        const lastInfo = JSON.parse(res[BASEVENTNAME]);
+        return lastInfo;
+      } else {
+        return {};
+      }
+    }, []);
+
+    const toBeUpperChainCredsFn = useCallback(async () => {
+      let credArrNew: CredTypeItemType[] = Object.values(credentialsFromStore);
+      const lastBASInfoObj = (await getBASInfoFn()) as any;
+      // del
+      console.log(
+        '222toBeUpperChainCredsFn-credArrNew:',
+        credArrNew,
+        lastBASInfoObj
+      );
+      // del
+      if (lastBASInfoObj?.steps && lastBASInfoObj.steps[1]) {
+        const lastTasks = lastBASInfoObj.steps[1].tasks ?? {};
+        const toBeUpperChainCredRequestids = Object.values(lastTasks);
+        const Creds = credArrNew.filter((c: any) =>
+          toBeUpperChainCredRequestids.includes(c.requestid)
+        );
+        console.log('222toBeUpperChainCreds:', Creds, lastTasks);
+        return Creds;
+      } else {
+        return [];
+      }
+    }, [credentialsFromStore, getBASInfoFn]);
+    const LineaSchemaNameFn = useCallback(
+      (networkName?: string) => {
+        const formatNetworkName = networkName ?? activeNetworkName;
+        let Name;
+        if (formatNetworkName?.startsWith('Linea')) {
+          Name = LINEASCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          (formatNetworkName.indexOf('BSC') > -1 ||
+            formatNetworkName.indexOf('BNB Greenfield') > -1)
+        ) {
+          Name = BNBSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('Scroll') > -1
+        ) {
+          Name = SCROLLSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('BNB Greenfield') > -1
+        ) {
+          Name = BNBGREENFIELDSCHEMANAME;
+        } else {
+          // Name = 'EAS';
+          Name = 'EAS-Ethereum';
+        }
+        return Name;
+      },
+      [activeNetworkName]
+    );
+    const completeUpperChainBASFn = useCallback(
+      async (params: any) => {
+        const { result, attestationUidArr, recipient, bucketName } = params;
+        const formatNetworkName = 'BNB Greenfield';
+        const LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
+        const toBeUpperChainCreds: CredTypeItemType[] =
+          await toBeUpperChainCredsFn();
+        const firstToBeUpperChainCred = toBeUpperChainCreds[0];
+
+        let upChainType = firstToBeUpperChainCred?.schemaType;
+
+        const eventType = `${upChainType}-${LineaSchemaName}`;
+        let eventInfoArr = toBeUpperChainCreds.map((i: any) => {
+          const uniqueId = strToHexSha256(i?.signature);
+          var eventInfo: any = {
+            eventType: 'UPPER_CHAIN',
+            rawData: {
+              network: formatNetworkName,
+              type: eventType,
+              source: i.source,
+              attestationId: uniqueId,
+            },
+          };
+          return eventInfo;
+        }, []);
+        if (result) {
+          const currentChainObj: any = ONCHAINLIST.find(
+            (i) => formatNetworkName === i.title
+          );
+          // currentChainObj.attestationUID = attestationUidArr[0];
+
+          currentChainObj.bucketName = bucketName;
+          currentChainObj.submitAddress = recipient;
+
+          toBeUpperChainCreds.forEach((i, k) => {
+            const newProvided = i.provided ?? [];
+            newProvided.push({
+              ...currentChainObj,
+              attestationUID: attestationUidArr[k],
+            });
+            credentialsFromStore[i.requestid] = Object.assign(i, {
+              provided: newProvided,
+            });
+          });
+          await chrome.storage.local.set({
+            credentials: JSON.stringify(credentialsFromStore),
+          });
+          await initCredList();
+
+          const res = await chrome.storage.local.get([BASEVENTNAME]);
+          if (res[BASEVENTNAME]) {
+            const lastInfo = JSON.parse(res[BASEVENTNAME]);
+            lastInfo.steps[2].status = 1;
+            await chrome.storage.local.set({
+              [BASEVENTNAME]: JSON.stringify(lastInfo),
+            });
+
+            setActiveSendToChainRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'Your attestation is recorded on-chain!',
+            });
+
+            eventInfoArr = eventInfoArr.map((i) => {
+              return {
+                ...i,
+                rawData: Object.assign(i.rawData, {
+                  status: 'SUCCESS',
+                  reason: '',
+                }),
+              };
+            });
+            const requestArr = eventInfoArr.map((i) => {
+              return eventReport(i);
+            });
+            await Promise.all(requestArr);
+          } else {
+            eventInfoArr = eventInfoArr.map((i) => {
+              return {
+                ...i,
+                rawData: Object.assign(i.rawData, {
+                  status: 'FAILED',
+                  reason: '',
+                }),
+              };
+            });
+            const requestArr = eventInfoArr.map((i) => {
+              return eventReport(i);
+            });
+            await Promise.all(requestArr);
+            return;
+          }
+        } else {
+          setActiveSendToChainRequest({
+            type: 'warn',
+            title: 'Unable to proceed',
+            desc: 'Please try again later.',
+          });
+          eventInfoArr = eventInfoArr.map((i) => {
+            return {
+              ...i,
+              rawData: Object.assign(i.rawData, {
+                status: 'FAILED',
+                reason: '',
+              }),
+            };
+          });
+          const requestArr = eventInfoArr.map((i) => {
+            return eventReport(i);
+          });
+          await Promise.all(requestArr);
+          return;
+        }
+      },
+      [
+        credentialsFromStore,
+        toBeUpperChainCredsFn,
+        initCredList,
+        LineaSchemaNameFn,
+      ]
+    );
+    const regeneratAttestationsBASFn = useCallback(async () => {
+      if (activeNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
+        const toBeUpperChainCreds = await toBeUpperChainCredsFn();
+        console.log('222toBeUpperChainCreds', toBeUpperChainCreds);
+        const regenerateAttestationParamsArr = toBeUpperChainCreds.map(
+          (i: any) => {
+            return {
+              rawParam:
+                i.source === 'google'
+                  ? i.rawParam
+                  : Object.assign(i, {
+                      ext: { event: SCROLLEVENTNAME },
+                    }),
+              greaterThanBaseValue: true,
+              signature: i?.signature,
+              newSigFormat: LineaSchemaNameFn('BNB Greenfield'),
+              sourceUseridHash: i?.sourceUseridHash,
+            };
+          }
+        );
+        console.log('222newSigFormat', LineaSchemaNameFn(), activeNetworkName);
+        const requestArr = regenerateAttestationParamsArr.map((i) => {
+          return regenerateAttestation(i);
+        });
+        const signResArr = await Promise.all(requestArr);
+
+        const upChainItems: any[] = [];
+        signResArr.forEach((i, k: number) => {
+          const { rc, result } = i;
+          if (rc === 0) {
+            const {
+              eip712MessageRawDataWithSignature,
+              result: resultResult,
+              schemaUid,
+            } = result;
+            upChainItems[k] = {
+              eip712MessageRawDataWithSignature,
+              getDataTime: resultResult.getDataTime,
+              schemaUid,
+            };
+          }
+        });
+        console.log('222connectedWallet', connectedWallet, upChainItems);
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'upperChain',
+          params: {
+            operation: 'upperChain',
+            attestationInfo: upChainItems,
+          },
+        });
+      }
+    }, [
+      LineaSchemaNameFn,
+      activeNetworkName,
+      toBeUpperChainCredsFn,
+      connectedWallet,
+    ]);
+    const BASEventDetailExt = useMemo(() => {
+      return BASEventDetail?.ext;
+    }, [BASEventDetail]);
+    const BASEventFn = useCallback(
+      async (
+        walletObj: any,
+        LineaSchemaName: string,
+        formatNetworkName?: string
+      ) => {
+        if (formatNetworkName === 'BNB Greenfield') {
+          chrome.runtime.sendMessage({
+            type: 'padoWebsite',
+            name: 'upperChain',
+            params: {
+              operation: 'openPadoWebsite',
+              eventName: BASEVENTNAME,
+              chainName: activeNetworkName,
+            },
+          });
+        } else {
+          const toBeUpperChainCreds = await toBeUpperChainCredsFn();
+          const upChainItems = toBeUpperChainCreds.map((i: any) => {
+            return {
+              data: i?.encodedData,
+              signature: i?.signature,
+              attesteraddr: PADOADDRESS,
+              receipt: i?.address,
+              type:
+                i?.reqType === 'web' || i?.source === 'google'
+                  ? 'web'
+                  : i?.type,
+              schemaName: i?.schemaName ?? LineaSchemaName,
+            };
+          });
+          const firstToBeUpperChainCred = toBeUpperChainCreds[0];
+          if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
+            const regenerateAttestationParamsArr = toBeUpperChainCreds.map(
+              (i: any) => {
+                return {
+                  rawParam:
+                    i.source === 'google'
+                      ? i.rawParam
+                      : Object.assign(i, {
+                          ext: { event: SCROLLEVENTNAME },
+                        }),
+                  greaterThanBaseValue: true,
+                  signature: i?.signature,
+                  newSigFormat: LineaSchemaName,
+                  sourceUseridHash: i?.sourceUseridHash,
+                };
+              }
+            );
+            const requestArr = regenerateAttestationParamsArr.map((i) => {
+              return regenerateAttestation(i);
+            });
+            const signResArr = await Promise.all(requestArr);
+            signResArr.forEach((i, k) => {
+              const { rc, result } = i;
+              if (rc === 0) {
+                upChainItems[k].signature = result.result.signature;
+                upChainItems[k].data = result.result.encodedData;
+              }
+            });
+          }
+          const upChainParams = {
+            networkName: formatNetworkName,
+            metamaskprovider: walletObj.provider,
+            items: upChainItems,
+            eventSchemauid: BASEventDetailExt?.schemaUid,
+          };
+
+          let upChainRes = await bulkAttest(upChainParams);
+          // burying point
+          console.log('222123upChainParams.items', upChainParams.items);
+          let upChainType = upChainParams.items[0].type;
+          if (upChainType === 'web') {
+            upChainType = firstToBeUpperChainCred?.schemaType;
+          }
+          const eventType = `${upChainType}-${upChainParams.items[0].schemaName}`;
+          let upchainNetwork = upChainParams.networkName;
+          if (
+            process.env.NODE_ENV === 'production' &&
+            upChainParams.networkName === 'Linea Goerli'
+          ) {
+            upchainNetwork = 'Linea Mainnet';
+          }
+          let eventInfoArr = toBeUpperChainCreds.map((i: any) => {
+            const uniqueId = strToHexSha256(i?.signature);
+            var eventInfo: any = {
+              eventType: 'UPPER_CHAIN',
+              rawData: {
+                network: upchainNetwork,
+                type: eventType,
+                source: i.source,
+                attestationId: uniqueId,
+              },
+            };
+            return eventInfo;
+          }, []);
+          if (upChainRes) {
+            if (upChainRes.error) {
+              if (upChainRes.error === 1) {
+                setActiveSendToChainRequest({
+                  type: 'warn',
+                  title: 'Unable to proceed',
+                  desc: 'Your balance is insufficient',
+                });
+              } else if (upChainRes.error === 2) {
+                setActiveSendToChainRequest({
+                  type: 'warn',
+                  title: 'Unable to proceed',
+                  desc: 'Please try again later.',
+                });
+              }
+              eventInfoArr = eventInfoArr.map((i) => {
+                return {
+                  ...i,
+                  rawData: Object.assign(i.rawData, {
+                    status: 'FAILED',
+                    reason: upChainRes.message,
+                  }),
+                };
+              });
+              const requestArr = eventInfoArr.map((i) => {
+                return eventReport(i);
+              });
+              await Promise.all(requestArr);
+              return;
+            }
+            const currentChainObj: any = ONCHAINLIST.find(
+              (i) => formatNetworkName === i.title
+            );
+            // currentChainObj.attestationUID = upChainRes;
+            // TODO???
+            currentChainObj.submitAddress = walletObj.address;
+
+            // for (let i = 0; i < toBeUpperChainCreds.length; i++) {
+            //   const cred = toBeUpperChainCreds[i];
+            //   const newProvided = cred.provided ?? [];
+            //   // currentChainObj.attestationUID = upChainRes[i];
+            //   newProvided.push({
+            //     ...currentChainObj,
+            //     attestationUID: upChainRes[i],
+            //   });
+            //   cred.provided = newProvided;
+            //   credentialsFromStore[cred.requestid] = cred;
+            //   console.log(
+            //     '222add chain provider attestationUID:',
+            //     upChainRes[i],
+            //     newProvided
+            //   );
+            //   console.log(
+            //     '222after add chain provider cred:',
+            //     credentialsFromStore[cred.requestid].provided,
+            //     cred.provided
+            //   );
+            // }
+            toBeUpperChainCreds.forEach(async (i, k) => {
+              const newProvided = i.provided ?? [];
+              // const existIndex = newProvided.findIndex(
+              //   (i) => i.title === formatNetworkName
+              // );
+              // existIndex < 0 &&
+              newProvided.push({
+                ...currentChainObj,
+                attestationUID: upChainRes[k],
+              });
+              credentialsFromStore[i.requestid] = Object.assign(i, {
+                provided: newProvided,
+              });
+            });
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(credentialsFromStore),
+            });
+
+            await initCredList();
+
+            const res = await chrome.storage.local.get([BASEVENTNAME]);
+            if (res[BASEVENTNAME]) {
+              const lastInfo = JSON.parse(res[BASEVENTNAME]);
+              lastInfo.steps[2].status = 1;
+              await chrome.storage.local.set({
+                [BASEVENTNAME]: JSON.stringify(lastInfo),
+              });
+
+              setActiveSendToChainRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your attestation is recorded on-chain!',
+              });
+
+              eventInfoArr = eventInfoArr.map((i) => {
+                return {
+                  ...i,
+                  rawData: Object.assign(i.rawData, {
+                    status: 'SUCCESS',
+                    reason: '',
+                  }),
+                };
+              });
+              const requestArr = eventInfoArr.map((i) => {
+                return eventReport(i);
+              });
+              await Promise.all(requestArr);
+            }
+          } else {
+            setActiveSendToChainRequest({
+              type: 'warn',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
+            });
+            eventInfoArr = eventInfoArr.map((i) => {
+              return {
+                ...i,
+                rawData: Object.assign(i.rawData, {
+                  status: 'FAILED',
+                  reason: 'attestByDelegationProxyFee error',
+                }),
+              };
+            });
+            const requestArr = eventInfoArr.map((i) => {
+              return eventReport(i);
+            });
+            await Promise.all(requestArr);
+          }
+        }
+      },
+      [
+        activeNetworkName,
+        BASEventDetailExt,
+        credentialsFromStore,
+        initCredList,
+        toBeUpperChainCredsFn,
+      ]
+    );
     const scrollEventFn = useCallback(
       async (
         walletObj: any,
@@ -350,29 +852,17 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       },
       [credentialsFromStore, initCredList]
     );
+
     const sucFn = useCallback(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
-          let LineaSchemaName;
-          if (formatNetworkName?.startsWith('Linea')) {
-            LineaSchemaName = LINEASCHEMANAME;
-          } else if (
-            formatNetworkName &&
-            formatNetworkName.indexOf('BSC') > -1
-          ) {
-            LineaSchemaName = BNBSCHEMANAME;
-          } else if (
-            formatNetworkName &&
-            formatNetworkName.indexOf('Scroll') > -1
-          ) {
-            LineaSchemaName = SCROLLSCHEMANAME;
-          } else {
-            LineaSchemaName = 'EAS';
-          }
+          let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
           if (fromEvents === 'Scroll') {
             scrollEventFn(walletObj, LineaSchemaName);
+          } else if (fromEvents === BASEVENTNAME) {
+            BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
           } else {
-            let upChainParams = {
+            let upChainParams: any = {
               networkName: formatNetworkName,
               metamaskprovider: walletObj.provider,
               receipt: activeCred?.address, // TODO DEL!!! for uniswap proof
@@ -384,14 +874,21 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                 activeCred?.reqType === 'web' || activeCred?.source === 'google'
                   ? 'web'
                   : activeCred?.type,
-              schemaName: activeCred?.schemaName ?? LineaSchemaName,
+              schemaName: activeCred?.schemaName ?? LineaSchemaName, // TODO-basevent
             };
+
             let versionForComparison = activeCred?.version ?? '';
 
             let upChainRes;
             const cObj = { ...credentialsFromStore };
             const curRequestid = activeCred?.requestid as string;
             const curCredential = cObj[curRequestid];
+            if (curCredential?.event === BASEVENTNAME) {
+              const schemaUidObj = BASEventDetailExt?.schemaUidInfo.find(
+                (i) => i.sigFormat === LineaSchemaName
+              );
+              upChainParams.eventSchemauid = schemaUidObj.schemaUid;
+            } // TODO-basevent
             if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
               const requestParams: any = {
                 rawParam:
@@ -403,7 +900,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                       }),
                 greaterThanBaseValue: true,
                 signature: curCredential.signature,
-                newSigFormat: LineaSchemaName,
+                newSigFormat: LineaSchemaName, // TODO-basevent
                 sourceUseridHash:
                   curCredential.type === 'UNISWAP_PROOF'
                     ? undefined
@@ -558,7 +1055,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         initCredList,
         scrollEventFn,
         fromEvents,
+        BASEventDetailExt,
         // activeNetworkName,
+        BASEventFn,
+        LineaSchemaNameFn,
       ]
     );
     const startFn = useCallback(() => {
@@ -577,50 +1077,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       });
     }, [errorDescEl]);
     const { connect } = useWallet();
-    // const upperChainFn = useCallback(
-    //   (networkName?: string) => {
-    //     startFn();
-    //     sucFn(
-    //       {
-    //         name: connectedWallet?.name, // walletconnect
-    //         provider: connectedWallet?.provider,
-    //         address: connectedWallet?.address,
-    //       },
-    //       networkName
-    //     );
-    //   },
-    //   [startF
     const handleSubmitConnectWallet = useCallback(
       async (wallet?: WALLETITEMTYPE, networkName?: string) => {
         const formatNetworkName = activeNetworkName ?? networkName;
+
         connect(wallet?.name, startFn, errorFn, sucFn, formatNetworkName);
-        // if (wallet) {
-
-        //   if (wallet?.name?.toLowerCase() === 'walletconnect') {
-
-        //     if (connectedWallet?.address) {
-
-        //       upperChainFn(networkName);
-        //     } else {
-
-        //       open();
-        //     }
-        //   }
-        //   // if (wallet?.name === 'metamask')
-        //   else {
-
-        //     connectWalletAsyncFn(undefined, networkName);
-        //   }
-        // } else {
-        //   if (
-        //     connectedWallet?.address &&
-        //     connectedWallet?.name === 'walletconnect'
-        //   ) {
-        //     upperChainFn(networkName);
-        //   } else {
-        //     connectWalletAsyncFn(undefined, networkName);
-        //   }
-        // }
       },
       [connect, startFn, sucFn, errorFn, activeNetworkName]
     );
@@ -688,18 +1149,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               onClick={onSubmitActiveSendToChainRequestDialog}
             />
           );
-        } else if (
-          isFromEventLINEA_DEFI_VOYAGE ||
-          fromEvents === 'LINEA_DEFI_VOYAGE'
-        ) {
-          const fn = () => {
-            const targetUrl =
-              eventDetail?.ext?.intractUrl || 'https://padolabs.org/events';
-            window.open(targetUrl);
-            onSubmitActiveSendToChainRequestDialog();
-          };
-          return <PButton text="Back to event" onClick={fn} />; //Check your campaign status
-        } else {
+        }
+        // else if (
+        //   isFromEventLINEA_DEFI_VOYAGE ||
+        //   fromEvents === 'LINEA_DEFI_VOYAGE'
+        // ) {
+        //   const fn = () => {
+        //     const targetUrl =
+        //       eventDetail?.ext?.intractUrl || 'https://padolabs.org/events';
+        //     window.open(targetUrl);
+        //     onSubmitActiveSendToChainRequestDialog();
+        //   };
+        //   return <PButton text="Back to event" onClick={fn} />; //Check your campaign status
+        // }
+        else {
           return null;
         }
       } else {
@@ -710,7 +1173,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       activeSendToChainRequest?.type,
       onClickClaimNFT,
       onClickRewards,
-      eventDetail?.ext?.intractUrl,
+      // eventDetail?.ext?.intractUrl,
     ]);
     const fetchEventDetail = useCallback(async () => {
       try {
@@ -732,6 +1195,25 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       fromEvents === 'LINEA_DEFI_VOYAGE' && fetchEventDetail();
     }, [fromEvents, fetchEventDetail]);
 
+    useEffect(() => {
+      const listerFn = async (message: any) => {
+        if (message.type === 'padoWebsite') {
+          if (message.name === 'upperChain') {
+            if (message.params.operation === 'regenerate') {
+              console.log('222extentsion receive regenerate');
+              await regeneratAttestationsBASFn();
+            } else if (message.params.operation === 'completeUpperChain') {
+              await completeUpperChainBASFn(message.params);
+            }
+          }
+        }
+      };
+      chrome.runtime.onMessage.addListener(listerFn);
+      return () => {
+        chrome.runtime.onMessage.removeListener(listerFn);
+      };
+    }, [regeneratAttestationsBASFn, completeUpperChainBASFn]);
+
     return (
       <div className="credSendToChainWrapper">
         {visible && step === 3 && (
@@ -741,7 +1223,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             list={formatChainList}
             tip="Please select one chain to submit attestation"
             checked={false}
-            backable={false}
+            backable={fromEvents === BASEVENTNAME}
             headerType={
               activeCred?.did ? 'polygonIdAttestation' : 'attestation'
             }
@@ -772,7 +1254,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             closeable={
               !fromEvents ||
               fromEvents === 'Scroll' ||
-              fromEvents === 'LINEA_DEFI_VOYAGE'
+              fromEvents === 'LINEA_DEFI_VOYAGE' ||
+              fromEvents === BASEVENTNAME
             }
           />
         )}

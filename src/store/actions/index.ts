@@ -8,14 +8,15 @@ import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import {
   DEFAULTDATASOURCEPOLLINGTIMENUM,
   SCROLLEVENTNAME,
+  BASEVENTNAME,
 } from '@/config/constants';
+import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import {
   bindConnectedWallet,
   checkIfBindConnectedWallet,
 } from '@/services/api/user';
-import { queryBadgeEventPeriod } from '@/services/api/event';
+import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
 import { getAssetsOnChains } from '@/services/api/dataSource';
-import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
 
 export const SETSYSCONFIG = 'SETSYSCONFIG';
@@ -95,6 +96,14 @@ export const setScrollEventPeriodAction = (values: any) => ({
   type: 'setScrollEventPeriodAction',
   payload: values,
 });
+export const setBASEventPeriodAction = (values: any) => ({
+  type: 'setBASEventPeriodAction',
+  payload: values,
+});
+export const setEventsAction = (values: any) => ({
+  type: 'setEventsAction',
+  payload: values,
+});
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {
@@ -130,7 +139,12 @@ export const connectWalletAsync = (
         address = connectObj.address;
         provider = connectObj.provider;
       } else {
-        const connectRes = await connectWallet(network);
+        let connectRes;
+        if (network?.title === 'BNB Greenfield') {
+          connectRes = await connectWallet();
+        } else {
+          connectRes = await connectWallet(network);
+        }
         provider = connectRes[2];
         address = (connectRes[0] as string[])[0];
       }
@@ -144,7 +158,7 @@ export const connectWalletAsync = (
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
           // startFn && (await startFn());
-          sucFn && (await sucFn({ name: type, address, provider },));
+          sucFn && (await sucFn({ name: type, address, provider }));
         } else {
           return;
         }
@@ -277,6 +291,9 @@ export const setBadgeEventPeriodActionAsync = () => {
         queryBadgeEventPeriod({
           event: SCROLLEVENTNAME,
         }),
+        queryBadgeEventPeriod({
+          event: BASEVENTNAME,
+        }),
       ]);
       eventPeriodRes.forEach((i, k) => {
         const { rc, result } = i;
@@ -288,10 +305,37 @@ export const setBadgeEventPeriodActionAsync = () => {
           if (rc === 0) {
             dispatch(setScrollEventPeriodAction(result));
           }
+        } else if (k === 2) {
+          if (rc === 0) {
+            dispatch(setBASEventPeriodAction(result));
+          }
         }
       });
     } catch (e) {
       console.log('setBadgeEventPeriodActionAsync e:', e);
+    }
+  };
+};
+export const setEventsActionAsync = () => {
+  return async (dispatch: any) => {
+    try {
+      const eventNameArr = [BASEVENTNAME];
+      const requestArr = eventNameArr.map((r) => {
+        return queryEventDetail({
+          event: r,
+        });
+      });
+      const resArr = await Promise.all(requestArr);
+      const obj = resArr.reduce((prev, curr, currK) => {
+        const { rc, result } = curr;
+        if (rc === 0) {
+          prev[eventNameArr[currK]] = result;
+        }
+        return prev;
+      }, {});
+      dispatch(setEventsAction(obj));
+    } catch (e) {
+      console.log('setEventsActionAsync e:', e);
     }
   };
 };

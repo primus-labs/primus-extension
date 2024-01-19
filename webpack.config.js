@@ -37,6 +37,7 @@ var options = {
     home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
+    //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },
   chromeExtensionBoilerplate: {
     notHotReload: ['background'],
@@ -191,11 +192,8 @@ var options = {
               );
             } else {
               let jsonobj = JSON.parse(content.toString());
-              jsonobj.host_permissions.push('https://api-dev.padolabs.org/');
-              jsonobj.host_permissions.push(
-                'https://xuda-note.oss-cn-shanghai.aliyuncs.com/'
-              );
-              //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:5100/*");
+              jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
+              jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9095/*");
               return Buffer.from(
                 JSON.stringify({
                   description: process.env.npm_package_description,
@@ -283,6 +281,15 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
+          from: 'src/content/xFollow.js',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
           from: 'src/content/pageDecode.js',
           to: path.join(__dirname, 'build'),
           force: true,
@@ -325,6 +332,15 @@ var options = {
         },
       ],
     }),
+    /*new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/pages/sandbox.html',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),*/
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'Home', 'index.html'),
       filename: 'home.html',

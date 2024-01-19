@@ -278,6 +278,7 @@ export async function attestByDelegationProxyFee(params) {
     metamaskprovider,
     type,
     schemaName,
+    eventSchemauid,
   } = params;
   const splitsignature = utils.splitSignature(signature);
   const formatSignature = {
@@ -313,11 +314,11 @@ export async function attestByDelegationProxyFee(params) {
     schemauid = activeSchemaInfo.schemaUidTokenHoldings;
   } else if (type === 'IDENTIFICATION_PROOF') {
     schemauid = activeSchemaInfo.schemaUidIdentification;
-  } else if (
-    type === 'web' ||
-    type === 'UNISWAP_PROOF'
-  ) {
+  } else if (type === 'web' || type === 'UNISWAP_PROOF') {
     schemauid = activeSchemaInfo.schemaUidWeb;
+  }
+  if (eventSchemauid) {
+    schemauid = eventSchemauid;
   }
   console.log(
     'attestByDelegationProxyFee schemauid=',
@@ -406,6 +407,7 @@ export async function bulkAttest(params) {
       type,
       schemaName,
     }]*/,
+    eventSchemauid,
   } = params;
   console.log('eas bulkAttest params', params);
   const easProxyFeeContractAddress = EASInfo[networkName].easProxyFeeContract;
@@ -413,19 +415,19 @@ export async function bulkAttest(params) {
   await provider.send('eth_requestAccounts', []);
   let signer = provider.getSigner();
   let contract;
-  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
-    contract = new ethers.Contract(
-      easProxyFeeContractAddress,
-      lineaportalabi,
-      signer
-    );
-  } else {
+  //if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
+  contract = new ethers.Contract(
+    easProxyFeeContractAddress,
+    lineaportalabi,
+    signer
+  );
+  /*} else {
     contract = new ethers.Contract(
       easProxyFeeContractAddress,
       proxyabi,
       signer
     );
-  }
+  }*/
 
   let bulkParams = [];
   for (const item of items) {
@@ -446,6 +448,9 @@ export async function bulkAttest(params) {
     } else if (item.type === 'web') {
       // TODO
       schemauid = activeSchemaInfo.schemaUidWeb;
+    }
+    if (eventSchemauid) {
+      schemauid = eventSchemauid;
     }
     console.log('bulkAttest schemauid=', schemauid);
 

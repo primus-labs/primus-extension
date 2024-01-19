@@ -45,7 +45,6 @@ const AddSourceSucDialog: React.FC<AddSourceSucDialogProps> = memo(
     tip,
     showBottom,
   }) => {
-    console.log('222123', code);
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
 

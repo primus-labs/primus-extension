@@ -199,6 +199,40 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://test.bascan.io/attestation',
     },
+    'BNB Greenfield': {
+      showName: 'BNB Greenfield',
+      icon: iconBinance,
+      title: 'BNB Greenfield',
+      rpcUrl: 'https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org',
+      easContact: '0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD',
+      easProxyFeeContract: '0x620e84546d71A775A82491e1e527292e94a7165A',
+      schemas: {
+        'BNB Greenfield Testnet': {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+          schemaUidWeb:
+            '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
+        },
+        PolygonID: {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+        },
+      },
+      chainId: '0x15E0', // 5600
+      chainName: 'BNB Greenfield Testnet',
+      rpcUrls: ['https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org'],
+      blockExplorerUrls: ['https://testnet.greenfieldscan.com/'],
+      nativeCurrency: {
+        name: 'tBNB',
+        symbol: 'tBNB',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://testnet.greenfieldscan.com/tx',
+      endpointUrl: 'https://gnfd-testnet-sp1.bnbchain.org',
+      bucketDetailUrl: 'https://testnet.dcellar.io/buckets',
+    },
     Arbitrum: {
       showName: 'Arbitrum',
       icon: iconArbitrum,
@@ -505,6 +539,40 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://www.bascan.io/attestation',
     },
+    'BNB Greenfield': {
+      showName: 'BNB Greenfield',
+      icon: iconBinance,
+      title: 'BNB Greenfield',
+      rpcUrl: 'https://greenfield-chain.bnbchain.org',
+      easContact: '0x247Fe62d887bc9410c3848DF2f322e52DA9a51bC',
+      easProxyFeeContract: '0x620e84546d71A775A82491e1e527292e94a7165A',
+      schemas: {
+        'BNB Greenfield Mainnet': {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+          schemaUidWeb:
+            '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
+        },
+        PolygonID: {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+        },
+      },
+      chainId: '0x3F9', // 1017
+      chainName: 'BNB Greenfield Mainnet',
+      rpcUrls: ['https://greenfield-chain.bnbchain.org'],
+      blockExplorerUrls: ['https://greenfieldscan.com/'],
+      nativeCurrency: {
+        name: 'tBNB',
+        symbol: 'tBNB',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://greenfieldscan.com/tx',
+      endpointUrl: 'https://greenfield-sp.bnbchain.org',
+      bucketDetailUrl: 'https://dcellar.io/buckets',
+    },
 
     Ethereum: {
       showName: 'Ethereum',
@@ -666,6 +734,18 @@ const BNBSCHEMANAMEMAP = {
   production: 'BAS-BSC-Mainnet',
 };
 export let BNBSCHEMANAME = BNBSCHEMANAMEMAP[CURENV];
+const BNBGREENFIELDSCHEMANAMEMAP = {
+  development: 'BNB Greenfield Testnet',
+  test: 'BNB Greenfield Testnet',
+  production: 'BNB Greenfield Mainnet',
+};
+export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
+const BNBGREENFIELDURLMAP = {
+  development: 'http://api-dev.padolabs.org:9095/',
+  test: 'http://api-dev.padolabs.org:9095/',
+  production: 'https://events.padolabs.org/',
+};
+export let BNBGREENFIELDURL = BNBGREENFIELDURLMAP[CURENV];
 const FIRSTVERSIONSUPPORTEDNETWORKNAMEMAP = {
   development: 'Sepolia',
   test: 'Sepolia',

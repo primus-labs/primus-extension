@@ -1,0 +1,97 @@
+@import '@/assets/css/pFlex.sass';
+@import '@/assets/css/pDialog.sass';
+@import '@/assets/css/padoDialog.scss';
+@import '@/components/PButton/index.scss';
+@import '@/components/Events/ClaimWrapper/index.scss';
+@import '@/assets/css/pSelectOption.scss';
+
+.padoDialog.claimDialog.claimBASEventDialog {
+  main {
+    gap: var(--spacing-28, 28px) !important;
+    .descContent {
+      @extend .fcss;
+      gap: var(--spacing-20, 20px);
+
+      .credTypeList {
+        gap: var(--spacing-16, 16px);
+
+        .credTypeItem {
+          width: 100%;
+          height: var(--spacing-68, 68px);
+          @extend .pSelectOptionStyle2;
+
+          .innerContent {
+            .con {
+              width: var(--con-width, 232px);
+            }
+            .title{
+              @extend .frsc;
+              gap: var(--spacing-8,8px);
+            }
+          }
+
+          // &:last-child {
+          //   .innerContent {
+          //     .con {
+          //       .desc {
+          //         letter-spacing: -0.408px;
+          //       }
+          //     }
+          //   }
+          // }
+          .innerContent {
+            .con {
+              width: var(--con2-width, 250px);
+              gap: var(--spacing-4, 4px);
+              .desc {
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+            }
+            > img {
+              width: var(--spacing-28, 28px);
+            }
+            .pButton.switchBtn {
+              @extend .buttonStyle1;
+              @extend .Body3;
+              width: var(--switchBtn-width, 56px);
+              height: var(--spacing-24, 24px);
+              &.disabled {
+                border: 1px solid var(--Text-hint, #7b7f80);
+                color: var(--Text-hint, #7b7f80);
+                cursor: not-allowed;
+                &:hover {
+                  border: 1px solid var(--Text-hint, #7b7f80);
+                  color: var(--Text-hint, #7b7f80);
+                  background: transparent;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .pRadioNew .pRadioItemWrapper .pRadioItem {
+        gap: var(--spacing-8, 8px);
+        .iconfont {
+          width: var(--spacing-18, 18px);
+        }
+        .desc {
+          @extend .Text1;
+          color: #000;
+        }
+      }
+
+      .attensionTip {
+        color: #000;
+        @extend .Headline6;
+      }
+    }
+  }
+  .headerWrapper{
+    .claimDialogHeader .illustration{
+      left: 9px;
+    }
+  }
+}

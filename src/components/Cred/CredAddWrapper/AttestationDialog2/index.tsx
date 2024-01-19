@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { WALLETLIST } from '@/config/constants';
+import { BASEVENTNAME, WALLETLIST } from '@/config/constants';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup';
 import PTabsNew from '@/components/PTabsNew';
@@ -82,7 +82,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       useState<string>(activeType);
     const [activeSource, setActiveSource] = useState<ConnectSourceType>();
     const [activeToken, setActiveToken] = useState<string>('');
-    const [activeBaseValue, setActiveBaseValue] = useState<string>('');
     const [errorTip, setErrorTip] = useState<string>();
 
     const exSources = useSelector((state: UserState) => state.exSources);
@@ -147,7 +146,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           disabled: true,
         },
       ];
-      webProofTypes.forEach((r:any) => {
+      webProofTypes.forEach((r: any) => {
         const existIdx = l.findIndex((i: any) => i.name === r.dataSource);
         const isFromLINEA_DEFI_VOYAGE =
           fromEvents === 'LINEA_DEFI_VOYAGE' && r.dataSource === 'binance';
@@ -245,7 +244,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const activeAttestationTypeInfo = useMemo(() => {
-      const obj = proofTypes.find((i:any) => i.credIdentifier === type);
+      const obj = proofTypes.find((i: any) => i.credIdentifier === type);
       return obj as PROOFTYPEITEM;
     }, [type, proofTypes]);
     const connectedExSourceList: ConnectSourceType[] = useMemo(() => {
@@ -366,24 +365,8 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return [];
       }
     }, [exSources, activeToken]);
-    const baseValueArr = useMemo(() => {
-      if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
-        const baseValArr = JSON.parse(
-          activeAttestationTypeInfo.credProofConditions
-        );
-        return baseValArr;
-      } else {
-        return [];
-      }
-    }, [activeAttestationTypeInfo]);
-    const baseValueList = useMemo(() => {
-      return baseValueArr.map((i: string) => {
-        return {
-          text: '$' + i,
-          value: i,
-        };
-      });
-    }, [baseValueArr]);
+   
+    
     const formatTabList = useMemo(() => {
       if (fromEvents) {
         const newList = tabList.map((i) => {
@@ -441,12 +424,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       },
       [activeIdentityType, activeCred]
     );
-    const handleChangeSelectBaseValue = useCallback((val: string) => {
-      if (!val) {
-        setActiveBaseValue('');
-      }
-      setActiveBaseValue(val);
-    }, []);
+    
     const handleClickNext = async () => {
       if (
         activeTab === 'API Data' &&
@@ -469,23 +447,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
             label: activeSource?.label,
           };
 
-          if (type === 'TOKEN_HOLDINGS') {
-            if (!activeToken) {
-              setErrorTip('Please select one token');
-              return;
-            } else {
-              form.token = activeToken;
-            }
-          }
-          if (type === 'ASSETS_PROOF') {
-            if (!activeBaseValue) {
-              setErrorTip('Please select one baseValue');
-              return;
-            } else {
-              form.baseValue = activeBaseValue;
-            }
-          }
-
           if (type === 'IDENTIFICATION_PROOF') {
             // credential?: string;
             const sourceLowerCaseName = activeSource.name.toLowerCase();
@@ -494,16 +455,15 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
               form.proofContent = activeIdentityType;
               form.proofClientType = activeTab;
             }
-            const res = await chrome.storage.local.get([sourceLowerCaseName]);
-            form.credential =
-              res[sourceLowerCaseName] &&
-              JSON.parse(res[sourceLowerCaseName]).credential;
-            form.userIdentity = walletAddress;
-            form.verifyIdentity = walletAddress;
+            if (activeSource.name === 'zan') {
+              const res = await chrome.storage.local.get([sourceLowerCaseName]);
+              form.credential =
+                res[sourceLowerCaseName] &&
+                JSON.parse(res[sourceLowerCaseName]).credential;
+              form.userIdentity = walletAddress;
+              form.verifyIdentity = walletAddress;
+            }
             form.proofType = type;
-          }
-          if (type === 'UNISWAP_PROOF') {
-            // TODO
           }
           if (activeCred?.requestid) {
             form.requestid = activeCred?.requestid;
@@ -530,6 +490,9 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         };
         if (fromEvents === 'LINEA_DEFI_VOYAGE') {
           form.event = 'LINEA_DEFI_VOYAGE';
+        }
+        if (fromEvents === BASEVENTNAME) {
+          form.event = fromEvents;
         }
         if (activeCred?.requestid) {
           form.requestid = activeCred?.requestid;
@@ -567,44 +530,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         }
       },
       [activeCred, activeSourceList, activeToken, type, activeSourceName]
-    );
-    const liClassNameCallback = useCallback(
-      (item: ConnectSourceType) => {
-        let defaultClassName = 'networkItem';
-        if ((activeCred || activeSourceName) && activeSource) {
-          if (activeSource?.name !== item.name) {
-            defaultClassName += ' disabled';
-          }
-        } else {
-          if (activeSourceList.length > 0) {
-            // if (activeSourceList.includes(item.name)) {
-            //   defaultClassName += ' excitable';
-            // }
-            if (!activeSourceList.includes(item.name)) {
-              defaultClassName += ' disabled';
-            }
-          }
-        }
-        if (activeSourceList.length > 0) {
-          if (activeSourceList.includes(item.name)) {
-            defaultClassName += ' excitable';
-          }
-        }
-        if (activeSource?.name === item.name) {
-          defaultClassName += ' active';
-        }
-        if (!activeIdentityType || activeCred) {
-          defaultClassName += ' disabled';
-        }
-        return defaultClassName;
-      },
-      [
-        activeSource,
-        activeSourceList,
-        activeCred,
-        activeSourceName,
-        activeIdentityType,
-      ]
     );
 
     useEffect(() => {
@@ -652,17 +577,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
     }, [activeCred, type, activeConnectedSourceList, activeWebTemplate]);
 
     useEffect(() => {
-      if (activeAttestationTypeInfo.credIdentifier === 'ASSETS_PROOF') {
-        const baseValArr = JSON.parse(
-          activeAttestationTypeInfo.credProofConditions
-        );
-        if (baseValArr.length === 1) setActiveBaseValue(baseValArr[0]);
-      }
-    }, [activeAttestationTypeInfo]);
-    useEffect(() => {
-      if (baseValueArr.length === 1) setActiveBaseValue(baseValueArr[0]);
-    }, [baseValueArr]);
-    useEffect(() => {
       if (fromEvents) {
         const aT = fromEventsMap[fromEvents as keyof typeof fromEventsMap];
         setActiveTab(aT);
@@ -678,8 +592,6 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         setActiveTab('Webpage Data');
       }
     }, [activeType]);
-     
-
 
     return (
       <PMask onClose={onClose} closeable={fromEvents !== 'LINEA_DEFI_VOYAGE'}>
@@ -687,7 +599,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           {!!onBack && <PBack onBack={onBack} />}
           <main>
             <header>
-              <h1>{activeAttestationTypeInfo.credTitle}</h1>
+              <h1>{activeAttestationTypeInfo?.credTitle}</h1>
               {/* <h2>{activeAttestationTypeInfo.credDetails}</h2> */}
             </header>
             <div className="formContent">

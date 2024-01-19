@@ -36,9 +36,14 @@
         color: var(--Text-headline, #0a1214);
         @extend .Headline3;
       }
-      h2,h3 {
-        color: var(--Text-hint, #7b7f80);
+      h2 {
+        color: rgba(0, 0, 0, 0.60);
         @extend .Text1;
+        text-align: center;
+      }
+      h3 {
+        color: var(--Text-hint, #7B7F80);
+        @extend .Text2;
         text-align: center;
       }
      

@@ -131,7 +131,6 @@ export const pageDecodeMsgListener = async (
       const storageObj = await chrome.storage.local.get(interceptorUrlArr);
       const storageArr = Object.values(storageObj);
       if (storageArr.length === interceptorUrlArr.length) {
-        
         const f = interceptorRequests.every((r) => {
           // const storageR = Object.keys(storageObj).find(
           //   (sRKey) => sRKey === r.url
@@ -186,6 +185,7 @@ export const pageDecodeMsgListener = async (
     tabCreatedByPado = await chrome.tabs.create({
       url: jumpTo,
     });
+    console.log('222pageDEcode tabCreatedByPado', tabCreatedByPado);
     const injectFn = async () => {
       await chrome.scripting.executeScript({
         target: {
@@ -201,9 +201,9 @@ export const pageDecodeMsgListener = async (
     await injectFn();
     checkWebRequestIsReadyFn();
     chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-      if (tabId === tabCreatedByPado.id && changeInfo.url) {
+      if (tabId === tabCreatedByPado.id && (changeInfo.url || changeInfo.title)) {
         await injectFn();
-        checkWebRequestIsReadyFn()
+        checkWebRequestIsReadyFn();
       }
     });
 

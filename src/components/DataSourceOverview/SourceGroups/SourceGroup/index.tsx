@@ -40,6 +40,9 @@ const ConnectDataSourceList: FC<ConnectDataSourceListProps> = memo(
         if (item?.disabled) {
           defaultClassName += ' disabled';
         }
+        if (item.name === 'BNB Greenfield') {
+          defaultClassName += ' lh1';
+        }
         
         if (mutiple) {
           const flag = activeSources.find((i) => i.name === item.name);

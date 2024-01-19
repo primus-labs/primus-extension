@@ -11,6 +11,7 @@ import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 
 import './index.scss';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
+import { BASEVENTNAME } from '@/config/constants';
 
 type ToolItem = {
   icon: any;
@@ -113,13 +114,13 @@ const TransferToChainDialog: React.FC<TransferToChainDialogProps> = memo(
           setErrorTip(undefined);
         }
       },
-      [,requireItem]
+      [requireItem]
     );
     const closeable = useMemo(() => {
       return (
         !fromEvents ||
         fromEvents === 'Scroll' ||
-        fromEvents === 'LINEA_DEFI_VOYAGE'
+        fromEvents === 'LINEA_DEFI_VOYAGE' || fromEvents === BASEVENTNAME
       );
     }, [fromEvents]);
     return (

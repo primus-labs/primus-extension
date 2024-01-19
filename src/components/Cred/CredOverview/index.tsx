@@ -1,7 +1,11 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { DATASOURCEMAP, SCROLLEVENTNAME } from '@/config/constants';
+import {
+  DATASOURCEMAP,
+  SCROLLEVENTNAME,
+  BASEVENTNAME,
+} from '@/config/constants';
 
 import PButton from '@/components/PButton';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
@@ -11,12 +15,12 @@ import DataAddBar from '@/components/DataSourceOverview/DataAddBar';
 import BindPolygonID from '@/components/Cred/BindPolygonID';
 import CredSendToChainWrapper from '../CredSendToChainWrapper';
 import ClaimMysteryBoxWrapper2 from '@/components/Events/ClaimMysteryBoxWrapper2';
-import useWallet from '@/hooks/useWallet'
-import {
-  setCredentialsAsync,
-} from '@/store/actions';
+import ClaimEventBAS from '@/components/Events/ClaimBAS';
+import useWallet from '@/hooks/useWallet';
+import { setCredentialsAsync } from '@/store/actions';
 
 import { postMsg } from '@/utils/utils';
+import { GOOGLEWEBPROOFID } from '@/config/constants';
 import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -31,6 +35,9 @@ const CredOverview = memo(() => {
   const [eventSource, setEventSource] = useState<string>();
   const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
     useState<boolean>(false);
+  const [claimEventBASVisible, setClaimEventBASVisible] =
+    useState<boolean>(false);
+  const [claimEventBASStep, setClaimEventBASStep] = useState<number>(1);
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
@@ -89,7 +96,7 @@ const CredOverview = memo(() => {
     if (activeSourceType && activeSourceType !== 'All') {
       activeList = activeList.filter((i) => {
         const curProofTypeItem = proofTypes.find(
-          (j:any) => j.credIdentifier === i.type
+          (j: any) => j.credIdentifier === i.type
         );
         return curProofTypeItem?.simplifiedName === activeSourceType;
       });
@@ -105,14 +112,14 @@ const CredOverview = memo(() => {
     let credArr = Object.values(credentialsFromStore);
 
     const haveXProof = credArr.find(
-      (i:any) => i.event === SCROLLEVENTNAME && i.source === 'x'
+      (i: any) => i.event === SCROLLEVENTNAME && i.source === 'x'
     );
     return haveXProof;
   }, [credentialsFromStore]);
   const proofBinance = useMemo(() => {
     let credArr = Object.values(credentialsFromStore);
     const haveBinanceProof = credArr.find(
-      (i:any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
+      (i: any) => i?.event === SCROLLEVENTNAME && i.source === 'binance'
     );
     return haveBinanceProof;
   }, [credentialsFromStore]);
@@ -182,8 +189,37 @@ const CredOverview = memo(() => {
     async (item: CredTypeItemType) => {
       const curRequestid = item.requestid;
       const cObj = { ...credentialsFromStore };
+      if (cObj[curRequestid]?.event === BASEVENTNAME) {
+        const res = await chrome.storage.local.get([BASEVENTNAME]);
+        if (res[BASEVENTNAME]) {
+          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          const { steps } = lastInfo;
+          if (steps[2]?.status !== 1) {
+            let newInfo = { ...lastInfo };
+            const credTasks = steps[1]?.tasks;
+            let newCredTasks = { ...credTasks };
+            let newCredTasksStatus = steps[1]?.status;
+            let webTemplateId;
+            Object.keys(credTasks).forEach((k) => {
+              if (credTasks[k] === item.requestid) {
+                webTemplateId = k;
+              }
+            });
+
+            delete newCredTasks[webTemplateId];
+            newCredTasksStatus = Object.values(newCredTasks).length > 0 ? 1 : 0;
+            newInfo.steps[1] = {
+              status: newCredTasksStatus,
+              tasks: newCredTasks,
+            };
+            await chrome.storage.local.set({
+              [BASEVENTNAME]: JSON.stringify(newInfo),
+            });
+          }
+        }
+      }
       delete cObj[curRequestid];
-      chrome.storage.local.set({
+      await chrome.storage.local.set({
         credentials: JSON.stringify(cObj),
       });
       await initCredList();
@@ -204,8 +240,7 @@ const CredOverview = memo(() => {
 
   const handleAdd = useCallback(async () => {
     if (
-      (fromEvents === 'NFTs' ||
-      fromEvents === 'LINEA_DEFI_VOYAGE') &&
+      (fromEvents === 'NFTs' || fromEvents === 'LINEA_DEFI_VOYAGE') &&
       activeCred
     ) {
       return;
@@ -218,13 +253,17 @@ const CredOverview = memo(() => {
       setConnectDialogVisible(true);
     }
   }, [connectedWallet?.address, fromEvents]);
-  const handleJoinScrollEvent = useCallback(async () => {
+  const handleJoinEvent = useCallback(async () => {
     if (connectedWallet?.address) {
-      setClaimMysteryBoxVisible2(true);
+      if (fromEvents === 'Scroll') {
+        setClaimMysteryBoxVisible2(true);
+      } else if (fromEvents === BASEVENTNAME) {
+        setClaimEventBASVisible(true);
+      }
     } else {
       setConnectDialogVisible(true);
     }
-  }, [connectedWallet?.address]);
+  }, [connectedWallet?.address, fromEvents]);
   const onCancelClaimMysteryBoxDialog2 = useCallback(() => {
     setClaimMysteryBoxVisible2(false);
     if (fromEvents === 'Scroll') {
@@ -262,6 +301,50 @@ const CredOverview = memo(() => {
     // setClaimMysteryBoxVisible2(false);
     setAddDialogVisible(true);
   };
+
+  const onCancelClaimEventBAS = useCallback(() => {
+    setClaimEventBASVisible(false);
+    if (fromEvents === BASEVENTNAME) {
+      navigate('/events');
+    }
+  }, [fromEvents, navigate]);
+  const onSubmitClaimEventBAS = useCallback(() => {
+    setClaimEventBASVisible(false);
+  }, []);
+  const onChangeClaimEventBAS = useCallback(
+    async (step: number) => {
+      // step: 4
+      if (step === 4) {
+        // upper chain
+        const { credentials } = await chrome.storage.local.get('credentials');
+        let credArrNew = Object.values(JSON.parse(credentials));
+
+        const res = await chrome.storage.local.get([BASEVENTNAME]);
+        if (res[BASEVENTNAME]) {
+          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          const lastTasks = lastInfo.steps[1].tasks ?? {};
+          const toBeUpperChainCredRequestids = Object.values(lastTasks);
+          const toBeUpperChainCreds = credArrNew.filter((c: any) =>
+            toBeUpperChainCredRequestids.includes(c.requestid)
+          );
+          const firstToBeUpperChainCred = toBeUpperChainCreds[0];
+          if (firstToBeUpperChainCred) {
+            setClaimEventBASVisible(false);
+            handleUpChain(firstToBeUpperChainCred as CredTypeItemType);
+          }
+        }
+      }
+    },
+    [handleUpChain]
+  );
+  const onClaimEventBASAttest = (attestId: string) => {
+    setEventSource(attestId);
+    setAddDialogVisible(true);
+    if (attestId === GOOGLEWEBPROOFID) {
+      setClaimEventBASVisible(false);
+    }
+  };
+
   const handleSubmitBindPolygonid = useCallback(async () => {
     await initCredList();
     setBindPolygonidVisible(false);
@@ -273,6 +356,14 @@ const CredOverview = memo(() => {
         if (fromEvents === 'Scroll') {
           setAddDialogVisible(false);
           setClaimMysteryBoxVisible2(true);
+        } else if (fromEvents === BASEVENTNAME) {
+          // if (addSucFlag) {
+          setAddDialogVisible(false);
+          setClaimEventBASVisible(true);
+          setClaimEventBASStep(2);
+          // } else {
+          //   navigate('/cred', { replace: true });
+          // }
         } else {
           if (addSucFlag) {
             // addSucFlag: requestid;
@@ -316,11 +407,18 @@ const CredOverview = memo(() => {
             navigate(targetUrl);
           } else if (fromEvents === 'LINEA_DEFI_VOYAGE') {
             navigate('/cred');
+          } else if (fromEvents === BASEVENTNAME) {
+            setSendToChainDialogVisible(false);
+            setClaimEventBASVisible(true);
+            navigate('/cred', { replace: true });
           }
         } else {
           if (fromEvents === 'Scroll') {
             targetUrl = '/events';
             navigate(targetUrl);
+          } else if (fromEvents === BASEVENTNAME) {
+            setSendToChainDialogVisible(false);
+            setClaimEventBASVisible(true);
           } else {
             navigate('/cred');
           }
@@ -334,6 +432,10 @@ const CredOverview = memo(() => {
     },
     [fromEvents, navigate]
   );
+  const handleBackToBASEvent = useCallback(() => {
+    setClaimEventBASVisible(true);
+    setSendToChainDialogVisible(false);
+  }, []);
   const startFn = useCallback(() => {
     if (connectedWallet?.address) {
       setActiveRequest({
@@ -398,9 +500,9 @@ const CredOverview = memo(() => {
     if (connectedWallet?.address) {
       setConnectDialogVisible(false);
     } else {
-      
       setConnectDialogVisible(true);
       setClaimMysteryBoxVisible2(false);
+      setClaimEventBASVisible(false);
       // bindPolygonidVisible;
       // qrcodeVisible;
       // sendToChainDialogVisible;
@@ -439,19 +541,36 @@ const CredOverview = memo(() => {
   }, [createFlag, proofType, fromEvents]);
   useEffect(() => {
     if (fromEvents) {
-      if (fromEvents === 'Scroll') {
-        handleJoinScrollEvent();
+      if (fromEvents === 'Scroll' || fromEvents === BASEVENTNAME) {
+        handleJoinEvent();
       } else {
         handleAdd();
       }
     }
-  }, [fromEvents, handleAdd, handleJoinScrollEvent]);
+  }, [fromEvents, handleAdd, handleJoinEvent]);
   useEffect(() => {
     const listerFn = (message: any) => {
       if (message.type === 'pageDecode') {
         if (message.name === 'sendRequest') {
-          setClaimMysteryBoxVisible2(false);
-          // setAddDialogVisible(true)
+          if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+            setClaimMysteryBoxVisible2(false);
+          }
+          if (fromEvents === BASEVENTNAME ) {
+            if (eventSource !== GOOGLEWEBPROOFID) {
+              setClaimEventBASVisible(false);
+              setAddDialogVisible(true);
+            }
+          }
+        } else if (
+          message.name === 'cancelAttest' ||
+          message.name === 'abortAttest'
+        ) {
+          if (fromEvents === BASEVENTNAME) {
+            // setAddDialogVisible(false);
+            setEventSource(undefined);
+            // setClaimEventBASVisible(true);
+            // setClaimEventBASStep(2);
+          }
         }
       }
     };
@@ -459,7 +578,8 @@ const CredOverview = memo(() => {
     return () => {
       chrome.runtime.onMessage.removeListener(listerFn);
     };
-  }, [activeRequest?.type]);
+  }, [fromEvents, eventSource]);
+
   useEffect(() => {
     return () => {
       const msg = {
@@ -517,6 +637,7 @@ const CredOverview = memo(() => {
         activeCred={activeCred}
         onClose={handleCloseSendToChainDialog}
         onSubmit={handleCloseSendToChainDialog}
+        handleBackToBASEvent={handleBackToBASEvent}
       />
       {qrcodeVisible && (
         <QRCodeDialog
@@ -538,6 +659,14 @@ const CredOverview = memo(() => {
         onClose={onCancelClaimMysteryBoxDialog2}
         onSubmit={onSubmitClaimMysteryBoxDialog2}
         onChange={onChangeClaimMysteryBoxDialog2}
+      />
+      <ClaimEventBAS
+        visible={claimEventBASVisible}
+        onClose={onCancelClaimEventBAS}
+        onSubmit={onSubmitClaimEventBAS}
+        onChange={onChangeClaimEventBAS}
+        onAttest={onClaimEventBASAttest}
+        activeStep={claimEventBASStep}
       />
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>
