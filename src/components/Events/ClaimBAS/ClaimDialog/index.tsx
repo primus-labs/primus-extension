@@ -80,6 +80,7 @@ const stepList: StepItem[] = [
 const ClaimDialog: FC<ClaimDialogProps> = memo(
   ({ onClose, onSubmit, onChange, title = '', titleIllustration = false }) => {
     const navigate = useNavigate();
+    const [PADOTabId, setPADOTabId] = useState<number>();
     const [xTabId, setXTabId] = useState<number>();
     const [credNum, setCredNum] = useState<number>(0);
     const [credAddress, setCredAddress] = useState<string>();
@@ -202,10 +203,20 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       const targetUrl =
         'https://twitter.com/intent/follow?screen_name=padolabs';
       const openXUrlFn = async () => {
+        const currentWindowTabs = await chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+        setPADOTabId(currentWindowTabs[0].id);
         const tabCreatedByPado = await chrome.tabs.create({
           url: targetUrl,
         });
-        console.log('222123 create tab', tabCreatedByPado.id);
+
+        console.log(
+          '222123 create tab',
+          tabCreatedByPado.id,
+          currentWindowTabs[0].id
+        );
         setXTabId(tabCreatedByPado.id);
       };
       if (xTabId) {
@@ -216,7 +227,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
           return;
         } catch {
           await openXUrlFn();
-          return
+          return;
         }
       }
       await openXUrlFn();
@@ -337,6 +348,11 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
                 const xTab = await chrome.tabs.get(xTabId as number);
                 if (xTab) {
                   setXTabId(undefined);
+                  if (PADOTabId) {
+                    await chrome.tabs.update(PADOTabId, {
+                      active: true,
+                    });
+                  }
                   await chrome.tabs.remove(xTabId as number);
                 }
               }
@@ -348,7 +364,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       return () => {
         chrome.runtime.onMessage.removeListener(listerFn);
       };
-    }, [xTabId]);
+    }, [xTabId, PADOTabId]);
 
     return (
       <PMask onClose={onClose}>
