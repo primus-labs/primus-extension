@@ -91,7 +91,7 @@ const Home = memo(() => {
         <article>
           <section className="descWrapper">
             <h1>Welcome to PADO Attestation Service</h1>
-            <p>Bringing all internet data into smart contracts.</p>
+            <p>Liberate Data and Computation with Cryptography.</p>
           </section>
           <PButton
             text="Click here to start"
