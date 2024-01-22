@@ -139,8 +139,8 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       setStep(1);
     }, []);
     useEffect(() => {
-      if (visible && activeStep === 2) {
-        setStep(2);
+      if (visible && activeStep) {
+        setStep(activeStep);
       }
     }, [activeStep, visible]);
 

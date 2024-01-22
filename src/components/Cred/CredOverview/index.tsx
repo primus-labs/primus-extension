@@ -313,6 +313,7 @@ const CredOverview = memo(() => {
   }, []);
   const onChangeClaimEventBAS = useCallback(
     async (step: number) => {
+      setClaimEventBASStep(1);
       // step: 4
       if (step === 4) {
         // upper chain
