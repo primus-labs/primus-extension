@@ -51,12 +51,14 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
 
   const eventActiveFlag = useMemo(() => {
     const { startTime, endTime } = BASEventPeriod;
-   
+    const isUnStart = dayjs().isBefore(dayjs(+startTime))
     const isActive =
       dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
     const isEnd = dayjs().isAfter(dayjs(+endTime));
     const isLongTerm = BASEventDetail?.ext?.isLongTermEvent;
-
+    if (isUnStart) {
+      return 0;
+    }
     if (isActive) {
       return 1;
     }
@@ -66,8 +68,9 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
     if (isLongTerm) {
       return 3;
     }
+
     return 0;
-  }, [BASEventPeriod, BASEventDetail]);
+  }, [BASEventPeriod, BASEventDetail?.ext?.isLongTermEvent]);
   const formatCN = useMemo(() => {
     if (eventActiveFlag === 1) {
       return 'adSpace adSpaceBadge';

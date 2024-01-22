@@ -57,11 +57,14 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     }, [BASEventDetail]);
     const eventActiveFlag = useMemo(() => {
       const { startTime, endTime } = BASEventPeriod;
+      const isUnStart = dayjs().isBefore(dayjs(+startTime));
       const isActive =
         dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
       const isEnd = dayjs().isAfter(dayjs(+endTime));
       const isLongTerm = BASEventDetail?.ext?.isLongTermEvent;
-
+      if (isUnStart) {
+        return 0;
+      }
       if (isActive) {
         return 1;
       }
