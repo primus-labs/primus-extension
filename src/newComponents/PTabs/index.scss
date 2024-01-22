@@ -1,0 +1,30 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.PTabs {
+  @include frsc;
+  gap: var(--spacing-32, 32px);
+  height: var(--spacing-32, 32px);
+  border-bottom: 1px solid var(--Border-Tokens-border--primary, #E0E0E0);
+  .tab {
+    cursor: pointer;
+    @include frsc;
+    height: 100%;
+    @include Label02;
+    color: var(--Text-Tokens-text-placeholder, #A8A8A8);
+    border-bottom: 1px solid var(--Border-Tokens-border--primary, #E0E0E0);
+    .con{
+      height: 100%;
+    }
+    &.disabled {
+      color: var(--Text-Tokens-text-disabled, #C6C6C6);
+      cursor: not-allowed;
+    }
+    &:not(.disabled):hover {
+      color: var(--Text-Tokens-text-tertiary, #6F6F6F);
+    }
+    &.active {
+      color: var(--Text-Tokens-text-primary, #161616);
+    }
+  }
+}

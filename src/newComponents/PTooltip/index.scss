@@ -1,0 +1,37 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.PTooltip {
+  position: relative;
+  width: fit-content;
+  &:hover {
+    .tooltip {
+      display: inline-block;
+    }
+  }
+  .tooltip {
+    display: none;
+    position: absolute;
+    bottom: -34px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    border-radius: var(--Radius-radius-xxs, 2px);
+    background: var(--Layer-Tokens-layer-primary, #fff);
+    box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.15);
+    @include BodyBody300;
+    &:after {
+      position: absolute;
+      z-index: 1;
+      content: '';
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: var(--spacing-8, 8px);
+      height: var(--spacing-8, 8px);
+      border-radius: 1PX;
+      background: var(--Layer-Tokens-layer-primary, #fff);
+      // box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.15),0 0 0 0 transparent,0 0 0 0 transparent,0px 2px 8px 0px rgba(0, 0, 0, 0.15),;
+    }
+  }
+}

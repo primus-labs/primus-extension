@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import PInput from '@/components/PInput/index';
 import PButton from '@/components/PButton';
+// import Test from '@/newComponents/Test'
 import AsideAnimation from '@/components/Layout/AsideAnimation';
 import { postMsg } from '@/utils/utils';
 import './index.scss';
@@ -26,7 +27,7 @@ const Lock = memo(() => {
           type: 'setUserPassword',
           payload: pwd,
         });
-        const targetUrl = backUrl? decodeURIComponent(backUrl) : '/events';
+        const targetUrl = backUrl ? decodeURIComponent(backUrl) : '/events';
         navigate(targetUrl);
       } else {
         setErrorMsg('Incorrect password');
@@ -96,6 +97,7 @@ const Lock = memo(() => {
       <main className="appContent">
         <AsideAnimation />
         <article className={hadSetPwd ? 'hadSetPwd' : ''}>
+          {/* <Test/> */}
           <section className="descWrapper">
             <h1>Welcome Back！</h1>
             <p>Liberate Data and Computation with Cryptography.</p>

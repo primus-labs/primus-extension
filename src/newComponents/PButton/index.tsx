@@ -3,15 +3,16 @@ import type { SyntheticEvent } from 'react';
 import './index.scss';
 
 interface PButtonProps {
-  prefix?: any;
-  suffix?: any;
-
+  disabled?: boolean;
   className?: string;
   type?: string;
   text?: string;
   size?: string;
   icon?: any;
   onClick: () => void;
+
+  prefix?: any;
+  suffix?: any;
 }
 // how to use: <PPButton text="Connect" type="text"  className="disable"/>
 const PButton: React.FC<PButtonProps> = memo(
@@ -24,6 +25,7 @@ const PButton: React.FC<PButtonProps> = memo(
     type = 'primary',
     icon,
     size = 'm',
+    disabled = false
   }) => {
     const formatClassName = useMemo(() => {
       let defaultCN = 'PButton';
@@ -49,9 +51,9 @@ const PButton: React.FC<PButtonProps> = memo(
       // } else if (type === 'icon') {
       //   defaultCN += ' icon';
       // }
-      defaultCN += ` ${type} ${size} ${className}`;
+      defaultCN += ` ${type} ${size} ${disabled && 'disabled'} ${className}`;
       return defaultCN;
-    }, [className, type, size]);
+    }, [className, type, size, disabled]);
     const handleClick = (e: SyntheticEvent) => {
       e.stopPropagation();
       onClick && onClick();

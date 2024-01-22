@@ -1,7 +1,5 @@
-
 // <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Overpass&display=swap" rel="stylesheet">
 @mixin HeadlineH1 {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -11,7 +9,6 @@
   line-height: 28px; /* 140% */
 }
 @mixin HeadlineH2 {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -21,7 +18,6 @@
   line-height: 22px; /* 137.5% */
 }
 @mixin HeadlineH3 {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on;
 
   font-family: 'IBM Plex Sans';
@@ -31,7 +27,6 @@
   line-height: 22px; /* 137.5% */
 }
 @mixin HeadlineH4 {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on;
 
   font-family: 'IBM Plex Sans';
@@ -41,7 +36,6 @@
   line-height: 22px; /* 137.5% */
 }
 @mixin HeadlineH5 {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -52,7 +46,6 @@
 }
 
 @mixin BodyBody100 {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -63,7 +56,6 @@
   letter-spacing: 0.16px;
 }
 @mixin BodyBody100semibold {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -83,7 +75,6 @@
   line-height: 18px; /* 138.462% */
 }
 @mixin BodyBody200Bold {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -93,7 +84,6 @@
   line-height: 18px; /* 138.462% */
 }
 @mixin BodyBody300 {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -103,8 +93,6 @@
   line-height: 16px; /* 133.333% */
 }
 @mixin BodyBody300Bold {
-  color: var(--Text-Tokens-text-inverse, #fff);
-
   font-family: 'IBM Plex Sans';
   font-size: 12px;
   font-style: normal;
@@ -112,8 +100,6 @@
   line-height: 16px; /* 133.333% */
 }
 @mixin BodyBody400 {
-  color: var(--Text-Tokens-text-inverse, #fff);
-
   font-family: 'IBM Plex Sans';
   font-size: 11px;
   font-style: normal;
@@ -121,8 +107,6 @@
   line-height: 16px; /* 145.455% */
 }
 @mixin BodyBody400Bold {
-  color: var(--Text-Tokens-text-inverse, #fff);
-
   font-family: 'IBM Plex Sans';
   font-size: 11px;
   font-style: normal;
@@ -132,7 +116,6 @@
 
 // TODO 10px
 @mixin Hint {
-  color: var(--Text-Tokens-text-inverse, #fff);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -142,6 +125,7 @@
   line-height: 16px; /* 160% */
 }
 
+// TODO-newui
 @mixin Error {
   color: var(--Text-Tokens-text-error, #fa4d56);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
@@ -180,13 +164,20 @@
   line-height: 16px; /* 133.333% */
 }
 
-@mixin Label {
-  color: var(--Text-Tokens-text-inverse, #fff);
+@mixin Label01 {
   /* Label 01 */
   font-family: 'IBM Plex Sans';
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
+  line-height: 18px; /* 128.571% */
+}
+@mixin Label02 {
+  /* Label 02 */
+  font-family: 'IBM Plex Sans';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
   line-height: 18px; /* 128.571% */
 }
 
