@@ -66,14 +66,14 @@ const stepList: StepItem[] = [
     id: 3,
     icon: iconStep2,
     title: 'Complete Attestation',
-    subTitle: 'Choose POH tasks to attest',
+    subTitle: 'Choose tasks to attest',
     finished: false,
   },
   {
     id: 4,
     icon: iconStep3,
     title: 'Submit Attestation ',
-    subTitle: 'Submit to BSC or Greenfield',
+    subTitle: 'Submit to BNB Chain or BNB Greenfield',
     finished: false,
   },
 ];
