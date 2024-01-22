@@ -165,7 +165,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(
             <PBack onBack={onBack} />
             <header>
               <h1>Attestation Tasks</h1>
-              <h2>Complete the tasks below to make your attestation.</h2>
+              <h2>Complete the tasks below to make your attestations.</h2>
             </header>
             <div className="scrollList">
               <ul className="credTypeList">
