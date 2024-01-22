@@ -98,7 +98,7 @@ const Lock = memo(() => {
         <article className={hadSetPwd ? 'hadSetPwd' : ''}>
           <section className="descWrapper">
             <h1>Welcome Back！</h1>
-            <p>Bringing all internet data into smart contracts.</p>
+            <p>Liberate Data and Computation with Cryptography.</p>
           </section>
           {hadSetPwd && (
             <main className="articleMain formItem">
