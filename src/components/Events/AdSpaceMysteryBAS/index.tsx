@@ -9,7 +9,7 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
-import useEventDetail from '@/hooks/useEventDetail'
+import useEventDetail from '@/hooks/useEventDetail';
 import { setRewardsDialogVisibleAction } from '@/store/actions';
 import { checkLotteryResults } from '@/services/api/event';
 import { BASEVENTNAME } from '@/config/constants';
@@ -17,6 +17,7 @@ import PButton from '@/components/PButton';
 import iconRightArrow from '@/assets/img/rightArrow.svg';
 import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
 import disabledBannerIllstration from '@/assets/img/events/luckyDrawIllstration.svg';
+import nftIllstration from '@/assets/img/events/nftIllstration.png';
 import './index.scss';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
@@ -50,39 +51,71 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
 
   const eventActiveFlag = useMemo(() => {
     const { startTime, endTime } = BASEventPeriod;
-    // const isActive =
-    //   dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
-    const isActive = dayjs().isAfter(dayjs(+startTime));
+   
+    const isActive =
+      dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
     const isEnd = dayjs().isAfter(dayjs(+endTime));
+    const isLongTerm = BASEventDetail?.ext?.isLongTermEvent;
+
     if (isActive) {
       return 1;
     }
-    if (isEnd) {
+    if (isEnd && !isLongTerm) {
       return 2;
     }
+    if (isLongTerm) {
+      return 3;
+    }
     return 0;
-  }, [BASEventPeriod]);
+  }, [BASEventPeriod, BASEventDetail]);
+  const formatCN = useMemo(() => {
+    if (eventActiveFlag === 1) {
+      return 'adSpace adSpaceBadge';
+    } else if (eventActiveFlag === 2) {
+      return 'adSpace adSpaceBadge disabled';
+    } else if (eventActiveFlag === 3) {
+      return 'adSpace adSpaceNft';
+    } else {
+      return 'adSpace';
+    }
+  }, [eventActiveFlag]);
+  const formatImgCN = useMemo(() => {
+    if (eventActiveFlag === 1) {
+      return 'activeImg';
+    } else if (eventActiveFlag === 2) {
+      return 'disabledImg';
+    } else {
+      return '';
+    }
+  }, [eventActiveFlag]);
+  const formatImgSrc = useMemo(() => {
+    if (eventActiveFlag === 1) {
+      return bannerIllstration;
+    } else if (eventActiveFlag === 2) {
+      return disabledBannerIllstration;
+    } else {
+      return nftIllstration;
+    }
+  }, [eventActiveFlag]);
+  const formatBtnTxt = useMemo(() => {
+    if (eventActiveFlag === 2) {
+      return 'Closed';
+    } else {
+      return 'Join Now';
+    }
+  }, [eventActiveFlag]);
+  const handleClick = useCallback(() => {
+    if (eventActiveFlag === 1 || eventActiveFlag === 3) {
+      onClick();
+    }
+  }, [onClick, eventActiveFlag]);
 
   return (
     <>
       {!!eventActiveFlag ? (
-        <div
-          className={
-            eventActiveFlag === 2
-              ? 'adSpace adSpaceBadge disabled'
-              : 'adSpace adSpaceBadge'
-          }
-        >
+        <div className={formatCN}>
           <div className="left">
-            {eventActiveFlag === 2 ? (
-              <img
-                className="disabledImg"
-                src={disabledBannerIllstration}
-                alt=""
-              />
-            ) : (
-              <img className="activeImg" src={bannerIllstration} alt="" />
-            )}
+            <img className={formatImgCN} src={formatImgSrc} alt="" />
             <div className="bannerContent">
               <h3 className="ct">BNBChain Attestation Alliance</h3>
               <div className="cn">
@@ -90,23 +123,22 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
                   Bringing more traditional data attestations to the BNB
                   ecosystem.
                 </p>
-                <p>{formatPeriod}</p>
+                {(eventActiveFlag === 1 || eventActiveFlag === 2) && (
+                  <p>{formatPeriod}</p>
+                )}
               </div>
             </div>
           </div>
-          {eventActiveFlag === 1 ? (
-            <PButton
-              text="Join Now"
-              suffix={<i className="iconfont icon-rightArrow"></i>}
-              onClick={onClick}
-            />
-          ) : (
-            <PButton
-              text={'Closed'}
-              className={'disabled'}
-              onClick={() => {}}
-            />
-          )}
+          <PButton
+            text={formatBtnTxt}
+            className={eventActiveFlag === 2 ? 'disabled' : ''}
+            suffix={
+              eventActiveFlag === 1 && (
+                <i className="iconfont icon-rightArrow"></i>
+              )
+            }
+            onClick={handleClick}
+          />
         </div>
       ) : (
         <></>

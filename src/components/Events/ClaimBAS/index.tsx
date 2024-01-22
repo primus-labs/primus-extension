@@ -60,14 +60,19 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       const isActive =
         dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
       const isEnd = dayjs().isAfter(dayjs(+endTime));
+      const isLongTerm = BASEventDetail?.ext?.isLongTermEvent;
+
       if (isActive) {
         return 1;
       }
-      if (isEnd) {
+      if (isEnd && !isLongTerm) {
         return 2;
       }
+      if (isLongTerm) {
+        return 3;
+      }
       return 0;
-    }, [BASEventPeriod]);
+    }, [BASEventPeriod, BASEventDetail?.ext?.isLongTermEvent]);
 
     const errorDescEl = useMemo(
       () => (
@@ -96,7 +101,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       }
       if (eventActiveFlag === 1) {
         onSubmit();
-      } else {
+      } else if (eventActiveFlag === 3) {
         setStep(3);
         setActiveRequest({
           type: 'suc',
