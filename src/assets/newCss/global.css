@@ -50,11 +50,15 @@
   --neutral-color-gray-90: #262626;
   --neutral-color-gray-95: #1d1d1d;
   --neutral-color-white: #ffffff;
-  --radius-radius-xxs: 2px;
-  --radius-radius-xs: 4px;
-  --radius-radius-m: 8px;
-  --radius-radius-l: 16px;
-  --radius-radius-xl: 100px;
+
+  --Text-Tokens-text-hover: var(--neutral-color-gray-30);
+  --text-button-disabled: var(--neutral-color-gray-40);
+  
+  --Radius-radius-xxs: 2px;
+  --Radius-radius-xs: 4px;
+  --Radius-radius-m: 8px;
+  --Radius-radius-l: 16px;
+  --Radius-radius-xl: 100px;
   --spacing-4px: 4px;
   --spacing-8px: 8px;
   --spacing-12px: 12px;
@@ -64,6 +68,7 @@
   --spacing-32px: 32px;
   --spacing-40px: 40px;
   --spacing-48px: 48px;
+
 }
 .pageOuterWrapper.light {
   --background-tokens-background: var(--neutral-color-gray-10);
@@ -72,12 +77,12 @@
   --background-tokens-background-inverse-hover: var(--neutral-color-gray-85);
   --background-tokens-background-nav: var(--neutral-color-white);
   --background-tokens-background-nav-selected: var(--brand-primary-color-bp-10);
-  --border-tokens-border-disabled: var(--neutral-color-gray-30);
-  --border-tokens-border-inverse: var(--neutral-color-gray-100);
-  --border-tokens-border-primary: var(--neutral-color-gray-20);
-  --border-tokens-border-primary-hover: var(--brand-primary-color-bp-50);
-  --button-tokens-button-disabled: var(--neutral-color-gray-20);
-  --button-tokens-button-primary: var(--neutral-color-gray-80);
+  --Border-Tokens-border-disabled: var(--neutral-color-gray-30);
+  --Border-Tokens-border-inverse: var(--neutral-color-gray-100);
+  --Border-Tokens-border-primary: var(--neutral-color-gray-20);
+  --Border-Tokens-border-primary-hover: var(--brand-primary-color-bp-50);
+  --Button-Tokens-button-disabled: var(--neutral-color-gray-20);
+  --Button-Tokens-button-primary: var(--neutral-color-gray-80);
   --button-tokens-button-primary-active: var(--neutral-color-gray-60);
   --button-tokens-button-primary-hover: var(--neutral-color-gray-70);
   --icon-tokens-icon-disabled: var(--neutral-color-gray-30);
@@ -86,21 +91,24 @@
   --icon-tokens-icon-primary: var(--neutral-color-gray-100);
   --icon-tokens-icon-secondary: var(--neutral-color-gray-70);
   --icon-tokens-icon-tertiary: var(--neutral-color-gray-60);
-  --layer-tokens-layer-primary: var(--neutral-color-gray-10);
-  --layer-tokens-layer-primary-hover: var(--neutral-color-gray-20);
-  --layer-tokens-layer-primary-selected: var(--neutral-color-gray-30);
-  --layer-tokens-layer-secondary: var(--neutral-color-gray-30);
-  --layer-tokens-layer-secondary-hover: var(--neutral-color-gray-40);
-  --layer-tokens-layer-secondary-selected: var(--neutral-color-gray-50);
+  --Layer-Tokens-layer-primary: var(--neutral-color-white);
+  --Layer-Tokens-layer-primary-hover: var(--neutral-color-gray-20);
+  --Layer-Tokens-layer-primary-selected: var(--neutral-color-gray-30);
+  --Layer-Tokens-layer-secondary: var(--neutral-color-gray-30);
+  --Layer-Tokens-layer-secondary-hover: var(--neutral-color-gray-40);
+  --Layer-Tokens-layer-secondary-selected: var(--neutral-color-gray-50);
   --tag-tokens-tag-brand: var(--brand-primary-color-bp-20);
   --tag-tokens-tag-brand-text: var(--brand-primary-color-bp-90);
-  --text-tokens-text-primary: var(--neutral-color-gray-100);
-  --text-tokens-text-disabled: var(--neutral-color-gray-30);
-  --text-tokens-text-error: var(--functional-color-red-red-50);
-  --text-tokens-text-inverse: var(--neutral-color-white);
-  --text-tokens-text-placeholder: var(--neutral-color-gray-40);
-  --text-tokens-text-secondary: var(--neutral-color-gray-70);
-  --text-tokens-text-tertiary: var(--neutral-color-gray-60);
+  --Text-Tokens-text-primary: var(--neutral-color-gray-100);
+  --Text-Tokens-text-disabled: var(--neutral-color-gray-30);
+  --Text-Tokens-text-error: var(--functional-color-red-red-50);
+  --Text-Tokens-text-inverse: var(--neutral-color-white);
+  --Text-Tokens-text-placeholder: var(--neutral-color-gray-40);
+  --Text-Tokens-text-secondary: var(--neutral-color-gray-70);
+  --Text-Tokens-text-tertiary: var(--neutral-color-gray-60);
+
+  --Border-disabled: var(--neutral-color-gray-10);
+  
 }
 .pageOuterWrapper.dark {
   --background-tokens-background: var(--neutral-color-gray-100);
@@ -110,11 +118,11 @@
   --background-tokens-background-inverse-hover: var(--neutral-color-gray-20);
   --background-tokens-background-nav: var(--neutral-color-gray-95);
   --background-tokens-background-nav-selected: var(--brand-primary-color-bp-95);
-  --border-tokens-border-disabled: var(--neutral-color-gray-90);
-  --border-tokens-border-inverse: var(--neutral-color-gray-10);
-  --border-tokens-border-primary: var(--neutral-color-gray-80);
-  --button-tokens-button-disabled: var(--neutral-color-gray-90);
-  --button-tokens-button-primary: var(--neutral-color-gray-60);
+  --Border-Tokens-border-disabled: var(--neutral-color-gray-90);
+  --Border-Tokens-border-inverse: var(--neutral-color-gray-10);
+  --Border-Tokens-border-primary: var(--neutral-color-gray-80);
+  --Button-Tokens-button-disabled: var(--neutral-color-gray-90);
+  --Button-Tokens-button-primary: var(--neutral-color-gray-60);
   --button-tokens-button-primary-active: var(--neutral-color-gray-80);
   --button-tokens-button-primary-hover: var(--neutral-color-gray-70);
   --icon-tokens-icon-disabled: var(--neutral-color-gray-70);
@@ -123,21 +131,23 @@
   --icon-tokens-icon-primary: var(--neutral-color-gray-10);
   --icon-tokens-icon-secondary: var(--neutral-color-gray-30);
   --icon-tokens-icon-tertiary: var(--neutral-color-gray-50);
-  --layer-tokens-layer-primary: var(--neutral-color-gray-90);
-  --layer-tokens-layer-primary-hover: var(--neutral-color-gray-85);
-  --layer-tokens-layer-primary-selected: var(--neutral-color-gray-80);
-  --layer-tokens-layer-secondary: var(--neutral-color-gray-70);
-  --layer-tokens-layer-secondary-hover: var(--neutral-color-gray-65);
-  --layer-tokens-layer-secondary-selected: var(--neutral-color-gray-60);
+  --Layer-Tokens-layer-primary: var(--neutral-color-gray-100);
+  --Layer-Tokens-layer-primary-hover: var(--neutral-color-gray-85);
+  --Layer-Tokens-layer-primary-selected: var(--neutral-color-gray-80);
+  --Layer-Tokens-layer-secondary: var(--neutral-color-gray-70);
+  --Layer-Tokens-layer-secondary-hover: var(--neutral-color-gray-65);
+  --Layer-Tokens-layer-secondary-selected: var(--neutral-color-gray-60);
   --tag-tokens-tag-brand: var(--neutral-color-gray-90);
   --tag-tokens-tag-brand-text: var(--brand-primary-color-bp-20);
-  --text-tokens-text-primary: var(--neutral-color-gray-10);
-  --text-tokens-text-disabled: var(--neutral-color-gray-70);
-  --text-tokens-text-error: var(--functional-color-red-red-50);
-  --text-tokens-text-inverse: var(--neutral-color-gray-100);
-  --text-tokens-text-placeholder: var(--neutral-color-gray-60);
-  --text-tokens-text-secondary: var(--neutral-color-gray-30);
-  --text-tokens-text-tertiary: var(--neutral-color-gray-50);
+  --Text-Tokens-text-primary: var(--neutral-color-gray-10);
+  --Text-Tokens-text-disabled: var(--neutral-color-gray-70);
+  --Text-Tokens-text-error: var(--functional-color-red-red-50);
+  --Text-Tokens-text-inverse: var(--neutral-color-gray-100);
+  --Text-Tokens-text-placeholder: var(--neutral-color-gray-60);
+  --Text-Tokens-text-secondary: var(--neutral-color-gray-30);
+  --Text-Tokens-text-tertiary: var(--neutral-color-gray-50);
+
+  --Border-disabled: var(--neutral-color-gray-90);
 }
 
 .disabled {

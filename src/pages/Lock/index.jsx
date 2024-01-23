@@ -97,7 +97,7 @@ const Lock = memo(() => {
       <main className="appContent">
         <AsideAnimation />
         <article className={hadSetPwd ? 'hadSetPwd' : ''}>
-          {/* <Test/> */}
+          <Test/>
           <section className="descWrapper">
             <h1>Welcome Back！</h1>
             <p>Liberate Data and Computation with Cryptography.</p>

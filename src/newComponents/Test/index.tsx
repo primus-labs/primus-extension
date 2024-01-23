@@ -9,15 +9,16 @@ import PSelect from '@/newComponents/PSelect';
 
 const Test: React.FC = memo(({}) => {
   const tList = [
-    { label: 'ABC', value: 1 },
-    { label: 'DEFG', value: 2 },
-    { label: 'HIGKLI', value: 3 },
+    { label: 'ABC', value: '1' },
+    { label: 'DEFG', value: '2' },
+    { label: 'HIGKLI', value: '3' },
   ];
-  const [sss, setSss] = useState();
-  const [ttt, setTtt] = useState(3);
+  const [sss, setSss] = useState('');
+  const [ttt, setTtt] = useState('3');
   const [ppp, setPpp] = useState('');
   return (
     <div className="test">
+      <PPButton text="primary" type="primary" onClick={() => {}} />
       <PPInput
         label="input label"
         placeholder="12345"

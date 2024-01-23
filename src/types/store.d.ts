@@ -48,4 +48,5 @@ export type UserState = {
   badgeEventPeriod: BadgeEventPeriodType;
   scrollEventPeriod: BadgeEventPeriodType;
   events: EventsType;
+  theme: 'light' | 'dark';
 };

@@ -8,7 +8,7 @@ import routes from '@/router';
 import { Provider } from 'react-redux';
 import store from '@/store/index';
 // export const EASInfo = EASINFOMAP[CURENV];
-import {EASInfo} from '@/config/envConstants'
+import { EASInfo } from '@/config/envConstants';
 const router = createHashRouter(routes);
 const container = document.getElementById('app-container');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
@@ -16,15 +16,17 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 // 1. Get projectId
 const projectId = '0dabe09aae6ef261e2a469af9ccb9b76';
 
-const supportChains = Object.values(EASInfo).filter((i) => !i.disabled).map(i => {
-  return {
-    chainId: parseInt(i.chainId),
-    name: i.title,
-    currency: i.nativeCurrency.symbol,
-    explorerUrl: i.blockExplorerUrls[0],
-    rpcUrl: i.rpcUrls[0],
-  };
-})
+const supportChains = Object.values(EASInfo)
+  .filter((i) => !i.disabled)
+  .map((i) => {
+    return {
+      chainId: parseInt(i.chainId),
+      name: i.title,
+      currency: i.nativeCurrency.symbol,
+      explorerUrl: i.blockExplorerUrls[0],
+      rpcUrl: i.rpcUrls[0],
+    };
+  });
 // 2. Set chains
 const chains = [
   {
@@ -90,9 +92,11 @@ console.log('Page initialization');
 
 // TODO
 root.render(
-  <div className="pageOuterWrapper light">
+  <>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <div className={`pageOuterWrapper ${store.getState().theme}`}>
+        <RouterProvider router={router} />
+      </div>
     </Provider>
-  </div>
+  </>
 );

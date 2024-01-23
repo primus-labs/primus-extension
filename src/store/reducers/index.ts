@@ -98,6 +98,7 @@ const initState = {
   },
   events: {
   },
+  theme: 'dark'
 };
 
 // reducer

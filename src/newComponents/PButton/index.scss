@@ -2,7 +2,7 @@
 @import '@/assets/newCss/font.scss';
 
 @mixin Button {
-  color: var(--Text-Tokens-text-inverse, #fff);
+  
   text-align: center;
 
   /* Button */
@@ -16,6 +16,7 @@
 button.PButton {
   @include frcc;
   @include Button;
+  color: var(--Text-Tokens-text-inverse, #fff);
   box-sizing: border-box;
   cursor: pointer;
   width: 100%;
