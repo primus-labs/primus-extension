@@ -11,6 +11,7 @@ interface PInputProps {
   errorTip?: any;
   helpTip?: any;
   disabled?: boolean;
+  prefix?: any;
 
   copiable?: boolean;
   onSearch?: (val: string) => void;
@@ -30,6 +31,7 @@ const PInput: React.FC<PInputProps> = memo(
     disabled = false,
     copiable = false,
     tooltip,
+    prefix,
   }) => {
     const inputEl = useRef<any>(null);
     const [val, setVal] = useState<string>('');
@@ -102,6 +104,7 @@ const PInput: React.FC<PInputProps> = memo(
           </label>
         )}
         <div className="inputWrapper">
+          {prefix}
           <input
             className="pInput"
             ref={inputEl}

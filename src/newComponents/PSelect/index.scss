@@ -1,46 +1,78 @@
-@import '@/assets/css/pVars.sass';
-@import '@/assets/css/pFlex.sass';
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
 
-@import '@/assets/css/padoM.scss';
-
-.padodropdown {
-  @extend .fcss;
+.PSelect {
   width: 100%;
-  padding: var(--spacing-8, 8px) 0px;
+  @include fcss;
   gap: var(--spacing-4, 4px);
-  border-radius: var(--spacing-8, 8px);
-  // background: var(--bg-90, rgba(255, 255, 255, 0.9));
-  background: var(--bg-default, #fff);
-  box-shadow: 0px 4px 8px 0px rgba(9, 30, 66, 0.2);
-}
-.dropdownItemWrapper {
-  @extend .frsc;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  height: var(--spacing-40, 40px);
-  padding: var(--spacing-8, 8px) var(--spacing-16, 16px);
-  gap: var(--spacing-8, 8px);
-  flex-shrink: 0;
-  &:not(.disabled):hover {
-    background: var(--Badge, rgba(10, 18, 20, 0.05));
+  position: relative;
+  > label {
+    color: var(--Text-Tokens-text-primary, #161616);
+    @include Label01;
+    @include frsc;
+    padding-bottom: var(--spacing-4, 4px);
   }
   &.disabled {
-    cursor: not-allowed;
-    opacity: 0.4;
+    > label {
+      color: var(--Text-Tokens-text-placeholder, #a8a8a8);
+    }
   }
-}
-.dropdownItem {
-  @extend .frsc;
-  gap: var(--spacing-16, 16px);
-  > img {
-    width: var(--spacing-18, 18px);
+  .selectInput {
+    width: 100%;
+    @include frsc;
+    gap: var(--spacing-16, 16px);
+    border-radius: var(--Radius-radius-xs, 4px);
+    border: 1px solid var(--Border-Tokens-border--primary, #e0e0e0);
+    background: var(--Layer-Tokens-layer-primary, #fff);
+    height: var(--spacing-40, 40px);
+    padding: 0 var(--spacing-16, 16px);
+    &:not(.disabled).toBeActive {
+      cursor: pointer;
+    }
+    &:not(.disabled).active {
+      border: 1px solid var(--Brand-Primary-Color-BP-50, #00c7f2);
+    }
+    &.disabled {
+      border: 1px solid var(--Border-disabled, #f4f4f4);
+      .valueWrapper {
+        color: var(--Text-Tokens-text-disabled, #c6c6c6);
+        &.placeholder {
+          color: var(--Text-Tokens-text-disabled, #c6c6c6);
+        }
+      }
+      .iconfont {
+        color: var(--icon-tokens-icon-disabled);
+      }
+    }
+
+    .valueWrapper {
+      color: var(--Text-Tokens-text-primary, #161616);
+      @include BodyBody100;
+      @include frsc;
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      border: 0;
+      &.placeholder {
+        color: var(--Text-Tokens-text-placeholder, #a8a8a8);
+      }
+    }
+    .iconfont {
+      color: var(--icon-tokens-icon-primary);
+      font-size: var(--spacing-16, 16px);
+    }
   }
-  .iconfont {
-    font-size: var(--spacing-18, 18px);
-  }
-  .desc {
-    @extend .Body2;
-    color: var(--Text-headline, #0a1214);
+  .selectOptionswrapper {
+    position: absolute;
+    z-index: 1;
+    top: var(--spacing-40, 40px);
+    padding-top: var(--spacing-4, 4px);
+    width: 100%;
+    &.withLabel {
+      top: 66px;
+    }
+    .PDropdown {
+      width: 100%;
+    }
   }
 }

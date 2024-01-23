@@ -5,6 +5,7 @@ import PPInput from '@/newComponents/PInput';
 import PPButton from '@/newComponents/PButton';
 import PPTabs from '@/newComponents/PTabs';
 import PPTooltip from '@/newComponents/PTooltip';
+import PSelect from '@/newComponents/PSelect';
 
 const Test: React.FC = memo(({}) => {
   const tList = [
@@ -12,18 +13,28 @@ const Test: React.FC = memo(({}) => {
     { label: 'DEFG', value: 2 },
     { label: 'HIGKLI', value: 3 },
   ];
+  const [sss, setSss] = useState();
   const [ttt, setTtt] = useState(3);
   const [ppp, setPpp] = useState('');
   return (
-    <div className='test'>
+    <div className="test">
       <PPInput
-        label="hi"
+        label="input label"
         placeholder="12345"
         type="password"
         onChange={(ppp) => {
           setPpp(ppp);
         }}
         value={ppp}
+      />
+      <PSelect
+        label="select label"
+        placeholder="12345"
+        list={tList}
+        value={sss}
+        onChange={(ppp) => {
+          setSss(ppp);
+        }}
       />
       <PPTabs
         list={tList}
@@ -34,7 +45,7 @@ const Test: React.FC = memo(({}) => {
       />
 
       <PPTooltip title="hello">
-        <PPButton text="tooltip" type="secondary" onClick={ () => {}} />
+        <PPButton text="tooltip" type="secondary" onClick={() => {}} />
       </PPTooltip>
     </div>
   );

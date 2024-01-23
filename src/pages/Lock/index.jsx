@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import PInput from '@/components/PInput/index';
 import PButton from '@/components/PButton';
-// import Test from '@/newComponents/Test'
+import Test from '@/newComponents/Test'
 import AsideAnimation from '@/components/Layout/AsideAnimation';
 import { postMsg } from '@/utils/utils';
 import './index.scss';
