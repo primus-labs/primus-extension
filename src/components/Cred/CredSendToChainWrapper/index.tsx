@@ -215,8 +215,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           Name = LINEASCHEMANAME;
         } else if (
           formatNetworkName &&
-          (formatNetworkName.indexOf('BSC') > -1 ||
-            formatNetworkName.indexOf('BNB Greenfield') > -1)
+          formatNetworkName.indexOf('BSC') > -1
         ) {
           Name = BNBSCHEMANAME;
         } else if (

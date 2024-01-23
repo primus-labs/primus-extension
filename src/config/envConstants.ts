@@ -735,9 +735,9 @@ const BNBSCHEMANAMEMAP = {
 };
 export let BNBSCHEMANAME = BNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDSCHEMANAMEMAP = {
-  development: 'BNB Greenfield Testnet',
-  test: 'BNB Greenfield Testnet',
-  production: 'BNB Greenfield Mainnet',
+  development: 'BAS-Greenfield-Testnet',
+  test: 'BAS-Greenfield-Testnet',
+  production: 'BAS-Greenfield-Mainnet',
 };
 export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDURLMAP = {
