@@ -1,0 +1,20 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.sidebar {
+  @include fcss;
+  width: 240px;
+  height: 100%;
+  border-right: 1px solid var(--Border-Tokens-border--primary, #e0e0e0);
+  background: var(--Background-Tokens-background-navi, #fff);
+  padding: var(--spacing-16, 16px) 0px;
+  gap: var(--spacing-16, 16px);
+  .logoWrapper {
+    @include frsc;
+    height: var(--spacing-40);
+    padding-left: var(--spacing-24);
+    .logo {
+      width: 76.19px;
+    }
+  }
+}

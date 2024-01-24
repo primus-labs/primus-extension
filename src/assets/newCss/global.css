@@ -72,12 +72,12 @@
   --text-button-disabled: var(--neutral-color-gray-40);
 }
 .pageApp.light {
-  --background-tokens-background: var(--neutral-color-gray-10);
-  --background-tokens-background-brand: var(--brand-primary-color-bp-50);
-  --background-tokens-background-inverse: var(--neutral-color-gray-90);
-  --background-tokens-background-inverse-hover: var(--neutral-color-gray-85);
-  --background-tokens-background-nav: var(--neutral-color-gray-10);
-  --background-tokens-background-nav-selected: var(--brand-primary-color-bp-10);
+  --Background-Tokens-background: var(--neutral-color-gray-10);
+  --Background-Tokens-background-brand: var(--brand-primary-color-bp-50);
+  --Background-Tokens-background-inverse: var(--neutral-color-gray-90);
+  --Background-Tokens-background-inverse-hover: var(--neutral-color-gray-85);
+  --Background-Tokens-background-navi: var(--neutral-color-gray-95);
+  --Background-Tokens-background-navi-selected: var(--brand-primary-color-bp-10);
   --Border-Tokens-border-disabled: var(--neutral-color-gray-30);
   --Border-Tokens-border-inverse: var(--neutral-color-gray-100);
   --Border-Tokens-border--primary: var(--neutral-color-gray-20);
@@ -111,13 +111,13 @@
   --Border-disabled: var(--neutral-color-gray-10);
 }
 .pageApp.dark {
-  --background-tokens-background: var(--neutral-color-gray-100);
-  --background-tokens-background-brand: var(--brand-primary-color-bp-50);
-  --background-tokens-background-hover: var(--neutral-color-gray-90);
-  --background-tokens-background-inverse: var(--neutral-color-gray-10);
-  --background-tokens-background-inverse-hover: var(--neutral-color-gray-20);
-  --background-tokens-background-nav: var(--neutral-color-white);
-  --background-tokens-background-nav-selected: var(--brand-primary-color-bp-95);
+  --Background-Tokens-background: var(--neutral-color-gray-100);
+  --Background-Tokens-background-brand: var(--brand-primary-color-bp-50);
+  --Background-Tokens-background-hover: var(--neutral-color-gray-90);
+  --Background-Tokens-background-inverse: var(--neutral-color-gray-10);
+  --Background-Tokens-background-inverse-hover: var(--neutral-color-gray-20);
+  --Background-Tokens-background-navi: var(--neutral-color-gray-10);
+  --Background-Tokens-background-navi-selected: var(--brand-primary-color-bp-95);
   --Border-Tokens-border-disabled: var(--neutral-color-gray-90);
   --Border-Tokens-border-inverse: var(--neutral-color-gray-10);
   --Border-Tokens-border--primary: var(--neutral-color-gray-80);

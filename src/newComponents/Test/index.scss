@@ -1,10 +1,12 @@
 @import '@/assets/newCss/flex.scss';
 .test {
-  width: 500px;
-  @include fcss;
-  
+  width: 1024px;
+  @include frss;
 
-  gap: 8px;
+  gap: 28px;
+  .lefr.right {
+    width: 50%;
+  }
   .pSection {
     @include fcss;
     gap: 16px;
