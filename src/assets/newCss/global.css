@@ -51,9 +51,6 @@
   --neutral-color-gray-95: #1d1d1d;
   --neutral-color-white: #ffffff;
 
-  --Text-Tokens-text-hover: var(--neutral-color-gray-30);
-  --text-button-disabled: var(--neutral-color-gray-40);
-  
   --Radius-radius-xxs: 2px;
   --Radius-radius-xs: 4px;
   --Radius-radius-m: 8px;
@@ -69,13 +66,17 @@
   --spacing-40px: 40px;
   --spacing-48px: 48px;
 
+
+
+  --Text-Tokens-text-hover: var(--neutral-color-gray-30);
+  --text-button-disabled: var(--neutral-color-gray-40);
 }
 .pageOuterWrapper.light {
   --background-tokens-background: var(--neutral-color-gray-10);
   --background-tokens-background-brand: var(--brand-primary-color-bp-50);
   --background-tokens-background-inverse: var(--neutral-color-gray-90);
   --background-tokens-background-inverse-hover: var(--neutral-color-gray-85);
-  --background-tokens-background-nav: var(--neutral-color-white);
+  --background-tokens-background-nav: var(--neutral-color-gray-10);
   --background-tokens-background-nav-selected: var(--brand-primary-color-bp-10);
   --Border-Tokens-border-disabled: var(--neutral-color-gray-30);
   --Border-Tokens-border-inverse: var(--neutral-color-gray-100);
@@ -91,7 +92,7 @@
   --icon-tokens-icon-primary: var(--neutral-color-gray-100);
   --icon-tokens-icon-secondary: var(--neutral-color-gray-70);
   --icon-tokens-icon-tertiary: var(--neutral-color-gray-60);
-  --Layer-Tokens-layer-primary: var(--neutral-color-white);
+  --Layer-Tokens-layer-primary: var(--neutral-color-gray-10);
   --Layer-Tokens-layer-primary-hover: var(--neutral-color-gray-20);
   --Layer-Tokens-layer-primary-selected: var(--neutral-color-gray-30);
   --Layer-Tokens-layer-secondary: var(--neutral-color-gray-30);
@@ -107,8 +108,9 @@
   --Text-Tokens-text-secondary: var(--neutral-color-gray-70);
   --Text-Tokens-text-tertiary: var(--neutral-color-gray-60);
 
+
+
   --Border-disabled: var(--neutral-color-gray-10);
-  
 }
 .pageOuterWrapper.dark {
   --background-tokens-background: var(--neutral-color-gray-100);
@@ -116,7 +118,7 @@
   --background-tokens-background-hover: var(--neutral-color-gray-90);
   --background-tokens-background-inverse: var(--neutral-color-gray-10);
   --background-tokens-background-inverse-hover: var(--neutral-color-gray-20);
-  --background-tokens-background-nav: var(--neutral-color-gray-95);
+  --background-tokens-background-nav: var(--neutral-color-white);
   --background-tokens-background-nav-selected: var(--brand-primary-color-bp-95);
   --Border-Tokens-border-disabled: var(--neutral-color-gray-90);
   --Border-Tokens-border-inverse: var(--neutral-color-gray-10);
@@ -131,7 +133,7 @@
   --icon-tokens-icon-primary: var(--neutral-color-gray-10);
   --icon-tokens-icon-secondary: var(--neutral-color-gray-30);
   --icon-tokens-icon-tertiary: var(--neutral-color-gray-50);
-  --Layer-Tokens-layer-primary: var(--neutral-color-gray-100);
+  --Layer-Tokens-layer-primary: var(--neutral-color-gray-90);
   --Layer-Tokens-layer-primary-hover: var(--neutral-color-gray-85);
   --Layer-Tokens-layer-primary-selected: var(--neutral-color-gray-80);
   --Layer-Tokens-layer-secondary: var(--neutral-color-gray-70);
@@ -147,6 +149,8 @@
   --Text-Tokens-text-secondary: var(--neutral-color-gray-30);
   --Text-Tokens-text-tertiary: var(--neutral-color-gray-50);
 
+
+  
   --Border-disabled: var(--neutral-color-gray-90);
 }
 
