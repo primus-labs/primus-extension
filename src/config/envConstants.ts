@@ -502,7 +502,7 @@ const EASINFOMAP = {
       transactionDetailUrl: 'https://arbitrum.easscan.org/attestation/view',
     },
     BSC: {
-      showName: 'BSC',
+      showName: 'BNB Chain',
       icon: iconBinance,
       title: 'BSC',
       rpcUrl: 'https://bsc-dataseed.binance.org/',

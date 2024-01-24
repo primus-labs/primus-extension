@@ -154,7 +154,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             onClose={onClose}
             onSubmit={onSubmitClaimDialog}
             onChange={onChangeFn}
-            title="BNBChain Attestation Tasks "
+            title="BAS Attestation Tasks"
             titleIllustration={true}
             subTitle=""
           />
