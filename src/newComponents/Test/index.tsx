@@ -22,10 +22,10 @@ const Test: React.FC = memo(({}) => {
   const tList = [
     { label: 'ABC', value: '1' },
     { label: 'DEFG', value: '2' },
-    { label: 'HIGKLI', value: '3' },
+    { label: 'HIGKLI', value: '3', disabled: true },
   ];
   const [sss, setSss] = useState('');
-  const [ttt, setTtt] = useState('3');
+  const [ttt, setTtt] = useState('1');
   const [ppp, setPpp] = useState('');
   const handleClick = useCallback(() => {
     dispatch(setThemeAction());
@@ -70,32 +70,76 @@ const Test: React.FC = memo(({}) => {
           />
         </div>
       </section>
+      <section className="pSection">
+        <div className="pRow">
+          <PSelect
+            label="select label"
+            placeholder="placeholder"
+            list={tList}
+            value={sss}
+            onChange={(ppp) => {
+              setSss(ppp);
+            }}
+          />
+          <PSelect
+            placeholder="placeholder"
+            list={tList}
+            value={'1'}
+            onChange={(ppp) => {
+              setSss(ppp);
+            }}
+            disabled
+          />
+        </div>
+      </section>
+      <section className="pSection">
+        <div className="pRow">
+          <PPInput
+            label="input label"
+            placeholder="placeholder"
+            type="text"
+            onChange={(ppp) => {
+              setPpp(ppp);
+            }}
+            value={ppp}
+          />
 
-      <PPInput
-        label="input label"
-        placeholder="12345"
-        type="password"
-        onChange={(ppp) => {
-          setPpp(ppp);
-        }}
-        value={ppp}
-      />
-      <PSelect
-        label="select label"
-        placeholder="12345"
-        list={tList}
-        value={sss}
-        onChange={(ppp) => {
-          setSss(ppp);
-        }}
-      />
-      <PPTabs
-        list={tList}
-        onChange={(ppp) => {
-          setTtt(ppp);
-        }}
-        value={ttt}
-      />
+          <PPInput
+            label="input label"
+            placeholder="placeholder"
+            type="password"
+            onChange={(ppp) => {
+              setPpp(ppp);
+            }}
+            value={ppp}
+            errorTip="error"
+          />
+          <PPInput
+            placeholder="placeholder"
+            type="text"
+            onChange={(ppp) => {
+              setPpp(ppp);
+            }}
+            value={'111'}
+            disabled
+            helpTip="help text"
+          />
+        </div>
+      </section>
+      <section className="pSection">
+        <div className="pRow">
+          <PPTabs
+            list={tList}
+            onChange={(ppp) => {
+              setTtt(ppp);
+            }}
+            value={ttt}
+          />
+        </div>
+      </section>
+      <section className="pSection">
+        <div className="pRow"></div>
+      </section>
 
       <PPTooltip title="hello">
         <PPButton text="tooltip" type="secondary" onClick={() => {}} />

@@ -36,6 +36,7 @@ const Layout = memo(() => {
     (state: UserState) => state.padoServicePort
   );
   const userPassword = useSelector((state: UserState) => state.userPassword);
+  const theme = useSelector((state: UserState) => state.theme);
 
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
@@ -202,7 +203,7 @@ const Layout = memo(() => {
   }, []);
 
   return (
-    <div className="pageApp">
+    <div className={`pageApp ${theme}`}>
       <BackgroundAnimation />
       <div className="pageLayer">
         <ActiveHeader />

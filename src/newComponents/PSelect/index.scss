@@ -36,7 +36,7 @@
       border: 1px solid var(--Border-disabled, #f4f4f4);
       .valueWrapper {
         color: var(--Text-Tokens-text-disabled, #c6c6c6);
-        &.placeholder {
+        .placeholder {
           color: var(--Text-Tokens-text-disabled, #c6c6c6);
         }
       }
@@ -53,7 +53,7 @@
       height: 100%;
       background: transparent;
       border: 0;
-      &.placeholder {
+      .placeholder {
         color: var(--Text-Tokens-text-placeholder, #a8a8a8);
       }
     }

@@ -12,11 +12,11 @@ export type TabItem = {
 
   icon?: any;
   tooltip?: string;
-  text: string;
+  
   path?: string;
 };
 interface PInputProps {
-  onChange: (val: string) => void;
+  onChange: (val: string, item: TabItem) => void;
   value?: string;
   list: TabItem[];
 }
@@ -28,7 +28,7 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value, list }) => {
   const handleClickTab = (item: TabItem) => {
     if (!item.disabled) {
       setActiveTab(item.value);
-      onChange(item.text);
+      onChange(item.value, item);
       item.link && navigate(item.link);
     }
   };

@@ -22,6 +22,11 @@
       flex-shrink: 0;
       &:not(.disabled):hover {
         background: var(--Layer-Tokens-layer-primary-hover, #f4f4f4);
+        .dropdownOptionCon {
+          .desc {
+            color: var(--Text-Tokens-text-primary, #161616);
+          }
+        }
       }
       &.disabled {
         cursor: not-allowed;
@@ -30,7 +35,7 @@
       }
       .dropdownOptionCon {
         @include frsc;
-        gap:var(--spacing-16, 16px);
+        gap: var(--spacing-16, 16px);
         padding: 0 var(--spacing-16, 16px);
         // > img {
         //   width: var(--spacing-18, 18px);
@@ -40,7 +45,7 @@
         // }
         .desc {
           @include BodyBody100;
-          color: var(--Text-Tokens-text-primary, #161616);
+          color: var(--Text-Tokens-text-secondary, #525252);
         }
       }
     }

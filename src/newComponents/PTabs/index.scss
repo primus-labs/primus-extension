@@ -25,6 +25,7 @@
     }
     &.active {
       color: var(--Text-Tokens-text-primary, #161616);
+      border-bottom: 2px solid var(--Text-Tokens-text-primary, #161616);
     }
   }
 }

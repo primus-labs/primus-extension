@@ -93,7 +93,7 @@ button.PButton {
     }
     &.disabled {
       .iconfont {
-        color: var(--icon-tokens-icon-disabled);
+        color: var(--text-button-disabled);
       }
     }
   }

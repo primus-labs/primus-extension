@@ -12,9 +12,9 @@
     > .inputWrapper {
       border: 1px solid var(--Border-disabled, #f4f4f4);
       // TODO-newui
-      // .pInput {
-      //   color: var(--Text-Tokens-text-primary, #161616);
-      // }
+      .pInput {
+        color: var(--Text-Tokens-text-disabled);
+      }
     }
   }
   &.error{
@@ -54,6 +54,7 @@
     .iconfont {
       font-size: var(--spacing-16, 16px);
       cursor: pointer;
+      color: var(--icon-tokens-icon-primary);
     }
   }
   > .tip {

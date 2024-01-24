@@ -20,6 +20,8 @@
     background: var(--Layer-Tokens-layer-primary, #fff);
     box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.15);
     @include BodyBody300;
+    color: var(--Text-Tokens-text-primary, #F4F4F4);
+    
     &:after {
       position: absolute;
       z-index: 1;
@@ -31,6 +33,7 @@
       height: var(--spacing-8, 8px);
       border-radius: 1PX;
       background: var(--Layer-Tokens-layer-primary, #fff);
+      
       // box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.15),0 0 0 0 transparent,0 0 0 0 transparent,0px 2px 8px 0px rgba(0, 0, 0, 0.15),;
     }
   }

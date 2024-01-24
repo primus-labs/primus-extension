@@ -66,12 +66,12 @@
   --spacing-40px: 40px;
   --spacing-48px: 48px;
 
-
-
   --Text-Tokens-text-hover: var(--neutral-color-gray-30);
   --text-button-disabled: var(--neutral-color-gray-40);
+  --dark-text-text-tertiary: var(--neutral-color-gray-50);
+  --text-button-disabled: var(--neutral-color-gray-40);
 }
-.pageOuterWrapper.light {
+.pageApp.light {
   --background-tokens-background: var(--neutral-color-gray-10);
   --background-tokens-background-brand: var(--brand-primary-color-bp-50);
   --background-tokens-background-inverse: var(--neutral-color-gray-90);
@@ -80,7 +80,7 @@
   --background-tokens-background-nav-selected: var(--brand-primary-color-bp-10);
   --Border-Tokens-border-disabled: var(--neutral-color-gray-30);
   --Border-Tokens-border-inverse: var(--neutral-color-gray-100);
-  --Border-Tokens-border-primary: var(--neutral-color-gray-20);
+  --Border-Tokens-border--primary: var(--neutral-color-gray-20);
   --Border-Tokens-border-primary-hover: var(--brand-primary-color-bp-50);
   --Button-Tokens-button-disabled: var(--neutral-color-gray-20);
   --Button-Tokens-button-primary: var(--neutral-color-gray-80);
@@ -108,11 +108,9 @@
   --Text-Tokens-text-secondary: var(--neutral-color-gray-70);
   --Text-Tokens-text-tertiary: var(--neutral-color-gray-60);
 
-
-
   --Border-disabled: var(--neutral-color-gray-10);
 }
-.pageOuterWrapper.dark {
+.pageApp.dark {
   --background-tokens-background: var(--neutral-color-gray-100);
   --background-tokens-background-brand: var(--brand-primary-color-bp-50);
   --background-tokens-background-hover: var(--neutral-color-gray-90);
@@ -122,7 +120,8 @@
   --background-tokens-background-nav-selected: var(--brand-primary-color-bp-95);
   --Border-Tokens-border-disabled: var(--neutral-color-gray-90);
   --Border-Tokens-border-inverse: var(--neutral-color-gray-10);
-  --Border-Tokens-border-primary: var(--neutral-color-gray-80);
+  --Border-Tokens-border--primary: var(--neutral-color-gray-80);
+
   --Button-Tokens-button-disabled: var(--neutral-color-gray-90);
   --Button-Tokens-button-primary: var(--neutral-color-gray-60);
   --button-tokens-button-primary-active: var(--neutral-color-gray-80);

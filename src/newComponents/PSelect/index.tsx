@@ -25,8 +25,8 @@ type OptionItem = {
 };
 interface PSelectProps {
   list: OptionItem[];
-  onChange: (val: any, item: OptionItem) => void;
-  val: string;
+  onChange: (value: any, item: OptionItem) => void;
+  value: string;
   placeholder?: string;
   disabled?: boolean;
   prefix?: any;
@@ -41,7 +41,7 @@ const PSelect: React.FC<PSelectProps> = memo(
     onChange,
     list,
     placeholder = 'Select',
-    val,
+    value,
     showIcon,
     prefix,
     showSelf = true,
@@ -56,8 +56,8 @@ const PSelect: React.FC<PSelectProps> = memo(
     const valEl = useRef(null);
 
     const activeOptions = useMemo(() => {
-      return list.filter((i) => i.value !== val);
-    }, [list, val]);
+      return list.filter((i) => i.value !== value);
+    }, [list, value]);
     const isOpen = useMemo(() => {
       return optionsVisible && !disabled && activeOptions.length > 0;
     }, [optionsVisible, disabled, activeOptions.length]);
@@ -139,8 +139,8 @@ const PSelect: React.FC<PSelectProps> = memo(
         >
           {prefix}
           <div className="valueWrapper">
-            <span ref={valEl} className={val ? '' : 'placeholder'}>
-              {val ? val : placeholder}
+            <span ref={valEl} className={value ? '' : 'placeholder'}>
+              {value ? value : placeholder}
             </span>
           </div>
           <i ref={suffixIconEl} className={formatSuffixCN} />

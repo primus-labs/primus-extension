@@ -94,9 +94,7 @@ console.log('Page initialization');
 root.render(
   <>
     <Provider store={store}>
-      <div className={`pageOuterWrapper ${store.getState().theme}`}>
         <RouterProvider router={router} />
-      </div>
     </Provider>
   </>
 );

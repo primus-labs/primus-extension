@@ -11,7 +11,7 @@
   }
   .pRow {
     @include frss;
-    align-items: flex-end;
+    // align-items: flex-end;
     gap: 8px;
   }
 }

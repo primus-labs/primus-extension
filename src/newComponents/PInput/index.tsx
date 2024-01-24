@@ -112,6 +112,8 @@ const PInput: React.FC<PInputProps> = memo(
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
+            disabled={disabled}
+            value={value}
           />
           {/* {copiable && (
             <i
