@@ -94,10 +94,10 @@ const Lock = memo(() => {
 
   return (
     <div className="pageIndex pageLock">
+      {/* <Test /> */}
       <main className="appContent">
         <AsideAnimation />
         <article className={hadSetPwd ? 'hadSetPwd' : ''}>
-          <Test/>
           <section className="descWrapper">
             <h1>Welcome Back！</h1>
             <p>Liberate Data and Computation with Cryptography.</p>

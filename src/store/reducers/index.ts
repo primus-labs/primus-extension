@@ -98,7 +98,7 @@ const initState = {
   },
   events: {
   },
-  theme: 'dark'
+  theme: 'light'
 };
 
 // reducer
@@ -153,6 +153,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, scrollEventPeriod: action.payload };
     case 'setEventsAction':
       return { ...state, events: action.payload };
+    case 'setThemeAction':
+      return { ...state, theme: state.theme === 'light'? 'dark': 'light' };
     default:
       return state;
   }

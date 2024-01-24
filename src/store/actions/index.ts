@@ -101,6 +101,9 @@ export const setEventsAction = (values: any) => ({
   type: 'setEventsAction',
   payload: values,
 });
+export const setThemeAction = () => ({
+  type: 'setThemeAction',
+});
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {
@@ -300,7 +303,6 @@ export const setBadgeEventPeriodActionAsync = () => {
             dispatch(setScrollEventPeriodAction(result));
           }
         }
-        
       });
     } catch (e) {
       console.log('setBadgeEventPeriodActionAsync e:', e);
@@ -341,7 +343,6 @@ export const initEventsActionAsync = () => {
     if (eventsDetailStr) {
       const eventsDetailObj = JSON.parse(eventsDetailStr);
       await dispatch(setEventsAction(eventsDetailObj));
-      
     }
     await dispatch(setEventsActionAsync());
   };

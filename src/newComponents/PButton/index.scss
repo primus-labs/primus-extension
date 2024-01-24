@@ -60,6 +60,7 @@ button.PButton {
     @include frcc;
     gap: 4px;
     color: var(--Text-Tokens-text-primary, #161616);
+    height: 38px;
     .iconfont {
       font-size: 16px;
       color: var(--icon-tokens-icon-primary);
@@ -78,6 +79,9 @@ button.PButton {
     }
   }
   &.icon {
+    @include frcc;
+    height: 40px;
+    width: 40px;
     .iconfont {
       font-size: 16px;
       color: var(--icon-tokens-icon-primary);
@@ -87,7 +91,7 @@ button.PButton {
         color: var(--button-tokens-button-primary-hover);
       }
     }
-    .disabled {
+    &.disabled {
       .iconfont {
         color: var(--icon-tokens-icon-disabled);
       }

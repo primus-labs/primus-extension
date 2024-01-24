@@ -51,7 +51,19 @@ const PButton: React.FC<PButtonProps> = memo(
       // } else if (type === 'icon') {
       //   defaultCN += ' icon';
       // }
-      defaultCN += ` ${type} ${size} ${disabled && 'disabled'} ${className}`;
+      if (type) {
+        defaultCN += ` ${type}`;
+      }
+      if (size) {
+        defaultCN += ` ${size}`;
+      }
+      if (disabled) {
+        defaultCN += ` disabled`;
+      }
+      if (className) {
+        defaultCN += ` ${className}`;
+      }
+      // defaultCN += ` ${type} ${size} ${disabled && 'disabled'} ${className}`;
       return defaultCN;
     }, [className, type, size, disabled]);
     const handleClick = (e: SyntheticEvent) => {

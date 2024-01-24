@@ -1,6 +1,17 @@
-.test{
-  width: 250px;
-  display: flex;
-  flex-direction: column;
+@import '@/assets/newCss/flex.scss';
+.test {
+  width: 500px;
+  @include fcss;
+  
+
   gap: 8px;
+  .pSection {
+    @include fcss;
+    gap: 16px;
+  }
+  .pRow {
+    @include frss;
+    align-items: flex-end;
+    gap: 8px;
+  }
 }
