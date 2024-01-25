@@ -15,6 +15,9 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
     } else if (eventName === BASEVENTNAME) {
       let url = chrome.runtime.getURL(`home.html#/events`);
       chrome.tabs.create({ url });
+    } else {
+      let url = chrome.runtime.getURL(`home.html#/events`);
+      chrome.tabs.create({ url });
     }
   } else if (name === 'upperChain') {
     if (operation === 'openPadoWebsite') {

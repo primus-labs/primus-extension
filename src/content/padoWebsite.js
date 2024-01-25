@@ -1,5 +1,5 @@
 const BASEVENTNAME = 'BAS_EVENT_PROOF_OF_HUMANITY';
-
+const LINEAEVENTNAME = "LINEA_DEFI_VOYAGE";
 var padoExtenstionTabId = null;
 var regenerateEl;
 var upperChainEl;
@@ -15,33 +15,116 @@ document.body.appendChild(injectEl);
 var EventsNavEl = document.querySelector('#EventsNav');
 
 // window.PADO = 'pado'
-const fn = () => {
-  var entranceEl = document.querySelector('#LINEA_DEFI_VOYAGE_entrance');
-  console.log('pado-extension-entranceEl', entranceEl);
-  if (entranceEl) {
-    entranceEl.onclick = (e) => {
-      e.preventDefault();
-      chrome.runtime.sendMessage({
-        type: 'padoWebsite',
-        name: 'createTab',
-        params: {
-          eventName: 'LINEA_DEFI_VOYAGE',
-        },
-      });
-      return;
-    };
-  }
-};
-fn();
-if (EventsNavEl) {
-  console.log('pado-extension-EventsNavEl', EventsNavEl);
-  EventsNavEl.addEventListener('click', () => {
-    setTimeout(() => {
-      fn();
-    }, 300);
-  });
+// const fn = () => {
+//   var entranceEl = document.querySelector('#LINEA_DEFI_VOYAGE_entrance');
+//   console.log('pado-extension-entranceEl', entranceEl);
+//   var EVENT_entranceEl = document.querySelector('#EVENT_entrance');
+//   if (entranceEl) {
+//     entranceEl.onclick = (e) => {
+//       e.preventDefault();
+//       chrome.runtime.sendMessage({
+//         type: 'padoWebsite',
+//         name: 'createTab',
+//         params: {
+//           eventName: 'LINEA_DEFI_VOYAGE',
+//         },
+//       });
+//       return;
+//     };
+//   }
+//   if (EVENT_entranceEl) {
+//     EVENT_entranceEl.onclick = (e) => {
+//       e.preventDefault();
+//       chrome.runtime.sendMessage({
+//         type: 'padoWebsite',
+//         name: 'createTab',
+//         params: {
+//           eventName: '',
+//         },
+//       });
+//       return;
+//     };
+//   }
+// };
+// fn();
+// if (EventsNavEl) {
+//   console.log('pado-extension-EventsNavEl', EventsNavEl);
+//   EventsNavEl.addEventListener('click', () => {
+//     setTimeout(() => {
+//       fn();
+//     }, 300);
+//   });
+// }
+// Linea event
+let checkLineaEventEntranceElTimer = null;
+if (window.location.pathname === '/events') {
+  checkLineaEventEntranceElTimer = setInterval(() => {
+    var EventEntranceEl = document.querySelector('#LINEA_DEFI_VOYAGE_entrance');
+    var EventJoinEl = document.querySelector('#EVENT_entrance');
+    console.log('LINEA_DEFI_VOYAGE_entrance btn', EventEntranceEl);
+    if (EventEntranceEl && EventJoinEl) {
+      EventEntranceEl.onclick = (e) => {
+        console.log('LINEA_DEFI_VOYAGE_entrance btn clicked ----');
+        e.preventDefault();
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'createTab',
+          params: {
+            eventName: LINEAEVENTNAME,
+          },
+        });
+        return;
+      };
+      EventJoinEl.onclick = (e) => {
+        console.log('EVENT_entrance btn clicked ----');
+        e.preventDefault();
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'createTab',
+          params: {
+            eventName: '',
+          },
+        });
+        return;
+      };
+      clearInterval(checkLineaEventEntranceElTimer);
+    }
+  }, 200);
 }
 
+// BAS event
+let checkBASEventEntranceElTimer = null;
+if (
+  window.location.pathname === '/basevent' ||
+  window.location.pathname === '/events'
+) {
+  checkBASEventEntranceElTimer = setInterval(() => {
+    var BASEventEntranceEl = document.querySelector(
+      '#BAS_EVENT_PROOF_OF_HUMANITY_entrance'
+    );
+    console.log(
+      '222 BAS_EVENT_PROOF_OF_HUMANITY_entrance btn',
+      BASEventEntranceEl
+    );
+    if (BASEventEntranceEl) {
+      BASEventEntranceEl.onclick = (e) => {
+        console.log('222 BASEventEntranceEl clicked ----');
+        e.preventDefault();
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'createTab',
+          params: {
+            eventName: BASEVENTNAME,
+          },
+        });
+        return;
+      };
+      clearInterval(checkBASEventEntranceElTimer);
+    }
+  }, 200);
+}
+
+// BNB Greenfield upper chain
 const regenerateFn = () => {
   regenerateEl = document.querySelector('#regenerate');
   upperChainEl = document.querySelector('#upperChain');
@@ -130,32 +213,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   }
 });
-
-let checkBASEventEntranceElTimer = null;
-if (window.location.pathname === '/basevent') {
-  checkBASEventEntranceElTimer = setInterval(() => {
-    var BASEventEntranceEl = document.querySelector(
-      '#BAS_EVENT_PROOF_OF_HUMANITY_entrance'
-    );
-    console.log(
-      '222 BAS_EVENT_PROOF_OF_HUMANITY_entrance btn',
-      BASEventEntranceEl
-    );
-    if (BASEventEntranceEl) {
-      BASEventEntranceEl.onclick = (e) => {
-        console.log('222 BASEventEntranceEl clicked ----');
-        e.preventDefault();
-        chrome.runtime.sendMessage({
-          type: 'padoWebsite',
-          name: 'createTab',
-          params: {
-            eventName: BASEVENTNAME,
-          },
-        });
-        return;
-      };
-
-      clearInterval(checkBASEventEntranceElTimer);
-    }
-  }, 200);
-}
