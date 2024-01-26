@@ -135,7 +135,7 @@ const EASINFOMAP = {
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       easProxyFeeContract: '0x140Bd8EaAa07d49FD98C73aad908e69a75867336',
       schemas: {
-        EAS: {
+        'EAS-Ethereum': {
           schemaUid:
             '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
           schemaUidTokenHoldings:
@@ -243,7 +243,7 @@ const EASINFOMAP = {
       easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
       easProxyContrac: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
       schemas: {
-        EAS: {
+        'EAS-Ethereum': {
           schemaUid:
             '0xcc1f2c6308ffbb7ac5b915641cbc74b6d6404bcdedaf304f9637e5ef7ecc593d',
           schemaUidTokenHoldings:
@@ -300,7 +300,7 @@ const EASINFOMAP = {
       easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
       easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
       schemas: {
-        EAS: {
+        'EAS-Ethereum': {
           schemaUid:
             '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
           schemaUidTokenHoldings:
@@ -357,7 +357,7 @@ const EASINFOMAP = {
       easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
       easProxyContrac: '0x2884E43B48c2Cc623A19c0c3d260DD8f398fd5F3',
       schemas: {
-        EAS: {
+        'EAS-Ethereum': {
           schemaUid:
             '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
           schemaUidTokenHoldings:
@@ -471,7 +471,7 @@ const EASINFOMAP = {
       easProxyContrac: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
       easProxyFeeContract: '0xafba8C42b7101e44116660daDEc1A1732E959599',
       schemas: {
-        EAS: {
+        'EAS-Ethereum': {
           schemaUid:
             '0xcc1f2c6308ffbb7ac5b915641cbc74b6d6404bcdedaf304f9637e5ef7ecc593d',
           schemaUidTokenHoldings:
