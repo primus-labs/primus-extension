@@ -8,16 +8,11 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
   const { eventName, operation } = params;
   if (name === 'createTab') {
     if (eventName === 'LINEA_DEFI_VOYAGE') {
-      let url = chrome.runtime.getURL(
-        `home.html#/cred?fromEvents=${eventName}`
-      );
-      chrome.tabs.create({ url });
+      createTabFn(`home.html#/cred?fromEvents=${eventName}`);
     } else if (eventName === BASEVENTNAME) {
-      let url = chrome.runtime.getURL(`home.html#/events`);
-      chrome.tabs.create({ url });
+      createTabFn(`home.html#/events`);
     } else {
-      let url = chrome.runtime.getURL(`home.html#/events`);
-      chrome.tabs.create({ url });
+      createTabFn(`home.html#/events`);
     }
   } else if (name === 'upperChain') {
     if (operation === 'openPadoWebsite') {
@@ -40,5 +35,15 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
         await chrome.tabs.remove(tabCreatedByPado.id);
       }, 2000);
     }
+  } else if (name === 'event') {
+    const { eventName, methodName,path } = params;
+    if (methodName === 'createTab') {
+      createTabFn(path);
+    }
   }
 };
+
+const createTabFn = (path) => {
+  let url = chrome.runtime.getURL(path);
+  chrome.tabs.create({ url });
+}

@@ -194,6 +194,9 @@ var options = {
               let jsonobj = JSON.parse(content.toString());
               //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
               jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9095/*");
+              jsonobj.content_scripts[0].matches.push(
+                'http://localhost:3001/*'
+              );
               return Buffer.from(
                 JSON.stringify({
                   description: process.env.npm_package_description,

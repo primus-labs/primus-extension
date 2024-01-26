@@ -1,9 +1,14 @@
 const BASEVENTNAME = 'BAS_EVENT_PROOF_OF_HUMANITY';
-const LINEAEVENTNAME = "LINEA_DEFI_VOYAGE";
-var padoExtenstionTabId = null;
+const LINEAEVENTNAME = 'LINEA_DEFI_VOYAGE';
+
 var regenerateEl;
 var upperChainEl;
 var completeUpperChainEl;
+window.pado = 'pado';
+console.log('window in content', window.pado);
+window.padoFn = (p) => {
+  console.log('padoFn called');
+};
 function createDomElement(html) {
   var dom = new DOMParser().parseFromString(html, 'text/html');
   return dom.body.firstElementChild;
@@ -12,117 +17,28 @@ var padoStr = `<div id="pado-extension-inject-el"></div>`;
 var injectEl = createDomElement(padoStr);
 document.body.appendChild(injectEl);
 
-var EventsNavEl = document.querySelector('#EventsNav');
-
-// window.PADO = 'pado'
-// const fn = () => {
-//   var entranceEl = document.querySelector('#LINEA_DEFI_VOYAGE_entrance');
-//   console.log('pado-extension-entranceEl', entranceEl);
-//   var EVENT_entranceEl = document.querySelector('#EVENT_entrance');
-//   if (entranceEl) {
-//     entranceEl.onclick = (e) => {
-//       e.preventDefault();
-//       chrome.runtime.sendMessage({
-//         type: 'padoWebsite',
-//         name: 'createTab',
-//         params: {
-//           eventName: 'LINEA_DEFI_VOYAGE',
-//         },
-//       });
-//       return;
-//     };
-//   }
-//   if (EVENT_entranceEl) {
-//     EVENT_entranceEl.onclick = (e) => {
-//       e.preventDefault();
-//       chrome.runtime.sendMessage({
-//         type: 'padoWebsite',
-//         name: 'createTab',
-//         params: {
-//           eventName: '',
-//         },
-//       });
-//       return;
-//     };
-//   }
-// };
-// fn();
-// if (EventsNavEl) {
-//   console.log('pado-extension-EventsNavEl', EventsNavEl);
-//   EventsNavEl.addEventListener('click', () => {
-//     setTimeout(() => {
-//       fn();
-//     }, 300);
-//   });
-// }
-// Linea event
-let checkLineaEventEntranceElTimer = null;
-if (window.location.pathname === '/events') {
-  checkLineaEventEntranceElTimer = setInterval(() => {
-    var EventEntranceEl = document.querySelector('#LINEA_DEFI_VOYAGE_entrance');
-    var EventJoinEl = document.querySelector('#EVENT_entrance');
-    console.log('LINEA_DEFI_VOYAGE_entrance btn', EventEntranceEl);
-    if (EventEntranceEl && EventJoinEl) {
-      EventEntranceEl.onclick = (e) => {
-        console.log('LINEA_DEFI_VOYAGE_entrance btn clicked ----');
-        e.preventDefault();
+window.addEventListener(
+  'message',
+  (e) => {
+    const { target, name, params } = e.data;
+    if (target === 'padoExtension') {
+      console.log('padoExtension content onMessage', e.data);
+      if (name === 'event') {
+        const { eventName, methodName, path } = params;
         chrome.runtime.sendMessage({
           type: 'padoWebsite',
-          name: 'createTab',
+          name: 'event',
           params: {
-            eventName: LINEAEVENTNAME,
+            eventName,
+            methodName,
+            path
           },
         });
-        return;
-      };
-      EventJoinEl.onclick = (e) => {
-        console.log('EVENT_entrance btn clicked ----');
-        e.preventDefault();
-        chrome.runtime.sendMessage({
-          type: 'padoWebsite',
-          name: 'createTab',
-          params: {
-            eventName: '',
-          },
-        });
-        return;
-      };
-      clearInterval(checkLineaEventEntranceElTimer);
+      }
     }
-  }, 200);
-}
-
-// BAS event
-let checkBASEventEntranceElTimer = null;
-if (
-  window.location.pathname === '/basevent' ||
-  window.location.pathname === '/events'
-) {
-  checkBASEventEntranceElTimer = setInterval(() => {
-    var BASEventEntranceEl = document.querySelector(
-      '#BAS_EVENT_PROOF_OF_HUMANITY_entrance'
-    );
-    console.log(
-      '222 BAS_EVENT_PROOF_OF_HUMANITY_entrance btn',
-      BASEventEntranceEl
-    );
-    if (BASEventEntranceEl) {
-      BASEventEntranceEl.onclick = (e) => {
-        console.log('222 BASEventEntranceEl clicked ----');
-        e.preventDefault();
-        chrome.runtime.sendMessage({
-          type: 'padoWebsite',
-          name: 'createTab',
-          params: {
-            eventName: BASEVENTNAME,
-          },
-        });
-        return;
-      };
-      clearInterval(checkBASEventEntranceElTimer);
-    }
-  }, 200);
-}
+  },
+  false
+);
 
 // BNB Greenfield upper chain
 const regenerateFn = () => {
