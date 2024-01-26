@@ -94,8 +94,8 @@ const Lock = memo(() => {
 
   return (
     <div className="pageIndex pageLock">
-      {/* <Test /> */}
-      <main className="appContent">
+      <Test />
+      {/* <main className="appContent">
         <AsideAnimation />
         <article className={hadSetPwd ? 'hadSetPwd' : ''}>
           <section className="descWrapper">
@@ -121,7 +121,7 @@ const Lock = memo(() => {
             onClick={handleClickStart}
           />
         </article>
-      </main>
+      </main> */}
     </div>
   );
 });
