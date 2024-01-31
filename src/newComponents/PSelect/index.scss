@@ -76,3 +76,13 @@
     }
   }
 }
+.dark {
+  .PSelect {
+    .selectInput {
+      background: var(--Background-Tokens-background);
+      &.disabled {
+        border: 1px solid var(--Button-Tokens-button-disabled, #262626);
+      }
+    }
+  }
+}

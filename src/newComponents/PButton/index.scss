@@ -2,7 +2,6 @@
 @import '@/assets/newCss/font.scss';
 
 @mixin Button {
-  
   text-align: center;
 
   /* Button */
@@ -94,6 +93,23 @@ button.PButton {
     &.disabled {
       .iconfont {
         color: var(--text-button-disabled);
+      }
+    }
+  }
+}
+.dark {
+  button.PButton {
+   
+    &.primary {
+      &.disabled {
+        color: var(--Text-Tokens-text-hover);
+        background: var(--Button-Tokens-button-primary);
+      }
+    }
+    &.secondary {
+      &.disabled {
+        color: var(--text-button-disabled);
+        border: 1px solid var(--Button-Tokens-button-disabled);
       }
     }
   }

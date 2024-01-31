@@ -22,6 +22,7 @@
       flex-shrink: 0;
       &:not(.disabled):hover {
         background: var(--Layer-Tokens-layer-primary-hover, #f4f4f4);
+
         .dropdownOptionCon {
           .desc {
             color: var(--Text-Tokens-text-primary, #161616);
@@ -46,6 +47,17 @@
         .desc {
           @include BodyBody100;
           color: var(--Text-Tokens-text-secondary, #525252);
+        }
+      }
+    }
+  }
+}
+.dark {
+  .PDropdown {
+    .dropdownOptions {
+      .dropdownOption {
+        &:not(.disabled):hover {
+          background: var(--Neutral-color-Gray-90);
         }
       }
     }
