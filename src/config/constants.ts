@@ -8,6 +8,7 @@ import iconWalletTrustWallet from '@/assets/img/iconWalletTrustWallet.svg';
 import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import iconWalletWalletConnect from '@/assets/img/iconWalletWalletConnect.svg';
 import iconWalletTokenPocket from '@/assets/img/iconWalletTokenPocket.svg';
+import iconWalletPlugWallet from '@/assets/img/layout/iconWalletPlugWallet.svg';
 import iconMina from '@/assets/img/iconMina.png';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
@@ -190,8 +191,13 @@ export const DATASOURCEMAP: DataSourceMapType = {
 };
 export const WALLETLIST: WALLETITEMTYPE[] = [
   {
+    icon: iconWalletPlugWallet,
+    name: 'Plug Wallet',
+  },
+  {
     icon: iconWalletMetamask,
     name: 'MetaMask',
+    disabled: true,
   },
   {
     icon: iconWalletWalletConnect,

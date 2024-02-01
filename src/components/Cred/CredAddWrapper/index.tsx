@@ -96,8 +96,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const [credRequestId, setCredRequestId] = useState<string>();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
-    const fromWallet = searchParams.get('fromWallet');
-    const fromWalletAddress = searchParams.get('fromWalletAddress');
+    
     const [uniSwapProofParams, setUniSwapProofParams] = useState<any>({});
     const [uniSwapProofRequestId, setUniSwapProofRequestId] =
       useState<string>('');
@@ -862,8 +861,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     );
     const onSubmitAttestationDialog = useCallback(
       async (form: AttestionForm) => {
-        if (fromWalletAddress) {
-          form.fromWalletAddress = fromWalletAddress;
+        if (connectedWallet.name === 'plug wallet') {
+          form.fromWalletAddress = connectedWallet.address;
         }
         setActiveAttestForm(form);
         if (form?.proofClientType === 'Webpage Data') {
@@ -873,8 +872,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           );
           currRequestObj.requestid = form.requestid;
           currRequestObj.event = form.event;
-          if (fromWalletAddress) {
-            currRequestObj.fromWalletAddress = form.fromWalletAddress;
+          if (connectedWallet.name === 'plug wallet') {
+            currRequestObj.fromWalletAddress = connectedWallet.address;
           }
           const currentWindowTabs = await chrome.tabs.query({
             active: true,
@@ -948,7 +947,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         fetchAttestForUni,
         BASEventDetail?.ext?.schemaType,
         fetchAttestForGoogle,
-        fromWalletAddress,
+
       ]
     );
     const onBackAttestationDialog = useCallback(() => {

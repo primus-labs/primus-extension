@@ -37,8 +37,6 @@ import {BASEVENTNAME} from '@/config/constants'
 
 const Layout = memo(() => {
   const [searchParams] = useSearchParams();
-  const fromWallet = searchParams.get('fromWallet');
-  const fromWalletAddress = searchParams.get('fromWalletAddress');
   const location = useLocation();
   const { pathname, search } = location;
   const padoServicePort = useSelector(
@@ -209,17 +207,7 @@ const Layout = memo(() => {
   useEffect(() => {
     updateAlgoUrl();
   }, []);
-  useEffect(() => {
-    if (fromWallet) {
-      dispatch(
-        setConnectWalletActionAsync({
-          name: fromWallet,
-          address: fromWalletAddress,
-          provider: null,
-        })
-      );
-    }
-  }, [fromWallet, fromWalletAddress, dispatch]);
+  
 
   return (
     <div className="pageApp">

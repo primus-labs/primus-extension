@@ -5,6 +5,11 @@ import useWallet from '@/hooks/useWallet';
 import { formatAddress } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/constants';
 
+import {
+  setConnectWalletActionAsync,
+  setConnectWalletDialogVisibleAction,
+} from '@/store/actions';
+
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import PButton from '@/components/PButton';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
@@ -16,8 +21,6 @@ import iconWallet from '@/assets/img/layout/iconWallet.svg';
 
 const PConnect = memo(() => {
   const [searchParams] = useSearchParams();
-  const fromWallet = searchParams.get('fromWallet');
-  const fromWalletAddress = searchParams.get('fromWalletAddress');
   const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =
     useState<boolean>(false);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
@@ -64,13 +67,26 @@ const PConnect = memo(() => {
   const { connect } = useWallet();
   const handleSubmitConnectWallet = useCallback(
     async (wallet?: WALLETITEMTYPE) => {
-      if (wallet?.name && wallet?.name?.toLowerCase() === 'metamsk') {
+      const lowerCaseWalletName = wallet?.name?.toLowerCase();
+      if (wallet?.name && lowerCaseWalletName !== 'walletconnect') {
         setActiveRequest({
           type: 'loading',
           title: 'Requesting Connection',
           desc: 'Check MetaMask to confirm the connection.',
         });
         setStep(2);
+        if (lowerCaseWalletName === 'plug wallet') {
+          chrome.runtime.sendMessage({
+            type: 'icp',
+            name: 'connectWallet',
+            params: {
+              walletName: lowerCaseWalletName,
+              operation: 'createTab',
+              path: 'http://localhost:3001/other/connectWallet',
+            },
+          });
+          return;
+        }
       }
       connect(wallet?.name, startFn, errorFn);
     },
@@ -89,17 +105,43 @@ const PConnect = memo(() => {
       handleSubmitConnectWallet(lastConnectedInfo);
     }
   }, [handleSubmitConnectWallet]);
-  useEffect(() => {
-    if (!fromWalletAddress) {
-      checkIfHadBound();
-    }
-  }, [fromWalletAddress]);
+  // useEffect(() => {
+  //     checkIfHadBound();
+  // }, []);
   useEffect(() => {
     if (connectedWallet?.address) {
       setConnectWalletDialogVisible1(false);
       setStep(1);
     }
   }, [connectedWallet?.address]);
+  useEffect(() => {
+    const listerFn = async (message: any) => {
+      if (message.type === 'icp') {
+        if (message.name === 'connectWallet') {
+          setStep(2);
+          if (message.result) {
+            await dispatch(
+              setConnectWalletActionAsync({
+                name: 'plug wallet',
+                address: message.params.address,
+              })
+            );
+            await dispatch(setConnectWalletDialogVisibleAction(false));
+          } else {
+            setActiveRequest({
+              type: 'warn',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
+            });
+          }
+        }
+      }
+    };
+    chrome.runtime.onMessage.addListener(listerFn);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listerFn);
+    };
+  }, [dispatch]);
   return (
     <div className="PConnect">
       {connectedWallet?.address ? (

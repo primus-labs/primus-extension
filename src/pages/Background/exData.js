@@ -236,7 +236,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     requestid: prevRequestid,
     event,
     fromWalletAddress,
-    // fromWallet,
   } = form;
   // const { baseName } = DATASOURCEMAP[source];
   const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName; // unnecessary for web proof
@@ -515,16 +514,6 @@ async function assembleUserInfoParams(form) {
     }
   }
   if (fromWalletAddress) {
-    
-    // const { padoCreatedWalletAddress } = await chrome.storage.local.get([
-    //   'padoCreatedWalletAddress',
-    // ]);
-    // console.log(
-    //   '222fromWalletAddress:',
-    //   fromWalletAddress,
-    //   'padoCreatedWalletAddress',
-    //   padoCreatedWalletAddress
-    // );
     formatAddress = fromWalletAddress;
   }
   const { id, token: loginToken } = JSON.parse(userInfo);

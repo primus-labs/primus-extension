@@ -472,9 +472,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     PadoWebsiteMsgListener(message, sender, sendResponse);
   }
   if (message.type === 'xFollow') {
-    const { name } = message;
-    if (name === 'follow') {
-    }
   }
   if (message.type === 'googleAuth') {
     const { name } = message;
