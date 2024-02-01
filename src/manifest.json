@@ -39,6 +39,14 @@
     {
       "matches": ["https://twitter.com/intent/follow?screen_name=padolabs"],
       "js": ["xFollow.js"]
+    },
+    {
+      "matches": [
+        "http://localhost:3001/*",
+        "http://127.0.0.1:8000/*",
+        "https://bupby-pqaaa-aaaam-abykq-cai.icp0.io/*"
+      ],
+      "js": ["icp.js"]
     }
   ]
 }

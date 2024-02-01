@@ -21,6 +21,7 @@ export const pageDecodeMsgListener = async (
     uiTemplate,
     id,
     event,
+    fromWalletAddress,
   } = activeTemplate;
   const requestUrlList = requests.map((r) => r.url);
   const isUrlWithQueryFn = (url, queryKeyArr) => {
@@ -242,6 +243,7 @@ export const pageDecodeMsgListener = async (
       type: category,
       label: null, // TODO
       exUserId: null,
+      fromWalletAddress,
     };
     // console.log(WorkerGlobalScope.location)
     if (event) {

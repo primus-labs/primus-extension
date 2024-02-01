@@ -193,7 +193,9 @@ var options = {
             } else {
               let jsonobj = JSON.parse(content.toString());
               //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
-              jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9095/*");
+              jsonobj.content_scripts[0].matches.push(
+                'http://api-dev.padolabs.org:9095/*'
+              );
               jsonobj.content_scripts[0].matches.push(
                 'http://localhost:3001/*'
               );
@@ -330,6 +332,15 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/content/iconSuc.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/content/icp.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },

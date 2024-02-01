@@ -166,6 +166,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     }, [item]);
     const txDetailUrlFn = useCallback((item: any) => {
       let chainShowName = item.title;
+      if (item.title === 'ICP') {
+        return `${item.txHash}`;
+      }
       if (item.title === 'BNB') {
         chainShowName = 'BNB';
       }
@@ -410,7 +413,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
             <div className="descItem">
               <div className="label">Connected Account</div>
               <div className="value">
-                {item.did
+                {item.fromWalletAddress
+                  ? formatAddress(item.fromWalletAddress.toLowerCase(), 13)
+                  : item.did
                   ? formatAddress(item.did.toLowerCase(), 13)
                   : formatAddress(item.address)}
               </div>

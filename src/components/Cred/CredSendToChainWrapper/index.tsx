@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { utils } from 'ethers';
 import useWallet from '@/hooks/useWallet';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, WALLETLIST } from '@/config/constants';
@@ -44,6 +45,7 @@ import {
 import { compareVersions, getAuthUserIdHash } from '@/utils/utils';
 import { regenerateAttestation } from '@/services/api/cred';
 import { queryEventDetail } from '@/services/api/event';
+
 import type { Dispatch } from 'react';
 import type { CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';
@@ -52,8 +54,8 @@ import type { ActiveRequestType } from '@/types/config';
 import { eventReport } from '@/services/api/usertracker';
 // import { useBAS } from '@/services/chains/useBAS';
 
+import iconIcp from '@/assets/img/credit/iconIcp.svg';
 import './index.scss';
-import { ObjectEncodingOptions } from 'fs';
 
 interface CredSendToChainWrapperType {
   visible?: boolean;
@@ -124,11 +126,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         }
         return newList;
       } else {
-        const filterdList = ONCHAINLIST.filter(
-          (i) => i.title !== 'BNB Greenfield'
-        );
+        const filterdList = ONCHAINLIST.filter((i) => i.title === 'ICP');
+        console.log('ONCHAINLIST', ONCHAINLIST);
         return filterdList;
       }
+
+      // TODO-icp
     }, [fromEvents]);
 
     const initCredList = useCallback(async () => {
@@ -213,10 +216,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         let Name;
         if (formatNetworkName?.startsWith('Linea')) {
           Name = LINEASCHEMANAME;
-        } else if (
-          formatNetworkName &&
-          formatNetworkName.indexOf('BSC') > -1
-        ) {
+        } else if (formatNetworkName && formatNetworkName.indexOf('BSC') > -1) {
           Name = BNBSCHEMANAME;
         } else if (
           formatNetworkName &&
@@ -228,6 +228,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           formatNetworkName.indexOf('BNB Greenfield') > -1
         ) {
           Name = BNBGREENFIELDSCHEMANAME;
+        } else if (formatNetworkName && formatNetworkName.indexOf('ICP') > -1) {
+          Name = 'PADO-ICP';
         } else {
           // Name = 'EAS';
           Name = 'EAS-Ethereum';
@@ -852,9 +854,79 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       [credentialsFromStore, initCredList]
     );
 
+    // copy from regeneratAttestationsBASFn
+    const regeneratAttestationsICPFn = useCallback(async () => {
+      if (activeNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
+        const cObj = { ...credentialsFromStore };
+        const curRequestid = activeCred?.requestid as string;
+        const curCredential = cObj[curRequestid];
+        const toBeUpperChainCreds = [curCredential];
+
+        const regenerateAttestationParamsArr = toBeUpperChainCreds.map(
+          (i: any) => {
+            return {
+              rawParam:
+                i.type === 'UNISWAP_PROOF' || i.source === 'google'
+                  ? i.rawParam
+                  : Object.assign(i, {
+                      ext: null,
+                    }),
+              greaterThanBaseValue: true,
+              signature: i?.signature,
+              newSigFormat: LineaSchemaNameFn('ICP'),
+              sourceUseridHash: i?.sourceUseridHash,
+            };
+          }
+        );
+        console.log('222newSigFormat', LineaSchemaNameFn(), activeNetworkName);
+        const requestArr = regenerateAttestationParamsArr.map((i) => {
+          return regenerateAttestation(i);
+        });
+        const signResArr = await Promise.all(requestArr);
+
+        const upChainItems: any[] = [];
+        signResArr.forEach((i, k: number) => {
+          const { rc, result } = i;
+          if (rc === 0) {
+            const {
+              eip712MessageRawDataWithSignature,
+              result: resultResult,
+              schemaUid,
+            } = result;
+            upChainItems[k] = {
+              eip712MessageRawDataWithSignature,
+              getDataTime: resultResult.getDataTime,
+              schemaUid,
+              signature: resultResult.signature,
+            };
+          }
+        });
+        console.log('222upChainItems', upChainItems);
+
+        let signatureP = upChainItems[0].signature;
+        const attestationInfoP = { ...upChainItems[0], signature: signatureP };
+        chrome.runtime.sendMessage({
+          type: 'icp',
+          name: 'upperChain',
+          params: {
+            requestid: toBeUpperChainCreds[0].requestid,
+            attestationInfo: attestationInfoP,
+          },
+        });
+      }
+    }, [
+      LineaSchemaNameFn,
+      activeNetworkName,
+      activeCred,
+      credentialsFromStore,
+    ]);
     const sucFn = useCallback(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
+          if (formatNetworkName === 'icp') {
+            regeneratAttestationsICPFn();
+            return;
+          }
           let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
           if (fromEvents === 'Scroll') {
             scrollEventFn(walletObj, LineaSchemaName);
@@ -1079,8 +1151,15 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const handleSubmitConnectWallet = useCallback(
       async (wallet?: WALLETITEMTYPE, networkName?: string) => {
         const formatNetworkName = activeNetworkName ?? networkName;
-
-        connect(wallet?.name, startFn, errorFn, sucFn, formatNetworkName);
+        let walletName = wallet?.name;
+        if (formatNetworkName === 'ICP') {
+          startFn();
+          walletName = 'plug';
+          regeneratAttestationsICPFn();
+          return;
+          //TODO-icp
+        }
+        connect(walletName, startFn, errorFn, sucFn, formatNetworkName);
       },
       [connect, startFn, sucFn, errorFn, activeNetworkName]
     );
@@ -1212,7 +1291,81 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         chrome.runtime.onMessage.removeListener(listerFn);
       };
     }, [regeneratAttestationsBASFn, completeUpperChainBASFn]);
+    useEffect(() => {
+      const listerFn = async (message: any) => {
+        if (message.type === 'icp') {
+          if (message.name === 'upperChainRes') {
+            const { attestationDetailPath, requestId, signature } =
+              message.params;
+            const rawDataType =
+              activeCred?.reqType === 'web' || activeCred?.source === 'google'
+                ? 'web'
+                : activeCred?.type;
+            const eventType = `${rawDataType}-PADO-ICP`;
+            const uniqueId = strToHexSha256(signature as string);
+            const cObj = { ...credentialsFromStore };
+            // const curRequestid = activeCred?.requestid as string;
+            const curRequestid = requestId as string;
+            const curCredential = cObj[requestId];
+            var eventInfo: any = {
+              eventType: 'UPPER_CHAIN',
+              rawData: {
+                network: 'ICP',
+                type: eventType,
+                source: curCredential.source,
+                attestationId: uniqueId,
+              },
+            };
+            if (message.result) {
+              setStep(5);
+              const newProvided = curCredential.provided ?? [];
+              const currentChainObj: any = {
+                title: 'icp',
+                icon: 'https://internetcomputer.org/img/favicon-32x32.png',
+                txHash: attestationDetailPath,
+              };
+              newProvided.push(currentChainObj);
 
+              cObj[curRequestid] = Object.assign(curCredential, {
+                provided: newProvided,
+              });
+              await chrome.storage.local.set({
+                credentials: JSON.stringify(cObj),
+              });
+              await initCredList();
+
+              setActiveSendToChainRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your attestation is recorded on-chain!',
+              });
+
+              eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                status: 'FAILED',
+                reason: '',
+              });
+              eventReport(eventInfo);
+            } else {
+              // TODO-icp
+              setActiveSendToChainRequest({
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
+              eventInfo.rawData = Object.assign(eventInfo.rawData, {
+                status: 'FAILED',
+                reason: '',
+              });
+              eventReport(eventInfo);
+            }
+          }
+        }
+      };
+      chrome.runtime.onMessage.addListener(listerFn);
+      return () => {
+        chrome.runtime.onMessage.removeListener(listerFn);
+      };
+    }, [credentialsFromStore, initCredList]);
     return (
       <div className="credSendToChainWrapper">
         {visible && step === 3 && (

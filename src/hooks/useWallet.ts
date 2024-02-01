@@ -107,6 +107,10 @@ const useWallet: UseWalletType = function useWallet() {
         } else {
           openWalletConnectDialog();
         }
+      } else if (formatWalletName === 'plug') {
+        // savedMetaMaskCallback.current();
+        // sucFn && sucFn(walletObj, network, label);
+        // TODO-icp
       } else if (formatWalletName === 'metamask') {
         // savedMetaMaskCallback.current();
         connectWalletAsyncFn(undefined);

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import useWallet from '@/hooks/useWallet';
 import { formatAddress } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/constants';
@@ -14,6 +15,9 @@ import type { ActiveRequestType } from '@/types/config';
 import iconWallet from '@/assets/img/layout/iconWallet.svg';
 
 const PConnect = memo(() => {
+  const [searchParams] = useSearchParams();
+  const fromWallet = searchParams.get('fromWallet');
+  const fromWalletAddress = searchParams.get('fromWalletAddress');
   const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =
     useState<boolean>(false);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
@@ -86,8 +90,10 @@ const PConnect = memo(() => {
     }
   }, [handleSubmitConnectWallet]);
   useEffect(() => {
-    checkIfHadBound();
-  }, []);
+    if (!fromWalletAddress) {
+      checkIfHadBound();
+    }
+  }, [fromWalletAddress]);
   useEffect(() => {
     if (connectedWallet?.address) {
       setConnectWalletDialogVisible1(false);

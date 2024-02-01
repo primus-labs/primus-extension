@@ -235,6 +235,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     requestid: prevRequestid,
     event,
+    fromWalletAddress,
+    // fromWallet,
   } = form;
   // const { baseName } = DATASOURCEMAP[source];
   const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName; // unnecessary for web proof
@@ -270,8 +272,12 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     // holdingToken // TODO
     authUseridHash,
     event,
-    setHostName: "true"
+    setHostName: 'true',
+    fromWalletAddress,
   };
+  if (fromWalletAddress) {// TODO-icp
+    params.sigFormat = 'PADO-ICP';
+  }
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
   if (source === 'tiktok') {
@@ -484,7 +490,7 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   return extRequestsOrderInfo;
 }
 async function assembleUserInfoParams(form) {
-  const { event } = form;
+  const { event, fromWalletAddress } = form;
   const { connectedWalletAddress, userInfo } = await chrome.storage.local.get([
     'connectedWalletAddress',
     'userInfo',
@@ -507,6 +513,19 @@ async function assembleUserInfoParams(form) {
         formatAddress = lastCredAddress;
       }
     }
+  }
+  if (fromWalletAddress) {
+    
+    // const { padoCreatedWalletAddress } = await chrome.storage.local.get([
+    //   'padoCreatedWalletAddress',
+    // ]);
+    // console.log(
+    //   '222fromWalletAddress:',
+    //   fromWalletAddress,
+    //   'padoCreatedWalletAddress',
+    //   padoCreatedWalletAddress
+    // );
+    formatAddress = fromWalletAddress;
   }
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
