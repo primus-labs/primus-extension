@@ -75,18 +75,18 @@ const PConnect = memo(() => {
           desc: 'Check MetaMask to confirm the connection.',
         });
         setStep(2);
-        if (lowerCaseWalletName === 'plug wallet') {
-          chrome.runtime.sendMessage({
-            type: 'icp',
-            name: 'connectWallet',
-            params: {
-              walletName: lowerCaseWalletName,
-              operation: 'createTab',
-              path: 'http://localhost:3001/other/connectWallet',
-            },
-          });
-          return;
-        }
+        // if (lowerCaseWalletName === 'plug wallet') {
+        //   chrome.runtime.sendMessage({
+        //     type: 'icp',
+        //     name: 'connectWallet',
+        //     params: {
+        //       walletName: lowerCaseWalletName,
+        //       operation: 'createTab',
+        //       path: 'http://localhost:3001/other/connectWallet',
+        //     },
+        //   });
+        //   return;
+        // }
       }
       connect(wallet?.name, startFn, errorFn);
     },
@@ -114,34 +114,34 @@ const PConnect = memo(() => {
       setStep(1);
     }
   }, [connectedWallet?.address]);
-  useEffect(() => {
-    const listerFn = async (message: any) => {
-      if (message.type === 'icp') {
-        if (message.name === 'connectWallet') {
-          setStep(2);
-          if (message.result) {
-            await dispatch(
-              setConnectWalletActionAsync({
-                name: 'plug wallet',
-                address: message.params.address,
-              })
-            );
-            await dispatch(setConnectWalletDialogVisibleAction(false));
-          } else {
-            setActiveRequest({
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: 'Please try again later.',
-            });
-          }
-        }
-      }
-    };
-    chrome.runtime.onMessage.addListener(listerFn);
-    return () => {
-      chrome.runtime.onMessage.removeListener(listerFn);
-    };
-  }, [dispatch]);
+  // useEffect(() => {
+  //   const listerFn = async (message: any) => {
+  //     if (message.type === 'icp') {
+  //       if (message.name === 'connectWallet') {
+  //         setStep(2);
+  //         if (message.result) {
+  //           await dispatch(
+  //             setConnectWalletActionAsync({
+  //               name: 'plug wallet',
+  //               address: message.params.address,
+  //             })
+  //           );
+  //           await dispatch(setConnectWalletDialogVisibleAction(false));
+  //         } else {
+  //           setActiveRequest({
+  //             type: 'warn',
+  //             title: 'Unable to proceed',
+  //             desc: 'Please try again later.',
+  //           });
+  //         }
+  //       }
+  //     }
+  //   };
+  //   chrome.runtime.onMessage.addListener(listerFn);
+  //   return () => {
+  //     chrome.runtime.onMessage.removeListener(listerFn);
+  //   };
+  // }, [dispatch]);
   return (
     <div className="PConnect">
       {connectedWallet?.address ? (

@@ -1,6 +1,9 @@
 let tabCreatedByPado;
 let icpPageTabId;
 let padoExtensionId;
+let upperChainRequest;
+const icpPath =
+  'http://127.0.0.1:8000/other/connectWallet?canisterId=bkyz2-fmaaa-aaaaa-qaaaq-cai';
 
 export const icpMsgListener = async (
   request,
@@ -9,27 +12,47 @@ export const icpMsgListener = async (
   password
 ) => {
   const { name, params, result } = request;
-  if (name === 'upperChain') {
-    // console.log('upperChain-from bg2', icpPageTabId);
-    chrome.tabs.sendMessage(icpPageTabId, request, function (response) {});
+  if (name === 'injectionCompleted') {
+    if (icpPageTabId && upperChainRequest) {
+      console.log('send upperChain to icp', new Date());
+      chrome.tabs.sendMessage(
+        icpPageTabId,
+        upperChainRequest,
+        function (response) {}
+      );
+    }
+  } else if (name === 'upperChain') {
+    icpPageTabId = await createTabFn(icpPath + '&operation=upperChain');
+    console.log('create icp tab', icpPageTabId);
+    upperChainRequest = request;
   } else if (name === 'connectWallet') {
     const { walletName, operation, path } = params;
-    if (operation === 'createTab') {
-      const tabCreatedByPado = await chrome.tabs.create({ url: path });
-      padoExtensionId = sender.tab.id;
-      icpPageTabId = tabCreatedByPado.id;
-      console.log('222icpPageTabId:', icpPageTabId);
-    }
-    if (result === true || result === false) {
-      console.log('222yyytest');
-      setTimeout(async () => {
-        await chrome.tabs.update(padoExtensionId, {
-          active: true,
-        });
-        // sender.tab.id === icpPageTabId
-        await chrome.tabs.remove(sender.tab.id);
-      }, 2000);
-      chrome.runtime.sendMessage(request);
-    }
+    padoExtensionId = sender.tab.id;
+    icpPageTabId = await createTabFn(icpPath + '&operation=connectWallet');
+    console.log('create icp tab', icpPageTabId);
+    // }
+  } else if (name === 'connectWalletRes') {
+    await ActiveAremoveTabFn(padoExtensionId, sender.tab.id);
+  } else if (name === 'upperChainRes') {
+    upperChainRequest = null;
+    // await ActiveAremoveTabFn(padoExtensionId, sender.tab.id);
   }
+};
+const createTabFn = async (path) => {
+  let url;
+  if (path.startsWith('http') || path.startsWith('https')) {
+    url = path;
+  } else {
+    url = chrome.runtime.getURL(path);
+  }
+  const res = await chrome.tabs.create({ url });
+  return res.id;
+};
+const ActiveAremoveTabFn = async (activeId, removeId) => {
+  setTimeout(async () => {
+    await chrome.tabs.update(activeId, {
+      active: true,
+    });
+    await chrome.tabs.remove(removeId);
+  }, 800);
 };

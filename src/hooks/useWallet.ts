@@ -4,6 +4,7 @@ import useWalletConnect from './useWalletConnect';
 import {
   connectWalletAsync,
   setConnectWalletActionAsync,
+  setConnectWalletDialogVisibleAction,
 } from '@/store/actions';
 import { EASInfo } from '@/config/envConstants';
 import { useSelector } from 'react-redux';
@@ -93,6 +94,8 @@ const useWallet: UseWalletType = function useWallet() {
         network,
         label,
       };
+      console.log('savedConnectInfo111', savedConnectInfo.current, new Date());
+      debugger;
       let formatWalletName = walletName ? walletName.toLowerCase() : undefined;
       setWallet(formatWalletName);
       if (formatWalletName === 'walletconnect') {
@@ -107,12 +110,24 @@ const useWallet: UseWalletType = function useWallet() {
         } else {
           openWalletConnectDialog();
         }
-      } else if (formatWalletName === 'plug') {
+      } else if (formatWalletName === 'plug wallet') {
         // savedMetaMaskCallback.current();
         // sucFn && sucFn(walletObj, network, label);
         // TODO-icp
+        savedConnectInfo.current.startFn();
+        chrome.runtime.sendMessage({
+          type: 'icp',
+          name: 'connectWallet',
+          params: {
+            walletName: formatWalletName,
+            operation: 'createTab',
+            path: 'http://localhost:3001/other/connectWallet',
+          },
+        });
+        return;
       } else if (formatWalletName === 'metamask') {
         // savedMetaMaskCallback.current();
+
         connectWalletAsyncFn(undefined);
       } else {
         // savedMetaMaskCallback.current();
@@ -165,7 +180,61 @@ const useWallet: UseWalletType = function useWallet() {
       });
     }
   }, [walletConnectProvider, walletConnectAddress, dispatch]);
-
+  // const listerFn = useCallback(
+  //   async (message: any) => {
+  //     if (message.type === 'icp') {
+  //       if (message.name === 'connectWallet') {
+  //         if (message.result) {
+  //           console.log(
+  //             'savedConnectInfo222',
+  //             savedConnectInfo.current,
+  //             new Date()
+  //           );
+  //           await dispatch(
+  //             setConnectWalletActionAsync({
+  //               name: 'plug wallet',
+  //               address: message.params.address,
+  //             })
+  //           );
+  //           await dispatch(setConnectWalletDialogVisibleAction(false));
+  //           debugger;
+  //           savedConnectInfo.current?.sucFn();
+  //         } else {
+  //           debugger;
+  //           savedConnectInfo.current?.errorFn();
+  //         }
+  //       }
+  //     }
+  //   },
+  //   [savedConnectInfo]
+  // );
+  useEffect(() => {
+    const listerFn = async (message: any) => {
+      if (message.type === 'icp') {
+        if (message.name === 'connectWalletRes') {
+          if (message.result) {
+            console.log('savedConnectInfo', savedConnectInfo);
+            await dispatch(
+              setConnectWalletActionAsync({
+                name: 'plug wallet',
+                address: message.params.address,
+              })
+            );
+            await dispatch(setConnectWalletDialogVisibleAction(false));
+            debugger;
+            savedConnectInfo.current?.sucFn();
+          } else {
+            debugger
+            savedConnectInfo.current?.errorFn();
+          }
+        }
+      }
+    };
+    chrome.runtime.onMessage.addListener(listerFn);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listerFn);
+    };
+  }, [dispatch, savedConnectInfo]);
   return {
     connect,
     openWalletConnectDialog,

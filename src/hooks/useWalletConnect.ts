@@ -22,7 +22,7 @@ const useWalletConnect: UseWalletConnectType = function useWalletConnect() {
   const { open: isOpen, selectedNetworkId: walletConnectNetworkId } =
     useWeb3ModalState();
   const events = useWeb3ModalEvents();
-  console.log('events', events);
+  // console.log('events', events);
   const { disconnect: disconnectWalletConnect } = useDisconnect();
 
   return {

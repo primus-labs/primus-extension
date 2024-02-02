@@ -902,7 +902,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           }
         });
         console.log('222upChainItems', upChainItems);
-
         let signatureP = upChainItems[0].signature;
         const attestationInfoP = { ...upChainItems[0], signature: signatureP };
         chrome.runtime.sendMessage({
@@ -923,7 +922,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const sucFn = useCallback(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
-          if (formatNetworkName === 'icp') {
+          debugger;
+          if (formatNetworkName === 'ICP') {
+            debugger;
             regeneratAttestationsICPFn();
             return;
           }
@@ -1141,6 +1142,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       setStep(5);
     }, []);
     const errorFn = useCallback(() => {
+      debugger;
       setActiveSendToChainRequest({
         type: 'warn',
         title: 'Unable to proceed',
@@ -1152,13 +1154,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       async (wallet?: WALLETITEMTYPE, networkName?: string) => {
         const formatNetworkName = activeNetworkName ?? networkName;
         let walletName = wallet?.name;
-        if (formatNetworkName === 'ICP') {
-          startFn();
-          walletName = 'plug';
-          regeneratAttestationsICPFn();
-          return;
-          //TODO-icp
-        }
+        walletName = 'plug wallet';
         connect(walletName, startFn, errorFn, sucFn, formatNetworkName);
       },
       [connect, startFn, sucFn, errorFn, activeNetworkName]
@@ -1174,12 +1170,18 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           const walletConnectItem = WALLETLIST.find(
             (i) => i.name.toLowerCase() === 'walletconnect'
           );
-          handleSubmitConnectWallet(
-            connectedWallet?.name === 'walletconnect'
-              ? walletConnectItem
-              : undefined,
-            networkName
-          );
+          if (networkName === 'ICP') {
+            startFn();
+            regeneratAttestationsICPFn();
+            return;
+          } else {
+            handleSubmitConnectWallet(
+              connectedWallet?.name === 'walletconnect'
+                ? walletConnectItem
+                : undefined,
+              networkName
+            );
+          }
         } else {
           setStep(4);
         }

@@ -8,6 +8,12 @@ var queryTimer = null;
 var credRequestId = null;
 document.body.appendChild(injectEl);
 console.log('222123icp');
+chrome.runtime.sendMessage(
+  {
+    type: 'icp',
+    name: 'injectionCompleted',
+  }
+);
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   var {
@@ -17,14 +23,14 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   } = request;
   if (type === 'icp') {
     if (name === 'upperChain') {
+      console.log('icp content receive upperChain', new Date());
+      credRequestId = requestid;
       window.postMessage({
         target: 'padoIcp',
         name: 'upperChain',
         params: attestationInfo,
       });
       // const balance = await window.ic?.plug?.requestBalance();
-
-      credRequestId = requestid;
     }
     if (name === 'upperChainRes') {
       var msgObj = {
@@ -43,28 +49,28 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 window.addEventListener(
   'message',
   (e) => {
-    const { target, name, params } = e.data;
-    if (target === 'padoExtension' && name === 'icp') {
+    const { target, origin, name, params } = e.data;
+    if (target === 'padoExtension' && origin === 'padoIcp') {
       console.log(
-        'padoExtension content onMessage',
+        `${target} receive message from ${origin}`,
         e.data,
         'credRequestId:',
         credRequestId
       );
       const { operation, result, params: resultParams } = params;
-      if (operation === 'connectWallet') {
+      if (name === 'connectWalletRes') {
         chrome.runtime.sendMessage({
           type: 'icp',
-          name: operation,
+          name,
           result,
           params: resultParams,
         });
-      } else if (operation === 'upperChain') {
+      } else if (name === 'upperChainRes') {
         const { attestationId, attestationDetailPath, signature } =
           resultParams;
         chrome.runtime.sendMessage({
           type: 'icp',
-          name: 'upperChainRes',
+          name,
           result,
           params: {
             attestationId,
