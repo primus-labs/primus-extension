@@ -873,7 +873,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           currRequestObj.requestid = form.requestid;
           currRequestObj.event = form.event;
           if (connectedWallet.name === 'plug wallet') {
-            currRequestObj.fromWalletAddress = connectedWallet.address;
+            currRequestObj.fromWalletAddress = form.fromWalletAddress;
           }
           const currentWindowTabs = await chrome.tabs.query({
             active: true,
