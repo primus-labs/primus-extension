@@ -10,7 +10,8 @@ import './index.scss';
 interface PButtonProps {}
 
 const Sidebar: React.FC<PButtonProps> = memo(({ }) => {
-   const theme = useSelector((state: UserState) => state.theme);
+  const theme = useSelector((state: UserState) => state.theme);
+  console.log('theme', theme)
   const formatLogo = useMemo(() => {
     return theme === 'light' ? logo : logoForDark;
   }, [theme]);

@@ -38,6 +38,7 @@
   --functional-color-red-red-70: #a2191f;
   --functional-color-red-red-90: #520408;
   --neutral-color-black: #000000;
+  -neutral-color-black-blur: #00000099;
   --neutral-color-gray-05: #f9f9f9;
   --neutral-color-gray-10: #f4f4f4;
   --neutral-color-gray-15: #ececec;
@@ -54,6 +55,7 @@
   --neutral-color-gray-90: #262626;
   --neutral-color-gray-95: #1d1d1d;
   --neutral-color-white: #ffffff;
+  -neutral-color-white-blur: #ffffff99;
   -base-color-blue-blue-10: #e5f6ff;
   -base-color-blue-blue-30: #82cfff;
   -base-color-blue-blue-50: #1192e8;
@@ -105,53 +107,60 @@
   --Background-Tokens-background-hover: var(--neutral-color-gray-10);
   --Background-Tokens-background-inverse: var(--neutral-color-gray-90);
   --Background-Tokens-background-inverse-hover: var(--neutral-color-gray-85);
-  --Background-Tokens-background-navi: var(--neutral-color-gray-95);
+  --Background-Tokens-background-navi: var(--neutral-color-white);
   --Background-Tokens-background-navi-selected: var(
     --brand-primary-color-bp-10
   );
   -background-tokens-background-selected: var(--neutral-color-gray-20);
+  -border-tokens-border-chart: var(--neutral-color-gray-10);
   --Border-Tokens-border-disabled: var(--neutral-color-gray-30);
   --Border-Tokens-border-inverse: var(--neutral-color-gray-100);
   --Border-Tokens-border--primary: var(--neutral-color-gray-20);
-  --Border-Tokens-border-primary-hover-bp: var(--brand-primary-color-bp-50);
+  --Border-Tokens-border-bp: var(--brand-primary-color-bp-50);
   -border-tokens-border-primary-selected-gray: var(--neutral-color-gray-30);
   --Button-Tokens-button-disabled: var(--neutral-color-gray-20);
   --Button-Tokens-button-primary: var(--neutral-color-gray-100);
   --button-tokens-button-primary-active: var(--neutral-color-gray-60);
   --button-tokens-button-primary-hover: var(--neutral-color-gray-70);
+  -button-tokens-button-text-link: var(--neutral-color-gray-100);
+  -button-tokens-button-text-link-hover: var(--brand-primary-color-bp-60);
   --icon-tokens-icon-disabled: var(--neutral-color-gray-30);
   --icon-tokens-icon-interactive: var(--brand-primary-color-bp-50);
-  -icon-tokens-icon-error: var(--functional-color-red-red-50);
-  -icon-tokens-icon-fill: var(--brand-primary-color-bp-50);
+
   --icon-tokens-icon-inverse: var(--neutral-color-white);
   --icon-tokens-icon-primary: var(--neutral-color-gray-100);
   --icon-tokens-icon-secondary: var(--neutral-color-gray-70);
   --icon-tokens-icon-tertiary: var(--neutral-color-gray-60);
-  -icon-tokens-layer-blue: var(--base-color-blue-blue-50);
-  -icon-tokens-layer-blue-background: var(--base-color-blue-blue-10);
-  -icon-tokens-layer-cool-gray: var(--base-color-cool-gray-cool-gray-50);
-  -icon-tokens-layer-cool-gray-background: var(
-    --base-color-cool-gray-cool-gray-10
-  );
-  -icon-tokens-layer-green: var(--functional-color-green-green-50);
-  -icon-tokens-layer-green-background: var(--functional-color-green-green-10);
-  -icon-tokens-layer-purple: var(--base-color-purple-purple-50);
-  -icon-tokens-layer-purple-background: var(--base-color-purple-purple-10);
-  -icon-tokens-layer-teal: var(--base-color-teal-teal-50);
-  -icon-tokens-layer-teal-background: var(--base-color-teal-teal-10);
-  -icon-tokens-layer-yellow: var(--base-color-yellow-yellow-50);
-  -icon-tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
+
   -layer-tokens-layer-02: var(--neutral-color-gray-20);
   -layer-tokens-layer-03: var(--neutral-color-gray-100);
   -layer-tokens-layer-bp: var(--brand-primary-color-bp-50);
+  -layer-tokens-layer-blue: var(--base-color-blue-blue-50);
+  -layer-tokens-layer-blue-background: var(--base-color-blue-blue-10);
+  -layer-tokens-layer-blur: var(--neutral-color-white-blur);
+  -layer-tokens-layer-cool-gray: var(--base-color-cool-gray-cool-gray-50);
+  -layer-tokens-layer-cool-gray-background: var(
+    --base-color-cool-gray-cool-gray-10
+  );
+  -layer-tokens-layer-error: var(--functional-color-red-red-50);
+  -layer-tokens-layer-fill: var(--brand-primary-color-bp-50);
+  -layer-tokens-layer-green: var(--functional-color-green-green-50);
+  -layer-tokens-layer-green-background: var(--functional-color-green-green-10);
+
   -layer-tokens-layer-on-primary: var(--neutral-color-gray-05);
   -layer-tokens-layer-on-primary-selected: var(--neutral-color-gray-15);
   --Layer-Tokens-layer-primary: var(--neutral-color-gray-white);
   --Layer-Tokens-layer-primary-hover: var(--neutral-color-gray-10);
   --Layer-Tokens-layer-primary-selected: var(--neutral-color-gray-20);
+  -layer-tokens-layer-purple: var(--base-color-purple-purple-50);
+  -layer-tokens-layer-purple-background: var(--base-color-purple-purple-10);
   --Layer-Tokens-layer-secondary: var(--neutral-color-gray-30);
   --Layer-Tokens-layer-secondary-hover: var(--neutral-color-gray-40);
   --Layer-Tokens-layer-secondary-selected: var(--neutral-color-gray-50);
+  -layer-tokens-layer-teal: var(--base-color-teal-teal-50);
+  -layer-tokens-layer-teal-background: var(--base-color-teal-teal-10);
+  -layer-tokens-layer-yellow: var(--base-color-yellow-yellow-50);
+  -layer-tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
   -tag-tokens-tag-blue: var(--base-color-blue-blue-30);
   -tag-tokens-tag-blue-text: var(--base-color-blue-blue-90);
   --tag-tokens-tag-brand: var(--brand-primary-color-bp-20);
@@ -185,49 +194,56 @@
     --brand-primary-color-bp-95
   );
   -background-tokens-background-selected: var(--neutral-color-gray-80);
+  -border-tokens-border-chart: var(--neutral-color-gray-90);
   --Border-Tokens-border-disabled: var(--neutral-color-gray-90);
   --Border-Tokens-border-inverse: var(--neutral-color-gray-10);
   --Border-Tokens-border--primary: var(--neutral-color-gray-80);
-  -border-tokens-border-primary-hover-bp: var(--brand-primary-color-bp-50);
+  -border-tokens-border-bp: var(--brand-primary-color-bp-50);
   -border-tokens-border-primary-selected-gray: var(--neutral-color-gray-70);
   --Button-Tokens-button-disabled: var(--neutral-color-gray-90);
   --Button-Tokens-button-primary: var(--neutral-color-white);
   --button-tokens-button-primary-active: var(--neutral-color-gray-80);
   --button-tokens-button-primary-hover: var(--neutral-color-gray-70);
-  -button-tokens-button-text-button: var(--neutral-color-gray-90);
+
+  -button-tokens-button-text-link: var(--neutral-color-white);
+  -button-tokens-button-text-link-hover: var(--brand-primary-color-bp-60);
   --icon-tokens-icon-disabled: var(--neutral-color-gray-70);
   --icon-tokens-icon-interactive: var(-brand-primary-color-bp-50);
   --icon-tokens-icon-inverse: var(--neutral-color-gray-100);
   --icon-tokens-icon-primary: var(--neutral-color-gray-10);
   --icon-tokens-icon-secondary: var(--neutral-color-gray-30);
   --icon-tokens-icon-tertiary: var(--neutral-color-gray-50);
-  -icon-tokens-icon-error: var(--functional-color-red-red-50);
-  -icon-tokens-icon-fill: var(--brand-primary-color-bp-50);
-  -icon-tokens-layer-blue: var(--base-color-blue-blue-50);
-  -icon-tokens-layer-blue-background: var(--base-color-blue-blue-10);
-  -icon-tokens-layer-cool-gray: var(--base-color-cool-gray-cool-gray-50);
-  -icon-tokens-layer-cool-gray-background: var(
-    --base-color-cool-gray-cool-gray-10
-  );
-  -icon-tokens-layer-green: var(--functional-color-green-green-50);
-  -icon-tokens-layer-green-background: var(--functional-color-green-green-10);
-  -icon-tokens-layer-purple: var(--base-color-purple-purple-50);
-  -icon-tokens-layer-purple-background: var(--base-color-purple-purple-10);
-  -icon-tokens-layer-teal: var(--base-color-teal-teal-50);
-  -icon-tokens-layer-teal-background: var(--base-color-teal-teal-10);
-  -icon-tokens-layer-yellow: var(--base-color-yellow-yellow-50);
-  -icon-tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
+
   -layer-tokens-layer-02: var(--neutral-color-gray-70);
   -layer-tokens-layer-03: var(--neutral-color-gray-10);
   -layer-tokens-layer-bp: var(--brand-primary-color-bp-50);
+  -layer-tokens-layer-blue: var(--base-color-blue-blue-50);
+  -layer-tokens-layer-blue-background: var(--base-color-blue-blue-10);
+  -layer-tokens-layer-blur: var(--neutral-color-black-blur);
+  -layer-tokens-layer-cool-gray: var(--base-color-cool-gray-cool-gray-50);
+  -layer-tokens-layer-cool-gray-background: var(
+    --base-color-cool-gray-cool-gray-10
+  );
+  -layer-tokens-layer-error: var(--functional-color-red-red-50);
+  -layer-tokens-layer-fill: var(--brand-primary-color-bp-50);
+  -layer-tokens-layer-green: var(--functional-color-green-green-50);
+  -layer-tokens-layer-green-background: var(--functional-color-green-green-10);
+  -layer-tokens-layer-interactive: var(--brand-primary-color-bp-50);
+
   -layer-tokens-layer-on-primary: var(--neutral-color-gray-90);
   -layer-tokens-layer-on-primary-selected: var(--neutral-color-gray-85);
   --Layer-Tokens-layer-primary: var(--neutral-color-gray-95);
   --Layer-Tokens-layer-primary-hover: var(--neutral-color-gray-85);
   --Layer-Tokens-layer-primary-selected: var(--neutral-color-gray-80);
+  -layer-tokens-layer-purple: var(--base-color-purple-purple-50);
+  -layer-tokens-layer-purple-background: var(--base-color-purple-purple-10);
   --Layer-Tokens-layer-secondary: var(--neutral-color-gray-70);
   --Layer-Tokens-layer-secondary-hover: var(--neutral-color-gray-65);
   --Layer-Tokens-layer-secondary-selected: var(--neutral-color-gray-60);
+  -layer-tokens-layer-teal: var(--base-color-teal-teal-50);
+  -layer-tokens-layer-teal-background: var(--base-color-teal-teal-10);
+  -layer-tokens-layer-yellow: var(--base-color-yellow-yellow-50);
+  -layer-tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
   -tag-tokens-tag-blue: var(--base-color-blue-blue-90);
   -tag-tokens-tag-blue-text: var(--base-color-blue-blue-10);
   --tag-tokens-tag-brand: var(--neutral-color-gray-90);
