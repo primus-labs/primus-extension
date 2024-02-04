@@ -100,6 +100,8 @@
   --text-button-disabled: var(--neutral-color-gray-40);
   --dark-text-text-tertiary: var(--neutral-color-gray-50);
   --text-button-disabled: var(--neutral-color-gray-40);
+
+  --pageContent-width: 1120px;
 }
 .pageApp.light {
   --Background-Tokens-background: var(--neutral-color-gray-05);

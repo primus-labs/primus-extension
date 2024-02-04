@@ -31,6 +31,7 @@ interface PSelectProps {
   disabled?: boolean;
   prefix?: any;
   label?: any;
+  className?: string;
 
   showIcon?: boolean;
   showSelf?: boolean;
@@ -47,6 +48,7 @@ const PSelect: React.FC<PSelectProps> = memo(
     showSelf = true,
     disabled = false,
     label,
+    className,
   }) => {
     const [optionsVisible, setOptionsVisible] = useState(false);
 
@@ -85,12 +87,15 @@ const PSelect: React.FC<PSelectProps> = memo(
       return str;
     }, [optionsVisible, disabled]);
     const formatPSelectCN = useMemo(() => {
-      let str = 'PSelect';
+      let cN = 'PSelect';
       if (disabled) {
-        str += ' disabled';
+        cN += ' disabled';
       }
-      return str;
-    }, [disabled]);
+      if (className) {
+        cN += ` ${className}`;
+      }
+      return cN;
+    }, [disabled, className]);
 
     const handleClickDropdownItem = useCallback(
       (value: string, item) => {
@@ -147,7 +152,9 @@ const PSelect: React.FC<PSelectProps> = memo(
         </div>
         {isOpen && (
           <div
-            className={label ? 'selectOptionswrapper withLabel' : 'selectOptionswrapper'}
+            className={
+              label ? 'selectOptionswrapper withLabel' : 'selectOptionswrapper'
+            }
             onClick={handleEnter}
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}

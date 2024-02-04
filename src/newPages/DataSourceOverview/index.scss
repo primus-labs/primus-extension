@@ -1,0 +1,55 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pageDataSource {
+  @include fcss;
+  .pageContent {
+    width: var(--pageContent-width);
+    padding: 40px 0 20px 0;
+    @include fcss;
+    gap: var(--spacing-24, 24px);
+    .friendlyTip {
+      width: 100%;
+      height: 104px;
+      padding: 0 var(--spacing-24, 24px);
+      background-color: var(--tag-tokens-tag-brand);
+      @include frbc;
+      gap: var(--spacing-4, 4px);
+      border-radius: var(--spacing-8, 8px);
+      background-image: url('../../assets/newImg/dataSource/bannerBg.svg');
+      background-position: right top;
+      background-repeat: no-repeat;
+      // background-size:508px 104px;
+      .intro {
+        @include fcss;
+        color: var(--Text-Tokens-text-primary);
+        width: 873px;
+        .title {
+          @include HeadlineH4;
+        }
+        .desc {
+          @include BodyBody100;
+        }
+      }
+    }
+    .searchBar {
+      @include frss;
+      gap: var(--spacing-8, 8px);
+      .serachStr {
+        width: 400px;
+        gap: var(--spacing-4);
+
+        .inputWrapper {
+          padding: 0 var(--spacing-12);
+        }
+      }
+      .serachType {
+        width: 191px;
+        .selectInput {
+          gap: var(--spacing-4);
+          padding: 0 var(--spacing-12);
+        }
+      }
+    }
+  }
+}

@@ -12,6 +12,7 @@ interface PInputProps {
   helpTip?: any;
   disabled?: boolean;
   prefix?: any;
+  className?: string;
 
   copiable?: boolean;
   onSearch?: (val: string) => void;
@@ -32,6 +33,7 @@ const PInput: React.FC<PInputProps> = memo(
     copiable = false,
     tooltip,
     prefix,
+    className,
   }) => {
     const inputEl = useRef<any>(null);
     const [val, setVal] = useState<string>('');
@@ -48,8 +50,11 @@ const PInput: React.FC<PInputProps> = memo(
       if (!!errorTip) {
         cN += ' error';
       }
+      if (className) {
+        cN += ` ${className}`;
+      }
       return cN;
-    }, [disabled, errorTip]);
+    }, [disabled, errorTip, className]);
     const activeType = useMemo(() => {
       if (visible) {
         return open ? 'text' : 'password';
