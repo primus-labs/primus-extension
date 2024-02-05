@@ -154,7 +154,7 @@ const reducer: any = function (state = initState, action: any) {
     case 'setEventsAction':
       return { ...state, events: action.payload };
     case 'setThemeAction':
-      return { ...state, theme: state.theme === 'light'? 'dark': 'light' };
+      return { ...state, theme: action.payload };
     default:
       return state;
   }

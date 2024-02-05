@@ -29,8 +29,11 @@
     // }
     .page {
       flex: 1;
-      overflow-y: auto;
       margin: 0 auto;
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        width: 0;
+      }
     }
   }
 }
