@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/types/store';
 
-import Nav from '../Nav';
+import Nav from '../../Nav';
 import logo from '@/assets/img/logo.svg';
 import logoForDark from '@/assets/newImg/layout/logoForDark.svg';
 import './index.scss';

@@ -16,7 +16,7 @@ import PPButton from '@/newComponents/PButton';
 import PPTabs from '@/newComponents/PTabs';
 import PPTooltip from '@/newComponents/PTooltip';
 import PSelect from '@/newComponents/PSelect';
-import Sidebar from '@/newComponents/Sidebar'
+import Sidebar from '@/newComponents/Layout/Sidebar';
 
 const Test: React.FC = memo(({}) => {
   const dispatch: Dispatch<any> = useDispatch();

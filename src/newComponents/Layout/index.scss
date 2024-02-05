@@ -1,0 +1,36 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/global.css';
+
+.PageLayout {
+  width: 100vw;
+  height: 100vh;
+  @include frss;
+  // .sidebar{
+  //   position: fixed;
+  //   left: 0;
+  //   top: 0;
+  // }
+  .pageRight {
+    @include fcbs;
+    flex: 1;
+    height: 100vh;
+    background-color: var(--Background-Tokens-background);
+    // position: relative;
+    // .pageHeader {
+    //   position: absolute;
+    //   left: 0;
+    //   top: 0;
+    // }
+    // .pageFooter {
+    //   position: absolute;
+    //   left: 0;
+    //   bottom: 0;
+    // }
+    .page {
+      flex: 1;
+      overflow-y: auto;
+      margin: 0 auto;
+    }
+  }
+}

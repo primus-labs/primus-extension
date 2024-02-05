@@ -13,7 +13,8 @@
     padding: var(--spacing-16) var(--spacing-24);
     @include fcss;
     gap: var(--spacing-24);
-    border: 1px solid var(--Border-Tokens-border--primary);
+    border: 1px solid var(--Border-Tokens-border-primary);
+    background: var(--Layer-Tokens-layer-primary);
     &:hover {
       border: 1px solid var(--Border-Tokens-border-bp); // TODO
     }

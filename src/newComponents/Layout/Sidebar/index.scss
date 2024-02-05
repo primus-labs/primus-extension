@@ -5,10 +5,8 @@
   @include fcss;
   width: 240px;
   height: 100%;
-  border-right: 1px solid var(--Border-Tokens-border--primary);
+  border-right: 1px solid var(--Border-Tokens-border-primary);
   background: var(--Background-Tokens-background-navi, #fff);
-  //   background: linear-gradient(0deg, #E0E0E0, #E0E0E0),
-  // linear-gradient(0deg, #FFFFFF, #FFFFFF);
 
   padding: var(--spacing-16, 16px) 0px;
   gap: var(--spacing-16, 16px);
@@ -23,17 +21,11 @@
 }
 .light {
   .sidebar {
-    // background: linear-gradient(
-    //   0deg,
-    //   var(--Border-Tokens-border--primary),
-    //   var(--Background-Tokens-background-navi)
-    // );
-    // border-right: 1px solid var(--Border-Tokens-border--primary);
     background: var(--Background-Tokens-background-navi, #fff);
   }
 }
 .dark {
   .sidebar {
-    background: var(--Border-Tokens-border--primary);
+    background: var(--Border-Tokens-border-primary);
   }
 }

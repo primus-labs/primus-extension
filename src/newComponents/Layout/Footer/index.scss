@@ -1,0 +1,21 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pageFooter {
+  width: 100%;
+  flex: 0 0 auto;
+  height: 42px;
+  @include frcc;
+  gap: var(--spacing-10);
+  background: var(--Background-Tokens-background);
+  .version {
+    @include Label01;
+    color: var(--Text-Tokens-text-primary);
+  }
+  .policy {
+    @include TextLinkLink;
+    text-decoration-line: underline;
+    // @extend .TextLinkLink;
+    color: var(--Text-Tokens-text-primary);
+  }
+}

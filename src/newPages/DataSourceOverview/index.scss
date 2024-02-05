@@ -3,8 +3,8 @@
 
 .pageDataSource {
   @include fcss;
+  margin: 0 auto;
   .pageContent {
-    width: var(--pageContent-width);
     padding: 40px 0 20px 0;
     @include fcss;
     gap: var(--spacing-24, 24px);
@@ -44,7 +44,7 @@
         }
       }
       .serachType {
-        width: 191px;
+        width: 192px;
         .selectInput {
           gap: var(--spacing-4);
           padding: 0 var(--spacing-12);
