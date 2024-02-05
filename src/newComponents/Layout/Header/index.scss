@@ -1,0 +1,36 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pageHeader {
+  width: 100%;
+  flex: 0 0 auto;
+  height: 60px;
+  @include frbc;
+  padding: 0 var(--spacing-24) 0 var(--spacing-40);
+  border-bottom: 1px solid var(--Border-Tokens-border-primary);
+  background: var(--Border-Tokens-border-primary);
+  .pathName {
+    @include HeadlineH1;
+    @include frsc;
+    height: 100%;
+    border-bottom: 4px solid var(--Background-Tokens-background-brand);
+  }
+  .rightActions {
+    @include frsc;
+    gap: var(--spacing-8);
+    .icon-iconBell {
+      font-size: var(--spacing-24);
+      color: var(--Button-Tokens-button-primary);
+      margin-right: var(--spacing-8);
+    }
+    .connectBtn {
+      width: 131px;
+      height: var(--spacing-32);
+    }
+    .avatar {
+      > img {
+        width: var(--spacing-32);
+      }
+    }
+  }
+}

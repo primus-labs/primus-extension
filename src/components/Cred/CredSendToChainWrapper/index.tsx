@@ -922,9 +922,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const sucFn = useCallback(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
-          debugger;
           if (formatNetworkName === 'ICP') {
-            debugger;
             regeneratAttestationsICPFn();
             return;
           }
@@ -1142,7 +1140,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       setStep(5);
     }, []);
     const errorFn = useCallback(() => {
-      debugger;
       setActiveSendToChainRequest({
         type: 'warn',
         title: 'Unable to proceed',
@@ -1322,7 +1319,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               setStep(5);
               const newProvided = curCredential.provided ?? [];
               const currentChainObj: any = {
-                title: 'icp',
+                title: 'ICP',
                 icon: 'https://internetcomputer.org/img/favicon-32x32.png',
                 txHash: attestationDetailPath,
               };

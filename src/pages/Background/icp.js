@@ -35,7 +35,7 @@ export const icpMsgListener = async (
     await ActiveAremoveTabFn(padoExtensionId, sender.tab.id);
   } else if (name === 'upperChainRes') {
     upperChainRequest = null;
-    // await ActiveAremoveTabFn(padoExtensionId, sender.tab.id);
+    await ActiveAremoveTabFn(padoExtensionId, sender.tab.id);
   }
 };
 const createTabFn = async (path) => {

@@ -95,7 +95,6 @@ const useWallet: UseWalletType = function useWallet() {
         label,
       };
       console.log('savedConnectInfo111', savedConnectInfo.current, new Date());
-      debugger;
       let formatWalletName = walletName ? walletName.toLowerCase() : undefined;
       setWallet(formatWalletName);
       if (formatWalletName === 'walletconnect') {
@@ -221,10 +220,8 @@ const useWallet: UseWalletType = function useWallet() {
               })
             );
             await dispatch(setConnectWalletDialogVisibleAction(false));
-            debugger;
             savedConnectInfo.current?.sucFn();
           } else {
-            debugger
             savedConnectInfo.current?.errorFn();
           }
         }
