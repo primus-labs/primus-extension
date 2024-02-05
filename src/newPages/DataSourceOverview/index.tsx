@@ -3,12 +3,14 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import PInput from '@/newComponents/PInput';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
+import Cards from '@/newComponents/DataSource/Cards'
 import './index.scss';
 const tList = [
   { label: 'Assets', value: '1' },
   { label: 'Social', value: '2' },
   { label: 'Identity', value: '3' },
 ];
+
 const DataSourceOverview = memo(() => {
   const [dataSourceSearch, setDataSourceSearch] = useState<string>('');
   const [dataSourceType, setDataSourceType] = useState<string>('');
@@ -60,6 +62,7 @@ const DataSourceOverview = memo(() => {
             prefix={<i className="iconfont icon-EyeOpen"></i>}
           />
         </div>
+        <Cards />
       </div>
     </div>
   );

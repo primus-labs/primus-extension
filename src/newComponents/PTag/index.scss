@@ -1,0 +1,31 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pTag {
+  @include frsc;
+  gap: var(--spacing-4);
+  @include Hint;
+  color: var(--tag-tokens-tag-yellow-text);
+  padding: var(--spacing-4) var(--spacing-8);
+  border-radius: var(--spacing-16);
+  &.yellow{
+    background-color: var(--tag-tokens-tag-yellow);
+    color: var(-tag-tokens-tag-yellow-text);
+  }
+  &.blue{
+    background-color: var(--tag-tokens-tag-blue);
+    color: var(--tag-tokens-tag-blue-text);
+  }
+  &.purple{
+    background-color: var(--tag-tokens-tag-purple);
+    color: var(--tag-tokens-tag-purple-text);
+  }
+  &.brand{
+    background-color: var(--tag-tokens-tag-brand);
+    color: var(--tag-tokens-tag-brand-text);
+  }
+  >.iconfont{
+    font-size: var(--spacing-12);
+  }
+}
+

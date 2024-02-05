@@ -35,7 +35,7 @@ export type SocialDataSourceData = {
 };
 export type ExchangeMeta = {
   name: string;
-  type: 'Social' | 'Assets' | 'Identity';
+  type: 'Social' | 'Assets' | 'Identity' | 'Humanity';
   icon: any;
   iconWithCircle?: any;
   requirePassphase?: boolean;
