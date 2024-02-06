@@ -1,0 +1,58 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+.connectedDataCards {
+  width: 100%;
+  @include fcss;
+
+  gap: var(--spacing-8);
+  .dataCard {
+    width: 100%;
+    padding: var(--spacing-24);
+    @include frbc;
+    gap: var(--spacing-24);
+    @include pCard;
+    &:hover {
+      .detailBtn ,
+      .detailBtn .iconfont{
+        color: var(--Button-Tokens-button-text-link-hover);
+      }
+    }
+    .brief {
+      @include frsc;
+      gap: var(--spacing-24);
+      > img {
+        width: var(--spacing-48);
+      }
+    }
+    .introTxt {
+      @include fcss;
+      gap: var(--spacing-8);
+      color: var(--Text-Tokens-text-primary);
+      .title {
+        @include HeadlineH2;
+        @include frsc;
+        gap: var(--spacing-8);
+        .iconfont {
+          font-size: var(--spacing-16);
+        }
+      }
+      .desc {
+        @include frsc;
+        gap: var(--spacing-24);
+        @include BodyBody100;
+      }
+    }
+
+    .detailBtn {
+      width: fit-content;
+
+      > span {
+        line-height: var(--spacing-18);
+      }
+      .iconfont {
+        align-self: flex-start;
+      }
+    }
+  }
+}

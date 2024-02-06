@@ -48,6 +48,9 @@ body {
   --pHeaderHeight: 105px; */
 }
 #app-container {
+  --spacing-2: 0.0138rem;
+  --spacing-7: 0.0486rem;
+
   --spacing-4: 0.0272rem;
   --spacing-6: 0.034rem;
   --spacing-8: 0.0544rem;
@@ -66,7 +69,7 @@ body {
   --spacing-40: 0.2721rem;
   --spacing-42: 0.2857rem;
   --spacing-48: 0.3265rem;
-  --spacing-60: .4082rem;
+  --spacing-60: 0.4082rem;
   --spacing-64: 0.4354rem;
   --spacing-68: 0.4722rem;
   --spacing-80: 0.5442rem;
@@ -77,6 +80,9 @@ body {
 
 @media (max-width: 1470px) {
   #app-container {
+    --spacing-2: 2px;
+    --spacing-7: 7px;
+
     --spacing-4: 4px;
     --spacing-6: 6px;
     --spacing-8: 8px;

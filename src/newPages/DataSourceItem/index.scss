@@ -1,0 +1,75 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pageDataSourceItem {
+  @include fcss;
+  margin: 0 auto;
+  // overflow-y: auto;
+  .pageContent {
+    padding: 40px 0 20px 0;
+    @include fcss;
+    gap: var(--spacing-16);
+    .backWrapper {
+      @include frsc;
+      gap: var(--spacing-4);
+      @include BodyBody100;
+      color: var(--Text-Tokens-text-primary);
+    }
+    .pageDataSourceItemContent {
+      width: 100%;
+      @include fcss;
+      .dataSourceBrief {
+        width: 100%;
+        @include frbc;
+        .introTxt {
+          @include fcss;
+          color: var(--Text-Tokens-text-primary);
+          .title {
+            @include HeadlineH1;
+            @include frsc;
+            gap: var(--spacing-8);
+          }
+          .origin {
+            @include Hint;
+          }
+        }
+      }
+      .hasContent {
+        width: 100%;
+        .sectionInfo {
+          padding-top: var(--spacing-40);
+          @include fcss;
+          gap: var(--spacing-16);
+          .sectionTitle {
+            @include HeadlineH2;
+            color: var(--Text-Tokens-text-primary);
+          }
+        }
+      }
+      .hasNoContent {
+        width: 100%;
+        @include fcsc;
+        padding-top: var(--spacing-80);
+        > img {
+          width: 160px;
+        }
+        .introTxt {
+          padding-top: var(--spacing-16);
+          padding-bottom: var(--spacing-40);
+          gap: var(--spacing-16);
+          @include fcsc;
+          width: 490px;
+          .title {
+            @include HeadlineH1;
+            color: var(--Text-Tokens-text-primary);
+          }
+          .desc {
+            @include BodyBody100;
+            color: var(--Text-Tokens-text-secondary);
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+}

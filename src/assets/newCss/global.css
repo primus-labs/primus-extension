@@ -122,10 +122,10 @@
   --Border-Tokens-border-primary-selected-gray: var(--neutral-color-gray-30);
   --Button-Tokens-button-disabled: var(--neutral-color-gray-20);
   --Button-Tokens-button-primary: var(--neutral-color-gray-100);
-  --button-tokens-button-primary-active: var(--neutral-color-gray-60);
-  --button-tokens-button-primary-hover: var(--neutral-color-gray-70);
-  --button-tokens-button-text-link: var(--neutral-color-gray-100);
-  --button-tokens-button-text-link-hover: var(--brand-primary-color-bp-60);
+  --Button-Tokens-button-primary-active: var(--neutral-color-gray-60);
+  --Button-Tokens-button-primary-hover: var(--neutral-color-gray-70);
+  --Button-Tokens-button-text-link: var(--neutral-color-gray-100);
+  --Button-Tokens-button-text-link-hover: var(--brand-primary-color-bp-60);
   --icon-tokens-icon-disabled: var(--neutral-color-gray-30);
   --icon-tokens-icon-interactive: var(--brand-primary-color-bp-50);
 
@@ -207,11 +207,11 @@
   --Border-Tokens-border-primary-selected-gray: var(--neutral-color-gray-70);
   --Button-Tokens-button-disabled: var(--neutral-color-gray-90);
   --Button-Tokens-button-primary: var(--neutral-color-white);
-  --button-tokens-button-primary-active: var(--neutral-color-gray-80);
-  --button-tokens-button-primary-hover: var(--neutral-color-gray-70);
+  --Button-Tokens-button-primary-active: var(--neutral-color-gray-80);
+  --Button-Tokens-button-primary-hover: var(--neutral-color-gray-70);
 
-  --button-tokens-button-text-link: var(--neutral-color-white);
-  --button-tokens-button-text-link-hover: var(--brand-primary-color-bp-60);
+  --Button-Tokens-button-text-link: var(--neutral-color-white);
+  --Button-Tokens-button-text-link-hover: var(--brand-primary-color-bp-60);
   --icon-tokens-icon-disabled: var(--neutral-color-gray-70);
   --icon-tokens-icon-interactive: var(-brand-primary-color-bp-50);
   --icon-tokens-icon-inverse: var(--neutral-color-gray-100);
@@ -251,7 +251,7 @@
   --Layer-Tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
   --tag-tokens-tag-blue: var(--base-color-blue-blue-90);
   --tag-tokens-tag-blue-text: var(--base-color-blue-blue-10);
-  --tag-tokens-tag-brand: var(--neutral-color-gray-90);
+  --tag-tokens-tag-brand: var(--brand-primary-color-bp-90);
   --tag-tokens-tag-brand-text: var(--brand-primary-color-bp-20);
   --tag-tokens-tag-purple: var(--base-color-purple-purple-90);
   --tag-tokens-tag-purple-text: var(--base-color-purple-purple-10);

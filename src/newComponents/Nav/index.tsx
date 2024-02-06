@@ -29,7 +29,7 @@ const Nav: React.FC<PButtonProps> = memo(({}) => {
     if (item?.disabled) {
       str += ' disabled';
     }
-    if (pathname === item.link) {
+    if (pathname.startsWith(item.link)) {
       str += ' active';
     }
     return str;

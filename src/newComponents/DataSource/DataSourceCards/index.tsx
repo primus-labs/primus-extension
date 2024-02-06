@@ -1,9 +1,12 @@
 import React, { memo, useCallback } from 'react';
 import { DATASOURCEMAP } from '@/config/dataSource';
+
+
 import type { SyntheticEvent } from 'react';
 
 import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
+
 import './index.scss';
 
 type NavItem = {
@@ -20,7 +23,6 @@ interface PDropdownProps {
   
   // list: NavItem[];
 }
-// const list = Object.values(DATASOURCEMAP);
 const list = Object.values(DATASOURCEMAP);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
@@ -30,6 +32,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleDelete = useCallback((e: SyntheticEvent, i) => {
       e.stopPropagation()
     }, []);
+    
     return (
       <ul className="dataSourceCards">
         {list.map((i) => {
@@ -42,7 +45,7 @@ const Cards: React.FC<PDropdownProps> = memo(
             >
               <div className="cardContent">
                 <div className="header">
-                  <PTag text="Assets Data" color="brand" />
+                  <PTag text={`${i.type} Data`} color="brand" />
                   <div className="connections">
                     <div className="num">
                       <i className="iconfont icon-iconConnection"></i>

@@ -1,5 +1,7 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
 .dataSourceCards {
   @include frbs;
   flex-wrap: wrap;
@@ -7,15 +9,15 @@
   .dataSourceCard {
     width: 363px;
     height: 204px;
-    cursor: pointer;
-    border-radius: var(--spacing-8);
     padding: var(--spacing-16) var(--spacing-24);
     @include fcss;
     gap: var(--spacing-24);
-    border: 1px solid var(--Border-Tokens-border-primary);
-    background: var(--Layer-Tokens-layer-primary);
+    @include pCard;
     &:hover {
-      border: 1px solid var(--Border-Tokens-border-bp); // TODO
+      .connectBtn,
+      .connectBtn .iconfont {
+        color: var(--Button-Tokens-button-text-link-hover);
+      }
     }
     .cardContent {
       width: 100%;
@@ -61,10 +63,8 @@
         }
       }
       .desc {
-
         @include BodyBody300;
         color: var(--Text-Tokens-text-secondary);
-        
       }
     }
     .connectBtn {

@@ -3,7 +3,7 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import PInput from '@/newComponents/PInput';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
-import Cards from '@/newComponents/DataSource/Cards'
+import DataSourceCards from '@/newComponents/DataSource/DataSourceCards';
 import './index.scss';
 const tList = [
   { label: 'Assets', value: '1' },
@@ -62,7 +62,7 @@ const DataSourceOverview = memo(() => {
             prefix={<i className="iconfont icon-EyeOpen"></i>}
           />
         </div>
-        <Cards />
+        <DataSourceCards />
       </div>
     </div>
   );

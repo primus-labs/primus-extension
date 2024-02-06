@@ -1,0 +1,9 @@
+.PBack {
+  display: flex;
+  .icon-DownArrow {
+    font-size: var(--spacing-16);
+    color: var(--Icon-Tokens-icon-primary);
+    transform: rotate(90deg);
+    cursor: pointer;
+  }
+}

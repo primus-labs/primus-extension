@@ -25,12 +25,12 @@ button.PButton {
   &.primary,
   &.secondary {
     border-radius: var(--Radius-radius-xs, 4px);
-    width: 108px;
+    width: fit-content;
     &.m {
-      height: 40px;
+      padding: var(--spacing-11) var(--spacing-16);
     }
     &.s {
-      height: 32px;
+      padding: var(--spacing-7) var(--spacing-16);
     }
   }
   &.primary {
