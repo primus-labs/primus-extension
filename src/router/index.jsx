@@ -23,6 +23,7 @@ const router = [
       },
       {
         path: 'datas',
+        name: 'Data Source',
         element: <DataSourceOverview />,
       },
       {

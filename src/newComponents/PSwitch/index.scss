@@ -6,7 +6,16 @@
   height: var(--spacing-24);
   @include frsc;
   background: var(--Layer-Tokens-layer-02);
+  border-radius: 100px;
+  padding: 2px;
+  &.dark{
+    justify-content: flex-end;
+  }
   .iconfont{
     font-size: var(--spacing-20);
   }
+  >img{
+    width: var(--spacing-20);
+  }
+ 
 }

@@ -171,10 +171,10 @@
   --tag-tokens-tag-purple-text: var(--base-color-purple-purple-90);
   --tag-tokens-tag-yellow: var(--base-color-yellow-yellow-30);
   --tag-tokens-tag-yellow-text: var(--base-color-yellow-yellow-90);
-  --text-tokens-text-bp: var(--brand-primary-color-bp-60);
-  --text-tokens-text-correct: var(--functional-color-green-green-50);
-  --text-tokens-text-hover: var(--neutral-color-gray-30);
-  --text-tokens-text-on-color: var(--neutral-color-white);
+  --Text-Tokens-text-bp: var(--brand-primary-color-bp-60);
+  --Text-Tokens-text-correct: var(--functional-color-green-green-50);
+  --Text-Tokens-text-hover: var(--neutral-color-gray-30);
+  --Text-Tokens-text-on-color: var(--neutral-color-white);
   --Text-Tokens-text-primary: var(--neutral-color-gray-100);
   --Text-Tokens-text-disabled: var(--neutral-color-gray-30);
   --Text-Tokens-text-error: var(--functional-color-red-red-50);
@@ -191,7 +191,7 @@
   --Background-Tokens-background-hover: var(--neutral-color-gray-90);
   --Background-Tokens-background-inverse: var(--neutral-color-gray-10);
   --Background-Tokens-background-inverse-hover: var(--neutral-color-gray-20);
-  --Background-Tokens-background-navi: var(--neutral-color-gray-10);
+  --Background-Tokens-background-navi: var(--neutral-color-gray-95);
   --Background-Tokens-background-navi-selected: var(
     --brand-primary-color-bp-95
   );
@@ -257,10 +257,10 @@
   --tag-tokens-tag-purple-text: var(--base-color-purple-purple-10);
   --tag-tokens-tag-yellow: var(--base-color-yellow-yellow-90);
   --tag-tokens-tag-yellow-text: var(--base-color-yellow-yellow-10);
-  --text-tokens-text-bp: var(--brand-primary-color-bp-50);
-  --text-tokens-text-correct: var(--functional-color-green-green-50);
-  --text-tokens-text-hover: var(--neutral-color-gray-30);
-  --text-tokens-text-on-color: var(--neutral-color-white);
+  --Text-Tokens-text-bp: var(--brand-primary-color-bp-50);
+  --Text-Tokens-text-correct: var(--functional-color-green-green-50);
+  --Text-Tokens-text-hover: var(--neutral-color-gray-30);
+  --Text-Tokens-text-on-color: var(--neutral-color-white);
   --Text-Tokens-text-primary: var(--neutral-color-gray-10);
   --Text-Tokens-text-disabled: var(--neutral-color-gray-70);
   --Text-Tokens-text-error: var(--functional-color-red-red-50);

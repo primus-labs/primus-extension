@@ -13,6 +13,7 @@ import './index.scss';
 
 const Nav: React.FC = memo(({ }) => {
   const theme = useSelector((state: UserState) => state.theme);
+  console.log('theme', theme)
   useEffect(() => {
     rem();
   }, []);

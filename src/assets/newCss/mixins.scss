@@ -1,0 +1,18 @@
+@mixin shadow($x: 0px, $y: 0px, $blur: 12px, $color: rgba(0, 0, 0, 0.1)) {
+  box-shadow: $x $y $blur $color;
+}
+.card-xs_shadow {
+  @include shadow(0, 4px, 24px);
+}
+.card-s_shadow {
+  @include shadow(0, 8px, 24px);
+}
+.card-m_shadow {
+  @include shadow(0, 12px, 24px);
+}
+.card-l_shadow {
+  @include shadow(0, 16px, 24px);
+}
+.dropdown-shadow-tooltip {
+  @include shadow(0, 0, 12px);
+}

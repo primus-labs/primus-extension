@@ -101,8 +101,9 @@ export const setEventsAction = (values: any) => ({
   type: 'setEventsAction',
   payload: values,
 });
-export const setThemeAction = (value: string) => ({
+export const setThemeAction = (values: string) => ({
   type: 'setThemeAction',
+  payload: values,
 });
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {

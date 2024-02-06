@@ -2,30 +2,31 @@
 @import '@/assets/newCss/font.scss';
 
 .sidebar {
-  @include fcss;
+  @include fcbs;
   width: 240px;
   height: 100%;
   border-right: 1px solid var(--Border-Tokens-border-primary);
   background: var(--Background-Tokens-background-navi, #fff);
 
-  padding: var(--spacing-16, 16px) 0px;
+  padding: var(--spacing-16, 16px) 0px var(--spacing-32) 0;
   gap: var(--spacing-16, 16px);
-  .logoWrapper {
-    @include frsc;
-    height: var(--spacing-40);
-    padding-left: var(--spacing-24);
-    .logo {
-      width: 76.19px;
+  .sidebarTop {
+    .logoWrapper {
+      @include frsc;
+      height: var(--spacing-40);
+      padding-left: var(--spacing-24);
+      .logo {
+        width: 76.19px;
+      }
     }
   }
-}
-.light {
-  .sidebar {
-    background: var(--Background-Tokens-background-navi, #fff);
+  .sidebarBottom{
+    padding-left: var(--spacing-24);
   }
 }
-.dark {
-  .sidebar {
-    background: var(--Border-Tokens-border-primary);
-  }
-}
+// .light {
+//   .sidebar {
+//     background: var(--Background-Tokens-background-navi, #fff);
+//   }
+// }
+

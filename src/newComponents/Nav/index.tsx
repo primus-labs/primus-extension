@@ -1,6 +1,7 @@
 import React, { memo, useMemo, useCallback } from 'react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
+import {list} from '@/config/menu'
 import './index.scss';
 
 interface PButtonProps {}
@@ -14,56 +15,7 @@ export type NavItem = {
   icon?: any;
   toBeActive?: boolean;
 };
-const list: NavItem[] = [
-  {
-    label: 'Home',
-    value: 'Home',
-    iconName: 'icon-iconMenuHome',
-    link: '/',
-  },
-  {
-    label: 'Data Source',
-    value: 'Data Source',
-    iconName: 'icon-iconMenuDataSource',
-    link: '/lock',
-  },
-  {
-    label: 'Data Overview',
-    value: 'Data Overview',
-    iconName: 'icon-iconMenuDataOverview',
-    link: '/',
-  },
-  {
-    label: 'zkAttestation',
-    value: 'zkAttestation',
-    iconName: 'icon-iconMenuZkAttestation',
-    link: '/',
-  },
-  {
-    label: 'Events',
-    value: 'Events',
-    iconName: 'icon-iconMenuEvents',
-    link: '/',
-  },
-  {
-    label: 'Developer',
-    value: 'Developer',
-    iconName: 'icon-iconMenuDeveloper',
-    link: '/',
-  },
-  {
-    label: 'Achievements',
-    value: 'Achievements',
-    iconName: 'icon-iconMenuAchievements',
-    link: '/',
-  },
-  {
-    label: 'Settings',
-    value: 'Settings',
-    iconName: 'icon-iconMenuSettings',
-    link: '/',
-  },
-];
+
 const Nav: React.FC<PButtonProps> = memo(({}) => {
   const navigate = useNavigate();
   const location = useLocation();

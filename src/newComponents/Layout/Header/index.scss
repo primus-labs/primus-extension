@@ -8,12 +8,14 @@
   @include frbc;
   padding: 0 var(--spacing-24) 0 var(--spacing-40);
   border-bottom: 1px solid var(--Border-Tokens-border-primary);
+  // Background Tokens/background-navi
   background: var(--Background-Tokens-background-navi);
   .pathName {
     @include HeadlineH1;
     @include frsc;
     height: 100%;
     border-bottom: 4px solid var(--Background-Tokens-background-brand);
+    color: var(--Text-Tokens-text-primary);
   }
   .rightActions {
     @include frsc;
@@ -38,3 +40,8 @@
     }
   }
 }
+// .dark{
+//   .pageHeader{
+//     background: var(--Background-Tokens-background-navi);
+//   }
+// }

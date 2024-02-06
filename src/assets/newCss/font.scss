@@ -1,4 +1,13 @@
 // <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Overpass&display=swap" rel="stylesheet">
+@mixin HeadlineH0 {
+  font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
+
+  font-family: 'IBM Plex Sans';
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 36px;
+}
 @mixin HeadlineH1 {
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
@@ -6,7 +15,7 @@
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 140% */
+  line-height: 28px;
 }
 @mixin HeadlineH2 {
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
@@ -14,8 +23,8 @@
   font-family: 'IBM Plex Sans';
   font-size: 16px;
   font-style: normal;
-  font-weight: 500;
-  line-height: 22px; /* 137.5% */
+  font-weight: 600;
+  line-height: 22px;
 }
 @mixin HeadlineH3 {
   font-feature-settings: 'ss08' on;
@@ -23,27 +32,27 @@
   font-family: 'IBM Plex Sans';
   font-size: 16px;
   font-style: normal;
-  font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  font-weight: 500;
+  line-height: 22px;
 }
 @mixin HeadlineH4 {
   font-feature-settings: 'ss08' on;
 
   font-family: 'IBM Plex Sans';
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 22px; /* 137.5% */
-}
-@mixin HeadlineH5 {
-  font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
-
-  font-family: 'IBM Plex Sans';
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 125%; /* 17.5px */
+  line-height: 125%;
 }
+// @mixin HeadlineH5 {
+//   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
+
+//   font-family: 'IBM Plex Sans';
+//   font-size: 14px;
+//   font-style: normal;
+//   font-weight: 400;
+//   line-height: 125%; /* 17.5px */
+// }
 
 @mixin BodyBody100 {
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
@@ -52,7 +61,7 @@
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 18px; /* 128.571% */
+  line-height: 18px;
   letter-spacing: 0.16px;
 }
 @mixin BodyBody100semibold {
@@ -62,7 +71,8 @@
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 18px; /* 128.571% */
+  letter-spacing: 0px;
+  line-height: 18px;
 }
 @mixin BodyBody200 {
   color: #c6c6c6;
@@ -72,7 +82,8 @@
   font-size: 13px;
   font-style: normal;
   font-weight: 400;
-  line-height: 18px; /* 138.462% */
+  letter-spacing: 0px;
+  line-height: 18px;
 }
 @mixin BodyBody200Bold {
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
@@ -80,8 +91,9 @@
   font-family: 'IBM Plex Sans';
   font-size: 13px;
   font-style: normal;
-  font-weight: 600;
-  line-height: 18px; /* 138.462% */
+  font-weight: 500;
+  letter-spacing: 0px;
+  line-height: 18px;
 }
 @mixin BodyBody300 {
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
@@ -90,28 +102,32 @@
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px; /* 133.333% */
+  letter-spacing: 0px;
+  line-height: 16px;
 }
 @mixin BodyBody300Bold {
   font-family: 'IBM Plex Sans';
   font-size: 12px;
   font-style: normal;
-  font-weight: 600;
-  line-height: 16px; /* 133.333% */
+  font-weight: 500;
+  letter-spacing: 0px;
+  line-height: 16px;
 }
 @mixin BodyBody400 {
   font-family: 'IBM Plex Sans';
   font-size: 11px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px; /* 145.455% */
+  letter-spacing: 0px;
+  line-height: 16px;
 }
 @mixin BodyBody400Bold {
   font-family: 'IBM Plex Sans';
   font-size: 11px;
   font-style: normal;
   font-weight: 600;
-  line-height: 16px; /* 145.455% */
+  letter-spacing: 0px;
+  line-height: 16px;
 }
 
 // TODO 10px
@@ -122,7 +138,8 @@
   font-size: 10px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px; /* 160% */
+  letter-spacing: 0px;
+  line-height: 16px;
 }
 
 // TODO-newui
@@ -134,7 +151,7 @@
   font-size: 11px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px; /* 145.455% */
+  line-height: 16px;
 }
 
 @mixin TextLinkLink {
@@ -145,7 +162,8 @@
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 24px; /* 171.429% */
+  letter-spacing: 0px;
+  line-height: 24px;
 }
 .TextLinkLink {
   @include TextLinkLink;
@@ -161,7 +179,8 @@
   font-size: 12px;
   font-style: normal;
   font-weight: 600;
-  line-height: 16px; /* 133.333% */
+  letter-spacing: 0px;
+  line-height: 16px;
 }
 
 @mixin Label01 {
@@ -170,15 +189,17 @@
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 18px; /* 128.571% */
+  letter-spacing: 0px;
+  line-height: 18px;
 }
 @mixin Label02 {
   /* Label 02 */
   font-family: 'IBM Plex Sans';
   font-size: 14px;
   font-style: normal;
-  font-weight: 600;
-  line-height: 18px; /* 128.571% */
+  font-weight: 500;
+  letter-spacing: 0px;
+  line-height: 18px;
 }
 
 @mixin Title {
@@ -188,5 +209,74 @@
   font-size: 44px;
   font-style: normal;
   font-weight: 700;
-  line-height: 60px; /* 136.364% */
+  letter-spacing: 0px;
+  line-height: 60px;
+}
+
+
+
+
+
+.textlink {
+  font-size: 14px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 18px;
+}
+.button-button {
+  font-size: 14px;
+  font-family: IBM Plex Sans;
+  font-weight: 500;
+  letter-spacing: 0.1599999964237213px;
+  line-height: 18px;
+}
+.number-time {
+  font-size: 14px;
+  font-family: IBM Plex Mono;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 18px;
+}
+.number-title {
+  font-size: 32px;
+  font-family: IBM Plex Mono;
+  font-weight: 600;
+  letter-spacing: 0px;
+  line-height: 40px;
+}
+.number-h1 {
+  font-size: 20px;
+  font-family: IBM Plex Mono;
+  font-weight: 500;
+  letter-spacing: 0px;
+  line-height: 28px;
+}
+.number-body-100 {
+  font-size: 14px;
+  font-family: IBM Plex Mono;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 18px;
+}
+.number-hint {
+  font-size: 10px;
+  font-family: IBM Plex Mono;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 16px;
+}
+.number-title-1 {
+  font-size: 32px;
+  font-family: IBM Plex Mono;
+  font-weight: 600;
+  letter-spacing: 0px;
+  line-height: 40px;
+}
+.number-body-100-semibold {
+  font-size: 14px;
+  font-family: IBM Plex Mono;
+  font-weight: 500;
+  letter-spacing: 0px;
+  line-height: 18px;
 }

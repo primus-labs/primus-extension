@@ -29,6 +29,7 @@
           align-self: flex-start;
           @include frsc;
           gap: var(--spacing-8);
+          color: var(--Text-Tokens-text-secondary);
           .num {
             @include Hint;
             @include frsc;
@@ -50,6 +51,7 @@
         }
         .intro {
           @include fcss;
+          color: var(--Text-Tokens-text-primary);
           .name {
             @include HeadlineH2;
           }
@@ -59,13 +61,16 @@
         }
       }
       .desc {
+
         @include BodyBody300;
+        color: var(--Text-Tokens-text-secondary);
+        
       }
     }
     .connectBtn {
       width: fit-content;
       align-self: flex-end;
-      >span{
+      > span {
         line-height: var(--spacing-24);
       }
       .iconfont {
