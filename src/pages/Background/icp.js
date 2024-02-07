@@ -32,7 +32,11 @@ export const icpMsgListener = async (
   } else if (name === 'connectWallet') {
     const { walletName, operation, path } = params;
     padoExtensionId = sender.tab.id;
-    icpPageTabId = await createTabFn(icpPath + '&operation=connectWallet');
+    const curUrl =
+      icpPath.indexOf('?') > -1
+        ? icpPath + '&operation=connectWallet'
+        : icpPath + '?operation=connectWallet';
+    icpPageTabId = await createTabFn(curUrl);
     console.log('create icp tab', icpPageTabId);
     // }
   } else if (name === 'connectWalletRes') {
