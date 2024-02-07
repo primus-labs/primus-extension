@@ -2,8 +2,7 @@ let tabCreatedByPado;
 let icpPageTabId;
 let padoExtensionId;
 let upperChainRequest;
-const icpPath =
-  'http://127.0.0.1:8000/other/connectWallet?canisterId=bkyz2-fmaaa-aaaaa-qaaaq-cai';
+const icpPath = 'https://bupby-pqaaa-aaaam-abykq-cai.icp0.io/';
 
 export const icpMsgListener = async (
   request,
