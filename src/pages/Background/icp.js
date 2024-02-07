@@ -2,7 +2,8 @@ let tabCreatedByPado;
 let icpPageTabId;
 let padoExtensionId;
 let upperChainRequest;
-const icpPath = 'https://bupby-pqaaa-aaaam-abykq-cai.icp0.io/';
+const icpPath =
+  'https://bupby-pqaaa-aaaam-abykq-cai.icp0.io/other/connectWallet';
 
 export const icpMsgListener = async (
   request,
@@ -21,7 +22,11 @@ export const icpMsgListener = async (
       );
     }
   } else if (name === 'upperChain') {
-    icpPageTabId = await createTabFn(icpPath + '&operation=upperChain');
+    const curUrl =
+      icpPath.indexOf('?') > -1
+        ? icpPath + '&operation=upperChain'
+        : icpPath + '?operation=upperChain';
+    icpPageTabId = await createTabFn(curUrl);
     console.log('create icp tab', icpPageTabId);
     upperChainRequest = request;
   } else if (name === 'connectWallet') {
