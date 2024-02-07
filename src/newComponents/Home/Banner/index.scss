@@ -1,0 +1,54 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.homeBanner {
+  width: 100%;
+  height: 144px;
+  @include frsc;
+  padding: 0 33px;
+  border-radius: var(--spacing-8);
+  border: 1px solid var(--Border-Tokens-border- primary);
+  // background-color: var(--Layer-Tokens-layer-bp);
+  background-color: #e8ffff;// TODO-newui
+  background-image: url(../../../assets//newImg/home/bannerBg.svg);
+  background-repeat: no-repeat;
+  background-size: 872px 144px;
+  background-position: right center;
+  .content {
+    width: 100%;
+    height: 100%;
+    @include frbc;
+    .intro {
+      @include fcss;
+      gap: var(--spacing-14);
+      .brief {
+        @include fcss;
+        gap: var(--spacing-2);
+        h1 {
+          @include HeadlineH1;
+          color: var(--Text-Tokens-text-primary);
+        }
+        h3 {
+          @include BodyBody300;
+          color: var(--Text-Tokens-text-tertiary);
+        }
+      }
+      .desc {
+        @include frsc;
+        gap: var(--spacing-18);
+        @include Label01;
+        .left,
+        .right {
+          @include frsc;
+          gap: var(--spacing-4);
+          .iconfont {
+            font-size: var(--spacing-16);
+            color: var(--Icon-Tokens-icon-primary);
+          }
+        }
+      }
+    }
+    .joinBtn {
+    }
+  }
+}

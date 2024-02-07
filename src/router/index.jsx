@@ -21,8 +21,8 @@ const router = [
     children: [
       {
         index: true,
-        // element: <Home />,
-        element: <FirstHome />,
+        element: <Home />,
+        // element: <FirstHome />,
       },
       {
         path: 'datas',
