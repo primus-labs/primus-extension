@@ -1,4 +1,5 @@
 import React, { memo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DATASOURCEMAP } from '@/config/dataSource';
 
 import type { SyntheticEvent } from 'react';
@@ -24,11 +25,18 @@ interface PDropdownProps {
 }
 const list = Object.values(DATASOURCEMAP);
 const Cards: React.FC<PDropdownProps> = memo(
-  ({ onClick = (item: NavItem) => {} }) => {
-    const handleConnect = useCallback((i) => {
-      onClick && onClick(i);
+  ({ onClick = (item: NavItem) => { } }) => {
+    const navigate = useNavigate()
+    const handleConnect = useCallback(
+      (i) => {
+        // onClick && onClick(i);
+        navigate(`/datas/data?dataSourceName=${i.name}`);
+      },
+      [navigate]
+    );
+    const handleDelete = useCallback((i) => {
+      
     }, []);
-    const handleDelete = useCallback((i) => {}, []);
 
     return (
       <ul className="dataSourceCards">

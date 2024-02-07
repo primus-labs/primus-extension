@@ -26,8 +26,10 @@ import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
 import type { ExchangeMeta } from '@/types/dataSource';
 
+export type DataSourceItemType = ExchangeMeta & { provider?: any; unConnectTip?: any };
+
 export type DataSourceMapType = {
-  [propName: string]: ExchangeMeta & { provider?: any };
+  [propName: string]: DataSourceItemType;
 };
 
 export const DATASOURCEMAP: DataSourceMapType = {
@@ -36,13 +38,16 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceOnChainAssets,
     desc: 'Support fetching token & NFT assets data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch token & NFT assets data from your Web3 Wallet to manage your assets or create attestations.',
   },
   binance: {
     name: 'Binance',
     type: 'Assets',
     icon: iconDataSourceBinance,
     desc: 'Support fetching spot & flexible account assets data for management and attestation creation.',
-
+    unConnectTip:
+      'You can fetch spot & flexible account assets data from your Binance account to manage your assets or create attestations.',
     constructorF: Binance,
     baseName: 'api.binance.com',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
@@ -52,7 +57,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceCoinbase,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
-
+    unConnectTip:
+      'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
     requirePassphase: false,
     constructorF: Coinbase,
     baseName: 'api.coinbase.com',
@@ -63,7 +69,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceKucoin,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
-
+    unConnectTip: '',
     requirePassphase: true,
     constructorF: KuCoin,
     baseName: 'api.kucoin.com',
@@ -73,7 +79,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceBybit,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
-
+    unConnectTip: '',
     requirePassphase: false,
     constructorF: Bybit,
     baseName: 'api.bybit.com',
@@ -83,7 +89,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceOKX,
     desc: 'Support fetching trading account assets data for management and attestation creation.',
-
+    unConnectTip:
+      'You can fetch trading account assets data from your OKX account to manage your data or create attestations.',
     requirePassphase: true,
     constructorF: OKX,
     baseName: 'www.okx.com',
@@ -95,7 +102,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceGate,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
-
+    unConnectTip: '',
     requirePassphase: false,
     constructorF: Gate,
     baseName: 'api.gateio.ws',
@@ -105,7 +112,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceHuobi,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
-
+    unConnectTip: '',
     iconWithCircle: iconDataSourceHuobiWithCircle,
     requirePassphase: false,
     constructorF: Huobi,
@@ -116,7 +123,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceBitget,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
-
+    unConnectTip:
+      'You can fetch spot account data from your Bitget account to manage your data or create attestations.',
     requirePassphase: true,
     constructorF: Bitget,
     baseName: 'api.bitget.com',
@@ -126,7 +134,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceMEXC,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
-
+    unConnectTip: '',
     requirePassphase: false,
     constructorF: Mexc,
     baseName: 'api.mexc.com',
@@ -137,18 +145,22 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceTwitter,
     desc: 'Support fetching tweet & followers data for management and attestation creation.',
     provider: 'Alex',
+    unConnectTip:
+      'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
   },
   github: {
     name: 'Github',
     type: 'Social',
     icon: iconDataSourceGithub,
     desc: 'Support fetching user profile data for management and attestation creation.',
+    unConnectTip: '',
   },
   discord: {
     name: 'Discord',
     type: 'Social',
     icon: iconDataSourceDiscord,
     desc: 'Support fetching account name & status data for management and attestation creation.',
+    unConnectTip: '',
   },
   /*youtube: {
     name: 'Youtube',
@@ -160,7 +172,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Humanity',
     icon: iconDataSourceZan,
     desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
-
+    unConnectTip:
+      'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
     disabled: true,
   },
   google: {
@@ -168,5 +181,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceGoogle,
     desc: 'Support fetching account name & email address data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch account name & email address data from your Google account to manage your data or create attestations.',
   },
 };

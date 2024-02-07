@@ -15,9 +15,11 @@
     @include pCard;
     .left,
     .right {
-      @include fcbc;
+      @include fcbs;
+      height: 100%;
     }
     .left {
+      
       > img {
         width: var(--spacing-40);
       }
@@ -34,6 +36,7 @@
       }
     }
     .right {
+      align-items: flex-end;
       .provider {
         @include Hint;
         color: var(--Text-Tokens-text-tertiary);

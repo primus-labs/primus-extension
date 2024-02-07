@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useSearchParams } from 'react-router-dom';
 import { DATASOURCEMAP } from '@/config/dataSource';
+import type { DataSourceItemType } from '@/config/dataSource';
 import PBack from '@/newComponents/PBack';
 import PButton from '@/newComponents/PButton';
 import PTag from '@/newComponents/PTag';
@@ -8,15 +9,21 @@ import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards'
 import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards'
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
-const activeDataSouce = Object.values(DATASOURCEMAP)[0];
+const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const dataSourceName = searchParams.get('dataSourceName');
   const [hasConnected, setHasConnected] = useState<boolean>(true);
   const handleConnect = useCallback(() => {}, []);
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
+  const activeDataSouce = useMemo(() => {
+    var obj = DataSouces.find((i) => i.name === dataSourceName);
+    return obj as DataSourceItemType;
+  }, [dataSourceName]);
 
   return (
     <div className="pageDataSourceItem">
@@ -51,11 +58,11 @@ const DataSourceItem = memo(() => {
             <div className="hasContent">
               <div className="connectedInfo sectionInfo">
                 <h2 className="sectionTitle">Connected data</h2>
-                <ConnectedDataCards/>
+                <ConnectedDataCards />
               </div>
               <div className="attestationTypes sectionInfo">
                 <h2 className="sectionTitle">Create your attestation</h2>
-                <SupportedAttestationCards/>
+                <SupportedAttestationCards />
               </div>
             </div>
           ) : (
@@ -63,10 +70,7 @@ const DataSourceItem = memo(() => {
               <img src={empty} alt="" />
               <div className="introTxt">
                 <div className="title">No data connected</div>
-                <div className="desc">
-                  You can fetch token & NFT assets data from your Web3 Wallet to
-                  manage your assets or create attestations.
-                </div>
+                <div className="desc">{activeDataSouce.unConnectTip}</div>
               </div>
               <PButton
                 className="connectBtn"

@@ -72,7 +72,6 @@ const Cards: React.FC<PDropdownProps> = memo(
                         handleDelete(i);
                       }}
                     />
-                   
                   </div>
                   <div className="desc">
                     <div className="origin">Fetching from {i.origin}</div>

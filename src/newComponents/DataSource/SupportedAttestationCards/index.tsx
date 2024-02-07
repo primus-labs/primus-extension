@@ -66,7 +66,6 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleDetail = useCallback((i) => {
       onClick && onClick(i);
     }, []);
-
     return (
       <ul className="supportSttestationCards">
         {supportList.map((i) => {
