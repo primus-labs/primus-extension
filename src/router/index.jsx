@@ -3,6 +3,7 @@ import Home from '@/pages/Home/Home.jsx';
 // import DataSourceOverview from '@/pages/DataSourceOverview/index.tsx';
 import DataSourceOverview from '@/newPages/DataSourceOverview/index.tsx';
 import DataSourceItem from '@/newPages/DataSourceItem/index.tsx';
+import FirstHome from '@/newPages/FirstHome/index.tsx';
 import DataSourceDetail from '@/pages/DataSourceDetail/index.tsx';
 import Lock from '@/pages/Lock/index.jsx';
 // import Layout from '@/components/Layout/Layout/index.tsx';
@@ -20,7 +21,8 @@ const router = [
     children: [
       {
         index: true,
-        element: <Home />,
+        // element: <Home />,
+        element: <FirstHome />,
       },
       {
         path: 'datas',
