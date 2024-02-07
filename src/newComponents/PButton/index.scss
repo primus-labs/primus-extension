@@ -18,7 +18,7 @@ button.PButton {
   color: var(--Text-Tokens-text-inverse, #fff);
   box-sizing: border-box;
   cursor: pointer;
-  width: 100%;
+  width: fit-content;
   &.disabled {
     cursor: not-allowed;
   }
@@ -79,15 +79,13 @@ button.PButton {
   }
   &.icon {
     @include frcc;
-    height: 40px;
-    width: 40px;
     .iconfont {
       font-size: 16px;
       color: var(--icon-tokens-icon-primary);
     }
     &:not(.disabled):hover {
       .iconfont {
-        color: var(--button-tokens-button-primary-hover);
+        color: var(--Button-Tokens-button-primary-hover);
       }
     }
     &.disabled {

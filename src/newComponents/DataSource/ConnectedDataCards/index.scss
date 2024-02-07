@@ -12,12 +12,7 @@
     @include frbc;
     gap: var(--spacing-24);
     @include pCard;
-    &:hover {
-      .detailBtn ,
-      .detailBtn .iconfont{
-        color: var(--Button-Tokens-button-text-link-hover);
-      }
-    }
+
     .brief {
       @include frsc;
       gap: var(--spacing-24);
@@ -30,11 +25,13 @@
       gap: var(--spacing-8);
       color: var(--Text-Tokens-text-primary);
       .title {
-        @include HeadlineH2;
+        @include HeadlineH3;
         @include frsc;
         gap: var(--spacing-8);
-        .iconfont {
-          font-size: var(--spacing-16);
+        .deleteBtn {
+          > .iconfont {
+            font-size: var(--spacing-16);
+          }
         }
       }
       .desc {
@@ -46,10 +43,9 @@
 
     .detailBtn {
       width: fit-content;
-
-      > span {
-        line-height: var(--spacing-18);
-      }
+      height: var(--spacing-20);
+      @include TextLinkLink;
+      height: var(--spacing-18);
       .iconfont {
         align-self: flex-start;
       }

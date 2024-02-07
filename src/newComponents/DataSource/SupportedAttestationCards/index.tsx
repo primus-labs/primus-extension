@@ -7,7 +7,9 @@ import type { SyntheticEvent } from 'react';
 import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
 import connectData from '@/assets/newImg/dataSource/connectedData.svg';
-
+import iconAttestationHumanity from '@/assets/newImg/dataSource/iconAttestationHumanity.svg';
+import iconAttestationAssets from '@/assets/newImg/dataSource/iconAttestationAssets.svg';
+import iconAttestationOnChain from '@/assets/newImg/dataSource/iconAttestationOnChain.svg';
 import './index.scss';
 
 type NavItem = {
@@ -24,18 +26,39 @@ interface PDropdownProps {
 
   // list: NavItem[];
 }
-const connectedList = [
+const supportList = [
+  // {
+  //   title: 'On-chain Activities',
+  //   desc: 'Largest ETH/USDC Uniswap transaction',
+  //   type: 'Powered by Brevis',
+  //   icon: iconAttestationOnChain,
+  //   id: '1',
+  //   webTemplateId: '2',
+  // },
+
   {
-    address: '0xF795811af86E9f23A0c03dE5115398B8d4778eD4',
-    origin: 'MetaMask',
-    initTime: '1707101091114',
-    updateTime: '1707201011114',
+    title: 'Assets Certificate',
+    desc: 'Owns the specified token',
+    icon: iconAttestationAssets,
+    type: 'Web Data',
+    id: '2',
+    webTemplateId: '2323',
   },
   {
-    address: '0x123411af86E9f23A0c03dE5115398B8d4778eD4',
-    origin: 'OKX',
-    initTime: '1707101091114',
-    updateTime: '1707201011114',
+    title: 'Assets Certificate',
+    desc: 'Asset balance ≥ specified amount',
+    icon: iconAttestationAssets,
+    id: '3',
+    webTemplateId: '2323',
+    type: 'Web Data',
+  },
+  {
+    title: 'Humanity Verification',
+    desc: 'Completed KYC Verification',
+    icon: iconAttestationHumanity,
+    type: 'Web Data',
+    id: '4',
+    webTemplateId: '2323',
   },
 ];
 const Cards: React.FC<PDropdownProps> = memo(
@@ -43,36 +66,26 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleDetail = useCallback((i) => {
       onClick && onClick(i);
     }, []);
-    const formatTime = (datastamp) => {
-      return dayjs.utc(+datastamp).format('YYYY.MM.DD hh:mm');
-    };
+
     return (
-      <ul className="connectedDataCards">
-        {connectedList.map((i) => {
+      <ul className="supportSttestationCards">
+        {supportList.map((i) => {
           return (
             <li
-              className="dataCard"
+              className="supportSttestationCard"
               onClick={() => {
                 handleDetail(i);
               }}
             >
               <div className="left">
-                <img src={connectData} alt="" />
+                <img src={i.icon} alt="" />
                 <div className="introTxt">
-                  <div className="title">
-                    <span>Wallet Address: {i.address}</span>
-                    <i className="iconfont iconDelete"></i>
-                  </div>
-                  <div className="desc">
-                    <div className="origin">Fetching from {i.origin}</div>
-                    <div className="time">{formatTime(i.updateTime)}</div>
-                  </div>
+                  <div className="title">{i.title}</div>
+                  <div className="desc">{i.desc}</div>
                 </div>
               </div>
               <div className="right">
-                <div className="provider">
-              
-                </div>
+                <div className="provider">{i.type}</div>
                 <PButton
                   className="createBtn"
                   text="Create"

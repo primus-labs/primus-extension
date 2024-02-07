@@ -5,6 +5,7 @@ import PBack from '@/newComponents/PBack';
 import PButton from '@/newComponents/PButton';
 import PTag from '@/newComponents/PTag';
 import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards'
+import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards'
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
 const activeDataSouce = Object.values(DATASOURCEMAP)[0];
@@ -54,6 +55,7 @@ const DataSourceItem = memo(() => {
               </div>
               <div className="attestationTypes sectionInfo">
                 <h2 className="sectionTitle">Create your attestation</h2>
+                <SupportedAttestationCards/>
               </div>
             </div>
           ) : (

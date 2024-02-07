@@ -46,6 +46,9 @@ const Cards: React.FC<PDropdownProps> = memo(
     const formatTime = (datastamp) => {
       return dayjs.utc(+datastamp).format('YYYY.MM.DD hh:mm');
     };
+    const handleDelete = useCallback((i) => {
+
+    },[])
     return (
       <ul className="connectedDataCards">
         {connectedList.map((i) => {
@@ -61,7 +64,15 @@ const Cards: React.FC<PDropdownProps> = memo(
                 <div className="introTxt">
                   <div className="title">
                     <span>Wallet Address: {i.address}</span>
-                    <i className="iconfont iconDelete"></i>
+                    <PButton
+                      className="deleteBtn"
+                      type="icon"
+                      icon={<i className="iconfont icon-iconDelete"></i>}
+                      onClick={() => {
+                        handleDelete(i);
+                      }}
+                    />
+                   
                   </div>
                   <div className="desc">
                     <div className="origin">Fetching from {i.origin}</div>

@@ -5,7 +5,7 @@
 .dataSourceCards {
   @include frbs;
   flex-wrap: wrap;
-  gap: var(--spacing-12);
+  row-gap: var(--spacing-16);
   .dataSourceCard {
     width: 363px;
     height: 204px;
@@ -13,12 +13,7 @@
     @include fcss;
     gap: var(--spacing-24);
     @include pCard;
-    &:hover {
-      .connectBtn,
-      .connectBtn .iconfont {
-        color: var(--Button-Tokens-button-text-link-hover);
-      }
-    }
+
     .cardContent {
       width: 100%;
       height: 100%;
@@ -40,8 +35,10 @@
               font-size: var(--spacing-16);
             }
           }
-          > .iconfont {
-            font-size: var(--spacing-12);
+          .deleteBtn {
+            > .iconfont {
+              font-size: var(--spacing-12);
+            }
           }
         }
       }
@@ -55,7 +52,7 @@
           @include fcss;
           color: var(--Text-Tokens-text-primary);
           .name {
-            @include HeadlineH2;
+            @include HeadlineH3;
           }
           .origin {
             @include Hint;
@@ -70,9 +67,7 @@
     .connectBtn {
       width: fit-content;
       align-self: flex-end;
-      > span {
-        line-height: var(--spacing-24);
-      }
+      @include TextLinkLink;
       .iconfont {
         align-self: flex-start;
       }

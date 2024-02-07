@@ -26,4 +26,10 @@
     border: 1px solid var(--Border-Tokens-border-bp); // TODO
     @include card-xs_shadow;
   }
+  .PButton.text:hover {
+    color: var(--Button-Tokens-button-text-link-hover);
+    .iconfont {
+      color: var(--Button-Tokens-button-text-link-hover);
+    }
+  }
 }

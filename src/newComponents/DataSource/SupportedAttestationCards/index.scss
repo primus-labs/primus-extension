@@ -1,28 +1,46 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
-.connectedDataCards {
+.supportSttestationCards {
   width: 100%;
-  @include fcss;
-
-  gap: var(--spacing-8);
-  .dataCard {
-    width: 100%;
+  @include frbs;
+  flex-wrap: wrap;
+  row-gap: var(--spacing-16);
+  .supportSttestationCard {
+    width: 363px;
+    height: 164px;
     padding: var(--spacing-24);
     @include frbc;
-    gap: var(--spacing-24);
+    row-gap: var(--spacing-20);
     @include pCard;
-    &:hover {
-      .detailBtn ,
-      .detailBtn .iconfont{
-        color: var(--Button-Tokens-button-text-link-hover);
+    .left,
+    .right {
+      @include fcbc;
+    }
+    .left {
+      > img {
+        width: var(--spacing-40);
+      }
+      .introTxt {
+        @include fcss;
+        .title {
+          @include BodyBody100semibold;
+          color: var(--Text-Tokens-text-primary);
+        }
+        .desc {
+          @include BodyBody300;
+          color: var(--Text-Tokens-text-secondary);
+        }
       }
     }
-    .brief {
-      @include frsc;
-      gap: var(--spacing-24);
-      > img {
-        width: var(--spacing-48);
+    .right {
+      .provider {
+        @include Hint;
+        color: var(--Text-Tokens-text-tertiary);
+      }
+      .createBtn {
+        height: var(--spacing-16);
+        @include TextLinkLink;
       }
     }
     .introTxt {

@@ -41,7 +41,7 @@
           @include fcss;
           gap: var(--spacing-16);
           .sectionTitle {
-            @include HeadlineH2;
+            @include HeadlineH3;
             color: var(--Text-Tokens-text-primary);
           }
         }

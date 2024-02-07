@@ -1,7 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { DATASOURCEMAP } from '@/config/dataSource';
 
-
 import type { SyntheticEvent } from 'react';
 
 import PTag from '@/newComponents/PTag';
@@ -20,19 +19,17 @@ type NavItem = {
 };
 interface PDropdownProps {
   onClick?: (item: NavItem) => void;
-  
+
   // list: NavItem[];
 }
 const list = Object.values(DATASOURCEMAP);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
     const handleConnect = useCallback((i) => {
-      onClick && onClick(i)
+      onClick && onClick(i);
     }, []);
-    const handleDelete = useCallback((e: SyntheticEvent, i) => {
-      e.stopPropagation()
-    }, []);
-    
+    const handleDelete = useCallback((i) => {}, []);
+
     return (
       <ul className="dataSourceCards">
         {list.map((i) => {
@@ -51,12 +48,14 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <i className="iconfont icon-iconConnection"></i>
                       <span>2</span>
                     </div>
-                    <i
-                      className="iconfont icon-iconDelete"
-                      onClick={(e) => {
-                        handleDelete(e, i);
+                    <PButton
+                      className="deleteBtn"
+                      type="icon"
+                      icon={<i className="iconfont icon-iconDelete"></i>}
+                      onClick={() => {
+                        handleDelete(i);
                       }}
-                    ></i>
+                    />
                   </div>
                 </div>
                 <div className="brief">

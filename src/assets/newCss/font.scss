@@ -155,7 +155,7 @@
 }
 
 @mixin TextLinkLink {
-  color: var(--Brand-Primary-Color-BP-50, #00c7f2);
+  // color: var(--Brand-Primary-Color-BP-50, #00c7f2);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
   /* TextLink/Hover */
   font-family: 'IBM Plex Sans';
@@ -212,10 +212,6 @@
   letter-spacing: 0px;
   line-height: 60px;
 }
-
-
-
-
 
 .textlink {
   font-size: 14px;
@@ -278,5 +274,35 @@
   font-family: IBM Plex Mono;
   font-weight: 500;
   letter-spacing: 0px;
+  line-height: 18px;
+}
+.number-body {
+  font-size: 12px;
+  font-family: IBM Plex Mono;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 125%;
+}
+
+.body-body-1 {
+  font-size: 14px;
+  font-family: Inter;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 24px;
+}
+.body-body-2 {
+  font-size: 14px;
+  font-family: Inter;
+  font-weight: 700;
+  letter-spacing: 0px;
+  line-height: 24px;
+}
+
+.number-id {
+  font-size: 14px;
+  font-family: IBM Plex Mono;
+  font-weight: 400;
+  letter-spacing: 0.1599999964237213px;
   line-height: 18px;
 }
