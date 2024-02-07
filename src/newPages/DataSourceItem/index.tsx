@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
-import { useNavigate,useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import type { DataSourceItemType } from '@/config/dataSource';
 import PBack from '@/newComponents/PBack';
 import PButton from '@/newComponents/PButton';
 import PTag from '@/newComponents/PTag';
-import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards'
-import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards'
+import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards';
+import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards';
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
@@ -24,6 +24,13 @@ const DataSourceItem = memo(() => {
     var obj = DataSouces.find((i) => i.name === dataSourceName);
     return obj as DataSourceItemType;
   }, [dataSourceName]);
+  const btnTxtEl = useMemo(() => {
+    if (activeDataSouce.name === 'G Account') {
+      return 'Connect by Auth';
+    } else {
+      return 'Connect by Web';
+    }
+  }, [activeDataSouce]);
 
   return (
     <div className="pageDataSourceItem">
@@ -48,7 +55,7 @@ const DataSourceItem = memo(() => {
             {hasConnected && (
               <PButton
                 className="connectBtn"
-                text="Connect by Web"
+                text={btnTxtEl}
                 size="s"
                 onClick={handleConnect}
               />
@@ -74,7 +81,7 @@ const DataSourceItem = memo(() => {
               </div>
               <PButton
                 className="connectBtn"
-                text="Connect by Web"
+                text={btnTxtEl}
                 size="s"
                 onClick={handleConnect}
               />
