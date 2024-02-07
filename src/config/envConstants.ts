@@ -263,7 +263,7 @@ const EASINFOMAP = {
         symbol: 'tBNB',
         decimals: 18,
       },
-      transactionDetailUrl: 'https://test.bascan.io/attestation',
+      transactionDetailUrl: 'https://testnet.opbnbscan.com/tx',
     },
     Arbitrum: {
       showName: 'Arbitrum',
@@ -772,6 +772,12 @@ const BNBGREENFIELDSCHEMANAMEMAP = {
   production: 'BAS-Greenfield-Mainnet',
 };
 export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
+const OPBNBSCHEMANAMEMAP = {
+  development: 'BAS-opBNB-Testnet',
+  test: 'BAS-opBNB-Testnet',
+  production: 'BAS-opBNB-Mainnet',
+};
+export let OPBNBSCHEMANAME = OPBNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDURLMAP = {
   development: 'http://api-dev.padolabs.org:9095/',
   test: 'http://api-dev.padolabs.org:9095/',
