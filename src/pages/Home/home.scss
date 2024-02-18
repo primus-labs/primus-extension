@@ -3,4 +3,8 @@
 
 .pageHome {
   padding-top: var(--spacing-40);
+  .pageContent{
+    @include fcss;
+    gap: var(--spacing-32);
+  }
 }

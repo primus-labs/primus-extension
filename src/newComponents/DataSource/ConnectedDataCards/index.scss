@@ -11,7 +11,7 @@
     padding: var(--spacing-24);
     @include frbc;
     gap: var(--spacing-24);
-    @include pCard;
+    @include clickableCard;
 
     .brief {
       @include frsc;

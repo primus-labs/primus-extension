@@ -12,7 +12,7 @@
     padding: var(--spacing-16) var(--spacing-24);
     @include fcss;
     gap: var(--spacing-24);
-    @include pCard;
+    @include clickableCard;
 
     .cardContent {
       width: 100%;

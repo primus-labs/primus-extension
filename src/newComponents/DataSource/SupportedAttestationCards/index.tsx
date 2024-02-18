@@ -29,7 +29,7 @@ interface PDropdownProps {
 }
 const attestationTypeMap = {
   1: {
-    title: 'On-chain Activities',
+    title: 'On-chain Activities Proof',
     desc: 'Largest ETH/USDC Uniswap transaction',
     type: 'Powered by Brevis',
     icon: iconAttestationOnChain,
@@ -37,7 +37,7 @@ const attestationTypeMap = {
     webTemplateId: '2',
   },
   2: {
-    title: 'Assets Certificate',
+    title: 'Assets Certificate Proof',
     desc: 'Owns the specified token',
     icon: iconAttestationAssets,
     type: 'Web Data',
@@ -45,7 +45,7 @@ const attestationTypeMap = {
     webTemplateId: '2323',
   },
   3: {
-    title: 'Assets Certificate',
+    title: 'Assets Certificate Proof',
     desc: 'Asset balance ≥ specified amount',
     icon: iconAttestationAssets,
     id: '3',
@@ -53,7 +53,7 @@ const attestationTypeMap = {
     type: 'Web Data',
   },
   4: {
-    title: 'Humanity Verification',
+    title: 'Humanity Verification Proof',
     desc: 'Owns the account',
     icon: iconAttestationHumanity,
     type: 'Web Data',
@@ -61,7 +61,7 @@ const attestationTypeMap = {
     webTemplateId: '2323',
   },
   5: {
-    title: 'Humanity Verification',
+    title: 'Humanity Verification Proof',
     desc: 'Completed KYC Verification',
     icon: iconAttestationHumanity,
     type: 'Web Data',

@@ -18,10 +18,13 @@
 }
 
 @mixin pCard {
-  cursor: pointer;
   border-radius: var(--spacing-8);
   border: 1px solid var(--Border-Tokens-border-primary);
   background: var(--Layer-Tokens-layer-primary);
+}
+@mixin clickableCard {
+  @include pCard;
+  cursor: pointer;
   &:hover {
     border: 1px solid var(--Border-Tokens-border-bp); // TODO
     @include card-xs_shadow;

@@ -12,7 +12,7 @@
     padding: var(--spacing-24);
     @include frbc;
     row-gap: var(--spacing-20);
-    @include pCard;
+    @include clickableCard;
     .left,
     .right {
       @include fcbs;
