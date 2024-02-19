@@ -17,7 +17,7 @@ export const pageDecodeMsgListener = async (
     dataSource,
     jumpTo,
     schemaType,
-    datasourceTemplate: { host, requests, responses },
+    datasourceTemplate: { host, requests, responses, calculations },
     uiTemplate,
     id,
     event,
@@ -319,6 +319,7 @@ export const pageDecodeMsgListener = async (
       responses,
       uiTemplate,
       templateId: id,
+      calculations,
     });
     await chrome.storage.local.set({
       activeRequestAttestation: JSON.stringify(aligorithmParams),
