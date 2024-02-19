@@ -5,16 +5,7 @@ import {list} from '@/config/menu'
 import './index.scss';
 
 interface PButtonProps {}
-export type NavItem = {
-  iconName?: any;
-  label?: any;
-  value?: any;
-  disabled?: boolean;
-  link?: string;
 
-  icon?: any;
-  toBeActive?: boolean;
-};
 
 const Nav: React.FC<PButtonProps> = memo(({}) => {
   const navigate = useNavigate();
@@ -34,7 +25,7 @@ const Nav: React.FC<PButtonProps> = memo(({}) => {
     }
     return str;
   }, [pathname]);
-  const handleClickOption = (item: NavItem) => {
+  const handleClickOption = (item) => {
     if (item.disabled) {
       return;
     }
@@ -42,10 +33,10 @@ const Nav: React.FC<PButtonProps> = memo(({}) => {
       navigate(item.link);
     }
   };
-  const handleEnter = (item: NavItem) => {
+  const handleEnter = (item) => {
     item.toBeActive = true;
   };
-  const handleLeave = (item: NavItem) => {};
+  const handleLeave = (item) => {};
   return (
     <div className="navWrapper">
       <ul className="navItems">

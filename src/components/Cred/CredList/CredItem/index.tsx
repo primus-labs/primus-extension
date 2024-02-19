@@ -26,7 +26,7 @@ import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import iconUpdate from '@/assets/img/credit/iconUpdate.svg';
 import iconClear from '@/assets/img/credit/iconClear.svg';
 import iconUniswap from '@/assets/img/credit/iconUniswap.svg';
-import iconTikTok from '@/assets/img/credit/iconTikTok.svg';
+import iconTikTok from '@/assets/img/iconDataSourceTikTok.svg';
 
 import type { PROOFTYPEITEM, CredTypeItemType } from '@/types/cred';
 import type { UserState } from '@/types/store';

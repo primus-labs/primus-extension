@@ -18,6 +18,7 @@ import { eventReport } from '@/services/api/usertracker';
 import './pageDecode.js';
 import { pageDecodeMsgListener } from './pageDecode.js';
 import { PadoWebsiteMsgListener } from './pageWebsite.js';
+import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -481,4 +482,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.runtime.sendMessage(message);
     }
   }
+  if (message.type === 'dataSourceWeb') {
+    dataSourceWebMsgListener(
+      message,
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort
+    );
+  }
+  
 });

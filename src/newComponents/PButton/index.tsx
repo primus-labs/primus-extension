@@ -25,7 +25,7 @@ const PButton: React.FC<PButtonProps> = memo(
     type = 'primary',
     icon,
     size = 'm',
-    disabled = false
+    disabled = false,
   }) => {
     const formatClassName = useMemo(() => {
       let defaultCN = 'PButton';
@@ -68,7 +68,10 @@ const PButton: React.FC<PButtonProps> = memo(
     }, [className, type, size, disabled]);
     const handleClick = (e: SyntheticEvent) => {
       e.stopPropagation();
-      onClick && onClick();
+      if (disabled) {
+      } else {
+        onClick && onClick();
+      }
     };
     return (
       <button className={formatClassName} onClick={handleClick}>

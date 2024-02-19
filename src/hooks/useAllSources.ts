@@ -12,7 +12,7 @@ import type {
   ExchangeMeta,
 } from '@/types/dataSource';
 
-const useAllSources = (sourceName?: undefined | string) => {
+const useAllSources = (sourceName?: undefined | null| string) => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
@@ -46,10 +46,11 @@ const useAllSources = (sourceName?: undefined | string) => {
   }, [exSources, socialSources, kycSources]);
   const activeSourceInfo: any = useMemo(() => {
     if (sourceName) {
+      const lowerCaseName = sourceName.toLowerCase()
       return (
-        exSources[sourceName] ||
-        socialSources[sourceName] ||
-        kycSources[sourceName]
+        exSources[lowerCaseName] ||
+        socialSources[lowerCaseName] ||
+        kycSources[lowerCaseName]
       );
     } else {
       return null;

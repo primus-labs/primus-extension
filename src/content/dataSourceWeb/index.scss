@@ -6,9 +6,14 @@
 #pado-extension-content {
   @include frcc;
   display: flex;
+  position: fixed;
+  z-index: 1000;
+  bottom: 30px;
+  right: 35px;
   .pado-extension-card {
     @include fcss;
     @include pCard;
+    @include card-xs_shadow;
     // gap: var(--spacing-24);
     padding: var(--spacing-32) var(--spacing-24) var(--spacing-24);
     width: 384px;
@@ -93,14 +98,19 @@
     }
     .footer {
       width: 100%;
+      @include frsc;
       justify-content: flex-end;
       &.initialized {
-        @include frsc;
         gap: var(--spacing-16);
       }
       &.verifying {
-        @include frsc;
         gap: var(--spacing-16);
+      }
+      .cancelBtn{
+        
+      }
+      .confirmBtn{
+
       }
     }
   }

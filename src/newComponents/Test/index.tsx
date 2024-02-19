@@ -29,7 +29,7 @@ const Test: React.FC = memo(({}) => {
   const [ttt, setTtt] = useState('1');
   const [ppp, setPpp] = useState('');
   const handleClick = useCallback(() => {
-    dispatch(setThemeAction());
+    dispatch(setThemeAction('dark'));
   }, [dispatch]);
   return (
     <div className="test">

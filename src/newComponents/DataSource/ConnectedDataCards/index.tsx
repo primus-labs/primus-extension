@@ -93,7 +93,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       }
       //  if (i.name === 'Binance')
     }, []);
-    const handleDelete = () => {};
+    const handleDelete = (i:any) => {};
     return (
       <ul className="connectedDataCards">
         {connectedList.map((i) => {
@@ -103,6 +103,7 @@ const Cards: React.FC<PDropdownProps> = memo(
               onClick={() => {
                 handleDetail(i);
               }}
+              key={i.account}
             >
               <div className="brief">
                 <img src={connectData} alt="" />

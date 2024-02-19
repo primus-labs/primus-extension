@@ -10,6 +10,7 @@
     @include fcss;
     gap: var(--spacing-16);
     .backWrapper {
+      cursor: pointer;
       @include frsc;
       gap: var(--spacing-4);
       @include BodyBody100;

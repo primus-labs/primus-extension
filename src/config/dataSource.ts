@@ -26,7 +26,11 @@ import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
 import type { ExchangeMeta } from '@/types/dataSource';
 
-export type DataSourceItemType = ExchangeMeta & { provider?: any; unConnectTip?: any };
+export type DataSourceItemType = ExchangeMeta & {
+  provider?: any;
+  unConnectTip?: any;
+  jumpTo?: any;
+};
 
 export type DataSourceMapType = {
   [propName: string]: DataSourceItemType;
@@ -51,6 +55,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     constructorF: Binance,
     baseName: 'api.binance.com',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
+    
+    jumpTo:"https://www.binance.com/my/dashboard",
   },
   coinbase: {
     name: 'Coinbase',

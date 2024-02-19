@@ -47,7 +47,7 @@ body {
 
   --pHeaderHeight: 105px; */
 }
-#app-container {
+#app-container,#pado-extension-content {
   --spacing-2: 0.0138rem;
   --spacing-7: 0.0486rem;
 
@@ -80,7 +80,7 @@ body {
 }
 
 @media (max-width: 1470px) {
-  #app-container {
+  #app-container,#pado-extension-content {
     --spacing-2: 2px;
     --spacing-7: 7px;
 

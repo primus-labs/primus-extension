@@ -31,7 +31,7 @@ const Nav: React.FC<PButtonProps> = memo(({ }) => {
     if (item.disabled) {
       return;
     }
-    onClick(item.value, item);
+    // onClick(item.value, item);
   };
   return (
     <div className="nav">

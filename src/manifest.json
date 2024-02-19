@@ -29,7 +29,11 @@
         "iconSucc.svg",
         "iconFail.svg",
         "iconLink.svg",
-        "iconDataSourceBinance.svg"
+        "iconDataSourceBinance.svg",
+        "iconDataSourceCoinbase.svg",
+        "iconDataSourceOKX.svg",
+        "iconDataSourceTwitter.svg",
+        "iconDataSourceTikTok.svg"
       ],
       "matches": ["<all_urls>"]
     }
@@ -47,10 +51,6 @@
     {
       "matches": ["https://twitter.com/intent/follow?screen_name=padolabs"],
       "js": ["xFollow.js"]
-    },
-    {
-      "matches": ["https://www.binance.com/my/dashboard"],
-      "js": ["dataSourceWeb.bundle.js"]
     }
   ]
 }

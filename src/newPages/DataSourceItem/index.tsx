@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import {useSelector} from 'react-redux'
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useAllSources from '@/hooks/useAllSources';
-
+import type { UserState } from '@/types/store';
 import type { DataSourceItemType } from '@/config/dataSource';
 import PBack from '@/newComponents/PBack';
 import PButton from '@/newComponents/PButton';
@@ -14,45 +15,61 @@ import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
-  const [sourceList, sourceMap,activeSourceInfo] = useAllSources('binance');
-  console.log(111, sourceList, sourceMap, activeSourceInfo);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dataSourceName = searchParams.get('dataSourceName');
-  const [hasConnected, setHasConnected] = useState<boolean>(true);
-  const handleConnect = useCallback(() => {}, []);
-  const handleBack = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
-  const activeDataSouce = useMemo(() => {
+  const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
+  const [sourceList, sourceMap, activeDataSouceUserInfo] =
+    useAllSources(dataSourceName);
+  
+  const hasConnected = useMemo(() => {
+    return activeDataSouceUserInfo?.id
+  }, [activeDataSouceUserInfo]);
+  
+  const activeDataSouceMetaInfo = useMemo(() => {
     var obj = DataSouces.find((i) => i.name === dataSourceName);
     return obj as DataSourceItemType;
   }, [dataSourceName]);
   const btnTxtEl = useMemo(() => {
-    if (activeDataSouce.name === 'G Account') {
+    if (activeDataSouceMetaInfo.name === 'G Account') {
       return 'Connect by Auth';
     } else {
       return 'Connect by Web';
     }
-  }, [activeDataSouce]);
+  }, [activeDataSouceMetaInfo]);
+  const handleConnect = useCallback(() => {
+    const currRequestObj = webProofTypes.find(
+      (r: any) => r.name === 'Account Ownership' && r.dataSource === dataSourceName?.toLocaleLowerCase()
+    );
+    chrome.runtime.sendMessage({
+      type: 'dataSourceWeb',
+      name: 'inject',
+      params: {
+        ...currRequestObj,
+      },
+    });
+  }, []);
+  const handleBack = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
 
   return (
     <div className="pageDataSourceItem">
       <div className="pageContent">
-        <div className="backWrapper">
-          <PBack onBack={handleBack} />
+        <div className="backWrapper" onClick={handleBack}>
+          <PBack onBack={() => {}} />
           <span>Back</span>
         </div>
         <div className="pageDataSourceItemContent">
           <div className="dataSourceBrief">
             <div className="introTxt">
               <div className="title">
-                <div className="name">{activeDataSouce.name}</div>
-                <PTag text={`${activeDataSouce.type} Data`} color="brand" />
+                <div className="name">{activeDataSouceMetaInfo.name}</div>
+                <PTag text={`${activeDataSouceMetaInfo.type} Data`} color="brand" />
               </div>
               <div className="origin">
-                {activeDataSouce.provider
-                  ? ` Provide by ${activeDataSouce.provider}`
+                {activeDataSouceMetaInfo.provider
+                  ? ` Provide by ${activeDataSouceMetaInfo.provider}`
                   : 'By Community'}
               </div>
             </div>
@@ -81,7 +98,7 @@ const DataSourceItem = memo(() => {
               <img src={empty} alt="" />
               <div className="introTxt">
                 <div className="title">No data connected</div>
-                <div className="desc">{activeDataSouce.unConnectTip}</div>
+                <div className="desc">{activeDataSouceMetaInfo.unConnectTip}</div>
               </div>
               <PButton
                 className="connectBtn"

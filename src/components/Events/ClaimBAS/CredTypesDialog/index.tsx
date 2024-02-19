@@ -16,7 +16,7 @@ import PBottomErrorTip from '@/components/PBottomErrorTip';
 import PButton from '@/components/PButton';
 import { BASEVENTNAME, GOOGLEWEBPROOFID } from '@/config/constants';
 import { queryEventDetail } from '@/services/api/event';
-import iconTikTok from '@/assets/img/credit/iconTikTok.svg';
+import iconTikTok from '@/assets/img/iconDataSourceTikTok.svg';
 
 interface CredTypesDialogProps {
   onClose: () => void;

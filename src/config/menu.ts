@@ -1,4 +1,14 @@
-export const list = [
+export type NavItem = {
+  iconName?: any;
+  label?: any;
+  value?: any;
+  disabled?: boolean;
+  link?: string;
+
+  icon?: any;
+  toBeActive?: boolean;
+};
+export const list: NavItem[] = [
   {
     label: 'Home',
     value: 'Home',

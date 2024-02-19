@@ -48,6 +48,7 @@ const Cards: React.FC<PDropdownProps> = memo(
               onClick={() => {
                 handleConnect(i);
               }}
+              key={ i.name}
             >
               <div className="cardContent">
                 <div className="header">
