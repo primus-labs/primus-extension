@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo} from 'react'
+import React, { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { postMsg, sub } from '@/utils/utils';
 
@@ -12,11 +12,11 @@ import type {
   ExchangeMeta,
 } from '@/types/dataSource';
 
-const useAllSources = (flag = false) => {
+const useAllSources = (sourceName?: undefined | string) => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
-  
+
   const exList = useMemo(() => {
     const sourceArr: ExDataList = Object.values({ ...exSources });
     const orderedExList = sourceArr.sort((a, b) =>
@@ -44,7 +44,19 @@ const useAllSources = (flag = false) => {
       kycSources,
     };
   }, [exSources, socialSources, kycSources]);
-  return [allSourceList, allSourceMap];
-}
+  const activeSourceInfo: any = useMemo(() => {
+    if (sourceName) {
+      return (
+        exSources[sourceName] ||
+        socialSources[sourceName] ||
+        kycSources[sourceName]
+      );
+    } else {
+      return null;
+    }
+  }, [exSources, socialSources, kycSources]);
+  // sourceName
+  return [allSourceList, allSourceMap, activeSourceInfo];
+};
 
-export default useAllSources
+export default useAllSources;

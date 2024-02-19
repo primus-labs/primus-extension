@@ -22,7 +22,15 @@
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
-      "resources": ["iconExtension.svg", "iconSuc.svg"],
+      "resources": [
+        "iconExtension.svg",
+        "iconSuc.svg",
+        "iconPado.svg",
+        "iconSucc.svg",
+        "iconFail.svg",
+        "iconLink.svg",
+        "iconDataSourceBinance.svg"
+      ],
       "matches": ["<all_urls>"]
     }
   ],
@@ -39,6 +47,10 @@
     {
       "matches": ["https://twitter.com/intent/follow?screen_name=padolabs"],
       "js": ["xFollow.js"]
+    },
+    {
+      "matches": ["https://www.binance.com/my/dashboard"],
+      "js": ["dataSourceWeb.bundle.js"]
     }
   ]
 }

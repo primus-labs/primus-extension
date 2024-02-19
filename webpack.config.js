@@ -36,6 +36,13 @@ var options = {
   entry: {
     home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
+    dataSourceWeb: path.join(
+      __dirname,
+      'src',
+      'content',
+      'dataSourceWeb',
+      'index.jsx'
+    ),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
     //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },
@@ -47,6 +54,7 @@ var options = {
     path: path.resolve(__dirname, 'build'),
     clean: true,
     publicPath: ASSET_PATH,
+    // chunkFilename: '[id].[chunkhash].js',
   },
   module: {
     rules: [
@@ -193,7 +201,9 @@ var options = {
             } else {
               let jsonobj = JSON.parse(content.toString());
               //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
-              jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9095/*");
+              jsonobj.content_scripts[0].matches.push(
+                'http://api-dev.padolabs.org:9095/*'
+              );
               return Buffer.from(
                 JSON.stringify({
                   description: process.env.npm_package_description,
@@ -321,6 +331,31 @@ var options = {
           to: path.join(__dirname, 'build'),
           force: true,
         },
+        {
+          from: 'src/assets/img/content/iconPado.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/iconSucc.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/iconFail.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/iconLink.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceBinance.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
       ],
     }),
     new CopyWebpackPlugin({
@@ -385,7 +420,8 @@ var options = {
     }),
     new MiniCssExtractPlugin({
       // 定义输出文件名和目录
-      filename: 'static/css/main.css',
+      // filename: 'static/css/main.css',
+      filename: 'static/css/[name].css',
     }),
   ].filter(Boolean),
   infrastructureLogging: {

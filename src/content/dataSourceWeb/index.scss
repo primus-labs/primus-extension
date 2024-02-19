@@ -1,0 +1,107 @@
+@import '@/assets/css/global.css';
+@import '@/assets/newCss/global.css';
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+#pado-extension-content {
+  @include frcc;
+  display: flex;
+  .pado-extension-card {
+    @include fcss;
+    @include pCard;
+    // gap: var(--spacing-24);
+    padding: var(--spacing-32) var(--spacing-24) var(--spacing-24);
+    width: 384px;
+    height: 216px;
+    &.initialized {
+      padding-top: var(--spacing-32);
+      .center {
+        padding: var(--spacing-24) 0;
+      }
+    }
+    &.verifying {
+      padding-top: var(--spacing-32);
+      .center {
+        padding: var(--spacing-16) 0 var(--spacing-24) 0;
+      }
+    }
+    &.result {
+      padding-top: var(--spacing-24);
+      .center {
+        padding: var(--spacing-16) 0 var(--spacing-24) 0;
+      }
+    }
+    .header {
+      width: 100%;
+      @include frcc;
+      gap: var(--spacing-8);
+      .iconPado,
+      .iconSource {
+        width: var(--spacing-32);
+      }
+      .iconLink {
+        width: var(--spacing-16);
+      }
+    }
+    .center {
+      width: 100%;
+      @include fccs;
+      gap: var(--spacing-16);
+      color: var(--Text-Tokens-text-primary);
+      @include BodyBody100;
+      .title {
+        width: 100%;
+        @include HeadlineH2;
+      }
+      .descWrapper {
+        width: 100%;
+        &.initialized {
+          @include frbc;
+          .label {
+            color: var(--Text-Tokens-text-tertiary);
+          }
+        }
+        &.verifying {
+          @include frcc;
+          color: var(--Text-Tokens-text-tertiary);
+        }
+        &.result {
+          @include fccs;
+          gap: var(--spacing-8);
+          &.suc {
+            .label {
+              color: var(--Text-Tokens-text-correct);
+            }
+          }
+          &.fail {
+            .label {
+              color: var(--Text-Tokens-text-error);
+            }
+          }
+          .label {
+            @include frsc;
+            gap: var(--spacing-4);
+            > img {
+              width: var(--spacing-16);
+            }
+          }
+          .value {
+            color: var(--Text-Tokens-text-tertiary);
+          }
+        }
+      }
+    }
+    .footer {
+      width: 100%;
+      justify-content: flex-end;
+      &.initialized {
+        @include frsc;
+        gap: var(--spacing-16);
+      }
+      &.verifying {
+        @include frsc;
+        gap: var(--spacing-16);
+      }
+    }
+  }
+}

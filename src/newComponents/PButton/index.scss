@@ -55,7 +55,7 @@ button.PButton {
       border: 1px solid var(--Button-Tokens-button-disabled, #e0e0e0);
     }
   }
-  &.text {
+  &.text,&.text2 {
     @include frcc;
     gap: 4px;
     color: var(--Text-Tokens-text-primary, #161616);

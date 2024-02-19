@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DATASOURCEMAP } from '@/config/dataSource';
+import useAllSources from '@/hooks/useAllSources';
+
 import type { DataSourceItemType } from '@/config/dataSource';
 import PBack from '@/newComponents/PBack';
 import PButton from '@/newComponents/PButton';
@@ -12,6 +14,8 @@ import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
+  const [sourceList, sourceMap,activeSourceInfo] = useAllSources('binance');
+  console.log(111, sourceList, sourceMap, activeSourceInfo);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dataSourceName = searchParams.get('dataSourceName');
