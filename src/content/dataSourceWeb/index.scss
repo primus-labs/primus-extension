@@ -72,9 +72,14 @@
       .descWrapper {
         width: 100%;
         &.initialized {
-          @include frbc;
-          .label {
-            color: var(--Text-Tokens-text-tertiary);
+          @include fcss;
+          gap: var(--spacing-8,8px);
+          .descItem {
+            width: 100%;
+            @include frbc;
+            .label {
+              color: var(--Text-Tokens-text-tertiary);
+            }
           }
         }
         &.verifying {

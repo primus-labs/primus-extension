@@ -1,4 +1,12 @@
-import { DATASOURCEMAP } from '@/config/constants';
+import {
+  DATASOURCEMAP,
+  CredVersion,
+  ExchangeStoreVersion,
+  schemaTypeMap,
+  SCROLLEVENTNAME,
+  BASEVENTNAME,
+} from '@/config/constants';
+import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
 let tabCreatedByPado;
 let activeTemplate = {};
 let currExtentionId;
@@ -10,7 +18,8 @@ export const dataSourceWebMsgListener = async (
   request,
   sender,
   sendResponse,
-  password
+  password,
+  port
 ) => {
   const { name, params, operation } = request;
   activeTemplate = name === 'init' ? params : activeTemplate;
@@ -279,7 +288,7 @@ export const dataSourceWebMsgListener = async (
       if (tabId === tabCreatedByPado.id) {
         chrome.runtime.sendMessage({
           type: 'dataSourceWeb',
-          name: 'abortAttest',
+          name: 'abortAttest', // TODO-datasource abortAttest
         });
       }
     });
@@ -293,6 +302,7 @@ export const dataSourceWebMsgListener = async (
       },
       dataSourcePageTabId: tabCreatedByPado.id,
       isReady: isReadyRequest,
+      operation: operationType
     });
   }
   if (name === 'start') {
@@ -308,11 +318,68 @@ export const dataSourceWebMsgListener = async (
       const activeHeader = Object.assign({}, activeInfo.headers, {
         Cookie: activeCookie,
       });
-      const exchangeInfo = DATASOURCEMAP[activeTemplate.dataSource];
+      const exchangeName = activeTemplate.dataSource;
+      const exchangeInfo = DATASOURCEMAP[exchangeName];
       const constructorF = exchangeInfo.constructorF;
-      const ex = new constructorF({ header: activeHeader });
-      await ex.getInfo();
-      console.log('222ex.getInfo', ex);
+      const resType = `set-${exchangeName}`;
+      try {
+        const ex = new constructorF({ header: activeHeader });
+        await ex.getInfo();
+        console.log('222ex.getInfo', ex);
+
+        let storageRes = await chrome.storage.local.get(exchangeName);
+        const lastData = storageRes[exchangeName];
+        let pnl = null;
+        if (lastData) {
+          const lastTotalBal = JSON.parse(lastData).totalBalance;
+          pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
+        }
+        const exData = {
+          totalBalance: ex.totalAccountBalance,
+          tokenListMap: ex.totalAccountTokenMap,
+          // apiKey: exParams.apiKey, // TODO-datasource
+          date: getCurrentDate(),
+          timestamp: +new Date(),
+          version: ExchangeStoreVersion, // TODO-datasource
+          label: '', // TODO-datasource
+          flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
+          spotAccountTokenMap: ex.spotAccountTokenMap,
+          tokenPriceMap: ex.tokenPriceMap,
+          tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
+        };
+        if (pnl !== null && pnl !== undefined) {
+          exData.pnl = pnl;
+        }
+
+        await chrome.storage.local.set({
+          [exchangeName]: JSON.stringify(exData),
+        });
+        postMsg(port, { resType, res: true });
+      } catch (error) {
+        console.log(
+          'exData',
+          error,
+          error.message,
+          error.message.indexOf('AuthenticationError')
+        );
+        var errMsg = '';
+        if (error.message.indexOf('AuthenticationError') > -1) {
+          errMsg = 'AuthenticationError';
+        } else if (error.message.indexOf('ExchangeNotAvailable') > -1) {
+          errMsg = 'ExchangeNotAvailable';
+        } else if (error.message.indexOf('InvalidNonce') > -1) {
+          errMsg = 'InvalidNonce';
+        } else if (error.message.indexOf('RequestTimeout') > -1) {
+          errMsg = 'TypeError: Failed to fetch';
+        } else if (error.message.indexOf('NetworkError') > -1) {
+          errMsg = 'TypeError: Failed to fetch';
+        } else if (error.message.indexOf('TypeError: Failed to fetch') > -1) {
+          errMsg = 'TypeError: Failed to fetch';
+        } else {
+          errMsg = 'UnhnowError';
+        }
+        postMsg(port, { resType, res: false, msg: errMsg });
+      }
     }
     // operation : connect attest
     /*const dataSourceCookies = await chrome.cookies.getAll({
@@ -372,6 +439,15 @@ export const dataSourceWebMsgListener = async (
       active: true,
     });
     await chrome.tabs.remove(tabCreatedByPado.id);
+  }
+  if (name === 'end') {
+    chrome.tabs.sendMessage(
+      tabCreatedByPado.id,
+      request,
+      function (response) {}
+    );
+    chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
+    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
   }
 };
 

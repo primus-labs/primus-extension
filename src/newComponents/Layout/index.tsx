@@ -16,6 +16,7 @@ import {
   setOnChainAssetsSourcesAsync,
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
+import useListener from '@/hooks/useListener';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 
@@ -26,10 +27,10 @@ import Sidebar from './Sidebar';
 import './index.scss';
 
 const Nav: React.FC = memo(({ }) => {
-  
   const theme = useSelector((state: UserState) => state.theme);
   const dispatch: Dispatch<any> = useDispatch();
   const [updateOnChainLoading, updateOnChainFn] = useUpdateOnChainSources();
+  useListener();
   useEffect(() => {
     rem();
   }, []);
