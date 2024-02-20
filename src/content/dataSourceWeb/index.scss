@@ -1,8 +1,18 @@
-@import '@/assets/css/global.css';
+// @import '@/assets/css/global.css';
 @import '@/assets/newCss/global.css';
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 #pado-extension-content {
   @include frcc;
   display: flex;
@@ -14,49 +24,50 @@
     @include fcss;
     @include pCard;
     @include card-xs_shadow;
-    // gap: var(--spacing-24);
-    padding: var(--spacing-32) var(--spacing-24) var(--spacing-24);
+    padding: var(--spacing-32, 32px) var(--spacing-24, 24px)
+      var(--spacing-24, 24px);
     width: 384px;
-    height: 216px;
+    // height: 216px;
     &.initialized {
-      padding-top: var(--spacing-32);
+      padding-top: var(--spacing-32, 32px);
       .center {
-        padding: var(--spacing-24) 0;
+        padding: var(--spacing-24, 24px) 0;
       }
     }
     &.verifying {
-      padding-top: var(--spacing-32);
+      padding-top: var(--spacing-32, 32px);
       .center {
-        padding: var(--spacing-16) 0 var(--spacing-24) 0;
+        padding: var(--spacing-16, 16px) 0 var(--spacing-24, 16px) 0;
       }
     }
     &.result {
-      padding-top: var(--spacing-24);
+      padding-top: var(--spacing-24, 24px);
       .center {
-        padding: var(--spacing-16) 0 var(--spacing-24) 0;
+        padding: var(--spacing-16, 16px) 0 var(--spacing-24, 24px) 0;
       }
     }
     .header {
       width: 100%;
       @include frcc;
-      gap: var(--spacing-8);
+      gap: var(--spacing-8, 8px);
       .iconPado,
       .iconSource {
-        width: var(--spacing-32);
+        width: var(--spacing-32, 32px);
       }
       .iconLink {
-        width: var(--spacing-16);
+        width: var(--spacing-16, 16px);
       }
     }
     .center {
       width: 100%;
       @include fccs;
-      gap: var(--spacing-16);
+      gap: var(--spacing-16, 16px);
       color: var(--Text-Tokens-text-primary);
       @include BodyBody100;
       .title {
         width: 100%;
         @include HeadlineH2;
+        text-align: center;
       }
       .descWrapper {
         width: 100%;
@@ -72,7 +83,7 @@
         }
         &.result {
           @include fccs;
-          gap: var(--spacing-8);
+          gap: var(--spacing-8, 8px);
           &.suc {
             .label {
               color: var(--Text-Tokens-text-correct);
@@ -85,9 +96,9 @@
           }
           .label {
             @include frsc;
-            gap: var(--spacing-4);
+            gap: var(--spacing-4, 4px);
             > img {
-              width: var(--spacing-16);
+              width: var(--spacing-16, 16px);
             }
           }
           .value {
@@ -101,16 +112,25 @@
       @include frsc;
       justify-content: flex-end;
       &.initialized {
-        gap: var(--spacing-16);
+        gap: var(--spacing-16, 16px);
       }
       &.verifying {
-        gap: var(--spacing-16);
+        gap: var(--spacing-16, 16px);
+        .confirmBtn {
+          padding: 7px 32px;
+        }
       }
-      .cancelBtn{
-        
+      .cancelBtn {
       }
-      .confirmBtn{
-
+      .confirmBtn {
+        .loading-spinner {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          border: 2px solid var(--icon-tokens-icon-primary);
+          border-top: 2px solid var(--Layer-Tokens-layer-primary);
+          animation: spin 1s linear infinite;
+        }
       }
     }
   }

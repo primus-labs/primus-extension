@@ -6,7 +6,7 @@ interface PButtonProps {
   disabled?: boolean;
   className?: string;
   type?: string;
-  text?: string;
+  text?: any;
   size?: string;
   icon?: any;
   onClick: () => void;

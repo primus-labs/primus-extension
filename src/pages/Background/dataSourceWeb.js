@@ -1,7 +1,9 @@
-
+import { DATASOURCEMAP } from '@/config/constants';
 let tabCreatedByPado;
 let activeTemplate = {};
 let currExtentionId;
+let isReadyRequest = false;
+let operationType = null;
 
 // inject-dynamic
 export const dataSourceWebMsgListener = async (
@@ -10,8 +12,8 @@ export const dataSourceWebMsgListener = async (
   sendResponse,
   password
 ) => {
-  const { name, params } = request;
-  activeTemplate = name === 'inject' ? params : activeTemplate;
+  const { name, params, operation } = request;
+  activeTemplate = name === 'init' ? params : activeTemplate;
   const {
     dataSource,
     jumpTo,
@@ -152,110 +154,17 @@ export const dataSourceWebMsgListener = async (
         return false;
       }
     };
-    const isReady = await checkReadyStatusFn();
+    isReadyRequest = await checkReadyStatusFn();
     console.log('web requests are captured');
     chrome.tabs.sendMessage(tabCreatedByPado.id, {
       type: 'dataSourceWeb',
       name: 'webRequestIsReady',
       params: {
-        isReady,
+        isReady: isReadyRequest,
       },
     });
   };
-
-  if (name === 'inject') {
-    console.log('yyyinject', );
-    // const { extensionTabId } = request;
-    // currExtentionId = extensionTabId;
-    const currentWindowTabs = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-    currExtentionId = currentWindowTabs[0].id;
-    chrome.webRequest.onBeforeSendHeaders.addListener(
-      onBeforeSendHeadersFn,
-      { urls: ['<all_urls>'] },
-      ['requestHeaders', 'extraHeaders']
-    );
-    chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequestFn,
-      { urls: ['<all_urls>'] },
-      ['requestBody']
-    );
-
-    tabCreatedByPado = await chrome.tabs.create({
-      url: jumpTo,
-    });
-    console.log('222pageDEcode tabCreatedByPado', tabCreatedByPado);
-    const injectFn = async () => {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: tabCreatedByPado.id,
-        },
-        files: ['dataSourceWeb.bundle.js'],
-      });
-      await chrome.scripting.insertCSS({
-        target: { tabId: tabCreatedByPado.id },
-        files: ['static/css/dataSourceWeb.css'],
-      });
-    };
-    await injectFn();
-    checkWebRequestIsReadyFn();
-    chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-      if (
-        tabId === tabCreatedByPado.id &&
-        (changeInfo.url || changeInfo.title)
-      ) {
-        await injectFn();
-        checkWebRequestIsReadyFn();
-      }
-    });
-
-    chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-      if (tabId === tabCreatedByPado.id) {
-        chrome.runtime.sendMessage({
-          type: 'dataSourceWeb',
-          name: 'abortAttest',
-        });
-      }
-    });
-    // injectFn();
-  }
-  if (name === 'injectionCompleted') {
-    sendResponse({
-      name: 'append',
-      params: {
-        ...activeTemplate,
-      },
-      dataSourcePageTabId: tabCreatedByPado.id,
-    });
-  }
-  if (name === 'sendRequest') {
-    /*const dataSourceCookies = await chrome.cookies.getAll({
-      url: new URL(jumpTo).origin,
-    });
-    const cookiesObj = dataSourceCookies.reduce((prev, curr) => {
-      const { name, value } = curr;
-      prev[name] = value;
-      return prev;
-    }, {});*/
-
-    // const { category } = activeTemplate;
-    // const form = {
-    //   source: dataSource,
-    //   type: category,
-    //   label: null, // TODO
-    //   exUserId: null,
-    // };
-    // // console.log(WorkerGlobalScope.location)
-    // if (event) {
-    //   form.event = event;
-    // }
-    // if (activeTemplate.requestid) {
-    //   form.requestid = activeTemplate.requestid;
-    // }
-    // let aligorithmParams = await assembleAlgorithmParams(form, password);
-
+  const formatRequestsFn = async () => {
     const formatRequests = [];
     for (const r of requests) {
       const { headers, cookies, body, url } = r;
@@ -314,27 +223,140 @@ export const dataSourceWebMsgListener = async (
 
       formatRequests.push(r);
     }
+    console.log('222formatRequests', formatRequests);
+    return formatRequests;
+  };
 
-    Object.assign(aligorithmParams, {
-      reqType: 'web',
-      host: host,
-      schemaType,
-      requests: formatRequests,
-      responses,
-      uiTemplate,
-      templateId: id,
+  if (name === 'init') {
+    operationType = operation;
+    // const { extensionTabId } = request;
+    // currExtentionId = extensionTabId;
+    const currentWindowTabs = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
     });
-    await chrome.storage.local.set({
-      activeRequestAttestation: JSON.stringify(aligorithmParams),
+    currExtentionId = currentWindowTabs[0].id;
+    chrome.webRequest.onBeforeSendHeaders.addListener(
+      onBeforeSendHeadersFn,
+      { urls: ['<all_urls>'] },
+      ['requestHeaders', 'extraHeaders']
+    );
+    chrome.webRequest.onBeforeRequest.addListener(
+      onBeforeRequestFn,
+      { urls: ['<all_urls>'] },
+      ['requestBody']
+    );
+
+    tabCreatedByPado = await chrome.tabs.create({
+      url: jumpTo,
     });
-    console.log('222222pageDecode-aligorithmParams', aligorithmParams);
-    chrome.runtime.sendMessage({
-      type: 'algorithm',
-      method: 'getAttestation',
-      params: aligorithmParams,
+    console.log('222pageDEcode tabCreatedByPado', tabCreatedByPado);
+    const injectFn = async () => {
+      await chrome.scripting.executeScript({
+        target: {
+          tabId: tabCreatedByPado.id,
+        },
+        files: ['dataSourceWeb.bundle.js'],
+      });
+      await chrome.scripting.insertCSS({
+        target: { tabId: tabCreatedByPado.id },
+        files: ['static/css/dataSourceWeb.css'],
+      });
+    };
+    await injectFn();
+    checkWebRequestIsReadyFn();
+    chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+      if (
+        tabId === tabCreatedByPado.id &&
+        (changeInfo.url || changeInfo.title)
+      ) {
+        await injectFn();
+        checkWebRequestIsReadyFn();
+      }
+    });
+
+    chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+      if (tabId === tabCreatedByPado.id) {
+        chrome.runtime.sendMessage({
+          type: 'dataSourceWeb',
+          name: 'abortAttest',
+        });
+      }
+    });
+    // injectFn();
+  }
+  if (name === 'initCompleted') {
+    sendResponse({
+      name: 'append',
+      params: {
+        ...activeTemplate,
+      },
+      dataSourcePageTabId: tabCreatedByPado.id,
+      isReady: isReadyRequest,
     });
   }
-
+  if (name === 'start') {
+    const formatRequests = await formatRequestsFn();
+    if (operationType === 'connect') {
+      const activeInfo = formatRequests.find((i) => i.headers);
+      var activeCookie = '';
+      if (activeInfo.cookies) {
+        Object.keys(activeInfo.cookies).reduce((prev, curr) => {
+          prev += `${prev}=${activeInfo.cookies[prev]};`;
+        }, '');
+      }
+      const activeHeader = Object.assign({}, activeInfo.headers, {
+        Cookie: activeCookie,
+      });
+      const exchangeInfo = DATASOURCEMAP[activeTemplate.dataSource];
+      const constructorF = exchangeInfo.constructorF;
+      const ex = new constructorF({ header: activeHeader });
+      await ex.getInfo();
+      console.log('222ex.getInfo', ex);
+    }
+    // operation : connect attest
+    /*const dataSourceCookies = await chrome.cookies.getAll({
+      url: new URL(jumpTo).origin,
+    });
+    const cookiesObj = dataSourceCookies.reduce((prev, curr) => {
+      const { name, value } = curr;
+      prev[name] = value;
+      return prev;
+    }, {});*/
+    // const { category } = activeTemplate;
+    // const form = {
+    //   source: dataSource,
+    //   type: category,
+    //   label: null, // TODO
+    //   exUserId: null,
+    // };
+    // // console.log(WorkerGlobalScope.location)
+    // if (event) {
+    //   form.event = event;
+    // }
+    // if (activeTemplate.requestid) {
+    //   form.requestid = activeTemplate.requestid;
+    // }
+    // let aligorithmParams = await assembleAlgorithmParams(form, password);
+    // Object.assign(aligorithmParams, {
+    //   reqType: 'web',
+    //   host: host,
+    //   schemaType,
+    //   requests: formatRequests,
+    //   responses,
+    //   uiTemplate,
+    //   templateId: id,
+    // });
+    // await chrome.storage.local.set({
+    //   activeRequestAttestation: JSON.stringify(aligorithmParams),
+    // });
+    // console.log('222222pageDecode-aligorithmParams', aligorithmParams);
+    // chrome.runtime.sendMessage({
+    //   type: 'algorithm',
+    //   method: 'getAttestation',
+    //   params: aligorithmParams,
+    // });
+  }
   if (name === 'attestResult') {
     // to send back your response  to the current tab
     chrome.tabs.sendMessage(
@@ -345,13 +367,11 @@ export const dataSourceWebMsgListener = async (
     chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
     chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
   }
-  if (name === 'closeDataSourcePage' || name === 'cancelAttest') {
+  if (name === 'close' || name === 'cancel') {
     await chrome.tabs.update(currExtentionId, {
       active: true,
     });
-    const { dataSourcePageTabId } = request;
-
-    await chrome.tabs.remove(dataSourcePageTabId);
+    await chrome.tabs.remove(tabCreatedByPado.id);
   }
 };
 

@@ -27,10 +27,10 @@ button.PButton {
     border-radius: var(--Radius-radius-xs, 4px);
     width: fit-content;
     &.m {
-      padding: var(--spacing-11) var(--spacing-16);
+      padding: var(--spacing-11,11px) var(--spacing-16,16px);
     }
     &.s {
-      padding: var(--spacing-7) var(--spacing-16);
+      padding: var(--spacing-7,7px) var(--spacing-16,16px);
     }
   }
   &.primary {

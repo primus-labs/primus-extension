@@ -39,11 +39,13 @@ const DataSourceItem = memo(() => {
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(() => {
     const currRequestObj = webProofTypes.find(
-      (r: any) => r.name === 'Account Ownership' && r.dataSource === dataSourceName?.toLocaleLowerCase()
+      (r: any) => r.dataSource === dataSourceName?.toLocaleLowerCase()
     );
+    // r.name === 'Account Ownership' &&
     chrome.runtime.sendMessage({
       type: 'dataSourceWeb',
-      name: 'inject',
+      name: 'init',
+      operation: 'connect',
       params: {
         ...currRequestObj,
       },

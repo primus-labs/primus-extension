@@ -18,9 +18,9 @@
 }
 
 @mixin pCard {
-  border-radius: var(--spacing-8);
+  border-radius: var(--spacing-8,8px);
   border: 1px solid var(--Border-Tokens-border-primary);
-  background: var(--Layer-Tokens-layer-primary);
+  background: var(--Layer-Tokens-layer-primary, #fff);
 }
 @mixin clickableCard {
   @include pCard;
