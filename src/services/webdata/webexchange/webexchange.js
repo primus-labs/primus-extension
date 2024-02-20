@@ -130,7 +130,7 @@ class WebExchange {
       if (amount) {
         const price = this.tokenPriceMap[curr] || ZERO + '';
         const value = mul(amount, price).toFixed();
-        // hidden tokens value less than 
+        // hidden tokens value less than
         if (gt(value, '0.01')) {
           prev[curr] = {
             symbol: curr,
@@ -190,7 +190,7 @@ class WebExchange {
 
   async request(fetchParams) {
     let { method, url, data = {}, config } = fetchParams;
-  
+
     if (method === 'GET') {
       let dataStr = '';
       Object.keys(data).forEach((key) => {
@@ -201,8 +201,7 @@ class WebExchange {
         url = url + '?' + dataStr;
       }
     }
-    let golbalHeader = {
-    };
+    let golbalHeader = {};
     const controller = new AbortController();
     const signal = controller.signal;
     const timeout = config?.timeout ?? 10 * 1000;
@@ -215,7 +214,7 @@ class WebExchange {
       cache: config?.cache ?? 'default', //  default | no-store | reload | no-cache | force-cache | only-if-cached 。
       signal: signal,
     };
-  
+
     if (method === 'POST') {
       Object.defineProperty(requestConfig, 'body', {
         value: JSON.stringify(data),
@@ -232,10 +231,9 @@ class WebExchange {
       } else {
         throw new Error(error);
       }
-      
     } finally {
       clearTimeout(timeoutTimer);
     }
-  };
+  }
 }
 export default WebExchange;

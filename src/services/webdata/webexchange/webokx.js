@@ -1,5 +1,10 @@
+import BigNumber from 'bignumber.js';
+import { USDT, BTC, STABLETOKENLIST } from '@/config/constants';
 import WebExchange from './webexchange';
-
+const BIGZERO = new BigNumber(0);
+const BIGONE = new BigNumber(1);
+const ONE = 1;
+const ZERO = 0;
 class WebOKX extends WebExchange {
   constructor(exchangeInfo) {
     super('okx', exchangeInfo);
@@ -7,10 +12,12 @@ class WebOKX extends WebExchange {
 
   async getFundingAccountTokenAmountMap() {
     const params = {};
-    params.url = "https://www.okx.com/v2/asset/balance/asset-overview?valuationUnit=USDT&transferFroms=180%2C6%2C20%2C18&limit=100&t=" + new Date().getTime();
-    params.method = "GET";
+    params.url =
+      'https://www.okx.com/v2/asset/balance/asset-overview?valuationUnit=USDT&transferFroms=180%2C6%2C20%2C18&limit=100&t=' +
+      new Date().getTime();
+    params.method = 'GET';
     const res = await this.request(params);
-    res.data.funding.forEach(({ currency, balance }) => {
+    res.data.bizBalances.funding.forEach(({ currency, balance }) => {
       this.fundingAccountTokenAmountMap.set(currency, balance);
     });
     // console.log(
@@ -22,10 +29,12 @@ class WebOKX extends WebExchange {
 
   async getTradingAccountTokenAmountMap() {
     const params = {};
-    params.url = "https://www.okx.com/v2/asset/balance/asset-overview?valuationUnit=USDT&transferFroms=180%2C6%2C20%2C18&limit=100&t=" + new Date().getTime();
-    params.method = "GET";
+    params.url =
+      'https://www.okx.com/v2/asset/balance/asset-overview?valuationUnit=USDT&transferFroms=180%2C6%2C20%2C18&limit=100&t=' +
+      new Date().getTime();
+    params.method = 'GET';
     const res = await this.request(params);
-    res.data.trading.forEach(({ currency, balance }) => {
+    res.data.bizBalances.trading.forEach(({ currency, balance }) => {
       this.tradingAccountTokenAmountMap.set(currency, balance);
       this.tradingAccountTokenAmountObj[currency] = balance;
     });
@@ -49,8 +58,10 @@ class WebOKX extends WebExchange {
     let res;
     //let errorSymbol;
     const params = {};
-    params.url = "https://www.okx.com/priapi/v5/market/tickers?instType=SPOT&t=" + new Date().getTime();
-    params.method = "GET";
+    params.url =
+      'https://www.okx.com/priapi/v5/market/tickers?instType=SPOT&t=' +
+      new Date().getTime();
+    params.method = 'GET';
     try {
       res = await this.request(params);
       res.data.forEach((lp) => {
