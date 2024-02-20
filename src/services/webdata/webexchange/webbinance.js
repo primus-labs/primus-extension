@@ -1,66 +1,57 @@
-import BigNumber from 'bignumber.js';
-import { add, gt } from '@/utils/utils';
-import {
-  USDT,
-  BUSD,
-  TUSD,
-  BTC,
-  LDO,
-  STABLETOKENLIST,
-} from '@/config/constants';
 import WebExchange from './webexchange';
-const BIGZERO = new BigNumber(0);
+import BigNumber from 'bignumber.js';
+
+import {USDT, BTC, STABLETOKENLIST, BUSD, TUSD} from '@/config/constants';
+
 const ONE = 1;
 const ZERO = 0;
 
-class WebBinance extends WebExchange {
+class WebOKX extends WebExchange {
   constructor(exchangeInfo) {
     super('binance', exchangeInfo);
   }
 
   async getFundingAccountTokenAmountMap() {
-    const res = await this.exchange.fetchBalance({ type: 'funding' });
-
-    res.info.forEach(({ asset, free, locked, freeze }) => {
-      // Tip: funding account balance = free + locked + freeze
-      const amt = add(add(free, locked), freeze).toFixed();
-      gt(amt, BIGZERO) && this.fundingAccountTokenAmountMap.set(asset, amt);
+    const params = {};
+    params.url = "https://www.binance.com/bapi/asset/v3/private/asset-service/asset/get-ledger-asset";
+    params.method = "POST";
+    const bodyParam = {
+      needBtcValuation:true,
+      quoteAsset:BTC
+    }
+    params.data=bodyParam
+    const res = await this.request(params);
+    console.log(res)
+    res.data.forEach(({ asset, free }) => {
+      this.fundingAccountTokenAmountMap.set(asset, free);
     });
     // console.log(
-    //   'fundingAccountTokenAmountMap',
+    //   'okx fundingAccountTokenAmountMap',
     //   this.fundingAccountTokenAmountMap
     // );
     return this.fundingAccountTokenAmountMap;
   }
 
   async getTradingAccountTokenAmountMap() {
-    const res = await this.exchange.fetchBalance({ type: 'trading' });
-    res.info.balances.forEach(({ asset, free, locked }) => {
-      // Tip: trading account balance = free + locked
-      const amt = add(free, locked).toFixed();
-      gt(amt, BIGZERO) &&
-        (!asset.startsWith('LD') || asset === LDO) &&
-        this.tradingAccountTokenAmountMap.set(asset, amt);
-    });
-    console.log(
-      'tradingAccountTokenAmountMap',
-      this.tradingAccountTokenAmountMap
-    );
-    return this.tradingAccountTokenAmountMap;
-  }
-
-  async getFlexibleAccountTokenAmountMap() {
-    const res = await this.exchange.fetchBalance({ type: 'savings' });
-    res.info.positionAmountVos.forEach(({ asset, amount }) => {
-      // Tip: trading account balance = free + locked
-      const amt = new BigNumber(amount).toFixed();
-      gt(amt, BIGZERO) && this.flexibleAccountTokenAmountMap.set(asset, amt);
+    const params = {};
+    params.url = "https://www.binance.com/bapi/composite/v1/private/bigdata/finance/spot-statistics";
+    params.method = "POST";
+    const bodyParam = {
+      recentDays:30,
+      withRate:true
+    }
+    params.data=bodyParam
+    const res = await this.request(params);
+    console.log('trading:',res)
+    res.data.assetPortionItemList.forEach(({ asset, qty }) => {
+      this.tradingAccountTokenAmountMap.set(asset, qty);
+      this.tradingAccountTokenAmountObj[asset] = qty;
     });
     // console.log(
-    //   'flexibleAccountTokenAmountMap',
-    //   this.flexibleAccountTokenAmountMap
+    //   'okx tradingAccountTokenAmountMap',
+    //   this.tradingAccountTokenAmountMap
     // );
-    return this.flexibleAccountTokenAmountMap;
+    return this.tradingAccountTokenAmountMap;
   }
 
   async getTokenPriceMap() {
@@ -70,13 +61,20 @@ class WebBinance extends WebExchange {
     // price unit: USD
     // coninbase need filter USD
     let LPSymbols = this.totalHoldingTokenSymbolList
-      .filter((i) => !STABLETOKENLIST.includes(i))
-      .concat(BTC)
-      .map((j) => `${j}/${USDT}`);
+        .filter((i) => !STABLETOKENLIST.includes(i))
+        .concat(BTC)
+        .map((j) => `${j}${USDT}`);
     let res;
     //let errorSymbol;
+    const params = {};
+    params.url =
+        'https://api.binance.com/api/v3/ticker/price';
+    params.method = 'GET';
     try {
-      res = await this.exchange.fetchTickers();
+      res = await this.request(params);
+      res.forEach((lp) => {
+        res[lp.symbol] = lp.price;
+      });
     } catch (e) {
       console.log('fetchTickers error:', this.exName, e);
       return;
@@ -87,13 +85,13 @@ class WebBinance extends WebExchange {
       return prev;
     }, {});
     LPSymbols.forEach((lpsymbol) => {
-      const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
+      const tokenSymbol = lpsymbol.replace(`${USDT}`, '');
       const BUSDLpsymbol = lpsymbol.replace(`${USDT}`, BUSD);
       const TUSDLpsymbol = lpsymbol.replace(`${USDT}`, TUSD);
       const last =
-        res[lpsymbol]?.last ||
-        res[BUSDLpsymbol]?.last ||
-        res[TUSDLpsymbol]?.last;
+          res[lpsymbol] ||
+          res[BUSDLpsymbol] ||
+          res[TUSDLpsymbol];
       if (last) {
         this.tokenPriceMap[tokenSymbol] = new BigNumber(last).toFixed();
       } else {
@@ -103,4 +101,5 @@ class WebBinance extends WebExchange {
     return this.tokenPriceMap;
   }
 }
-export default WebBinance;
+
+export default WebOKX;

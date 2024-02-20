@@ -25,7 +25,7 @@ import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
 import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
-import Binance from '@/services/exchange/binance';
+import Binance from '@/services/webdata/webexchange/webbinance';
 // import OKX from '@/services/exchange/okx';
 import OKX from '@/services/webdata/webexchange/webokx';
 import KuCoin from '@/services/exchange/kucoin';

@@ -219,6 +219,7 @@ class WebExchange {
       Object.defineProperty(requestConfig, 'body', {
         value: JSON.stringify(data),
       });
+      requestConfig.headers['Content-Type'] = 'application/json'
     }
     try {
       const response = await fetch(url, requestConfig);
