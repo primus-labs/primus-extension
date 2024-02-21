@@ -1,15 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 // import rem from '@/utils/rem.js';
 import PButton from '@/newComponents/PButton';
 import './index.scss';
 
 let activeRequest;
+let operationType;
+let attestType;
 function removeStorageValuesFn() {
   sessionStorage.removeItem('padoRequestStatus');
   sessionStorage.removeItem('padoRequestReady');
+  activeRequest = null;
+  operationType = null;
 }
-function FooterEl({ status, setStatus, isReadyFetch }) {
+function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
   const handleOK = useCallback(async () => {
     removeStorageValuesFn();
     var msgObj = {
@@ -73,22 +77,80 @@ function FooterEl({ status, setStatus, isReadyFetch }) {
     </div>
   );
 }
-function DescEl({ status }) {
+function DataSourceLineEl({ list }) {
+  return (
+    <ul className="descWrapper initialized">
+      {list.map((i) => {
+        return (
+          <li className="descItem" key={i.label}>
+            <div className="label">{i.label}</div>
+            <div className="value">{i.value}</div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+function DescEl({ status, resultStatus }) {
   var iconSuc = chrome.runtime.getURL(`iconSucc.svg`);
   var iconFail = chrome.runtime.getURL(`iconFail.svg`);
   var host = activeRequest.datasourceTemplate.host;
+  var uiTemplate = activeRequest.uiTemplate;
+  const descList = useMemo(() => {
+    if (operationType === 'connect') {
+      return [{ label: 'Data Source', value: host }];
+    } else {
+      if (attestType === 1) {
+        return [
+          { label: 'Data Source', value: host },
+          {
+            label: 'Verification Content',
+            value: uiTemplate.proofContent,
+          },
+        ];
+      } else {
+        return [
+          { label: 'Data Source', value: host },
+          {
+            label: 'Verification Content',
+            value: uiTemplate.proofContent,
+          },
+          { label: 'Verification Value', value: uiTemplate.condition },
+        ];
+      }
+    }
+  }, []);
+  const loadingTxt = useMemo(() => {
+    if (operationType === 'connect') {
+      return 'Connecting ...';
+    } else {
+      return 'Verifying ...';
+    }
+  }, []);
+  const sucTxt = useMemo(() => {
+    if (operationType === 'connect') {
+      return 'Connect successfully!';
+    } else {
+      return 'Verified!';
+    }
+  }, []);
+  const errorTxt = useMemo(() => {
+    if (operationType === 'connect') {
+      return 'Connect failed.';
+    } else {
+      return 'Error Message.';
+    }
+  }, []);
+
   return status === 'initialized' ? (
-    <div className="descWrapper initialized">
-      <div className="label">Data Source</div>
-      <div className="value">{host}</div>
-    </div>
+    <DataSourceLineEl list={descList} />
   ) : status === 'verifying' ? (
-    <div className="descWrapper verifying">Connecting ...</div>
-  ) : status === 'result' ? (
+    <div className="descWrapper verifying">{loadingTxt}</div>
+  ) : status === 'result' && resultStatus === 'success' ? (
     <div className="descWrapper result suc">
       <div className="label">
         <img src={iconSuc} alt="" />
-        <span>Connect successfully!</span>
+        <span>{sucTxt}</span>
       </div>
       <div className="value">Please return to PADO.</div>
     </div>
@@ -96,7 +158,7 @@ function DescEl({ status }) {
     <div className="descWrapper result fail">
       <div className="label">
         <img src={iconFail} alt="" />
-        <span>Connect failed.</span>
+        <span>{errorTxt}</span>
       </div>
       <div className="value">Please return to PADO and try again.</div>
     </div>
@@ -104,7 +166,8 @@ function DescEl({ status }) {
 }
 function PadoCard() {
   const [status, setStatus] = useState('initialized');
-  const [isReadyFetch, setIsReadyFetch] = useState('initialized');
+  const [isReadyFetch, setIsReadyFetch] = useState(false);
+  const [resultStatus, setResultStatus] = useState('');
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
   var iconLink = chrome.runtime.getURL(`iconLink.svg`);
 
@@ -191,6 +254,11 @@ function PadoCard() {
         setIsReadyFetch(true);
         sessionStorage.setItem('padoRequestReady', '1');
       }
+      if (name === 'end') {
+        console.log('content receive:end');
+        setStatus('result');
+        setResultStatus(result);
+      }
     };
     chrome.runtime.onMessage.addListener(listenerFn);
     return () => {
@@ -206,12 +274,13 @@ function PadoCard() {
       </div>
       <div className="center">
         <p className="title">PADO Data Connection Process</p>
-        <DescEl status={status} />
+        <DescEl status={status} resultStatus={resultStatus} />
       </div>
       <FooterEl
         status={status}
         setStatus={setStatus}
         isReadyFetch={isReadyFetch}
+        resultStatus={resultStatus}
       />
     </div>
   );
@@ -231,6 +300,7 @@ chrome.runtime.sendMessage(
   },
   (response, a, b) => {
     if (response.name === 'append') {
+      // hide in login page
       var disabledPathList = ['login', 'register'];
       var isDisabled = disabledPathList.some(
         (i) => window.location.href.indexOf(i) > -1
@@ -238,13 +308,16 @@ chrome.runtime.sendMessage(
       if (isDisabled) {
         return;
       }
+      // avoid re-render
       if (activeRequest) {
         if (response.isReady) {
           sessionStorage.setItem('padoRequestReady', '1');
         }
         return;
       }
+      // render
       activeRequest = response.params;
+      operationType = response.operation;
       const container = document.getElementById('pado-extension-content');
       const root = createRoot(container);
       root.render(<PadoCard />);
