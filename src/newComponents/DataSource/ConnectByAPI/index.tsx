@@ -11,8 +11,12 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
   const [step, setStep] = useState<number>(1);
   const [hadSetPwd, setHadSetPwd] = useState<boolean>(false);
 
-  const handleCloseSetPwdDialog = useCallback(() => {}, []);
-  const handleSubmitSetPwdDialog = useCallback(() => {}, []);
+  const handleCloseSetPwdDialog = useCallback(() => {
+    onClose()
+  }, []);
+  const handleSubmitSetPwdDialog = useCallback(() => {
+    onSubmit();
+  }, []);
   const checkIfHadSetPwd = async () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
     setHadSetPwd(!!keyStore);

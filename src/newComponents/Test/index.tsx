@@ -113,7 +113,6 @@ const Test: React.FC = memo(({}) => {
               }}
               value={ppp}
             />
-
             <PPInput
               label="input label"
               placeholder="placeholder"

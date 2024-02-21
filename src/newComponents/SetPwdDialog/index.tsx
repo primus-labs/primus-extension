@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
-import PInput from '@/components/PInput/index';
+import PInput from '@/newComponents/PInput';
 import PMask from '@/newComponents/PMask';
 import PBack from '@/components/PBack';
 import PButton from '@/newComponents/PButton';
@@ -26,6 +26,10 @@ interface SetPwdDialogProps {
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onClose, onSubmit }) => {
     const [eyeOpen, setEyeOpen] = useState<boolean>(false);
+    const [pswForm, setPswForm] = useState<object>({
+      password: '',
+      confirmation: '',
+    });
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
     const [accountAddr, setAccountAddr] = useState<any>();
@@ -129,6 +133,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const handleEyeOpen = useCallback(() => {
       setEyeOpen((b) => !b);
     }, []);
+    const handleChangePswForm = useCallback((v, formKey) => {
+      setPswForm((f) => ({ ...f, [formKey]: v }));
+    }, []);
     return (
       <PMask>
         {/* onClose={onClose} closeable={!fromEvents} */}
@@ -149,7 +156,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                   protection.
                 </div>
               </div>
-              <div className="step step1 done">
+              {/* <div className="step step1 done">
                 <img className="iconDone" src={iconDone} alt="" />
                 <div className="txt">Set up password</div>
               </div>
@@ -161,9 +168,28 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 <div className="con">
                   Configure with your READ-ONLY API keys
                 </div>
-              </div>
+              </div> */}
             </section>
-            {/* <div className="formWrapper">
+            <div className="formWrapper">
+              <PInput
+                label="Setup your password"
+                placeholder="Please enter your password"
+                type="password"
+                onChange={(p) => {
+                  handleChangePswForm(p, 'password');
+                }}
+                value={pswForm.password}
+              />
+              <PInput
+                label="Reconfirmation"
+                placeholder="Please confirm your password"
+                type="password"
+                onChange={(p) => {
+                  handleChangePswForm(p, 'confirmation');
+                }}
+                value={pswForm.confirmation}
+                errorTip="error"
+              />
               <PInput
                 type="password"
                 placeholder="Please enter your password"
@@ -189,7 +215,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                   })}
                 </ul>
               </div>
-              
+
               <PInput
                 type="password"
                 placeholder="Please confirm your password"
@@ -201,7 +227,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               {errorTipVisible && (
                 <p className="errorTip">Entered passwords differ!</p>
               )}
-            </div> */}
+            </div>
           </main>
           <PButton text="OK" onClick={handleClickNext}></PButton>
         </div>

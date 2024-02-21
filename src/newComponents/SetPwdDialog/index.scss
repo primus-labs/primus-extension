@@ -8,8 +8,12 @@
       @include fcss;
       .step {
         width: 100%;
+        &:first-child {
+          padding-top: 0;
+        }
         &:last-child {
           border-bottom: 0;
+          padding-bottom: 0;
         }
         &.done {
           @include frsc;
