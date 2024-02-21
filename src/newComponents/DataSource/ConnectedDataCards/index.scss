@@ -23,7 +23,7 @@
     .introTxt {
       @include fcss;
       gap: var(--spacing-8);
-      color: var(--Text-Tokens-text-primary);
+      color: var(--text-tokens-text-primary);
       .title {
         @include HeadlineH3;
         @include frsc;

@@ -5,27 +5,27 @@
   @include frsc;
   gap: var(--spacing-32, 32px);
   height: var(--spacing-32, 32px);
-  border-bottom: 1px solid var(--Border-Tokens-border--primary, #E0E0E0);
+  border-bottom: 1px solid var(--border-tokens-border--primary, #e0e0e0);
   .tab {
     cursor: pointer;
     @include frsc;
     height: 100%;
     @include Label02;
-    color: var(--Text-Tokens-text-placeholder, #A8A8A8);
-    border-bottom: 1px solid var(--Border-Tokens-border--primary, #E0E0E0);
-    .con{
+    color: var(--text-tokens-text-placeholder, #a8a8a8);
+    border-bottom: 1px solid var(--border-tokens-border--primary, #e0e0e0);
+    .con {
       height: 100%;
     }
     &.disabled {
-      color: var(--Text-Tokens-text-disabled, #C6C6C6);
+      color: var(--text-tokens-text-disabled, #c6c6c6);
       cursor: not-allowed;
     }
     &:not(.disabled):hover {
-      color: var(--Text-Tokens-text-tertiary, #6F6F6F);
+      color: var(--text-tokens-text-tertiary, #6f6f6f);
     }
     &.active {
-      color: var(--Text-Tokens-text-primary, #161616);
-      border-bottom: 2px solid var(--Text-Tokens-text-primary, #161616);
+      color: var(--text-tokens-text-primary, #161616);
+      border-bottom: 2px solid var(--text-tokens-text-primary, #161616);
     }
   }
 }

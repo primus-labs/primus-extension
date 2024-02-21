@@ -14,7 +14,7 @@
       @include frsc;
       gap: var(--spacing-4);
       @include BodyBody100;
-      color: var(--Text-Tokens-text-primary);
+      color: var(--text-tokens-text-primary);
     }
     .pageDataSourceItemContent {
       width: 100%;
@@ -24,7 +24,7 @@
         @include frbc;
         .introTxt {
           @include fcss;
-          color: var(--Text-Tokens-text-primary);
+          color: var(--text-tokens-text-primary);
           .title {
             @include HeadlineH1;
             @include frsc;
@@ -43,7 +43,7 @@
           gap: var(--spacing-16);
           .sectionTitle {
             @include HeadlineH3;
-            color: var(--Text-Tokens-text-primary);
+            color: var(--text-tokens-text-primary);
           }
         }
       }
@@ -62,11 +62,11 @@
           width: 490px;
           .title {
             @include HeadlineH1;
-            color: var(--Text-Tokens-text-primary);
+            color: var(--text-tokens-text-primary);
           }
           .desc {
             @include BodyBody100;
-            color: var(--Text-Tokens-text-secondary);
+            color: var(--text-tokens-text-secondary);
             text-align: center;
           }
         }

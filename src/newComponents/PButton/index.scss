@@ -15,7 +15,7 @@
 button.PButton {
   @include frcc;
   @include Button;
-  color: var(--Text-Tokens-text-inverse, #fff);
+  color: var(--text-tokens-text-inverse, #fff);
   box-sizing: border-box;
   cursor: pointer;
   width: fit-content;
@@ -34,32 +34,32 @@ button.PButton {
     }
   }
   &.primary {
-    background: var(--Button-Tokens-button-primary, #161616);
-    color: var(--Text-Tokens-text-inverse, #fff);
+    background: var(--button-tokens-button-primary, #161616);
+    color: var(--text-tokens-text-inverse, #fff);
     &:not(.disabled):hover {
-      color: var(--Text-Tokens-text-hover, #c6c6c6);
+      color: var(--text-tokens-text-hover, #c6c6c6);
     }
     &.disabled {
       color: var(--text-button-disabled, #a8a8a8);
-      background: var(--Button-Tokens-button-disabled, #e0e0e0);
+      background: var(--button-tokens-button-disabled, #e0e0e0);
     }
   }
   &.secondary {
-    border: 1px solid var(--Button-Tokens-button-primary, #161616);
-    color: var(--Button-Tokens-button-primary, #161616);
+    border: 1px solid var(--button-tokens-button-primary, #161616);
+    color: var(--button-tokens-button-primary, #161616);
     &:not(.disabled):hover {
-      color: var(--Text-Tokens-text-secondary, #525252);
+      color: var(--text-tokens-text-secondary, #525252);
     }
     &.disabled {
       color: var(--text-button-disabled, #a8a8a8);
-      border: 1px solid var(--Button-Tokens-button-disabled, #e0e0e0);
+      border: 1px solid var(--button-tokens-button-disabled, #e0e0e0);
     }
   }
   &.text,
   &.text2 {
     @include frcc;
     gap: 4px;
-    color: var(--Text-Tokens-text-primary, #161616);
+    color: var(--text-tokens-text-primary, #161616);
     height: 38px;
     &.text2 {
       height: auto;
@@ -69,13 +69,13 @@ button.PButton {
       color: var(--icon-tokens-icon-primary);
     }
     &:not(.disabled):hover {
-      color: var(--Text-Tokens-text-secondary, #525252);
+      color: var(--text-tokens-text-secondary, #525252);
       .iconfont {
         color: var(--icon-tokens-icon-secondary);
       }
     }
     &.disabled {
-      color: var(--Text-Tokens-text-disabled, #c6c6c6);
+      color: var(--text-tokens-text-disabled, #c6c6c6);
       .iconfont {
         color: var(--icon-tokens-icon-disabled);
       }
@@ -89,7 +89,7 @@ button.PButton {
     }
     &:not(.disabled):hover {
       .iconfont {
-        color: var(--Button-Tokens-button-primary-hover);
+        color: var(--button-tokens-button-primary-hover);
       }
     }
     &.disabled {
@@ -103,14 +103,14 @@ button.PButton {
   button.PButton {
     &.primary {
       &.disabled {
-        color: var(--Text-Tokens-text-hover);
-        background: var(--Button-Tokens-button-primary);
+        color: var(--text-tokens-text-hover);
+        background: var(--button-tokens-button-primary);
       }
     }
     &.secondary {
       &.disabled {
         color: var(--text-button-disabled);
-        border: 1px solid var(--Button-Tokens-button-disabled);
+        border: 1px solid var(--button-tokens-button-disabled);
       }
     }
   }

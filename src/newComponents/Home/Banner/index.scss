@@ -7,9 +7,9 @@
   @include frsc;
   padding: 0 33px;
   border-radius: var(--spacing-8);
-  border: 1px solid var(--Border-Tokens-border- primary);
-  // background-color: var(--Layer-Tokens-layer-bp);
-  background-color: #e8ffff;// TODO-newui
+  border: 1px solid var(--border-tokens-border- primary);
+  // background-color: var(--layer-tokens-layer-bp);
+  background-color: #e8ffff; // TODO-newui
   background-image: url(../../../assets//newImg/home/bannerBg.svg);
   background-repeat: no-repeat;
   background-size: 872px 144px;
@@ -26,11 +26,11 @@
         gap: var(--spacing-2);
         h1 {
           @include HeadlineH1;
-          color: var(--Text-Tokens-text-primary);
+          color: var(--text-tokens-text-primary);
         }
         h3 {
           @include BodyBody300;
-          color: var(--Text-Tokens-text-tertiary);
+          color: var(--text-tokens-text-tertiary);
         }
       }
       .desc {

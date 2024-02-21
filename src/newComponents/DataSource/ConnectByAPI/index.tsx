@@ -25,7 +25,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
   }, [hadSetPwd]);
 
   return (
-    <div className="nav">
+    <div className="connectByAPIModel">
       {step === 1 && (
         <SetPwdDialog
           onClose={handleCloseSetPwdDialog}

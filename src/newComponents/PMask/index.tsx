@@ -9,7 +9,7 @@ interface PMaskProps {
 
 const PMask: React.FC<PMaskProps> = memo(({ children }) => {
   return (
-    <div className="pMask bgLayer">
+    <div className="pMask2">
       {/* {closeable && (
         <img className="closeBtn" src={iconClose} alt="" onClick={onClose} />
       )} */}

@@ -7,15 +7,15 @@
   height: 42px;
   @include frcc;
   gap: var(--spacing-10);
-  background: var(--Background-Tokens-background);
+  background: var(--background-tokens-background);
   .version {
     @include Label01;
-    color: var(--Text-Tokens-text-primary);
+    color: var(--text-tokens-text-primary);
   }
   .policy {
     @include TextLinkLink;
     text-decoration-line: underline;
     // @extend .TextLinkLink;
-    color: var(--Text-Tokens-text-primary);
+    color: var(--text-tokens-text-primary);
   }
 }

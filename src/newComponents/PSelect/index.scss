@@ -7,14 +7,14 @@
   gap: var(--spacing-4, 4px);
   position: relative;
   > label {
-    color: var(--Text-Tokens-text-primary, #161616);
+    color: var(--text-tokens-text-primary, #161616);
     @include Label01;
     @include frsc;
     padding-bottom: var(--spacing-4, 4px);
   }
   &.disabled {
     > label {
-      color: var(--Text-Tokens-text-placeholder, #a8a8a8);
+      color: var(--text-tokens-text-placeholder, #a8a8a8);
     }
   }
   .selectInput {
@@ -22,8 +22,8 @@
     @include frsc;
     gap: var(--spacing-16, 16px);
     border-radius: var(--Radius-radius-xs, 4px);
-    border: 1px solid var(--Border-Tokens-border--primary, #e0e0e0);
-    background: var(--Layer-Tokens-layer-primary, #fff);
+    border: 1px solid var(--border-tokens-border--primary, #e0e0e0);
+    background: var(--layer-tokens-layer-primary, #fff);
     height: var(--spacing-40, 40px);
     padding: 0 var(--spacing-16, 16px);
     &:not(.disabled).toBeActive {
@@ -33,11 +33,11 @@
       border: 1px solid var(--Brand-Primary-Color-BP-50, #00c7f2);
     }
     &.disabled {
-      border: 1px solid var(--Border-disabled, #f4f4f4);
+      border: 1px solid var(--border-disabled, #f4f4f4);
       .valueWrapper {
-        color: var(--Text-Tokens-text-disabled, #c6c6c6);
+        color: var(--text-tokens-text-disabled, #c6c6c6);
         .placeholder {
-          color: var(--Text-Tokens-text-disabled, #c6c6c6);
+          color: var(--text-tokens-text-disabled, #c6c6c6);
         }
       }
       .iconfont {
@@ -46,7 +46,7 @@
     }
 
     .valueWrapper {
-      color: var(--Text-Tokens-text-primary, #161616);
+      color: var(--text-tokens-text-primary, #161616);
       @include BodyBody100;
       @include frsc;
       flex: 1;
@@ -54,7 +54,7 @@
       background: transparent;
       border: 0;
       .placeholder {
-        color: var(--Text-Tokens-text-placeholder, #a8a8a8);
+        color: var(--text-tokens-text-placeholder, #a8a8a8);
       }
     }
     .iconfont {
@@ -79,9 +79,9 @@
 .dark {
   .PSelect {
     .selectInput {
-      background: var(--Background-Tokens-background);
+      background: var(--background-tokens-background);
       &.disabled {
-        border: 1px solid var(--Button-Tokens-button-disabled, #262626);
+        border: 1px solid var(--button-tokens-button-disabled, #262626);
       }
     }
   }

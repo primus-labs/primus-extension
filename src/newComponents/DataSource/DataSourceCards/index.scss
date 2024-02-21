@@ -26,7 +26,7 @@
           align-self: flex-start;
           @include frsc;
           gap: var(--spacing-8);
-          color: var(--Text-Tokens-text-secondary);
+          color: var(--text-tokens-text-secondary);
           .num {
             @include Hint;
             @include frsc;
@@ -50,7 +50,7 @@
         }
         .intro {
           @include fcss;
-          color: var(--Text-Tokens-text-primary);
+          color: var(--text-tokens-text-primary);
           .name {
             @include HeadlineH3;
           }
@@ -61,7 +61,7 @@
       }
       .desc {
         @include BodyBody300;
-        color: var(--Text-Tokens-text-secondary);
+        color: var(--text-tokens-text-secondary);
       }
     }
     .connectBtn {

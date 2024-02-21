@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
 import PInput from '@/components/PInput/index';
-import PMask from '@/components/PMask';
+import PMask from '@/newComponents/PMask';
 import PBack from '@/components/PBack';
 import PButton from '@/newComponents/PButton';
-import PEye from '@/newComponents/PEye'
-import PClose from '@/newComponents/PClose'
+import PEye from '@/newComponents/PEye';
+import PClose from '@/newComponents/PClose';
 
 import { postMsg } from '@/utils/utils';
 import { initWalletAddressActionAsync } from '@/store/actions';
@@ -127,10 +127,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       setConfirm(val);
     };
     const handleEyeOpen = useCallback(() => {
-      setEyeOpen(b => !b)
+      setEyeOpen((b) => !b);
     }, []);
     return (
-      <PMask onClose={onClose} closeable={!fromEvents}>
+      <PMask>
+        {/* onClose={onClose} closeable={!fromEvents} */}
         <div className="pDialog2 setPwdDialog">
           <PClose onClick={onClose} />
           <main>
@@ -150,13 +151,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               </div>
               <div className="step step1 done">
                 <img className="iconDone" src={iconDone} alt="" />
-                <div className="txt">
-                  <div className="tit">Set up password</div>
-                  <div className="con">
-                    <span>password placeholder</span>
-                    <PEye open={eyeOpen} onClick={handleEyeOpen} />
-                  </div>
-                </div>
+                <div className="txt">Set up password</div>
               </div>
               <div className="step step2">
                 <div className="tit">

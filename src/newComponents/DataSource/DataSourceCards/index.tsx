@@ -1,7 +1,7 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DATASOURCEMAP } from '@/config/dataSource';
-
+import useDataSource from '@/hooks/useDataSource';
 import type { SyntheticEvent } from 'react';
 
 import PTag from '@/newComponents/PTag';
@@ -25,9 +25,14 @@ interface PDropdownProps {
 }
 const list = Object.values(DATASOURCEMAP);
 const Cards: React.FC<PDropdownProps> = memo(
-  ({ onClick = (item: NavItem) => { } }) => {
-    
-    const navigate = useNavigate()
+  ({ onClick = (item: NavItem) => {} }) => {
+    const [activeDataSourceName, setActiveDataSourceName] = useState<string>('');
+    const {
+      metaInfo: activeDataSouceMetaInfo,
+      userInfo: activeDataSouceUserInfo,
+      deleteFn: deleteDataSourceFn,
+    } = useDataSource(activeDataSourceName);
+    const navigate = useNavigate();
     const handleConnect = useCallback(
       (i) => {
         // onClick && onClick(i);
@@ -36,7 +41,9 @@ const Cards: React.FC<PDropdownProps> = memo(
       [navigate]
     );
     const handleDelete = useCallback((i) => {
-      
+      setActiveDataSourceName(i.name);
+      deleteDataSourceFn();
+      // TODO-newui badge
     }, []);
 
     return (
@@ -48,7 +55,7 @@ const Cards: React.FC<PDropdownProps> = memo(
               onClick={() => {
                 handleConnect(i);
               }}
-              key={ i.name}
+              key={i.name}
             >
               <div className="cardContent">
                 <div className="header">

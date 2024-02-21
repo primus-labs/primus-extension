@@ -7,22 +7,22 @@
   height: 60px;
   @include frbc;
   padding: 0 var(--spacing-24) 0 var(--spacing-40);
-  border-bottom: 1px solid var(--Border-Tokens-border-primary);
+  border-bottom: 1px solid var(--border-tokens-border-primary);
   // Background Tokens/background-navi
-  background: var(--Background-Tokens-background-navi);
+  background: var(--background-tokens-background-navi);
   .pathName {
     @include HeadlineH1;
     @include frsc;
     height: 100%;
-    border-bottom: 4px solid var(--Background-Tokens-background-brand);
-    color: var(--Text-Tokens-text-primary);
+    border-bottom: 4px solid var(--background-tokens-background-brand);
+    color: var(--text-tokens-text-primary);
   }
   .rightActions {
     @include frsc;
     gap: var(--spacing-8);
     .icon-iconBell {
       font-size: var(--spacing-24);
-      color: var(--Button-Tokens-button-primary);
+      color: var(--button-tokens-button-primary);
       margin-right: var(--spacing-8);
     }
     .connectBtn {
@@ -42,6 +42,6 @@
 }
 // .dark{
 //   .pageHeader{
-//     background: var(--Background-Tokens-background-navi);
+//     background: var(--background-tokens-background-navi);
 //   }
 // }

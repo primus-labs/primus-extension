@@ -16,7 +16,7 @@ import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
-  const [visibleConnectByWeb, setVisibleSetPwdDialog] = useState<boolean>(false);
+  const [visibleConnectByWeb, setVisibleConnectByAPI] = useState<boolean>(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dataSourceName = searchParams.get('dataSourceName');
@@ -44,7 +44,7 @@ const DataSourceItem = memo(() => {
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(() => {
     if (activeDataSouceMetaInfo?.connectType === 'API') {
-      ;
+      setVisibleConnectByAPI(true)
     } else if (activeDataSouceMetaInfo?.connectType === 'Web') {
       const currRequestObj = webProofTypes.find(
         (r: any) => r.dataSource === lowerCaseDataSourceName
@@ -64,9 +64,11 @@ const DataSourceItem = memo(() => {
     navigate(-1);
   }, [navigate]);
   const handleCloseConnectByAPI = useCallback(() => {
-    setVisibleSetPwdDialog(false)
+    setVisibleConnectByAPI(false)
   }, [])
-  const handleSubmitConnectByAPI = useCallback(() => {}, []);
+  const handleSubmitConnectByAPI = useCallback(() => {
+     setVisibleConnectByAPI(false);
+  }, []);
 
   return (
     <div className="pageDataSourceItem">

@@ -144,7 +144,7 @@
 
 // TODO-newui
 @mixin Error {
-  color: var(--Text-Tokens-text-error, #fa4d56);
+  color: var(--text-tokens-text-error, #fa4d56);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
   /* Error */
   font-family: 'IBM Plex Sans';
@@ -173,7 +173,7 @@
 }
 
 @mixin Tab {
-  color: var(--Text-Tokens-text-inverse, #fff);
+  color: var(--text-tokens-text-inverse, #fff);
   /* Tab */
   font-family: 'IBM Plex Sans';
   font-size: 12px;
@@ -203,7 +203,7 @@
 }
 
 @mixin Title {
-  color: var(--Text-Tokens-text-inverse, #fff);
+  color: var(--text-tokens-text-inverse, #fff);
   /* Title */
   font-family: 'IBM Plex Sans';
   font-size: 32px;

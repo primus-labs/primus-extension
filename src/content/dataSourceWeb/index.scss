@@ -62,7 +62,7 @@
       width: 100%;
       @include fccs;
       gap: var(--spacing-16, 16px);
-      color: var(--Text-Tokens-text-primary);
+      color: var(--text-tokens-text-primary);
       @include BodyBody100;
       .title {
         width: 100%;
@@ -78,25 +78,25 @@
             width: 100%;
             @include frbc;
             .label {
-              color: var(--Text-Tokens-text-tertiary);
+              color: var(--text-tokens-text-tertiary);
             }
           }
         }
         &.verifying {
           @include frcc;
-          color: var(--Text-Tokens-text-tertiary);
+          color: var(--text-tokens-text-tertiary);
         }
         &.result {
           @include fccs;
           gap: var(--spacing-8, 8px);
           &.suc {
             .label {
-              color: var(--Text-Tokens-text-correct);
+              color: var(--text-tokens-text-correct);
             }
           }
           &.fail {
             .label {
-              color: var(--Text-Tokens-text-error);
+              color: var(--text-tokens-text-error);
             }
           }
           .label {
@@ -110,7 +110,7 @@
           .value {
             text-align: center;
             width: 100%;
-            color: var(--Text-Tokens-text-tertiary);
+            color: var(--text-tokens-text-tertiary);
           }
         }
       }
@@ -135,8 +135,8 @@
           width: 16px;
           height: 16px;
           border-radius: 50%;
-          border: 2px solid var(--icon-tokens-icon-primary,#161616);
-          border-top: 2px solid var(--Layer-Tokens-layer-primary,#fff);
+          border: 2px solid var(--icon-tokens-icon-primary, #161616);
+          border-top: 2px solid var(--layer-tokens-layer-primary, #fff);
           animation: spin 1s linear infinite;
         }
       }

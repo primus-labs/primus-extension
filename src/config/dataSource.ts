@@ -121,56 +121,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     connectType: 'API',
   },
-  kucoin: {
-    name: 'KuCoin',
-    type: 'Assets',
-    icon: iconDataSourceKucoin,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip: '',
-    requirePassphase: true,
-    constructorF: KuCoin,
-    baseName: 'api.kucoin.com',
-
-    connectType: 'API',
-  },
-  bybit: {
-    name: 'Bybit',
-    type: 'Assets',
-    icon: iconDataSourceBybit,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip: '',
-    requirePassphase: false,
-    constructorF: Bybit,
-    baseName: 'api.bybit.com',
-
-    connectType: 'API',
-  },
-
-  gate: {
-    name: 'Gate',
-    type: 'Assets',
-    icon: iconDataSourceGate,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip: '',
-    requirePassphase: false,
-    constructorF: Gate,
-    baseName: 'api.gateio.ws',
-
-    connectType: 'API',
-  },
-  huobi: {
-    name: 'Huobi',
-    type: 'Assets',
-    icon: iconDataSourceHuobi,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip: '',
-    iconWithCircle: iconDataSourceHuobiWithCircle,
-    requirePassphase: false,
-    constructorF: Huobi,
-    baseName: 'api.huobi.pro',
-
-    connectType: 'API',
-  },
   bitget: {
     name: 'Bitget',
     type: 'Assets',
@@ -184,19 +134,17 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     connectType: 'API',
   },
-  mexc: {
-    name: 'MEXC',
-    type: 'Assets',
-    icon: iconDataSourceMEXC,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip: '',
-    requirePassphase: false,
-    constructorF: Mexc,
-    baseName: 'api.mexc.com',
+  zan: {
+    name: 'ZAN',
+    type: 'Humanity',
+    icon: iconDataSourceZan,
+    desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
+    disabled: true,
 
     connectType: 'API',
   },
-
   github: {
     name: 'Github',
     type: 'Social',
@@ -215,20 +163,72 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     connectType: 'API',
   },
+  bybit: {
+    name: 'Bybit',
+    type: 'Assets',
+    icon: iconDataSourceBybit,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip: '',
+    requirePassphase: false,
+    constructorF: Bybit,
+    baseName: 'api.bybit.com',
+
+    connectType: 'API',
+  },
+  huobi: {
+    name: 'Huobi',
+    type: 'Assets',
+    icon: iconDataSourceHuobi,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip: '',
+    iconWithCircle: iconDataSourceHuobiWithCircle,
+    requirePassphase: false,
+    constructorF: Huobi,
+    baseName: 'api.huobi.pro',
+
+    connectType: 'API',
+  },
+
+  kucoin: {
+    name: 'KuCoin',
+    type: 'Assets',
+    icon: iconDataSourceKucoin,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip: '',
+    requirePassphase: true,
+    constructorF: KuCoin,
+    baseName: 'api.kucoin.com',
+
+    connectType: 'API',
+  },
+  gate: {
+    name: 'Gate',
+    type: 'Assets',
+    icon: iconDataSourceGate,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip: '',
+    requirePassphase: false,
+    constructorF: Gate,
+    baseName: 'api.gateio.ws',
+
+    connectType: 'API',
+  },
+  mexc: {
+    name: 'MEXC',
+    type: 'Assets',
+    icon: iconDataSourceMEXC,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip: '',
+    requirePassphase: false,
+    constructorF: Mexc,
+    baseName: 'api.mexc.com',
+
+    connectType: 'API',
+  },
+
   /*youtube: {
     name: 'Youtube',
     type: 'Social',
     icon: iconDataSourceYoutube,
   },*/
-  zan: {
-    name: 'ZAN',
-    type: 'Humanity',
-    icon: iconDataSourceZan,
-    desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
-    unConnectTip:
-      'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
-    disabled: true,
-
-    connectType: 'API',
-  },
 };

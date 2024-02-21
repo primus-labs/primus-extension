@@ -7,24 +7,24 @@
   width: 100%;
   &.disabled {
     > label {
-      color: var(--Text-Tokens-text-placeholder, #a8a8a8);
+      color: var(--text-tokens-text-placeholder, #a8a8a8);
     }
     > .inputWrapper {
-      border: 1px solid var(--Border-disabled, #f4f4f4);
+      border: 1px solid var(--border-disabled, #f4f4f4);
       // TODO-newui
       .pInput {
-        color: var(--Text-Tokens-text-disabled);
+        color: var(--text-tokens-text-disabled);
       }
     }
   }
-  &.error{
-     > .inputWrapper {
-      border: 1px solid var(--Text-Tokens-text-error, #FA4D56);
+  &.error {
+    > .inputWrapper {
+      border: 1px solid var(--text-tokens-text-error, #fa4d56);
     }
   }
-  
+
   > label {
-    color: var(--Text-Tokens-text-primary, #161616);
+    color: var(--text-tokens-text-primary, #161616);
     @include Label01;
     @include frsc;
     padding-bottom: var(--spacing-4, 4px);
@@ -34,22 +34,22 @@
     @include frsc;
     gap: var(--spacing-16, 16px);
     border-radius: var(--Radius-radius-xs, 4px);
-    border: 1px solid var(--Border-Tokens-border--primary, #e0e0e0);
-    background: var(--Layer-Tokens-layer-primary, #fff);
+    border: 1px solid var(--border-tokens-border--primary, #e0e0e0);
+    background: var(--layer-tokens-layer-primary, #fff);
     height: var(--spacing-40, 40px);
     padding: 0 var(--spacing-16, 16px);
     &:focus-within {
       border: 1px solid var(--Brand-Primary-Color-BP-50, #00c7f2);
     }
     .pInput {
-      color: var(--Text-Tokens-text-primary, #161616);
+      color: var(--text-tokens-text-primary, #161616);
       @include BodyBody100;
       flex: 1;
       height: 100%;
       background: transparent;
       border: 0;
       &::placeholder {
-        color: var(--Text-Tokens-text-placeholder, #a8a8a8);
+        color: var(--text-tokens-text-placeholder, #a8a8a8);
       }
     }
     .iconfont {
@@ -61,7 +61,7 @@
   > .tip {
     @include Error;
     &.error {
-      color: var(--Text-Tokens-text-error, #fa4d56);
+      color: var(--text-tokens-text-error, #fa4d56);
     }
     &.help {
       color: var(--dark-text-text-tertiary, #8d8d8d);

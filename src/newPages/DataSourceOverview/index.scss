@@ -23,7 +23,7 @@
       // background-size:508px 104px;
       .intro {
         @include fcss;
-        color: var(--Text-Tokens-text-primary);
+        color: var(--text-tokens-text-primary);
         width: 873px;
         .title {
           @include HeadlineH4;

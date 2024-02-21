@@ -19,7 +19,6 @@
       height: 100%;
     }
     .left {
-      
       > img {
         width: var(--spacing-40);
       }
@@ -27,11 +26,11 @@
         @include fcss;
         .title {
           @include BodyBody100semibold;
-          color: var(--Text-Tokens-text-primary);
+          color: var(--text-tokens-text-primary);
         }
         .desc {
           @include BodyBody300;
-          color: var(--Text-Tokens-text-secondary);
+          color: var(--text-tokens-text-secondary);
         }
       }
     }
@@ -39,7 +38,7 @@
       align-items: flex-end;
       .provider {
         @include Hint;
-        color: var(--Text-Tokens-text-tertiary);
+        color: var(--text-tokens-text-tertiary);
       }
       .createBtn {
         height: var(--spacing-16);
@@ -49,7 +48,7 @@
     .introTxt {
       @include fcss;
       gap: var(--spacing-8);
-      color: var(--Text-Tokens-text-primary);
+      color: var(--text-tokens-text-primary);
       .title {
         @include HeadlineH2;
         @include frsc;

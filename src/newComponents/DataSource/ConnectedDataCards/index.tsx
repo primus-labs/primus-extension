@@ -4,7 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import useAllSources from '@/hooks/useAllSources';
+// import useAllSources from '@/hooks/useAllSources';
+import useDataSource from '@/hooks/useDataSource';
 import { eventReport } from '@/services/api/usertracker';
 import {
   setExSourcesAsync,
@@ -42,16 +43,21 @@ interface PDropdownProps {
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
     const [searchParams] = useSearchParams();
-    const dataSourceName = searchParams.get('dataSourceName');
+    const dataSourceName = searchParams.get('dataSourceName') as string;
     const lowerCaseDataSourceName = dataSourceName?.toLowerCase();
     const dispatch: Dispatch<any> = useDispatch();
-    const [sourceList, sourceMap, activeDataSouceUserInfo] = useAllSources(
-      lowerCaseDataSourceName
-    );
-    const activeDataSouceMetaInfo = useMemo(() => {
-      var obj = DataSouces.find((i) => i.name === dataSourceName);
-      return obj as DataSourceItemType;
-    }, [dataSourceName]);
+    const {
+      metaInfo: activeDataSouceMetaInfo,
+      userInfo: activeDataSouceUserInfo,
+      deleteFn: deleteDataSourceFn,
+    } = useDataSource(lowerCaseDataSourceName);
+    // const [sourceList, sourceMap, activeDataSouceUserInfo] = useAllSources(
+    //   lowerCaseDataSourceName
+    // );
+    // const activeDataSouceMetaInfo = useMemo(() => {
+    //   var obj = DataSouces.find((i) => i.name === dataSourceName);
+    //   return obj as DataSourceItemType;
+    // }, [dataSourceName]);
     const connectedList = useMemo(() => {
       // const list = [
       //   {
@@ -130,85 +136,8 @@ const Cards: React.FC<PDropdownProps> = memo(
       //  if (i.name === 'Binance')
     }, []);
 
-    const handleDelete = async ( i: any) => {
-      // Delete credentials storage related to the exchange
-      const { credentials: credentialsStr } = await chrome.storage.local.get([
-        'credentials',
-      ]);
-      const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-      let newCredentialObj = { ...credentialObj };
-      Object.keys(credentialObj).forEach((key) => {
-        if (lowerCaseDataSourceName === credentialObj[key].source) {
-          const curCred = newCredentialObj[key];
-          if (!curCred.provided) {
-            delete newCredentialObj[key];
-          }
-        }
-      });
-      await chrome.storage.local.set({
-        credentials: JSON.stringify(newCredentialObj),
-      });
-      // Delete on-chain datas
-
-      // dispatch action & report event
-      dispatch(setCredentialsAsync());
-      if (activeDataSouceMetaInfo?.type === 'Assets') {
-        // Delete data source storage
-        if (
-          lowerCaseDataSourceName &&
-          lowerCaseDataSourceName !== 'Web3 Wallet'
-        ) {
-          await chrome.storage.local.remove([lowerCaseDataSourceName]);
-        }
-        // TODO-newui
-        // if (i.name.startsWith('0x')) {
-        if (lowerCaseDataSourceName === 'Web3 Wallet') {
-          const { onChainAssetsSources: onChainAssetsSourcesStr } =
-            await chrome.storage.local.get(['onChainAssetsSources']);
-          const onChainAssetsSourcesObj = onChainAssetsSourcesStr
-            ? JSON.parse(onChainAssetsSourcesStr)
-            : {};
-          let newOnChainAssetsSourcesObj = { ...onChainAssetsSourcesObj };
-          // key account address
-          // if (newOnChainAssetsSourcesObj[key]) {
-          //   delete newOnChainAssetsSourcesObj[key];
-          // }
-          await chrome.storage.local.set({
-            onChainAssetsSources: JSON.stringify(newOnChainAssetsSourcesObj),
-          });
-
-          dispatch(setOnChainAssetsSourcesAsync());
-          return eventReport({
-            eventType: 'DATA_SOURCE_DELETE',
-            rawData: {
-              type: 'Assets',
-              dataSource: 'onchain-ConnectWallet',
-            },
-          });
-        } else {
-          dispatch(setExSourcesAsync());
-          return eventReport({
-            eventType: 'DATA_SOURCE_DELETE',
-            rawData: {
-              type: activeDataSouceMetaInfo?.type,
-              dataSource: lowerCaseDataSourceName,
-            },
-          });
-        }
-      } else {
-        if (activeDataSouceMetaInfo?.type === 'Social') {
-          dispatch(setSocialSourcesAsync());
-        } else if (activeDataSouceMetaInfo?.type === 'Humanity') {
-          dispatch(setKYCsAsync());
-        }
-        return eventReport({
-          eventType: 'DATA_SOURCE_DELETE',
-          rawData: {
-            type: activeDataSouceMetaInfo?.type,
-            dataSource: lowerCaseDataSourceName,
-          },
-        });
-      }
+    const handleDelete = async (i: any) => {
+      deleteDataSourceFn();
     };
     return (
       <ul className="connectedDataCards">

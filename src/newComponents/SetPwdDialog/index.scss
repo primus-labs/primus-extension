@@ -1,13 +1,15 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
 
 .pDialog2.setPwdDialog {
   main {
     .detailWrapper {
       @include fcss;
       .step {
+        width: 100%;
         &:last-child {
-          border: 0;
+          border-bottom: 0;
         }
         &.done {
           @include frsc;
@@ -16,27 +18,19 @@
             width: var(--spacing-24);
           }
           .txt {
-            @include fcss;
-            gap: var(--spacing-4);
-            .title {
-              @include BodyBody300;
-            }
-            .con {
-              @include frsc;
-              gap: var(--spacing-16);
-              @include BodyBody100semibold;
-            }
+            @include BodyBody100semibold;
           }
         }
         @include fcss;
         gap: var(--spacing-16);
-        padding: var(--spacing-24);
-        border-bottom: 1px solid var(--border-tokens-border- primary);
+        padding: var(--spacing-24) 0;
+        border-bottom: 1px solid var(--border-tokens-border-primary);
         .tit {
           @include frsc;
           gap: var(--spacing-12);
           @include BodyBody100semibold;
           .order {
+            @include frcc;
             width: var(--spacing-24);
             height: var(--spacing-24);
             border-radius: 50%;

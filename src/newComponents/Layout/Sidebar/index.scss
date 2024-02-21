@@ -5,12 +5,15 @@
   @include fcbs;
   width: 240px;
   height: 100%;
-  border-right: 1px solid var(--Border-Tokens-border-primary);
-  background: var(--Background-Tokens-background-navi, #fff);
+  border-right: 1px solid var(--border-tokens-border-primary);
+  background: var(--background-tokens-background-navi, #fff);
 
   padding: var(--spacing-16, 16px) 0px var(--spacing-32) 0;
   gap: var(--spacing-16, 16px);
   .sidebarTop {
+    width: 100%;
+    @include fcss;
+    gap: var(--spacing-16, 16px);
     .logoWrapper {
       @include frsc;
       height: var(--spacing-40);
@@ -20,13 +23,12 @@
       }
     }
   }
-  .sidebarBottom{
+  .sidebarBottom {
     padding-left: var(--spacing-24);
   }
 }
 // .light {
 //   .sidebar {
-//     background: var(--Background-Tokens-background-navi, #fff);
+//     background: var(--background-tokens-background-navi, #fff);
 //   }
 // }
-
