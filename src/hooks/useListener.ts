@@ -38,43 +38,43 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
         };
         // result: 'warn',
         // failReason,
-        if (msg === 'AuthenticationError') {
-          setActiveRequest({
-            type: 'error',
-            title: 'Invalid input',
-            desc: 'Please check your API Key or Secret Key.',
-          });
-        } else if (msg === 'ExchangeNotAvailable') {
-          setActiveRequest({
-            type: 'warn',
-            title: 'Service unavailable',
-            desc: 'The network is unstable or the access may be restricted. Please adjust and try again later.',
-          });
-        } else if (msg === 'InvalidNonce') {
-          setActiveRequest({
-            type: 'warn',
-            title: 'Something went wrong',
-            desc: 'Looks like your time or internet settings may be incorrect. Please check and try again later.',
-          });
-        } else if (msg === 'TypeError: Failed to fetch') {
-          setActiveRequest({
-            type: 'warn',
-            title: 'Your connection are lost',
-            desc: 'Please check your internet connection and try again later.',
-          });
-        } else if (msg === 'RequestTimeout') {
-          setActiveRequest({
-            type: 'warn',
-            title: 'Request timed out',
-            desc: 'This request takes too long to process, it is timed out by the data source server.',
-          });
-        } else {
-          setActiveRequest({
-            type: 'warn',
-            title: 'Ooops...',
-            desc: 'Something went wrong. Please try again later.',
-          });
-        }
+        // if (msg === 'AuthenticationError') {
+        //   setActiveRequest({
+        //     type: 'error',
+        //     title: 'Invalid input',
+        //     desc: 'Please check your API Key or Secret Key.',
+        //   });
+        // } else if (msg === 'ExchangeNotAvailable') {
+        //   setActiveRequest({
+        //     type: 'warn',
+        //     title: 'Service unavailable',
+        //     desc: 'The network is unstable or the access may be restricted. Please adjust and try again later.',
+        //   });
+        // } else if (msg === 'InvalidNonce') {
+        //   setActiveRequest({
+        //     type: 'warn',
+        //     title: 'Something went wrong',
+        //     desc: 'Looks like your time or internet settings may be incorrect. Please check and try again later.',
+        //   });
+        // } else if (msg === 'TypeError: Failed to fetch') {
+        //   setActiveRequest({
+        //     type: 'warn',
+        //     title: 'Your connection are lost',
+        //     desc: 'Please check your internet connection and try again later.',
+        //   });
+        // } else if (msg === 'RequestTimeout') {
+        //   setActiveRequest({
+        //     type: 'warn',
+        //     title: 'Request timed out',
+        //     desc: 'This request takes too long to process, it is timed out by the data source server.',
+        //   });
+        // } else {
+        //   setActiveRequest({
+        //     type: 'warn',
+        //     title: 'Ooops...',
+        //     desc: 'Something went wrong. Please try again later.',
+        //   });
+        // }
       }
       chrome.runtime.sendMessage({
         type: 'dataSourceWeb',

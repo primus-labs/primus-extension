@@ -21,9 +21,9 @@ const DataSourceItem = memo(() => {
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const [sourceList, sourceMap, activeDataSouceUserInfo] =
     useAllSources(dataSourceName);
-  
+  console.log('activeDataSouceUserInfo', activeDataSouceUserInfo);
   const hasConnected = useMemo(() => {
-    return activeDataSouceUserInfo?.id
+    return !!activeDataSouceUserInfo?.name;
   }, [activeDataSouceUserInfo]);
   
   const activeDataSouceMetaInfo = useMemo(() => {

@@ -288,7 +288,7 @@ export const dataSourceWebMsgListener = async (
       if (tabId === tabCreatedByPado.id) {
         chrome.runtime.sendMessage({
           type: 'dataSourceWeb',
-          name: 'abortAttest', // TODO-datasource abortAttest
+          name: 'abortAttest', // TODO-newui abortAttest
         });
       }
     });
@@ -337,11 +337,11 @@ export const dataSourceWebMsgListener = async (
         const exData = {
           totalBalance: ex.totalAccountBalance,
           tokenListMap: ex.totalAccountTokenMap,
-          // apiKey: exParams.apiKey, // TODO-datasource
+          // apiKey: exParams.apiKey, // TODO-newui
           date: getCurrentDate(),
           timestamp: +new Date(),
-          version: ExchangeStoreVersion, // TODO-datasource
-          label: '', // TODO-datasource
+          version: ExchangeStoreVersion, // TODO-newui
+          label: '', // TODO-newui
           flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
           spotAccountTokenMap: ex.spotAccountTokenMap,
           tokenPriceMap: ex.tokenPriceMap,
