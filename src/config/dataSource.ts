@@ -15,6 +15,7 @@ import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
+import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.svg'
 import Binance from '@/services/exchange/binance';
 import OKX from '@/services/exchange/okx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -30,6 +31,7 @@ export type DataSourceItemType = ExchangeMeta & {
   provider?: any;
   unConnectTip?: any;
   jumpTo?: any;
+  connectType?: any
 };
 
 export type DataSourceMapType = {
@@ -44,6 +46,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: 'Support fetching token & NFT assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch token & NFT assets data from your Web3 Wallet to manage your assets or create attestations.',
+    connectType: 'API',
   },
   binance: {
     name: 'Binance',
@@ -55,40 +58,20 @@ export const DATASOURCEMAP: DataSourceMapType = {
     constructorF: Binance,
     baseName: 'api.binance.com',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
-    
-    jumpTo:"https://www.binance.com/my/dashboard",
+
+    jumpTo: 'https://www.binance.com/my/dashboard',
+    connectType: 'Web',
   },
-  coinbase: {
-    name: 'Coinbase',
-    type: 'Assets',
-    icon: iconDataSourceCoinbase,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
+  x: {
+    name: 'X',
+    type: 'Social',
+    icon: iconDataSourceTwitter,
+    desc: 'Support fetching tweet & followers data for management and attestation creation.',
+    provider: 'Alex',
     unConnectTip:
-      'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
-    requirePassphase: false,
-    constructorF: Coinbase,
-    baseName: 'api.coinbase.com',
-    accountBalanceUrl: 'https://api.binance.com/api/v3/account',
-  },
-  kucoin: {
-    name: 'KuCoin',
-    type: 'Assets',
-    icon: iconDataSourceKucoin,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip: '',
-    requirePassphase: true,
-    constructorF: KuCoin,
-    baseName: 'api.kucoin.com',
-  },
-  bybit: {
-    name: 'Bybit',
-    type: 'Assets',
-    icon: iconDataSourceBybit,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip: '',
-    requirePassphase: false,
-    constructorF: Bybit,
-    baseName: 'api.bybit.com',
+      'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
+
+    connectType: 'API',
   },
   okx: {
     name: 'OKX',
@@ -102,7 +85,67 @@ export const DATASOURCEMAP: DataSourceMapType = {
     baseName: 'www.okx.com',
 
     accountBalanceUrl: 'https://www.okx.com/api/v5/account/balance',
+    connectType: 'Web',
   },
+  tiktok: {
+    name: 'TikTok',
+    type: 'Social',
+    icon: iconDataSourceTikTok,
+    desc: 'Support fetching account name & status data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch account name & status data from your TikTok account to manage your data or create attestations.',
+
+    connectType: 'Web',
+  },
+  google: {
+    name: 'Google Account',
+    type: 'Social',
+    icon: iconDataSourceGoogle,
+    desc: 'Support fetching account name & email address data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch account name & email address data from your Google account to manage your data or create attestations.',
+
+    connectType: 'Auth',
+  },
+  coinbase: {
+    name: 'Coinbase',
+    type: 'Assets',
+    icon: iconDataSourceCoinbase,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
+    requirePassphase: false,
+    constructorF: Coinbase,
+    baseName: 'api.coinbase.com',
+    accountBalanceUrl: 'https://api.binance.com/api/v3/account',
+
+    connectType: 'API',
+  },
+  kucoin: {
+    name: 'KuCoin',
+    type: 'Assets',
+    icon: iconDataSourceKucoin,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip: '',
+    requirePassphase: true,
+    constructorF: KuCoin,
+    baseName: 'api.kucoin.com',
+
+    connectType: 'API',
+  },
+  bybit: {
+    name: 'Bybit',
+    type: 'Assets',
+    icon: iconDataSourceBybit,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip: '',
+    requirePassphase: false,
+    constructorF: Bybit,
+    baseName: 'api.bybit.com',
+
+    connectType: 'API',
+  },
+
   gate: {
     name: 'Gate',
     type: 'Assets',
@@ -112,6 +155,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Gate,
     baseName: 'api.gateio.ws',
+
+    connectType: 'API',
   },
   huobi: {
     name: 'Huobi',
@@ -123,6 +168,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Huobi,
     baseName: 'api.huobi.pro',
+
+    connectType: 'API',
   },
   bitget: {
     name: 'Bitget',
@@ -134,6 +181,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: true,
     constructorF: Bitget,
     baseName: 'api.bitget.com',
+
+    connectType: 'API',
   },
   mexc: {
     name: 'MEXC',
@@ -144,22 +193,18 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Mexc,
     baseName: 'api.mexc.com',
+
+    connectType: 'API',
   },
-  x: {
-    name: 'X',
-    type: 'Social',
-    icon: iconDataSourceTwitter,
-    desc: 'Support fetching tweet & followers data for management and attestation creation.',
-    provider: 'Alex',
-    unConnectTip:
-      'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
-  },
+
   github: {
     name: 'Github',
     type: 'Social',
     icon: iconDataSourceGithub,
     desc: 'Support fetching user profile data for management and attestation creation.',
     unConnectTip: '',
+
+    connectType: 'API',
   },
   discord: {
     name: 'Discord',
@@ -167,6 +212,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceDiscord,
     desc: 'Support fetching account name & status data for management and attestation creation.',
     unConnectTip: '',
+
+    connectType: 'API',
   },
   /*youtube: {
     name: 'Youtube',
@@ -181,13 +228,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
     disabled: true,
-  },
-  google: {
-    name: 'Google Account',
-    type: 'Social',
-    icon: iconDataSourceGoogle,
-    desc: 'Support fetching account name & email address data for management and attestation creation.',
-    unConnectTip:
-      'You can fetch account name & email address data from your Google account to manage your data or create attestations.',
+
+    connectType: 'API',
   },
 };

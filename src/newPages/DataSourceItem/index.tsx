@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useAllSources from '@/hooks/useAllSources';
 import type { UserState } from '@/types/store';
@@ -10,50 +10,63 @@ import PButton from '@/newComponents/PButton';
 import PTag from '@/newComponents/PTag';
 import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards';
 import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards';
+import ConnectByAPI from '@/newComponents/DataSource/ConnectByAPI';
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
+  const [visibleConnectByWeb, setVisibleSetPwdDialog] = useState<boolean>(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dataSourceName = searchParams.get('dataSourceName');
+  const lowerCaseDataSourceName = dataSourceName?.toLocaleLowerCase();
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
-  const [sourceList, sourceMap, activeDataSouceUserInfo] =
-    useAllSources(dataSourceName);
+  const [sourceList, sourceMap, activeDataSouceUserInfo] = useAllSources(
+    lowerCaseDataSourceName
+  );
   console.log('activeDataSouceUserInfo', activeDataSouceUserInfo);
   const hasConnected = useMemo(() => {
     return !!activeDataSouceUserInfo?.name;
   }, [activeDataSouceUserInfo]);
-  
+
   const activeDataSouceMetaInfo = useMemo(() => {
     var obj = DataSouces.find((i) => i.name === dataSourceName);
     return obj as DataSourceItemType;
   }, [dataSourceName]);
   const btnTxtEl = useMemo(() => {
-    if (activeDataSouceMetaInfo.name === 'G Account') {
-      return 'Connect by Auth';
-    } else {
-      return 'Connect by Web';
-    }
+    // if (activeDataSouceMetaInfo.name === 'G Account') {
+    //   return 'Connect by Auth';
+    // } else {
+    //   return 'Connect by Web';
+    // }
+    return 'Connect by ' + activeDataSouceMetaInfo?.connectType;
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(() => {
-    const currRequestObj = webProofTypes.find(
-      (r: any) => r.dataSource === dataSourceName?.toLocaleLowerCase()
-    );
-    // r.name === 'Account Ownership' &&
-    chrome.runtime.sendMessage({
-      type: 'dataSourceWeb',
-      name: 'init',
-      operation: 'connect',
-      params: {
-        ...currRequestObj,
-      },
-    });
+    if (activeDataSouceMetaInfo?.connectType === 'API') {
+      ;
+    } else if (activeDataSouceMetaInfo?.connectType === 'Web') {
+      const currRequestObj = webProofTypes.find(
+        (r: any) => r.dataSource === lowerCaseDataSourceName
+      );
+      // r.name === 'Account Ownership' &&
+      chrome.runtime.sendMessage({
+        type: 'dataSourceWeb',
+        name: 'init',
+        operation: 'connect',
+        params: {
+          ...currRequestObj,
+        },
+      });
+    }
   }, []);
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
+  const handleCloseConnectByAPI = useCallback(() => {
+    setVisibleSetPwdDialog(false)
+  }, [])
+  const handleSubmitConnectByAPI = useCallback(() => {}, []);
 
   return (
     <div className="pageDataSourceItem">
@@ -67,7 +80,10 @@ const DataSourceItem = memo(() => {
             <div className="introTxt">
               <div className="title">
                 <div className="name">{activeDataSouceMetaInfo.name}</div>
-                <PTag text={`${activeDataSouceMetaInfo.type} Data`} color="brand" />
+                <PTag
+                  text={`${activeDataSouceMetaInfo.type} Data`}
+                  color="brand"
+                />
               </div>
               <div className="origin">
                 {activeDataSouceMetaInfo.provider
@@ -100,7 +116,9 @@ const DataSourceItem = memo(() => {
               <img src={empty} alt="" />
               <div className="introTxt">
                 <div className="title">No data connected</div>
-                <div className="desc">{activeDataSouceMetaInfo.unConnectTip}</div>
+                <div className="desc">
+                  {activeDataSouceMetaInfo.unConnectTip}
+                </div>
               </div>
               <PButton
                 className="connectBtn"
@@ -112,6 +130,12 @@ const DataSourceItem = memo(() => {
           )}
         </div>
       </div>
+      {visibleConnectByWeb && (
+        <ConnectByAPI
+          onClose={handleCloseConnectByAPI}
+          onSubmit={handleSubmitConnectByAPI}
+        />
+      )}
     </div>
   );
 });

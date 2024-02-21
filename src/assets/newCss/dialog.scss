@@ -1,0 +1,79 @@
+@import './flex.scss';
+@import './mixins.scss';
+// .padoDialog {
+//     --padoDialog-width: 3.4014rem;
+//     --padoDialog-height: 4.2313rem;
+//     --padoDialog-padding: .3265rem .2857rem .2177rem;
+//     --padoDialog-footerBotton-height: .3265rem;
+//   }
+// @media (max-width: 1470px) {
+//   .padoDialog {
+//     --padoDialog-width: 500px;
+//     --padoDialog-height: 622px;
+//     --padoDialog-padding: 48px 42px 32px;
+//     --padoDialog-footerBotton-height: 48px;
+//   }
+// }
+
+.padoDialogHeaderStyle {
+  width: 100%;
+  h1 {
+    @include HeadlineH0;
+    color: var(--text-tokens-text-primary);
+  }
+}
+.padoFormDialogStyle {
+  main {
+    gap: var(--spacing-32, 32px);
+    .formContent {
+      width: 100%;
+      @extend .fcss;
+      gap: var(--spacing-24, 24px);
+      .contItem {
+        width: 100%;
+        @extend .fcss;
+        gap: var(--spacing-16, 16px);
+        .label {
+          @extend .Headline5;
+          color: var(--Text-headline, #0a1214);
+        }
+      }
+    }
+  }
+}
+.pDialog2 {
+  @include fcbc;
+  width: var(--padoDialog-width, 448px);
+  height: var(--padoDialog-height, 516px);
+  border-radius: var(--spacing-8, 8px);
+  background: var(--Layer-Tokens-layer-primary, #fff);
+  padding: var(--spacing-24, 24px);
+  color: var(--text-tokens-text-primary);
+  position: relative;
+  .PClose {
+    position: absolute;
+    top: var(--spacing-34, 34px);
+    right: var(--spacing-24);
+  }
+  > main {
+    @extend .fcss;
+    width: 100%;
+    gap: var(--spacing-24);
+    > header {
+      @extend .padoDialogHeaderStyle;
+    }
+  }
+  > footer > .PButton {
+    width: 100%;
+    height: var(--spacing-40, 40px);
+  }
+  // > .pButton,
+  // > footer > .pButton {
+  //   width: 100%;
+  //   height: var(--padoDialog-footerBotton-height,48px);
+  // }
+  // footer {
+  //   position: relative;
+  //   width: 100%;
+  // }
+}
