@@ -46,7 +46,21 @@ const DataSourceItem = memo(() => {
 
       // TODO
       if (lowerCaseDataSourceName === "tiktok") {
-        currRequestObj.datasourceTemplate.requests[1].url = "https://www.tiktok.com/api/user/detail/";
+        currRequestObj.datasourceTemplate.requests[0] = {
+          "name": "first",
+          "url": "https://www.tiktok.com/api/user/detail/",
+          "queryParams": [
+              "WebIdLastTime"
+          ],
+          "method": "GET",
+          "headers": [
+              "User-Agent"
+          ],
+          "cookies": [
+              "sessionid",
+              "tt-target-idc"
+          ]
+        };
       }
       // TODO END
 

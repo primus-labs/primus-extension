@@ -21,6 +21,31 @@ class WebTikTok extends WebSocial {
     this.verified = res.userInfo.user.verified;
     this.userName = res.userInfo.user.nickname;
   }
+
+  async storeUserName() {
+    /*const tiktokUserStr = await chrome.storage.local.get("tiktokUsername");
+    if (tiktokUserStr["tiktokUsername"] ) {
+        const tiktokUserObj = JSON.parse(tiktokUserStr["tiktokUsername"]);
+        const now = new Date().getTime();
+        if (now - tiktokUserObj.timestamp < 5000) {
+          return;
+        }
+    }*/
+
+    const params = {};
+    params.url = "https://www.tiktok.com/passport/web/account/info/";
+    params.method = 'GET';
+    const storageStr = await chrome.storage.local.get([params.url]);
+    const storageObj = JSON.parse(storageStr[params.url]);
+    params.url = params.url + "?" + storageObj.queryString;
+    params.headers = storageObj.headers;
+    const res = await this.request(params);
+    /*const storeTiktokObj = {
+      username: res.data.username,
+      timestamp: new Date().getTime()
+    }*/
+    await chrome.storage.local.set({"tiktokUsername": res.data.username});
+  }
 }
 
 export default WebTikTok;

@@ -305,6 +305,16 @@ export const dataSourceWebMsgListener = async (
       isReady: isReadyRequest,
       operation: operationType
     });
+
+    if (dataSource === 'tiktok') {
+      const tiktok = new WebTikTok();
+      await tiktok.storeUserName();
+      const tiktokUsername = await chrome.storage.local.get("tiktokUsername");
+      const currentTab = await chrome.tabs.get(tabCreatedByPado.id);
+      if (currentTab.url === jumpTo + "/") {
+        chrome.tabs.update(tabCreatedByPado.id, {url: jumpTo + "/@" + tiktokUsername["tiktokUsername"]});
+      }
+    }
   }
   if (name === 'start') {
     const formatRequests = await formatRequestsFn();
