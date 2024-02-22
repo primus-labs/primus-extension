@@ -23,6 +23,7 @@ class WebExchange {
     this.tokenPriceMap = {};
     this.totalAccountTokenMap = {};
     this.totalAccountBalance = BIGZERO;
+    this.userInfo = {};
   }
   async getFundingAccountTokenAmountMap() {
     console.log('getFundingAccountTokenAmountMap');
@@ -178,9 +179,14 @@ class WebExchange {
     // console.log('totalAccountBalance', this.totalAccountBalance);
     return this.totalAccountBalance;
   }
+  async getUserInfo() {
+  }
   async getInfo() {
     try {
-      await this.getTotalAccountBalance();
+      await Promise.all([
+        this.getTotalAccountBalance(),
+        this.getUserInfo(),
+      ]);
       //return this.exchange;
     } catch (error) {
       console.log('exchange getInfo error:', error);
@@ -201,7 +207,6 @@ class WebExchange {
         url = url + '?' + dataStr;
       }
     }
-    let golbalHeader = {};
     const controller = new AbortController();
     const signal = controller.signal;
     const timeout = config?.timeout ?? 10 * 1000;

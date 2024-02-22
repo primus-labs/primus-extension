@@ -7,7 +7,7 @@ import {gt} from "@/utils/utils";
 const ONE = 1;
 const ZERO = 0;
 
-class WebOKX extends WebExchange {
+class WebBinance extends WebExchange {
     constructor(exchangeInfo) {
         super('binance', exchangeInfo);
     }
@@ -119,6 +119,9 @@ class WebOKX extends WebExchange {
         });
         return this.tokenPriceMap;
     }
+
+    async getUserInfo() {
+    }
 }
 
-export default WebOKX;
+export default WebBinance;

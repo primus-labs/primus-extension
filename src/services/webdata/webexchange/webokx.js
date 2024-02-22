@@ -77,15 +77,24 @@ class WebOKX extends WebExchange {
       return prev;
     }, {});
     LPSymbols.forEach((lpsymbol) => {
-      const tokenSymbol = lpsymbol.replace(`/${USDT}`, '');
-      if (res[lpsymbol] && res[lpsymbol].last) {
-        const { last } = res[lpsymbol];
-        this.tokenPriceMap[tokenSymbol] = new BigNumber(last).toFixed();
+      const tokenSymbol = lpsymbol.replace(`-${USDT}`, '');
+      if (res[lpsymbol]) {
+        this.tokenPriceMap[tokenSymbol] = new BigNumber(res[lpsymbol]).toFixed();
       } else {
         this.tokenPriceMap[tokenSymbol] = ZERO + '';
       }
     });
     return this.tokenPriceMap;
+  }
+
+  async getUserInfo() {
+    const params = {};
+    params.url =
+      'https://www.okx.com/v3/users/security/profile?t=' +
+      new Date().getTime();
+    params.method = 'GET';
+    const res = await this.request(params);
+    this.userInfo.userName = res.data.petname;
   }
 }
 
