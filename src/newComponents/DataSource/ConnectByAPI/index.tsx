@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import SetPwdDialog from '@/newComponents/SetPwdDialog';
+import SetAPIDialog from '@/newComponents/SetAPIDialog';
 import './index.scss';
 
 interface PButtonProps {
@@ -15,7 +16,8 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
     onClose()
   }, []);
   const handleSubmitSetPwdDialog = useCallback(() => {
-    onSubmit();
+    // onSubmit();
+    setStep(2)
   }, []);
   const checkIfHadSetPwd = async () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);

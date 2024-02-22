@@ -79,7 +79,7 @@ const initState = {
   webProofTypes: [],
   credentials: {},
   userInfo: {},
-  walletAddress: '',
+  walletAddress: '', // created account when click start
   rewards: {},
   effective: true,
   onChainAssetsSources: {},

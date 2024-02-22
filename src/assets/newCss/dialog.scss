@@ -22,25 +22,6 @@
     color: var(--text-tokens-text-primary);
   }
 }
-// .padoFormDialogStyle {
-//   main {
-//     gap: var(--spacing-32, 32px);
-//     .formContent {
-//       width: 100%;
-//       @extend .fcss;
-//       gap: var(--spacing-24, 24px);
-//       .contItem {
-//         width: 100%;
-//         @extend .fcss;
-//         gap: var(--spacing-16, 16px);
-//         .label {
-//           @extend .Headline5;
-//           color: var(--Text-headline, #0a1214);
-//         }
-//       }
-//     }
-//   }
-// }
 .pDialog2 {
   @include fcbc;
   width: var(--padoDialog-width, 448px);
@@ -62,18 +43,22 @@
     > header {
       @extend .padoDialogHeaderStyle;
     }
+    .formWrapper {
+      @include fcss;
+      width: 100%;
+      gap: var(--spacing-24);
+      .formItem {
+        width: 100%;
+      }
+    }
   }
-  > footer > .PButton {
+  > footer {
     width: 100%;
-    height: var(--spacing-40, 40px);
+    > .PButton {
+      height: var(--spacing-40, 40px);
+      &.fullWidthBtn {
+        width: 100%;
+      }
+    }
   }
-  // > .pButton,
-  // > footer > .pButton {
-  //   width: 100%;
-  //   height: var(--padoDialog-footerBotton-height,48px);
-  // }
-  // footer {
-  //   position: relative;
-  //   width: 100%;
-  // }
 }

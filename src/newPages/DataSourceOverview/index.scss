@@ -25,6 +25,7 @@
         @include fcss;
         color: var(--text-tokens-text-primary);
         width: 873px;
+        gap: var(--spacing-4);
         .title {
           @include HeadlineH4;
         }

@@ -19,12 +19,12 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
   );
   const padoServicePortListener = useCallback(async function (message: any) {
     const { resType, res, msg } = message;
-    console.log(`page_get:${resType}:`, res);
-    if (resType.startsWith('set-')) {
+    if (resType && resType.startsWith('set-')) {
+      console.log(`page_get:${resType}:`, res);
       const lowerCaseSourceName = resType.split('-')[1];
       var params = {
-          result: 'success',
-        }
+        result: 'success',
+      };
       if (res) {
         dispatch(setExSourcesAsync());
         const eventInfo = {

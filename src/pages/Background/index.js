@@ -72,9 +72,6 @@ const processFullscreenReq = (message, port) => {
     case 'networkreq':
       processExReq(message, port, USERPASSWORD);
       break;
-    case 'storage':
-      processStorageReq(message, port);
-      break;
     case 'wallet':
       processWalletReq(message, port);
       break;
@@ -319,20 +316,6 @@ const processpadoServiceReq = async (message, port) => {
   }
 };
 
-const processStorageReq = async (message, port) => {
-  // console.log('processStorageReq message', message);
-  const { type, key, value } = message;
-  switch (type) {
-    case 'set':
-      await chrome.storage.local.set({ [key]: value });
-      break;
-    case 'remove':
-      await chrome.storage.local.remove(key);
-      break;
-    default:
-      break;
-  }
-};
 
 const processWalletReq = async (message, port) => {
   // console.log('processWalletReq message', message);
@@ -399,13 +382,7 @@ const processWalletReq = async (message, port) => {
           acc = web3EthAccount.privateKeyToAccount(privateKey);
         } else {
           acc = web3EthAccount.create();
-          transferMsg = {
-            fullScreenType: 'storage',
-            type: 'set',
-            key: 'privateKey',
-            value: acc.privateKey,
-          };
-          await processStorageReq(transferMsg, port);
+          await chrome.storage.local.set({ privateKey: acc.privateKey });
         }
         postMsg(port, { resMethodName: reqMethodName, res: acc.address });
       } catch {
