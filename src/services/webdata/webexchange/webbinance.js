@@ -121,6 +121,13 @@ class WebBinance extends WebExchange {
     }
 
     async getUserInfo() {
+        const params = {};
+        params.url =
+            'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail';
+        params.method = 'POST';
+        const res = await this.request(params);
+        this.userInfo.userName = res.data.mobileNo;
+        console.log(res.data.mobileNo)
     }
 }
 
