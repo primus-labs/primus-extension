@@ -49,6 +49,13 @@ const DataSourceItem = memo(() => {
       const currRequestObj = webProofTypes.find(
         (r: any) => r.dataSource === lowerCaseDataSourceName
       );
+
+      // TODO
+      if (lowerCaseDataSourceName === "tiktok") {
+        currRequestObj.datasourceTemplate.requests[1].url = "https://www.tiktok.com/api/user/detail/";
+      }
+      // TODO END
+
       // r.name === 'Account Ownership' &&
       chrome.runtime.sendMessage({
         type: 'dataSourceWeb',

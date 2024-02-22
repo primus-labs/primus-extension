@@ -7,6 +7,8 @@ import {
   BASEVENTNAME,
 } from '@/config/constants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
+import WebTikTok from '@/services/webdata/websocial/webtiktok'
+
 let tabCreatedByPado;
 let activeTemplate = {};
 let currExtentionId;
@@ -179,7 +181,6 @@ export const dataSourceWebMsgListener = async (
       const { headers, cookies, body, url } = r;
       const formatUrlKey = url;
       const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-
       const {
         headers: curRequestHeader,
         body: curRequestBody,
@@ -308,6 +309,13 @@ export const dataSourceWebMsgListener = async (
   if (name === 'start') {
     const formatRequests = await formatRequestsFn();
     if (operationType === 'connect') {
+      if (activeTemplate.dataSource === "tiktok") {
+        const tiktok = new WebTikTok();
+        await tiktok.getInfo();
+        console.log("dataSourceWeb tiktok=", tiktok);
+        return;
+      }
+
       const activeInfo = formatRequests.find((i) => i.headers);
       var activeCookie = '';
       if (activeInfo.cookies) {
