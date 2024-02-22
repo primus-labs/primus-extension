@@ -1,7 +1,10 @@
 import React, { useRef, useEffect, useCallback } from 'react';
-
 import { useSelector, useDispatch } from 'react-redux';
-import { setExSourcesAsync, setSocialSourcesAsync } from '@/store/actions';
+import {
+  setExSourcesAsync,
+  setSocialSourcesAsync,
+  setConnectByAPILoading,
+} from '@/store/actions';
 import { postMsg } from '@/utils/utils';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -18,9 +21,10 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
     (state: UserState) => state.padoServicePort
   );
   const padoServicePortListener = useCallback(async function (message: any) {
-    const { resType, res, msg } = message;
+    const { resType, res, msg, connectType } = message;
     if (resType && resType.startsWith('set-')) {
       console.log(`page_get:${resType}:`, res);
+      debugger
       const lowerCaseSourceName = resType.split('-')[1];
       var params = {
         result: 'success',
@@ -76,12 +80,17 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
         //   });
         // }
       }
-      chrome.runtime.sendMessage({
-        type: 'dataSourceWeb',
-        name: 'end',
-        result: res,
-        params,
-      });
+      dispatch(setExSourcesAsync());
+      if (connectType === 'Web') {
+        chrome.runtime.sendMessage({
+          type: 'dataSourceWeb',
+          name: 'end',
+          result: res,
+          params,
+        });
+      } else {
+        dispatch(setConnectByAPILoading(false));
+      }
     }
     padoServicePort.onMessage.removeListener(padoServicePortListener);
   }, []);
@@ -96,3 +105,4 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
   }, [padoServicePort, padoServicePortListener]);
 };
 export default useAlgorithm;
+

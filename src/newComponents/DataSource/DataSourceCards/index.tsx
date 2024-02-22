@@ -26,7 +26,8 @@ interface PDropdownProps {
 const list = Object.values(DATASOURCEMAP);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
-    const [activeDataSourceName, setActiveDataSourceName] = useState<string>('');
+    const [activeDataSourceName, setActiveDataSourceName] =
+      useState<string>('');
     const {
       metaInfo: activeDataSouceMetaInfo,
       userInfo: activeDataSouceUserInfo,
@@ -40,11 +41,18 @@ const Cards: React.FC<PDropdownProps> = memo(
       },
       [navigate]
     );
-    const handleDelete = useCallback((i) => {
-      setActiveDataSourceName(i.name);
-      deleteDataSourceFn();
-      // TODO-newui badge
-    }, []);
+    const handleDelete = useCallback(
+      (i) => {
+        setActiveDataSourceName(i.name);
+        setTimeout(() => {
+          debugger;
+          deleteDataSourceFn(i.name);
+        }, 2000);
+
+        // TODO-newui badge
+      },
+      [deleteDataSourceFn]
+    );
 
     return (
       <ul className="dataSourceCards">

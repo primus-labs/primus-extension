@@ -354,15 +354,15 @@ export const dataSourceWebMsgListener = async (
           spotAccountTokenMap: ex.spotAccountTokenMap,
           tokenPriceMap: ex.tokenPriceMap,
           tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
+          userInfo: ex.userInfo
         };
         if (pnl !== null && pnl !== undefined) {
           exData.pnl = pnl;
         }
-
         await chrome.storage.local.set({
           [exchangeName]: JSON.stringify(exData),
         });
-        postMsg(port, { resType, res: true });
+        postMsg(port, { resType, res: true ,connectType: 'Web'});
       } catch (error) {
         console.log(
           'exData',
@@ -386,7 +386,7 @@ export const dataSourceWebMsgListener = async (
         } else {
           errMsg = 'UnhnowError';
         }
-        postMsg(port, { resType, res: false, msg: errMsg });
+        postMsg(port, { resType, res: false, msg: errMsg, connectType: 'Web' });
       }
     }
     // operation : connect attest

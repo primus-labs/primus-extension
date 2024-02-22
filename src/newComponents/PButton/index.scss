@@ -1,6 +1,13 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
-
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 @mixin Button {
   text-align: center;
 
@@ -97,6 +104,14 @@ button.PButton {
         color: var(--text-button-disabled);
       }
     }
+  }
+  .loading-spinner {
+    width: var(--spacing-16,16px);
+    height: var(--spacing-16,16px);
+    border-radius: 50%;
+    border: 2px solid var(--layer-tokens-layer-primary, #fff);
+    border-top: 2px solid var(--icon-tokens-icon-primary, #161616);
+    animation: spin 1s linear infinite;
   }
 }
 .dark {

@@ -105,6 +105,10 @@ export const setThemeAction = (values: string) => ({
   type: 'setThemeAction',
   payload: values,
 });
+export const setConnectByAPILoading = (values: boolean) => ({
+  type: 'setConnectByAPILoading',
+  payload: values,
+});;
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {

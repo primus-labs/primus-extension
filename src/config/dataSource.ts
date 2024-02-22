@@ -232,3 +232,17 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceYoutube,
   },*/
 };
+
+const guideMap = {
+  Binance:
+    'https://docs.padolabs.org/Exchanges-API-Setup/Binance-API-Key-Setup',
+  Coinbase:
+    'https://docs.padolabs.org/Exchanges-API-Setup/Coinbase-API-Key-Setup',
+  KuCoin: 'https://docs.padolabs.org/Exchanges-API-Setup/Kucoin-API-Key-Setup',
+  Bybit: 'https://docs.padolabs.org/Exchanges-API-Setup/Bybit-API-Key-Setup',
+  OKX: 'https://docs.padolabs.org/Exchanges-API-Setup/OKX-API-Key-Setup',
+  Gate: 'https://docs.padolabs.org/Exchanges-API-Setup/Gate-API-Key-Setup',
+  Huobi: 'https://docs.padolabs.org/Exchanges-API-Setup/Huobi-API-Key-Setup',
+  Bitget: 'https://docs.padolabs.org/Exchanges-API-Setup/Bitget-API-Key-Setup',
+  MEXC: 'https://docs.padolabs.org/Exchanges-API-Setup/MEXC-API-Key-Setup',
+};

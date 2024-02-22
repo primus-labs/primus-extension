@@ -25,7 +25,7 @@
 .pDialog2 {
   @include fcbc;
   width: var(--padoDialog-width, 448px);
-  height: var(--padoDialog-height, 516px);
+  // height: var(--padoDialog-height, 516px);
   border-radius: var(--spacing-8, 8px);
   background: var(--layer-tokens-layer-primary, #fff);
   padding: var(--spacing-24, 24px);
@@ -43,22 +43,24 @@
     > header {
       @extend .padoDialogHeaderStyle;
     }
-    .formWrapper {
+    .pFormWrapper {
       @include fcss;
       width: 100%;
       gap: var(--spacing-24);
       .formItem {
         width: 100%;
       }
+      > .PButton {
+        width: 100%;
+        height: var(--spacing-40, 40px);
+      }
     }
   }
   > footer {
     width: 100%;
     > .PButton {
+      width: 100%;
       height: var(--spacing-40, 40px);
-      &.fullWidthBtn {
-        width: 100%;
-      }
     }
   }
 }

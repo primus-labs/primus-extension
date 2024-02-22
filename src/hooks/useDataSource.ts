@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { postMsg, sub } from '@/utils/utils';
 import useAllSources from '@/hooks/useAllSources';
@@ -27,7 +27,8 @@ import type {
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const useSource = (sourceName: string) => {
-  const lowerCaseName = sourceName.toLowerCase();
+  // var lowerCaseName = sourceName?.toLowerCase();
+  const [lowerCaseName, setLowerCaseName] = useState<string>();
   const dispatch: Dispatch<any> = useDispatch();
   const [sourceList, allSourceMap] = useAllSources();
   const activeDataSouceMetaInfo = useMemo(() => {
@@ -35,7 +36,7 @@ const useSource = (sourceName: string) => {
     return obj as DataSourceItemType;
   }, [lowerCaseName]);
   const activeSourceInfo: any = useMemo(() => {
-    if (sourceName) {
+    if (lowerCaseName) {
       return (
         allSourceMap.exSources[lowerCaseName] ||
         allSourceMap.socialSources[lowerCaseName] ||
@@ -44,64 +45,80 @@ const useSource = (sourceName: string) => {
     } else {
       return null;
     }
-  }, [allSourceMap]);
-  const handleDelete = useCallback(async () => {
-    // Delete credentials storage related to the exchange
-    const { credentials: credentialsStr } = await chrome.storage.local.get([
-      'credentials',
-    ]);
-    const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-    let newCredentialObj = { ...credentialObj };
-    Object.keys(credentialObj).forEach((key) => {
-      if (lowerCaseName === credentialObj[key].source) {
-        const curCred = newCredentialObj[key];
-        if (!curCred.provided) {
-          delete newCredentialObj[key];
+  }, [allSourceMap, lowerCaseName]);
+  const handleDelete = useCallback(
+    async (name?: string) => {
+      debugger
+      // if (name) {
+      //   lowerCaseName = name.toLowerCase();
+      // }
+      // Delete credentials storage related to the exchange
+      const { credentials: credentialsStr } = await chrome.storage.local.get([
+        'credentials',
+      ]);
+      const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
+      let newCredentialObj = { ...credentialObj };
+      Object.keys(credentialObj).forEach((key) => {
+        if (lowerCaseName === credentialObj[key].source) {
+          const curCred = newCredentialObj[key];
+          if (!curCred.provided) {
+            delete newCredentialObj[key];
+          }
         }
-      }
-    });
-    await chrome.storage.local.set({
-      credentials: JSON.stringify(newCredentialObj),
-    });
-    // Delete on-chain datas
+      });
+      await chrome.storage.local.set({
+        credentials: JSON.stringify(newCredentialObj),
+      });
+      // Delete on-chain datas
 
-    // dispatch action & report event
-    dispatch(setCredentialsAsync());
-    if (activeDataSouceMetaInfo?.type === 'Assets') {
-      // Delete data source storage
-      if (
-        lowerCaseName &&
-        lowerCaseName !== 'Web3 Wallet'
-      ) {
-        await chrome.storage.local.remove([lowerCaseName]);
-      }
-      // TODO-newui
-      // if (i.name.startsWith('0x')) {
-      if (lowerCaseName === 'Web3 Wallet') {
-        const { onChainAssetsSources: onChainAssetsSourcesStr } =
-          await chrome.storage.local.get(['onChainAssetsSources']);
-        const onChainAssetsSourcesObj = onChainAssetsSourcesStr
-          ? JSON.parse(onChainAssetsSourcesStr)
-          : {};
-        let newOnChainAssetsSourcesObj = { ...onChainAssetsSourcesObj };
-        // key account address
-        // if (newOnChainAssetsSourcesObj[key]) {
-        //   delete newOnChainAssetsSourcesObj[key];
-        // }
-        await chrome.storage.local.set({
-          onChainAssetsSources: JSON.stringify(newOnChainAssetsSourcesObj),
-        });
+      // dispatch action & report event
+      dispatch(setCredentialsAsync());
+      if (activeDataSouceMetaInfo?.type === 'Assets') {
+        // Delete data source storage
+        if (lowerCaseName && lowerCaseName !== 'Web3 Wallet') {
+          await chrome.storage.local.remove([lowerCaseName]);
+        }
+        // TODO-newui
+        // if (i.name.startsWith('0x')) {
+        if (lowerCaseName === 'Web3 Wallet') {
+          const { onChainAssetsSources: onChainAssetsSourcesStr } =
+            await chrome.storage.local.get(['onChainAssetsSources']);
+          const onChainAssetsSourcesObj = onChainAssetsSourcesStr
+            ? JSON.parse(onChainAssetsSourcesStr)
+            : {};
+          let newOnChainAssetsSourcesObj = { ...onChainAssetsSourcesObj };
+          // key account address
+          // if (newOnChainAssetsSourcesObj[key]) {
+          //   delete newOnChainAssetsSourcesObj[key];
+          // }
+          await chrome.storage.local.set({
+            onChainAssetsSources: JSON.stringify(newOnChainAssetsSourcesObj),
+          });
 
-        dispatch(setOnChainAssetsSourcesAsync());
-        return eventReport({
-          eventType: 'DATA_SOURCE_DELETE',
-          rawData: {
-            type: 'Assets',
-            dataSource: 'onchain-ConnectWallet',
-          },
-        });
+          dispatch(setOnChainAssetsSourcesAsync());
+          return eventReport({
+            eventType: 'DATA_SOURCE_DELETE',
+            rawData: {
+              type: 'Assets',
+              dataSource: 'onchain-ConnectWallet',
+            },
+          });
+        } else {
+          dispatch(setExSourcesAsync());
+          return eventReport({
+            eventType: 'DATA_SOURCE_DELETE',
+            rawData: {
+              type: activeDataSouceMetaInfo?.type,
+              dataSource: lowerCaseName,
+            },
+          });
+        }
       } else {
-        dispatch(setExSourcesAsync());
+        if (activeDataSouceMetaInfo?.type === 'Social') {
+          dispatch(setSocialSourcesAsync());
+        } else if (activeDataSouceMetaInfo?.type === 'Humanity') {
+          dispatch(setKYCsAsync());
+        }
         return eventReport({
           eventType: 'DATA_SOURCE_DELETE',
           rawData: {
@@ -110,22 +127,15 @@ const useSource = (sourceName: string) => {
           },
         });
       }
-    } else {
-      if (activeDataSouceMetaInfo?.type === 'Social') {
-        dispatch(setSocialSourcesAsync());
-      } else if (activeDataSouceMetaInfo?.type === 'Humanity') {
-        dispatch(setKYCsAsync());
-      }
-      return eventReport({
-        eventType: 'DATA_SOURCE_DELETE',
-        rawData: {
-          type: activeDataSouceMetaInfo?.type,
-          dataSource: lowerCaseName,
-        },
-      });
+    },
+    [activeDataSouceMetaInfo, lowerCaseName]
+  );
+  useEffect(() => {
+    if (sourceName) {
+      debugger
+      setLowerCaseName(sourceName?.toLowerCase());
     }
-  }, []);
-
+  }, [sourceName]);
   return {
     metaInfo: activeDataSouceMetaInfo,
     userInfo: activeSourceInfo,

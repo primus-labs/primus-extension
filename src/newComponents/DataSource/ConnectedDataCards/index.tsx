@@ -51,6 +51,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       userInfo: activeDataSouceUserInfo,
       deleteFn: deleteDataSourceFn,
     } = useDataSource(lowerCaseDataSourceName);
+    console.log('activeDataSouceUserInfo', activeDataSouceUserInfo);
     // const [sourceList, sourceMap, activeDataSouceUserInfo] = useAllSources(
     //   lowerCaseDataSourceName
     // );
@@ -105,18 +106,30 @@ const Cards: React.FC<PDropdownProps> = memo(
       // return [];
       // TODO-newui
       if (activeDataSouceUserInfo) {
+        var account = '';
+        if (activeDataSouceMetaInfo.connectType === 'Web') {
+          let userName = activeDataSouceUserInfo?.userInfo?.userName;
+          if (userName) {
+            account = userName;
+          } else {
+            account = '';
+          }
+        } else if (activeDataSouceMetaInfo.connectType === 'API') {
+          account = activeDataSouceUserInfo.apiKey;
+        }
+
         return [
           {
-            account: 'xxxx@gmail.com',
-            origin: 'Web',
-            initTime: '1707101091114',
-            updateTime: '1707201011114',
+            account,
+            origin: activeDataSouceMetaInfo.connectType,
+            initTime: activeDataSouceUserInfo.timestamp,
+            // updateTime: '1707201011114',
           },
         ];
       } else {
         return [];
       }
-    }, [activeDataSouceUserInfo]);
+    }, [activeDataSouceUserInfo, activeDataSouceMetaInfo]);
     const handleDetail = useCallback((i) => {
       onClick && onClick(i);
     }, []);
@@ -124,6 +137,9 @@ const Cards: React.FC<PDropdownProps> = memo(
       return dayjs.utc(+datastamp).format('YYYY.MM.DD hh:mm');
     };
     const titleElFn = useCallback((i) => {
+      if (activeDataSouceMetaInfo.connectType === 'API') {
+        return <span>API Key: {i.account}</span>;
+      }
       if (i.name === 'Web3 Wallet') {
         return <span>Wallet Address: {i.address}</span>;
       } else if (i.name === 'X' || dataSourceName === 'TikTok') {
@@ -136,9 +152,12 @@ const Cards: React.FC<PDropdownProps> = memo(
       //  if (i.name === 'Binance')
     }, []);
 
-    const handleDelete = async (i: any) => {
-      deleteDataSourceFn();
-    };
+    const handleDelete = useCallback(
+      async (i: any) => {
+        deleteDataSourceFn();
+      },
+      [deleteDataSourceFn]
+    );
     return (
       <ul className="connectedDataCards">
         {connectedList.map((i) => {
@@ -166,7 +185,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                   </div>
                   <div className="desc">
                     <div className="origin">Fetching from {i.origin}</div>
-                    <div className="time">{formatTime(i.updateTime)}</div>
+                    <div className="time">{formatTime(i.initTime)}</div>
                   </div>
                 </div>
               </div>

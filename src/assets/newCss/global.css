@@ -279,3 +279,6 @@
 .pageContent {
   width: var(--pageContent-width);
 }
+.fullWidth{
+  width: 100% !important;
+}

@@ -1,6 +1,9 @@
 import { SETSYSCONFIG } from '../actions';
 import { connectWallet } from '@/services/wallets/metamask';
-import { BASEVENTNAME, DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import {
+  BASEVENTNAME,
+  DEFAULTDATASOURCEPOLLINGTIMENUM,
+} from '@/config/constants';
 
 const DEFAULTCREDTYPELIST = [
   {
@@ -96,9 +99,9 @@ const initState = {
     startTime: '1699243200000',
     endTime: '1700971200000',
   },
-  events: {
-  },
-  theme: 'light'
+  events: {},
+  theme: 'light',
+  connectByAPILoading: false,
 };
 
 // reducer
@@ -155,6 +158,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, events: action.payload };
     case 'setThemeAction':
       return { ...state, theme: action.payload };
+    case 'setConnectByAPILoading':
+      return { ...state, connectByAPILoading: action.payload };
     default:
       return state;
   }

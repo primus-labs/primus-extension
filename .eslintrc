@@ -1,6 +1,15 @@
 {
-  "extends": "react-app",
-  "globals": {
-    "chrome": "readonly"
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["react", "react-hooks"],
+
+  "rules": {
+    "react-hooks/exhaustive-deps": "warn"
   }
 }

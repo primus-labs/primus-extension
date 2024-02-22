@@ -10,6 +10,7 @@ interface PButtonProps {
   size?: string;
   icon?: any;
   onClick: () => void;
+  loading?: boolean;
 
   prefix?: any;
   suffix?: any;
@@ -26,6 +27,7 @@ const PButton: React.FC<PButtonProps> = memo(
     icon,
     size = 'm',
     disabled = false,
+    loading = false,
   }) => {
     const formatClassName = useMemo(() => {
       let defaultCN = 'PButton';
@@ -84,7 +86,11 @@ const PButton: React.FC<PButtonProps> = memo(
           icon
         ) : (
           <>
-            <span className="btnText">{text}</span>
+            {loading ? (
+              <div className="loading-spinner"></div>
+            ) : (
+              <span className="btnText">{text}</span>
+            )}
             {type === 'text' && <i className="iconfont icon-LinkArrow"></i>}
           </>
         )}
