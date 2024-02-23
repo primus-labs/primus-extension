@@ -54,6 +54,11 @@ const useSource = (sourceName: string) => {
           (i) => i.name.toLowerCase() === lowerCaseName
         ) as DataSourceItemType;
       }
+      // Delete data source storage
+      if (lowerCaseName && lowerCaseName !== 'Web3 Wallet') {
+        await chrome.storage.local.remove([lowerCaseName]);
+      }
+      
       // Delete credentials storage related to the exchange
       const { credentials: credentialsStr } = await chrome.storage.local.get([
         'credentials',
@@ -71,15 +76,11 @@ const useSource = (sourceName: string) => {
       await chrome.storage.local.set({
         credentials: JSON.stringify(newCredentialObj),
       });
-      // Delete on-chain datas
+      // Delete on-chain datas // TODO-newui
 
       // dispatch action & report event
       dispatch(setCredentialsAsync());
       if (activeDataSouceMetaInfo?.type === 'Assets') {
-        // Delete data source storage
-        if (lowerCaseName && lowerCaseName !== 'Web3 Wallet') {
-          await chrome.storage.local.remove([lowerCaseName]);
-        }
         // TODO-newui
         // if (i.name.startsWith('0x')) {
         if (lowerCaseName === 'Web3 Wallet') {

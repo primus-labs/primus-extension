@@ -8,6 +8,7 @@ import {
 import { postMsg } from '@/utils/utils';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
+import { DATASOURCEMAP } from '@/config/dataSource';
 import { eventReport } from '@/services/api/usertracker';
 
 import type { UserState } from '@/types/store';
@@ -25,20 +26,27 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
     if (resType && resType.startsWith('set-')) {
       console.log(`page_get:${resType}:`, res);
       const lowerCaseSourceName = resType.split('-')[1];
+      const activeDataSouceMetaInfo = DATASOURCEMAP[lowerCaseSourceName];
+      const sourceType = activeDataSouceMetaInfo.type;
       var params = {
         result: 'success',
       };
       if (res) {
-        dispatch(setExSourcesAsync());
+        if (sourceType === 'Assets') {
+          dispatch(setExSourcesAsync());
+        } else if (sourceType === 'Social') {
+          dispatch(setSocialSourcesAsync());
+        }
         const eventInfo = {
           eventType: 'DATA_SOURCE_INIT',
-          rawData: { type: 'Assets', dataSource: lowerCaseSourceName },
+          rawData: { type: sourceType, dataSource: lowerCaseSourceName },
         };
         eventReport(eventInfo);
       } else {
         params = {
           result: 'fail',
         };
+        // TODO-newui eventReport
         // result: 'warn',
         // failReason,
         // if (msg === 'AuthenticationError') {
@@ -79,7 +87,6 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
         //   });
         // }
       }
-      dispatch(setExSourcesAsync());
       if (connectType === 'Web') {
         chrome.runtime.sendMessage({
           type: 'dataSourceWeb',
@@ -87,7 +94,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
           result: res,
           params,
         });
-      } else {
+      } else if (connectType === 'API') {
         dispatch(setConnectByAPILoading(2));
       }
     }
@@ -104,4 +111,3 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
   }, [padoServicePort, padoServicePortListener]);
 };
 export default useAlgorithm;
-

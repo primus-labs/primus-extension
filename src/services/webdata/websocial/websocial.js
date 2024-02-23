@@ -1,6 +1,11 @@
 class WebSocial {
     constructor(socialName) {
       this.socialName = socialName;
+      this.followers = 0;
+      this.posts = 0;
+      this.followings = 0;
+      this.verified = false;
+      this.userName = '';
     }
 
     async getInfo() {

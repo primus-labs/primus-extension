@@ -28,13 +28,15 @@ const DataSourceItem = memo(() => {
     // deleteFn: deleteDataSourceFn,
   } = useDataSource(lowerCaseDataSourceName);
   
-  console.log('222activeDataSouceUserInfo in page', activeDataSouceUserInfo);
+  
   const hasConnected = useMemo(() => {
     return activeDataSouceUserInfo?.name;
   }, [activeDataSouceUserInfo]);
 
   const btnTxtEl = useMemo(() => {
-    return 'Connect by ' + activeDataSouceMetaInfo?.connectType;
+    return activeDataSouceMetaInfo?.connectType
+      ? 'Connect by ' + activeDataSouceMetaInfo?.connectType
+      : 'Connect';
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(() => {
     if (activeDataSouceMetaInfo?.connectType === 'API') {
@@ -44,7 +46,7 @@ const DataSourceItem = memo(() => {
         (r: any) => r.dataSource === lowerCaseDataSourceName
       );
 
-      // TODO
+      // TODO-newui
       if (lowerCaseDataSourceName === 'tiktok') {
         currRequestObj.datasourceTemplate.requests[0] = {
           name: 'first',
@@ -101,14 +103,15 @@ const DataSourceItem = memo(() => {
                   : 'By Community'}
               </div>
             </div>
-            {hasConnected && (
-              <PButton
-                className="connectBtn"
-                text={btnTxtEl}
-                size="s"
-                onClick={handleConnect}
-              />
-            )}
+            {hasConnected &&
+              lowerCaseDataSourceName === 'web3 account' && (
+                <PButton
+                  className="connectBtn"
+                  text={btnTxtEl}
+                  size="s"
+                  onClick={handleConnect}
+                />
+              )}
           </div>
           {hasConnected ? (
             <div className="hasContent">

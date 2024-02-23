@@ -15,9 +15,11 @@ import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
-import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.svg'
-import Binance from '@/services/exchange/binance';
-import OKX from '@/services/exchange/okx';
+import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.svg';
+
+import Binance from '@/services/webdata/webexchange/webbinance';
+
+import OKX from '@/services/webdata/webexchange/webokx';
 import KuCoin from '@/services/exchange/kucoin';
 import Coinbase from '@/services/exchange/coinbase';
 import Huobi from '@/services/exchange/huobi';
@@ -25,13 +27,14 @@ import Gate from '@/services/exchange/gate';
 import Bitget from '@/services/exchange/bitget';
 import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
+import WebTikTok from '@/services/webdata/websocial/webtiktok';
 import type { ExchangeMeta } from '@/types/dataSource';
 
 export type DataSourceItemType = ExchangeMeta & {
   provider?: any;
   unConnectTip?: any;
   jumpTo?: any;
-  connectType?: any
+  connectType?: any;
 };
 
 export type DataSourceMapType = {
@@ -46,7 +49,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: 'Support fetching token & NFT assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch token & NFT assets data from your Web3 Wallet to manage your assets or create attestations.',
-    connectType: 'API',
+    connectType: '',
   },
   binance: {
     name: 'Binance',
@@ -94,6 +97,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: 'Support fetching account name & status data for management and attestation creation.',
     unConnectTip:
       'You can fetch account name & status data from your TikTok account to manage your data or create attestations.',
+    constructorF: WebTikTok,
 
     connectType: 'Web',
   },

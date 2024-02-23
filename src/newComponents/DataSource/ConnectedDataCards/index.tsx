@@ -51,7 +51,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       userInfo: activeDataSouceUserInfo,
       deleteFn: deleteDataSourceFn,
     } = useDataSource(lowerCaseDataSourceName);
-    console.log('activeDataSouceUserInfo', activeDataSouceUserInfo);
+    
     // const [sourceList, sourceMap, activeDataSouceUserInfo] = useAllSources(
     //   lowerCaseDataSourceName
     // );
@@ -60,55 +60,14 @@ const Cards: React.FC<PDropdownProps> = memo(
     //   return obj as DataSourceItemType;
     // }, [dataSourceName]);
     const connectedList = useMemo(() => {
-      // const list = [
-      //   {
-      //     address: '0xF795811af86E9f23A0c03dE5115398B8d4778eD4',
-      //     origin: 'MetaMask',
-      //     initTime: '1707101091114',
-      //     updateTime: '1707201011114',
-      //   },
-      //   {
-      //     address: '0x123411af86E9f23A0c03dE5115398B8d4778eD4',
-      //     origin: 'OKX',
-      //     initTime: '1707101091114',
-      //     updateTime: '1707201011114',
-      //   },
-      // ];
-      // const list2 = [
-      //   {
-      //     account: 'xxxx@gmail.com',
-      //     origin: 'Web',
-      //     initTime: '1707101091114',
-      //     updateTime: '1707201011114',
-      //   },
-      // ];
-      // const list3 = [
-      //   {
-      //     userName: 'Alex',
-      //     origin: 'Web',
-      //     initTime: '1707101091114',
-      //     updateTime: '1707201011114',
-      //   },
-      // ];
-      // const list4 = [
-      //   {
-      //     emailAddress: 'xxxx@gmail.com',
-      //     origin: 'Web',
-      //     initTime: '1707101091114',
-      //     updateTime: '1707201011114',
-      //   },
-      // ];
-
-      // if (dataSourceName === 'Web3 Wallet') return list;
-      // if (dataSourceName === 'Binance') return list2;
-      // if (dataSourceName === 'X' || dataSourceName === 'TikTok') return list3;
-      // if (dataSourceName === 'G Account') return list4;
-      // return [];
       // TODO-newui
       if (activeDataSouceUserInfo) {
         var account = '';
         if (activeDataSouceMetaInfo.connectType === 'Web') {
-          let userName = activeDataSouceUserInfo?.userInfo?.userName;
+          // activeDataSouceUserInfo?.userName for tiktok
+          let userName =
+            activeDataSouceUserInfo?.userName ||
+            activeDataSouceUserInfo?.userInfo?.userName;
           if (userName) {
             account = userName;
           } else {
@@ -139,16 +98,31 @@ const Cards: React.FC<PDropdownProps> = memo(
     const titleElFn = useCallback((i) => {
       if (activeDataSouceMetaInfo.connectType === 'API') {
         return <span>API Key: {i.account}</span>;
+      } else if (activeDataSouceMetaInfo.connectType === 'Web') {
+        var activeLabel = 'Account';
+        // binance okx Account
+        // X Tiktok Zan User Name
+        // G Account' Email address
+        // Web3 Wallet Wallet Address
+        if (['binance', 'okx'].includes(lowerCaseDataSourceName)) {
+          activeLabel = 'Account';
+        }
+        if (['x', 'tiktok', 'zan'].includes(lowerCaseDataSourceName)) {
+          activeLabel = 'User Name';
+        }
+        if (['google'].includes(lowerCaseDataSourceName)) {
+          activeLabel = 'Email address';
+        }
+        if (['web3 account'].includes(lowerCaseDataSourceName)) {
+          activeLabel = 'Wallet Address';
+        }
+        return (
+          <span>
+            {activeLabel}: {i.account}
+          </span>
+        );
       }
-      if (i.name === 'Web3 Wallet') {
-        return <span>Wallet Address: {i.address}</span>;
-      } else if (i.name === 'X' || dataSourceName === 'TikTok') {
-        return <span>User Name: {i.userName}</span>;
-      } else if (dataSourceName === 'G Account') {
-        return <span>Email address: {i.EmailAddress}</span>;
-      } else {
-        return <span>Account ID: {i.account}</span>;
-      }
+
       //  if (i.name === 'Binance')
     }, []);
 

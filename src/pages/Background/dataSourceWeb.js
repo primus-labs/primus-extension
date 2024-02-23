@@ -1,13 +1,14 @@
 import {
-  DATASOURCEMAP,
   CredVersion,
   ExchangeStoreVersion,
+  SocailStoreVersion,
   schemaTypeMap,
   SCROLLEVENTNAME,
   BASEVENTNAME,
 } from '@/config/constants';
+import { DATASOURCEMAP } from '@/config/dataSource';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
-import WebTikTok from '@/services/webdata/websocial/webtiktok'
+import WebTikTok from '@/services/webdata/websocial/webtiktok';
 
 let tabCreatedByPado;
 let activeTemplate = {};
@@ -24,7 +25,9 @@ export const dataSourceWebMsgListener = async (
   port
 ) => {
   const { name, params, operation } = request;
-  activeTemplate = name === 'init' ? params : activeTemplate;
+  if (name === 'init') {
+    activeTemplate = params;
+  }
   const {
     dataSource,
     jumpTo,
@@ -34,6 +37,10 @@ export const dataSourceWebMsgListener = async (
     id,
     event,
   } = activeTemplate;
+  const exchangeName = activeTemplate.dataSource;
+  const exchangeInfo = DATASOURCEMAP[exchangeName];
+  const { constructorF, type: sourceType } = exchangeInfo;
+
   const requestUrlList = requests.map((r) => r.url);
   const isUrlWithQueryFn = (url, queryKeyArr) => {
     const urlStrArr = url.split('?');
@@ -166,7 +173,9 @@ export const dataSourceWebMsgListener = async (
       }
     };
     isReadyRequest = await checkReadyStatusFn();
-    console.log('web requests are captured');
+    if (isReadyRequest) {
+      console.log('web requests are captured');
+    }
     chrome.tabs.sendMessage(tabCreatedByPado.id, {
       type: 'dataSourceWeb',
       name: 'webRequestIsReady',
@@ -289,7 +298,7 @@ export const dataSourceWebMsgListener = async (
       if (tabId === tabCreatedByPado.id) {
         chrome.runtime.sendMessage({
           type: 'dataSourceWeb',
-          name: 'abortAttest', // TODO-newui abortAttest
+          name: 'stop', // TODO-newui abortAttest
         });
       }
     });
@@ -303,29 +312,24 @@ export const dataSourceWebMsgListener = async (
       },
       dataSourcePageTabId: tabCreatedByPado.id,
       isReady: isReadyRequest,
-      operation: operationType
+      operation: operationType,
     });
 
     if (dataSource === 'tiktok') {
-      const tiktok = new WebTikTok();
+      const tiktok = new constructorF();
       await tiktok.storeUserName();
-      const tiktokUsername = await chrome.storage.local.get("tiktokUsername");
+      const tiktokUsername = await chrome.storage.local.get('tiktokUsername');
       const currentTab = await chrome.tabs.get(tabCreatedByPado.id);
-      if (currentTab.url === jumpTo + "/") {
-        chrome.tabs.update(tabCreatedByPado.id, {url: jumpTo + "/@" + tiktokUsername["tiktokUsername"]});
+      if (currentTab.url === jumpTo + '/') {
+        chrome.tabs.update(tabCreatedByPado.id, {
+          url: jumpTo + '/@' + tiktokUsername['tiktokUsername'],
+        });
       }
     }
   }
   if (name === 'start') {
     const formatRequests = await formatRequestsFn();
     if (operationType === 'connect') {
-      if (activeTemplate.dataSource === "tiktok") {
-        const tiktok = new WebTikTok();
-        await tiktok.getInfo();
-        console.log("dataSourceWeb tiktok=", tiktok);
-        return;
-      }
-
       const activeInfo = formatRequests.find((i) => i.headers);
       var activeCookie = '';
       if (activeInfo.cookies) {
@@ -336,67 +340,87 @@ export const dataSourceWebMsgListener = async (
       const activeHeader = Object.assign({}, activeInfo.headers, {
         Cookie: activeCookie,
       });
-      const exchangeName = activeTemplate.dataSource;
-      const exchangeInfo = DATASOURCEMAP[exchangeName];
-      const constructorF = exchangeInfo.constructorF;
+
       const resType = `set-${exchangeName}`;
       try {
         const ex = new constructorF({ header: activeHeader });
         await ex.getInfo();
-        console.log('222ex.getInfo', ex);
-
-        let storageRes = await chrome.storage.local.get(exchangeName);
-        const lastData = storageRes[exchangeName];
-        let pnl = null;
-        if (lastData) {
-          const lastTotalBal = JSON.parse(lastData).totalBalance;
-          pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
+        console.log(`222dataSourceWeb getInfo ${exchangeName}= `, ex);
+        var newSourceUserData = {};
+        if (sourceType === 'Assets') {
+          let storageRes = await chrome.storage.local.get(exchangeName);
+          const lastData = storageRes[exchangeName];
+          let pnl = null;
+          if (lastData) {
+            const lastTotalBal = JSON.parse(lastData).totalBalance;
+            pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
+          }
+          newSourceUserData = {
+            totalBalance: ex.totalAccountBalance,
+            tokenListMap: ex.totalAccountTokenMap,
+            // apiKey: exParams.apiKey, // TODO-newui
+            date: getCurrentDate(),
+            timestamp: +new Date(),
+            version: ExchangeStoreVersion, // TODO-newui
+            label: '', // TODO-newui
+            flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
+            spotAccountTokenMap: ex.spotAccountTokenMap,
+            tokenPriceMap: ex.tokenPriceMap,
+            tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
+            userInfo: ex.userInfo,
+          };
+          if (pnl !== null && pnl !== undefined) {
+            newSourceUserData.pnl = pnl;
+          }
+        } else if (sourceType === 'Social') {
+          newSourceUserData = {
+            ...ex,
+            version: SocailStoreVersion,
+          };
+          // postMsg(port, { resMethodName: 'checkIsLogin', res: false });
         }
-        const exData = {
-          totalBalance: ex.totalAccountBalance,
-          tokenListMap: ex.totalAccountTokenMap,
-          // apiKey: exParams.apiKey, // TODO-newui
+        Object.assign(newSourceUserData, {
           date: getCurrentDate(),
           timestamp: +new Date(),
-          version: ExchangeStoreVersion, // TODO-newui
-          label: '', // TODO-newui
-          flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
-          spotAccountTokenMap: ex.spotAccountTokenMap,
-          tokenPriceMap: ex.tokenPriceMap,
-          tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
-          userInfo: ex.userInfo
-        };
-        if (pnl !== null && pnl !== undefined) {
-          exData.pnl = pnl;
-        }
-        await chrome.storage.local.set({
-          [exchangeName]: JSON.stringify(exData),
         });
-        postMsg(port, { resType, res: true ,connectType: 'Web'});
+        await chrome.storage.local.set({
+          [exchangeName]: JSON.stringify(newSourceUserData),
+        });
+        postMsg(port, { resType, res: true, connectType: 'Web' });
       } catch (error) {
         console.log(
-          'exData',
+          'connect source  by web error',
           error,
           error.message,
           error.message.indexOf('AuthenticationError')
         );
         var errMsg = '';
-        if (error.message.indexOf('AuthenticationError') > -1) {
-          errMsg = 'AuthenticationError';
-        } else if (error.message.indexOf('ExchangeNotAvailable') > -1) {
-          errMsg = 'ExchangeNotAvailable';
-        } else if (error.message.indexOf('InvalidNonce') > -1) {
-          errMsg = 'InvalidNonce';
-        } else if (error.message.indexOf('RequestTimeout') > -1) {
-          errMsg = 'TypeError: Failed to fetch';
-        } else if (error.message.indexOf('NetworkError') > -1) {
-          errMsg = 'TypeError: Failed to fetch';
-        } else if (error.message.indexOf('TypeError: Failed to fetch') > -1) {
-          errMsg = 'TypeError: Failed to fetch';
-        } else {
+        if (sourceType === 'Assets') {
+          if (error.message.indexOf('AuthenticationError') > -1) {
+            errMsg = 'AuthenticationError';
+          } else if (error.message.indexOf('ExchangeNotAvailable') > -1) {
+            errMsg = 'ExchangeNotAvailable';
+          } else if (error.message.indexOf('InvalidNonce') > -1) {
+            errMsg = 'InvalidNonce';
+          } else if (error.message.indexOf('RequestTimeout') > -1) {
+            errMsg = 'TypeError: Failed to fetch';
+          } else if (error.message.indexOf('NetworkError') > -1) {
+            errMsg = 'TypeError: Failed to fetch';
+          } else if (error.message.indexOf('TypeError: Failed to fetch') > -1) {
+            errMsg = 'TypeError: Failed to fetch';
+          } else {
+            errMsg = 'UnhnowError';
+          }
+        } else if (sourceType === 'Social') {
+          // TODO-newui
           errMsg = 'UnhnowError';
         }
-        postMsg(port, { resType, res: false, msg: errMsg, connectType: 'Web' });
+        postMsg(port, {
+          resType,
+          res: false,
+          msg: errMsg,
+          connectType: 'Web',
+        });
       }
     }
     // operation : connect attest
