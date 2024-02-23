@@ -17,9 +17,15 @@
 
 .padoDialogHeaderStyle {
   width: 100%;
+  @include fcss;
+  gap: var(--spacing-24);
   h1 {
     @include HeadlineH0;
     color: var(--text-tokens-text-primary);
+  }
+  h2{
+    @include BodyBody100;
+    color: var(--text-tokens-text-secondary);
   }
 }
 .pDialog2 {

@@ -102,6 +102,7 @@ const initState = {
   events: {},
   theme: 'light',
   connectByAPILoading: 0,
+  lastLoginHasPwd: false,
 };
 
 // reducer
@@ -160,6 +161,9 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, theme: action.payload };
     case 'setConnectByAPILoading':
       return { ...state, connectByAPILoading: action.payload };
+    case 'setIfHasPwd':
+      return { ...state, lastLoginHasPwd: action.payload };
+      return;
     default:
       return state;
   }

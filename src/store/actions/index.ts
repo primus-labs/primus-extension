@@ -109,7 +109,11 @@ export const setThemeAction = (values: string) => ({
 export const setConnectByAPILoading = (values: number) => ({
   type: 'setConnectByAPILoading',
   payload: values,
-});;
+});
+export const setIfHasPwdAction = (values: any) => ({
+  type: 'setIfHasPwd',
+  payload: values,
+});
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {
@@ -522,5 +526,16 @@ export const setProofTypesAsync = () => {
     } catch (e) {
       // alert('getProofTypes network error');
     }
+  };
+};
+
+// const checkIfHadSetPwd = useCallback(async () => {
+//   let { keyStore } = await chrome.storage.local.get(['keyStore']);
+//   dispatch()
+// }, [dispatch]);
+export const initIfHadPwdAsync = () => {
+  return async (dispatch: any) => {
+    let { keyStore } = await chrome.storage.local.get(['keyStore']);
+    dispatch(setIfHasPwdAction(!!keyStore));
   };
 };

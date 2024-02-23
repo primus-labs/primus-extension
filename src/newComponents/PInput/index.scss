@@ -22,12 +22,17 @@
       border: 1px solid var(--text-tokens-text-error, #fa4d56);
     }
   }
-
   > label {
     color: var(--text-tokens-text-primary, #161616);
     @include Label01;
     @include frsc;
     padding-bottom: var(--spacing-4, 4px);
+    gap: var(--spacing-4);
+    .tooltipBtn {
+      &.icon {
+        width: var(--spacing-12, 12px);
+      }
+    }
   }
   > .inputWrapper {
     width: 100%;

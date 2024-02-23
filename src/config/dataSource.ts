@@ -35,6 +35,7 @@ export type DataSourceItemType = ExchangeMeta & {
   unConnectTip?: any;
   jumpTo?: any;
   connectType?: any;
+  showName?: string
 };
 
 export type DataSourceMapType = {
@@ -74,7 +75,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
 
-    connectType: 'API',
+    connectType: 'Auth',
   },
   okx: {
     name: 'OKX',
@@ -102,7 +103,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'Web',
   },
   google: {
-    name: 'Google Account',
+    name: 'GOOGLE',
+
     type: 'Social',
     icon: iconDataSourceGoogle,
     desc: 'Support fetching account name & email address data for management and attestation creation.',
@@ -110,6 +112,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
       'You can fetch account name & email address data from your Google account to manage your data or create attestations.',
 
     connectType: 'Auth',
+    showName: 'G Account',
   },
   coinbase: {
     name: 'Coinbase',
@@ -165,7 +168,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: 'Support fetching account name & status data for management and attestation creation.',
     unConnectTip: '',
 
-    connectType: 'API',
+    connectType: 'Auth',
   },
   bybit: {
     name: 'Bybit',
@@ -237,16 +240,16 @@ export const DATASOURCEMAP: DataSourceMapType = {
   },*/
 };
 
-const guideMap = {
-  Binance:
+export const guideMap = {
+  binance:
     'https://docs.padolabs.org/Exchanges-API-Setup/Binance-API-Key-Setup',
-  Coinbase:
+  coinbase:
     'https://docs.padolabs.org/Exchanges-API-Setup/Coinbase-API-Key-Setup',
-  KuCoin: 'https://docs.padolabs.org/Exchanges-API-Setup/Kucoin-API-Key-Setup',
-  Bybit: 'https://docs.padolabs.org/Exchanges-API-Setup/Bybit-API-Key-Setup',
-  OKX: 'https://docs.padolabs.org/Exchanges-API-Setup/OKX-API-Key-Setup',
-  Gate: 'https://docs.padolabs.org/Exchanges-API-Setup/Gate-API-Key-Setup',
-  Huobi: 'https://docs.padolabs.org/Exchanges-API-Setup/Huobi-API-Key-Setup',
-  Bitget: 'https://docs.padolabs.org/Exchanges-API-Setup/Bitget-API-Key-Setup',
-  MEXC: 'https://docs.padolabs.org/Exchanges-API-Setup/MEXC-API-Key-Setup',
+  kucoin: 'https://docs.padolabs.org/Exchanges-API-Setup/Kucoin-API-Key-Setup',
+  bybit: 'https://docs.padolabs.org/Exchanges-API-Setup/Bybit-API-Key-Setup',
+  okx: 'https://docs.padolabs.org/Exchanges-API-Setup/OKX-API-Key-Setup',
+  gate: 'https://docs.padolabs.org/Exchanges-API-Setup/Gate-API-Key-Setup',
+  huobi: 'https://docs.padolabs.org/Exchanges-API-Setup/Huobi-API-Key-Setup',
+  bitget: 'https://docs.padolabs.org/Exchanges-API-Setup/Bitget-API-Key-Setup',
+  mexc: 'https://docs.padolabs.org/Exchanges-API-Setup/MEXC-API-Key-Setup',
 };

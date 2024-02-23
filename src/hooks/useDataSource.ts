@@ -29,7 +29,7 @@ const DataSouces = Object.values(DATASOURCEMAP);
 const useSource = (sourceName: string) => {
   var lowerCaseName = sourceName?.toLowerCase();
   const dispatch: Dispatch<any> = useDispatch();
-  const [sourceList, allSourceMap] = useAllSources();
+  const { sourceList, sourceMap: allSourceMap } = useAllSources();
   var activeDataSouceMetaInfo = useMemo(() => {
     var obj =
       DataSouces.find((i) => i.name.toLowerCase() === lowerCaseName) || {};

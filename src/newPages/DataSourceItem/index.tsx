@@ -1,8 +1,13 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
+import useAuthorization from '@/hooks/useAuthorization';
+import { setSocialSourcesAsync } from '@/store/actions';
+import type { Dispatch } from 'react';
+
 import type { UserState } from '@/types/store';
 import type { DataSourceItemType } from '@/config/dataSource';
 import PBack from '@/newComponents/PBack';
@@ -16,7 +21,8 @@ import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
-  const [visibleConnectByWeb, setVisibleConnectByAPI] = useState<boolean>(false);
+  const [visibleConnectByWeb, setVisibleConnectByAPI] =
+    useState<boolean>(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dataSourceName = searchParams.get('dataSourceName') as string;
@@ -27,25 +33,26 @@ const DataSourceItem = memo(() => {
     userInfo: activeDataSouceUserInfo,
     // deleteFn: deleteDataSourceFn,
   } = useDataSource(lowerCaseDataSourceName);
-  
-  
+  const authorize = useAuthorization();
+  const dispatch: Dispatch<any> = useDispatch();
+  const activeConnectType = useMemo(() => {
+    return activeDataSouceMetaInfo?.connectType;
+  }, [activeDataSouceMetaInfo]);
+
   const hasConnected = useMemo(() => {
     return activeDataSouceUserInfo?.name;
   }, [activeDataSouceUserInfo]);
 
   const btnTxtEl = useMemo(() => {
-    return activeDataSouceMetaInfo?.connectType
-      ? 'Connect by ' + activeDataSouceMetaInfo?.connectType
-      : 'Connect';
+    return activeConnectType ? 'Connect by ' + activeConnectType : 'Connect';
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(() => {
-    if (activeDataSouceMetaInfo?.connectType === 'API') {
+    if (activeConnectType === 'API') {
       setVisibleConnectByAPI(true);
-    } else if (activeDataSouceMetaInfo?.connectType === 'Web') {
+    } else if (activeConnectType === 'Web') {
       const currRequestObj = webProofTypes.find(
         (r: any) => r.dataSource === lowerCaseDataSourceName
       );
-
       // TODO-newui
       if (lowerCaseDataSourceName === 'tiktok') {
         currRequestObj.datasourceTemplate.requests[0] = {
@@ -68,16 +75,31 @@ const DataSourceItem = memo(() => {
           ...currRequestObj,
         },
       });
+    } else if (activeConnectType === 'Auth') {
+      //  if (item.type === 'Social') {
+      var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
+      // if (authorizeSourceKey === 'G ACCOUNT') {
+      //   authorizeSourceKey = 'GOOGLE';
+      // }
+      authorize(authorizeSourceKey, () => {
+        dispatch(setSocialSourcesAsync());
+      });
+      //  } else if (item.type === 'Identity') {
+      //    // TODO
+      //    setActiveSource(item);
+      //    setStep(0);
+      //    setKYCDialogVisible(true);
+      //  }
     }
   }, [activeDataSouceMetaInfo]);
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
   const handleCloseConnectByAPI = useCallback(() => {
-    setVisibleConnectByAPI(false)
-  }, [])
+    setVisibleConnectByAPI(false);
+  }, []);
   const handleSubmitConnectByAPI = useCallback(() => {
-     setVisibleConnectByAPI(false);
+    setVisibleConnectByAPI(false);
   }, []);
 
   return (
@@ -91,7 +113,9 @@ const DataSourceItem = memo(() => {
           <div className="dataSourceBrief">
             <div className="introTxt">
               <div className="title">
-                <div className="name">{activeDataSouceMetaInfo?.name}</div>
+                <div className="name">
+                  {activeDataSouceMetaInfo?.showName ?? activeDataSouceMetaInfo?.name}
+                </div>
                 <PTag
                   text={`${activeDataSouceMetaInfo?.type} Data`}
                   color="brand"
@@ -103,15 +127,14 @@ const DataSourceItem = memo(() => {
                   : 'By Community'}
               </div>
             </div>
-            {hasConnected &&
-              lowerCaseDataSourceName === 'web3 account' && (
-                <PButton
-                  className="connectBtn"
-                  text={btnTxtEl}
-                  size="s"
-                  onClick={handleConnect}
-                />
-              )}
+            {hasConnected && lowerCaseDataSourceName === 'web3 account' && (
+              <PButton
+                className="connectBtn"
+                text={btnTxtEl}
+                size="s"
+                onClick={handleConnect}
+              />
+            )}
           </div>
           {hasConnected ? (
             <div className="hasContent">

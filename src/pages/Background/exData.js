@@ -171,7 +171,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
             [exchangeName]: JSON.stringify(exData),
           });
           EXCHANGEINFO[exchangeName] = exParams;
-          postMsg(port, { resType: type, res: true });
+          postMsg(port, { resType: type, res: true ,connectType: 'API'});
         }
       } catch (error) {
         console.log(
@@ -180,42 +180,28 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           error.message,
           error.message.indexOf('AuthenticationError')
         );
+        var errMsg = '';
         if (error.message.indexOf('AuthenticationError') > -1) {
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'AuthenticationError',
-          });
+          errMsg = 'AuthenticationError';
         } else if (error.message.indexOf('ExchangeNotAvailable') > -1) {
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'ExchangeNotAvailable',
-          });
+          errMsg = 'ExchangeNotAvailable';
         } else if (error.message.indexOf('InvalidNonce') > -1) {
-          postMsg(port, { resType: type, res: false, msg: 'InvalidNonce' });
+          errMsg = 'InvalidNonce';
         } else if (error.message.indexOf('RequestTimeout') > -1) {
-          // postMsg(port,{ resType: type, res: false, msg: 'RequestTimeout' }) // cctx-10s
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'TypeError: Failed to fetch',
-          });
+          errMsg = 'TypeError: Failed to fetch';
         } else if (error.message.indexOf('NetworkError') > -1) {
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'TypeError: Failed to fetch',
-          });
+          errMsg = 'TypeError: Failed to fetch';
         } else if (error.message.indexOf('TypeError: Failed to fetch') > -1) {
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'TypeError: Failed to fetch',
-          });
+          errMsg = 'TypeError: Failed to fetch';
         } else {
-          postMsg(port, { resType: type, res: false, msg: 'UnhnowError' });
+          errMsg = 'UnhnowError';
         }
+        postMsg(port, {
+          resType,
+          res: false,
+          msg: errMsg,
+          connectType: 'API',
+        });
       }
       break;
     default:

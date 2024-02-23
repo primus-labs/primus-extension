@@ -4,12 +4,16 @@ import {
   setExSourcesAsync,
   setSocialSourcesAsync,
   setConnectByAPILoading,
+  initWalletAddressActionAsync,
 } from '@/store/actions';
 import { postMsg } from '@/utils/utils';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
+
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { eventReport } from '@/services/api/usertracker';
+import { requestSignTypedData } from '@/services/wallets/utils';
+import { getUserIdentity } from '@/services/api/user';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
@@ -22,9 +26,9 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
     (state: UserState) => state.padoServicePort
   );
   const padoServicePortListener = useCallback(async function (message: any) {
-    const { resType, res, msg, connectType } = message;
+    const { resType, res, msg, connectType, resMethodName } = message;
     if (resType && resType.startsWith('set-')) {
-      console.log(`page_get:${resType}:`, res);
+      console.log(`page_get:${resType}:`, res, msg);
       const lowerCaseSourceName = resType.split('-')[1];
       const activeDataSouceMetaInfo = DATASOURCEMAP[lowerCaseSourceName];
       const sourceType = activeDataSouceMetaInfo.type;
@@ -94,11 +98,58 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
           result: res,
           params,
         });
-      } else if (connectType === 'API') {
+      } else {
         dispatch(setConnectByAPILoading(2));
       }
     }
-    padoServicePort.onMessage.removeListener(padoServicePortListener);
+    if (resMethodName === 'queryUserPassword') {
+      if (res) {
+        await dispatch({
+          type: 'setUserPassword',
+          payload: message.res,
+        });
+      }
+    }
+    if (resMethodName === 'create') {
+      console.log('page_get:create:', res);
+      if (res) {
+        const { privateKey } = await chrome.storage.local.get(['privateKey']);
+        const privateKeyStr = privateKey?.substr(2);
+        // const address = message.res.toLowerCase();
+        const address = message.res;
+        const timestamp = +new Date() + '';
+        await chrome.storage.local.set({ padoCreatedWalletAddress: address });
+        await dispatch(initWalletAddressActionAsync());
+        try {
+          const signature = await requestSignTypedData(
+            privateKeyStr,
+            address,
+            timestamp
+          );
+          const res = await getUserIdentity({
+            signature: signature as string,
+            timestamp,
+            address,
+          });
+          const { rc, result } = res;
+          if (rc === 0) {
+            const { bearerToken, identifier } = result;
+            await chrome.storage.local.set({
+              userInfo: JSON.stringify({
+                id: identifier,
+                token: bearerToken,
+              }),
+            });
+            // const targetUrl = backUrl
+            //   ? decodeURIComponent(backUrl)
+            //   : '/events';
+            // navigate(targetUrl);
+          }
+        } catch (e) {
+          console.log('handleClickStart error', e);
+        }
+      }
+    }
   }, []);
 
   useEffect(() => {

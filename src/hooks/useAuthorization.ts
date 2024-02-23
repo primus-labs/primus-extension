@@ -30,9 +30,6 @@ const useAuthorization = () => {
       setAuthWindowId(newWindowId);
       // console.log('create', newWindowId)
       const fetchIsAuthDialog = async (state: string, source: string) => {
-        const { invitationCode } = await chrome.storage.local.get([
-          'invitationCode',
-        ]);
         postMsg(padoServicePort, {
           fullScreenType: 'padoService',
           reqMethodName: 'checkIsLogin',

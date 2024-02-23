@@ -44,6 +44,13 @@ const useAllSources = (sourceName?: undefined | null| string) => {
       kycSources,
     };
   }, [exSources, socialSources, kycSources]);
+  const allSourceMap2: any = useMemo(() => {
+    return {
+      ...exSources,
+      ...socialSources,
+      ...kycSources,
+    };
+  }, [exSources, socialSources, kycSources]);
   const activeSourceInfo: any = useMemo(() => {
     if (sourceName) {
       const lowerCaseName = sourceName.toLowerCase()
@@ -57,7 +64,12 @@ const useAllSources = (sourceName?: undefined | null| string) => {
     }
   }, [exSources, socialSources, kycSources]);
   // sourceName
-  return [allSourceList, allSourceMap, activeSourceInfo];
+  return {
+    sourceList: allSourceList,
+    sourceMap: allSourceMap,
+    sourceMap2: allSourceMap2,
+    activeSourceInfo
+  }
 };
 
 export default useAllSources;

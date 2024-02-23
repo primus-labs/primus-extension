@@ -6,6 +6,7 @@ import PInput from '@/newComponents/PInput';
 import PButton from '@/newComponents/PButton';
 
 import { postMsg } from '@/utils/utils';
+import { guideMap } from '@/config/dataSource';
 import { initWalletAddressActionAsync } from '@/store/actions';
 
 import type { Dispatch } from 'react';
@@ -13,7 +14,7 @@ import type { UserState } from '@/types/store';
 
 import './index.scss';
 interface SetPwdDialogProps {
-  sourceName: string;
+  sourceName: string; // lowerCase
   onSubmit: () => void;
 }
 type PswFormType = {
@@ -42,6 +43,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       // deleteFn: deleteDataSourceFn,
     } = useDataSource(sourceName);
 
+    const activeGuideUrl = useMemo(() => {
+      if (sourceName) {
+        return guideMap[sourceName as keyof typeof guideMap];
+      } else {
+        return '';
+      }
+    }, [sourceName]);
     const formLegalObj = useMemo(() => {
       const passwordHasValue =
         pswForm.apiKey !== '' && pswForm.apiKey !== undefined;
@@ -92,12 +100,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (!formLegal) {
         return;
       }
+      dispatch(setConnectByAPILoading(1));
       const form = {
         name: sourceName,
         ...pswForm,
         // label,
       };
-      dispatch(setConnectByAPILoading(1));
       const reqType = `set-${sourceName}`;
       const msg: any = {
         fullScreenType: 'networkreq',
@@ -115,8 +123,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     useEffect(() => {
       if (connectByAPILoading === 2) {
         onSubmit();
+        return () => {
+          dispatch(setConnectByAPILoading(0));
+        };
       }
     }, [connectByAPILoading, onSubmit]);
+
     return (
       <div className="pFormWrapper pswForm">
         <div className="formItem">
@@ -127,6 +139,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'apiKey');
             }}
             value={pswForm.apiKey}
+            tooltip={{ link: activeGuideUrl }}
           />
         </div>
         <div className="formItem">
@@ -157,7 +170,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           text="Confirm"
           className="fullWidth confirmBtn"
           disabled={!formLegal}
-          loading={connectByAPILoading === 1}
+          loading={formLegal && connectByAPILoading === 1}
           onClick={handleClickNext}
         ></PButton>
       </div>

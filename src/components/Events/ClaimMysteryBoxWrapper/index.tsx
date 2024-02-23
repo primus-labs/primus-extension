@@ -63,7 +63,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       return credArr;
     }, [credentialsFromStore]);
 
-    const [sourceList, sourceMap] = useAllSources();
+    const { sourceMap } = useAllSources();
     const hasSource = useMemo(() => {
       const exLen =
         (sourceMap.exSources && Object.keys(sourceMap.exSources).length) ?? 0;

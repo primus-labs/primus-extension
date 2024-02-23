@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import { DATASOURCEMAP } from '@/config/dataSource';
-// import useAllSources from '@/hooks/useAllSources';
 import useDataSource from '@/hooks/useDataSource';
 import { eventReport } from '@/services/api/usertracker';
 import {
@@ -51,14 +50,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       userInfo: activeDataSouceUserInfo,
       deleteFn: deleteDataSourceFn,
     } = useDataSource(lowerCaseDataSourceName);
-    
-    // const [sourceList, sourceMap, activeDataSouceUserInfo] = useAllSources(
-    //   lowerCaseDataSourceName
-    // );
-    // const activeDataSouceMetaInfo = useMemo(() => {
-    //   var obj = DataSouces.find((i) => i.name === dataSourceName);
-    //   return obj as DataSourceItemType;
-    // }, [dataSourceName]);
+
     const connectedList = useMemo(() => {
       // TODO-newui
       if (activeDataSouceUserInfo) {
@@ -75,8 +67,14 @@ const Cards: React.FC<PDropdownProps> = memo(
           }
         } else if (activeDataSouceMetaInfo.connectType === 'API') {
           account = activeDataSouceUserInfo.apiKey;
+        } else if (activeDataSouceMetaInfo.connectType === 'Auth') {
+          if (['x', 'discord'].includes(lowerCaseDataSourceName)) {
+            account = activeDataSouceUserInfo.userName;
+          }
+          if (lowerCaseDataSourceName === 'google') {
+            account = activeDataSouceUserInfo.email;
+          }
         }
-
         return [
           {
             account,
@@ -98,8 +96,8 @@ const Cards: React.FC<PDropdownProps> = memo(
     const titleElFn = useCallback((i) => {
       if (activeDataSouceMetaInfo.connectType === 'API') {
         return <span>API Key: {i.account}</span>;
-      } else if (activeDataSouceMetaInfo.connectType === 'Web') {
-        var activeLabel = 'Account';
+      } else {
+        var activeLabel = 'User Name';
         // binance okx Account
         // X Tiktok Zan User Name
         // G Account' Email address
@@ -107,7 +105,7 @@ const Cards: React.FC<PDropdownProps> = memo(
         if (['binance', 'okx'].includes(lowerCaseDataSourceName)) {
           activeLabel = 'Account';
         }
-        if (['x', 'tiktok', 'zan'].includes(lowerCaseDataSourceName)) {
+        if (['x', 'tiktok', 'zan', 'discord'].includes(lowerCaseDataSourceName)) {
           activeLabel = 'User Name';
         }
         if (['google'].includes(lowerCaseDataSourceName)) {
@@ -122,8 +120,6 @@ const Cards: React.FC<PDropdownProps> = memo(
           </span>
         );
       }
-
-      //  if (i.name === 'Binance')
     }, []);
 
     const handleDelete = useCallback(

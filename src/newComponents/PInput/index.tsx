@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo, memo, useEffect } from 'react';
 import type { ChangeEvent, KeyboardEvent } from 'react';
+import PButton from '@/newComponents/PButton';
 import './index.scss';
 
 interface PInputProps {
@@ -83,13 +84,17 @@ const PInput: React.FC<PInputProps> = memo(
         onSearch && onSearch(formatVal);
       }
     };
-    // const onClickTooltip = () => {
-    //   if (tooltip?.link) {
-    //     if (tooltip.link.startsWith('http')) {
-    //       window.open(tooltip.link);
-    //     }
-    //   }
-    // };
+
+    const onClickTooltip = () => {
+      if (tooltip?.link) {
+        if (
+          tooltip.link.startsWith('http') ||
+          tooltip.link.startsWith('https')
+        ) {
+          window.open(tooltip.link);
+        }
+      }
+    };
     useEffect(() => {
       if (value !== null && value !== undefined) {
         setVal(value);
@@ -100,12 +105,14 @@ const PInput: React.FC<PInputProps> = memo(
         {label && (
           <label>
             <span>{label}</span>
-            {/* {tooltip && (
-              <i
-                className="iconfont icon-iconTooltip"
+            {tooltip && (
+              <PButton
+                className="tooltipBtn"
+                type="icon"
+                icon={<i className="iconfont icon-iconTooltip"></i>}
                 onClick={onClickTooltip}
               />
-            )} */}
+            )}
           </label>
         )}
         <div className="inputWrapper">

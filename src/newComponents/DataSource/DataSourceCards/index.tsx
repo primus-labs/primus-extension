@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
+import useAllSources from '@/hooks/useAllSources';
 import type { SyntheticEvent } from 'react';
 
 import PTag from '@/newComponents/PTag';
@@ -30,6 +31,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       useState<string>('');
     const { deleteFn: deleteDataSourceFn } =
       useDataSource(activeDataSourceName);
+    const { sourceMap2 } = useAllSources();
     const navigate = useNavigate();
     const handleConnect = useCallback(
       (i) => {
@@ -46,6 +48,17 @@ const Cards: React.FC<PDropdownProps> = memo(
       },
       [deleteDataSourceFn]
     );
+    const connectionNumFn = useCallback(
+      (i) => {
+        const lowerCaseSourceName = i.name.toLowerCase();
+        if (sourceMap2?.[lowerCaseSourceName]) {
+          return 1;
+        } else {
+          return 0;
+        }
+      },
+      [sourceMap2]
+    );
 
     return (
       <ul className="dataSourceCards">
@@ -61,25 +74,27 @@ const Cards: React.FC<PDropdownProps> = memo(
               <div className="cardContent">
                 <div className="header">
                   <PTag text={`${i.type} Data`} color="brand" />
-                  <div className="connections">
-                    <div className="num">
-                      <i className="iconfont icon-iconConnection"></i>
-                      <span>2</span>
+                  {connectionNumFn(i) > 0 && (
+                    <div className="connections">
+                      <div className="num">
+                        <i className="iconfont icon-iconConnection"></i>
+                        <span>{connectionNumFn(i)}</span>
+                      </div>
+                      <PButton
+                        className="deleteBtn"
+                        type="icon"
+                        icon={<i className="iconfont icon-iconDelete"></i>}
+                        onClick={() => {
+                          handleDelete(i);
+                        }}
+                      />
                     </div>
-                    <PButton
-                      className="deleteBtn"
-                      type="icon"
-                      icon={<i className="iconfont icon-iconDelete"></i>}
-                      onClick={() => {
-                        handleDelete(i);
-                      }}
-                    />
-                  </div>
+                  )}
                 </div>
                 <div className="brief">
                   <img src={i.icon} alt="" />
                   <div className="intro">
-                    <div className="name">{i.name}</div>
+                    <div className="name">{i?.showName ?? i.name}</div>
                     <div className="origin">
                       {i.provider
                         ? ` Provide by ${i.provider}`

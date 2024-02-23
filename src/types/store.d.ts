@@ -6,10 +6,10 @@ import type { Rewards } from './event';
 type EventDetailType = {
   startTime: string;
   endTime: string;
-  ext: any
+  ext: any;
 };
 type EventsType = {
-  [propName: string]:EventDetailType
+  [propName: string]: EventDetailType;
 };
 type BadgeEventPeriodType = {
   startTime: string;
@@ -19,11 +19,11 @@ type ConnectedWallet = {
   address: string;
   provider: any;
   name: string;
-}
+};
 type rewardsDialogVisibleType = {
   visible: boolean;
   tab?: string;
-}
+};
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -50,4 +50,5 @@ export type UserState = {
   events: EventsType;
   theme: 'light' | 'dark';
   connectByAPILoading: number; // 0: unstart 1:start loading 2:end
+  lastLoginHasPwd: boolean; // if has set password
 };
