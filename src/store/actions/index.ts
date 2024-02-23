@@ -105,7 +105,7 @@ export const setThemeAction = (values: string) => ({
   type: 'setThemeAction',
   payload: values,
 });
-export const setConnectByAPILoading = (values: boolean) => ({
+export const setConnectByAPILoading = (values: number) => ({
   type: 'setConnectByAPILoading',
   payload: values,
 });;

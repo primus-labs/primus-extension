@@ -27,12 +27,12 @@ import type {
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const useSource = (sourceName: string) => {
-  // var lowerCaseName = sourceName?.toLowerCase();
-  const [lowerCaseName, setLowerCaseName] = useState<string>();
+  var lowerCaseName = sourceName?.toLowerCase();
   const dispatch: Dispatch<any> = useDispatch();
   const [sourceList, allSourceMap] = useAllSources();
-  const activeDataSouceMetaInfo = useMemo(() => {
-    var obj = DataSouces.find((i) => i.name.toLowerCase() === lowerCaseName);
+  var activeDataSouceMetaInfo = useMemo(() => {
+    var obj =
+      DataSouces.find((i) => i.name.toLowerCase() === lowerCaseName) || {};
     return obj as DataSourceItemType;
   }, [lowerCaseName]);
   const activeSourceInfo: any = useMemo(() => {
@@ -48,10 +48,12 @@ const useSource = (sourceName: string) => {
   }, [allSourceMap, lowerCaseName]);
   const handleDelete = useCallback(
     async (name?: string) => {
-      debugger
-      // if (name) {
-      //   lowerCaseName = name.toLowerCase();
-      // }
+      if (name) {
+        lowerCaseName = name.toLowerCase();
+        activeDataSouceMetaInfo = DataSouces.find(
+          (i) => i.name.toLowerCase() === lowerCaseName
+        ) as DataSourceItemType;
+      }
       // Delete credentials storage related to the exchange
       const { credentials: credentialsStr } = await chrome.storage.local.get([
         'credentials',
@@ -130,12 +132,7 @@ const useSource = (sourceName: string) => {
     },
     [activeDataSouceMetaInfo, lowerCaseName]
   );
-  useEffect(() => {
-    if (sourceName) {
-      debugger
-      setLowerCaseName(sourceName?.toLowerCase());
-    }
-  }, [sourceName]);
+
   return {
     metaInfo: activeDataSouceMetaInfo,
     userInfo: activeSourceInfo,

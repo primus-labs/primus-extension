@@ -24,7 +24,6 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
     const { resType, res, msg, connectType } = message;
     if (resType && resType.startsWith('set-')) {
       console.log(`page_get:${resType}:`, res);
-      debugger
       const lowerCaseSourceName = resType.split('-')[1];
       var params = {
         result: 'success',
@@ -89,7 +88,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
           params,
         });
       } else {
-        dispatch(setConnectByAPILoading(false));
+        dispatch(setConnectByAPILoading(2));
       }
     }
     padoServicePort.onMessage.removeListener(padoServicePortListener);

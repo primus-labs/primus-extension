@@ -49,5 +49,5 @@ export type UserState = {
   scrollEventPeriod: BadgeEventPeriodType;
   events: EventsType;
   theme: 'light' | 'dark';
-  connectByAPILoading: boolean;
+  connectByAPILoading: number; // 0: unstart 1:start loading 2:end
 };

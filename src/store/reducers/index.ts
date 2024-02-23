@@ -101,7 +101,7 @@ const initState = {
   },
   events: {},
   theme: 'light',
-  connectByAPILoading: false,
+  connectByAPILoading: 0,
 };
 
 // reducer

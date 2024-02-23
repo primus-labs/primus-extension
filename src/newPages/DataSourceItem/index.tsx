@@ -28,7 +28,7 @@ const DataSourceItem = memo(() => {
     // deleteFn: deleteDataSourceFn,
   } = useDataSource(lowerCaseDataSourceName);
   
-  console.log('activeDataSouceUserInfo in page', activeDataSouceUserInfo);
+  console.log('222activeDataSouceUserInfo in page', activeDataSouceUserInfo);
   const hasConnected = useMemo(() => {
     return activeDataSouceUserInfo?.name;
   }, [activeDataSouceUserInfo]);
@@ -38,28 +38,21 @@ const DataSourceItem = memo(() => {
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(() => {
     if (activeDataSouceMetaInfo?.connectType === 'API') {
-      setVisibleConnectByAPI(true)
+      setVisibleConnectByAPI(true);
     } else if (activeDataSouceMetaInfo?.connectType === 'Web') {
       const currRequestObj = webProofTypes.find(
         (r: any) => r.dataSource === lowerCaseDataSourceName
       );
 
       // TODO
-      if (lowerCaseDataSourceName === "tiktok") {
+      if (lowerCaseDataSourceName === 'tiktok') {
         currRequestObj.datasourceTemplate.requests[0] = {
-          "name": "first",
-          "url": "https://www.tiktok.com/api/user/detail/",
-          "queryParams": [
-              "WebIdLastTime"
-          ],
-          "method": "GET",
-          "headers": [
-              "User-Agent"
-          ],
-          "cookies": [
-              "sessionid",
-              "tt-target-idc"
-          ]
+          name: 'first',
+          url: 'https://www.tiktok.com/api/user/detail/',
+          queryParams: ['WebIdLastTime'],
+          method: 'GET',
+          headers: ['User-Agent'],
+          cookies: ['sessionid', 'tt-target-idc'],
         };
       }
       // TODO END
@@ -74,7 +67,7 @@ const DataSourceItem = memo(() => {
         },
       });
     }
-  }, []);
+  }, [activeDataSouceMetaInfo]);
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
@@ -103,7 +96,7 @@ const DataSourceItem = memo(() => {
                 />
               </div>
               <div className="origin">
-                {activeDataSouceMetaInfo.provider
+                {activeDataSouceMetaInfo?.provider
                   ? ` Provide by ${activeDataSouceMetaInfo.provider}`
                   : 'By Community'}
               </div>

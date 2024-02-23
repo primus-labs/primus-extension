@@ -1,4 +1,4 @@
-import React, { useState, useMemo, memo, useCallback,useEffect } from 'react';
+import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useDataSource from '@/hooks/useDataSource';
 import { setConnectByAPILoading } from '@/store/actions';
@@ -88,13 +88,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     //   },
     //   [authorize, dispatch, connectedWallet?.address]
     // );
-    const fetchBindUserAddress = useCallback(() => {
+    const handleClickNext = useCallback(async () => {
+      if (!formLegal) {
+        return;
+      }
       const form = {
         name: sourceName,
         ...pswForm,
         // label,
       };
-      dispatch(setConnectByAPILoading(true));
+      dispatch(setConnectByAPILoading(1));
       const reqType = `set-${sourceName}`;
       const msg: any = {
         fullScreenType: 'networkreq',
@@ -103,31 +106,17 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           ...form,
         },
       };
-      debugger;
       postMsg(padoServicePort, msg);
       console.log(`page_send:${reqType} request`);
-      // const sourceType = activeDataSouceMetaInfo.type
-      // if (sourceType === 'Assets') {
-      //   if (activeDataSouceMetaInfo.name === 'Web3 Wallet') {
-      //   } else {
-      //   }
-      // }
-      // onSubmit(form);
-    }, [dispatch, padoServicePort, pswForm]);
-    const handleClickNext = useCallback(async () => {
-      if (!formLegal) {
-        return;
-      }
-      fetchBindUserAddress();
-    }, [formLegal, fetchBindUserAddress]);
+    }, [formLegal, dispatch, padoServicePort, pswForm]);
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => ({ ...f, [formKey]: v }));
     }, []);
     useEffect(() => {
-      if (!connectByAPILoading && pswForm.apiKey) {
+      if (connectByAPILoading === 2) {
         onSubmit();
       }
-    }, [connectByAPILoading, pswForm, onSubmit]);
+    }, [connectByAPILoading, onSubmit]);
     return (
       <div className="pFormWrapper pswForm">
         <div className="formItem">
@@ -168,7 +157,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           text="Confirm"
           className="fullWidth confirmBtn"
           disabled={!formLegal}
-          loading={connectByAPILoading}
+          loading={connectByAPILoading === 1}
           onClick={handleClickNext}
         ></PButton>
       </div>
