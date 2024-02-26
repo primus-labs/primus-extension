@@ -49,7 +49,7 @@ export const list: NavItem[] = [
     label: 'Achievements',
     value: 'Achievements',
     iconName: 'icon-iconMenuAchievements',
-    link: '/5',
+    link: '/achievements',
   },
   {
     label: 'Settings',

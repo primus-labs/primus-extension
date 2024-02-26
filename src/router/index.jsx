@@ -12,6 +12,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import Cred from '@/pages/Cred/index.tsx';
 import Events from '@/pages/Events';
 import TransactionDetail from '@/pages/Transaction/TransactionDetail';
+import Achievement from "@/newPages/Achievement";
 
 const router = [
   {
@@ -54,6 +55,10 @@ const router = [
         path: 'events',
         element: <Events />,
       },
+      {
+        path: 'achievements',
+        element: <Achievement/>
+      }
     ],
   },
   {

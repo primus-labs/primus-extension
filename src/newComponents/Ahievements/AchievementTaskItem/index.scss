@@ -1,0 +1,43 @@
+
+.achievementTaskitem {
+  display: flex;
+  font-family: 'IBM Plex Sans';
+  font-size: 16px;
+  font-weight: 500;
+  padding-left: 24px;
+  height: 72px;
+  padding-top: 24px;
+  color: var(--text-tokens-text-primary, #161616);
+  border-radius: var(--spacing-8, 8px);
+  border: 1px solid var(--border-tokens-border-primary);
+  background: var(--layer-tokens-layer-primary, #fff);
+  margin-top: 15px;
+
+  .achievementTaskitemText {
+    width: 1000px;
+    display: flex;
+
+    .achievementTaskitemIcon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .achievementTaskitemDesc {
+      height: 20px;
+      margin-left: 20px;
+
+    }
+
+    .achievementTaskitemScore {
+      margin-left: 20px;
+      height: 20px;
+    }
+  }
+
+  .achievementTaskitemFinishBtn {
+    margin-right: 20px;
+    width: 79px;
+    height: 32px;
+  }
+
+}

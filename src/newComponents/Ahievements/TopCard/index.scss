@@ -1,0 +1,201 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pageAchievementTopCard {
+  height: 174px;
+  width: 1120px;
+  display: flex;
+  gap: var(--spacing-16);
+  border: 1px;
+  border-radius: 24px;
+
+  .leftCard {
+    width: 628px;
+    height: 174px;
+    border-radius: var(--spacing-8, 8px);
+    border: 1px solid var(--border-tokens-border-primary);
+    background: var(--layer-tokens-layer-primary, #fff);
+    padding: 24px;
+    display: flex;
+
+    .pointsEarned {
+      width: 116px;
+      height: 66px;
+      gap: var(--spacing-8);
+
+      .pointsEarned-text {
+        font-size: 14px;
+        font-family: 'IBM Plex Sans';
+        color: var(--text-tokens-text-secondary, #525252);
+      }
+
+      .points-score {
+        width: 116px;
+        height: 40px;
+        font-size: 32px;
+        font-weight: 600;
+        font-family: 'IBM Plex Sans';
+        color: var(--text-tokens-text-primary, #161616);
+      }
+
+      .reward-history {
+        padding-top: 30px;
+        width: 150px;
+        height: 18px;
+        gap: var(--spacing-5);
+        display: flex;
+        cursor: pointer;
+      }
+
+      .reward-history-icon {
+        height: 16px;
+        width: 16px;
+      }
+
+      .reward-history-text {
+        //width: 130px;
+        height: 18px;
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 0.16px;
+        padding-left: 5px;
+        font-family: 'IBM Plex Sans';
+        color: var(--text-tokens-text-secondary, #525252);
+      }
+    }
+
+    .pointsShare {
+      margin-left: 260px;
+      display: flex;
+      height: 16px;
+      cursor: pointer;
+
+
+      .pointsShareText {
+        font-family: 'IBM Plex Sans';
+        font-size: 14px;
+        font-weight: 500;
+        width: 150px;
+        height: 16px;
+        color: var(--text-tokens-text-primary, #161616);
+      }
+
+      .pointsShareIcon {
+        margin-right: 10px;
+        height: 16px;
+        width: 16px;
+      }
+    }
+
+  }
+
+  .rightCard {
+    width: 486px;
+    height: 174px;
+    border: 1px;
+    border-radius: var(--spacing-8, 8px);
+    border: 1px solid var(--border-tokens-border-primary);
+    background: var(--layer-tokens-layer-primary, #fff);
+    padding: 24px;
+    display: flex;
+
+    .referral {
+      width: 300px;
+      height: 66px;
+      gap: var(--spacing-8);
+
+      .referral-text {
+        font-size: 14px;
+        font-family: 'IBM Plex Sans';
+        color: var(--text-tokens-text-secondary, #525252);
+      }
+
+      .referral-times {
+        width: 116px;
+        height: 40px;
+        font-size: 32px;
+        font-weight: 600;
+        font-family: 'IBM Plex Sans';
+        color: var(--text-tokens-text-primary, #161616);
+      }
+
+      .referral-counted-referrals {
+        font-size: 14px;
+        padding-top: 20px;
+        font-family: 'IBM Plex Sans';
+        display: flex;
+
+        .referral-counted-referrals-text {
+          color: var(--text-tokens-text-tertiary);
+          width: 190px;
+        }
+
+        .referral-counted-referrals-count {
+          color: var(--text-tokens-text-primary, #161616);
+          width: 14px;
+        }
+      }
+
+      .referral-code {
+        font-size: 14px;
+        padding-top: 10px;
+        font-family: 'IBM Plex Sans';
+        display: flex;
+
+        .referral-code-text {
+          width: 190px;
+          color: var(--text-tokens-text-tertiary);
+        }
+
+        .referral-code-main {
+          display: flex;
+
+          .referral-code-main-text {
+            color: var(--text-tokens-text-primary, #161616);
+          }
+
+          .referral-code-copy-ico {
+            margin-left: 5px;
+          }
+        }
+      }
+    }
+
+    .referralShare {
+      width: 200px;
+      display: flex;
+      height: 16px;
+      cursor: pointer;
+
+      .referralShareText {
+        font-family: 'IBM Plex Sans';
+        font-size: 14px;
+        font-weight: 500;
+        width: 150px;
+        height: 16px;
+        color: var(--text-tokens-text-primary, #161616);
+      }
+
+      .referralShareIcon {
+        margin-left: 5px;
+        height: 16px;
+        width: 16px;
+      }
+    }
+
+    //background-color: #0e6027;
+  }
+}
+
+.taskListDiv {
+  margin-top: 40px;
+
+  .taskListTitle {
+    height: 22px;
+    font-family: 'IBM Plex Sans';
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-tokens-text-primary, #161616);
+  }
+
+}
