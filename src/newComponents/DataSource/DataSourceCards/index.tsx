@@ -1,9 +1,11 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
 import type { SyntheticEvent } from 'react';
+import type { UserState } from '@/types/store';
 
 import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
@@ -21,18 +23,40 @@ type NavItem = {
 };
 interface PDropdownProps {
   onClick?: (item: NavItem) => void;
-
   // list: NavItem[];
 }
 const list = Object.values(DATASOURCEMAP);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
+    const navigate = useNavigate();
     const [activeDataSourceName, setActiveDataSourceName] =
       useState<string>('');
     const { deleteFn: deleteDataSourceFn } =
       useDataSource(activeDataSourceName);
+    const dataSourceQueryStr = useSelector(
+      (state: UserState) => state.dataSourceQueryStr
+    );
+    const dataSourceQueryType = useSelector(
+      (state: UserState) => state.dataSourceQueryType
+    );
+    const filterdList = useMemo(() => {
+      var newList = list;
+      if (dataSourceQueryType && dataSourceQueryType !== 'All') {
+        newList = list.filter((i) => {
+          return i.type === dataSourceQueryType;
+        });
+      }
+      if (dataSourceQueryStr) {
+        newList = list.filter((i) => {
+          const curName = i.showName ?? i.name;
+          const lowerCaseName = curName.toLowerCase();
+          return lowerCaseName.startsWith(dataSourceQueryStr);
+        });
+      }
+      return newList;
+    }, [list, dataSourceQueryStr, dataSourceQueryType]);
     const { sourceMap2 } = useAllSources();
-    const navigate = useNavigate();
+
     const handleConnect = useCallback(
       (i) => {
         // onClick && onClick(i);
@@ -62,7 +86,7 @@ const Cards: React.FC<PDropdownProps> = memo(
 
     return (
       <ul className="dataSourceCards">
-        {list.map((i) => {
+        {filterdList.map((i) => {
           return (
             <li
               className="dataSourceCard"

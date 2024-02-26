@@ -51,4 +51,6 @@ export type UserState = {
   theme: 'light' | 'dark';
   connectByAPILoading: number; // 0: unstart 1:start loading 2:end
   lastLoginHasPwd: boolean; // if has set password
+  dataSourceQueryStr: string;
+  dataSourceQueryType: string | number;
 };

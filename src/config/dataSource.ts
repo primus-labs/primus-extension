@@ -143,7 +143,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
   },
   zan: {
     name: 'ZAN',
-    type: 'Humanity',
+    type: 'Identity',
     icon: iconDataSourceZan,
     desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
     unConnectTip:
@@ -239,6 +239,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceYoutube,
   },*/
 };
+export const DATASOURCEMAPVALUES: DataSourceItemType[] = Object.values(DATASOURCEMAP);
 
 export const guideMap = {
   binance:

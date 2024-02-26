@@ -3,11 +3,13 @@
 @import '@/assets/newCss/mixins.scss';
 
 .dataSourceCards {
-  @include frbs;
+  @include frss;
   flex-wrap: wrap;
   row-gap: var(--spacing-16);
+  column-gap: var(--spacing-16);
+  width: 100%;
   .dataSourceCard {
-    width: 363px;
+    width: calc((100% - var(--spacing-16) *2)/3);
     height: 204px;
     padding: var(--spacing-16) var(--spacing-24);
     @include fcss;

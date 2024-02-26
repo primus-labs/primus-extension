@@ -103,6 +103,8 @@ const initState = {
   theme: 'light',
   connectByAPILoading: 0,
   lastLoginHasPwd: false,
+  dataSourceQueryStr: '',
+  dataSourceQueryType: '',
 };
 
 // reducer
@@ -163,7 +165,10 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, connectByAPILoading: action.payload };
     case 'setIfHasPwd':
       return { ...state, lastLoginHasPwd: action.payload };
-      return;
+    case 'setDataSourceQueryStr':
+      return { ...state, dataSourceQueryStr: action.payload };
+    case 'setDataSourceQueryType':
+      return { ...state, dataSourceQueryType: action.payload };
     default:
       return state;
   }
