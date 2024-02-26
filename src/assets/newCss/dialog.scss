@@ -39,7 +39,7 @@
   position: relative;
   .PClose {
     position: absolute;
-    top: var(--spacing-34, 34px);
+    top: var(--spacing-24, 24px);// TODO-newui
     right: var(--spacing-24);
   }
   > main {

@@ -28,7 +28,7 @@ const useWallet: UseWalletType = function useWallet() {
   } = useWalletConnect();
   const connectWalletAsyncFn = useCallback(
     async (connectObj?: any) => {
-      const { startFn, errorFn, sucFn, network, label } =
+      const { startFn, errorFn, sucFn, network, label,requireAssets } =
         savedConnectInfo.current;
       const targetNetwork = EASInfo[network as keyof typeof EASInfo];
       if (
@@ -51,7 +51,8 @@ const useWallet: UseWalletType = function useWallet() {
             errorFn,
             sucFn,
             targetNetwork,
-            label
+            label,
+            requireAssets
           )
         );
       } else {
@@ -62,7 +63,8 @@ const useWallet: UseWalletType = function useWallet() {
             errorFn,
             sucFn,
             targetNetwork,
-            label
+            label,
+            requireAssets
           )
         );
       }
@@ -76,15 +78,16 @@ const useWallet: UseWalletType = function useWallet() {
   );
   const connect = useCallback(
     async (
-      walletName?: string,
+      walletId?: string,
       startFn?: () => void,
       errorFn?: () => void,
       sucFn?: (walletObj: any, network?: string, label?: string) => void,
       network?: any,
-      label?: string
+      label?: string,
+      requireAssets?:boolean
     ) => {
       savedConnectInfo.current = {
-        walletName,
+        walletId,
         startFn,
         errorFn,
         sucFn: (walletObj: any) => {
@@ -92,10 +95,11 @@ const useWallet: UseWalletType = function useWallet() {
         },
         network,
         label,
+        requireAssets,
       };
-      let formatWalletName = walletName ? walletName.toLowerCase() : undefined;
-      setWallet(formatWalletName);
-      if (formatWalletName === 'walletconnect') {
+
+      setWallet(walletId);
+      if (walletId === 'walletconnect') {
         const targetNetwork = EASInfo[network as keyof typeof EASInfo];
         if (walletConnectProvider && network) {
           if (parseInt(targetNetwork?.chainId) !== walletConnectChainId) {
@@ -107,7 +111,7 @@ const useWallet: UseWalletType = function useWallet() {
         } else {
           openWalletConnectDialog();
         }
-      } else if (formatWalletName === 'metamask') {
+      } else if (walletId === 'metamask') {
         // savedMetaMaskCallback.current();
         connectWalletAsyncFn(undefined);
       } else {

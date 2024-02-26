@@ -16,7 +16,9 @@ const useAllSources = (sourceName?: undefined | null| string) => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
-
+  const onChainAssetsSources = useSelector(
+    (state: UserState) => state.onChainAssetsSources
+  );
   const exList = useMemo(() => {
     const sourceArr: ExDataList = Object.values({ ...exSources });
     const orderedExList = sourceArr.sort((a, b) =>
@@ -34,35 +36,41 @@ const useAllSources = (sourceName?: undefined | null| string) => {
   const kycList: KYCDataList = useMemo(() => {
     return Object.values({ ...kycSources });
   }, [kycSources]);
+  const onChainList: any = useMemo(() => {
+    return Object.values({ ...onChainAssetsSources });
+  }, [kycSources]);
   const allSourceList: SourceDataList = useMemo(() => {
-    return [...exList, ...socialList, ...kycList];
+    return [...exList, ...socialList, ...kycList, ...onChainList];
   }, [exList, socialList, kycList]);
   const allSourceMap: any = useMemo(() => {
     return {
       exSources,
       socialSources,
       kycSources,
+      onChainAssetsSources,
     };
-  }, [exSources, socialSources, kycSources]);
+  }, [exSources, socialSources, kycSources, onChainAssetsSources]);
   const allSourceMap2: any = useMemo(() => {
     return {
       ...exSources,
       ...socialSources,
       ...kycSources,
+      ...onChainAssetsSources,
     };
-  }, [exSources, socialSources, kycSources]);
+  }, [exSources, socialSources, kycSources, onChainAssetsSources]);
   const activeSourceInfo: any = useMemo(() => {
     if (sourceName) {
-      const lowerCaseName = sourceName.toLowerCase()
+      const lowerCaseName = sourceName.toLowerCase();
       return (
         exSources[lowerCaseName] ||
         socialSources[lowerCaseName] ||
-        kycSources[lowerCaseName]
+        kycSources[lowerCaseName] ||
+        onChainAssetsSources[lowerCaseName]
       );
     } else {
       return null;
     }
-  }, [exSources, socialSources, kycSources]);
+  }, [exSources, socialSources, kycSources, onChainAssetsSources]);
   // sourceName
   return {
     sourceList: allSourceList,

@@ -50,39 +50,48 @@ const Cards: React.FC<PDropdownProps> = memo(
       userInfo: activeDataSouceUserInfo,
       deleteFn: deleteDataSourceFn,
     } = useDataSource(lowerCaseDataSourceName);
-
+    console.log('2', activeDataSouceUserInfo);
     const connectedList = useMemo(() => {
       // TODO-newui
       if (activeDataSouceUserInfo) {
         var account = '';
-        if (activeDataSouceMetaInfo.connectType === 'Web') {
-          // activeDataSouceUserInfo?.userName for tiktok
-          let userName =
-            activeDataSouceUserInfo?.userName ||
-            activeDataSouceUserInfo?.userInfo?.userName;
-          if (userName) {
-            account = userName;
-          } else {
-            account = '';
+        if (lowerCaseDataSourceName === 'web3 wallet') {
+          const list = Object.values(activeDataSouceUserInfo).map((i: any) => ({
+            account: i.address,
+            origin: 'Metamsk', // TODO-newui
+            initTime: i.timestamp,
+          }));
+          return list;
+        } else {
+          if (activeDataSouceMetaInfo.connectType === 'Web') {
+            // activeDataSouceUserInfo?.userName for tiktok
+            let userName =
+              activeDataSouceUserInfo?.userName ||
+              activeDataSouceUserInfo?.userInfo?.userName;
+            if (userName) {
+              account = userName;
+            } else {
+              account = '';
+            }
+          } else if (activeDataSouceMetaInfo.connectType === 'API') {
+            account = activeDataSouceUserInfo.apiKey;
+          } else if (activeDataSouceMetaInfo.connectType === 'Auth') {
+            if (['x', 'discord'].includes(lowerCaseDataSourceName)) {
+              account = activeDataSouceUserInfo.userName;
+            }
+            if (lowerCaseDataSourceName === 'google') {
+              account = activeDataSouceUserInfo.email;
+            }
           }
-        } else if (activeDataSouceMetaInfo.connectType === 'API') {
-          account = activeDataSouceUserInfo.apiKey;
-        } else if (activeDataSouceMetaInfo.connectType === 'Auth') {
-          if (['x', 'discord'].includes(lowerCaseDataSourceName)) {
-            account = activeDataSouceUserInfo.userName;
-          }
-          if (lowerCaseDataSourceName === 'google') {
-            account = activeDataSouceUserInfo.email;
-          }
+          return [
+            {
+              account,
+              origin: activeDataSouceMetaInfo.connectType,
+              initTime: activeDataSouceUserInfo.timestamp,
+              // updateTime: '1707201011114',
+            },
+          ];
         }
-        return [
-          {
-            account,
-            origin: activeDataSouceMetaInfo.connectType,
-            initTime: activeDataSouceUserInfo.timestamp,
-            // updateTime: '1707201011114',
-          },
-        ];
       } else {
         return [];
       }
@@ -105,7 +114,9 @@ const Cards: React.FC<PDropdownProps> = memo(
         if (['binance', 'okx'].includes(lowerCaseDataSourceName)) {
           activeLabel = 'Account';
         }
-        if (['x', 'tiktok', 'zan', 'discord'].includes(lowerCaseDataSourceName)) {
+        if (
+          ['x', 'tiktok', 'zan', 'discord'].includes(lowerCaseDataSourceName)
+        ) {
           activeLabel = 'User Name';
         }
         if (['google'].includes(lowerCaseDataSourceName)) {
@@ -124,7 +135,11 @@ const Cards: React.FC<PDropdownProps> = memo(
 
     const handleDelete = useCallback(
       async (i: any) => {
-        deleteDataSourceFn();
+        if (lowerCaseDataSourceName === 'web3 wallet') {
+          deleteDataSourceFn(i.account);
+        } else {
+          deleteDataSourceFn(lowerCaseDataSourceName);
+        }
       },
       [deleteDataSourceFn]
     );

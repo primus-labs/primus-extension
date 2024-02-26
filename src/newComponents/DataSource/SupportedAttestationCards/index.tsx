@@ -74,7 +74,6 @@ const Cards: React.FC<PDropdownProps> = memo(
     const [searchParams] = useSearchParams();
     const dataSourceName = searchParams.get('dataSourceName');
     const supportList = useMemo(() => {
-
       if (dataSourceName === 'Web3 Wallet') return [attestationTypeMap[1]];
       if (dataSourceName === 'Binance' || dataSourceName === 'OKX')
         return [

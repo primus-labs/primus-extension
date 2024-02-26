@@ -37,11 +37,16 @@ const useSource = (sourceName: string) => {
   }, [lowerCaseName]);
   const activeSourceInfo: any = useMemo(() => {
     if (lowerCaseName) {
-      return (
-        allSourceMap.exSources[lowerCaseName] ||
-        allSourceMap.socialSources[lowerCaseName] ||
-        allSourceMap.kycSources[lowerCaseName]
-      );
+      if (lowerCaseName === 'web3 wallet') {
+        return allSourceMap.onChainAssetsSources;
+      } else {
+        return (
+          allSourceMap.exSources[lowerCaseName] ||
+          allSourceMap.socialSources[lowerCaseName] ||
+          allSourceMap.kycSources[lowerCaseName] ||
+          allSourceMap.onChainAssetsSources[lowerCaseName]
+        );
+      }
     } else {
       return null;
     }
@@ -55,10 +60,45 @@ const useSource = (sourceName: string) => {
         ) as DataSourceItemType;
       }
       // Delete data source storage
-      if (lowerCaseName && lowerCaseName !== 'Web3 Wallet') {
-        await chrome.storage.local.remove([lowerCaseName]);
+      if (lowerCaseName) {
+        if (lowerCaseName.startsWith('0x')) {
+          const { onChainAssetsSources: lastOnChainAssetsMapStr } =
+            await chrome.storage.local.get(['onChainAssetsSources']);
+
+          const lastOnChainAssetsMap = lastOnChainAssetsMapStr
+            ? JSON.parse(lastOnChainAssetsMapStr)
+            : {};
+          delete lastOnChainAssetsMap[lowerCaseName];
+          const newOnChainAssetsMap = { ...lastOnChainAssetsMap };
+
+          await chrome.storage.local.set({
+            onChainAssetsSources: JSON.stringify(newOnChainAssetsMap),
+          });
+          dispatch(setOnChainAssetsSourcesAsync());
+          return eventReport({
+            eventType: 'DATA_SOURCE_DELETE',
+            rawData: {
+              type: 'Assets',
+              dataSource: 'onchain-ConnectWallet',
+            },
+          });
+        } else {
+          if (lowerCaseName === 'web3 wallet') {
+            await chrome.storage.local.remove(['onChainAssetsSources']);
+            dispatch(setOnChainAssetsSourcesAsync());
+            return eventReport({
+              eventType: 'DATA_SOURCE_DELETE',
+              rawData: {
+                type: 'Assets',
+                dataSource: 'onchain-ConnectWallet',
+              },
+            });
+          } else {
+            await chrome.storage.local.remove([lowerCaseName]);
+          }
+        }
       }
-      
+
       // Delete credentials storage related to the exchange
       const { credentials: credentialsStr } = await chrome.storage.local.get([
         'credentials',
@@ -83,30 +123,7 @@ const useSource = (sourceName: string) => {
       if (activeDataSouceMetaInfo?.type === 'Assets') {
         // TODO-newui
         // if (i.name.startsWith('0x')) {
-        if (lowerCaseName === 'Web3 Wallet') {
-          const { onChainAssetsSources: onChainAssetsSourcesStr } =
-            await chrome.storage.local.get(['onChainAssetsSources']);
-          const onChainAssetsSourcesObj = onChainAssetsSourcesStr
-            ? JSON.parse(onChainAssetsSourcesStr)
-            : {};
-          let newOnChainAssetsSourcesObj = { ...onChainAssetsSourcesObj };
-          // key account address
-          // if (newOnChainAssetsSourcesObj[key]) {
-          //   delete newOnChainAssetsSourcesObj[key];
-          // }
-          await chrome.storage.local.set({
-            onChainAssetsSources: JSON.stringify(newOnChainAssetsSourcesObj),
-          });
-
-          dispatch(setOnChainAssetsSourcesAsync());
-          return eventReport({
-            eventType: 'DATA_SOURCE_DELETE',
-            rawData: {
-              type: 'Assets',
-              dataSource: 'onchain-ConnectWallet',
-            },
-          });
-        } else {
+        if (lowerCaseName !== 'web3 wallet' && lowerCaseName.startsWith('0x')) {
           dispatch(setExSourcesAsync());
           return eventReport({
             eventType: 'DATA_SOURCE_DELETE',
@@ -133,7 +150,6 @@ const useSource = (sourceName: string) => {
     },
     [activeDataSouceMetaInfo, lowerCaseName]
   );
-
   return {
     metaInfo: activeDataSouceMetaInfo,
     userInfo: activeSourceInfo,

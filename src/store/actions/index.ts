@@ -138,7 +138,8 @@ export const connectWalletAsync = (
   errorFn?: any,
   sucFn?: any,
   network?: any,
-  label?: string
+  label?: string,
+  requireAssets?: boolean
 ) => {
   return async (dispatch: any) => {
     try {
@@ -162,6 +163,30 @@ export const connectWalletAsync = (
       const type = connectObj?.name ?? 'metamask';
       const checkRes = await checkIfBindConnectedWallet({ address });
       if (checkRes.rc === 0 && checkRes.result) {
+        if (requireAssets) {
+           const timestamp: string = +new Date() + '';
+           const walletInfo =
+             connectObj?.name === 'walletconnect'
+               ? {
+                   walletName: connectObj?.name,
+                   walletProvider: connectObj.provider,
+                 }
+               : undefined;
+           const signature = await requestSign(address, timestamp, walletInfo);
+           if (!signature) {
+             errorFn && (await errorFn());
+             return;
+           }
+          await getChainAssets(signature, timestamp, address, dispatch, label);
+          // sucFn &&
+          //   (await sucFn({
+          //     name: type,
+          //     address,
+          //     provider,
+          //     signature,
+          //     timestamp,
+          //   }));
+        }
         await dispatch(
           setConnectWalletActionAsync({ name: type, address, provider })
         );
@@ -247,6 +272,7 @@ export const getChainAssets = async (
         signature,
         ...res,
         ...DATASOURCEMAP['onChain'],
+        walletName: 'MetaMask', // TODO-newui
       };
 
       const { onChainAssetsSources: lastOnChainAssetsMapStr } =

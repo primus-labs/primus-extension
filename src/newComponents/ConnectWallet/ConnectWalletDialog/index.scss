@@ -1,0 +1,22 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+.pDialog2.ConnectWalletDialog {
+  padding: var(--spacing-40, 40px) var(--spacing-24, 24px);
+  main {
+    > header {
+      align-items: center;
+      gap: var(--spacing-8);
+      h1 {
+        font-family: IBM Plex Sans;
+        font-size: var(--spacing-24);
+        font-weight: 600;
+        line-height: var(--spacing-36);
+      }
+      h2 {
+        @include BodyShort01;
+        color: var(--text-tokens-text-primary);
+      }
+    }
+  }
+}

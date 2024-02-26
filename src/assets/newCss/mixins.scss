@@ -36,3 +36,27 @@
     }
   }
 }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@mixin pSpiner(
+  $width: var(--spacing-16, 16px),
+  $height: var(--spacing-16, 16px),
+  $borderWidth: 2px,
+  $borderColor: var(--layer-tokens-layer-primary, #fff),
+  $borderTopColor: var(--icon-tokens-icon-primary, #161616),
+  $time: 1s
+) {
+  width: $width;
+  height: $height;
+  border-radius: 50%;
+  border: $borderWidth solid $borderColor;
+  border-top: $borderWidth solid $borderTopColor;
+  animation: spin $time linear infinite;
+}

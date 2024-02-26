@@ -1,5 +1,6 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -106,12 +107,13 @@ button.PButton {
     }
   }
   .loading-spinner {
-    width: var(--spacing-16,16px);
-    height: var(--spacing-16,16px);
-    border-radius: 50%;
-    border: 2px solid var(--layer-tokens-layer-primary, #fff);
-    border-top: 2px solid var(--icon-tokens-icon-primary, #161616);
-    animation: spin 1s linear infinite;
+    // width: var(--spacing-16,16px);
+    // height: var(--spacing-16,16px);
+    // border-radius: 50%;
+    // border: 2px solid var(--layer-tokens-layer-primary, #fff);
+    // border-top: 2px solid var(--icon-tokens-icon-primary, #161616);
+    // animation: spin 1s linear infinite;
+    @include pSpiner;
   }
 }
 .dark {

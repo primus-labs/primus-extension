@@ -16,6 +16,7 @@ import PTag from '@/newComponents/PTag';
 import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards';
 import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards';
 import ConnectByAPI from '@/newComponents/DataSource/ConnectByAPI';
+import ConnectWallet from '@/newComponents/ConnectWallet';
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
@@ -23,10 +24,13 @@ const DataSouces = Object.values(DATASOURCEMAP);
 const DataSourceItem = memo(() => {
   const [visibleConnectByWeb, setVisibleConnectByAPI] =
     useState<boolean>(false);
+  const [visibleConnectWallet, setVisibleConnectWallet] =
+    useState<boolean>(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dataSourceName = searchParams.get('dataSourceName') as string;
   const lowerCaseDataSourceName = dataSourceName?.toLocaleLowerCase();
+
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const {
     metaInfo: activeDataSouceMetaInfo,
@@ -40,13 +44,25 @@ const DataSourceItem = memo(() => {
   }, [activeDataSouceMetaInfo]);
 
   const hasConnected = useMemo(() => {
-    return activeDataSouceUserInfo?.name;
+    if (lowerCaseDataSourceName === 'web3 wallet') {
+      return Object.values(activeDataSouceUserInfo).length > 0
+    } else {
+      return activeDataSouceUserInfo?.name;
+    }
   }, [activeDataSouceUserInfo]);
 
   const btnTxtEl = useMemo(() => {
     return activeConnectType ? 'Connect by ' + activeConnectType : 'Connect';
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(() => {
+    if (activeDataSouceMetaInfo.name === 'Web3 Wallet') {
+      // dispatch({
+      //   type: 'setConnectWalletDialogVisible',
+      //   payload: true
+      // });
+      setVisibleConnectWallet(true);
+      return;
+    }
     if (activeConnectType === 'API') {
       setVisibleConnectByAPI(true);
     } else if (activeConnectType === 'Web') {
@@ -95,11 +111,15 @@ const DataSourceItem = memo(() => {
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
-  const handleCloseConnectByAPI = useCallback(() => {
-    setVisibleConnectByAPI(false);
-  }, []);
+
   const handleSubmitConnectByAPI = useCallback(() => {
     setVisibleConnectByAPI(false);
+  }, []);
+  const handleCloseConnectWallet = useCallback(() => {
+    setVisibleConnectWallet(false);
+  }, []);
+  const handleSubmitConnectWallet = useCallback(() => {
+    setVisibleConnectWallet(false);
   }, []);
 
   return (
@@ -114,7 +134,8 @@ const DataSourceItem = memo(() => {
             <div className="introTxt">
               <div className="title">
                 <div className="name">
-                  {activeDataSouceMetaInfo?.showName ?? activeDataSouceMetaInfo?.name}
+                  {activeDataSouceMetaInfo?.showName ??
+                    activeDataSouceMetaInfo?.name}
                 </div>
                 <PTag
                   text={`${activeDataSouceMetaInfo?.type} Data`}
@@ -168,9 +189,15 @@ const DataSourceItem = memo(() => {
       </div>
       {visibleConnectByWeb && (
         <ConnectByAPI
-          onClose={handleCloseConnectByAPI}
+          onClose={handleSubmitConnectByAPI}
           onSubmit={handleSubmitConnectByAPI}
           sourceName={lowerCaseDataSourceName}
+        />
+      )}
+      {visibleConnectWallet && (
+        <ConnectWallet
+          onClose={handleCloseConnectWallet}
+          onSubmit={handleSubmitConnectWallet}
         />
       )}
     </div>
