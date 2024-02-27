@@ -124,6 +124,7 @@ export const setConnectWalletActionAsync = (values: any) => {
           address,
         }),
       });
+      debugger
       await dispatch(setConnectWalletAction(values));
       await dispatch(setConnectWalletDialogVisibleAction(false));
     } else {

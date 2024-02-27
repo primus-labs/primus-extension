@@ -45,7 +45,7 @@ const DataSourceItem = memo(() => {
 
   const hasConnected = useMemo(() => {
     if (lowerCaseDataSourceName === 'web3 wallet') {
-      return Object.values(activeDataSouceUserInfo).length > 0
+      return Object.values(activeDataSouceUserInfo).length > 0;
     } else {
       return activeDataSouceUserInfo?.name;
     }
@@ -194,12 +194,12 @@ const DataSourceItem = memo(() => {
           sourceName={lowerCaseDataSourceName}
         />
       )}
-      {visibleConnectWallet && (
-        <ConnectWallet
-          onClose={handleCloseConnectWallet}
-          onSubmit={handleSubmitConnectWallet}
-        />
-      )}
+
+      <ConnectWallet
+        visible={visibleConnectWallet}
+        onClose={handleCloseConnectWallet}
+        onSubmit={handleSubmitConnectWallet}
+      />
     </div>
   );
 });
