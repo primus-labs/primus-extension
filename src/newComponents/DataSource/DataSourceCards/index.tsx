@@ -55,7 +55,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       }
       return newList;
     }, [list, dataSourceQueryStr, dataSourceQueryType]);
-    const { sourceMap2 } = useAllSources();
+    const { sourceMap,sourceMap2 } = useAllSources();
 
     const handleConnect = useCallback(
       (i) => {
@@ -76,7 +76,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       (i) => {
         const lowerCaseSourceName = i.name.toLowerCase();
         if (lowerCaseSourceName === 'web3 wallet') {
-          return Object.values(sourceMap2).length
+          return Object.values(sourceMap.onChainAssetsSources).length;
         } else {
           if (sourceMap2?.[lowerCaseSourceName]) {
             return 1;
@@ -85,7 +85,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           }
         }
       },
-      [sourceMap2]
+      [sourceMap2, sourceMap]
     );
 
     return (

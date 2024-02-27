@@ -13,11 +13,12 @@ import type { UserState } from '@/types/store';
 import './index.scss';
 
 interface PButtonProps {
+  visible: boolean;
   onClose: () => void;
   onSubmit: () => void;
 }
 
-const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
+const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit, visible }) => {
   const [step, setStep] = useState<number>(1);
   const [activeRequest, setActiveRequest] = useState<any>({});
   // const [hadSetPwd, setHadSetPwd] = useState<boolean>(false);
@@ -81,9 +82,27 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
     },
     [connect, errorFn]
   );
+  const checkIfHadBound = useCallback(async () => {
+    const { connectedWalletAddress } = await chrome.storage.local.get([
+      'connectedWalletAddress',
+    ]);
+    debugger;
+    if (connectedWalletAddress) {
+      const lastConnectedInfo = JSON.parse(connectedWalletAddress);
+      handleSubmitConnectWallet(lastConnectedInfo);
+    }
+  }, [handleSubmitConnectWallet]);
+  useEffect(() => {
+    debugger
+    checkIfHadBound();
+  }, []);
 
   return (
-    <div className="pDialog2 connectWallet">
+    <div
+      className={
+        visible ? 'pDialog2 connectWallet visible' : 'pDialog2 connectWallet'
+      }
+    >
       {step === 1 && (
         <ConnectWalletDialog
           onClose={handleCloseConnectWallet}
