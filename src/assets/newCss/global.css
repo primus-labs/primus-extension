@@ -103,6 +103,8 @@
   --text-button-disabled: var(--neutral-color-gray-40);
 
   --pageContent-width: 1120px;
+  font-family: 'IBM Plex Sans';
+  color: var(--text-tokens-text-primary);
 }
 .light {
   --background-tokens-background: var(--neutral-color-gray-05);

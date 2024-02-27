@@ -1,0 +1,35 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+.allAttestationTypeCards {
+  width: 100%;
+  @include frss;
+  flex-wrap: wrap;
+  gap: var(--spacing-16);
+  .attestationTypeCard {
+    width: calc((100% - var(--spacing-16) * 3) / 4);
+    height: 96px;
+    padding: var(--spacing-16);
+    @include fcss;
+    gap: var(--spacing-16);
+    @include clickableCard;
+    .top,
+    .bottom {
+      width: 100%;
+    }
+    .top {
+      @include frsc;
+      gap: var(--spacing-8);
+      .typeIcon {
+        width: var(--spacing-32);
+      }
+      .typeName {
+        @include HeadlineH3;
+      }
+    }
+    .bottom {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}

@@ -1,16 +1,10 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { DATASOURCEMAP } from '@/config/dataSource';
-import dayjs from 'dayjs';
-import utc from 'dayjs-plugin-utc';
-import type { SyntheticEvent } from 'react';
-
-import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
-import connectData from '@/assets/newImg/dataSource/connectedData.svg';
-import iconAttestationHumanity from '@/assets/newImg/dataSource/iconAttestationHumanity.svg';
-import iconAttestationAssets from '@/assets/newImg/dataSource/iconAttestationAssets.svg';
-import iconAttestationOnChain from '@/assets/newImg/dataSource/iconAttestationOnChain.svg';
+import iconAttestationHumanity from '@/assets/newImg/zkAttestation/iconAttestationTypeIdentity.svg';
+import iconAttestationAssets from '@/assets/newImg/zkAttestation/iconAttestationTypeAssets.svg';
+import iconAttestationOnChain from '@/assets/newImg/zkAttestation/iconAttestationTypeOnChain.svg';
+
 import './index.scss';
 
 type NavItem = {
@@ -24,8 +18,6 @@ type NavItem = {
 };
 interface PDropdownProps {
   onClick?: (item: NavItem) => void;
-
-  // list: NavItem[];
 }
 const attestationTypeMap = {
   1: {

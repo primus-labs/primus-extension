@@ -13,6 +13,7 @@ import Cred from '@/pages/Cred/index.tsx';
 import Events from '@/pages/Events';
 import TransactionDetail from '@/pages/Transaction/TransactionDetail';
 import Achievement from "@/newPages/Achievement";
+import ZkAttestation from '@/newPages/ZkAttestation';
 
 const router = [
   {
@@ -26,7 +27,7 @@ const router = [
         // element: <FirstHome />,
       },
       {
-        path: 'datas',
+        path: 'dataSource',
         name: 'Data Source',
         children: [
           {
@@ -38,6 +39,11 @@ const router = [
             element: <DataSourceItem />,
           },
         ],
+      },
+      {
+        path: 'zkAttestation',
+        name: 'zkAttestation',
+        element: <ZkAttestation />,
       },
       {
         path: 'dataDetail',
@@ -57,8 +63,8 @@ const router = [
       },
       {
         path: 'achievements',
-        element: <Achievement/>
-      }
+        element: <Achievement />,
+      },
     ],
   },
   {

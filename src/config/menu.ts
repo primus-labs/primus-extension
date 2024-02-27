@@ -19,19 +19,19 @@ export const list: NavItem[] = [
     label: 'Data Source',
     value: 'Data Source',
     iconName: 'icon-iconMenuDataSource',
-    link: '/datas',
+    link: '/dataSource',
   },
   {
     label: 'Data Overview',
     value: 'Data Overview',
     iconName: 'icon-iconMenuDataOverview',
-    link: '/1',
+    link: '/',
   },
   {
     label: 'zkAttestation',
     value: 'zkAttestation',
     iconName: 'icon-iconMenuZkAttestation',
-    link: '/2',
+    link: '/zkAttestation',
   },
   {
     label: 'Events',
