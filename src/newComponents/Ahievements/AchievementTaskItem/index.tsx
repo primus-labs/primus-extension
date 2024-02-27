@@ -5,6 +5,7 @@ import PButton from '@/newComponents/PButton';
 import taskItemIcon from '@/assets/newImg/achievements/taskItemIcon.svg'
 
 export type TaskItem = {
+    taskIcon:string;
     taskIdentifier: string;
     taskDesc: string;
     taskXpScore: number;
@@ -13,7 +14,7 @@ export type TaskItem = {
 };
 
 
-const AchievementTopCard = memo(() => {
+const AchievementTaskItem: React.FC<TaskItem>  = memo((taskItem: TaskItem) => {
 
     const finishTask = () => {
 
@@ -23,8 +24,8 @@ const AchievementTopCard = memo(() => {
         <div className="achievementTaskitem">
             <div className={"achievementTaskitemText"}>
                 <img className={"achievementTaskitemIcon"} src={taskItemIcon}></img>
-                <div className={"achievementTaskitemDesc"}>Daily check-in</div>
-                <div className={"achievementTaskitemScore"}>+5xp/day</div>
+                <div className={"achievementTaskitemDesc"}>{taskItem.taskDesc}</div>
+                <div className={"achievementTaskitemScore"}>{taskItem.taskXpScore}</div>
             </div>
             <PButton
                 text="Finish"
@@ -35,4 +36,4 @@ const AchievementTopCard = memo(() => {
     );
 });
 
-export default AchievementTopCard;
+export default AchievementTaskItem;
