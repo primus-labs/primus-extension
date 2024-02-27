@@ -147,8 +147,8 @@ chrome.runtime.sendMessage(
         var loadingTxtEl = document.querySelector('.loadingTxt');
         var progressPercentage = 0;
 
-        function simulateFileUpload() {
-          progressPercentage 
+        function simulateFileUpload() { 
+          progressPercentage += 1;
           if (progressPercentage > 0 && progressPercentage <= 1.25) {
             loadingTxtEl.innerHTML = 'Connecting to PADO node...';
           } else if (progressPercentage > 1.25 && progressPercentage <= 2.5) {
