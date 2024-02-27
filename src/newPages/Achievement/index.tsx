@@ -15,7 +15,6 @@ const AchievementHome = memo(() => {
     const getAchievementTaskListFn = useCallback(async () => {
         const res = await getAchievementTaskList(size, page)
         const {rc, result} = res;
-        debugger
         if (rc === 0) {
             setAchievementTaskList(result.items);
             setTotalCount(result.totalCount)
@@ -30,11 +29,22 @@ const AchievementHome = memo(() => {
     //   debugger
     //   setAchievementTaskList(achievementTaskListFn);
     // }, [achievementTaskListFn]);
+
+    const handleFinishTask = (identifier) => {
+        // eslint-disable-next-line no-undef
+        console.log(identifier)
+    }
     const AchievementTaskItemList = () => {
         return achievementTaskList.map((item, index) => {
-            return <AchievementTaskItem key={index} {...item}/>;
+            const taskItemWithClick = {
+                onClick: handleFinishTask,
+                taskItem: item
+            }
+            return <AchievementTaskItem key={index} {...taskItemWithClick}/>;
         });
     };
+
+
     return (
         <div className="pageAchievementTaskItem">
             <AchievementTopCard></AchievementTopCard>
