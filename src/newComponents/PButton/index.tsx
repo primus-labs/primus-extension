@@ -81,7 +81,7 @@ const PButton: React.FC<PButtonProps> = memo(
         {/* {prefix} */}
         {/* {suffix && <img className="suffix" src={suffix} alt="" />} */}
         {/* {suffix} */}
-
+        {prefix}
         {type === 'icon' ? (
           icon
         ) : (

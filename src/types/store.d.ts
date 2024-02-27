@@ -19,6 +19,7 @@ type ConnectedWallet = {
   address: string;
   provider: any;
   name: string;
+  id: string;
 };
 type rewardsDialogVisibleType = {
   visible: boolean;
@@ -53,4 +54,5 @@ export type UserState = {
   lastLoginHasPwd: boolean; // if has set password
   dataSourceQueryStr: string;
   dataSourceQueryType: string | number;
+  connectedWallets: any;
 };

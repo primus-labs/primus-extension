@@ -2,9 +2,9 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
 
-.pDialog2.connectWallet {
+.connectWallet {
   display: none;
-  .visible {
+  &.visible {
     display: flex;
   }
 }

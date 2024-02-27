@@ -16,6 +16,9 @@
 @mixin dropdown-shadow-tooltip {
   @include shadow(0, 0, 12px);
 }
+@mixin dropdown-shadow {
+  @include shadow(0, 0, 20px,rgba(0, 0, 0, 0.15));
+}
 
 @mixin pCard {
   border-radius: var(--spacing-8, 8px);

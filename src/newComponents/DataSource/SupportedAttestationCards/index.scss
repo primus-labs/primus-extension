@@ -25,7 +25,7 @@
       .introTxt {
         @include fcss;
         .title {
-          @include BodyBody100semibold;
+          @include BodyBody100Semibold;
           color: var(--text-tokens-text-primary);
         }
         .desc {

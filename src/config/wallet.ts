@@ -10,26 +10,29 @@ export type newWALLETITEMTYPE = {
   id: string | number;
   disabled?: boolean;
 };
+export type WALLETMAPTYPE = {
+  [propName:string]: newWALLETITEMTYPE;
+};
 
-export const WALLETLIST: newWALLETITEMTYPE[] = [
-  {
+export const WALLETMAP: WALLETMAPTYPE = {
+  metamask: {
     icon: iconWalletMetamask,
     name: 'MetaMask',
     id: 'metamask',
   },
-  {
+  walletconnect: {
     icon: iconWalletWalletConnect,
     name: 'WalletConnect',
     id: 'walletconnect',
     disabled: true,
   },
-  {
+  coinbasewallet: {
     icon: iconWalletCoinbaseWallet,
     name: 'CoinbaseWallet',
     id: 'coinbasewallet',
     disabled: true,
   },
-  {
+  plugwallet: {
     icon: iconWalletCoinbaseWallet,
     name: 'PlugWallet',
     id: 'plugwallet',
@@ -46,4 +49,5 @@ export const WALLETLIST: newWALLETITEMTYPE[] = [
   //   name: 'TrustWallet',
   //   disabled: true,
   // },
-];
+};
+export const WALLETLIST: newWALLETITEMTYPE[] = Object.values(WALLETMAP);

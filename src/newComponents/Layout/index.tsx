@@ -15,6 +15,7 @@ import {
   initRewardsActionAsync,
   setOnChainAssetsSourcesAsync,
   initIfHadPwdAsync,
+  setConnectedWalletsActionAsync,
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
@@ -58,6 +59,7 @@ const Nav: React.FC = memo(({}) => {
     dispatch(initRewardsActionAsync());
     dispatch(setOnChainAssetsSourcesAsync());
     dispatch(initIfHadPwdAsync());
+    dispatch(setConnectedWalletsActionAsync());
 
     // dispatch(initConnectedWalletActionAsync());
     (updateOnChainFn as () => void)();

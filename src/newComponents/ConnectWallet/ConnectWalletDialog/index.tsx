@@ -34,8 +34,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     const [accountAddr, setAccountAddr] = useState<any>();
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
-    // const list: DataFieldItem[] = WALLETLIST;
-
+    
     const onChangeWallet = (item?: WALLETITEMTYPE) => {
       if (!item?.disabled) {
         setErrorTip(undefined);

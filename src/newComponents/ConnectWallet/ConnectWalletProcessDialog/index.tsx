@@ -29,8 +29,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     const [accountAddr, setAccountAddr] = useState<any>();
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
-    // const list: DataFieldItem[] = WALLETLIST;
-
+    
     const handleClose = useCallback(() => {
       // dispatch({
       //   type: 'setConnectWalletDialogVisible',

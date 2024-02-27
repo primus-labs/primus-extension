@@ -1,0 +1,86 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.pConnected {
+  height: 60px;
+  @include frcc;
+  position: relative;
+  &:hover {
+    .historyWrapper {
+      display: flex;
+    }
+    .addressWrapper {
+      .icon-DownArrow {
+        transform: rotate(180deg);
+      }
+    }
+  }
+  .addressWrapper {
+    @include frsc;
+    gap: var(--spacing-4);
+    padding: var(--spacing-7) var(--spacing-16);
+    border: 1px solid var(--border-tokens-border-primary, #e0e0e0);
+    @include NumberBody100;
+    cursor: pointer;
+
+    .icon-DownArrow {
+      font-size: 16px;
+      color: var(--icon-tokens-icon-primary);
+      // transform: rotate(180deg);
+    }
+  }
+  .historyWrapper {
+    position: absolute;
+    top: 54px;
+    right: 0;
+    width: 228px;
+    @include fcss;
+    gap: var(--spacing-8);
+    padding: var(--spacing-8);
+    @include dropdown-shadow;
+    background: var(--layer-tokens-layer-primary);
+    border-radius: var(--spacing-4);
+    display: none;
+    .walletItems {
+      width: 100%;
+      @include fcss;
+      gap: var(--spacing-8);
+      .walletItem {
+        width: 100%;
+        @include fcss;
+        gap: var(--spacing-8);
+        padding: var(--spacing-8);
+        border-radius: var(--spacing-4);
+        background: var(--layer-tokens-layer-on-primary);
+        .recordItem {
+          width: 100%;
+          @include frbc;
+          @include NumberBody100;
+          &:first-child {
+            @include BodyBody100Semibold;
+          }
+          .left {
+            @include frsc;
+            gap: var(--spacing-8);
+            .placeHolder,
+            .iconWallet {
+              width: var(--spacing-16);
+            }
+            //icon-Legal
+            .icon-Legal {
+              font-size: var(--spacing-16);
+              color: var(--icon-tokens-icon-primary);
+            }
+          }
+          .right {
+            .iconfont {
+              font-size: var(--spacing-16);
+            }
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

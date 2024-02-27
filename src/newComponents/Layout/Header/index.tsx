@@ -4,7 +4,7 @@ import { list } from '@/config/menu';
 import PButton from '@/newComponents/PButton';
 import PConnect from '@/newComponents/PConnect';
 
-import iconMy from '@/assets/img/iconMy.svg';
+import iconAvatar from '@/assets/newImg/layout/iconAvatar.svg';
 import './index.scss';
 
 const Nav: React.FC = memo(({}) => {
@@ -28,7 +28,7 @@ const Nav: React.FC = memo(({}) => {
         /> */}
         <PConnect/>
         <div className="avatar">
-          <img src={iconMy} alt="" />
+          <img src={iconAvatar} alt="" />
         </div>
       </div>
     </div>

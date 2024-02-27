@@ -87,7 +87,7 @@ const initState = {
   effective: true,
   onChainAssetsSources: {},
   connectWalletDialogVisible: false,
-  connectedWallet: null,
+  connectedWallet: null, // user connected
   rewardsDialogVisible: {
     visible: false,
   },
@@ -105,6 +105,8 @@ const initState = {
   lastLoginHasPwd: false,
   dataSourceQueryStr: '',
   dataSourceQueryType: '',
+
+  connectedWallets: {}, // had connected wallets and accounts
 };
 
 // reducer
@@ -169,6 +171,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, dataSourceQueryStr: action.payload };
     case 'setDataSourceQueryType':
       return { ...state, dataSourceQueryType: action.payload };
+    case 'setConnectedWallets':
+      return { ...state, connectedWallets: action.payload };
     default:
       return state;
   }

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
-import { WALLETLIST } from '@/config/constants';
 
 import PControledInput from '@/components/PControledInput';
 import PInput from '@/components/PInput';
@@ -65,7 +64,6 @@ const ConnectWalletDataDialog: React.FC<ConnectWalletDataDialogProps> = memo(
               <div className="contItem ">
                 <div className="label">Select Wallet</div>
                 <WalletList onClick={onChangeWallet} />
-                {/* <SourceGroup onChange={onChangeWallet} list={WALLETLIST} /> */}
               </div>
               <div className="contItem ">
                 {/* <div className="label">Label (Optional)</div> */}

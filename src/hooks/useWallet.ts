@@ -44,6 +44,7 @@ const useWallet: UseWalletType = function useWallet() {
           connectWalletAsync(
             {
               name: 'walletconnect',
+              id: 'walletconnect',
               provider: walletConnectProvider,
               address: walletConnectAddress,
             },
@@ -135,6 +136,7 @@ const useWallet: UseWalletType = function useWallet() {
       // savedWalletConnectCallback.current();
       connectWalletAsyncFn({
         name: 'walletconnect',
+        id: 'walletconnect',
         provider: walletConnectProvider,
         address: walletConnectAddress,
       });

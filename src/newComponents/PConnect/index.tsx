@@ -8,6 +8,7 @@ import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDial
 import PButton from '@/newComponents/PButton';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import ConnectWallet from '@/newComponents/ConnectWallet';
+import Connected from './Connected';
 
 import './index.scss';
 import type { UserState } from '@/types/store';
@@ -27,7 +28,6 @@ const PConnect = memo(() => {
   const handleConnect = useCallback(() => {
     setConnectWalletDialogVisible1(true);
   }, []);
-  
 
   const handleCloseConnectWallet = useCallback(() => {
     setConnectWalletDialogVisible1(false);
@@ -38,7 +38,7 @@ const PConnect = memo(() => {
   return (
     <div className="pConnect">
       {connectedWallet?.address ? (
-        '0x....'
+        <Connected onConnect={handleConnect} />
       ) : (
         <PButton
           className="connectBtn"
@@ -46,29 +46,11 @@ const PConnect = memo(() => {
           onClick={handleConnect}
         />
       )}
-
       <ConnectWallet
         visible={connectWalletDialogVisible1}
         onClose={handleCloseConnectWallet}
         onSubmit={handleSubmitConnectWallet}
       />
-
-      {/* {connectWalletDialogVisible1 && step === 1 && (
-        <ConnectWalletDialog
-          onClose={handleCloseMask}
-          onSubmit={handleSubmitConnectWallet}
-        />
-      )}
-      {connectWalletDialogVisible1 && step === 2 && (
-        <AddSourceSucDialog
-          type={activeRequest?.type}
-          title={activeRequest?.title}
-          desc={activeRequest?.desc}
-          activeSource={DATASOURCEMAP['onChain']}
-          onClose={handleCloseMask}
-          onSubmit={onSubmitProcessDialog}
-        />
-      )} */}
     </div>
   );
 });

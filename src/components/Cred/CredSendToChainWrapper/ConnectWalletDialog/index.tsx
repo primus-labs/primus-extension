@@ -35,8 +35,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     const fromEvents = searchParams.get('fromEvents');
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
-    // const list: DataFieldItem[] = WALLETLIST;
-
+    
     const handleClickBack = useCallback(() => {
       onBack && onBack();
     }, []);

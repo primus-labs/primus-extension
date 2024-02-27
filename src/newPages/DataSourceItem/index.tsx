@@ -199,6 +199,7 @@ const DataSourceItem = memo(() => {
         visible={visibleConnectWallet}
         onClose={handleCloseConnectWallet}
         onSubmit={handleSubmitConnectWallet}
+        requireAssets={true}
       />
     </div>
   );

@@ -64,7 +64,7 @@
   line-height: 18px;
   letter-spacing: 0.16px;
 }
-@mixin BodyBody100semibold {
+@mixin BodyBody100Semibold {
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;
 
   font-family: 'IBM Plex Sans';
@@ -256,7 +256,7 @@
   letter-spacing: 0px;
   line-height: 28px;
 }
-.number-body-100 {
+@mixin NumberBody100 {
   font-size: 14px;
   font-family: IBM Plex Mono;
   font-weight: 400;
@@ -277,7 +277,7 @@
   letter-spacing: 0px;
   line-height: 40px;
 }
-.number-body-100-semibold {
+@mixin NumberBody100Semibold {
   font-size: 14px;
   font-family: IBM Plex Mono;
   font-weight: 500;

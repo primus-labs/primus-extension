@@ -1,4 +1,3 @@
-
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
@@ -24,7 +23,7 @@
             width: var(--spacing-24);
           }
           .txt {
-            @include BodyBody100semibold;
+            @include BodyBody100Semibold;
           }
         }
         @include fcss;
@@ -34,7 +33,7 @@
         .tit {
           @include frsc;
           gap: var(--spacing-12);
-          @include BodyBody100semibold;
+          @include BodyBody100Semibold;
           .order {
             @include frcc;
             width: var(--spacing-24);

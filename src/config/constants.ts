@@ -193,24 +193,20 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
   {
     icon: iconWalletMetamask,
     name: 'MetaMask',
-    id: 'metamask',
   },
   {
     icon: iconWalletWalletConnect,
     name: 'WalletConnect',
-    id: 'walletconnect',
     disabled: true,
   },
   {
     icon: iconWalletCoinbaseWallet,
     name: 'CoinbaseWallet',
-    id: 'coinbasewallet',
     disabled: true,
   },
   {
     icon: iconWalletTokenPocket,
     name: 'TokenPocket',
-    id: 'tokenpocket',
     disabled: true,
   },
 

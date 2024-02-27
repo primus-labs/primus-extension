@@ -11,6 +11,7 @@ import {
   SCROLLEVENTNAME,
   BASEVENTNAME,
 } from '@/config/constants';
+import { WALLETMAP } from '@/config/wallet';
 import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import {
   bindConnectedWallet,
@@ -114,17 +115,50 @@ export const setIfHasPwdAction = (values: any) => ({
   type: 'setIfHasPwd',
   payload: values,
 });
+export const setConnectedWalletsAction = (values: any) => ({
+  type: 'setConnectedWallets',
+  payload: values,
+});
+export const setConnectedWalletsActionAsync = () => {
+  return async (dispatch: any) => {
+    const { connectedWallets: lastConnectedWalletsStr } =
+      await chrome.storage.local.get(['connectedWallets']);
+    let lastConnectedWalletsObj = {};
+    if (lastConnectedWalletsStr) {
+      lastConnectedWalletsObj = JSON.parse(lastConnectedWalletsStr);
+    }
+    await dispatch(setConnectedWalletsAction(lastConnectedWalletsObj));
+  };
+};
+
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
     if (values?.address) {
-      const { address, name } = values;
+      const { address, name, id } = values;
       await chrome.storage.local.set({
         connectedWalletAddress: JSON.stringify({
           name,
           address,
+          id,
         }),
       });
-      debugger
+      const { connectedWallets: lastConnectedWalletsStr } =
+        await chrome.storage.local.get(['connectedWallets']);
+      let lastConnectedWalletsObj = {};
+      let lastCurrentWalletObj = {};
+      if (lastConnectedWalletsStr) {
+        lastConnectedWalletsObj = JSON.parse(lastConnectedWalletsStr);
+        if (lastConnectedWalletsObj[id]) {
+          lastCurrentWalletObj = lastConnectedWalletsObj[id];
+        }
+      }
+      lastCurrentWalletObj[address.toLowerCase()] = { name, address, id };
+      lastConnectedWalletsObj[id] = lastCurrentWalletObj;
+
+      await chrome.storage.local.set({
+        connectedWallets: JSON.stringify(lastConnectedWalletsObj),
+      });
+      await dispatch(setConnectedWalletsActionAsync());
       await dispatch(setConnectWalletAction(values));
       await dispatch(setConnectWalletDialogVisibleAction(false));
     } else {
@@ -160,41 +194,37 @@ export const connectWalletAsync = (
         provider = connectRes[2];
         address = (connectRes[0] as string[])[0];
       }
-
-      const type = connectObj?.name ?? 'metamask';
+      const type = connectObj?.id ?? 'metamask';
+      const walletName = WALLETMAP[type].name;
+      const walletInfo =
+        type === 'walletconnect'
+          ? {
+              walletName,
+              walletProvider: connectObj.provider,
+            }
+          : undefined;
       const checkRes = await checkIfBindConnectedWallet({ address });
       if (checkRes.rc === 0 && checkRes.result) {
         if (requireAssets) {
-           const timestamp: string = +new Date() + '';
-           const walletInfo =
-             connectObj?.name === 'walletconnect'
-               ? {
-                   walletName: connectObj?.name,
-                   walletProvider: connectObj.provider,
-                 }
-               : undefined;
-           const signature = await requestSign(address, timestamp, walletInfo);
-           if (!signature) {
-             errorFn && (await errorFn());
-             return;
-           }
+          const timestamp: string = +new Date() + '';
+          const signature = await requestSign(address, timestamp, walletInfo);
+          if (!signature) {
+            errorFn && (await errorFn());
+            return;
+          }
           await getChainAssets(signature, timestamp, address, dispatch, label);
-          // sucFn &&
-          //   (await sucFn({
-          //     name: type,
-          //     address,
-          //     provider,
-          //     signature,
-          //     timestamp,
-          //   }));
         }
         await dispatch(
-          setConnectWalletActionAsync({ name: type, address, provider })
+          setConnectWalletActionAsync({
+            id: type,
+            name: walletName,
+            address,
+            provider,
+          })
         );
         await dispatch(setConnectWalletDialogVisibleAction(false));
         if (sucFn) {
-          // startFn && (await startFn());
-          sucFn && (await sucFn({ name: type, address, provider }));
+          sucFn && (await sucFn({ id: type, name: type, address, provider }));
         } else {
           return;
         }
@@ -202,13 +232,6 @@ export const connectWalletAsync = (
         // startFn && (await startFn());
         await dispatch(setConnectWalletDialogVisibleAction(true));
         const timestamp: string = +new Date() + '';
-        const walletInfo =
-          connectObj?.name === 'walletconnect'
-            ? {
-                walletName: connectObj?.name,
-                walletProvider: connectObj.provider,
-              }
-            : undefined;
         const signature = await requestSign(address, timestamp, walletInfo);
         if (!signature) {
           errorFn && (await errorFn());
@@ -223,7 +246,12 @@ export const connectWalletAsync = (
         const { rc, result } = res;
         if (rc === 0 && result) {
           await dispatch(
-            setConnectWalletActionAsync({ name: type, address, provider })
+            setConnectWalletActionAsync({
+              id: type,
+              name: walletName,
+              address,
+              provider,
+            })
           );
           await dispatch(setConnectWalletDialogVisibleAction(false));
           await getChainAssets(signature, timestamp, address, dispatch, label);
