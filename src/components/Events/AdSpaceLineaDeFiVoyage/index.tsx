@@ -11,7 +11,9 @@ import utc from 'dayjs-plugin-utc';
 import { queryEventDetail } from '@/services/api/event';
 import PButton from '@/components/PButton';
 import bannerIllstration from '@/assets/img/events/bannerIllstration.svg';
-import nftIllstration from '@/assets/img/events/nftIllstration.png';
+// import nftIllstration from '@/assets/img/events/nftIllstration.png';
+import nftIllstration from '@/assets/img/credit/iconNetworkLinea.svg';
+
 import './index.scss';
 interface AdSpaceProps {
   onClick: () => void;

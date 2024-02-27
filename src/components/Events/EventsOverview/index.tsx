@@ -169,10 +169,11 @@ const EventsOverview = memo(() => {
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">
+        <AdSpaceLineaDeFiVoyage onClick={handleClickAdSpaceLineaDeFiVoyage} />
         <AdSpaceMysteryBAS onClick={handleClickClaimBAS} />
         {/* <AdSpaceBAS onClick={handleClickClaimBAS} /> */}
         {/* <Slider {...settings}> */}
-        <AdSpaceLineaDeFiVoyage onClick={handleClickAdSpaceLineaDeFiVoyage} />
+
         {scrollEventActiveFlag === 1 && (
           <AdSpaceMysteryBox2 onClick={handleClickMysterybox2} />
         )}

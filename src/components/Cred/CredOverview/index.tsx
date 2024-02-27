@@ -377,11 +377,17 @@ const CredOverview = memo(() => {
               const queryKey = `${fromEvents}Process`;
               const targetUrl = `/events?${queryKey}=error`;
               navigate(targetUrl);
+            } else if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+              navigate('/events');
             } else {
               navigate('/cred');
             }
           } else if (addSucFlag === undefined) {
-            navigate('/cred');
+            if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+              navigate('/events');
+            } else {
+              navigate('/cred');
+            }
           }
         }
       } else {
@@ -556,7 +562,7 @@ const CredOverview = memo(() => {
           if (fromEvents === 'LINEA_DEFI_VOYAGE') {
             setClaimMysteryBoxVisible2(false);
           }
-          if (fromEvents === BASEVENTNAME ) {
+          if (fromEvents === BASEVENTNAME) {
             if (eventSource !== GOOGLEWEBPROOFID) {
               setClaimEventBASVisible(false);
               setAddDialogVisible(true);
