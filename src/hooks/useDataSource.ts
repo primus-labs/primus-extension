@@ -123,7 +123,7 @@ const useSource = (sourceName: string) => {
       if (activeDataSouceMetaInfo?.type === 'Assets') {
         // TODO-newui
         // if (i.name.startsWith('0x')) {
-        if (lowerCaseName !== 'web3 wallet' && lowerCaseName.startsWith('0x')) {
+        if (lowerCaseName !== 'web3 wallet' && !lowerCaseName.startsWith('0x')) {
           dispatch(setExSourcesAsync());
           return eventReport({
             eventType: 'DATA_SOURCE_DELETE',
