@@ -25,7 +25,7 @@ const AchievementTaskItem: React.FC<TaskItem>  = memo((taskItem: TaskItem) => {
             <div className={"achievementTaskitemText"}>
                 <img className={"achievementTaskitemIcon"} src={taskItemIcon}></img>
                 <div className={"achievementTaskitemDesc"}>{taskItem.taskDesc}</div>
-                <div className={"achievementTaskitemScore"}>{taskItem.taskXpScore}</div>
+                <div className={"achievementTaskitemScore"}>+{taskItem.taskXpScore}xp</div>
             </div>
             <PButton
                 text="Finish"
