@@ -6,6 +6,9 @@
   @include fcss;
   gap: var(--spacing-4, 4px);
   position: relative;
+  &.horizontal{
+    @include frss;
+  }
   > label {
     color: var(--text-tokens-text-primary, #161616);
     @include Label01;
@@ -53,8 +56,13 @@
       height: 100%;
       background: transparent;
       border: 0;
+      gap: var(--spacing-8);
       .placeholder {
         color: var(--text-tokens-text-placeholder, #a8a8a8);
+      }
+      .iconfont,.iconImg{
+        font-size: var(--spacing-16);
+        width: var(--spacing-16);
       }
     }
     .iconfont {

@@ -5,17 +5,9 @@
 .pDialog2.connectByAPIDialog {
   main {
     .detailWrapper {
-      width: 100%;
-      @include fcss;
+      @include detailWrapper;
       .step {
-        width: 100%;
-        &:first-child {
-          padding-top: 0;
-        }
-        &:last-child {
-          border-bottom: 0;
-          padding-bottom: 0;
-        }
+        gap: var(--spacing-16);
         &.done {
           @include frsc;
           gap: var(--spacing-12);
@@ -24,22 +16,6 @@
           }
           .txt {
             @include BodyBody100Semibold;
-          }
-        }
-        @include fcss;
-        gap: var(--spacing-16);
-        padding: var(--spacing-24) 0;
-        border-bottom: 1px solid var(--border-tokens-border-primary);
-        .tit {
-          @include frsc;
-          gap: var(--spacing-12);
-          @include BodyBody100Semibold;
-          .order {
-            @include frcc;
-            width: var(--spacing-24);
-            height: var(--spacing-24);
-            border-radius: 50%;
-            background: var(--layer-tokens-layer-02);
           }
         }
         .con {

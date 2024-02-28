@@ -32,18 +32,20 @@
       &.disabled {
         cursor: not-allowed;
         // TODO-newui
-        background: var(--button-tokens-button-disabled);
+        // background: var(--button-tokens-button-disabled);
+        opacity: 0.2;
+        cursor: not-allowed;
       }
       .dropdownOptionCon {
         @include frsc;
         gap: var(--spacing-16, 16px);
         padding: 0 var(--spacing-16, 16px);
-        // > img {
-        //   width: var(--spacing-18, 18px);
-        // }
-        // .iconfont {
-        //   font-size: var(--spacing-18, 18px);
-        // }
+        .iconImg {
+          width: var(--spacing-18, 18px);
+        }
+        .iconfont {
+          font-size: var(--spacing-18, 18px);
+        }
         .desc {
           @include BodyBody100;
           color: var(--text-tokens-text-secondary, #525252);

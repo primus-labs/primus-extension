@@ -80,3 +80,11 @@ export type AttestionForm = {
   event?: string;
   sourceUseridHash?: string;
 };
+
+
+export type ATTESTATIONTYPEITEMTYPE = {
+  id: string;
+  name: string;
+  icon: any;
+  disabled?: boolean;
+};
