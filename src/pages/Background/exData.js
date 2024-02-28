@@ -284,6 +284,41 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
       USERPASSWORD,
       port
     );
+    if (source === 'coinbase') {
+      extRequestsOrderInfo.name = "token-holding";
+      const request0 = {
+        name: "first",
+        url: "https://api.coinbase.com/v2/time"
+      };
+      const response1 = {
+        "conditions": {
+          "type": "CONDITION_EXPANSION",
+          "op": "&",
+          "subconditions": [
+            {
+              "type": "FIELD_RANGE",
+              "field": "$.data.balance.currency",
+              "op": "STREQ",
+              "value": holdingToken
+            },
+            {
+              "type": "FIELD_RANGE",
+              "field": "$.data.balance.amount",
+              "op": ">",
+              "value": "0"
+            }
+          ]
+        }
+      };
+      Object.assign(params, {
+        reqType: 'web',
+        host: baseName,
+        requests: [request0, extRequestsOrderInfo],
+        responses: [{}, response1]
+      });
+      return params;
+    }
+
     let extRequestsOrder;
     if (source === 'binance') {
       extRequestsOrder = 'asset-balances';
@@ -319,21 +354,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
     Object.assign(params, {
       ext,
-      exchange: {
-        apikey: 'xxx',
-        apisecret: 'xxx',
-        apipassword: 'xxx',
-      },
-      schema: [
-        // TODO
-        { name: 'source', type: 'string' },
-        { name: 'sourceUseridHash', type: 'string' },
-        { name: 'authUseridHash', type: 'string' },
-        { name: 'receipt', type: 'string' },
-        { name: 'getDataTime', type: 'string' },
-        { name: 'baseValue', type: 'string' },
-        { name: 'balanceGreaterThanBaseValue', type: 'string' },
-      ],
     });
   } else {
     Object.assign(params, {
@@ -418,9 +438,9 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
       }
       signres = await sign('coinbase', data, USERPASSWORD, port);
       signres.headers['CB-VERSION'] = '2018-05-30';
-      signres.parseSchema =
-        'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
-      signres.decryptFlag = 'false';
+      //signres.parseSchema =
+      //  'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
+      //signres.decryptFlag = 'false';
       extRequestsOrderInfo = { ...signres };
       break;
     case 'okx':
