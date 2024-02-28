@@ -132,6 +132,7 @@ const reducer: any = function (state = initState, action: any) {
     case 'setProofTypes':
       return { ...state, proofTypes: action.payload };
     case 'setWebProofTypes':
+      debugger
       return { ...state, webProofTypes: action.payload };
     case 'setCredentials':
       return { ...state, credentials: action.payload };

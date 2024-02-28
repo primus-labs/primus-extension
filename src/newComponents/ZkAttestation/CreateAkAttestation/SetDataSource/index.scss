@@ -1,36 +1,17 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
+@import '../attestationForm.scss';
 
 .pFormWrapper.dataSourceNameForm {
   --selectInput-width: 182px;
   .formItem {
-    .PSelect{
-      width: 100%;
-      @include frbc;
-      >label{
-        @include BodyBody100;
-        color: var(--text-tokens-text-tertiary)
-      }
-      .selectInput{
-        width: var(--selectInput-width);
-        height: var(--spacing-32);
-        padding: 0 var(--spacing-8)  0 var(--spacing-12);
-        gap: var(--spacing-4);
-      }
-      .selectOptionswrapper{
-        top: var(--spacing-32);
-        // top: 0;
-        right:0;
-        width: var(--selectInput-width);
-        .PDropdown .dropdownOptions .dropdownOption .dropdownOptionCon{
-          padding: var(--spacing-12);
-          gap: var(--spacing-8);
-        }
-      }
+    @include attestationForm;
+    .dataSourceName{
+      @include inputSelectWidth(var(--selectInput-width),var(--selectInput-width));
     }
   }
-  .confirmBtn{
+  .confirmBtn {
     margin-top: var(--spacing-8);
   }
 }

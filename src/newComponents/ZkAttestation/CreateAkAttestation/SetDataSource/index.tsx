@@ -7,7 +7,7 @@ import PButton from '@/newComponents/PButton';
 
 import './index.scss';
 interface SetPwdDialogProps {
-  onSubmit: () => void;
+  onSubmit: (dataSourceId: string) => void;
 }
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
@@ -20,16 +20,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
     if (!formLegal) {
       return;
     }
+    onSubmit(dataSourceName);
   }, [formLegal]);
   const tList = useMemo(() => {
     const sourceNameArr = ['binance', 'okx', 'coinbase'];
     const newArr = sourceNameArr.map((i) => {
       const metaInfo = DATASOURCEMAP[i];
       const isDisabled = !sourceMap2[i];
-
       return {
         label: metaInfo.name,
-        value: i,
+        value: metaInfo.id,
         icon: metaInfo.icon,
         disabled: isDisabled,
         tooltip: 'Add Data Source first',
@@ -39,7 +39,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
   }, [sourceMap2]);
 
   return (
-    <div className="pFormWrapper dataSourceNameForm">
+    <div className="pFormWrapper attestationForm dataSourceNameForm">
       <div className="formItem">
         <PSelect
           className="dataSourceName"

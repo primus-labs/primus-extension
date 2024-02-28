@@ -31,7 +31,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
 
   const showAddr = useMemo(() => {
     return formatAddress(connectedWallet?.address, 4, 4, '...');
-  }, connectedWallet?.address);
+  }, [connectedWallet?.address]);
 
   const handleConnectOther = useCallback(() => {
     dispatch(setConnectWalletActionAsync(undefined));

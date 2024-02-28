@@ -1,0 +1,38 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@mixin inputSelectWidth($inputWidth: 182px, $selectWidth: 182px) {
+  .selectInput {
+    width: $inputWidth;
+  }
+  .selectOptionswrapper {
+    width: $selectWidth;
+  }
+}
+@mixin attestationFormItem {
+  width: 100%;
+  @include frbc;
+  > label {
+    @include BodyBody100;
+    color: var(--text-tokens-text-tertiary);
+  }
+}
+@mixin attestationForm {
+  .PSelect {
+    @include attestationFormItem;
+    .selectInput {
+      // width: var(--selectInput-width);
+      height: var(--spacing-32);
+      padding: 0 var(--spacing-7) 0 var(--spacing-11);
+      gap: var(--spacing-16);
+    }
+    .selectOptionswrapper {
+      top: var(--spacing-32);
+      right: 0;
+      // width: var(--selectInput-width);
+      .PDropdown .dropdownOptions .dropdownOption .dropdownOptionCon {
+        padding: var(--spacing-12);
+        gap: var(--spacing-8);
+      }
+    }
+  }
+}

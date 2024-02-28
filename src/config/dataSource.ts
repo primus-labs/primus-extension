@@ -35,7 +35,8 @@ export type DataSourceItemType = ExchangeMeta & {
   unConnectTip?: any;
   jumpTo?: any;
   connectType?: any;
-  showName?: string
+  showName?: string;
+  id: string;
 };
 
 export type DataSourceMapType = {
@@ -44,6 +45,7 @@ export type DataSourceMapType = {
 
 export const DATASOURCEMAP: DataSourceMapType = {
   onChain: {
+    id: 'web3 wallet',
     name: 'Web3 Wallet',
     type: 'Assets',
     icon: iconDataSourceOnChainAssets,
@@ -53,6 +55,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: '',
   },
   binance: {
+    id: 'binance',
     name: 'Binance',
     type: 'Assets',
     icon: iconDataSourceBinance,
@@ -67,6 +70,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'Web',
   },
   x: {
+    id: 'x',
     name: 'X',
     type: 'Social',
     icon: iconDataSourceTwitter,
@@ -78,6 +82,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'Auth',
   },
   okx: {
+    id: 'okx',
     name: 'OKX',
     type: 'Assets',
     icon: iconDataSourceOKX,
@@ -92,6 +97,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'Web',
   },
   tiktok: {
+    id: 'tiktok',
     name: 'TikTok',
     type: 'Social',
     icon: iconDataSourceTikTok,
@@ -103,6 +109,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'Web',
   },
   google: {
+    id: 'google',
     name: 'GOOGLE',
 
     type: 'Social',
@@ -115,6 +122,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     showName: 'G Account',
   },
   coinbase: {
+    id: 'coinbase',
     name: 'Coinbase',
     type: 'Assets',
     icon: iconDataSourceCoinbase,
@@ -129,6 +137,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'API',
   },
   bitget: {
+    id: 'bitget',
     name: 'Bitget',
     type: 'Assets',
     icon: iconDataSourceBitget,
@@ -142,6 +151,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'API',
   },
   zan: {
+    id: 'zan',
     name: 'ZAN',
     type: 'Identity',
     icon: iconDataSourceZan,
@@ -153,6 +163,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'API',
   },
   github: {
+    id: 'github',
     name: 'Github',
     type: 'Social',
     icon: iconDataSourceGithub,
@@ -162,6 +173,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'API',
   },
   discord: {
+    id: 'discord',
     name: 'Discord',
     type: 'Social',
     icon: iconDataSourceDiscord,
@@ -171,6 +183,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'Auth',
   },
   bybit: {
+    id: 'bybit',
     name: 'Bybit',
     type: 'Assets',
     icon: iconDataSourceBybit,
@@ -183,6 +196,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'API',
   },
   huobi: {
+    id: 'houbi',
     name: 'Huobi',
     type: 'Assets',
     icon: iconDataSourceHuobi,
@@ -197,6 +211,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
   },
 
   kucoin: {
+    id: 'kucoin',
     name: 'KuCoin',
     type: 'Assets',
     icon: iconDataSourceKucoin,
@@ -209,6 +224,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'API',
   },
   gate: {
+    id: 'gate',
     name: 'Gate',
     type: 'Assets',
     icon: iconDataSourceGate,
@@ -221,6 +237,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'API',
   },
   mexc: {
+    id: 'mexc',
     name: 'MEXC',
     type: 'Assets',
     icon: iconDataSourceMEXC,
@@ -234,12 +251,14 @@ export const DATASOURCEMAP: DataSourceMapType = {
   },
 
   /*youtube: {
+    id:'youtube',
     name: 'Youtube',
     type: 'Social',
     icon: iconDataSourceYoutube,
   },*/
 };
-export const DATASOURCEMAPVALUES: DataSourceItemType[] = Object.values(DATASOURCEMAP);
+export const DATASOURCEMAPVALUES: DataSourceItemType[] =
+  Object.values(DATASOURCEMAP);
 
 export const guideMap = {
   binance:
