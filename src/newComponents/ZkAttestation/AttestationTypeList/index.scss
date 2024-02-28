@@ -9,10 +9,22 @@
   .attestationTypeCard {
     width: calc((100% - var(--spacing-16) * 3) / 4);
     height: 96px;
-    padding: var(--spacing-16);
+    padding: var(--spacing-16)  var(--spacing-16)   var(--spacing-8) ;
     @include fcss;
     gap: var(--spacing-16);
     @include clickableCard;
+    &.addCard {
+      padding: var(--spacing-16);
+      @include frcc;
+      .createBtn {
+        .iconfont.icon-Add {
+          align-self: flex-start;
+        }
+        .btnText {
+          line-height: var(--spacing-24);
+        }
+      }
+    }
     .top,
     .bottom {
       width: 100%;
@@ -30,6 +42,9 @@
     .bottom {
       display: flex;
       justify-content: flex-end;
+      .createBtn{
+        height: var(--spacing-24);
+      }
     }
   }
 }

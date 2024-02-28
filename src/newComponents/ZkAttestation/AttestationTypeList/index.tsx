@@ -36,6 +36,9 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleDetail = useCallback((i) => {
       onClick && onClick(i);
     }, []);
+    const handleAdd = () => {
+
+    }
     return (
       <ul className="allAttestationTypeCards">
         {supportList.map((i) => {
@@ -63,6 +66,15 @@ const Cards: React.FC<PDropdownProps> = memo(
             </li>
           );
         })}
+        <li className="attestationTypeCard addCard" onClick={handleAdd}>
+          <PButton
+            text="Create new attestations"
+            type="text2"
+            onClick={() => {}}
+            prefix={<i className="iconfont icon-Add"></i>}
+            className="createBtn"
+          />
+        </li>
       </ul>
     );
   }
