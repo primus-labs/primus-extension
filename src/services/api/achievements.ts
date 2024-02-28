@@ -13,3 +13,10 @@ export const getUserInfo = async () => {
         url: `/users/info`,
     });
 }
+
+export const getAchievementClaimed = async (size,page)=>{
+    return await request({
+        method : 'get',
+        url:`/achievement/claimed?size=${size}&page=${page}`
+    })
+}

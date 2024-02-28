@@ -6,8 +6,12 @@ import PageSelect from "@/newComponents/Ahievements/PageSelect";
 
 import {getAchievementTaskList} from "@/services/api/achievements"
 import './index.scss';
+import AssetDialog from '@/newComponents/ZkAttestation/CreateAkAttestation/AssetDialog';
+import AchievementRewardHistory from '@/newComponents/Ahievements/AchievementRewardHistory';
 
 const AchievementHome = memo(() => {
+
+    const [visibleAssetDialog, setVisibleAssetDialog] = useState<boolean>(false);
     const [size, setSize] = useState(7);
     const [pageCount, setPageCount] = useState(1);
     const [totolCount, setTotalCount] = useState(1);
@@ -66,17 +70,45 @@ const AchievementHome = memo(() => {
         return <PageSelect totalPage={pageCount} onClick={pageChangedFn} current={current}/>
     }
 
+    const hasConnected = useMemo(() => {
+        return false;
+    }, []);
+    const handleCreate = useCallback(() => {
+        setVisibleAssetDialog(true);
+    }, [])
+    const handleCloseAssetDialog = useCallback(() => {
+        setVisibleAssetDialog(false)
+    }, []);
+
+    //for top card
+    const handleRewordHistory = ()=>{
+        handleCreate()
+    }
+
+    const handleSharePoints = ()=>{
+        alert("points")
+    }
+
+    const handleShareReferralCode = ()=>{
+        alert("code")
+    }
+
+
+
     return (
         <div className="pageAchievementTaskItem">
-            <AchievementTopCard></AchievementTopCard>
+            <AchievementTopCard handleRewardsHistory={handleRewordHistory} handleSharePoints={handleSharePoints} handleShareReferralCode={handleShareReferralCode}></AchievementTopCard>
             <div className={"achievementTasks"}>
                 <div className={"achievementTasksTitle"}>Task list</div>
                 <AchievementTaskItemList/>
                 <PageSelectComponent/>
             </div>
-
-
+            {visibleAssetDialog && <AchievementRewardHistory
+              onClose={handleCloseAssetDialog}
+            />}
         </div>
+
+
     );
 });
 
