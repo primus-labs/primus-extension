@@ -4,7 +4,7 @@ import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import SetPwd from '@/newComponents/SetPwdDialog/SetPwdForm';
 import SetAPI from '@/newComponents/SetAPIDialog/SetAPIForm';
-
+import OrderItem from '@/newComponents/OrderItem'
 import iconDone from '@/assets/newImg/layout/iconDone.svg';
 import type { UserState } from '@/types/store';
 import './index.scss';
@@ -56,10 +56,7 @@ const Nav: React.FC<PButtonProps> = memo(
             {step === 1 && (
               <section className="detailWrapper">
                 <div className="step step1">
-                  <div className="tit">
-                    <div className="order">1</div>
-                    <span>Set up password</span>
-                  </div>
+                  <OrderItem order="1" text="Set up password" />
                   <div className="con">
                     You need to set a password for extension security and data
                     protection.
@@ -74,10 +71,7 @@ const Nav: React.FC<PButtonProps> = memo(
                   <div className="txt">Set up password</div>
                 </div>
                 <div className="step step2">
-                  <div className="tit">
-                    <div className="order">2</div>
-                    <span>Access your data</span>
-                  </div>
+                  <OrderItem order="2" text="Access your data" />
                   <div className="con">
                     Configure with your READ-ONLY API keys
                   </div>

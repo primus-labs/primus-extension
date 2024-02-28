@@ -1,3 +1,31 @@
-.pageZkAttestation{
-
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+.pageZkAttestation {
+  // height: calc(100vh - 60px - 42px);
+  height: 100%;
+  .pageContent {
+    height: 100%;
+    padding: 40px 0 20px 0;
+    @include fcss;
+    gap: var(--spacing-32);
+    .hasNoContent {
+      width: 100%;
+      flex: 1;
+      @include fccc;
+      // padding-top: 167px;
+      > img {
+        width: 160px;
+      }
+      .introTxt {
+        padding-top: var(--spacing-16);
+        @include fcsc;
+        width: 160px;
+        .title {
+          @include HeadlineH1;
+          color: var(--text-tokens-text-primary);
+        }
+      }
+    }
+  }
 }

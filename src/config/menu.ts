@@ -19,7 +19,7 @@ export const list: NavItem[] = [
     label: 'Data Source',
     value: 'Data Source',
     iconName: 'icon-iconMenuDataSource',
-    link: '/dataSource',
+    link: '/datas',
   },
   {
     label: 'Data Overview',

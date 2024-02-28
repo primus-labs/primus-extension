@@ -104,6 +104,7 @@ const Cards: React.FC<PDropdownProps> = memo(
               onClick={() => {
                 handleDetail(i);
               }}
+              key={i.id}
             >
               <div className="left">
                 <img src={i.icon} alt="" />

@@ -20,6 +20,7 @@ type OptionItem = {
   label?: any;
   value?: any;
   disabled?: boolean;
+  tooltip?: string;
 
   icon?: any;
 };
@@ -32,6 +33,7 @@ interface PSelectProps {
   prefix?: any;
   label?: any;
   className?: string;
+  align?: string;
 
   showIcon?: boolean;
   showSelf?: boolean;
@@ -49,17 +51,26 @@ const PSelect: React.FC<PSelectProps> = memo(
     disabled = false,
     label,
     className,
+    align = 'vertical',
   }) => {
-    const [optionsVisible, setOptionsVisible] = useState(false);
+    const [optionsVisible, setOptionsVisible] = useState(true);
 
     const selectInputEl = useRef(null);
     const prefixIconEl = useRef(null);
     const suffixIconEl = useRef(null);
     const valEl = useRef(null);
 
-    const activeOptions = useMemo(() => {
-      return list.filter((i) => i.value !== value);
+    const activeOption = useMemo(() => {
+      const obj = list.find((i) => i.value === value);
+      return obj;
     }, [list, value]);
+    const activeOptions = useMemo(() => {
+      if (showSelf) {
+        return list;
+      } else {
+        return list.filter((i) => i.value !== value);
+      }
+    }, [list, value, showSelf]);
     const isOpen = useMemo(() => {
       return optionsVisible && !disabled && activeOptions.length > 0;
     }, [optionsVisible, disabled, activeOptions.length]);
@@ -94,8 +105,11 @@ const PSelect: React.FC<PSelectProps> = memo(
       if (className) {
         cN += ` ${className}`;
       }
+      if (align) {
+        cN += ` ${align}`;
+      }
       return cN;
-    }, [disabled, className]);
+    }, [disabled, className, align]);
 
     const handleClickDropdownItem = useCallback(
       (value: string, item) => {
@@ -144,9 +158,22 @@ const PSelect: React.FC<PSelectProps> = memo(
         >
           {prefix}
           <div className="valueWrapper">
-            <span ref={valEl} className={value ? '' : 'placeholder'}>
-              {value ? value : placeholder}
-            </span>
+            {value ? (
+              <>
+                {activeOption?.iconName ? (
+                  <i className={`iconfont ${activeOption.iconName}`}></i>
+                ) : activeOption?.icon ? (
+                  <img src={activeOption.icon} alt="" className="iconImg" />
+                ) : undefined}
+                <span ref={valEl} className={''}>
+                  {activeOption?.label}
+                </span>
+              </>
+            ) : (
+              <span ref={valEl} className={'placeholder'}>
+                {placeholder}
+              </span>
+            )}
           </div>
           <i ref={suffixIconEl} className={formatSuffixCN} />
         </div>
@@ -159,7 +186,7 @@ const PSelect: React.FC<PSelectProps> = memo(
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
           >
-            <PDropdown list={activeOptions} onClick={handleClickDropdownItem} />
+            <PDropdown list={activeOptions} onClick={handleClickDropdownItem} value={!showSelf && value} />
           </div>
         )}
       </div>

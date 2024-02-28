@@ -13,7 +13,7 @@ const DataSourceOverview = memo(() => {
       <div className="pageContent">
         <Banner/>
         <Search />
-        <DataSourceCards />
+        <DataSourceCards/>
       </div>
     </div>
   );

@@ -9,13 +9,18 @@ import './index.scss';
 
 const Nav: React.FC = memo(({}) => {
   const location = useLocation();
-  console.log('location', location);
+  
   const { pathname } = location;
+  console.log('location', location, pathname, list);
   // const handleConnect = useCallback(() => {}, []);
   const pathTitle = useMemo(() => {
-    const obj = list.find((i) => i.link === pathname);
+    const obj = list.find(
+      (i) =>
+        i.link === pathname ||
+        (i.link !== '/' && pathname.startsWith(i.link as string))
+    );
     return obj?.label;
-  }, []);
+  }, [pathname]);
   return (
     <div className="pageHeader">
       <div className="pathName">{pathTitle}</div>

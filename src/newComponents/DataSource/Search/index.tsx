@@ -7,11 +7,7 @@ import PInput from '@/newComponents/PInput';
 import PSelect from '@/newComponents/PSelect';
 import iconSearch from '@/assets/newImg/layout/iconSearch.svg';
 import './index.scss'
-// const tList = [
-//   { label: 'Assets', value: '1' },
-//   { label: 'Social', value: '2' },
-//   { label: 'Identity', value: '3' },
-// ];
+
 const Search: React.FC = () => {
   const dispatch = useDispatch();
   const dataSourceQueryStr = useSelector(
@@ -20,8 +16,6 @@ const Search: React.FC = () => {
   const dataSourceQueryType = useSelector(
     (state: UserState) => state.dataSourceQueryType
   );
-  // const [dataSourceSearch, setDataSourceSearch] = useState<string>('');
-  // const [dataSourceType, setDataSourceType] = useState<string>('');
   const tList = useMemo(() => {
     let arr: string[] = [];
     DATASOURCEMAPVALUES.forEach((i) => {

@@ -27,7 +27,7 @@ const router = [
         // element: <FirstHome />,
       },
       {
-        path: 'dataSource',
+        path: 'datas',
         name: 'Data Source',
         children: [
           {

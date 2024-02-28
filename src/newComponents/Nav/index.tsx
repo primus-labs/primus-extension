@@ -15,12 +15,16 @@ const Nav: React.FC<PButtonProps> = memo(({}) => {
   const formatList = useMemo(() => {
     return [...list];
   }, []);
+  
   const formatOptionCN = useCallback((item) => {
     let str = 'navItem';
     if (item?.disabled) {
       str += ' disabled';
     }
-    if (pathname.startsWith(item.link)) {
+    if (
+      pathname === item.link ||
+      (item.link !== '/' && pathname.startsWith(item.link))
+    ) {
       str += ' active';
     }
     return str;

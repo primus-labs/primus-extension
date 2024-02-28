@@ -23,7 +23,7 @@
     @include HeadlineH0;
     color: var(--text-tokens-text-primary);
   }
-  h2{
+  h2 {
     @include BodyBody100;
     color: var(--text-tokens-text-secondary);
   }
@@ -39,7 +39,7 @@
   position: relative;
   .PClose {
     position: absolute;
-    top: var(--spacing-24, 24px);// TODO-newui
+    top: var(--spacing-24, 24px); // TODO-newui
     right: var(--spacing-24);
   }
   > main {
@@ -67,6 +67,24 @@
     > .PButton {
       width: 100%;
       height: var(--spacing-40, 40px);
+    }
+  }
+}
+
+@mixin detailWrapper {
+  width: 100%;
+  @include fcss;
+  .step {
+    width: 100%;
+    gap: var(--spacing-16);
+    padding: var(--spacing-24) 0;
+    border-bottom: 1px solid var(--border-tokens-border-primary);
+    &:first-child {
+      padding-top: 0;
+    }
+    &:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
     }
   }
 }

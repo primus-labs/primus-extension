@@ -5,12 +5,8 @@ import iconAttestationTypeOnChain from '@/assets/newImg/zkAttestation/iconAttest
 import iconAttestationTypeQualification from '@/assets/newImg/zkAttestation/iconAttestationTypeQualification.svg';
 import iconAttestationTypeGame from '@/assets/newImg/zkAttestation/iconAttestationTypeGame.svg';
 import iconAttestationTypeAIGC from '@/assets/newImg/zkAttestation/iconAttestationTypeAIGC.svg';
-type ATTESTATIONTYPEITEMTYPE = {
-  id: string;
-  name: string;
-  icon: any;
-  disabled?: boolean;
-};
+
+import type { ATTESTATIONTYPEITEMTYPE } from '@/types/cred'
 
 type ATTESTATIONTYPEMAPTYPE = {
   [propName: string]: ATTESTATIONTYPEITEMTYPE;
@@ -56,7 +52,8 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     disabled: true,
   },
 };
-export const ATTESTATIONTYPELIST = Object.values(ATTESTATIONTYPEMAP);
+export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
+  Object.values(ATTESTATIONTYPEMAP);
 
 // const attestationTypeMap = {
 //   1: {
