@@ -55,4 +55,5 @@ export type UserState = {
   dataSourceQueryStr: string;
   dataSourceQueryType: string | number;
   connectedWallets: any;
+  attestLoading: number; // 0: unstart 1:start loading 2:end
 };

@@ -128,3 +128,7 @@ export type SourceDataList = (ExData | SocialData | KYCData | onChainData)[];
 
 export type AssetData = onChainAssetsData | exData;
 export type AssetDataList = AssetData[];
+
+export type DataSourceMapType = {
+  [propName: string]: DataSourceItemType;
+};

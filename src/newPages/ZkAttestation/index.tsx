@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Banner from '@/newComponents/Home/Banner';
 import AttestationTypeList from '@/newComponents/ZkAttestation/AttestationTypeList';
-import AssetDialog from '@/newComponents/ZkAttestation/CreateAkAttestation/AssetDialog'
+import AssetDialog from '@/newComponents/ZkAttestation/CreateZkAttestation/AssetDialog'
 import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
 

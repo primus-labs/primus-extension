@@ -35,7 +35,7 @@
       @include frsc;
       height: var(--spacing-32);
       border-radius: var(--spacing-4);
-      background: var(--layer-tokens-layer-6);
+      background: var(--border-tokens-border-chart);
       padding: var(--spacing-4) var(--spacing-12);
       .account {
         @include BodyBody100;
