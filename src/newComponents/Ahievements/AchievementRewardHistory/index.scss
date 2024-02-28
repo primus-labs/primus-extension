@@ -1,0 +1,11 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.reward-history {
+  height: 174px;
+  width: 1120px;
+  display: flex;
+  gap: var(--spacing-16);
+  border: 1px;
+  border-radius: 24px;
+}

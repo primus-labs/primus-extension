@@ -2,17 +2,19 @@ import React, {useState, useMemo, useCallback, useEffect, memo} from 'react';
 
 import AchievementTopCard from "@/newComponents/Ahievements/TopCard";
 import AchievementTaskItem from "@/newComponents/Ahievements/AchievementTaskItem";
+import PageSelect from "@/newComponents/Ahievements/PageSelect";
+
 import {getAchievementTaskList} from "@/services/api/achievements"
 import './index.scss';
 
 const AchievementHome = memo(() => {
-    let [size, setSize] = useState(7);
-    let [page, setPage] = useState(1);
-    let [pageCount, setPageCount] = useState(0);
-    let [totolCount, setTotalCount] = useState(0);
+    const [size, setSize] = useState(7);
+    const [pageCount, setPageCount] = useState(1);
+    const [totolCount, setTotalCount] = useState(1);
+    const [current, setCurrent] = useState(1);
     let [achievementTaskList, setAchievementTaskList] = useState<any>([]);
 
-    const getAchievementTaskListFn = useCallback(async () => {
+    const getAchievementTaskListFn = useCallback(async (page) => {
         const res = await getAchievementTaskList(size, page)
         const {rc, result} = res;
         if (rc === 0) {
@@ -22,13 +24,9 @@ const AchievementHome = memo(() => {
         }
     }, []);
     useEffect(() => {
-        getAchievementTaskListFn()
+        getAchievementTaskListFn(current)
     }, []);
-    // useEffect(() => {
-    //   // eslint-disable-next-line no-debugger
-    //   debugger
-    //   setAchievementTaskList(achievementTaskListFn);
-    // }, [achievementTaskListFn]);
+
 
     const handleFinishTask = (identifier) => {
         // eslint-disable-next-line no-undef
@@ -44,6 +42,29 @@ const AchievementHome = memo(() => {
         });
     };
 
+    useEffect(() => {
+        getAchievementTaskListFn(current)
+    }, [current]);
+
+    const pageChangedFn = (page)=>{
+        if(page ==='pre'){
+            page = current-1
+        }
+        if(page === 'next'){
+            page = current+1
+        }
+        if(page<1){
+            page = 1;
+        }
+        if(page>pageCount){
+            page = pageCount
+        }
+        setCurrent(page)
+    }
+
+    const PageSelectComponent = ()=>{
+        return <PageSelect totalPage={pageCount} onClick={pageChangedFn} current={current}/>
+    }
 
     return (
         <div className="pageAchievementTaskItem">
@@ -51,6 +72,7 @@ const AchievementHome = memo(() => {
             <div className={"achievementTasks"}>
                 <div className={"achievementTasksTitle"}>Task list</div>
                 <AchievementTaskItemList/>
+                <PageSelectComponent/>
             </div>
 
 

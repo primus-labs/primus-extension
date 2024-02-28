@@ -1,21 +1,48 @@
-import React, {memo} from "react";
+import React, {useState, useMemo, useCallback, useEffect, memo} from 'react';
 
 import './index.scss';
 import pointsEarnedIcon from "@/assets/newImg/achievements/pointsEarnedIcon.svg"
 import pointsEarnedShareIcon from "@/assets/newImg/achievements/pointsEarnedShareIcon.svg"
 import textCopyIcon from "@/assets/newImg/achievements/textCopyIcon.svg"
+import {getUserInfo} from "@/services/api/achievements"
+import copy from 'copy-to-clipboard';
+
 
 const AchievementTopCard = memo(() => {
+
+    let [referralCode, setRefferralCode] = useState('');
+    let [totalScore, setTotalScore] = useState(0);
+
     const handleRewardsHistory = () => {
         // eslint-disable-next-line no-undef
         alert("handler")
     }
+
+    const getUserInfoFn = async () => {
+        const res = await getUserInfo()
+        const {rc, result} = res;
+        if (rc === 0) {
+            setRefferralCode(result.referralCode)
+            setTotalScore(result.totalScore)
+        }
+    }
+
+    useEffect(() => {
+        getUserInfoFn()
+    }, []);
+
+    const copyReferralCodeFn = ()=>{
+        copy(referralCode)
+        alert("copy success")
+    }
+
+
     return (
         <div className="pageAchievementTopCard">
             <div className="leftCard">
                 <div className="pointsEarned">
                     <div className="pointsEarned-text"><p>Points Earned</p></div>
-                    <div className="points-score">12,300</div>
+                    <div className="points-score">{totalScore}</div>
                     <div className="reward-history" onClick={handleRewardsHistory}>
                         <img className="reward-history-icon" src={pointsEarnedIcon}/>
                         <div className="reward-history-text">
@@ -39,8 +66,8 @@ const AchievementTopCard = memo(() => {
                     <div className={"referral-code"}>
                         <div className={"referral-code-text"}>Referral Code</div>
                         <div className={"referral-code-main"}>
-                            <div className={"referral-code-main-text"}>qazxswe</div>
-                            <img className={"referral-code-copy-ico"} src={textCopyIcon}></img>
+                            <div className={"referral-code-main-text"}>{referralCode}</div>
+                            <img className={"referral-code-copy-ico"} src={textCopyIcon} onClick={copyReferralCodeFn}></img>
                         </div>
                     </div>
                 </div>

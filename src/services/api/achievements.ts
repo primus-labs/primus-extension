@@ -6,3 +6,10 @@ export const getAchievementTaskList =  async (size: number, page: number) => {
         url: `/achievement/tasks?size=${size}&page=${page}`,
     });
 }
+
+export const getUserInfo = async () => {
+    return await request({
+        method: "get",
+        url: `/users/info`,
+    });
+}

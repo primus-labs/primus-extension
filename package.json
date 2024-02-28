@@ -26,6 +26,7 @@
     "buffer": "^6.0.3",
     "ccxt": "^3.0.78",
     "constants-browserify": "^1.0.0",
+    "copy-to-clipboard": "^3.3.3",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.10",
     "dayjs-plugin-utc": "^0.1.2",
