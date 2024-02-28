@@ -15,6 +15,7 @@ const Home = memo(() => {
     return false;
   }, []);
   const handleCreate = useCallback((typeItem) => {
+    debugger
     setVisibleAssetDialog(true);
   }, [])
   const handleCloseAssetDialog = useCallback(() => {

@@ -37,18 +37,28 @@
         cursor: not-allowed;
       }
       .dropdownOptionCon {
-        @include frsc;
-        gap: var(--spacing-16, 16px);
+        width: 100%;
+        @include frbc;
         padding: 0 var(--spacing-16, 16px);
-        .iconImg {
-          width: var(--spacing-18, 18px);
+        .left {
+          @include frsc;
+          gap: var(--spacing-16, 16px);
+          > .iconImg {
+            width: var(--spacing-18, 18px);
+          }
+          > .iconfont {
+            font-size: var(--spacing-18, 18px);
+          }
+          .desc {
+            @include BodyBody100;
+            color: var(--text-tokens-text-secondary, #525252);
+          }
         }
-        .iconfont {
-          font-size: var(--spacing-18, 18px);
-        }
-        .desc {
-          @include BodyBody100;
-          color: var(--text-tokens-text-secondary, #525252);
+
+        .tooltipBtn {
+          .iconfont {
+            font-size: var(--spacing-12);
+          }
         }
       }
     }

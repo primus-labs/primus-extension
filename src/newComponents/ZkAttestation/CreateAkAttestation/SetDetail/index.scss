@@ -1,0 +1,51 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+@import '../attestationForm.scss';
+.pFormWrapper.detailForm {
+  --verificationContent-width: 132px;
+  --verificationContent-input-width: 147px;
+  --verificationContent-select-width: 269px;
+  gap: var(--spacing-12) !important;
+  .formItem {
+    @include attestationForm;
+    .verificationContent {
+      // @include inputSelectWidth(
+      //   var(--verificationContent-width),
+      //   var(--verificationContent-width)
+      // );
+      .selectInput {
+        min-width: var(--verificationContent-input-width);
+        width: auto;
+      }
+      .selectOptionswrapper {
+        width: var(--verificationContent-select-width);
+      }
+    }
+    .verificationValue {
+      @include inputSelectWidth(
+        var(--verificationContent-width),
+        var(--verificationContent-width)
+      );
+    }
+  }
+  .staticItem {
+    @include attestationFormItem;
+    .value {
+      @include frsc;
+      height: var(--spacing-32);
+      border-radius: var(--spacing-4);
+      background: var(--layer-tokens-layer-6);
+      padding: var(--spacing-4) var(--spacing-12);
+      .account {
+        @include BodyBody100;
+      }
+      .balance {
+        @include BodyBody300;
+      }
+    }
+  }
+  .confirmBtn {
+    margin-top: var(--spacing-8);
+  }
+}

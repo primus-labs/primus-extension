@@ -3,6 +3,7 @@
 @import '@/assets/newCss/dialog.scss';
 
 .pDialog2.assetAttestationDialog {
+  width: 528px;
   main {
     .detailWrapper {
       @include detailWrapper;

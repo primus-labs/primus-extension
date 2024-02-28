@@ -6,11 +6,15 @@ import iconAttestationTypeQualification from '@/assets/newImg/zkAttestation/icon
 import iconAttestationTypeGame from '@/assets/newImg/zkAttestation/iconAttestationTypeGame.svg';
 import iconAttestationTypeAIGC from '@/assets/newImg/zkAttestation/iconAttestationTypeAIGC.svg';
 
-import type { ATTESTATIONTYPEITEMTYPE } from '@/types/cred'
+import type {
+  ATTESTATIONTYPEITEMTYPE,
+  ASSETSVERIFICATIONCONTENTTYPEITEM,
+} from '@/types/cred';
 
 type ATTESTATIONTYPEMAPTYPE = {
   [propName: string]: ATTESTATIONTYPEITEMTYPE;
 };
+
 export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   '1': {
     id: '1',
@@ -55,6 +59,41 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
 export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
   Object.values(ATTESTATIONTYPEMAP);
 
+type ATTESTATIONTYPEITEMTYPEMAP = {
+  [propName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
+};
+export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  '1': {
+    value: '1',
+    label: 'Assets balance ≥ specified amount',
+  },
+  '2': {
+    value: '2',
+    label: 'Owns a specified token',
+  },
+};
+export const ASSETSVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(ASSETSVERIFICATIONCONTENTTYPEEMAP);
+export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  '10': {
+    value: '10',
+    label: '$10',
+  },
+  '100': {
+    value: '100',
+    label: '$100',
+  },
+  '500': {
+    value: '500',
+    label: '$500',
+  },
+  '1000': {
+    value: '1000',
+    label: '$1000',
+  },
+};
+export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
 // const attestationTypeMap = {
 //   1: {
 //     title: 'On-chain Activities Proof',

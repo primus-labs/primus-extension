@@ -32,6 +32,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
         return (
           <li
             className="attestationTypeCard"
+            key={i.name}
             onClick={() => {
               onClick(i);
             }}

@@ -44,7 +44,7 @@ export type CredTypeItemType = {
   sigFormat?: string;
   rawParam?: any;
   dataToBeSigned?: any;
-  proofContent?: any
+  proofContent?: any;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;
@@ -81,10 +81,13 @@ export type AttestionForm = {
   sourceUseridHash?: string;
 };
 
-
 export type ATTESTATIONTYPEITEMTYPE = {
   id: string;
   name: string;
   icon: any;
   disabled?: boolean;
+};
+export type ASSETSVERIFICATIONCONTENTTYPEITEM = {
+  value: string;
+  label: string;
 };
