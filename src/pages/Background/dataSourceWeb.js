@@ -335,21 +335,13 @@ export const dataSourceWebMsgListener = async (
     const formatRequests = await formatRequestsFn();
     if (operationType === 'connect') {
       const activeInfo = formatRequests.find((i) => i.headers);
-      var activeCookie = '';
-      if (activeInfo.cookies) {
-        Object.keys(activeInfo.cookies).reduce((prev, curr) => {
-          prev += `${prev}=${activeInfo.cookies[prev]};`;
-        }, '');
-      }
-      const activeHeader = Object.assign({}, activeInfo.headers, {
-        Cookie: activeCookie,
-      });
+      const activeHeader = Object.assign({}, activeInfo.headers);
 
       const resType = `set-${exchangeName}`;
       try {
         const authInfoName = exchangeName + "-auth";
         await chrome.storage.local.set({[authInfoName]: JSON.stringify(activeHeader)})
-        const ex = new constructorF({ header: activeHeader });
+        const ex = new constructorF();
         await ex.getInfo();
         console.log(`222dataSourceWeb getInfo ${exchangeName}= `, ex);
         var newSourceUserData = {};

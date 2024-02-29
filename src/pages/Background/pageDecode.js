@@ -312,15 +312,7 @@ export const pageDecodeMsgListener = async (
     }
 
     const activeInfo = formatRequests.find((i) => i.headers);
-    var activeCookie = '';
-    if (activeInfo.cookies) {
-      Object.keys(activeInfo.cookies).reduce((prev, curr) => {
-        prev += `${prev}=${activeInfo.cookies[prev]};`;
-      }, '');
-    }
-    const activeHeader = Object.assign({}, activeInfo.headers, {
-      Cookie: activeCookie,
-    });
+    const activeHeader = Object.assign({}, activeInfo.headers);
     const authInfoName = dataSource + "-auth";
     await chrome.storage.local.set({[authInfoName]: JSON.stringify(activeHeader)})
 
