@@ -1,8 +1,9 @@
-import React, {memo} from "react";
+import React, { memo, useState } from 'react';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import taskItemIcon from '@/assets/newImg/achievements/taskItemIcon.svg'
+import { finishTask } from '@/services/api/achievements';
 
 export type TaskItem = {
     taskIcon:string;
@@ -15,17 +16,37 @@ export type TaskItem = {
 
 export type TaskItemWithClick = {
     taskItem: TaskItem;
-    onClick: any;
+    isFinished: boolean
 };
-
 
 
 const AchievementTaskItem: React.FC<TaskItemWithClick>  = memo((taskItemWithClick: TaskItemWithClick) => {
     const taskItem = taskItemWithClick.taskItem;
-    const onClickFn = taskItemWithClick.onClick;
-    const handleClock = ()=>{
-        onClickFn(taskItem.taskIdentifier)
+    const [finished,setFinished] = useState(taskItemWithClick.isFinished)
+
+    const getDataSourceData = async () => {
+        debugger
+        const datasource = 'x';
+        const data =  await chrome.storage.local.get(datasource);
+        console.log(data)
     }
+
+
+    const handleClick = async () => {
+        let ext = {}
+        const finishBody = {
+            taskIdentifier: taskItem.taskIdentifier,
+            ext: ext
+        }
+        if (taskItem.taskIdentifier === '') {
+            ext = {}
+        }
+        const res = await finishTask(finishBody)
+        if(res.rc===0){
+            setFinished(true)
+        }
+    }
+
     return (
         <div className="achievementTaskitem">
             <div className={"achievementTaskitemText"}>
@@ -50,7 +71,8 @@ const AchievementTaskItem: React.FC<TaskItemWithClick>  = memo((taskItemWithClic
             </div>
             <PButton
                 text="Finish"
-                onClick={handleClock}
+                disabled={finished}
+                onClick={handleClick}
                 className={"achievementTaskitemFinishBtn"}
             /></div>
 

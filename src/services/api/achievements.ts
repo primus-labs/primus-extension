@@ -20,3 +20,18 @@ export const getAchievementClaimed = async (size,page)=>{
         url:`/achievement/claimed?size=${size}&page=${page}`
     })
 }
+
+export const finishTask = async (data) =>{
+    return await request({
+        method : 'post',
+        url : '/achievement/complete',
+        data:data
+    });
+}
+
+export const taskStatusCheck = async (tasks) => {
+    return await request({
+        method : 'get',
+        url : '/achievement/check?tasks='+tasks,
+    });
+}

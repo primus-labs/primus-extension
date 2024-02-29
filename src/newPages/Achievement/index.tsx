@@ -4,11 +4,11 @@ import AchievementTopCard from '@/newComponents/Ahievements/TopCard';
 import AchievementTaskItem from '@/newComponents/Ahievements/AchievementTaskItem';
 import PageSelect from '@/newComponents/Ahievements/PageSelect';
 
-import { getAchievementTaskList } from '@/services/api/achievements';
+import { getAchievementTaskList, taskStatusCheck } from '@/services/api/achievements';
 import './index.scss';
-import AssetDialog from '@/newComponents/ZkAttestation/CreateAkAttestation/AssetDialog';
 import AchievementRewardHistory from '@/newComponents/Ahievements/AchievementRewardHistory';
 import { Pagination } from 'antd';
+import { all } from 'axios';
 
 const AchievementHome = memo(() => {
 
@@ -18,6 +18,8 @@ const AchievementHome = memo(() => {
   const [totolCount, setTotalCount] = useState(1);
   const [current, setCurrent] = useState(1);
   let [achievementTaskList, setAchievementTaskList] = useState<any>([]);
+
+  const [taskIsFinished, setTaskIsFinished] = useState();
 
   const getAchievementTaskListFn = useCallback(async (page) => {
     const res = await getAchievementTaskList(size, page);
@@ -32,16 +34,29 @@ const AchievementHome = memo(() => {
     getAchievementTaskListFn(current);
   }, []);
 
+  useEffect( () => {
+    const checkAchievementTaskStatus = async () => {
+      const allTasks = achievementTaskList.map((item) => {
+        return item.taskIdentifier;
+      });
+      if (Array.isArray(allTasks) && allTasks.length > 0) {
+        const tasks = allTasks.join(",")
+        const res = await taskStatusCheck(tasks)
+        if(res.rc === 0){
+          setTaskIsFinished(res.result)
+        }
+      }
+    }
+    checkAchievementTaskStatus()
+  }, [achievementTaskList]);
 
-  const handleFinishTask = (identifier) => {
-    // eslint-disable-next-line no-undef
-    console.log(identifier);
-  };
+
   const AchievementTaskItemList = () => {
     return achievementTaskList.map((item, index) => {
+      const isFinished = taskIsFinished?.[item.taskIdentifier] || false;
       const taskItemWithClick = {
-        onClick: handleFinishTask,
         taskItem: item,
+        isFinished:isFinished
       };
       return <AchievementTaskItem key={index} {...taskItemWithClick} />;
     });
@@ -87,6 +102,10 @@ const AchievementHome = memo(() => {
     alert('code');
   };
 
+  const getDataSourceData = async (dataSource) => {
+    const data =  await chrome.storage.local.get(dataSource);
+    console.log(data)
+  }
 
   return (
     <div className="pageAchievementTaskItem">
@@ -97,18 +116,19 @@ const AchievementHome = memo(() => {
         <AchievementTaskItemList />
         <div className={"pageComponent"}>
           <Pagination
-                      total={totolCount}
-                      onChange={pageChangedFn}
-                      showSizeChanger={false}
-                      pageSize={size}
+            total={totolCount}
+            onChange={pageChangedFn}
+            showSizeChanger={false}
+            pageSize={size}
           />
         </div>
       </div>
       {visibleAssetDialog && <AchievementRewardHistory
         onClose={handleCloseAssetDialog}
       />}
-    </div>
+      <button onClick={getDataSourceData}>Get DataSource Data</button>
 
+    </div>
 
   );
 });
