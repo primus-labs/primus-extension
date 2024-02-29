@@ -11,17 +11,12 @@ import { finishTask } from '@/services/api/achievements';
 interface PButtonProps {
   // sourceName: string;
   onClose: () => void;
-  setReferralTaskFinished:any
+  setReferralTaskFinished: any;
 }
 
-type AchievementRecords = {
-  score: string;
-  task: string;
-  date: string;
-};
 
 const ReferralCodeInput: React.FC<PButtonProps> = memo(
-  ({ onClose ,setReferralTaskFinished}) => {
+  ({ onClose, setReferralTaskFinished }) => {
     const [referralCode, setReferralCode] = React.useState('');
     const PasteButton = () => {
       return (
@@ -40,21 +35,24 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
     };
 
     const handleSubmit = async () => {
+      debugger
+      if (!referralCode || referralCode.trim() === '') {
+      }
       const finishBody = {
         taskIdentifier: 'SIGN_IN_USING_AN_REFERRAL_CODE',
         ext: {
-          referralCode: referralCode
+          referralCode: referralCode,
         },
       };
       const res = await finishTask(finishBody);
       if (res.rc === 0) {
-        onClose()
-        setReferralTaskFinished()
+        onClose();
+        setReferralTaskFinished();
         //set sign-in task item finished
-      }else{
-        alert(res.msg)
+      } else {
+        alert(res.msg);
       }
-    }
+    };
     return (
       <PMask>
         <div className="pDialog2 referral-code">

@@ -87,6 +87,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     }
     if( taskItem.taskIdentifier ==='SIGN_IN_USING_AN_REFERRAL_CODE'){
       showCodeDiag(true)
+      return
     }
 
 
