@@ -4,7 +4,7 @@
 
 .pDialog2.reword-history {
   width: 528px;
-  height: 637px;
+  height: 650px;
   line-height: 42px;
 
   main {
@@ -45,6 +45,22 @@
     }
 
 
-  }
+    .pageComponent{
+      width: 480px;
+      float: right;
+      display: inline-block;
+    }
 
+  }
 }
+
+.ant-pagination > .ant-pagination-item-active {
+  color: var(--text-tokens-text-tertiary, #6f6f6f);
+  background-color: var(--neutral-color-gray-15, #ececec);
+  border: none;
+}
+
+.ant-pagination > .ant-pagination-item-active a{
+  color: var(--text-tokens-text-tertiary, #6f6f6f);
+}
+

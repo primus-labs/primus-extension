@@ -1,14 +1,9 @@
-import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
-import OrderItem from '@/newComponents/OrderItem';
-import iconDone from '@/assets/newImg/layout/iconDone.svg';
-import type { UserState } from '@/types/store';
 import './index.scss';
 import { getAchievementClaimed } from '@/services/api/achievements';
-import PageSelect from '@/newComponents/Ahievements/PageSelect';
-
+import { Pagination } from 'antd';
 interface PButtonProps {
   // sourceName: string;
   onClose: () => void;
@@ -25,13 +20,15 @@ const Nav: React.FC<PButtonProps> = memo(
     const size = 10;
     const [achievements, setAchievements] = useState([]);
     const [current, setCurrent] = useState(1);
+    const [totalCount, setTotalCount] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
 
-    const getAchieveRecords = useCallback(async () => {
-      const res = await getAchievementClaimed(size, current);
+    const getAchieveRecords = useCallback(async (page) => {
+      const res = await getAchievementClaimed(size, page);
       const { rc, result } = res;
       if (rc === 0) {
         setTotalPage(result.pageCount);
+        setTotalCount(result.totalCount);
         const achievements = result.items.map(e => {
           return {
             score: e.score,
@@ -45,9 +42,9 @@ const Nav: React.FC<PButtonProps> = memo(
     }, []);
 
     const AchievementRecords = () => {
-      return achievements.map((item:AchievementRecords, index)  => {
+      return achievements.map((item: AchievementRecords, index) => {
         return <tr>
-          <td style={{width: '64px'}}>+{item.score}</td>
+          <td style={{ width: '64px' }}>+{item.score}</td>
           <td>{item.task}</td>
           <td style={{ textAlign: 'right' }}>{item.date}</td>
         </tr>;
@@ -56,11 +53,12 @@ const Nav: React.FC<PButtonProps> = memo(
 
 
     useEffect(() => {
-      getAchieveRecords();
+      getAchieveRecords(current);
     }, []);
 
     const handlePageChange = (page: number) => {
-      console.log(page)
+      setCurrent(page);
+      getAchieveRecords(page);
     };
     // @ts-ignore
     // @ts-ignore
@@ -79,7 +77,14 @@ const Nav: React.FC<PButtonProps> = memo(
               <th style={{ textAlign: 'right' }}>Time</th>
               <AchievementRecords />
             </table>
-            <PageSelect totalPage={totalPage} onClick={handlePageChange} current={current}/>
+            <div className={"pageComponent"}>
+              <Pagination style={{float:'right'}}
+                          total={totalCount}
+                          onChange={handlePageChange}
+                          showSizeChanger={false}
+                          pageSize={size}
+              /></div>
+            {/*<PageSelect totalPage={totalPage} onClick={handlePageChange} current={current}/>*/}
           </main>
 
         </div>
