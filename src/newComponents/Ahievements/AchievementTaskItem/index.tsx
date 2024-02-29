@@ -90,7 +90,86 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       return
     }
 
+    if(taskItem.taskIdentifier==='CAMPAIGN_PARTICIPATION'){
+      ext = {};
+    }
 
+    if(taskItem.taskIdentifier ==='CONNECT_TIKTOK_ACCOUNT_DATA'){
+      const res = await getDataSourceData('tiktok');
+      if (!res.tiktok) {
+        return;
+      }
+      const tiktokUserInfo = JSON.parse(res.tiktok);
+      console.log(res);
+      ext = {
+        uniqueName: tiktokUserInfo.userName,
+      };
+    }
+
+    if(taskItem.taskIdentifier === 'CONNECT_GOOGLE_ACCOUNT_DATA'){
+      const res = await getDataSourceData('google');
+      if (!res.google) {
+        return;
+      }
+      const googleUserInfo = JSON.parse(res.google);
+      console.log(res);
+      ext = {
+        uniqueName: googleUserInfo.uniqueId,
+      };
+    }
+
+    if(taskItem.taskIdentifier == "CONNECT_BINANCE_DATA"){
+      const res = await getDataSourceData('binance');
+      if(!res.binance){
+        return;
+      }
+      const binanceInfo = JSON.parse(res.binance);
+      debugger
+      if(binanceInfo.userInfo){
+        ext = {
+          uniqueName: binanceInfo.userInfo,
+        };
+      }else{
+        ext = {
+          uniqueName: 'binance',
+        };
+      }
+    }
+
+    if(taskItem.taskIdentifier == "CONNECT_COINBASE_DATA"){
+      const res = await getDataSourceData('coinbase');
+      if(!res.coinbase){
+        return;
+      }
+      const coinbaseInfo = JSON.parse(res.coinbase);
+      if(coinbaseInfo.userInfo){
+        ext = {
+          uniqueName: coinbaseInfo.userInfo,
+        };
+      }else{
+        ext = {
+          uniqueName: 'coinbase',
+        };
+      }
+    }
+
+    if(taskItem.taskIdentifier ==='CONNECT_OKX_DATA'){
+      const res = await getDataSourceData('okx');
+      if(!res.okx){
+        return;
+      }
+      const okxInfo = JSON.parse(res.okx);
+      debugger
+      if(okxInfo.userInfo){
+        ext = {
+          uniqueName: okxInfo.userInfo,
+        };
+      }else{
+        ext = {
+          uniqueName: 'okx',
+        };
+      }
+    }
 
     const finishBody = {
       taskIdentifier: taskItem.taskIdentifier,
@@ -99,6 +178,8 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     const res = await finishTask(finishBody);
     if (res.rc === 0) {
       setFinished(true);
+    }else {
+      alert(res.mc)
     }
   };
 
