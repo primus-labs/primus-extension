@@ -119,6 +119,10 @@ export const setConnectedWalletsAction = (values: any) => ({
   type: 'setConnectedWallets',
   payload: values,
 });
+export const setAttestLoading = (values: number) => ({
+  type: 'setAttestLoading',
+  payload: values,
+});
 export const setConnectedWalletsActionAsync = () => {
   return async (dispatch: any) => {
     const { connectedWallets: lastConnectedWalletsStr } =

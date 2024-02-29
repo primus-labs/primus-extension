@@ -1,8 +1,12 @@
-import React, { useState, useMemo, memo, useCallback } from 'react';
+import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
 } from '@/config/attestation';
+import { setAttestLoading } from '@/store/actions';
+import type { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
 
@@ -15,18 +19,32 @@ interface SetPwdDialogProps {
   onSubmit: (form: PswFormType) => void;
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
+  const dispatch: Dispatch<any> = useDispatch();
   const [pswForm, setPswForm] = useState<PswFormType>({
     verificationContent: '',
     verificationValue: '',
   });
+  const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const formLegal = useMemo(() => {
-    return pswForm.verificationContent && pswForm.verificationValue;
+    return !! (pswForm.verificationContent && pswForm.verificationValue);
   }, [pswForm]);
+  // const verificationContentList = useMemo(() => {
+
+  // })
   const handleClickNext = useCallback(async () => {
     if (!formLegal) {
       return;
     }
+    dispatch(setAttestLoading(1));
+    // if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+    //   form.event = 'LINEA_DEFI_VOYAGE';
+    // }
+    // if (fromEvents === BASEVENTNAME) {
+    //   form.event = fromEvents;
+    // }
     onSubmit(pswForm);
+    
+    return;
   }, [formLegal, pswForm]);
   // const tList = useMemo(() => {
   //   const sourceNameArr = ['binance', 'okx', 'coinbase'];
@@ -46,6 +64,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
   const handleChangePswForm = useCallback((v, formKey) => {
     setPswForm((f) => ({ ...f, [formKey]: v }));
   }, []);
+  
 
   return (
     <div className="pFormWrapper detailForm">
@@ -81,7 +100,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
         <label>Account</label>
         <div className="value">
           <div className="account">shenminwen@gmail.com</div>
-          &nbsp;
           <div className="balance">$123</div>
         </div>
       </div>
@@ -89,6 +107,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
         text="Next"
         className="fullWidth confirmBtn"
         disabled={!formLegal}
+        loading={formLegal && attestLoading === 1}
         onClick={handleClickNext}
       ></PButton>
     </div>

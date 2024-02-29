@@ -63,12 +63,12 @@ type ATTESTATIONTYPEITEMTYPEMAP = {
   [propName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
 };
 export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  '1': {
-    value: '1',
+  'Assets Proof': {
+    value: 'Assets Proof',
     label: 'Assets balance ≥ specified amount',
   },
-  '2': {
-    value: '2',
+  'Token Holding': {
+    value: 'Token Holding',
     label: 'Owns a specified token',
   },
 };

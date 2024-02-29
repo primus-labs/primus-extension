@@ -28,7 +28,7 @@ import Bitget from '@/services/exchange/bitget';
 import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
 import WebTikTok from '@/services/webdata/websocial/webtiktok';
-import type { ExchangeMeta } from '@/types/dataSource';
+import type { ExchangeMeta, DataSourceMapType } from '@/types/dataSource';
 
 export type DataSourceItemType = ExchangeMeta & {
   provider?: any;
@@ -39,9 +39,7 @@ export type DataSourceItemType = ExchangeMeta & {
   id: string;
 };
 
-export type DataSourceMapType = {
-  [propName: string]: DataSourceItemType;
-};
+
 
 export const DATASOURCEMAP: DataSourceMapType = {
   onChain: {

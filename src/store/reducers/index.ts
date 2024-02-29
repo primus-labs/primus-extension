@@ -107,6 +107,7 @@ const initState = {
   dataSourceQueryType: '',
 
   connectedWallets: {}, // had connected wallets and accounts
+  attestLoading:0,
 };
 
 // reducer
@@ -132,7 +133,6 @@ const reducer: any = function (state = initState, action: any) {
     case 'setProofTypes':
       return { ...state, proofTypes: action.payload };
     case 'setWebProofTypes':
-      debugger
       return { ...state, webProofTypes: action.payload };
     case 'setCredentials':
       return { ...state, credentials: action.payload };
@@ -174,6 +174,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, dataSourceQueryType: action.payload };
     case 'setConnectedWallets':
       return { ...state, connectedWallets: action.payload };
+    case 'setAttestLoading':
+      return { ...state, setAttestLoading: action.payload };
     default:
       return state;
   }
