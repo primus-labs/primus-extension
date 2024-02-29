@@ -16,41 +16,41 @@ type ATTESTATIONTYPEMAPTYPE = {
 };
 
 export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
-  '1': {
-    id: '1',
+  'Assets Certificate': {
+    id: 'Assets Certificate',
     name: 'Assets Certificate',
     icon: iconAttestationTypeAssets,
   },
-  '2': {
-    id: '2',
+  'Social Activities': {
+    id: 'Social Activities',
     name: 'Social Activities',
     icon: iconAttestationTypeSocial,
     disabled: true,
   },
-  '3': {
-    id: '3',
+  'Humanity Verification': {
+    id: 'Humanity Verification',
     name: 'Humanity Verification',
     icon: iconAttestationTypeIdentity,
   },
-  '4': {
-    id: '4',
-    name: 'On-chain Activities',
+  'On-chain Transaction': {
+    id: 'On-chain Transaction',
+    name: 'On-chain Transaction',
     icon: iconAttestationTypeOnChain,
   },
-  '5': {
-    id: '5',
+  'Qualification Certificate': {
+    id: 'Qualification Certificate',
     name: 'Qualification Certificate',
     icon: iconAttestationTypeQualification,
     disabled: true,
   },
-  '6': {
-    id: '6',
+  'Game Achievements': {
+    id: 'Game Achievements',
     name: 'Game Achievements',
     icon: iconAttestationTypeGame,
     disabled: true,
   },
-  '7': {
-    id: '7',
+  'AIGC Proof': {
+    id: 'AIGC Proof',
     name: 'AIGC Proof',
     icon: iconAttestationTypeAIGC,
     disabled: true,
@@ -96,7 +96,7 @@ export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[
   Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
 // const attestationTypeMap = {
 //   1: {
-//     title: 'On-chain Activities Proof',
+//     title: 'On-chain Transaction Proof',
 //     desc: 'Largest ETH/USDC Uniswap transaction',
 //     type: 'Powered by Brevis',
 //     icon: iconAttestationOnChain,

@@ -123,6 +123,11 @@ export const setAttestLoading = (values: number) => ({
   type: 'setAttestLoading',
   payload: values,
 });
+export const setActiveAttestation = (values: any) => ({
+  type: 'setActiveAttestation',
+  payload: values,
+});
+
 export const setConnectedWalletsActionAsync = () => {
   return async (dispatch: any) => {
     const { connectedWallets: lastConnectedWalletsStr } =
@@ -134,6 +139,7 @@ export const setConnectedWalletsActionAsync = () => {
     await dispatch(setConnectedWalletsAction(lastConnectedWalletsObj));
   };
 };
+
 
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {

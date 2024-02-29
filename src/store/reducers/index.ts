@@ -107,7 +107,8 @@ const initState = {
   dataSourceQueryType: '',
 
   connectedWallets: {}, // had connected wallets and accounts
-  attestLoading:0,
+  attestLoading: 0,
+  activeAttestation: {}, // attestation in progress
 };
 
 // reducer
@@ -175,7 +176,13 @@ const reducer: any = function (state = initState, action: any) {
     case 'setConnectedWallets':
       return { ...state, connectedWallets: action.payload };
     case 'setAttestLoading':
-      return { ...state, setAttestLoading: action.payload };
+      return { ...state, attestLoading: action.payload };
+    case 'setActiveAttestation':
+      return {
+        ...state,
+        activeAttestation: { ...state.activeAttestation, ...action.payload },
+      };
+
     default:
       return state;
   }

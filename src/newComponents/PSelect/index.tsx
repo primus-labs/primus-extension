@@ -53,7 +53,7 @@ const PSelect: React.FC<PSelectProps> = memo(
     className,
     align = 'vertical',
   }) => {
-    const [optionsVisible, setOptionsVisible] = useState(true);
+    const [optionsVisible, setOptionsVisible] = useState(false);
 
     const selectInputEl = useRef(null);
     const prefixIconEl = useRef(null);

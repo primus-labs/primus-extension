@@ -28,7 +28,7 @@ const DataSourceItem = memo(() => {
     useState<boolean>(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const dataSourceName = searchParams.get('dataSourceName') as string;
+  const dataSourceName = searchParams.get('dataSourceId') as string;
   const lowerCaseDataSourceName = dataSourceName?.toLocaleLowerCase();
 
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
@@ -148,7 +148,7 @@ const DataSourceItem = memo(() => {
                   : 'By Community'}
               </div>
             </div>
-            {hasConnected && lowerCaseDataSourceName === 'web3 account' && (
+            {hasConnected && lowerCaseDataSourceName === 'web3 wallet' && (
               <PButton
                 className="connectBtn"
                 text={btnTxtEl}

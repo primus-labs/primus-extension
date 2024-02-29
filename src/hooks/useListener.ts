@@ -5,6 +5,7 @@ import {
   setSocialSourcesAsync,
   setConnectByAPILoading,
   initWalletAddressActionAsync,
+  setSysConfigAction,
 } from '@/store/actions';
 import { postMsg } from '@/utils/utils';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
@@ -17,6 +18,7 @@ import { getUserIdentity } from '@/services/api/user';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
+import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 
 type UseAlgorithm = () => void;
 
@@ -102,51 +104,69 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
         dispatch(setConnectByAPILoading(2));
       }
     }
-    if (resMethodName === 'queryUserPassword') {
-      if (res) {
-        await dispatch({
-          type: 'setUserPassword',
-          payload: message.res,
-        });
-      }
-    }
-    if (resMethodName === 'create') {
-      console.log('page_get:create:', res);
-      if (res) {
-        const { privateKey } = await chrome.storage.local.get(['privateKey']);
-        const privateKeyStr = privateKey?.substr(2);
-        // const address = message.res.toLowerCase();
-        const address = message.res;
-        const timestamp = +new Date() + '';
-        await chrome.storage.local.set({ padoCreatedWalletAddress: address });
-        await dispatch(initWalletAddressActionAsync());
-        try {
-          const signature = await requestSignTypedData(
-            privateKeyStr,
-            address,
-            timestamp
-          );
-          const res = await getUserIdentity({
-            signature: signature as string,
-            timestamp,
-            address,
+    if (resMethodName) {
+      if (resMethodName === 'queryUserPassword') {
+        if (res) {
+          await dispatch({
+            type: 'setUserPassword',
+            payload: message.res,
           });
-          const { rc, result } = res;
-          if (rc === 0) {
-            const { bearerToken, identifier } = result;
-            await chrome.storage.local.set({
-              userInfo: JSON.stringify({
-                id: identifier,
-                token: bearerToken,
-              }),
+        }
+      } else if (resMethodName === 'create') {
+        console.log('page_get:create:', res);
+        if (res) {
+          const { privateKey } = await chrome.storage.local.get(['privateKey']);
+          const privateKeyStr = privateKey?.substr(2);
+          // const address = message.res.toLowerCase();
+          const address = message.res;
+          const timestamp = +new Date() + '';
+          await chrome.storage.local.set({ padoCreatedWalletAddress: address });
+          await dispatch(initWalletAddressActionAsync());
+          try {
+            const signature = await requestSignTypedData(
+              privateKeyStr,
+              address,
+              timestamp
+            );
+            const res = await getUserIdentity({
+              signature: signature as string,
+              timestamp,
+              address,
             });
-            // const targetUrl = backUrl
-            //   ? decodeURIComponent(backUrl)
-            //   : '/events';
-            // navigate(targetUrl);
+            const { rc, result } = res;
+            if (rc === 0) {
+              const { bearerToken, identifier } = result;
+              await chrome.storage.local.set({
+                userInfo: JSON.stringify({
+                  id: identifier,
+                  token: bearerToken,
+                }),
+              });
+              // const targetUrl = backUrl
+              //   ? decodeURIComponent(backUrl)
+              //   : '/events';
+              // navigate(targetUrl);
+            }
+          } catch (e) {
+            console.log('handleClickStart error', e);
           }
-        } catch (e) {
-          console.log('handleClickStart error', e);
+        }
+      } else if (resMethodName === 'getSysConfig') {
+        const { res } = message;
+        console.log('page_get:getSysConfig:', res);
+        if (res) {
+          const configMap = res.reduce(
+            (prev: ObjectType, curr: SysConfigItem) => {
+              const { configName, configValue } = curr;
+              prev[configName] = configValue;
+              return prev;
+            },
+            {}
+          );
+          dispatch(setSysConfigAction(configMap));
+        } else {
+          //alert('getSysConfig network error');
+          console.log('getSysConfig network error');
         }
       }
     }

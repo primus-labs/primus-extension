@@ -21,7 +21,7 @@ interface PDropdownProps {
 }
 const attestationTypeMap = {
   1: {
-    title: 'On-chain Activities Proof',
+    title: 'On-chain Transaction Proof',
     desc: 'Largest ETH/USDC Uniswap transaction',
     type: 'Powered by Brevis',
     icon: iconAttestationOnChain,
@@ -64,10 +64,10 @@ const attestationTypeMap = {
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
     const [searchParams] = useSearchParams();
-    const dataSourceName = searchParams.get('dataSourceName');
+    const dataSourceName = searchParams.get('dataSourceId');
     const supportList = useMemo(() => {
-      if (dataSourceName === 'Web3 Wallet') return [attestationTypeMap[1]];
-      if (dataSourceName === 'Binance' || dataSourceName === 'OKX')
+      if (dataSourceName === 'web3 wallet') return [attestationTypeMap[1]];
+      if (dataSourceName === 'binance' || dataSourceName === 'okx')
         return [
           attestationTypeMap[2],
           attestationTypeMap[3],
@@ -75,21 +75,18 @@ const Cards: React.FC<PDropdownProps> = memo(
           attestationTypeMap[5],
         ];
       if (
-        dataSourceName === 'X' ||
-        dataSourceName === 'TikTok' ||
-        dataSourceName === 'G Account'
+        dataSourceName === 'x' ||
+        dataSourceName === 'tiktok' ||
+        dataSourceName === 'google'
       )
         return [attestationTypeMap[4]];
-      if (dataSourceName === 'Coinbase' || dataSourceName === 'Bitget')
+      if (dataSourceName === 'coinbase' || dataSourceName === 'bitget')
         return [
           attestationTypeMap[2],
           attestationTypeMap[3],
           attestationTypeMap[4],
         ];
-      if (dataSourceName === 'ZAN')
-        return [
-          attestationTypeMap[5],
-        ];
+      if (dataSourceName === 'zan') return [attestationTypeMap[5]];
       return [];
     }, []);
     const handleDetail = useCallback((i) => {

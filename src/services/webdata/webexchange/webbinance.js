@@ -8,8 +8,8 @@ const ONE = 1;
 const ZERO = 0;
 
 class WebBinance extends WebExchange {
-    constructor(exchangeInfo) {
-        super('binance', exchangeInfo);
+    constructor() {
+        super('binance');
     }
 
     async getFundingAccountTokenAmountMap() {
@@ -127,6 +127,7 @@ class WebBinance extends WebExchange {
         params.method = 'POST';
         const res = await this.request(params);
         this.userInfo.userName = res.data.mobileNo;
+        this.userInfo.userId = res.data.userId;
         console.log(res.data.mobileNo)
     }
 }
