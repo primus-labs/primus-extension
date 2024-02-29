@@ -28,7 +28,7 @@ export const dataSourceWebMsgListener = async (
   if (name === 'init') {
     activeTemplate = params;
   }
-  const {
+  let {
     dataSource,
     jumpTo,
     schemaType,
@@ -105,10 +105,11 @@ export const dataSourceWebMsgListener = async (
         isStoreTiktokName = true;
         console.log("store tiktok username and jump page");
         const tiktok = new constructorF();
+        const tiktokUsernamePre = await chrome.storage.local.get('tiktokUsername');
         await tiktok.storeUserName();
         const tiktokUsername = await chrome.storage.local.get('tiktokUsername');
         const currentTab = await chrome.tabs.get(tabCreatedByPado.id);
-        if (currentTab.url === jumpTo + '/') {
+        if (currentTab.url === jumpTo + '/' && !tiktokUsernamePre['tiktokUsername']) {
           chrome.tabs.update(tabCreatedByPado.id, {
             url: jumpTo + '/@' + tiktokUsername['tiktokUsername'],
           });
@@ -282,6 +283,10 @@ export const dataSourceWebMsgListener = async (
       ['requestBody']
     );
 
+    const tiktokUsername = await chrome.storage.local.get('tiktokUsername');
+    if (dataSource === 'tiktok' && tiktokUsername['tiktokUsername']) {
+      jumpTo = jumpTo + '/@' + tiktokUsername['tiktokUsername'];
+    }
     tabCreatedByPado = await chrome.tabs.create({
       url: jumpTo,
     });
