@@ -1,0 +1,55 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+
+.pDialog2.referral-code {
+  width: 448px;
+  height: 300px;
+  main {
+    .detailWrapper {
+      @include detailWrapper;
+
+      .step {
+
+      }
+    }
+
+    .inputDesc {
+      font-size: 14px;
+      font-weight: 400;
+      height: 18px;
+      font-family: 'IBM Plex Sans';
+      color: var(--text-tokens-text-secondary, #525252);
+    }
+
+    .inputTitle {
+      font-size: 14px;
+      font-weight: 400;
+      height: 18px;
+    }
+
+    .inputComponent {
+      margin-top:-15px;
+      display: flex;
+      position: relative;
+      width: 400px;
+      height: 40px;
+      button {
+        position: absolute;
+        font-size: 14px;
+        font-family: 'IBM Plex Sans';
+        color: var(--text-tokens-text-primary, #161616);
+        letter-spacing: 0.16px;
+        font-weight: 500;
+        top: 11px;
+        right: 10px;
+      }
+    }
+    .confirm-button{
+      font-size: 14px;
+      font-family: 'IBM Plex Sans';
+      width: 400px;
+      height: 40px;
+    }
+  }
+}

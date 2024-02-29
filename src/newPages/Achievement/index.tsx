@@ -3,16 +3,20 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import AchievementTopCard from '@/newComponents/Ahievements/TopCard';
 import AchievementTaskItem from '@/newComponents/Ahievements/AchievementTaskItem';
 import PageSelect from '@/newComponents/Ahievements/PageSelect';
+import PButton from '@/newComponents/PButton';
 
 import { getAchievementTaskList, taskStatusCheck } from '@/services/api/achievements';
 import './index.scss';
 import AchievementRewardHistory from '@/newComponents/Ahievements/AchievementRewardHistory';
 import { Pagination } from 'antd';
 import { all } from 'axios';
+import ReferralCodeInput from '@/newComponents/Ahievements/ReferralCodeInput';
 
 const AchievementHome = memo(() => {
 
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<boolean>(false);
+  const [visibleReferralCodeDialog, setVisibleReferralCodeDialog] = useState<boolean>(false);
+  const [referralCodeTaskFinished, setReferralCodeTaskFinished] = useState<boolean>(false);
   const [size, setSize] = useState(7);
   const [pageCount, setPageCount] = useState(1);
   const [totolCount, setTotalCount] = useState(1);
@@ -53,10 +57,14 @@ const AchievementHome = memo(() => {
 
   const AchievementTaskItemList = () => {
     return achievementTaskList.map((item, index) => {
-      const isFinished = taskIsFinished?.[item.taskIdentifier] || false;
+      let isFinished = taskIsFinished?.[item.taskIdentifier] || false;
+      if(item.taskIdentifier ==='SIGN_IN_USING_AN_REFERRAL_CODE'){
+        isFinished = isFinished|| referralCodeTaskFinished
+      }
       const taskItemWithClick = {
         taskItem: item,
-        isFinished:isFinished
+        isFinished:isFinished,
+        showCodeDiag: setVisibleReferralCodeDialog,
       };
       return <AchievementTaskItem key={index} {...taskItemWithClick} />;
     });
@@ -102,9 +110,17 @@ const AchievementHome = memo(() => {
     alert('code');
   };
 
-  const getDataSourceData = async (dataSource) => {
-    const data =  await chrome.storage.local.get(dataSource);
-    console.log(data)
+
+
+
+
+  const handleReferralCodeClose = ()=>{
+      setVisibleReferralCodeDialog(false)
+  }
+
+  const handleReferralCodeTaskFinish = ()=>{
+    // @ts-ignore
+    setReferralCodeTaskFinished(true)
   }
 
   return (
@@ -126,7 +142,7 @@ const AchievementHome = memo(() => {
       {visibleAssetDialog && <AchievementRewardHistory
         onClose={handleCloseAssetDialog}
       />}
-      <button onClick={getDataSourceData}>Get DataSource Data</button>
+      {visibleReferralCodeDialog&& <ReferralCodeInput onClose={handleReferralCodeClose} setReferralTaskFinished={handleReferralCodeTaskFinish}/>}
 
     </div>
 
