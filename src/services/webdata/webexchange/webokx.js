@@ -6,8 +6,8 @@ const BIGONE = new BigNumber(1);
 const ONE = 1;
 const ZERO = 0;
 class WebOKX extends WebExchange {
-  constructor(exchangeInfo) {
-    super('okx', exchangeInfo);
+  constructor() {
+    super('okx');
   }
 
   async getFundingAccountTokenAmountMap() {
@@ -95,6 +95,7 @@ class WebOKX extends WebExchange {
     params.method = 'GET';
     const res = await this.request(params);
     this.userInfo.userName = res.data.petname;
+    this.userInfo.userId = res.data.uuid;
   }
 }
 

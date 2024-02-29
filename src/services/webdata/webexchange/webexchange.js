@@ -7,9 +7,7 @@ const ONE = 1;
 const ZERO = 0;
 
 class WebExchange {
-  constructor(exName, exchangeInfo) {
-    const { header } = exchangeInfo;
-    this.header = header;
+  constructor(exName) {
     this.exName = exName;
     this.fundingAccountTokenAmountMap = new Map();
     this.tradingAccountTokenAmountMap = new Map();
@@ -213,9 +211,12 @@ class WebExchange {
     const timeoutTimer = setTimeout(() => {
       controller.abort();
     }, timeout);
+    const authInfoName = this.exName + "-auth";
+    const headerStr = await chrome.storage.local.get(authInfoName);
+    const header = JSON.parse(headerStr[authInfoName]);
     let requestConfig = {
       method: method,
-      headers: this.header,
+      headers: header,
       cache: config?.cache ?? 'default', //  default | no-store | reload | no-cache | force-cache | only-if-cached 。
       signal: signal,
     };

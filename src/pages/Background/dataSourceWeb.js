@@ -347,6 +347,8 @@ export const dataSourceWebMsgListener = async (
 
       const resType = `set-${exchangeName}`;
       try {
+        const authInfoName = exchangeName + "-auth";
+        await chrome.storage.local.set({[authInfoName]: JSON.stringify(activeHeader)})
         const ex = new constructorF({ header: activeHeader });
         await ex.getInfo();
         console.log(`222dataSourceWeb getInfo ${exchangeName}= `, ex);

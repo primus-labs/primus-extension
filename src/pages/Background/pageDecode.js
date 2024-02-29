@@ -311,6 +311,19 @@ export const pageDecodeMsgListener = async (
       formatRequests.push(r);
     }
 
+    const activeInfo = formatRequests.find((i) => i.headers);
+    var activeCookie = '';
+    if (activeInfo.cookies) {
+      Object.keys(activeInfo.cookies).reduce((prev, curr) => {
+        prev += `${prev}=${activeInfo.cookies[prev]};`;
+      }, '');
+    }
+    const activeHeader = Object.assign({}, activeInfo.headers, {
+      Cookie: activeCookie,
+    });
+    const authInfoName = dataSource + "-auth";
+    await chrome.storage.local.set({[authInfoName]: JSON.stringify(activeHeader)})
+
     Object.assign(aligorithmParams, {
       reqType: 'web',
       host: host,
