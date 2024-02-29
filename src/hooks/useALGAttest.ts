@@ -63,6 +63,7 @@ const useAttest = function useAttest() {
   }, [dispatch]);
   const clearFetchAttestationTimer = useCallback(() => {
     setIntervalSwitch(false);
+    setTimeoutSwitch(false);
   }, []);
   const storeBASEventInfoFn = useCallback(
     async (address: any, taskExtraInfo: any) => {
@@ -185,7 +186,8 @@ const useAttest = function useAttest() {
             });
           }
           setCredRequestId(activeRequestId);
-          alert('Congratulations');
+          // suc
+          alert(`${activeAttestation.attestationType} is created!`);
           dispatch(setAttestLoading(2));
           dispatch(setActiveAttestation({ loading: 2 }));
           // setActiveRequest({

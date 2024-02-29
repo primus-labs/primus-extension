@@ -42,7 +42,7 @@ interface PDropdownProps {
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
     const [searchParams] = useSearchParams();
-    const dataSourceName = searchParams.get('dataSourceName') as string;
+    const dataSourceName = searchParams.get('dataSourceId') as string;
     const lowerCaseDataSourceName = dataSourceName?.toLowerCase();
     const dispatch: Dispatch<any> = useDispatch();
     const {
@@ -122,7 +122,7 @@ const Cards: React.FC<PDropdownProps> = memo(
         if (['google'].includes(lowerCaseDataSourceName)) {
           activeLabel = 'Email address';
         }
-        if (['web3 account'].includes(lowerCaseDataSourceName)) {
+        if (['web3 wallet'].includes(lowerCaseDataSourceName)) {
           activeLabel = 'Wallet Address';
         }
         return (

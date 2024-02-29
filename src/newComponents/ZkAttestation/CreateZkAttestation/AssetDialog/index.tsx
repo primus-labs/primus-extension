@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
-import { DATASOURCEMAP } from '@/config/dataSource';
+import { DATASOURCEMAP, dataSource } from '@/config/dataSource';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
@@ -137,7 +137,12 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
             </section>
           )}
           {step === 1 && <SetDataSource onSubmit={handleSubmitSetPwdDialog} />}
-          {step === 2 && <SetDetail onSubmit={handleSubmitSetDetail} />}
+          {step === 2 && (
+            <SetDetail
+              onSubmit={handleSubmitSetDetail}
+              dataSourceId={assetForm.dataSourceId}
+            />
+          )}
         </main>
       </div>
     </PMask>

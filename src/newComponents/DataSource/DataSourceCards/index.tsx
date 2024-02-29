@@ -60,7 +60,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleConnect = useCallback(
       (i) => {
         // onClick && onClick(i);
-        navigate(`/datas/data?dataSourceName=${i.name}`);
+        navigate(`/datas/data?dataSourceId=${i.id}`);
       },
       [navigate]
     );
