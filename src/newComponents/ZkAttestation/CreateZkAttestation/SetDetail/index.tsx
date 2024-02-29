@@ -4,7 +4,6 @@ import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
 } from '@/config/attestation';
-import { setAttestLoading } from '@/store/actions';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
@@ -35,13 +34,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
     if (!formLegal) {
       return;
     }
-    dispatch(setAttestLoading(1));
-    // if (fromEvents === 'LINEA_DEFI_VOYAGE') {
-    //   form.event = 'LINEA_DEFI_VOYAGE';
-    // }
-    // if (fromEvents === BASEVENTNAME) {
-    //   form.event = fromEvents;
-    // }
     onSubmit(pswForm);
     
     return;

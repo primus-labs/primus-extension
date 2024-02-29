@@ -19,7 +19,12 @@ import {
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
+import useALGAttest from '@/hooks/useALGAttest';
+import useKeepConnect from '@/hooks/useKeepConnect';
+import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
+
 import { postMsg } from '@/utils/utils';
+import { updateAlgoUrl } from '@/config/envConstants';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
@@ -38,9 +43,10 @@ const Nav: React.FC = memo(({}) => {
   );
   const [updateOnChainLoading, updateOnChainFn] = useUpdateOnChainSources();
   useListener();
-  useEffect(() => {
-    rem();
-  }, []);
+  useALGAttest();
+  useKeepConnect();
+  // usePollingUpdateAllSources()// TODO-newui
+
   const initStoreData = useCallback(async () => {
     //
     const { twitter } = await chrome.storage.local.get(['twitter']);
@@ -97,10 +103,20 @@ const Nav: React.FC = memo(({}) => {
     };
     postMsg(padoServicePort, msg2);
   };
+  const getSysConfig = useCallback(async () => {
+    postMsg(padoServicePort, {
+      fullScreenType: 'padoService',
+      reqMethodName: 'getSysConfig',
+    });
+    console.log('page_send:getSysConfig request');
+  }, [dispatch, padoServicePort]);
 
   useEffect(() => {
     createPadoId();
     queryUserPassword();
+    getSysConfig();
+    updateAlgoUrl();
+    rem();
   }, []);
 
   return (

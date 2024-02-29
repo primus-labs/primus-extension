@@ -25,6 +25,19 @@ type rewardsDialogVisibleType = {
   visible: boolean;
   tab?: string;
 };
+
+type loadingStatus = 0 | 1 | 2; // 0: unstart 1:start loading 2:end
+
+type activeAttestationRequest = {
+  dataSourceId?: string;
+  verificationContent?: string;
+  verificationValue?: string;
+  attestationType?: string; // 'Assets Certificate'
+  fetchType?: string; // Web ,API
+  loading?: loadingStatus;
+  presets?: any; // attest params
+  requestId?: string;
+};
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -50,10 +63,11 @@ export type UserState = {
   scrollEventPeriod: BadgeEventPeriodType;
   events: EventsType;
   theme: 'light' | 'dark';
-  connectByAPILoading: number; // 0: unstart 1:start loading 2:end
+  connectByAPILoading: loadingStatus;
   lastLoginHasPwd: boolean; // if has set password
   dataSourceQueryStr: string;
   dataSourceQueryType: string | number;
   connectedWallets: any;
-  attestLoading: number; // 0: unstart 1:start loading 2:end
+  attestLoading: loadingStatus;
+  activeAttestation: activeAttestationRequest;
 };

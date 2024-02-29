@@ -21,7 +21,7 @@ interface PDropdownProps {
 }
 const attestationTypeMap = {
   1: {
-    title: 'On-chain Activities Proof',
+    title: 'On-chain Transaction Proof',
     desc: 'Largest ETH/USDC Uniswap transaction',
     type: 'Powered by Brevis',
     icon: iconAttestationOnChain,
@@ -86,10 +86,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           attestationTypeMap[3],
           attestationTypeMap[4],
         ];
-      if (dataSourceName === 'ZAN')
-        return [
-          attestationTypeMap[5],
-        ];
+      if (dataSourceName === 'ZAN') return [attestationTypeMap[5]];
       return [];
     }, []);
     const handleDetail = useCallback((i) => {
