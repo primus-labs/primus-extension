@@ -55,10 +55,10 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         ...form,
         attestationType: 'Assets Certificate', // TODO-newui
         fetchType: 'Web',
-        loading: 1,
+        // loading: 1,
       };
       dispatch(setActiveAttestation(activeAttestationParams));
-      dispatch(setAttestLoading(1));
+
       // 2.check web proof template
       const activeWebProofTemplate = webProofTypes.find(
         (i) =>
@@ -74,10 +74,22 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         event: fromEvents,
       };
       const responses = currRequestTemplate.datasourceTemplate.responses;
-      const responsesLen = responses.length;
+
+      const lastResponse = responses[responses.length - 1];
+      const lastResponseConditions = lastResponse.conditions;
       // change verification value
-      responses[responsesLen - 1].conditions.value =
-        activeAttestationParams.verificationValue;
+      lastResponseConditions.value = activeAttestationParams.verificationValue;
+
+      // for okx
+      const lastResponseConditionsSubconditions =
+        lastResponseConditions.subconditions;
+      if (lastResponseConditionsSubconditions) {
+        const lastSubCondition =
+          lastResponseConditionsSubconditions[
+            lastResponseConditionsSubconditions.length - 1
+          ];
+        lastSubCondition.value = activeAttestationParams.verificationValue;
+      }
       // 3.send msg to content
       const currentWindowTabs = await chrome.tabs.query({
         active: true,
@@ -94,13 +106,13 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
     },
     [assetForm, fromEvents, BASEventDetail, dispatch]
   );
-  useEffect(() => {
-    if (attestLoading === 2) {
-      return () => {
-        dispatch(setAttestLoading(0));
-      };
-    }
-  }, [attestLoading, onSubmit]);
+  // useEffect(() => {
+  //   if (attestLoading === 2) {
+  //     return () => {
+  //       dispatch(setAttestLoading(0));
+  //     };
+  //   }
+  // }, [attestLoading, onSubmit]);
 
   return (
     <PMask>

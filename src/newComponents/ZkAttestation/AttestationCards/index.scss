@@ -1,0 +1,97 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.attestationCards {
+  @include frss;
+  flex-wrap: wrap;
+  gap: var(--spacing-16);
+  width: 100%;
+  .attestationCard {
+    width: calc((100% - var(--spacing-16) * 2) / 3);
+    // height: 204px;
+    padding: var(--spacing-16) var(--spacing-24);
+    @include fcss;
+    gap: var(--spacing-24);
+
+    @include clickableCard;
+    cursor: default;
+    min-height: 428px;
+    padding: var(--spacing-16);
+
+    .cardContent {
+      width: 100%;
+      height: 100%;
+      @include fcbs;
+      gap: var(--spacing-16);
+      .header {
+        width: 100%;
+        @include frbc;
+        // .connections {
+        //   align-self: flex-start;
+        //   @include frsc;
+        //   gap: var(--spacing-8);
+        //   color: var(--text-tokens-text-secondary);
+        //   .num {
+        //     @include Hint;
+        //     @include frsc;
+        //     gap: var(--spacing-2, 2px);
+        //     .iconfont {
+        //       font-size: var(--spacing-16);
+        //     }
+        //   }
+        //   .deleteBtn {
+        //     > .iconfont {
+        //       font-size: var(--spacing-12);
+        //     }
+        //   }
+        // }
+      }
+      .brief {
+        @include frsc;
+        gap: var(--spacing-16);
+        .splicedIcons {
+          @include frsc;
+          > img {
+            width: var(--spacing-40);
+            &:last-child {
+              position: relative;
+              z-index: 1;
+              left: calc(-1 * var(--spacing-8));
+            }
+          }
+        }
+
+        .intro {
+          @include fcss;
+          gap: var(--spacing-2);
+          color: var(--text-tokens-text-primary);
+          .name {
+            @include BodyBody100Semibold;
+          }
+          .updateTime {
+            @include frsc;
+            gap: var(--spacing-8);
+            @include numberHint;
+            .iconfont {
+              font-size: var(--spacing-12);
+              color: var(--icon-tokens-icon-primary);
+            }
+          }
+        }
+      }
+      .desc {
+        @include BodyBody300;
+        color: var(--text-tokens-text-secondary);
+      }
+    }
+    .connectBtn {
+      width: fit-content;
+      align-self: flex-end;
+      @include TextLinkLink;
+      .iconfont {
+        align-self: flex-start;
+      }
+    }
+  }
+}

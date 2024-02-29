@@ -46,7 +46,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
                 className="createBtn"
                 text="Create"
                 type="text"
-                onClick={() => {}}
+                onClick={() => {onClick(i);}}
               />
             </div>
           </li>

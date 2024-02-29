@@ -263,7 +263,7 @@
   letter-spacing: 0px;
   line-height: 18px;
 }
-.number-hint {
+@mixin numberHint {
   font-size: 10px;
   font-family: IBM Plex Mono;
   font-weight: 400;

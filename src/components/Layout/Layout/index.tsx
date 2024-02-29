@@ -28,7 +28,6 @@ import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 
 import { updateAlgoUrl } from '@/config/envConstants';
 import {BASEVENTNAME} from '@/config/constants'
-import ConnectWalletDialog from '@/newComponents/ConnectWalletDialog';
 
 const Layout = memo(() => {
   const location = useLocation();
@@ -38,9 +37,6 @@ const Layout = memo(() => {
   );
   const userPassword = useSelector((state: UserState) => state.userPassword);
   const theme = useSelector((state: UserState) => state.theme);
-  const connectWalletDialogVisible = useSelector(
-    (state: UserState) => state.connectWalletDialogVisible
-  );
 
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
@@ -213,7 +209,7 @@ const Layout = memo(() => {
         <ActiveHeader />
         <Outlet />
       </div>
-      {/* {connectWalletDialogVisible && <ConnectWalletDialog/>} */}
+      
     </div>
   );
 });
