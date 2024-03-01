@@ -229,6 +229,8 @@ const processpadoServiceReq = async (message, port) => {
             timestamp: +new Date(),
             version: SocailStoreVersion,
           };
+          socialSourceData.userInfo = {};
+          socialSourceData.userInfo.userName = socialSourceData.userName;
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           });

@@ -6,6 +6,7 @@ class WebSocial {
       this.followings = 0;
       this.verified = false;
       this.userName = '';
+      this.userInfo = {};
     }
 
     async getInfo() {

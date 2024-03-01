@@ -20,6 +20,7 @@ class WebTikTok extends WebSocial {
     this.followings = res.userInfo.stats.followingCount;
     this.verified = res.userInfo.user.verified;
     this.userName = res.userInfo.user.nickname;
+    this.userInfo.userName = res.userInfo.user.nickname;
   }
 
   async storeUserName() {
