@@ -12,6 +12,7 @@ interface PButtonProps {
   // sourceName: string;
   onClose: () => void;
   setReferralTaskFinished: any;
+
 }
 
 
@@ -57,6 +58,8 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
         alert(res.msg);
       }
     };
+
+
     return (
       <PMask>
         <div className="pDialog2 referral-code">
@@ -83,7 +86,7 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
                   <Input className={'inputComponent'} defaultValue={referralCode} value={referralCode}
                          onChange={(e) => setReferralCode(e.target.value)} />
                 </Form.Item>
-                <button onClick={handlePaste}>Paste</button>
+                <button onClick={handlePaste} disabled={!referralCode || referralCode.trim() === ''}>Paste</button>
               </div>
               <PButton text={'Confirm'} className={'confirm-button'} onClick={handleSubmit} />
             </Form>

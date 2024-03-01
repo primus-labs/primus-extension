@@ -31,6 +31,8 @@ const AchievementHome = memo(() => {
     if (rc === 0) {
       setRefferralCode(result.referralCode);
       setTotalScore(result.totalScore);
+      setReferrals(result.referrals)
+      setCountedReferrals(result.countedReferrals)
     }
   };
 
@@ -59,7 +61,6 @@ const AchievementHome = memo(() => {
       if (item.taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE') {
         isFinished = isFinished || referralCodeTaskFinished;
       }
-      debugger
       const taskItemWithClick = {
         taskItem: item,
         isFinished: isFinished,
@@ -132,6 +133,12 @@ const AchievementHome = memo(() => {
   const handleReferralCodeTaskFinish = () => {
     // @ts-ignore
     setReferralCodeTaskFinished(true);
+    debugger
+    for (let i = 0; i < achievementTaskList.length; i++) {
+      if(achievementTaskList[i].taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE'){
+        setTotalScore(totalScore + achievementTaskList[i].taskXpScore);
+      }
+    }
   };
 
   return (
