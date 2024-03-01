@@ -107,6 +107,11 @@
             }
             .value {
               @include NumberId;
+              @include frsc;
+              gap: var(--spacing-8);
+              .dataSourceIcon{
+                width: var(--spacing-16);
+              }
             }
             .icon-Add {
               font-size: var(--spacing-24);

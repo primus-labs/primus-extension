@@ -20,6 +20,7 @@ import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 
 import './index.scss';
 import { formatDate, div } from '../../../utils/utils';
+import request from '@/utils/request';
 
 type NavItem = {
   type: string;
@@ -43,6 +44,8 @@ const Cards: React.FC<PDropdownProps> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
+    const sysConfig = useSelector((state: UserState) => state.sysConfig);
+
     console.log('222credentialsFromStore', credentialsFromStore); //delete
     const { deleteFn: deleteDataSourceFn } =
       useDataSource(activeDataSourceName);
@@ -98,21 +101,26 @@ const Cards: React.FC<PDropdownProps> = memo(
       if (i.attestationType === 'Assets Certificate') {
         if (i.verificationContent === 'Assets Proof') {
           str = 'Asset balance';
+        } else if (i.verificationContent === 'Token Holding') {
+          str = i.verificationContent;
         }
-        // else if () {
-
-        // }
       }
       return str;
     };
     const getValue = (i) => {
-      let str = '';
+      let str: any = '';
       if (i.attestationType === 'Assets Certificate') {
         if (i.verificationContent === 'Assets Proof') {
           str = `>=${i.verificationValue}`;
+        } else if (i.verificationContent === 'Token Holding') {
+          const dataSourceIconSrc = `${sysConfig.TOKEN_LOGO_PREFIX}icon${i.verificationValue}.png`;
+          str = (
+            <>
+              <img src={dataSourceIconSrc} className="dataSourceIcon" alt="" />
+              <span>{i.verificationValue}</span>
+            </>
+          );
         }
-        // else if () {
-        // }
       }
       return str;
     };
@@ -188,12 +196,11 @@ const Cards: React.FC<PDropdownProps> = memo(
               <div className="cardContent">
                 <div className="header">
                   <PTag text={`${i.attestationType}`} color="yellow" />
-
                   <div className="operations">
                     <PButton
                       className="shareBtn"
                       type="icon"
-                      icon={<i className="iconfont icon-iconDelete"></i>}
+                      icon={<i className="iconfont icon-iconShare"></i>}
                       onClick={() => {
                         handleShare(i);
                       }}
@@ -202,17 +209,16 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <PButton
                         className="copyBtn"
                         type="icon"
-                        icon={<i className="iconfont icon-iconDelete"></i>}
+                        icon={<i className="iconfont icon-iconCopy"></i>}
                         onClick={() => {
                           handleCopy(i);
                         }}
                       />
                     </div>
-
                     <PButton
                       className="moreBtn"
                       type="icon"
-                      icon={<i className="iconfont icon-iconDelete"></i>}
+                      icon={<i className="iconfont icon-iconMore"></i>}
                       onClick={() => {
                         handleMore(i);
                       }}

@@ -34,8 +34,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
-
-  const dataSourceMetaInfo: DataSourceMapType = useMemo(() => {
+const dataSourceMetaInfo: DataSourceMapType = useMemo(() => {
     if (assetForm.dataSourceId) {
       return DATASOURCEMAP[assetForm.dataSourceId];
     } else {
@@ -77,19 +76,29 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
 
       const lastResponse = responses[responses.length - 1];
       const lastResponseConditions = lastResponse.conditions;
-      // change verification value
-      lastResponseConditions.value = activeAttestationParams.verificationValue;
-
-      // for okx
       const lastResponseConditionsSubconditions =
         lastResponseConditions.subconditions;
-      if (lastResponseConditionsSubconditions) {
-        const lastSubCondition =
-          lastResponseConditionsSubconditions[
-            lastResponseConditionsSubconditions.length - 1
-          ];
-        lastSubCondition.value = activeAttestationParams.verificationValue;
+      if (activeAttestationParams.verificationContent === 'Assets Proof') {
+        // change verification value
+        lastResponseConditions.value =
+          activeAttestationParams.verificationValue;
+        // for okx
+        if (lastResponseConditionsSubconditions) {
+          const lastSubCondition =
+            lastResponseConditionsSubconditions[
+              lastResponseConditionsSubconditions.length - 1
+            ];
+          lastSubCondition.value = activeAttestationParams.verificationValue;
+        }
+      } else if (
+        activeAttestationParams.verificationContent === 'Token Holding'
+      ) {
+        if (lastResponseConditionsSubconditions) {
+          const firstSubCondition = lastResponseConditionsSubconditions[0];
+          firstSubCondition.value = activeAttestationParams.verificationValue;
+        }
       }
+
       // 3.send msg to content
       const currentWindowTabs = await chrome.tabs.query({
         active: true,

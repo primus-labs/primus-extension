@@ -26,12 +26,11 @@ type PswFormType = {
 interface SetPwdDialogProps {
   onSubmit: (form: PswFormType) => void;
   dataSourceId: string;
-  
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, dataSourceId }) => {
     const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
-    // console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
+    console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
     const dispatch: Dispatch<any> = useDispatch();
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',
@@ -41,6 +40,20 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
     );
+    const sysConfig = useSelector((state: UserState) => state.sysConfig);
+    const valueList = useMemo(() => {
+      let list = [];
+      if (pswForm.verificationContent === 'Assets Proof') {
+        list = [...ASSETSVERIFICATIONVALUETYPELIST];
+      } else if (pswForm.verificationContent === 'Token Holding') {
+        list = Object.keys(activeDataSouceUserInfo.tokenListMap).map((i) => ({
+          label: i,
+          value: i,
+          icon: `${sysConfig.TOKEN_LOGO_PREFIX}icon${i}.png`,
+        }));
+      }
+      return list;
+    }, [pswForm.verificationContent]);
     const formLegal = useMemo(() => {
       return !!(pswForm.verificationContent && pswForm.verificationValue);
     }, [pswForm]);
@@ -94,7 +107,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     useEffect(() => {
       handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
     }, [activeDataSouceUserInfo]);
-    
+
     useEffect(() => {
       if (attestLoading === 2) {
         dispatch(setAttestLoading(0));
@@ -123,7 +136,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             label="Verification Value"
             align="horizontal"
             placeholder="Select Value"
-            list={ASSETSVERIFICATIONVALUETYPELIST}
+            list={valueList}
             onChange={(p) => {
               handleChangePswForm(p, 'verificationValue');
             }}
