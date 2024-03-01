@@ -93,6 +93,7 @@ export type ATTESTATIONTYPEITEMTYPE = {
   name: string;
   icon: any;
   disabled?: boolean;
+  color?: string;
 };
 export type ASSETSVERIFICATIONCONTENTTYPEITEM = {
   value: string;

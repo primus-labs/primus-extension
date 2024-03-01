@@ -25,6 +25,10 @@
     background-color: var(--tag-tokens-tag-brand);
     color: var(--tag-tokens-tag-brand-text);
   }
+  &.gray {
+    background-color: var(--layer-tokens-layer-cool-gray-background);
+    color: var(--base-color-cool-gray-cool-gray-90);
+  }
   > .iconfont {
     font-size: var(--spacing-12);
   }

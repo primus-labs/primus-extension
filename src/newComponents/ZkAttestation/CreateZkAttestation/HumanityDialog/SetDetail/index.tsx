@@ -46,20 +46,28 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       (state: UserState) => state.webProofTypes
     );
     const contentList = useMemo(() => {
-      let supportedContentIdArr = Object.keys(
-        HUMANITYVERIFICATIONCONTENTTYPEMAP
-      ).filter((i) => {
-        const contentObj = HUMANITYVERIFICATIONCONTENTTYPEMAP[i];
-        const activeWebProofTemplate = webProofTypes.find(
-          (i) =>
-            i.dataSource === dataSourceId &&
-            (i.name === contentObj.label || i.name === contentObj.templateName)
-        );
-        return !!activeWebProofTemplate;
-      });
-      const list = supportedContentIdArr.map(
+      let supportedContentIdArr: any = [];
+
+      if (dataSourceId === 'google') {
+        supportedContentIdArr = ['Owns an account'];
+      } else {
+        supportedContentIdArr = Object.keys(
+          HUMANITYVERIFICATIONCONTENTTYPEMAP
+        ).filter((i) => {
+          const contentObj = HUMANITYVERIFICATIONCONTENTTYPEMAP[i];
+          const activeWebProofTemplate = webProofTypes.find(
+            (i) =>
+              i.dataSource === dataSourceId &&
+              (i.name === contentObj.label ||
+                i.name === contentObj.templateName)
+          );
+          return !!activeWebProofTemplate;
+        });
+      }
+      let list = supportedContentIdArr.map(
         (i) => HUMANITYVERIFICATIONCONTENTTYPEMAP[i]
       );
+
       return list;
     }, [webProofTypes, dataSourceId]);
     const valueList = useMemo(() => {
@@ -95,7 +103,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       setPswForm((f) => ({ ...f, [formKey]: v }));
     }, []);
     useEffect(() => {
-      handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
+      handleChangePswForm(activeDataSouceUserInfo?.userInfo?.userName, 'account');
     }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
@@ -143,12 +151,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             showSelf={false}
           />
         </div>
-        {activeDataSouceUserInfo.userInfo && (
+        {activeDataSouceUserInfo?.userInfo && (
           <div className="staticItem">
             <label>Account</label>
             <div className="value">
               <div className="account">
-                {activeDataSouceUserInfo.userInfo.userName}
+                {activeDataSouceUserInfo?.userInfo?.userName}
               </div>
             </div>
           </div>

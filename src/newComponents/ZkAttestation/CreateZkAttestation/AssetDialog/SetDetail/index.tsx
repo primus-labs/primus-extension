@@ -105,7 +105,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       setPswForm((f) => ({ ...f, [formKey]: v }));
     }, []);
     useEffect(() => {
-      handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
+      handleChangePswForm(
+        activeDataSouceUserInfo?.userInfo?.userName,
+        'account'
+      );
     }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
@@ -149,15 +152,18 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             showSelf={false}
           />
         </div>
-        <div className="staticItem">
-          <label>Account</label>
-          <div className="value">
-            <div className="account">
-              {activeDataSouceUserInfo.userInfo.userName}
+        {activeDataSouceUserInfo?.userInfo && (
+          <div className="staticItem">
+            <label>Account</label>
+            <div className="value">
+              <div className="account">
+                {activeDataSouceUserInfo?.userInfo?.userName}
+              </div>
+              <div className="balance">${totalBalanceForAttest}</div>
             </div>
-            <div className="balance">${totalBalanceForAttest}</div>
           </div>
-        </div>
+        )}
+
         <PButton
           text="Next"
           className="fullWidth confirmBtn"

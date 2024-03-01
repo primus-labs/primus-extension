@@ -29,7 +29,6 @@ interface SetPwdDialogProps {
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, dataSourceId }) => {
     const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
-    console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
     const dispatch: Dispatch<any> = useDispatch();
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',

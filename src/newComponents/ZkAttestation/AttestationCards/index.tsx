@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
 import {BASEVENTNAME} from '@/config/events'
-import { DATASOURCEMAP } from '@/config/dataSource';
+import { DATASOURCEMAP, dataSource } from '@/config/dataSource';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
@@ -138,7 +138,10 @@ const Cards: React.FC<PDropdownProps> = memo(
       return str;
     };
     const getResult = (i) => {
-      return i.uiTemplate.condition;
+      if (i.dataSourceId === 'google') {
+        return 'Verified';
+      }
+      return i?.uiTemplate?.condition;
     };
     const handleOnChain = useCallback((i) => {}, []);
     const handleShare = useCallback((i) => {}, []);
@@ -208,7 +211,7 @@ const Cards: React.FC<PDropdownProps> = memo(
             >
               <div className="cardContent">
                 <div className="header">
-                  <PTag text={`${i.attestationType}`} color="yellow" />
+                  <PTag text={`${i.attestationType}`} color={ ATTESTATIONTYPEMAP[i.attestationType].color} />
                   <div className="operations">
                     <PButton
                       className="shareBtn"

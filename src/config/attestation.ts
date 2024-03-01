@@ -20,6 +20,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     id: 'Assets Certificate',
     name: 'Assets Certificate',
     icon: iconAttestationTypeAssets,
+    color: 'yellow',
   },
   'Social Activities': {
     id: 'Social Activities',
@@ -31,11 +32,13 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     id: 'Humanity Verification',
     name: 'Humanity Verification',
     icon: iconAttestationTypeIdentity,
+    color: 'gray',
   },
   'On-chain Transaction': {
     id: 'On-chain Transaction',
     name: 'On-chain Transaction',
     icon: iconAttestationTypeOnChain,
+    color: 'blue',
   },
   'Qualification Certificate': {
     id: 'Qualification Certificate',
