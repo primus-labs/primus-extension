@@ -62,6 +62,7 @@ export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
 type ATTESTATIONTYPEITEMTYPEMAP = {
   [propName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
 };
+
 // Assets Certificate content/value options
 export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   'Assets Proof': {
@@ -83,7 +84,7 @@ export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   '1': {
     value: '1',
     label: '$1',
-  },//delete
+  }, //delete
   '10': {
     value: '10',
     label: '$10',
@@ -103,6 +104,34 @@ export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 };
 export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
+
+// Humanity Verification content/value options
+export const HUMANITYVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  'KYC Status': {
+    value: 'KYC Status',
+    label: 'KYC Status',
+  },
+  'Owns an account': {
+    value: 'Owns an account',
+    label: 'Owns an account',
+    templateName: 'Account Ownership',
+  },
+};
+export const HUMANITYVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(HUMANITYVERIFICATIONCONTENTTYPEEMAP);
+export const HUMANITYVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  'Basic Verification': {
+    value: 'Basic Verification',
+    label: 'Basic Verification',
+  },
+  // 'Advanced Verification': {
+  //   value: 'Advanced Verification',
+  //   label: 'Advanced Verification',
+  // },
+};
+export const HUMANITYVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(HUMANITYVERIFICATIONVALUETYPEEMAP);
+
 // On-chain Transaction content/value options
 export const ONCHAINVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   '1': {
@@ -118,6 +147,11 @@ export const ONCHAINVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEIT
   Object.values(ONCHAINVERIFICATIONCONTENTTYPEEMAP);
 
 
+export const ALLVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  ...ASSETSVERIFICATIONCONTENTTYPEEMAP,
+  ...HUMANITYVERIFICATIONCONTENTTYPEEMAP,
+  ...ONCHAINVERIFICATIONCONTENTTYPEEMAP
+};
 // const attestationTypeMap = {
 //   1: {
 //     title: 'On-chain Transaction Proof',

@@ -1,12 +1,14 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ONCHAINVERIFICATIONCONTENTTYPELIST } from '@/config/attestation';
+import {
+  HUMANITYVERIFICATIONCONTENTTYPELIST,
+  HUMANITYVERIFICATIONVALUETYPELIST,
+} from '@/config/attestation';
 import useDataSource from '@/hooks/useDataSource';
 import {
   gt,
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
-  formatAddress
 } from '@/utils/utils';
 import { setAttestLoading } from '@/store/actions';
 
@@ -16,11 +18,10 @@ import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
 
 import './index.scss';
-import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 type PswFormType = {
   verificationContent: '';
-  // verificationValue: ''; // different
-  account: string;
+  verificationValue: '';
+  account?: string;
 };
 interface SetPwdDialogProps {
   onSubmit: (form: PswFormType) => void;
@@ -33,61 +34,72 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const dispatch: Dispatch<any> = useDispatch();
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',
+      verificationValue: '',
       account: '',
     });
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
     );
-    const sysConfig = useSelector((state: UserState) => state.sysConfig);
-    const onChainAssetsSources = useSelector(
-      (state: UserState) => state.onChainAssetsSources
-    );
-    // different
-    const accountList = useMemo(() => {
-      let list = Object.values(onChainAssetsSources).map((i: any) => ({
-        label: formatAddress(i.address,6,6),
-        value: i.address,
-        icon: iconWalletMetamask, //TODO-newui
-      }));
+    const valueList = useMemo(() => {
+      let list = [];
+      if (pswForm.verificationContent === 'KYC Status') {
+        list = [...HUMANITYVERIFICATIONVALUETYPELIST];
+      } else if (pswForm.verificationContent === 'Owns an account') {
+        list = [
+          {
+            label: 'N/A',
+            value: 'N/A',
+            disabled: true,
+            // selected: true,
+          },
+        ];
+      }
       return list;
-    }, [onChainAssetsSources]);
-    //different
+    }, [pswForm.verificationContent]);
     const formLegal = useMemo(() => {
-      return !!(pswForm.verificationContent && pswForm.account);
+      return !!(pswForm.verificationContent && pswForm.verificationValue);
     }, [pswForm]);
-    
+
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
         return;
       }
-      //diffferent
+      //different
       onSubmit(pswForm);
       return;
-    }, [formLegal, pswForm,]);
+    }, [formLegal, pswForm]);
 
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => ({ ...f, [formKey]: v }));
     }, []);
-    //different
-    // useEffect(() => {
-    //   handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
-    // }, [activeDataSouceUserInfo]);
+    useEffect(() => {
+      handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
+    }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
       if (attestLoading === 2) {
         dispatch(setAttestLoading(0));
       }
     }, [attestLoading, onSubmit]);
+    useEffect(() => {
+      if (pswForm.verificationContent) {
+        let newValue = ''
+        if (pswForm.verificationContent === 'Owns an account') {
+          newValue = 'N/A'
+        }
+        handleChangePswForm(newValue, 'verificationValue');
+      }
+    }, [pswForm.verificationContent, handleChangePswForm]);
 
     return (
-      <div className="pFormWrapper detailForm2">
+      <div className="pFormWrapper detailForm3">
         <div className="formItem">
           <PSelect
             className="verificationContent"
             label="Verification Content"
             align="horizontal"
             placeholder="Select Content"
-            list={ONCHAINVERIFICATIONCONTENTTYPELIST}
+            list={HUMANITYVERIFICATIONCONTENTTYPELIST}
             onChange={(p) => {
               handleChangePswForm(p, 'verificationContent');
             }}
@@ -95,30 +107,30 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             showSelf={false}
           />
         </div>
-        {/* different */}
         <div className="formItem">
           <PSelect
-            className="account"
-            label="Account"
+            className="verificationValue"
+            label="Verification Value"
             align="horizontal"
-            placeholder="Select Account"
-            list={accountList}
+            placeholder="Select Value"
+            list={valueList}
             onChange={(p) => {
-              handleChangePswForm(p, 'account');
+              handleChangePswForm(p, 'verificationValue');
             }}
-            value={pswForm.account}
+            value={pswForm.verificationValue}
             showSelf={false}
           />
         </div>
-        {/* <div className="staticItem">
-          <label>Account</label>
-          <div className="value">
-            <div className="account">
-              {activeDataSouceUserInfo.userInfo.userName}
+        {activeDataSouceUserInfo.userInfo && (
+          <div className="staticItem">
+            <label>Account</label>
+            <div className="value">
+              <div className="account">
+                {activeDataSouceUserInfo.userInfo.userName}
+              </div>
             </div>
-            <div className="balance">${totalBalanceForAttest}</div>
           </div>
-        </div> */}
+        )}
         <PButton
           text="Next"
           className="fullWidth confirmBtn"

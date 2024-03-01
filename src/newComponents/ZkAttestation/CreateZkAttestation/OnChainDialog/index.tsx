@@ -4,7 +4,8 @@ import { useSearchParams } from 'react-router-dom';
 import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
-import { DATASOURCEMAP, dataSource } from '@/config/dataSource';
+import { DATASOURCEMAP,  } from '@/config/dataSource';
+import {ALLVERIFICATIONCONTENTTYPEEMAP} from '@/config/attestation'
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
@@ -59,10 +60,14 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       dispatch(setActiveAttestation(activeAttestationParams));
 
       // 2.check web proof template
+      const contentObj =
+        ALLVERIFICATIONCONTENTTYPEEMAP[
+          activeAttestationParams.verificationContent
+        ];
       const activeWebProofTemplate = webProofTypes.find(
         (i) =>
           i.dataSource === activeAttestationParams.dataSourceId &&
-          i.name === activeAttestationParams.verificationContent
+          (i.name === contentObj.label || i.name === contentObj.templateName)
       );
       const currRequestTemplate = {
         ...activeWebProofTemplate,
@@ -115,13 +120,6 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
     },
     [assetForm, fromEvents, BASEventDetail, dispatch]
   );
-  // useEffect(() => {
-  //   if (attestLoading === 2) {
-  //     return () => {
-  //       dispatch(setAttestLoading(0));
-  //     };
-  //   }
-  // }, [attestLoading, onSubmit]);
 
   return (
     <PMask>

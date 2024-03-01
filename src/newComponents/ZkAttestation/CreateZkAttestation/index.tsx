@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
 import PButton from '@/newComponents/PButton';
 import AssetDialog from './AssetDialog';
+import HumanityDialog from './HumanityDialog';
+
 import OnChainDialog from './OnChainDialog';
 
 interface PBackProps {
@@ -13,6 +15,9 @@ const PClose: React.FC<PBackProps> = memo(({ type, onClose, onSubmit }) => {
     <div className="createZkAttestation">
       {type === 'Assets Certificate' && (
         <AssetDialog onClose={onClose} onSubmit={onSubmit} />
+      )}
+      {type === 'Humanity Verification' && (
+        <HumanityDialog onClose={onClose} onSubmit={onSubmit} />
       )}
       {type === 'On-chain Transaction' && (
         <OnChainDialog onClose={onClose} onSubmit={onSubmit} />

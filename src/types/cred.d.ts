@@ -97,4 +97,5 @@ export type ATTESTATIONTYPEITEMTYPE = {
 export type ASSETSVERIFICATIONCONTENTTYPEITEM = {
   value: string;
   label: string;
+  templateName?: string
 };

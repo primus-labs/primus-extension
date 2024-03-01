@@ -5,6 +5,8 @@ import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP, dataSource } from '@/config/dataSource';
+import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
+
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
@@ -16,7 +18,7 @@ import SetDataSource from './SetDataSource';
 import OrderItem from '@/newComponents/OrderItem';
 import iconDone from '@/assets/newImg/layout/iconDone.svg';
 
-import './index.scss';
+import '../AssetDialog/index.scss';
 
 interface PButtonProps {
   // sourceName: string;
@@ -52,18 +54,24 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       const activeAttestationParams = {
         ...assetForm,
         ...form,
-        attestationType: 'Assets Certificate', // TODO-newui
+        attestationType: 'Humanity Verification', // TODO-newui different
         fetchType: 'Web',
         // loading: 1,
       };
       dispatch(setActiveAttestation(activeAttestationParams));
 
       // 2.check web proof template
-      const activeWebProofTemplate = webProofTypes.find(
-        (i) =>
-          i.dataSource === activeAttestationParams.dataSourceId &&
-          i.name === activeAttestationParams.verificationContent
-      );
+      // templateName
+       const contentObj =
+         ALLVERIFICATIONCONTENTTYPEEMAP[
+           activeAttestationParams.verificationContent
+         ];
+       const activeWebProofTemplate = webProofTypes.find(
+         (i) =>
+           i.dataSource === activeAttestationParams.dataSourceId &&
+           (i.name === contentObj.label || i.name === contentObj.templateName)
+       );
+      // TODO-newui get account from attestation???
       const currRequestTemplate = {
         ...activeWebProofTemplate,
         schemaType:
@@ -72,32 +80,32 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
             : activeWebProofTemplate.schemaType,
         event: fromEvents,
       };
-      const responses = currRequestTemplate.datasourceTemplate.responses;
-
-      const lastResponse = responses[responses.length - 1];
-      const lastResponseConditions = lastResponse.conditions;
-      const lastResponseConditionsSubconditions =
-        lastResponseConditions.subconditions;
-      if (activeAttestationParams.verificationContent === 'Assets Proof') {
-        // change verification value
-        lastResponseConditions.value =
-          activeAttestationParams.verificationValue;
-        // for okx
-        if (lastResponseConditionsSubconditions) {
-          const lastSubCondition =
-            lastResponseConditionsSubconditions[
-              lastResponseConditionsSubconditions.length - 1
-            ];
-          lastSubCondition.value = activeAttestationParams.verificationValue;
-        }
-      } else if (
-        activeAttestationParams.verificationContent === 'Token Holding'
-      ) {
-        if (lastResponseConditionsSubconditions) {
-          const firstSubCondition = lastResponseConditionsSubconditions[0];
-          firstSubCondition.value = activeAttestationParams.verificationValue;
-        }
-      }
+      // different
+      // const responses = currRequestTemplate.datasourceTemplate.responses;
+      // const lastResponse = responses[responses.length - 1];
+      // const lastResponseConditions = lastResponse.conditions;
+      // const lastResponseConditionsSubconditions =
+      //   lastResponseConditions.subconditions;
+      // if (activeAttestationParams.verificationContent === 'Assets Proof') {
+      //   // change verification value
+      //   lastResponseConditions.value =
+      //     activeAttestationParams.verificationValue;
+      //   // for okx
+      //   if (lastResponseConditionsSubconditions) {
+      //     const lastSubCondition =
+      //       lastResponseConditionsSubconditions[
+      //         lastResponseConditionsSubconditions.length - 1
+      //       ];
+      //     lastSubCondition.value = activeAttestationParams.verificationValue;
+      //   }
+      // } else if (
+      //   activeAttestationParams.verificationContent === 'Token Holding'
+      // ) {
+      //   if (lastResponseConditionsSubconditions) {
+      //     const firstSubCondition = lastResponseConditionsSubconditions[0];
+      //     firstSubCondition.value = activeAttestationParams.verificationValue;
+      //   }
+      // }
 
       // 3.send msg to content
       const currentWindowTabs = await chrome.tabs.query({
@@ -115,11 +123,12 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
     },
     [assetForm, fromEvents, BASEventDetail, dispatch]
   );
+  
 
   return (
     <PMask>
       {/* onClose={onClose} closeable={!fromEvents} */}
-      <div className="pDialog2 assetAttestationDialog">
+      <div className="pDialog2 assetAttestationDialog onChainAttestationDialog">
         <PClose onClick={onClose} />
         <main>
           <header>

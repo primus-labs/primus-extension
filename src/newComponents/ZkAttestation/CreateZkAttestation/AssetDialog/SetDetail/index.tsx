@@ -113,6 +113,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         dispatch(setAttestLoading(0));
       }
     }, [attestLoading, onSubmit]);
+    useEffect(() => {
+      if (pswForm.verificationContent) {
+        handleChangePswForm('', 'verificationValue');
+      }
+    }, [pswForm.verificationContent, handleChangePswForm]);
 
     return (
       <div className="pFormWrapper detailForm">

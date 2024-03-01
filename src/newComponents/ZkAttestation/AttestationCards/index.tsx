@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
+import {BASEVENTNAME} from '@/config/events'
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import useDataSource from '@/hooks/useDataSource';
@@ -104,6 +105,12 @@ const Cards: React.FC<PDropdownProps> = memo(
         } else if (i.verificationContent === 'Token Holding') {
           str = i.verificationContent;
         }
+      } else if (i.attestationType === 'Humanity Verification') {
+        if (i.verificationContent === 'KYC Status') {
+          str = i.verificationContent;
+        }else if (i.verificationContent === 'Owns an account') {
+          str = i.verificationContent;
+        } 
       }
       return str;
     };
@@ -120,6 +127,12 @@ const Cards: React.FC<PDropdownProps> = memo(
               <span>{i.verificationValue}</span>
             </>
           );
+        }
+      } else if (i.attestationType === 'Humanity Verification') {
+        if (i.verificationContent === 'KYC Status') {
+          str = i.verificationValue;
+        } else if (i.verificationContent === 'Owns an account') {
+          str = i.verificationValue;
         }
       }
       return str;
