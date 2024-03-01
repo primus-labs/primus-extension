@@ -14,7 +14,7 @@
   margin-top: 15px;
 
   .achievementTaskitemText {
-    width: 1000px;
+    //width: 980px;
     display: flex;
 
     .achievementTaskitemIcon {
@@ -35,7 +35,8 @@
   }
 
   .achievementTaskitemFinishBtn {
-    margin-right: 20px;
+    margin-left: auto;
+    margin-right: 40px;
     width: 79px;
     height: 32px;
   }

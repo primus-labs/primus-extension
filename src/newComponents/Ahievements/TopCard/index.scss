@@ -16,12 +16,9 @@
     border: 1px solid var(--border-tokens-border-primary);
     background: var(--layer-tokens-layer-primary, #fff);
     padding: 24px;
-    display: flex;
 
-    .pointsEarned {
-      width: 116px;
-      height: 66px;
-      gap: var(--spacing-8);
+    .points-text-line {
+      display: flex;
 
       .pointsEarned-text {
         font-size: 14px;
@@ -29,7 +26,36 @@
         color: var(--text-tokens-text-secondary, #525252);
       }
 
+      .pointsShare {
+        margin-left: auto;
+        display: flex;
+        height: 16px;
+        cursor: pointer;
+
+        .pointsShareText {
+          font-family: 'IBM Plex Sans';
+          font-size: 14px;
+          font-weight: 500;
+          width: 150px;
+          height: 16px;
+          color: var(--text-tokens-text-primary, #161616);
+        }
+
+        .pointsShareIcon {
+          height: 16px;
+          width: 16px;
+        }
+      }
+    }
+
+    .pointsEarned {
+      width: 116px;
+      height: 66px;
+      gap: var(--spacing-8);
+
+
       .points-score {
+        margin-top:10px;
         width: 116px;
         height: 40px;
         font-size: 32px;
@@ -63,30 +89,6 @@
         color: var(--text-tokens-text-secondary, #525252);
       }
     }
-
-    .pointsShare {
-      margin-left: 260px;
-      display: flex;
-      height: 16px;
-      cursor: pointer;
-
-
-      .pointsShareText {
-        font-family: 'IBM Plex Sans';
-        font-size: 14px;
-        font-weight: 500;
-        width: 150px;
-        height: 16px;
-        color: var(--text-tokens-text-primary, #161616);
-      }
-
-      .pointsShareIcon {
-        margin-right: 10px;
-        height: 16px;
-        width: 16px;
-      }
-    }
-
   }
 
   .rightCard {
@@ -97,12 +99,9 @@
     border: 1px solid var(--border-tokens-border-primary);
     background: var(--layer-tokens-layer-primary, #fff);
     padding: 24px;
-    display: flex;
 
-    .referral {
-      width: 300px;
-      height: 66px;
-      gap: var(--spacing-8);
+    .referral-text-line {
+      display: flex;
 
       .referral-text {
         font-size: 14px;
@@ -110,7 +109,37 @@
         color: var(--text-tokens-text-secondary, #525252);
       }
 
+      .referralShare {
+        margin-left: auto;
+        width: 200px;
+        display: flex;
+        height: 16px;
+        cursor: pointer;
+
+        .referralShareText {
+          margin-left: auto;
+          font-family: 'IBM Plex Sans';
+          font-size: 14px;
+          font-weight: 500;
+          width: 150px;
+          height: 16px;
+          color: var(--text-tokens-text-primary, #161616);
+        }
+
+        .referralShareIcon {
+          cursor: pointer;
+          height: 16px;
+          width: 16px;
+        }
+      }
+    }
+
+    .referral {
+      width: 300px;
+      height: 66px;
+      gap: var(--spacing-8);
       .referral-times {
+        margin-top:10px;
         width: 116px;
         height: 40px;
         font-size: 32px;
@@ -162,28 +191,7 @@
       }
     }
 
-    .referralShare {
-      width: 200px;
-      display: flex;
-      height: 16px;
-      cursor: pointer;
 
-      .referralShareText {
-        font-family: 'IBM Plex Sans';
-        font-size: 14px;
-        font-weight: 500;
-        width: 150px;
-        height: 16px;
-        color: var(--text-tokens-text-primary, #161616);
-      }
-
-      .referralShareIcon {
-        cursor: pointer;
-        margin-left: 5px;
-        height: 16px;
-        width: 16px;
-      }
-    }
 
     //background-color: #0e6027;
   }

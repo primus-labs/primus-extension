@@ -51,6 +51,10 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
       };
       const res = await finishTask(finishBody);
       if (res.rc === 0) {
+        //save referral code
+        await chrome.storage.local.set({
+          referralCode: referralCode ,
+        });
         onClose();
         setReferralTaskFinished();
         //set sign-in task item finished

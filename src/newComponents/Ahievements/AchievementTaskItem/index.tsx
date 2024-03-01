@@ -190,7 +190,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
   return (
     <div className="achievementTaskitem">
       <div className={'achievementTaskitemText'}>
-        <img className={'achievementTaskitemIcon'} src={taskItemIcon}></img>
+        <img className={'achievementTaskitemIcon'} src={taskItem.taskIcon}></img>
         <input type={'hidden'} value={taskItem.taskIdentifier} />
         <div className={'achievementTaskitemDesc'}>{taskItem.taskDesc}</div>
         <div className={'achievementTaskitemScore'}>
