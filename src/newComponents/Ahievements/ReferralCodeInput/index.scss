@@ -29,11 +29,12 @@
     }
 
     .inputComponent {
-      margin-top:-15px;
+      margin-top: -5px;
       display: flex;
       position: relative;
       width: 400px;
       height: 40px;
+
       button {
         position: absolute;
         font-size: 14px;
@@ -41,11 +42,12 @@
         color: var(--text-tokens-text-primary, #161616);
         letter-spacing: 0.16px;
         font-weight: 500;
-        top: 11px;
+        top: 5px;
         right: 10px;
       }
     }
     .confirm-button{
+      margin-top: 15px;
       font-size: 14px;
       font-family: 'IBM Plex Sans';
       width: 400px;

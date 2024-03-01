@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import './index.scss';
-import { Input } from 'antd';
+import { Input, Form } from 'antd';
 import PButton from '@/newComponents/PButton';
 import { finishTask } from '@/services/api/achievements';
 
@@ -18,6 +18,7 @@ interface PButtonProps {
 const ReferralCodeInput: React.FC<PButtonProps> = memo(
   ({ onClose, setReferralTaskFinished }) => {
     const [referralCode, setReferralCode] = React.useState('');
+    const [form] = Form.useForm();
     const PasteButton = () => {
       return (
         <div> Paste </div>
@@ -35,8 +36,11 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
     };
 
     const handleSubmit = async () => {
-      debugger
       if (!referralCode || referralCode.trim() === '') {
+        console.log('Invalid referral code!');
+        debugger
+        form.submit;
+        return;
       }
       const finishBody = {
         taskIdentifier: 'SIGN_IN_USING_AN_REFERRAL_CODE',
@@ -68,12 +72,21 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
             <div className={'inputTitle'}>
               Referral Code
             </div>
-            <div className={'inputComponent'}>
-              <Input value={referralCode} onChange={(e) => setReferralCode(e.target.value)} />
-              <button onClick={handlePaste}>Paste</button>
-            </div>
-            <PButton text={'Confirm'} className={'confirm-button'} onClick={handleSubmit} />
-
+            <Form initialValues={{ referralCode: referralCode}}>
+              <div className={'inputComponent'}>
+                <Form.Item name={'referralCode'} rules={[
+                  {
+                    required: true,
+                    message:''
+                  }
+                ]}>
+                  <Input className={'inputComponent'} defaultValue={referralCode} value={referralCode}
+                         onChange={(e) => setReferralCode(e.target.value)} />
+                </Form.Item>
+                <button onClick={handlePaste}>Paste</button>
+              </div>
+              <PButton text={'Confirm'} className={'confirm-button'} onClick={handleSubmit} />
+            </Form>
           </main>
 
         </div>
