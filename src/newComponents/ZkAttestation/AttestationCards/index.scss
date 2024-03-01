@@ -16,7 +16,7 @@
 
     @include clickableCard;
     cursor: default;
-    min-height: 428px;
+    min-height: 368px;
     padding: var(--spacing-16);
 
     .cardContent {
@@ -46,6 +46,10 @@
         //     }
         //   }
         // }
+        .operations{
+          @include frsc;
+          gap: var(--spacing-8);
+        }
       }
       .brief {
         @include frsc;
@@ -73,16 +77,42 @@
             @include frsc;
             gap: var(--spacing-8);
             @include numberHint;
-            .iconfont {
-              font-size: var(--spacing-12);
-              color: var(--icon-tokens-icon-primary);
+            // .iconfont {
+            //   font-size: var(--spacing-12);
+            //   color: var(--icon-tokens-icon-primary);
+            // }
+            .iconUpdate {
+              width: var(--spacing-12);
             }
           }
         }
       }
-      .desc {
-        @include BodyBody300;
-        color: var(--text-tokens-text-secondary);
+      .details {
+        width: 100%;
+        @include fcss;
+        gap: var(--spacing-16);
+        padding: var(--spacing-24) var(--spacing-16);
+        border-radius: var(--spacing-8);
+        background: var(--layer-tokens-layer-on-primary);
+        .descItems {
+          width: 100%;
+          @include fcss;
+          gap: var(--spacing-8);
+          .descItem {
+            width: 100%;
+            @include frbc;
+            .label {
+              @include BodyBody100;
+              color: var(--text-tokens-text-tertiary);
+            }
+            .value {
+              @include NumberId;
+            }
+            .icon-Add {
+              font-size: var(--spacing-24);
+            }
+          }
+        }
       }
     }
     .connectBtn {

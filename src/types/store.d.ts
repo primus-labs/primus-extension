@@ -37,6 +37,7 @@ type activeAttestationRequest = {
   loading?: loadingStatus;
   presets?: any; // attest params
   requestId?: string;
+  account?: string;
 };
 export type UserState = {
   padoServicePort: chrome.runtime.Port;

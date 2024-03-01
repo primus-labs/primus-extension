@@ -51,6 +51,7 @@ export type CredTypeItemType = {
   verificationValue?: string;
   attestationType?: string; // 'Assets Certificate'
   fetchType?: string; // Web ,API
+  account?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

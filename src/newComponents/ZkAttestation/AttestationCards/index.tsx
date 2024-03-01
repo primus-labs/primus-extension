@@ -1,18 +1,25 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+import dayjs from 'dayjs';
 import { DATASOURCEMAP } from '@/config/dataSource';
+import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
-import { getCurrentDate } from '@/utils/utils';
-import type { SyntheticEvent } from 'react';
+import { getCurrentDate, formatAddress } from '@/utils/utils';
+import { setCredentialsAsync } from '@/store/actions';
+import type { SyntheticEvent, Dispatch } from 'react';
 import type { UserState } from '@/types/store';
+import type { CredTypeItemType } from '@/types/cred';
 
 import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
+import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 
 import './index.scss';
+import { formatDate, div } from '../../../utils/utils';
 
 type NavItem = {
   type: string;
@@ -29,6 +36,7 @@ interface PDropdownProps {
 }
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
+    const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
     const [activeDataSourceName, setActiveDataSourceName] =
       useState<string>('');
@@ -46,7 +54,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     );
     const filterdList: any = useMemo(() => {
       const obj = { ...credentialsFromStore };
-      delete obj['1709201562550'];
+      delete obj['1709201562550']; // TODO-newui
 
       var newList = Object.values(obj);
       if (dataSourceQueryType && dataSourceQueryType !== 'All') {
@@ -79,6 +87,92 @@ const Cards: React.FC<PDropdownProps> = memo(
       },
       [deleteDataSourceFn]
     );
+    const formatDate = (timestamp) => {
+      return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
+    };
+    const getDataSourceMetaInfo = (dataSourceId) => {
+      return DATASOURCEMAP[dataSourceId];
+    };
+    const getContent = (i) => {
+      let str = '';
+      if (i.attestationType === 'Assets Certificate') {
+        if (i.verificationContent === 'Assets Proof') {
+          str = 'Asset balance';
+        }
+        // else if () {
+
+        // }
+      }
+      return str;
+    };
+    const getValue = (i) => {
+      let str = '';
+      if (i.attestationType === 'Assets Certificate') {
+        if (i.verificationContent === 'Assets Proof') {
+          str = `>=${i.verificationValue}`;
+        }
+        // else if () {
+        // }
+      }
+      return str;
+    };
+    const getResult = (i) => {
+      return i.uiTemplate.condition;
+    };
+    const handleOnChain = useCallback((i) => {}, []);
+    const handleShare = useCallback((i) => {}, []);
+    const handleCopy = useCallback((i) => {}, []);
+    const handleMore = useCallback((i) => {
+      handleDeleteCred(i);
+    }, []);
+    const initCredList = useCallback(async () => {
+      await dispatch(setCredentialsAsync());
+    }, [dispatch]);
+    const handleDeleteCred = useCallback(
+      async (item: CredTypeItemType) => {
+        const curRequestid = item.requestid;
+        const cObj = { ...credentialsFromStore };
+        if (cObj[curRequestid]?.event === BASEVENTNAME) {
+          const res = await chrome.storage.local.get([BASEVENTNAME]);
+          if (res[BASEVENTNAME]) {
+            const lastInfo = JSON.parse(res[BASEVENTNAME]);
+            const { steps } = lastInfo;
+            if (steps[2]?.status !== 1) {
+              let newInfo = { ...lastInfo };
+              const credTasks = steps[1]?.tasks;
+              let newCredTasks = { ...credTasks };
+              let newCredTasksStatus = steps[1]?.status;
+              let webTemplateId;
+              Object.keys(credTasks).forEach((k) => {
+                if (credTasks[k] === item.requestid) {
+                  webTemplateId = k;
+                }
+              });
+
+              delete newCredTasks[webTemplateId];
+              newCredTasksStatus =
+                Object.values(newCredTasks).length > 0 ? 1 : 0;
+              newInfo.steps[1] = {
+                status: newCredTasksStatus,
+                tasks: newCredTasks,
+              };
+              await chrome.storage.local.set({
+                [BASEVENTNAME]: JSON.stringify(newInfo),
+              });
+            }
+          }
+        }
+        delete cObj[curRequestid];
+        await chrome.storage.local.set({
+          credentials: JSON.stringify(cObj),
+        });
+        await initCredList();
+      },
+      [initCredList, credentialsFromStore]
+    );
+    // useEffect(() => {
+    //   handleDeleteCred(credentialsFromStore[]);
+    // }, [credentialsFromStore, handleDeleteCred]);
 
     return (
       <ul className="attestationCards">
@@ -95,16 +189,35 @@ const Cards: React.FC<PDropdownProps> = memo(
                 <div className="header">
                   <PTag text={`${i.attestationType}`} color="yellow" />
 
-                  {/* <div className="connections">
+                  <div className="operations">
+                    <PButton
+                      className="shareBtn"
+                      type="icon"
+                      icon={<i className="iconfont icon-iconDelete"></i>}
+                      onClick={() => {
+                        handleShare(i);
+                      }}
+                    />
+                    <div title="Copy link to share">
                       <PButton
-                        className="deleteBtn"
+                        className="copyBtn"
                         type="icon"
                         icon={<i className="iconfont icon-iconDelete"></i>}
                         onClick={() => {
-                          handleDelete(i);
+                          handleCopy(i);
                         }}
                       />
-                    </div> */}
+                    </div>
+
+                    <PButton
+                      className="moreBtn"
+                      type="icon"
+                      icon={<i className="iconfont icon-iconDelete"></i>}
+                      onClick={() => {
+                        handleMore(i);
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="brief">
                   <div className="splicedIcons">
@@ -112,15 +225,65 @@ const Cards: React.FC<PDropdownProps> = memo(
                       src={ATTESTATIONTYPEMAP[i.attestationType].icon}
                       alt=""
                     />
-                    <img src={DATASOURCEMAP[i.dataSourceId].icon} alt="" />
+                    <img
+                      src={getDataSourceMetaInfo(i.dataSourceId).icon}
+                      alt=""
+                    />
                   </div>
                   <div className="intro">
                     <div className="name">
-                      {DATASOURCEMAP[i.dataSourceId].name}
+                      {getDataSourceMetaInfo(i.dataSourceId).name}
                     </div>
                     <div className="updateTime">
-                      <span> {getCurrentDate(Number(i?.getDataTime))}</span>
-                      <i className="iconfont icon-iconDelete"></i>
+                      <span> {formatDate(Number(i?.getDataTime))}</span>
+                      <img src={iconUpdate} alt="" className="iconUpdate" />
+                    </div>
+                  </div>
+                </div>
+                <div className="details">
+                  <div className="descItems">
+                    {/* TODO-newui config uiTemplate */}
+                    <div className="descItem">
+                      <div className="label">Data account</div>
+                      <div className="value">{i.account}</div>
+                    </div>
+                    <div className="descItem">
+                      <div className="label">Content</div>
+                      <div className="value">{getContent(i)}</div>
+                    </div>
+                    <div className="descItem">
+                      <div className="label">Value</div>
+                      <div className="value">{getValue(i)}</div>
+                    </div>
+                    <div className="descItem">
+                      <div className="label">Result</div>
+                      <div className="value">{getResult(i)}</div>
+                    </div>
+                  </div>
+                  <div className="descItems">
+                    <div className="descItem">
+                      <div className="label">Create address</div>
+                      <div className="value">
+                        {formatAddress(i.address, 6, 4, '...')}
+                      </div>
+                    </div>
+                    <div className="descItem">
+                      <div className="label">Attest address</div>
+                      <div className="value">
+                        {formatAddress(PADOADDRESS, 6, 4, '...')}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="descItems">
+                    <div className="descItem">
+                      <div className="label">On-chain</div>
+                      <PButton
+                        icon={<i className="iconfont icon-Add"></i>}
+                        type="icon"
+                        onClick={() => {
+                          handleOnChain(i);
+                        }}
+                      />
                     </div>
                   </div>
                 </div>

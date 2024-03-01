@@ -16,6 +16,9 @@ const Home = memo(() => {
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
+  const attestLoading= useSelector(
+    (state: UserState) => state.attestLoading
+  );
   const hasConnected = useMemo(() => {
     return Object.keys(credentialsFromStore).length >0;
   }, [credentialsFromStore]);
@@ -25,7 +28,12 @@ const Home = memo(() => {
   const handleCloseAssetDialog = useCallback(() => {
     setVisibleAssetDialog(false);
   }, []);
-  const handleSubmitAssetDialog = useCallback(() => {}, []);
+  const handleSubmitAssetDialog = useCallback(() => { }, []);
+  useEffect(() => {
+    if (attestLoading === 2) {
+      setVisibleAssetDialog(false)
+    }
+  }, [attestLoading]);
   return (
     <div className="pageZkAttestation">
       <div className="pageContent">

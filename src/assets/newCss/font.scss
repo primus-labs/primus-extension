@@ -307,7 +307,7 @@
   line-height: 24px;
 }
 
-.number-id {
+@mixin NumberId {
   font-size: 14px;
   font-family: IBM Plex Mono;
   font-weight: 400;

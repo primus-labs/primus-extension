@@ -21,10 +21,12 @@ import './index.scss';
 type PswFormType = {
   verificationContent: '';
   verificationValue: '';
+  account: string;
 };
 interface SetPwdDialogProps {
   onSubmit: (form: PswFormType) => void;
   dataSourceId: string;
+  
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, dataSourceId }) => {
@@ -34,6 +36,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',
       verificationValue: '',
+      account: '',
     });
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
@@ -89,10 +92,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       setPswForm((f) => ({ ...f, [formKey]: v }));
     }, []);
     useEffect(() => {
+      handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
+    }, [activeDataSouceUserInfo]);
+    
+    useEffect(() => {
       if (attestLoading === 2) {
-        
-          dispatch(setAttestLoading(0));
-        
+        dispatch(setAttestLoading(0));
       }
     }, [attestLoading, onSubmit]);
 
