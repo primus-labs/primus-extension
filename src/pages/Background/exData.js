@@ -160,12 +160,12 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
             [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
           });
           EXCHANGEINFO[exchangeName] = exParams;
-          postMsg(port, { resType: type, res: true });
+          postMsg(port, { resType: type, res: true, connectType: 'API' });
         } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
           await chrome.storage.local.set({
             [exchangeName]: JSON.stringify(exData),
           });
-          postMsg(port, { resType: type, res: true });
+          postMsg(port, { resType: type, res: true, connectType: 'API' });
         } else {
           await chrome.storage.local.set({
             [exchangeName]: JSON.stringify(exData),
