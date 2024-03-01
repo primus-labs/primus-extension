@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
-import {BASEVENTNAME} from '@/config/events'
-import { DATASOURCEMAP, dataSource } from '@/config/dataSource';
+import { BASEVENTNAME } from '@/config/events';
+import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
@@ -17,8 +17,9 @@ import type { CredTypeItemType } from '@/types/cred';
 
 import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
+import PDropdown from '@/newComponents/PDropdown';
 import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
-
+import ConfirmDeleteDialog from '../ConfirmDeleteDialog';
 import './index.scss';
 import { formatDate, div } from '../../../utils/utils';
 import request from '@/utils/request';
@@ -42,6 +43,10 @@ const Cards: React.FC<PDropdownProps> = memo(
     const navigate = useNavigate();
     const [activeDataSourceName, setActiveDataSourceName] =
       useState<string>('');
+    const [confirmDeleteDialogVisible, setConfirmDeleteDialogVisible] =
+      useState<boolean>(false);
+    const [activeCredId, setActiveCredId] = useState<string>();
+
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
@@ -56,6 +61,35 @@ const Cards: React.FC<PDropdownProps> = memo(
     const dataSourceQueryType = useSelector(
       (state: UserState) => state.dataSourceQueryType
     );
+    const otherOperationsFn = useCallback((i) => {
+      // if (item?.provided?.length && item?.provided?.length > 0) {
+      //   return [
+      //     {
+      //       icon: iconClear,
+      //       text: 'Delete',
+      //     },
+      //   ];
+      // }
+      // if (item.type === 'UNISWAP_PROOF') {
+      //   return [
+      //     {
+      //       icon: iconClear,
+      //       text: 'Delete',
+      //     },
+      //   ];
+      // }
+      return [
+        {
+          value: 'Delete',
+          label: 'Delete',
+        },
+        {
+          value: 'Bind to DID',
+          label: 'Bind to DID',
+          disabled: true,
+        },
+      ];
+    }, []);
     const filterdList: any = useMemo(() => {
       const obj = { ...credentialsFromStore };
       delete obj['1709201562550']; // TODO-newui
@@ -108,9 +142,9 @@ const Cards: React.FC<PDropdownProps> = memo(
       } else if (i.attestationType === 'Humanity Verification') {
         if (i.verificationContent === 'KYC Status') {
           str = i.verificationContent;
-        }else if (i.verificationContent === 'Owns an account') {
+        } else if (i.verificationContent === 'Owns an account') {
           str = i.verificationContent;
-        } 
+        }
       }
       return str;
     };
@@ -146,174 +180,220 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleOnChain = useCallback((i) => {}, []);
     const handleShare = useCallback((i) => {}, []);
     const handleCopy = useCallback((i) => {}, []);
-    const handleMore = useCallback((i) => {
-      handleDeleteCred(i);
+    const handleShowMore = useCallback((i) => {
+      setActiveCredId(i.requestid);
     }, []);
     const initCredList = useCallback(async () => {
       await dispatch(setCredentialsAsync());
     }, [dispatch]);
-    const handleDeleteCred = useCallback(
-      async (item: CredTypeItemType) => {
-        const curRequestid = item.requestid;
-        const cObj = { ...credentialsFromStore };
-        if (cObj[curRequestid]?.event === BASEVENTNAME) {
-          const res = await chrome.storage.local.get([BASEVENTNAME]);
-          if (res[BASEVENTNAME]) {
-            const lastInfo = JSON.parse(res[BASEVENTNAME]);
-            const { steps } = lastInfo;
-            if (steps[2]?.status !== 1) {
-              let newInfo = { ...lastInfo };
-              const credTasks = steps[1]?.tasks;
-              let newCredTasks = { ...credTasks };
-              let newCredTasksStatus = steps[1]?.status;
-              let webTemplateId;
-              Object.keys(credTasks).forEach((k) => {
-                if (credTasks[k] === item.requestid) {
-                  webTemplateId = k;
-                }
-              });
+    const handleDeleteCred = useCallback(async () => {
+      const curRequestid = activeCredId as string;
+      const cObj = { ...credentialsFromStore };
+      if (cObj[curRequestid]?.event === BASEVENTNAME) {
+        const res = await chrome.storage.local.get([BASEVENTNAME]);
+        if (res[BASEVENTNAME]) {
+          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          const { steps } = lastInfo;
+          if (steps[2]?.status !== 1) {
+            let newInfo = { ...lastInfo };
+            const credTasks = steps[1]?.tasks;
+            let newCredTasks = { ...credTasks };
+            let newCredTasksStatus = steps[1]?.status;
+            let webTemplateId;
+            Object.keys(credTasks).forEach((k) => {
+              if (credTasks[k] === requestid) {
+                webTemplateId = k;
+              }
+            });
 
-              delete newCredTasks[webTemplateId];
-              newCredTasksStatus =
-                Object.values(newCredTasks).length > 0 ? 1 : 0;
-              newInfo.steps[1] = {
-                status: newCredTasksStatus,
-                tasks: newCredTasks,
-              };
-              await chrome.storage.local.set({
-                [BASEVENTNAME]: JSON.stringify(newInfo),
-              });
-            }
+            delete newCredTasks[webTemplateId];
+            newCredTasksStatus = Object.values(newCredTasks).length > 0 ? 1 : 0;
+            newInfo.steps[1] = {
+              status: newCredTasksStatus,
+              tasks: newCredTasks,
+            };
+            await chrome.storage.local.set({
+              [BASEVENTNAME]: JSON.stringify(newInfo),
+            });
           }
         }
-        delete cObj[curRequestid];
-        await chrome.storage.local.set({
-          credentials: JSON.stringify(cObj),
-        });
-        await initCredList();
+      }
+      delete cObj[curRequestid];
+      await chrome.storage.local.set({
+        credentials: JSON.stringify(cObj),
+      });
+      await initCredList();
+    }, [initCredList, credentialsFromStore, activeCredId]);
+    const handleHideMore = () => {
+      setActiveCredId(undefined);
+    };
+    const handleClickDropdownItem = useCallback(
+      (operation: string) => {
+        // setActiveItem(operation);
+        if (operation === 'Update') {
+          // onUpdate(item);
+        } else if (operation === 'Delete') {
+          // handleDeleteCred(activeCredId);
+          setConfirmDeleteDialogVisible(true);
+        }
       },
-      [initCredList, credentialsFromStore]
+      [activeCredId]
     );
+    const handleSubmitConfirmDeleteDialog = useCallback(() => {
+      setConfirmDeleteDialogVisible(false);
+      handleDeleteCred();
+    }, [handleDeleteCred]);
+    const handleCloseConfirmDeleteDialog = useCallback(() => {
+      setConfirmDeleteDialogVisible(false);
+    }, []);
     // useEffect(() => {
     //   handleDeleteCred(credentialsFromStore[]);
     // }, [credentialsFromStore, handleDeleteCred]);
 
     return (
-      <ul className="attestationCards">
-        {filterdList.map((i) => {
-          return (
-            <li
-              className="attestationCard"
-              onClick={() => {
-                handleConnect(i);
-              }}
-              key={i.name}
-            >
-              <div className="cardContent">
-                <div className="header">
-                  <PTag text={`${i.attestationType}`} color={ ATTESTATIONTYPEMAP[i.attestationType].color} />
-                  <div className="operations">
-                    <PButton
-                      className="shareBtn"
-                      type="icon"
-                      icon={<i className="iconfont icon-iconShare"></i>}
-                      onClick={() => {
-                        handleShare(i);
-                      }}
+      <div className="attestationsWrapper">
+        <ul className="attestationCards">
+          {filterdList.map((i) => {
+            return (
+              <li className="attestationCard" key={i.name}>
+                <div className="cardContent">
+                  <div className="header">
+                    <PTag
+                      text={`${i.attestationType}`}
+                      color={ATTESTATIONTYPEMAP[i.attestationType].color}
                     />
-                    <div title="Copy link to share">
+                    <div className="operations">
                       <PButton
-                        className="copyBtn"
+                        className="shareBtn"
                         type="icon"
-                        icon={<i className="iconfont icon-iconCopy"></i>}
+                        icon={<i className="iconfont icon-iconShare"></i>}
                         onClick={() => {
-                          handleCopy(i);
+                          handleShare(i);
                         }}
                       />
-                    </div>
-                    <PButton
-                      className="moreBtn"
-                      type="icon"
-                      icon={<i className="iconfont icon-iconMore"></i>}
-                      onClick={() => {
-                        handleMore(i);
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="brief">
-                  <div className="splicedIcons">
-                    <img
-                      src={ATTESTATIONTYPEMAP[i.attestationType].icon}
-                      alt=""
-                    />
-                    <img
-                      src={getDataSourceMetaInfo(i.dataSourceId).icon}
-                      alt=""
-                    />
-                  </div>
-                  <div className="intro">
-                    <div className="name">
-                      {getDataSourceMetaInfo(i.dataSourceId).name}
-                    </div>
-                    <div className="updateTime">
-                      <span> {formatDate(Number(i?.getDataTime))}</span>
-                      <img src={iconUpdate} alt="" className="iconUpdate" />
-                    </div>
-                  </div>
-                </div>
-                <div className="details">
-                  <div className="descItems">
-                    {/* TODO-newui config uiTemplate */}
-                    <div className="descItem">
-                      <div className="label">Data account</div>
-                      <div className="value">{i.account}</div>
-                    </div>
-                    <div className="descItem">
-                      <div className="label">Content</div>
-                      <div className="value">{getContent(i)}</div>
-                    </div>
-                    <div className="descItem">
-                      <div className="label">Value</div>
-                      <div className="value">{getValue(i)}</div>
-                    </div>
-                    <div className="descItem">
-                      <div className="label">Result</div>
-                      <div className="value">{getResult(i)}</div>
-                    </div>
-                  </div>
-                  <div className="descItems">
-                    <div className="descItem">
-                      <div className="label">Create address</div>
-                      <div className="value">
-                        {formatAddress(i.address, 6, 4, '...')}
+                      <div title="Copy link to share">
+                        <PButton
+                          className="copyBtn"
+                          type="icon"
+                          icon={<i className="iconfont icon-iconCopy"></i>}
+                          onClick={() => {
+                            handleCopy(i);
+                          }}
+                        />
                       </div>
-                    </div>
-                    <div className="descItem">
-                      <div className="label">Attest address</div>
-                      <div className="value">
-                        {formatAddress(PADOADDRESS, 6, 4, '...')}
+                      <div
+                        onClick={() => {
+                          handleShowMore(i);
+                        }}
+                        onMouseEnter={() => {
+                          handleShowMore(i);
+                        }}
+                        onMouseLeave={handleHideMore}
+                        className="moreBtnWrapper"
+                      >
+                        <PButton
+                          className="moreBtn"
+                          type="icon"
+                          icon={<i className="iconfont icon-iconMore"></i>}
+                          onClick={() => {}}
+                        />
+                        {activeCredId === i.requestid && (
+                          <div
+                            className="dropdownWrapper"
+                            onMouseEnter={() => {
+                              handleShowMore(i);
+                            }}
+                            onMouseLeave={handleHideMore}
+                          >
+                            <PDropdown
+                              list={otherOperationsFn(i)}
+                              onClick={handleClickDropdownItem}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <div className="descItems">
-                    <div className="descItem">
-                      <div className="label">On-chain</div>
-                      <PButton
-                        icon={<i className="iconfont icon-Add"></i>}
-                        type="icon"
-                        onClick={() => {
-                          handleOnChain(i);
-                        }}
+                  <div className="brief">
+                    <div className="splicedIcons">
+                      <img
+                        src={ATTESTATIONTYPEMAP[i.attestationType].icon}
+                        alt=""
                       />
+                      <img
+                        src={getDataSourceMetaInfo(i.dataSourceId).icon}
+                        alt=""
+                      />
+                    </div>
+                    <div className="intro">
+                      <div className="name">
+                        {getDataSourceMetaInfo(i.dataSourceId).name}
+                      </div>
+                      <div className="updateTime">
+                        <span> {formatDate(Number(i?.getDataTime))}</span>
+                        <img src={iconUpdate} alt="" className="iconUpdate" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="details">
+                    <div className="descItems">
+                      {/* TODO-newui config uiTemplate */}
+                      <div className="descItem">
+                        <div className="label">Data account</div>
+                        <div className="value">{i.account}</div>
+                      </div>
+                      <div className="descItem">
+                        <div className="label">Content</div>
+                        <div className="value">{getContent(i)}</div>
+                      </div>
+                      <div className="descItem">
+                        <div className="label">Value</div>
+                        <div className="value">{getValue(i)}</div>
+                      </div>
+                      <div className="descItem">
+                        <div className="label">Result</div>
+                        <div className="value">{getResult(i)}</div>
+                      </div>
+                    </div>
+                    <div className="descItems">
+                      <div className="descItem">
+                        <div className="label">Create address</div>
+                        <div className="value">
+                          {formatAddress(i.address, 6, 4, '...')}
+                        </div>
+                      </div>
+                      <div className="descItem">
+                        <div className="label">Attest address</div>
+                        <div className="value">
+                          {formatAddress(PADOADDRESS, 6, 4, '...')}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="descItems">
+                      <div className="descItem">
+                        <div className="label">On-chain</div>
+                        <PButton
+                          icon={<i className="iconfont icon-Add"></i>}
+                          type="icon"
+                          onClick={() => {
+                            handleOnChain(i);
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+        {confirmDeleteDialogVisible && (
+          <ConfirmDeleteDialog
+            onClose={handleCloseConfirmDeleteDialog}
+            onSubmit={handleSubmitConfirmDeleteDialog}
+          />
+        )}
+      </div>
     );
   }
 );

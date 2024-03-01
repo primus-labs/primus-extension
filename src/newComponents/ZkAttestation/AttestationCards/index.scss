@@ -46,9 +46,28 @@
         //     }
         //   }
         // }
-        .operations{
+        .operations {
           @include frsc;
           gap: var(--spacing-8);
+          .moreBtnWrapper {
+            position: relative;
+            width: var(--spacing-16);
+            height: var(--spacing-16);
+            .dropdownWrapper {
+              position: absolute;
+              z-index: 1;
+              top: var(--spacing-16);
+              right:0;
+              padding-top: var(--spacing-7);
+              width: fit-content;
+              // .PDropdown {
+              //   width: 100%;
+              // }
+              .dropdownOption{
+                width: 154px;
+              }
+            }
+          }
         }
       }
       .brief {
@@ -109,7 +128,7 @@
               @include NumberId;
               @include frsc;
               gap: var(--spacing-8);
-              .dataSourceIcon{
+              .dataSourceIcon {
                 width: var(--spacing-16);
               }
             }
