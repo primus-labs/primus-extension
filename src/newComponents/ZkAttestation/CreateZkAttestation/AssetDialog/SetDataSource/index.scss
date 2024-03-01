@@ -1,17 +1,17 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
-@import '../attestationForm.scss';
+@import '../../attestationForm.scss';
 
 .pFormWrapper.dataSourceNameForm {
   --selectInput-width: 182px;
   .formItem {
     @include attestationForm;
-    .dataSourceName{
-      @include inputSelectWidth(var(--selectInput-width),var(--selectInput-width));
+    .dataSourceName {
+      @include inputSelectWidth(
+        var(--selectInput-width),
+        var(--selectInput-width)
+      );
     }
-  }
-  .confirmBtn {
-    margin-top: var(--spacing-8);
   }
 }

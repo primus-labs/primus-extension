@@ -1,7 +1,7 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
-@import '../attestationForm.scss';
+@import '../../attestationForm.scss';
 .pFormWrapper.detailForm {
   --verificationContent-width: 132px;
   --verificationContent-input-width: 147px;
@@ -43,11 +43,8 @@
       .balance {
         @include BodyBody300;
         margin-left: 6px;
-        color: var(--text-tokens-text-placeholder)
+        color: var(--text-tokens-text-placeholder);
       }
     }
-  }
-  .confirmBtn {
-    margin-top: var(--spacing-8);
   }
 }

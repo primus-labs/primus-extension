@@ -62,6 +62,7 @@ export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
 type ATTESTATIONTYPEITEMTYPEMAP = {
   [propName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
 };
+// Assets Certificate content/value options
 export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   'Assets Proof': {
     value: 'Assets Proof',
@@ -102,6 +103,21 @@ export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 };
 export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
+// On-chain Transaction content/value options
+export const ONCHAINVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  '1': {
+    value: '1',
+    label: 'Largest ETH/USDC Uniswap Transaction',
+  },
+  // '2': {
+  //   value: '2',
+  //   label: 'Sum of WETH/USDC Uniswap Volume',
+  // },
+};
+export const ONCHAINVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(ONCHAINVERIFICATIONCONTENTTYPEEMAP);
+
+
 // const attestationTypeMap = {
 //   1: {
 //     title: 'On-chain Transaction Proof',

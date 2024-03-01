@@ -1,10 +1,10 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import type {UserState} from '@/types/store'
+import type { UserState } from '@/types/store';
 import Banner from '@/newComponents/Home/Banner';
 import AttestationTypeList from '@/newComponents/ZkAttestation/AttestationTypeList';
-import AssetDialog from '@/newComponents/ZkAttestation/CreateZkAttestation/AssetDialog'
+import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 import AttestationCards from '@/newComponents/ZkAttestation/AttestationCards';
 import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
@@ -12,26 +12,24 @@ import empty from '@/assets/newImg/zkAttestation/empty.svg';
 import './index.scss';
 
 const Home = memo(() => {
-  const [visibleAssetDialog, setVisibleAssetDialog] = useState<boolean>(false);
+  const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
-  const attestLoading= useSelector(
-    (state: UserState) => state.attestLoading
-  );
+  const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const hasConnected = useMemo(() => {
-    return Object.keys(credentialsFromStore).length >0;
+    return Object.keys(credentialsFromStore).length > 0;
   }, [credentialsFromStore]);
   const handleCreate = useCallback((typeItem) => {
-    setVisibleAssetDialog(true);
+    setVisibleAssetDialog(typeItem.id);
   }, []);
   const handleCloseAssetDialog = useCallback(() => {
-    setVisibleAssetDialog(false);
+    setVisibleAssetDialog('');
   }, []);
-  const handleSubmitAssetDialog = useCallback(() => { }, []);
+  const handleSubmitAssetDialog = useCallback(() => {}, []);
   useEffect(() => {
     if (attestLoading === 2) {
-      setVisibleAssetDialog(false)
+      setVisibleAssetDialog('');
     }
   }, [attestLoading]);
   return (
@@ -50,7 +48,8 @@ const Home = memo(() => {
           </div>
         )}
         {visibleAssetDialog && (
-          <AssetDialog
+          <CreateZkAttestation
+            type={visibleAssetDialog}
             onClose={handleCloseAssetDialog}
             onSubmit={handleSubmitAssetDialog}
           />

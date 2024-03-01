@@ -16,7 +16,7 @@ import SetDataSource from './SetDataSource';
 import OrderItem from '@/newComponents/OrderItem';
 import iconDone from '@/assets/newImg/layout/iconDone.svg';
 
-import './index.scss';
+import '../AssetDialog/index.scss';
 
 interface PButtonProps {
   // sourceName: string;
@@ -34,7 +34,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
-const dataSourceMetaInfo: DataSourceMapType = useMemo(() => {
+  const dataSourceMetaInfo: DataSourceMapType = useMemo(() => {
     if (assetForm.dataSourceId) {
       return DATASOURCEMAP[assetForm.dataSourceId];
     } else {
@@ -126,7 +126,7 @@ const dataSourceMetaInfo: DataSourceMapType = useMemo(() => {
   return (
     <PMask>
       {/* onClose={onClose} closeable={!fromEvents} */}
-      <div className="pDialog2 assetAttestationDialog">
+      <div className="pDialog2 assetAttestationDialog onChainAttestationDialog">
         <PClose onClick={onClose} />
         <main>
           <header>

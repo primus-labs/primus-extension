@@ -42,7 +42,7 @@ export type DataSourceItemType = ExchangeMeta & {
 
 
 export const DATASOURCEMAP: DataSourceMapType = {
-  onChain: {
+  'web3 wallet': {
     id: 'web3 wallet',
     name: 'Web3 Wallet',
     type: 'Assets',

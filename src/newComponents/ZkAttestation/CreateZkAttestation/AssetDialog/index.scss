@@ -1,40 +1,8 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
+@import '../attestationForm.scss';
 
 .pDialog2.assetAttestationDialog {
-  width: 528px;
-  main {
-    .detailWrapper {
-      @include detailWrapper;
-      .step {
-        &.done {
-          @include frsc;
-          gap: var(--spacing-12);
-          .iconDone {
-            width: var(--spacing-24);
-          }
-          .txt {
-            @include BodyBody100Semibold;
-            @include fcss;
-            gap: var(--spacing-4);
-            .title {
-              @include BodyBody300;
-            }
-            .dataSourceIntro {
-              @include frsc;
-              gap: var(--spacing-4);
-              > img {
-                width: var(--spacing-16);
-              }
-            }
-          }
-        }
-        // .con {
-        //   @include BodyBody100;
-        //   color: var(--text-tokens-text-secondary);
-        // }
-      }
-    }
-  }
+  @include attestationDialog;
 }
