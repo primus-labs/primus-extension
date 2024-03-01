@@ -45,6 +45,12 @@ export type CredTypeItemType = {
   rawParam?: any;
   dataToBeSigned?: any;
   proofContent?: any;
+
+  dataSourceId?: string;
+  verificationContent?: string;
+  verificationValue?: string;
+  attestationType?: string; // 'Assets Certificate'
+  fetchType?: string; // Web ,API
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

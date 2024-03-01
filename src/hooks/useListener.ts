@@ -28,7 +28,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
     (state: UserState) => state.padoServicePort
   );
   const padoServicePortListener = useCallback(async function (message: any) {
-    const { resType, res, msg, connectType, resMethodName } = message;
+    const { resType, res, msg, connectType, resMethodName, type } = message;
     if (resType && resType.startsWith('set-')) {
       console.log(`page_get:${resType}:`, res, msg);
       const lowerCaseSourceName = resType.split('-')[1];
@@ -170,6 +170,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
         }
       }
     }
+    
   }, []);
 
   useEffect(() => {
@@ -182,3 +183,4 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
   }, [padoServicePort, padoServicePortListener]);
 };
 export default useAlgorithm;
+

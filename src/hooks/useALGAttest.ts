@@ -163,6 +163,7 @@ const useAttest = function useAttest() {
           const fullAttestation = {
             ...content,
             ...parsedActiveRequestAttestation,
+            ...activeAttestation,
           };
 
           const credentialsObj = { ...credentialsFromStore };
@@ -443,9 +444,9 @@ const useAttest = function useAttest() {
         },
       });
     }
-    alert('Request Timed Out');
     dispatch(setAttestLoading(2));
     dispatch(setActiveAttestation({ loading: 2 }));
+    alert('Request Timed Out');
     // setActiveRequest({
     //   type: 'warn',
     //   title: 'Request Timed Out',
@@ -483,5 +484,67 @@ const useAttest = function useAttest() {
   }, [padoServicePort]);
   useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
+
+  
+  useEffect(() => {
+    const listerFn = (message: any) => {
+      const { type, name } = message;
+      if (type === 'pageDecode') {
+        if (name === 'cancelAttest') {
+          alert('Unable to proceed');
+          dispatch(setAttestLoading(2))
+          dispatch(setActiveAttestation({loading:2}));
+          // setActiveRequest({
+          //   type: 'warn',
+          //   title: 'Unable to proceed',
+          //   desc: 'Please try again later.',
+          // });
+        } else if (name === 'sendRequest') {
+          dispatch(setAttestLoading(1));
+          dispatch(setActiveAttestation({ loading: 1 }));
+          // setActiveRequest({
+          //   type: 'loading',
+          //   title: 'Attestation is processing',
+          //   desc: 'It may take a few seconds.',
+          // });
+        } else if (name === 'abortAttest') {
+          alert('Unable to proceed');
+          dispatch(setAttestLoading(2));
+          dispatch(setActiveAttestation({ loading: 2 }));
+          // if (activeRequest?.type === 'loading' || !activeRequest?.type) {//TODO-newui
+          //   setActiveRequest({
+          //     type: 'warn',
+          //     title: 'Unable to proceed',
+          //     desc: 'Please try again later.',
+          //   });
+          // }
+          // if (activeRequest?.type === 'loading') {
+          //   setIntervalSwitch(false);
+          // }
+        }
+        // else if (
+        //   message.name === 'closeDataSourcePage' &&
+        //   message.tryFlag
+        // ) {
+        //   LINEA_DEFI_VOYAGETryAgainFn();
+        // }
+      } else if (type === 'googleAuth') {
+        if (name === 'cancelAttest') {
+          alert('Unable to proceed');
+          dispatch(setAttestLoading(2));
+          dispatch(setActiveAttestation({ loading: 2 }));
+          // setActiveRequest({
+          //   type: 'warn',
+          //   title: 'Unable to proceed',
+          //   desc: 'Please try again later.',
+          // });
+        }
+      }
+    };
+    chrome.runtime.onMessage.addListener(listerFn);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listerFn);
+    };
+  }, [dispatch]);
 };
 export default useAttest;

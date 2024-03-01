@@ -10,7 +10,8 @@
   border-radius: var(--spacing-16);
   &.yellow {
     background-color: var(--tag-tokens-tag-yellow);
-    color: var(-tag-tokens-tag-yellow-text);
+    color: var(--tag-tokens-tag-yellow-text);
+
   }
   &.blue {
     background-color: var(--tag-tokens-tag-blue);

@@ -4,6 +4,14 @@ import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
 } from '@/config/attestation';
+import useDataSource from '@/hooks/useDataSource';
+import {
+  gt,
+  getTotalBalFromNumObjAPriceObj,
+  getTotalBalFromAssetsMap,
+} from '@/utils/utils';
+import { setAttestLoading } from '@/store/actions';
+
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
@@ -16,10 +24,12 @@ type PswFormType = {
 };
 interface SetPwdDialogProps {
   onSubmit: (form: PswFormType) => void;
-  dataSourceId?:string
+  dataSourceId: string;
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, dataSourceId }) => {
+    const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
+    // console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
     const dispatch: Dispatch<any> = useDispatch();
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',
@@ -31,6 +41,20 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const formLegal = useMemo(() => {
       return !!(pswForm.verificationContent && pswForm.verificationValue);
     }, [pswForm]);
+    const totalBalanceForAttest = useMemo(() => {
+      let totalBalance = '0';
+      if (dataSourceId === 'okx') {
+        totalBalance = getTotalBalFromNumObjAPriceObj(
+          activeDataSouceUserInfo.tradingAccountTokenAmountObj,
+          activeDataSouceUserInfo.tokenPriceMap
+        );
+      } else if (dataSourceId === 'binance') {
+        totalBalance = getTotalBalFromAssetsMap(
+          activeDataSouceUserInfo.spotAccountTokenMap
+        );
+      }
+      return totalBalance;
+    }, [pswForm, dataSourceId, activeDataSouceUserInfo]);
     // const verificationContentList = useMemo(() => {
 
     // })
@@ -38,28 +62,39 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (!formLegal) {
         return;
       }
+      if (
+        gt(Number(pswForm.verificationValue), Number(totalBalanceForAttest))
+      ) {
+        alert('Not met the requirements');
+        // setActiveRequest({
+        //   type: 'warn',
+        //   title: 'Not met the requirements',
+        //   desc: (
+        //     <>
+        //       <p>
+        //         Insufficient assets in your{' '}
+        //         {source === 'okx' ? 'Trading' : 'Spot'} Account.
+        //       </p>
+        //       <p>Please confirm and try again later.</p>
+        //     </>
+        //   ),
+        // });
+        // return;
+      }
       onSubmit(pswForm);
-
       return;
-    }, [formLegal, pswForm]);
-    // const tList = useMemo(() => {
-    //   const sourceNameArr = ['binance', 'okx', 'coinbase'];
-    //   const newArr = sourceNameArr.map((i) => {
-    //     const metaInfo = DATASOURCEMAP[i];
-    //     const isDisabled = !sourceMap2[i];
-    //     return {
-    //       label: metaInfo.name,
-    //       value: metaInfo.id,
-    //       icon: metaInfo.icon,
-    //       disabled: isDisabled,
-    //       tooltip: 'Add Data Source first',
-    //     };
-    //   });
-    //   return newArr;
-    // }, [sourceMap2]);
+    }, [formLegal, pswForm, , totalBalanceForAttest]);
+
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => ({ ...f, [formKey]: v }));
     }, []);
+    useEffect(() => {
+      if (attestLoading === 2) {
+        
+          dispatch(setAttestLoading(0));
+        
+      }
+    }, [attestLoading, onSubmit]);
 
     return (
       <div className="pFormWrapper detailForm">
@@ -94,8 +129,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         <div className="staticItem">
           <label>Account</label>
           <div className="value">
-            <div className="account">shenminwen@gmail.com</div>
-            <div className="balance">$123</div>
+            <div className="account">
+              {activeDataSouceUserInfo.userInfo.userName}
+            </div>
+            <div className="balance">${totalBalanceForAttest}</div>
           </div>
         </div>
         <PButton

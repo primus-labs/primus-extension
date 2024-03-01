@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
 import { PADOSERVERURL } from '@/config/envConstants';
+import { BIGZERO } from '@/config/constants';
+import type { AssetsMap } from '@/types/dataSource';
 
 var ethereumjsUtil = require('ethereumjs-util');
 
@@ -155,7 +157,7 @@ export function postMsg(port: chrome.runtime.Port, msg: any) {
   try {
     port.postMessage(msg);
   } catch (error: any) {
-    console.log('postMsg error: ', error)
+    console.log('postMsg error: ', error);
     // throw new Error(error);
   }
 }
@@ -174,7 +176,7 @@ export function strToHexSha256(str: string) {
 }
 export function base64ToHex(base64Str: string) {
   const value = Buffer.from(base64Str, 'base64');
-  const returnValue = "0x" + value.toString();
+  const returnValue = '0x' + value.toString();
   return returnValue;
 }
 
@@ -184,7 +186,7 @@ type AuthParams = {
   token: string;
 };
 export function getAuthUrl(authParams: AuthParams) {
-  const { source, state,token } = authParams;
+  const { source, state, token } = authParams;
   return `${PADOSERVERURL}/oauth2/render/${source}?state=${state}&pado-token=${token}`;
 }
 
@@ -298,7 +300,7 @@ export const getStatisticalData = (res: any) => {
 
     // native token
     const curChainNativeToken: any = nativeToken.find(
-      (i:any) => i.chain === curChainName
+      (i: any) => i.chain === curChainName
     );
     const { balance, currentUsdPrice, currency } = curChainNativeToken;
     const curChainNativeTokenAmount = div(parseInt(balance), Math.pow(10, 18));
@@ -364,29 +366,49 @@ export const getStatisticalData = (res: any) => {
 // v1>v2 => 1
 // v1=v2 => 0
 // v1< v2 => -1
-export function compareVersions(v1:string, v2:string) {
+export function compareVersions(v1: string, v2: string) {
   var v1parts = v1.split('.');
   var v2parts = v2.split('.');
-  
+
   for (var i = 0; i < v1parts.length; ++i) {
     if (v2parts.length === i) {
       return 1;
     }
-    
+
     if (v1parts[i] === v2parts[i]) {
       continue;
-    }
-    else if (v1parts[i] > v2parts[i]) {
+    } else if (v1parts[i] > v2parts[i]) {
       return 1;
-    }
-    else {
+    } else {
       return -1;
     }
   }
-  
+
   if (v1parts.length !== v2parts.length) {
     return -1;
   }
-  
+
   return 0;
 }
+
+export const getTotalBalFromAssetsMap = (targetMap: AssetsMap) => {
+  const totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
+    const obj = targetMap[curr as keyof typeof targetMap];
+    const curValue = obj.value;
+    prev = add(Number(prev), Number(curValue));
+    return prev;
+  }, BIGZERO);
+  const totalBalance = totalAccBal.toFixed();
+  return totalBalance;
+};
+export const getTotalBalFromNumObjAPriceObj = (numObj, priceObj) => {
+  const totalAccBal = Object.keys(numObj).reduce((prev, curr) => {
+    const num = numObj[curr as keyof typeof numObj];
+    const price = priceObj[curr as keyof typeof priceObj];
+    const curValue = mul(num, price).toFixed();
+    prev = add(Number(prev), Number(curValue));
+    return prev;
+  }, BIGZERO);
+  const totalBalance = totalAccBal.toFixed();
+  return totalBalance;
+};

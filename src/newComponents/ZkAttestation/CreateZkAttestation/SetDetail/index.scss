@@ -42,6 +42,8 @@
       }
       .balance {
         @include BodyBody300;
+        margin-left: 6px;
+        color: var(--text-tokens-text-placeholder)
       }
     }
   }
