@@ -11,27 +11,16 @@ import copy from 'copy-to-clipboard';
 type AchievementTopCardProps = {
   handleRewardsHistory: any,
   handleSharePoints: any,
-  handleShareReferralCode: any
+  handleShareReferralCode: any,
+  referralCode,
+  totalScore,
+  referrals,
+  countedReferrals
 }
 
 
-const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({handleRewardsHistory,handleSharePoints,handleShareReferralCode}) => {
+const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({referralCode,totalScore,referrals,countedReferrals,handleRewardsHistory,handleSharePoints,handleShareReferralCode}) => {
 
-  let [referralCode, setRefferralCode] = useState('');
-  let [totalScore, setTotalScore] = useState(0);
-
-  const getUserInfoFn = async () => {
-    const res = await getUserInfo();
-    const { rc, result } = res;
-    if (rc === 0) {
-      setRefferralCode(result.referralCode);
-      setTotalScore(result.totalScore);
-    }
-  };
-
-  useEffect(() => {
-    getUserInfoFn();
-  }, []);
 
   const copyReferralCodeFn = () => {
     copy(referralCode);
@@ -60,10 +49,10 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({handleRewar
       <div className="rightCard">
         <div className="referral">
           <div className={'referral-text'}>Referrals</div>
-          <div className={'referral-times'}>23</div>
+          <div className={'referral-times'}>{referrals}</div>
           <div className={'referral-counted-referrals'}>
             <div className={'referral-counted-referrals-text'}>Counted referrals</div>
-            <div className={'referral-counted-referrals-count'}>5</div>
+            <div className={'referral-counted-referrals-count'}>{countedReferrals}</div>
           </div>
           <div className={'referral-code'}>
             <div className={'referral-code-text'}>Referral Code</div>

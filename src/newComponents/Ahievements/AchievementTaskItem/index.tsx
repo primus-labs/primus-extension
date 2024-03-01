@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';
@@ -18,13 +18,15 @@ export type TaskItemWithClick = {
   taskItem: TaskItem;
   isFinished: boolean;
   showCodeDiag: any;
-  referralCode: string
+  referralCode: string;
+  refreshTotalScore: any;
 };
 
 
 const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick: TaskItemWithClick) => {
   const taskItem = taskItemWithClick.taskItem;
   const showCodeDiag = taskItemWithClick.showCodeDiag;
+  const refreshTotalScore = taskItemWithClick.refreshTotalScore;
   const [finished, setFinished] = useState(taskItemWithClick.isFinished);
 
   const getDataSourceData = async (datasource) => {
@@ -178,10 +180,12 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     const res = await finishTask(finishBody);
     if (res.rc === 0) {
       setFinished(true);
+      refreshTotalScore(taskItem.taskXpScore,taskItem.taskIdentifier)
     }else {
       alert(res.mc)
     }
   };
+
 
   return (
     <div className="achievementTaskitem">

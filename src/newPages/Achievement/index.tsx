@@ -2,14 +2,11 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 
 import AchievementTopCard from '@/newComponents/Ahievements/TopCard';
 import AchievementTaskItem from '@/newComponents/Ahievements/AchievementTaskItem';
-import PageSelect from '@/newComponents/Ahievements/PageSelect';
-import PButton from '@/newComponents/PButton';
 
-import { getAchievementTaskList, taskStatusCheck } from '@/services/api/achievements';
+import { getAchievementTaskList, getUserInfo} from '@/services/api/achievements';
 import './index.scss';
 import AchievementRewardHistory from '@/newComponents/Ahievements/AchievementRewardHistory';
 import { Pagination } from 'antd';
-import { all } from 'axios';
 import ReferralCodeInput from '@/newComponents/Ahievements/ReferralCodeInput';
 
 const AchievementHome = memo(() => {
@@ -22,8 +19,25 @@ const AchievementHome = memo(() => {
   const [totolCount, setTotalCount] = useState(1);
   const [current, setCurrent] = useState(1);
   let [achievementTaskList, setAchievementTaskList] = useState<any>([]);
+  const [referralCode, setRefferralCode] = useState('');
+  const [totalScore, setTotalScore] = useState(0);
+  const [referrals, setReferrals] = useState(0);
+  const [countedReferrals, setCountedReferrals] = useState(0);
 
-  const [taskIsFinished, setTaskIsFinished] = useState();
+
+  const getUserInfoFn = async () => {
+    const res = await getUserInfo();
+    const { rc, result } = res;
+    if (rc === 0) {
+      setRefferralCode(result.referralCode);
+      setTotalScore(result.totalScore);
+    }
+  };
+
+  useEffect(() => {
+    getUserInfoFn();
+  }, []);
+
 
   const getAchievementTaskListFn = useCallback(async (page) => {
     const res = await getAchievementTaskList(size, page);
@@ -38,33 +52,20 @@ const AchievementHome = memo(() => {
     getAchievementTaskListFn(current);
   }, []);
 
-  useEffect( () => {
-    const checkAchievementTaskStatus = async () => {
-      const allTasks = achievementTaskList.map((item) => {
-        return item.taskIdentifier;
-      });
-      if (Array.isArray(allTasks) && allTasks.length > 0) {
-        const tasks = allTasks.join(",")
-        const res = await taskStatusCheck(tasks)
-        if(res.rc === 0){
-          setTaskIsFinished(res.result)
-        }
-      }
-    }
-    checkAchievementTaskStatus()
-  }, [achievementTaskList]);
-
 
   const AchievementTaskItemList = () => {
     return achievementTaskList.map((item, index) => {
-      let isFinished = taskIsFinished?.[item.taskIdentifier] || false;
-      if(item.taskIdentifier ==='SIGN_IN_USING_AN_REFERRAL_CODE'){
-        isFinished = isFinished|| referralCodeTaskFinished
+      let isFinished = item.finished;
+      if (item.taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE') {
+        isFinished = isFinished || referralCodeTaskFinished;
       }
+      debugger
       const taskItemWithClick = {
         taskItem: item,
-        isFinished:isFinished,
+        isFinished: isFinished,
         showCodeDiag: setVisibleReferralCodeDialog,
+        refreshTotalScore: refreshTotalScoreFn,
+        referralCode: referralCode,
       };
       return <AchievementTaskItem key={index} {...taskItemWithClick} />;
     });
@@ -111,26 +112,38 @@ const AchievementHome = memo(() => {
   };
 
 
+  const refreshTotalScoreFn = async (scoreChanged, taskIdentifier) => {
+    setTotalScore(totalScore + scoreChanged);
+    debugger
+    const newList = achievementTaskList.map((item) => {
+      if (item.taskIdentifier === taskIdentifier) {
+        item.finished = true;
+      }
+      return item;
+    })
+    setAchievementTaskList(newList);
+  };
 
 
+  const handleReferralCodeClose = () => {
+    setVisibleReferralCodeDialog(false);
+  };
 
-  const handleReferralCodeClose = ()=>{
-      setVisibleReferralCodeDialog(false)
-  }
-
-  const handleReferralCodeTaskFinish = ()=>{
+  const handleReferralCodeTaskFinish = () => {
     // @ts-ignore
-    setReferralCodeTaskFinished(true)
-  }
+    setReferralCodeTaskFinished(true);
+  };
 
   return (
     <div className="pageAchievementTaskItem">
-      <AchievementTopCard handleRewardsHistory={handleRewordHistory} handleSharePoints={handleSharePoints}
+      <AchievementTopCard referrals={referrals} countedReferrals={countedReferrals} totalScore={totalScore}
+                          referralCode={referralCode} handleRewardsHistory={handleRewordHistory}
+                          handleSharePoints={handleSharePoints}
                           handleShareReferralCode={handleShareReferralCode}></AchievementTopCard>
       <div className={'achievementTasks'}>
         <div className={'achievementTasksTitle'}>Task list</div>
         <AchievementTaskItemList />
-        <div className={"pageComponent"}>
+        <div className={'pageComponent'}>
           <Pagination
             total={totolCount}
             onChange={pageChangedFn}
@@ -142,7 +155,8 @@ const AchievementHome = memo(() => {
       {visibleAssetDialog && <AchievementRewardHistory
         onClose={handleCloseAssetDialog}
       />}
-      {visibleReferralCodeDialog&& <ReferralCodeInput onClose={handleReferralCodeClose} setReferralTaskFinished={handleReferralCodeTaskFinish}/>}
+      {visibleReferralCodeDialog &&
+        <ReferralCodeInput onClose={handleReferralCodeClose} setReferralTaskFinished={handleReferralCodeTaskFinish} />}
 
     </div>
 
