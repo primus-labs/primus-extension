@@ -2,7 +2,9 @@ import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   HUMANITYVERIFICATIONCONTENTTYPELIST,
+  HUMANITYVERIFICATIONCONTENTTYPEMAP,
   HUMANITYVERIFICATIONVALUETYPELIST,
+  ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
 import useDataSource from '@/hooks/useDataSource';
 import {
@@ -40,6 +42,26 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
     );
+    const webProofTypes = useSelector(
+      (state: UserState) => state.webProofTypes
+    );
+    const contentList = useMemo(() => {
+      let supportedContentIdArr = Object.keys(
+        HUMANITYVERIFICATIONCONTENTTYPEMAP
+      ).filter((i) => {
+        const contentObj = HUMANITYVERIFICATIONCONTENTTYPEMAP[i];
+        const activeWebProofTemplate = webProofTypes.find(
+          (i) =>
+            i.dataSource === dataSourceId &&
+            (i.name === contentObj.label || i.name === contentObj.templateName)
+        );
+        return !!activeWebProofTemplate;
+      });
+      const list = supportedContentIdArr.map(
+        (i) => HUMANITYVERIFICATIONCONTENTTYPEMAP[i]
+      );
+      return list;
+    }, [webProofTypes, dataSourceId]);
     const valueList = useMemo(() => {
       let list = [];
       if (pswForm.verificationContent === 'KYC Status') {
@@ -83,9 +105,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [attestLoading, onSubmit]);
     useEffect(() => {
       if (pswForm.verificationContent) {
-        let newValue = ''
+        let newValue = '';
         if (pswForm.verificationContent === 'Owns an account') {
-          newValue = 'N/A'
+          newValue = 'N/A';
         }
         handleChangePswForm(newValue, 'verificationValue');
       }
@@ -99,7 +121,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             label="Verification Content"
             align="horizontal"
             placeholder="Select Content"
-            list={HUMANITYVERIFICATIONCONTENTTYPELIST}
+            list={contentList}
             onChange={(p) => {
               handleChangePswForm(p, 'verificationContent');
             }}

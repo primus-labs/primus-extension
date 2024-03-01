@@ -4,8 +4,10 @@ import { useSearchParams } from 'react-router-dom';
 import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
-import { DATASOURCEMAP, dataSource } from '@/config/dataSource';
-import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
+import { DATASOURCEMAP } from '@/config/dataSource';
+import {
+  ALLVERIFICATIONCONTENTTYPEEMAP,
+} from '@/config/attestation';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -35,7 +37,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
 
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
-  const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
+  
   const dataSourceMetaInfo: DataSourceMapType = useMemo(() => {
     if (assetForm.dataSourceId) {
       return DATASOURCEMAP[assetForm.dataSourceId];
