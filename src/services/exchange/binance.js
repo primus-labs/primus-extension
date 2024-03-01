@@ -51,6 +51,7 @@ class Binance extends Exchange {
         (!asset.startsWith('LD') || asset === LDO) &&
         this.tradingAccountTokenAmountMap.set(asset, amt);
     });
+    this.userId = res.info.uid;
     console.log(
       'tradingAccountTokenAmountMap',
       this.tradingAccountTokenAmountMap
@@ -59,12 +60,12 @@ class Binance extends Exchange {
   }
 
   async getFlexibleAccountTokenAmountMap() {
-    const res = await this.exchange.fetchBalance({ type: 'savings' });
+    /*const res = await this.exchange.fetchBalance({ type: 'savings' });
     res.info.positionAmountVos.forEach(({ asset, amount }) => {
       // Tip: trading account balance = free + locked
       const amt = new BigNumber(amount).toFixed();
       gt(amt, BIGZERO) && this.flexibleAccountTokenAmountMap.set(asset, amt);
-    });
+    });*/
     // console.log(
     //   'flexibleAccountTokenAmountMap',
     //   this.flexibleAccountTokenAmountMap

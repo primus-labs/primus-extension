@@ -33,11 +33,17 @@ class OKX extends Exchange {
       this.tradingAccountTokenAmountMap.set(ccy, eq);
       this.tradingAccountTokenAmountObj[ccy] = eq;
     });
+    await this.getUserInfo();
     // console.log(
     //   'okx tradingAccountTokenAmountMap',
     //   this.tradingAccountTokenAmountMap
     // );
     return this.tradingAccountTokenAmountMap;
+  }
+
+  async getUserInfo() {
+    const res = await this.exchange.privateGetAccountConfig();
+    this.userId = res.data[0].uid;
   }
 }
 
