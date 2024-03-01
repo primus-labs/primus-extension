@@ -1,0 +1,9 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/newComponents/DataSource/Search/index.scss';
+.dataSourceSearchBar.attestationSearchBar {
+  .serachType {
+    width: 240px;
+  }
+}

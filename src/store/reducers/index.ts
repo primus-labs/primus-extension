@@ -109,6 +109,8 @@ const initState = {
   connectedWallets: {}, // had connected wallets and accounts
   attestLoading: 0,
   activeAttestation: {}, // attestation in progress
+  attestationQueryStr: '',
+  attestationQueryType: '',
 };
 
 // reducer
@@ -182,7 +184,10 @@ const reducer: any = function (state = initState, action: any) {
         ...state,
         activeAttestation: { ...state.activeAttestation, ...action.payload },
       };
-
+    case 'setAttestationQueryStr':
+      return { ...state, attestationQueryStr: action.payload };
+    case 'setAttestationQueryType':
+      return { ...state, attestationQueryType: action.payload };
     default:
       return state;
   }

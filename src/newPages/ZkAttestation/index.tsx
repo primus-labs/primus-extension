@@ -6,6 +6,7 @@ import Banner from '@/newComponents/Home/Banner';
 import AttestationTypeList from '@/newComponents/ZkAttestation/AttestationTypeList';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 import AttestationCards from '@/newComponents/ZkAttestation/AttestationCards';
+import Search from '@/newComponents/ZkAttestation/Search'
 import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
 
@@ -37,6 +38,7 @@ const Home = memo(() => {
       <div className="pageContent">
         <Banner />
         <AttestationTypeList onClick={handleCreate} />
+        <Search/>
         {hasConnected ? (
           <AttestationCards />
         ) : (

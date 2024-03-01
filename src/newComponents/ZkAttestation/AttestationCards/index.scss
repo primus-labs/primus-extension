@@ -1,7 +1,9 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
-
+.attestationsWrapper{
+  width: 100%;
+}
 .attestationCards {
   @include frss;
   flex-wrap: wrap;
@@ -55,7 +57,7 @@
             height: var(--spacing-16);
             .dropdownWrapper {
               position: absolute;
-              z-index: 1;
+              // z-index: 1;
               top: var(--spacing-16);
               right:0;
               padding-top: var(--spacing-7);

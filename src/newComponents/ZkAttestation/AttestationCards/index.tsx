@@ -55,12 +55,35 @@ const Cards: React.FC<PDropdownProps> = memo(
     console.log('222credentialsFromStore', credentialsFromStore); //delete
     const { deleteFn: deleteDataSourceFn } =
       useDataSource(activeDataSourceName);
-    const dataSourceQueryStr = useSelector(
-      (state: UserState) => state.dataSourceQueryStr
+    const attestationQueryStr = useSelector(
+      (state: UserState) => state.attestationQueryStr
     );
-    const dataSourceQueryType = useSelector(
-      (state: UserState) => state.dataSourceQueryType
+    const attestationQueryType = useSelector(
+      (state: UserState) => state.attestationQueryType
     );
+
+    const filterdList: any = useMemo(() => {
+      const obj = { ...credentialsFromStore };
+      delete obj['1709201562550']; // TODO-newui
+
+      var newList = Object.values(obj);
+      if (attestationQueryType && attestationQueryType !== 'All') {
+        newList = newList.filter((i) => {
+          return i.attestationType === attestationQueryType;
+        });
+      }
+      if (attestationQueryStr) {
+        newList = newList.filter((i) => {
+          const lowerCaseStr = attestationQueryStr.toLowerCase();
+          return (
+            i.dataSourceId?.startsWith(lowerCaseStr) ||
+            i.account?.startsWith(lowerCaseStr) ||
+            i.address?.startsWith(lowerCaseStr)
+          );
+        });
+      }
+      return newList;
+    }, [credentialsFromStore, attestationQueryStr, attestationQueryType]);
     const otherOperationsFn = useCallback((i) => {
       // if (item?.provided?.length && item?.provided?.length > 0) {
       //   return [
@@ -78,10 +101,12 @@ const Cards: React.FC<PDropdownProps> = memo(
       //     },
       //   ];
       // }
+      const isDeleteDisable = i?.provided?.length && i?.provided?.length > 0;
       return [
         {
           value: 'Delete',
           label: 'Delete',
+          disabled: isDeleteDisable,
         },
         {
           value: 'Bind to DID',
@@ -90,41 +115,6 @@ const Cards: React.FC<PDropdownProps> = memo(
         },
       ];
     }, []);
-    const filterdList: any = useMemo(() => {
-      const obj = { ...credentialsFromStore };
-      delete obj['1709201562550']; // TODO-newui
-
-      var newList = Object.values(obj);
-      if (dataSourceQueryType && dataSourceQueryType !== 'All') {
-        newList = newList.filter((i) => {
-          return i.type === dataSourceQueryType;
-        });
-      }
-      if (dataSourceQueryStr) {
-        newList = newList.filter((i) => {
-          const curName = i.showName ?? i.name;
-          const lowerCaseName = curName.toLowerCase();
-          return lowerCaseName.startsWith(dataSourceQueryStr);
-        });
-      }
-      return newList;
-    }, [credentialsFromStore, dataSourceQueryStr, dataSourceQueryType]);
-
-    const handleConnect = useCallback(
-      (i) => {
-        // onClick && onClick(i);
-        navigate(`/datas/data?dataSourceId=${i.id}`);
-      },
-      [navigate]
-    );
-    const handleDelete = useCallback(
-      (i) => {
-        setActiveDataSourceName(i.name);
-        deleteDataSourceFn(i.name);
-        // TODO-newui badge
-      },
-      [deleteDataSourceFn]
-    );
     const formatDate = (timestamp) => {
       return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
     };

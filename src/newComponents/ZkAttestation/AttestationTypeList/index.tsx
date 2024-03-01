@@ -19,8 +19,7 @@ interface PDropdownProps {
 }
 
 const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
-  const [searchParams] = useSearchParams();
-  const dataSourceName = searchParams.get('dataSourceName');
+  
   const supportList = useMemo(() => {
     return ATTESTATIONTYPELIST.filter((i) => !i.disabled);
   }, []);

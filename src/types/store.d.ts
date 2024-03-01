@@ -71,4 +71,6 @@ export type UserState = {
   connectedWallets: any;
   attestLoading: loadingStatus;
   activeAttestation: activeAttestationRequest;
+  attestationQueryStr: string;
+  attestationQueryType: string | number;
 };
