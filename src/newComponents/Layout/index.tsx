@@ -23,7 +23,7 @@ import useALGAttest from '@/hooks/useALGAttest';
 import useKeepConnect from '@/hooks/useKeepConnect';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 
-import { postMsg } from '@/utils/utils';
+import { postMsg, compareVersions } from '@/utils/utils';
 import { updateAlgoUrl } from '@/config/envConstants';
 
 import type { UserState } from '@/types/store';
@@ -48,12 +48,48 @@ const Nav: React.FC = memo(({}) => {
   // usePollingUpdateAllSources()// TODO-newui
 
   const initStoreData = useCallback(async () => {
-    //
-    const { twitter } = await chrome.storage.local.get(['twitter']);
-    if (twitter) {
-      await chrome.storage.local.set({ x: twitter });
-      await chrome.storage.local.remove('twitter');
-    }
+    // Compatible with old certificates
+    const { credentials: credentialsStr } = await chrome.storage.local.get([
+      'credentials',
+    ]);
+    const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
+    Object.values(credentialObj).forEach((i: any) => {
+      const compareRes = compareVersions('1.0.3', i.credVersion);
+      if (compareRes > -1) {
+        // attestation version <= '1.0.3'
+        if (i.type === 'ASSETS_PROOF') {
+          i.attestationType = 'Assets Certificate';
+          i.verificationContent = 'Assets Proof';
+          i.verificationValue = i.baseValue;
+        } else if (i.type === 'TOKEN_HOLDINGS') {
+          i.attestationType = 'Assets Certificate';
+          i.verificationContent = 'Token Holding';
+          i.verificationValue = i.holdingToken;
+        } else if (i.type === 'IDENTIFICATION_PROOF') {
+          i.attestationType = 'Humanity Verification';
+          if (i.uiTemplate) {
+            const uiContent = i?.uiTemplate?.proofContent;
+            if (uiContent === 'Account Ownership') {
+              i.verificationContent = 'Owns an account';
+            } else if (uiContent === 'KYC Status') {
+              i.verificationContent = 'KYC Status';
+            }
+          } else {
+            if (i.proofContent === 'Account Ownership') {
+              // google
+              i.verificationContent = 'Owns an account';
+            }
+          }
+          i.verificationContent = 'Humanity Verification';
+          i.verificationValue = 'N/A';
+        } else if (i.type === 'UNISWAP_PROOF') {
+          i.attestationType = 'On-chain Transaction';
+          i.verificationContent = 'Largest ETH/USDC Uniwap Transaction';
+          i.verificationValue = i.dataToBeSigned.content;
+        }
+      }
+    });
+
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
     dispatch(setKYCsAsync());
