@@ -1,16 +1,17 @@
 import React, { useState, useCallback, memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+
 import type { WALLETITEMTYPE } from '@/config/constants';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
-import iconConnectWalletMetaMaskSuc from '@/assets/newImg/layout/iconConnectWalletMetaMaskSuc.svg';
+import iconConnectWalletSuc from '@/assets/newImg/layout/iconConnectWalletSuc.svg';
 import iconConnectWalletFail from '@/assets/newImg/layout/iconConnectWalletFail.svg';
 import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 
 interface DataSourcesDialogProps {
-  preset: string | number;
+  preset: any;
   onClose?: () => void;
   onSubmit?: () => void;
   activeRequest: any;
@@ -23,7 +24,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     const [accountAddr, setAccountAddr] = useState<any>();
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
-
+    
     const handleClose = useCallback(() => {
       // dispatch({
       //   type: 'setConnectWalletDialogVisible',
@@ -41,15 +42,14 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
               {activeRequest?.type === 'loading' && (
                 <>
                   <div className="spiner"></div>
-                  <img src={iconWalletMetamask} alt="" className="walletImg" />
+                  <img src={preset} alt="" className="walletImg" />
                 </>
               )}
               {activeRequest?.type === 'suc' && (
-                <img
-                  src={iconConnectWalletMetaMaskSuc}
-                  alt=""
-                  className="resultImg"
-                />
+                <>
+                  <div className="sucCircle"></div>
+                  <img src={preset} alt="" className="walletImg" />
+                </>
               )}
               {activeRequest?.type === 'fail' && (
                 <img src={iconConnectWalletFail} alt="" className="resultImg" />

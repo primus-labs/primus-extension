@@ -24,8 +24,10 @@
       border: 1px solid var(--border-tokens-border-primary);
       border-radius: var(--spacing-4);
       padding-left: var(--spacing-20);
+      cursor: pointer;
       &.disabled{
         opacity: 0.4;
+        cursor: not-allowed;
       }
       &:not(.disabled):hover,
       &.active {

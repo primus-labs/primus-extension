@@ -151,6 +151,7 @@ export const ALLVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   ...HUMANITYVERIFICATIONCONTENTTYPEMAP,
   ...ONCHAINVERIFICATIONCONTENTTYPEEMAP
 };
+export const CredVersion = '1.0.4';
 // const attestationTypeMap = {
 //   1: {
 //     title: 'On-chain Transaction Proof',

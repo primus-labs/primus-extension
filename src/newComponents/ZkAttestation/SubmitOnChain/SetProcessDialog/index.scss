@@ -20,7 +20,19 @@
         width: 70px;
       }
       .spiner {
-        @include pSpiner(100%, 100%, 5px,var(--icon-tokens-icon-primary, #161616),var(--layer-tokens-layer-primary, #fff),2s);
+        @include pSpiner(
+          100%,
+          100%,
+          5px,
+          var(--icon-tokens-icon-primary, #161616),
+          var(--layer-tokens-layer-primary, #fff),
+          2s
+        );
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      .sucCircle {
         position: absolute;
         top: 0;
         left: 0;

@@ -6,30 +6,6 @@ import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
 import { CURENV } from './envConstants';
 
-const PADOURLMAP = {
-  development: 'wss://api-dev.padolabs.org/algorithm',
-  production: 'wss://api.padolabs.org/algorithm',
-};
-export let PADOURL = PADOURLMAP[CURENV];
-
-const PROXYURLMAP = {
-  development: 'wss://api-dev.padolabs.org/algoproxy',
-  production: 'wss://api.padolabs.org/algoproxy',
-};
-export let PROXYURL = PROXYURLMAP[CURENV];
-
-const PADOADDRESSMAP = {
-  development: '0xe02bd7a6c8aa401189aebb5bad755c2610940a73',
-  production: '0xDB736B13E2f522dBE18B2015d0291E4b193D8eF6',
-};
-export const PADOADDRESS = PADOADDRESSMAP[CURENV];
-
-const PADOSERVERURLMAP = {
-  development: 'https://api-dev.padolabs.org',
-  production: 'https://api.padolabs.org',
-};
-export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
-
 const EASINFOMAP = {
   development: {
     'Scroll Sepolia': {
