@@ -127,6 +127,10 @@ export const setActiveAttestation = (values: any) => ({
   type: 'setActiveAttestation',
   payload: values,
 });
+export const setActiveOnChain = (values: any) => ({
+  type: 'setActiveOnChain',
+  payload: values,
+});
 
 export const setConnectedWalletsActionAsync = () => {
   return async (dispatch: any) => {

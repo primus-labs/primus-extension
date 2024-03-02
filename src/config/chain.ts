@@ -2,40 +2,30 @@ import iconPolygon from '@/assets/img/iconPolygon.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
 import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
-import { getAlgoUrl } from '@/services/api/algorithm';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
-import { postMsg } from '@/utils/utils';
-import store from '@/store';
-import type {UserState} from '@/types/store'
-type ENVTYPE = 'development' | 'test' | 'production';
+import { CURENV } from './envConstants';
 
-export const CURENV = process.env.NODE_ENV as ENVTYPE;
-// const CURENV = 'production';
 const PADOURLMAP = {
   development: 'wss://api-dev.padolabs.org/algorithm',
-  test: '18.179.8.186:8888',
   production: 'wss://api.padolabs.org/algorithm',
 };
 export let PADOURL = PADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
   development: 'wss://api-dev.padolabs.org/algoproxy',
-  test: '18.179.8.186:9000',
   production: 'wss://api.padolabs.org/algoproxy',
 };
 export let PROXYURL = PROXYURLMAP[CURENV];
 
 const PADOADDRESSMAP = {
   development: '0xe02bd7a6c8aa401189aebb5bad755c2610940a73',
-  test: '0xe02bd7a6c8aa401189aebb5bad755c2610940a73',
   production: '0xDB736B13E2f522dBE18B2015d0291E4b193D8eF6',
 };
 export const PADOADDRESS = PADOADDRESSMAP[CURENV];
 
 const PADOSERVERURLMAP = {
   development: 'https://api-dev.padolabs.org',
-  test: 'http://18.179.8.186:8080',
   production: 'https://api.padolabs.org',
 };
 export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
@@ -290,93 +280,6 @@ const EASINFOMAP = {
       },
     },
   },
-  test: {
-    Sepolia: {
-      showName: 'Sepolia',
-      icon: iconUpChainEthereum,
-      title: 'Sepolia',
-      rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      erc721Contract: '0xE71e7b07158963095A5Ea841ADDBd6f20E599292',
-      easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
-      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
-      schemas: {
-        EAS: {
-          schemaUid:
-            '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
-          schemaUidTokenHoldings:
-            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
-          schemaUidIdentification:
-            '0x871cb30613666b4349fe45b1e4af222e7da3c3f3b6487ef99b813a897470cb28',
-        },
-        PolygonID: {
-          schemaUid:
-            '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
-          schemaUidTokenHoldings:
-            '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
-          schemaUidIdentification:
-            '0xe08e249cc244e018cc56cb05938665fd16e373e77acc23d625e84cd4fe07cc48',
-        },
-      },
-      chainId: '0xaa36a7', // numToHex
-      chainName: 'Sepolia',
-      rpcUrls: [
-        'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      ],
-      blockExplorerUrls: ['https://sepolia.etherscan.io'],
-    },
-    Polygon: {
-      showName: 'Polygon',
-      icon: iconPolygon,
-      title: 'Polygon',
-      disabled: true,
-      rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
-      easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
-      schemaUid:
-        '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
-      schemaUidTokenHoldings:
-        '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
-      chainId: '0xaa36a7', // numToHex
-      chainName: 'Sepolia',
-      rpcUrls: [
-        'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      ],
-      blockExplorerUrls: ['https://sepolia.etherscan.io'],
-      nativeCurrency: {
-        name: 'MATIC',
-        symbol: 'MATIC',
-        decimals: 18,
-      },
-    },
-    BNB: {
-      showName: 'BNB',
-      icon: iconBinance,
-      title: 'BNB',
-      disabled: true,
-      rpcUrl: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
-      easContact: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
-      easProxyContrac: '0x2884E43B48c2Cc623A19c0c3d260DD8f398fd5F3',
-      schemas: {
-        EAS: {
-          schemaUid:
-            '0x45316fbaa4070445d3ed1b041c6161c844e80e89c368094664ed756c649413a9',
-          schemaUidTokenHoldings:
-            '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
-          schemaUidIdentification:
-            '0xe2b389fef1bd8887415ac6079090e2ed6377eca6235cb5c5f691ba71cd2ca456',
-        },
-        PolygonID: {
-          schemaUid: '',
-          schemaUidTokenHoldings: '',
-          schemaUidIdentification: '',
-        },
-      },
-      chainId: '0x61', // numToHex
-      chainName: 'BNB Smart Chain Testnet',
-      rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545/'],
-      blockExplorerUrls: ['https://testnet.bscscan.com/'],
-    },
-  },
   production: {
     'Scroll Mainnet': {
       showName: 'Scroll',
@@ -618,144 +521,39 @@ export const EASInfo = EASINFOMAP[CURENV];
 
 export const ONCHAINLIST = Object.values(EASInfo);
 
-export const updateAlgoUrl = async () => {
-  const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
-  if (!algorithmUrl) {
-    console.log('updateAlgoUrl store first');
-    const algojsonobj = {
-      padoUrl: PADOURL,
-      proxyUrl: PROXYURL,
-    };
-    await chrome.storage.local.set({
-      algorithmUrl: JSON.stringify(algojsonobj),
-    });
-  }
-
-  const res = await getAlgoUrl();
-
-  /*const res = {
-    "rc": 0,
-    "mc": "SUCCESS",
-    "msg": "",
-    "result": [
-        {
-            "algorithmDomain": "api1.padolabs.org",
-            "algoProxyDomain": "api1.padolabs.org"
-        },
-        {
-          "algorithmDomain": "api-dev.padolabs.org",
-          "algoProxyDomain": "api-dev.padolabs.org"
-        }
-    ]
-  };*/
-
-  console.log('updateAlgoUrl res=', res);
-  if (res?.rc === 0) {
-    let isInited = false;
-    res.result.forEach((item: any) => {
-      let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);
-      ws.onopen = async function (e) {
-        console.log('updateAlgoUrl onopen url=', item.algoProxyDomain);
-        if (!isInited) {
-          console.log('updateAlgoUrl onopen update url new');
-          PADOURL = `wss://${item.algorithmDomain}/algorithm`;
-          PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
-          const jsonobj = {
-            padoUrl: PADOURL,
-            proxyUrl: PROXYURL,
-          };
-          if (jsonobj) {
-            await chrome.storage.local.set({
-              algorithmUrl: JSON.stringify(jsonobj),
-            });
-            isInited = true;
-            const padoServicePort = (store.getState() as UserState)
-              .padoServicePort;
-            postMsg(padoServicePort, {
-              fullScreenType: 'algorithm',
-              reqMethodName: 'lineaEventStartOffline',
-              params: {},
-            });
-          }
-        }
-        ws.close();
-      };
-      ws.onerror = function (e) {
-        console.log('updateAlgoUrl ws onerror', e);
-      };
-      ws.onclose = function (e) {
-        console.log('updateAlgoUrl ws onclose', e);
-      };
-    });
-  }
-};
-
-export const getPadoUrl = async () => {
-  const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
-  if (algorithmUrl) {
-    const algorithmUrlObj = JSON.parse(algorithmUrl);
-    console.log('updateAlgoUrl getPadoUrl PADOURL=', algorithmUrlObj.padoUrl);
-    return algorithmUrlObj.padoUrl;
-  } else {
-    return '';
-  }
-};
-
-export const getProxyUrl = async () => {
-  const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
-
-  if (algorithmUrl) {
-    const algorithmUrlObj = JSON.parse(algorithmUrl);
-    console.log(
-      'updateAlgoUrl getProxyUrl PROXYURL=',
-      algorithmUrlObj.proxyUrl
-    );
-    return algorithmUrlObj.proxyUrl;
-  } else {
-    return ''
-  }
-};
-
 const LINEASCHEMANAMEMAP = {
   development: 'Verax-Linea-Goerli',
-  test: 'Verax-Linea-Goerli',
   production: 'Verax-Linea-Mainnet',
 };
 export let LINEASCHEMANAME = LINEASCHEMANAMEMAP[CURENV];
 const SCROLLSCHEMANAMEMAP = {
   development: 'Verax-Scroll-Sepolia',
-  test: 'Verax-Scroll-Sepolia',
   production: 'Verax-Scroll-Mainnet',
 };
 export let SCROLLSCHEMANAME = SCROLLSCHEMANAMEMAP[CURENV];
 const BNBSCHEMANAMEMAP = {
   development: 'BAS-BSC-Testnet',
-  test: 'BAS-BSC-Testnet',
   production: 'BAS-BSC-Mainnet',
 };
 export let BNBSCHEMANAME = BNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDSCHEMANAMEMAP = {
   development: 'BNB Greenfield Testnet',
-  test: 'BNB Greenfield Testnet',
   production: 'BNB Greenfield Mainnet',
 };
 export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDURLMAP = {
   development: 'http://api-dev.padolabs.org:9095/',
-  test: 'http://api-dev.padolabs.org:9095/',
   production: 'https://events.padolabs.org/',
 };
 export let BNBGREENFIELDURL = BNBGREENFIELDURLMAP[CURENV];
 const FIRSTVERSIONSUPPORTEDNETWORKNAMEMAP = {
   development: 'Sepolia',
-  test: 'Sepolia',
   production: 'ArbitrumOne',
 };
 export let FIRSTVERSIONSUPPORTEDNETWORKNAME =
   FIRSTVERSIONSUPPORTEDNETWORKNAMEMAP[CURENV];
 const CLAIMNFTNETWORKNAMEMAP = {
   development: 'Sepolia',
-  test: 'Sepolia',
   production: 'Polygon',
 };
 export let CLAIMNFTNETWORKNAME = CLAIMNFTNETWORKNAMEMAP[CURENV];

@@ -1,11 +1,14 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import {setActiveOnChain} from '@/store/actions'
 import type { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
 import Banner from '@/newComponents/Home/Banner';
 import AttestationTypeList from '@/newComponents/ZkAttestation/AttestationTypeList';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 import AttestationCards from '@/newComponents/ZkAttestation/AttestationCards';
+import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
 import Search from '@/newComponents/ZkAttestation/Search'
 import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
@@ -13,11 +16,14 @@ import empty from '@/assets/newImg/zkAttestation/empty.svg';
 import './index.scss';
 
 const Home = memo(() => {
+  const dispatch:Dispatch<any> = useDispatch()
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
+  const [visibleOnChainDialog, setVisibleOnChainDialog] = useState<boolean>(false);
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
+  const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
   const hasConnected = useMemo(() => {
     return Object.keys(credentialsFromStore).length > 0;
   }, [credentialsFromStore]);
@@ -27,7 +33,15 @@ const Home = memo(() => {
   const handleCloseAssetDialog = useCallback(() => {
     setVisibleAssetDialog('');
   }, []);
-  const handleSubmitAssetDialog = useCallback(() => {}, []);
+  const handleSubmitAssetDialog = useCallback(() => { }, []);
+  const handleCloseOnChainDialog = useCallback(() => {
+    // setVisibleOnChainDialog(false);
+    dispatch(setActiveOnChain({ loading: 0 }));
+  }, [dispatch]);
+  const handleSubmitOnChainDialog = useCallback(() => {
+    // setVisibleOnChainDialog(false);
+    dispatch(setActiveOnChain({ loading: 0 }));
+  }, [dispatch]);
   useEffect(() => {
     if (attestLoading === 2) {
       setVisibleAssetDialog('');
@@ -38,7 +52,7 @@ const Home = memo(() => {
       <div className="pageContent">
         <Banner />
         <AttestationTypeList onClick={handleCreate} />
-        <Search/>
+        <Search />
         {hasConnected ? (
           <AttestationCards />
         ) : (
@@ -54,6 +68,12 @@ const Home = memo(() => {
             type={visibleAssetDialog}
             onClose={handleCloseAssetDialog}
             onSubmit={handleSubmitAssetDialog}
+          />
+        )}
+        {activeOnChain.loading === 1 && (
+          <SubmitOnChain
+            onClose={handleCloseOnChainDialog}
+            onSubmit={handleSubmitOnChainDialog}
           />
         )}
       </div>

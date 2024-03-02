@@ -1,0 +1,30 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+.pDialog2.setChainDialog {
+  // &.span1{
+
+  // }
+  &.span2 {
+    main {
+      .pOptionsWrapper {
+        .pOptions {
+          @include frss;
+          flex-wrap: wrap;
+          column-gap: var(--spacing-14);
+          row-gap: var(--spacing-10);
+          .pOption {
+            width: calc((100% - var(--spacing-14)) / 2);
+          }
+        }
+      }
+    }
+  }
+  main {
+    .pOptionsWrapper {
+      .pOptions {
+        gap: var(--spacing-16);
+      }
+    }
+  }
+}

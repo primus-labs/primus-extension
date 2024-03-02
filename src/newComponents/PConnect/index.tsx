@@ -1,20 +1,11 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import useWallet from '@/hooks/useWallet';
-import { formatAddress } from '@/utils/utils';
-import { DATASOURCEMAP } from '@/config/constants';
-
-import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import PButton from '@/newComponents/PButton';
-import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import ConnectWallet from '@/newComponents/ConnectWallet';
 import Connected from './Connected';
 
 import './index.scss';
 import type { UserState } from '@/types/store';
-import type { WALLETITEMTYPE } from '@/config/constants';
-import type { ActiveRequestType } from '@/types/config';
-import iconWallet from '@/assets/img/layout/iconWallet.svg';
 
 const PConnect = memo(() => {
   const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =

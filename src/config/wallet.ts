@@ -4,15 +4,7 @@ import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import iconWalletWalletConnect from '@/assets/img/iconWalletWalletConnect.svg';
 import iconWalletTokenPocket from '@/assets/img/iconWalletTokenPocket.svg';
 import iconMina from '@/assets/img/iconMina.png';
-export type newWALLETITEMTYPE = {
-  icon: any;
-  name: string;
-  id: string | number;
-  disabled?: boolean;
-};
-export type WALLETMAPTYPE = {
-  [propName:string]: newWALLETITEMTYPE;
-};
+import type { newWALLETITEMTYPE, WALLETMAPTYPE } from '@/types/config';
 
 export const WALLETMAP: WALLETMAPTYPE = {
   metamask: {

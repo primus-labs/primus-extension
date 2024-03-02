@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
+import { getCurrentDate, formatAddress } from '@/utils/utils';
+import { setCredentialsAsync, setActiveOnChain } from '@/store/actions';
+import useDataSource from '@/hooks/useDataSource';
+import useAllSources from '@/hooks/useAllSources';
 import { BASEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
-import useDataSource from '@/hooks/useDataSource';
-import useAllSources from '@/hooks/useAllSources';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
-import { getCurrentDate, formatAddress } from '@/utils/utils';
-import { setCredentialsAsync } from '@/store/actions';
+
 import type { SyntheticEvent, Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
@@ -68,12 +69,12 @@ const Cards: React.FC<PDropdownProps> = memo(
 
       var newList = Object.values(obj);
       if (attestationQueryType && attestationQueryType !== 'All') {
-        newList = newList.filter((i:any) => {
+        newList = newList.filter((i: any) => {
           return i.attestationType === attestationQueryType;
         });
       }
       if (attestationQueryStr) {
-        newList = newList.filter((i:any) => {
+        newList = newList.filter((i: any) => {
           const lowerCaseStr = attestationQueryStr.toLowerCase();
           return (
             i.source?.startsWith(lowerCaseStr) ||
@@ -165,9 +166,14 @@ const Cards: React.FC<PDropdownProps> = memo(
       if (['coinbase', 'google'].includes(i.source)) {
         return 'Verified';
       }
-      return i?.uiTemplate?.condition ;
+      return i?.uiTemplate?.condition;
     };
-    const handleOnChain = useCallback((i) => {}, []);
+    const handleOnChain = useCallback(
+      (i) => {
+        dispatch(setActiveOnChain({ loading: 1, requestid: i.requestid }));
+      },
+      [dispatch]
+    );
     const handleShare = useCallback((i) => {}, []);
     const handleCopy = useCallback((i) => {}, []);
     const handleShowMore = useCallback((i) => {
@@ -310,10 +316,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                         src={ATTESTATIONTYPEMAP[i.attestationType].icon}
                         alt=""
                       />
-                      <img
-                        src={getDataSourceMetaInfo(i.source).icon}
-                        alt=""
-                      />
+                      <img src={getDataSourceMetaInfo(i.source).icon} alt="" />
                     </div>
                     <div className="intro">
                       <div className="name">

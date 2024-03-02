@@ -39,6 +39,10 @@ type activeAttestationRequest = {
   // requestId?: string;
   account?: string;
 };
+type activeOnChainRequest = {
+  requestid?: string;
+  loading?: 0 | 1;
+};
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -73,4 +77,5 @@ export type UserState = {
   activeAttestation: activeAttestationRequest;
   attestationQueryStr: string;
   attestationQueryType: string | number;
+  activeOnChain: activeOnChainRequest;
 };

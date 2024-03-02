@@ -1,0 +1,42 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+@import '@/assets/newCss/dialog.scss';
+.pDialog2.ConnectWalletProcessDialog {
+  padding: var(--spacing-24, 24px);
+  height: 384px;
+  main {
+    align-items: center;
+    padding-top: var(--spacing-40);
+    .pic {
+      width: 128px;
+      height: 128px;
+      position: relative;
+      @include frcc;
+      .resultImg {
+        width: 128px;
+      }
+      .walletImg {
+        width: 70px;
+      }
+      .spiner {
+        @include pSpiner(100%, 100%, 5px,var(--icon-tokens-icon-primary, #161616),var(--layer-tokens-layer-primary, #fff),2s);
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+    .descWrapper {
+      width: 100%;
+      @include fcsc;
+      gap: var(--spacing-8);
+      h5 {
+        @include HeadlineH1;
+      }
+      h6 {
+        @include BodyBody100;
+        text-align: center;
+      }
+    }
+  }
+}

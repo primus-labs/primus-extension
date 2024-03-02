@@ -111,6 +111,7 @@ const initState = {
   activeAttestation: {}, // attestation in progress
   attestationQueryStr: '',
   attestationQueryType: '',
+  activeOnChain: {}, // attestation on chain in progress
 };
 
 // reducer
@@ -188,6 +189,12 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, attestationQueryStr: action.payload };
     case 'setAttestationQueryType':
       return { ...state, attestationQueryType: action.payload };
+    case 'setActiveOnChain':
+      return {
+        ...state,
+        activeOnChain: { ...state.activeAttestation, ...action.payload },
+      };
+
     default:
       return state;
   }

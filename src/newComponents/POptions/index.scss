@@ -23,7 +23,10 @@
       height: var(--spacing-48);
       border: 1px solid var(--border-tokens-border-primary);
       border-radius: var(--spacing-4);
-      padding: 0 var(--spacing-20);
+      padding-left: var(--spacing-20);
+      &.disabled{
+        opacity: 0.4;
+      }
       &:not(.disabled):hover,
       &.active {
         border-color: var(--border-tokens-border-bp);
@@ -45,6 +48,7 @@
           letter-spacing: 0px;
           overflow: hidden;
           text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
     }
