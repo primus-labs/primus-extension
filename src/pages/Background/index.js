@@ -462,7 +462,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   }
   if (message.type === 'dataSourceWeb') {
-    debugger
     dataSourceWebMsgListener(
       message,
       sender,

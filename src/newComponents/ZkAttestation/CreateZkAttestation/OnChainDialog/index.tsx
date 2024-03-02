@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { setAttestLoading, setActiveAttestation } from '@/store/actions';
+import {  setActiveAttestation } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP,  } from '@/config/dataSource';

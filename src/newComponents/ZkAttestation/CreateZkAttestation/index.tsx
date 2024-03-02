@@ -1,5 +1,8 @@
-import React, { memo } from 'react';
-import PButton from '@/newComponents/PButton';
+import React, { memo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAttestLoading, setActiveAttestation } from '@/store/actions';
+import type { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
 import AssetDialog from './AssetDialog';
 import HumanityDialog from './HumanityDialog';
 
@@ -11,6 +14,13 @@ interface PBackProps {
   onSubmit: () => void;
 }
 const PClose: React.FC<PBackProps> = memo(({ type, onClose, onSubmit }) => {
+  const dispatch: Dispatch<any> = useDispatch();
+  const attestLoading = useSelector((state: UserState) => state.attestLoading);
+  useEffect(() => {
+    if (attestLoading === 2) {
+      dispatch(setAttestLoading(0));
+    }
+  }, [attestLoading, dispatch]);
   return (
     <div className="createZkAttestation">
       {type === 'Assets Certificate' && (

@@ -425,6 +425,7 @@ const useAttest = function useAttest() {
   );
   const timeoutFn = useCallback(async () => {
     console.log('120s timeout');
+    clearFetchAttestationTimer();
     // if (activeRequest?.type === 'suc') {
     //   return;
     // }// TODO-newui
@@ -472,7 +473,7 @@ const useAttest = function useAttest() {
     };
     console.log('after timeout port', padoServicePort);
     postMsg(padoServicePort, msg);
-  }, [padoServicePort]);
+  }, [padoServicePort, clearFetchAttestationTimer]);
   const intervalFn = useCallback(() => {
     const msg = {
       fullScreenType: 'algorithm',

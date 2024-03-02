@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
+  ASSETSVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
 import useDataSource from '@/hooks/useDataSource';
 import {
@@ -10,7 +11,6 @@ import {
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
 } from '@/utils/utils';
-import { setAttestLoading } from '@/store/actions';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
@@ -41,6 +41,23 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       (state: UserState) => state.attestLoading
     );
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
+    const contentList = useMemo(() => {
+      let supportedContentIdArr: any = [];
+
+      if (dataSourceId === 'coinbase') {
+        supportedContentIdArr = ['Token Holding'];
+        let list = supportedContentIdArr.map(
+          (i) => ASSETSVERIFICATIONCONTENTTYPEEMAP[i]
+        );
+        return list;
+      } else {
+        return ASSETSVERIFICATIONCONTENTTYPELIST;
+      }
+    }, [
+      dataSourceId,
+      ASSETSVERIFICATIONCONTENTTYPEEMAP,
+      ASSETSVERIFICATIONCONTENTTYPELIST,
+    ]);
     const valueList = useMemo(() => {
       let list = [];
       if (pswForm.verificationContent === 'Assets Proof') {
@@ -81,13 +98,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (!formLegal) {
         return;
       }
-      debugger
       if (
         activeDataSouceUserInfo &&
         gt(Number(pswForm.verificationValue), Number(totalBalanceForAttest))
       ) {
         alert('Not met the requirements');
-        return
+        return;
         // setActiveRequest({
         //   type: 'warn',
         //   title: 'Not met the requirements',
@@ -117,11 +133,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       );
     }, [activeDataSouceUserInfo]);
 
-    useEffect(() => {
-      if (attestLoading === 2) {
-        dispatch(setAttestLoading(0));
-      }
-    }, [attestLoading, onSubmit]);
+    
     useEffect(() => {
       if (pswForm.verificationContent) {
         handleChangePswForm('', 'verificationValue');
@@ -136,7 +148,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             label="Verification Content"
             align="horizontal"
             placeholder="Choose Data Source"
-            list={ASSETSVERIFICATIONCONTENTTYPELIST}
+            list={contentList}
             onChange={(p) => {
               handleChangePswForm(p, 'verificationContent');
             }}

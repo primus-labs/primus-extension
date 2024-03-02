@@ -4,7 +4,6 @@ import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  setAttestLoading,
   setActiveAttestation,
   setCredentialsAsync,
 } from '@/store/actions';

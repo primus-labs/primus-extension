@@ -67,21 +67,19 @@ const Nav: React.FC = memo(({}) => {
           i.verificationValue = i.holdingToken;
         } else if (i.type === 'IDENTIFICATION_PROOF') {
           i.attestationType = 'Humanity Verification';
-          if (i.uiTemplate) {
-            const uiContent = i?.uiTemplate?.proofContent;
-            if (uiContent === 'Account Ownership') {
-              i.verificationContent = 'Owns an account';
-            } else if (uiContent === 'KYC Status') {
-              i.verificationContent = 'KYC Status';
-            }
-          } else {
-            if (i.proofContent === 'Account Ownership') {
-              // google
-              i.verificationContent = 'Owns an account';
-            }
+          const uiContent = i?.uiTemplate?.proofContent;
+          if (
+            i.proofContent === 'Account Ownership' ||
+            uiContent === 'Account Ownership'
+          ) {
+            i.verificationContent = 'Owns an account';
+            i.verificationValue = 'N/A';
           }
-          i.verificationContent = 'Humanity Verification';
-          i.verificationValue = 'N/A';
+          if (uiContent === 'KYC Status') {
+            i.verificationContent = 'KYC Status';
+            i.verificationValue = 'Basic Verification';
+          }
+          
         } else if (i.type === 'UNISWAP_PROOF') {
           i.attestationType = 'On-chain Transaction';
           i.verificationContent = 'Largest ETH/USDC Uniwap Transaction';

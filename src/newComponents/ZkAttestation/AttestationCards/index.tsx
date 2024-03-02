@@ -68,15 +68,15 @@ const Cards: React.FC<PDropdownProps> = memo(
 
       var newList = Object.values(obj);
       if (attestationQueryType && attestationQueryType !== 'All') {
-        newList = newList.filter((i) => {
+        newList = newList.filter((i:any) => {
           return i.attestationType === attestationQueryType;
         });
       }
       if (attestationQueryStr) {
-        newList = newList.filter((i) => {
+        newList = newList.filter((i:any) => {
           const lowerCaseStr = attestationQueryStr.toLowerCase();
           return (
-            i.dataSourceId?.startsWith(lowerCaseStr) ||
+            i.source?.startsWith(lowerCaseStr) ||
             i.account?.startsWith(lowerCaseStr) ||
             i.address?.startsWith(lowerCaseStr)
           );
@@ -118,8 +118,8 @@ const Cards: React.FC<PDropdownProps> = memo(
     const formatDate = (timestamp) => {
       return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
     };
-    const getDataSourceMetaInfo = (dataSourceId) => {
-      return DATASOURCEMAP[dataSourceId];
+    const getDataSourceMetaInfo = (source) => {
+      return DATASOURCEMAP[source];
     };
     const getContent = (i) => {
       let str = '';
@@ -162,10 +162,10 @@ const Cards: React.FC<PDropdownProps> = memo(
       return str;
     };
     const getResult = (i) => {
-      if (i.dataSourceId === 'google') {
+      if (['coinbase', 'google'].includes(i.source)) {
         return 'Verified';
       }
-      return i?.uiTemplate?.condition;
+      return i?.uiTemplate?.condition ;
     };
     const handleOnChain = useCallback((i) => {}, []);
     const handleShare = useCallback((i) => {}, []);
@@ -311,13 +311,13 @@ const Cards: React.FC<PDropdownProps> = memo(
                         alt=""
                       />
                       <img
-                        src={getDataSourceMetaInfo(i.dataSourceId).icon}
+                        src={getDataSourceMetaInfo(i.source).icon}
                         alt=""
                       />
                     </div>
                     <div className="intro">
                       <div className="name">
-                        {getDataSourceMetaInfo(i.dataSourceId).name}
+                        {getDataSourceMetaInfo(i.source).name}
                       </div>
                       <div className="updateTime">
                         <span> {formatDate(Number(i?.getDataTime))}</span>

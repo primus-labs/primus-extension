@@ -8,7 +8,6 @@ import {
   getTotalBalFromAssetsMap,
   formatAddress
 } from '@/utils/utils';
-import { setAttestLoading } from '@/store/actions';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
@@ -72,11 +71,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     //   handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
     // }, [activeDataSouceUserInfo]);
 
-    useEffect(() => {
-      if (attestLoading === 2) {
-        dispatch(setAttestLoading(0));
-      }
-    }, [attestLoading, onSubmit]);
+   
 
     return (
       <div className="pFormWrapper detailForm2">
