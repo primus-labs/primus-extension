@@ -83,10 +83,6 @@ export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   '0.01': {
     value: '0.01',
     label: '$0.01',
-  },
-  '1': {
-    value: '1',
-    label: '$1',
   }, //delete
   '10': {
     value: '10',

@@ -1,14 +1,14 @@
-import {
-  CredVersion,
-  ExchangeStoreVersion,
-  SocailStoreVersion,
-  schemaTypeMap,
-  SCROLLEVENTNAME,
-  BASEVENTNAME,
-} from '@/config/constants';
+// import {
+//   CredVersion,
+//   ExchangeStoreVersion,
+//   SocailStoreVersion,
+//   schemaTypeMap,
+//   SCROLLEVENTNAME,
+//   BASEVENTNAME,
+// } from '@/config/constants';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
-import WebTikTok from '@/services/webdata/websocial/webtiktok';
+import { storeDataSource } from './dataSourceUtils';
 
 let tabCreatedByPado;
 let activeTemplate = {};
@@ -28,406 +28,340 @@ export const dataSourceWebMsgListener = async (
   if (name === 'init') {
     activeTemplate = params;
   }
-  let {
-    dataSource,
-    jumpTo,
-    schemaType,
-    datasourceTemplate: { host, requests, responses },
-    uiTemplate,
-    id,
-    event,
-  } = activeTemplate;
-  const exchangeName = activeTemplate.dataSource;
-  const exchangeInfo = DATASOURCEMAP[exchangeName];
-  const { constructorF, type: sourceType } = exchangeInfo;
-  let isStoreTiktokName = false;
+  if (activeTemplate.dataSource) {
+    let {
+      dataSource,
+      jumpTo,
+      schemaType,
+      datasourceTemplate: { host, requests, responses },
+      uiTemplate,
+      id,
+      event,
+    } = activeTemplate;
+    const exchangeName = activeTemplate.dataSource;
+    const exchangeInfo = DATASOURCEMAP[exchangeName];
+    const { constructorF, type: sourceType } = exchangeInfo;
+    let isStoreTiktokName = false;
 
-  const requestUrlList = requests.map((r) => r.url);
-  const isUrlWithQueryFn = (url, queryKeyArr) => {
-    const urlStrArr = url.split('?');
-    const queryStr = urlStrArr[1];
-    const queryStrArr = queryStr.split('&');
-    const isUrlWithQuery = queryKeyArr.every((tQItem) => {
-      return queryStrArr.some((qItem) => {
-        return qItem.split('=')[0] === tQItem;
-      });
-    });
-    return isUrlWithQuery ? queryStr : false;
-  };
-  const onBeforeSendHeadersFn = async (details) => {
-    const { url: currRequestUrl, requestHeaders } = details;
-    let formatUrlKey = currRequestUrl;
-    let addQueryStr = '';
-    const isTarget = requests.some((r) => {
-      if (r.queryParams && r.queryParams[0]) {
-        const urlStrArr = currRequestUrl.split('?');
-        const hostUrl = urlStrArr[0];
-        let curUrlWithQuery = r.url === hostUrl;
-        if (r.url === hostUrl) {
-          curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
-        }
-        if (curUrlWithQuery) {
-          addQueryStr = curUrlWithQuery;
-        }
-        formatUrlKey = hostUrl;
-        return !!curUrlWithQuery;
-      } else {
-        return r.url === currRequestUrl;
-      }
-    });
-    if (isTarget) {
-      let formatHeader = requestHeaders.reduce((prev, curr) => {
-        const { name, value } = curr;
-        prev[name] = value;
-        return prev;
-      }, {});
-      // const requestHeadersObj = JSON.stringify(formatHeader);
-      const storageObj = await chrome.storage.local.get([formatUrlKey]);
-      const currRequestUrlStorage = storageObj[formatUrlKey];
-      const currRequestObj = currRequestUrlStorage
-        ? JSON.parse(currRequestUrlStorage)
-        : {};
-      const newCurrRequestObj = {
-        ...currRequestObj,
-        headers: formatHeader,
-      };
-      if (addQueryStr) {
-        newCurrRequestObj.queryString = addQueryStr;
-      }
-      console.log('222222listen', formatUrlKey);
-      await chrome.storage.local.set({
-        [formatUrlKey]: JSON.stringify(newCurrRequestObj),
-      });
-      checkWebRequestIsReadyFn();
-
-      if (dataSource === 'tiktok' && !isStoreTiktokName
-      && formatUrlKey==="https://www.tiktok.com/passport/web/account/info/") {
-        isStoreTiktokName = true;
-        console.log("store tiktok username and jump page");
-        const tiktok = new constructorF();
-        const tiktokUsernamePre = await chrome.storage.local.get('tiktokUsername');
-        await tiktok.storeUserName();
-        const tiktokUsername = await chrome.storage.local.get('tiktokUsername');
-        const currentTab = await chrome.tabs.get(tabCreatedByPado.id);
-        if (currentTab.url === jumpTo + '/' && !tiktokUsernamePre['tiktokUsername']) {
-          chrome.tabs.update(tabCreatedByPado.id, {
-            url: jumpTo + '/@' + tiktokUsername['tiktokUsername'],
-          });
-        }
-      }
-    }
-  };
-  const onBeforeRequestFn = async (subDetails) => {
-    const { url: currRequestUrl, requestBody } = subDetails;
-    let formatUrlKey = currRequestUrl;
-    const isTarget = requests.some((r) => {
-      if (r.queryParams && r.queryParams[0]) {
-        const urlStrArr = currRequestUrl.split('?');
-        const hostUrl = urlStrArr[0];
-        let curUrlWithQuery = r.url === hostUrl;
-        if (r.url === hostUrl) {
-          curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
-        }
-        formatUrlKey = hostUrl;
-        return curUrlWithQuery;
-      } else {
-        return r.url === currRequestUrl;
-      }
-    });
-    if (isTarget) {
-      if (requestBody && requestBody.raw) {
-        const rawBody = requestBody.raw[0];
-        if (rawBody && rawBody.bytes) {
-          const byteArray = new Uint8Array(rawBody.bytes);
-          const bodyText = new TextDecoder().decode(byteArray);
-          console.log(
-            `url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
-          );
-
-          const storageObj = await chrome.storage.local.get([formatUrlKey]);
-          const currRequestUrlStorage = storageObj[formatUrlKey];
-          const currRequestObj = currRequestUrlStorage
-            ? JSON.parse(currRequestUrlStorage)
-            : {};
-          const newCurrRequestObj = {
-            ...currRequestObj,
-            body: JSON.parse(bodyText),
-          };
-          await chrome.storage.local.set({
-            [formatUrlKey]: JSON.stringify(newCurrRequestObj),
-          });
-        }
-      }
-    }
-  };
-  const checkWebRequestIsReadyFn = async () => {
-    const checkReadyStatusFn = async () => {
-      const interceptorRequests = requests.filter((r) => r.name !== 'first');
-      const interceptorUrlArr = interceptorRequests.map((i) => i.url);
-      const storageObj = await chrome.storage.local.get(interceptorUrlArr);
-      const storageArr = Object.values(storageObj);
-      if (storageArr.length === interceptorUrlArr.length) {
-        const f = interceptorRequests.every((r) => {
-          // const storageR = Object.keys(storageObj).find(
-          //   (sRKey) => sRKey === r.url
-          // );
-          const sRrequestObj = storageObj[r.url]
-            ? JSON.parse(storageObj[r.url])
-            : {};
-          const headersFlag =
-            !r.headers || (!!r.headers && !!sRrequestObj.headers);
-          const bodyFlag = !r.body || (!!r.body && !!sRrequestObj.body);
-          const cookieFlag =
-            !r.cookies ||
-            (!!r.cookies &&
-              !!sRrequestObj.headers &&
-              !!sRrequestObj.headers.Cookie);
-          return headersFlag && bodyFlag && cookieFlag;
+    const requestUrlList = requests.map((r) => r.url);
+    const isUrlWithQueryFn = (url, queryKeyArr) => {
+      const urlStrArr = url.split('?');
+      const queryStr = urlStrArr[1];
+      const queryStrArr = queryStr.split('&');
+      const isUrlWithQuery = queryKeyArr.every((tQItem) => {
+        return queryStrArr.some((qItem) => {
+          return qItem.split('=')[0] === tQItem;
         });
-        return f;
-      } else {
-        return false;
-      }
+      });
+      return isUrlWithQuery ? queryStr : false;
     };
-    isReadyRequest = await checkReadyStatusFn();
-    if (isReadyRequest) {
-      console.log('web requests are captured');
-    }
-    chrome.tabs.sendMessage(tabCreatedByPado.id, {
-      type: 'dataSourceWeb',
-      name: 'webRequestIsReady',
-      params: {
-        isReady: isReadyRequest,
-      },
-    });
-  };
-  const formatRequestsFn = async () => {
-    const formatRequests = [];
-    for (const r of requests) {
-      const { headers, cookies, body, url } = r;
-      const formatUrlKey = url;
-      const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-      const {
-        headers: curRequestHeader,
-        body: curRequestBody,
-        queryString,
-      } = (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
-
-      const cookiesObj = curRequestHeader
-        ? parseCookie(curRequestHeader.Cookie)
-        : {};
-      let formateHeader = {},
-        formateCookie = {},
-        formateBody = {};
-      if (headers && headers.length > 0) {
-        headers.forEach((hk) => {
-          if (curRequestHeader) {
-            const inDataSourceHeaderKey = Object.keys(curRequestHeader).find(
-              (h) => h.toLowerCase() === hk.toLowerCase()
-            );
-            formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
+    const onBeforeSendHeadersFn = async (details) => {
+      const { url: currRequestUrl, requestHeaders } = details;
+      let formatUrlKey = currRequestUrl;
+      let addQueryStr = '';
+      const isTarget = requests.some((r) => {
+        if (r.queryParams && r.queryParams[0]) {
+          const urlStrArr = currRequestUrl.split('?');
+          const hostUrl = urlStrArr[0];
+          let curUrlWithQuery = r.url === hostUrl;
+          if (r.url === hostUrl) {
+            curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
           }
-        });
-        Object.assign(r, {
-          headers: formateHeader,
-        });
-      }
-      if (cookies && cookies.length > 0) {
-        cookies.forEach((ck) => {
-          formateCookie[ck] = cookiesObj[ck];
-        });
-        Object.assign(r, {
-          cookies: formateCookie,
-        });
-      }
-      if (body && body.length > 0) {
-        body.forEach((hk) => {
-          formateBody[hk] = curRequestBody[hk];
-        });
-        Object.assign(r, {
-          body: formateBody,
-        });
-      }
-      if (queryString) {
-        Object.assign(r, {
-          url: r.url + '?' + queryString,
-        });
-      }
-      if ('queryParams' in r) {
-        delete r.queryParams;
-      }
-
-      formatRequests.push(r);
-    }
-    console.log('222formatRequests', formatRequests);
-    return formatRequests;
-  };
-
-  if (name === 'init') {
-    operationType = operation;
-    // const { extensionTabId } = request;
-    // currExtentionId = extensionTabId;
-    const currentWindowTabs = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-    currExtentionId = currentWindowTabs[0].id;
-    chrome.webRequest.onBeforeSendHeaders.addListener(
-      onBeforeSendHeadersFn,
-      { urls: ['<all_urls>'] },
-      ['requestHeaders', 'extraHeaders']
-    );
-    chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequestFn,
-      { urls: ['<all_urls>'] },
-      ['requestBody']
-    );
-
-    const tiktokUsername = await chrome.storage.local.get('tiktokUsername');
-    if (dataSource === 'tiktok' && tiktokUsername['tiktokUsername']) {
-      jumpTo = jumpTo + '/@' + tiktokUsername['tiktokUsername'];
-    }
-    tabCreatedByPado = await chrome.tabs.create({
-      url: jumpTo,
-    });
-    console.log('222pageDEcode tabCreatedByPado', tabCreatedByPado);
-    const injectFn = async () => {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: tabCreatedByPado.id,
-        },
-        files: ['dataSourceWeb.bundle.js'],
-      });
-      await chrome.scripting.insertCSS({
-        target: { tabId: tabCreatedByPado.id },
-        files: ['static/css/dataSourceWeb.css'],
-      });
-    };
-    await injectFn();
-    checkWebRequestIsReadyFn();
-    chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-      if (
-        tabId === tabCreatedByPado.id &&
-        (changeInfo.url || changeInfo.title)
-      ) {
-        await injectFn();
-        checkWebRequestIsReadyFn();
-      }
-    });
-
-    chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-      if (tabId === tabCreatedByPado.id) {
-        chrome.runtime.sendMessage({
-          type: 'dataSourceWeb',
-          name: 'stop', // TODO-newui abortAttest
-        });
-      }
-    });
-    // injectFn();
-  }
-  if (name === 'initCompleted') {
-    sendResponse({
-      name: 'append',
-      params: {
-        ...activeTemplate,
-      },
-      dataSourcePageTabId: tabCreatedByPado.id,
-      isReady: isReadyRequest,
-      operation: operationType,
-    });
-  }
-  if (name === 'start') {
-    const formatRequests = await formatRequestsFn();
-    if (operationType === 'connect') {
-      const activeInfo = formatRequests.find((i) => i.headers);
-      const activeHeader = Object.assign({}, activeInfo.headers);
-
-      const resType = `set-${exchangeName}`;
-      try {
-        const authInfoName = exchangeName + "-auth";
-        await chrome.storage.local.set({[authInfoName]: JSON.stringify(activeHeader)})
-        const ex = new constructorF();
-        await ex.getInfo();
-        console.log(`222dataSourceWeb getInfo ${exchangeName}= `, ex);
-        var newSourceUserData = {};
-        if (sourceType === 'Assets') {
-          let storageRes = await chrome.storage.local.get(exchangeName);
-          const lastData = storageRes[exchangeName];
-          let pnl = null;
-          if (lastData) {
-            const lastTotalBal = JSON.parse(lastData).totalBalance;
-            pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
+          if (curUrlWithQuery) {
+            addQueryStr = curUrlWithQuery;
           }
-          newSourceUserData = {
-            totalBalance: ex.totalAccountBalance,
-            tokenListMap: ex.totalAccountTokenMap,
-            // apiKey: exParams.apiKey, // TODO-newui
-            date: getCurrentDate(),
-            timestamp: +new Date(),
-            version: ExchangeStoreVersion, // TODO-newui
-            label: '', // TODO-newui
-            flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
-            spotAccountTokenMap: ex.spotAccountTokenMap,
-            tokenPriceMap: ex.tokenPriceMap,
-            tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
-            userInfo: ex.userInfo,
-          };
-          if (pnl !== null && pnl !== undefined) {
-            newSourceUserData.pnl = pnl;
-          }
-        } else if (sourceType === 'Social') {
-          newSourceUserData = {
-            ...ex,
-            version: SocailStoreVersion,
-          };
-          // postMsg(port, { resMethodName: 'checkIsLogin', res: false });
+          formatUrlKey = hostUrl;
+          return !!curUrlWithQuery;
+        } else {
+          return r.url === currRequestUrl;
         }
-        Object.assign(newSourceUserData, {
-          date: getCurrentDate(),
-          timestamp: +new Date(),
-        });
+      });
+      if (isTarget) {
+        let formatHeader = requestHeaders.reduce((prev, curr) => {
+          const { name, value } = curr;
+          prev[name] = value;
+          return prev;
+        }, {});
+        // const requestHeadersObj = JSON.stringify(formatHeader);
+        const storageObj = await chrome.storage.local.get([formatUrlKey]);
+        const currRequestUrlStorage = storageObj[formatUrlKey];
+        const currRequestObj = currRequestUrlStorage
+          ? JSON.parse(currRequestUrlStorage)
+          : {};
+        const newCurrRequestObj = {
+          ...currRequestObj,
+          headers: formatHeader,
+        };
+        if (addQueryStr) {
+          newCurrRequestObj.queryString = addQueryStr;
+        }
+        console.log('222222listen', formatUrlKey);
         await chrome.storage.local.set({
-          [exchangeName]: JSON.stringify(newSourceUserData),
+          [formatUrlKey]: JSON.stringify(newCurrRequestObj),
         });
-        postMsg(port, { resType, res: true, connectType: 'Web' });
-      } catch (error) {
-        console.log(
-          'connect source  by web error',
-          error,
-          error.message,
-          error.message.indexOf('AuthenticationError')
-        );
-        var errMsg = '';
-        if (sourceType === 'Assets') {
-          if (error.message.indexOf('AuthenticationError') > -1) {
-            errMsg = 'AuthenticationError';
-          } else if (error.message.indexOf('ExchangeNotAvailable') > -1) {
-            errMsg = 'ExchangeNotAvailable';
-          } else if (error.message.indexOf('InvalidNonce') > -1) {
-            errMsg = 'InvalidNonce';
-          } else if (error.message.indexOf('RequestTimeout') > -1) {
-            errMsg = 'TypeError: Failed to fetch';
-          } else if (error.message.indexOf('NetworkError') > -1) {
-            errMsg = 'TypeError: Failed to fetch';
-          } else if (error.message.indexOf('TypeError: Failed to fetch') > -1) {
-            errMsg = 'TypeError: Failed to fetch';
-          } else {
-            errMsg = 'UnhnowError';
+        checkWebRequestIsReadyFn();
+
+        if (
+          dataSource === 'tiktok' &&
+          !isStoreTiktokName &&
+          formatUrlKey === 'https://www.tiktok.com/passport/web/account/info/'
+        ) {
+          isStoreTiktokName = true;
+          console.log('store tiktok username and jump page');
+          const tiktok = new constructorF();
+          const tiktokUsernamePre = await chrome.storage.local.get(
+            'tiktokUsername'
+          );
+          await tiktok.storeUserName();
+          const tiktokUsername = await chrome.storage.local.get(
+            'tiktokUsername'
+          );
+          const currentTab = await chrome.tabs.get(tabCreatedByPado.id);
+          if (
+            currentTab.url === jumpTo + '/' &&
+            !tiktokUsernamePre['tiktokUsername']
+          ) {
+            chrome.tabs.update(tabCreatedByPado.id, {
+              url: jumpTo + '/@' + tiktokUsername['tiktokUsername'],
+            });
           }
-        } else if (sourceType === 'Social') {
-          // TODO-newui
-          errMsg = 'UnhnowError';
         }
-        postMsg(port, {
-          resType,
-          res: false,
-          msg: errMsg,
-          connectType: 'Web',
-        });
       }
+    };
+    const onBeforeRequestFn = async (subDetails) => {
+      const { url: currRequestUrl, requestBody } = subDetails;
+      let formatUrlKey = currRequestUrl;
+      const isTarget = requests.some((r) => {
+        if (r.queryParams && r.queryParams[0]) {
+          const urlStrArr = currRequestUrl.split('?');
+          const hostUrl = urlStrArr[0];
+          let curUrlWithQuery = r.url === hostUrl;
+          if (r.url === hostUrl) {
+            curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
+          }
+          formatUrlKey = hostUrl;
+          return curUrlWithQuery;
+        } else {
+          return r.url === currRequestUrl;
+        }
+      });
+      if (isTarget) {
+        if (requestBody && requestBody.raw) {
+          const rawBody = requestBody.raw[0];
+          if (rawBody && rawBody.bytes) {
+            const byteArray = new Uint8Array(rawBody.bytes);
+            const bodyText = new TextDecoder().decode(byteArray);
+            console.log(
+              `url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
+            );
+
+            const storageObj = await chrome.storage.local.get([formatUrlKey]);
+            const currRequestUrlStorage = storageObj[formatUrlKey];
+            const currRequestObj = currRequestUrlStorage
+              ? JSON.parse(currRequestUrlStorage)
+              : {};
+            const newCurrRequestObj = {
+              ...currRequestObj,
+              body: JSON.parse(bodyText),
+            };
+            await chrome.storage.local.set({
+              [formatUrlKey]: JSON.stringify(newCurrRequestObj),
+            });
+          }
+        }
+      }
+    };
+    const checkWebRequestIsReadyFn = async () => {
+      const checkReadyStatusFn = async () => {
+        const interceptorRequests = requests.filter((r) => r.name !== 'first');
+        const interceptorUrlArr = interceptorRequests.map((i) => i.url);
+        const storageObj = await chrome.storage.local.get(interceptorUrlArr);
+        const storageArr = Object.values(storageObj);
+        if (storageArr.length === interceptorUrlArr.length) {
+          const f = interceptorRequests.every((r) => {
+            // const storageR = Object.keys(storageObj).find(
+            //   (sRKey) => sRKey === r.url
+            // );
+            const sRrequestObj = storageObj[r.url]
+              ? JSON.parse(storageObj[r.url])
+              : {};
+            const headersFlag =
+              !r.headers || (!!r.headers && !!sRrequestObj.headers);
+            const bodyFlag = !r.body || (!!r.body && !!sRrequestObj.body);
+            const cookieFlag =
+              !r.cookies ||
+              (!!r.cookies &&
+                !!sRrequestObj.headers &&
+                !!sRrequestObj.headers.Cookie);
+            return headersFlag && bodyFlag && cookieFlag;
+          });
+          return f;
+        } else {
+          return false;
+        }
+      };
+      isReadyRequest = await checkReadyStatusFn();
+      if (isReadyRequest) {
+        console.log('web requests are captured');
+      }
+      chrome.tabs.sendMessage(tabCreatedByPado.id, {
+        type: 'dataSourceWeb',
+        name: 'webRequestIsReady',
+        params: {
+          isReady: isReadyRequest,
+        },
+      });
+    };
+    const formatRequestsFn = async () => {
+      const formatRequests = [];
+      for (const r of requests) {
+        const { headers, cookies, body, url } = r;
+        const formatUrlKey = url;
+        const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
+        const {
+          headers: curRequestHeader,
+          body: curRequestBody,
+          queryString,
+        } = (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
+
+        const cookiesObj = curRequestHeader
+          ? parseCookie(curRequestHeader.Cookie)
+          : {};
+        let formateHeader = {},
+          formateCookie = {},
+          formateBody = {};
+        if (headers && headers.length > 0) {
+          headers.forEach((hk) => {
+            if (curRequestHeader) {
+              const inDataSourceHeaderKey = Object.keys(curRequestHeader).find(
+                (h) => h.toLowerCase() === hk.toLowerCase()
+              );
+              formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
+            }
+          });
+          Object.assign(r, {
+            headers: formateHeader,
+          });
+        }
+        if (cookies && cookies.length > 0) {
+          cookies.forEach((ck) => {
+            formateCookie[ck] = cookiesObj[ck];
+          });
+          Object.assign(r, {
+            cookies: formateCookie,
+          });
+        }
+        if (body && body.length > 0) {
+          body.forEach((hk) => {
+            formateBody[hk] = curRequestBody[hk];
+          });
+          Object.assign(r, {
+            body: formateBody,
+          });
+        }
+        if (queryString) {
+          Object.assign(r, {
+            url: r.url + '?' + queryString,
+          });
+        }
+        if ('queryParams' in r) {
+          delete r.queryParams;
+        }
+
+        formatRequests.push(r);
+      }
+      console.log('222formatRequests', formatRequests);
+      return formatRequests;
+    };
+
+    if (name === 'init') {
+      operationType = operation;
+      // const { extensionTabId } = request;
+      // currExtentionId = extensionTabId;
+      const currentWindowTabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      currExtentionId = currentWindowTabs[0].id;
+      chrome.webRequest.onBeforeSendHeaders.addListener(
+        onBeforeSendHeadersFn,
+        { urls: ['<all_urls>'] },
+        ['requestHeaders', 'extraHeaders']
+      );
+      chrome.webRequest.onBeforeRequest.addListener(
+        onBeforeRequestFn,
+        { urls: ['<all_urls>'] },
+        ['requestBody']
+      );
+
+      const tiktokUsername = await chrome.storage.local.get('tiktokUsername');
+      if (dataSource === 'tiktok' && tiktokUsername['tiktokUsername']) {
+        jumpTo = jumpTo + '/@' + tiktokUsername['tiktokUsername'];
+      }
+      tabCreatedByPado = await chrome.tabs.create({
+        url: jumpTo,
+      });
+      console.log('222pageDEcode tabCreatedByPado', tabCreatedByPado);
+      const injectFn = async () => {
+        await chrome.scripting.executeScript({
+          target: {
+            tabId: tabCreatedByPado.id,
+          },
+          files: ['dataSourceWeb.bundle.js'],
+        });
+        await chrome.scripting.insertCSS({
+          target: { tabId: tabCreatedByPado.id },
+          files: ['static/css/dataSourceWeb.css'],
+        });
+      };
+      await injectFn();
+      checkWebRequestIsReadyFn();
+      chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+        if (
+          tabId === tabCreatedByPado.id &&
+          (changeInfo.url || changeInfo.title)
+        ) {
+          await injectFn();
+          checkWebRequestIsReadyFn();
+        }
+      });
+
+      chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+        if (tabId === tabCreatedByPado.id) {
+          chrome.runtime.sendMessage({
+            type: 'dataSourceWeb',
+            name: 'stop', // TODO-newui abortAttest
+          });
+        }
+      });
+      // injectFn();
     }
-    // operation : connect attest
-    /*const dataSourceCookies = await chrome.cookies.getAll({
+    if (name === 'initCompleted') {
+      sendResponse({
+        name: 'append',
+        params: {
+          ...activeTemplate,
+        },
+        dataSourcePageTabId: tabCreatedByPado.id,
+        isReady: isReadyRequest,
+        operation: operationType,
+      });
+    }
+    if (name === 'start') {
+      const formatRequests = await formatRequestsFn();
+      if (operationType === 'connect') {
+        const activeInfo = formatRequests.find((i) => i.headers);
+        const activeHeader = Object.assign({}, activeInfo.headers);
+
+        const authInfoName = exchangeName + '-auth';
+        await chrome.storage.local.set({
+          [authInfoName]: JSON.stringify(activeHeader),
+        });
+        const ex = new constructorF();
+        await storeDataSource(exchangeName, ex, port);
+      }
+      // operation : connect attest
+      /*const dataSourceCookies = await chrome.cookies.getAll({
       url: new URL(jumpTo).origin,
     });
     const cookiesObj = dataSourceCookies.reduce((prev, curr) => {
@@ -435,64 +369,75 @@ export const dataSourceWebMsgListener = async (
       prev[name] = value;
       return prev;
     }, {});*/
-    // const { category } = activeTemplate;
-    // const form = {
-    //   source: dataSource,
-    //   type: category,
-    //   label: null, // TODO
-    //   exUserId: null,
-    // };
-    // // console.log(WorkerGlobalScope.location)
-    // if (event) {
-    //   form.event = event;
-    // }
-    // if (activeTemplate.requestid) {
-    //   form.requestid = activeTemplate.requestid;
-    // }
-    // let aligorithmParams = await assembleAlgorithmParams(form, password);
-    // Object.assign(aligorithmParams, {
-    //   reqType: 'web',
-    //   host: host,
-    //   schemaType,
-    //   requests: formatRequests,
-    //   responses,
-    //   uiTemplate,
-    //   templateId: id,
-    // });
-    // await chrome.storage.local.set({
-    //   activeRequestAttestation: JSON.stringify(aligorithmParams),
-    // });
-    // console.log('222222pageDecode-aligorithmParams', aligorithmParams);
-    // chrome.runtime.sendMessage({
-    //   type: 'algorithm',
-    //   method: 'getAttestation',
-    //   params: aligorithmParams,
-    // });
-  }
-  if (name === 'attestResult') {
-    // to send back your response  to the current tab
-    chrome.tabs.sendMessage(
-      tabCreatedByPado.id,
-      request,
-      function (response) {}
-    );
-    chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
-    chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
-  }
-  if (name === 'close' || name === 'cancel') {
-    await chrome.tabs.update(currExtentionId, {
-      active: true,
-    });
-    await chrome.tabs.remove(tabCreatedByPado.id);
-  }
-  if (name === 'end') {
-    chrome.tabs.sendMessage(
-      tabCreatedByPado.id,
-      request,
-      function (response) {}
-    );
-    chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
-    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+      // const { category } = activeTemplate;
+      // const form = {
+      //   source: dataSource,
+      //   type: category,
+      //   label: null, // TODO
+      //   exUserId: null,
+      // };
+      // // console.log(WorkerGlobalScope.location)
+      // if (event) {
+      //   form.event = event;
+      // }
+      // if (activeTemplate.requestid) {
+      //   form.requestid = activeTemplate.requestid;
+      // }
+      // let aligorithmParams = await assembleAlgorithmParams(form, password);
+      // Object.assign(aligorithmParams, {
+      //   reqType: 'web',
+      //   host: host,
+      //   schemaType,
+      //   requests: formatRequests,
+      //   responses,
+      //   uiTemplate,
+      //   templateId: id,
+      // });
+      // await chrome.storage.local.set({
+      //   activeRequestAttestation: JSON.stringify(aligorithmParams),
+      // });
+      // console.log('222222pageDecode-aligorithmParams', aligorithmParams);
+      // chrome.runtime.sendMessage({
+      //   type: 'algorithm',
+      //   method: 'getAttestation',
+      //   params: aligorithmParams,
+      // });
+    }
+    if (name === 'attestResult') {
+      // to send back your response  to the current tab
+      chrome.tabs.sendMessage(
+        tabCreatedByPado.id,
+        request,
+        function (response) {}
+      );
+      chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
+      chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
+    }
+    if (name === 'close' || name === 'cancel') {
+      await chrome.tabs.update(currExtentionId, {
+        active: true,
+      });
+      await chrome.tabs.remove(tabCreatedByPado.id);
+    }
+    if (name === 'end') {
+      chrome.tabs.sendMessage(
+        tabCreatedByPado.id,
+        request,
+        function (response) {}
+      );
+      chrome.webRequest.onBeforeSendHeaders.removeListener(
+        onBeforeSendHeadersFn
+      );
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+    }
+  } else {
+    if (name === 'end') {
+      chrome.tabs.sendMessage(
+        tabCreatedByPado.id,
+        request,
+        function (response) {}
+      );
+    }
   }
 };
 

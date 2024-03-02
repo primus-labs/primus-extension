@@ -36,7 +36,7 @@ type activeAttestationRequest = {
   fetchType?: string; // Web ,API
   loading?: loadingStatus;
   presets?: any; // attest params
-  requestId?: string;
+  // requestId?: string;
   account?: string;
 };
 export type UserState = {

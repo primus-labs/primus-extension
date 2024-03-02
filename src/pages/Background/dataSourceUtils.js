@@ -1,7 +1,9 @@
+import { getCurrentDate, postMsg } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import { getCurrentDate } from '@/utils/utils';
-// ex : instance
+import { ExchangeStoreVersion, SocailStoreVersion } from '@/config/constants';
+// ex : exhange service Constructor instance
 export const storeDataSource = async (dataSourceId, ex, port) => {
+  const resType = `set-${dataSourceId}`;
   const exchangeInfo = DATASOURCEMAP[dataSourceId];
   const { constructorF, type: sourceType } = exchangeInfo;
   try {

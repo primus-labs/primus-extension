@@ -3,9 +3,18 @@
 @import '@/assets/newCss/dialog.scss';
 @import '../../attestationForm.scss';
 .pFormWrapper.detailForm {
-  --verificationContent-width: 132px;
-  --verificationContent-input-width: 147px;
-  --verificationContent-select-width: 269px;
+  --verificationContent-width: 0.92rem;
+  --verificationContent-input-width: 1.02rem;
+  --verificationContent-select-width: 1.87rem;
+}
+@media (max-width: 1470px) {
+  .pFormWrapper.detailForm {
+    --verificationContent-width: 132px;
+    --verificationContent-input-width: 147px;
+    --verificationContent-select-width: 269px;
+  }
+}
+.pFormWrapper.detailForm {
   gap: var(--spacing-12) !important;
   .formItem {
     @include attestationForm;
@@ -42,7 +51,7 @@
       }
       .balance {
         @include BodyBody300;
-        margin-left: 6px;
+        margin-left: var(--spacing-6);
         color: var(--text-tokens-text-placeholder);
       }
     }

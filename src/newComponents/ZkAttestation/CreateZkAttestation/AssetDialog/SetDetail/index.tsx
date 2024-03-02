@@ -59,16 +59,19 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [pswForm]);
     const totalBalanceForAttest = useMemo(() => {
       let totalBalance = '0';
-      if (dataSourceId === 'okx') {
-        totalBalance = getTotalBalFromNumObjAPriceObj(
-          activeDataSouceUserInfo.tradingAccountTokenAmountObj,
-          activeDataSouceUserInfo.tokenPriceMap
-        );
-      } else if (dataSourceId === 'binance') {
-        totalBalance = getTotalBalFromAssetsMap(
-          activeDataSouceUserInfo.spotAccountTokenMap
-        );
+      if (activeDataSouceUserInfo) {
+        if (dataSourceId === 'okx') {
+          totalBalance = getTotalBalFromNumObjAPriceObj(
+            activeDataSouceUserInfo?.tradingAccountTokenAmountObj,
+            activeDataSouceUserInfo?.tokenPriceMap
+          );
+        } else if (dataSourceId === 'binance') {
+          totalBalance = getTotalBalFromAssetsMap(
+            activeDataSouceUserInfo?.spotAccountTokenMap
+          );
+        }
       }
+
       return totalBalance;
     }, [pswForm, dataSourceId, activeDataSouceUserInfo]);
     // const verificationContentList = useMemo(() => {
@@ -78,10 +81,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (!formLegal) {
         return;
       }
+      debugger
       if (
+        activeDataSouceUserInfo &&
         gt(Number(pswForm.verificationValue), Number(totalBalanceForAttest))
       ) {
         alert('Not met the requirements');
+        return
         // setActiveRequest({
         //   type: 'warn',
         //   title: 'Not met the requirements',
@@ -99,7 +105,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
       onSubmit(pswForm);
       return;
-    }, [formLegal, pswForm, , totalBalanceForAttest]);
+    }, [formLegal, pswForm, activeDataSouceUserInfo, totalBalanceForAttest]);
 
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => ({ ...f, [formKey]: v }));

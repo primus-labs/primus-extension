@@ -2,15 +2,22 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
 @import '../../attestationForm.scss';
-
 .pFormWrapper.dataSourceNameForm {
-  --selectInput-width: 182px;
+  --select-width: 1.27rem;
+}
+@media (max-width: 1470px) {
+  .pFormWrapper.dataSourceNameForm {
+    --select-width: 182px;
+  }
+}
+.pFormWrapper.dataSourceNameForm {
+  
   .formItem {
     @include attestationForm;
     .dataSourceName {
       @include inputSelectWidth(
-        var(--selectInput-width),
-        var(--selectInput-width)
+        var(--select-width),
+        var(--select-width)
       );
     }
   }

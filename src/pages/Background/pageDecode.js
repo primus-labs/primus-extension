@@ -1,4 +1,6 @@
 import { assembleAlgorithmParams } from './exData';
+import { storeDataSource } from './dataSourceUtils';
+import { DATASOURCEMAP } from '@/config/dataSource';
 
 let tabCreatedByPado;
 let activeTemplate = {};
@@ -9,7 +11,8 @@ export const pageDecodeMsgListener = async (
   request,
   sender,
   sendResponse,
-  password
+  password,
+  port
 ) => {
   const { name, params } = request;
   activeTemplate = name === 'inject' ? params : activeTemplate;
@@ -201,7 +204,10 @@ export const pageDecodeMsgListener = async (
     await injectFn();
     checkWebRequestIsReadyFn();
     chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-      if (tabId === tabCreatedByPado.id && (changeInfo.url || changeInfo.title)) {
+      if (
+        tabId === tabCreatedByPado.id &&
+        (changeInfo.url || changeInfo.title)
+      ) {
         await injectFn();
         checkWebRequestIsReadyFn();
       }
@@ -313,8 +319,10 @@ export const pageDecodeMsgListener = async (
 
     const activeInfo = formatRequests.find((i) => i.headers);
     const activeHeader = Object.assign({}, activeInfo.headers);
-    const authInfoName = dataSource + "-auth";
-    await chrome.storage.local.set({[authInfoName]: JSON.stringify(activeHeader)})
+    const authInfoName = dataSource + '-auth';
+    await chrome.storage.local.set({
+      [authInfoName]: JSON.stringify(activeHeader),
+    });
 
     Object.assign(aligorithmParams, {
       reqType: 'web',
@@ -330,11 +338,16 @@ export const pageDecodeMsgListener = async (
       activeRequestAttestation: JSON.stringify(aligorithmParams),
     });
     console.log('222222pageDecode-aligorithmParams', aligorithmParams);
+
     chrome.runtime.sendMessage({
       type: 'algorithm',
       method: 'getAttestation',
       params: aligorithmParams,
     });
+
+    const { constructorF } = DATASOURCEMAP[dataSource];
+    const ex = new constructorF();
+    await storeDataSource(dataSource, ex, port);
   }
 
   if (name === 'attestResult') {
