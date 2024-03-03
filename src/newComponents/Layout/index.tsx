@@ -58,11 +58,11 @@ const Nav: React.FC = memo(({}) => {
       if (compareRes > -1) {
         // attestation version <= '1.0.3'
         if (i.type === 'ASSETS_PROOF') {
-          i.attestationType = 'Assets Certificate';
+          i.attestationType = 'Assets Certification';
           i.verificationContent = 'Assets Proof';
           i.verificationValue = i.baseValue;
         } else if (i.type === 'TOKEN_HOLDINGS') {
-          i.attestationType = 'Assets Certificate';
+          i.attestationType = 'Assets Certification';
           i.verificationContent = 'Token Holding';
           i.verificationValue = i.holdingToken;
         } else if (i.type === 'IDENTIFICATION_PROOF') {
@@ -79,13 +79,18 @@ const Nav: React.FC = memo(({}) => {
             i.verificationContent = 'KYC Status';
             i.verificationValue = 'Basic Verification';
           }
-          
         } else if (i.type === 'UNISWAP_PROOF') {
           i.attestationType = 'On-chain Transaction';
           i.verificationContent = 'Largest ETH/USDC Uniwap Transaction';
           i.verificationValue = i.dataToBeSigned.content;
         }
       }
+      if ((i.attestationType = 'Assets Certificate')) {
+        i.attestationType = 'Assets Certification';
+      }// delete
+    });
+    await chrome.storage.local.set({
+      credentials: JSON.stringify(credentialObj),
     });
 
     dispatch(setExSourcesAsync());
@@ -161,7 +166,6 @@ const Nav: React.FC = memo(({}) => {
         <div className="page">
           <Outlet />
         </div>
-
         <Footer />
       </article>
     </div>

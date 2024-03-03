@@ -13,36 +13,56 @@ interface PBackProps {
   type: string;
   onClose: () => void;
   onSubmit: () => void;
+  presets?: any
 }
-const PClose: React.FC<PBackProps> = memo(({ type, onClose, onSubmit }) => {
-  const dispatch: Dispatch<any> = useDispatch();
-  const attestLoading = useSelector((state: UserState) => state.attestLoading);
-  // const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
-  const { connected } = useCheckIsConnectedWallet(true);
-  useEffect(() => {
-    if (attestLoading === 2) {
-      dispatch(setAttestLoading(0));
-    }
-  }, [attestLoading, dispatch]);
-  return (
-    <div className="createZkAttestation">
-      {connected ? (
-        <>
-          {type === 'Assets Certificate' && (
-            <AssetDialog type={type} onClose={onClose} onSubmit={onSubmit} />
-          )}
-          {type === 'Humanity Verification' && (
-            <HumanityDialog type={type} onClose={onClose} onSubmit={onSubmit} />
-          )}
-          {type === 'On-chain Transaction' && (
-            <OnChainDialog type={type} onClose={onClose} onSubmit={onSubmit} />
-          )}
-        </>
-      ) : (
-        <></>
-      )}
-    </div>
-  );
-});
+const PClose: React.FC<PBackProps> = memo(
+  ({ type, onClose, onSubmit, presets }) => {
+    const dispatch: Dispatch<any> = useDispatch();
+    const attestLoading = useSelector(
+      (state: UserState) => state.attestLoading
+    );
+    // const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
+    const { connected } = useCheckIsConnectedWallet(true);
+    useEffect(() => {
+      if (attestLoading === 2) {
+        dispatch(setAttestLoading(0));
+      }
+    }, [attestLoading, dispatch]);
+    return (
+      <div className="createZkAttestation">
+        {connected ? (
+          <>
+            {type === 'Assets Certification' && (
+              <AssetDialog
+                presets={presets}
+                type={type}
+                onClose={onClose}
+                onSubmit={onSubmit}
+              />
+            )}
+            {type === 'Humanity Verification' && (
+              <HumanityDialog
+                presets={presets}
+                type={type}
+                onClose={onClose}
+                onSubmit={onSubmit}
+              />
+            )}
+            {type === 'On-chain Transaction' && (
+              <OnChainDialog
+                presets={presets}
+                type={type}
+                onClose={onClose}
+                onSubmit={onSubmit}
+              />
+            )}
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
+    );
+  }
+);
 
 export default PClose;

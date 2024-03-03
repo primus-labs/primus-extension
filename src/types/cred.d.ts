@@ -49,7 +49,7 @@ export type CredTypeItemType = {
   dataSourceId?: string;
   verificationContent?: string;
   verificationValue?: string;
-  attestationType?: string; // 'Assets Certificate'
+  attestationType?: string; // 'Assets Certification'
   fetchType?: string; // Web ,API
   account?: string;
 };
@@ -94,9 +94,12 @@ export type ATTESTATIONTYPEITEMTYPE = {
   icon: any;
   disabled?: boolean;
   color?: string;
+  childMap?: {
+    [prodName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
+  };
 };
 export type ASSETSVERIFICATIONCONTENTTYPEITEM = {
   value: string;
   label: string;
-  templateName?: string
+  templateName?: string;
 };

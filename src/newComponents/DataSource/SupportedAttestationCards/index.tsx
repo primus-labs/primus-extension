@@ -19,9 +19,13 @@ type NavItem = {
 interface PDropdownProps {
   onClick?: (item: NavItem) => void;
 }
+// verificationContent: '';
+// verificationValue: '';
+// account: string;
 const attestationTypeMap = {
   1: {
-    title: 'On-chain Transaction Proof',
+    attestationType: 'On-chain Transaction',
+    verificationContent: '1',
     desc: 'Largest ETH/USDC Uniswap transaction',
     type: 'Powered by Brevis',
     icon: iconAttestationOnChain,
@@ -29,7 +33,8 @@ const attestationTypeMap = {
     webTemplateId: '2',
   },
   2: {
-    title: 'Assets Certificate Proof',
+    attestationType: 'Assets Certification',
+    verificationContent: 'Token Holding',
     desc: 'Owns the specified token',
     icon: iconAttestationAssets,
     type: 'Web Data',
@@ -37,7 +42,8 @@ const attestationTypeMap = {
     webTemplateId: '2323',
   },
   3: {
-    title: 'Assets Certificate Proof',
+    attestationType: 'Assets Certification',
+    verificationContent: 'Assets Proof',
     desc: 'Asset balance ≥ specified amount',
     icon: iconAttestationAssets,
     id: '3',
@@ -45,7 +51,8 @@ const attestationTypeMap = {
     type: 'Web Data',
   },
   4: {
-    title: 'Humanity Verification Proof',
+    attestationType: 'Humanity Verification',
+    verificationContent: 'Owns an account',
     desc: 'Owns the account',
     icon: iconAttestationHumanity,
     type: 'Web Data',
@@ -53,7 +60,8 @@ const attestationTypeMap = {
     webTemplateId: '2323',
   },
   5: {
-    title: 'Humanity Verification Proof',
+    attestationType: 'Humanity Verification',
+    verificationContent: 'KYC Status',
     desc: 'Completed KYC Verification',
     icon: iconAttestationHumanity,
     type: 'Web Data',
@@ -67,11 +75,17 @@ const Cards: React.FC<PDropdownProps> = memo(
     const dataSourceName = searchParams.get('dataSourceId');
     const supportList = useMemo(() => {
       if (dataSourceName === 'web3 wallet') return [attestationTypeMap[1]];
-      if (dataSourceName === 'binance' || dataSourceName === 'okx')
+      if (dataSourceName === 'binance')
         return [
           attestationTypeMap[2],
           attestationTypeMap[3],
           attestationTypeMap[4],
+          attestationTypeMap[5],
+        ];
+      if (dataSourceName === 'okx')
+        return [
+          attestationTypeMap[2],
+          attestationTypeMap[3],
           attestationTypeMap[5],
         ];
       if (
@@ -89,7 +103,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       if (dataSourceName === 'zan') return [attestationTypeMap[5]];
       return [];
     }, []);
-    const handleDetail = useCallback((i) => {
+    const handleCreate = useCallback((i) => {
       onClick && onClick(i);
     }, []);
     return (
@@ -99,14 +113,14 @@ const Cards: React.FC<PDropdownProps> = memo(
             <li
               className="supportSttestationCard"
               onClick={() => {
-                handleDetail(i);
+                handleCreate(i);
               }}
               key={i.id}
             >
               <div className="left">
                 <img src={i.icon} alt="" />
                 <div className="introTxt">
-                  <div className="title">{i.title}</div>
+                  <div className="title">{i.attestationType} Proof</div>
                   <div className="desc">{i.desc}</div>
                 </div>
               </div>
@@ -117,7 +131,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                   text="Create"
                   type="text"
                   onClick={() => {
-                    handleDetail(i);
+                    handleCreate(i);
                   }}
                 />
               </div>

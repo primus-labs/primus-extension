@@ -15,58 +15,12 @@ type ATTESTATIONTYPEMAPTYPE = {
   [propName: string]: ATTESTATIONTYPEITEMTYPE;
 };
 
-export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
-  'Assets Certificate': {
-    id: 'Assets Certificate',
-    name: 'Assets Certificate',
-    icon: iconAttestationTypeAssets,
-    color: 'yellow',
-  },
-  'Social Activities': {
-    id: 'Social Activities',
-    name: 'Social Activities',
-    icon: iconAttestationTypeSocial,
-    disabled: true,
-  },
-  'Humanity Verification': {
-    id: 'Humanity Verification',
-    name: 'Humanity Verification',
-    icon: iconAttestationTypeIdentity,
-    color: 'gray',
-  },
-  'On-chain Transaction': {
-    id: 'On-chain Transaction',
-    name: 'On-chain Transaction',
-    icon: iconAttestationTypeOnChain,
-    color: 'blue',
-  },
-  'Qualification Certificate': {
-    id: 'Qualification Certificate',
-    name: 'Qualification Certificate',
-    icon: iconAttestationTypeQualification,
-    disabled: true,
-  },
-  'Game Achievements': {
-    id: 'Game Achievements',
-    name: 'Game Achievements',
-    icon: iconAttestationTypeGame,
-    disabled: true,
-  },
-  'AIGC Proof': {
-    id: 'AIGC Proof',
-    name: 'AIGC Proof',
-    icon: iconAttestationTypeAIGC,
-    disabled: true,
-  },
-};
-export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
-  Object.values(ATTESTATIONTYPEMAP);
 
 type ATTESTATIONTYPEITEMTYPEMAP = {
   [propName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
 };
 
-// Assets Certificate content/value options
+// Assets Certification content/value options
 export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   'Assets Proof': {
     value: 'Assets Proof',
@@ -151,6 +105,57 @@ export const ALLVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   ...HUMANITYVERIFICATIONCONTENTTYPEMAP,
   ...ONCHAINVERIFICATIONCONTENTTYPEEMAP
 };
+
+export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
+  'Assets Certification': {
+    id: 'Assets Certification',
+    name: 'Assets Certification',
+    icon: iconAttestationTypeAssets,
+    color: 'yellow',
+    childMap: ASSETSVERIFICATIONCONTENTTYPEEMAP,
+  },
+  'Social Activities': {
+    id: 'Social Activities',
+    name: 'Social Activities',
+    icon: iconAttestationTypeSocial,
+    disabled: true,
+  },
+  'Humanity Verification': {
+    id: 'Humanity Verification',
+    name: 'Humanity Verification',
+    icon: iconAttestationTypeIdentity,
+    color: 'gray',
+    childMap: HUMANITYVERIFICATIONCONTENTTYPEMAP,
+  },
+  'On-chain Transaction': {
+    id: 'On-chain Transaction',
+    name: 'On-chain Transaction',
+    icon: iconAttestationTypeOnChain,
+    color: 'blue',
+    childMap: ONCHAINVERIFICATIONCONTENTTYPEEMAP,
+  },
+  'Qualification Certificate': {
+    id: 'Qualification Certificate',
+    name: 'Qualification Certificate',
+    icon: iconAttestationTypeQualification,
+    disabled: true,
+  },
+  'Game Achievements': {
+    id: 'Game Achievements',
+    name: 'Game Achievements',
+    icon: iconAttestationTypeGame,
+    disabled: true,
+  },
+  'AIGC Proof': {
+    id: 'AIGC Proof',
+    name: 'AIGC Proof',
+    icon: iconAttestationTypeAIGC,
+    disabled: true,
+  },
+};
+export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
+  Object.values(ATTESTATIONTYPEMAP);
+
 export const CredVersion = '1.0.4';
 // const attestationTypeMap = {
 //   1: {
@@ -162,7 +167,7 @@ export const CredVersion = '1.0.4';
 //     webTemplateId: '2',
 //   },
 //   2: {
-//     title: 'Assets Certificate Proof',
+//     title: 'Assets Certification Proof',
 //     desc: 'Owns the specified token',
 //     icon: iconAttestationAssets,
 //     type: 'Web Data',
@@ -170,7 +175,7 @@ export const CredVersion = '1.0.4';
 //     webTemplateId: '2323',
 //   },
 //   3: {
-//     title: 'Assets Certificate Proof',
+//     title: 'Assets Certification Proof',
 //     desc: 'Asset balance ≥ specified amount',
 //     icon: iconAttestationAssets,
 //     id: '3',

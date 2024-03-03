@@ -6,7 +6,6 @@ import Banner from '@/newComponents/DataSource/Banner'
 import './index.scss';
 
 const DataSourceOverview = memo(() => {
- 
   
   return (
     <div className="pageDataSource">

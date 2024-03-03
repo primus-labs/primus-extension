@@ -124,7 +124,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     };
     const getContent = (i) => {
       let str = '';
-      if (i.attestationType === 'Assets Certificate') {
+      if (i.attestationType === 'Assets Certification') {
         if (i.verificationContent === 'Assets Proof') {
           str = 'Asset balance';
         } else if (i.verificationContent === 'Token Holding') {
@@ -141,7 +141,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     };
     const getValue = (i) => {
       let str: any = '';
-      if (i.attestationType === 'Assets Certificate') {
+      if (i.attestationType === 'Assets Certification') {
         if (i.verificationContent === 'Assets Proof') {
           str = `>= $${i.verificationValue}`;
         } else if (i.verificationContent === 'Token Holding') {

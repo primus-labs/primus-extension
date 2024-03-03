@@ -25,10 +25,12 @@ type PswFormType = {
 };
 interface SetPwdDialogProps {
   onSubmit: (form: PswFormType) => void;
-  dataSourceId: string;
+  // dataSourceId: string;
+  presets: any;
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
-  ({ onSubmit, dataSourceId }) => {
+  ({ onSubmit, presets }) => {
+    const dataSourceId = presets.dataSourceId;
     const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
     console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
     const dispatch: Dispatch<any> = useDispatch();
@@ -133,12 +135,14 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       );
     }, [activeDataSouceUserInfo]);
 
-    
     useEffect(() => {
       if (pswForm.verificationContent) {
         handleChangePswForm('', 'verificationValue');
       }
     }, [pswForm.verificationContent, handleChangePswForm]);
+    useEffect(() => {
+      setPswForm(presets);
+    }, [presets]);
 
     return (
       <div className="pFormWrapper detailForm">
@@ -153,6 +157,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'verificationContent');
             }}
             value={pswForm.verificationContent}
+            disabled={presets?.verificationContent}
             showSelf={false}
           />
         </div>

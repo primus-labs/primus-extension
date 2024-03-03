@@ -32,7 +32,7 @@ type activeAttestationRequest = {
   dataSourceId?: string;
   verificationContent?: string;
   verificationValue?: string;
-  attestationType?: string; // 'Assets Certificate'
+  attestationType?: string; // 'Assets Certification'
   fetchType?: string; // Web ,API
   loading?: loadingStatus;
   presets?: any; // attest params
@@ -45,7 +45,7 @@ type activeOnChainRequest = {
 };
 type activeConnectWalletRequest = {
   network?: any;
-  loading?: 0 | 1;// TODO-newui0
+  loading?: 0 | 1; // TODO-newui0
 };
 export type UserState = {
   padoServicePort: chrome.runtime.Port;

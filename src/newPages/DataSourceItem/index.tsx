@@ -19,12 +19,15 @@ import PTag from '@/newComponents/PTag';
 import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards';
 import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards';
 import ConnectByAPI from '@/newComponents/DataSource/ConnectByAPI';
-
+import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
+  const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
+  const [attestationPresets, setAttestationPresets] = useState<any>();
+
   const [visibleConnectByWeb, setVisibleConnectByAPI] =
     useState<boolean>(false);
   const navigate = useNavigate();
@@ -59,7 +62,6 @@ const DataSourceItem = memo(() => {
     if (activeDataSouceMetaInfo.name === 'Web3 Wallet') {
       await dispatch({ type: 'setRequireFetchAssets', payload: true });
       dispatch(setConnectWalletDialogVisibleAction(true));
-
       return;
     }
     if (activeConnectType === 'API') {
@@ -114,7 +116,27 @@ const DataSourceItem = memo(() => {
   const handleSubmitConnectByAPI = useCallback(() => {
     setVisibleConnectByAPI(false);
   }, []);
-
+  const handleCloseAssetDialog = useCallback(() => {
+    setVisibleAssetDialog('');
+  }, []);
+  const handleSubmitAssetDialog = useCallback(() => {}, []);
+  const handleAttest = useCallback((i) => {
+    setVisibleAssetDialog(i.attestationType)
+    const presetsP = Object.keys({
+      verificationContent: '',
+      verificationValue: '',
+      // account: ''
+    }).reduce(
+      (prev, curr) => {
+        if (i[curr]) {
+          prev[curr] = i[curr];
+        }
+        return prev;
+      },
+      { dataSourceId: lowerCaseDataSourceName }
+    );
+    setAttestationPresets(presetsP);
+  }, []);
   return (
     <div className="pageDataSourceItem">
       <div className="pageContent">
@@ -158,7 +180,7 @@ const DataSourceItem = memo(() => {
               </div>
               <div className="attestationTypes sectionInfo">
                 <h2 className="sectionTitle">Create your attestation</h2>
-                <SupportedAttestationCards />
+                <SupportedAttestationCards onClick={handleAttest} />
               </div>
             </div>
           ) : (
@@ -185,6 +207,14 @@ const DataSourceItem = memo(() => {
           onClose={handleSubmitConnectByAPI}
           onSubmit={handleSubmitConnectByAPI}
           sourceName={lowerCaseDataSourceName}
+        />
+      )}
+      {visibleAssetDialog && (
+        <CreateZkAttestation
+          presets={attestationPresets}
+          type={visibleAssetDialog}
+          onClose={handleCloseAssetDialog}
+          onSubmit={handleSubmitAssetDialog}
         />
       )}
     </div>
