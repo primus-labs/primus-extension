@@ -28,7 +28,7 @@ const useWallet: UseWalletType = function useWallet() {
   } = useWalletConnect();
   const connectWalletAsyncFn = useCallback(
     async (connectObj?: any) => {
-      const { startFn, errorFn, sucFn, network, label,requireAssets } =
+      const { startFn, errorFn, sucFn, network, label } =
         savedConnectInfo.current;
       const targetNetwork = EASInfo[network as keyof typeof EASInfo];
       if (
@@ -53,7 +53,6 @@ const useWallet: UseWalletType = function useWallet() {
             sucFn,
             targetNetwork,
             label,
-            requireAssets
           )
         );
       } else {
@@ -65,7 +64,6 @@ const useWallet: UseWalletType = function useWallet() {
             sucFn,
             targetNetwork,
             label,
-            requireAssets
           )
         );
       }
@@ -85,7 +83,6 @@ const useWallet: UseWalletType = function useWallet() {
       sucFn?: (walletObj: any, network?: string, label?: string) => void,
       network?: any,
       label?: string,
-      requireAssets?:boolean
     ) => {
       savedConnectInfo.current = {
         walletId,
@@ -96,7 +93,6 @@ const useWallet: UseWalletType = function useWallet() {
         },
         network,
         label,
-        requireAssets,
       };
 
       setWallet(walletId);

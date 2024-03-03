@@ -24,9 +24,9 @@ export const connectWallet = async (targetNetwork) => {
       provider.request({ method: 'eth_chainId' }),
     ]);
 
-    if (targetNetwork) {
-      await switchChain(chainId, targetNetwork);
-    }
+    // if (targetNetwork) {
+    await switchChain(chainId, targetNetwork);
+    // }
     subscribeToEvents();
     return [accounts, chainId, provider];
   } catch (e) {
@@ -43,8 +43,14 @@ export const connectWallet = async (targetNetwork) => {
 };
 export const switchChain = async (connectedChainId, targetNetwork, p) => {
   provider = p ?? provider;
-  const { chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
-    targetNetwork;
+  let chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency;
+  const tNetwork = store.getState().activeConnectWallet.network;
+  if (!tNetwork) {
+    return;
+  }
+  ({ chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
+    tNetwork);
+
   const obj = {
     chainId,
     chainName,

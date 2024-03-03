@@ -43,6 +43,10 @@ type activeOnChainRequest = {
   requestid?: string;
   loading?: 0 | 1;
 };
+type activeConnectWalletRequest = {
+  network?: any;
+  loading?: 0 | 1;// TODO-newui0
+};
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -62,6 +66,7 @@ export type UserState = {
   effective: boolean;
   onChainAssetsSources: onChainAssetsDatas;
   connectWalletDialogVisible: boolean;
+  activeConnectWallet: activeConnectWalletRequest;
   requireFetchAssets: boolean;
   connectedWallet: ConnectedWallet;
   rewardsDialogVisible: rewardsDialogVisibleType;

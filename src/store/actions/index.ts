@@ -1,10 +1,7 @@
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import { ONEMINUTE } from '@/config/constants';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import type { ExchangeMeta } from '@/types/dataSource';
-import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import { getProofTypes } from '@/services/api/config';
-import type { PROOFTYPEITEM } from '@/types/cred';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import {
   DEFAULTDATASOURCEPOLLINGTIMENUM,
@@ -20,6 +17,10 @@ import {
 import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
 import { getAssetsOnChains } from '@/services/api/dataSource';
 import { eventReport } from '@/services/api/usertracker';
+// import { EASInfo } from '@/config/chain';
+import type { ExchangeMeta } from '@/types/dataSource';
+import type { DataSourceStorages } from '@/pages/DataSourceOverview';
+import type { PROOFTYPEITEM } from '@/types/cred';
 
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
@@ -131,7 +132,10 @@ export const setActiveOnChain = (values: any) => ({
   type: 'setActiveOnChain',
   payload: values,
 });
-
+export const setActiveConnectWallet = (values: any) => ({
+  type: 'setActiveConnectWallet',
+  payload: values,
+});
 export const setConnectedWalletsActionAsync = () => {
   return async (dispatch: any) => {
     const { connectedWallets: lastConnectedWalletsStr } =
@@ -143,7 +147,6 @@ export const setConnectedWalletsActionAsync = () => {
     await dispatch(setConnectedWalletsAction(lastConnectedWalletsObj));
   };
 };
-
 
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {
@@ -187,15 +190,19 @@ export const connectWalletAsync = (
   errorFn?: any,
   sucFn?: any,
   network?: any,
-  label?: string,
+  label?: string
 ) => {
   return async (dispatch: any, getState) => {
     console.log('getState', getState()); // delete
     const requireFetchAssets = getState().requireFetchAssets;
+    let activeNetworkId = getState().activeConnectWallet.network;
+    // let activeNetwork = EASInfo[activeNetworkId as keyof typeof EASInfo]
+    
     try {
       let address;
       let provider;
       startFn && (await startFn());
+      debugger
       if (connectObj?.address) {
         address = connectObj.address;
         provider = connectObj.provider;
@@ -204,6 +211,7 @@ export const connectWalletAsync = (
         if (network?.title === 'BNB Greenfield') {
           connectRes = await connectWallet();
         } else {
+          debugger
           connectRes = await connectWallet(network);
         }
         provider = connectRes[2];

@@ -16,11 +16,11 @@ interface PButtonProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: () => void;
-  requireAssets?: boolean;
+  
 }
 
 const Nav: React.FC<PButtonProps> = memo(
-  ({ onClose, onSubmit, visible, requireAssets= false }) => {
+  ({ onClose, onSubmit, visible}) => {
     const [step, setStep] = useState<number>(1);
     const [activeRequest, setActiveRequest] = useState<any>({});
     const connectedWallet = useSelector(
@@ -76,7 +76,6 @@ const Nav: React.FC<PButtonProps> = memo(
           sucFn,
           undefined,
           undefined,
-          requireAssets
         );
       },
       [connect, errorFn]

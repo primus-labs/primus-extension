@@ -87,6 +87,7 @@ const initState = {
   effective: true,
   onChainAssetsSources: {},
   connectWalletDialogVisible: false,
+  activeConnectWallet: {}, // connect wallet in process
   requireFetchAssets: false,
   connectedWallet: null, // user connected
   rewardsDialogVisible: {
@@ -157,6 +158,14 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, sysConfig: action.payload };
     case 'setConnectWalletDialogVisible':
       return { ...state, connectWalletDialogVisible: action.payload };
+    case 'setActiveConnectWallet':
+      return {
+        ...state,
+        activeConnectWallet: {
+          ...state.activeConnectWallet,
+          ...action.payload,
+        },
+      };
     case 'setRequireFetchAssets':
       return { ...state, requireFetchAssets: action.payload };
     case 'setConnectWallet':
@@ -195,7 +204,7 @@ const reducer: any = function (state = initState, action: any) {
     case 'setActiveOnChain':
       return {
         ...state,
-        activeOnChain: { ...state.activeAttestation, ...action.payload },
+        activeOnChain: { ...state.activeOnChain, ...action.payload },
       };
 
     default:
