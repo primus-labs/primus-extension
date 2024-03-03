@@ -197,12 +197,11 @@ export const connectWalletAsync = (
     const requireFetchAssets = getState().requireFetchAssets;
     let activeNetworkId = getState().activeConnectWallet.network;
     // let activeNetwork = EASInfo[activeNetworkId as keyof typeof EASInfo]
-    
+
     try {
       let address;
       let provider;
       startFn && (await startFn());
-      debugger
       if (connectObj?.address) {
         address = connectObj.address;
         provider = connectObj.provider;
@@ -211,9 +210,11 @@ export const connectWalletAsync = (
         if (network?.title === 'BNB Greenfield') {
           connectRes = await connectWallet();
         } else {
-          debugger
           connectRes = await connectWallet(network);
         }
+
+        await dispatch(setActiveConnectWallet({ network: undefined }));
+
         provider = connectRes[2];
         address = (connectRes[0] as string[])[0];
       }

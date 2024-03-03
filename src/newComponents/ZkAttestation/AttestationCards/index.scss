@@ -139,7 +139,7 @@
                 .chains {
                   @include frsc;
                   gap: var(--spacing-4);
-                  > img {
+                  img {
                     width: var(--spacing-24);
                   }
                 }

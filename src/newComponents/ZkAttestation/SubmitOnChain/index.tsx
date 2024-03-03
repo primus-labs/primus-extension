@@ -385,6 +385,17 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         } else if (fromEvents === BASEVENTNAME) {
           BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
         } else {
+          let curType = activeOnChainAttestation?.type;
+          if (
+            activeOnChainAttestation?.reqType === 'web' ||
+            activeOnChainAttestation?.source === 'google'
+          ) {
+            curType = 'web'
+          }
+          if (activeOnChainAttestation?.source === 'coinbase') {
+            curType = 'TOKEN_HOLDINGS';
+          }
+           
           let upChainParams: any = {
             networkName: formatNetworkName,
             metamaskprovider: walletObj.provider,
@@ -393,11 +404,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
             attesteraddr: PADOADDRESS,
             data: activeOnChainAttestation?.encodedData,
             signature: activeOnChainAttestation?.signature,
-            type:
-              activeOnChainAttestation?.reqType === 'web' ||
-              activeOnChainAttestation?.source === 'google'
-                ? 'web'
-                : activeOnChainAttestation?.type,
+            type: curType,
             schemaName: activeOnChainAttestation?.schemaName ?? LineaSchemaName, // TODO-basevent
           };
 
@@ -579,10 +586,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       }
     },
     [
-      activeOnChainAttestation,
-      credentialsFromStore,
-      initCredList,
-
+     
       fromEvents,
       BASEventDetailExt,
       // chainId,
@@ -590,22 +594,25 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       LineaSchemaNameFn,
     ]
   );
-  const handleSubmitConnectWallet = useCallback(async (cId) => {
-    setChainId(cId);
-    setStep(2);
-    setActiveSendToChainRequest({
-      type: 'loading',
-      title: 'Processing',
-      desc: 'Please complete the transaction in your wallet.',
-    });
-    if (cId !== 'BNB Greenfield') {
-      await dispatch(setActiveConnectWallet({ network: EASInfo[cId] }));
-    } 
-    setCheckIsConnectFlag(true);
-    // sucFn(connectedWallet, cId);
-  }, []);
+  const handleSubmitConnectWallet = useCallback(
+    async (cId) => {
+      setChainId(cId);
+      setStep(2);
+      setActiveSendToChainRequest({
+        type: 'loading',
+        title: 'Processing',
+        desc: 'Please complete the transaction in your wallet.',
+      });
+      if (cId !== 'BNB Greenfield') {
+        await dispatch(setActiveConnectWallet({ network: EASInfo[cId] }));
+      }
+      setCheckIsConnectFlag(true);
+    },
+    [dispatch]
+  );
   useEffect(() => {
-    if (connected) {
+    if (connected && chainId) {
+      debugger
       sucFn(connectedWallet, chainId as string);
     }
   }, [connected, chainId, sucFn]);
