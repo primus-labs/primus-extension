@@ -47,7 +47,11 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
               )}
               {activeRequest?.type === 'suc' && (
                 <>
-                  <div className="sucCircle"></div>
+                  <img
+                    src={iconConnectWalletSuc}
+                    alt=""
+                    className="sucCircle"
+                  />
                   <img src={preset} alt="" className="walletImg" />
                 </>
               )}

@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   setActiveAttestation,
   setCredentialsAsync,
+  setAttestLoading,
 } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import useAuthorization2 from '@/hooks/useAuthorization2';
@@ -64,86 +65,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
     setAssetForm((f) => ({ ...f, dataSourceId: dataSourceId }));
     setStep(2);
   }, []);
-  const handleSubmitSetDetail = useCallback(
-    async (form) => {
-      // setAssetForm((f) => ({ ...f, ...form }));
-      // 1.store attestation in process params in react store
-      const activeAttestationParams = {
-        ...assetForm,
-        ...form,
-        attestationType: 'Humanity Verification', // TODO-newui different
-        fetchType: 'Web',
-        // loading: 1,
-      };
-      dispatch(setActiveAttestation(activeAttestationParams));
-
-      if (activeAttestationParams.dataSourceId === 'google') {
-        fetchAttestForGoogle(activeAttestationParams);
-      } else {
-        // 2.check web proof template
-        // templateName
-        const contentObj =
-          ALLVERIFICATIONCONTENTTYPEEMAP[
-            activeAttestationParams.verificationContent
-          ];
-        const activeWebProofTemplate = webProofTypes.find(
-          (i) =>
-            i.dataSource === activeAttestationParams.dataSourceId &&
-            (i.name === contentObj.label || i.name === contentObj.templateName)
-        );
-        // TODO-newui get account from attestation???
-        const currRequestTemplate = {
-          ...activeWebProofTemplate,
-          schemaType:
-            fromEvents === BASEVENTNAME
-              ? BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY'
-              : activeWebProofTemplate.schemaType,
-          event: fromEvents,
-        };
-        // different
-        // const responses = currRequestTemplate.datasourceTemplate.responses;
-        // const lastResponse = responses[responses.length - 1];
-        // const lastResponseConditions = lastResponse.conditions;
-        // const lastResponseConditionsSubconditions =
-        //   lastResponseConditions.subconditions;
-        // if (activeAttestationParams.verificationContent === 'Assets Proof') {
-        //   // change verification value
-        //   lastResponseConditions.value =
-        //     activeAttestationParams.verificationValue;
-        //   // for okx
-        //   if (lastResponseConditionsSubconditions) {
-        //     const lastSubCondition =
-        //       lastResponseConditionsSubconditions[
-        //         lastResponseConditionsSubconditions.length - 1
-        //       ];
-        //     lastSubCondition.value = activeAttestationParams.verificationValue;
-        //   }
-        // } else if (
-        //   activeAttestationParams.verificationContent === 'Token Holding'
-        // ) {
-        //   if (lastResponseConditionsSubconditions) {
-        //     const firstSubCondition = lastResponseConditionsSubconditions[0];
-        //     firstSubCondition.value = activeAttestationParams.verificationValue;
-        //   }
-        // }
-
-        // 3.send msg to content
-        const currentWindowTabs = await chrome.tabs.query({
-          active: true,
-          currentWindow: true,
-        });
-        await chrome.runtime.sendMessage({
-          type: 'pageDecode',
-          name: 'inject',
-          params: {
-            ...currRequestTemplate,
-          },
-          extensionTabId: currentWindowTabs[0].id,
-        });
-      }
-    },
-    [assetForm, fromEvents, BASEventDetail, dispatch, fetchAttestForGoogle]
-  );
+ 
   const initCredList = useCallback(async () => {
     await dispatch(setCredentialsAsync());
   }, [dispatch]);
@@ -207,6 +129,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
           ...signatureRawInfo,
           address: credAddress,
           ...form,
+          source: form.dataSourceId,
           version: CredVersion,
           requestid: attestationId,
           sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
@@ -260,6 +183,89 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       storeBASEventInfoFn,
     ]
   );
+   const handleSubmitSetDetail = useCallback(
+     async (form) => {
+       // setAssetForm((f) => ({ ...f, ...form }));
+       // 1.store attestation in process params in react store
+       const activeAttestationParams = {
+         ...assetForm,
+         ...form,
+         attestationType: 'Humanity Verification', // TODO-newui different
+         fetchType: 'Web',
+         // loading: 1,
+       };
+       dispatch(setActiveAttestation(activeAttestationParams));
+
+       if (activeAttestationParams.dataSourceId === 'google') {
+         await fetchAttestForGoogle(activeAttestationParams);
+         dispatch(setActiveAttestation({loading:2}));
+         dispatch(setAttestLoading(2));
+       } else {
+         // 2.check web proof template
+         // templateName
+         const contentObj =
+           ALLVERIFICATIONCONTENTTYPEEMAP[
+             activeAttestationParams.verificationContent
+           ];
+         const activeWebProofTemplate = webProofTypes.find(
+           (i) =>
+             i.dataSource === activeAttestationParams.dataSourceId &&
+             (i.name === contentObj.label || i.name === contentObj.templateName)
+         );
+         // TODO-newui get account from attestation???
+         const currRequestTemplate = {
+           ...activeWebProofTemplate,
+           schemaType:
+             fromEvents === BASEVENTNAME
+               ? BASEventDetail?.ext?.schemaType ||
+                 'BAS_EVENT_PROOF_OF_HUMANITY'
+               : activeWebProofTemplate.schemaType,
+           event: fromEvents,
+         };
+         // different
+         // const responses = currRequestTemplate.datasourceTemplate.responses;
+         // const lastResponse = responses[responses.length - 1];
+         // const lastResponseConditions = lastResponse.conditions;
+         // const lastResponseConditionsSubconditions =
+         //   lastResponseConditions.subconditions;
+         // if (activeAttestationParams.verificationContent === 'Assets Proof') {
+         //   // change verification value
+         //   lastResponseConditions.value =
+         //     activeAttestationParams.verificationValue;
+         //   // for okx
+         //   if (lastResponseConditionsSubconditions) {
+         //     const lastSubCondition =
+         //       lastResponseConditionsSubconditions[
+         //         lastResponseConditionsSubconditions.length - 1
+         //       ];
+         //     lastSubCondition.value = activeAttestationParams.verificationValue;
+         //   }
+         // } else if (
+         //   activeAttestationParams.verificationContent === 'Token Holding'
+         // ) {
+         //   if (lastResponseConditionsSubconditions) {
+         //     const firstSubCondition = lastResponseConditionsSubconditions[0];
+         //     firstSubCondition.value = activeAttestationParams.verificationValue;
+         //   }
+         // }
+
+         // 3.send msg to content
+         const currentWindowTabs = await chrome.tabs.query({
+           active: true,
+           currentWindow: true,
+         });
+         await chrome.runtime.sendMessage({
+           type: 'pageDecode',
+           name: 'inject',
+           params: {
+             ...currRequestTemplate,
+           },
+           extensionTabId: currentWindowTabs[0].id,
+         });
+       }
+     },
+     [assetForm, fromEvents, BASEventDetail, dispatch, fetchAttestForGoogle]
+   );
 
   return (
     <PMask>

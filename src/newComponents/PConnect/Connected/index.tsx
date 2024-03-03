@@ -27,7 +27,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
-  // console.log('222connectedWallets', connectedWallets, connectedWallet);//delete
+  console.log('222connectedWallets', connectedWallets, connectedWallet);//delete
 
   const showAddr = useMemo(() => {
     return formatAddress(connectedWallet?.address, 4, 4, '...');
@@ -51,11 +51,11 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
         <ul className="walletItems">
           {Object.keys(connectedWallets).map((wK) => {
             return (
-              <li className="walletItem">
+              <li className="walletItem" key={wK}>
                 <div className="recordItem">
                   <div className="left">
                     <img
-                      src={WALLETMAP[wK].icon}
+                      src={WALLETMAP[wK]?.icon}
                       alt=""
                       className="iconWallet"
                     />

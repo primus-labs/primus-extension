@@ -242,6 +242,21 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleCloseConfirmDeleteDialog = useCallback(() => {
       setConfirmDeleteDialogVisible(false);
     }, []);
+    const txDetailUrlFn = useCallback((item: any) => {
+      let chainShowName = item.title;
+      if (item.title === 'BNB') {
+        chainShowName = 'BNB';
+      }
+      if (item.title === 'ArbitrumOne') {
+        chainShowName = 'Arbitrum';
+      }
+      if (item.title === 'BNB Greenfield') {
+        const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
+        return `${chainInfo.bucketDetailUrl}/${item.bucketName}`;
+      }
+      const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
+      return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
+    }, []);
     // useEffect(() => {
     //   handleDeleteCred(credentialsFromStore[]);
     // }, [credentialsFromStore, handleDeleteCred]);
@@ -365,13 +380,27 @@ const Cards: React.FC<PDropdownProps> = memo(
                     <div className="descItems">
                       <div className="descItem">
                         <div className="label">On-chain</div>
-                        <PButton
-                          icon={<i className="iconfont icon-Add"></i>}
-                          type="icon"
-                          onClick={() => {
-                            handleOnChain(i);
-                          }}
-                        />
+                        <div className="value onChain">
+                          <div className="chains">
+                            {i.provided?.map((c, k) => (
+                              <a
+                                href={txDetailUrlFn(c)}
+                                target="_blank"
+                                rel="noreferrer"
+                                key={k}
+                              >
+                                <img src={c.icon} alt="" />
+                              </a>
+                            ))}
+                          </div>
+                          <PButton
+                            icon={<i className="iconfont icon-Add"></i>}
+                            type="icon"
+                            onClick={() => {
+                              handleOnChain(i);
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

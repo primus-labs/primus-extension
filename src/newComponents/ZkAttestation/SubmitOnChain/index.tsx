@@ -53,6 +53,7 @@ const Nav: React.FC<PButtonProps> = memo(
     const fromEvents = searchParams.get('fromEvents');
     const [step, setStep] = useState<number>(1);
     const [activeRequest, setActiveRequest] = useState<any>({});
+    const [activeSendToChainRequest, setActiveSendToChainRequest] = useState<any>({});
     const [chainId, setChainId] = useState<string | number>('');
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
@@ -71,7 +72,7 @@ const Nav: React.FC<PButtonProps> = memo(
     }, [credentialsFromStore, activeOnChain]);
     const presetIcon = useMemo(() => {
       if (chainId) {
-        return EASInfo[chainId];
+        return EASInfo[chainId].icon;
       } else {
         return null;
       }
@@ -84,10 +85,7 @@ const Nav: React.FC<PButtonProps> = memo(
       onClose();
     }, [onClose]);
 
-    const handleSubmitConnectWallet = useCallback(async (walletId) => {
-      setChainId(walletId);
-      setStep(2);
-    }, []);
+    
     const initCredList = useCallback(async () => {
       await dispatch(setCredentialsAsync());
     }, [dispatch]);
@@ -244,19 +242,21 @@ const Nav: React.FC<PButtonProps> = memo(
           if (upChainRes) {
             if (upChainRes.error) {
               if (upChainRes.error === 1) {
-                alert('Unable to proceed');
-                // setActiveSendToChainRequest({
-                //   type: 'warn',
-                //   title: 'Unable to proceed',
-                //   desc: 'Your balance is insufficient',
-                // });
+                
+                setActiveSendToChainRequest({
+                  // type: 'warn',
+                  type: 'fail',
+                  title: 'Unable to proceed',
+                  desc: 'Your balance is insufficient',
+                });
               } else if (upChainRes.error === 2) {
-                alert('Unable to proceed');
-                // setActiveSendToChainRequest({
-                //   type: 'warn',
-                //   title: 'Unable to proceed',
-                //   desc: 'Please try again later.',
-                // });
+                
+                setActiveSendToChainRequest({
+                  // type: 'warn',
+                  type: 'fail',
+                  title: 'Unable to proceed',
+                  desc: 'Please try again later.',
+                });
               }
               eventInfoArr = eventInfoArr.map((i) => {
                 return {
@@ -328,12 +328,12 @@ const Nav: React.FC<PButtonProps> = memo(
               await chrome.storage.local.set({
                 [BASEVENTNAME]: JSON.stringify(lastInfo),
               });
-              alert('Your attestation is recorded on-chain!');
-              // setActiveSendToChainRequest({
-              //   type: 'suc',
-              //   title: 'Congratulations',
-              //   desc: 'Your attestation is recorded on-chain!',
-              // });
+              
+              setActiveSendToChainRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your attestation is recorded on-chain!',
+              });
 
               eventInfoArr = eventInfoArr.map((i) => {
                 return {
@@ -350,12 +350,13 @@ const Nav: React.FC<PButtonProps> = memo(
               await Promise.all(requestArr);
             }
           } else {
-            alert('');
-            // setActiveSendToChainRequest({
-            //   type: 'warn',
-            //   title: 'Unable to proceed',
-            //   desc: 'Please try again later.',
-            // });
+            
+            setActiveSendToChainRequest({
+              // type: 'warn',
+              type: 'fail',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
+            });
             eventInfoArr = eventInfoArr.map((i) => {
               return {
                 ...i,
@@ -491,19 +492,21 @@ const Nav: React.FC<PButtonProps> = memo(
             if (upChainRes) {
               if (upChainRes.error) {
                 if (upChainRes.error === 1) {
-                  alert();
-                  // setActiveSendToChainRequest({
-                  //   type: 'warn',
-                  //   title: 'Unable to proceed',
-                  //   desc: 'Your balance is insufficient',
-                  // });
+                  
+                  setActiveSendToChainRequest({
+                    // type: 'warn',
+                    type: 'fail',
+                    title: 'Unable to proceed',
+                    desc: 'Your balance is insufficient',
+                  });
                 } else if (upChainRes.error === 2) {
-                  alert;
-                  // setActiveSendToChainRequest({
-                  //   type: 'warn',
-                  //   title: 'Unable to proceed',
-                  //   desc: 'Please try again later.',
-                  // });
+                  
+                  setActiveSendToChainRequest({
+                    // type: 'warn',
+                    type: 'fail',
+                    title: 'Unable to proceed',
+                    desc: 'Please try again later.',
+                  });
                 }
                 eventInfo.rawData = Object.assign(eventInfo.rawData, {
                   status: 'FAILED',
@@ -543,24 +546,24 @@ const Nav: React.FC<PButtonProps> = memo(
                   }
                 }
               }
-              alert('');
-              // setActiveSendToChainRequest({
-              //   type: 'suc',
-              //   title: 'Congratulations',
-              //   desc: 'Your attestation is recorded on-chain!',
-              // });
+              setActiveSendToChainRequest({
+                type: 'suc',
+                title: 'Congratulations',
+                desc: 'Your attestation is recorded on-chain!',
+              });
               eventInfo.rawData = Object.assign(eventInfo.rawData, {
                 status: 'SUCCESS',
                 reason: '',
               });
               eventReport(eventInfo);
             } else {
-              alert('');
-              // setActiveSendToChainRequest({
-              //   type: 'warn',
-              //   title: 'Unable to proceed',
-              //   desc: 'Please try again later.',
-              // });
+             
+              setActiveSendToChainRequest({
+                // type: 'warn',
+                type: 'fail',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              });
               eventInfo.rawData = Object.assign(eventInfo.rawData, {
                 status: 'FAILED',
                 reason: 'attestByDelegationProxyFee error',
@@ -569,12 +572,13 @@ const Nav: React.FC<PButtonProps> = memo(
             }
           }
         } catch (e) {
-          alert('');
-          // setActiveSendToChainRequest({
-          //   type: 'warn',
-          //   title: 'Unable to proceed',
-          //   desc: 'Please try again later.',
-          // });
+         
+          setActiveSendToChainRequest({
+            // type: 'warn',
+            type:'fail',
+            title: 'Unable to proceed',
+            desc: 'Please try again later.',
+          });
           console.log('upper chain error:', e);
           // eventInfo.rawData = Object.assign(eventInfo.rawData, {
           //   status: 'FAILED',
@@ -596,6 +600,19 @@ const Nav: React.FC<PButtonProps> = memo(
         LineaSchemaNameFn,
       ]
     );
+    const handleSubmitConnectWallet = useCallback(
+      async (walletId) => {
+        setChainId(walletId);
+        setStep(2);
+        setActiveSendToChainRequest({
+          type: 'loading',
+          title: 'Processing',
+          desc: 'Please complete the transaction in your wallet.',
+        });
+        sucFn(connectedWallet, walletId);
+      },
+      [sucFn, connectedWallet]
+    );
     // useEffect(() => {
     //   if (visible) {
     //     setStep(1);
@@ -615,7 +632,7 @@ const Nav: React.FC<PButtonProps> = memo(
             preset={presetIcon}
             onClose={handleCloseConnectWalletProcessDialog}
             onSubmit={() => {}}
-            activeRequest={activeRequest}
+            activeRequest={activeSendToChainRequest}
           />
         )}
       </div>

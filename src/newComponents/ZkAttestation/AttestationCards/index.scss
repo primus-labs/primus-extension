@@ -1,7 +1,7 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
-.attestationsWrapper{
+.attestationsWrapper {
   width: 100%;
 }
 .attestationCards {
@@ -59,13 +59,13 @@
               position: absolute;
               // z-index: 1;
               top: var(--spacing-16);
-              right:0;
+              right: 0;
               padding-top: var(--spacing-7);
               width: fit-content;
               // .PDropdown {
               //   width: 100%;
               // }
-              .dropdownOption{
+              .dropdownOption {
                 width: 154px;
               }
             }
@@ -132,6 +132,17 @@
               gap: var(--spacing-8);
               .dataSourceIcon {
                 width: var(--spacing-16);
+              }
+              &.onChain {
+                @include frsc;
+                gap: var(--spacing-4);
+                .chains {
+                  @include frsc;
+                  gap: var(--spacing-4);
+                  > img {
+                    width: var(--spacing-24);
+                  }
+                }
               }
             }
             .icon-Add {

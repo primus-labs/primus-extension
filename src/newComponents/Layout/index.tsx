@@ -54,7 +54,7 @@ const Nav: React.FC = memo(({}) => {
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     Object.values(credentialObj).forEach((i: any) => {
-      const compareRes = compareVersions('1.0.3', i.credVersion);
+      const compareRes = compareVersions('1.0.3', i.version);
       if (compareRes > -1) {
         // attestation version <= '1.0.3'
         if (i.type === 'ASSETS_PROOF') {
