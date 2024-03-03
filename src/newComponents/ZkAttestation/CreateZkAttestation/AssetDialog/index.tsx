@@ -21,11 +21,12 @@ import './index.scss';
 
 interface PButtonProps {
   // sourceName: string;
+  type: string;
   onClose: () => void;
   onSubmit: () => void;
 }
 
-const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
+const Nav: React.FC<PButtonProps> = memo(({ type, onClose, onSubmit }) => {
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
   const fromEvents = searchParams.get('fromEvents');
@@ -147,7 +148,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         <main>
           <header>
             <h1>Create zkAttestation</h1>
-            <h2>You're creating assets certification.</h2>
+            <h2>You're creating {type.toLowerCase()}.</h2>
           </header>
           {step === 1 && (
             <section className="detailWrapper">

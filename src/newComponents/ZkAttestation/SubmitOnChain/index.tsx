@@ -112,8 +112,8 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       ) {
         Name = BNBGREENFIELDSCHEMANAME;
       } else {
-        // Name = 'EAS';
-        Name = 'EAS-Ethereum';
+        Name = 'EAS';
+        // Name = 'EAS-Ethereum';
       }
       return Name;
     },
@@ -612,10 +612,9 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
   );
   useEffect(() => {
     if (connected && chainId) {
-      debugger
       sucFn(connectedWallet, chainId as string);
     }
-  }, [connected, chainId, sucFn]);
+  }, [connected, chainId]);
   // useEffect(() => {
   //   if (visible) {
   //     setStep(1);

@@ -1,11 +1,11 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import {  setActiveAttestation } from '@/store/actions';
+import { setActiveAttestation } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
-import { DATASOURCEMAP,  } from '@/config/dataSource';
-import {ALLVERIFICATIONCONTENTTYPEEMAP} from '@/config/attestation'
+import { DATASOURCEMAP } from '@/config/dataSource';
+import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
@@ -21,11 +21,12 @@ import '../AssetDialog/index.scss';
 
 interface PButtonProps {
   // sourceName: string;
+  type: string;
   onClose: () => void;
   onSubmit: () => void;
 }
 
-const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
+const Nav: React.FC<PButtonProps> = memo(({ type, onClose, onSubmit }) => {
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
   const fromEvents = searchParams.get('fromEvents');
@@ -129,7 +130,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         <main>
           <header>
             <h1>Create zkAttestation</h1>
-            <h2>You're creating assets certification.</h2>
+            <h2>You're creating {type.toLowerCase()}.</h2>
           </header>
           {step === 1 && (
             <section className="detailWrapper">

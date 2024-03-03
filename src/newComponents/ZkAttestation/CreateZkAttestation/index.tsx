@@ -29,13 +29,13 @@ const PClose: React.FC<PBackProps> = memo(({ type, onClose, onSubmit }) => {
       {connected ? (
         <>
           {type === 'Assets Certificate' && (
-            <AssetDialog onClose={onClose} onSubmit={onSubmit} />
+            <AssetDialog type={type} onClose={onClose} onSubmit={onSubmit} />
           )}
           {type === 'Humanity Verification' && (
-            <HumanityDialog onClose={onClose} onSubmit={onSubmit} />
+            <HumanityDialog type={type} onClose={onClose} onSubmit={onSubmit} />
           )}
           {type === 'On-chain Transaction' && (
-            <OnChainDialog onClose={onClose} onSubmit={onSubmit} />
+            <OnChainDialog type={type} onClose={onClose} onSubmit={onSubmit} />
           )}
         </>
       ) : (

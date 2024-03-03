@@ -14,7 +14,6 @@ const useCheckIsConnectedWallet = function useCheckIsConnectedWallet(
   const activeConnectWallet = useSelector((state) => state.activeConnectWallet);
   useEffect(() => {
     if (switchFlag) {
-      debugger
       setConnected(!!connectedWallet?.address && !activeConnectWallet?.network);
     }
   }, [switchFlag, connectedWallet?.address, activeConnectWallet?.network]);
