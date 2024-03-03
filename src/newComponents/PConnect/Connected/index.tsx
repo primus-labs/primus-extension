@@ -27,7 +27,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
-  console.log('222connectedWallets', connectedWallets, connectedWallet);//delete
+  console.log('222connectedWallets', connectedWallets, connectedWallet); //delete
 
   const showAddr = useMemo(() => {
     return formatAddress(connectedWallet?.address, 4, 4, '...');
@@ -49,44 +49,46 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
       </div>
       <div className="historyWrapper">
         <ul className="walletItems">
-          {Object.keys(connectedWallets).map((wK) => {
-            return (
-              <li className="walletItem" key={wK}>
-                <div className="recordItem">
-                  <div className="left">
-                    <img
-                      src={WALLETMAP[wK]?.icon}
-                      alt=""
-                      className="iconWallet"
-                    />
-                    <span>{WALLETMAP[wK].name}</span>
-                  </div>
-                </div>
-                {Object.keys(connectedWallets[wK]).map((addrK) => {
-                  return (
-                    <div className="recordItem">
-                      <div className="left">
-                        {addrK === connectedWallet?.address ? (
-                          <i className="iconfont icon-Legal"></i>
-                        ) : (
-                          <div className="placeHolder"></div>
-                        )}
-                        <span>{formatAddress(addrK, 4, 4, '...')}</span>
-                      </div>
-                      {addrK === connectedWallet?.address && (
-                        <img
-                          src={iconClose}
-                          alt=""
-                          className="right iconClose"
-                          onClick={handleDisConnect}
-                        />
-                      )}
+          {Object.keys(connectedWallets)
+            .filter((wK) => wK!=='undefined')
+            .map((wK) => {
+              return (
+                <li className="walletItem" key={wK}>
+                  <div className="recordItem">
+                    <div className="left">
+                      <img
+                        src={WALLETMAP[wK]?.icon}
+                        alt=""
+                        className="iconWallet"
+                      />
+                      <span>{WALLETMAP[wK]?.name}</span>
                     </div>
-                  );
-                })}
-              </li>
-            );
-          })}
+                  </div>
+                  {Object.keys(connectedWallets[wK])?.map((addrK) => {
+                    return (
+                      <div className="recordItem">
+                        <div className="left">
+                          {addrK === connectedWallet?.address ? (
+                            <i className="iconfont icon-Legal"></i>
+                          ) : (
+                            <div className="placeHolder"></div>
+                          )}
+                          <span>{formatAddress(addrK, 4, 4, '...')}</span>
+                        </div>
+                        {addrK === connectedWallet?.address && (
+                          <img
+                            src={iconClose}
+                            alt=""
+                            className="right iconClose"
+                            onClick={handleDisConnect}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </li>
+              );
+            })}
         </ul>
         <PButton
           text="Connect another wallet"

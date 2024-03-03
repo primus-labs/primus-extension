@@ -99,7 +99,7 @@ export const requestSign = async (
   try {
     if (walletName === 'walletconnect') {
       const provider = new ethers.providers.Web3Provider(walletProvider);
-      const signer = provider.getSigner();  
+      const signer = provider.getSigner();
       const typedData = {
         types: {
           // EIP712Domain: [{ name: 'name', type: 'string' }],
@@ -168,9 +168,12 @@ const subscribeToEvents = () => {
 const handleChainChanged = (chainId) => {
   console.log('metamask chainId changes: ', chainId, provider);
   const addr = provider.selectedAddress;
-  const name = store.getState().connectedWallet?.name;
+  const curConnectedWallet = store.getState().connectedWallet;
+  const name = curConnectedWallet?.name;
+  const id = curConnectedWallet?.id;
   store.dispatch(
     setConnectWalletActionAsync({
+      id,
       name,
       address: addr,
       provider,
@@ -187,9 +190,10 @@ const handleAccountsChanged = async (accounts) => {
     // await store.dispatch(setConnectWalletActionAsync(undefined));
     store.dispatch(
       connectWalletAsync({
+        id: 'metamask',
         address: addr,
         provider,
-        name: 'metamask'
+        name: 'metamask',
       })
     );
   } else {

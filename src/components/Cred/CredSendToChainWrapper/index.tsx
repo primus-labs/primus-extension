@@ -11,7 +11,6 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import useWallet from '@/hooks/useWallet';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME, WALLETLIST } from '@/config/constants';
-import { setConnectWalletActionAsync } from '@/store/actions';
 import { strToHexSha256 } from '@/utils/utils';
 import PButton from '@/components/PButton';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';

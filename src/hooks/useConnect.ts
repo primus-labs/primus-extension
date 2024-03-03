@@ -35,8 +35,9 @@ const useConnect: UseInterval = function useConnect(
       const type = 'metamask';
       const checkRes = await checkIfBindConnectedWallet({ address });
       if (checkRes.rc === 0 && checkRes.result) {
+
         await dispatch(
-          setConnectWalletActionAsync({ name: type, address, provider })
+          setConnectWalletActionAsync({ id: type,name: type, address, provider })
         );
         await dispatch(setConnectWalletDialogVisibleAction(false));
         return;
@@ -62,7 +63,7 @@ const useConnect: UseInterval = function useConnect(
       const { rc, result } = res;
       if (rc === 0 && result) {
         await dispatch(
-          setConnectWalletActionAsync({ name: type, address, provider })
+          setConnectWalletActionAsync({ id:type,name: type, address, provider })
         );
         await dispatch(setConnectWalletDialogVisibleAction(false));
       }
