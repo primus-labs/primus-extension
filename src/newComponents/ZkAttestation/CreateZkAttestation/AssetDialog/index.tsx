@@ -44,7 +44,6 @@ const Nav: React.FC<PButtonProps> = memo(
     );
     const dataSourceMetaInfo: DataSourceMapType = useMemo(() => {
       if (assetForm.dataSourceId) {
-        debugger;
         return DATASOURCEMAP[assetForm.dataSourceId];
       } else {
         return {};

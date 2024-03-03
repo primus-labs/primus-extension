@@ -123,24 +123,30 @@ const Cards: React.FC<PDropdownProps> = memo(
       return DATASOURCEMAP[source];
     };
     const getContent = (i) => {
-      let str = '';
-      if (i.attestationType === 'Assets Certification') {
-        if (i.verificationContent === 'Assets Proof') {
-          str = 'Asset balance';
-        } else if (i.verificationContent === 'Token Holding') {
-          str = i.verificationContent;
-        }
-      } else if (i.attestationType === 'Humanity Verification') {
-        if (i.verificationContent === 'KYC Status') {
-          str = i.verificationContent;
-        } else if (i.verificationContent === 'Owns an account') {
-          str = i.verificationContent;
-        }
-      }
+      let str = i.verificationContent;
+      if (
+        i.attestationType === 'Assets Certification' &&
+        i.verificationContent === 'Assets Proof'
+      ) {
+        str = 'Asset balance';
+      } 
+      // if (i.attestationType === 'Assets Certification') {
+      //   if (i.verificationContent === 'Assets Proof') {
+      //     str = 'Asset balance';
+      //   } else if (i.verificationContent === 'Token Holding') {
+      //     str = i.verificationContent;
+      //   }
+      // } else if (i.attestationType === 'Humanity Verification') {
+      //   if (i.verificationContent === 'KYC Status') {
+      //     str = i.verificationContent;
+      //   } else if (i.verificationContent === 'Owns an account') {
+      //     str = i.verificationContent;
+      //   }
+      // }
       return str;
     };
     const getValue = (i) => {
-      let str: any = '';
+      let str: any = i.verificationValue;
       if (i.attestationType === 'Assets Certification') {
         if (i.verificationContent === 'Assets Proof') {
           str = `>= $${i.verificationValue}`;
@@ -153,13 +159,14 @@ const Cards: React.FC<PDropdownProps> = memo(
             </>
           );
         }
-      } else if (i.attestationType === 'Humanity Verification') {
-        if (i.verificationContent === 'KYC Status') {
-          str = i.verificationValue;
-        } else if (i.verificationContent === 'Owns an account') {
-          str = i.verificationValue;
-        }
       }
+      // else if (i.attestationType === 'Humanity Verification') {
+      //   if (i.verificationContent === 'KYC Status') {
+      //     str = i.verificationValue;
+      //   } else if (i.verificationContent === 'Owns an account') {
+      //     str = i.verificationValue;
+      //   }
+      // }
       return str;
     };
     const getResult = (i) => {
