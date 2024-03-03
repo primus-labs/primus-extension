@@ -94,13 +94,8 @@ const Cards: React.FC<PDropdownProps> = memo(
         dataSourceName === 'google'
       )
         return [attestationTypeMap[4]];
-      if (dataSourceName === 'coinbase' || dataSourceName === 'bitget')
-        return [
-          attestationTypeMap[2],
-          attestationTypeMap[3],
-          attestationTypeMap[4],
-        ];
-      if (dataSourceName === 'zan') return [attestationTypeMap[5]];
+      if (dataSourceName === 'coinbase') return [attestationTypeMap[2]];
+      // if (dataSourceName === 'zan') return [attestationTypeMap[5]];
       return [];
     }, []);
     const handleCreate = useCallback((i) => {

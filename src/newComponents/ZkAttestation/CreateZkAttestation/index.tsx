@@ -25,6 +25,7 @@ const PClose: React.FC<PBackProps> = memo(
     const { connected } = useCheckIsConnectedWallet(true);
     useEffect(() => {
       if (attestLoading === 2) {
+        onSubmit()
         dispatch(setAttestLoading(0));
       }
     }, [attestLoading, dispatch]);
