@@ -1,6 +1,7 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAttestLoading, setActiveAttestation } from '@/store/actions';
+import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import AssetDialog from './AssetDialog';
@@ -16,6 +17,8 @@ interface PBackProps {
 const PClose: React.FC<PBackProps> = memo(({ type, onClose, onSubmit }) => {
   const dispatch: Dispatch<any> = useDispatch();
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
+  // const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
+  const { connected } = useCheckIsConnectedWallet(true);
   useEffect(() => {
     if (attestLoading === 2) {
       dispatch(setAttestLoading(0));
@@ -23,14 +26,20 @@ const PClose: React.FC<PBackProps> = memo(({ type, onClose, onSubmit }) => {
   }, [attestLoading, dispatch]);
   return (
     <div className="createZkAttestation">
-      {type === 'Assets Certificate' && (
-        <AssetDialog onClose={onClose} onSubmit={onSubmit} />
-      )}
-      {type === 'Humanity Verification' && (
-        <HumanityDialog onClose={onClose} onSubmit={onSubmit} />
-      )}
-      {type === 'On-chain Transaction' && (
-        <OnChainDialog onClose={onClose} onSubmit={onSubmit} />
+      {connected ? (
+        <>
+          {type === 'Assets Certificate' && (
+            <AssetDialog onClose={onClose} onSubmit={onSubmit} />
+          )}
+          {type === 'Humanity Verification' && (
+            <HumanityDialog onClose={onClose} onSubmit={onSubmit} />
+          )}
+          {type === 'On-chain Transaction' && (
+            <OnChainDialog onClose={onClose} onSubmit={onSubmit} />
+          )}
+        </>
+      ) : (
+        <></>
       )}
     </div>
   );

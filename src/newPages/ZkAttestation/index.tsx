@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import {setActiveOnChain} from '@/store/actions'
+import { setActiveOnChain } from '@/store/actions'
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import Banner from '@/newComponents/Home/Banner';
@@ -27,6 +27,7 @@ const Home = memo(() => {
   const hasConnected = useMemo(() => {
     return Object.keys(credentialsFromStore).length > 0;
   }, [credentialsFromStore]);
+  
   const handleCreate = useCallback((typeItem) => {
     setVisibleAssetDialog(typeItem.id);
   }, []);

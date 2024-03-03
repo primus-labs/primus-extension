@@ -188,9 +188,10 @@ export const connectWalletAsync = (
   sucFn?: any,
   network?: any,
   label?: string,
-  requireAssets?: boolean
 ) => {
-  return async (dispatch: any) => {
+  return async (dispatch: any, getState) => {
+    console.log('getState', getState()); // delete
+    const requireFetchAssets = getState().requireFetchAssets;
     try {
       let address;
       let provider;
@@ -219,7 +220,7 @@ export const connectWalletAsync = (
           : undefined;
       const checkRes = await checkIfBindConnectedWallet({ address });
       if (checkRes.rc === 0 && checkRes.result) {
-        if (requireAssets) {
+        if (requireFetchAssets) {
           const timestamp: string = +new Date() + '';
           const signature = await requestSign(address, timestamp, walletInfo);
           if (!signature) {

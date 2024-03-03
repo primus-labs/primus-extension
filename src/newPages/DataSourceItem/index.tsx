@@ -2,10 +2,13 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
 import useAuthorization from '@/hooks/useAuthorization';
-import { setSocialSourcesAsync } from '@/store/actions';
+import {
+  setSocialSourcesAsync,
+  setConnectWalletDialogVisibleAction,
+} from '@/store/actions';
+import { DATASOURCEMAP } from '@/config/dataSource';
 import type { Dispatch } from 'react';
 
 import type { UserState } from '@/types/store';
@@ -16,15 +19,13 @@ import PTag from '@/newComponents/PTag';
 import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards';
 import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards';
 import ConnectByAPI from '@/newComponents/DataSource/ConnectByAPI';
-import ConnectWallet from '@/newComponents/ConnectWallet';
+
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
   const [visibleConnectByWeb, setVisibleConnectByAPI] =
-    useState<boolean>(false);
-  const [visibleConnectWallet, setVisibleConnectWallet] =
     useState<boolean>(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -54,13 +55,11 @@ const DataSourceItem = memo(() => {
   const btnTxtEl = useMemo(() => {
     return activeConnectType ? 'Connect by ' + activeConnectType : 'Connect';
   }, [activeDataSouceMetaInfo]);
-  const handleConnect = useCallback(() => {
+  const handleConnect = useCallback(async () => {
     if (activeDataSouceMetaInfo.name === 'Web3 Wallet') {
-      // dispatch({
-      //   type: 'setConnectWalletDialogVisible',
-      //   payload: true
-      // });
-      setVisibleConnectWallet(true);
+      await dispatch({ type: 'setRequireFetchAssets', payload: true });
+      dispatch(setConnectWalletDialogVisibleAction(true));
+
       return;
     }
     if (activeConnectType === 'API') {
@@ -107,19 +106,13 @@ const DataSourceItem = memo(() => {
       //    setKYCDialogVisible(true);
       //  }
     }
-  }, [activeDataSouceMetaInfo]);
+  }, [activeDataSouceMetaInfo, dispatch]);
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
 
   const handleSubmitConnectByAPI = useCallback(() => {
     setVisibleConnectByAPI(false);
-  }, []);
-  const handleCloseConnectWallet = useCallback(() => {
-    setVisibleConnectWallet(false);
-  }, []);
-  const handleSubmitConnectWallet = useCallback(() => {
-    setVisibleConnectWallet(false);
   }, []);
 
   return (
@@ -194,13 +187,6 @@ const DataSourceItem = memo(() => {
           sourceName={lowerCaseDataSourceName}
         />
       )}
-
-      <ConnectWallet
-        visible={visibleConnectWallet}
-        onClose={handleCloseConnectWallet}
-        onSubmit={handleSubmitConnectWallet}
-        requireAssets={true}
-      />
     </div>
   );
 });
