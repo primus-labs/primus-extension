@@ -115,14 +115,17 @@ const AchievementHome = memo(() => {
 
   const refreshTotalScoreFn = async (scoreChanged, taskIdentifier) => {
     setTotalScore(totalScore + scoreChanged);
-    debugger
-    const newList = achievementTaskList.map((item) => {
-      if (item.taskIdentifier === taskIdentifier) {
-        item.finished = true;
-      }
-      return item;
-    })
-    setAchievementTaskList(newList);
+    // eslint-disable-next-line no-undef
+    console.log('taskIdentifier:',taskIdentifier)
+    await getAchievementTaskListFn(current);
+    // const newList = achievementTaskList.map((item) => {
+    //   if (item.taskIdentifier === taskIdentifier) {
+    //     item.finished = true;
+    //   }
+    //   return item;
+    // })
+    // setAchievementTaskList(newList);
+
   };
 
 

@@ -3,6 +3,7 @@ import React, { memo, useEffect, useState } from 'react';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import taskItemIcon from '@/assets/newImg/achievements/taskItemIcon.svg';
+import taskFinishedIcon from '@/assets/newImg/achievements/taskFinishedIcon.svg';
 import { finishTask } from '@/services/api/achievements';
 
 export type TaskItem = {
@@ -209,12 +210,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           })()}
         </div>
       </div>
-      <PButton
-        text="Finish"
-        disabled={finished}
-        onClick={handleClick}
-        className={'achievementTaskitemFinishBtn'}
-      /></div>
+      {
+        finished?<div className={"achievementFinishedIcon"}> <img  src={taskFinishedIcon}/></div>:<PButton
+          text="Finish"
+          disabled={finished}
+          onClick={handleClick}
+          className={'achievementTaskitemFinishBtn'}
+        />
+      }
+
+
+    </div>
 
   );
 });
