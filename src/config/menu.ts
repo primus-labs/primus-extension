@@ -37,7 +37,7 @@ export const list: NavItem[] = [
     label: 'Events',
     value: 'Events',
     iconName: 'icon-iconMenuEvents',
-    link: '/3',
+    link: '/events',
   },
   {
     label: 'Developer',

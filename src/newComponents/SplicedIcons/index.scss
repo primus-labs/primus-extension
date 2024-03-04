@@ -1,0 +1,12 @@
+@import '@/assets/newCss/flex.scss';
+
+.splicedIcons {
+  @include frsc;
+  > img {
+    width: var(--spacing-40);
+    &:not(:first-child){
+      position: relative;
+      left: calc(-1 * var(--spacing-8));
+    }
+  }
+}

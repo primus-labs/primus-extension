@@ -10,10 +10,11 @@ import Lock from '@/pages/Lock/index.jsx';
 import Layout from '@/newComponents/Layout/index.tsx';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import Cred from '@/pages/Cred/index.tsx';
-import Events from '@/pages/Events';
+// import Events from '@/pages/Events';
 import TransactionDetail from '@/pages/Transaction/TransactionDetail';
 import Achievement from "@/newPages/Achievement";
 import ZkAttestation from '@/newPages/ZkAttestation';
+import Events from '@/newPages/Events';
 
 const router = [
   {
@@ -46,6 +47,11 @@ const router = [
         element: <ZkAttestation />,
       },
       {
+        path: 'events',
+        name: 'events',
+        element: <Events />,
+      },
+      {
         path: 'dataDetail',
         element: <DataSourceDetail />,
       },
@@ -57,10 +63,10 @@ const router = [
         path: 'cred',
         element: <Cred />,
       },
-      {
-        path: 'events',
-        element: <Events />,
-      },
+      // {
+      //   path: 'events',
+      //   element: <Events />,
+      // },
       {
         path: 'achievements',
         element: <Achievement />,

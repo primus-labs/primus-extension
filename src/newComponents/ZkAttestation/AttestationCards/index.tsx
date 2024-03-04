@@ -21,6 +21,7 @@ import PButton from '@/newComponents/PButton';
 import PDropdown from '@/newComponents/PDropdown';
 import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 import ConfirmDeleteDialog from '../ConfirmDeleteDialog';
+import SplicedIcons from '@/newComponents/SplicedIcons'
 import './index.scss';
 import { formatDate, div } from '../../../utils/utils';
 import request from '@/utils/request';
@@ -333,13 +334,12 @@ const Cards: React.FC<PDropdownProps> = memo(
                     </div>
                   </div>
                   <div className="brief">
-                    <div className="splicedIcons">
-                      <img
-                        src={ATTESTATIONTYPEMAP[i.attestationType].icon}
-                        alt=""
-                      />
-                      <img src={getDataSourceMetaInfo(i.source).icon} alt="" />
-                    </div>
+                    <SplicedIcons
+                      list={[
+                        ATTESTATIONTYPEMAP[i.attestationType].icon,
+                        getDataSourceMetaInfo(i.source).icon,
+                      ]}
+                    />
                     <div className="intro">
                       <div className="name">
                         {getDataSourceMetaInfo(i.source).name}
