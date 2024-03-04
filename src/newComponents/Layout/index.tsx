@@ -85,7 +85,7 @@ const Nav: React.FC = memo(({}) => {
           i.verificationValue = i.dataToBeSigned.content;
         }
       }
-      if ((i.attestationType = 'Assets Certificate')) {
+      if ((i.attestationType === 'Assets Certificate')) {
         i.attestationType = 'Assets Certification';
       }// delete
     });

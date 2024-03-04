@@ -68,7 +68,7 @@ const Nav: React.FC<PButtonProps> = memo(
         const activeAttestationParams = {
           ...assetForm,
           ...form,
-          attestationType: 'Assets Certification', // TODO-newui
+          attestationType: type,
           fetchType: 'Web',
           // loading: 1,
         };
@@ -152,7 +152,7 @@ const Nav: React.FC<PButtonProps> = memo(
           });
         }
       },
-      [assetForm, fromEvents, BASEventDetail, dispatch]
+      [assetForm, fromEvents, BASEventDetail, dispatch,type]
     );
     useEffect(() => {
       if (presets) {

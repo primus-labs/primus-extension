@@ -60,7 +60,7 @@ const Nav: React.FC<PButtonProps> = memo(
         const activeAttestationParams = {
           ...assetForm,
           ...form,
-          attestationType: 'Assets Certification', // TODO-newui
+          attestationType: type, // TODO-newui
           fetchType: 'Web',
           // loading: 1,
         };
@@ -125,7 +125,7 @@ const Nav: React.FC<PButtonProps> = memo(
           extensionTabId: currentWindowTabs[0].id,
         });
       },
-      [assetForm, fromEvents, BASEventDetail, dispatch]
+      [assetForm, fromEvents, BASEventDetail, dispatch, type]
     );
 
     return (

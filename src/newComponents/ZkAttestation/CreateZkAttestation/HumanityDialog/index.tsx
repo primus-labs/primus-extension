@@ -205,7 +205,7 @@ const Nav: React.FC<PButtonProps> = memo(
         const activeAttestationParams = {
           ...assetForm,
           ...form,
-          attestationType: 'Humanity Verification', // TODO-newui different
+          attestationType: type, // different
           fetchType: 'Web',
           // loading: 1,
         };
@@ -280,7 +280,14 @@ const Nav: React.FC<PButtonProps> = memo(
           });
         }
       },
-      [assetForm, fromEvents, BASEventDetail, dispatch, fetchAttestForGoogle]
+      [
+        assetForm,
+        fromEvents,
+        BASEventDetail,
+        dispatch,
+        fetchAttestForGoogle,
+        type,
+      ]
     );
     useEffect(() => {
       if (presets) {
@@ -334,7 +341,6 @@ const Nav: React.FC<PButtonProps> = memo(
             {step === 2 && (
               <SetDetail
                 onSubmit={handleSubmitSetDetail}
-                dataSourceId={assetForm.dataSourceId}
                 presets={assetForm}
               />
             )}

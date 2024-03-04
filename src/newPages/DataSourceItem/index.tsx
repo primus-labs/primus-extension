@@ -119,7 +119,9 @@ const DataSourceItem = memo(() => {
   const handleCloseAssetDialog = useCallback(() => {
     setVisibleAssetDialog('');
   }, []);
-  const handleSubmitAssetDialog = useCallback(() => {}, []);
+  const handleSubmitAssetDialog = useCallback(() => {
+    setVisibleAssetDialog('');
+  }, []);
   const handleAttest = useCallback((i) => {
     setVisibleAssetDialog(i.attestationType)
     const presetsP = Object.keys({
