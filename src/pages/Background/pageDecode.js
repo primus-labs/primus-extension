@@ -334,6 +334,9 @@ export const pageDecodeMsgListener = async (
       templateId: id,
       calculations,
     });
+    if (schemaType.startsWith("OKX_TOKEN_HOLDING")) {
+      aligorithmParams.requests[2].url = aligorithmParams.requests[2].url.replace("limit=5", "limit=100");
+    }
     await chrome.storage.local.set({
       activeRequestAttestation: JSON.stringify(aligorithmParams),
     });
