@@ -1,50 +1,17 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { DATASOURCEMAP } from '@/config/dataSource';
-import useDataSource from '@/hooks/useDataSource';
-import useAllSources from '@/hooks/useAllSources';
-import type { SyntheticEvent } from 'react';
-import type { UserState } from '@/types/store';
-import SplicedIcons from '@/newComponents/SplicedIcons';
-import PTag from '@/newComponents/PTag';
-import PButton from '@/newComponents/PButton';
+
+import EventsCards from '@/newComponents/Events/EventCards';
+
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconBinance from '@/assets/img/iconBinance.png';
-import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
-import bgCombineType0 from '@/assets/newImg/events/bgCombineType0.svg';
-import bgCombineType1 from '@/assets/newImg/events/bgCombineType1.svg';
-import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
 
-type NavItem = {
-  type: string;
-  icon: any;
-  desc: any;
-  name: string;
-
-  importType?: string;
-  provider?: string;
-};
 interface PDropdownProps {
   onClick?: (item: NavItem) => void;
   // list: NavItem[];
 }
-const list = Object.values(DATASOURCEMAP);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
-    const navigate = useNavigate();
-    const [activeDataSourceName, setActiveDataSourceName] =
-      useState<string>('');
-    const { deleteFn: deleteDataSourceFn } =
-      useDataSource(activeDataSourceName);
-    const dataSourceQueryStr = useSelector(
-      (state: UserState) => state.dataSourceQueryStr
-    );
-    const dataSourceQueryType = useSelector(
-      (state: UserState) => state.dataSourceQueryType
-    );
     const filterdList = useMemo(() => {
       var newList = [
         {
@@ -92,65 +59,12 @@ const Cards: React.FC<PDropdownProps> = memo(
       ];
 
       return newList;
-    }, [list, dataSourceQueryStr, dataSourceQueryType]);
-    const { sourceMap, sourceMap2 } = useAllSources();
-    const handleJoin = (i) => {
-
-    }
+    }, []);
+    const handleJoin = useCallback((i) => {}, []);
     return (
       <div className="currentEvents">
         <h2 className="title">Current events</h2>
-        <ul className="currentEventsCards">
-          {filterdList.map((i) => {
-            return (
-              <li
-                className="dataSourceCard"
-                onClick={() => {
-                  handleJoin(i);
-                }}
-                key={i.id}
-              >
-                <div className="cardContent">
-                  <div className="picWrapper">
-                    <div className={`picContent ${i.combineType === '1' && 'combine'}`}>
-                      <SplicedIcons
-                        list={
-                          i.combineType === '1'
-                            ? [i.parterIcon, iconPado]
-                            : [iconPado]
-                        }
-                      />
-                      <span>{i.picTxt}</span>
-                    </div>
-                    <div className="endMask">END</div>
-                  </div>
-                  <div className="txtWrapper">
-                    <div className="title">{i.title}</div>
-                    <div className="descItems">
-                      {i.periodType === '1' && (
-                        <div className="descItem">
-                          <i className="iconfont icon-iconBlockChain"></i>
-                          <span>{i.chainDesc}</span>
-                        </div>
-                      )}
-                      {i.periodType === '0' && (
-                        <div className="descItem">
-                          <i className="iconfont icon-iconCalendar"></i>
-                          <span>{JSON.stringify(i.period)}</span>
-                        </div>
-                      )}
-                      <div className="descItem">
-                        <i className="iconfont icon-iconGift"></i>
-                        <span>{i.gift}</span>
-                      </div>
-                    </div>
-                    <div className="desc">{i.desc}</div>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <EventsCards list={filterdList} onClick={handleJoin} />
       </div>
     );
   }

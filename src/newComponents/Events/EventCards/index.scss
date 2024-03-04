@@ -1,0 +1,100 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.currentEventsCards {
+  @include frss;
+  flex-wrap: wrap;
+  row-gap: var(--spacing-16);
+  column-gap: var(--spacing-23);
+  width: 100%;
+  .dataSourceCard {
+    width: calc((100% - var(--spacing-23) * 2) / 3);
+    height: 358px;
+    @include fcss;
+    @include clickableCard;
+    .cardContent {
+      width: 100%;
+      height: 100%;
+      @include fcss;
+
+      .picWrapper {
+        width: 100%;
+        height: 200px;
+        position: relative;
+        @include frsc;
+        // .bg {
+        //   position: absolute;
+        //   z-index: -1;
+        //   width: 100%;
+        //   height: 100%;
+        //   background-size: 100% 100%;
+        //   background-repeat: no-repeat;
+
+        //   background-image: url('~@/assets/newImg/events/bgCombineType0.svg');
+        //   &.combine {
+        //     background-image: url('~@/assets/newImg/events/bgCombineType1.svg');
+        //   }
+        // }
+        .picContent {
+          width: 100%;
+          height: 100%;
+          background-repeat: no-repeat;
+          background-image: url('~@/assets/newImg/events/bgCombineType0.svg');
+          &.combine {
+            background-image: url('~@/assets/newImg/events/bgCombineType1.svg');
+          }
+          @include frsc;
+          gap: var(--spacing-16);
+          @include HeadlineH3;
+          padding-left: var(--spacing-40);
+          .splicedIcons {
+            > img {
+              width: var(--spacing-52);
+              // &:not(:first-child) {
+              //   left: calc(-1 * var(--spacing-4));
+              // }
+            }
+          }
+          > span {
+            width: 146px;
+          }
+        }
+        .endMask {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.2);
+          @include frcc;
+          @include HeadlineH0;
+          color: var(--text-tokens-text-inverse);
+        }
+      }
+      .txtWrapper {
+        padding: var(--spacing-24);
+        @include fcss;
+        gap: var(--spacing-4);
+        .title {
+          @include HeadlineH4;
+        }
+        .descItems {
+          @include fcss;
+          gap: var(--spacing-4);
+          .descItem {
+            @include frsc;
+            gap: var(--spacing-8);
+            @include Label01;
+            .iconfont {
+              font-size: var(--spacing-16);
+            }
+          }
+        }
+        .desc {
+          margin-top: var(--spacing-4);
+          @include BodyBody100;
+          color: var(--text-tokens-text-tertiary);
+        }
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@ import { setActiveOnChain } from '@/store/actions'
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import CurrentEvents from '@/newComponents/Events/CurrentEvents';
+import PastEvents from '@/newComponents/Events/PastEvents';
 
 import './index.scss';
 
@@ -25,6 +26,7 @@ const Home = memo(() => {
     <div className="pageEvents">
       <div className="pageContent">
         <CurrentEvents />
+        <PastEvents/>
       </div>
     </div>
   );

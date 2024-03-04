@@ -16,6 +16,7 @@ import {
   setOnChainAssetsSourcesAsync,
   initIfHadPwdAsync,
   setConnectedWalletsActionAsync,
+  initEventsActionAsync,
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
@@ -32,7 +33,7 @@ import type { Dispatch } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import Sidebar from './Sidebar';
-import PMsgs from '@/newComponents/PMsgs'
+import PMsgs from '@/newComponents/PMsgs';
 
 import './index.scss';
 
@@ -86,9 +87,9 @@ const Nav: React.FC = memo(({}) => {
           i.verificationValue = i.dataToBeSigned.content;
         }
       }
-      if ((i.attestationType === 'Assets Certificate')) {
+      if (i.attestationType === 'Assets Certificate') {
         i.attestationType = 'Assets Certification';
-      }// delete
+      } // delete
     });
     await chrome.storage.local.set({
       credentials: JSON.stringify(credentialObj),
@@ -106,7 +107,7 @@ const Nav: React.FC = memo(({}) => {
     dispatch(setOnChainAssetsSourcesAsync());
     dispatch(initIfHadPwdAsync());
     dispatch(setConnectedWalletsActionAsync());
-
+    dispatch(initEventsActionAsync());
     // dispatch(initConnectedWalletActionAsync());
     (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);
@@ -169,7 +170,7 @@ const Nav: React.FC = memo(({}) => {
         </div>
         <Footer />
       </article>
-      <PMsgs/>
+      <PMsgs />
     </div>
   );
 });

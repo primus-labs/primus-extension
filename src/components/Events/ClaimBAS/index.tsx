@@ -18,7 +18,6 @@ import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
 import { BASEVENTNAME } from '@/config/constants';
-import { queryEventDetail } from '@/services/api/event';
 import useEventDetail from '@/hooks/useEventDetail';
 
 import type { ActiveRequestType } from '@/types/config';

@@ -3,11 +3,13 @@ import { ONEMINUTE } from '@/config/constants';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { getProofTypes } from '@/services/api/config';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
+import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 import {
-  DEFAULTDATASOURCEPOLLINGTIMENUM,
   SCROLLEVENTNAME,
   BASEVENTNAME,
-} from '@/config/constants';
+  LINEAEVENTNAME,
+  LUCKYDRAWEVENTNAME,
+} from '@/config/events';
 import { WALLETMAP } from '@/config/wallet';
 import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import {
@@ -405,7 +407,12 @@ export const setBadgeEventPeriodActionAsync = () => {
 export const setEventsActionAsync = () => {
   return async (dispatch: any) => {
     try {
-      const eventNameArr = [BASEVENTNAME];
+      const eventNameArr = [
+        LUCKYDRAWEVENTNAME,
+        SCROLLEVENTNAME,
+        LINEAEVENTNAME,
+        BASEVENTNAME,
+      ];
       const requestArr = eventNameArr.map((r) => {
         return queryEventDetail({
           event: r,

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import dayjs from 'dayjs';
-import { setEventsActionAsync, initEventsActionAsync } from '@/store/actions';
+import { initEventsActionAsync } from '@/store/actions';
 
 import RewardsDialog from '@/components/RewardsDialog';
 import ClaimWrapper from '../ClaimWrapper';

@@ -51,9 +51,9 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
         <ul className="walletItems">
           {Object.keys(connectedWallets)
             .filter((wK) => wK!=='undefined')
-            .map((wK) => {
+            .map((wK,k) => {
               return (
-                <li className="walletItem" key={wK}>
+                <li className="walletItem" key={k}>
                   <div className="recordItem">
                     <div className="left">
                       <img
