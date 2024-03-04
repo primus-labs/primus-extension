@@ -46,6 +46,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
       const res = await getDataSourceData('discord');
       if (!res.discord) {
+        alert("please connect discord")
         return;
       }
       const discordUserInfo = JSON.parse(res.discord);
@@ -58,6 +59,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'CONNECT_X_DATA' || taskItem.taskIdentifier === 'FOLLOW_PADOLABS') {
       const res = await getDataSourceData('x');
       if (!res.x) {
+        alert("please connect x")
         return;
       }
       const xUserInfo = JSON.parse(res.x);
@@ -69,6 +71,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'CONNECT_DISCORD_DATA') {
       const res = await getDataSourceData('discord');
       if (!res.discord) {
+        alert("please connect discord")
         return;
       }
       const discordUserInfo = JSON.parse(res.discord);
@@ -81,6 +84,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if( taskItem.taskIdentifier ==='JOIN_PADO_DISCORD'){
       const res = await getDataSourceData('discord');
       if (!res.discord) {
+        alert("please connect discord")
         return;
       }
       const discordUserInfo = JSON.parse(res.discord);
@@ -100,6 +104,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if(taskItem.taskIdentifier ==='CONNECT_TIKTOK_ACCOUNT_DATA'){
       const res = await getDataSourceData('tiktok');
       if (!res.tiktok) {
+        alert("please connect tiktok")
         return;
       }
       const tiktokUserInfo = JSON.parse(res.tiktok);
@@ -112,6 +117,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if(taskItem.taskIdentifier === 'CONNECT_GOOGLE_ACCOUNT_DATA'){
       const res = await getDataSourceData('google');
       if (!res.google) {
+        alert("please connect google")
         return;
       }
       const googleUserInfo = JSON.parse(res.google);
@@ -124,6 +130,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if(taskItem.taskIdentifier == "CONNECT_BINANCE_DATA"){
       const res = await getDataSourceData('binance');
       if(!res.binance){
+        alert("please connect binance")
         return;
       }
       const binanceInfo = JSON.parse(res.binance);
@@ -142,6 +149,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if(taskItem.taskIdentifier == "CONNECT_COINBASE_DATA"){
       const res = await getDataSourceData('coinbase');
       if(!res.coinbase){
+        alert("please connect coinbase")
         return;
       }
       const coinbaseInfo = JSON.parse(res.coinbase);
@@ -159,6 +167,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if(taskItem.taskIdentifier ==='CONNECT_OKX_DATA'){
       const res = await getDataSourceData('okx');
       if(!res.okx){
+        alert("please connect okx")
         return;
       }
       const okxInfo = JSON.parse(res.okx);
