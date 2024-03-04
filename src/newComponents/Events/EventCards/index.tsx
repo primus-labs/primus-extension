@@ -1,8 +1,10 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
+import dayjs from 'dayjs';
+import utc from 'dayjs-plugin-utc';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
-
+dayjs.extend(utc);
 type NavItem = {
   id: string;
   combineType: string;
@@ -31,6 +33,13 @@ const Cards: React.FC<PDropdownProps> = memo(
       if (i.periodType === '0') {
         return false; // TODO-newui
       }
+    };
+    const formatPeriod = (period) => {
+      const { startTime, endTime } = period;
+      const s = dayjs.utc(+startTime).format('MMM.D,YYYY');
+      const e = dayjs.utc(+endTime).format('MMM.D,YYYY');
+      
+      return `${s}-${e}`;
     };
     const handleJoin = (i) => {
       onClick(i);
@@ -76,7 +85,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                     {i.periodType === '0' && (
                       <div className="descItem">
                         <i className="iconfont icon-iconCalendar"></i>
-                        <span>{JSON.stringify(i.period)}</span>
+                        <span>{formatPeriod(i.period)}</span>
                       </div>
                     )}
                     <div className="descItem">

@@ -1,7 +1,13 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 
 import EventsCards from '@/newComponents/Events/EventCards';
-
+import {
+  SCROLLEVENTNAME,
+  BASEVENTNAME,
+  LINEAEVENTNAME,
+  LUCKYDRAWEVENTNAME,
+  eventMetaMap,
+} from '@/config/events';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
 import './index.scss';
@@ -15,7 +21,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     const filterdList = useMemo(() => {
       var newList = [
         {
-          id: '1',
+          id: LINEAEVENTNAME,
           combineType: '1', // 0： pado，1:pado combine with partner
           parterIcon: iconNetworkLinea, // required when combineType is 1
 
@@ -30,7 +36,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           gift: '100 PADO points',
         },
         {
-          id: '2',
+          id: BASEVENTNAME,
           combineType: '1',
           parterIcon: iconDataSourceBinance,
 

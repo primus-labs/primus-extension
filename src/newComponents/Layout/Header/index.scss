@@ -17,6 +17,29 @@
     border-bottom: 4px solid var(--background-tokens-background-brand);
     color: var(--text-tokens-text-primary);
   }
+  .PTabs {
+    border-bottom: 0;
+    height: 100%;
+    .tab {
+      &.active {
+        .border {
+          height: 4px;
+          background: var(--background-tokens-background-brand);
+        }
+      }
+      &:not(.active) {
+        .border {
+          height: 0;
+        }
+      }
+      .con {
+        @include HeadlineH1;
+        @include frsc;
+        height: 100%;
+        // color: var(--text-tokens-text-primary);
+      }
+    }
+  }
   .rightActions {
     @include frsc;
     gap: var(--spacing-8);

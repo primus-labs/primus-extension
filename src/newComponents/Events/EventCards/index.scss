@@ -23,19 +23,7 @@
         height: 200px;
         position: relative;
         @include frsc;
-        // .bg {
-        //   position: absolute;
-        //   z-index: -1;
-        //   width: 100%;
-        //   height: 100%;
-        //   background-size: 100% 100%;
-        //   background-repeat: no-repeat;
 
-        //   background-image: url('~@/assets/newImg/events/bgCombineType0.svg');
-        //   &.combine {
-        //     background-image: url('~@/assets/newImg/events/bgCombineType1.svg');
-        //   }
-        // }
         .picContent {
           width: 100%;
           height: 100%;

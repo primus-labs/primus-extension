@@ -1,0 +1,12 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+.pageRewards {
+  height: 100%;
+  .pageContent {
+    height: 100%;
+    padding: 40px 0 20px 0;
+    @include fcss;
+    gap: var(--spacing-40);
+  }
+}

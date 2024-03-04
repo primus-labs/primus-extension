@@ -66,6 +66,7 @@ const PTabs: React.FC<PInputProps> = memo(({ onChange, value, list }) => {
             <div className="con">
               <span>{item.label}</span>
             </div>
+            <div className="border"></div>
           </div>
         );
       })}

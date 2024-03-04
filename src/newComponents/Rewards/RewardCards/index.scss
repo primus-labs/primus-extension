@@ -1,0 +1,60 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.rewardCards {
+  @include frss;
+  flex-wrap: wrap;
+  row-gap: var(--spacing-16);
+  column-gap: var(--spacing-16);
+  width: 100%;
+  .dataSourceCard {
+    width: calc((100% - var(--spacing-16) * 2) / 3);
+    height: 410px;
+    @include fcss;
+    @include clickableCard;
+    position: relative;
+    .iconLink {
+      position: absolute;
+      top: var(--spacing-8);
+      right: var(--spacing-8);
+      width: var(--spacing-32);
+      height: var(--spacing-32);
+      @include frcc;
+      > img {
+        width: 100%;
+      }
+    }
+    .cardContent {
+      width: 100%;
+      height: 100%;
+      @include fcss;
+      padding: var(--spacing-16) var(--spacing-16) var(--spacing-24)
+        var(--spacing-16);
+      gap: var(--spacing-12);
+
+      .picWrapper {
+        width: 304px;
+        height: 304px;
+        position: relative;
+        @include frcc;
+        > img {
+          width: 100%;
+        }
+      }
+      .txtWrapper {
+        @include fcss;
+        gap: var(--spacing-8);
+        .title {
+          @include HeadlineH3;
+        }
+        .desc {
+          @include frsc;
+          gap: var(--spacing-8);
+          @include BodyBody100;
+          color: var(--text-tokens-text-tertiary);
+        }
+      }
+    }
+  }
+}

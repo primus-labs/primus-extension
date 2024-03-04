@@ -15,6 +15,7 @@ import TransactionDetail from '@/pages/Transaction/TransactionDetail';
 import Achievement from "@/newPages/Achievement";
 import ZkAttestation from '@/newPages/ZkAttestation';
 import Events from '@/newPages/Events';
+import Rewards from '@/newPages/Rewards';
 
 const router = [
   {
@@ -49,7 +50,16 @@ const router = [
       {
         path: 'events',
         name: 'events',
-        element: <Events />,
+        children: [
+          {
+            index: true,
+            element: <Events />,
+          },
+          {
+            path: 'rewards',
+            element: <Rewards />,
+          },
+        ],
       },
       {
         path: 'dataDetail',
