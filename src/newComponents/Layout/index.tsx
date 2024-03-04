@@ -32,6 +32,7 @@ import type { Dispatch } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import Sidebar from './Sidebar';
+import PMsgs from '@/newComponents/PMsgs'
 
 import './index.scss';
 
@@ -168,6 +169,7 @@ const Nav: React.FC = memo(({}) => {
         </div>
         <Footer />
       </article>
+      <PMsgs/>
     </div>
   );
 });

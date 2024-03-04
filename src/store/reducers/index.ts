@@ -114,6 +114,35 @@ const initState = {
   attestationQueryStr: '',
   attestationQueryType: '',
   activeOnChain: {}, // attestation on chain in progress
+
+  msgs: {
+    // '0': {
+    //   id: 0,
+    //   type: 'suc',
+    //   title: 'Data Connected',
+    //   desc: 'See details in the Data Source page.',
+    //   link: '/',
+    // },
+    // '1': {
+    //   id: '1',
+    //   type: 'error',
+    //   title: 'Data Connected',
+    //   desc: 'See details in the Data Source page.',
+    // },
+    // '2': {
+    //   id: '2',
+    //   type: 'warn',
+    //   title: 'Data Connected',
+    //   desc: 'See details in the Data Source page.',
+    //   code: '2330'
+    // },
+    // '3': {
+    //   id: '3',
+    //   type: 'info',
+    //   title: 'Data Connected',
+    //   desc: 'See details in the Data Source page.',
+    // },
+  },
 };
 
 // reducer
@@ -206,7 +235,8 @@ const reducer: any = function (state = initState, action: any) {
         ...state,
         activeOnChain: { ...state.activeOnChain, ...action.payload },
       };
-
+    case 'setMsgs':
+      return { ...state, msgs: action.payload };
     default:
       return state;
   }

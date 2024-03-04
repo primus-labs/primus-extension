@@ -168,6 +168,8 @@
   --layer-tokens-layer-teal-background: var(--base-color-teal-teal-10);
   --layer-tokens-layer-yellow: var(--base-color-yellow-yellow-50);
   --layer-tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
+  --layer-tokens-layer-red: var(--functional-color-red-red-50);
+  --layer-tokens-layer-red-background: var(--functional-color-red-red-10);
   --tag-tokens-tag-blue: var(--base-color-blue-blue-30);
   --tag-tokens-tag-blue-text: var(--base-color-blue-blue-90);
   --tag-tokens-tag-brand: var(--brand-primary-color-bp-20);
@@ -254,6 +256,8 @@
   --layer-tokens-layer-teal-background: var(--base-color-teal-teal-10);
   --layer-tokens-layer-yellow: var(--base-color-yellow-yellow-50);
   --layer-tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
+  --layer-tokens-layer-red: var(--functional-color-red-red-50);
+  --layer-tokens-layer-red-background: var(--functional-color-red-red-10);
   --tag-tokens-tag-blue: var(--base-color-blue-blue-90);
   --tag-tokens-tag-blue-text: var(--base-color-blue-blue-10);
   --tag-tokens-tag-brand: var(--brand-primary-color-bp-90);
@@ -283,6 +287,6 @@
 .pageContent {
   width: var(--pageContent-width);
 }
-.fullWidth{
+.fullWidth {
   width: 100% !important;
 }

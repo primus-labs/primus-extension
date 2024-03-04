@@ -47,6 +47,18 @@ type activeConnectWalletRequest = {
   network?: any;
   loading?: 0 | 1; // TODO-newui0
 };
+type Msg = {
+  id: string;
+  type: string;
+  title: string;
+  desc?: string;
+  code?: string;
+  link?: string;
+  done?:boolean
+}
+type MsgMap = {
+  [propName:string]: Msg
+};
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -84,4 +96,5 @@ export type UserState = {
   attestationQueryStr: string;
   attestationQueryType: string | number;
   activeOnChain: activeOnChainRequest;
+  msgs: MsgMap;
 };
