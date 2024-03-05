@@ -30,14 +30,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         dataSourceId: 'x',
         title: 'Follow @padolabs',
         subTitle: 'Authorize twitter and follow ',
-        done: false,
       },
       discord: {
         id: '2',
         dataSourceId: 'discord',
         title: 'Join PADO Server',
         subTitle: 'Authorize discord and join',
-        done: false,
       },
     };
     const [questionList, setQuestionList] = useState<any[]>(
@@ -52,13 +50,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
-    const [checkIsConnectFlag, setCheckIsConnectFlag] =
-      useState<boolean>(false);
-    const { connected } = useCheckIsConnectedWallet(checkIsConnectFlag);
-
     const formLegal = useMemo(() => {
-      return questionList.every((i) => i.done);
-    }, [questionList]);
+      return Object.values(taskStatusMap).every((i) => !!i);
+    }, [taskStatusMap]);
 
     const onFollowX = useCallback(async () => {
       const targetUrl =
@@ -93,68 +87,72 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
       await openXUrlFn();
     }, [xTabId]);
-    const handleTask = useCallback(
-      (i) => {
-        // setQuestionList(Object.values(socialTaskMap));
-        if (i.dataSourceId === 'x') {
-          onFollowX();
-        } else if (i.dataSourceId === 'discord') {
-          
-        }
-      },
-      [onFollowX]
-    );
+
     const initTaskStatus = async () => {
       const res = await chrome.storage.local.get([eventId]);
       const currentAddress = connectedWallet?.address;
       if (res[eventId]) {
         const lastEventObj = JSON.parse(res[eventId]);
         const lastInfo = lastEventObj[currentAddress];
-        const { x, discord } = lastInfo.taskMap.follow;
-        setTaskStatusMap({ x, discord });
+        setTaskStatusMap({ ...lastInfo.taskMap.follow });
       }
     };
+    const setSocialTaskStatus = useCallback(
+      async (k, v = 1) => {
+        const res = await chrome.storage.local.get([eventId]);
+        const currentAddress = connectedWallet?.address;
+        if (res[eventId]) {
+          const lastEventObj = JSON.parse(res[eventId]);
+          const lastInfo = lastEventObj[currentAddress];
+          lastInfo.taskMap.follow[k] = v;
+          setTaskStatusMap((m) => ({ ...m, [k]: v }));
+          await chrome.storage.local.set({
+            [eventId]: JSON.stringify(lastEventObj),
+          });
+        }
+      },
+      [connectedWallet, eventId]
+    );
+    const handleTask = useCallback(
+      (i) => {
+        // setQuestionList(Object.values(socialTaskMap));
+        if (i.dataSourceId === 'x') {
+          onFollowX();
+        } else if (i.dataSourceId === 'discord') {
+          window.open('https://discord.com/invite/YxJftNRxhh');
+          setSocialTaskStatus('discord');
+        }
+      },
+      [onFollowX, setSocialTaskStatus]
+    );
     useEffect(() => {
       const listerFn = async (message, sender, sendResponse) => {
         if (message.type === 'xFollow' && message.name === 'follow') {
           console.log(`Claim ${eventId} onMessage follow message`, message);
-          const res = await chrome.storage.local.get([eventId]);
-          const currentAddress = connectedWallet?.address;
-          if (res[eventId]) {
-            const lastEventObj = JSON.parse(res[eventId]);
-            const lastInfo = lastEventObj[currentAddress];
-
-            lastInfo.taskMap.follow.x = 1;
-            setTaskStatusMap((m) => ({ ...m, x: 1 }));
-
-            await chrome.storage.local.set({
-              [eventId]: JSON.stringify(lastEventObj),
-            });
-            // setStepObj((obj) => ({ ...obj, step1: 1 }));
-            console.log('222123tabdId', xTabId);
-            try {
-              if (xTabId) {
-                const xTab = await chrome.tabs.get(xTabId as number);
-                if (xTab) {
-                  setXTabId(undefined);
-                  if (PADOTabId) {
-                    await chrome.tabs.update(PADOTabId, {
-                      active: true,
-                    });
-                  }
-                  await chrome.tabs.remove(xTabId as number);
+          setSocialTaskStatus('x');
+          console.log('222123tabdId', xTabId);
+          try {
+            if (xTabId) {
+              const xTab = await chrome.tabs.get(xTabId as number);
+              if (xTab) {
+                setXTabId(undefined);
+                if (PADOTabId) {
+                  await chrome.tabs.update(PADOTabId, {
+                    active: true,
+                  });
                 }
+                await chrome.tabs.remove(xTabId as number);
               }
-            } catch {}
-          }
+            }
+          } catch {}
         }
       };
       chrome.runtime.onMessage.addListener(listerFn);
       return () => {
         chrome.runtime.onMessage.removeListener(listerFn);
       };
-    }, [xTabId, PADOTabId, connectedWallet, eventId]);
-    
+    }, [xTabId, PADOTabId, eventId, setSocialTaskStatus]);
+
     useEffect(() => {
       initTaskStatus();
     }, []);

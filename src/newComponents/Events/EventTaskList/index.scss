@@ -28,6 +28,10 @@
       .right {
         @include frsc;
         gap: var(--spacing-40);
+        .iconfont{
+          color: var(--layer-tokens-layer-bp);
+          font-size: var(--spacing-24);
+        }
         .process {
           @include fcss;
           align-items: flex-end;
