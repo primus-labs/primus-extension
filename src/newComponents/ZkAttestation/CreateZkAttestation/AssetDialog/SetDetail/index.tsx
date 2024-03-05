@@ -19,8 +19,9 @@ import PButton from '@/newComponents/PButton';
 
 import './index.scss';
 type PswFormType = {
-  verificationContent: '';
-  verificationValue: '';
+  dataSourceId: string;
+  verificationContent: string;
+  verificationValue: string;
   account: string;
 };
 interface SetPwdDialogProps {
@@ -38,6 +39,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       verificationContent: '',
       verificationValue: '',
       account: '',
+      dataSourceId: '',
     });
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
@@ -126,13 +128,19 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [formLegal, pswForm, activeDataSouceUserInfo, totalBalanceForAttest]);
 
     const handleChangePswForm = useCallback((v, formKey) => {
-      setPswForm((f) => ({ ...f, [formKey]: v }));
+      setPswForm((f) => {
+        const newForm = { ...f, [formKey]: v };
+        console.log('newForm', f, newForm);
+        return newForm;
+      });
     }, []);
     useEffect(() => {
-      handleChangePswForm(
-        activeDataSouceUserInfo?.userInfo?.userName,
-        'account'
-      );
+      if (activeDataSouceUserInfo?.userInfo?.userName) {
+        handleChangePswForm(
+          activeDataSouceUserInfo?.userInfo?.userName,
+          'account'
+        );
+      }
     }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
@@ -141,7 +149,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
     }, [pswForm.verificationContent, handleChangePswForm]);
     useEffect(() => {
-      setPswForm(presets);
+      if (presets) {
+        setPswForm((f) => ({...f,...presets}));
+      }
     }, [presets]);
 
     return (

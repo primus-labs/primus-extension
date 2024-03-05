@@ -11,6 +11,7 @@ import {
   setAttestLoading,
   setCredentialsAsync,
   setActiveAttestation,
+  setMsgs,
 } from '@/store/actions';
 
 import useEventDetail from '@/hooks/useEventDetail';
@@ -57,6 +58,7 @@ const useAttest = function useAttest() {
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
+  const msgs = useSelector((state: UserState) => state.msgs);
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const initCredList = useCallback(async () => {
     await dispatch(setCredentialsAsync());
@@ -97,7 +99,7 @@ const useAttest = function useAttest() {
       } else if (retcode === '2') {
         alert('Failed'); // TODO-newui notification
         dispatch(setAttestLoading(2));
-        dispatch(setActiveAttestation({loading:2}));
+        dispatch(setActiveAttestation({ loading: 2 }));
         // algorithm is not initialized
         // setActiveRequest({
         //   type: 'error',
@@ -486,15 +488,14 @@ const useAttest = function useAttest() {
   useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
 
-  
   useEffect(() => {
     const listerFn = (message: any) => {
       const { type, name } = message;
       if (type === 'pageDecode') {
         if (name === 'cancelAttest') {
           alert('Unable to proceed');
-          dispatch(setAttestLoading(2))
-          dispatch(setActiveAttestation({loading:2}));
+          dispatch(setAttestLoading(2));
+          dispatch(setActiveAttestation({ loading: 2 }));
           // setActiveRequest({
           //   type: 'warn',
           //   title: 'Unable to proceed',
@@ -509,9 +510,20 @@ const useAttest = function useAttest() {
           //   desc: 'It may take a few seconds.',
           // });
         } else if (name === 'abortAttest') {
-          alert('Unable to proceed');
-          dispatch(setAttestLoading(2));
-          dispatch(setActiveAttestation({ loading: 2 }));
+          if (attestLoading === 1) {
+            alert('Unable to proceed');
+            const id = Date.now();
+            const newMsgs = {
+              ...msgs,
+              id: {
+                id,
+                type: 'error',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+              },
+            };
+            dispatch(setMsgs(newMsgs));
+          }
           // if (activeRequest?.type === 'loading' || !activeRequest?.type) {//TODO-newui
           //   setActiveRequest({
           //     type: 'warn',
@@ -522,6 +534,8 @@ const useAttest = function useAttest() {
           // if (activeRequest?.type === 'loading') {
           //   setIntervalSwitch(false);
           // }
+          dispatch(setAttestLoading(2));
+          dispatch(setActiveAttestation({ loading: 2 }));
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
@@ -546,6 +560,6 @@ const useAttest = function useAttest() {
     return () => {
       chrome.runtime.onMessage.removeListener(listerFn);
     };
-  }, [dispatch]);
+  }, [dispatch, attestLoading]);
 };
 export default useAttest;
