@@ -16,6 +16,7 @@ import Achievement from "@/newPages/Achievement";
 import ZkAttestation from '@/newPages/ZkAttestation';
 import Events from '@/newPages/Events';
 import Rewards from '@/newPages/Rewards';
+import EventDetail from '@/newPages/EventDetail';
 
 const router = [
   {
@@ -58,6 +59,10 @@ const router = [
           {
             path: 'rewards',
             element: <Rewards />,
+          },
+          {
+            path: 'detail',
+            element: <EventDetail />,
           },
         ],
       },

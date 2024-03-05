@@ -1,9 +1,11 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
+
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
+import { useNavigate } from 'react-router-dom';
 dayjs.extend(utc);
 type NavItem = {
   id: string;
@@ -26,6 +28,7 @@ interface PDropdownProps {
 }
 const Cards: React.FC<PDropdownProps> = memo(
   ({ list, onClick = (item: NavItem) => {} }) => {
+    const navigate = useNavigate();
     const checkIsActive = (i) => {
       if (i.periodType === '1') {
         return true;
@@ -38,11 +41,13 @@ const Cards: React.FC<PDropdownProps> = memo(
       const { startTime, endTime } = period;
       const s = dayjs.utc(+startTime).format('MMM.D,YYYY');
       const e = dayjs.utc(+endTime).format('MMM.D,YYYY');
-      
+
       return `${s}-${e}`;
     };
     const handleJoin = (i) => {
-      onClick(i);
+      if (checkIsActive(i)) {
+        navigate(`/events/detail?id=${i.id}`);
+      }
     };
     return (
       <ul className="currentEventsCards">

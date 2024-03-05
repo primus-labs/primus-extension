@@ -37,11 +37,9 @@
           @include HeadlineH3;
           padding-left: var(--spacing-40);
           .splicedIcons {
+            margin-right: calc(-1* var(--spacing-8));
             > img {
               width: var(--spacing-52);
-              // &:not(:first-child) {
-              //   left: calc(-1 * var(--spacing-4));
-              // }
             }
           }
           > span {
