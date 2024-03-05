@@ -52,6 +52,40 @@ export const DATASOURCEMAP: DataSourceMapType = {
       'You can fetch token & NFT assets data from your Web3 Wallet to manage your assets or create attestations.',
     connectType: '',
   },
+  x: {
+    id: 'x',
+    name: 'X',
+    type: 'Social',
+    icon: iconDataSourceTwitter,
+    desc: 'Support fetching tweet & followers data for management and attestation creation.',
+    provider: 'Alex',
+    unConnectTip:
+      'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
+
+    connectType: 'Auth',
+  },
+  discord: {
+    id: 'discord',
+    name: 'Discord',
+    type: 'Social',
+    icon: iconDataSourceDiscord,
+    desc: 'Support fetching account name & status data for management and attestation creation.',
+    unConnectTip: '',
+
+    connectType: 'Auth',
+  },
+  tiktok: {
+    id: 'tiktok',
+    name: 'TikTok',
+    type: 'Social',
+    icon: iconDataSourceTikTok,
+    desc: 'Support fetching account name & status data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch account name & status data from your TikTok account to manage your data or create attestations.',
+    constructorF: WebTikTok,
+
+    connectType: 'Web',
+  },
   binance: {
     id: 'binance',
     name: 'Binance',
@@ -66,18 +100,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     jumpTo: 'https://www.binance.com/my/dashboard',
     connectType: 'Web',
-  },
-  x: {
-    id: 'x',
-    name: 'X',
-    type: 'Social',
-    icon: iconDataSourceTwitter,
-    desc: 'Support fetching tweet & followers data for management and attestation creation.',
-    provider: 'Alex',
-    unConnectTip:
-      'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
-
-    connectType: 'Auth',
   },
   okx: {
     id: 'okx',
@@ -94,17 +116,20 @@ export const DATASOURCEMAP: DataSourceMapType = {
     accountBalanceUrl: 'https://www.okx.com/api/v5/account/balance',
     connectType: 'Web',
   },
-  tiktok: {
-    id: 'tiktok',
-    name: 'TikTok',
-    type: 'Social',
-    icon: iconDataSourceTikTok,
-    desc: 'Support fetching account name & status data for management and attestation creation.',
+  coinbase: {
+    id: 'coinbase',
+    name: 'Coinbase',
+    type: 'Assets',
+    icon: iconDataSourceCoinbase,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
     unConnectTip:
-      'You can fetch account name & status data from your TikTok account to manage your data or create attestations.',
-    constructorF: WebTikTok,
+      'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
+    requirePassphase: false,
+    constructorF: Coinbase,
+    baseName: 'api.coinbase.com',
+    accountBalanceUrl: 'https://api.binance.com/api/v3/account',
 
-    connectType: 'Web',
+    connectType: 'API',
   },
   google: {
     id: 'google',
@@ -119,18 +144,13 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'Auth',
     showName: 'G Account',
   },
-  coinbase: {
-    id: 'coinbase',
-    name: 'Coinbase',
-    type: 'Assets',
-    icon: iconDataSourceCoinbase,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip:
-      'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
-    requirePassphase: false,
-    constructorF: Coinbase,
-    baseName: 'api.coinbase.com',
-    accountBalanceUrl: 'https://api.binance.com/api/v3/account',
+  github: {
+    id: 'github',
+    name: 'Github',
+    type: 'Social',
+    icon: iconDataSourceGithub,
+    desc: 'Support fetching user profile data for management and attestation creation.',
+    unConnectTip: '',
 
     connectType: 'API',
   },
@@ -148,51 +168,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     connectType: 'API',
   },
-  zan: {
-    id: 'zan',
-    name: 'ZAN',
-    type: 'Identity',
-    icon: iconDataSourceZan,
-    desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
-    unConnectTip:
-      'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
-    disabled: true,
-
-    connectType: 'API',
-  },
-  github: {
-    id: 'github',
-    name: 'Github',
-    type: 'Social',
-    icon: iconDataSourceGithub,
-    desc: 'Support fetching user profile data for management and attestation creation.',
-    unConnectTip: '',
-
-    connectType: 'API',
-  },
-  discord: {
-    id: 'discord',
-    name: 'Discord',
-    type: 'Social',
-    icon: iconDataSourceDiscord,
-    desc: 'Support fetching account name & status data for management and attestation creation.',
-    unConnectTip: '',
-
-    connectType: 'Auth',
-  },
-  bybit: {
-    id: 'bybit',
-    name: 'Bybit',
-    type: 'Assets',
-    icon: iconDataSourceBybit,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip: '',
-    requirePassphase: false,
-    constructorF: Bybit,
-    baseName: 'api.bybit.com',
-
-    connectType: 'API',
-  },
   huobi: {
     id: 'houbi',
     name: 'Huobi',
@@ -207,7 +182,19 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     connectType: 'API',
   },
+  bybit: {
+    id: 'bybit',
+    name: 'Bybit',
+    type: 'Assets',
+    icon: iconDataSourceBybit,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip: '',
+    requirePassphase: false,
+    constructorF: Bybit,
+    baseName: 'api.bybit.com',
 
+    connectType: 'API',
+  },
   kucoin: {
     id: 'kucoin',
     name: 'KuCoin',
@@ -244,6 +231,18 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: Mexc,
     baseName: 'api.mexc.com',
+
+    connectType: 'API',
+  },
+  zan: {
+    id: 'zan',
+    name: 'ZAN',
+    type: 'Identity',
+    icon: iconDataSourceZan,
+    desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
+    disabled: true,
 
     connectType: 'API',
   },
