@@ -3,16 +3,18 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import AchievementTopCard from '@/newComponents/Ahievements/TopCard';
 import AchievementTaskItem from '@/newComponents/Ahievements/AchievementTaskItem';
 
-import { getAchievementTaskList, getUserInfo} from '@/services/api/achievements';
+import { getAchievementTaskList, getUserInfo } from '@/services/api/achievements';
 import './index.scss';
 import AchievementRewardHistory from '@/newComponents/Ahievements/AchievementRewardHistory';
 import { Pagination } from 'antd';
 import ReferralCodeInput from '@/newComponents/Ahievements/ReferralCodeInput';
+import ShareComponent from '@/newComponents/Ahievements/ShareComponent';
 
 const AchievementHome = memo(() => {
 
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<boolean>(false);
   const [visibleReferralCodeDialog, setVisibleReferralCodeDialog] = useState<boolean>(false);
+  const [visibleShareDiag, setVisibleShareDiag] = useState<boolean>(false);
   const [referralCodeTaskFinished, setReferralCodeTaskFinished] = useState<boolean>(false);
   const [size, setSize] = useState(7);
   const [pageCount, setPageCount] = useState(1);
@@ -23,7 +25,7 @@ const AchievementHome = memo(() => {
   const [totalScore, setTotalScore] = useState(0);
   const [referrals, setReferrals] = useState(0);
   const [countedReferrals, setCountedReferrals] = useState(0);
-
+  const [shareType,setShareType] = useState('')
 
   const getUserInfoFn = async () => {
     const res = await getUserInfo();
@@ -31,8 +33,8 @@ const AchievementHome = memo(() => {
     if (rc === 0) {
       setRefferralCode(result.referralCode);
       setTotalScore(result.totalScore);
-      setReferrals(result.referrals)
-      setCountedReferrals(result.countedReferrals)
+      setReferrals(result.referrals);
+      setCountedReferrals(result.countedReferrals);
     }
   };
 
@@ -105,18 +107,20 @@ const AchievementHome = memo(() => {
   };
 
   const handleSharePoints = () => {
-    alert('points');
+    setShareType('score')
+    setVisibleShareDiag(true)
   };
 
   const handleShareReferralCode = () => {
-    alert('code');
+    setShareType('referralCode')
+    setVisibleShareDiag(true)
   };
 
 
   const refreshTotalScoreFn = async (scoreChanged, taskIdentifier) => {
     setTotalScore(totalScore + scoreChanged);
     // eslint-disable-next-line no-undef
-    console.log('taskIdentifier:',taskIdentifier)
+    console.log('taskIdentifier:', taskIdentifier);
     await getAchievementTaskListFn(current);
     // const newList = achievementTaskList.map((item) => {
     //   if (item.taskIdentifier === taskIdentifier) {
@@ -133,12 +137,16 @@ const AchievementHome = memo(() => {
     setVisibleReferralCodeDialog(false);
   };
 
+  const handleSharePageClose = () => {
+    setVisibleShareDiag(false);
+  };
+
   const handleReferralCodeTaskFinish = () => {
     // @ts-ignore
     setReferralCodeTaskFinished(true);
     debugger
     for (let i = 0; i < achievementTaskList.length; i++) {
-      if(achievementTaskList[i].taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE'){
+      if (achievementTaskList[i].taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE') {
         setTotalScore(totalScore + achievementTaskList[i].taskXpScore);
       }
     }
@@ -167,7 +175,7 @@ const AchievementHome = memo(() => {
       />}
       {visibleReferralCodeDialog &&
         <ReferralCodeInput onClose={handleReferralCodeClose} setReferralTaskFinished={handleReferralCodeTaskFinish} />}
-
+      {visibleShareDiag && <ShareComponent onClose={handleSharePageClose} shareType={shareType} scoreShareProps={{score: totalScore,referralCode:referralCode}}/>}
     </div>
 
   );

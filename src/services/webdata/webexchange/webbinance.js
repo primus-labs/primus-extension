@@ -126,7 +126,7 @@ class WebBinance extends WebExchange {
             'https://www.binance.com/bapi/accounts/v1/private/account/user/base-detail';
         params.method = 'POST';
         const res = await this.request(params);
-        this.userInfo.userName = res.data.mobileNo;
+        this.userInfo.userName = res.data.userId;
         this.userInfo.userId = res.data.userId;
         console.log(res.data.mobileNo)
     }

@@ -36,6 +36,7 @@
     "ethereumjs-util": "^7.1.5",
     "ethers": "5.7.2",
     "file-saver": "^2.0.5",
+    "html-to-image": "^1.11.11",
     "metamask-extension-provider": "^3.0.0",
     "mini-css-extract-plugin": "^2.7.6",
     "net": "^1.0.2",

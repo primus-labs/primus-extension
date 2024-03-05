@@ -42,7 +42,7 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
 
         <div className={'points-text-line'}>
           <div className="pointsEarned-text"><p>Points Earned</p></div>
-          <div className="pointsShare">
+          <div className="pointsShare" onClick={handleSharePoints}>
             <div className="pointsShareText">Share on social media</div>
             <img className="pointsShareIcon" src={pointsEarnedShareIcon} />
           </div>
@@ -61,7 +61,7 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
       <div className="rightCard">
         <div className={'referral-text-line'}>
           <div className={'referral-text'}>Referrals</div>
-          <div className={'referralShare'}>
+          <div className={'referralShare'} onClick={handleShareReferralCode}>
             <div className={'referralShareText'}> Share on social media</div>
             <img className={'referralShareIcon'} src={pointsEarnedShareIcon}></img>
           </div>

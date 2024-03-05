@@ -35,3 +35,11 @@ export const taskStatusCheck = async (tasks) => {
         url : '/achievement/check?tasks='+tasks,
     });
 }
+
+export  const shareTwitter = async (data) => {
+    return await request({
+        method : 'post',
+        url : '/media/share/twitter',
+        data: data
+    });
+}
