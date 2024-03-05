@@ -3,6 +3,8 @@
 @import '@/assets/newCss/global.css';
 
 .PageLayout {
+  font-family: 'IBM Plex Sans';
+  color: var(--text-tokens-text-primary);
   width: 100vw;
   height: 100vh;
   @include frss;
