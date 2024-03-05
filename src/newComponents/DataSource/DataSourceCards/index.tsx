@@ -131,8 +131,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                   </div>
                 </div>
                 <div className="desc">
-                  Support fetching token & NFT assets data for management and
-                  attestation creation.
+                  {i.desc}
                 </div>
               </div>
               <PButton
