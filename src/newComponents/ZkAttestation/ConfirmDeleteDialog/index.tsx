@@ -18,8 +18,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             <header>
               <h1>Sure to delete?</h1>
               <h2>
-                Deleted attestations that were not submitted cannot be recovered
-                or searched for by the create wallet function on-chain.
+              Attestations that are not submitted cannot be recovered or searched for by the create wallet address.
               </h2>
             </header>
             <PButton

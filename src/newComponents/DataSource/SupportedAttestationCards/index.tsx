@@ -115,7 +115,7 @@ const Cards: React.FC<PDropdownProps> = memo(
               <div className="left">
                 <img src={i.icon} alt="" />
                 <div className="introTxt">
-                  <div className="title">{i.attestationType} Proof</div>
+                  <div className="title">{i.attestationType}</div>
                   <div className="desc">{i.desc}</div>
                 </div>
               </div>

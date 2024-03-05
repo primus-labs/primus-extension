@@ -181,7 +181,7 @@ const Nav: React.FC<PButtonProps> = memo(
                 {step === 1 && (
                   <section className="detailWrapper">
                     <div className="step step1">
-                      <OrderItem order="1" text="Choose data source" />
+                      <OrderItem order="1" text="Connect data source" />
                     </div>
                   </section>
                 )}
@@ -190,7 +190,7 @@ const Nav: React.FC<PButtonProps> = memo(
                     <div className="step step1 done">
                       <img className="iconDone" src={iconDone} alt="" />
                       <div className="txt">
-                        <div className="title">Choose Data Source</div>
+                        <div className="title">Connect Data Source</div>
                         {dataSourceEl}
                       </div>
                     </div>
