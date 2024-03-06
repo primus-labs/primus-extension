@@ -81,28 +81,28 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                 <img className={'white-circle'} src={whiteCircle}></img>
                 <img className={'blue-rectangle'} src={blueRect}></img>
                 <img className="logo" src={padoLogo}></img>
-                {shareType === 'score'&&
-                <div className={'shareContent'}>
-                  <div className="title">My achievements in PADO</div>
-                  <div style={{
-                    fontWeight: '600',
-                    fontSize: '32px',
-                    marginLeft: '24px',
-                    marginTop: '20px',
-                  }}>{scoreShareProps.score}<a
-                    style={{ fontWeight: '400', fontSize: '12px', marginLeft: '5px', marginTop: '10px' }}>xp</a></div>
-                  <div style={{
-                    fontWeight: '400',
-                    fontSize: '12px',
-                    color: '#161616',
-                    marginLeft: '24px',
-                    marginTop: '10px',
-                  }}>My referral
-                    code: <a>{scoreShareProps.referralCode}</a></div>
-                </div>
+                {shareType === 'score' &&
+                  <div className={'shareContent'}>
+                    <div className="title">My achievements in PADO</div>
+                    <div style={{
+                      fontWeight: '600',
+                      fontSize: '32px',
+                      marginLeft: '24px',
+                      marginTop: '20px',
+                    }}>{scoreShareProps.score}<a
+                      style={{ fontWeight: '400', fontSize: '12px', marginLeft: '5px', marginTop: '10px' }}>xp</a></div>
+                    <div style={{
+                      fontWeight: '400',
+                      fontSize: '12px',
+                      color: '#161616',
+                      marginLeft: '24px',
+                      marginTop: '10px',
+                    }}>My referral
+                      code: <a>{scoreShareProps.referralCode}</a></div>
+                  </div>
                 }
 
-                {shareType === 'referralCode'&&
+                {shareType === 'referralCode' &&
                   <div className={'shareContent'}>
                     <div className="title">Sign up to PADO and use my referral code to earn extra points!</div>
                     <div style={{
