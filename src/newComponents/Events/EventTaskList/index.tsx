@@ -89,6 +89,10 @@ const stepMap: { [propName: string]: StepItem } = {
     id: 'check',
     title: 'Go to Linea event page to check your status',
     finished: false,
+    tasksProcess: {
+      total: 1,
+      current: 0,
+    },
   },
 };
 const stepList: StepItem[] = Object.values(stepMap);
@@ -124,7 +128,7 @@ const DataSourceItem = memo(() => {
       if (isConnect) {
         initEvent();
       } else {
-        if (i.id === 1) {
+        if (i.id === 'follow') {
           setCheckIsConnectFlag(true);
         }
       }
@@ -186,7 +190,7 @@ const DataSourceItem = memo(() => {
   const handleCloseSocialTasksDialog = useCallback(() => {
     setVisibleSocialTasksDialog(false);
   }, []);
-  const initTaskStatus = async () => {
+  const initTaskStatus = useCallback(async () => {
     const res = await chrome.storage.local.get([eventId]);
     const currentAddress = connectedWallet?.address;
     if (res[eventId]) {
@@ -196,8 +200,18 @@ const DataSourceItem = memo(() => {
         const { taskMap } = lastInfo;
         const statusM = Object.keys(taskMap).reduce((prev, curr) => {
           const currTask = taskMap[curr];
+          // tasksProcess
           if (currTask) {
-            const allDone = Object.values(currTask).every((i) => !!i);
+            const taskLen = Object.keys(currTask).length;
+            const doneTaskLen = Object.values(currTask).filter(
+              (i) => !!i
+            ).length;
+            const allDone = taskLen === doneTaskLen;
+
+            stepMap[curr].tasksProcess.total = taskLen;
+            stepMap[curr].tasksProcess.current = doneTaskLen;
+            stepMap[curr].finished = allDone;
+
             prev[curr] = allDone ? 1 : 0;
           }
           return prev;
@@ -205,16 +219,19 @@ const DataSourceItem = memo(() => {
         setTaskStatusMap({ ...statusM });
       }
     }
-  };
+  }, [connectedWallet?.address]);
   useEffect(() => {
     if (connected) {
       initEvent();
       setIsConnect(true);
     }
   }, [connected]);
+
   useEffect(() => {
-    initTaskStatus();
-  }, []);
+    if (!visibleSocialTasksDialog) {
+      initTaskStatus();
+    }
+  }, [visibleSocialTasksDialog]);
   return (
     <div className="eventTaskList">
       <h2 className="title">Task lists</h2>
@@ -229,7 +246,7 @@ const DataSourceItem = memo(() => {
               }}
             >
               <div className="left">
-                <div className="order">Task {i.id}</div>
+                <div className="order">Task {k+1}</div>
                 <div className="title">{i.title}</div>
               </div>
 
@@ -244,17 +261,28 @@ const DataSourceItem = memo(() => {
                           {i.tasksProcess.current}/{i.tasksProcess.total}
                         </div>
                         <div className="bar">
-                          <div className="current"></div>
+                          <div
+                            className="current"
+                            style={{
+                              width: `${
+                                (i.tasksProcess.current /
+                                  i.tasksProcess.total) *
+                                100
+                              }%`,
+                            }}
+                          ></div>
                         </div>
                       </div>
                     )}
                     <PButton
-                      text="Finish"
+                      text={k === 3 ? 'Check' : 'Finish'}
                       type="primary"
                       onClick={() => {
                         handleTask(i);
                       }}
-                      disabled={k > 0 ? !stepList[k - 1]?.finished : false}
+                      disabled={
+                        k > 0 ? !stepList[k - 1].finished : false
+                      }
                     />
                   </>
                 )}

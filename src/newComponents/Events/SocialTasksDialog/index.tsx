@@ -182,7 +182,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                           alt=""
                           className="dataSourceIcon"
                         />
-                        {taskStatusMap[i.dataSourceId] && (
+                        {!!taskStatusMap[i.dataSourceId] && (
                           <img
                             src={iconCircleSuc}
                             alt=""

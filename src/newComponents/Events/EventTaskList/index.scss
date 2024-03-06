@@ -28,7 +28,7 @@
       .right {
         @include frsc;
         gap: var(--spacing-40);
-        .iconfont{ 
+        .iconfont {
           color: var(--layer-tokens-layer-bp);
           font-size: var(--spacing-24);
         }
@@ -44,6 +44,12 @@
             width: 148px;
             height: var(--spacing-4);
             background: var(--neutral-color-gray-10);
+            border-radius: var(--spacing-4);
+            .current {
+              height: 100%;
+              background: var(--layer-tokens-layer-bp);
+              border-radius: var(--spacing-4);
+            }
           }
         }
         .PButton {
