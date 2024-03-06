@@ -17,6 +17,7 @@ import ZkAttestation from '@/newPages/ZkAttestation';
 import Events from '@/newPages/Events';
 import Rewards from '@/newPages/Rewards';
 import EventDetail from '@/newPages/EventDetail';
+import Setting from '@/newPages/Setting';
 
 const router = [
   {
@@ -86,6 +87,10 @@ const router = [
         path: 'achievements',
         element: <Achievement />,
       },
+      {
+        path: 'settings',
+        element: <Setting />,
+      }
     ],
   },
   {

@@ -55,6 +55,6 @@ export const list: NavItem[] = [
     label: 'Settings',
     value: 'Settings',
     iconName: 'icon-iconMenuSettings',
-    link: '/6',
+    link: '/settings',
   },
 ];

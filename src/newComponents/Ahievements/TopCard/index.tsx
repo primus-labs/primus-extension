@@ -31,7 +31,9 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
 
 
   const copyReferralCodeFn = () => {
-    copy(referralCode);
+    const copyDetail = `Download and install the PADO Chrome extension from https://padolabs.org/. Remember to sign up and fill in your referral code ${referralCode}  to earn extra points.`
+    copy(copyDetail);
+
     alert('copy success');
   };
 
