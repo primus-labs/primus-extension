@@ -12,7 +12,7 @@ import discord from '@/assets/newImg/achievements/discord.svg';
 import telegram from '@/assets/newImg/achievements/telegram.svg';
 // @ts-ignore
 import { toPng } from 'html-to-image';
-import { shareTwitter } from '@/services/api/achievements';
+import { shareTelegram, shareTwitter } from '@/services/api/achievements';
 
 
 interface PButtonProps {
@@ -62,8 +62,16 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       if (isSharing) {
         return;
       }
-      const dataUrl = await toPng(domEl.current);
-      console.log(dataUrl);
+      setIsSharing(true);
+      const base64Imag = await toPng(domEl.current);
+      const rsp = await shareTelegram(base64Imag);
+      console.log(rsp);
+      if (rsp.rc === 0) {
+        window.open(rsp.result.content);
+      } else {
+        alert('error occurred');
+      }
+      setIsSharing(false);
     };
 
     return (

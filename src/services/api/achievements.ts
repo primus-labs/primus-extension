@@ -43,3 +43,12 @@ export  const shareTwitter = async (data) => {
         data: data
     });
 }
+
+
+export  const shareTelegram = async (data) => {
+    return await request({
+        method : 'post',
+        url : '/media/share/telegram',
+        data: data
+    });
+}
