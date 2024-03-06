@@ -66,7 +66,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [taskIds]);
     const handleCloseAssetDialog = useCallback(() => {
       setVisibleAssetDialog('');
-    }, []);
+      multipleTask && onSubmit();
+    }, [multipleTask, onSubmit]);
 
     const handleCloseAttestationTasksDialog = useCallback(() => {
       onSubmit();
@@ -86,7 +87,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         dataSourceId,
         // account: ''
       };
-      debugger;
+      debugger
       setAttestationPresets(presetsP);
     }, []);
     useEffect(() => {

@@ -130,7 +130,6 @@ const DataSourceItem = memo(() => {
   const metaInfo = eventMetaMap[eventId];
   const handleTask = useCallback(
     (i) => {
-      debugger
       if (i.finished) {
         return;
       }

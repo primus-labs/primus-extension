@@ -229,6 +229,7 @@ const Nav: React.FC<PButtonProps> = memo(
               (i.name === contentObj.label ||
                 i.name === contentObj.templateName)
           );
+          debugger
           // TODO-newui get account from attestation???
           const currRequestTemplate = {
             ...activeWebProofTemplate,

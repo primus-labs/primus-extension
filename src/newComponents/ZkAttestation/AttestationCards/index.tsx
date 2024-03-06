@@ -7,7 +7,7 @@ import { getCurrentDate, formatAddress } from '@/utils/utils';
 import { setCredentialsAsync, setActiveOnChain } from '@/store/actions';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
-import { BASEVENTNAME } from '@/config/events';
+import { BASEVENTNAME, eventMetaMap } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
@@ -386,7 +386,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                     </div>
                     <div className="descItems">
                       <div className="descItem">
-                        <div className="label">On-chain</div>
+                        <div className="label">On-chain{ i.event? `(${eventMetaMap[i.event].nameInAttestation})`: ''}</div>
                         <div className="value onChain">
                           <div className="chains">
                             {i.provided?.map((c, k) => (

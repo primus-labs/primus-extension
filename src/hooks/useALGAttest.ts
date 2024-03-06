@@ -42,7 +42,7 @@ import type { ActiveRequestType } from '@/types/config';
 const useAttest = function useAttest() {
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
-  const fromEvents = searchParams.get('fromEvents');
+  const fromEvents = searchParams.get('id');
   const [credRequestId, setCredRequestId] = useState<string>();
   const [timeoutSwitch, setTimeoutSwitch] = useState<boolean>(false);
   const [intervalSwitch, setIntervalSwitch] = useState<boolean>(false);
@@ -90,6 +90,27 @@ const useAttest = function useAttest() {
     },
     [fromEvents]
   );
+  const storeEventInfoFn = useCallback(async (fullAttestation) => {
+    const {
+      event: eventId,
+      address: currentAddress,
+      source,
+      templateId,
+      requestid,
+    } = fullAttestation;
+    const res = await chrome.storage.local.get([eventId]);
+    if (res[eventId]) {
+      const lastEventObj = JSON.parse(res[eventId]);
+      const lastInfo = lastEventObj[currentAddress];
+      if (lastInfo) {
+        const { taskMap } = lastInfo;
+        taskMap.attestation[templateId] = requestid;
+        await chrome.storage.local.set({
+          [eventId]: JSON.stringify(lastEventObj),
+        });
+      }
+    }
+  }, []);
   const getAttestationCallback = useCallback(
     async (res: any) => {
       const { retcode, retdesc } = JSON.parse(res);
@@ -176,10 +197,15 @@ const useAttest = function useAttest() {
           await chrome.storage.local.remove(['activeRequestAttestation']);
           await initCredList();
           if (fullAttestation.reqType === 'web') {
-            storeBASEventInfoFn(content.address, {
-              [parsedActiveRequestAttestation.templateId]:
-                parsedActiveRequestAttestation.requestid,
-            });
+            if (fullAttestation.event === BASEVENTNAME) {
+              storeBASEventInfoFn(content.address, {
+                [parsedActiveRequestAttestation.templateId]:
+                  parsedActiveRequestAttestation.requestid,
+              });
+            } else if (fullAttestation.event === LINEAEVENTNAME) {
+              await storeEventInfoFn(fullAttestation);
+            }
+
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
               name: 'attestResult',

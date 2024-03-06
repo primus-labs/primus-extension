@@ -13,6 +13,7 @@ export const eventMetaMap = {
   [BASEVENTNAME]: {
     combineType: '1',
     icon: iconDataSourceBinance,
+    nameInAttestation: 'BAS event-specific',
   },
   [LINEAEVENTNAME]: {
     combineType: '1',
@@ -23,6 +24,7 @@ export const eventMetaMap = {
     periodType: '1',
     chainDesc: 'Linea Voyage XP',
     gift: '100 PADO points',
+    nameInAttestation: 'Linea voyage specific',
 
     // picTxt: 'The Linea Voyage Proof of Humanity',
     // desc: 'Complete an attestation with a KYCed account on Binance.',
