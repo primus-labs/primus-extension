@@ -52,3 +52,11 @@ export  const shareTelegram = async (data) => {
         data: data
     });
 }
+
+export  const shareDiscord = async (data) => {
+    return await request({
+        method : 'post',
+        url : '/media/share/discord',
+        data: data
+    });
+}
