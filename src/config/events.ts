@@ -13,7 +13,17 @@ export const eventMetaMap = {
   [BASEVENTNAME]: {
     combineType: '1',
     icon: iconDataSourceBinance,
+    title: 'BNBChain Attestation Alliance',
+    longDesc:
+      'The BNB Attestation Service (BAS) is an infrastructure built on the BNB ecosystem for generating attestation to verify information. BAS assists users in on-chain or off-chain verification, allowing them to assert ownership of attestation by storing them in Greenfield.',
+    periodType: '1',
+    chainDesc: 'BAS XPS',
+    gift: '100 PADO points',
     nameInAttestation: 'BAS event-specific',
+    picTxt: 'BAS Attestation Alliance',
+    desc: 'Bringing more traditional data attestations to the BNB ecosystem.',
+
+    chainIds: ['BSC', 'BNB Greenfield'],
   },
   [LINEAEVENTNAME]: {
     combineType: '1',
@@ -25,9 +35,10 @@ export const eventMetaMap = {
     chainDesc: 'Linea Voyage XP',
     gift: '100 PADO points',
     nameInAttestation: 'Linea voyage specific',
+    picTxt: 'The Linea Voyage Proof of Humanity',
+    desc: 'Complete an attestation with a KYCed account on Binance.',
+
     chainIds: ['Linea Goerli'],
-    // picTxt: 'The Linea Voyage Proof of Humanity',
-    // desc: 'Complete an attestation with a KYCed account on Binance.',
   },
   [SCROLLEVENTNAME]: {
     combineType: '1',

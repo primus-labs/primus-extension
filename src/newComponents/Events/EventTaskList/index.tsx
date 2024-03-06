@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import { setActiveOnChain } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
-import useEventDetail from '@/hooks/useEventDetail'
+import useEventDetail from '@/hooks/useEventDetail';
 import useAuthorization from '@/hooks/useAuthorization';
 import {
   setSocialSourcesAsync,
@@ -57,8 +57,8 @@ const socialTaskMap = {
     subTitle: 'Authorize discord and join',
   },
 };
-const attestationTaskMap = {};
-const stepMap: { [propName: string]: StepItem } = {
+
+const lineaTaskMap: { [propName: string]: StepItem } = {
   follow: {
     id: 'follow',
     title: 'Follow PADO social medial',
@@ -101,12 +101,57 @@ const stepMap: { [propName: string]: StepItem } = {
     },
   },
 };
-const stepList: StepItem[] = Object.values(stepMap);
-
+const basTaskMap: { [propName: string]: StepItem } = {
+  follow: {
+    id: 'follow',
+    title: 'Follow PADO social medial',
+    finished: false,
+    tasksProcess: {
+      total: 2,
+      current: 0,
+    },
+    tasks: {
+      1: socialTaskMap[1],
+      2: socialTaskMap[2],
+    },
+  },
+  attestation: {
+    id: 'attestation',
+    title: 'Complete zkAttestations',
+    finished: false,
+    tasksProcess: {
+      total: 4,
+      current: 0,
+    },
+  },
+  onChain: {
+    id: 'onChain',
+    title: 'Submit to BNB Chain or BNB Greenfield',
+    finished: false,
+    tasksProcess: {
+      total: 1,
+      current: 0,
+    },
+  },
+  check: {
+    id: 'check',
+    title: 'Go to BAS attestation alliance campaign to earn your BAS XPS',
+    finished: false,
+    tasksProcess: {
+      total: 1,
+      current: 0,
+    },
+  },
+};
+const eventTaskMap = {
+  [BASEVENTNAME]: basTaskMap,
+  [LINEAEVENTNAME]:lineaTaskMap
+};
 const DataSourceItem = memo(() => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
+  const stepMap = eventTaskMap[eventId];
   const eventDetail = useEventDetail(eventId);
   const dispatch: Dispatch<any> = useDispatch();
   const metaInfo = eventMetaMap[eventId];
@@ -118,8 +163,7 @@ const DataSourceItem = memo(() => {
   });
   const [visibleAttestationTasksDialog, setVisibleAttestationTasksDialog] =
     useState<boolean>(false);
-  const [visibleOnChainTasksDialog, setVisibleOnChainTasksDialog] =
-    useState<boolean>(false);
+  const [stepList, setStepList] = useState<any[]>([]);
   const [activeTaskId, setActiveTaskId] = useState<string>();
 
   const [visibleSocialTasksDialog, setVisibleSocialTasksDialog] =
@@ -244,7 +288,7 @@ const DataSourceItem = memo(() => {
     } else {
       //  have not joined this event
       newEventObj = {
-        currentAddress: emptyInfo,
+        [currentAddress]: emptyInfo,
       };
       await chrome.storage.local.set({
         [eventId]: JSON.stringify(newEventObj),
@@ -286,6 +330,7 @@ const DataSourceItem = memo(() => {
     }
   }, [connectedWallet?.address]);
   const handleCloseAttestationTasksDialog = useCallback(() => {
+    debugger;
     setVisibleAttestationTasksDialog(false);
   }, []);
   const handleSubmitOnChainDialog = useCallback(() => {
@@ -298,20 +343,30 @@ const DataSourceItem = memo(() => {
       setIsConnect(true);
     }
   }, [connected, activeTaskId]);
-
   useEffect(() => {
-    if (
-      !visibleSocialTasksDialog ||
-      !visibleAttestationTasksDialog ||
-      activeOnChain.loading === 0
-    ) {
+    if (!visibleSocialTasksDialog) {
       initTaskStatus();
     }
-  }, [
-    visibleSocialTasksDialog,
-    visibleAttestationTasksDialog,
-    activeOnChain.loading,
-  ]);
+  }, [visibleSocialTasksDialog]);
+  useEffect(() => {
+    if (!visibleAttestationTasksDialog) {
+      initTaskStatus();
+    }
+  }, [visibleAttestationTasksDialog]);
+  useEffect(() => {
+    if (attestLoading === 2) {
+      setVisibleAttestationTasksDialog(false);
+      initTaskStatus();
+    }
+  }, [attestLoading, visibleAttestationTasksDialog]);
+  useEffect(() => {
+    if (activeOnChain.loading === 0) {
+      initTaskStatus();
+    }
+  }, [activeOnChain.loading]);
+  useEffect(() => {
+    setStepList(Object.values(stepMap));
+  }, []);
 
   return (
     <div className="eventTaskList">

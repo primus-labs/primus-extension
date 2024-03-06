@@ -49,7 +49,7 @@ const DataSourceItem = memo(() => {
         const { taskMap } = lastInfo;
         let requiredTaskMap = { ...taskMap };
         delete requiredTaskMap.check;
-        const statusM = Object.keys(taskMap).reduce((prev, curr) => {
+        const statusM = Object.keys(requiredTaskMap).reduce((prev, curr) => {
           const currTask = taskMap[curr];
           // tasksProcess
           if (currTask) {
@@ -68,7 +68,7 @@ const DataSourceItem = memo(() => {
     }
   }, [connectedWallet?.address]);
   useEffect(() => {
-    initTaskStatus();
+    initTaskStatus(); // TODO-newui2 after submit to chain
   }, [initTaskStatus]);
 
   return (
