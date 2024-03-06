@@ -31,7 +31,7 @@ const Nav: React.FC<PButtonProps> = memo(
   ({ type, onClose, onSubmit, presets }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const [searchParams] = useSearchParams();
-    const fromEvents = searchParams.get('fromEvents');
+    const fromEvents = searchParams.get('id');
     const [step, setStep] = useState<number>(1);
     const [assetForm, setAssetForm] = useState<any>({});
 

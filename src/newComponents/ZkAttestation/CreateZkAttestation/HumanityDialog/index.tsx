@@ -44,7 +44,8 @@ const Nav: React.FC<PButtonProps> = memo(
 
     const dispatch: Dispatch<any> = useDispatch();
     const [searchParams] = useSearchParams();
-    const fromEvents = searchParams.get('fromEvents');
+    const fromEvents = searchParams.get('id');
+
     const [step, setStep] = useState<number>(1);
     const [assetForm, setAssetForm] = useState<any>({});
 
@@ -270,6 +271,7 @@ const Nav: React.FC<PButtonProps> = memo(
             active: true,
             currentWindow: true,
           });
+          debugger
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',

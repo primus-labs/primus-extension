@@ -22,6 +22,8 @@ import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import PButton from '@/newComponents/PButton';
 import SocialTasksDialog from '../SocialTasksDialog';
+import AttestationTasks from '../AttestationTasks';
+
 import './index.scss';
 
 dayjs.extend(utc);
@@ -52,6 +54,7 @@ const socialTaskMap = {
     subTitle: 'Authorize discord and join',
   },
 };
+const attestationTaskMap = {};
 const stepMap: { [propName: string]: StepItem } = {
   follow: {
     id: 'follow',
@@ -104,8 +107,8 @@ const DataSourceItem = memo(() => {
     onChain: 0,
     check: 0,
   });
-  const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
-  const [attestationPresets, setAttestationPresets] = useState<any>();
+  const [visibleAttestationTasksDialog, setVisibleAttestationTasksDialog] = useState<boolean>(false);
+  const [activeTaskId, setActiveTaskId] = useState<string>();
 
   const [visibleSocialTasksDialog, setVisibleSocialTasksDialog] =
     useState<boolean>(false);
@@ -114,6 +117,8 @@ const DataSourceItem = memo(() => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
+  const attestLoading = useSelector((state: UserState) => state.attestLoading);
+  const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const { connected } = useCheckIsConnectedWallet(checkIsConnectFlag);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -125,16 +130,27 @@ const DataSourceItem = memo(() => {
   const metaInfo = eventMetaMap[eventId];
   const handleTask = useCallback(
     (i) => {
+      debugger
+      if (i.finished) {
+        return;
+      }
       if (isConnect) {
-        initEvent();
+        doTask(i.id);
       } else {
-        if (i.id === 'follow') {
-          setCheckIsConnectFlag(true);
-        }
+        setActiveTaskId(i.id);
+        setCheckIsConnectFlag(true);
       }
     },
     [isConnect]
   );
+  const doTask = useCallback((taskId) => {
+    if (taskId === 'follow') {
+      initEvent();
+    } else if (taskId === 'attestation') {
+      setVisibleAttestationTasksDialog(true);
+    } else if (taskId === 'onChain') {
+    }
+  }, []);
   const initEvent = async () => {
     let newEventObj = {};
     const currentAddress = connectedWallet?.address;
@@ -220,18 +236,23 @@ const DataSourceItem = memo(() => {
       }
     }
   }, [connectedWallet?.address]);
+  const handleCloseAttestationTasksDialog = useCallback(() => {
+    setVisibleAttestationTasksDialog(false)
+  }, []);
+  
   useEffect(() => {
     if (connected) {
-      initEvent();
+      doTask(activeTaskId);
       setIsConnect(true);
     }
-  }, [connected]);
+  }, [connected, activeTaskId]);
 
   useEffect(() => {
-    if (!visibleSocialTasksDialog) {
+    if (!visibleSocialTasksDialog || !visibleAttestationTasksDialog) {
       initTaskStatus();
     }
-  }, [visibleSocialTasksDialog]);
+  }, [visibleSocialTasksDialog, visibleAttestationTasksDialog]);
+  
   return (
     <div className="eventTaskList">
       <h2 className="title">Task lists</h2>
@@ -246,7 +267,7 @@ const DataSourceItem = memo(() => {
               }}
             >
               <div className="left">
-                <div className="order">Task {k+1}</div>
+                <div className="order">Task {k + 1}</div>
                 <div className="title">{i.title}</div>
               </div>
 
@@ -280,9 +301,7 @@ const DataSourceItem = memo(() => {
                       onClick={() => {
                         handleTask(i);
                       }}
-                      disabled={
-                        k > 0 ? !stepList[k - 1].finished : false
-                      }
+                      disabled={k > 0 ? !stepList[k - 1].finished : false}
                     />
                   </>
                 )}
@@ -295,6 +314,13 @@ const DataSourceItem = memo(() => {
         <SocialTasksDialog
           onClose={handleCloseSocialTasksDialog}
           onSubmit={handleCloseSocialTasksDialog}
+        />
+      )}
+
+      {visibleAttestationTasksDialog && (
+        <AttestationTasks
+          onClose={handleCloseAttestationTasksDialog}
+          onSubmit={handleCloseAttestationTasksDialog}
         />
       )}
     </div>

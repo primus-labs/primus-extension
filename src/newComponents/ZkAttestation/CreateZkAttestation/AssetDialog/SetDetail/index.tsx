@@ -144,13 +144,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
-      if (pswForm.verificationContent) {
-        handleChangePswForm('', 'verificationValue');
+      if (!presets) {
+        if (pswForm.verificationContent) {
+          handleChangePswForm('', 'verificationValue');
+        }
       }
-    }, [pswForm.verificationContent, handleChangePswForm]);
+    }, [pswForm.verificationContent, handleChangePswForm, presets]);
     useEffect(() => {
       if (presets) {
-        setPswForm((f) => ({...f,...presets}));
+        setPswForm((f) => ({ ...f, ...presets }));
       }
     }, [presets]);
 
@@ -182,6 +184,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'verificationValue');
             }}
             value={pswForm.verificationValue}
+            disabled={presets?.verificationValue}
             showSelf={false}
           />
         </div>
