@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setActiveOnChain } from '@/store/actions';
+
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import { DATASOURCEMAP } from '@/config/dataSource';
-
+import { EASInfo } from '@/config/chain';
 import type { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
+import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
 
 import PMask from '@/newComponents/PMask';
 import PButton from '@/newComponents/PButton';
@@ -25,6 +29,7 @@ type TaskStatusMap = {
 };
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onClose, onSubmit }) => {
+    const dispatch: Dispatch<any> = useDispatch();
     const [searchParams] = useSearchParams();
     const eventId = searchParams.get('id') as string;
     const socialTaskMap = {
@@ -51,11 +56,14 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
+    const activeOnChain = useSelector(
+      (state: UserState) => state.activeOnChain
+    );
 
     const taskIds = useMemo(() => {
       let l: string[] = [];
       if (eventId === LINEAEVENTNAME) {
-        return (l = ['1']);
+        return (l = ['Linea Goerli']);
       } else if (eventId === BASEVENTNAME) {
         return [];
       }
@@ -64,6 +72,22 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const multipleTask = useMemo(() => {
       return taskIds.length > 1;
     }, [taskIds]);
+    const formatList = useMemo(() => {
+      let l = taskIds.map((i) => {
+        const { title, showName, icon, disabled } = EASInfo[i];
+        return {
+          id: title,
+          name: showName,
+          icon,
+          disabled,
+        };
+      });
+      return l;
+    }, [taskIds]);
+    const handleSubmitOnChainDialog = useCallback(() => {
+      // setVisibleOnChainDialog(false);
+      dispatch(setActiveOnChain({ loading: 0 }));
+    }, [dispatch]);
     const handleCloseAssetDialog = useCallback(() => {
       setVisibleAssetDialog('');
       multipleTask && onSubmit();
@@ -72,7 +96,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const handleCloseAttestationTasksDialog = useCallback(() => {
       onSubmit();
     }, [onSubmit]);
-    const handleAttest = useCallback((taskId) => {
+    const handleSubTask = useCallback((taskId) => {
       let attestationType, verificationContent, verificationValue, dataSourceId;
       if (taskId === '1') {
         attestationType = 'Humanity Verification';
@@ -90,25 +114,21 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       setAttestationPresets(presetsP);
     }, []);
     useEffect(() => {
-      if (!multipleTask) {
-        handleAttest(taskIds[0]);
-      }
-    }, [multipleTask]);
-
+      dispatch(setActiveOnChain({ loading: 1 }));
+    }, [dispatch]);
     return (
-      <div className="attestationTasks">
+      <div className="onChainTasks">
         {/* {multipleTask && step === 1 && (
           <AttestationTasksDialog
             onClose={handleCloseAttestationTasksDialog}
             onSubmit={handleCloseAttestationTasksDialog}
           />
         )} */}
-        {visibleAssetDialog && (
-          <CreateZkAttestation
-            presets={attestationPresets}
-            type={visibleAssetDialog}
-            onClose={handleCloseAssetDialog}
-            onSubmit={handleCloseAssetDialog}
+        {activeOnChain.loading === 1 && (
+          <SubmitOnChain
+            list={formatList}
+            onClose={handleSubmitOnChainDialog}
+            onSubmit={handleSubmitOnChainDialog}
           />
         )}
       </div>

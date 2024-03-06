@@ -3,8 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
+import { setActiveOnChain } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
-
+import useEventDetail from '@/hooks/useEventDetail'
 import useAuthorization from '@/hooks/useAuthorization';
 import {
   setSocialSourcesAsync,
@@ -18,11 +19,13 @@ import {
   LUCKYDRAWEVENTNAME,
   eventMetaMap,
 } from '@/config/events';
+import { EASInfo } from '@/config/chain';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import PButton from '@/newComponents/PButton';
 import SocialTasksDialog from '../SocialTasksDialog';
 import AttestationTasks from '../AttestationTasks';
+import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
 
 import './index.scss';
 
@@ -101,13 +104,22 @@ const stepMap: { [propName: string]: StepItem } = {
 const stepList: StepItem[] = Object.values(stepMap);
 
 const DataSourceItem = memo(() => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const eventId = searchParams.get('id') as string;
+  const eventDetail = useEventDetail(eventId);
+  const dispatch: Dispatch<any> = useDispatch();
+  const metaInfo = eventMetaMap[eventId];
   const [taskStatusMap, setTaskStatusMap] = useState<TaskStatusMap>({
     follow: 0,
     attestation: 0,
     onChain: 0,
     check: 0,
   });
-  const [visibleAttestationTasksDialog, setVisibleAttestationTasksDialog] = useState<boolean>(false);
+  const [visibleAttestationTasksDialog, setVisibleAttestationTasksDialog] =
+    useState<boolean>(false);
+  const [visibleOnChainTasksDialog, setVisibleOnChainTasksDialog] =
+    useState<boolean>(false);
   const [activeTaskId, setActiveTaskId] = useState<string>();
 
   const [visibleSocialTasksDialog, setVisibleSocialTasksDialog] =
@@ -119,15 +131,30 @@ const DataSourceItem = memo(() => {
   );
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
+  const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
+  const taskIds = useMemo(() => {
+    let l: string[] = [];
+    if (eventId === LINEAEVENTNAME) {
+      return (l = ['Linea Goerli']);
+    } else if (eventId === BASEVENTNAME) {
+      return [];
+    }
+    return l;
+  }, [eventId]);
+  const formatList = useMemo(() => {
+    let l = taskIds.map((i) => {
+      const { title, showName, icon, disabled } = EASInfo[i];
+      return {
+        id: title,
+        name: showName,
+        icon,
+        disabled,
+      };
+    });
+    return l;
+  }, [taskIds]);
   const { connected } = useCheckIsConnectedWallet(checkIsConnectFlag);
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const eventId = searchParams.get('id') as string;
 
-  // const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
-
-  const dispatch: Dispatch<any> = useDispatch();
-  const metaInfo = eventMetaMap[eventId];
   const handleTask = useCallback(
     (i) => {
       if (i.finished) {
@@ -142,14 +169,37 @@ const DataSourceItem = memo(() => {
     },
     [isConnect]
   );
-  const doTask = useCallback((taskId) => {
-    if (taskId === 'follow') {
-      initEvent();
-    } else if (taskId === 'attestation') {
-      setVisibleAttestationTasksDialog(true);
-    } else if (taskId === 'onChain') {
-    }
-  }, []);
+  const doTask = useCallback(
+    async (taskId) => {
+      if (taskId === 'follow') {
+        initEvent();
+      } else if (taskId === 'attestation') {
+        setVisibleAttestationTasksDialog(true);
+      } else if (taskId === 'onChain') {
+        const res = await chrome.storage.local.get([eventId]);
+        const currentAddress = connectedWallet?.address;
+        if (res[eventId]) {
+          const lastEventObj = JSON.parse(res[eventId]);
+          const lastInfo = lastEventObj[currentAddress];
+          if (lastInfo) {
+            const {
+              taskMap: { attestation },
+            } = lastInfo;
+            debugger;
+            dispatch(
+              setActiveOnChain({
+                loading: 1,
+                requestid: Object.values(attestation)[0],
+              })
+            );
+          }
+        }
+      } else if (taskId === 'check') {
+        window.open(eventDetail?.ext?.intractUrl ?? 'https://poh.linea.build/');
+      }
+    },
+    [dispatch, eventDetail]
+  );
   const initEvent = async () => {
     let newEventObj = {};
     const currentAddress = connectedWallet?.address;
@@ -236,9 +286,12 @@ const DataSourceItem = memo(() => {
     }
   }, [connectedWallet?.address]);
   const handleCloseAttestationTasksDialog = useCallback(() => {
-    setVisibleAttestationTasksDialog(false)
+    setVisibleAttestationTasksDialog(false);
   }, []);
-  
+  const handleSubmitOnChainDialog = useCallback(() => {
+    dispatch(setActiveOnChain({ loading: 0 }));
+  }, [dispatch]);
+
   useEffect(() => {
     if (connected) {
       doTask(activeTaskId);
@@ -247,11 +300,19 @@ const DataSourceItem = memo(() => {
   }, [connected, activeTaskId]);
 
   useEffect(() => {
-    if (!visibleSocialTasksDialog || !visibleAttestationTasksDialog) {
+    if (
+      !visibleSocialTasksDialog ||
+      !visibleAttestationTasksDialog ||
+      activeOnChain.loading === 0
+    ) {
       initTaskStatus();
     }
-  }, [visibleSocialTasksDialog, visibleAttestationTasksDialog]);
-  
+  }, [
+    visibleSocialTasksDialog,
+    visibleAttestationTasksDialog,
+    activeOnChain.loading,
+  ]);
+
   return (
     <div className="eventTaskList">
       <h2 className="title">Task lists</h2>
@@ -275,11 +336,12 @@ const DataSourceItem = memo(() => {
                   <i className="iconfont icon-iconResultSuc"></i>
                 ) : (
                   <>
-                    {i.tasksProcess && (
+                    {k !== 3 && (
                       <div className="process">
                         <div className="txt">
                           {i.tasksProcess.current}/{i.tasksProcess.total}
                         </div>
+
                         <div className="bar">
                           <div
                             className="current"
@@ -320,6 +382,13 @@ const DataSourceItem = memo(() => {
         <AttestationTasks
           onClose={handleCloseAttestationTasksDialog}
           onSubmit={handleCloseAttestationTasksDialog}
+        />
+      )}
+      {activeOnChain.loading === 1 && (
+        <SubmitOnChain
+          list={formatList}
+          onClose={handleSubmitOnChainDialog}
+          onSubmit={handleSubmitOnChainDialog}
         />
       )}
     </div>

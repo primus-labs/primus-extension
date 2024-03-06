@@ -9,6 +9,7 @@ import './index.scss';
 import { newWALLETITEMTYPE } from '@/types/config';
 
 interface DataSourcesDialogProps {
+  list: newWALLETITEMTYPE[];
   className?: string;
   title?: any;
   subTitle?: any;
@@ -18,6 +19,7 @@ interface DataSourcesDialogProps {
 
 const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
   ({
+    list,
     onClose,
     onSubmit,
     className,
@@ -25,27 +27,16 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
     subTitle = 'Choose a blockchain to submit your attestation.',
   }) => {
     const [activeSet, setActiveSet] = useState<string>();
-    const filterdList = useMemo(() => {
-      const list: newWALLETITEMTYPE[] = ONCHAINLIST.map((i: any) => {
-        const { title, showName, icon, disabled } = i;
-        return {
-          id: title,
-          name: showName,
-          icon,
-          disabled,
-        };
-      });
-      return list;
-    }, []);
+
     const computedCN = useMemo(() => {
       let cN = 'span1';
-      if (filterdList.length >= 4) {
+      if (list.length >= 4) {
         return 'span2';
-      } else if (filterdList.length >= 6) {
+      } else if (list.length >= 6) {
         return 'span3';
       }
       return cN;
-    }, [filterdList]);
+    }, [list]);
     const formLegal = useMemo(() => {
       return !!activeSet;
     }, [activeSet]);
@@ -74,7 +65,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
                 {subTitle && <h2>{subTitle}</h2>}
               </header>
             )}
-            <POptions list={filterdList} onClick={handleChangeWallet} />
+            <POptions list={list} onClick={handleChangeWallet} />
             <PButton
               text="Next"
               className="fullWidth confirmBtn"

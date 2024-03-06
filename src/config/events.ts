@@ -25,7 +25,7 @@ export const eventMetaMap = {
     chainDesc: 'Linea Voyage XP',
     gift: '100 PADO points',
     nameInAttestation: 'Linea voyage specific',
-
+    chainIds: ['Linea Goerli'],
     // picTxt: 'The Linea Voyage Proof of Humanity',
     // desc: 'Complete an attestation with a KYCed account on Binance.',
   },
