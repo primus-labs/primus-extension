@@ -133,7 +133,7 @@ const Setting = memo(() => {
             <p className={'title'}>Setup password</p>
             <p className={'content'}>Set a password to secure the data on your computer.</p>
           </div>
-          <div className={'selectDiv'} style={{ width: '155px', height: '32px' }}>
+          <div className={'selectDiv'} style={{ width: '160px', height: '32px' }}>
             <PButton type={'secondary'} onClick={() => {
             }} text={'Change Password'} />
           </div>

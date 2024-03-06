@@ -41,7 +41,11 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       }
       setIsSharing(true);
       const base64Imag = await toPng(domEl.current);
-      const rsp = await shareTwitter(base64Imag);
+      const rsp = await shareTwitter({
+        base64Image:base64Imag,
+        referralCode: scoreShareProps.referralCode,
+        points: scoreShareProps.score,
+      });
       console.log(rsp);
       if (rsp.rc === 0) {
         window.open(rsp.result.content);
@@ -57,9 +61,14 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       }
       setIsSharing(true);
       const base64Imag = await toPng(domEl.current);
-      const rsp = await shareDiscord(base64Imag);
+      const rsp = await shareDiscord({
+        base64Image:base64Imag,
+        referralCode: scoreShareProps.referralCode,
+        points: scoreShareProps.score,
+      });
       console.log(rsp);
       if (rsp.rc === 0) {
+        debugger
         copy(rsp.result.content)
         window.open('https://discord.com/channels/@me');
       } else {
@@ -74,7 +83,11 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       }
       setIsSharing(true);
       const base64Imag = await toPng(domEl.current);
-      const rsp = await shareTelegram(base64Imag);
+      const rsp = await shareTelegram({
+        base64Image:base64Imag,
+        referralCode: scoreShareProps.referralCode,
+        points: scoreShareProps.score,
+      });
       console.log(rsp);
       if (rsp.rc === 0) {
         window.open(rsp.result.content);
