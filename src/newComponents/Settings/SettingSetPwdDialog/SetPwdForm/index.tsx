@@ -84,7 +84,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit, resetPwsSucc
   }, [pwdRules, pswForm]);
 
   const handleClickNext = useCallback(async () => {
-    debugger
     if (!pswForm.password || !confirm) {
       return;
     }
@@ -98,6 +97,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit, resetPwsSucc
   const handleSubmit = useCallback(
     (newPwd: string) => {
       const padoServicePortListener = async function(message: any) {
+        debugger
         if (message.resMethodName === 'resetPassword') {
           console.log('page_get:resetPassword:', message.res);
           if (message.res) {
