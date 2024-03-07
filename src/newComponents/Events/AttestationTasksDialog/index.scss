@@ -7,7 +7,7 @@
   color: var(--text-tokens-text-primary);
   width: 528px;
   main {
-    .tasks {
+    .attestationTasks {
       width: 100%;
       @include fcss;
       gap: var(--spacing-12);
@@ -18,6 +18,13 @@
         height: 76px;
         @include clickableCard;
         border-radius: var(--spacing-4);
+        &.done,
+        &.disabled {
+          cursor: default;
+          &:hover {
+            border-color: var(--border-tokens-border-primary);
+          }
+        }
         .left {
           @include frsc;
           gap: var(--spacing-16);
@@ -47,6 +54,11 @@
               @include BodyBody100;
               color: var(--text-tokens-text-secondary);
             }
+          }
+        }
+        .right {
+          .score {
+            @include NumberBody100Semibold;
           }
         }
       }

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import { DATASOURCEMAP } from '@/config/dataSource';
-
+import { eventMetaMap } from '@/config/events';
 import type { UserState } from '@/types/store';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 
@@ -14,39 +14,31 @@ import iconCircleSuc from '@/assets/newImg/layout/iconCircleSuc.svg';
 import './index.scss';
 
 import { LINEAEVENTNAME } from '@/config/events';
+
+type TaskStatusMap = {
+  [propName: string]: number;
+};
+type attestationMeta = {
+  id: string;
+  title: string;
+  subTitle: string;
+  dataSourceId: string;
+  score: string;
+};
+type attestationMap = {
+  [propName: string]: attestationMeta;
+};
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
+  onChange: (id) => void;
 }
-type TaskStatusMap = {
-  x: number;
-  discord: number;
-};
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
-  ({ onClose, onSubmit }) => {
+  ({ onClose, onSubmit, onChange }) => {
     const [searchParams] = useSearchParams();
     const eventId = searchParams.get('id') as string;
-    const socialTaskMap = {
-      x: {
-        id: '1',
-        dataSourceId: 'x',
-        title: 'Follow @padolabs',
-        subTitle: 'Authorize twitter and follow ',
-      },
-      discord: {
-        id: '2',
-        dataSourceId: 'discord',
-        title: 'Join PADO Server',
-        subTitle: 'Authorize discord and join',
-      },
-    };
-    const [questionList, setQuestionList] = useState<any[]>(
-      Object.values(socialTaskMap)
-    );
-    const [taskStatusMap, setTaskStatusMap] = useState<TaskStatusMap>({
-      x: 0,
-      discord: 0,
-    });
+    const eventMetaInfo = eventMetaMap[eventId];
+    const [taskStatusMap, setTaskStatusMap] = useState<TaskStatusMap>({});
     const [xTabId, setXTabId] = useState<number>();
     const [PADOTabId, setPADOTabId] = useState<number>();
     const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
@@ -54,44 +46,52 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
-    const formLegal = useMemo(() => {
-      return Object.values(taskStatusMap).every((i) => !!i);
-    }, [taskStatusMap]);
-
-    const handleSubmitAssetDialog = useCallback(() => {}, []);
-    const onFollowX = useCallback(async () => {
-      const targetUrl =
-        'https://twitter.com/intent/follow?screen_name=padolabs';
-      const openXUrlFn = async () => {
-        const currentWindowTabs = await chrome.tabs.query({
-          active: true,
-          currentWindow: true,
-        });
-        setPADOTabId(currentWindowTabs[0].id);
-        const tabCreatedByPado = await chrome.tabs.create({
-          url: targetUrl,
-        });
-
-        console.log(
-          '222123 create tab',
-          tabCreatedByPado.id,
-          currentWindowTabs[0].id
-        );
-        setXTabId(tabCreatedByPado.id);
-      };
-      if (xTabId) {
-        try {
-          await chrome.tabs.update(xTabId as number, {
-            active: true,
+    const activeOnChain = useSelector((state) => state.activeOnChain);
+    const taskIds = useMemo(() => {
+      let l: string[] = [];
+      l = Object.keys(eventMetaInfo.taskMap.attestation);
+      return l;
+    }, []);
+    const attestationMap: attestationMap = useMemo(() => {
+      const m = taskIds.reduce((prev, curr) => {
+        let subTitle = 'Proof of Account Ownership';
+        let obj = { subTitle, id: curr };
+        if (curr === '2') {
+          Object.assign(obj, {
+            dataSourceId: 'binance',
+            title: 'Owns Binance Account',
+            score: '+100 xp',
           });
-          return;
-        } catch {
-          await openXUrlFn();
-          return;
+        } else if (curr === '6') {
+          Object.assign(obj, {
+            dataSourceId: 'tiktok',
+            title: 'Owns TikTok Account',
+            subTitle,
+            score: '+80 xp',
+          });
+        } else if (curr === '100') {
+          Object.assign(obj, {
+            dataSourceId: 'google',
+            title: 'Owns Google Account',
+            score: '+50 xp',
+          });
+        } else if (curr === '3') {
+          Object.assign(obj, {
+            dataSourceId: 'x',
+            title: 'Owns X Account',
+            score: '+50 xp',
+          });
         }
-      }
-      await openXUrlFn();
-    }, [xTabId]);
+        prev[curr] = obj;
+        return prev;
+      }, {});
+      return m;
+    }, [taskIds]);
+    const formLegal = useMemo(() => {
+      const allTask = Object.values(taskStatusMap);
+      const allDone = allTask.every((i) => !!i);
+      return allTask.length > 0 && allDone;
+    }, [taskStatusMap]);
 
     const initTaskStatus = useCallback(async () => {
       const res = await chrome.storage.local.get([eventId]);
@@ -99,68 +99,27 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (res[eventId]) {
         const lastEventObj = JSON.parse(res[eventId]);
         const lastInfo = lastEventObj[currentAddress];
-        setTaskStatusMap({ ...lastInfo.taskMap.follow });
+        setTaskStatusMap({ ...lastInfo.taskMap.attestation });
       }
     }, [connectedWallet?.address]);
-    const setSocialTaskStatus = useCallback(
-      async (k, v = 1) => {
-        const res = await chrome.storage.local.get([eventId]);
-        const currentAddress = connectedWallet?.address;
-        if (res[eventId]) {
-          const lastEventObj = JSON.parse(res[eventId]);
-          const lastInfo = lastEventObj[currentAddress];
-          lastInfo.taskMap.follow[k] = v;
-          setTaskStatusMap((m) => ({ ...m, [k]: v }));
-          await chrome.storage.local.set({
-            [eventId]: JSON.stringify(lastEventObj),
-          });
-        }
-      },
-      [connectedWallet, eventId]
-    );
     const handleTask = useCallback(
       (i) => {
-        // setQuestionList(Object.values(socialTaskMap));
-        if (i.dataSourceId === 'x') {
-          onFollowX();
-        } else if (i.dataSourceId === 'discord') {
-          window.open('https://discord.com/invite/YxJftNRxhh');
-          setSocialTaskStatus('discord');
+        if (taskStatusMap[i.id]) {
+          return;
+        } else {
+          onChange(i.id);
         }
       },
-      [onFollowX, setSocialTaskStatus]
+      [taskStatusMap]
     );
-    useEffect(() => {
-      const listerFn = async (message, sender, sendResponse) => {
-        if (message.type === 'xFollow' && message.name === 'follow') {
-          console.log(`Claim ${eventId} onMessage follow message`, message);
-          setSocialTaskStatus('x');
-          console.log('222123tabdId', xTabId);
-          try {
-            if (xTabId) {
-              const xTab = await chrome.tabs.get(xTabId as number);
-              if (xTab) {
-                setXTabId(undefined);
-                if (PADOTabId) {
-                  await chrome.tabs.update(PADOTabId, {
-                    active: true,
-                  });
-                }
-                await chrome.tabs.remove(xTabId as number);
-              }
-            }
-          } catch {}
-        }
-      };
-      chrome.runtime.onMessage.addListener(listerFn);
-      return () => {
-        chrome.runtime.onMessage.removeListener(listerFn);
-      };
-    }, [xTabId, PADOTabId, eventId, setSocialTaskStatus]);
-
     useEffect(() => {
       initTaskStatus();
     }, [initTaskStatus]);
+    useEffect(() => {
+      if (activeOnChain.loading === 0) {
+        initTaskStatus();
+      }
+    }, [activeOnChain.loading]);
 
     return (
       <PMask>
@@ -169,12 +128,17 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           <main>
             <header>
               <h1>Attestation Tasks</h1>
+              <h2>
+                Complete the tasks below to make your attestations. Make sure
+                you connect the same wallet in the top right corner and in the
+                BAS event page.
+              </h2>
             </header>
-            <ul className="tasks">
-              {questionList.map((i, k) => {
+            <ul className="attestationTasks">
+              {Object.values(attestationMap).map((i, k) => {
                 return (
                   <li
-                    className="task"
+                    className={`task ${!!taskStatusMap[i.id] && 'done'}`}
                     key={k}
                     onClick={() => {
                       handleTask(i);
@@ -187,7 +151,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                           alt=""
                           className="dataSourceIcon"
                         />
-                        {!!taskStatusMap[i.dataSourceId] && (
+                        {!!taskStatusMap[i.id] && (
                           <img
                             src={iconCircleSuc}
                             alt=""
@@ -201,13 +165,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                       </div>
                     </div>
                     <div className="right">
-                      <PButton
-                        text="Finish"
-                        type="text"
-                        onClick={() => {
-                          handleTask(i);
-                        }}
-                      />
+                      <div className="score">{i.score}</div>
                     </div>
                   </li>
                 );

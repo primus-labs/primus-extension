@@ -9,7 +9,7 @@
   .title {
     @include HeadlineH2;
   }
-  .tasks {
+  .eventTasks {
     @include fcss;
     width: 100%;
     gap: var(--spacing-16);

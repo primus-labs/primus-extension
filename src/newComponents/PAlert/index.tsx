@@ -1,14 +1,15 @@
 import React, { useMemo, memo, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setMsgs } from '@/store/actions';
 import PButton from '@/newComponents/PButton';
 import PClose from '@/newComponents/PClose';
-
 import './index.scss';
-import { useSelector } from 'react-redux';
 import type { Msg } from '@/types/store';
 
 const PAlert: React.FC<Msg> = memo(
   ({
+    id,
     type = 'suc',
     title = '',
     desc = '',
@@ -17,7 +18,8 @@ const PAlert: React.FC<Msg> = memo(
     done = false,
   }) => {
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
+    const msgs = useSelector((state) => state.msgs);
     const activeIconName = useMemo(() => {
       let cN = '';
       if (type === 'suc') {
@@ -34,6 +36,16 @@ const PAlert: React.FC<Msg> = memo(
     const handleDetail = useCallback(() => {
       navigate(link);
     }, [navigate]);
+    const handleDelete = useCallback(
+      async (id) => {
+        const lastMsgs = { ...msgs };
+        if (lastMsgs[id]) {
+          delete lastMsgs[id];
+        }
+        dispatch(setMsgs(lastMsgs));
+      },
+      [msgs, dispatch]
+    );
     return (
       <div className={`pAlert ${type}`}>
         <main>
@@ -56,7 +68,11 @@ const PAlert: React.FC<Msg> = memo(
               />
             )}
           </div>
-          <PClose onClick={() => {}} />
+          <PClose
+            onClick={() => {
+              handleDelete(id);
+            }}
+          />
         </main>
       </div>
     );

@@ -30,7 +30,10 @@ export const eventMetaMap = {
         discord: 0,
       },
       attestation: {
-        1: 0,
+        2: 0, // biance account
+        6: 0, // tiktok account
+        100: 0, // google account
+        3: 0, //  x account
       },
       onChain: {
         BSC: 0,
@@ -57,13 +60,10 @@ export const eventMetaMap = {
         discord: 0,
       },
       attestation: {
-        2: 0, // biance account
-        6: 0, // tiktok account
-        100: 0, // google account
-        3: 0, //  x account
+        1: 0,
       },
       onChain: {
-        BSC: 0,
+        Linea: 0,
       },
     },
   },

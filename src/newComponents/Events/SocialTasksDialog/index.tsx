@@ -168,7 +168,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             <header>
               <h1>Follow PADO</h1>
             </header>
-            <ul className="tasks">
+            <ul className="socialTasks">
               {questionList.map((i, k) => {
                 return (
                   <li

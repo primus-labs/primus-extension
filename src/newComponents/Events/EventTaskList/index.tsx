@@ -383,7 +383,7 @@ const DataSourceItem = memo(() => {
   return (
     <div className="eventTaskList">
       <h2 className="title">Task lists</h2>
-      <ul className="tasks">
+      <ul className="eventTasks">
         {stepList.map((i, k) => {
           return (
             <li
@@ -392,7 +392,7 @@ const DataSourceItem = memo(() => {
               }`}
               key={k}
               onClick={() => {
-                handleTask(i,k);
+                handleTask(i, k);
               }}
             >
               <div className="left">
@@ -429,7 +429,7 @@ const DataSourceItem = memo(() => {
                       text={k === 3 ? 'Check' : 'Finish'}
                       type="primary"
                       onClick={() => {
-                        handleTask(i,k);
+                        handleTask(i, k);
                       }}
                       disabled={k > 0 ? !stepList[k - 1].finished : false}
                     />
