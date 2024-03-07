@@ -198,7 +198,7 @@ const Nav: React.FC<PButtonProps> = memo(
                     i.source === 'google'
                       ? i.rawParam
                       : Object.assign(i, {
-                          ext: { event: SCROLLEVENTNAME },
+                          ext: { event: BASEVENTNAME },
                         }),
                   greaterThanBaseValue: true,
                   signature: i?.signature,
@@ -399,16 +399,18 @@ const Nav: React.FC<PButtonProps> = memo(
         address: currentAddress,
         requestid,
       } = fullAttestation;
-      const res = await chrome.storage.local.get([eventId]);
-      if (res[eventId]) {
-        const lastEventObj = JSON.parse(res[eventId]);
-        const lastInfo = lastEventObj[currentAddress];
-        if (lastInfo) {
-          const { taskMap } = lastInfo;
-          taskMap.onChain['onChain'] = requestid;
-          await chrome.storage.local.set({
-            [eventId]: JSON.stringify(lastEventObj),
-          });
+      if (eventId) {
+        const res = await chrome.storage.local.get([eventId]);
+        if (res[eventId]) {
+          const lastEventObj = JSON.parse(res[eventId]);
+          const lastInfo = lastEventObj[currentAddress];
+          if (lastInfo) {
+            const { taskMap } = lastInfo;
+            taskMap.onChain['onChain'] = requestid;
+            await chrome.storage.local.set({
+              [eventId]: JSON.stringify(lastEventObj),
+            });
+          }
         }
       }
     }, []);
@@ -416,6 +418,7 @@ const Nav: React.FC<PButtonProps> = memo(
     const sucFn = useCallback(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
+          debugger;
           let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
           if (fromEvents === 'Scroll') {
             // scrollEventFn(walletObj, LineaSchemaName);// TODO-newui
@@ -653,7 +656,7 @@ const Nav: React.FC<PButtonProps> = memo(
       if (connected && chainId) {
         sucFn(connectedWallet, chainId as string);
       }
-    }, [connected, chainId, connectedWallet]);
+    }, [connected, chainId]);
     // useEffect(() => {
     //   if (visible) {
     //     setStep(1);

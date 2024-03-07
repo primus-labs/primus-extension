@@ -80,7 +80,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           {
             label: 'N/A',
             value: 'N/A',
-            disabled: true,
             // selected: true,
           },
         ];
@@ -167,7 +166,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           </div>
         )}
         <PButton
-          text="Next"
+          text={attestLoading === 3 ? 'Try Again' : 'Next'}
           className="fullWidth confirmBtn"
           disabled={!formLegal}
           loading={formLegal && attestLoading === 1}

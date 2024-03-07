@@ -370,6 +370,9 @@ const useAttest = function useAttest() {
             };
             break;
         }
+        setMsg(requestResObj);
+        dispatch(setAttestLoading(3));
+        dispatch(setActiveAttestation({ loading: 3 }));
         if (
           retdesc.indexOf('connect to proxy error') > -1 ||
           retdesc.indexOf('WebSocket On Error') > -1 ||
@@ -377,7 +380,6 @@ const useAttest = function useAttest() {
         ) {
           eventInfoMsg = 'Unstable internet connection';
         }
-        // setActiveRequest(requestResObj);//TODO-newui
         eventInfo.rawData = Object.assign(eventInfo.rawData, {
           status: 'FAILED',
           reason: eventInfoMsg,

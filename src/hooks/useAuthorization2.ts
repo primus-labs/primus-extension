@@ -21,7 +21,7 @@ type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 const useAuthorization2 = () => {
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const [searchParams] = useSearchParams();
-  const fromEvents = searchParams.get('fromEvents');
+  const fromEvents = searchParams.get('id');
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
   const connectedWallet = useSelector(
