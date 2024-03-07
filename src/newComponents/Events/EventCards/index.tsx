@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
+import { BASEVENTNAME } from '@/config/events';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
@@ -49,6 +50,9 @@ const Cards: React.FC<PDropdownProps> = memo(
         navigate(`/events/detail?id=${i.id}`);
       }
     };
+    // useEffect(() => {
+    //   chrome.storage.local.remove([BASEVENTNAME]);
+    // }, []);
     return (
       <ul className="currentEventsCards">
         {list.map((i) => {

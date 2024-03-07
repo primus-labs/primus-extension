@@ -44,6 +44,7 @@ const DataSourceItem = memo(() => {
     const res = await chrome.storage.local.get([eventId]);
     const currentAddress = connectedWallet?.address;
     if (res[eventId]) {
+
       const lastEventObj = JSON.parse(res[eventId]);
       const lastInfo = lastEventObj[currentAddress];
       if (lastInfo) {

@@ -18,6 +18,18 @@
         height: 76px;
         @include clickableCard;
         border-radius: var(--spacing-4);
+        &.done {
+          border: 0;
+          background: var(--layer-tokens-layer-on-primary);
+          // cursor: default;
+          .right{
+            display: none;
+          }
+          // &:hover {
+          //   border: 0;
+          //   box-shadow: none;
+          // }
+        }
         .left {
           @include frsc;
           gap: var(--spacing-16);

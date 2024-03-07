@@ -115,15 +115,18 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     );
     const handleTask = useCallback(
       (i) => {
-        // setQuestionList(Object.values(socialTaskMap));
+        if (!!taskStatusMap[i.dataSourceId]) {
+          return;
+        }
         if (i.dataSourceId === 'x') {
+          // setQuestionList(Object.values(socialTaskMap));
           onFollowX();
         } else if (i.dataSourceId === 'discord') {
           window.open('https://discord.com/invite/YxJftNRxhh');
           setSocialTaskStatus('discord');
         }
       },
-      [onFollowX, setSocialTaskStatus]
+      [onFollowX, setSocialTaskStatus, taskStatusMap]
     );
     useEffect(() => {
       const listerFn = async (message, sender, sendResponse) => {
@@ -169,7 +172,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               {questionList.map((i, k) => {
                 return (
                   <li
-                    className="task"
+                    className={`task ${
+                      !!taskStatusMap[i.dataSourceId] && 'done'
+                    }`}
                     key={k}
                     onClick={() => {
                       handleTask(i);

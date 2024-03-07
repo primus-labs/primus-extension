@@ -20,6 +20,12 @@
       @include frbc;
       padding: 0 var(--spacing-40) 0 var(--spacing-24);
       height: 72px;
+      &.done,&.disabled {
+        cursor: default;
+        &:hover{
+          border-color: var(--border-tokens-border-primary);
+        }
+      }
       .left {
         @include frsc;
         gap: var(--spacing-16);

@@ -17,7 +17,7 @@
   @include shadow(0, 0, 12px);
 }
 @mixin dropdown-shadow {
-  @include shadow(0, 0, 20px,rgba(0, 0, 0, 0.15));
+  @include shadow(0, 0, 20px, rgba(0, 0, 0, 0.15));
 }
 
 @mixin pCard {
@@ -28,9 +28,15 @@
 @mixin clickableCard {
   @include pCard;
   cursor: pointer;
-  &:hover {
-    border: 1px solid var(--border-tokens-border-bp); // TODO
+  &:not(.disabled):hover {
+    border-color: var(--border-tokens-border-bp); // TODO
     @include card-xs_shadow;
+  }
+  &.done {
+    cursor:default;
+    &:hover {
+      box-shadow: none;
+    }
   }
   .PButton.text:hover {
     color: var(--button-tokens-button-text-link-hover);

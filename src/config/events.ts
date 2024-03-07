@@ -24,6 +24,18 @@ export const eventMetaMap = {
     desc: 'Bringing more traditional data attestations to the BNB ecosystem.',
 
     chainIds: ['BSC', 'BNB Greenfield'],
+    taskMap: {
+      follow: {
+        x: 0,
+        discord: 0,
+      },
+      attestation: {
+        1: 0,
+      },
+      onChain: {
+        BSC: 0,
+      },
+    },
   },
   [LINEAEVENTNAME]: {
     combineType: '1',
@@ -39,6 +51,21 @@ export const eventMetaMap = {
     desc: 'Complete an attestation with a KYCed account on Binance.',
 
     chainIds: ['Linea Goerli'],
+    taskMap: {
+      follow: {
+        x: 0,
+        discord: 0,
+      },
+      attestation: {
+        2: 0, // biance account
+        6: 0, // tiktok account
+        100: 0, // google account
+        3: 0, //  x account
+      },
+      onChain: {
+        BSC: 0,
+      },
+    },
   },
   [SCROLLEVENTNAME]: {
     combineType: '1',

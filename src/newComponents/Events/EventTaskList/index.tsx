@@ -145,7 +145,7 @@ const basTaskMap: { [propName: string]: StepItem } = {
 };
 const eventTaskMap = {
   [BASEVENTNAME]: basTaskMap,
-  [LINEAEVENTNAME]:lineaTaskMap
+  [LINEAEVENTNAME]: lineaTaskMap,
 };
 const DataSourceItem = memo(() => {
   const navigate = useNavigate();
@@ -181,7 +181,7 @@ const DataSourceItem = memo(() => {
     if (eventId === LINEAEVENTNAME) {
       return (l = ['Linea Goerli']);
     } else if (eventId === BASEVENTNAME) {
-      return [];
+      return ['BSC'];
     }
     return l;
   }, [eventId]);
@@ -200,8 +200,9 @@ const DataSourceItem = memo(() => {
   const { connected } = useCheckIsConnectedWallet(checkIsConnectFlag);
 
   const handleTask = useCallback(
-    (i) => {
-      if (i.finished) {
+    (i,k) => {
+      const prevStep = stepList[k - 1];
+      if (i.finished || (prevStep && !prevStep.finished)) {
         return;
       }
       if (isConnect) {
@@ -213,6 +214,68 @@ const DataSourceItem = memo(() => {
     },
     [isConnect]
   );
+
+  const initEvent = useCallback(async () => {
+    let newEventObj = {};
+    const currentAddress = connectedWallet?.address;
+    const res = await chrome.storage.local.get([eventId]);
+    let emptyInfo = {};
+    let attestation = {};
+    if (eventId === LINEAEVENTNAME) {
+      attestation = {
+        '1': 0, // binance kyc (web tempalte id:1)
+      };
+    } else if (eventId === BASEVENTNAME) {
+      attestation = {
+        2: 0, // biance account
+        6: 0, // tiktok account
+        100: 0, // google account
+        3: 0, //  x account
+      };
+    }
+    emptyInfo = {
+      address: currentAddress,
+      taskMap: {
+        follow: {
+          x: 0,
+          discord: 0,
+        },
+        attestation,
+        onChain: {
+          onChain: 0,
+        },
+        check: {
+          check: 0,
+        },
+      },
+    };
+
+    // have joined this event
+    if (res[eventId]) {
+      const lastEventObj = JSON.parse(res[eventId]);
+      // have joined this event by current connected address
+      if (lastEventObj[currentAddress]) {
+        setVisibleSocialTasksDialog(true);
+        return;
+      } else {
+        // have joined ,but not by current connected address
+        newEventObj = { ...lastEventObj };
+        newEventObj[currentAddress] = emptyInfo;
+      }
+      await chrome.storage.local.set({
+        [eventId]: JSON.stringify(newEventObj),
+      });
+    } else {
+      //  have not joined this event
+      newEventObj = {
+        [currentAddress]: emptyInfo,
+      };
+      await chrome.storage.local.set({
+        [eventId]: JSON.stringify(newEventObj),
+      });
+    }
+    setVisibleSocialTasksDialog(true);
+  }, [connectedWallet?.address]);
   const doTask = useCallback(
     async (taskId) => {
       if (taskId === 'follow') {
@@ -241,60 +304,8 @@ const DataSourceItem = memo(() => {
         window.open(eventDetail?.ext?.intractUrl ?? 'https://poh.linea.build/');
       }
     },
-    [dispatch, eventDetail]
+    [dispatch, eventDetail, initEvent]
   );
-  const initEvent = async () => {
-    let newEventObj = {};
-    const currentAddress = connectedWallet?.address;
-    const res = await chrome.storage.local.get([eventId]);
-    let emptyInfo = {};
-    if (eventId === LINEAEVENTNAME) {
-      emptyInfo = {
-        address: currentAddress,
-        taskMap: {
-          follow: {
-            x: 0,
-            discord: 0,
-          },
-          attestation: {
-            '1': 0, // binance kyc (web tempalte id:1)
-          },
-          onChain: {
-            onChain: 0,
-          },
-          check: {
-            check: 0,
-          },
-        },
-      };
-    }
-
-    // have joined this event
-    if (res[eventId]) {
-      const lastEventObj = JSON.parse(res[eventId]);
-      // have joined this event by current connected address
-      if (lastEventObj[currentAddress]) {
-        setVisibleSocialTasksDialog(true);
-        return;
-      } else {
-        // have joined ,but not by current connected address
-        newEventObj = { ...lastEventObj };
-        newEventObj[currentAddress] = emptyInfo;
-      }
-      await chrome.storage.local.set({
-        [eventId]: JSON.stringify(newEventObj),
-      });
-    } else {
-      //  have not joined this event
-      newEventObj = {
-        [currentAddress]: emptyInfo,
-      };
-      await chrome.storage.local.set({
-        [eventId]: JSON.stringify(newEventObj),
-      });
-    }
-    setVisibleSocialTasksDialog(true);
-  };
   const handleCloseSocialTasksDialog = useCallback(() => {
     setVisibleSocialTasksDialog(false);
   }, []);
@@ -342,6 +353,9 @@ const DataSourceItem = memo(() => {
     }
   }, [connected, activeTaskId]);
   useEffect(() => {
+    initTaskStatus();
+  }, []);
+  useEffect(() => {
     if (!visibleSocialTasksDialog) {
       initTaskStatus();
     }
@@ -373,10 +387,12 @@ const DataSourceItem = memo(() => {
         {stepList.map((i, k) => {
           return (
             <li
-              className="task"
+              className={`task ${i.finished && 'done'} ${
+                k > 0 && !stepList[k - 1].finished && 'disabled'
+              }`}
               key={k}
               onClick={() => {
-                handleTask(i);
+                handleTask(i,k);
               }}
             >
               <div className="left">
@@ -413,7 +429,7 @@ const DataSourceItem = memo(() => {
                       text={k === 3 ? 'Check' : 'Finish'}
                       type="primary"
                       onClick={() => {
-                        handleTask(i);
+                        handleTask(i,k);
                       }}
                       disabled={k > 0 ? !stepList[k - 1].finished : false}
                     />
