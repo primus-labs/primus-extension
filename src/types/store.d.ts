@@ -34,7 +34,7 @@ type activeAttestationRequest = {
   verificationValue?: string;
   attestationType?: string; // 'Assets Certification'
   fetchType?: string; // Web ,API
-  loading?: loadingStatus;
+  loading?: 0 | 1 | 2 | 3; // 0: unstart 1:start loading 2:suc 3: fail
   presets?: any; // attest params
   // requestId?: string;
   account?: string;
@@ -54,10 +54,10 @@ type Msg = {
   desc?: string;
   code?: string;
   link?: string;
-  done?:boolean
-}
+  done?: boolean;
+};
 type MsgMap = {
-  [propName:string]: Msg
+  [propName: string]: Msg;
 };
 export type UserState = {
   padoServicePort: chrome.runtime.Port;

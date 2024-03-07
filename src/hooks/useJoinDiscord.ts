@@ -4,88 +4,129 @@ import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuthAttestation } from '@/services/api/cred';
 import type { UserState } from '@/types/store';
-import { postMsg, getAuthUrl } from '@/utils/utils';
+import { postMsg, getAuthUrl, getCurrentDate } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
 import useInterval from './useInterval';
 import { BASEVENTNAME } from '@/config/constants';
 import useEventDetail from './useEventDetail';
+import useAllSources from './useAllSources';
 import { schemaTypeMap } from '../config/constants';
+import { SocailStoreVersion } from '@/config/constants';
+import { checkIsLogin } from '@/services/api/user';
+import { finishTask } from '@/services/api/achievements';
+
 type CreateAuthWindowCallBack = (
   state: string,
   source: string,
   window?: chrome.windows.Window | undefined,
-  onSubmit?: (p: any) => void
+  onSubmit?: (p: any) => void,
+  needCheckLogin?: boolean
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
-// create google account attestation
+// connect & join discord
+const DISCORDINVITEURL = 'https://discord.com/invite/K8Uqm5ww';
 const useAuthorization2 = () => {
+  const { sourceMap2 } = useAllSources();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const [searchParams] = useSearchParams();
   const fromEvents = searchParams.get('fromEvents');
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
+  const [checkIsJoinDialogTimer, setCheckIsJoinDialogTimer] = useState<any>();
+  
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
-  // const pollingResultFn = async (state: string, source: string) => {
-  //   const res = await getAuthAttestation({
-  //     state,
-  //     source,
-  //     schemaType: 'GOOGLE_ACCOUNT_OWNER',
-  //     address: connectedWallet.address,
-  //   });
-  //   if (res.code === 0 && res.result) {
-  //     // clear
-  //   }
-  // };
-  // useInterval(pollingResultFn, 1000, pollingFlag, false);
+
   const createAuthWindowCallBack: CreateAuthWindowCallBack = useCallback(
-    (state, source, res, onSubmit) => {
+    (state, source, res, onSubmit, needCheckLogin) => {
       const newWindowId = res?.id;
       setAuthWindowId(newWindowId);
+      let timer, joinTimer;
       chrome.windows.onRemoved.addListener((windowId) => {
         if (windowId === newWindowId) {
           if (timer) {
-            chrome.runtime.sendMessage({
-              type: 'googleAuth',
-              name: 'cancelAttest',
-            });
-            clearInterval(timer);
-            timer = null
-          }
-        }
-      });
-
-      const pollingResultFn = async (state: string, source: string) => {
-        const res = await getAuthAttestation({
-          state,
-          source,
-          address: connectedWallet.address,
-          schemaType:
-            fromEvents === BASEVENTNAME
-              ? BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY'
-              : 'GOOGLE_ACCOUNT_OWNER',
-        });
-        if (res.rc === 0 && res.result) {
-          if (timer) {
+            // chrome.runtime.sendMessage({
+            //   type: 'googleAuth',
+            //   name: 'cancelAttest',
+            // });
             clearInterval(timer);
             timer = null;
           }
+          if (joinTimer) {
+            clearInterval(joinTimer);
+            joinTimer = null;
+          }
+        }
+      });
+      debugger;
+      if (needCheckLogin) {
+        const checkIsLoginFn = async (state, source) => {
+          const res = await checkIsLogin({
+            state: state,
+            source: source,
+            data_type: 'LOGIN',
+          });
+          const rc = res.rc;
+          const result = res.result;
+          if (rc === 0) {
+            const { dataInfo, userInfo } = result;
+            const lowerCaseSourceName = source.toLowerCase();
+            const socialSourceData = {
+              ...dataInfo,
+              date: getCurrentDate(),
+              timestamp: +new Date(),
+              version: SocailStoreVersion,
+            };
+            socialSourceData.userInfo = {};
+            socialSourceData.userInfo.userName = socialSourceData.userName;
+            await chrome.storage.local.set({
+              [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+            });
+          }
+        };
+        timer = setInterval(() => {
+          checkIsLoginFn(state, source);
+        }, 1000);
+        setCheckIsAuthDialogTimer(timer);
+      }
+      const pollingResultFn = async (state: string, source: string) => {
+        if (!sourceMap2.discord) {
+          return;
+        }
+        if (timer) {
+          clearInterval(timer);
+        }
+        let ext = {
+          discordUserId: sourceMap2.discord.uniqueId.replace('DISCORD_', ''),
+        };
+        const finishBody = {
+          taskIdentifier: 'JOIN_PADO_DISCORD',
+          ext: ext,
+        };
+        const finishCheckRsp = await finishTask(finishBody);
+        if (finishCheckRsp.rc === 0) {
+          // setFinished(true);
+          clearInterval(joinTimer);
+          // redresh score TODO
           setAuthWindowId(undefined);
           newWindowId &&
             chrome.windows.get(newWindowId, {}, (win) => {
               win?.id && chrome.windows.remove(newWindowId);
             });
-          onSubmit && onSubmit(res.result);
-        } else {
+          onSubmit && onSubmit(true);
         }
       };
-      let timer:any = setInterval(() => {
+      joinTimer = setInterval(() => {
         pollingResultFn(state, source);
       }, 1000);
-      setCheckIsAuthDialogTimer(timer);
+      setCheckIsJoinDialogTimer(joinTimer);
     },
-    [connectedWallet?.address, BASEventDetail?.ext?.schemaType, fromEvents]
+    [
+      connectedWallet?.address,
+      BASEventDetail?.ext?.schemaType,
+      fromEvents,
+    ]
   );
   const handleClickOAuthSource: OauthFn = useCallback(
     async (source, onSubmit) => {
@@ -98,12 +139,20 @@ const useAuthorization2 = () => {
         var top = Math.round(windowScreen.height / 2 - height / 2);
         const { userInfo } = await chrome.storage.local.get(['userInfo']);
         const parseUserInfo = JSON.parse(userInfo);
-        const authUrl = getAuthUrl({
+        let authUrl = getAuthUrl({
           source,
           state,
           token: parseUserInfo.token,
         });
-
+        let needCheckLogin = false
+        if (sourceMap2['discord']) {
+          authUrl = DISCORDINVITEURL;
+          needCheckLogin = false
+          debugger
+        } else {
+          authUrl = `${authUrl}&redirectUrl=${DISCORDINVITEURL}`;
+          needCheckLogin = true;
+        }
         const windowOptions: chrome.windows.CreateData = {
           url: authUrl,
           type: 'popup',
@@ -115,7 +164,13 @@ const useAuthorization2 = () => {
           height,
         };
         chrome.windows.create(windowOptions, (window) => {
-          createAuthWindowCallBack(state, source, window, onSubmit);
+          createAuthWindowCallBack(
+            state,
+            source,
+            window,
+            onSubmit,
+            needCheckLogin
+          );
         });
       };
       // If the authorization window is open,focus on it
@@ -137,7 +192,7 @@ const useAuthorization2 = () => {
       }
       fn();
     },
-    [authWindowId, createAuthWindowCallBack]
+    [authWindowId, createAuthWindowCallBack, sourceMap2]
   );
   useEffect(() => {
     return () => {

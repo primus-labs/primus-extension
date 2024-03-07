@@ -118,20 +118,16 @@ const useAttest = function useAttest() {
         setTimeoutSwitch(true);
         setIntervalSwitch(true);
       } else if (retcode === '2') {
-        alert('Failed'); // TODO-newui notification
-        dispatch(setAttestLoading(2));
-        dispatch(setActiveAttestation({ loading: 2 }));
+        setMsgsFn({
+          type: 'error',
+          title: 'Failed',
+          desc: 'The algorithm has not been initialized.Please try again later.',
+        });
+        dispatch(setAttestLoading(3));
+        dispatch(setActiveAttestation({ loading: 3 }));
+
         // algorithm is not initialized
-        // setActiveRequest({
-        //   type: 'error',
-        //   title: 'Failed',
-        //   desc: (
-        //     <>
-        //       <p>The algorithm has not been initialized.</p>
-        //       <p>Please try again later.</p>
-        //     </>
-        //   ),
-        // });
+
         const { activeRequestAttestation } = await chrome.storage.local.get([
           'activeRequestAttestation',
         ]);
@@ -216,14 +212,12 @@ const useAttest = function useAttest() {
           }
           setCredRequestId(activeRequestId);
           // suc
-          alert(`${activeAttestation.attestationType} is created!`);
+          setMsgsFn({
+            type: 'suc',
+            title: `${activeAttestation.attestationType} is created!`,
+          });
           dispatch(setAttestLoading(2));
           dispatch(setActiveAttestation({ loading: 2 }));
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Your proof is created!',
-          // });
 
           const uniqueId = strToHexSha256(fullAttestation.signature);
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
@@ -244,12 +238,7 @@ const useAttest = function useAttest() {
               activeAttestation?.dataSourceId === 'okx' ? 'Trading' : 'Spot'
             } Account.`;
           }
-          // let descEl = (
-          //   <>
-          //     <p>{descItem1}</p>
-          //     <p>Please confirm and try again later.</p>
-          //   </>
-          // );
+          let descEl = `${descItem1} Please confirm and try again later.`;
           let btnTxt =
             titleItem1 === 'Not met the requirements' ? '' : undefined;
 
@@ -257,7 +246,7 @@ const useAttest = function useAttest() {
             let failReason = '';
             if (!content.signature && content.encodedData) {
               titleItem1 = 'Unable to proceed';
-              // descEl = <p>Not meeting the uniqueness requirement.</p>;
+              descEl = 'Not meeting the uniqueness requirement.';
               failReason = 'Not meeting the uniqueness requirement.';
               btnTxt = '';
               await chrome.runtime.sendMessage({
@@ -278,14 +267,18 @@ const useAttest = function useAttest() {
               });
             }
           }
-          alert('warn');
-          dispatch(setAttestLoading(2));
-          dispatch(setActiveAttestation({ loading: 2 }));
+          setMsgsFn({
+            type: 'error',
+            title: titleItem1,
+            desc: descEl,
+          });
+          dispatch(setAttestLoading(3));
+          dispatch(setActiveAttestation({ loading: 3 }));
           // setActiveRequest({
           //   type: 'warn',
           //   title: titleItem1,
           //   desc: descEl,
-          //   btnTxt,
+          //   btnTxt,// TODO-newui
           // });
 
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
@@ -473,14 +466,14 @@ const useAttest = function useAttest() {
         },
       });
     }
-    dispatch(setAttestLoading(2));
-    dispatch(setActiveAttestation({ loading: 2 }));
-    alert('Request Timed Out');
-    // setActiveRequest({
-    //   type: 'warn',
-    //   title: 'Request Timed Out',
-    //   desc: 'The service did not respond within the expected time. Please try again later.',
-    // });
+    setMsgsFn({
+      type: 'error',
+      title: 'Request Timed Out',
+      desc: 'The service did not respond within the expected time. Please try again later.',
+    });
+    dispatch(setAttestLoading(3));
+    dispatch(setActiveAttestation({ loading: 3 }));
+    
     var eventInfo: any = {
       eventType: 'ATTESTATION_GENERATE',
       rawData: {
@@ -513,42 +506,47 @@ const useAttest = function useAttest() {
   }, [padoServicePort]);
   useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
-
+  const setMsgsFn = useCallback(
+    (infoObj) => {
+      const id = Date.now();
+      const newMsgs = {
+        ...msgs,
+        id: {
+          id,
+          ...infoObj,
+          // type: 'error',
+          // title: 'Unable to proceed',
+          // desc: 'Please try again later.',
+        },
+      };
+      dispatch(setMsgs(newMsgs));
+    },
+    [msgs, dispatch]
+  );
   useEffect(() => {
     const listerFn = (message: any) => {
       const { type, name } = message;
       if (type === 'pageDecode') {
         if (name === 'cancelAttest') {
-          alert('Unable to proceed');
-          dispatch(setAttestLoading(2));
-          dispatch(setActiveAttestation({ loading: 2 }));
-          // setActiveRequest({
-          //   type: 'warn',
-          //   title: 'Unable to proceed',
-          //   desc: 'Please try again later.',
-          // });
+          setMsgsFn({
+            type: 'error',
+            title: 'Unable to proceed',
+            desc: 'Please try again later.',
+          });
+          dispatch(setAttestLoading(3));
+          dispatch(setActiveAttestation({ loading: 3 }));
+          
         } else if (name === 'sendRequest') {
           dispatch(setAttestLoading(1));
           dispatch(setActiveAttestation({ loading: 1 }));
-          // setActiveRequest({
-          //   type: 'loading',
-          //   title: 'Attestation is processing',
-          //   desc: 'It may take a few seconds.',
-          // });
+          
         } else if (name === 'abortAttest') {
           if (attestLoading === 1) {
-            alert('Unable to proceed');
-            const id = Date.now();
-            const newMsgs = {
-              ...msgs,
-              id: {
-                id,
-                type: 'error',
-                title: 'Unable to proceed',
-                desc: 'Please try again later.',
-              },
-            };
-            dispatch(setMsgs(newMsgs));
+            setMsgsFn({
+              type: 'error',
+              title: 'Unable to proceed',
+              desc: 'Please try again later.',
+            });
           }
           // if (activeRequest?.type === 'loading' || !activeRequest?.type) {//TODO-newui
           //   setActiveRequest({
@@ -560,8 +558,8 @@ const useAttest = function useAttest() {
           // if (activeRequest?.type === 'loading') {
           //   setIntervalSwitch(false);
           // }
-          dispatch(setAttestLoading(2));
-          dispatch(setActiveAttestation({ loading: 2 }));
+          dispatch(setAttestLoading(3));
+          dispatch(setActiveAttestation({ loading: 3 }));
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
@@ -571,14 +569,14 @@ const useAttest = function useAttest() {
         // }
       } else if (type === 'googleAuth') {
         if (name === 'cancelAttest') {
-          alert('Unable to proceed');
-          dispatch(setAttestLoading(2));
-          dispatch(setActiveAttestation({ loading: 2 }));
-          // setActiveRequest({
-          //   type: 'warn',
-          //   title: 'Unable to proceed',
-          //   desc: 'Please try again later.',
-          // });
+          setMsgsFn({
+            type: 'error',
+            title: 'Unable to proceed',
+            desc: 'Please try again later.',
+          });
+          dispatch(setAttestLoading(3));
+          dispatch(setActiveAttestation({ loading: 3 }));
+         
         }
       }
     };

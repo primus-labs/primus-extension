@@ -8,6 +8,7 @@ import {
   setCredentialsAsync,
   setAttestLoading,
 } from '@/store/actions';
+import useMsgs from '@/hooks/useMsgs';
 import useEventDetail from '@/hooks/useEventDetail';
 import useAuthorization2 from '@/hooks/useAuthorization2';
 
@@ -40,6 +41,7 @@ interface PButtonProps {
 
 const Nav: React.FC<PButtonProps> = memo(
   ({ type, onClose, onSubmit, presets }) => {
+    const [msgs, setMsg] = useMsgs();
     const authorize = useAuthorization2();
 
     const dispatch: Dispatch<any> = useDispatch();
@@ -106,6 +108,7 @@ const Nav: React.FC<PButtonProps> = memo(
       },
       []
     );
+
     const fetchAttestForGoogle = useCallback(
       async (form) => {
         const isFromBASEvent = fromEvents === BASEVENTNAME;
@@ -137,6 +140,7 @@ const Nav: React.FC<PButtonProps> = memo(
           return credAddress;
         };
         const storeGoogleCred = async (res: any) => {
+          debugger;
           //w
           const { signatureInfo, signatureRawInfo } = res;
           const credAddress = await getCredAddrFn();
@@ -172,15 +176,24 @@ const Nav: React.FC<PButtonProps> = memo(
           eventInfo.rawData.status = 'SUCCESS';
           eventInfo.rawData.reason = '';
           eventReport(eventInfo);
+          dispatch(setActiveAttestation({ loading: 2 }));
+          dispatch(setAttestLoading(2));
           //w
         };
 
         try {
-          authorize(form.dataSourceId.toUpperCase(), storeGoogleCred);
+          await authorize(form.dataSourceId.toUpperCase(), storeGoogleCred);
         } catch {
           setStep(-1);
+          setMsg({
+            type: 'error',
+            title: 'Unable to proceed',
+            desc: 'Please try again later.',
+          });
           // setActiveRequest(undefined);
-          alert('attestForGoogle network error');
+          // alert('attestForGoogle network error');
+          dispatch(setActiveAttestation({ loading: 3 }));
+          dispatch(setAttestLoading(3));
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
             // attestationId: uniqueId,
             status: 'FAILED',
@@ -197,6 +210,8 @@ const Nav: React.FC<PButtonProps> = memo(
         fromEvents,
         BASEventDetail?.ext?.schemaType,
         storeBASEventInfoFn,
+        dispatch,
+        setMsgsFn,
       ]
     );
     const handleSubmitSetDetail = useCallback(
@@ -214,8 +229,6 @@ const Nav: React.FC<PButtonProps> = memo(
 
         if (activeAttestationParams.dataSourceId === 'google') {
           await fetchAttestForGoogle(activeAttestationParams);
-          dispatch(setActiveAttestation({ loading: 2 }));
-          dispatch(setAttestLoading(2));
         } else {
           // 2.check web proof template
           // templateName
@@ -340,10 +353,7 @@ const Nav: React.FC<PButtonProps> = memo(
               <SetDataSource onSubmit={handleSubmitSetPwdDialog} />
             )}
             {step === 2 && (
-              <SetDetail
-                onSubmit={handleSubmitSetDetail}
-                presets={assetForm}
-              />
+              <SetDetail onSubmit={handleSubmitSetDetail} presets={assetForm} />
             )}
           </main>
         </div>

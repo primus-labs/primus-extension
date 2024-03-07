@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
+import useJoinDiscord from '@/hooks/useJoinDiscord';
 import { DATASOURCEMAP } from '@/config/dataSource';
-
 import type { UserState } from '@/types/store';
 import PMask from '@/newComponents/PMask';
 import PButton from '@/newComponents/PButton';
@@ -22,6 +22,7 @@ type TaskStatusMap = {
 };
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onClose, onSubmit }) => {
+    const authorize = useJoinDiscord();
     const [searchParams] = useSearchParams();
     const eventId = searchParams.get('id') as string;
     const socialTaskMap = {
@@ -122,8 +123,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           // setQuestionList(Object.values(socialTaskMap));
           onFollowX();
         } else if (i.dataSourceId === 'discord') {
-          window.open('https://discord.com/invite/YxJftNRxhh');
-          setSocialTaskStatus('discord');
+          authorize(i.dataSourceId.toUpperCase(), () => {
+            setSocialTaskStatus('discord');
+          });
         }
       },
       [onFollowX, setSocialTaskStatus, taskStatusMap]

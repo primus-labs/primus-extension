@@ -27,6 +27,7 @@ const PClose: React.FC<PBackProps> = memo(
       if (attestLoading === 2) {
         onSubmit()
         dispatch(setAttestLoading(0));
+        dispatch(setActiveAttestation({ loading: 0 }));
       }
     }, [attestLoading, dispatch]);
     return (
