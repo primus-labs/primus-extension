@@ -316,8 +316,10 @@ const DataSourceItem = memo(() => {
     if (res[eventId]) {
       const lastEventObj = JSON.parse(res[eventId]);
       const lastInfo = lastEventObj[currentAddress];
+
       if (lastInfo) {
         const { taskMap } = lastInfo;
+        
         const statusM = Object.keys(taskMap).reduce((prev, curr) => {
           const currTask = taskMap[curr];
 

@@ -334,34 +334,27 @@ const Nav: React.FC<PButtonProps> = memo(
 
             await initCredList();
 
-            const res = await chrome.storage.local.get([BASEVENTNAME]);
-            if (res[BASEVENTNAME]) {
-              const lastInfo = JSON.parse(res[BASEVENTNAME]);
-              lastInfo.steps[2].status = 1;
-              await chrome.storage.local.set({
-                [BASEVENTNAME]: JSON.stringify(lastInfo),
-              });
+            await storeEventInfoFn(toBeUpperChainCreds[0]);
 
-              setActiveSendToChainRequest({
-                type: 'suc',
-                title: 'Congratulations',
-                desc: 'Your attestation is recorded on-chain!',
-              });
+            setActiveSendToChainRequest({
+              type: 'suc',
+              title: 'Congratulations',
+              desc: 'Your attestation is recorded on-chain!',
+            });
 
-              eventInfoArr = eventInfoArr.map((i) => {
-                return {
-                  ...i,
-                  rawData: Object.assign(i.rawData, {
-                    status: 'SUCCESS',
-                    reason: '',
-                  }),
-                };
-              });
-              const requestArr = eventInfoArr.map((i) => {
-                return eventReport(i);
-              });
-              await Promise.all(requestArr);
-            }
+            eventInfoArr = eventInfoArr.map((i) => {
+              return {
+                ...i,
+                rawData: Object.assign(i.rawData, {
+                  status: 'SUCCESS',
+                  reason: '',
+                }),
+              };
+            });
+            const requestArr = eventInfoArr.map((i) => {
+              return eventReport(i);
+            });
+            await Promise.all(requestArr);
           } else {
             setActiveSendToChainRequest({
               // type: 'warn',
@@ -418,7 +411,6 @@ const Nav: React.FC<PButtonProps> = memo(
     const sucFn = useCallback(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
-          debugger;
           let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
           if (fromEvents === 'Scroll') {
             // scrollEventFn(walletObj, LineaSchemaName);// TODO-newui

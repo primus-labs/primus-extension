@@ -114,7 +114,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           </div>
         </div> */}
         <PButton
-          text="Next"
+          text={attestLoading === 3 ? 'Try Again' : 'Next'}
           className="fullWidth confirmBtn"
           disabled={!formLegal}
           loading={formLegal && attestLoading === 1}

@@ -69,6 +69,8 @@ const useAuthorization2 = () => {
           const rc = res.rc;
           const result = res.result;
           if (rc === 0) {
+            clearInterval(timer);
+            timer = null;
             const { dataInfo, userInfo } = result;
             const lowerCaseSourceName = source.toLowerCase();
             const socialSourceData = {
@@ -90,14 +92,17 @@ const useAuthorization2 = () => {
         setCheckIsAuthDialogTimer(timer);
       }
       const pollingResultFn = async (state: string, source: string) => {
-        if (!sourceMap2.discord) {
+        const data = await chrome.storage.local.get(['discord']);
+        console.log('222sourceMap2.discord', sourceMap2.discord, data);// delete
+        if (!data.discord) {
           return;
         }
         if (timer) {
           clearInterval(timer);
         }
+        const discordObj = JSON.parse(data.discord);
         let ext = {
-          discordUserId: sourceMap2.discord.uniqueId.replace('DISCORD_', ''),
+          discordUserId: discordObj.uniqueId.replace('DISCORD_', ''),
         };
         const finishBody = {
           taskIdentifier: 'JOIN_PADO_DISCORD',
