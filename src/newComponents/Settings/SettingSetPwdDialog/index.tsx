@@ -9,6 +9,7 @@ import './index.scss';
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
+  resetPwsSuccessCallback: ()=> void;
   // onCancel: () => void;
 }
 
@@ -18,7 +19,7 @@ type PswFormType = {
 };
 
 const SettingSetPwdDialog: React.FC<SetPwdDialogProps> = memo(
-  ({ onClose, onSubmit }) => {
+  ({ onClose, onSubmit,resetPwsSuccessCallback }) => {
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
     const [accountAddr, setAccountAddr] = useState<any>();
@@ -40,7 +41,7 @@ const SettingSetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 </div>
               </div>
             </section>
-            <SetPwdForm onSubmit={onSubmit} />
+            <SetPwdForm onSubmit={onSubmit} resetPwsSuccessCallback={resetPwsSuccessCallback} />
           </main>
         </div>
       </PMask>

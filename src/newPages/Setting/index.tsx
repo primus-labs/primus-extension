@@ -23,7 +23,7 @@ const Setting = memo(() => {
   const [serialNum, setSerialNum] = useState('');
 
   const [showSetPwdDialog, setShowSetPwdDialog] = useState(false);
-  const [showInputPasswordDialog, setShowInputPasswordDialog] = useState(true);
+  const [showInputPasswordDialog, setShowInputPasswordDialog] = useState(false);
 
 
   useEffect(() => {
@@ -74,15 +74,10 @@ const Setting = memo(() => {
     alert('copy success');
   };
 
-  <ConfigProvider
-    theme={{
-      token: {
-        lineWidth: 1,
-      },
-    }}
-  >
-  </ConfigProvider>;
-
+  const resetPwsSuccessCallbackFn = () => {
+    setShowSetPwdDialog(false);
+    setShowInputPasswordDialog(true);
+  };
 
   return (
     <div className={'outerDiv'}>
@@ -166,8 +161,7 @@ const Setting = memo(() => {
       {showSetPwdDialog && <SettingsSetPwdDialog onClose={() => {
         setShowSetPwdDialog(false);
       }} onSubmit={() => {
-        console.log('submit');
-      }} />}
+      }} resetPwsSuccessCallback={resetPwsSuccessCallbackFn}/>}
       {showInputPasswordDialog && <WebComeBackDialog onSubmit={() => {}} showDialog={setShowInputPasswordDialog} />}
     </div>
   );

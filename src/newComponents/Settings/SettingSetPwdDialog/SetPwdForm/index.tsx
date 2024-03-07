@@ -11,23 +11,27 @@ import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 
 import './index.scss';
+
 interface SetPwdDialogProps {
   onSubmit: () => void;
+  resetPwsSuccessCallback: () => void;
 }
+
 type PswFormType = {
   password: '';
   confirmation: '';
 };
 
-const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
+const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit, resetPwsSuccessCallback }) => {
   const [pswForm, setPswForm] = useState<PswFormType>({
     password: '',
     confirmation: '',
   });
+
+  const [formLegal, setFormLegal] = useState(false);
   const padoServicePort = useSelector(
-    (state: UserState) => state.padoServicePort
+    (state: UserState) => state.padoServicePort,
   );
-  const dispatch: Dispatch<any> = useDispatch();
   const pwdRules = useMemo(() => {
     const initalRules = [
       {
@@ -55,8 +59,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
       const currentRules = initalRules.map((rule: any) => {
         if (rule.reg.test(pswForm.password)) {
           rule.legal = 1;
+          setFormLegal(true);
         } else {
           rule.legal = 2;
+          setFormLegal(false);
         }
         return rule;
       });
@@ -76,47 +82,47 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
       confirmation: pswForm.confirmation ? (confirmationLegal ? 1 : 2) : 0,
     };
   }, [pwdRules, pswForm]);
-  const formLegal = useMemo(() => {
-    const Leagal = Object.values(formLegalObj).every((i) => i === 1);
-    return Leagal;
-  }, [formLegalObj]);
-  const fetchBindUserAddress = useCallback(() => {
-    chrome.storage.local.get(['userInfo'], (storedData) => {
-      debugger
-      if (storedData['userInfo']) {
-        const padoServicePortListener = async function (message: any) {
-          if (message.resMethodName === 'bindUserAddress') {
-            const { res } = message;
-            console.log('page_get:bindUserAddress:', res);
-            if (res) {
-              await dispatch(initWalletAddressActionAsync());
-              onSubmit();
-            } else {
-            }
-          }
-        };
-        padoServicePort.onMessage.addListener(padoServicePortListener);
 
-        postMsg(padoServicePort, {
-          fullScreenType: 'padoService',
-          reqMethodName: 'bindUserAddress',
-          params: {
-            password: pswForm.password,
-          },
-        });
-        dispatch({
-          type: 'setUserPassword',
-          payload: pswForm.password,
-        });
-      }
-    });
-  }, [dispatch, onSubmit, padoServicePort, pswForm.password]);
   const handleClickNext = useCallback(async () => {
-    if (!formLegal) {
+    debugger
+    if (!pswForm.password || !confirm) {
       return;
     }
-    fetchBindUserAddress();
-  }, [formLegal, fetchBindUserAddress]);
+    const pwdIsLegal = pwdRules.every((i) => i.legal);
+    if (!pwdIsLegal) {
+      return;
+    }
+    handleSubmit(pswForm.password);
+  }, [pswForm.password, confirm, onSubmit, pwdRules]);
+
+  const handleSubmit = useCallback(
+    (newPwd: string) => {
+      const padoServicePortListener = async function(message: any) {
+        if (message.resMethodName === 'resetPassword') {
+          console.log('page_get:resetPassword:', message.res);
+          if (message.res) {
+            onSubmit();
+            resetPwsSuccessCallback();
+          } else {
+            alert('Password reset failed');
+          }
+          padoServicePort.onMessage.removeListener(padoServicePortListener);
+        }
+      };
+      padoServicePort.onMessage.addListener(padoServicePortListener);
+      const msg = {
+        fullScreenType: 'wallet',
+        reqMethodName: 'resetPassword',
+        params: {
+          password: newPwd,
+        },
+      };
+      postMsg(padoServicePort, msg);
+      console.log('page_send:resetPassword');
+    },
+    [onSubmit, padoServicePort],
+  );
+
   const handleChangePswForm = useCallback((v, formKey) => {
     setPswForm((f) => ({ ...f, [formKey]: v }));
   }, []);
