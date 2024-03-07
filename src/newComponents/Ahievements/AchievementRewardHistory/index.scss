@@ -8,6 +8,13 @@
   line-height: 42px;
 
   main {
+    .PClose {
+      height: 36px;
+      .closeBtn {
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+    }
     .detailWrapper {
       @include detailWrapper;
 

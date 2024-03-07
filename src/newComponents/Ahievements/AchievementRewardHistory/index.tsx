@@ -74,11 +74,12 @@ const Nav: React.FC<PButtonProps> = memo(
     return (
       <PMask>
         <div className="pDialog2 reword-history">
-          <PClose onClick={onClose} />
           <main>
             <header>
               <h1>Rewards History</h1>
             </header>
+            <PClose onClick={onClose} />
+
             <div className={'tableDiv'}>
               <table>
                 <tr>
