@@ -21,7 +21,7 @@ import PButton from '@/newComponents/PButton';
 import PDropdown from '@/newComponents/PDropdown';
 import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 import ConfirmDeleteDialog from '../ConfirmDeleteDialog';
-import SplicedIcons from '@/newComponents/SplicedIcons'
+import SplicedIcons from '@/newComponents/SplicedIcons';
 import './index.scss';
 import { formatDate, div } from '../../../utils/utils';
 import request from '@/utils/request';
@@ -130,7 +130,7 @@ const Cards: React.FC<PDropdownProps> = memo(
         i.verificationContent === 'Assets Proof'
       ) {
         str = 'Asset balance';
-      } 
+      }
       // if (i.attestationType === 'Assets Certification') {
       //   if (i.verificationContent === 'Assets Proof') {
       //     str = 'Asset balance';
@@ -386,7 +386,12 @@ const Cards: React.FC<PDropdownProps> = memo(
                     </div>
                     <div className="descItems">
                       <div className="descItem">
-                        <div className="label">On-chain{ i.event? `(${eventMetaMap[i.event].nameInAttestation})`: ''}</div>
+                        <div className="label">
+                          On-chain
+                          {i.event
+                            ? `(${eventMetaMap[i.event].nameInAttestation})`
+                            : ''}
+                        </div>
                         <div className="value onChain">
                           <div className="chains">
                             {i.provided?.map((c, k) => (

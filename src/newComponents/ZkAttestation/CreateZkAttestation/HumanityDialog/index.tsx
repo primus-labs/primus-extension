@@ -108,7 +108,27 @@ const Nav: React.FC<PButtonProps> = memo(
       },
       []
     );
-
+    const storeEventInfoFn = useCallback(async (fullAttestation) => {
+      const {
+        event: eventId,
+        address: currentAddress,
+        source,
+        templateId,
+        requestid,
+      } = fullAttestation;
+      const res = await chrome.storage.local.get([eventId]);
+      if (res[eventId]) {
+        const lastEventObj = JSON.parse(res[eventId]);
+        const lastInfo = lastEventObj[currentAddress];
+        if (lastInfo) {
+          const { taskMap } = lastInfo;
+          taskMap.attestation[templateId] = requestid;
+          await chrome.storage.local.set({
+            [eventId]: JSON.stringify(lastEventObj),
+          });
+        }
+      }
+    }, []);
     const fetchAttestForGoogle = useCallback(
       async (form) => {
         const isFromBASEvent = fromEvents === BASEVENTNAME;
@@ -154,13 +174,11 @@ const Nav: React.FC<PButtonProps> = memo(
             requestid: attestationId,
             sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
             event: fromEvents,
+            templateId: '100', // TODO google template id
           };
-          if (isFromBASEvent) {
-            await storeBASEventInfoFn(connectedWallet?.address, {
-              [GOOGLEWEBPROOFID]: fullAttestation.requestid,
-            });
+          if (fromEvents) {
+            await storeEventInfoFn(fullAttestation);
           }
-
           const credentialsObj = { ...credentialsFromStore };
           credentialsObj[attestationId] = fullAttestation;
           await chrome.storage.local.set({
@@ -211,7 +229,7 @@ const Nav: React.FC<PButtonProps> = memo(
         BASEventDetail?.ext?.schemaType,
         storeBASEventInfoFn,
         dispatch,
-        setMsgsFn,
+        setMsg,
       ]
     );
     const handleSubmitSetDetail = useCallback(

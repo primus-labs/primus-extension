@@ -420,15 +420,19 @@ export const dataSourceWebMsgListener = async (
       await chrome.tabs.remove(tabCreatedByPado.id);
     }
     if (name === 'end') {
-      chrome.tabs.sendMessage(
-        tabCreatedByPado.id,
-        request,
-        function (response) {}
-      );
-      chrome.webRequest.onBeforeSendHeaders.removeListener(
-        onBeforeSendHeadersFn
-      );
-      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+      if (tabCreatedByPado) {
+        chrome.tabs.sendMessage(
+          tabCreatedByPado.id,
+          request,
+          function (response) {}
+        );
+        chrome.webRequest.onBeforeSendHeaders.removeListener(
+          onBeforeSendHeadersFn
+        );
+        chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+      }
+
+      
     }
   } else {
     if (name === 'end') {

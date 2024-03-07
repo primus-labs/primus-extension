@@ -200,7 +200,7 @@ const DataSourceItem = memo(() => {
   const { connected } = useCheckIsConnectedWallet(checkIsConnectFlag);
 
   const handleTask = useCallback(
-    (i,k) => {
+    (i, k) => {
       const prevStep = stepList[k - 1];
       if (i.finished || (prevStep && !prevStep.finished)) {
         return;
@@ -301,7 +301,7 @@ const DataSourceItem = memo(() => {
           }
         }
       } else if (taskId === 'check') {
-        window.open(eventDetail?.ext?.intractUrl ?? 'https://poh.linea.build/');
+        window.open(eventDetail?.ext?.intractUrl);
       }
     },
     [dispatch, eventDetail, initEvent]
@@ -311,6 +311,7 @@ const DataSourceItem = memo(() => {
   }, []);
   const initTaskStatus = useCallback(async () => {
     const res = await chrome.storage.local.get([eventId]);
+
     const currentAddress = connectedWallet?.address;
     if (res[eventId]) {
       const lastEventObj = JSON.parse(res[eventId]);
@@ -319,6 +320,7 @@ const DataSourceItem = memo(() => {
         const { taskMap } = lastInfo;
         const statusM = Object.keys(taskMap).reduce((prev, curr) => {
           const currTask = taskMap[curr];
+
           // tasksProcess
           if (currTask) {
             const taskLen = Object.keys(currTask).length;
@@ -354,7 +356,7 @@ const DataSourceItem = memo(() => {
   }, [connected, activeTaskId]);
   useEffect(() => {
     initTaskStatus();
-  }, []);
+  }, [initTaskStatus]);
   useEffect(() => {
     if (!visibleSocialTasksDialog) {
       initTaskStatus();
@@ -364,18 +366,18 @@ const DataSourceItem = memo(() => {
     if (!visibleAttestationTasksDialog) {
       initTaskStatus();
     }
-  }, [visibleAttestationTasksDialog]);
+  }, [visibleAttestationTasksDialog, initTaskStatus]);
   useEffect(() => {
     if (attestLoading === 2) {
       setVisibleAttestationTasksDialog(false);
       initTaskStatus();
     }
-  }, [attestLoading, visibleAttestationTasksDialog]);
+  }, [attestLoading, visibleAttestationTasksDialog, initTaskStatus]);
   useEffect(() => {
     if (activeOnChain.loading === 0) {
       initTaskStatus();
     }
-  }, [activeOnChain.loading]);
+  }, [activeOnChain.loading, initTaskStatus]);
   useEffect(() => {
     setStepList(Object.values(stepMap));
   }, []);

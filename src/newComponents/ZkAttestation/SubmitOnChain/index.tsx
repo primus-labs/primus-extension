@@ -61,7 +61,7 @@ const Nav: React.FC<PButtonProps> = memo(
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
 
     const [searchParams] = useSearchParams();
-    const fromEvents = searchParams.get('fromEvents');
+    const fromEvents = searchParams.get('id');
     const [step, setStep] = useState<number>(1);
     const [activeRequest, setActiveRequest] = useState<any>({});
     const [activeSendToChainRequest, setActiveSendToChainRequest] =
@@ -137,21 +137,22 @@ const Nav: React.FC<PButtonProps> = memo(
       const res = await chrome.storage.local.get([BASEVENTNAME]);
       if (res[BASEVENTNAME]) {
         const lastInfo = JSON.parse(res[BASEVENTNAME]);
-        return lastInfo;
+        return lastInfo[connectedWallet?.address];
       } else {
         return {};
       }
-    }, []);
+    }, [connectedWallet?.address]);
     const toBeUpperChainCredsFn = useCallback(async () => {
       let credArrNew: CredTypeItemType[] = Object.values(credentialsFromStore);
       const lastBASInfoObj = (await getBASInfoFn()) as any;
-      if (lastBASInfoObj?.steps && lastBASInfoObj.steps[1]) {
-        const lastTasks = lastBASInfoObj.steps[1].tasks ?? {};
-        const toBeUpperChainCredRequestids = Object.values(lastTasks);
+      if (lastBASInfoObj?.taskMap && lastBASInfoObj?.taskMap?.attestation) {
+        const toBeUpperChainCredRequestids = [
+          ...new Set(Object.values(lastBASInfoObj?.taskMap?.attestation)),
+        ];
         const Creds = credArrNew.filter((c: any) =>
           toBeUpperChainCredRequestids.includes(c.requestid)
         );
-        console.log('222toBeUpperChainCreds:', Creds, lastTasks);
+        console.log('222toBeUpperChainCreds:', Creds);
         return Creds;
       } else {
         return [];
@@ -652,7 +653,7 @@ const Nav: React.FC<PButtonProps> = memo(
       if (connected && chainId) {
         sucFn(connectedWallet, chainId as string);
       }
-    }, [connected, chainId]);
+    }, [connected, chainId, connectedWallet]);
     // useEffect(() => {
     //   if (visible) {
     //     setStep(1);

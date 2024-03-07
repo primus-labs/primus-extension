@@ -59,7 +59,6 @@ const useAuthorization2 = () => {
           }
         }
       });
-      debugger;
       if (needCheckLogin) {
         const checkIsLoginFn = async (state, source) => {
           const res = await checkIsLogin({
@@ -148,7 +147,6 @@ const useAuthorization2 = () => {
         if (sourceMap2['discord']) {
           authUrl = DISCORDINVITEURL;
           needCheckLogin = false
-          debugger
         } else {
           authUrl = `${authUrl}&redirectUrl=${DISCORDINVITEURL}`;
           needCheckLogin = true;

@@ -103,7 +103,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             verificationValue = 'N/A';
           }
         }
-        debugger;
         setVisibleAssetDialog(attestationType);
         const presetsP = {
           verificationContent,

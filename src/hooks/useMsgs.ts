@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { setMsgs } from '@/store/actions';
 import type { UserState } from '@/types/store';
 
 const useMsgs = function useMsgs() {
@@ -10,7 +11,7 @@ const useMsgs = function useMsgs() {
       const id = Date.now();
       const newMsgs = {
         ...msgs,
-        id: {
+        [id]: {
           id,
           ...infoObj,
           // type: 'error',

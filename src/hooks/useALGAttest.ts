@@ -13,7 +13,7 @@ import {
   setActiveAttestation,
   setMsgs,
 } from '@/store/actions';
-
+import useMsgs from '@/hooks/useMsgs';
 import useEventDetail from '@/hooks/useEventDetail';
 import useAlgorithm from '@/hooks/useAlgorithm';
 import useTimeout from '@/hooks/useTimeout';
@@ -40,6 +40,7 @@ import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 const useAttest = function useAttest() {
+  const [msgs, setMsg] = useMsgs();
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
   const fromEvents = searchParams.get('id');
@@ -58,7 +59,7 @@ const useAttest = function useAttest() {
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
-  const msgs = useSelector((state: UserState) => state.msgs);
+  // const msgs = useSelector((state: UserState) => state.msgs);
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const initCredList = useCallback(async () => {
     await dispatch(setCredentialsAsync());
@@ -67,29 +68,6 @@ const useAttest = function useAttest() {
     setIntervalSwitch(false);
     setTimeoutSwitch(false);
   }, []);
-  const storeBASEventInfoFn = useCallback(
-    async (address: any, taskExtraInfo: any) => {
-      if (fromEvents === BASEVENTNAME) {
-        const res = await chrome.storage.local.get([BASEVENTNAME]);
-        if (res[BASEVENTNAME]) {
-          const lastInfo = JSON.parse(res[BASEVENTNAME]);
-          const lastTasks = lastInfo.steps[1].tasks ?? {};
-          if (!lastInfo.address) {
-            lastInfo.address = address;
-          }
-          lastInfo.steps[1].status = 1;
-          lastInfo.steps[1].tasks = {
-            ...lastTasks,
-            ...taskExtraInfo, //taskExtraInfo: {[GOOGLEWEBPROOFID]: fullAttestation.requestid,}
-          };
-          await chrome.storage.local.set({
-            [BASEVENTNAME]: JSON.stringify(lastInfo),
-          });
-        }
-      }
-    },
-    [fromEvents]
-  );
   const storeEventInfoFn = useCallback(async (fullAttestation) => {
     const {
       event: eventId,
@@ -118,7 +96,7 @@ const useAttest = function useAttest() {
         setTimeoutSwitch(true);
         setIntervalSwitch(true);
       } else if (retcode === '2') {
-        setMsgsFn({
+        setMsg({
           type: 'error',
           title: 'Failed',
           desc: 'The algorithm has not been initialized.Please try again later.',
@@ -193,12 +171,7 @@ const useAttest = function useAttest() {
           await chrome.storage.local.remove(['activeRequestAttestation']);
           await initCredList();
           if (fullAttestation.reqType === 'web') {
-            if (fullAttestation.event === BASEVENTNAME) {
-              storeBASEventInfoFn(content.address, {
-                [parsedActiveRequestAttestation.templateId]:
-                  parsedActiveRequestAttestation.requestid,
-              });
-            } else if (fullAttestation.event === LINEAEVENTNAME) {
+            if (fullAttestation.event) {
               await storeEventInfoFn(fullAttestation);
             }
 
@@ -212,7 +185,7 @@ const useAttest = function useAttest() {
           }
           setCredRequestId(activeRequestId);
           // suc
-          setMsgsFn({
+          setMsg({
             type: 'suc',
             title: `${activeAttestation.attestationType} is created!`,
           });
@@ -267,7 +240,7 @@ const useAttest = function useAttest() {
               });
             }
           }
-          setMsgsFn({
+          setMsg({
             type: 'error',
             title: titleItem1,
             desc: descEl,
@@ -466,14 +439,14 @@ const useAttest = function useAttest() {
         },
       });
     }
-    setMsgsFn({
+    setMsg({
       type: 'error',
       title: 'Request Timed Out',
       desc: 'The service did not respond within the expected time. Please try again later.',
     });
     dispatch(setAttestLoading(3));
     dispatch(setActiveAttestation({ loading: 3 }));
-    
+
     var eventInfo: any = {
       eventType: 'ATTESTATION_GENERATE',
       rawData: {
@@ -506,43 +479,41 @@ const useAttest = function useAttest() {
   }, [padoServicePort]);
   useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
-  const setMsgsFn = useCallback(
-    (infoObj) => {
-      const id = Date.now();
-      const newMsgs = {
-        ...msgs,
-        id: {
-          id,
-          ...infoObj,
-          // type: 'error',
-          // title: 'Unable to proceed',
-          // desc: 'Please try again later.',
-        },
-      };
-      dispatch(setMsgs(newMsgs));
-    },
-    [msgs, dispatch]
-  );
+  // const setMsgsFn = useCallback(
+  //   (infoObj) => {
+  //     const id = Date.now();
+  //     const newMsgs = {
+  //       ...msgs,
+  //       [id]: {
+  //         id,
+  //         ...infoObj,
+  //         // type: 'error',
+  //         // title: 'Unable to proceed',
+  //         // desc: 'Please try again later.',
+  //       },
+  //     };
+  //     dispatch(setMsgs(newMsgs));
+  //   },
+  //   [msgs, dispatch]
+  // );
   useEffect(() => {
     const listerFn = (message: any) => {
       const { type, name } = message;
       if (type === 'pageDecode') {
         if (name === 'cancelAttest') {
-          setMsgsFn({
+          setMsg({
             type: 'error',
             title: 'Unable to proceed',
             desc: 'Please try again later.',
           });
           dispatch(setAttestLoading(3));
           dispatch(setActiveAttestation({ loading: 3 }));
-          
         } else if (name === 'sendRequest') {
           dispatch(setAttestLoading(1));
           dispatch(setActiveAttestation({ loading: 1 }));
-          
         } else if (name === 'abortAttest') {
           if (attestLoading === 1) {
-            setMsgsFn({
+            setMsg({
               type: 'error',
               title: 'Unable to proceed',
               desc: 'Please try again later.',
@@ -569,14 +540,13 @@ const useAttest = function useAttest() {
         // }
       } else if (type === 'googleAuth') {
         if (name === 'cancelAttest') {
-          setMsgsFn({
+          setMsg({
             type: 'error',
             title: 'Unable to proceed',
             desc: 'Please try again later.',
           });
           dispatch(setAttestLoading(3));
           dispatch(setActiveAttestation({ loading: 3 }));
-         
         }
       }
     };
