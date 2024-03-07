@@ -229,7 +229,6 @@ const Nav: React.FC<PButtonProps> = memo(
               (i.name === contentObj.label ||
                 i.name === contentObj.templateName)
           );
-          debugger
           // TODO-newui get account from attestation???
           const currRequestTemplate = {
             ...activeWebProofTemplate,
@@ -272,7 +271,6 @@ const Nav: React.FC<PButtonProps> = memo(
             active: true,
             currentWindow: true,
           });
-          debugger
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',

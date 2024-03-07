@@ -229,7 +229,6 @@ const DataSourceItem = memo(() => {
             const {
               taskMap: { attestation },
             } = lastInfo;
-            debugger;
             dispatch(
               setActiveOnChain({
                 loading: 1,
@@ -330,7 +329,6 @@ const DataSourceItem = memo(() => {
     }
   }, [connectedWallet?.address]);
   const handleCloseAttestationTasksDialog = useCallback(() => {
-    debugger;
     setVisibleAttestationTasksDialog(false);
   }, []);
   const handleSubmitOnChainDialog = useCallback(() => {

@@ -94,13 +94,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [xTabId]);
 
     const initTaskStatus = useCallback(async () => {
-      debugger
       const res = await chrome.storage.local.get([eventId]);
       const currentAddress = connectedWallet?.address;
       if (res[eventId]) {
         const lastEventObj = JSON.parse(res[eventId]);
         const lastInfo = lastEventObj[currentAddress];
-        debugger;
         setTaskStatusMap({ ...lastInfo.taskMap.follow });
       }
     }, [connectedWallet?.address]);

@@ -451,7 +451,6 @@ const Nav: React.FC<PButtonProps> = memo(
             const cObj = { ...credentialsFromStore };
             const curRequestid = activeOnChainAttestation?.requestid as string;
             const curCredential = cObj[curRequestid];
-            debugger;
             if (curCredential?.event === BASEVENTNAME) {
               const schemaUidObj = BASEventDetailExt?.schemaUidInfo.find(
                 (i) => i.sigFormat === LineaSchemaName

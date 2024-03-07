@@ -73,7 +73,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       onSubmit();
     }, [onSubmit]);
     const handleAttest = useCallback((taskId) => {
-      debugger
       let attestationType, verificationContent, verificationValue, dataSourceId;
       if (taskId === '1') {
         attestationType = 'Humanity Verification';
@@ -91,7 +90,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       setAttestationPresets(presetsP);
     }, []);
     useEffect(() => {
-      debugger
       if (!multipleTask) {
         handleAttest(taskIds[0]);
       }
