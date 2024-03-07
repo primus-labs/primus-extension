@@ -422,7 +422,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         // const schemaType = schemaTypeMap[type as keyof typeof schemaTypeMap];
         const schemaType =
           event === BASEVENTNAME
-            ? BASEventDetail?.ext?.schemaType
+            ? BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY'
             : 'GOOGLE_ACCOUNT_OWNER';
         const attestationId = requestid ?? uuidv4();
         const eventInfo: any = {
@@ -463,6 +463,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             requestid: attestationId,
             sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
             event: fromEvents,
+            schemaType,
           };
           await storeBASEventInfoFn(connectedWallet?.address, {
             [GOOGLEWEBPROOFID]: fullAttestation.requestid,

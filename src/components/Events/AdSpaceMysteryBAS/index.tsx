@@ -46,7 +46,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
 
     const sArr = s.split('-');
     const eArr = e.split('-');
-    return `${sArr[0]} ~ `;
+    return `${sArr[0]} ~ ${eArr[0]}`;
   }, [BASEventPeriod]);
 
   const eventActiveFlag = useMemo(() => {
@@ -120,7 +120,7 @@ const AdSpace: FC<AdSpaceProps> = memo(({ onClick }) => {
           <div className="left">
             <img className={formatImgCN} src={formatImgSrc} alt="" />
             <div className="bannerContent">
-              <h3 className="ct">BNBChain Attestation Alliance</h3>
+              <h3 className="ct">BAS Attestation Alliance</h3>
               <div className="cn">
                 <p>
                   Bringing more traditional data attestations to the BNB

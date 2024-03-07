@@ -387,7 +387,11 @@ export async function attestByDelegationProxyFee(params) {
   console.log('eas attestByDelegationProxyFee tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
-  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
+  if (
+    networkName.startsWith('Linea') ||
+    networkName.indexOf('Scroll') > -1 ||
+    networkName.indexOf('opBNB') > -1
+  ) {
     return txreceipt.transactionHash;
   } else {
     const newAttestationUID = txreceipt.logs[txreceipt.logs.length - 1].data;

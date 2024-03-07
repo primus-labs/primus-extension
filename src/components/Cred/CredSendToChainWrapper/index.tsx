@@ -26,6 +26,7 @@ import {
   SCROLLSCHEMANAME,
   BNBSCHEMANAME,
   BNBGREENFIELDSCHEMANAME,
+  OPBNBSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
 import { CredVersion, SCROLLEVENTNAME } from '@/config/constants';
@@ -214,8 +215,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           Name = LINEASCHEMANAME;
         } else if (
           formatNetworkName &&
-          (formatNetworkName.indexOf('BSC') > -1 ||
-            formatNetworkName.indexOf('BNB Greenfield') > -1)
+          formatNetworkName.indexOf('BSC') > -1
         ) {
           Name = BNBSCHEMANAME;
         } else if (
@@ -228,6 +228,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           formatNetworkName.indexOf('BNB Greenfield') > -1
         ) {
           Name = BNBGREENFIELDSCHEMANAME;
+        } else if (formatNetworkName && formatNetworkName.indexOf('opBNB') > -1) {
+          Name = OPBNBSCHEMANAME;
         } else {
           // Name = 'EAS';
           Name = 'EAS-Ethereum';

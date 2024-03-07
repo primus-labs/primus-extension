@@ -235,6 +235,38 @@ const EASINFOMAP = {
       endpointUrl: 'https://gnfd-testnet-sp1.bnbchain.org',
       bucketDetailUrl: 'https://testnet.dcellar.io/buckets',
     },
+    opBNB: {
+      showName: 'opBNB',
+      icon: iconBinance,
+      title: 'opBNB',
+      rpcUrl: 'https://opbnb-testnet-rpc.bnbchain.org',
+      easContact: '0x5e905F77f59491F03eBB78c204986aaDEB0C6bDa',
+      easProxyFeeContract: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
+      schemas: {
+        'BAS-opBNB-Testnet': {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+          schemaUidWeb:
+            '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
+        },
+        PolygonID: {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+        },
+      },
+      chainId: '0x15eb', // 5611
+      chainName: 'opBNB Testnet',
+      rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'],
+      blockExplorerUrls: ['https://testnet.opbnbscan.com/'],
+      nativeCurrency: {
+        name: 'tBNB',
+        symbol: 'tBNB',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://testnet.opbnbscan.com/tx',
+    },
     Arbitrum: {
       showName: 'Arbitrum',
       icon: iconArbitrum,
@@ -504,7 +536,7 @@ const EASINFOMAP = {
       transactionDetailUrl: 'https://arbitrum.easscan.org/attestation/view',
     },
     BSC: {
-      showName: 'BSC',
+      showName: 'BNB Chain',
       icon: iconBinance,
       title: 'BSC',
       rpcUrl: 'https://bsc-dataseed.binance.org/',
@@ -737,11 +769,17 @@ const BNBSCHEMANAMEMAP = {
 };
 export let BNBSCHEMANAME = BNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDSCHEMANAMEMAP = {
-  development: 'BNB Greenfield Testnet',
-  test: 'BNB Greenfield Testnet',
-  production: 'BNB Greenfield Mainnet',
+  development: 'BAS-Greenfield-Testnet',
+  test: 'BAS-Greenfield-Testnet',
+  production: 'BAS-Greenfield-Mainnet',
 };
 export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
+const OPBNBSCHEMANAMEMAP = {
+  development: 'BAS-opBNB-Testnet',
+  test: 'BAS-opBNB-Testnet',
+  production: 'BAS-opBNB-Mainnet',
+};
+export let OPBNBSCHEMANAME = OPBNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDURLMAP = {
   development: 'http://api-dev.padolabs.org:9095/',
   test: 'http://api-dev.padolabs.org:9095/',

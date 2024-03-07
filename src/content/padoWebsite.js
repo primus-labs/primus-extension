@@ -1,9 +1,14 @@
 const BASEVENTNAME = 'BAS_EVENT_PROOF_OF_HUMANITY';
+const LINEAEVENTNAME = 'LINEA_DEFI_VOYAGE';
 
-var padoExtenstionTabId = null;
 var regenerateEl;
 var upperChainEl;
 var completeUpperChainEl;
+window.pado = 'pado';
+console.log('window in content', window.pado);
+window.padoFn = (p) => {
+  console.log('padoFn called');
+};
 function createDomElement(html) {
   var dom = new DOMParser().parseFromString(html, 'text/html');
   return dom.body.firstElementChild;
@@ -12,36 +17,30 @@ var padoStr = `<div id="pado-extension-inject-el"></div>`;
 var injectEl = createDomElement(padoStr);
 document.body.appendChild(injectEl);
 
-var EventsNavEl = document.querySelector('#EventsNav');
+window.addEventListener(
+  'message',
+  (e) => {
+    const { target, name, params } = e.data;
+    if (target === 'padoExtension') {
+      console.log('padoExtension content onMessage', e.data);
+      if (name === 'event') {
+        const { eventName, methodName, path } = params;
+        chrome.runtime.sendMessage({
+          type: 'padoWebsite',
+          name: 'event',
+          params: {
+            eventName,
+            methodName,
+            path
+          },
+        });
+      }
+    }
+  },
+  false
+);
 
-// window.PADO = 'pado'
-const fn = () => {
-  var entranceEl = document.querySelector('#LINEA_DEFI_VOYAGE_entrance');
-  console.log('pado-extension-entranceEl', entranceEl);
-  if (entranceEl) {
-    entranceEl.onclick = (e) => {
-      e.preventDefault();
-      chrome.runtime.sendMessage({
-        type: 'padoWebsite',
-        name: 'createTab',
-        params: {
-          eventName: 'LINEA_DEFI_VOYAGE',
-        },
-      });
-      return;
-    };
-  }
-};
-fn();
-if (EventsNavEl) {
-  console.log('pado-extension-EventsNavEl', EventsNavEl);
-  EventsNavEl.addEventListener('click', () => {
-    setTimeout(() => {
-      fn();
-    }, 300);
-  });
-}
-
+// BNB Greenfield upper chain
 const regenerateFn = () => {
   regenerateEl = document.querySelector('#regenerate');
   upperChainEl = document.querySelector('#upperChain');
@@ -130,32 +129,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   }
 });
-
-let checkBASEventEntranceElTimer = null;
-if (window.location.pathname === '/basevent') {
-  checkBASEventEntranceElTimer = setInterval(() => {
-    var BASEventEntranceEl = document.querySelector(
-      '#BAS_EVENT_PROOF_OF_HUMANITY_entrance'
-    );
-    console.log(
-      '222 BAS_EVENT_PROOF_OF_HUMANITY_entrance btn',
-      BASEventEntranceEl
-    );
-    if (BASEventEntranceEl) {
-      BASEventEntranceEl.onclick = (e) => {
-        console.log('222 BASEventEntranceEl clicked ----');
-        e.preventDefault();
-        chrome.runtime.sendMessage({
-          type: 'padoWebsite',
-          name: 'createTab',
-          params: {
-            eventName: BASEVENTNAME,
-          },
-        });
-        return;
-      };
-
-      clearInterval(checkBASEventEntranceElTimer);
-    }
-  }, 200);
-}

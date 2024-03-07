@@ -147,20 +147,18 @@ chrome.runtime.sendMessage(
         var loadingTxtEl = document.querySelector('.loadingTxt');
         var progressPercentage = 0;
 
-        function simulateFileUpload() {
+        function simulateFileUpload() { 
           progressPercentage += 1;
-          if (progressPercentage > 0 && progressPercentage <= 0.8) {
+          if (progressPercentage > 0 && progressPercentage <= 1.25) {
             loadingTxtEl.innerHTML = 'Connecting to PADO node...';
-          } else if (progressPercentage > 0.81 && progressPercentage <= 1.6) {
+          } else if (progressPercentage > 1.25 && progressPercentage <= 2.5) {
             loadingTxtEl.innerHTML = 'Connecting to data source...';
-          } else if (progressPercentage > 1.61 && progressPercentage <= 5) {
-            loadingTxtEl.innerHTML = '3PC-TLS Execution...';
-          } else if (progressPercentage > 5.1 && progressPercentage <= 60) {
-            loadingTxtEl.innerHTML = 'IZK Execution...';
-          } else if (progressPercentage > 60 && progressPercentage <= 100) {
-            loadingTxtEl.innerHTML = `Signature Generation...`;
-          } else if (progressPercentage > 100) {
-            loadingTxtEl.innerHTML = 'Completed...';
+          } else if (progressPercentage > 2.5 && progressPercentage <= 5) {
+            loadingTxtEl.innerHTML = 'MPC-TLS executing...';
+          } else if (progressPercentage > 5 && progressPercentage <= 100) {
+            loadingTxtEl.innerHTML = 'IZK proving and verifying...';
+          }  else if (progressPercentage > 100) {
+            loadingTxtEl.innerHTML = 'Attestation creation completed ...';
             progressPercentage = 100;
             clearInterval(intervalTimer);
             if (padoRightNode.innerHTML !== '3/3') {
