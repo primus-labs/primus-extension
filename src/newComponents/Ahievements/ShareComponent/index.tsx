@@ -68,7 +68,6 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       });
       console.log(rsp);
       if (rsp.rc === 0) {
-        debugger
         copy(rsp.result.content)
         window.open('https://discord.com/channels/@me');
       } else {
