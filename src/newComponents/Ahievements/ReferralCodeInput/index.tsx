@@ -79,21 +79,13 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
             <div className={'inputTitle'}>
               Referral Code
             </div>
-            <Form initialValues={{ referralCode: referralCode}}>
               <div className={'inputComponent'}>
-                <Form.Item name={'referralCode'} rules={[
-                  {
-                    required: true,
-                    message:''
-                  }
-                ]}>
                   <Input className={'inputComponent'} defaultValue={referralCode} value={referralCode}
                          onChange={(e) => setReferralCode(e.target.value)} />
-                </Form.Item>
+                {/*</Form.Item>*/}
                 <button onClick={handlePaste} >Paste</button>
               </div>
-              <PButton text={'Confirm'} disabled={!referralCode || referralCode.trim() === ''} className={'confirm-button'} onClick={handleSubmit} />
-            </Form>
+              <PButton text={'Confirm'} disabled={referralCode===""||referralCode=== undefined} className={'confirm-button'} onClick={handleSubmit} />
           </main>
 
         </div>

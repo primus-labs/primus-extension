@@ -4,7 +4,7 @@
 
 .pDialog2.referral-code {
   width: 448px;
-  height: 300px;
+  height: 288px;
   main {
     .detailWrapper {
       @include detailWrapper;
@@ -47,7 +47,6 @@
       }
     }
     .confirm-button{
-      margin-top: 15px;
       font-size: 14px;
       font-family: 'IBM Plex Sans';
       width: 400px;
