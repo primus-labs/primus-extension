@@ -45,6 +45,9 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
     dispatch(setConnectWalletActionAsync(undefined));
   };
   const handleChangeAddress = (addr: any) => {
+    if (addr === connectedWallet?.address) {
+      return;
+    }
     dispatch(setConnectWalletActionAsync({
       id: "metamask",
       name: "MetaMask",

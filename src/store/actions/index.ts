@@ -260,7 +260,7 @@ export const connectWalletAsync = (
         }
       } else {
         // startFn && (await startFn());
-        await dispatch(setConnectWalletDialogVisibleAction(true));
+        //await dispatch(setConnectWalletDialogVisibleAction(true));
         const timestamp: string = +new Date() + '';
         const signature = await requestSign(address, timestamp, walletInfo);
         if (!signature) {
