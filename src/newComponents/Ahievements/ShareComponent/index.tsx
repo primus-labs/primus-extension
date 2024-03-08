@@ -16,6 +16,7 @@ import { shareDiscord, shareTelegram, shareTwitter } from '@/services/api/achiev
 import copy from 'copy-to-clipboard';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import PButton from '@/newComponents/PButton';
 
 
 interface PButtonProps {
@@ -36,6 +37,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
     const domEl = useRef(null);
 
     const [isSharing, setIsSharing] = useState(false);
+    const [isShowDiscordCopyBtn, setIsShowDiscordCopyBtn] = useState(false);
 
     const shareTwitterImg = async () => {
       if (isSharing) {
@@ -62,6 +64,10 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       }
     };
 
+
+    const toDiscordSharePage = async ()=>{
+      setIsShowDiscordCopyBtn(true)
+    }
     const shareDiscordImg = async () => {
       if (isSharing) {
         return;
@@ -85,6 +91,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
         console.log(e);
       } finally {
         setIsSharing(false);
+        setIsShowDiscordCopyBtn(false)
       }
     };
 
@@ -168,14 +175,23 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                   </a>
                 </div>
               </div>
+              {!isShowDiscordCopyBtn &&
               <div className={'shareMedia'}>
                 Share to
                 <div className={'shareIcon'}>
                   <img src={x} style={{ margin: '0 10px', cursor: 'pointer' }} onClick={shareTwitterImg} />
-                  <img src={discord} style={{ margin: '0 10px', cursor: 'pointer' }} onClick={shareDiscordImg} />
+                  <img src={discord} style={{ margin: '0 10px', cursor: 'pointer' }} onClick={toDiscordSharePage} />
                   <img src={telegram} style={{ margin: '0 10px', cursor: 'pointer' }} onClick={shareTelegramImg} />
                 </div>
               </div>
+              }
+              {
+                isShowDiscordCopyBtn &&
+                <div className={'shareDiscordCopy'}>
+                  Copy and paste the snapshot to your Discord channel.
+                  <PButton className={'shareDiscordCopyBtn'} onClick={shareDiscordImg} text={'Copy to share'}/>
+                </div>
+              }
 
             </div>
           </main>
