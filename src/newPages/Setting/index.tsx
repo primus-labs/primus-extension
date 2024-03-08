@@ -7,7 +7,7 @@ import mode from '@/assets/newImg/settings/mode.svg';
 import { getUserInfo } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
 import PButton from '@/newComponents/PButton';
-import { Button, ConfigProvider, Divider, Select } from 'antd';
+import { Button, Divider, Select } from 'antd';
 import SettingsSetPwdDialog from '@/newComponents/Settings/SettingSetPwdDialog';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
 import useMsgs from '@/hooks/useMsgs';
@@ -70,8 +70,8 @@ const Setting = memo(() => {
     addMsg({
       type: 'suc',
       title: 'Copied',
-      link:''
-    })
+      link: '',
+    });
   };
 
   const copySerialNumFn = () => {
@@ -80,8 +80,8 @@ const Setting = memo(() => {
     addMsg({
       type: 'suc',
       title: 'Copied',
-      link:''
-    })
+      link: '',
+    });
   };
 
   const resetPwsSuccessCallbackFn = () => {
@@ -97,7 +97,13 @@ const Setting = memo(() => {
             <div className={'title'}>Preferred currency</div>
             <div className={'content'}>Choose the currency shown to your asset balance</div>
           </div>
-          <div className={'selectDiv'} style={{ width: '149px', height: '32px' }}>
+          <div className={'selectDiv'} style={{
+            width: '149px',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
             <Select
               style={{ width: '149px', height: '32px' }}
               defaultValue={currencyChosen}
@@ -114,7 +120,13 @@ const Setting = memo(() => {
             <p className={'title'}>Data update frequency</p>
             <p className={'content'}>Select the frequency to automatically update your fetched data sources.</p>
           </div>
-          <div className={'selectDiv'} style={{ width: '149px', height: '32px' }}>
+          <div className={'selectDiv'} style={{
+            width: '149px',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
             <Select
               style={{ width: '149px', height: '32px' }}
               defaultValue={updateFrequencyChosen}
@@ -145,8 +157,14 @@ const Setting = memo(() => {
             <p className={'title'}>Setup password</p>
             <p className={'content'}>Set a password to secure the data on your computer.</p>
           </div>
-          <div className={'selectDiv'} style={{ width: '149px', height: '32px' }}>
-            <Button onClick={() => {
+          <div className={'selectDiv'} style={{
+            width: '149px',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <Button className={'changePwdBtn'} onClick={() => {
               setShowSetPwdDialog(true);
             }}>Change Password</Button>
           </div>
@@ -165,14 +183,15 @@ const Setting = memo(() => {
         <Divider style={{ width: '1072px', marginTop: '16px', marginBottom: '16px', color: '##E0E0E0' }} />
         <div className={'modeDiv'}>
           <div className={'textDiv'}>Mode</div>
-          <img className={'iconDiv'} src={mode}></img>
+            <img className={'iconDiv'} src={mode}></img>
         </div>
       </div>
       {showSetPwdDialog && <SettingsSetPwdDialog onClose={() => {
         setShowSetPwdDialog(false);
       }} onSubmit={() => {
-      }} resetPwsSuccessCallback={resetPwsSuccessCallbackFn}/>}
-      {showInputPasswordDialog && <WebComeBackDialog onSubmit={() => {}} showDialog={setShowInputPasswordDialog} />}
+      }} resetPwsSuccessCallback={resetPwsSuccessCallbackFn} />}
+      {showInputPasswordDialog && <WebComeBackDialog onSubmit={() => {
+      }} showDialog={setShowInputPasswordDialog} />}
     </div>
   );
 });

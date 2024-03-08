@@ -8,11 +8,12 @@
   .cardDiv1 {
     padding: 24px;
     border: 1px solid var(--border-tokens-border-primary);
-    border-radius: 24px;
+    border-radius: var(--spacing-8, 8px);
     width: 1120px;
     height: 176px;
     gap: 16px;
     margin-bottom: 8px;
+    background: var(--layer-tokens-layer-primary, #fff);
 
     .currencyDiv {
       width: 1072px;
@@ -57,6 +58,10 @@
           margin-top: auto;
           margin-bottom: auto;
         }
+
+        .changePwdBtn{
+          border-color: var(--neutral-color-gray-100);
+        }
       }
 
     }
@@ -66,9 +71,10 @@
     padding: 24px;
     margin-top: 8px;
     border: 1px solid var(--border-tokens-border-primary);
-    border-radius: 24px;
+    border-radius: var(--spacing-8, 8px);
     width: 1120px;
     height: 138px;
+    background: var(--layer-tokens-layer-primary, #fff);
 
     .serialNumDiv {
       display: flex;
@@ -101,6 +107,7 @@
     }
     .modeDiv {
       display: flex;
+      align-items: center;
       .textDiv {
         font-size: 16px;
         font-weight: 500;
