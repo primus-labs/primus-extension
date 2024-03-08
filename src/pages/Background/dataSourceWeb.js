@@ -431,16 +431,16 @@ export const dataSourceWebMsgListener = async (
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
       }
-
-      
     }
   } else {
     if (name === 'end') {
-      chrome.tabs.sendMessage(
-        tabCreatedByPado.id,
-        request,
-        function (response) {}
-      );
+      if (tabCreatedByPado) {
+        chrome.tabs.sendMessage(
+          tabCreatedByPado.id,
+          request,
+          function (response) {}
+        );
+      }
     }
   }
 };
