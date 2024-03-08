@@ -1,17 +1,20 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import DataSourceBrief from '@/newComponents/DataSource/DataSourceBrief';
+import ConnectDataSource from '@/newComponents/DataSource/ConnectDataSource';
 import { useNavigate } from 'react-router-dom';
 
 const Overview = memo(() => {
+  const [activeConnectDataSourceId, setActiveConnectDataSourceId] =
+    useState<string>();
   const navigate = useNavigate();
   const dataSourceList = ['web3 wallet', 'x', 'tiktok', 'coinbase', 'binance'];
   const handleClick = useCallback(
-    (link) => {
-      navigate(link);
+    (i) => {
+      setActiveConnectDataSourceId(i);
     },
     [navigate]
   );
@@ -32,7 +35,13 @@ const Overview = memo(() => {
       <ul className="dataSourceItems">
         {dataSourceList.map((i, k) => {
           return (
-            <li className="dataSourceItem" key={k}>
+            <li
+              className="dataSourceItem"
+              key={k}
+              onClick={() => {
+                handleClick(i);
+              }}
+            >
               <DataSourceBrief id={i} />
               <PButton
                 className="connectBtn"
@@ -46,6 +55,9 @@ const Overview = memo(() => {
           );
         })}
       </ul>
+      {activeConnectDataSourceId && (
+        <ConnectDataSource dataSourceId={activeConnectDataSourceId} />
+      )}
     </div>
   );
 });

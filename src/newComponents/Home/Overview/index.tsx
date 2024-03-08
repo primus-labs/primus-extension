@@ -10,6 +10,7 @@ import { EASInfo } from '@/config/chain';
 import type { UserState } from '@/types/store';
 import PButton from '@/newComponents/PButton';
 import SplicedIcons from '@/newComponents/SplicedIcons';
+
 import './index.scss';
 
 type ItemMap = {
@@ -50,6 +51,7 @@ const Overview = memo(() => {
       link: '/achievements',
     },
   });
+  
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
@@ -105,7 +107,7 @@ const Overview = memo(() => {
     (id) => {
       if (id === 'dataSource') {
         const l = Object.values(connectedDataSources).map((i: any) => i.icon);
-        return l.concat(l);
+        return l;
       } else if (id === 'zkAttestation') {
         return Object.values(onChains).map((i: any) => i.icon);
       } else {
@@ -168,6 +170,7 @@ const Overview = memo(() => {
           );
         })}
       </ul>
+      
     </div>
   );
 });

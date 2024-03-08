@@ -59,7 +59,7 @@ const DataSourceItem = memo(() => {
     return activeConnectType ? 'Connect by ' + activeConnectType : 'Connect';
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(async () => {
-    if (activeDataSouceMetaInfo.name === 'Web3 Wallet') {
+    if (lowerCaseDataSourceName === 'Web3 Wallet') {
       await dispatch({ type: 'setRequireFetchAssets', payload: true });
       dispatch(setConnectWalletDialogVisibleAction(true));
       return;
@@ -82,7 +82,6 @@ const DataSourceItem = memo(() => {
         };
       }
       // TODO END
-
       chrome.runtime.sendMessage({
         type: 'dataSourceWeb',
         name: 'init',
@@ -92,22 +91,12 @@ const DataSourceItem = memo(() => {
         },
       });
     } else if (activeConnectType === 'Auth') {
-      //  if (item.type === 'Social') {
       var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
-      // if (authorizeSourceKey === 'G ACCOUNT') {
-      //   authorizeSourceKey = 'GOOGLE';
-      // }
       authorize(authorizeSourceKey, () => {
         dispatch(setSocialSourcesAsync());
       });
-      //  } else if (item.type === 'Identity') {
-      //    // TODO
-      //    setActiveSource(item);
-      //    setStep(0);
-      //    setKYCDialogVisible(true);
-      //  }
     }
-  }, [activeDataSouceMetaInfo, dispatch]);
+  }, [dispatch]);
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
