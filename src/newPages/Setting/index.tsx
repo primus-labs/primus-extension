@@ -10,6 +10,7 @@ import PButton from '@/newComponents/PButton';
 import { Button, ConfigProvider, Divider, Select } from 'antd';
 import SettingsSetPwdDialog from '@/newComponents/Settings/SettingSetPwdDialog';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
+import useMsgs from '@/hooks/useMsgs';
 
 
 const Setting = memo(() => {
@@ -24,6 +25,7 @@ const Setting = memo(() => {
 
   const [showSetPwdDialog, setShowSetPwdDialog] = useState(false);
   const [showInputPasswordDialog, setShowInputPasswordDialog] = useState(false);
+  const { msgs, addMsg } = useMsgs();
 
 
   useEffect(() => {
@@ -65,13 +67,21 @@ const Setting = memo(() => {
   const copyMainWalletFn = () => {
     copy(mainWallet);
     // eslint-disable-next-line no-undef
-    alert('copy success');
+    addMsg({
+      type: 'suc',
+      title: 'Copied',
+      link:''
+    })
   };
 
   const copySerialNumFn = () => {
     copy(serialNum);
     // eslint-disable-next-line no-undef
-    alert('copy success');
+    addMsg({
+      type: 'suc',
+      title: 'Copied',
+      link:''
+    })
   };
 
   const resetPwsSuccessCallbackFn = () => {

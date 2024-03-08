@@ -6,6 +6,7 @@ import pointsEarnedShareIcon from '@/assets/newImg/achievements/pointsEarnedShar
 import textCopyIcon from '@/assets/newImg/achievements/textCopyIcon.svg';
 import { getUserInfo } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
+import useMsgs from '@/hooks/useMsgs';
 
 
 type AchievementTopCardProps = {
@@ -28,13 +29,18 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
                                                                       handleSharePoints,
                                                                       handleShareReferralCode,
                                                                     }) => {
+  const { msgs, addMsg } = useMsgs();
 
 
   const copyReferralCodeFn = () => {
     const copyDetail = `Download and install the PADO Chrome extension from https://padolabs.org/. Remember to sign up and fill in your referral code ${referralCode}  to earn extra points.`
     copy(copyDetail);
 
-    alert('copy success');
+    addMsg({
+      type: 'suc',
+      title: 'Copied',
+      link:''
+    })
   };
 
 

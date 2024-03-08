@@ -9,6 +9,7 @@ import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
+import useMsgs from '@/hooks/useMsgs';
 
 export type TaskItem = {
   taskIcon: string;
@@ -33,6 +34,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
   const showCodeDiag = taskItemWithClick.showCodeDiag;
   const refreshTotalScore = taskItemWithClick.refreshTotalScore;
   const [finished, setFinished] = useState(taskItemWithClick.isFinished);
+  const { msgs, addMsg } = useMsgs();
 
   const getDataSourceData = async (datasource) => {
     const data = await chrome.storage.local.get(datasource);
@@ -50,7 +52,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
       const res = await getDataSourceData('discord');
       if (!res.discord) {
-        alert('please connect discord');
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect discord data.',
+          link: "/datas/data?dataSourceId=discord",
+          linkText: 'View details',
+        });
         return;
       }
       const discordUserInfo = JSON.parse(res.discord);
@@ -63,7 +71,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'CONNECT_X_DATA' || taskItem.taskIdentifier === 'FOLLOW_PADOLABS') {
       const res = await getDataSourceData('x');
       if (!res.x) {
-        alert('please connect x');
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect x data.',
+          link: "/datas/data?dataSourceId=x",
+          linkText: 'View details',
+        });
         return;
       }
       const xUserInfo = JSON.parse(res.x);
@@ -75,6 +89,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'CONNECT_DISCORD_DATA') {
       const res = await getDataSourceData('discord');
       if (!res.discord) {
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect discord data.',
+          link: "/datas/data?dataSourceId=discord",
+          linkText: 'View details',
+        });
         return;
       }
       const discordUserInfo = JSON.parse(res.discord);
@@ -162,7 +183,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'CONNECT_TIKTOK_ACCOUNT_DATA') {
       const res = await getDataSourceData('tiktok');
       if (!res.tiktok) {
-        alert('please connect tiktok');
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect tiktok data.',
+          link: "/datas/data?dataSourceId=tiktok",
+          linkText: 'View details',
+        });
         return;
       }
       const tiktokUserInfo = JSON.parse(res.tiktok);
@@ -175,7 +202,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'CONNECT_GOOGLE_ACCOUNT_DATA') {
       const res = await getDataSourceData('google');
       if (!res.google) {
-        alert('please connect google');
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect google data.',
+          link: "/datas/data?dataSourceId=google",
+          linkText: 'View details',
+        });
         return;
       }
       const googleUserInfo = JSON.parse(res.google);
@@ -188,7 +221,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier == 'CONNECT_BINANCE_DATA') {
       const res = await getDataSourceData('binance');
       if (!res.binance) {
-        alert('please connect binance');
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect binance data.',
+          link: "/datas/data?dataSourceId=binance",
+          linkText: 'View details',
+        });
         return;
       }
       const binanceInfo = JSON.parse(res.binance);
@@ -207,7 +246,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier == 'CONNECT_COINBASE_DATA') {
       const res = await getDataSourceData('coinbase');
       if (!res.coinbase) {
-        alert('please connect coinbase');
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect coinbase data.',
+          link: "/datas/data?dataSourceId=coinbase",
+          linkText: 'View details',
+        });
         return;
       }
       const coinbaseInfo = JSON.parse(res.coinbase);
@@ -225,7 +270,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     if (taskItem.taskIdentifier === 'CONNECT_OKX_DATA') {
       const res = await getDataSourceData('okx');
       if (!res.okx) {
-        alert('please connect okx');
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect okx data.',
+          link: "/datas/data?dataSourceId=okx",
+          linkText: 'View details',
+        });
         return;
       }
       const okxInfo = JSON.parse(res.okx);
@@ -250,7 +301,11 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       setFinished(true);
       refreshTotalScore(taskItem.taskXpScore, taskItem.taskIdentifier);
     } else {
-      alert(res.mc);
+      addMsg({
+        type: 'info',
+        title: 'Not qualified',
+        desc: res.msg,
+      });
     }
   };
 
