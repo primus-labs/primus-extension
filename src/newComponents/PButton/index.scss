@@ -27,6 +27,7 @@ button.PButton {
   box-sizing: border-box;
   cursor: pointer;
   width: fit-content;
+  white-space: nowrap;
   &.disabled {
     cursor: not-allowed;
   }

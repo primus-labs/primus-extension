@@ -83,7 +83,6 @@ const DataSourceItem = memo(() => {
       }
       // TODO END
 
-      // r.name === 'Account Ownership' &&
       chrome.runtime.sendMessage({
         type: 'dataSourceWeb',
         name: 'init',

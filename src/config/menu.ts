@@ -8,12 +8,13 @@ export type NavItem = {
   icon?: any;
   toBeActive?: boolean;
 };
+
 export const list: NavItem[] = [
   {
     label: 'Home',
     value: 'Home',
     iconName: 'icon-iconMenuHome',
-    link: '/home',
+    link: '/',
   },
   {
     label: 'Data Source',
@@ -25,7 +26,7 @@ export const list: NavItem[] = [
     label: 'Data Overview',
     value: 'Data Overview',
     iconName: 'icon-iconMenuDataOverview',
-    link: '/',
+    link: '/dataDashboard',
   },
   {
     label: 'zkAttestation',
@@ -43,7 +44,7 @@ export const list: NavItem[] = [
     label: 'Developer',
     value: 'Developer',
     iconName: 'icon-iconMenuDeveloper',
-    link: '/4',
+    link: '/developer',
   },
   {
     label: 'Achievements',

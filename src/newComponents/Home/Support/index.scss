@@ -1,0 +1,42 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.homeSupport {
+  @include fccs;
+  width: 275px;
+  height: 100%;
+  gap: var(--spacing-16);
+  .title {
+    @include HeadlineH3;
+  }
+  .content {
+    height: 142px;
+    @include fccs;
+    width: 100%;
+    border-radius: var(--spacing-8);
+    border: 1px solid var(--border-tokens-border-primary);
+    background: var(--layer-tokens-layer-primary);
+    padding: 0 var(--spacing-24);
+    gap: var(--spacing-8);
+    .title {
+      @include HeadlineH4;
+    }
+    .mediaItems {
+      @include frss;
+      flex-wrap: wrap;
+      gap: var(--spacing-4);
+      .mediaItem {
+        width: calc((100% - var(--spacing-4)) / 2);
+        padding-top: var(--spacing-6);
+        @include frsc;
+        gap: var(--spacing-8);
+        @include BodyBody100;
+        white-space: nowrap;
+        cursor: pointer;
+        > img {
+          width: var(--spacing-16);
+        }
+      }
+    }
+  }
+}

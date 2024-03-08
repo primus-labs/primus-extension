@@ -1,0 +1,42 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.homeOverview {
+  @include fcss;
+  gap: var(--spacing-16);
+  flex: 1;
+
+  .title {
+    @include HeadlineH3;
+  }
+  .overviewItems {
+    height: 142px;
+    width: 100%;
+    @include frsc;
+    gap: 100px;
+    border-radius: var(--spacing-8);
+    border: 1px solid var(--border-tokens-border-primary);
+    background: var(--layer-tokens-layer-primary);
+    padding: 0 var(--spacing-24);
+    .overviewItem {
+      height: 100%;
+      @include fcss;
+      gap: var(--spacing-8);
+      padding-top: var(--spacing-32);
+      .title {
+        @include HeadlineH4;
+      }
+      .desc {
+        @include frss;
+        align-items: flex-end;
+        gap: var(--spacing-16);
+        .num {
+          @include NumberTitle;
+        }
+        .operationBtn {
+          height: var(--spacing-24);
+        }
+      }
+    }
+  }
+}

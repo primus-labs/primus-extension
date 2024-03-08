@@ -6,5 +6,10 @@
   .pageContent{
     @include fcss;
     gap: var(--spacing-32);
+    .pRow{
+      width: 100%;
+      @include frsc;
+      gap: var(--spacing-16);
+    }
   }
 }

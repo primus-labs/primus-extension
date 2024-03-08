@@ -17,17 +17,17 @@ import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAsset
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
 import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.svg';
 
-import Binance from '@/services/webdata/webexchange/webbinance';
+// import Binance from '@/services/webdata/webexchange/webbinance';
 
-import OKX from '@/services/webdata/webexchange/webokx';
-import KuCoin from '@/services/exchange/kucoin';
-import Coinbase from '@/services/exchange/coinbase';
-import Huobi from '@/services/exchange/huobi';
-import Gate from '@/services/exchange/gate';
-import Bitget from '@/services/exchange/bitget';
-import Bybit from '@/services/exchange/bybit';
-import Mexc from '@/services/exchange/mexc';
-import WebTikTok from '@/services/webdata/websocial/webtiktok';
+// import OKX from '@/services/webdata/webexchange/webokx';
+// import KuCoin from '@/services/exchange/kucoin';
+// import Coinbase from '@/services/exchange/coinbase';
+// import Huobi from '@/services/exchange/huobi';
+// import Gate from '@/services/exchange/gate';
+// import Bitget from '@/services/exchange/bitget';
+// import Bybit from '@/services/exchange/bybit';
+// import Mexc from '@/services/exchange/mexc';
+// import WebTikTok from '@/services/webdata/websocial/webtiktok';
 import type { ExchangeMeta, DataSourceMapType } from '@/types/dataSource';
 
 export type DataSourceItemType = ExchangeMeta & {
@@ -57,6 +57,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceTwitter,
     desc: 'Support fetching tweet & followers data for management and attestation creation.',
+    // provider: 'Alex',
     unConnectTip:
       'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
 
@@ -81,7 +82,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: 'Support fetching account name & status data for management and attestation creation.',
     unConnectTip:
       'You can fetch account name & status data from your TikTok account to manage your data or create attestations.',
-    constructorF: WebTikTok,
+    // constructorF: WebTikTok,
 
     connectType: 'Web',
   },
@@ -93,7 +94,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: 'Support fetching spot & flexible account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch spot & flexible account assets data from your Binance account to manage your assets or create attestations.',
-    constructorF: Binance,
+    // constructorF: Binance,
     baseName: 'api.binance.com',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
 
@@ -109,7 +110,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch trading account assets data from your OKX account to manage your data or create attestations.',
     requirePassphase: true,
-    constructorF: OKX,
+    // constructorF: OKX,
     baseName: 'www.okx.com',
 
     accountBalanceUrl: 'https://www.okx.com/api/v5/account/balance',
@@ -124,7 +125,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
     requirePassphase: false,
-    constructorF: Coinbase,
+    // constructorF: Coinbase,
     baseName: 'api.coinbase.com',
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
 
@@ -163,7 +164,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your Bitget account to manage your data or create attestations.',
     requirePassphase: true,
-    constructorF: Bitget,
+    // constructorF: Bitget,
     baseName: 'api.bitget.com',
 
     connectType: 'API',
@@ -178,7 +179,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
       'You can fetch spot account data from your Huobi account to manage your data or create attestations.',
     iconWithCircle: iconDataSourceHuobiWithCircle,
     requirePassphase: false,
-    constructorF: Huobi,
+    // constructorF: Huobi,
     baseName: 'api.huobi.pro',
 
     connectType: 'API',
@@ -192,7 +193,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your Bybit account to manage your data or create attestations.',
     requirePassphase: false,
-    constructorF: Bybit,
+    // constructorF: Bybit,
     baseName: 'api.bybit.com',
 
     connectType: 'API',
@@ -206,7 +207,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your KuCoin account to manage your data or create attestations.',
     requirePassphase: true,
-    constructorF: KuCoin,
+    // constructorF: KuCoin,
     baseName: 'api.kucoin.com',
 
     connectType: 'API',
@@ -220,7 +221,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your Gate account to manage your data or create attestations.',
     requirePassphase: false,
-    constructorF: Gate,
+    // constructorF: Gate,
     baseName: 'api.gateio.ws',
 
     connectType: 'API',
@@ -234,7 +235,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your MEXC account to manage your data or create attestations.',
     requirePassphase: false,
-    constructorF: Mexc,
+    // constructorF: Mexc,
     baseName: 'api.mexc.com',
 
     connectType: 'API',

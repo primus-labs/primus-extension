@@ -18,6 +18,7 @@ import Events from '@/newPages/Events';
 import Rewards from '@/newPages/Rewards';
 import EventDetail from '@/newPages/EventDetail';
 import Setting from '@/newPages/Setting';
+import ComingSoon from '@/newPages/ComingSoon';
 
 const router = [
   {
@@ -68,6 +69,14 @@ const router = [
         ],
       },
       {
+        path: 'dataDashboard',
+        element: <ComingSoon />,
+      },
+      {
+        path: 'developer',
+        element: <ComingSoon />,
+      },
+      {
         path: 'dataDetail',
         element: <DataSourceDetail />,
       },
@@ -90,7 +99,7 @@ const router = [
       {
         path: 'settings',
         element: <Setting />,
-      }
+      },
     ],
   },
   {

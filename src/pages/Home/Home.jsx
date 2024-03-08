@@ -1,7 +1,10 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import Banner from '@/newComponents/Home/Banner';
+import Slider from '@/newComponents/Events/Slider';
+import Overview from '@/newComponents/Home/Overview';
+import Support from '@/newComponents/Home/Support';
+import DataSources from '@/newComponents/Home/DataSources';
 import { postMsg } from '@/utils/utils';
 import './home.scss';
 
@@ -9,7 +12,12 @@ const Home = memo(() => {
   return (
     <div className="pageHome">
       <div className="pageContent">
-        <Banner />
+        <Slider />
+        <div className="pRow">
+          <Overview />
+          <Support/>
+        </div>
+        <DataSources/>
       </div>
     </div>
   );

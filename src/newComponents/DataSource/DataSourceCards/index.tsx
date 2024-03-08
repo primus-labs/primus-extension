@@ -9,6 +9,7 @@ import type { UserState } from '@/types/store';
 
 import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
+import DataSourceBrief from '../DataSourceBrief';
 
 import './index.scss';
 
@@ -55,7 +56,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       }
       return newList;
     }, [list, dataSourceQueryStr, dataSourceQueryType]);
-    const { sourceMap,sourceMap2 } = useAllSources();
+    const { sourceMap, sourceMap2 } = useAllSources();
 
     const handleConnect = useCallback(
       (i) => {
@@ -119,7 +120,8 @@ const Cards: React.FC<PDropdownProps> = memo(
                     </div>
                   )}
                 </div>
-                <div className="brief">
+                <DataSourceBrief id={i.id} />
+                {/* <div className="brief">
                   <img src={i.icon} alt="" />
                   <div className="intro">
                     <div className="name">{i?.showName ?? i.name}</div>
@@ -129,10 +131,8 @@ const Cards: React.FC<PDropdownProps> = memo(
                         : 'By Community'}
                     </div>
                   </div>
-                </div>
-                <div className="desc">
-                  {i.desc}
-                </div>
+                </div> */}
+                <div className="desc">{i.desc}</div>
               </div>
               <PButton
                 className="connectBtn"

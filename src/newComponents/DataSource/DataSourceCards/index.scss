@@ -44,23 +44,7 @@
           }
         }
       }
-      .brief {
-        @include frsc;
-        gap: var(--spacing-8);
-        > img {
-          width: var(--spacing-40);
-        }
-        .intro {
-          @include fcss;
-          color: var(--text-tokens-text-primary);
-          .name {
-            @include HeadlineH3;
-          }
-          .origin {
-            @include Hint;
-          }
-        }
-      }
+      
       .desc {
         @include BodyBody300;
         color: var(--text-tokens-text-secondary);

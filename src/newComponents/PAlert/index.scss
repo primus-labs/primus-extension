@@ -1,9 +1,11 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
 
 .pAlert {
   display: flex;
   border-radius: var(--spacing-4);
+  @include card-xs_shadow;
   &.suc {
     background: var(--layer-tokens-layer-green-background);
     .iconfont {
