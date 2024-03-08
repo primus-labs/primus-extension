@@ -40,6 +40,14 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
   const handleDisConnect = () => {
     dispatch(setConnectWalletActionAsync(undefined));
   };
+  const handleChangeAddress = (addr: any) => {
+    dispatch(setConnectWalletActionAsync({
+      id: "metamask",
+      name: "MetaMask",
+      address: addr,
+      provider: connectedWallet?.provider,
+    }));
+  };
 
   return (
     <div className="pConnected">
@@ -66,7 +74,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                   </div>
                   {Object.keys(connectedWallets[wK])?.map((addrK) => {
                     return (
-                      <div className="recordItem">
+                      <div className="recordItem" onClick={()=>handleChangeAddress(addrK)}>
                         <div className="left">
                           {addrK === connectedWallet?.address ? (
                             <i className="iconfont icon-Legal"></i>

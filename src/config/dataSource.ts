@@ -58,7 +58,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceTwitter,
     desc: 'Support fetching tweet & followers data for management and attestation creation.',
-    provider: 'Alex',
     unConnectTip:
       'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
 
