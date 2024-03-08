@@ -23,7 +23,7 @@ export const eventMetaMap = {
     picTxt: 'BAS Attestation Alliance',
     desc: 'Bringing more traditional data attestations to the BNB ecosystem.',
 
-    chainIds: ['BSC', 'BNB Greenfield'],
+    chainIds: ['BSC'], // , 'BNB Greenfield'
     taskMap: {
       follow: {
         x: 0,
@@ -70,5 +70,31 @@ export const eventMetaMap = {
   [SCROLLEVENTNAME]: {
     combineType: '1',
     icon: iconNetworkScroll,
+  },
+  [EARLYBIRDNFTEVENTNAME]: {
+    combineType: '0',
+    // icon: iconDataSourceBinance,
+    title: 'PADO Early Bird NFT Rewards',
+    longDesc:
+      'For trying things out, make an asset certification, submit it to Linea, and share your referral code. This will grant you the eligibility to mint the PADO early bird NFT.',
+    periodType: '1',
+    chainDesc: 'Early Bird NFT',
+    gift: '100 PADO points',
+    nameInAttestation: 'Early Bird NFT', // TODO-newui ???
+    picTxt: 'PADO Early Bird NFT Rewards',
+    desc: 'Complete an attestation with any kind of Asset Certificate.',
+    chainIds: [], // TODOnewui ???
+    taskMap: {
+      follow: {
+        x: 0,
+        discord: 0,
+      },
+      attestation: {
+        // TODOnewui ???
+      },
+      onChain: {
+        // TODOnewui ???
+      },
+    },
   },
 };

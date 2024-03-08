@@ -18,6 +18,7 @@ import {
   LINEAEVENTNAME,
   LUCKYDRAWEVENTNAME,
   eventMetaMap,
+  EARLYBIRDNFTEVENTNAME,
 } from '@/config/events';
 import { EASInfo } from '@/config/chain';
 import type { Dispatch } from 'react';
@@ -39,6 +40,7 @@ type StepItem = {
   extra?: string;
   tasksProcess?: any;
   tasks?: any;
+  operationName?: string;
 };
 type TaskStatusMap = {
   [propName: string]: number;
@@ -99,6 +101,7 @@ const lineaTaskMap: { [propName: string]: StepItem } = {
       total: 1,
       current: 0,
     },
+    operationName: 'Check',
   },
 };
 const basTaskMap: { [propName: string]: StepItem } = {
@@ -141,11 +144,65 @@ const basTaskMap: { [propName: string]: StepItem } = {
       total: 1,
       current: 0,
     },
+    operationName: 'Check',
+  },
+};
+const earlyBirdNftTskMap = {
+  follow: {
+    id: 'follow',
+    title: 'Follow PADO social medial',
+    finished: false,
+    tasksProcess: {
+      total: 2,
+      current: 0,
+    },
+    tasks: {
+      1: socialTaskMap[1],
+      2: socialTaskMap[2],
+    },
+  },
+  attestation: {
+    id: 'attestation',
+    title: 'Complete an asset certification',
+    finished: false,
+    tasksProcess: {
+      total: 1,
+      current: 0,
+    },
+  },
+  onChain: {
+    id: 'onChain',
+    title: 'Submit on-chain',
+    finished: false,
+    tasksProcess: {
+      total: 1,
+      current: 0,
+    },
+  },
+  // share: {
+  //   id: 'share',
+  //   title: 'Share your referral code',
+  //   finished: false,
+  //   tasksProcess: {
+  //     total: 1,
+  //     current: 0,
+  //   },
+  // },
+  claim: {
+    id: 'claim',
+    title: 'Claim PADO Early Bird NFT ',
+    finished: false,
+    tasksProcess: {
+      total: 1,
+      current: 0,
+    },
+    operationName: 'Claim'
   },
 };
 const eventTaskMap = {
   [BASEVENTNAME]: basTaskMap,
   [LINEAEVENTNAME]: lineaTaskMap,
+  [EARLYBIRDNFTEVENTNAME]: earlyBirdNftTskMap,
 };
 const DataSourceItem = memo(() => {
   const navigate = useNavigate();

@@ -81,10 +81,33 @@ const lineaQsMap = {
     expand: true,
   },
 };
+const earluBirdQsMap = {
+  1: {
+    id: 1,
+    question: 'Can I join this event with a different wallet address? ',
+    answer:
+      'No, the Early Bird NFT event is only available to early active users, based on the PADO extension account and the wallet address that participated in the event. If you have already claimed an NFT through your current PADO extension, you will not be able to claim again by connecting another wallet through the top right corner.',
+    expand: true,
+  },
+  2: {
+    id: 2,
+    question: 'What should I do if the attestation process fails? ',
+    answer:
+      'As the attestation is under MPC-TLS process, it often depends on your internet condition. A quick.solution is to connect with a new Wifi network/connection, or change to a different VPN node, if possible. If you get an error message with an error code, feel free to contact us in the Discord #help channel.',
+    expand: true,
+  },
+  3: {
+    id: 3,
+    question: 'How are PADO points for this event counted?',
+    answer:
+      'For PADO points, it is counted based on your PADO extension account, which means PADO points will not be double counted when you switch wallet address.',
+    expand: true,
+  },
+};
 const eventQsMap = {
   [BASEVENTNAME]: basQsMap,
   [LINEAEVENTNAME]: lineaQsMap,
-  [EARLYBIRDNFTEVENTNAME]: {},
+  [EARLYBIRDNFTEVENTNAME]: earluBirdQsMap,
 };
 const DataSourceItem = memo(() => {
   const [questionList, setQuestionList] = useState<any[]>([]);
@@ -101,7 +124,7 @@ const DataSourceItem = memo(() => {
   }, []);
   return (
     <div className="qsList">
-      <h3 className="Frequently asked questions?"></h3>
+      <h3 className="title">Frequently asked questions?</h3>
       <ul className="qss">
         {questionList.map((i, k) => {
           return (

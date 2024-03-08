@@ -7,6 +7,7 @@ import {
   LINEAEVENTNAME,
   LUCKYDRAWEVENTNAME,
   eventMetaMap,
+  EARLYBIRDNFTEVENTNAME,
 } from '@/config/events';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
@@ -50,7 +51,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           gift: '100 PADO points',
         },
         {
-          id: '2',
+          id: EARLYBIRDNFTEVENTNAME,
           combineType: '0',
 
           periodType: '1',
