@@ -144,12 +144,13 @@ const AchievementHome = memo(() => {
   const handleReferralCodeTaskFinish = () => {
     // @ts-ignore
     setReferralCodeTaskFinished(true);
-    debugger
     for (let i = 0; i < achievementTaskList.length; i++) {
       if (achievementTaskList[i].taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE') {
         setTotalScore(totalScore + achievementTaskList[i].taskXpScore);
       }
     }
+    getAchievementTaskListFn(current)
+
   };
 
   return (

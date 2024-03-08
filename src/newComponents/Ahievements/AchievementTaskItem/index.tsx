@@ -298,6 +298,11 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     };
     const res = await finishTask(finishBody);
     if (res.rc === 0) {
+      addMsg({
+        type: 'suc',
+        title: `${taskItem.taskXpScore} points earned!`,
+        link: '',
+      });
       setFinished(true);
       refreshTotalScore(taskItem.taskXpScore, taskItem.taskIdentifier);
     } else {
