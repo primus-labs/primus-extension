@@ -1,9 +1,12 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { getUserInfo } from '@/services/api/achievements';
+
 import useAllSources from '@/hooks/useAllSources';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 import { EASInfo } from '@/config/chain';
+
 import type { UserState } from '@/types/store';
 import PButton from '@/newComponents/PButton';
 import SplicedIcons from '@/newComponents/SplicedIcons';
@@ -23,6 +26,7 @@ const Overview = memo(() => {
   const navigate = useNavigate();
   const [connectedDataSources, setConnectedDataSources] = useState<any>();
   const [onChains, setOnChains] = useState<any>();
+  // const [totalScore, setTotalScore] = useState<string>();
   const [itemMap, setItemMap] = useState<ItemMap>({
     dataSource: {
       id: 'dataSource',
@@ -110,12 +114,25 @@ const Overview = memo(() => {
     },
     [onChains, connectedDataSources]
   );
+  const getUserInfoFn = async () => {
+    const res = await getUserInfo();
+    const { rc, result } = res;
+    if (rc === 0) {
+      setItemMap((m) => {
+        m.achievement.num = result.totalScore;
+        return m;
+      });
+    }
+  };
   useEffect(() => {
     initDataFn();
   }, [initDataFn]);
   useEffect(() => {
     initOnChainFn();
   }, [initOnChainFn]);
+  useEffect(() => {
+    getUserInfoFn();
+  }, []);
   return (
     <div className="homeOverview">
       <div className="title">

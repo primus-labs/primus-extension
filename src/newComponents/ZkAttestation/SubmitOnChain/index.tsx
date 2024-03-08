@@ -26,7 +26,7 @@ import {
   BNBGREENFIELDSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/chain';
-import { BASEVENTNAME, SCROLLEVENTNAME } from '@/config/events';
+import { BASEVENTNAME, SCROLLEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { PADOADDRESS } from '@/config/envConstants';
 import { CredVersion } from '@/config/attestation';
 
@@ -79,12 +79,24 @@ const Nav: React.FC<PButtonProps> = memo(
     const activeOnChain = useSelector(
       (state: UserState) => state.activeOnChain
     );
+
     const BASEventDetailExt = useMemo(() => {
       return BASEventDetail?.ext;
     }, [BASEventDetail]);
     const activeOnChainAttestation = useMemo(() => {
       return credentialsFromStore[activeOnChain.requestid];
     }, [credentialsFromStore, activeOnChain.requestid]);
+    const formatList = useMemo(() => {
+      let l = [...list];
+      const activeEvent = activeOnChainAttestation?.event;
+     
+      if (activeEvent === LINEAEVENTNAME) {
+        l = list.filter((i) => i.id === 'Linea Goerli');
+      } else if (activeEvent === BASEVENTNAME) {
+        l = list.filter((i) => i.id === 'BSC');
+      }
+      return l;
+    }, [list, activeOnChainAttestation]);
     const presetIcon = useMemo(() => {
       if (chainId) {
         return EASInfo[chainId].icon;
@@ -659,7 +671,7 @@ const Nav: React.FC<PButtonProps> = memo(
       <div className={'submitOnChain'}>
         {step === 1 && (
           <SetDialog
-            list={list}
+            list={formatList}
             onClose={handleCloseConnectWallet}
             onSubmit={handleSubmitConnectWallet}
           />
