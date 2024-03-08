@@ -5,6 +5,7 @@ import { setActiveOnChain } from '@/store/actions'
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import Banner from '@/newComponents/Home/Banner';
+import Slider from '@/newComponents/Events/Slider'
 import AttestationTypeList from '@/newComponents/ZkAttestation/AttestationTypeList';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 import AttestationCards from '@/newComponents/ZkAttestation/AttestationCards';
@@ -14,6 +15,7 @@ import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
 
 import './index.scss';
+
 
 const Home = memo(() => {
   const dispatch:Dispatch<any> = useDispatch()
@@ -51,7 +53,8 @@ const Home = memo(() => {
   return (
     <div className="pageZkAttestation">
       <div className="pageContent">
-        <Banner />
+        {/* <Banner /> */}
+        <Slider/>
         <AttestationTypeList onClick={handleCreate} />
         <Search />
         {hasConnected ? (

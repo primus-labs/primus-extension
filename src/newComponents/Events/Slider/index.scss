@@ -1,0 +1,15 @@
+.eventsSlider {
+  width: 100%;
+  margin-top: -18px;
+  .slick-slider {
+    .slick-list .slick-slide > div {
+      // padding-top: 33px;
+      > img {
+        width: 100%;
+      }
+    }
+    .slick-dots {
+      bottom: -12px;
+    }
+  }
+}

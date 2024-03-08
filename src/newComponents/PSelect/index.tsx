@@ -186,7 +186,11 @@ const PSelect: React.FC<PSelectProps> = memo(
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
           >
-            <PDropdown list={activeOptions} onClick={handleClickDropdownItem} value={!showSelf && value} />
+            <PDropdown
+              list={activeOptions}
+              onClick={handleClickDropdownItem}
+              value={!showSelf && value}
+            />
           </div>
         )}
       </div>

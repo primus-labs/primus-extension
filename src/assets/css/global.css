@@ -67,6 +67,7 @@ body {
   --spacing-28: 0.1905rem;
   --spacing-30: 0.2041rem;
   --spacing-32: 0.2177rem;
+  --spacing-34: 0.2361rem;
   --spacing-36: 0.2449rem;
   --spacing-40: 0.2721rem;
   --spacing-42: 0.2857rem;
@@ -137,7 +138,7 @@ body {
   --spacing-28: 28px;
   --spacing-30: 30px;
   --spacing-32: 32px;
-
+  --spacing-34: 34px;
   --spacing-36: 36px;
   --spacing-40: 40px;
   --spacing-42: 42px;

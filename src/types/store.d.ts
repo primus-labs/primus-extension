@@ -49,11 +49,12 @@ type activeConnectWalletRequest = {
 };
 type Msg = {
   id: string;
-  type: string;
+  type: string;// 'suc'|'error'|'warn'|'info'
   title: string;
   desc?: string;
   code?: string;
   link?: string;
+  linkText?: string;
   done?: boolean;
 };
 type MsgMap = {

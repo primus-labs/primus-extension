@@ -94,7 +94,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
           text="Connect another wallet"
           type="text2"
           prefix={<i className="iconfont icon-Add"></i>}
-          className="fullWidth"
+          className="fullWidth connectBtn"
           onClick={handleConnectOther}
         />
       </div>
