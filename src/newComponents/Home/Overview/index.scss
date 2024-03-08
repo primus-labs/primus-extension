@@ -5,7 +5,6 @@
   @include fcss;
   gap: var(--spacing-16);
   flex: 1;
-
   .title {
     @include HeadlineH3;
   }
@@ -23,6 +22,7 @@
       @include fcss;
       gap: var(--spacing-8);
       padding-top: var(--spacing-32);
+      width: calc((100% - 100px)/3);
       .title {
         @include HeadlineH4;
       }
@@ -30,6 +30,18 @@
         @include frss;
         align-items: flex-end;
         gap: var(--spacing-16);
+        .splicedIcons {
+          // position: relative;
+          > img {
+            width: var(--spacing-34);
+            // position: absolute;
+            // bottom: 0;
+          }
+          .hideCircle{
+            width: var(--spacing-34);
+            height: var(--spacing-34);
+          }
+        }
         .num {
           @include NumberTitle;
         }

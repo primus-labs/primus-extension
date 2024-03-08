@@ -1,12 +1,33 @@
 @import '@/assets/newCss/flex.scss';
+$element-count: 6;
 
 .splicedIcons {
   @include frsc;
   > img {
     width: var(--spacing-40);
-    &:not(:first-child){
+    position: relative;
+    &:not(:first-child) {
       position: relative;
       left: calc(-1 * var(--spacing-8));
     }
+    @for $i from 1 through $element-count {
+      &:nth-child(#{$i}) {
+        left: calc(-1 * $i * var(--spacing-8));
+      }
+    }
+  }
+  .hideCircle {
+    background: var(--neutral-color-gray-20);
+    width: var(--spacing-40);
+    height: var(--spacing-40);
+    position: relative;
+    left: calc(-1 * 6 * var(--spacing-8));
+    @include frcc;
+    border-radius: 50%;
+    font-size: 14px;
+    font-family: IBM Plex Mono;
+    font-weight: 400;
+    letter-spacing: 0px;
+    line-height: 16px;
   }
 }

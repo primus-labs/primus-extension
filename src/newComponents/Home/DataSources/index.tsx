@@ -1,4 +1,6 @@
 import React, { memo, useCallback } from 'react';
+import { DATASOURCEMAP } from '@/config/dataSource2';
+
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import DataSourceBrief from '@/newComponents/DataSource/DataSourceBrief';
