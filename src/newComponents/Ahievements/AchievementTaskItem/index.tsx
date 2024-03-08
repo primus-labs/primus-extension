@@ -35,6 +35,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
   const refreshTotalScore = taskItemWithClick.refreshTotalScore;
   const [finished, setFinished] = useState(taskItemWithClick.isFinished);
   const { msgs, addMsg } = useMsgs();
+  const [btnIsLoading,setBtnIsLoading] = useState(false)
 
   const getDataSourceData = async (datasource) => {
     const data = await chrome.storage.local.get(datasource);
@@ -42,6 +43,12 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     return data;
   };
 
+
+  const handleClickFn = async ()=>{
+    setBtnIsLoading(true)
+    await handleClick()
+    setBtnIsLoading(false)
+  }
 
   const handleClick = async () => {
     let ext = {};
@@ -362,9 +369,9 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       {
         finished ? <div className={'achievementFinishedIcon'}><img src={taskFinishedIcon} /></div> : <PButton
           text="Finish"
-          disabled={finished}
-          onClick={handleClick}
+          onClick={handleClickFn}
           className={'achievementTaskitemFinishBtn'}
+          loading={btnIsLoading}
         />
       }
 
