@@ -3,6 +3,7 @@ import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import './index.scss';
 import { getAchievementClaimed } from '@/services/api/achievements';
+import { LoadingOutlined } from '@ant-design/icons';
 import loading from '@/assets/newImg/achievements/loading.svg';
 import { Pagination, Spin, Table } from 'antd';
 
@@ -80,13 +81,44 @@ const Nav: React.FC<PButtonProps> = memo(
             </header>
             <PClose onClick={onClose} />
 
+
             <div className={'tableDiv'}>
-              <table>
+              {isLoading && <div>
+                <table>
+                  <thead>
+                  <tr>
+                    <th style={{ width: '64px', textAlign: 'left' }}>Point</th>
+                    <th style={{ textAlign: 'left' }}>Source</th>
+                    <th style={{ textAlign: 'right' }}>Time</th>
+                  </tr>
+                  </thead>
+                </table>
+                <div style={{
+                  width: '480px',
+                  height: '435px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                  <LoadingOutlined
+                    style={{
+                      fontSize: 24,
+                    }}
+                    src={loading}
+                  >
+                  </LoadingOutlined>
+                </div>
+              </div>
+              }
+              {!isLoading&&<table>
+                <thead>
                 <tr>
-                  <td style={{ width: '64px', textAlign: 'left' }}>Point</td>
-                  <td style={{ textAlign: 'left' }}>Source</td>
-                  <td style={{ textAlign: 'right' }}>Time</td>
+                  <th style={{ width: '64px', textAlign: 'left' }}>Point</th>
+                  <th style={{ textAlign: 'left' }}>Source</th>
+                  <th style={{ textAlign: 'right' }}>Time</th>
                 </tr>
+                </thead>
+                <tbody>
                 {achievements.map((item: AchievementRecords, index) => {
                   return <tr>
                     <td style={{ width: '64px', textAlign: 'left' }}>+{item.score}</td>
@@ -94,19 +126,12 @@ const Nav: React.FC<PButtonProps> = memo(
                     <td style={{ textAlign: 'right' }}>{item.date}</td>
                   </tr>;
                 })}
+                </tbody>
               </table>
+              }
             </div>
-            {/*<Table*/}
-            {/*  columns={columns}*/}
-            {/*  dataSource={achievements.map((item: AchievementRecords, index) => {*/}
-            {/*    return {*/}
-            {/*      key:index,*/}
-            {/*      point: item.score,*/}
-            {/*      source: item.task,*/}
-            {/*      time: item.date,*/}
-            {/*    }*/}
-            {/*  })}*/}
-            {/*/>*/}
+
+
             <div className={'pageComponent'}>
               <Pagination style={{ float: 'right' }}
                           total={totalCount}
