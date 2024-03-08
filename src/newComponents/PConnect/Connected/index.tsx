@@ -15,6 +15,7 @@ import PButton from '@/newComponents/PButton';
 import iconClose from '@/assets/newImg/layout/iconClose.svg';
 import './index.scss';
 import type { UserState } from '@/types/store';
+import { switchAccount } from '@/services/wallets/metamask';
 interface PConnectProps {
   onConnect: () => void;
 }
@@ -33,10 +34,13 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
     return formatAddress(connectedWallet?.address, 4, 4, '...');
   }, [connectedWallet?.address]);
 
-  const handleConnectOther = useCallback(() => {
+  /*const handleConnectOther = useCallback(() => {
     dispatch(setConnectWalletActionAsync(undefined));
     onConnect();
-  }, [onConnect]);
+  }, [onConnect]);*/
+  const handleConnectOther = () => {
+    switchAccount(connectedWallet?.provider);
+  };
   const handleDisConnect = () => {
     dispatch(setConnectWalletActionAsync(undefined));
   };

@@ -354,10 +354,6 @@ const Cards: React.FC<PDropdownProps> = memo(
                     <div className="descItems">
                       {/* TODO-newui config uiTemplate */}
                       <div className="descItem">
-                        <div className="label">Data account</div>
-                        <div className="value">{i.account}</div>
-                      </div>
-                      <div className="descItem">
                         <div className="label">Content</div>
                         <div className="value">{getContent(i)}</div>
                       </div>
@@ -368,6 +364,10 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <div className="descItem">
                         <div className="label">Result</div>
                         <div className="value">{getResult(i)}</div>
+                      </div>
+                      <div className="descItem">
+                        <div className="label">Data account</div>
+                        <div className="value">{i.account}</div>
                       </div>
                     </div>
                     <div className="descItems">
