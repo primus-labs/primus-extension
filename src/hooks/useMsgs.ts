@@ -1,14 +1,16 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setMsgs } from '@/store/actions';
 import type { UserState } from '@/types/store';
 
 const useMsgs = function useMsgs() {
   const dispatch = useDispatch();
+  const [msgId, setMsgId] = useState<string>();
   const msgs = useSelector((state: UserState) => state.msgs);
-  const setMsgsFn = useCallback(
+  const addMsg = useCallback(
     (infoObj) => {
-      const id = Date.now();
+      const id = Date.now() + '';
+      setMsgId(id);
       const newMsgs = {
         ...msgs,
         [id]: {
@@ -23,6 +25,27 @@ const useMsgs = function useMsgs() {
     },
     [msgs, dispatch]
   );
-  return [msgs, setMsgsFn];
+  const deleteMsg = useCallback(
+    async (id) => {
+      const lastMsgs = { ...msgs };
+      if (lastMsgs[id]) {
+        delete lastMsgs[id];
+        dispatch(setMsgs(lastMsgs));
+      }
+    },
+    [msgs, dispatch]
+  );
+  useEffect(() => {
+    if (msgId) {
+      let timer = setTimeout(() => {
+        deleteMsg(msgId);
+      }, 5000);
+      return () => {
+        clearTimeout(timer);
+      }
+    }
+  }, [msgId]);
+ 
+  return { msgs, addMsg, deleteMsg };
 };
 export default useMsgs;

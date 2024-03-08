@@ -8,7 +8,7 @@ import PAlert from '@/newComponents/PAlert';
 const PMsgs = memo(() => {
   const msgs = useSelector((state: UserState) => state.msgs);
   const navigate = useNavigate();
-  console.log('222msgs', msgs);//delete
+  // console.log('222msgs', msgs);//delete
   const filterdList = useMemo(() => {
     return Object.keys(msgs)
       .filter((m) => !msgs[m].done)

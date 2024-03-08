@@ -41,7 +41,7 @@ interface PButtonProps {
 
 const Nav: React.FC<PButtonProps> = memo(
   ({ type, onClose, onSubmit, presets }) => {
-    const [msgs, setMsg] = useMsgs();
+    const {msgs, addMsg} = useMsgs();
     const authorize = useAuthorization2();
 
     const dispatch: Dispatch<any> = useDispatch();
@@ -203,7 +203,7 @@ const Nav: React.FC<PButtonProps> = memo(
           await authorize(form.dataSourceId.toUpperCase(), storeGoogleCred);
         } catch {
           setStep(-1);
-          setMsg({
+          addMsg({
             type: 'error',
             title: 'Unable to proceed',
             desc: 'Please try again later.',
@@ -229,7 +229,7 @@ const Nav: React.FC<PButtonProps> = memo(
         BASEventDetail?.ext?.schemaType,
         storeBASEventInfoFn,
         dispatch,
-        setMsg,
+        addMsg,
       ]
     );
     const handleSubmitSetDetail = useCallback(

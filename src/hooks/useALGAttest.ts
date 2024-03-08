@@ -11,7 +11,6 @@ import {
   setAttestLoading,
   setCredentialsAsync,
   setActiveAttestation,
-  setMsgs,
 } from '@/store/actions';
 import useMsgs from '@/hooks/useMsgs';
 import useEventDetail from '@/hooks/useEventDetail';
@@ -40,7 +39,7 @@ import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 const useAttest = function useAttest() {
-  const [msgs, setMsg] = useMsgs();
+  const { msgs, addMsg } = useMsgs();
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
   const fromEvents = searchParams.get('id');
@@ -96,7 +95,7 @@ const useAttest = function useAttest() {
         setTimeoutSwitch(true);
         setIntervalSwitch(true);
       } else if (retcode === '2') {
-        setMsg({
+        addMsg({
           type: 'error',
           title: 'Failed',
           desc: 'The algorithm has not been initialized.Please try again later.',
@@ -185,7 +184,7 @@ const useAttest = function useAttest() {
           }
           setCredRequestId(activeRequestId);
           // suc
-          setMsg({
+          addMsg({
             type: 'suc',
             title: `${activeAttestation.attestationType} is created!`,
           });
@@ -240,7 +239,7 @@ const useAttest = function useAttest() {
               });
             }
           }
-          setMsg({
+          addMsg({
             type: 'error',
             title: titleItem1,
             desc: descEl,
@@ -370,7 +369,7 @@ const useAttest = function useAttest() {
             };
             break;
         }
-        setMsg(requestResObj);
+        addMsg(requestResObj);
         dispatch(setAttestLoading(3));
         dispatch(setActiveAttestation({ loading: 3 }));
         if (
@@ -441,7 +440,7 @@ const useAttest = function useAttest() {
         },
       });
     }
-    setMsg({
+    addMsg({
       type: 'error',
       title: 'Request Timed Out',
       desc: 'The service did not respond within the expected time. Please try again later.',
@@ -481,29 +480,13 @@ const useAttest = function useAttest() {
   }, [padoServicePort]);
   useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
-  // const setMsgsFn = useCallback(
-  //   (infoObj) => {
-  //     const id = Date.now();
-  //     const newMsgs = {
-  //       ...msgs,
-  //       [id]: {
-  //         id,
-  //         ...infoObj,
-  //         // type: 'error',
-  //         // title: 'Unable to proceed',
-  //         // desc: 'Please try again later.',
-  //       },
-  //     };
-  //     dispatch(setMsgs(newMsgs));
-  //   },
-  //   [msgs, dispatch]
-  // );
+  
   useEffect(() => {
     const listerFn = (message: any) => {
       const { type, name } = message;
       if (type === 'pageDecode') {
         if (name === 'cancelAttest') {
-          setMsg({
+          addMsg({
             type: 'error',
             title: 'Unable to proceed',
             desc: 'Please try again later.',
@@ -515,7 +498,7 @@ const useAttest = function useAttest() {
           dispatch(setActiveAttestation({ loading: 1 }));
         } else if (name === 'abortAttest') {
           if (attestLoading === 1) {
-            setMsg({
+            addMsg({
               type: 'error',
               title: 'Unable to proceed',
               desc: 'Please try again later.',
@@ -542,7 +525,7 @@ const useAttest = function useAttest() {
         // }
       } else if (type === 'googleAuth') {
         if (name === 'cancelAttest') {
-          setMsg({
+          addMsg({
             type: 'error',
             title: 'Unable to proceed',
             desc: 'Please try again later.',
