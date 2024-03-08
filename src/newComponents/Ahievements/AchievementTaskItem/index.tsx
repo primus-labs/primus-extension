@@ -45,6 +45,10 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
 
   const handleClickFn = async ()=>{
+    if(btnIsLoading){
+      console.log('btnIsLoading',btnIsLoading)
+      return;
+    }
     setBtnIsLoading(true)
     await handleClick()
     setBtnIsLoading(false)
