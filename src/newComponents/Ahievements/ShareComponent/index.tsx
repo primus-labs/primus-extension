@@ -14,6 +14,8 @@ import telegram from '@/assets/newImg/achievements/telegram.svg';
 import { toPng } from 'html-to-image';
 import { shareDiscord, shareTelegram, shareTwitter } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 
 interface PButtonProps {
@@ -41,18 +43,23 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       }
       setIsSharing(true);
       const base64Imag = await toPng(domEl.current);
-      const rsp = await shareTwitter({
-        base64Image:base64Imag,
-        referralCode: scoreShareProps.referralCode,
-        points: scoreShareProps.score,
-      });
-      console.log(rsp);
-      if (rsp.rc === 0) {
-        window.open(rsp.result.content);
-      } else {
-        alert('error occurred');
+      try {
+        const rsp = await shareTwitter({
+          base64Image: base64Imag,
+          referralCode: scoreShareProps.referralCode,
+          points: scoreShareProps.score,
+        });
+        console.log(rsp);
+        if (rsp.rc === 0) {
+          window.open(rsp.result.content);
+        } else {
+          alert('error occurred');
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsSharing(false);
       }
-      setIsSharing(false);
     };
 
     const shareDiscordImg = async () => {
@@ -61,19 +68,24 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       }
       setIsSharing(true);
       const base64Imag = await toPng(domEl.current);
-      const rsp = await shareDiscord({
-        base64Image:base64Imag,
-        referralCode: scoreShareProps.referralCode,
-        points: scoreShareProps.score,
-      });
-      console.log(rsp);
-      if (rsp.rc === 0) {
-        copy(rsp.result.content)
-        window.open('https://discord.com/channels/@me');
-      } else {
-        alert('error occurred');
+      try {
+        const rsp = await shareDiscord({
+          base64Image: base64Imag,
+          referralCode: scoreShareProps.referralCode,
+          points: scoreShareProps.score,
+        });
+        console.log(rsp);
+        if (rsp.rc === 0) {
+          copy(rsp.result.content);
+          window.open('https://discord.com/channels/@me');
+        } else {
+          alert('error occurred');
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsSharing(false);
       }
-      setIsSharing(false);
     };
 
     const shareTelegramImg = async () => {
@@ -82,18 +94,23 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       }
       setIsSharing(true);
       const base64Imag = await toPng(domEl.current);
-      const rsp = await shareTelegram({
-        base64Image:base64Imag,
-        referralCode: scoreShareProps.referralCode,
-        points: scoreShareProps.score,
-      });
-      console.log(rsp);
-      if (rsp.rc === 0) {
-        window.open(rsp.result.content);
-      } else {
-        alert('error occurred');
+      try {
+        const rsp = await shareTelegram({
+          base64Image: base64Imag,
+          referralCode: scoreShareProps.referralCode,
+          points: scoreShareProps.score,
+        });
+        console.log(rsp);
+        if (rsp.rc === 0) {
+          window.open(rsp.result.content);
+        } else {
+          alert('error occurred');
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsSharing(false);
       }
-      setIsSharing(false);
     };
 
     return (
@@ -163,6 +180,15 @@ const ShareComponent: React.FC<PButtonProps> = memo(
             </div>
           </main>
         </div>
+        <Spin spinning={isSharing} fullscreen indicator={
+          <LoadingOutlined
+            style={{
+              fontSize: 24,
+              color: '#6F6F6F',
+            }}
+            spin
+          />
+        } />
 
       </PMask>
     );
