@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+import 'animate.css';
 import '@/assets/css/global.css';
 import '@/assets/newCss/global.css';
 import routes from '@/router';

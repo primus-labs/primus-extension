@@ -1,5 +1,5 @@
 import React from 'react';
-import Home from '@/pages/Home/Home.jsx';
+import Guide from '@/pages/Home/Home.jsx';
 // import DataSourceOverview from '@/pages/DataSourceOverview/index.tsx';
 import DataSourceOverview from '@/newPages/DataSourceOverview/index.tsx';
 import DataSourceItem from '@/newPages/DataSourceItem/index.tsx';
@@ -19,15 +19,27 @@ import Rewards from '@/newPages/Rewards';
 import EventDetail from '@/newPages/EventDetail';
 import Setting from '@/newPages/Setting';
 import ComingSoon from '@/newPages/ComingSoon';
-
+import Home from '@/newPages/Home';
 const router = [
+  {
+    path: '/',
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        index: true,
+        element: <Guide />,
+        // element: <FirstHome />,
+      },
+    ],
+  },
   {
     path: '/',
     element: <Layout />,
     errorElement: <ErrorBoundary />,
     children: [
       {
-        index: true,
+        path: 'home',
+        name: 'Home',
         element: <Home />,
         // element: <FirstHome />,
       },
@@ -76,18 +88,18 @@ const router = [
         path: 'developer',
         element: <ComingSoon />,
       },
-      {
-        path: 'dataDetail',
-        element: <DataSourceDetail />,
-      },
-      {
-        path: 'lock',
-        element: <Lock />,
-      },
-      {
-        path: 'cred',
-        element: <Cred />,
-      },
+      // {
+      //   path: 'dataDetail',
+      //   element: <DataSourceDetail />,
+      // },
+      // {
+      //   path: 'lock',
+      //   element: <Lock />,
+      // },
+      // {
+      //   path: 'cred',
+      //   element: <Cred />,
+      // },
       // {
       //   path: 'events',
       //   element: <Events />,

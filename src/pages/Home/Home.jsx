@@ -1,24 +1,106 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
+import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import Slider from '@/newComponents/Events/Slider';
-import Overview from '@/newComponents/Home/Overview';
-import Support from '@/newComponents/Home/Support';
-import DataSources from '@/newComponents/Home/DataSources';
+
+import useTimeout from '@/hooks/useTimeout';
 import { postMsg } from '@/utils/utils';
+
+import page1 from '@/assets/newImg/guide/page1.svg';
+import page2 from '@/assets/newImg/guide/page2.svg';
+import page3 from '@/assets/newImg/guide/page3.svg';
+import page4 from '@/assets/newImg/guide/page4.svg';
+import page5 from '@/assets/newImg/guide/page5.svg';
+import iconLogoPado from '@/assets/newImg/guide/iconLogoPado.svg';
 import './home.scss';
 
 const Home = memo(() => {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(0);
+  const [timeoutStep2Switch, setTimeoutStep2Switch] = useState(false);
+  const padoServicePort = useSelector((state) => state.padoServicePort);
+  const imgSrc = useMemo(() => {
+    let s = page1;
+    switch (step) {
+      case 1:
+        s = page1;
+        break;
+      case 2:
+        s = page2;
+        break;
+      case 3:
+        s = page3;
+        break;
+      case 4:
+        s = page4;
+        break;
+      case 5:
+        s = page5;
+        break;
+      default:
+        s = page1;
+        break;
+    }
+    return s;
+  }, [step]);
+  const timeoutStep1Fn = () => {
+    setStep(1);
+    setTimeoutStep2Switch(true);
+  };
+  useTimeout(timeoutStep1Fn, 800, true, false);
+  const timeoutStep2Fn = () => {
+    setStep(2);
+  };
+  useTimeout(timeoutStep2Fn, 1000, timeoutStep2Switch, false);
+  const handleClick = useCallback(() => {
+    if (step <= 4) {
+      setStep((p) => p + 1);
+    } else {
+      const msg = {
+        fullScreenType: 'wallet',
+        reqMethodName: 'create',
+        params: {},
+      };
+      postMsg(padoServicePort, msg);
+      navigate('/home');
+    }
+  }, [step]);
+
+  const checkIsFirstLogin = useCallback(async () => {
+    const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
+      await chrome.storage.local.get([
+        'keyStore',
+        'padoCreatedWalletAddress',
+        'privateKey',
+        'userInfo',
+      ]);
+    if (!keyStore && !privateKey) {
+    } else {
+      navigate('/home');
+    }
+  }, [navigate]);
+  useEffect(() => {
+    checkIsFirstLogin()
+  }, [checkIsFirstLogin]);
+
   return (
-    <div className="pageHome">
-      <div className="pageContent">
-        <Slider />
-        <div className="pRow">
-          <Overview />
-          <Support/>
+    <div className="pageGuide">
+      {step > 0 && (
+        <img
+          src={imgSrc}
+          alt=""
+          onClick={handleClick}
+          className={`guideImg animate__animated animate__fadeIn`}
+        />
+      )}
+      {step === 0 && (
+        <div className="animationWrapper  animate__animated animate__flipInX ">
+          <img src={iconLogoPado} alt="" />
+          <i></i>
+          <div className="logonTxt">
+            Liberate Data and Computation with Cryptography
+          </div>
         </div>
-        <DataSources/>
-      </div>
+      )}
     </div>
   );
 });

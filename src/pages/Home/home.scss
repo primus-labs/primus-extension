@@ -1,15 +1,31 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
-
-.pageHome {
-  padding-top: var(--spacing-40);
-  .pageContent{
-    @include fcss;
-    gap: var(--spacing-32);
-    .pRow{
-      width: 100%;
-      @include frsc;
-      gap: var(--spacing-16);
+.pageGuide {
+  cursor: pointer;
+  @include frcc;
+  min-height: 100vh;
+  .guideImg {
+    width: 100vw;
+  }
+  .animationWrapper {
+    @include frsc;
+    gap: 40px;
+    font-family: Overpass;
+    font-size: 32px;
+    font-weight: normal;
+    line-height: 140%;
+    letter-spacing: 0px;
+    color: rgba(0, 0, 0, 0.8);
+    > img {
+      width: 349px;
+    }
+    > i {
+      width: 1px;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .logonTxt{
+      width: 471px;
     }
   }
 }

@@ -14,7 +14,7 @@ export const list: NavItem[] = [
     label: 'Home',
     value: 'Home',
     iconName: 'icon-iconMenuHome',
-    link: '/',
+    link: '/home',
   },
   {
     label: 'Data Source',
