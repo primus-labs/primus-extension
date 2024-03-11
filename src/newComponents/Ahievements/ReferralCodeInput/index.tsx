@@ -59,7 +59,7 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
       if (res.rc === 0) {
         //save referral code
         await chrome.storage.local.set({
-          referralCode: referralCode ,
+          referralCode: referralCode,
         });
         onClose();
         setReferralTaskFinished();
@@ -86,17 +86,19 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
             <div className={'inputDesc'}>
               Please input the code you received here.
             </div>
-
-            <div className={'inputTitle'}>
-              Referral Code
-            </div>
-              <div className={'inputComponent'}>
-                  <Input className={'inputComponent'} defaultValue={referralCode} value={referralCode}
-                         onChange={(e) => setReferralCode(e.target.value)} />
-                {/*</Form.Item>*/}
-                <button onClick={handlePaste} >Paste</button>
+            <div>
+              <div className={'inputTitle'}>
+                Referral Code
               </div>
-              <PButton text={'Confirm'} disabled={referralCode===""||referralCode=== undefined} className={'confirm-button'} onClick={handleSubmit} />
+              <div className={'inputComponent'}>
+                <Input className={'inputComponent'} defaultValue={referralCode} value={referralCode}
+                       onChange={(e) => setReferralCode(e.target.value)} />
+                {/*</Form.Item>*/}
+                <button onClick={handlePaste}>Paste</button>
+              </div>
+            </div>
+            <PButton text={'Confirm'} disabled={referralCode === '' || referralCode === undefined}
+                     className={'confirmButton'} onClick={handleSubmit} />
           </main>
 
         </div>
