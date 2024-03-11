@@ -14,6 +14,7 @@ interface PButtonProps {
 const ShareButton: React.FC<PButtonProps> = memo(
   ({ onClick, btnDesc, img, imgHover }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [fontStyle, setFontStyle] = useState('false');
     const imgCom = () => {
       if (isHovered) {
         return imgHover;
@@ -21,16 +22,25 @@ const ShareButton: React.FC<PButtonProps> = memo(
         return img;
       }
     };
+    const fontStyleFn = () => {
+      if (isHovered) {
+        setFontStyle("shareDescFontHover") ;
+      } else {
+        setFontStyle("shareDescFont");
+      }
+    };
+
     useEffect(() => {
       imgCom();
+      fontStyleFn();
     }, [isHovered]);
     return (
       <button
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={onClick} style={{ display: 'flex', alignItems: 'center' }}>
-        <span className={'shareDescFont'}>{btnDesc}</span>
-        <span><img src={imgCom()} /></span>
+        <span className={fontStyle}>{btnDesc}</span>
+        <span><img  src={imgCom()} /></span>
       </button>
     );
   },

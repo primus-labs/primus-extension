@@ -11,6 +11,11 @@
   height: 16px;
   color: var(--text-tokens-text-primary, #161616);
 }
-.shareDescFont:hover{
+.shareDescFontHover{
+  font-family: 'IBM Plex Sans';
+  font-size: 14px;
+  font-weight: 500;
+  width: 150px;
+  height: 16px;
   color: var(--brand-primary-color-bp-50);
 }
