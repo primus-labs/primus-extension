@@ -6,7 +6,13 @@
 .pDialog2.share-div {
   width: 448px;
   height: 454px;
-
+  .PClose {
+    height: 36px;
+    .closeBtn {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+  }
   main {
     display: flex;
     .shareDiv {
