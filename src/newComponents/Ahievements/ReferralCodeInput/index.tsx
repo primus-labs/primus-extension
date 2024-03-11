@@ -5,6 +5,7 @@ import './index.scss';
 import { Input, Form } from 'antd';
 import PButton from '@/newComponents/PButton';
 import { finishTask } from '@/services/api/achievements';
+import useMsgs from '@/hooks/useMsgs';
 
 // import { Button, Input } from 'antd';
 
@@ -20,6 +21,7 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
   ({ onClose, setReferralTaskFinished }) => {
     const [referralCode, setReferralCode] = React.useState('');
     const [form] = Form.useForm();
+    const { msgs, addMsg } = useMsgs();
     const PasteButton = () => {
       return (
         <div> Paste </div>
@@ -38,7 +40,11 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
 
     const handleSubmit = async () => {
       if (!referralCode || referralCode.trim() === '') {
-        console.log('Invalid referral code!');
+        addMsg({
+          type: 'info',
+          title: `Invalid referral code.`,
+          link: '',
+        });
         debugger
         form.submit;
         return;
@@ -57,6 +63,11 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
         });
         onClose();
         setReferralTaskFinished();
+        addMsg({
+          type: 'suc',
+          title: `10 points earned!`,
+          link: '',
+        });
         //set sign-in task item finished
       } else {
         alert(res.msg);

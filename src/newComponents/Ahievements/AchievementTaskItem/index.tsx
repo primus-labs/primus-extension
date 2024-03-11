@@ -104,7 +104,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
                 await chrome.tabs.update(PADOTabId, {
                   active: true,
                 });
-                console.log("followed")
+                console.log('followed');
                 //if followed
                 const res = await getDataSourceData('x');
                 const xUserInfo = JSON.parse(res.x);
@@ -415,13 +415,14 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     };
     const res = await finishTask(finishBody);
     if (res.rc === 0) {
+      const points = res.result.points !==0 ? res.result.points : taskItem.taskXpScore;
       addMsg({
         type: 'suc',
-        title: `${taskItem.taskXpScore} points earned!`,
+        title: `${points} points earned!`,
         link: '',
       });
       setFinished(true);
-      refreshTotalScore(taskItem.taskXpScore, taskItem.taskIdentifier);
+      refreshTotalScore(points, taskItem.taskIdentifier);
     } else {
       addMsg({
         type: 'info',
