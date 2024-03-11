@@ -1,12 +1,16 @@
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, memo, useRef } from 'react';
 
 import './index.scss';
 import pointsEarnedIcon from '@/assets/newImg/achievements/pointsEarnedIcon.svg';
 import pointsEarnedShareIcon from '@/assets/newImg/achievements/pointsEarnedShareIcon.svg';
+import shareHover from '@/assets/newImg/achievements/shareHover.svg';
 import textCopyIcon from '@/assets/newImg/achievements/textCopyIcon.svg';
 import { getUserInfo } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
 import useMsgs from '@/hooks/useMsgs';
+import { Button } from 'antd';
+import Icon from 'antd/lib/icon';
+import ShareButton from '@/newComponents/Ahievements/TopCard/ShareButton';
 
 
 type AchievementTopCardProps = {
@@ -31,7 +35,6 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
                                                                     }) => {
   const { msgs, addMsg } = useMsgs();
 
-
   const copyReferralCodeFn = () => {
     const copyDetail = `Download and install the PADO Chrome extension from https://padolabs.org/. Remember to sign up and fill in your referral code ${referralCode}  to earn extra points.`
     copy(copyDetail);
@@ -50,9 +53,8 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
 
         <div className={'points-text-line'}>
           <div className="pointsEarned-text"><p>Points Earned</p></div>
-          <div className="pointsShare" onClick={handleSharePoints}>
-            <div className="pointsShareText">Share on social media</div>
-            <img className="pointsShareIcon" src={pointsEarnedShareIcon} />
+          <div className="pointsShare">
+            <ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleSharePoints} btnDesc={"Share on social media"}/>
           </div>
         </div>
         <div className="pointsEarned">
@@ -69,9 +71,8 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
       <div className="rightCard">
         <div className={'referral-text-line'}>
           <div className={'referral-text'}>Referrals</div>
-          <div className={'referralShare'} onClick={handleShareReferralCode}>
-            <div className={'referralShareText'}> Share on social media</div>
-            <img className={'referralShareIcon'} src={pointsEarnedShareIcon}></img>
+          <div className={'referralShare'}>
+            <ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleShareReferralCode} btnDesc={"Share on social media"}/>
           </div>
         </div>
         <div className="referral">

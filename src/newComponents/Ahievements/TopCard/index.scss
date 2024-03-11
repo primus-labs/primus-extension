@@ -40,6 +40,9 @@
           height: 16px;
           color: var(--text-tokens-text-primary, #161616);
         }
+        .pointsShareText:hover{
+          color: var(--brand-primary-color-bp-50);
+        }
 
         .pointsShareIcon {
           height: 16px;
@@ -111,7 +114,6 @@
 
       .referralShare {
         margin-left: auto;
-        width: 200px;
         display: flex;
         height: 16px;
         cursor: pointer;
