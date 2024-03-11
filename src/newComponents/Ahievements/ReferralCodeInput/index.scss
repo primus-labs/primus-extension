@@ -5,7 +5,16 @@
 .pDialog2.referral-code {
   width: 448px;
   height: 288px;
+  .PClose {
+    height: 36px;
+    .closeBtn {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+  }
   main {
+    gap: 24px;
+
     .detailWrapper {
       @include detailWrapper;
 
@@ -29,11 +38,11 @@
     }
 
     .inputComponent {
-      margin-top: -5px;
       display: flex;
       position: relative;
       width: 400px;
       height: 40px;
+      margin-top:3px;
 
       button {
         position: absolute;
@@ -42,11 +51,12 @@
         color: var(--text-tokens-text-primary, #161616);
         letter-spacing: 0.16px;
         font-weight: 500;
-        top: 5px;
+        margin-top: 15px;
         right: 10px;
       }
     }
-    .confirm-button{
+    .confirmButton{
+      margin-top: 4px;
       font-size: 14px;
       font-family: 'IBM Plex Sans';
       width: 400px;
