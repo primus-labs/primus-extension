@@ -74,7 +74,7 @@ const Overview = memo(() => {
   return (
     <div className="homeSupport">
       <div className="title">
-        <h2>Support</h2>
+        <span>Support</span>
       </div>
       <div className="content">
         <div className="title">Find us on:</div>

@@ -51,6 +51,10 @@
           color: var(--text-tokens-text-secondary);
         }
       }
+      .detailBtn {
+        justify-content: flex-end;
+        width: 100%;
+      }
     }
     .PClose {
       margin-left: var(--spacing-8);

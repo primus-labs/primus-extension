@@ -6,7 +6,9 @@ import {
   setConnectByAPILoading,
   initWalletAddressActionAsync,
   setSysConfigAction,
+  setActiveConnectDataSource,
 } from '@/store/actions';
+import useMsgs from './useMsgs';
 import { postMsg } from '@/utils/utils';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
@@ -23,6 +25,7 @@ import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 type UseAlgorithm = () => void;
 
 const useAlgorithm: UseAlgorithm = function useAlgorithm() {
+  const { addMsg } = useMsgs();
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
@@ -43,55 +46,66 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
         } else if (sourceType === 'Social') {
           dispatch(setSocialSourcesAsync());
         }
+        dispatch(setActiveConnectDataSource({ loading: 2 }));
+        addMsg({
+          type: 'suc',
+          title: 'Data connected!',
+          link: `/datas/data?dataSourceId=${lowerCaseSourceName}`,
+        });
         const eventInfo = {
           eventType: 'DATA_SOURCE_INIT',
           rawData: { type: sourceType, dataSource: lowerCaseSourceName },
         };
         eventReport(eventInfo);
       } else {
+        dispatch(setActiveConnectDataSource({ loading: 3 }));
+        let msgObj = {};
+
         params = {
           result: 'fail',
         };
         // TODO-newui eventReport
         // result: 'warn',
         // failReason,
-        // if (msg === 'AuthenticationError') {
-        //   setActiveRequest({
-        //     type: 'error',
-        //     title: 'Invalid input',
-        //     desc: 'Please check your API Key or Secret Key.',
-        //   });
-        // } else if (msg === 'ExchangeNotAvailable') {
-        //   setActiveRequest({
-        //     type: 'warn',
-        //     title: 'Service unavailable',
-        //     desc: 'The network is unstable or the access may be restricted. Please adjust and try again later.',
-        //   });
-        // } else if (msg === 'InvalidNonce') {
-        //   setActiveRequest({
-        //     type: 'warn',
-        //     title: 'Something went wrong',
-        //     desc: 'Looks like your time or internet settings may be incorrect. Please check and try again later.',
-        //   });
-        // } else if (msg === 'TypeError: Failed to fetch') {
-        //   setActiveRequest({
-        //     type: 'warn',
-        //     title: 'Your connection are lost',
-        //     desc: 'Please check your internet connection and try again later.',
-        //   });
-        // } else if (msg === 'RequestTimeout') {
-        //   setActiveRequest({
-        //     type: 'warn',
-        //     title: 'Request timed out',
-        //     desc: 'This request takes too long to process, it is timed out by the data source server.',
-        //   });
-        // } else {
-        //   setActiveRequest({
-        //     type: 'warn',
-        //     title: 'Ooops...',
-        //     desc: 'Something went wrong. Please try again later.',
-        //   });
-        // }
+        if (msg === 'AuthenticationError') {
+          msgObj = {
+            type: 'error',
+            title: 'Invalid input',
+            desc: 'Please check your API Key or Secret Key.',
+          }
+        } else if (msg === 'ExchangeNotAvailable') {
+         msgObj = {
+            type: 'warn',
+            title: 'Service unavailable',
+            desc: 'The network is unstable or the access may be restricted. Please adjust and try again later.',
+          }
+        } else if (msg === 'InvalidNonce') {
+          msgObj = {
+            type: 'warn',
+            title: 'Something went wrong',
+            desc: 'Looks like your time or internet settings may be incorrect. Please check and try again later.',
+          }
+        } else if (msg === 'TypeError: Failed to fetch') {
+          msgObj = {
+            type: 'warn',
+            title: 'Your connection are lost',
+            desc: 'Please check your internet connection and try again later.',
+          }
+        } else if (msg === 'RequestTimeout') {
+          msgObj = {
+            type: 'warn',
+            title: 'Request timed out',
+            desc: 'This request takes too long to process, it is timed out by the data source server.',
+          }
+        } else {
+          msgObj = {
+            type: 'warn',
+            title: 'Ooops...',
+            desc: 'Something went wrong. Please try again later.',
+          }
+        }
+        dispatch(setActiveConnectDataSource({ loading: 3 }));
+        addMsg(msgObj);
       }
       if (connectType === 'Web') {
         chrome.runtime.sendMessage({
@@ -170,7 +184,6 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
         }
       }
     }
-    
   }, []);
 
   useEffect(() => {
@@ -183,4 +196,3 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
   }, [padoServicePort, padoServicePortListener]);
 };
 export default useAlgorithm;
-

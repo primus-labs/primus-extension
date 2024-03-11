@@ -39,6 +39,11 @@ type activeAttestationRequest = {
   // requestId?: string;
   account?: string;
 };
+type activeConnectDataSourceRequest = {
+  dataSourceId?: string;
+  loading?: 0 | 1 | 2 | 3; // 0: unstart 1:start loading 2:suc 3: fail
+  account?: string;
+};
 type activeOnChainRequest = {
   requestid?: string;
   loading?: 0 | 1;
@@ -49,7 +54,7 @@ type activeConnectWalletRequest = {
 };
 type Msg = {
   id: string;
-  type: string;// 'suc'|'error'|'warn'|'info'
+  type: string; // 'suc'|'error'|'warn'|'info'
   title: string;
   desc?: string;
   code?: string;
@@ -91,6 +96,7 @@ export type UserState = {
   lastLoginHasPwd: boolean; // if has set password
   dataSourceQueryStr: string;
   dataSourceQueryType: string | number;
+  activeConnectDataSource: activeConnectDataSourceRequest;
   connectedWallets: any;
   attestLoading: loadingStatus;
   activeAttestation: activeAttestationRequest;
