@@ -50,6 +50,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
+          shareType: shareType ==='score'?"score".toUpperCase():"referralCode"
         });
         console.log(rsp);
         if (rsp.rc === 0) {
@@ -79,6 +80,8 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
+          shareType: shareType ==='score'?"score".toUpperCase():"referralCode"
+
         });
         console.log(rsp);
         if (rsp.rc === 0) {
@@ -106,6 +109,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
+          shareType: shareType ==='score'?"score".toUpperCase():"referralCode"
         });
         console.log(rsp);
         if (rsp.rc === 0) {
