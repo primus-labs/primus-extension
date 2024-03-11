@@ -78,6 +78,8 @@
 
     .serialNumDiv {
       display: flex;
+      height: 45px;
+
       .serialNumTitle{
         margin-right: auto;
         margin-bottom: auto;
@@ -107,7 +109,9 @@
     }
     .modeDiv {
       display: flex;
-      align-items: center;
+      //align-items: center;
+      height: 45px;
+      margin-top: 10px;
       .textDiv {
         font-size: 16px;
         font-weight: 500;
