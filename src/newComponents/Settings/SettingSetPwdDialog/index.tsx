@@ -7,6 +7,8 @@ import SetPwdForm from './SetPwdForm';
 import './index.scss';
 
 interface SetPwdDialogProps {
+  title: string;
+  isChangePwd: boolean;
   onClose: () => void;
   onSubmit: () => void;
   resetPwsSuccessCallback: ()=> void;
@@ -19,7 +21,7 @@ type PswFormType = {
 };
 
 const SettingSetPwdDialog: React.FC<SetPwdDialogProps> = memo(
-  ({ onClose, onSubmit,resetPwsSuccessCallback }) => {
+  ({ title,isChangePwd,onClose, onSubmit,resetPwsSuccessCallback }) => {
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
     const [accountAddr, setAccountAddr] = useState<any>();
@@ -30,7 +32,7 @@ const SettingSetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         <div className="pDialog2 setPwdDialog">
           <main>
             <header>
-              <h1>Change Password</h1>
+              <h1>{title}</h1>
             </header>
             <PClose onClick={onClose}/>
             <section className="detailWrapper">
@@ -41,7 +43,7 @@ const SettingSetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 </div>
               </div>
             </section>
-            <SetPwdForm onSubmit={onSubmit} resetPwsSuccessCallback={resetPwsSuccessCallback} />
+            <SetPwdForm isChangePwd={isChangePwd} onSubmit={onSubmit} resetPwsSuccessCallback={resetPwsSuccessCallback} />
           </main>
         </div>
       </PMask>

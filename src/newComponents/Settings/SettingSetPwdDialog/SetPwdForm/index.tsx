@@ -13,6 +13,7 @@ import type { UserState } from '@/types/store';
 import './index.scss';
 
 interface SetPwdDialogProps {
+  isChangePwd: boolean;
   onSubmit: () => void;
   resetPwsSuccessCallback: () => void;
 }
@@ -22,11 +23,12 @@ type PswFormType = {
   confirmation: '';
 };
 
-const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit, resetPwsSuccessCallback }) => {
+const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ isChangePwd, onSubmit, resetPwsSuccessCallback }) => {
   const [pswForm, setPswForm] = useState<PswFormType>({
     password: '',
     confirmation: '',
   });
+  const dispatch: Dispatch<any> = useDispatch();
 
   const [formLegal, setFormLegal] = useState(false);
   const padoServicePort = useSelector(
@@ -96,29 +98,55 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit, resetPwsSucc
 
   const handleSubmit = useCallback(
     (newPwd: string) => {
-      const padoServicePortListener = async function(message: any) {
+      console.log('isChangePwd:',isChangePwd)
+      if (isChangePwd) {
         debugger
-        if (message.resMethodName === 'resetPassword') {
-          console.log('page_get:resetPassword:', message.res);
-          if (message.res) {
-            onSubmit();
-            resetPwsSuccessCallback();
-          } else {
-            alert('Password reset failed');
+        const padoServicePortListener = async function(message: any) {
+          if (message.resMethodName === 'resetPassword') {
+            console.log('page_get:resetPassword:', message.res);
+            if (message.res) {
+              onSubmit();
+              resetPwsSuccessCallback();
+            } else {
+              alert('Password reset failed');
+            }
+            padoServicePort.onMessage.removeListener(padoServicePortListener);
           }
-          padoServicePort.onMessage.removeListener(padoServicePortListener);
-        }
-      };
-      padoServicePort.onMessage.addListener(padoServicePortListener);
-      const msg = {
-        fullScreenType: 'wallet',
-        reqMethodName: 'resetPassword',
-        params: {
-          password: newPwd,
-        },
-      };
-      postMsg(padoServicePort, msg);
-      console.log('page_send:resetPassword');
+        };
+        padoServicePort.onMessage.addListener(padoServicePortListener);
+        const msg = {
+          fullScreenType: 'wallet',
+          reqMethodName: 'resetPassword',
+          params: {
+            password: newPwd,
+          },
+        };
+        postMsg(padoServicePort, msg);
+        console.log('page_send:resetPassword');
+      }else {
+        const padoServicePortListener = async function(message: any) {
+          if (message.resMethodName === 'bindUserAddress') {
+            const { res } = message;
+            console.log('page_get:bindUserAddress:', res);
+            if (res) {
+              onSubmit();
+              debugger
+              resetPwsSuccessCallback();
+            } else {
+            }
+          }
+        };
+        padoServicePort.onMessage.addListener(padoServicePortListener);
+        const msg = {
+          fullScreenType: 'padoService',
+          reqMethodName: 'bindUserAddress',
+          params: {
+            password: newPwd,
+          },
+        };
+        postMsg(padoServicePort, msg);
+        console.log('page_send:bindUserAddress');
+      }
     },
     [onSubmit, padoServicePort],
   );

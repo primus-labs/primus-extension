@@ -6,13 +6,13 @@ import textCopyIcon from '@/assets/newImg/achievements/textCopyIcon.svg';
 import mode from '@/assets/newImg/settings/mode.svg';
 import { getUserInfo } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
-import PButton from '@/newComponents/PButton';
-import { Button, Divider, Select } from 'antd';
+import { Button, Divider } from 'antd';
 import SettingsSetPwdDialog from '@/newComponents/Settings/SettingSetPwdDialog';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
 import useMsgs from '@/hooks/useMsgs';
 
 
+// eslint-disable-next-line react/display-name
 const Setting = memo(() => {
 
   const [currencies, setCurrencies] = useState([]);
@@ -25,8 +25,18 @@ const Setting = memo(() => {
 
   const [showSetPwdDialog, setShowSetPwdDialog] = useState(false);
   const [showInputPasswordDialog, setShowInputPasswordDialog] = useState(false);
-  const { msgs, addMsg } = useMsgs();
+  const { addMsg } = useMsgs();
+  const [hadSetPwd, setHadSetPwd] = useState();
+  const [passwordDialogTitle, setPasswordDialogTitle] = useState('');
+  const [isChangePwd, setIsChangePwd] = useState(false);
 
+
+  const checkIfHadSetPwd = useCallback(async () => {
+    // eslint-disable-next-line no-undef
+    let { keyStore } = await chrome.storage.local.get(['keyStore']);
+    // @ts-ignore
+    setHadSetPwd(!!keyStore);
+  }, []);
 
   useEffect(() => {
     async function getUserIgetUserInfoFnnfoFn() {
@@ -43,7 +53,7 @@ const Setting = memo(() => {
     // @ts-ignore
     setUpdateFrequency(['5']);
     getUserIgetUserInfoFnnfoFn();
-
+    checkIfHadSetPwd();
   }, []);
 
   const currencyItems = useMemo(() => {
@@ -84,9 +94,15 @@ const Setting = memo(() => {
     });
   };
 
-  const resetPwsSuccessCallbackFn = () => {
+  const resetPwsSuccessCallbackFn = async () => {
     setShowSetPwdDialog(false);
-    setShowInputPasswordDialog(true);
+    // eslint-disable-next-line no-undef
+    let { keyStore } = await chrome.storage.local.get(['keyStore']);
+    // @ts-ignore
+    setHadSetPwd(!!keyStore);
+    if (isChangePwd) {
+      setShowInputPasswordDialog(true);
+    }
   };
 
   return (
@@ -113,7 +129,7 @@ const Setting = memo(() => {
             {/*  }}>*/}
             {/*</Select>*/}
             <PSelect
-              className={"selectDivInput"}
+              className={'selectDivInput'}
               list={currencyItems} onChange={(v) => {
               setCurrencyChosen(v);
             }} value={currencyChosen} />
@@ -141,9 +157,9 @@ const Setting = memo(() => {
             {/*  }}>*/}
             {/*</Select>*/}
 
-            <PSelect className={"selectDivInput"} list={updateFrequencyItems} onChange={(v) => {
+            <PSelect className={'selectDivInput'} list={updateFrequencyItems} onChange={(v) => {
               setUpdateFrequencyChosen(v);
-            }} value={updateFrequencyChosen}/>
+            }} value={updateFrequencyChosen} />
           </div>
         </div>
       </div>
@@ -173,11 +189,20 @@ const Setting = memo(() => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-            <Button className={'changePwdBtn'} onClick={() => {
+            {hadSetPwd &&
+              <Button className={'changePwdBtn'} onClick={() => {
+                setShowSetPwdDialog(true);
+                setPasswordDialogTitle('Change Password');
+                setIsChangePwd(true);
+              }}>Change Password</Button>}
+            {!hadSetPwd && <Button className={'changePwdBtn'} onClick={() => {
               setShowSetPwdDialog(true);
-            }}>Change Password</Button>
+              setPasswordDialogTitle('Setup Password');
+              setIsChangePwd(false);
+            }}>Setup Password</Button>}
           </div>
         </div>
+
 
       </div>
 
@@ -195,7 +220,7 @@ const Setting = memo(() => {
           <img className={'iconDiv'} src={mode}></img>
         </div>
       </div>
-      {showSetPwdDialog && <SettingsSetPwdDialog onClose={() => {
+      {showSetPwdDialog && <SettingsSetPwdDialog isChangePwd={isChangePwd} title={passwordDialogTitle} onClose={() => {
         setShowSetPwdDialog(false);
       }} onSubmit={() => {
       }} resetPwsSuccessCallback={resetPwsSuccessCallbackFn} />}

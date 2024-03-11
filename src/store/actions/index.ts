@@ -466,6 +466,7 @@ export const initUserInfoActionAsync = () => {
 };
 export const initWalletAddressActionAsync = () => {
   return async (dispatch: any) => {
+    debugger
     const { keyStore, padoCreatedWalletAddress } =
       await chrome.storage.local.get(['keyStore', 'padoCreatedWalletAddress']);
     if (keyStore) {
