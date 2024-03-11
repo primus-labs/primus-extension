@@ -104,14 +104,19 @@ const Setting = memo(() => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-            <Select
-              style={{ width: '149px', height: '32px' }}
-              defaultValue={currencyChosen}
-              options={currencyItems}
-              onChange={(v) => {
-                setCurrencyChosen(v);
-              }}>
-            </Select>
+            {/*<Select*/}
+            {/*  style={{ width: '149px', height: '32px' }}*/}
+            {/*  defaultValue={currencyChosen}*/}
+            {/*  options={currencyItems}*/}
+            {/*  onChange={(v) => {*/}
+            {/*    setCurrencyChosen(v);*/}
+            {/*  }}>*/}
+            {/*</Select>*/}
+            <PSelect
+              className={"selectDivInput"}
+              list={currencyItems} onChange={(v) => {
+              setCurrencyChosen(v);
+            }} value={currencyChosen} />
           </div>
         </div>
         <Divider style={{ width: '1072px', marginTop: '16px', marginBottom: '16px', color: '##E0E0E0' }} />
@@ -127,14 +132,18 @@ const Setting = memo(() => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-            <Select
-              style={{ width: '149px', height: '32px' }}
-              defaultValue={updateFrequencyChosen}
-              options={updateFrequencyItems}
-              onChange={(v) => {
-                setUpdateFrequencyChosen(v);
-              }}>
-            </Select>
+            {/*<Select*/}
+            {/*  style={{ width: '149px', height: '32px' }}*/}
+            {/*  defaultValue={updateFrequencyChosen}*/}
+            {/*  options={updateFrequencyItems}*/}
+            {/*  onChange={(v) => {*/}
+            {/*    setUpdateFrequencyChosen(v);*/}
+            {/*  }}>*/}
+            {/*</Select>*/}
+
+            <PSelect className={"selectDivInput"} list={updateFrequencyItems} onChange={(v) => {
+              setUpdateFrequencyChosen(v);
+            }} value={updateFrequencyChosen}/>
           </div>
         </div>
       </div>
@@ -183,7 +192,7 @@ const Setting = memo(() => {
         <Divider style={{ width: '1072px', marginTop: '0px', marginBottom: '0px', color: '##E0E0E0' }} />
         <div className={'modeDiv'}>
           <div className={'textDiv'}>Mode</div>
-            <img className={'iconDiv'} src={mode}></img>
+          <img className={'iconDiv'} src={mode}></img>
         </div>
       </div>
       {showSetPwdDialog && <SettingsSetPwdDialog onClose={() => {

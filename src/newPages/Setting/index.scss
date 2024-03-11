@@ -41,6 +41,9 @@
       .selectDiv {
         margin-left: auto;
         display: flex;
+        .selectDivInput{
+          height: 32px;
+        }
         .textDiv {
           font-size: 14px;
           font-weight: 400;
@@ -61,6 +64,11 @@
 
         .changePwdBtn{
           border-color: var(--neutral-color-gray-100);
+
+        }
+        .changePwdBtn:hover{
+          border-color: var(--brand-primary-color-bp-50);
+          color: var(--neutral-color-gray-100);
         }
       }
 
