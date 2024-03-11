@@ -127,6 +127,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
           });
         }
       } else if (resMethodName === 'create') {
+        
         console.log('page_get:create:', res);
         if (res) {
           const { privateKey } = await chrome.storage.local.get(['privateKey']);

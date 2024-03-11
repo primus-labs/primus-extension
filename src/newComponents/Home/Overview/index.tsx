@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getUserInfo } from '@/services/api/achievements';
@@ -51,7 +51,9 @@ const Overview = memo(() => {
       link: '/achievements',
     },
   });
-  
+  const hasData = useMemo(() => {
+    return Object.values(itemMap).some(i =>i.num >0)
+  }, [itemMap]);
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
@@ -75,7 +77,7 @@ const Overview = memo(() => {
       return prev;
     }, {});
     setConnectedDataSources(m);
-    
+
     setItemMap((i) => {
       i.dataSource.num = Object.keys(m).length;
       return i;
@@ -147,7 +149,7 @@ const Overview = memo(() => {
       <ul className="overviewItems">
         {Object.values(itemMap).map((i, k) => {
           return (
-            <li className="overviewItem" key={k}>
+            <li className={`overviewItem ${hasData && 'hasContent'}`} key={k}>
               <h4 className="title">{i.title}</h4>
               <div className="desc">
                 <div className="num">{i.num}</div>
@@ -170,7 +172,6 @@ const Overview = memo(() => {
           );
         })}
       </ul>
-      
     </div>
   );
 });

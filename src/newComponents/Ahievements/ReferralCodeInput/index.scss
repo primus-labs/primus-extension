@@ -4,7 +4,8 @@
 
 .pDialog2.referral-code {
   width: 448px;
-  height: 288px;
+  height: fit-content;
+  padding: 24px;
   .PClose {
     height: 36px;
     .closeBtn {
@@ -61,6 +62,10 @@
       font-size: 14px;
       font-family: 'IBM Plex Sans';
       width: 400px;
+      height: 40px;
+    }
+    .skipBtn{
+      margin-top: -16px;
       height: 40px;
     }
   }

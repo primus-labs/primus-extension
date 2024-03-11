@@ -320,7 +320,7 @@ const processpadoServiceReq = async (message, port) => {
 
 
 const processWalletReq = async (message, port) => {
-  // console.log('processWalletReq message', message);
+  console.log('processWalletReq message', message);
   const {
     reqMethodName,
     params: { password },

@@ -94,7 +94,7 @@ button.PButton {
     @include frcc;
     .iconfont {
       font-size: 16px;
-      color: var(--icon-tokens-icon-primary);
+      color: var(--icon-tokens-icon-primary, #161616);
     }
     &:not(.disabled):hover {
       .iconfont {

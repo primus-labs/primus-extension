@@ -13,27 +13,26 @@ interface PButtonProps {
   // sourceName: string;
   onClose: () => void;
   setReferralTaskFinished: any;
-
+  required?: boolean;
+  onCancel?: () => void;
 }
 
-
 const ReferralCodeInput: React.FC<PButtonProps> = memo(
-  ({ onClose, setReferralTaskFinished }) => {
+  ({ onClose, setReferralTaskFinished, required = true, onCancel }) => {
     const [referralCode, setReferralCode] = React.useState('');
     const [form] = Form.useForm();
     const { msgs, addMsg } = useMsgs();
     const PasteButton = () => {
-      return (
-        <div> Paste </div>
-      );
+      return <div> Paste </div>;
     };
 
     const handlePaste = () => {
-      navigator.clipboard.readText()
-        .then(text => {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
           setReferralCode(text);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error('Failed to read clipboard contents: ', err);
         });
     };
@@ -45,7 +44,7 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
           title: `Invalid referral code.`,
           link: '',
         });
-        debugger
+        debugger;
         form.submit;
         return;
       }
@@ -74,7 +73,6 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
       }
     };
 
-
     return (
       <PMask>
         <div className="pDialog2 referral-code">
@@ -87,24 +85,37 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
               Please input the code you received here.
             </div>
             <div>
-              <div className={'inputTitle'}>
-                Referral Code
-              </div>
+              <div className={'inputTitle'}>Referral Code</div>
               <div className={'inputComponent'}>
-                <Input className={'inputComponent'} defaultValue={referralCode} value={referralCode}
-                       onChange={(e) => setReferralCode(e.target.value)} />
+                <Input
+                  className={'inputComponent'}
+                  defaultValue={referralCode}
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value)}
+                />
                 {/*</Form.Item>*/}
                 <button onClick={handlePaste}>Paste</button>
               </div>
             </div>
-            <PButton text={'Confirm'} disabled={referralCode === '' || referralCode === undefined}
-                     className={'confirmButton'} onClick={handleSubmit} />
+            <PButton
+              text={'Confirm'}
+              disabled={referralCode === '' || referralCode === undefined}
+              className={'confirmButton'}
+              onClick={handleSubmit}
+            />
+            {!required && (
+              <PButton
+                text="I don't have one, skip now"
+                type="text2"
+                className={'skipBtn fullWidth'}
+                onClick={onCancel ?? (() => {})}
+              />
+            )}
           </main>
-
         </div>
       </PMask>
     );
-  },
+  }
 );
 
 export default ReferralCodeInput;

@@ -22,7 +22,27 @@
       @include fcss;
       gap: var(--spacing-8);
       padding-top: var(--spacing-32);
-      width: calc((100% - 100px)/3);
+      // width: calc((100% - 100px)/3);
+      &:first-child {
+        width: 191px;
+      }
+      &:nth-child(2) {
+        width: 189px;
+      }
+      &:nth-child(3) {
+        width: 129px;
+      }
+      &.hasContent {
+        &:first-child {
+          min-width: 220px;
+        }
+        &:nth-child(2) {
+          min-width: 188px;
+        }
+        &:nth-child(3) {
+          min-width: 173px;
+        }
+      }
       .title {
         @include HeadlineH4;
       }
@@ -37,7 +57,7 @@
             // position: absolute;
             // bottom: 0;
           }
-          .hideCircle{
+          .hideCircle {
             width: var(--spacing-34);
             height: var(--spacing-34);
           }

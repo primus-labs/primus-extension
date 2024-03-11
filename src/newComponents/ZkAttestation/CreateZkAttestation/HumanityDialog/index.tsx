@@ -160,7 +160,6 @@ const Nav: React.FC<PButtonProps> = memo(
           return credAddress;
         };
         const storeGoogleCred = async (res: any) => {
-          debugger;
           //w
           const { signatureInfo, signatureRawInfo } = res;
           const credAddress = await getCredAddrFn();

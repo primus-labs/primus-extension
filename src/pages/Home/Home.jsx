@@ -1,10 +1,10 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-
+import useListener from '@/hooks/useListener';
 import useTimeout from '@/hooks/useTimeout';
 import { postMsg } from '@/utils/utils';
-
+import ReferralCodeInput from '@/newComponents/Ahievements/ReferralCodeInput';
 import page1 from '@/assets/newImg/guide/page1.svg';
 import page2 from '@/assets/newImg/guide/page2.svg';
 import page3 from '@/assets/newImg/guide/page3.svg';
@@ -14,7 +14,9 @@ import iconLogoPado from '@/assets/newImg/guide/iconLogoPado.svg';
 import './home.scss';
 
 const Home = memo(() => {
+  useListener();
   const navigate = useNavigate();
+  const [visibleReferralCodeDialog, setVisibleReferralCodeDialog] = useState();
   const [step, setStep] = useState(0);
   const [timeoutStep2Switch, setTimeoutStep2Switch] = useState(false);
   const padoServicePort = useSelector((state) => state.padoServicePort);
@@ -61,7 +63,7 @@ const Home = memo(() => {
         params: {},
       };
       postMsg(padoServicePort, msg);
-      navigate('/home');
+      setVisibleReferralCodeDialog(true);
     }
   }, [step]);
 
@@ -78,8 +80,15 @@ const Home = memo(() => {
       navigate('/home');
     }
   }, [navigate]);
+  const handleReferralCodeClose = () => {
+    setVisibleReferralCodeDialog(false);
+  };
+  const handleReferralCodeSubmit = useCallback(() => {
+    navigate('/home');
+  }, []);
+
   useEffect(() => {
-    checkIsFirstLogin()
+    checkIsFirstLogin();
   }, [checkIsFirstLogin]);
 
   return (
@@ -100,6 +109,14 @@ const Home = memo(() => {
             Liberate Data and Computation with Cryptography
           </div>
         </div>
+      )}
+      {visibleReferralCodeDialog && (
+        <ReferralCodeInput
+          onClose={handleReferralCodeClose}
+          setReferralTaskFinished={handleReferralCodeSubmit}
+          onCancel={handleReferralCodeSubmit}
+          required={false}
+        />
       )}
     </div>
   );
