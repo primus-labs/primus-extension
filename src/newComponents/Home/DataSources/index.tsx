@@ -1,4 +1,6 @@
 import React, { memo, useCallback, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setActiveConnectDataSource } from '@/store/actions';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 
 import './index.scss';
@@ -6,17 +8,26 @@ import PButton from '@/newComponents/PButton';
 import DataSourceBrief from '@/newComponents/DataSource/DataSourceBrief';
 import ConnectDataSource from '@/newComponents/DataSource/ConnectDataSource';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Overview = memo(() => {
+  const dispatch = useDispatch();
   const [activeConnectDataSourceId, setActiveConnectDataSourceId] =
     useState<string>();
   const navigate = useNavigate();
   const dataSourceList = ['web3 wallet', 'x', 'tiktok', 'coinbase', 'binance'];
+
   const handleClick = useCallback(
     (i) => {
-      setActiveConnectDataSourceId(i);
+      // setActiveConnectDataSourceId(i);
+      dispatch(
+        setActiveConnectDataSource({
+          dataSourceId: i,
+          loading: 0
+        })
+      );
     },
-    [navigate]
+    [dispatch]
   );
   const handleMore = useCallback(() => {
     navigate('/datas');
@@ -24,7 +35,7 @@ const Overview = memo(() => {
   return (
     <div className="homeDataSources">
       <div className="title">
-        <h2>Data Sources</h2>
+        <span>Data Sources</span>
         <PButton
           className="moreBtn"
           text="View More"
@@ -55,9 +66,8 @@ const Overview = memo(() => {
           );
         })}
       </ul>
-      {activeConnectDataSourceId && (
-        <ConnectDataSource dataSourceId={activeConnectDataSourceId} />
-      )}
+
+      <ConnectDataSource />
     </div>
   );
 });

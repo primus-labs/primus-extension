@@ -75,10 +75,10 @@ const Overview = memo(() => {
       return prev;
     }, {});
     setConnectedDataSources(m);
-
-    setItemMap((m) => {
-      m.dataSource.num = Object.keys(m).length;
-      return m;
+    
+    setItemMap((i) => {
+      i.dataSource.num = Object.keys(m).length;
+      return i;
     });
   }, [sourceMap2]);
   const initOnChainFn = useCallback(() => {
@@ -138,7 +138,7 @@ const Overview = memo(() => {
   return (
     <div className="homeOverview">
       <div className="title">
-        <h2>Overview</h2>
+        <span>Overview</span>
         {/* <div className="updateTip">
           <span>Updated 4mins ago</span>
           <i className="iconfont "></i>

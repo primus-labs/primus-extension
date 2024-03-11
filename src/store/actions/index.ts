@@ -142,6 +142,10 @@ export const setMsgs = (values: any) => ({
   type: 'setMsgs',
   payload: values,
 });
+export const setActiveConnectDataSource = (values: any) => ({
+  type: 'setActiveConnectDataSource',
+  payload: values,
+});
 export const setConnectedWalletsActionAsync = () => {
   return async (dispatch: any) => {
     const { connectedWallets: lastConnectedWalletsStr } =

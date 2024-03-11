@@ -54,6 +54,7 @@ const PAlert: React.FC<Msg> = memo(
                 text="View details"
                 type="text2"
                 onClick={handleDetail}
+                className="detailBtn"
               />
             )}
           </div>

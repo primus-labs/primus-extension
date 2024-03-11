@@ -32,6 +32,11 @@ h4,
 h5,
 h6 {
   font-weight: normal;
+  font-size: inherit;
+  font-weight: normal;
+  font-family: inherit;
+  color: inherit;
+  line-height: normal;
 }
 
 /* 实现1px边框 */

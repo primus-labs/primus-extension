@@ -107,7 +107,7 @@ const initState = {
   lastLoginHasPwd: false,
   dataSourceQueryStr: '',
   dataSourceQueryType: '',
-
+  activeConnectDataSource: {}, // connect data source in progress
   connectedWallets: {}, // had connected wallets and accounts
   attestLoading: 0,
   activeAttestation: {}, // attestation in progress
@@ -237,6 +237,14 @@ const reducer: any = function (state = initState, action: any) {
       };
     case 'setMsgs':
       return { ...state, msgs: action.payload };
+    case 'setActiveConnectDataSource':
+      return {
+        ...state,
+        activeConnectDataSource: {
+          ...state.activeConnectDataSource,
+          ...action.payload,
+        },
+      };
     default:
       return state;
   }

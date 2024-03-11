@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import { setActiveConnectDataSource } from '@/store/actions';
 import type { UserState } from '@/types/store';
 import { postMsg, getAuthUrl } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
@@ -18,6 +19,7 @@ type OauthFn = (
   dataType?: string
 ) => void;
 const useAuthorization = () => {
+  const dispatch = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
@@ -46,7 +48,16 @@ const useAuthorization = () => {
       setCheckIsAuthDialogTimer(timer);
       const removeWindowCallBack = (windowId: number) => {
         setAuthWindowId(undefined);
-        windowId === newWindowId && timer && clearInterval(timer);
+        if (windowId === newWindowId) {
+          if (timer) {
+            clearInterval(timer);
+            dispatch(
+              setActiveConnectDataSource({
+                loading: 3,
+              })
+            );
+          }
+        }
         padoServicePort.onMessage.removeListener(padoServicePortListener);
       };
       const padoServicePortListener = async function (message: any) {
@@ -55,11 +66,12 @@ const useAuthorization = () => {
           if (message.res) {
             // if (message.params?.data_type === 'DATASOURCE') {
             // console.log('remove', newWindowId)
+
+            timer && clearInterval(timer);
             newWindowId &&
               chrome.windows.get(newWindowId, {}, (win) => {
                 win?.id && chrome.windows.remove(newWindowId);
               });
-            timer && clearInterval(timer);
             onSubmit && onSubmit();
 
             const eventInfo = {
