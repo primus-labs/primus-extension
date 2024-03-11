@@ -1,0 +1,20 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pageGuide {
+  cursor: pointer;
+  @include frsc;
+  // position: fixed;
+  // top: 0;
+  // left: 0;
+  height: fit-content;
+  .guideImg {
+    width: 100vw;
+    height: calc(100vw / (1440 / 1024));
+    cursor: pointer;
+    &.longImg {
+      height: calc(100vw / (1440 / 1288));
+    }
+  }
+}
+

@@ -10,6 +10,7 @@ var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 var ReactRefreshTypeScript = require('react-refresh-typescript');
 var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 var alias = {
@@ -201,7 +202,9 @@ var options = {
             } else {
               let jsonobj = JSON.parse(content.toString());
               //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
-              jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9095/*");
+              jsonobj.content_scripts[0].matches.push(
+                'http://api-dev.padolabs.org:9095/*'
+              );
               jsonobj.content_scripts[0].matches.push(
                 'http://localhost:3001/*'
               );
@@ -444,6 +447,19 @@ var options = {
       // filename: 'static/css/main.css',
       filename: 'static/css/[name].css',
     }),
+    // new CircularDependencyPlugin({
+    //   // exclude detection of files based on a RegExp
+    //   exclude: /a\.js|node_modules/,
+    //   // include specific files based on a RegExp
+    //   include: /src/,
+    //   // add errors to webpack instead of warnings
+    //   failOnError: true,
+    //   // allow import cycles that include an asyncronous import,
+    //   // e.g. via import(/* webpackMode: "weak" */ './file.js')
+    //   allowAsyncCycles: false,
+    //   // set the current working directory for displaying module paths
+    //   cwd: process.cwd(),
+    // }),
   ].filter(Boolean),
   infrastructureLogging: {
     level: 'info',

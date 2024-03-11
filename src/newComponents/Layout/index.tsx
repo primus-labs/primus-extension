@@ -36,8 +36,10 @@ import Sidebar from './Sidebar';
 import PMsgs from '@/newComponents/PMsgs';
 
 import './index.scss';
-
-const Nav: React.FC = memo(({}) => {
+type LayoutProps = {
+  children?: any;
+};
+const Nav: React.FC<LayoutProps> = memo(({ children }) => {
   const theme = useSelector((state: UserState) => state.theme);
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
@@ -116,26 +118,26 @@ const Nav: React.FC = memo(({}) => {
   }, [initStoreData]);
 
   // TODO-newui create wallet
-  const handleClickStart = useCallback(() => {
-    const msg = {
-      fullScreenType: 'wallet',
-      reqMethodName: 'create',
-      params: {},
-    };
-    postMsg(padoServicePort, msg);
-  }, [padoServicePort]);
-  const createPadoId = async () => {
-    const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
-      await chrome.storage.local.get([
-        'keyStore',
-        'padoCreatedWalletAddress',
-        'privateKey',
-        'userInfo',
-      ]);
-    if (!keyStore && !privateKey) {
-      handleClickStart();
-    }
-  };
+  // const handleClickStart = useCallback(() => {
+  //   const msg = {
+  //     fullScreenType: 'wallet',
+  //     reqMethodName: 'create',
+  //     params: {},
+  //   };
+  //   postMsg(padoServicePort, msg);
+  // }, [padoServicePort]);
+  // const createPadoId = async () => {
+  //   const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
+  //     await chrome.storage.local.get([
+  //       'keyStore',
+  //       'padoCreatedWalletAddress',
+  //       'privateKey',
+  //       'userInfo',
+  //     ]);
+  //   if (!keyStore && !privateKey) {
+  //     handleClickStart();
+  //   }
+  // };
   const queryUserPassword = async () => {
     const msg2 = {
       fullScreenType: 'wallet',
@@ -153,7 +155,7 @@ const Nav: React.FC = memo(({}) => {
   }, [dispatch, padoServicePort]);
 
   useEffect(() => {
-    createPadoId();
+    // createPadoId();
     queryUserPassword();
     getSysConfig();
     updateAlgoUrl();
