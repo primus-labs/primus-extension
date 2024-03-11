@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';
@@ -7,7 +7,7 @@ import taskFinishedIcon from '@/assets/newImg/achievements/taskFinishedIcon.svg'
 import { finishTask } from '@/services/api/achievements';
 import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
-import { SocailStoreVersion } from '@/config/constants';
+import { BASEVENTNAME, SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
 import useMsgs from '@/hooks/useMsgs';
 
@@ -35,7 +35,10 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
   const refreshTotalScore = taskItemWithClick.refreshTotalScore;
   const [finished, setFinished] = useState(taskItemWithClick.isFinished);
   const { msgs, addMsg } = useMsgs();
-  const [btnIsLoading,setBtnIsLoading] = useState(false)
+  const [btnIsLoading, setBtnIsLoading] = useState(false);
+
+  const [PADOTabId, setPADOTabId] = useState<number>();
+  const [xTabId, setXTabId] = useState<number>();
 
   const getDataSourceData = async (datasource) => {
     const data = await chrome.storage.local.get(datasource);
@@ -44,15 +47,103 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
   };
 
 
-  const handleClickFn = async ()=>{
-    if(btnIsLoading){
-      console.log('btnIsLoading',btnIsLoading)
+  const handleClickFn = async () => {
+    if (btnIsLoading) {
+      console.log('btnIsLoading', btnIsLoading);
       return;
     }
-    setBtnIsLoading(true)
-    await handleClick()
-    setBtnIsLoading(false)
-  }
+    setBtnIsLoading(true);
+    await handleClick();
+    setBtnIsLoading(false);
+  };
+
+  const onFollowX = useCallback(async () => {
+    const targetUrl =
+      'https://twitter.com/intent/follow?screen_name=padolabs';
+    const openXUrlFn = async () => {
+      const currentWindowTabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      setPADOTabId(currentWindowTabs[0].id);
+      const tabCreatedByPado = await chrome.tabs.create({
+        url: targetUrl,
+      });
+
+      console.log(
+        '222123 create tab',
+        tabCreatedByPado.id,
+        currentWindowTabs[0].id,
+      );
+      setXTabId(tabCreatedByPado.id);
+    };
+    if (xTabId) {
+      try {
+        await chrome.tabs.update(xTabId as number, {
+          active: true,
+        });
+        return;
+      } catch {
+        await openXUrlFn();
+        return;
+      }
+    }
+    await openXUrlFn();
+  }, [xTabId]);
+
+  useEffect(() => {
+    const listerFn = async (message, sender, sendResponse) => {
+      console.log('Achievement  onMessage message', message);
+      if (message.type === 'xFollow' && message.name === 'follow') {
+        try {
+          if (xTabId) {
+            const xTab = await chrome.tabs.get(xTabId as number);
+            if (xTab) {
+              setXTabId(undefined);
+              if (PADOTabId) {
+                await chrome.tabs.update(PADOTabId, {
+                  active: true,
+                });
+                console.log("followed")
+                //if followed
+                const res = await getDataSourceData('x');
+                const xUserInfo = JSON.parse(res.x);
+                const ext = {
+                  uniqueName: xUserInfo.screenName,
+                };
+                const finishBody = {
+                  taskIdentifier: taskItem.taskIdentifier,
+                  ext: ext,
+                };
+                const resFromServer = await finishTask(finishBody);
+                if (resFromServer.rc === 0) {
+                  addMsg({
+                    type: 'suc',
+                    title: `${taskItem.taskXpScore} points earned!`,
+                    link: '',
+                  });
+                  setFinished(true);
+                  refreshTotalScore(taskItem.taskXpScore, taskItem.taskIdentifier);
+                } else {
+                  addMsg({
+                    type: 'info',
+                    title: 'Not qualified',
+                    desc: resFromServer.msg,
+                  });
+                }
+              }
+              await chrome.tabs.remove(xTabId as number);
+            }
+          }
+        } catch {
+        }
+      }
+    };
+    chrome.runtime.onMessage.addListener(listerFn);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listerFn);
+    };
+  }, [xTabId, PADOTabId]);
 
   const handleClick = async () => {
     let ext = {};
@@ -67,26 +158,25 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           type: 'info',
           title: 'Not qualified',
           desc: 'Please connect discord data.',
-          link: "/datas/data?dataSourceId=discord",
+          link: '/datas/data?dataSourceId=discord',
           linkText: 'View details',
         });
         return;
       }
       const discordUserInfo = JSON.parse(res.discord);
-      debugger
       ext = {
         name: discordUserInfo.userName,
         discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
       };
     }
-    if (taskItem.taskIdentifier === 'CONNECT_X_DATA' || taskItem.taskIdentifier === 'FOLLOW_PADOLABS') {
+    if (taskItem.taskIdentifier === 'CONNECT_X_DATA') {
       const res = await getDataSourceData('x');
       if (!res.x) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
           desc: 'Please connect x data.',
-          link: "/datas/data?dataSourceId=x",
+          link: '/datas/data?dataSourceId=x',
           linkText: 'View details',
         });
         return;
@@ -97,6 +187,24 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         uniqueName: xUserInfo.screenName,
       };
     }
+
+    if (taskItem.taskIdentifier === 'FOLLOW_PADOLABS') {
+      const res = await getDataSourceData('x');
+      if (!res.x) {
+        addMsg({
+          type: 'info',
+          title: 'Not qualified',
+          desc: 'Please connect x data.',
+          link: '/datas/data?dataSourceId=x',
+          linkText: 'View details',
+        });
+        return;
+      }
+      await onFollowX();
+      console.log(res);
+      return;
+    }
+
     if (taskItem.taskIdentifier === 'CONNECT_DISCORD_DATA') {
       const res = await getDataSourceData('discord');
       if (!res.discord) {
@@ -104,7 +212,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           type: 'info',
           title: 'Not qualified',
           desc: 'Please connect discord data.',
-          link: "/datas/data?dataSourceId=discord",
+          link: '/datas/data?dataSourceId=discord',
           linkText: 'View details',
         });
         return;
@@ -129,7 +237,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           state: state,
           token: parseUserInfo.token,
         });
-        authUrl = authUrl+"&redirectUrl=https://discord.com/invite/K8Uqm5ww"
+        authUrl = authUrl + '&redirectUrl=https://discord.com/invite/K8Uqm5ww';
         needCheckLogin = true;
       } else {
         authUrl = 'https://discord.com/invite/K8Uqm5ww';
@@ -162,7 +270,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         if (!res.discord) {
           return;
         }
-        if(checkLoginTimer){
+        if (checkLoginTimer) {
           clearInterval(checkLoginTimer);
         }
         const discordUserInfo = JSON.parse(res.discord);
@@ -176,10 +284,10 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         const finishCheckRsp = await finishTask(finishBody);
         if (finishCheckRsp.rc === 0) {
           setFinished(true);
-          clearInterval(checkDiscordTaskTimer)
+          clearInterval(checkDiscordTaskTimer);
           refreshTotalScore(taskItem.taskXpScore, taskItem.taskIdentifier);
         }
-      },1000)
+      }, 1000);
       return;
     }
     if (taskItem.taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE') {
@@ -198,7 +306,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           type: 'info',
           title: 'Not qualified',
           desc: 'Please connect tiktok data.',
-          link: "/datas/data?dataSourceId=tiktok",
+          link: '/datas/data?dataSourceId=tiktok',
           linkText: 'View details',
         });
         return;
@@ -217,7 +325,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           type: 'info',
           title: 'Not qualified',
           desc: 'Please connect google data.',
-          link: "/datas/data?dataSourceId=google",
+          link: '/datas/data?dataSourceId=google',
           linkText: 'View details',
         });
         return;
@@ -236,13 +344,12 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           type: 'info',
           title: 'Not qualified',
           desc: 'Please connect binance data.',
-          link: "/datas/data?dataSourceId=binance",
+          link: '/datas/data?dataSourceId=binance',
           linkText: 'View details',
         });
         return;
       }
       const binanceInfo = JSON.parse(res.binance);
-      debugger
       if (binanceInfo.userInfo) {
         ext = {
           uniqueName: binanceInfo.userInfo,
@@ -261,7 +368,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           type: 'info',
           title: 'Not qualified',
           desc: 'Please connect coinbase data.',
-          link: "/datas/data?dataSourceId=coinbase",
+          link: '/datas/data?dataSourceId=coinbase',
           linkText: 'View details',
         });
         return;
@@ -285,13 +392,12 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           type: 'info',
           title: 'Not qualified',
           desc: 'Please connect okx data.',
-          link: "/datas/data?dataSourceId=okx",
+          link: '/datas/data?dataSourceId=okx',
           linkText: 'View details',
         });
         return;
       }
       const okxInfo = JSON.parse(res.okx);
-      debugger
       if (okxInfo.userInfo) {
         ext = {
           uniqueName: okxInfo.userInfo,
