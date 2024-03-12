@@ -165,7 +165,7 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://test.bascan.io/attestation',
     },
-    'BNB Greenfield': {
+    /*'BNB Greenfield': {
       showName: 'BNB Greenfield',
       icon: iconBinance,
       title: 'BNB Greenfield',
@@ -198,7 +198,7 @@ const EASINFOMAP = {
       transactionDetailUrl: 'https://testnet.greenfieldscan.com/tx',
       endpointUrl: 'https://gnfd-testnet-sp1.bnbchain.org',
       bucketDetailUrl: 'https://testnet.dcellar.io/buckets',
-    },
+    },*/
     Arbitrum: {
       showName: 'Arbitrum',
       icon: iconArbitrum,
@@ -418,7 +418,7 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://www.bascan.io/attestation',
     },
-    'BNB Greenfield': {
+    /*'BNB Greenfield': {
       showName: 'BNB Greenfield',
       icon: iconBinance,
       title: 'BNB Greenfield',
@@ -451,7 +451,7 @@ const EASINFOMAP = {
       transactionDetailUrl: 'https://greenfieldscan.com/tx',
       endpointUrl: 'https://greenfield-sp.bnbchain.org',
       bucketDetailUrl: 'https://dcellar.io/buckets',
-    },
+    },*/
 
     Ethereum: {
       showName: 'Ethereum',
