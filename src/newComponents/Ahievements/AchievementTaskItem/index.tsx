@@ -26,6 +26,8 @@ export type TaskItemWithClick = {
   showCodeDiag: any;
   referralCode: string;
   refreshTotalScore: any;
+  isConnect: any;
+  onConnectWallet:any
 };
 
 
@@ -33,6 +35,8 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
   const taskItem = taskItemWithClick.taskItem;
   const showCodeDiag = taskItemWithClick.showCodeDiag;
   const refreshTotalScore = taskItemWithClick.refreshTotalScore;
+  const isConnect = taskItemWithClick.isConnect;
+  const onConnectWallet = taskItemWithClick.onConnectWallet;
   const [finished, setFinished] = useState(taskItemWithClick.isFinished);
   const { msgs, addMsg } = useMsgs();
   const [btnIsLoading, setBtnIsLoading] = useState(false);
@@ -107,7 +111,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
                 console.log('followed');
                 //if followed
                 const res = await getDataSourceData('x');
-                const xUserInfo = JSON.parse(res.x);
+                const xUserInfo = JSON.parse(res["x"]);
                 const ext = {
                   uniqueName: xUserInfo.screenName,
                 };
@@ -146,6 +150,10 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
   }, [xTabId, PADOTabId]);
 
   const handleClick = async () => {
+    if(!isConnect){
+      onConnectWallet()
+      return
+    }
     let ext = {};
 
     if (taskItem.taskIdentifier === 'DAILY_CHECK_IN') {
@@ -153,7 +161,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     }
     if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
       const res = await getDataSourceData('discord');
-      if (!res.discord) {
+      if (!res["discord"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -163,7 +171,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         });
         return;
       }
-      const discordUserInfo = JSON.parse(res.discord);
+      const discordUserInfo = JSON.parse(res["discord"]);
       ext = {
         name: discordUserInfo.userName,
         discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
@@ -171,7 +179,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     }
     if (taskItem.taskIdentifier === 'CONNECT_X_DATA') {
       const res = await getDataSourceData('x');
-      if (!res.x) {
+      if (!res["x"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -181,7 +189,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         });
         return;
       }
-      const xUserInfo = JSON.parse(res.x);
+      const xUserInfo = JSON.parse(res["x"]);
       console.log(res);
       ext = {
         uniqueName: xUserInfo.screenName,
@@ -190,7 +198,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'FOLLOW_PADOLABS') {
       const res = await getDataSourceData('x');
-      if (!res.x) {
+      if (!res["x"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -207,7 +215,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'CONNECT_DISCORD_DATA') {
       const res = await getDataSourceData('discord');
-      if (!res.discord) {
+      if (!res["discord"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -217,7 +225,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         });
         return;
       }
-      const discordUserInfo = JSON.parse(res.discord);
+      const discordUserInfo = JSON.parse(res["discord"]);
       console.log(res);
       ext = {
         uniqueName: discordUserInfo.userName,
@@ -229,7 +237,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       let authUrl;
       let needCheckLogin = false;
       const state = uuidv4();
-      if (!res.discord) {
+      if (!res["discord"]) {
         const { userInfo } = await chrome.storage.local.get(['userInfo']);
         const parseUserInfo = JSON.parse(userInfo);
         authUrl = getAuthUrl({
@@ -267,13 +275,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       const checkDiscordTaskTimer = setInterval(async () => {
         //check has join discord
         const res = await getDataSourceData('discord');
-        if (!res.discord) {
+        if (!res["discord"]) {
           return;
         }
         if (checkLoginTimer) {
           clearInterval(checkLoginTimer);
         }
-        const discordUserInfo = JSON.parse(res.discord);
+        const discordUserInfo = JSON.parse(res["discord"]);
         ext = {
           discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
         };
@@ -316,7 +324,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'CONNECT_TIKTOK_ACCOUNT_DATA') {
       const res = await getDataSourceData('tiktok');
-      if (!res.tiktok) {
+      if (!res["tiktok"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -326,7 +334,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         });
         return;
       }
-      const tiktokUserInfo = JSON.parse(res.tiktok);
+      const tiktokUserInfo = JSON.parse(res["tiktok"]);
       console.log(res);
       ext = {
         uniqueName: tiktokUserInfo.userName,
@@ -335,7 +343,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'CONNECT_GOOGLE_ACCOUNT_DATA') {
       const res = await getDataSourceData('google');
-      if (!res.google) {
+      if (!res["google"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -345,7 +353,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         });
         return;
       }
-      const googleUserInfo = JSON.parse(res.google);
+      const googleUserInfo = JSON.parse(res["google"]);
       console.log(res);
       ext = {
         uniqueName: googleUserInfo.uniqueId,
@@ -354,7 +362,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier == 'CONNECT_BINANCE_DATA') {
       const res = await getDataSourceData('binance');
-      if (!res.binance) {
+      if (!res["binance"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -364,7 +372,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         });
         return;
       }
-      const binanceInfo = JSON.parse(res.binance);
+      const binanceInfo = JSON.parse(res["binance"]);
       if (binanceInfo.userInfo) {
         ext = {
           uniqueName: binanceInfo.userInfo,
@@ -378,7 +386,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier == 'CONNECT_COINBASE_DATA') {
       const res = await getDataSourceData('coinbase');
-      if (!res.coinbase) {
+      if (!res["coinbase"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -388,7 +396,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         });
         return;
       }
-      const coinbaseInfo = JSON.parse(res.coinbase);
+      const coinbaseInfo = JSON.parse(res["coinbase"]);
       if (coinbaseInfo.userInfo) {
         ext = {
           uniqueName: coinbaseInfo.userInfo,
@@ -402,7 +410,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'CONNECT_OKX_DATA') {
       const res = await getDataSourceData('okx');
-      if (!res.okx) {
+      if (!res["okx"]) {
         addMsg({
           type: 'info',
           title: 'Not qualified',
@@ -412,7 +420,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         });
         return;
       }
-      const okxInfo = JSON.parse(res.okx);
+      const okxInfo = JSON.parse(res["okx"]);
       if (okxInfo.userInfo) {
         ext = {
           uniqueName: okxInfo.userInfo,

@@ -9,6 +9,9 @@ import AchievementRewardHistory from '@/newComponents/Ahievements/AchievementRew
 import { Pagination } from 'antd';
 import ReferralCodeInput from '@/newComponents/Ahievements/ReferralCodeInput';
 import ShareComponent from '@/newComponents/Ahievements/ShareComponent';
+import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
+import { setConnectWalletDialogVisibleAction } from '@/store/actions';
+import { useDispatch, useSelector } from 'react-redux';
 
 const AchievementHome = memo(() => {
 
@@ -25,7 +28,29 @@ const AchievementHome = memo(() => {
   const [totalScore, setTotalScore] = useState(0);
   const [referrals, setReferrals] = useState(0);
   const [countedReferrals, setCountedReferrals] = useState(0);
-  const [shareType,setShareType] = useState('')
+  const [shareType, setShareType] = useState('');
+
+  const dispatch = useDispatch();
+  const [connected, setConnected] = useState<boolean>(false);
+  const connectedWallet = useSelector((state) => state.connectedWallet);
+  const activeConnectWallet = useSelector((state) => state.activeConnectWallet);
+
+  useEffect(() => {
+    setConnected(!!connectedWallet?.address && !activeConnectWallet?.network);
+  }, [connectedWallet?.address, activeConnectWallet?.network]);
+  // useEffect(() => {
+  //   dispatch(setConnectWalletDialogVisibleAction(!connected));
+  // }, [connected, dispatch]);
+
+  const onConnectWallet = ()=>{
+    if(!connected){
+      dispatch(setConnectWalletDialogVisibleAction(!connected));
+    }
+  }
+
+  console.log("connected:",connected)
+  console.log("connectedWallet:",connectedWallet)
+  console.log("activeConnectWallet:",activeConnectWallet)
 
   const getUserInfoFn = async () => {
     const res = await getUserInfo();
@@ -69,6 +94,8 @@ const AchievementHome = memo(() => {
         showCodeDiag: setVisibleReferralCodeDialog,
         refreshTotalScore: refreshTotalScoreFn,
         referralCode: referralCode,
+        isConnect: connected,
+        onConnectWallet:onConnectWallet
       };
       return <AchievementTaskItem key={index} {...taskItemWithClick} />;
     });
@@ -107,13 +134,13 @@ const AchievementHome = memo(() => {
   };
 
   const handleSharePoints = () => {
-    setShareType('score')
-    setVisibleShareDiag(true)
+    setShareType('score');
+    setVisibleShareDiag(true);
   };
 
   const handleShareReferralCode = () => {
-    setShareType('referralCode')
-    setVisibleShareDiag(true)
+    setShareType('referralCode');
+    setVisibleShareDiag(true);
   };
 
 
@@ -149,7 +176,7 @@ const AchievementHome = memo(() => {
         setTotalScore(totalScore + achievementTaskList[i].taskXpScore);
       }
     }
-    getAchievementTaskListFn(current)
+    getAchievementTaskListFn(current);
 
   };
 
@@ -176,7 +203,8 @@ const AchievementHome = memo(() => {
       />}
       {visibleReferralCodeDialog &&
         <ReferralCodeInput onClose={handleReferralCodeClose} setReferralTaskFinished={handleReferralCodeTaskFinish} />}
-      {visibleShareDiag && <ShareComponent onClose={handleSharePageClose} shareType={shareType} scoreShareProps={{score: totalScore,referralCode:referralCode}}/>}
+      {visibleShareDiag && <ShareComponent onClose={handleSharePageClose} shareType={shareType}
+                                           scoreShareProps={{ score: totalScore, referralCode: referralCode }} />}
     </div>
 
   );
