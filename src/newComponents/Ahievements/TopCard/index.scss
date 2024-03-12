@@ -10,7 +10,7 @@
   border-radius: 24px;
 
   .leftCard {
-    width: 628px;
+    width: 618px;
     height: 174px;
     border-radius: var(--spacing-8, 8px);
     border: 1px solid var(--border-tokens-border-primary);
@@ -60,12 +60,12 @@
         height: 40px;
         font-size: 32px;
         font-weight: 600;
-        font-family: 'IBM Plex Sans';
+        font-family: 'IBM Plex Mono';
         color: var(--text-tokens-text-primary, #161616);
       }
 
       .reward-history {
-        padding-top: 30px;
+        padding-top: 22px;
         width: 150px;
         height: 18px;
         gap: var(--spacing-5);
@@ -132,26 +132,26 @@
         }
       }
     }
-
+    .referral-times {
+      margin-top:10px;
+      width: 116px;
+      height: 40px;
+      font-size: 32px;
+      font-weight: 600;
+      font-family: 'IBM Plex Mono';
+      color: var(--text-tokens-text-primary, #161616);
+    }
     .referral {
-      width: 300px;
-      height: 66px;
+      margin-top: 16px;
+      width: 280px;
+      height: 44px;
       gap: var(--spacing-8);
-      .referral-times {
-        margin-top:10px;
-        width: 116px;
-        height: 40px;
-        font-size: 32px;
-        font-weight: 600;
-        font-family: 'IBM Plex Sans';
-        color: var(--text-tokens-text-primary, #161616);
-      }
-
       .referral-counted-referrals {
         font-size: 14px;
-        padding-top: 20px;
         font-family: 'IBM Plex Sans';
         display: flex;
+        font-weight: 500;
+        line-height: 18px;
 
         .referral-counted-referrals-text {
           color: var(--text-tokens-text-tertiary);
@@ -179,6 +179,10 @@
           display: flex;
 
           .referral-code-main-text {
+            font-family: "IBM Plex Mono";
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 18px;
             color: var(--text-tokens-text-primary, #161616);
           }
 

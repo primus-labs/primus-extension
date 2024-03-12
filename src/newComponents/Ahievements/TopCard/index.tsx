@@ -89,8 +89,8 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
             {/*<ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleShareReferralCode} btnDesc={"Share on social media"}/>*/}
           </div>
         </div>
+        <div className={'referral-times'}>{referrals}</div>
         <div className="referral">
-          <div className={'referral-times'}>{referrals}</div>
           <div className={'referral-counted-referrals'}>
             <div className={'referral-counted-referrals-text'}>Counted referrals</div>
             <div className={'referral-counted-referrals-count'}>{countedReferrals}</div>
