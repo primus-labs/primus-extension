@@ -107,6 +107,7 @@ const Nav: React.FC<PButtonProps> = memo(
                   'BAS_EVENT_PROOF_OF_HUMANITY'
                 : activeWebProofTemplate.schemaType,
             event: fromEvents,
+            ...activeAttestationParams,
           };
           const responses = currRequestTemplate.datasourceTemplate.responses;
 
@@ -142,13 +143,15 @@ const Nav: React.FC<PButtonProps> = memo(
             active: true,
             currentWindow: true,
           });
+          debugger
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
-            name: 'inject',
+            name: 'init',
             params: {
               ...currRequestTemplate,
             },
             extensionTabId: currentWindowTabs[0].id,
+            operation: 'attest',
           });
         }
       },

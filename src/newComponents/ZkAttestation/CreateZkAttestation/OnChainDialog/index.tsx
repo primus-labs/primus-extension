@@ -118,11 +118,12 @@ const Nav: React.FC<PButtonProps> = memo(
         });
         await chrome.runtime.sendMessage({
           type: 'pageDecode',
-          name: 'inject',
+          name: 'init',
           params: {
             ...currRequestTemplate,
           },
           extensionTabId: currentWindowTabs[0].id,
+          operation: 'attest',
         });
       },
       [assetForm, fromEvents, BASEventDetail, dispatch, type]

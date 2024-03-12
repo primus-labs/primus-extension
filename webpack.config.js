@@ -44,6 +44,13 @@ var options = {
       'dataSourceWeb',
       'index.jsx'
     ),
+    pageDecode: path.join(
+      __dirname,
+      'src',
+      'content',
+      'pageDecode',
+      'index.jsx'
+    ),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
     //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },
@@ -301,15 +308,15 @@ var options = {
         },
       ],
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'src/content/pageDecode.js',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-      ],
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: 'src/content/pageDecode.js',
+    //       to: path.join(__dirname, 'build'),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
     new CopyWebpackPlugin({
       patterns: [
         {
