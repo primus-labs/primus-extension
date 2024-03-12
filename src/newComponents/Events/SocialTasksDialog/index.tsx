@@ -89,7 +89,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       await openXUrlFn();
     }, [xTabId]);
 
-    const initTaskStatus = async () => {
+    const initTaskStatus = useCallback(async () => {
       const res = await chrome.storage.local.get([eventId]);
       const currentAddress = connectedWallet?.address;
       if (res[eventId]) {
@@ -97,7 +97,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         const lastInfo = lastEventObj[currentAddress];
         setTaskStatusMap({ ...lastInfo.taskMap.follow });
       }
-    };
+    }, [connectedWallet?.address]);
     const setSocialTaskStatus = useCallback(
       async (k, v = 1) => {
         const res = await chrome.storage.local.get([eventId]);
@@ -160,7 +160,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
     useEffect(() => {
       initTaskStatus();
-    }, []);
+    }, [initTaskStatus]);
 
     return (
       <PMask>

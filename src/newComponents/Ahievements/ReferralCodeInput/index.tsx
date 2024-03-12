@@ -44,7 +44,6 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
           title: `Invalid referral code.`,
           link: '',
         });
-        debugger;
         form.submit;
         return;
       }

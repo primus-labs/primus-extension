@@ -15,6 +15,7 @@ const PAlert: React.FC<Msg> = memo(
     link = '/',
     code = '',
     done = false,
+    linkText = 'View details',
   }) => {
     const { deleteMsg } = useMsgs();
     const navigate = useNavigate();
@@ -34,7 +35,7 @@ const PAlert: React.FC<Msg> = memo(
     const handleDetail = useCallback(() => {
       navigate(link);
     }, [navigate]);
-    
+
     return (
       <div className={`pAlert ${type}`}>
         <main>
@@ -51,7 +52,7 @@ const PAlert: React.FC<Msg> = memo(
             )}
             {type === 'suc' && link && (
               <PButton
-                text="View details"
+                text={linkText}
                 type="text2"
                 onClick={handleDetail}
                 className="detailBtn"

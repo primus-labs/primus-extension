@@ -66,6 +66,8 @@ const DataSourceItem = memo(() => {
         }, {});
         const f = Object.values(statusM).every((i) => !!i);
         setIsComplete(f);
+      } else {
+        setIsComplete(false);
       }
     }
   }, [connectedWallet?.address]);

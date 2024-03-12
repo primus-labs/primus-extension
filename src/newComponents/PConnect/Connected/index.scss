@@ -42,6 +42,7 @@
     background: var(--layer-tokens-layer-primary);
     border-radius: var(--spacing-4);
     display: none;
+    z-index: 1;
     .walletItems {
       width: 100%;
       @include fcss;
