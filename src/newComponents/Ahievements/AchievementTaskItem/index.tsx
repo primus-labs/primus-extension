@@ -27,7 +27,7 @@ export type TaskItemWithClick = {
   referralCode: string;
   refreshTotalScore: any;
   isConnect: any;
-  onConnectWallet:any
+  onConnectWallet: any
 };
 
 
@@ -111,7 +111,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
                 console.log('followed');
                 //if followed
                 const res = await getDataSourceData('x');
-                const xUserInfo = JSON.parse(res["x"]);
+                const xUserInfo = JSON.parse(res['x']);
                 const ext = {
                   uniqueName: xUserInfo.screenName,
                 };
@@ -150,9 +150,9 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
   }, [xTabId, PADOTabId]);
 
   const handleClick = async () => {
-    if(!isConnect){
-      onConnectWallet()
-      return
+    if (!isConnect) {
+      onConnectWallet();
+      return;
     }
     let ext = {};
 
@@ -161,17 +161,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     }
     if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
       const res = await getDataSourceData('discord');
-      if (!res["discord"]) {
+      if (!res['discord']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect discord data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=discord',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
-      const discordUserInfo = JSON.parse(res["discord"]);
+      const discordUserInfo = JSON.parse(res['discord']);
       ext = {
         name: discordUserInfo.userName,
         discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
@@ -179,17 +179,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     }
     if (taskItem.taskIdentifier === 'CONNECT_X_DATA') {
       const res = await getDataSourceData('x');
-      if (!res["x"]) {
+      if (!res['x']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect x data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=x',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
-      const xUserInfo = JSON.parse(res["x"]);
+      const xUserInfo = JSON.parse(res['x']);
       console.log(res);
       ext = {
         uniqueName: xUserInfo.screenName,
@@ -198,13 +198,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'FOLLOW_PADOLABS') {
       const res = await getDataSourceData('x');
-      if (!res["x"]) {
+      if (!res['x']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect x data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=x',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
@@ -215,17 +215,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'CONNECT_DISCORD_DATA') {
       const res = await getDataSourceData('discord');
-      if (!res["discord"]) {
+      if (!res['discord']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect discord data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=discord',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
-      const discordUserInfo = JSON.parse(res["discord"]);
+      const discordUserInfo = JSON.parse(res['discord']);
       console.log(res);
       ext = {
         uniqueName: discordUserInfo.userName,
@@ -237,7 +237,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       let authUrl;
       let needCheckLogin = false;
       const state = uuidv4();
-      if (!res["discord"]) {
+      if (!res['discord']) {
         const { userInfo } = await chrome.storage.local.get(['userInfo']);
         const parseUserInfo = JSON.parse(userInfo);
         authUrl = getAuthUrl({
@@ -275,13 +275,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       const checkDiscordTaskTimer = setInterval(async () => {
         //check has join discord
         const res = await getDataSourceData('discord');
-        if (!res["discord"]) {
+        if (!res['discord']) {
           return;
         }
         if (checkLoginTimer) {
           clearInterval(checkLoginTimer);
         }
-        const discordUserInfo = JSON.parse(res["discord"]);
+        const discordUserInfo = JSON.parse(res['discord']);
         ext = {
           discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
         };
@@ -299,20 +299,19 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       return;
     }
     if (taskItem.taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE') {
-      const res = await taskStatusCheck("SIGN_IN_USING_AN_REFERRAL_CODE");
+      const res = await taskStatusCheck('SIGN_IN_USING_AN_REFERRAL_CODE');
       const rc = res.rc;
       const result = res.result;
       let needShowCodeDiag = true;
       if (rc === 0) {
-        needShowCodeDiag = !result["SIGN_IN_USING_AN_REFERRAL_CODE"];
-        if(needShowCodeDiag){
+        needShowCodeDiag = !result['SIGN_IN_USING_AN_REFERRAL_CODE'];
+        if (needShowCodeDiag) {
           showCodeDiag(true);
           return;
-        }else {
-          ext = {
-          };
+        } else {
+          ext = {};
         }
-      }else {
+      } else {
         return;
       }
     }
@@ -323,17 +322,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'CONNECT_TIKTOK_ACCOUNT_DATA') {
       const res = await getDataSourceData('tiktok');
-      if (!res["tiktok"]) {
+      if (!res['tiktok']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect tiktok data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=tiktok',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
-      const tiktokUserInfo = JSON.parse(res["tiktok"]);
+      const tiktokUserInfo = JSON.parse(res['tiktok']);
       console.log(res);
       ext = {
         uniqueName: tiktokUserInfo.userName,
@@ -342,17 +341,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'CONNECT_GOOGLE_ACCOUNT_DATA') {
       const res = await getDataSourceData('google');
-      if (!res["google"]) {
+      if (!res['google']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect google data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=google',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
-      const googleUserInfo = JSON.parse(res["google"]);
+      const googleUserInfo = JSON.parse(res['google']);
       console.log(res);
       ext = {
         uniqueName: googleUserInfo.uniqueId,
@@ -361,17 +360,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier == 'CONNECT_BINANCE_DATA') {
       const res = await getDataSourceData('binance');
-      if (!res["binance"]) {
+      if (!res['binance']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect binance data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=binance',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
-      const binanceInfo = JSON.parse(res["binance"]);
+      const binanceInfo = JSON.parse(res['binance']);
       if (binanceInfo.userInfo) {
         ext = {
           uniqueName: binanceInfo.userInfo,
@@ -385,17 +384,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier == 'CONNECT_COINBASE_DATA') {
       const res = await getDataSourceData('coinbase');
-      if (!res["coinbase"]) {
+      if (!res['coinbase']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect coinbase data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=coinbase',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
-      const coinbaseInfo = JSON.parse(res["coinbase"]);
+      const coinbaseInfo = JSON.parse(res['coinbase']);
       if (coinbaseInfo.userInfo) {
         ext = {
           uniqueName: coinbaseInfo.userInfo,
@@ -409,17 +408,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
     if (taskItem.taskIdentifier === 'CONNECT_OKX_DATA') {
       const res = await getDataSourceData('okx');
-      if (!res["okx"]) {
+      if (!res['okx']) {
         addMsg({
           type: 'info',
-          title: 'Not qualified',
-          desc: 'Please connect okx data.',
+          title: 'Data not connected',
+          desc: 'Go to Data Source page to connect.',
           link: '/datas/data?dataSourceId=okx',
-          linkText: 'View details',
+          linkText: 'To connect',
         });
         return;
       }
-      const okxInfo = JSON.parse(res["okx"]);
+      const okxInfo = JSON.parse(res['okx']);
       if (okxInfo.userInfo) {
         ext = {
           uniqueName: okxInfo.userInfo,
@@ -437,7 +436,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
     };
     const res = await finishTask(finishBody);
     if (res.rc === 0) {
-      const points = res.result.points !==0 ? res.result.points : taskItem.taskXpScore;
+      const points = res.result.points !== 0 ? res.result.points : taskItem.taskXpScore;
       addMsg({
         type: 'suc',
         title: `${points} points earned!`,
@@ -446,10 +445,48 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       setFinished(true);
       refreshTotalScore(points, taskItem.taskIdentifier);
     } else {
+      const mc = res.mc;
+      let title;
+      let msg;
+      let link;
+      let linkText;
+      if (mc === '-110007') {
+        title = 'Not qualified';
+        const res = await getDataSourceData('discord');
+        const discordInfo = JSON.parse(res['discord']);
+        msg = `No GM messages found for (${discordInfo.userName}) on PADO Discord.`;
+      }
+      if (mc === '-110008') {
+        title = 'No event participated';
+        msg = 'Go to Events page to participate.';
+        link = '/events';
+        linkText = 'View details';
+      }
+      if (mc === '-110009') {
+        title = 'No attestation created';
+        msg = 'Go to zkAttestation page to create.';
+        link = '/zkAttestation';
+        linkText = 'View details';
+      }
+
+      if (mc === '-110010') {
+        title = 'No new attestation submitted';
+        msg = 'Go to zkAttestation page to submit.';
+        link = '/zkAttestation';
+        linkText = 'View details';
+      }
+
+      if (mc === '-110011') {
+        title = 'Not qualified';
+        msg = 'No new counted referrals.';
+      }
+
       addMsg({
         type: 'info',
-        title: 'Not qualified',
-        desc: res.msg,
+        title: title,
+        desc: msg,
+        link: link,
+        linkText: linkText,
       });
     }
   };
