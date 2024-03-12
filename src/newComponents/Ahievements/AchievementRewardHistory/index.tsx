@@ -123,7 +123,7 @@ const Nav: React.FC<PButtonProps> = memo(
                   return <tr>
                     <td style={{ width: '64px', textAlign: 'left' }}>+{item.score}</td>
                     <td style={{ textAlign: 'left' }}>{item.task}</td>
-                    <td style={{ textAlign: 'right' }}>{item.date}</td>
+                    <td style={{ textAlign: 'right',fontFamily:'IBM Plex Mono',fontWeight:'400',fontSize:'14px' }}><span>{item.date}</span></td>
                   </tr>;
                 })}
                 </tbody>

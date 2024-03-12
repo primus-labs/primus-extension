@@ -39,6 +39,8 @@
           color: var(--text-tokens-text-tertiary, #6f6f6f);
           border-left: none;
           border-right: none;
+          font-family: 'IBM Plex Sans';
+          font-weight: 400;
           border-top: 1px solid var(--neutral-color-gray-30);
           border-bottom: 1px solid var(--neutral-color-gray-30);
         }
@@ -47,6 +49,7 @@
           height: 43.5px;
           border-left: none;
           border-right: none;
+          color: #161616;
           border-top: 1px solid var(--neutral-color-gray-30);
           border-bottom: 1px solid var(--neutral-color-gray-30);
         }
