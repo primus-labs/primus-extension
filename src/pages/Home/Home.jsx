@@ -53,14 +53,14 @@ const Home = memo(() => {
     return s;
   }, [step]);
   const timeoutStep1Fn = () => {
-    setStep(1);
+    setStep(2);
     setTimeoutStep2Switch(true);
   };
-  useTimeout(timeoutStep1Fn, 800, true, false);
-  const timeoutStep2Fn = () => {
-    setStep(2);
-  };
-  useTimeout(timeoutStep2Fn, 1000, timeoutStep2Switch, false);
+  useTimeout(timeoutStep1Fn, 1200, true, false);
+  // const timeoutStep2Fn = () => {
+  //   setStep(2);
+  // };
+  // useTimeout(timeoutStep2Fn, 1000, timeoutStep2Switch, false);
   const handleClick = useCallback(() => {
     if (step <= 4) {
       setStep((p) => p + 1);
@@ -127,16 +127,16 @@ const Home = memo(() => {
           src={imgSrc}
           alt=""
           onClick={handleClick}
-          className={`guideImg animate__animated animate__fadeIn`}
+          className={`guideImg `}
         />
       )}
       {step === 0 && (
         <div className="animationWrapper  animate__animated animate__fadeIn">
           <img src={iconLogoPado} alt="" />
-          <i></i>
+          {/* <i></i>
           <div className="logonTxt">
             Liberate Data and Computation with Cryptography
-          </div>
+          </div> */}
         </div>
       )}
       {visibleReferralCodeDialog && (
