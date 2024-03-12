@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DATASOURCEMAP } from '@/config/constants';
+import { DATASOURCEMAP } from '@/config/dataSource2';
 import { setExSourcesAsync } from '@/store/actions';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import { postMsg } from '@/utils/utils';
+import useAllSources from './useAllSources';
 type ExKeysStorages = {
   [propName: string]: any;
 };
@@ -13,6 +14,7 @@ type queryObjType = {
   [propName: string]: any;
 };
 const useUpdateExSources = (flag = false) => {
+  const { sourceMap } = useAllSources();
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
@@ -30,19 +32,9 @@ const useUpdateExSources = (flag = false) => {
   }, [queryObj]);
   const fetchExDatas = useCallback(
     async (name?: string) => {
-      const sourceNameList = name
-        ? [name]
-        : Object.keys(DATASOURCEMAP).filter(
-            (i) =>
-              DATASOURCEMAP[i].type === 'Assets' &&
-              DATASOURCEMAP[i].name !== 'On-chain'
-          );
-      const exCipherKeys = sourceNameList.map((i) => `${i}cipher`);
-      let res: ExKeysStorages = await chrome.storage.local.get(exCipherKeys);
-      const list = Object.keys(res).map((i) => {
-        const exName = i.split('cipher')[0];
-        setQueryObj((obj) => ({ ...obj, [exName]: undefined }));
-        return exName;
+      const list = name ? [name] : Object.keys(sourceMap.exSources);
+      list.map((i) => {
+        setQueryObj((obj) => ({ ...obj, [i]: undefined }));
       });
       list.forEach(async (item) => {
         const reqType = `set-${item}`;
@@ -55,7 +47,7 @@ const useUpdateExSources = (flag = false) => {
         console.log(`page_send:${reqType} request`);
       });
     },
-    [padoServicePort]
+    [padoServicePort, sourceMap?.exSources]
   );
   const padoServicePortListener = function (message: any) {
     const { resType, res } = message;

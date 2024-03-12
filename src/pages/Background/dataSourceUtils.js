@@ -2,10 +2,10 @@ import { getCurrentDate, postMsg } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ExchangeStoreVersion, SocailStoreVersion } from '@/config/constants';
 // ex : exhange service Constructor instance
-export const storeDataSource = async (dataSourceId, ex, port) => {
+export const storeDataSource = async (dataSourceId, ex, port, apiKey) => {
   const resType = `set-${dataSourceId}`;
   const exchangeInfo = DATASOURCEMAP[dataSourceId];
-  const { constructorF, type: sourceType } = exchangeInfo;
+  const { constructorF, type: sourceType, connectType } = exchangeInfo;
   try {
     // const ex = new constructorF();
     await ex.getInfo();
@@ -22,16 +22,16 @@ export const storeDataSource = async (dataSourceId, ex, port) => {
       newSourceUserData = {
         totalBalance: ex.totalAccountBalance,
         tokenListMap: ex.totalAccountTokenMap,
-        // apiKey: exParams.apiKey, // TODO-newui
-        date: getCurrentDate(),
-        timestamp: +new Date(),
+        apiKey: apiKey, // TODO-newui
+        // date: getCurrentDate(),
+        // timestamp: +new Date(),
         version: ExchangeStoreVersion, // TODO-newui
         label: '', // TODO-newui
         flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
         spotAccountTokenMap: ex.spotAccountTokenMap,
         tokenPriceMap: ex.tokenPriceMap,
         tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
-        userInfo: ex.userInfo,
+        userInfo: ex.userInfo, // new add
       };
       if (pnl !== null && pnl !== undefined) {
         newSourceUserData.pnl = pnl;
@@ -50,10 +50,10 @@ export const storeDataSource = async (dataSourceId, ex, port) => {
     await chrome.storage.local.set({
       [dataSourceId]: JSON.stringify(newSourceUserData),
     });
-    postMsg(port, { resType, res: true, connectType: 'Web' });
+    postMsg(port, { resType, res: true, connectType });
   } catch (error) {
     console.log(
-      'connect source  by web error',
+      'connect source  error',
       error,
       error.message,
       error.message.indexOf('AuthenticationError')
@@ -83,7 +83,7 @@ export const storeDataSource = async (dataSourceId, ex, port) => {
       resType,
       res: false,
       msg: errMsg,
-      connectType: 'Web',
+      connectType,
     });
   }
 };

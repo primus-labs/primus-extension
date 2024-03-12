@@ -24,7 +24,8 @@ const usePollingUpdateAllSources = () => {
     return allDataSources.length > 0;
   }, [exSources, socialSources]);
   const switchFlag = useMemo(() => {
-    return !!userPassword && hasDataSources
+    // return !!userPassword && hasDataSources
+    return hasDataSources;
   }, [userPassword, hasDataSources]);
   const delay = useMemo(() => {
     if (sourceUpdateFrequency) {
