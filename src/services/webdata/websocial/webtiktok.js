@@ -41,6 +41,7 @@ class WebTikTok extends WebSocial {
     params.url = params.url + "?" + storageObj.queryString;
     params.headers = storageObj.headers;
     const res = await this.request(params);
+    this.userName = res.data.username;
     /*const storeTiktokObj = {
       username: res.data.username,
       timestamp: new Date().getTime()

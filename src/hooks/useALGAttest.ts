@@ -176,7 +176,7 @@ const useAttest = function useAttest() {
 
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
-              name: 'attestResult',
+              name: 'end',
               params: {
                 result: 'success',
               },
@@ -223,7 +223,7 @@ const useAttest = function useAttest() {
               btnTxt = '';
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
-                name: 'attestResult',
+                name: 'end',
                 params: {
                   result: 'warn',
                   failReason,
@@ -232,7 +232,7 @@ const useAttest = function useAttest() {
             } else {
               await chrome.runtime.sendMessage({
                 type: 'pageDecode',
-                name: 'attestResult',
+                name: 'end',
                 params: {
                   result: 'fail',
                 },
@@ -396,7 +396,7 @@ const useAttest = function useAttest() {
 
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
-            name: 'attestResult',
+            name: 'end',
             params: {
               result: 'warn',
               failReason,
@@ -434,7 +434,7 @@ const useAttest = function useAttest() {
     if (parsedActiveRequestAttestation.reqType === 'web') {
       await chrome.runtime.sendMessage({
         type: 'pageDecode',
-        name: 'attestResult',
+        name: 'end',
         params: {
           result: 'warn',
         },
@@ -485,7 +485,7 @@ const useAttest = function useAttest() {
     const listerFn = (message: any) => {
       const { type, name } = message;
       if (type === 'pageDecode') {
-        if (name === 'cancelAttest') {
+        if (name === 'cancel') {
           addMsg({
             type: 'error',
             title: 'Unable to proceed',
@@ -493,10 +493,10 @@ const useAttest = function useAttest() {
           });
           dispatch(setAttestLoading(3));
           dispatch(setActiveAttestation({ loading: 3 }));
-        } else if (name === 'sendRequest') {
+        } else if (name === 'start') {
           dispatch(setAttestLoading(1));
           dispatch(setActiveAttestation({ loading: 1 }));
-        } else if (name === 'abortAttest') {
+        } else if (name === 'stop') {
           if (attestLoading === 1) {
             addMsg({
               type: 'error',

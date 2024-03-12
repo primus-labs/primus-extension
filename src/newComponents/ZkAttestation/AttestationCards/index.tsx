@@ -66,7 +66,6 @@ const Cards: React.FC<PDropdownProps> = memo(
 
     const filterdList: any = useMemo(() => {
       const obj = { ...credentialsFromStore };
-      delete obj['1709201562550']; // TODO-newui
 
       var newList = Object.values(obj);
       if (attestationQueryType && attestationQueryType !== 'All') {
@@ -87,22 +86,6 @@ const Cards: React.FC<PDropdownProps> = memo(
       return newList;
     }, [credentialsFromStore, attestationQueryStr, attestationQueryType]);
     const otherOperationsFn = useCallback((i) => {
-      // if (item?.provided?.length && item?.provided?.length > 0) {
-      //   return [
-      //     {
-      //       icon: iconClear,
-      //       text: 'Delete',
-      //     },
-      //   ];
-      // }
-      // if (item.type === 'UNISWAP_PROOF') {
-      //   return [
-      //     {
-      //       icon: iconClear,
-      //       text: 'Delete',
-      //     },
-      //   ];
-      // }
       const isDeleteDisable = i?.provided?.length && i?.provided?.length > 0;
       return [
         {
