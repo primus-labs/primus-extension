@@ -3,7 +3,13 @@
 .pageGuide {
   cursor: pointer;
   @include frcc;
-  min-height: 100vh;
+  height: 100vh;
+  &.fixedH {
+    height: 100vh;
+  }
+  &.autoH {
+    height: fit-content;
+  }
   .guideImg {
     width: 100vw;
   }
@@ -24,8 +30,14 @@
       height: 80px;
       background: rgba(0, 0, 0, 0.6);
     }
-    .logonTxt{
+    .logonTxt {
       width: 471px;
     }
   }
+  .animate__animated {
+    animation-duration: 3s;
+  }
 }
+// #app-container{
+//   height: fit-content;
+// }

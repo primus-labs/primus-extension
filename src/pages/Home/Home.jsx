@@ -1,4 +1,11 @@
-import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import useListener from '@/hooks/useListener';
@@ -14,6 +21,7 @@ import iconLogoPado from '@/assets/newImg/guide/iconLogoPado.svg';
 import './home.scss';
 
 const Home = memo(() => {
+  const guideImg = useRef(null);
   useListener();
   const navigate = useNavigate();
   const [visibleReferralCodeDialog, setVisibleReferralCodeDialog] = useState();
@@ -57,6 +65,7 @@ const Home = memo(() => {
     if (step <= 4) {
       setStep((p) => p + 1);
     } else {
+      setStep(1);
       const msg = {
         fullScreenType: 'wallet',
         reqMethodName: 'create',
@@ -90,11 +99,31 @@ const Home = memo(() => {
   useEffect(() => {
     checkIsFirstLogin();
   }, [checkIsFirstLogin]);
+  useEffect(() => {
+    if (guideImg.current) {
+      if (step === 4) {
+        guideImg.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
+        // guideImg.current.scrollTop = (460 / 1440) * window.innerWidth;
+      }
+      if ([0, 1, 2, 3].includes(step)) {
+        guideImg.current.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }
+    }
+  }, [step, guideImg]);
 
   return (
-    <div className="pageGuide">
+    <div
+      className={`pageGuide ${
+        [0, 4, 5].includes(step)
+          ? 'fixedH'
+          : [1, 2, 3].includes(step)
+          ? 'autoH'
+          : ''
+      }`}
+    >
       {step > 0 && (
         <img
+          ref={guideImg}
           src={imgSrc}
           alt=""
           onClick={handleClick}
@@ -102,7 +131,7 @@ const Home = memo(() => {
         />
       )}
       {step === 0 && (
-        <div className="animationWrapper  animate__animated animate__flipInX ">
+        <div className="animationWrapper  animate__animated animate__fadeIn">
           <img src={iconLogoPado} alt="" />
           <i></i>
           <div className="logonTxt">
