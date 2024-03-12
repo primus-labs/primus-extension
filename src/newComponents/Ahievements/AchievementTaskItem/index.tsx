@@ -4,7 +4,7 @@ import './index.scss';
 import PButton from '@/newComponents/PButton';
 import taskItemIcon from '@/assets/newImg/achievements/taskItemIcon.svg';
 import taskFinishedIcon from '@/assets/newImg/achievements/taskFinishedIcon.svg';
-import { finishTask } from '@/services/api/achievements';
+import { finishTask, taskStatusCheck } from '@/services/api/achievements';
 import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { BASEVENTNAME, SocailStoreVersion } from '@/config/constants';
@@ -291,8 +291,23 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       return;
     }
     if (taskItem.taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE') {
-      showCodeDiag(true);
-      return;
+      const res = await taskStatusCheck("SIGN_IN_USING_AN_REFERRAL_CODE");
+      const rc = res.rc;
+      const result = res.result;
+      debugger
+      let needShowCodeDiag = true;
+      if (rc === 0) {
+        needShowCodeDiag = !result["SIGN_IN_USING_AN_REFERRAL_CODE"];
+        if(needShowCodeDiag){
+          showCodeDiag(true);
+          return;
+        }else {
+          ext = {
+          };
+        }
+      }else {
+        return;
+      }
     }
 
     if (taskItem.taskIdentifier === 'CAMPAIGN_PARTICIPATION') {
