@@ -8,7 +8,7 @@ import textCopyIcon from '@/assets/newImg/achievements/textCopyIcon.svg';
 import { getUserInfo } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
 import useMsgs from '@/hooks/useMsgs';
-import { Button } from 'antd';
+import PButton from '@/newComponents/PButton';
 import Icon from 'antd/lib/icon';
 import ShareButton from '@/newComponents/Ahievements/TopCard/ShareButton';
 
@@ -54,7 +54,14 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
         <div className={'points-text-line'}>
           <div className="pointsEarned-text"><p>Points Earned</p></div>
           <div className="pointsShare">
-            <ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleSharePoints} btnDesc={"Share on social media"}/>
+            <span className={"pointsShareText"}>Share on social media</span>
+            <PButton
+              className="referralShareIcon"
+              type="icon"
+              icon={<i className="iconfont icon-iconShare"></i>}
+              onClick={handleSharePoints}
+            />
+            {/*<ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleSharePoints} btnDesc={"Share on social media"}/>*/}
           </div>
         </div>
         <div className="pointsEarned">
@@ -72,7 +79,14 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
         <div className={'referral-text-line'}>
           <div className={'referral-text'}>Referrals</div>
           <div className={'referralShare'}>
-            <ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleShareReferralCode} btnDesc={"Share on social media"}/>
+            <span className={'referralShareText'}>Share on social media</span>
+            <PButton
+              className="referralShareIcon"
+              type="icon"
+              icon={<i className="iconfont icon-iconShare"></i>}
+              onClick={handleShareReferralCode}
+            />
+            {/*<ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleShareReferralCode} btnDesc={"Share on social media"}/>*/}
           </div>
         </div>
         <div className="referral">
@@ -85,7 +99,13 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
             <div className={'referral-code-text'}>Referral Code</div>
             <div className={'referral-code-main'}>
               <div className={'referral-code-main-text'}>{referralCode}</div>
-              <img className={'referral-code-copy-ico'} src={textCopyIcon} onClick={copyReferralCodeFn}></img>
+              <PButton
+                type="icon"
+                className={"referral-code-copy-ico"}
+                icon={<i className="iconfont icon-iconCopy"></i>}
+                onClick={copyReferralCodeFn}
+              />
+              {/*<img className={'referral-code-copy-ico'} src={textCopyIcon} onClick={copyReferralCodeFn}></img>*/}
             </div>
           </div>
         </div>

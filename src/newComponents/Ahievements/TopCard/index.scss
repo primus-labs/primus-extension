@@ -30,18 +30,15 @@
         margin-left: auto;
         display: flex;
         height: 16px;
-        cursor: pointer;
+        //cursor: pointer;
 
         .pointsShareText {
           font-family: 'IBM Plex Sans';
           font-size: 14px;
           font-weight: 500;
-          width: 150px;
+          width: 146px;
           height: 16px;
           color: var(--text-tokens-text-primary, #161616);
-        }
-        .pointsShareText:hover{
-          color: var(--brand-primary-color-bp-50);
         }
 
         .pointsShareIcon {
@@ -123,7 +120,7 @@
           font-family: 'IBM Plex Sans';
           font-size: 14px;
           font-weight: 500;
-          width: 150px;
+          width: 146px;
           height: 16px;
           color: var(--text-tokens-text-primary, #161616);
         }

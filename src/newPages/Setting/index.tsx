@@ -10,6 +10,7 @@ import { Button, Divider } from 'antd';
 import SettingsSetPwdDialog from '@/newComponents/Settings/SettingSetPwdDialog';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
 import useMsgs from '@/hooks/useMsgs';
+import PButton from '@/newComponents/PButton';
 
 
 // eslint-disable-next-line react/display-name
@@ -172,7 +173,13 @@ const Setting = memo(() => {
           </div>
           <div className={'selectDiv'}>
             <div className={'textDiv'}>{mainWallet}</div>
-            <img className={'iconDiv'} src={textCopyIcon} alt={textCopyIcon} onClick={copyMainWalletFn} />
+            <PButton
+              type="icon"
+              className={"iconDiv"}
+              icon={<i className="iconfont icon-iconCopy"></i>}
+              onClick={copyMainWalletFn}
+            />
+            {/*<img className={'iconDiv'} src={textCopyIcon} alt={textCopyIcon} onClick={copyMainWalletFn} />*/}
           </div>
         </div>
         <Divider style={{ width: '1072px', marginTop: '16px', marginBottom: '16px', color: '##E0E0E0' }} />
@@ -211,7 +218,13 @@ const Setting = memo(() => {
           <div className={'serialNumTitle'}>Serial number</div>
           <div className={'serialNumTxt'}>
             <div className={'textDiv'}>{serialNum}</div>
-            <img className={'iconDiv'} src={textCopyIcon} alt={textCopyIcon} onClick={copySerialNumFn} />
+            <PButton
+              type="icon"
+              className={"iconDiv"}
+              icon={<i className="iconfont icon-iconCopy"></i>}
+              onClick={copySerialNumFn}
+            />
+            {/*<img className={'iconDiv'} src={textCopyIcon} alt={textCopyIcon} onClick={copySerialNumFn} />*/}
           </div>
         </div>
         <Divider style={{ width: '1072px', marginTop: '0px', marginBottom: '0px', color: '##E0E0E0' }} />
