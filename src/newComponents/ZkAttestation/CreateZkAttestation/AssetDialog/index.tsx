@@ -143,7 +143,6 @@ const Nav: React.FC<PButtonProps> = memo(
             active: true,
             currentWindow: true,
           });
-          debugger
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'init',

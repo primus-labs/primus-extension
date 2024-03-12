@@ -294,7 +294,6 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
       const res = await taskStatusCheck("SIGN_IN_USING_AN_REFERRAL_CODE");
       const rc = res.rc;
       const result = res.result;
-      debugger
       let needShowCodeDiag = true;
       if (rc === 0) {
         needShowCodeDiag = !result["SIGN_IN_USING_AN_REFERRAL_CODE"];

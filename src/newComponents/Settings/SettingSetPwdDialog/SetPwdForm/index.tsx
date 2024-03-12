@@ -100,7 +100,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ isChangePwd, onSubmit,
     (newPwd: string) => {
       console.log('isChangePwd:',isChangePwd)
       if (isChangePwd) {
-        debugger
         const padoServicePortListener = async function(message: any) {
           if (message.resMethodName === 'resetPassword') {
             console.log('page_get:resetPassword:', message.res);
@@ -130,7 +129,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ isChangePwd, onSubmit,
             console.log('page_get:bindUserAddress:', res);
             if (res) {
               onSubmit();
-              debugger
               resetPwsSuccessCallback();
             } else {
             }

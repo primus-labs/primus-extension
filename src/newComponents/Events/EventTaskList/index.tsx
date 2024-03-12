@@ -196,7 +196,7 @@ const earlyBirdNftTskMap = {
       total: 1,
       current: 0,
     },
-    operationName: 'Claim'
+    operationName: 'Claim',
   },
 };
 const eventTaskMap = {
@@ -204,19 +204,17 @@ const eventTaskMap = {
   [LINEAEVENTNAME]: lineaTaskMap,
   [EARLYBIRDNFTEVENTNAME]: earlyBirdNftTskMap,
 };
+const initStatusMap = { follow: 0, attestation: 0, onChain: 0, check: 0 };
 const DataSourceItem = memo(() => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
-  const stepMap = eventTaskMap[eventId];
+  let stepMap = { ...eventTaskMap[eventId] };
   const eventDetail = useEventDetail(eventId);
   const dispatch: Dispatch<any> = useDispatch();
   const metaInfo = eventMetaMap[eventId];
   const [taskStatusMap, setTaskStatusMap] = useState<TaskStatusMap>({
-    follow: 0,
-    attestation: 0,
-    onChain: 0,
-    check: 0,
+    ...initStatusMap,
   });
   const [visibleAttestationTasksDialog, setVisibleAttestationTasksDialog] =
     useState<boolean>(false);
@@ -233,6 +231,7 @@ const DataSourceItem = memo(() => {
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
+
   const taskIds = useMemo(() => {
     let l: string[] = [];
     if (eventId === LINEAEVENTNAME) {
@@ -368,7 +367,6 @@ const DataSourceItem = memo(() => {
   }, []);
   const initTaskStatus = useCallback(async () => {
     const res = await chrome.storage.local.get([eventId]);
-
     const currentAddress = connectedWallet?.address;
     if (res[eventId]) {
       const lastEventObj = JSON.parse(res[eventId]);
@@ -376,10 +374,8 @@ const DataSourceItem = memo(() => {
 
       if (lastInfo) {
         const { taskMap } = lastInfo;
-        
         const statusM = Object.keys(taskMap).reduce((prev, curr) => {
           const currTask = taskMap[curr];
-
           // tasksProcess
           if (currTask) {
             const taskLen = Object.keys(currTask).length;
@@ -397,6 +393,9 @@ const DataSourceItem = memo(() => {
           return prev;
         }, {});
         setTaskStatusMap({ ...statusM });
+      } else {
+        stepMap = { ...eventTaskMap[eventId] };
+        setTaskStatusMap({ ...initStatusMap });
       }
     }
   }, [connectedWallet?.address]);

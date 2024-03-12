@@ -77,7 +77,7 @@ const Overview = memo(() => {
         <span>Support</span>
       </div>
       <div className="content">
-        <div className="title">Find us on:</div>
+        <div className="title">Find Us On:</div>
         <ul className="mediaItems">
           {Object.values(formatItemsMap).map((i, k) => {
             return (

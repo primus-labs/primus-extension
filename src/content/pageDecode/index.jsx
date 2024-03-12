@@ -318,7 +318,6 @@ chrome.runtime.sendMessage(
         }
         return;
       }
-      debugger;
       // render
       activeRequest = response.params;
       operationType = response.operation;
