@@ -26,13 +26,15 @@
         .title {
           margin-top: auto;
           font-size: 16px;
+          line-height: 22px;
           font-weight: 500;
           color: var(--text-tokens-text-primary, #161616);
         }
 
         .content {
-          margin-top: 12px;
+          margin-top: 8px;
           font-size: 14px;
+          line-height: 18px;
           font-weight: 400;
           color: var(--text-tokens-text-secondary, #525252);
         }
