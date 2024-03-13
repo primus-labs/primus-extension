@@ -30,7 +30,7 @@ const useUpdateExSources = (flag = false) => {
       return false;
     }
   }, [queryObj]);
-  
+
   const exSources = useMemo(() => {
     return sourceMap.exSources;
   }, [sourceMap]);
@@ -46,7 +46,7 @@ const useUpdateExSources = (flag = false) => {
           fullScreenType: 'networkreq',
           type: reqType,
           params: {
-            withoutMsg: true
+            withoutMsg: true,
           },
         };
         postMsg(padoServicePort, msg);
@@ -55,28 +55,40 @@ const useUpdateExSources = (flag = false) => {
     },
     [padoServicePort, exSources]
   );
-  const padoServicePortListener = async function (message: any) {
-    const { resType, res, msg, } = message;
-    
-    if (resType?.startsWith(`set-`)) {
-      console.log(`page_get:${resType}:`, message.res);
-      const name = resType.split('-')[1];
-      setQueryObj((obj) => ({ ...obj, [name]: true }));
-      if (!res && msg === 'AuthenticationError') {
-        const curSourceUserInfo = exSources[name];
-        curSourceUserInfo.expired = '1';
-        await chrome.storage.local.set({
-          [name]: JSON.stringify(curSourceUserInfo),
+  const padoServicePortListener = useCallback(
+    async function (message: any) {
+      const { resType, res, msg } = message;
+      if (resType?.startsWith(`set-`)) {
+        console.log(
+          `page_get:${resType}:`,
+          message.res,
+          'useUpdateExSources'
+        );
+        const name = resType.split('-')[1];
+        setQueryObj((obj) => {
+          if (name in (obj as object)) {
+            return { ...obj, [name]: true };
+          } else {
+            return obj;
+          }
         });
+        if (!res && msg === 'AuthenticationError') {
+          const curSourceUserInfo = exSources[name];
+          curSourceUserInfo.expired = '1';
+          await chrome.storage.local.set({
+            [name]: JSON.stringify(curSourceUserInfo),
+          });
+        }
       }
-    }
-  };
+    },
+    [exSources]
+  );
   useEffect(() => {
     padoServicePort.onMessage.addListener(padoServicePortListener);
     return () => {
       padoServicePort.onMessage.removeListener(padoServicePortListener);
     };
-  }, [padoServicePort.onMessage]);
+  }, [padoServicePort.onMessage, padoServicePortListener]);
   useEffect(() => {
     if (!loading) {
       dispatch(setExSourcesAsync());

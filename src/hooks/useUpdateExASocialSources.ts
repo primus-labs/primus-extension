@@ -10,7 +10,8 @@ const useUpdateAllSources = (flag = false) => {
     return fetchExDatasLoading || fetchSocialDatasLoading
   },[fetchExDatasLoading , fetchSocialDatasLoading])
   const updateF = useCallback(() => {
-    Promise.all([(fetchExDatas as ReturnPromiseType)(), (fetchSocialDatas as ReturnPromiseType)()])
+    console.log('222updateF');
+    Promise.all([(fetchExDatas as ReturnPromiseType)(), (fetchSocialDatas as ReturnPromiseType)()]);
   }, [fetchExDatas, fetchSocialDatas])
   
   return [updating,updateF]

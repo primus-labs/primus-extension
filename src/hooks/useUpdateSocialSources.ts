@@ -75,31 +75,41 @@ const useUpdateSocialSources = () => {
       }
     });
   }, [padoServicePort, authorize, socialSources]);
-  const padoServicePortListener = async function (message: any) {
-    const { resMethodName, res, params } = message;
-    if (resMethodName === 'refreshAuthData') {
-      console.log(`page_get:${resMethodName}:`, res);
-      const lowerCaseSourceName = params?.source.toLowerCase();
-      if (res) {
-        setQueryObj((obj) => ({ ...obj, [lowerCaseSourceName]: true }));
-      } else {
+  const padoServicePortListener = useCallback(
+    async function (message: any) {
+      const { resMethodName, res, params } = message;
+      if (resMethodName === 'refreshAuthData') {
+        console.log(
+          `page_get:${resMethodName}:`,
+          res,
+          params?.source,
+          'useUpdateSocialSources'
+        );
+        const lowerCaseSourceName = params?.source.toLowerCase();
+        setQueryObj((obj) => {
+          if (lowerCaseSourceName in (obj as object)) {
+            return { ...obj, [lowerCaseSourceName]: true };
+          } else {
+            return obj;
+          }
+        });
         if (params?.mc === 'UNAUTHORIZED_401') {
           const curSourceUserInfo = socialSources[lowerCaseSourceName];
           curSourceUserInfo.expired = '1';
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(curSourceUserInfo),
           });
-          setQueryObj((obj) => ({ ...obj, [lowerCaseSourceName]: true }));
         }
       }
-    }
-    const { resType } = message;
-    if (resType?.startsWith(`set-`)) {
-      console.log(`page_get:${resType}:`, res);
-      const name = resType.split('-')[1];
-      setQueryObj((obj) => ({ ...obj, [name]: true }));
-    }
-  };
+      const { resType } = message;
+      if (resType?.startsWith(`set-`)) {
+        console.log(`page_get:${resType}:`, res);
+        const name = resType.split('-')[1];
+        setQueryObj((obj) => ({ ...obj, [name]: true }));
+      }
+    },
+    [socialSources]
+  );
   useEffect(() => {
     if (!loading) {
       dispatch(setSocialSourcesAsync());
@@ -110,7 +120,7 @@ const useUpdateSocialSources = () => {
     return () => {
       padoServicePort.onMessage.removeListener(padoServicePortListener);
     };
-  }, [padoServicePort.onMessage]);
+  }, [padoServicePort.onMessage, padoServicePortListener]);
 
   return [loading, fetchSocialDatas];
 };

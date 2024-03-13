@@ -45,12 +45,12 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
-  const [updateOnChainLoading, updateOnChainFn] = useUpdateOnChainSources();
+  // const [updateOnChainLoading, updateOnChainFn] = useUpdateOnChainSources();
   useListener();
   useALGAttest();
   useKeepConnect();
   usePollingUpdateAllSources();
-  console.log('222layout')
+  console.log('222layout');
 
   const initStoreData = useCallback(async () => {
     // Compatible with old certificates
@@ -112,8 +112,8 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     dispatch(setConnectedWalletsActionAsync());
     dispatch(initEventsActionAsync());
     // dispatch(initConnectedWalletActionAsync());
-    (updateOnChainFn as () => void)();
-  }, [dispatch, updateOnChainFn]);
+    // (updateOnChainFn as () => void)();
+  }, [dispatch, ]);
   useEffect(() => {
     initStoreData();
   }, [initStoreData]);

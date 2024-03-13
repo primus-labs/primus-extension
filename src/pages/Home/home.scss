@@ -12,6 +12,9 @@
   }
   .guideImg {
     width: 100vw;
+    &.animate__animated {
+      animation-duration: 0.2s;
+    }
   }
   .animationWrapper {
     @include frsc;
@@ -22,8 +25,11 @@
     line-height: 140%;
     letter-spacing: 0px;
     color: rgba(0, 0, 0, 0.8);
+    &.animate__animated {
+      animation-duration: 0.8s;
+    }
     > img {
-      width: 349px;
+      width: 140px;
     }
     > i {
       width: 1px;
@@ -33,9 +39,6 @@
     .logonTxt {
       width: 471px;
     }
-  }
-  .animate__animated {
-    animation-duration: 3s;
   }
 }
 // #app-container{

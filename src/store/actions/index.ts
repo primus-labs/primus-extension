@@ -336,6 +336,7 @@ export const getChainAssets = async (
         ...res,
         ...DATASOURCEMAP['onChain'],
         walletName: 'MetaMask', // TODO-newui
+        updateTime: Date.now() + '',
       };
 
       const { onChainAssetsSources: lastOnChainAssetsMapStr } =
