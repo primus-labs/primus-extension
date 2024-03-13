@@ -51,7 +51,7 @@ const WebComeBackDialog: React.FC<InputPasswordProps> = memo(
             payload: password,
           });
           showDialog(false)
-
+          sessionStorage.setItem('hasInputPsw', '1');
         } else {
           setErrorMsg('Incorrect password');
         }
@@ -80,7 +80,7 @@ const WebComeBackDialog: React.FC<InputPasswordProps> = memo(
       }
     };
     return (
-      <PMask>
+      <PMask className="backMask">
         {/* onClose={onClose} closeable={!fromEvents} */}
         <div className="pDialog2 inputPassword">
           <main>
@@ -108,7 +108,7 @@ const WebComeBackDialog: React.FC<InputPasswordProps> = memo(
             <PButton
               text="Confirm"
               className="fullWidth confirmBtn"
-              disabled={password === ""}
+              disabled={password === ''}
               onClick={handleClickStart}
             ></PButton>
           </main>

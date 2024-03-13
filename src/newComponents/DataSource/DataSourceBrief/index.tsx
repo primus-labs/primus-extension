@@ -7,7 +7,7 @@ interface DataSourceBriefProps {
 }
 const DataSourceBrief: React.FC<DataSourceBriefProps> = memo(
   ({ id: dataSourceId }) => {
-    console.log('222dataSourceId', dataSourceId, DATASOURCEMAP[dataSourceId]);
+    // console.log('222dataSourceId', dataSourceId, DATASOURCEMAP[dataSourceId]);
     const dataSourceMetaInfo = DATASOURCEMAP[dataSourceId];
     return (
       <div className="dataSourceBrief">

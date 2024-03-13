@@ -41,6 +41,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
       const { resType, res, msg, connectType, resMethodName, type } = message;
       if (resType && resType.startsWith('set-')) {
         console.log(`page_get:${resType}:`, res, msg);
+        const { withoutMsg } = message;
         const lowerCaseSourceName = resType.split('-')[1];
         const activeDataSouceMetaInfo = DATASOURCEMAP[lowerCaseSourceName];
         const sourceType = activeDataSouceMetaInfo.type;
@@ -60,11 +61,12 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
           }
 
           dispatch(setActiveConnectDataSource({ loading: 2 }));
-          addMsg({
-            type: 'suc',
-            title: 'Data connected!',
-            link: `/datas/data?dataSourceId=${lowerCaseSourceName}`,
-          });
+          !withoutMsg &&
+            addMsg({
+              type: 'suc',
+              title: 'Data connected!',
+              link: `/datas/data?dataSourceId=${lowerCaseSourceName}`,
+            });
           const eventInfo = {
             eventType: 'DATA_SOURCE_INIT',
             rawData: { type: sourceType, dataSource: lowerCaseSourceName },
@@ -118,7 +120,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
             };
           }
           dispatch(setActiveConnectDataSource({ loading: 3 }));
-          addMsg(msgObj);
+          !withoutMsg && addMsg(msgObj);
         }
         if (connectType === 'Web') {
           chrome.runtime.sendMessage({

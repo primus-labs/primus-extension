@@ -91,6 +91,7 @@ const getExchange = async (message, USERPASSWORD, port) => {
         }
       }
     }
+
     ex = new constructorF(exParams);
   } else if (exchangeInfo.connectType === 'Web') {
     ex = new constructorF();
@@ -101,7 +102,7 @@ const getExchange = async (message, USERPASSWORD, port) => {
 const processNetworkReq = async (message, port, USERPASSWORD) => {
   var {
     type,
-    params: { apiKey, secretKey, passphase, name, exData, label },
+    params: { apiKey, secretKey, passphase, name, exData, label, withoutMsg },
   } = message;
   const exchangeName = type.split('-')[1];
   if (type.startsWith('set-')) {
@@ -110,8 +111,10 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
       const exchange = await getExchange(message, USERPASSWORD, port);
       const ex = exchange.ex;
       const exParams = exchange.exParams;
-
-      await storeDataSource(exchangeName, ex, port);
+      await storeDataSource(exchangeName, ex, port, {
+        apiKey: exParams?.apiKey,
+        withoutMsg: withoutMsg,
+      });
       if (apiKey) {
         const { apiKey, secretKey, passphase } = exParams;
         const exCipherData = {

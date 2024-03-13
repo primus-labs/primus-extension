@@ -348,6 +348,9 @@ export const dataSourceWebMsgListener = async (
       });
     }
     if (name === 'start') {
+      if (operation) {
+        operationType = operation;
+      }
       const formatRequests = await formatRequestsFn();
       if (operationType === 'connect') {
         const activeInfo = formatRequests.find((i) => i.headers);
@@ -403,16 +406,16 @@ export const dataSourceWebMsgListener = async (
       //   params: aligorithmParams,
       // });
     }
-    if (name === 'attestResult') {
-      // to send back your response  to the current tab
-      chrome.tabs.sendMessage(
-        tabCreatedByPado.id,
-        request,
-        function (response) {}
-      );
-      chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
-      chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
-    }
+    // if (name === 'attestResult') {
+    //   // to send back your response  to the current tab
+    //   chrome.tabs.sendMessage(
+    //     tabCreatedByPado.id,
+    //     request,
+    //     function (response) {}
+    //   );
+    //   chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
+    //   chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
+    // }
     if (name === 'close' || name === 'cancel') {
       await chrome.tabs.update(currExtentionId, {
         active: true,

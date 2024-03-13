@@ -39,7 +39,7 @@ import './index.scss';
 type LayoutProps = {
   children?: any;
 };
-const Nav: React.FC<LayoutProps> = memo(({ children }) => {
+const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   const theme = useSelector((state: UserState) => state.theme);
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
@@ -49,7 +49,8 @@ const Nav: React.FC<LayoutProps> = memo(({ children }) => {
   useListener();
   useALGAttest();
   useKeepConnect();
-  // usePollingUpdateAllSources()// TODO-newui
+  usePollingUpdateAllSources();
+  console.log('222layout')
 
   const initStoreData = useCallback(async () => {
     // Compatible with old certificates
@@ -177,4 +178,4 @@ const Nav: React.FC<LayoutProps> = memo(({ children }) => {
   );
 });
 
-export default Nav;
+export default Layout;

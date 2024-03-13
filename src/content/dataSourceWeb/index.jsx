@@ -34,6 +34,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     var msgObj = {
       type: 'dataSourceWeb',
       name: 'start',
+      operation: 'connect'
     };
     await chrome.runtime.sendMessage(msgObj);
     setStatus('verifying');

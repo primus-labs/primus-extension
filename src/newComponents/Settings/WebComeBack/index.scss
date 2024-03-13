@@ -1,7 +1,9 @@
 @import '@/assets/newCss/flex';
 @import '@/assets/newCss/font';
 @import '@/assets/newCss/dialog';
-
+.backMask{
+  backdrop-filter: blur(10px);
+}
 .pDialog2.inputPassword {
   color: var(--text-tokens-text-primary);
 

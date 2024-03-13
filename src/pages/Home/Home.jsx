@@ -27,6 +27,7 @@ const Home = memo(() => {
   const [visibleReferralCodeDialog, setVisibleReferralCodeDialog] = useState();
   const [step, setStep] = useState(0);
   const [timeoutStep2Switch, setTimeoutStep2Switch] = useState(false);
+  const [showInputPasswordDialog, setShowInputPasswordDialog] = useState(false);
   const padoServicePort = useSelector((state) => state.padoServicePort);
   const imgSrc = useMemo(() => {
     let s = page1;
@@ -61,31 +62,39 @@ const Home = memo(() => {
   //   setStep(2);
   // };
   // useTimeout(timeoutStep2Fn, 1000, timeoutStep2Switch, false);
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback(async () => {
     if (step <= 4) {
       setStep((p) => p + 1);
     } else {
       setStep(1);
-      const msg = {
-        fullScreenType: 'wallet',
-        reqMethodName: 'create',
-        params: {},
-      };
-      postMsg(padoServicePort, msg);
+
+      const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
+        await chrome.storage.local.get([
+          'keyStore',
+          'padoCreatedWalletAddress',
+          'privateKey',
+          'userInfo',
+        ]);
+      if (!keyStore && !privateKey) {
+        const msg = {
+          fullScreenType: 'wallet',
+          reqMethodName: 'create',
+          params: {},
+        };
+        postMsg(padoServicePort, msg);
+      }
+
+      chrome.storage.local.set({
+        guide: '1',
+      });
+
       setVisibleReferralCodeDialog(true);
     }
   }, [step]);
 
   const checkIsFirstLogin = useCallback(async () => {
-    const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
-      await chrome.storage.local.get([
-        'keyStore',
-        'padoCreatedWalletAddress',
-        'privateKey',
-        'userInfo',
-      ]);
-    if (!keyStore && !privateKey) {
-    } else {
+    const { guide } = await chrome.storage.local.get(['guide']);
+    if (guide) {
       navigate('/home');
     }
   }, [navigate]);

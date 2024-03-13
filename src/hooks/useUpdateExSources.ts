@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DATASOURCEMAP } from '@/config/dataSource2';
+import { DATASOURCEMAP } from '@/config/dataSource';
 import { setExSourcesAsync } from '@/store/actions';
 
 import type { UserState } from '@/types/store';
@@ -30,9 +30,13 @@ const useUpdateExSources = (flag = false) => {
       return false;
     }
   }, [queryObj]);
+  
+  const exSources = useMemo(() => {
+    return sourceMap.exSources;
+  }, [sourceMap]);
   const fetchExDatas = useCallback(
     async (name?: string) => {
-      const list = name ? [name] : Object.keys(sourceMap.exSources);
+      const list = name ? [name] : Object.keys(exSources);
       list.map((i) => {
         setQueryObj((obj) => ({ ...obj, [i]: undefined }));
       });
@@ -41,23 +45,31 @@ const useUpdateExSources = (flag = false) => {
         const msg: any = {
           fullScreenType: 'networkreq',
           type: reqType,
-          params: {},
+          params: {
+            withoutMsg: true
+          },
         };
         postMsg(padoServicePort, msg);
         console.log(`page_send:${reqType} request`);
       });
     },
-    [padoServicePort, sourceMap?.exSources]
+    [padoServicePort, exSources]
   );
-  const padoServicePortListener = function (message: any) {
-    const { resType, res } = message;
+  const padoServicePortListener = async function (message: any) {
+    const { resType, res, msg, } = message;
+    
     if (resType?.startsWith(`set-`)) {
       console.log(`page_get:${resType}:`, message.res);
       const name = resType.split('-')[1];
       setQueryObj((obj) => ({ ...obj, [name]: true }));
+      if (!res && msg === 'AuthenticationError') {
+        const curSourceUserInfo = exSources[name];
+        curSourceUserInfo.expired = '1';
+        await chrome.storage.local.set({
+          [name]: JSON.stringify(curSourceUserInfo),
+        });
+      }
     }
-    // TODO request fail
-    // padoServicePort.onMessage.removeListener(padoServicePortListener);
   };
   useEffect(() => {
     padoServicePort.onMessage.addListener(padoServicePortListener);

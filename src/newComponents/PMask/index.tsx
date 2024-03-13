@@ -4,12 +4,12 @@ import './index.scss';
 
 interface PMaskProps {
   children?: any;
-  // closeable?: boolean;
+  className?: string;
 }
 
-const PMask: React.FC<PMaskProps> = memo(({ children }) => {
+const PMask: React.FC<PMaskProps> = memo(({ children, className }) => {
   return (
-    <div className="pMask2">
+    <div className={`pMask2 ${className}`}>
       {/* {closeable && (
         <img className="closeBtn" src={iconClose} alt="" onClick={onClose} />
       )} */}

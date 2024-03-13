@@ -9,6 +9,7 @@ import { ONEMINUTE } from '@/config/constants';
 import type { UserState } from '@/types/store';
 
 const usePollingUpdateAllSources = () => {
+  console.log('222usePollingUpdateAllSources');
   const userPassword = useSelector((state: UserState) => state.userPassword);
   const sourceUpdateFrequency = useSelector(
     (state: UserState) => state.sourceUpdateFrequency
@@ -24,8 +25,7 @@ const usePollingUpdateAllSources = () => {
     return allDataSources.length > 0;
   }, [exSources, socialSources]);
   const switchFlag = useMemo(() => {
-    // return !!userPassword && hasDataSources
-    return hasDataSources;
+    return !!userPassword && hasDataSources
   }, [userPassword, hasDataSources]);
   const delay = useMemo(() => {
     if (sourceUpdateFrequency) {

@@ -1,8 +1,10 @@
-import { getCurrentDate, postMsg } from '@/utils/utils';
+import { getCurrentDate, postMsg, sub } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ExchangeStoreVersion, SocailStoreVersion } from '@/config/constants';
 // ex : exhange service Constructor instance
-export const storeDataSource = async (dataSourceId, ex, port, apiKey) => {
+export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
+  otherParams = otherParams || {};
+  const { apiKey, withoutMsg } = otherParams;
   const resType = `set-${dataSourceId}`;
   const exchangeInfo = DATASOURCEMAP[dataSourceId];
   const { constructorF, type: sourceType, connectType } = exchangeInfo;
@@ -50,7 +52,7 @@ export const storeDataSource = async (dataSourceId, ex, port, apiKey) => {
     await chrome.storage.local.set({
       [dataSourceId]: JSON.stringify(newSourceUserData),
     });
-    postMsg(port, { resType, res: true, connectType });
+    postMsg(port, { resType, res: true, connectType, withoutMsg });
   } catch (error) {
     console.log(
       'connect source  error',
@@ -84,6 +86,7 @@ export const storeDataSource = async (dataSourceId, ex, port, apiKey) => {
       res: false,
       msg: errMsg,
       connectType,
+      withoutMsg,
     });
   }
 };

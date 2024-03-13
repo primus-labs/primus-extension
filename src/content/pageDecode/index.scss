@@ -28,6 +28,7 @@
       var(--spacing-24, 24px);
     width: 384px;
     // height: 216px;
+    border: 0;
     &.initialized {
       padding-top: var(--spacing-32, 32px);
       .center {
@@ -131,6 +132,7 @@
       .cancelBtn {
       }
       .confirmBtn {
+        height: 32px;
         .loading-spinner {
           width: 16px;
           height: 16px;
