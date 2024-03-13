@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { add, mul, gt, div } from '@/utils/utils';
 import { USDT, BTC, STABLETOKENLIST } from '@/config/constants';
+import { AuthenticationError } from 'ccxt';
 const BIGZERO = new BigNumber(0);
 const BIGONE = new BigNumber(1);
 const ONE = 1;
@@ -229,6 +230,10 @@ class WebExchange {
     }
     try {
       const response = await fetch(url, requestConfig);
+      if(response.status === 401){
+        console.log(`response code from ${this.exName} is:${response.status}`)
+        throw new AuthenticationError('AuthenticationError')
+      }
       const responseJson = await response.json();
       clearTimeout(timeoutTimer);
       return responseJson;
