@@ -173,7 +173,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                 }
 
                 <div className={'downloadApp'}>
-                  <a style={{ fontWeight: '400', fontSize: '12px', color: '#161616' }} href={'#'}>
+                  <a style={{ fontWeight: '400', fontSize: '12px', color: '#161616' }} target={"_blank"} href={'https://chromewebstore.google.com/detail/pado/oeiomhmbaapihbilkfkhmlajkeegnjhe'}>
                     Download PADO<img src={lineLogo} style={{ marginLeft: '5px' }} />
 
                   </a>
