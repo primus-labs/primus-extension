@@ -67,9 +67,9 @@ const Overview = memo(() => {
   }, []);
   const handleClick = useCallback(
     (link) => {
-      navigate(link);
+      window.open(link)
     },
-    [navigate]
+    []
   );
   return (
     <div className="homeSupport">

@@ -40,7 +40,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
     async function (message: any) {
       const { resType, res, msg, connectType, resMethodName, type } = message;
       if (resType && resType.startsWith('set-')) {
-        console.log(`page_get:${resType}:`, res, msg);
+        console.log(`page_get:${resType}:`, res, msg, 'useListener');
         const { withoutMsg } = message;
         const lowerCaseSourceName = resType.split('-')[1];
         const activeDataSouceMetaInfo = DATASOURCEMAP[lowerCaseSourceName];

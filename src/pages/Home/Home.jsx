@@ -57,7 +57,7 @@ const Home = memo(() => {
     setStep(2);
     setTimeoutStep2Switch(true);
   };
-  useTimeout(timeoutStep1Fn, 1200, true, false);
+  useTimeout(timeoutStep1Fn, 1300, true, false);
   // const timeoutStep2Fn = () => {
   //   setStep(2);
   // };
@@ -136,11 +136,11 @@ const Home = memo(() => {
           src={imgSrc}
           alt=""
           onClick={handleClick}
-          className={`guideImg `}
+          className={`guideImg animate__animated animate__fadeIn`}
         />
       )}
       {step === 0 && (
-        <div className="animationWrapper  animate__animated animate__fadeIn">
+        <div className="animationWrapper animate__animated animate__fadeIn">
           <img src={iconLogoPado} alt="" />
           {/* <i></i>
           <div className="logonTxt">
