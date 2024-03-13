@@ -289,7 +289,7 @@ const Setting = memo(() => {
       {showSetPwdDialog && (
         <SettingsSetPwdDialog
           isChangePwd={isChangePwd}
-          title={passwordDialogTitle}m
+          title={passwordDialogTitle}
           onClose={() => {
             setShowSetPwdDialog(false);
           }}
