@@ -42,13 +42,19 @@ const AchievementHome = memo(() => {
   //   dispatch(setConnectWalletDialogVisibleAction(!connected));
   // }, [connected, dispatch]);
 
-  const onConnectWallet = ()=>{
-    if(!connected){
-      dispatch(setConnectWalletDialogVisibleAction(!connected));
+  const onConnectWallet = async () => {
+    if (!connected) {
+      await dispatch(setConnectWalletDialogVisibleAction(!connected));
+      await getAchievementTaskListFn(current);
     }
   }
 
-  console.log("connected:",connected)
+  useEffect(() => {
+    getAchievementTaskListFn(current);
+    getUserInfoFn()
+  }, [connected]);
+
+  console.log("connected in achievement:",connected)
   console.log("connectedWallet:",connectedWallet)
   console.log("activeConnectWallet:",activeConnectWallet)
 
