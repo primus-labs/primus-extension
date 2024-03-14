@@ -5,6 +5,9 @@
   @include fcss;
   gap: var(--spacing-4, 4px);
   width: 100%;
+  &.horizontal{
+    @include frss;
+  }
   &.disabled {
     > label {
       color: var(--text-tokens-text-placeholder, #a8a8a8);

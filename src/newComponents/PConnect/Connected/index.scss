@@ -11,6 +11,7 @@
       display: flex;
     }
     .addressWrapper {
+      @include NumberBody100;
       .icon-DownArrow {
         transform: rotate(180deg);
       }
@@ -58,6 +59,9 @@
           width: 100%;
           @include frbc;
           @include NumberBody100;
+          &.addressItem {
+            cursor: pointer;
+          }
           &:first-child {
             @include BodyBody100Semibold;
           }
@@ -83,7 +87,7 @@
         }
       }
     }
-    .connectBtn{
+    .connectBtn {
       height: var(--spacing-34) !important;
     }
   }

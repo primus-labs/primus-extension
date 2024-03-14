@@ -81,7 +81,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                   </div>
                   {Object.keys(connectedWallets[wK])?.map((addrK) => {
                     return (
-                      <div className="recordItem" onClick={()=>handleChangeAddress(addrK)}>
+                      <div className="recordItem addressItem" onClick={()=>handleChangeAddress(addrK)}>
                         <div className="left">
                           {addrK === connectedWallet?.address ? (
                             <i className="iconfont icon-Legal"></i>

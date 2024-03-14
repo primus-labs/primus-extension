@@ -86,7 +86,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       return newList;
     }, [credentialsFromStore, attestationQueryStr, attestationQueryType]);
     const otherOperationsFn = useCallback((i) => {
-      const isDeleteDisable = i?.provided?.length && i?.provided?.length > 0;
+      const isDeleteDisable = i?.provided?.length && i?.provided?.length > 0 || i.event;
       return [
         {
           value: 'Delete',
@@ -176,35 +176,6 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleDeleteCred = useCallback(async () => {
       const curRequestid = activeCredId as string;
       const cObj = { ...credentialsFromStore };
-      if (cObj[curRequestid]?.event === BASEVENTNAME) {
-        const res = await chrome.storage.local.get([BASEVENTNAME]);
-        if (res[BASEVENTNAME]) {
-          const lastInfo = JSON.parse(res[BASEVENTNAME]);
-          const { steps } = lastInfo;
-          if (steps[2]?.status !== 1) {
-            let newInfo = { ...lastInfo };
-            const credTasks = steps[1]?.tasks;
-            let newCredTasks = { ...credTasks };
-            let newCredTasksStatus = steps[1]?.status;
-            let webTemplateId;
-            Object.keys(credTasks).forEach((k) => {
-              if (credTasks[k] === requestid) {
-                webTemplateId = k;
-              }
-            });
-
-            delete newCredTasks[webTemplateId];
-            newCredTasksStatus = Object.values(newCredTasks).length > 0 ? 1 : 0;
-            newInfo.steps[1] = {
-              status: newCredTasksStatus,
-              tasks: newCredTasks,
-            };
-            await chrome.storage.local.set({
-              [BASEVENTNAME]: JSON.stringify(newInfo),
-            });
-          }
-        }
-      }
       delete cObj[curRequestid];
       await chrome.storage.local.set({
         credentials: JSON.stringify(cObj),

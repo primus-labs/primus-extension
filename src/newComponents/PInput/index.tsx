@@ -15,6 +15,7 @@ interface PInputProps {
   prefix?: any;
   className?: string;
 
+  align?: string;
   copiable?: boolean;
   onSearch?: (val: string) => void;
   tooltip?: any;
@@ -35,6 +36,7 @@ const PInput: React.FC<PInputProps> = memo(
     tooltip,
     prefix,
     className,
+    align = 'vertical',
   }) => {
     const inputEl = useRef<any>(null);
     const [val, setVal] = useState<string>('');
@@ -51,11 +53,14 @@ const PInput: React.FC<PInputProps> = memo(
       if (!!errorTip) {
         cN += ' error';
       }
+      if (align) {
+        cN += ` ${align}`;
+      }
       if (className) {
         cN += ` ${className}`;
       }
       return cN;
-    }, [disabled, errorTip, className]);
+    }, [disabled, errorTip, className, align]);
     const activeType = useMemo(() => {
       if (visible) {
         return open ? 'text' : 'password';
