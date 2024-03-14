@@ -94,7 +94,7 @@ class WebOKX extends WebExchange {
       new Date().getTime();
     params.method = 'GET';
     const res = await this.request(params);
-    this.userInfo.userName = res.data.petname;
+    this.userInfo.userName = res.data.uuid;
     this.userInfo.userId = res.data.uuid;
   }
 }
