@@ -32,9 +32,6 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
           <li
             className="attestationTypeCard"
             key={i.name}
-            onClick={() => {
-              onClick(i);
-            }}
           >
             <div className="top">
               <img src={i.icon} alt="" className="typeIcon" />

@@ -13,6 +13,7 @@
     @include fcss;
     gap: var(--spacing-16);
     @include clickableCard;
+    cursor: default;
     &.addCard {
       padding: var(--spacing-16);
       @include frcc;

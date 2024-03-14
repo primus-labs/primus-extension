@@ -86,7 +86,8 @@ const Cards: React.FC<PDropdownProps> = memo(
       return newList;
     }, [credentialsFromStore, attestationQueryStr, attestationQueryType]);
     const otherOperationsFn = useCallback((i) => {
-      const isDeleteDisable = i?.provided?.length && i?.provided?.length > 0 || i.event;
+      const isDeleteDisable =
+        (i?.provided?.length && i?.provided?.length > 0) || i.event;
       return [
         {
           value: 'Delete',
@@ -359,13 +360,15 @@ const Cards: React.FC<PDropdownProps> = memo(
                               </a>
                             ))}
                           </div>
-                          <PButton
-                            icon={<i className="iconfont icon-Add"></i>}
-                            type="icon"
-                            onClick={() => {
-                              handleOnChain(i);
-                            }}
-                          />
+                          {!(i.event && i?.provided?.length > 0) && (
+                            <PButton
+                              icon={<i className="iconfont icon-Add"></i>}
+                              type="icon"
+                              onClick={() => {
+                                handleOnChain(i);
+                              }}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>

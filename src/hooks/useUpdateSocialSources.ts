@@ -95,7 +95,7 @@ const useUpdateSocialSources = () => {
         });
         const curSourceUserInfo = socialSources[lowerCaseSourceName];
         if (res) {
-          if (curSourceUserInfo.expired === '1') {
+          if (curSourceUserInfo?.expired === '1') {
             delete curSourceUserInfo.expired;
             await chrome.storage.local.set({
               [lowerCaseSourceName]: JSON.stringify(curSourceUserInfo),

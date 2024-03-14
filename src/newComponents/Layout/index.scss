@@ -16,7 +16,7 @@
   .pageRight {
     @include fcbs;
     flex: 1;
-    height: 100vh;
+    // height: 100vh;
     background-color: var(--background-tokens-background);
     // position: relative;
     // .pageHeader {
@@ -30,7 +30,8 @@
     //   bottom: 0;
     // }
     .page {
-      flex: 1;
+      // flex: 1;
+      min-height: calc(100vh - 60px - 42px);
       margin: 0 auto;
       overflow-y: auto;
       &::-webkit-scrollbar {

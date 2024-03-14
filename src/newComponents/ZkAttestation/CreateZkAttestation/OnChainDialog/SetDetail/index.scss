@@ -22,6 +22,7 @@
       }
       .selectOptionswrapper {
         width: var(--verificationContent-select-width);
+        
       }
     }
     .account {
@@ -31,6 +32,10 @@
       }
       .selectOptionswrapper {
         width: var(--account-select-width);
+        .PDropdown {
+          max-height: 240px;
+          overflow-y: auto;
+        }
       }
     }
   }

@@ -17,14 +17,14 @@ interface DataSourcesDialogProps {
   activeRequest: any;
 }
 const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
-  ({ preset,onClose, onSubmit, activeRequest }) => {
+  ({ preset, onClose, onSubmit, activeRequest }) => {
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
 
     const [accountAddr, setAccountAddr] = useState<any>();
     const [errorTip, setErrorTip] = useState<string>();
     const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
-    
+
     const handleClose = useCallback(() => {
       // dispatch({
       //   type: 'setConnectWalletDialogVisible',
@@ -63,15 +63,15 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
               <h5>{activeRequest?.title}</h5>
               <h6>{activeRequest?.desc}</h6>
             </div>
-            {activeRequest?.type === 'suc' ||
-              (activeRequest?.type === 'fail' && (
-                <PButton
-                  text={activeRequest?.type === 'suc' ? 'Confirm' : 'Ok'}
-                  onClick={handleClose}
-                  className="fullWidth"
-                />
-              ))}
           </main>
+          {(activeRequest?.type === 'suc' ||
+            activeRequest?.type === 'fail') && (
+            <PButton
+              text={activeRequest?.type === 'suc' ? 'Confirm' : 'Ok'}
+              onClick={handleClose}
+              className="fullWidth"
+            />
+          )}
         </div>
       </PMask>
     );

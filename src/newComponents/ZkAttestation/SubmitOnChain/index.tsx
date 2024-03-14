@@ -347,7 +347,7 @@ const Nav: React.FC<PButtonProps> = memo(
             await initCredList();
 
             await storeEventInfoFn(toBeUpperChainCreds[0]);
-
+            debugger
             setActiveSendToChainRequest({
               type: 'suc',
               title: 'Congratulations',
@@ -586,6 +586,7 @@ const Nav: React.FC<PButtonProps> = memo(
                 }
               }
               await storeEventInfoFn(activeOnChainAttestation);
+              debugger
               setActiveSendToChainRequest({
                 type: 'suc',
                 title: 'Congratulations',

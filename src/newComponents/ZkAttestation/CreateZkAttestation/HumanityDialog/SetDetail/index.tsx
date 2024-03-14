@@ -158,11 +158,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         {activeDataSouceUserInfo?.userInfo && (
           <div className="staticItem">
             <label>Account</label>
-            <div className="value">
-              <div className="account">
-                {activeDataSouceUserInfo?.userInfo?.userName}
-              </div>
-            </div>
+            
           </div>
         )}
         <PButton

@@ -5,6 +5,7 @@ import type { UserState } from '@/types/store';
 import Nav from '../../Nav';
 import PSwitch from '@/newComponents/PSwitch';
 import logo from '@/assets/img/logo.svg';
+import logoForLight from '@/assets/newImg/layout/logoForLight.svg';
 import logoForDark from '@/assets/newImg/layout/logoForDark.svg';
 import './index.scss';
 
@@ -14,7 +15,7 @@ const Sidebar: React.FC<PButtonProps> = memo(({}) => {
   const theme = useSelector((state: UserState) => state.theme);
   console.log('theme', theme);
   const formatLogo = useMemo(() => {
-    return theme === 'light' ? logo : logoForDark;
+    return theme === 'light' ? logoForLight : logoForDark;
   }, [theme]);
   return (
     <div className="sidebar">

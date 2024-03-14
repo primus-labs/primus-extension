@@ -70,7 +70,7 @@ const useUpdateExSources = (flag = false) => {
         });
         const curSourceUserInfo = exSources[name];
         if (res) {
-          if (curSourceUserInfo.expired === '1') {
+          if (curSourceUserInfo?.expired === '1') {
             delete curSourceUserInfo.expired;
             await chrome.storage.local.set({
               [name]: JSON.stringify(curSourceUserInfo),

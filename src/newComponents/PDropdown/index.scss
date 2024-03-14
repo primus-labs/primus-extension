@@ -3,13 +3,24 @@
 
 .PDropdown {
   width: 100%;
+  border-radius: var(--Radius-radius-xs, 4px);
+  background: var(--layer-tokens-layer-primary, #fff);
+  box-shadow: 0px 6px 24px 0px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+  &::-webkit-scrollbar {
+    width: var(--spacing-4);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--spacing-4);
+  }
   .dropdownOptions {
     @include fcss;
     width: 100%;
     padding: var(--spacing-8, 8px) 0px;
-    border-radius: var(--Radius-radius-xs, 4px);
-    background: var(--layer-tokens-layer-primary, #fff);
-    box-shadow: 0px 6px 24px 0px rgba(0, 0, 0, 0.1);
+    // border-radius: var(--Radius-radius-xs, 4px);
+    // background: var(--layer-tokens-layer-primary, #fff);
+    // box-shadow: 0px 6px 24px 0px rgba(0, 0, 0, 0.1);
     .dropdownOption {
       @include frsc;
       cursor: pointer;

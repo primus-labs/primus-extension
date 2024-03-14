@@ -191,11 +191,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         {activeDataSouceUserInfo?.userInfo && (
           <div className="staticItem">
             <label>Account</label>
+
             <div className="value">
               <div className="account">
                 {activeDataSouceUserInfo?.userInfo?.userName}
               </div>
-              <div className="balance">${totalBalanceForAttest}</div>
+              {pswForm.verificationContent === 'Assets Proof' && (
+                <div className="balance">
+                  ${Number(totalBalanceForAttest).toFixed(2)}
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -56,7 +56,7 @@ const Home = memo(() => {
         {/* <Banner /> */}
         <Slider/>
         <AttestationTypeList onClick={handleCreate} />
-        <Search />
+        {hasConnected && <Search />}
         {hasConnected ? (
           <AttestationCards />
         ) : (

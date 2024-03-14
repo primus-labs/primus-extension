@@ -2,11 +2,9 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
 .pageZkAttestation {
-  // height: calc(100vh - 60px - 42px);
-  height: 100%;
   .pageContent {
-    height: 100%;
-    padding: 40px 0 20px 0;
+    min-height: calc(100vh - 60px - 42px);
+    padding: 40px 0;
     @include fcss;
     gap: var(--spacing-32);
     .hasNoContent {

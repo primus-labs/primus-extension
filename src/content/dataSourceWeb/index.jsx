@@ -95,7 +95,9 @@ function DataSourceLineEl({ list }) {
 function DescEl({ status, resultStatus }) {
   var iconSuc = chrome.runtime.getURL(`iconSucc.svg`);
   var iconFail = chrome.runtime.getURL(`iconFail.svg`);
-  var host = activeRequest.datasourceTemplate.host;
+  var host = activeRequest.jumpTo
+    ? new URL(activeRequest.jumpTo).origin
+    : activeRequest.datasourceTemplate.host;
   var uiTemplate = activeRequest.uiTemplate;
   const descList = useMemo(() => {
     if (operationType === 'connect') {

@@ -5,7 +5,7 @@ $element-count: 6;
   @include frsc;
   > img {
     width: var(--spacing-40);
-    position: relative;
+    // position: static;
     &:not(:first-child) {
       position: relative;
       left: calc(-1 * var(--spacing-8));

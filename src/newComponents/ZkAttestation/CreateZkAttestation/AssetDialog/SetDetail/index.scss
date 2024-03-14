@@ -36,6 +36,12 @@
         var(--verificationContent-width),
         var(--verificationContent-width)
       );
+      .selectOptionswrapper {
+        .PDropdown {
+          max-height: 240px;
+          overflow-y: auto;
+        }
+      }
     }
   }
   .staticItem {

@@ -166,6 +166,9 @@
   --layer-tokens-layer-teal-background: var(--base-color-teal-teal-10);
   --layer-tokens-layer-yellow: var(--base-color-yellow-yellow-50);
   --layer-tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
+  -layer-tokens-layer-red-background: var(--functional-color-red-red-10);
+ --layer-tokens-layer-orange: var(--functional-color-orange-orange-50);
+--layer-tokens-layer-orange-background: var(--functional-color-orange-orange-10);
   --layer-tokens-layer-red: var(--functional-color-red-red-50);
   --layer-tokens-layer-red-background: var(--functional-color-red-red-10);
   --tag-tokens-tag-blue: var(--base-color-blue-blue-30);
@@ -254,6 +257,11 @@
   --layer-tokens-layer-teal-background: var(--base-color-teal-teal-10);
   --layer-tokens-layer-yellow: var(--base-color-yellow-yellow-50);
   --layer-tokens-layer-yellow-background: var(--base-color-yellow-yellow-10);
+  -layer-tokens-layer-red-background: var(--functional-color-red-red-10);
+  --layer-tokens-layer-orange: var(--functional-color-orange-orange-50);
+  --layer-tokens-layer-orange-background: var(
+    --functional-color-orange-orange-10
+  );
   --layer-tokens-layer-red: var(--functional-color-red-red-50);
   --layer-tokens-layer-red-background: var(--functional-color-red-red-10);
   --tag-tokens-tag-blue: var(--base-color-blue-blue-90);

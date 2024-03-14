@@ -83,6 +83,7 @@ const Nav: React.FC<PButtonProps> = memo(
               ? BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY'
               : activeWebProofTemplate.schemaType,
           event: fromEvents,
+          ...activeAttestationParams,
         };
         const responses = currRequestTemplate.datasourceTemplate.responses;
 

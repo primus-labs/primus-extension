@@ -25,6 +25,11 @@
       }
       .selectOptionswrapper {
         width: var(--verificationValue-select-width);
+
+        .PDropdown {
+          max-height: 240px;
+          overflow-y: auto;
+        }
       }
     }
   }

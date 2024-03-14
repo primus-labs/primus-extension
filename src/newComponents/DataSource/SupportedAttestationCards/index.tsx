@@ -35,7 +35,7 @@ const attestationTypeMap = {
   2: {
     attestationType: 'Assets Certification',
     verificationContent: 'Token Holding',
-    desc: 'Owns the specified token',
+    desc: 'Owns a specified token',
     icon: iconAttestationAssets,
     type: 'Web Data',
     id: '2',
@@ -53,7 +53,7 @@ const attestationTypeMap = {
   4: {
     attestationType: 'Humanity Verification',
     verificationContent: 'Owns an account',
-    desc: 'Owns the account',
+    desc: 'Owns an account',
     icon: iconAttestationHumanity,
     type: 'Web Data',
     id: '4',
