@@ -50,7 +50,6 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   useALGAttest();
   useKeepConnect();
   usePollingUpdateAllSources();
-  console.log('222layout');
 
   const initStoreData = useCallback(async () => {
     // Compatible with old certificates

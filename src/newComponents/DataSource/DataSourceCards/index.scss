@@ -1,7 +1,9 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
-
+.dataSourceCardsWrapper {
+  width: 100%;
+}
 .dataSourceCards {
   @include frss;
   flex-wrap: wrap;
@@ -9,12 +11,18 @@
   column-gap: var(--spacing-16);
   width: 100%;
   .dataSourceCard {
-    width: calc((100% - var(--spacing-16) *2)/3);
+    width: calc((100% - var(--spacing-16) * 2) / 3);
     height: 204px;
     padding: var(--spacing-16) var(--spacing-24);
     @include fcss;
     gap: var(--spacing-24);
     @include clickableCard;
+    cursor: default;
+    &:hover {
+      .cardContent .header .connections .deleteBtn {
+        display: inline-flex;
+      }
+    }
 
     .cardContent {
       width: 100%;
@@ -37,14 +45,21 @@
               font-size: var(--spacing-16);
             }
           }
+          .reconnectBtn {
+            > .iconfont {
+              font-size: var(--spacing-12);
+              color: var(--icon-tokens-icon-error);
+            }
+          }
           .deleteBtn {
+            display: none;
             > .iconfont {
               font-size: var(--spacing-12);
             }
           }
         }
       }
-      
+
       .desc {
         @include BodyBody300;
         color: var(--text-tokens-text-secondary);

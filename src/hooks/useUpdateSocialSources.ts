@@ -93,12 +93,21 @@ const useUpdateSocialSources = () => {
             return obj;
           }
         });
-        if (params?.mc === 'UNAUTHORIZED_401') {
-          const curSourceUserInfo = socialSources[lowerCaseSourceName];
-          curSourceUserInfo.expired = '1';
-          await chrome.storage.local.set({
-            [lowerCaseSourceName]: JSON.stringify(curSourceUserInfo),
-          });
+        const curSourceUserInfo = socialSources[lowerCaseSourceName];
+        if (res) {
+          if (curSourceUserInfo.expired === '1') {
+            delete curSourceUserInfo.expired;
+            await chrome.storage.local.set({
+              [lowerCaseSourceName]: JSON.stringify(curSourceUserInfo),
+            });
+          }
+        } else {
+          if (params?.mc === 'UNAUTHORIZED_401') {
+            curSourceUserInfo.expired = '1';
+            await chrome.storage.local.set({
+              [lowerCaseSourceName]: JSON.stringify(curSourceUserInfo),
+            });
+          }
         }
       }
       const { resType } = message;

@@ -59,11 +59,7 @@ const useUpdateExSources = (flag = false) => {
     async function (message: any) {
       const { resType, res, msg } = message;
       if (resType?.startsWith(`set-`)) {
-        console.log(
-          `page_get:${resType}:`,
-          message.res,
-          'useUpdateExSources'
-        );
+        console.log(`page_get:${resType}:`, message.res, 'useUpdateExSources');
         const name = resType.split('-')[1];
         setQueryObj((obj) => {
           if (name in (obj as object)) {
@@ -72,12 +68,21 @@ const useUpdateExSources = (flag = false) => {
             return obj;
           }
         });
-        if (!res && msg === 'AuthenticationError') {
-          const curSourceUserInfo = exSources[name];
-          curSourceUserInfo.expired = '1';
-          await chrome.storage.local.set({
-            [name]: JSON.stringify(curSourceUserInfo),
-          });
+        const curSourceUserInfo = exSources[name];
+        if (res) {
+          if (curSourceUserInfo.expired === '1') {
+            delete curSourceUserInfo.expired;
+            await chrome.storage.local.set({
+              [name]: JSON.stringify(curSourceUserInfo),
+            });
+          }
+        } else {
+          if (msg === 'AuthenticationError') {
+            curSourceUserInfo.expired = '1';
+            await chrome.storage.local.set({
+              [name]: JSON.stringify(curSourceUserInfo),
+            });
+          }
         }
       }
     },

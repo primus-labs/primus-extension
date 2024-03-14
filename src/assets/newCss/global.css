@@ -105,7 +105,6 @@
   --text-button-disabled: var(--neutral-color-gray-40);
 
   --pageContent-width: 1120px;
-  
 }
 .light {
   --background-tokens-background: var(--neutral-color-gray-05);
@@ -137,7 +136,7 @@
   --icon-tokens-icon-primary: var(--neutral-color-gray-100);
   --icon-tokens-icon-secondary: var(--neutral-color-gray-70);
   --icon-tokens-icon-tertiary: var(--neutral-color-gray-60);
-
+  --icon-tokens-icon-error: var(--functional-color-red-red-50);
   --layer-tokens-layer-02: var(--neutral-color-gray-20);
   --layer-tokens-layer-03: var(--neutral-color-gray-100);
   --layer-tokens-layer-bp: var(--brand-primary-color-bp-50);
@@ -224,7 +223,7 @@
   --icon-tokens-icon-primary: var(--neutral-color-gray-10);
   --icon-tokens-icon-secondary: var(--neutral-color-gray-30);
   --icon-tokens-icon-tertiary: var(--neutral-color-gray-50);
-
+  --icon-tokens-icon-error: var(--functional-color-red-red-50);
   --layer-tokens-layer-02: var(--neutral-color-gray-70);
   --layer-tokens-layer-03: var(--neutral-color-gray-10);
   --layer-tokens-layer-bp: var(--brand-primary-color-bp-50);

@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setActiveConnectDataSource } from '@/store/actions';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
@@ -10,6 +11,7 @@ import type { UserState } from '@/types/store';
 import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
 import DataSourceBrief from '../DataSourceBrief';
+import ConnectDataSource from '../ConnectDataSource';
 
 import './index.scss';
 
@@ -29,6 +31,7 @@ interface PDropdownProps {
 const list = Object.values(DATASOURCEMAP);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [activeDataSourceName, setActiveDataSourceName] =
       useState<string>('');
@@ -58,7 +61,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     }, [list, dataSourceQueryStr, dataSourceQueryType]);
     const { sourceMap, sourceMap2 } = useAllSources();
 
-    const handleConnect = useCallback(
+    const handleDetail = useCallback(
       (i) => {
         // onClick && onClick(i);
         navigate(`/datas/data?dataSourceId=${i.id}`);
@@ -72,6 +75,18 @@ const Cards: React.FC<PDropdownProps> = memo(
         // TODO-newui badge
       },
       [deleteDataSourceFn]
+    );
+    const handleConnect = useCallback(
+      (i) => {
+        // setActiveConnectDataSourceId(i);
+        dispatch(
+          setActiveConnectDataSource({
+            dataSourceId: i.id,
+            loading: 0,
+          })
+        );
+      },
+      [dispatch]
     );
     const connectionNumFn = useCallback(
       (i) => {
@@ -90,62 +105,59 @@ const Cards: React.FC<PDropdownProps> = memo(
     );
 
     return (
-      <ul className="dataSourceCards">
-        {filterdList.map((i) => {
-          return (
-            <li
-              className="dataSourceCard"
-              onClick={() => {
-                handleConnect(i);
-              }}
-              key={i.name}
-            >
-              <div className="cardContent">
-                <div className="header">
-                  <PTag text={`${i.type} Data`} color="brand" />
-                  {connectionNumFn(i) > 0 && (
-                    <div className="connections">
-                      <div className="num">
-                        <i className="iconfont icon-iconConnection"></i>
-                        <span>{connectionNumFn(i)}</span>
+      <div className="dataSourceCardsWrapper">
+        <ul className="dataSourceCards">
+          {filterdList.map((i) => {
+            return (
+              <li className="dataSourceCard" key={i.name}>
+                <div className="cardContent">
+                  <div className="header">
+                    <PTag text={`${i.type} Data`} color="brand" />
+                    {connectionNumFn(i) > 0 && (
+                      <div className="connections">
+                        <div className="num">
+                          <i className="iconfont icon-iconConnection"></i>
+                          <span>{connectionNumFn(i)}</span>
+                        </div>
+
+                        {sourceMap2[i.id]?.expired === '1' && (
+                          <PButton
+                            className="reconnectBtn"
+                            type="icon"
+                            icon={<i className="iconfont icon-iconInfo"></i>}
+                            onClick={() => {
+                              handleConnect(i);
+                            }}
+                          />
+                        )}
+                        {sourceMap2[i.id]?.expired !== '1' && <PButton
+                          className="deleteBtn"
+                          type="icon"
+                          icon={<i className="iconfont icon-iconDelete"></i>}
+                          onClick={() => {
+                            handleDelete(i);
+                          }}
+                        />}
                       </div>
-                      <PButton
-                        className="deleteBtn"
-                        type="icon"
-                        icon={<i className="iconfont icon-iconDelete"></i>}
-                        onClick={() => {
-                          handleDelete(i);
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-                <DataSourceBrief id={i.id} />
-                {/* <div className="brief">
-                  <img src={i.icon} alt="" />
-                  <div className="intro">
-                    <div className="name">{i?.showName ?? i.name}</div>
-                    <div className="origin">
-                      {i.provider
-                        ? ` Provide by ${i.provider}`
-                        : 'By Community'}
-                    </div>
+                    )}
                   </div>
-                </div> */}
-                <div className="desc">{i.desc}</div>
-              </div>
-              <PButton
-                className="connectBtn"
-                text="Connect"
-                type="text"
-                onClick={() => {
-                  handleConnect(i);
-                }}
-              />
-            </li>
-          );
-        })}
-      </ul>
+                  <DataSourceBrief id={i.id} />
+                  <div className="desc">{i.desc}</div>
+                </div>
+                <PButton
+                  className="connectBtn"
+                  text="Connect"
+                  type="text"
+                  onClick={() => {
+                    handleDetail(i);
+                  }}
+                />
+              </li>
+            );
+          })}
+        </ul>
+        <ConnectDataSource />
+      </div>
     );
   }
 );
