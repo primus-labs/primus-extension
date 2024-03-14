@@ -10,6 +10,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { BASEVENTNAME, SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
 import useMsgs from '@/hooks/useMsgs';
+import { eventReport } from '@/services/api/usertracker';
+import { useSelector } from 'react-redux';
+import type { UserState } from '@/types/store';
 
 export type TaskItem = {
   taskIcon: string;
@@ -43,6 +46,11 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
 
   const [PADOTabId, setPADOTabId] = useState<number>();
   const [xTabId, setXTabId] = useState<number>();
+
+
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
+  );
 
   const getDataSourceData = async (datasource) => {
     const data = await chrome.storage.local.get(datasource);
@@ -265,7 +273,10 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
         width,
         height,
       };
-      await chrome.windows.create(windowOptions);
+      let newWindowId;
+      chrome.windows.create(windowOptions, (window) => {
+         newWindowId = window?.id;
+      });
       let checkLoginTimer;
       if (needCheckLogin) {
         checkLoginTimer = setInterval(async () => {
@@ -296,6 +307,11 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo((taskItemWithClick
           refreshTotalScore(taskItem.taskXpScore, taskItem.taskIdentifier);
         }
       }, 1000);
+      chrome.windows.onRemoved.addListener(windowId => {
+        if (windowId === newWindowId) {
+          clearInterval(checkDiscordTaskTimer);
+        }
+      });
       return;
     }
     if (taskItem.taskIdentifier === 'SIGN_IN_USING_AN_REFERRAL_CODE') {
