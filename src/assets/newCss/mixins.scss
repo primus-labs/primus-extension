@@ -39,9 +39,9 @@
     }
   }
   .PButton.text:hover {
-    color: var(--button-tokens-button-text-link-hover);
+    color: var(--text-tokens-text-secondary);
     .iconfont {
-      color: var(--button-tokens-button-text-link-hover);
+      color: var(--text-tokens-text-secondary);
     }
   }
 }

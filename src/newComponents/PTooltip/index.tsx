@@ -1,19 +1,21 @@
 import React, { memo } from 'react';
 import './index.scss';
+import { div } from '../../utils/utils';
 interface PBackProps {
   children: any;
   title: string;
   placement?: string;
 }
-const PBack: React.FC<PBackProps> = memo(
+const PTooltip: React.FC<PBackProps> = memo(
   ({ children, placement = 'bottom', title }) => {
     return (
       <div className="PTooltip">
         {children}
-        <div className="tooltip">{title}</div>
+        <div className="tooltip">
+          <div>{title}</div></div>
       </div>
     );
   }
 );
 
-export default PBack;
+export default PTooltip;

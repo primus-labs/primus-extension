@@ -24,7 +24,7 @@
     border: 1px solid var(--border-tokens-border-primary, #e0e0e0);
     @include NumberBody100;
     cursor: pointer;
-
+    border-radius: var(--spacing-4);
     .icon-DownArrow {
       font-size: 16px;
       color: var(--icon-tokens-icon-primary);

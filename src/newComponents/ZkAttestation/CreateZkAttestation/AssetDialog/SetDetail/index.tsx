@@ -5,6 +5,7 @@ import {
   ASSETSVERIFICATIONVALUETYPELIST,
   ASSETSVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
+import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
 import {
   gt,
@@ -16,6 +17,7 @@ import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
+import PTooltip from '@/newComponents/PTooltip';
 
 import './index.scss';
 type PswFormType = {
@@ -190,8 +192,21 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         </div>
         {activeDataSouceUserInfo?.userInfo && (
           <div className="staticItem">
-            <label>Account</label>
-
+            <label>
+              <span>Data Account</span>
+              <PTooltip
+                title={`Your ${
+                  DATASOURCEMAP[presets.dataSourceId].name
+                } UserID`}
+              >
+                <PButton
+                  type="icon"
+                  icon={<i className="iconfont icon-iconInfo"></i>}
+                  onClick={() => {}}
+                  className="infoBtn"
+                />
+              </PTooltip>
+            </label>
             <div className="value">
               <div className="account">
                 {activeDataSouceUserInfo?.userInfo?.userName}
