@@ -1,3 +1,5 @@
+import { AuthenticationError } from 'ccxt';
+
 class WebSocial {
     constructor(socialName) {
       this.socialName = socialName;
@@ -46,6 +48,10 @@ class WebSocial {
       }
       try {
         const response = await fetch(url, requestConfig);
+        if(response.status === 401){
+          console.log(`response code from ${this.socialName} is:${response.status}`)
+          throw new AuthenticationError('AuthenticationError')
+        }
         const responseJson = await response.json();
         clearTimeout(timeoutTimer);
         return responseJson;
