@@ -86,7 +86,7 @@ const useUpdateSocialSources = () => {
           'useUpdateSocialSources'
         );
         const lowerCaseSourceName = params?.source.toLowerCase();
-        setQueryObj((obj) => {
+        setQueryObj((obj = {}) => {
           if (lowerCaseSourceName in (obj as object)) {
             return { ...obj, [lowerCaseSourceName]: true };
           } else {

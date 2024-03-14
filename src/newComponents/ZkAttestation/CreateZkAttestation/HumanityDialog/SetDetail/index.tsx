@@ -20,7 +20,6 @@ import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
 import PTooltip from '@/newComponents/PTooltip';
 
-
 import './index.scss';
 type PswFormType = {
   verificationContent: '';
@@ -128,39 +127,62 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [presets]);
     return (
       <div className="pFormWrapper detailForm3">
-        <div className="formItem">
-          <PSelect
-            className="verificationContent"
-            label="Verification Content"
-            align="horizontal"
-            placeholder="Select Content"
-            list={contentList}
-            onChange={(p) => {
-              handleChangePswForm(p, 'verificationContent');
-            }}
-            value={pswForm.verificationContent}
-            disabled={presets?.verificationContent}
-            showSelf={false}
-          />
+        <div
+          className={`formItem ${presets.verificationContent ? 'preset' : ''}`}
+        >
+          {presets.verificationContent ? (
+            <>
+              <div className="label">Verification Content</div>
+              <div className="value">
+                {
+                  ALLVERIFICATIONCONTENTTYPEEMAP[presets.verificationContent]
+                    .label
+                }
+              </div>
+            </>
+          ) : (
+            <PSelect
+              className="verificationContent"
+              label="Verification Content"
+              align="horizontal"
+              placeholder="Choose Data Source"
+              list={contentList}
+              onChange={(p) => {
+                handleChangePswForm(p, 'verificationContent');
+              }}
+              value={pswForm.verificationContent}
+              disabled={presets?.verificationContent}
+              showSelf={false}
+            />
+          )}
         </div>
-        <div className="formItem">
-          <PSelect
-            className="verificationValue"
-            label="Verification Value"
-            align="horizontal"
-            placeholder="Select Value"
-            list={valueList}
-            onChange={(p) => {
-              handleChangePswForm(p, 'verificationValue');
-            }}
-            value={pswForm.verificationValue}
-            disabled={presets?.verificationValue}
-            showSelf={false}
-          />
+        <div
+          className={`formItem ${presets.verificationValue ? 'preset' : ''}`}
+        >
+          {presets.verificationValue ? (
+            <>
+              <div className="label">Verification Value</div>
+              <div className="value">{presets.verificationValue}</div>
+            </>
+          ) : (
+            <PSelect
+              className="verificationValue"
+              label="Verification Value"
+              align="horizontal"
+              placeholder="Select Value"
+              list={valueList}
+              onChange={(p) => {
+                handleChangePswForm(p, 'verificationValue');
+              }}
+              value={pswForm.verificationValue}
+              disabled={presets?.verificationValue}
+              showSelf={false}
+            />
+          )}
         </div>
         {activeDataSouceUserInfo?.userInfo && (
           <div className="staticItem">
-            <label>
+            <label className="label">
               <span>Data Account</span>
               <PTooltip
                 title={`Your ${

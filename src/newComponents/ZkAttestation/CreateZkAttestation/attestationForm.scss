@@ -16,7 +16,66 @@
     color: var(--text-tokens-text-tertiary);
   }
 }
+@mixin presetAttestationFormItem {
+  width: 100%;
+  @include frbc;
+  @include BodyBody100;
+  .label {
+    color: var(--text-tokens-text-tertiary);
+    @include frsc;
+    gap: var(--spacing-4);
+    .infoBtn {
+      .iconfont {
+        font-size: var(--spacing-12);
+        color: var(--icon-tokens-icon-tertiary);
+      }
+      &:hover {
+        .iconfont {
+          color: var(--icon-tokens-icon-tertiary);
+        }
+      }
+    }
+    .PTooltip {
+      .tooltip {
+        top: 22px;
+        background: var(--layer-tokens-layer-05);
+        color: var(--text-tokens-text-inverse);
+        left: calc(var(--spacing-8) * -1);
+        transform: none;
+        &:after {
+          background: var(--layer-tokens-layer-05);
+          left: var(--spacing-8);
+          transform: rotate(45deg);
+        }
+      }
+    }
+  }
+  .value {
+    @include frsc;
+    height: var(--spacing-32);
+    border-radius: var(--spacing-4);
+    background: var(--border-tokens-border-chart);
+    padding: var(--spacing-4) var(--spacing-12);
+    .account {
+      @include BodyBody100;
+    }
+    .balance {
+      @include BodyBody300;
+      margin-left: var(--spacing-6);
+      color: var(--text-tokens-text-placeholder);
+    }
+  }
+}
 @mixin attestationForm {
+  .PInputWrapper {
+    @include attestationFormItem;
+    .inputWrapper {
+      height: var(--spacing-32);
+      padding: 0 var(--spacing-7) 0 var(--spacing-11);
+      gap: var(--spacing-16);
+      width: fit-content;
+    }
+  }
   .PSelect {
     @include attestationFormItem;
     .selectInput {

@@ -53,6 +53,7 @@ const attestationTypeMap = {
   4: {
     attestationType: 'Humanity Verification',
     verificationContent: 'Owns an account',
+    verificationValue: 'N/A',
     desc: 'Owns an account',
     icon: iconAttestationHumanity,
     type: 'Web Data',
@@ -62,6 +63,7 @@ const attestationTypeMap = {
   5: {
     attestationType: 'Humanity Verification',
     verificationContent: 'KYC Status',
+    verificationValue: 'Basic Verification',
     desc: 'Completed KYC Verification',
     icon: iconAttestationHumanity,
     type: 'Web Data',

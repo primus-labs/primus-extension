@@ -4,6 +4,7 @@ import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
   ASSETSVERIFICATIONCONTENTTYPEEMAP,
+  ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
@@ -18,6 +19,7 @@ import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
 import PTooltip from '@/newComponents/PTooltip';
+import PInput from '@/newComponents/PInput';
 
 import './index.scss';
 type PswFormType = {
@@ -66,17 +68,20 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     ]);
     const valueList = useMemo(() => {
       let list = [];
-      if (pswForm.verificationContent === 'Assets Proof') {
-        list = [...ASSETSVERIFICATIONVALUETYPELIST];
-      } else if (pswForm.verificationContent === 'Token Holding') {
-        list = Object.keys(activeDataSouceUserInfo.tokenListMap).map((i) => ({
-          label: i,
-          value: i,
-          icon: `${sysConfig.TOKEN_LOGO_PREFIX}icon${i}.png`,
-        }));
+      if (activeDataSouceUserInfo) {
+        if (pswForm.verificationContent === 'Assets Proof') {
+          list = [...ASSETSVERIFICATIONVALUETYPELIST];
+        } else if (pswForm.verificationContent === 'Token Holding') {
+          list = Object.keys(activeDataSouceUserInfo.tokenListMap).map((i) => ({
+            label: i,
+            value: i,
+            icon: `${sysConfig.TOKEN_LOGO_PREFIX}icon${i}.png`,
+          }));
+        }
       }
+
       return list;
-    }, [pswForm.verificationContent]);
+    }, [pswForm.verificationContent, activeDataSouceUserInfo]);
     const formLegal = useMemo(() => {
       return !!(pswForm.verificationContent && pswForm.verificationValue);
     }, [pswForm]);
@@ -160,39 +165,81 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
     return (
       <div className="pFormWrapper detailForm">
-        <div className="formItem">
-          <PSelect
-            className="verificationContent"
-            label="Verification Content"
-            align="horizontal"
-            placeholder="Choose Data Source"
-            list={contentList}
-            onChange={(p) => {
-              handleChangePswForm(p, 'verificationContent');
-            }}
-            value={pswForm.verificationContent}
-            disabled={presets?.verificationContent}
-            showSelf={false}
-          />
+        <div
+          className={`formItem ${presets.verificationContent ? 'preset' : ''}`}
+        >
+          {presets.verificationContent ? (
+            <>
+              <div className="label">Verification Content</div>
+              <div className="value">
+                {
+                  ALLVERIFICATIONCONTENTTYPEEMAP[presets.verificationContent]
+                    .label
+                }
+              </div>
+            </>
+          ) : (
+            <PSelect
+              className="verificationContent"
+              label="Verification Content"
+              align="horizontal"
+              placeholder="Choose Data Source"
+              list={contentList}
+              onChange={(p) => {
+                handleChangePswForm(p, 'verificationContent');
+              }}
+              value={pswForm.verificationContent}
+              disabled={presets?.verificationContent}
+              showSelf={false}
+            />
+          )}
         </div>
         <div className="formItem">
-          <PSelect
-            className="verificationValue"
-            label="Verification Value"
-            align="horizontal"
-            placeholder="Select Value"
-            list={valueList}
-            onChange={(p) => {
-              handleChangePswForm(p, 'verificationValue');
-            }}
-            value={pswForm.verificationValue}
-            disabled={presets?.verificationValue}
-            showSelf={false}
-          />
+          {pswForm.verificationContent ? (
+            activeDataSouceUserInfo?.userInfo ? (
+              <PSelect
+                className="verificationValue"
+                label="Verification Value"
+                align="horizontal"
+                placeholder="Select Value"
+                list={valueList}
+                onChange={(p) => {
+                  handleChangePswForm(p, 'verificationValue');
+                }}
+                value={pswForm.verificationValue}
+                disabled={presets?.verificationValue}
+                showSelf={false}
+              />
+            ) : (
+              <PInput
+                className="verificationValue"
+                label="Verification Value"
+                align="horizontal"
+                placeholder="Input Value"
+                onChange={(p) => {
+                  handleChangePswForm(p, 'verificationValue');
+                }}
+                value={pswForm.verificationValue}
+                disabled={!pswForm.verificationContent}
+              />
+            )
+          ) : (
+            <PInput
+              className="verificationValue"
+              label="Verification Value"
+              align="horizontal"
+              placeholder="Input Value"
+              onChange={(p) => {
+                handleChangePswForm(p, 'verificationValue');
+              }}
+              value={pswForm.verificationValue}
+              disabled={!pswForm.verificationContent}
+            />
+          )}
         </div>
         {activeDataSouceUserInfo?.userInfo && (
           <div className="staticItem">
-            <label>
+            <label className="label">
               <span>Data Account</span>
               <PTooltip
                 title={`Your ${
@@ -219,7 +266,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             </div>
           </div>
         )}
-
         <PButton
           text={attestLoading === 3 ? 'Try Again' : 'Next'}
           className="fullWidth confirmBtn"

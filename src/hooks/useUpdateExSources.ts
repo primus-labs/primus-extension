@@ -61,7 +61,7 @@ const useUpdateExSources = (flag = false) => {
       if (resType?.startsWith(`set-`)) {
         console.log(`page_get:${resType}:`, message.res, 'useUpdateExSources');
         const name = resType.split('-')[1];
-        setQueryObj((obj) => {
+        setQueryObj((obj = {}) => {
           if (name in (obj as object)) {
             return { ...obj, [name]: true };
           } else {
