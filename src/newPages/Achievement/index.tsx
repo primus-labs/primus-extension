@@ -208,7 +208,7 @@ const AchievementHome = memo(() => {
         onClose={handleCloseAssetDialog}
       />}
       {visibleReferralCodeDialog &&
-        <ReferralCodeInput onClose={handleReferralCodeClose} setReferralTaskFinished={handleReferralCodeTaskFinish} />}
+        <ReferralCodeInput onClose={handleReferralCodeClose}  showMsg={true} setReferralTaskFinished={handleReferralCodeTaskFinish} />}
       {visibleShareDiag && <ShareComponent onClose={handleSharePageClose} shareType={shareType}
                                            scoreShareProps={{ score: totalScore, referralCode: referralCode }} />}
     </div>

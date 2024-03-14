@@ -2,10 +2,10 @@ import React, { memo } from 'react';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import './index.scss';
-import { Input, Form } from 'antd';
 import PButton from '@/newComponents/PButton';
 import { finishTask } from '@/services/api/achievements';
 import useMsgs from '@/hooks/useMsgs';
+import PInput from '@/newComponents/PInput';
 
 // import { Button, Input } from 'antd';
 
@@ -13,14 +13,14 @@ interface PButtonProps {
   // sourceName: string;
   onClose: () => void;
   setReferralTaskFinished: any;
+  showMsg?: boolean;
   required?: boolean;
   onCancel?: () => void;
 }
 
 const ReferralCodeInput: React.FC<PButtonProps> = memo(
-  ({ onClose, setReferralTaskFinished, required = true, onCancel }) => {
+  ({ onClose, setReferralTaskFinished, showMsg,required = true, onCancel }) => {
     const [referralCode, setReferralCode] = React.useState('');
-    const [form] = Form.useForm();
     const { msgs, addMsg } = useMsgs();
     const PasteButton = () => {
       return <div> Paste </div>;
@@ -44,7 +44,6 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
           title: `Invalid referral code.`,
           link: '',
         });
-        form.submit;
         return;
       }
       const finishBody = {
@@ -61,11 +60,13 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
         });
         onClose();
         setReferralTaskFinished();
-        addMsg({
-          type: 'suc',
-          title: `10 points earned!`,
-          link: '',
-        });
+        if(showMsg) {
+          addMsg({
+            type: 'suc',
+            title: `10 points earned!`,
+            link: '',
+          });
+        }
         //set sign-in task item finished
       } else {
         alert(res.msg);
@@ -86,11 +87,10 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
             <div>
               <div className={'inputTitle'}>Referral Code</div>
               <div className={'inputComponent'}>
-                <Input
+                <PInput
                   className={'inputComponent'}
-                  defaultValue={referralCode}
                   value={referralCode}
-                  onChange={(e) => setReferralCode(e.target.value)}
+                  onChange={(e) => setReferralCode(e)}
                 />
                 {/*</Form.Item>*/}
                 <button onClick={handlePaste}>Paste</button>

@@ -57,6 +57,10 @@
         right: 10px;
       }
     }
+    .inputComponent:hover{
+      border-color: var(--brand-primary-color-bp-50);
+    }
+
     .confirmButton{
       margin-top: 1px;
       font-size: 14px;
