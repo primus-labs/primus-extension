@@ -186,10 +186,10 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         if (!res['discord']) {
           addMsg({
             type: 'info',
-            title: 'Data not connected',
-            desc: 'Go to Data Source page to connect.',
-            link: '/datas/data?dataSourceId=discord',
-            linkText: 'To connect',
+            title: 'Not qualified',
+            desc: 'Please complete the Join PADO Discord event first.',
+            link: '/achievements',
+            linkText: 'To complete',
           });
           return;
         }
