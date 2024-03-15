@@ -11,14 +11,10 @@
   }
 }
 .pFormWrapper.dataSourceNameForm {
-  
   .formItem {
     @include attestationForm;
     .dataSourceName {
-      @include inputSelectWidth(
-        var(--select-width),
-        var(--select-width)
-      );
+      @include inputSelectWidth(var(--select-width), var(--select-width));
     }
   }
 }

@@ -151,7 +151,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
-      if (!presets) {
+      if (!presets.verificationContent) {
         if (pswForm.verificationContent) {
           handleChangePswForm('', 'verificationValue');
         }

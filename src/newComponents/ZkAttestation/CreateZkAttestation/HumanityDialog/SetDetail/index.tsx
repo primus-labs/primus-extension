@@ -19,6 +19,7 @@ import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
 import PTooltip from '@/newComponents/PTooltip';
+import PInput from '@/newComponents/PInput';
 
 import './index.scss';
 type PswFormType = {
@@ -112,10 +113,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
-      if (!presets) {
+      if (!presets.verificationContent) {
         if (pswForm.verificationContent) {
           let newValue = '';
-          if (pswForm.verificationContent === 'Owns an account') {
+
+          if (pswForm.verificationContent === 'KYC Status') {
+            newValue = 'Basic Verification';
+          } else if (pswForm.verificationContent === 'Owns an account') {
             newValue = 'N/A';
           }
           handleChangePswForm(newValue, 'verificationValue');
@@ -157,26 +161,30 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           )}
         </div>
         <div
-          className={`formItem ${presets.verificationValue ? 'preset' : ''}`}
+          className={`formItem ${presets.verificationValue ? 'preset' : ''} ${
+            !presets.verificationContent && pswForm.verificationContent
+              ? 'hasDefaultValue'
+              : ''
+          }`}
         >
-          {presets.verificationValue ? (
+          {pswForm.verificationContent ? (
             <>
               <div className="label">Verification Value</div>
-              <div className="value">{presets.verificationValue}</div>
+              <div className="value">
+                {presets.verificationValue || pswForm.verificationValue}
+              </div>
             </>
           ) : (
-            <PSelect
+            <PInput
               className="verificationValue"
               label="Verification Value"
               align="horizontal"
-              placeholder="Select Value"
-              list={valueList}
+              placeholder="Input Value"
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationValue');
               }}
               value={pswForm.verificationValue}
-              disabled={presets?.verificationValue}
-              showSelf={false}
+              disabled={!pswForm.verificationContent}
             />
           )}
         </div>
