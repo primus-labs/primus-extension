@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
@@ -13,7 +13,7 @@ interface PBackProps {
   type: string;
   onClose: () => void;
   onSubmit: () => void;
-  presets?: any
+  presets?: any;
 }
 const PClose: React.FC<PBackProps> = memo(
   ({ type, onClose, onSubmit, presets }) => {
@@ -23,9 +23,14 @@ const PClose: React.FC<PBackProps> = memo(
     );
     // const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
     const { connected } = useCheckIsConnectedWallet(true);
+    const handleClose = useCallback(() => {
+      dispatch(setAttestLoading(0));
+      dispatch(setActiveAttestation({ loading: 0 }));
+      onClose();
+    }, [onClose]);
     useEffect(() => {
       if (attestLoading === 2) {
-        onSubmit()
+        onSubmit();
         dispatch(setAttestLoading(0));
         dispatch(setActiveAttestation({ loading: 0 }));
       }
@@ -38,7 +43,7 @@ const PClose: React.FC<PBackProps> = memo(
               <AssetDialog
                 presets={presets}
                 type={type}
-                onClose={onClose}
+                onClose={handleClose}
                 onSubmit={onSubmit}
               />
             )}
@@ -46,7 +51,7 @@ const PClose: React.FC<PBackProps> = memo(
               <HumanityDialog
                 presets={presets}
                 type={type}
-                onClose={onClose}
+                onClose={handleClose}
                 onSubmit={onSubmit}
               />
             )}
@@ -54,7 +59,7 @@ const PClose: React.FC<PBackProps> = memo(
               <OnChainDialog
                 presets={presets}
                 type={type}
-                onClose={onClose}
+                onClose={handleClose}
                 onSubmit={onSubmit}
               />
             )}

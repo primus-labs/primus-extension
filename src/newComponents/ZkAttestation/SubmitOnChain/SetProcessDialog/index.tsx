@@ -32,6 +32,13 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
       // });
       onClose && onClose();
     }, [onClose]);
+    const handleSubmit = useCallback(() => {
+      if (activeRequest?.btnTxt === 'Try Again') {
+        onSubmit && onSubmit();
+      } else {
+        onClose && onClose();
+      }
+    }, [onClose, onSubmit, activeRequest?.btnTxt]);
 
     return (
       <PMask>
@@ -62,13 +69,14 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
             <div className="descWrapper">
               <h5>{activeRequest?.title}</h5>
               <h6>{activeRequest?.desc}</h6>
+              {activeRequest?.code && <p>{activeRequest?.code}</p>}
             </div>
           </main>
           {(activeRequest?.type === 'suc' ||
             activeRequest?.type === 'fail') && (
             <PButton
-              text={activeRequest?.type === 'suc' ? 'Confirm' : 'Ok'}
-              onClick={handleClose}
+              text={activeRequest?.btnTxt ?? 'Ok'}
+              onClick={handleSubmit}
               className="fullWidth"
             />
           )}

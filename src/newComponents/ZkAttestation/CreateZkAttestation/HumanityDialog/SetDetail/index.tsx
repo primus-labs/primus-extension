@@ -92,15 +92,20 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const formLegal = useMemo(() => {
       return !!(pswForm.verificationContent && pswForm.verificationValue);
     }, [pswForm]);
-
+    const loading = useMemo(() => {
+      return formLegal && attestLoading === 1;
+    }, [formLegal, attestLoading]);
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
+        return;
+      }
+      if (loading) {
         return;
       }
       //different
       onSubmit(pswForm);
       return;
-    }, [formLegal, pswForm]);
+    }, [formLegal, pswForm, loading]);
 
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => ({ ...f, [formKey]: v }));

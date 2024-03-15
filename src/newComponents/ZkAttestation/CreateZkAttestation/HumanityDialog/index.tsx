@@ -41,7 +41,7 @@ interface PButtonProps {
 
 const Nav: React.FC<PButtonProps> = memo(
   ({ type, onClose, onSubmit, presets }) => {
-    const {msgs, addMsg} = useMsgs();
+    const { msgs, addMsg } = useMsgs();
     const authorize = useAuthorization2();
 
     const dispatch: Dispatch<any> = useDispatch();
@@ -243,10 +243,12 @@ const Nav: React.FC<PButtonProps> = memo(
           // loading: 1,
         };
         dispatch(setActiveAttestation(activeAttestationParams));
-
+        
         if (activeAttestationParams.dataSourceId === 'google') {
           await fetchAttestForGoogle(activeAttestationParams);
         } else {
+          dispatch(setAttestLoading(1));
+          dispatch(setActiveAttestation({ loading: 1 }));
           // 2.check web proof template
           // templateName
           const contentObj =
