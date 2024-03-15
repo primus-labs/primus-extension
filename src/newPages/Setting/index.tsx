@@ -230,28 +230,29 @@ const Setting = memo(() => {
             }}
           >
             {hadSetPwd && (
-              <Button
+              <PButton
                 className={'changePwdBtn'}
+                text={"Change Password"}
+                type="secondary"
                 onClick={() => {
                   setShowSetPwdDialog(true);
                   setPasswordDialogTitle('Change Password');
                   setIsChangePwd(true);
                 }}
-              >
-                Change Password
-              </Button>
+              />
+
             )}
             {!hadSetPwd && (
-              <Button
+              <PButton
                 className={'changePwdBtn'}
+                text={"Setup Password"}
+                type="secondary"
                 onClick={() => {
                   setShowSetPwdDialog(true);
                   setPasswordDialogTitle('Setup Password');
                   setIsChangePwd(false);
                 }}
-              >
-                Setup Password
-              </Button>
+              />
             )}
           </div>
         </div>

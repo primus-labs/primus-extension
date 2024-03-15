@@ -5,7 +5,6 @@ import PInput from '@/newComponents/PInput';
 import PButton from '@/newComponents/PButton';
 
 import { postMsg } from '@/utils/utils';
-import { initWalletAddressActionAsync } from '@/store/actions';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -30,7 +29,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ isChangePwd, onSubmit,
   });
   const dispatch: Dispatch<any> = useDispatch();
 
-  const [formLegal, setFormLegal] = useState(false);
+
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort,
   );
@@ -61,10 +60,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ isChangePwd, onSubmit,
       const currentRules = initalRules.map((rule: any) => {
         if (rule.reg.test(pswForm.password)) {
           rule.legal = 1;
-          setFormLegal(true);
         } else {
           rule.legal = 2;
-          setFormLegal(false);
         }
         return rule;
       });
@@ -84,6 +81,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ isChangePwd, onSubmit,
       confirmation: pswForm.confirmation ? (confirmationLegal ? 1 : 2) : 0,
     };
   }, [pwdRules, pswForm]);
+
+  const formLegal = useMemo(() => {
+    const Leagal = Object.values(formLegalObj).every((i) => i === 1);
+    return Leagal;
+  }, [formLegalObj]);
 
   const handleClickNext = useCallback(async () => {
     if (!pswForm.password || !confirm) {

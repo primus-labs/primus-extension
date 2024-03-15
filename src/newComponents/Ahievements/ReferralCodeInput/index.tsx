@@ -64,6 +64,7 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
           addMsg({
             type: 'suc',
             title: `10 points earned!`,
+            msg : "Sign-in using an referral code",
             link: '',
           });
         }

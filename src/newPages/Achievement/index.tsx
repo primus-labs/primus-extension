@@ -12,6 +12,7 @@ import ShareComponent from '@/newComponents/Ahievements/ShareComponent';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import { setConnectWalletDialogVisibleAction } from '@/store/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 const AchievementHome = memo(() => {
 
@@ -29,6 +30,9 @@ const AchievementHome = memo(() => {
   const [referrals, setReferrals] = useState(0);
   const [countedReferrals, setCountedReferrals] = useState(0);
   const [shareType, setShareType] = useState('');
+  //task need to be finished when go this page first time
+  const [taskToFinished, setTaskToFinished] = useState('');
+  const location = useLocation();
 
   const dispatch = useDispatch();
   const [connected, setConnected] = useState<boolean>(false);
@@ -41,6 +45,21 @@ const AchievementHome = memo(() => {
   // useEffect(() => {
   //   dispatch(setConnectWalletDialogVisibleAction(!connected));
   // }, [connected, dispatch]);
+
+
+
+  function queryParams() {
+    const searchParams = new URLSearchParams(location.search);
+    const taskName = searchParams.get('finishTask');
+    if(taskName){
+      setTaskToFinished(taskName);
+    }
+  }
+
+  useEffect(() => {
+    queryParams()
+  }, []);
+
 
   const onConnectWallet = async () => {
     if (!connected) {
@@ -101,7 +120,8 @@ const AchievementHome = memo(() => {
         refreshTotalScore: refreshTotalScoreFn,
         referralCode: referralCode,
         isConnect: connected,
-        onConnectWallet:onConnectWallet
+        onConnectWallet:onConnectWallet,
+        taskToFinished: taskToFinished
       };
       return <AchievementTaskItem key={index} {...taskItemWithClick} />;
     });

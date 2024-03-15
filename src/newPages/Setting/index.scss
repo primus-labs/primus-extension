@@ -66,12 +66,10 @@
         }
 
         .changePwdBtn{
+          width: 149px;
+          height: 32px;
           border-color: var(--neutral-color-gray-100);
 
-        }
-        .changePwdBtn:hover{
-          border-color: var(--brand-primary-color-bp-50);
-          color: var(--neutral-color-gray-100);
         }
       }
 
