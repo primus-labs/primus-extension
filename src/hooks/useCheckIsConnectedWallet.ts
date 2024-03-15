@@ -20,7 +20,6 @@ const useCheckIsConnectedWallet = function useCheckIsConnectedWallet(
   useEffect(() => {
     if (switchFlag) {
       dispatch(setConnectWalletDialogVisibleAction(!connected));
-      
     }
   }, [switchFlag,connected, dispatch]);
   return { connected };
