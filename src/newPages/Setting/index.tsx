@@ -98,9 +98,7 @@ const Setting = memo(() => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
     // @ts-ignore
     setHadSetPwd(!!keyStore);
-    if (isChangePwd) {
-      setShowInputPasswordDialog(true);
-    }
+    setShowInputPasswordDialog(true);
   };
 
   return (
