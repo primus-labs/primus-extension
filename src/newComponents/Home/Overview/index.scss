@@ -49,7 +49,7 @@
       .desc {
         @include frss;
         align-items: flex-end;
-        gap: var(--spacing-16);
+        gap: var(--spacing-24);
         .splicedIcons {
           // position: relative;
           > img {

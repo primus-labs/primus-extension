@@ -50,7 +50,7 @@ const PAlert: React.FC<Msg> = memo(
                 )}
               </h2>
             )}
-            {type === 'suc' && link && (
+            {link && (
               <PButton
                 text={linkText}
                 type="text2"

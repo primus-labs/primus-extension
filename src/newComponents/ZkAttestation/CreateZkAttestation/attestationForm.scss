@@ -16,12 +16,18 @@
     color: var(--text-tokens-text-tertiary);
   }
 }
-@mixin presetAttestationFormItem {
+@mixin plainTextFormItem {
   width: 100%;
   @include frbc;
   @include BodyBody100;
   .label {
     color: var(--text-tokens-text-tertiary);
+  }
+}
+
+@mixin hasPresetFormItem {
+  @include plainTextFormItem;
+  .label {
     @include frsc;
     gap: var(--spacing-4);
     .infoBtn {
@@ -52,18 +58,6 @@
   }
   .value {
     @include frsc;
-    height: var(--spacing-32);
-    border-radius: var(--spacing-4);
-    background: var(--border-tokens-border-chart);
-    padding: var(--spacing-4) var(--spacing-12);
-    .account {
-      @include BodyBody100;
-    }
-    .balance {
-      @include BodyBody300;
-      margin-left: var(--spacing-6);
-      color: var(--text-tokens-text-placeholder);
-    }
   }
 }
 @mixin attestationForm {
@@ -93,9 +87,6 @@
         gap: var(--spacing-8);
       }
     }
-  }
-  .confirmBtn {
-    margin-top: var(--spacing-8);
   }
 }
 
@@ -127,6 +118,16 @@
             }
           }
         }
+      }
+    }
+    .dataSourceNameForm {
+      .confirmBtn {
+        margin-top: var(--spacing-8);
+      }
+    }
+    .detailForm {
+      .confirmBtn {
+        margin-top: var(--spacing-16);
       }
     }
   }

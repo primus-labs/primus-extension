@@ -31,7 +31,7 @@ const Overview = memo(() => {
   const [itemMap, setItemMap] = useState<ItemMap>({
     dataSource: {
       id: 'dataSource',
-      title: 'Data connected',
+      title: 'Data Connected',
       num: 0,
       operationName: 'Connect Data Source',
       link: '/datas',

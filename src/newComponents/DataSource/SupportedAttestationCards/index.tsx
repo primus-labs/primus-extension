@@ -107,13 +107,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       <ul className="supportSttestationCards">
         {supportList.map((i) => {
           return (
-            <li
-              className="supportSttestationCard"
-              onClick={() => {
-                handleCreate(i);
-              }}
-              key={i.id}
-            >
+            <li className="supportSttestationCard" key={i.id}>
               <div className="left">
                 <img src={i.icon} alt="" />
                 <div className="introTxt">
