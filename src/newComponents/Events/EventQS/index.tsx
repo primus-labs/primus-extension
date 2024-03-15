@@ -70,7 +70,7 @@ const lineaQsMap = {
     id: 4,
     question: 'Can I join this event with a different wallet address? ',
     answer:
-      'Yes, you can join this event with different wallet address. When you change the connected wallet above the task list, the task status will reset and you can go through it with the newly connected wallet address. Remember, you also need to connect the new address on the BAS attestation alliance campaign page to earn your BAS XPS with this new address.',
+      'No, you cannot use another wallet address to join this event. As Linea requires an uniqueness Binance account binding requirement, only one Binance account can bind to one wallet address during the attestation process. If you have already complete this event using one wallet address, you will see “Not meet the uniqueness requirement” error message while using a different wallet address to join this event again.',
     expand: true,
   },
   5: {

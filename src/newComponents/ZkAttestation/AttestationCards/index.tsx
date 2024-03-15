@@ -322,12 +322,12 @@ const Cards: React.FC<PDropdownProps> = memo(
                         <div className="label">Result</div>
                         <div className="value">{getResult(i)}</div>
                       </div>
+                    </div>
+                    <div className="descItems">
                       <div className="descItem">
                         <div className="label">Data account</div>
                         <div className="value">{i.account}</div>
                       </div>
-                    </div>
-                    <div className="descItems">
                       <div className="descItem">
                         <div className="label">Create address</div>
                         <div className="value">
