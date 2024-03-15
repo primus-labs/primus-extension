@@ -67,7 +67,9 @@ const Cards: React.FC<PDropdownProps> = memo(
     const filterdList: any = useMemo(() => {
       const obj = { ...credentialsFromStore };
 
-      var newList = Object.values(obj);
+      var newList = Object.values(obj).sort((a: any, b: any) => {
+        return b.getDataTime - a.getDataTime;
+      });
       if (attestationQueryType && attestationQueryType !== 'All') {
         newList = newList.filter((i: any) => {
           return i.attestationType === attestationQueryType;
@@ -342,10 +344,13 @@ const Cards: React.FC<PDropdownProps> = memo(
                     <div className="descItems">
                       <div className="descItem">
                         <div className="label">
-                          On-chain
-                          {i.event
-                            ? `(${eventMetaMap[i.event].nameInAttestation})`
-                            : ''}
+                          <span>On-chain</span>
+
+                          <span>
+                            {i.event
+                              ? `(${eventMetaMap[i.event].nameInAttestation})`
+                              : ''}
+                          </span>
                         </div>
                         <div className="value onChain">
                           <div className="chains">
