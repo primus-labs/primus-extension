@@ -4,7 +4,8 @@
 @import '@/assets/newCss/dialog.scss';
 .pDialog2.ConnectWalletProcessDialog {
   padding: var(--spacing-24, 24px);
-  height: 384px;
+  min-height: 384px;
+  gap: var(--spacing-32);
   main {
     align-items: center;
     padding-top: var(--spacing-40);
@@ -50,6 +51,10 @@
       h6 {
         @include BodyBody100;
         text-align: center;
+      }
+      >p{
+        @include Hint;
+        color: rgba(0, 0, 0, 0.6)
       }
     }
   }

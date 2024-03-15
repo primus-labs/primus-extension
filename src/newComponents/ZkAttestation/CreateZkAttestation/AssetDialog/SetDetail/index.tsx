@@ -85,6 +85,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const formLegal = useMemo(() => {
       return !!(pswForm.verificationContent && pswForm.verificationValue);
     }, [pswForm]);
+    const loading = useMemo(() => {
+      return formLegal && attestLoading === 1;
+    }, [formLegal, attestLoading]);
     const totalBalanceForAttest = useMemo(() => {
       let totalBalance = '0';
       if (activeDataSouceUserInfo) {
@@ -107,6 +110,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     // })
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
+        return;
+      }
+      if (loading) {
         return;
       }
       if (
@@ -132,7 +138,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
       onSubmit(pswForm);
       return;
-    }, [formLegal, pswForm, activeDataSouceUserInfo, totalBalanceForAttest]);
+    }, [
+      formLegal,
+      pswForm,
+      activeDataSouceUserInfo,
+      totalBalanceForAttest,
+      loading,
+    ]);
 
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => {
@@ -196,7 +208,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         </div>
         <div className="formItem">
           {pswForm.verificationContent ? (
-            activeDataSouceUserInfo?.userInfo ? (
+            activeDataSouceUserInfo ? (
               <PSelect
                 className="verificationValue"
                 label="Verification Value"
@@ -270,7 +282,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           text={attestLoading === 3 ? 'Try Again' : 'Next'}
           className="fullWidth confirmBtn"
           disabled={!formLegal}
-          loading={formLegal && attestLoading === 1}
+          loading={loading}
           onClick={handleClickNext}
         ></PButton>
       </div>

@@ -95,13 +95,22 @@ const useAttest = function useAttest() {
         setTimeoutSwitch(true);
         setIntervalSwitch(true);
       } else if (retcode === '2') {
-        addMsg({
+        const msgObj = {
           type: 'error',
           title: 'Failed',
           desc: 'The algorithm has not been initialized.Please try again later.',
-        });
+        };
+        if (activeAttestation.dataSourceId === 'coinbase') {
+        } else {
+          addMsg(msgObj);
+        }
         dispatch(setAttestLoading(3));
-        dispatch(setActiveAttestation({ loading: 3 }));
+        dispatch(
+          setActiveAttestation({
+            loading: 3,
+            msgObj: { ...msgObj, btnTxt: 'Try Again' },
+          })
+        );
 
         // algorithm is not initialized
 
@@ -125,7 +134,7 @@ const useAttest = function useAttest() {
         eventReport(eventInfo);
       }
     },
-    [dispatch]
+    [dispatch, activeAttestation.dataSourceId]
   );
   const getAttestationResultCallback = useCallback(
     async (res: any) => {
@@ -184,12 +193,16 @@ const useAttest = function useAttest() {
           }
           setCredRequestId(activeRequestId);
           // suc
-          addMsg({
+          const msgObj = {
             type: 'suc',
             title: `${activeAttestation.attestationType} is created!`,
-          });
+          };
+          if (activeAttestation.dataSourceId === 'coinbase') {
+          } else {
+            addMsg(msgObj);
+          }
           dispatch(setAttestLoading(2));
-          dispatch(setActiveAttestation({ loading: 2 }));
+          dispatch(setActiveAttestation({ loading: 2, msgObj }));
 
           const uniqueId = strToHexSha256(fullAttestation.signature);
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
@@ -239,13 +252,22 @@ const useAttest = function useAttest() {
               });
             }
           }
-          addMsg({
+          const msgObj = {
             type: 'error',
             title: titleItem1,
             desc: descEl,
-          });
+          };
+          if (activeAttestation.dataSourceId === 'coinbase') {
+          } else {
+            addMsg(msgObj);
+          }
           dispatch(setAttestLoading(3));
-          dispatch(setActiveAttestation({ loading: 3 }));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { ...msgObj, btnTxt: 'Try Again' },
+            })
+          );
           // setActiveRequest({
           //   type: 'warn',
           //   title: titleItem1,
@@ -260,6 +282,7 @@ const useAttest = function useAttest() {
           eventReport(eventInfo);
         }
       } else if (retcode === '2') {
+        clearFetchAttestationTimer()
         const {
           errlog: { code, desc },
         } = details;
@@ -369,9 +392,21 @@ const useAttest = function useAttest() {
             };
             break;
         }
-        addMsg(requestResObj);
+
+        const msgObj = {
+          ...requestResObj,
+        };
+        if (activeAttestation.dataSourceId === 'coinbase') {
+        } else {
+          addMsg(msgObj);
+        }
         dispatch(setAttestLoading(3));
-        dispatch(setActiveAttestation({ loading: 3 }));
+        dispatch(
+          setActiveAttestation({
+            loading: 3,
+            msgObj: { ...msgObj, btnTxt: 'Try Again' },
+          })
+        );
         if (
           retdesc.indexOf('connect to proxy error') > -1 ||
           retdesc.indexOf('WebSocket On Error') > -1 ||
@@ -440,13 +475,24 @@ const useAttest = function useAttest() {
         },
       });
     }
-    addMsg({
+    const msgObj = 
+      {
       type: 'error',
       title: 'Request Timed Out',
       desc: 'The service did not respond within the expected time. Please try again later.',
-    });
+    }
+    
+    if (activeAttestation.dataSourceId === 'coinbase') {
+    } else {
+      addMsg(msgObj);
+    }
     dispatch(setAttestLoading(3));
-    dispatch(setActiveAttestation({ loading: 3 }));
+    dispatch(
+      setActiveAttestation({
+        loading: 3,
+        msgObj: { ...msgObj, btnTxt: 'Try Again' },
+      })
+    );
 
     var eventInfo: any = {
       eventType: 'ATTESTATION_GENERATE',
@@ -468,7 +514,7 @@ const useAttest = function useAttest() {
     };
     console.log('after timeout port', padoServicePort);
     postMsg(padoServicePort, msg);
-  }, [padoServicePort, clearFetchAttestationTimer]);
+  }, [padoServicePort, clearFetchAttestationTimer,activeAttestation]);
   const intervalFn = useCallback(() => {
     const msg = {
       fullScreenType: 'algorithm',
@@ -480,7 +526,7 @@ const useAttest = function useAttest() {
   }, [padoServicePort]);
   useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
-  
+
   useEffect(() => {
     const listerFn = (message: any) => {
       const { type, name } = message;
@@ -494,8 +540,8 @@ const useAttest = function useAttest() {
           dispatch(setAttestLoading(3));
           dispatch(setActiveAttestation({ loading: 3 }));
         } else if (name === 'start') {
-          dispatch(setAttestLoading(1));
-          dispatch(setActiveAttestation({ loading: 1 }));
+          // dispatch(setAttestLoading(1));
+          // dispatch(setActiveAttestation({ loading: 1 }));
         } else if (name === 'stop') {
           if (attestLoading === 1) {
             addMsg({
