@@ -9,7 +9,6 @@ import AchievementRewardHistory from '@/newComponents/Ahievements/AchievementRew
 import { Pagination } from 'antd';
 import ReferralCodeInput from '@/newComponents/Ahievements/ReferralCodeInput';
 import ShareComponent from '@/newComponents/Ahievements/ShareComponent';
-import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import { setConnectWalletDialogVisibleAction } from '@/store/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';

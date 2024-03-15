@@ -1,26 +1,28 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setActiveOnChain } from '@/store/actions'
+import { setActiveOnChain } from '@/store/actions';
+import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import Banner from '@/newComponents/Home/Banner';
-import Slider from '@/newComponents/Events/Slider'
+import Slider from '@/newComponents/Events/Slider';
 import AttestationTypeList from '@/newComponents/ZkAttestation/AttestationTypeList';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 import AttestationCards from '@/newComponents/ZkAttestation/AttestationCards';
 import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
-import Search from '@/newComponents/ZkAttestation/Search'
+import Search from '@/newComponents/ZkAttestation/Search';
 import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
 
 import './index.scss';
 
-
 const Home = memo(() => {
-  const dispatch:Dispatch<any> = useDispatch()
+  useCheckIsConnectedWallet(true);
+  const dispatch: Dispatch<any> = useDispatch();
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
-  const [visibleOnChainDialog, setVisibleOnChainDialog] = useState<boolean>(false);
+  const [visibleOnChainDialog, setVisibleOnChainDialog] =
+    useState<boolean>(false);
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
@@ -29,14 +31,14 @@ const Home = memo(() => {
   const hasConnected = useMemo(() => {
     return Object.keys(credentialsFromStore).length > 0;
   }, [credentialsFromStore]);
-  
+
   const handleCreate = useCallback((typeItem) => {
     setVisibleAssetDialog(typeItem.id);
   }, []);
   const handleCloseAssetDialog = useCallback(() => {
     setVisibleAssetDialog('');
   }, []);
-  const handleSubmitAssetDialog = useCallback(() => { }, []);
+  const handleSubmitAssetDialog = useCallback(() => {}, []);
   const handleCloseOnChainDialog = useCallback(() => {
     // setVisibleOnChainDialog(false);
     dispatch(setActiveOnChain({ loading: 0 }));
@@ -54,7 +56,7 @@ const Home = memo(() => {
     <div className="pageZkAttestation">
       <div className="pageContent">
         {/* <Banner /> */}
-        <Slider/>
+        <Slider />
         <AttestationTypeList onClick={handleCreate} />
         {hasConnected && <Search />}
         {hasConnected ? (

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setActiveOnChain } from '@/store/actions'
+import { setActiveOnChain } from '@/store/actions';
+import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import CurrentEvents from '@/newComponents/Events/CurrentEvents';
@@ -10,9 +11,11 @@ import PastEvents from '@/newComponents/Events/PastEvents';
 import './index.scss';
 
 const Home = memo(() => {
-  const dispatch:Dispatch<any> = useDispatch()
+  useCheckIsConnectedWallet(true);
+  const dispatch: Dispatch<any> = useDispatch();
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
-  const [visibleOnChainDialog, setVisibleOnChainDialog] = useState<boolean>(false);
+  const [visibleOnChainDialog, setVisibleOnChainDialog] =
+    useState<boolean>(false);
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
@@ -21,12 +24,12 @@ const Home = memo(() => {
   const hasConnected = useMemo(() => {
     return Object.keys(credentialsFromStore).length > 0;
   }, [credentialsFromStore]);
-  
+
   return (
     <div className="pageEvents">
       <div className="pageContent">
         <CurrentEvents />
-        <PastEvents/>
+        <PastEvents />
       </div>
     </div>
   );
