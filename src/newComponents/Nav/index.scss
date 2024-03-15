@@ -18,7 +18,9 @@
       @include HeadlineH3;
       color: var(--text-tokens-text-primary, #161616);
       cursor: pointer;
-      &:hover,
+      &:hover{
+        @include HeadlineH2;
+      }
       &.active {
         @include HeadlineH2;
         background: var(--background-tokens-background-navi-selected, #e8ffff);

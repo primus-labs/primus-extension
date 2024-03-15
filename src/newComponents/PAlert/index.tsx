@@ -41,9 +41,9 @@ const PAlert: React.FC<Msg> = memo(
         <main>
           <i className={`iconfont ${activeIconName} resultIcon`}></i>
           <div className="content">
-            <h1>{title}</h1>
+            <h1 className="title">{title}</h1>
             {desc && (
-              <h2>
+              <h2 className="descWrapper">
                 <span className="desc">{desc}</span>
                 {type === 'warn' && code && (
                   <span className="code">&nbsp;Error code:{code}</span>
