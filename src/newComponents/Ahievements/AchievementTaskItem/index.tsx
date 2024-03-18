@@ -188,8 +188,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
             type: 'info',
             title: 'Not qualified',
             desc: 'Please complete the Join PADO Discord event first.',
-            link: '/achievements',
-            linkText: 'To complete',
+            link: '',
           });
           return;
         }
