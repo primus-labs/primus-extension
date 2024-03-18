@@ -17,6 +17,7 @@ import useEventDetail from '@/hooks/useEventDetail';
 import useAlgorithm from '@/hooks/useAlgorithm';
 import useTimeout from '@/hooks/useTimeout';
 import useInterval from '@/hooks/useInterval';
+import useAllSources from '@/hooks/useAllSources';
 import { eventReport } from '@/services/api/usertracker';
 import { postMsg, strToHex, base64ToHex, strToHexSha256 } from '@/utils/utils';
 
@@ -39,6 +40,7 @@ import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 const useAttest = function useAttest() {
+  const { sourceMap2 } = useAllSources();
   const { msgs, addMsg } = useMsgs();
   const dispatch: Dispatch<any> = useDispatch();
   const [searchParams] = useSearchParams();
@@ -169,6 +171,7 @@ const useAttest = function useAttest() {
             ...content,
             ...parsedActiveRequestAttestation,
             ...activeAttestation,
+            account: sourceMap2[activeAttestation.dataSourceId].userInfo.userName,
           };
 
           const credentialsObj = { ...credentialsFromStore };
@@ -282,7 +285,7 @@ const useAttest = function useAttest() {
           eventReport(eventInfo);
         }
       } else if (retcode === '2') {
-        clearFetchAttestationTimer()
+        clearFetchAttestationTimer();
         const {
           errlog: { code, desc },
         } = details;
@@ -446,6 +449,7 @@ const useAttest = function useAttest() {
       initCredList,
       credentialsFromStore,
       activeAttestation,
+      sourceMap2,
     ]
   );
   useAlgorithm(
@@ -475,13 +479,12 @@ const useAttest = function useAttest() {
         },
       });
     }
-    const msgObj = 
-      {
+    const msgObj = {
       type: 'error',
       title: 'Request Timed Out',
       desc: 'The service did not respond within the expected time. Please try again later.',
-    }
-    
+    };
+
     if (activeAttestation.dataSourceId === 'coinbase') {
     } else {
       addMsg(msgObj);
@@ -514,7 +517,7 @@ const useAttest = function useAttest() {
     };
     console.log('after timeout port', padoServicePort);
     postMsg(padoServicePort, msg);
-  }, [padoServicePort, clearFetchAttestationTimer,activeAttestation]);
+  }, [padoServicePort, clearFetchAttestationTimer, activeAttestation]);
   const intervalFn = useCallback(() => {
     const msg = {
       fullScreenType: 'algorithm',

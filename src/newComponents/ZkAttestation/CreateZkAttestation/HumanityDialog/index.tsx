@@ -330,6 +330,7 @@ const Nav: React.FC<PButtonProps> = memo(
         setStep(2);
       }
     }, [presets]);
+    
     return (
       <PMask>
         {/* onClose={onClose} closeable={!fromEvents} */}

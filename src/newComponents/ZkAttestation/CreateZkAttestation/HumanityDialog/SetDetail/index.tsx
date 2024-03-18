@@ -35,9 +35,11 @@ interface SetPwdDialogProps {
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, presets }) => {
     const { dataSourceId } = presets;
-    const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
-    console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
+    // const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
+    // console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
     const dispatch: Dispatch<any> = useDispatch();
+    const [activeDataSouceUserInfo, setActiveDataSouceUserInfo] =
+      useState<any>();
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',
       verificationValue: '',
@@ -134,6 +136,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     useEffect(() => {
       setPswForm(presets);
     }, [presets]);
+    const initActiveDataSouceUserInfo = useCallback(async () => {
+      const res = await chrome.storage.local.get([dataSourceId]);
+      if (res[dataSourceId]) {
+        setActiveDataSouceUserInfo(JSON.parse(res[dataSourceId]));
+      }
+    }, []);
+    useEffect(() => {
+      initActiveDataSouceUserInfo();
+    }, []);
     return (
       <div className="pFormWrapper detailForm3">
         <div

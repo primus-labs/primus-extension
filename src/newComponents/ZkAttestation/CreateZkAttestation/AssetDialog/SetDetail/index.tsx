@@ -22,6 +22,7 @@ import PTooltip from '@/newComponents/PTooltip';
 import PInput from '@/newComponents/PInput';
 
 import './index.scss';
+import useAllSources from '@/hooks/useAllSources';
 type PswFormType = {
   dataSourceId: string;
   verificationContent: string;
@@ -36,8 +37,10 @@ interface SetPwdDialogProps {
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, presets }) => {
     const dataSourceId = presets.dataSourceId;
-    const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
-    console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
+    // const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
+    // console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
+    const [activeDataSouceUserInfo, setActiveDataSouceUserInfo] =
+      useState<any>();
     const dispatch: Dispatch<any> = useDispatch();
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',
@@ -49,6 +52,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       (state: UserState) => state.attestLoading
     );
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
+
     const contentList = useMemo(() => {
       let supportedContentIdArr: any = [];
 
@@ -174,6 +178,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         setPswForm((f) => ({ ...f, ...presets }));
       }
     }, [presets]);
+    const initActiveDataSouceUserInfo = useCallback(async () => {
+      const res = await chrome.storage.local.get([dataSourceId]);
+      if (res[dataSourceId]) {
+        setActiveDataSouceUserInfo(JSON.parse(res[dataSourceId]));
+      }
+    }, []);
+    useEffect(() => {
+      initActiveDataSouceUserInfo();
+    }, []);
 
     return (
       <div className="pFormWrapper detailForm">
@@ -249,7 +262,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             />
           )}
         </div>
-        {activeDataSouceUserInfo?.userInfo && (
+        {!!activeDataSouceUserInfo?.userInfo && (
           <div className="staticItem">
             <label className="label">
               <span>Data Account</span>
