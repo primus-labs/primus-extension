@@ -209,7 +209,10 @@ const DataSourceItem = memo(() => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
-  let stepMap = { ...eventTaskMap[eventId] };
+  const [stepMap, setStepMap] = useState<any>(
+    JSON.parse(JSON.stringify(eventTaskMap[eventId]))
+  );
+  // let stepMap = JSON.parse(JSON.stringify(eventTaskMap[eventId]));
   const eventDetail = useEventDetail(eventId);
   const dispatch: Dispatch<any> = useDispatch();
   const metaInfo = eventMetaMap[eventId];
@@ -218,7 +221,7 @@ const DataSourceItem = memo(() => {
   });
   const [visibleAttestationTasksDialog, setVisibleAttestationTasksDialog] =
     useState<boolean>(false);
-  const [stepList, setStepList] = useState<any[]>([]);
+  // const [stepList, setStepList] = useState<any[]>([]);
   const [activeTaskId, setActiveTaskId] = useState<string>();
 
   const [visibleSocialTasksDialog, setVisibleSocialTasksDialog] =
@@ -231,7 +234,9 @@ const DataSourceItem = memo(() => {
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
-
+  const stepList = useMemo(() => {
+    return Object.values(stepMap);
+  }, [stepMap]);
   const taskIds = useMemo(() => {
     let l: string[] = [];
     if (eventId === LINEAEVENTNAME) {
@@ -374,6 +379,7 @@ const DataSourceItem = memo(() => {
 
       if (lastInfo) {
         const { taskMap } = lastInfo;
+        const newStepMap = {...stepMap}
         const statusM = Object.keys(taskMap).reduce((prev, curr) => {
           const currTask = taskMap[curr];
           // tasksProcess
@@ -384,17 +390,18 @@ const DataSourceItem = memo(() => {
             ).length;
             const allDone = taskLen === doneTaskLen;
 
-            stepMap[curr].tasksProcess.total = taskLen;
-            stepMap[curr].tasksProcess.current = doneTaskLen;
-            stepMap[curr].finished = allDone;
+            newStepMap[curr].tasksProcess.total = taskLen;
+            newStepMap[curr].tasksProcess.current = doneTaskLen;
+            newStepMap[curr].finished = allDone;
 
             prev[curr] = allDone ? 1 : 0;
           }
           return prev;
         }, {});
+        setStepMap(newStepMap);
         setTaskStatusMap({ ...statusM });
       } else {
-        stepMap = { ...eventTaskMap[eventId] };
+        setStepMap(JSON.parse(JSON.stringify(eventTaskMap[eventId])));
         setTaskStatusMap({ ...initStatusMap });
       }
     }
@@ -436,9 +443,9 @@ const DataSourceItem = memo(() => {
       initTaskStatus();
     }
   }, [activeOnChain.loading, initTaskStatus]);
-  useEffect(() => {
-    setStepList(Object.values(stepMap));
-  }, []);
+  // useEffect(() => {
+  //   setStepList(Object.values(stepMap));
+  // }, []);
 
   return (
     <div className="eventTaskList">
