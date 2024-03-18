@@ -89,7 +89,7 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
               <div className={'inputTitle'}>Referral Code</div>
               <div className={'inputComponent'}>
                 <PInput
-                  className={'inputComponent'}
+                  className={'CodeInput'}
                   value={referralCode}
                   onChange={(e) => setReferralCode(e)}
                 />

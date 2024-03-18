@@ -44,6 +44,11 @@
       width: 400px;
       height: 40px;
       margin-top:3px;
+      & * .inputWrapper{
+        margin-top:3px;
+        width: 400px;
+        height: 40px;
+      }
 
       button {
         position: absolute;
@@ -52,7 +57,7 @@
         color: var(--text-tokens-text-primary, #161616);
         letter-spacing: 0.16px;
         font-weight: 500;
-        margin-top: 15px;
+        margin-top: 13px;
         right: 10px;
       }
     }
