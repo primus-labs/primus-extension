@@ -52,7 +52,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       }
       if (dataSourceQueryStr) {
         newList = list.filter((i) => {
-          const curName = i.showName ?? i.name;
+          const curName = i.name;
           const lowerCaseName = curName.toLowerCase();
           return lowerCaseName.startsWith(dataSourceQueryStr);
         });

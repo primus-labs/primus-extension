@@ -32,7 +32,7 @@ const useSource = (sourceName: string) => {
   const { sourceList, sourceMap: allSourceMap } = useAllSources();
   var activeDataSouceMetaInfo = useMemo(() => {
     var obj =
-      DataSouces.find((i) => i.name.toLowerCase() === lowerCaseName) || {};
+      DataSouces.find((i) => i.id.toLowerCase() === lowerCaseName) || {};
     return obj as DataSourceItemType;
   }, [lowerCaseName]);
   const activeSourceInfo: any = useMemo(() => {

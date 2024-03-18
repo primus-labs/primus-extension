@@ -132,7 +132,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
   },
   google: {
     id: 'google',
-    name: 'Google',
+    name: 'Google Account',
 
     type: 'Social',
     icon: iconDataSourceGoogle,

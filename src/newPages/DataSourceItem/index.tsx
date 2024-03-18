@@ -111,7 +111,7 @@ const DataSourceItem = memo(() => {
     setVisibleAssetDialog('');
   }, []);
   const handleAttest = useCallback((i) => {
-    setVisibleAssetDialog(i.attestationType)
+    setVisibleAssetDialog(i.attestationType);
     const presetsP = Object.keys({
       verificationContent: '',
       verificationValue: '',
@@ -138,10 +138,7 @@ const DataSourceItem = memo(() => {
           <div className="dataSourceBrief">
             <div className="introTxt">
               <div className="title">
-                <div className="name">
-                  {activeDataSouceMetaInfo?.showName ??
-                    activeDataSouceMetaInfo?.name}
-                </div>
+                <div className="name">{activeDataSouceMetaInfo?.name}</div>
                 <PTag
                   text={`${activeDataSouceMetaInfo?.type} Data`}
                   color="brand"

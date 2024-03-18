@@ -646,7 +646,7 @@ const Nav: React.FC<PButtonProps> = memo(
         setActiveSendToChainRequest({
           type: 'loading',
           title: 'Requesting Connection',
-          desc: 'Check your wallet to confirm the connection and submit your attestation to Linea.',
+          desc: `Check your wallet to confirm the connection and submit your attestation to ${EASInfo[cId].showName}.`,
         });
         if (cId !== 'BNB Greenfield') {
           await dispatch(setActiveConnectWallet({ network: EASInfo[cId] }));

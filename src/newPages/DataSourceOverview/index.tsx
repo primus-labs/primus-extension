@@ -6,7 +6,7 @@ import Banner from '@/newComponents/DataSource/Banner';
 import './index.scss';
 
 const DataSourceOverview = memo(() => {
-  useCheckIsConnectedWallet(true);
+  // useCheckIsConnectedWallet(true);
   return (
     <div className="pageDataSource">
       <div className="pageContent">
