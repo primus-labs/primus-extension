@@ -3,13 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
-
-import useAuthorization from '@/hooks/useAuthorization';
-import {
-  setSocialSourcesAsync,
-  setConnectWalletDialogVisibleAction,
-} from '@/store/actions';
-import { DATASOURCEMAP } from '@/config/dataSource';
 import { eventMetaMap } from '@/config/events';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';

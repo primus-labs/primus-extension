@@ -51,6 +51,7 @@
       h6 {
         @include BodyBody100;
         text-align: center;
+        color: var(--text-tokens-text-secondary);
       }
       >p{
         @include Hint;

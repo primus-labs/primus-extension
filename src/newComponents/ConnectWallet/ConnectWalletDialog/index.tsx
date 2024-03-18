@@ -46,10 +46,6 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
       
     }, []);
     const handleClose = useCallback(() => {
-      // dispatch({
-      //   type: 'setConnectWalletDialogVisible',
-      //   payload: false,
-      // });
       onClose && onClose();
     }, [onClose]);
     const handleChangeWallet = useCallback(

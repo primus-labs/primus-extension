@@ -47,9 +47,6 @@ const AchievementHome = memo(() => {
   useEffect(() => {
     setConnected(!!connectedWallet?.address && !activeConnectWallet?.network);
   }, [connectedWallet?.address, activeConnectWallet?.network]);
-  // useEffect(() => {
-  //   dispatch(setConnectWalletDialogVisibleAction(!connected));
-  // }, [connected, dispatch]);
 
   function queryParams() {
     const searchParams = new URLSearchParams(location.search);
@@ -65,7 +62,7 @@ const AchievementHome = memo(() => {
 
   const onConnectWallet = async () => {
     if (!connected) {
-      await dispatch(setConnectWalletDialogVisibleAction(!connected));
+      await dispatch(setConnectWalletDialogVisibleAction(connected?0:1));
       await getAchievementTaskListFn(current);
     }
   };

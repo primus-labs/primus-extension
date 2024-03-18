@@ -39,13 +39,13 @@ const useConnect: UseInterval = function useConnect(
         await dispatch(
           setConnectWalletActionAsync({ id: type,name: type, address, provider })
         );
-        await dispatch(setConnectWalletDialogVisibleAction(false));
+        await dispatch(setConnectWalletDialogVisibleAction(0));
         return;
       }
       // TODO
       const handler = () => savedCallback.current();
       handler();
-      await dispatch(setConnectWalletDialogVisibleAction(true));
+      await dispatch(setConnectWalletDialogVisibleAction(1));
       const timestamp: string = +new Date() + '';
       const signature = await requestSign(address, timestamp);
 
@@ -65,7 +65,7 @@ const useConnect: UseInterval = function useConnect(
         await dispatch(
           setConnectWalletActionAsync({ id:type,name: type, address, provider })
         );
-        await dispatch(setConnectWalletDialogVisibleAction(false));
+        await dispatch(setConnectWalletDialogVisibleAction(0));
       }
     } catch (e) {
       console.log('useConnect catch e=', e);

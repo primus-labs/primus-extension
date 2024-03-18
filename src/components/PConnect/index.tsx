@@ -18,9 +18,7 @@ const PConnect = memo(() => {
     useState<boolean>(false);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [step, setStep] = useState<number>(1);
-  const connectWalletDialogVisible = useSelector(
-    (state: UserState) => state.connectWalletDialogVisible
-  );
+  
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );

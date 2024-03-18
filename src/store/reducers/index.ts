@@ -86,7 +86,7 @@ const initState = {
   rewards: {},
   effective: true,
   onChainAssetsSources: {},
-  connectWalletDialogVisible: false,
+  connectWalletDialogVisible: 0,
   activeConnectWallet: {}, // connect wallet in process
   requireFetchAssets: false,
   connectedWallet: null, // user connected

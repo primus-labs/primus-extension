@@ -52,7 +52,7 @@ const ConnectDataSource: React.FC = memo(({}) => {
         })
       );
       await dispatch({ type: 'setRequireFetchAssets', payload: true });
-      dispatch(setConnectWalletDialogVisibleAction(true));
+      dispatch(setConnectWalletDialogVisibleAction(1));
       return;
     }
     if (activeConnectType === 'API') {

@@ -83,7 +83,7 @@ export type UserState = {
   rewards: Rewards;
   effective: boolean;
   onChainAssetsSources: onChainAssetsDatas;
-  connectWalletDialogVisible: boolean;
+  connectWalletDialogVisible: number; // 0| 1| 2
   activeConnectWallet: activeConnectWalletRequest;
   requireFetchAssets: boolean;
   connectedWallet: ConnectedWallet;
