@@ -2,6 +2,9 @@
 @import '@/assets/newCss/font.scss';
 
 .sidebar {
+  position: fixed;
+  left: 0;
+  left: 0;
   @include fcbs;
   width: 240px;
   height: 100%;

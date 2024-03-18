@@ -470,7 +470,6 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (res.rc === 0) {
         const points =
           res.result.points !== 0 ? res.result.points : taskItem.taskXpScore;
-        debugger
         addMsg({
           type: 'suc',
           title: `${points} points earned!`,

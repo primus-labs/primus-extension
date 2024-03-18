@@ -54,8 +54,11 @@
           // position: relative;
           > img {
             width: var(--spacing-34);
-            // position: absolute;
-            // bottom: 0;
+            @for $i from 1 through 6 {
+              &:nth-child(#{$i}) {
+                left: calc(-1 * ($i - 1) * var(--spacing-4));
+              }
+            }
           }
           .hideCircle {
             width: var(--spacing-34);

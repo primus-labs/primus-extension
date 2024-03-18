@@ -1,17 +1,5 @@
-import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
-import { ONEMINUTE } from '@/config/constants';
-import { DATASOURCEMAP } from '@/config/dataSource';
-import { getProofTypes } from '@/services/api/config';
-import { connectWallet, requestSign } from '@/services/wallets/metamask';
-import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
-import {
-  SCROLLEVENTNAME,
-  BASEVENTNAME,
-  LINEAEVENTNAME,
-  LUCKYDRAWEVENTNAME,
-} from '@/config/events';
-import { WALLETMAP } from '@/config/wallet';
 import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
+import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import {
   bindConnectedWallet,
   checkIfBindConnectedWallet,
@@ -19,11 +7,22 @@ import {
 import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
 import { getAssetsOnChains } from '@/services/api/dataSource';
 import { eventReport } from '@/services/api/usertracker';
+import { ONEMINUTE } from '@/config/constants';
+import { DATASOURCEMAP } from '@/config/dataSource';
+import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import { getProofTypes } from '@/services/api/config';
+import {
+  SCROLLEVENTNAME,
+  BASEVENTNAME,
+  LINEAEVENTNAME,
+  LUCKYDRAWEVENTNAME,
+} from '@/config/events';
+import { WALLETMAP } from '@/config/wallet';
 // import { EASInfo } from '@/config/chain';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import type { PROOFTYPEITEM } from '@/types/cred';
-
+import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
 type ExInfo = {

@@ -29,7 +29,7 @@ const Nav: React.FC = memo(({}) => {
 
   return (
     <div className="pageHeader">
-      {pathname.startsWith('/events') ? (
+      {pathname.startsWith('/events') && !pathname.startsWith('/events/detail') ? (
         <PPTabs
           list={tList}
           onChange={(ppp) => {

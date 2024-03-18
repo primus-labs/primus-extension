@@ -14,6 +14,8 @@
   //   top: 0;
   // }
   .pageRight {
+    width: calc(100% - 240px);
+    margin-left: 240px;
     @include fcbs;
     flex: 1;
     // height: 100vh;

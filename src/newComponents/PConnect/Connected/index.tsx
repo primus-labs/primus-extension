@@ -9,7 +9,10 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import { formatAddress } from '@/utils/utils';
 import { WALLETMAP } from '@/config/wallet';
-import { setConnectWalletActionAsync } from '@/store/actions';
+import {
+  setConnectWalletActionAsync,
+  setConnectedWalletsActionAsync,
+} from '@/store/actions';
 
 import PButton from '@/newComponents/PButton';
 import iconClose from '@/assets/newImg/layout/iconClose.svg';
@@ -41,19 +44,44 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
   const handleConnectOther = () => {
     switchAccount(connectedWallet?.provider);
   };
-  const handleDisConnect = () => {
-    dispatch(setConnectWalletActionAsync(undefined));
+  const handleDisConnect = async (wk, addrK) => {
+    // console.log('222', wk, addrK);
+    const newrecords = { ...connectedWallets };
+    delete newrecords[wk][addrK];
+    if (Object.keys(newrecords[wk]).length === 0) {
+      delete newrecords[wk];
+    }
+    const firstWK = Object.keys(newrecords).filter((i) => i !== 'undefined')[0];
+    if (firstWK) {
+      const firstAddrK = Object.keys(connectedWallets[firstWK])[0];
+      await dispatch(
+        setConnectWalletActionAsync({
+          id: 'metamask',
+          name: 'MetaMask',
+          address: firstAddrK,
+          provider: connectedWallet?.provider,
+        })
+      );
+    } else {
+      await dispatch(setConnectWalletActionAsync(undefined));
+    }
+    await chrome.storage.local.set({
+      connectedWallets: JSON.stringify(newrecords),
+    });
+    await dispatch(setConnectedWalletsActionAsync());
   };
   const handleChangeAddress = (addr: any) => {
     if (addr === connectedWallet?.address) {
       return;
     }
-    dispatch(setConnectWalletActionAsync({
-      id: "metamask",
-      name: "MetaMask",
-      address: addr,
-      provider: connectedWallet?.provider,
-    }));
+    dispatch(
+      setConnectWalletActionAsync({
+        id: 'metamask',
+        name: 'MetaMask',
+        address: addr,
+        provider: connectedWallet?.provider,
+      })
+    );
   };
 
   return (
@@ -65,8 +93,8 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
       <div className="historyWrapper">
         <ul className="walletItems">
           {Object.keys(connectedWallets)
-            .filter((wK) => wK!=='undefined')
-            .map((wK,k) => {
+            .filter((wK) => wK !== 'undefined')
+            .map((wK, k) => {
               return (
                 <li className="walletItem" key={k}>
                   <div className="recordItem">
@@ -79,9 +107,13 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                       <span>{WALLETMAP[wK]?.name}</span>
                     </div>
                   </div>
-                  {Object.keys(connectedWallets[wK])?.map((addrK) => {
+                  {Object.keys(connectedWallets[wK])?.map((addrK, addrKIdx) => {
                     return (
-                      <div className="recordItem addressItem" onClick={()=>handleChangeAddress(addrK)}>
+                      <div
+                        className="recordItem addressItem"
+                        onClick={() => handleChangeAddress(addrK)}
+                        key={addrKIdx}
+                      >
                         <div className="left">
                           {addrK === connectedWallet?.address ? (
                             <i className="iconfont icon-Legal"></i>
@@ -95,7 +127,9 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                             src={iconClose}
                             alt=""
                             className="right iconClose"
-                            onClick={handleDisConnect}
+                            onClick={() => {
+                              handleDisConnect(wK, addrK);
+                            }}
                           />
                         )}
                       </div>

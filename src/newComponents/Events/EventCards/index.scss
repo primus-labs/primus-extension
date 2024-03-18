@@ -29,6 +29,7 @@
           height: 100%;
           background-repeat: no-repeat;
           background-image: url('~@/assets/newImg/events/bgCombineType0.svg');
+          background-size: contain;
           &.combine {
             background-image: url('~@/assets/newImg/events/bgCombineType1.svg');
           }
@@ -37,7 +38,7 @@
           @include HeadlineH3;
           padding-left: var(--spacing-40);
           .splicedIcons {
-            margin-right: calc(-1* var(--spacing-8));
+            margin-right: calc(-1 * var(--spacing-8));
             > img {
               width: var(--spacing-52);
             }
