@@ -4,12 +4,15 @@
   .slick-slider {
     .slick-list .slick-slide > div {
       // padding-top: 33px;
-      > img {
+      .sliderImg {
         width: 100%;
+        height: auto;
+        cursor: pointer;
       }
     }
     .slick-dots {
-      bottom: -12px;
+      bottom: 130px;
+      height: 0;
     }
   }
 }

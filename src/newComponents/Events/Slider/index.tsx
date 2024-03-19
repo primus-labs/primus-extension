@@ -34,7 +34,8 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
       // link: `/events/detail?id=BAS_EVENT_PROOF_OF_HUMANITY`,
     },
   };
-  const handleClick = (i) => {
+  const handleClick = (i: any) => {
+    debugger;
     navigate(`/events/detail?id=${i.id}`);
   };
   return (
@@ -43,6 +44,7 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
         {Object.values(eventMap).map((i) => {
           return (
             <img
+              className="sliderImg"
               src={i.adImg}
               alt=""
               onClick={() => {
