@@ -11,27 +11,22 @@ import type { Dispatch } from 'react';
 
 const PConnect = memo(() => {
   const dispatch: Dispatch<any> = useDispatch();
-  const [connectWalletDialogVisible1, setConnectWalletDialogVisible1] =
-    useState<boolean>(false);
-  const connectWalletDialogVisible = useSelector(
-    (state: UserState) => state.connectWalletDialogVisible
-  );
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
   const handleConnect = useCallback(() => {
     //   setConnectWalletDialogVisible1(true);
     // }, []);
-    dispatch(setConnectWalletDialogVisibleAction(true));
+    dispatch(setConnectWalletDialogVisibleAction(1));
   }, [dispatch]);
 
   const handleCloseConnectWallet = useCallback(() => {
     // setConnectWalletDialogVisible1(false);
-    dispatch(setConnectWalletDialogVisibleAction(false));
+    dispatch(setConnectWalletDialogVisibleAction(0));
   }, [dispatch]);
   const handleSubmitConnectWallet = useCallback(() => {
     // setConnectWalletDialogVisible1(false);
-    dispatch(setConnectWalletDialogVisibleAction(false));
+    dispatch(setConnectWalletDialogVisibleAction(0));
   }, [dispatch]);
   return (
     <div className="pConnect">
@@ -45,7 +40,6 @@ const PConnect = memo(() => {
         />
       )}
       <ConnectWallet
-        visible={connectWalletDialogVisible}
         onClose={handleCloseConnectWallet}
         onSubmit={handleSubmitConnectWallet}
       />

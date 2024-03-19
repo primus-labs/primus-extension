@@ -4,6 +4,8 @@ import store from '@/store';
 import {
   setConnectWalletActionAsync,
   connectWalletAsync,
+  setActiveConnectWallet,
+  setActiveOnChain,
 } from '@/store/actions';
 var provider;
 
@@ -25,7 +27,7 @@ export const connectWallet = async (targetNetwork) => {
     ]);
 
     // if (targetNetwork) {
-    await switchChain(chainId, targetNetwork);
+    await switchChain();
     // }
     subscribeToEvents();
     return [accounts, chainId, provider];
@@ -41,13 +43,19 @@ export const connectWallet = async (targetNetwork) => {
     }
   }
 };
-export const switchChain = async (connectedChainId, targetNetwork, p) => {
-  provider = p ?? provider;
+export const switchChain = async () => {
+  // provider = p ?? provider;
+  const connectedChainId = await provider.request({ method: 'eth_chainId' });
+  
   let chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency;
   const tNetwork = store.getState().activeConnectWallet.network;
   if (!tNetwork) {
     return;
   }
+  if (tNetwork && parseInt(tNetwork.chainId) === parseInt(connectedChainId)) {
+    store.dispatch(setActiveConnectWallet({ network: undefined }));
+  }
+
   ({ chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
     tNetwork);
 
@@ -59,7 +67,7 @@ export const switchChain = async (connectedChainId, targetNetwork, p) => {
     nativeCurrency,
   };
 
-  if (connectedChainId === obj.chainId) {
+  if (parseInt(connectedChainId) === parseInt(obj.chainId)) {
     console.log(`The current chain is already:${obj.chainName}`);
     return;
   } else {
@@ -83,11 +91,18 @@ export const switchChain = async (connectedChainId, targetNetwork, p) => {
           params: [obj],
         });
       } catch (addError) {
+        store.dispatch(setActiveConnectWallet({ network: undefined }));
+        store.dispatch(setActiveOnChain({ loading: 0 }));
+        
         console.error(addError);
       }
     } else if (err.code === 4001) {
+      store.dispatch(setActiveConnectWallet({ network: undefined }));
+      store.dispatch(setActiveOnChain({ loading: 0 }));
       throw new Error(err.code);
     } else {
+      store.dispatch(setActiveConnectWallet({ network: undefined }));
+      store.dispatch(setActiveOnChain({ loading: 0 }));
     }
     return true;
   }
@@ -172,11 +187,22 @@ const subscribeToEvents = () => {
 };
 
 const handleChainChanged = (chainId) => {
-  console.log('metamask chainId changes: ', chainId, provider);
+  const requiredChain = store.getState().activeConnectWallet.network;
+  console.log(
+    'metamask chainId changes: ',
+    chainId,
+    provider,
+    'switch to chain:',
+    requiredChain
+  );
   const addr = provider.selectedAddress;
   const curConnectedWallet = store.getState().connectedWallet;
   const name = curConnectedWallet?.name;
   const id = curConnectedWallet?.id;
+  if (requiredChain && parseInt(requiredChain.chainId) === parseInt(chainId)) {
+    store.dispatch(setActiveConnectWallet({ network: undefined }));
+  }
+
   store.dispatch(
     setConnectWalletActionAsync({
       id,

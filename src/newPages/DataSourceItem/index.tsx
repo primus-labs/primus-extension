@@ -60,9 +60,9 @@ const DataSourceItem = memo(() => {
     return activeConnectType ? 'Connect by ' + activeConnectType : 'Connect';
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(async () => {
-    if (lowerCaseDataSourceName === 'Web3 Wallet') {
+    if (lowerCaseDataSourceName === 'web3 wallet') {
       await dispatch({ type: 'setRequireFetchAssets', payload: true });
-      dispatch(setConnectWalletDialogVisibleAction(true));
+      dispatch(setConnectWalletDialogVisibleAction(1));
       return;
     }
     if (activeConnectType === 'API') {

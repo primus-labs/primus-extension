@@ -89,7 +89,7 @@ const Nav: React.FC<PButtonProps> = memo(
     const formatList = useMemo(() => {
       let l = [...list];
       const activeEvent = activeOnChainAttestation?.event;
-     
+
       if (activeEvent === LINEAEVENTNAME) {
         l = list.filter((i) => i.id === 'Linea Goerli');
       } else if (activeEvent === BASEVENTNAME) {
@@ -637,35 +637,29 @@ const Nav: React.FC<PButtonProps> = memo(
     const handleSubmitConnectWallet = useCallback(
       async (cId) => {
         setChainId(cId);
+        if (cId !== 'BNB Greenfield') {
+          await dispatch(setActiveConnectWallet({ network: EASInfo[cId] }));
+        }
+        setCheckIsConnectFlag(true);
         setStep(2);
-        // setActiveSendToChainRequest({
-        //   type: 'loading',
-        //   title: 'Processing',
-        //   desc: 'Please complete the transaction in your wallet.',
-        // });
         setActiveSendToChainRequest({
           type: 'loading',
           title: 'Requesting Connection',
           desc: `Check your wallet to confirm the connection and submit your attestation to ${EASInfo[cId].showName}.`,
         });
-        if (cId !== 'BNB Greenfield') {
-          await dispatch(setActiveConnectWallet({ network: EASInfo[cId] }));
-        }
-        setCheckIsConnectFlag(true);
       },
       [dispatch]
     );
     useEffect(() => {
-      if (connected && chainId) {
+      setStep(1);
+      setActiveRequest({});
+    }, []);
+    useEffect(() => {
+      if (chainId && connected) {
         sucFn(connectedWallet, chainId as string);
+        
       }
-    }, [connected, chainId]);
-    // useEffect(() => {
-    //   if (visible) {
-    //     setStep(1);
-    //     setActiveRequest({});
-    //   }
-    // }, [visible]);
+    }, [chainId, connected]);
     return (
       <div className={'submitOnChain'}>
         {step === 1 && (
@@ -675,20 +669,15 @@ const Nav: React.FC<PButtonProps> = memo(
             onSubmit={handleSubmitConnectWallet}
           />
         )}
-        {step === 2 && (
-          <>
-            {connected ? (
-              <SetProcessDialog
-                preset={presetIcon}
-                onClose={handleCloseConnectWalletProcessDialog}
-                onSubmit={() => {}}
-                activeRequest={activeSendToChainRequest}
-              />
-            ) : (
-              <></>
-            )}
-          </>
-        )}
+        {step === 2 &&
+          connected &&(
+            <SetProcessDialog
+              preset={presetIcon}
+              onClose={handleCloseConnectWalletProcessDialog}
+              onSubmit={() => {}}
+              activeRequest={activeSendToChainRequest}
+            />
+          )}
       </div>
     );
   }

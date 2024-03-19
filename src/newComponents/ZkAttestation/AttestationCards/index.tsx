@@ -342,7 +342,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                       </div>
                     </div>
                     <div className="descItems">
-                      <div className="descItem">
+                      <div className="descItem onChain">
                         <div className="label">
                           <span>On-chain</span>
 

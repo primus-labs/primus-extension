@@ -114,6 +114,9 @@
           .descItem {
             width: 100%;
             @include frbc;
+            &.onChain{
+              height: var(--spacing-24);
+            }
             .label {
               @include BodyBody100;
               color: var(--text-tokens-text-tertiary);

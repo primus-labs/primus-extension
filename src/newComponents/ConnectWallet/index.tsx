@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
-import { useSelector ,useDispatch} from 'react-redux';
-import {setActiveConnectDataSource} from '@/store/actions'
+import { useSelector, useDispatch } from 'react-redux';
+import { setActiveConnectDataSource } from '@/store/actions';
 import useMsgs from '@/hooks/useMsgs';
 import useWallet from '@/hooks/useWallet';
 import { formatAddress } from '@/utils/utils';
@@ -15,18 +15,20 @@ import type { UserState } from '@/types/store';
 import './index.scss';
 
 interface PButtonProps {
-  visible: boolean;
   onClose: () => void;
   onSubmit: () => void;
 }
 
-const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit, visible }) => {
-  const dispatch = useDispatch()
+const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
+  const dispatch = useDispatch();
   const { addMsg } = useMsgs();
   const [step, setStep] = useState<number>(1);
   const [activeRequest, setActiveRequest] = useState<any>({});
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
+  );
+  const connectWalletDialogVisible = useSelector(
+    (state: UserState) => state.connectWalletDialogVisible
   );
 
   const handleCloseConnectWalletProcessDialog = useCallback(() => {
@@ -39,7 +41,6 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit, visible }) => {
 
   const { connect } = useWallet();
   const startFn = () => {
-    
     setActiveRequest({
       type: 'loading',
       title: 'Requesting Connection',
@@ -112,13 +113,19 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit, visible }) => {
     !connectedWallet?.address && checkIfHadBound();
   }, [connectedWallet]);
   useEffect(() => {
-    if (visible) {
+    if (connectWalletDialogVisible === 1) {
       setStep(1);
       setActiveRequest({});
+    } else if (connectWalletDialogVisible === 2) {
+      handleSubmitConnectWallet({ id: 'metamask' });
     }
-  }, [visible]);
+  }, [connectWalletDialogVisible]);
   return (
-    <div className={visible ? 'connectWallet visible' : 'connectWallet'}>
+    <div
+      className={
+        connectWalletDialogVisible ? 'connectWallet visible' : 'connectWallet'
+      }
+    >
       {step === 1 && (
         <ConnectWalletDialog
           onClose={handleCloseConnectWallet}

@@ -69,9 +69,7 @@ const CredOverview = memo(() => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
-  const connectWalletDialogVisible = useSelector(
-    (state: UserState) => state.connectWalletDialogVisible
-  );
+ 
   const dispatch: Dispatch<any> = useDispatch();
 
   const errorDescEl = useMemo(
@@ -516,10 +514,6 @@ const CredOverview = memo(() => {
       setAddDialogVisible(false);
     }
   }, [connectedWallet?.address]);
-  // const onSubmitConnectTipDialog = useCallback(() => {
-  //   setConnectTipDialogVisible(false);
-  //   dispatch(setConnectWalletDialogVisibleAction(true));
-  // }, [dispatch]);
   useEffect(() => {
     initCredList();
   }, [initCredList]);

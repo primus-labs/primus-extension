@@ -80,7 +80,7 @@ export const setRewardsAction = (values: object) => ({
   type: 'setRewards',
   payload: values,
 });
-export const setConnectWalletDialogVisibleAction = (values: boolean) => ({
+export const setConnectWalletDialogVisibleAction = (values: any) => ({
   type: 'setConnectWalletDialogVisible',
   payload: values,
 });
@@ -186,7 +186,7 @@ export const setConnectWalletActionAsync = (values: any) => {
       });
       await dispatch(setConnectedWalletsActionAsync());
       await dispatch(setConnectWalletAction(values));
-      await dispatch(setConnectWalletDialogVisibleAction(false));
+      await dispatch(setConnectWalletDialogVisibleAction(0));
     } else {
       await chrome.storage.local.remove(['connectedWalletAddress']);
       await dispatch(setConnectWalletAction(values));
@@ -206,7 +206,6 @@ export const connectWalletAsync = (
     const requireFetchAssets = getState().requireFetchAssets;
     let activeNetworkId = getState().activeConnectWallet.network;
     // let activeNetwork = EASInfo[activeNetworkId as keyof typeof EASInfo]
-
     try {
       let address;
       let provider;
@@ -221,9 +220,6 @@ export const connectWalletAsync = (
         } else {
           connectRes = await connectWallet(network);
         }
-
-        await dispatch(setActiveConnectWallet({ network: undefined }));
-
         provider = connectRes[2];
         address = (connectRes[0] as string[])[0];
       }
@@ -255,7 +251,7 @@ export const connectWalletAsync = (
             provider,
           })
         );
-        await dispatch(setConnectWalletDialogVisibleAction(false));
+        await dispatch(setConnectWalletDialogVisibleAction(0));
         if (sucFn) {
           sucFn && (await sucFn({ id: type, name: type, address, provider }));
         } else {
@@ -263,7 +259,7 @@ export const connectWalletAsync = (
         }
       } else {
         // startFn && (await startFn());
-        //await dispatch(setConnectWalletDialogVisibleAction(true));
+        //await dispatch(setConnectWalletDialogVisibleAction(1));
         const timestamp: string = +new Date() + '';
         const signature = await requestSign(address, timestamp, walletInfo);
         if (!signature) {
@@ -286,7 +282,7 @@ export const connectWalletAsync = (
               provider,
             })
           );
-          await dispatch(setConnectWalletDialogVisibleAction(false));
+          await dispatch(setConnectWalletDialogVisibleAction(0));
           await getChainAssets(signature, timestamp, address, dispatch, label);
           sucFn &&
             (await sucFn({

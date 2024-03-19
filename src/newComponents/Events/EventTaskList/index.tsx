@@ -6,12 +6,6 @@ import utc from 'dayjs-plugin-utc';
 import { setActiveOnChain } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import useEventDetail from '@/hooks/useEventDetail';
-import useAuthorization from '@/hooks/useAuthorization';
-import {
-  setSocialSourcesAsync,
-  setConnectWalletDialogVisibleAction,
-} from '@/store/actions';
-import { DATASOURCEMAP } from '@/config/dataSource';
 import {
   SCROLLEVENTNAME,
   BASEVENTNAME,
