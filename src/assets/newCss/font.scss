@@ -276,14 +276,14 @@
   letter-spacing: 0px;
   line-height: 18px;
 }
-@mixin numberHint {
+@mixin NumberHint {
   font-size: 10px;
   font-family: IBM Plex Mono;
   font-weight: 400;
   letter-spacing: 0px;
   line-height: 16px;
 }
-.number-title-1 {
+@mixin NumberTitle {
   font-size: 32px;
   font-family: IBM Plex Mono;
   font-weight: 600;
@@ -295,6 +295,13 @@
   font-family: IBM Plex Mono;
   font-weight: 500;
   letter-spacing: 0px;
+  line-height: 18px;
+}
+@mixin NumberId {
+  font-size: 14px;
+  font-family: IBM Plex Mono;
+  font-weight: 400;
+  letter-spacing: 0.1599999964237213px;
   line-height: 18px;
 }
 .number-body {
@@ -318,12 +325,4 @@
   font-weight: 700;
   letter-spacing: 0px;
   line-height: 24px;
-}
-
-@mixin NumberId {
-  font-size: 14px;
-  font-family: IBM Plex Mono;
-  font-weight: 400;
-  letter-spacing: 0.1599999964237213px;
-  line-height: 18px;
 }

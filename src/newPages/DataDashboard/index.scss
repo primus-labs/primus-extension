@@ -1,13 +1,16 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 
-.pageDataSource {
+.pageDataDashboard {
   @include fcss;
   margin: 0 auto;
-  // overflow-y: auto;
   .pageContent {
     padding: 40px 0;
     @include fcss;
-    gap: var(--spacing-24, 24px);
+    gap: var(--spacing-40);
+    .pEmpty {
+      padding-top: 152px;
+    }
   }
+  
 }

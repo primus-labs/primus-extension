@@ -26,7 +26,6 @@ const Home = memo(() => {
     <div className="pageRewards">
       <div className="pageContent">
         <RewardsWrapper/>
-        
       </div>
     </div>
   );

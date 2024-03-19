@@ -63,6 +63,7 @@
           .hideCircle {
             width: var(--spacing-34);
             height: var(--spacing-34);
+            left: calc(-1 * 5 * var(--spacing-4));
           }
         }
         .num {

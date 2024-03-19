@@ -89,7 +89,7 @@
           .updateTime {
             @include frsc;
             gap: var(--spacing-8);
-            @include numberHint;
+            @include NumberHint;
             // .iconfont {
             //   font-size: var(--spacing-12);
             //   color: var(--icon-tokens-icon-primary);
@@ -114,7 +114,7 @@
           .descItem {
             width: 100%;
             @include frbc;
-            &.onChain{
+            &.onChain {
               height: var(--spacing-24);
             }
             .label {

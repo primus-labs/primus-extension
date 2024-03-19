@@ -38,13 +38,13 @@
     &.verifying {
       padding-top: var(--spacing-32, 32px);
       .center {
-        padding: var(--spacing-16, 16px) 0 var(--spacing-24, 16px) 0;
+        padding: 0 var(--spacing-24, 24px) 0;
       }
     }
     &.result {
       // padding-top: var(--spacing-24, 24px);
       .center {
-        padding: var(--spacing-16, 16px) 0 var(--spacing-24, 24px) 0;
+        padding: var(--spacing-24, 24px) ;
       }
     }
     .header {

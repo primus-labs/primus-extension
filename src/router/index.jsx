@@ -20,6 +20,7 @@ import EventDetail from '@/newPages/EventDetail';
 import Setting from '@/newPages/Setting';
 import ComingSoon from '@/newPages/ComingSoon';
 import Home from '@/newPages/Home';
+import DataDashboard from '@/newPages/DataDashboard';
 const router = [
   {
     path: '/',
@@ -82,7 +83,7 @@ const router = [
       },
       {
         path: 'dataDashboard',
-        element: <ComingSoon />,
+        element: <DataDashboard />,
       },
       {
         path: 'developer',

@@ -91,7 +91,8 @@ const PButton: React.FC<PButtonProps> = memo(
             ) : (
               <span className="btnText">{text}</span>
             )}
-            {type === 'text' && <i className="iconfont icon-LinkArrow"></i>}
+            {type === 'text' &&
+              (suffix ?? <i className="iconfont icon-LinkArrow"></i>)}
           </>
         )}
       </button>

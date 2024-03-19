@@ -1,0 +1,193 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.assetsDetails {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-16);
+  flex: 1;
+  .title {
+    width: 100%;
+    @include HeadlineH3;
+    @include frbc;
+    .operations {
+      @include frsc;
+      gap: var(--spacing-16);
+    }
+  }
+  .content {
+    width: 100%;
+    padding: var(--spacing-16) var(--spacing-24);
+    border-radius: var(--spacing-8);
+    border: 1px solid var(--border-tokens-border-primary);
+    background: var(--layer-tokens-layer-primary);
+    @include fcss;
+    gap: var(--spacing-24);
+
+    .PTabs {
+      width: 100%;
+    }
+    .tableSection {
+      width: 100%;
+      @include fcss;
+      gap: var(--spacing-16);
+      .dataSourceItems {
+        width: 100%;
+        @include fcss;
+        gap: var(--spacing-8);
+
+        .dataSourceItem {
+          width: 100%;
+          // height: 76px;
+          padding: var(--spacing-16);
+          // @include clickableCard;
+          border-radius: var(--spacing-8);
+          background: var(--layer-tokens-layer-primary);
+          background-color: var(--layer-tokens-layer-on-primary);
+          @include fcss;
+          gap: var(--spacing-24);
+          // cursor: pointer;
+          .mainInfo {
+            width: 100%;
+            @include frbc;
+            .left {
+              @include frsc;
+              gap: var(--spacing-8);
+              .pStar {
+                .iconfont {
+                  font-size: var(--spacing-16);
+                }
+              }
+              .sourceIcon {
+                width: var(--spacing-40);
+              }
+              .breif {
+                @include fcss;
+                gap: 2px;
+                @include BodyBody100Semibold;
+                .top {
+                  @include frsc;
+                  gap: var(--spacing-16);
+                  .num {
+                    @include frsc;
+                    gap: 2px;
+                    @include NumberHint;
+                    color: var(--text-tokens-text-secondary);
+                  }
+                }
+                .bottom {
+                  @include frsc;
+                  gap: var(--spacing-4);
+                  .balance {
+                    @include NumberBody100Semibold;
+                  }
+                  .percent {
+                    @include NumberBody100;
+                    color: var(--text-tokens-text-secondary);
+                  }
+                }
+              }
+            }
+            .right {
+              @include frbc;
+              width: 228px;
+              .tokens {
+                @include fcss;
+                gap: var(--spacing-4);
+                @include Hint;
+                .splicedIcons {
+                  gap: var(--spacing-4);
+                  > img {
+                    width: var(--spacing-24);
+                    position: static !important;
+                  }
+                  .hideCircle {
+                    width: var(--spacing-24);
+                    height: var(--spacing-24);
+                    position: static !important;
+                  }
+                }
+              }
+            }
+          }
+          .extraInfo {
+            width: 100%;
+            @include frsc;
+            .card {
+              @include frsc;
+              width: 304px;
+              padding: var(--spacing-16);
+              gap: var(--spacing-8);
+              border-radius: var(--spacing-8);
+              border: 1px solid
+                var(--border-tokens-border-primary-selected-gray);
+              .iconfont {
+                font-size: var(--spacing-24);
+              }
+              .txtWrapper {
+                @include BodyBody100Semibold;
+                .value {
+                  @include NumberBody100;
+                }
+              }
+            }
+          }
+          .expandInfo {
+            width: 100%;
+            @include fcss;
+            gap: var(--spacing-16);
+            .title {
+              @include HeadlineH3;
+              @include frsc;
+              gap: var(--spacing-4);
+              .num {
+                @include NumberBody100Semibold;
+                color: var(--text-tokens-text-tertiary);
+              }
+            }
+            .tokenItems {
+              width: 100%;
+              @include fcss;
+              .tokenItem {
+                width: 100%;
+                @include frbc;
+                border-top: 1px solid var(--border-tokens-border-primary);
+                &.th {
+                  height: 43px;
+                  @include Label01;
+                  color: var(--text-tokens-text-tertiary);
+                }
+                &.tr {
+                  height: 48px;
+                  @include NumberBody100;
+                }
+                > div {
+                  width: 120px;
+                  text-align: right;
+                  &.token{
+                    @include frsc;
+                    gap: var(--spacing-4);
+                    @include BodyBody100;
+                    text-align: left;
+                    >img{
+                      width: var(--spacing-24);
+                      // height: var(--spacing-24);
+                    }
+                  }
+                }
+                // .token{
+                //   width:
+                // }
+              }
+            }
+          }
+        }
+      }
+      .moreBtn {
+        height: auto;
+        align-self: center;
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 @import '@/assets/newCss/flex.scss';
-$element-count: 6;
+$element-count: 100;
 
 .splicedIcons {
   @include frsc;
@@ -21,7 +21,7 @@ $element-count: 6;
     width: var(--spacing-40);
     height: var(--spacing-40);
     position: relative;
-    left: calc(-1 * 6 * var(--spacing-8));
+    left: calc(-1 * 5 * var(--spacing-8));
     @include frcc;
     border-radius: 50%;
     font-size: 14px;
