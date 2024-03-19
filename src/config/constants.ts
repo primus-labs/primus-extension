@@ -26,6 +26,7 @@ import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import Binance from '@/services/webdata/webexchange/webbinance';
+import WebBitGet from '@/services/webdata/webexchange/webbitget';
 // import OKX from '@/services/exchange/okx';
 import OKX from '@/services/webdata/webexchange/webokx';
 import KuCoin from '@/services/exchange/kucoin';
@@ -133,7 +134,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceGate,
     requirePassphase: false,
-    constructorF: Gate,
+    constructorF: Binance,
     baseName: 'api.gateio.ws',
   },
   huobi: {
@@ -150,8 +151,9 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceBitget,
     requirePassphase: true,
-    constructorF: Bitget,
-    baseName: 'api.bitget.com',
+    constructorF: WebBitGet,
+    baseName: 'www.bitget.com',
+    accountBalanceUrl: 'https://www.bitget.com/v1/mix/assetsV2',
   },
   mexc: {
     name: 'MEXC',

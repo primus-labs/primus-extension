@@ -8,7 +8,7 @@ import {
   setSocialSourcesAsync,
   setConnectWalletDialogVisibleAction,
 } from '@/store/actions';
-import { DATASOURCEMAP } from '@/config/dataSource';
+import {DATASOURCEMAP } from '@/config/dataSource';
 import type { Dispatch } from 'react';
 
 import type { UserState } from '@/types/store';
@@ -22,6 +22,7 @@ import ConnectByAPI from '@/newComponents/DataSource/ConnectByAPI';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
+import { webDataSourceTemplate } from '@/config/webDataSourceTemplate';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
@@ -67,7 +68,7 @@ const DataSourceItem = memo(() => {
     if (activeConnectType === 'API') {
       setVisibleConnectByAPI(true);
     } else if (activeConnectType === 'Web') {
-      const currRequestObj = webProofTypes.find(
+      let currRequestObj = webProofTypes.find(
         (r: any) => r.dataSource === lowerCaseDataSourceName
       );
       // TODO-newui
@@ -80,6 +81,10 @@ const DataSourceItem = memo(() => {
           headers: ['User-Agent'],
           cookies: ['sessionid', 'tt-target-idc'],
         };
+      }
+      //if currRequestObj is undefined, try to find locally
+      if(!currRequestObj){
+        currRequestObj = webDataSourceTemplate['bitget'];
       }
       // TODO END
       chrome.runtime.sendMessage({

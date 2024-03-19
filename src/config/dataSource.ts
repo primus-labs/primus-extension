@@ -25,6 +25,7 @@ import Coinbase from '@/services/exchange/coinbase';
 import Huobi from '@/services/exchange/huobi';
 import Gate from '@/services/exchange/gate';
 import Bitget from '@/services/exchange/bitget';
+import WebBitGet from '@/services/webdata//webexchange/webbitget';
 import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
 import WebTikTok from '@/services/webdata/websocial/webtiktok';
@@ -163,10 +164,11 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your Bitget account to manage your data or create attestations.',
     requirePassphase: true,
-    constructorF: Bitget,
-    baseName: 'api.bitget.com',
-
-    connectType: 'API',
+    constructorF: WebBitGet,
+    baseName: 'www.bitget.com',
+    accountBalanceUrl: 'https://www.bitget.com/v1/mix/assetsV2',
+    jumpTo: 'https://www.bitget.com/zh-CN/asset/spot',
+    connectType: 'Web',
   },
   huobi: {
     id: 'huobi',
