@@ -155,12 +155,12 @@ const Nav: React.FC<PButtonProps> = memo(
                 activeAttestationParams.verificationValue;
             }
           }
-
           // 3.send msg to content
           const currentWindowTabs = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
+
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'init',

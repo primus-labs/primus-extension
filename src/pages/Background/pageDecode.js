@@ -354,6 +354,29 @@ export const pageDecodeMsgListener = async (
         aligorithmParams.requests[2].url =
           aligorithmParams.requests[2].url.replace('limit=5', 'limit=100');
       }
+      if(dataSource === 'docusign') {
+        const { constructorF } = DATASOURCEMAP[dataSource];
+        const ex = new constructorF();
+        await storeDataSource(dataSource, ex, port);
+        const docusignUserId = await chrome.storage.local.get("docusignUserId")
+        const docusignAccountId = await chrome.storage.local.get("docusignAccountId")
+        const date = new Date();
+        const dateNowStr = date.toISOString()
+        date.setFullYear(date.getFullYear() - 1)
+        const dateYearAgoStr = date.toISOString();
+        const cookies = aligorithmParams.requests[0].cookies
+        const headers = aligorithmParams.requests[0].headers
+        cookies['docusign.spid'] = encodeURIComponent(cookies['docusign.spid'])
+        aligorithmParams.requests[0].cookies = cookies
+        // aligorithmParams.padoUrl = aligorithmParams.padoUrl.replace('algorithm','algorithmV2')
+        aligorithmParams.requests[1].url = `https://apps.docusign.com/api/send/api/accounts/${docusignAccountId['docusignAccountId']}/envelopes?from_date=${dateYearAgoStr}&to_date=${dateNowStr}&count=40`
+        aligorithmParams.requests[1].cookies = aligorithmParams.requests[0].cookies
+        aligorithmParams.responses[1].conditions.field.subconditions[0].value = docusignUserId['docusignUserId']
+        const countedReqHeaders = {}
+        countedReqHeaders['User-Agent'] = headers['User-Agent'];
+        countedReqHeaders['Accept'] = '*/*';
+        aligorithmParams.requests[1].headers = countedReqHeaders;
+      }
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(aligorithmParams),
       });
@@ -364,10 +387,12 @@ export const pageDecodeMsgListener = async (
         method: 'getAttestation',
         params: aligorithmParams,
       });
+      if(!dataSource === 'docusign') {
+        const { constructorF } = DATASOURCEMAP[dataSource];
+        const ex = new constructorF();
+        await storeDataSource(dataSource, ex, port);
+      }
 
-      const { constructorF } = DATASOURCEMAP[dataSource];
-      const ex = new constructorF();
-      await storeDataSource(dataSource, ex, port);
     }
 
     // if (name === 'attestResult') {

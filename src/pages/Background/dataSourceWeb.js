@@ -42,6 +42,7 @@ export const dataSourceWebMsgListener = async (
     const exchangeInfo = DATASOURCEMAP[exchangeName];
     const { constructorF, type: sourceType } = exchangeInfo;
     let isStoreTiktokName = false;
+    let isStoreDocusignUserId = false;
 
     const requestUrlList = requests.map((r) => r.url);
     const isUrlWithQueryFn = (url, queryKeyArr) => {
@@ -100,6 +101,16 @@ export const dataSourceWebMsgListener = async (
           [formatUrlKey]: JSON.stringify(newCurrRequestObj),
         });
         checkWebRequestIsReadyFn();
+
+        if (
+          dataSource === 'docusign' &&
+          !isStoreDocusignUserId &&
+          formatUrlKey === 'https://apps.docusign.com/api/send/__settings?IS_ONE_DS_MODE=true'
+        ) {
+          isStoreTiktokName = true;
+          const docuSign = new constructorF();
+          await docuSign.storeUserName();
+        }
 
         if (
           dataSource === 'tiktok' &&

@@ -29,6 +29,8 @@ import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.svg';
 // import Mexc from '@/services/exchange/mexc';
 // import WebTikTok from '@/services/webdata/websocial/webtiktok';
 import type { ExchangeMeta, DataSourceMapType } from '@/types/dataSource';
+import WebDocusign from '@/services/webdata/websocial/webdocusign';
+import WebBitGet from '@/services/webdata/webexchange/webbitget';
 
 export type DataSourceItemType = ExchangeMeta & {
   provider?: any;
@@ -131,6 +133,22 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     connectType: 'API',
   },
+  //todo remove
+  docusign: {
+    id: 'docusign',
+    name: 'Docusign',
+    type: 'Social',
+    icon: iconDataSourceCoinbase,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
+    requirePassphase: false,
+    constructorF: WebDocusign,
+    baseName: 'apps.docusign.com',
+    accountBalanceUrl: 'https://apps.docusign.com/send/documents',
+
+    connectType: 'WEB',
+  },
   google: {
     id: 'google',
     name: 'Google Account',
@@ -163,10 +181,11 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your Bitget account to manage your data or create attestations.',
     requirePassphase: true,
-    // constructorF: Bitget,
-    baseName: 'api.bitget.com',
-
-    connectType: 'API',
+    constructorF: WebBitGet,
+    baseName: 'www.bitget.com',
+    accountBalanceUrl: 'https://www.bitget.com/v1/mix/assetsV2',
+    jumpTo: 'https://www.bitget.com/zh-CN/asset/spot',
+    connectType: 'Web',
   },
   huobi: {
     id: 'huobi',

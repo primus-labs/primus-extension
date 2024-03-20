@@ -163,10 +163,12 @@ const useAttest = function useAttest() {
           content.balanceGreaterThanBaseValue === 'true' &&
           content.signature
         ) {
+          debugger
           const activeRequestId = parsedActiveRequestAttestation.requestid;
           if (activeRequestId !== content?.requestid) {
             return;
           }
+          console.log('activeAttestation.dataSourceId:',activeAttestation.dataSourceId)
           const fullAttestation = {
             ...content,
             ...parsedActiveRequestAttestation,

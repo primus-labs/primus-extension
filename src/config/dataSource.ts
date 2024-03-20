@@ -29,6 +29,7 @@ import WebBitGet from '@/services/webdata//webexchange/webbitget';
 import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
 import WebTikTok from '@/services/webdata/websocial/webtiktok';
+import WebDocusign from '@/services/webdata/websocial/webdocusign';
 import type { ExchangeMeta, DataSourceMapType } from '@/types/dataSource';
 
 export type DataSourceItemType = ExchangeMeta & {
@@ -131,6 +132,23 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     connectType: 'API',
   },
+  //todo remove
+  docusign: {
+    id: 'docusign',
+    name: 'Docusign',
+    type: 'Social',
+    icon: iconDataSourceCoinbase,
+    desc: 'Support fetching spot account assets data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
+    requirePassphase: false,
+    constructorF: WebDocusign,
+    baseName: 'apps.docusign.com',
+    accountBalanceUrl: 'https://apps.docusign.com/send/documents',
+
+    connectType: 'WEB',
+  },
+
   google: {
     id: 'google',
     name: 'Google Account',

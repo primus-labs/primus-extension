@@ -26,5 +26,19 @@ export const webDataSourceTemplate = {
         },
       ],
     },
+  },
+  huobi:{
+    dataSource: 'huobi',
+    jumpTo: 'https://www.htx.com/zh-cn/finance/account/spot',
+    datasourceTemplate: {
+      requests: [
+        {
+          name: 'first',
+          url: 'https://www.htx.com/-/x/uc/uc/open/login/check',
+          headers: ['User-Agent','hb-uc-token'],
+          method: 'GET',
+        }
+      ],
+    },
   }
 };
