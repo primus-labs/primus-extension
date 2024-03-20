@@ -168,7 +168,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     baseName: 'www.bitget.com',
     accountBalanceUrl: 'https://www.bitget.com/v1/mix/assetsV2',
     jumpTo: 'https://www.bitget.com/zh-CN/asset/spot',
-    connectType: 'Web',
+    connectType: 'API',
   },
   huobi: {
     id: 'huobi',

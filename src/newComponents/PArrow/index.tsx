@@ -3,6 +3,7 @@ import PButton from '@/newComponents/PButton';
 import './index.scss';
 interface PArrowProps {
   onClick: () => void;
+  // open?: boolean;
 }
 const PArrow: React.FC<PArrowProps> = memo(({ onClick }) => {
   const [active, setActive] = useState<boolean>(false);
@@ -18,7 +19,7 @@ const PArrow: React.FC<PArrowProps> = memo(({ onClick }) => {
         icon={
           <i className={`iconfont icon-DownArrow ${active && 'rotate'}`}></i>
         }
-        onClick={handleClick}
+        onClick={onClick}
       />
     </div>
   );

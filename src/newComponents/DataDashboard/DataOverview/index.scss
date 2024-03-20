@@ -55,7 +55,12 @@
               color: var(--text-tokens-text-secondary);
             }
             .value {
-              color: var(--functional-color-green-green-50);
+              &.rise {
+                color: var(--functional-color-green-green-50);
+              }
+              &.fall {
+                color: var(--functional-color-red-red-50);
+              }
             }
           }
         }

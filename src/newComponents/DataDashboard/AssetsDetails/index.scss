@@ -165,12 +165,12 @@
                 > div {
                   width: 120px;
                   text-align: right;
-                  &.token{
+                  &.token {
                     @include frsc;
                     gap: var(--spacing-4);
                     @include BodyBody100;
                     text-align: left;
-                    >img{
+                    > img {
                       width: var(--spacing-24);
                       // height: var(--spacing-24);
                     }
@@ -187,6 +187,9 @@
       .moreBtn {
         height: auto;
         align-self: center;
+        .rotate {
+          transform: rotate(180deg);
+        }
       }
     }
   }

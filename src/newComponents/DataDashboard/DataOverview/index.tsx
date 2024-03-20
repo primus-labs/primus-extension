@@ -1,9 +1,13 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import BigNumber from 'bignumber.js';
 import { getUserInfo } from '@/services/api/achievements';
 
 import useAllSources from '@/hooks/useAllSources';
+import useAssetsStatistic from '@/hooks/useAssetsStatistic';
+import useSocialStatistic from '@/hooks/useSocialStatistic';
+import { gte } from '@/utils/utils';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 import { EASInfo } from '@/config/chain';
 
@@ -16,6 +20,15 @@ import './index.scss';
 
 const Overview = memo(() => {
   const { sourceMap } = useAllSources();
+  const {
+    totalAssetsBalance,
+    formatTotalAssetsBalance,
+    totalPnl,
+    totalPnlPercent,
+    formatTotalPnlPercent,
+  } = useAssetsStatistic();
+
+  const { totalFollowers, formatTotalFollowers } = useSocialStatistic();
   const navigate = useNavigate();
   const [balanceVisible, setBalanceVisible] = useState<boolean>(true);
   const connectedSocialSources = useMemo(() => {
@@ -66,10 +79,25 @@ const Overview = memo(() => {
           </h4>
           <div className="content">
             <div className="num">
-              <div className="balance">$32,124</div>
+              <div className="balance">
+                {balanceVisible? formatTotalAssetsBalance: '$***'}
+              </div>
               <div className="pnl">
                 <div className="label">PnL</div>
-                <div className="value">+$6.55(1.5%)</div>
+                <div
+                  className={`value ${
+                    gte(Number(totalPnl), 0) ? 'rise' : 'fall'
+                  }`}
+                >
+                  {gte(Number(totalPnl), 0) ? `+$${totalPnl}` : `-$${totalPnl}`}
+                  (
+                  {gte(Number(totalPnlPercent), 0)
+                    ? `${totalPnlPercent}%`
+                    : `${new BigNumber(Number(totalPnlPercent))
+                        .abs()
+                        .toFixed(2)}%`}
+                  )
+                </div>
               </div>
             </div>
           </div>
@@ -79,7 +107,7 @@ const Overview = memo(() => {
             <span>Followers</span>
           </h4>
           <div className="content">
-            <div className="num">32.1k</div>
+            <div className="num">{formatTotalFollowers}</div>
             <div className="from">
               <span>From</span>
               <ul className="sources">

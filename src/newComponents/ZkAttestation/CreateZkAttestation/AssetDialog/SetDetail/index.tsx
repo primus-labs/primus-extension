@@ -108,7 +108,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
 
       return totalBalance;
-    }, [pswForm, dataSourceId, activeDataSouceUserInfo]);
+    }, [ dataSourceId, activeDataSouceUserInfo]);
     // const verificationContentList = useMemo(() => {
 
     // })
