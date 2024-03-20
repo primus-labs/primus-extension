@@ -1,0 +1,27 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+@import '../Portfolio/index.scss';
+
+.tableSection.token {
+  .dataSourceItems {
+    .dataSourceItem {
+      .mainInfo {
+        .right {
+          gap: 88px;
+          .amount,.price{
+            width: 108px;
+            @include fcss;
+            gap: var(--spacing-4);
+            .label{
+              @include Hint;
+            }
+            .value{
+              @include NumberBody100;
+            }
+          }
+        }
+      }
+    }
+  }
+}

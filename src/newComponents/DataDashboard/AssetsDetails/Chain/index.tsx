@@ -27,7 +27,7 @@ import PArrow from '@/newComponents/PArrow';
 import TokenTable from '../TokenTable';
 const MAX = 5;
 
-const AssetsDetails = memo(() => {
+const Chain = memo(() => {
   const { addMsg } = useMsgs();
   const {
     totalOnChainAssetsBalance,
@@ -39,7 +39,7 @@ const AssetsDetails = memo(() => {
   } = useAssetsStatistic();
   const dispatch = useDispatch();
   const { sourceMap, sourceMap2 } = useAllSources();
-  const [current, setCurrent] = useState(1);
+  const [starArr, setStarArr] = useState<string[]>();
 
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
@@ -49,16 +49,13 @@ const AssetsDetails = memo(() => {
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
-  const connectedExchangeSources = useMemo(() => {
-    return sourceMap.exSources;
-  }, [sourceMap]);
   const connectedOnChainSources = useMemo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);
   console.log('22connectedSocialSources', sourceMap); // delete
 
   const connectedAssetsSourcesList = useMemo(() => {
-    let l = Object.values(connectedExchangeSources);
+    let l = [];
     if (Object.keys(connectedOnChainSources).length > 0) {
       const newOnChainList = Object.values(connectedOnChainSources).map(
         (i: any) => {
@@ -69,7 +66,7 @@ const AssetsDetails = memo(() => {
       l = l.concat(newOnChainList);
     }
     return l;
-  }, [connectedExchangeSources, connectedOnChainSources]);
+  }, [connectedOnChainSources]);
   const sortedConnectedAssetsSourcesList = useMemo(() => {
     const sortFn = (l) => {
       return l.sort((a: any, b: any) =>
@@ -80,13 +77,16 @@ const AssetsDetails = memo(() => {
     let hasStarL = connectedAssetsSourcesList.filter((i: any) => !!i.star);
     noStarL = sortFn(noStarL);
     hasStarL = sortFn(hasStarL);
+    debugger;
     return [...hasStarL, ...noStarL];
+    
   }, [connectedAssetsSourcesList]);
 
   const showList = useMemo(() => {
     return showMore
       ? sortedConnectedAssetsSourcesList
       : sortedConnectedAssetsSourcesList.slice(0, MAX);
+    
   }, [sortedConnectedAssetsSourcesList, showMore]);
 
   const handleShowMore = useCallback(() => {
@@ -101,12 +101,12 @@ const AssetsDetails = memo(() => {
       } else {
         const digit = div(
           Number(totalBalance),
-          new BigNumber(totalAssetsBalance).toNumber()
+          new BigNumber(totalOnChainAssetsBalance).toNumber()
         );
         return digit.toFixed(2);
       }
     },
-    [totalAssetsBalance]
+    [totalOnChainAssetsBalance]
   );
   const connectionNumFn = useCallback(
     (i) => {
@@ -181,27 +181,46 @@ const AssetsDetails = memo(() => {
     },
     [activeExpand]
   );
-  const handleStar = useCallback(
-    async (i) => {
-      i.star = !i.star;
-      if (i.address?.startsWith('0x')) {
-        const newObj = { ...connectedOnChainSources };
-        newObj[i.address] = i;
-        await chrome.storage.local.set({
-          onChainAssetsSources: JSON.stringify(newObj),
-        });
-        dispatch(setOnChainAssetsSourcesAsync());
-      } else {
-        if (i.type === 'Assets') {
-          await chrome.storage.local.set({
-            [i.id]: JSON.stringify(i),
-          });
-          dispatch(setExSourcesAsync());
-        }
+  const resetStarArr = async () => {
+    const { assetsStarsMap: assetsStarsMapStr } =
+      await chrome.storage.local.get(['assetsStarsMap']);
+    if (assetsStarsMapStr) {
+      const assetsStarsMapObj = JSON.parse(assetsStarsMapStr);
+      if (assetsStarsMapObj.chain) {
+        setStarArr(Object.keys(assetsStarsMapObj.chain));
       }
-    },
-    [dispatch, connectedOnChainSources]
-  );
+    }
+  };
+  const handleStar = useCallback(async (i) => {
+    const { symbol } = i;
+    const { assetsStarsMap: assetsStarsMapStr } =
+      await chrome.storage.local.get(['assetsStarsMap']);
+    if (assetsStarsMapStr) {
+      const assetsStarsMapObj = JSON.parse(assetsStarsMapStr);
+      if (assetsStarsMapObj.chain) {
+        if (symbol in assetsStarsMapObj.chain) {
+          delete assetsStarsMapObj.chain[symbol];
+        } else {
+          assetsStarsMapObj.chain[symbol] = 1;
+        }
+        await chrome.storage.local.set({
+          assetsStarsMap: JSON.stringify(assetsStarsMapObj),
+        });
+      }
+    } else {
+      const obj = {
+        chain: { [symbol]: 1 },
+        token: {},
+      };
+      await chrome.storage.local.set({
+        assetsStarsMap: JSON.stringify(obj),
+      });
+    }
+    resetStarArr();
+  }, []);
+  useEffect(() => {
+    resetStarArr();
+  }, []);
   return (
     <section className="tableSection portfolio">
       <ul className="dataSourceItems">
@@ -251,7 +270,7 @@ const AssetsDetails = memo(() => {
                   </div>
                 </div>
               </div>
-              {activeExpand.includes(i.id) && (
+              {/* {activeExpand.includes(i.id) && (
                 <>
                   {['okx', 'binance'].includes(i.id) && (
                     <div className="extraInfo">
@@ -280,7 +299,7 @@ const AssetsDetails = memo(() => {
                     }
                   />
                 </>
-              )}
+              )} */}
             </li>
           );
         })}
@@ -298,4 +317,4 @@ const AssetsDetails = memo(() => {
   );
 });
 
-export default AssetsDetails;
+export default Chain;

@@ -28,6 +28,8 @@ import './index.scss';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import PArrow from '@/newComponents/PArrow';
 import Portfolio from './Portfolio';
+import Token from './Token';
+import Chain from './Chain';
 const MAX = 5;
 const tList = [
   { label: 'Portfolio', value: 'Portfolio' },
@@ -49,12 +51,11 @@ const AssetsDetails = memo(() => {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(1);
   const [ttt, setTtt] = useState('Portfolio');
-  
+
   const sysConfig = useSelector((state) => state.sysConfig);
 
-
   const handleShare = useCallback(() => {}, []);
- 
+
   return (
     <div className="assetsDetails">
       <div className="title">
@@ -77,6 +78,9 @@ const AssetsDetails = memo(() => {
           value={ttt}
         />
         {ttt === 'Portfolio' && <Portfolio />}
+        {ttt === 'Token' && <Token />}
+        {ttt === 'Chain' && <Chain />}
+        
       </div>
     </div>
   );

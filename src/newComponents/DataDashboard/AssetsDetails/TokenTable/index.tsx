@@ -17,7 +17,7 @@ interface TokenTableProps {
   title: string;
   id: string;
   listMap: any;
-  others: any;
+  others?: any;
 }
 
 const TokenTable: FC<TokenTableProps> = memo(
@@ -90,7 +90,10 @@ const TokenTable: FC<TokenTableProps> = memo(
             return (
               <li className="tokenItem tr" key={j.symbol}>
                 <div className="token">
-                  <img src={`${tokenLogoPrefix}icon${j.symbol}.png`} alt="" />
+                  <img
+                    src={j.icon ? j.icon: `${tokenLogoPrefix}icon${j.symbol}.png`}
+                    alt=""
+                  />
                   <span>{j.symbol}</span>
                 </div>
                 {!!spotAccountTokenMap && (
