@@ -4,6 +4,12 @@ import iconBinance from '@/assets/img/iconBinance.png';
 import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
+import iconNetwork3 from '@/assets/img/iconNetwork3.png';
+import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
+import iconNetwork5 from '@/assets/img/iconNetwork5.png';
+import iconNetwork6 from '@/assets/img/iconNetwork6.png';
+import iconChainEthereum from '@/assets/img/iconChainEthereum.svg';
+import iconOptimism from '@/assets/img/iconOptimism.svg';
 import { CURENV } from './envConstants';
 
 const EASINFOMAP = {
@@ -533,3 +539,36 @@ const CLAIMNFTNETWORKNAMEMAP = {
   production: 'Polygon',
 };
 export let CLAIMNFTNETWORKNAME = CLAIMNFTNETWORKNAMEMAP[CURENV];
+
+export const SUPPORRTEDQUERYCHAINMAP = {
+  'Arbitrum One': {
+    name: 'Arbitrum One',
+    chainId: 42161,
+    icon: iconArbitrum,
+  },
+  BSC: {
+    name: 'BSC',
+    chainId: 56,
+    icon: iconBinance,
+  },
+  Ethereum: {
+    name: 'Ethereum',
+    chainId: 1,
+    icon: iconChainEthereum,
+  },
+  Polygon: {
+    name: 'Polygon',
+    chainId: 137,
+    icon: iconPolygon,
+  },
+  Avalanche: {
+    name: 'Avalanche',
+    chainId: 43114,
+    icon: iconNetwork6,
+  },
+  Optimism: {
+    name: 'Optimism',
+    chainId: 10,
+    icon: iconOptimism,
+  },
+};

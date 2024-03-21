@@ -70,7 +70,7 @@ const Token = memo(() => {
       );
       l = l.concat(newOnChainList);
     }
-    
+
     return l;
   }, [connectedExchangeSources, connectedOnChainSources]);
   const queryIconFn = (id) => {
@@ -188,7 +188,7 @@ const Token = memo(() => {
           Number(totalBalance),
           new BigNumber(totalAssetsBalance).toNumber()
         );
-        return digit.toFixed(2);
+        return mul(Number(digit), 100).toFixed(2);;
       }
     },
     [totalAssetsBalance]
@@ -224,7 +224,6 @@ const Token = memo(() => {
     if (assetsStarsMapStr) {
       const assetsStarsMapObj = JSON.parse(assetsStarsMapStr);
       if (assetsStarsMapObj.token) {
-        debugger
         setStarArr(Object.keys(assetsStarsMapObj.token));
       }
     }
@@ -256,6 +255,19 @@ const Token = memo(() => {
     }
     resetStarArr();
   }, []);
+  const iconFn = useCallback(
+    (j) => {
+      if (j.icon) {
+        return j.icon;
+      } else if (j.logo) {
+        return j.logo;
+      } else {
+        const symbol = j.symbol.split('---')[0];
+        return `${tokenLogoPrefix}icon${symbol}.png`;
+      }
+    },
+    [tokenLogoPrefix]
+  );
   useEffect(() => {
     resetStarArr();
   }, []);
@@ -273,14 +285,10 @@ const Token = memo(() => {
                       handleStar(i);
                     }}
                   />
-                  <img
-                    src={`${tokenLogoPrefix}icon${i.symbol}.png`}
-                    alt=""
-                    className="sourceIcon"
-                  />
+                  <img src={iconFn(i)} alt="" className="sourceIcon" />
                   <div className="breif">
                     <div className="top">
-                      <div className="name">{i.symbol}</div>
+                      <div className="name">{i.symbol.split('---')[0]}</div>
                     </div>
                     <div className="bottom">
                       <div className="balance">${formatNumeral(i.value)}</div>
@@ -327,15 +335,19 @@ const Token = memo(() => {
           );
         })}
       </ul>
-      <PButton
-        type="text"
-        text="View More"
-        suffix={
-          <i className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}></i>
-        }
-        onClick={handleShowMore}
-        className="moreBtn"
-      />
+      {sortedHoldingTokensList.length > MAX && (
+        <PButton
+          type="text"
+          text="View More"
+          suffix={
+            <i
+              className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}
+            ></i>
+          }
+          onClick={handleShowMore}
+          className="moreBtn"
+        />
+      )}
     </section>
   );
 });

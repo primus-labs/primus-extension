@@ -1,21 +1,9 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import BigNumber from 'bignumber.js';
-import {
-  setExSourcesAsync,
-  setOnChainAssetsSourcesAsync,
-} from '@/store/actions';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
-import useMsgs from '@/hooks/useMsgs';
-import {
-  sub,
-  add,
-  div,
-  formatNumeral,
-  getTotalBalFromNumObjAPriceObj,
-  getTotalBalFromAssetsMap,
-} from '@/utils/utils';
-import { WALLETMAP } from '@/config/wallet';
+import { sub, add, div, mul, formatNumeral } from '@/utils/utils';
+import { EASInfo, SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 
 import useAllSources from '@/hooks/useAllSources';
 import PButton from '@/newComponents/PButton';
@@ -28,7 +16,6 @@ import TokenTable from '../TokenTable';
 const MAX = 5;
 
 const Chain = memo(() => {
-  const { addMsg } = useMsgs();
   const {
     totalOnChainAssetsBalance,
     totalAssetsBalance,
@@ -37,15 +24,11 @@ const Chain = memo(() => {
     totalPnlPercent,
     formatTotalPnlPercent,
   } = useAssetsStatistic();
-  const dispatch = useDispatch();
   const { sourceMap, sourceMap2 } = useAllSources();
   const [starArr, setStarArr] = useState<string[]>();
-
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
-
   const sysConfig = useSelector((state) => state.sysConfig);
-
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
@@ -54,40 +37,96 @@ const Chain = memo(() => {
   }, [sourceMap]);
   console.log('22connectedSocialSources', sourceMap); // delete
 
-  const connectedAssetsSourcesList = useMemo(() => {
-    let l = [];
-    if (Object.keys(connectedOnChainSources).length > 0) {
-      const newOnChainList = Object.values(connectedOnChainSources).map(
-        (i: any) => {
-          const { name, icon } = WALLETMAP['metamask'];
-          return Object.assign(i, { name, icon, id: i.address });
-        }
-      );
-      l = l.concat(newOnChainList);
-    }
-    return l;
+  const totalChainAssetsMap = useMemo(() => {
+    const reduceF = (prev, curr) => {
+      const { chainsAssetsMap } = curr;
+      if (chainsAssetsMap && Object.keys(chainsAssetsMap).length > 0) {
+        Object.keys(chainsAssetsMap).forEach((chain) => {
+          const currObj = chainsAssetsMap[chain];
+          if (chain in prev) {
+            const { totalBalance, tokenListMap } = currObj;
+            const {
+              totalBalance: prevTotalBalance,
+              tokenListMap: prevTokenListMap,
+            } = prev[chain];
+            const innerReduceF = (prevM, currM) => {
+              const symbol = currM.split('---')[0];
+              const currTokenItem = tokenListMap[prevM];
+              const { amount, price, value, isNative, chain } = currTokenItem;
+              if (symbol in prevM) {
+                const { amount: prevAmount, chain } = prevM[symbol];
+                const totalAmount = add(
+                  Number(prevAmount),
+                  Number(amount)
+                ).toFixed();
+                const totalValue = mul(
+                  Number(totalAmount),
+                  Number(price)
+                ).toFixed();
+                prevM[symbol] = {
+                  amount: totalAmount,
+                  price,
+                  value: totalValue,
+                  isNative,
+                  chain,
+                };
+              } else {
+                prevM[symbol] = currTokenItem;
+              }
+            };
+
+            const newTokenListMap = Object.keys(tokenListMap).reduce(
+              innerReduceF,
+              prevTokenListMap
+            );
+            prev[chain] = {
+              ...prev[chain],
+              totalBalance: add(
+                Number(prevTotalBalance),
+                Number(totalBalance)
+              ).toFixed(),
+              tokenListMap: newTokenListMap,
+            };
+          } else {
+            const { icon, name } = SUPPORRTEDQUERYCHAINMAP[chain];
+            prev = {
+              ...prev,
+              [chain]: {
+                ...currObj,
+                id: chain,
+                icon,
+                name,
+              },
+            };
+          }
+        });
+      }
+      return prev;
+    };
+    const tAM = Object.values(connectedOnChainSources).reduce(reduceF, {});
+    return tAM;
   }, [connectedOnChainSources]);
-  const sortedConnectedAssetsSourcesList = useMemo(() => {
+
+  const sortedChainAssetsList = useMemo(() => {
+    const l = Object.values(totalChainAssetsMap as any);
     const sortFn = (l) => {
       return l.sort((a: any, b: any) =>
         sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
       );
     };
-    let noStarL = connectedAssetsSourcesList.filter((i: any) => !i.star);
-    let hasStarL = connectedAssetsSourcesList.filter((i: any) => !!i.star);
+    let noStarL = l.filter((i: any) => !starArr?.includes(i.id));
+    let hasStarL = l.filter((i: any) => starArr?.includes(i.id));
+
     noStarL = sortFn(noStarL);
     hasStarL = sortFn(hasStarL);
-    debugger;
     return [...hasStarL, ...noStarL];
-    
-  }, [connectedAssetsSourcesList]);
+  }, [totalChainAssetsMap, starArr]);
 
   const showList = useMemo(() => {
     return showMore
-      ? sortedConnectedAssetsSourcesList
-      : sortedConnectedAssetsSourcesList.slice(0, MAX);
-    
-  }, [sortedConnectedAssetsSourcesList, showMore]);
+      ? sortedChainAssetsList
+      : sortedChainAssetsList.slice(0, MAX);
+  }, [sortedChainAssetsList, showMore]);
 
   const handleShowMore = useCallback(() => {
     setShowMore((f) => !f);
@@ -103,68 +142,36 @@ const Chain = memo(() => {
           Number(totalBalance),
           new BigNumber(totalOnChainAssetsBalance).toNumber()
         );
-        return digit.toFixed(2);
+        return mul(Number(digit), 100).toFixed(2);
       }
     },
     [totalOnChainAssetsBalance]
   );
-  const connectionNumFn = useCallback(
-    (i) => {
-      const lowerCaseSourceName = i.name.toLowerCase();
-      if (lowerCaseSourceName === 'web3 wallet') {
-        return Object.values(sourceMap.onChainAssetsSources).length;
+  const iconFn = useCallback(
+    (j) => {
+      if (j.icon) {
+        return j.icon;
+      } else if (j.logo) {
+        return j.logo;
       } else {
-        if (sourceMap2?.[lowerCaseSourceName]) {
-          return 1;
-        } else {
-          return 0;
-        }
+        const symbol = j.symbol.split('---')[0];
+        return `${tokenLogoPrefix}icon${symbol}.png`;
       }
     },
-    [sourceMap2, sourceMap]
+    [tokenLogoPrefix]
   );
   const holdingTokenLogosFn = useCallback(
     (i) => {
-      const l = Object.keys(i.tokenListMap).map((i) => {
-        return `${tokenLogoPrefix}icon${i}.png`;
+      const l = Object.values(i.tokenListMap).map((i) => {
+        return iconFn(i);
       });
       return l;
     },
     [sourceMap2, sourceMap]
   );
-  const totalBalanceForAttestFn = useCallback((activeDataSouceUserInfo) => {
-    let totalBalance = '0';
-
-    if (activeDataSouceUserInfo) {
-      const { id: dataSourceId } = activeDataSouceUserInfo;
-      if (dataSourceId === 'okx') {
-        totalBalance = getTotalBalFromNumObjAPriceObj(
-          activeDataSouceUserInfo?.tradingAccountTokenAmountObj,
-          activeDataSouceUserInfo?.tokenPriceMap
-        );
-      } else if (dataSourceId === 'binance') {
-        totalBalance = getTotalBalFromAssetsMap(
-          activeDataSouceUserInfo?.spotAccountTokenMap
-        );
-      } else {
-        totalBalance = activeDataSouceUserInfo?.totalBalance;
-      }
-    }
-
-    return totalBalance;
-  }, []);
 
   const handleExpand = useCallback(
     (dataSource) => {
-      if (dataSource.expried) {
-        addMsg({
-          type: 'warn',
-          title: `${dataSource.name} data login session has expired`,
-          desc: 'Please reconnect the data source to get real-time information.',
-          link: '/datas',
-        });
-      }
-
       if (activeExpand.includes(dataSource.id)) {
         setActiveExpand((arr) => {
           const newArr = [...arr];
@@ -192,7 +199,7 @@ const Chain = memo(() => {
     }
   };
   const handleStar = useCallback(async (i) => {
-    const { symbol } = i;
+    const { id: symbol } = i;
     const { assetsStarsMap: assetsStarsMapStr } =
       await chrome.storage.local.get(['assetsStarsMap']);
     if (assetsStarsMapStr) {
@@ -222,7 +229,7 @@ const Chain = memo(() => {
     resetStarArr();
   }, []);
   return (
-    <section className="tableSection portfolio">
+    <section className="tableSection chain">
       <ul className="dataSourceItems">
         {showList.map((i: any) => {
           return (
@@ -230,7 +237,7 @@ const Chain = memo(() => {
               <div className="mainInfo">
                 <div className="left">
                   <PStar
-                    open={i.star}
+                    open={starArr?.includes(i.id)}
                     onClick={() => {
                       handleStar(i);
                     }}
@@ -239,20 +246,12 @@ const Chain = memo(() => {
                   <div className="breif">
                     <div className="top">
                       <div className="name">{i.name}</div>
-                      <div className="num">
-                        <i className="iconfont icon-iconConnection"></i>
-                        <span>
-                          {connectionNumFn(i) > 1
-                            ? connectionNumFn(i)
-                            : i.userInfo?.userName ?? i.apiKey ?? i.address}
-                        </span>
-                      </div>
                     </div>
                     <div className="bottom">
                       <div className="balance">
                         ${formatNumeral(i.totalBalance)}
                       </div>
-                      <div className="percent">({balancePercentFn(i)}%)</div>
+                      {/* <div className="percent">({balancePercentFn(i)}%)</div> */}
                     </div>
                   </div>
                 </div>
@@ -270,49 +269,43 @@ const Chain = memo(() => {
                   </div>
                 </div>
               </div>
-              {/* {activeExpand.includes(i.id) && (
+              {activeExpand.includes(i.id) && (
                 <>
-                  {['okx', 'binance'].includes(i.id) && (
-                    <div className="extraInfo">
-                      <div className="card">
-                        <i className="iconfont icon-iconAmountForAttest"></i>
-                        <div className="txtWrapper">
-                          <div className="label">Available for Attestation</div>
-                          <div className="value">
-                            ${totalBalanceForAttestFn(i)}
-                          </div>
+                  <div className="extraInfo">
+                    <div className="card">
+                      <i className="iconfont icon-iconAmountForAttest"></i>
+                      <div className="txtWrapper">
+                        <div className="label">Tokens</div>
+                        <div className="value">
+                          ${formatNumeral(totalOnChainAssetsBalance)}
                         </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                   <TokenTable
                     title="Tokens"
                     id={i.id}
                     listMap={i.tokenListMap}
-                    others={
-                      i.id === 'binance'
-                        ? {
-                            spotAccountTokenMap: i.spotAccountTokenMap,
-                            flexibleAccountTokenMap: i.flexibleAccountTokenMap,
-                          }
-                        : {}
-                    }
                   />
                 </>
-              )} */}
+              )}
             </li>
           );
         })}
       </ul>
-      <PButton
-        type="text"
-        text="View More"
-        suffix={
-          <i className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}></i>
-        }
-        onClick={handleShowMore}
-        className="moreBtn"
-      />
+      {sortedChainAssetsList.length > MAX && (
+        <PButton
+          type="text"
+          text="View More"
+          suffix={
+            <i
+              className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}
+            ></i>
+          }
+          onClick={handleShowMore}
+          className="moreBtn"
+        />
+      )}
     </section>
   );
 });

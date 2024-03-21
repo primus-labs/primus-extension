@@ -35,7 +35,6 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
     },
   };
   const handleClick = (i: any) => {
-    debugger;
     navigate(`/events/detail?id=${i.id}`);
   };
   return (

@@ -76,8 +76,8 @@ const useAllSources = (sourceName?: undefined | null| string) => {
     sourceList: allSourceList,
     sourceMap: allSourceMap,
     sourceMap2: allSourceMap2,
-    activeSourceInfo
-  }
+    activeSourceInfo,
+  };
 };
 
 export default useAllSources;

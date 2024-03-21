@@ -11,6 +11,7 @@ import {
   sub,
   add,
   div,
+  mul,
   formatNumeral,
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
@@ -103,7 +104,7 @@ const AssetsDetails = memo(() => {
           Number(totalBalance),
           new BigNumber(totalAssetsBalance).toNumber()
         );
-        return digit.toFixed(2);
+        return mul(Number(digit), 100).toFixed(2);;
       }
     },
     [totalAssetsBalance]
@@ -285,15 +286,19 @@ const AssetsDetails = memo(() => {
           );
         })}
       </ul>
-      <PButton
-        type="text"
-        text="View More"
-        suffix={
-          <i className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}></i>
-        }
-        onClick={handleShowMore}
-        className="moreBtn"
-      />
+      {sortedConnectedAssetsSourcesList.length > MAX && (
+        <PButton
+          type="text"
+          text="View More"
+          suffix={
+            <i
+              className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}
+            ></i>
+          }
+          onClick={handleShowMore}
+          className="moreBtn"
+        />
+      )}
     </section>
   );
 });
