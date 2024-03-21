@@ -122,37 +122,4 @@
   }
 }
 
-.tableSection.portfolio {
-  .dataSourceItems {
-    .dataSourceItem {
-      .extraInfo {
-        width: 100%;
-        @include frsc;
-        .card {
-          @include frsc;
-          width: 304px;
-          padding: var(--spacing-16);
-          gap: var(--spacing-8);
-          border-radius: var(--spacing-8);
-          border: 1px solid var(--border-tokens-border-primary-selected-gray);
-          .iconfont {
-            font-size: var(--spacing-24);
-          }
-          .txtWrapper {
-            @include BodyBody100Semibold;
-            .value {
-              @include NumberBody100;
-            }
-          }
-        }
-      }
-    }
-  }
-  .moreBtn {
-    height: auto;
-    align-self: center;
-    .rotate {
-      transform: rotate(180deg);
-    }
-  }
-}
+

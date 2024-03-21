@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { memo, useCallback, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import {
@@ -252,6 +252,19 @@ const AssetsDetails = memo(() => {
                           <div className="label">Available for Attestation</div>
                           <div className="value">
                             ${totalBalanceForAttestFn(i)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {i.id.startsWith('0x') && (
+                    <div className="extraInfo">
+                      <div className="card">
+                        <i className="iconfont icon-iconAmountForAttest"></i>
+                        <div className="txtWrapper">
+                          <div className="label">Token</div>
+                          <div className="value">
+                            ${formatNumeral(i.totalBalance)}
                           </div>
                         </div>
                       </div>

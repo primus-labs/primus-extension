@@ -13,10 +13,10 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
     await ex.getInfo();
     console.log(`222dataSourceWeb getInfo ${dataSourceId}= `, ex);
     var newSourceUserData = {};
+    let storageRes = await chrome.storage.local.get(dataSourceId);
+    const lastData = storageRes[dataSourceId];
+    let pnl = null;
     if (sourceType === 'Assets') {
-      let storageRes = await chrome.storage.local.get(dataSourceId);
-      const lastData = storageRes[dataSourceId];
-      let pnl = null;
       if (lastData) {
         const lastTotalBal = JSON.parse(lastData).totalBalance;
         pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
@@ -39,6 +39,13 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
         newSourceUserData.pnl = pnl;
       }
     } else if (sourceType === 'Social') {
+      if (lastData) {
+        const lastTotalBal = JSON.parse(lastData).followers;
+        pnl = sub(ex.followers, lastTotalBal).toFixed();
+      }
+      if (pnl !== null && pnl !== undefined) {
+        ex.pnl = pnl;
+      }
       newSourceUserData = {
         ...ex,
         version: SocailStoreVersion,

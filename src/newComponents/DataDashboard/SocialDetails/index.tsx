@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
-import Table from './Table';
+import React, { memo } from 'react';
+import SocialTable from './SocialTable';
 import './index.scss';
 
 const AssetsDetails = memo(() => {
@@ -9,7 +9,7 @@ const AssetsDetails = memo(() => {
         <span>Social Details</span>
       </div>
       <div className="content">
-        <Table />
+        <SocialTable />
       </div>
     </div>
   );

@@ -1,21 +1,8 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import BigNumber from 'bignumber.js';
-import {
-  setExSourcesAsync,
-  setOnChainAssetsSourcesAsync,
-} from '@/store/actions';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
-import useMsgs from '@/hooks/useMsgs';
-import {
-  sub,
-  add,
-  div,
-  mul,
-  formatNumeral,
-  getTotalBalFromNumObjAPriceObj,
-  getTotalBalFromAssetsMap,
-} from '@/utils/utils';
+import { sub, add, div, mul, formatNumeral } from '@/utils/utils';
 import { WALLETMAP } from '@/config/wallet';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 
@@ -30,19 +17,9 @@ import TokenTable from '../TokenTable';
 const MAX = 5;
 
 const Token = memo(() => {
-  const {
-    totalOnChainAssetsBalance,
-    totalAssetsBalance,
-    formatTotalAssetsBalance,
-    totalPnl,
-    totalPnlPercent,
-    formatTotalPnlPercent,
-  } = useAssetsStatistic();
-  const dispatch = useDispatch();
-  const { sourceMap, sourceMap2 } = useAllSources();
-  const [current, setCurrent] = useState(1);
+  const { totalAssetsBalance } = useAssetsStatistic();
+  const { sourceMap } = useAllSources();
   const [starArr, setStarArr] = useState<string[]>();
-
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
 
@@ -58,7 +35,6 @@ const Token = memo(() => {
   const connectedOnChainSources = useMemo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);
-  console.log('22connectedSocialSources', sourceMap); // delete
   const connectedAssetsSourcesList = useMemo(() => {
     let l = Object.values(connectedExchangeSources);
     if (Object.keys(connectedOnChainSources).length > 0) {
@@ -188,7 +164,7 @@ const Token = memo(() => {
           Number(totalBalance),
           new BigNumber(totalAssetsBalance).toNumber()
         );
-        return mul(Number(digit), 100).toFixed(2);;
+        return mul(Number(digit), 100).toFixed(2);
       }
     },
     [totalAssetsBalance]

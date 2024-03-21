@@ -5,7 +5,7 @@ import {
   refreshAuthData,
 } from '@/services/api/user';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
-import { getCurrentDate, postMsg } from '@/utils/utils';
+import { getCurrentDate, postMsg, sub } from '@/utils/utils';
 import { SocailStoreVersion } from '@/config/constants';
 import {
   default as processExReq,
@@ -223,6 +223,18 @@ const processpadoServiceReq = async (message, port) => {
         if (rc === 0) {
           const { dataInfo, userInfo } = result;
           const lowerCaseSourceName = params.source.toLowerCase();
+
+          let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
+          const lastData = storageRes[lowerCaseSourceName];
+          let pnl = null;
+          if (lastData) {
+            const lastTotalBal = JSON.parse(lastData).followers;
+            pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
+          }
+          if (pnl !== null && pnl !== undefined) {
+            dataInfo.pnl = pnl;
+          }
+
           const socialSourceData = {
             ...dataInfo,
             date: getCurrentDate(),
@@ -271,6 +283,18 @@ const processpadoServiceReq = async (message, port) => {
         if (rc === 0) {
           const lowerCaseSourceName = params.source.toLowerCase();
           const { dataInfo, userInfo } = result;
+
+          let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
+          const lastData = storageRes[lowerCaseSourceName];
+          let pnl = null;
+          if (lastData) {
+            const lastTotalBal = JSON.parse(lastData).followers;
+            pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
+          }
+          if (pnl !== null && pnl !== undefined) {
+            dataInfo.pnl = pnl;
+          }
+
           const socialSourceData = {
             ...dataInfo,
             date: getCurrentDate(),

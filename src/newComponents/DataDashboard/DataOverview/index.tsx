@@ -7,11 +7,19 @@ import { getUserInfo } from '@/services/api/achievements';
 import useAllSources from '@/hooks/useAllSources';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import useSocialStatistic from '@/hooks/useSocialStatistic';
-import { gte } from '@/utils/utils';
-import { DATASOURCEMAP } from '@/config/dataSource2';
-import { EASInfo } from '@/config/chain';
+import { gte, sub, add, getCurrentDate, formatFullTime } from '@/utils/utils';
+import { exportCsv } from '@/utils/exportFile';
 
+import { BIGZERO } from '@/config/constants';
+
+import type { ConnectSourceType } from '@/types/dataSource';
+import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
+// import type { SocialDatas } from '@/types/dataSource';
+import type {
+  DataSourceItemType,
+  AssetsMap,
+} from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import PButton from '@/newComponents/PButton';
 import PEye from '@/newComponents/PEye';
 import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
@@ -34,11 +42,353 @@ const Overview = memo(() => {
   const connectedSocialSources = useMemo(() => {
     return sourceMap.socialSources;
   }, [sourceMap]);
+  const connectedOnChainSources = useMemo(() => {
+    return sourceMap.onChainAssetsSources;
+  }, [sourceMap]);
+  const connectedExchangeSources = useMemo(() => {
+    return sourceMap.exSources;
+  }, [sourceMap]);
   const connectedKycSources = useMemo(() => {
     return sourceMap.kycSources;
   }, [sourceMap]);
+
   console.log('22connectedSocialSources', sourceMap);
-  const handleExport = useCallback(() => {}, []);
+  const accTagsFn = useCallback((item: any) => {
+    let lowerCaseName = item.id;
+    let formatTxt;
+    switch (lowerCaseName) {
+      case 'x':
+        formatTxt = item.verified ? 'Verified' : 'Not Verified';
+        break;
+      case 'discord':
+        const flagArr = item.remarks?.flags.split(',');
+        const flagArrLen = flagArr.length;
+        const activeFlag =
+          flagArr[flagArrLen - 1] === 'Bot'
+            ? flagArr[flagArrLen - 2]
+            : flagArr[flagArrLen - 1];
+        formatTxt = activeFlag;
+        break;
+      default:
+        formatTxt = '-';
+        break;
+    }
+    return formatTxt;
+  }, []);
+  const assembleKYCExcelParams = useCallback(async () => {
+    let kycRows: object[] = [];
+    kycRows = [
+      {
+        label: 'DataType',
+        value: 'Identity',
+      },
+    ];
+    const activeKYCSourceNameArr = Object.keys(connectedKycSources);
+    activeKYCSourceNameArr.forEach((key, idx) => {
+      const {
+        name,
+        fullName,
+        countryName,
+        idNumber,
+        validUntil,
+        docName,
+        dateOfBirth,
+        cipher,
+      } = connectedKycSources[key];
+      const curSourceRows = [
+        {
+          empty: '',
+          label: 'Source' + (idx + 1),
+          value: name,
+        },
+
+        {
+          empty: '',
+          label: 'Ciphertext',
+          value: cipher + '\t',
+        },
+        {
+          empty: '',
+          ProfileDetail: 'ProfileDetail',
+          userName: 'Name',
+          createdTime: 'DocumentType',
+          followers: 'Country/Region',
+          following: 'DocumentNumber',
+          posts: 'DateofBirth',
+          accountTags: 'DateofExpire',
+        },
+        {
+          empty: '',
+          empty2: '',
+          userName: fullName,
+          createdTime: docName,
+          followers: countryName,
+          following: idNumber,
+          posts: dateOfBirth,
+          accountTags: validUntil,
+        },
+      ];
+      kycRows.push(...curSourceRows);
+    });
+
+    return kycRows;
+  }, [connectedKycSources]);
+  const assembleAssetsExcelParams = useCallback(async () => {
+    let checkedExSourcesTotalBal: any = BIGZERO;
+    const activeExSourceNameArr = Object.keys(connectedExchangeSources);
+    const activeOnChainSourceNameArr = Object.keys(connectedOnChainSources);
+    const activeExSourceCipherNameArr = activeExSourceNameArr.map(
+      (i) => `${i}cipher`
+    );
+
+    const ciphers = await chrome.storage.local.get(activeExSourceCipherNameArr);
+    let assetsRows: any[] = [];
+    if (
+      activeExSourceNameArr.length > 0 ||
+      activeOnChainSourceNameArr.length > 0
+    ) {
+      activeExSourceNameArr
+        .sort((a, b) =>
+          sub(
+            Number(connectedExchangeSources[b].totalBalance),
+            Number(connectedExchangeSources[a].totalBalance)
+          ).toNumber()
+        )
+        .forEach((key, idx) => {
+          let { name, totalBalance, tokenListMap, label } =
+            connectedExchangeSources[key];
+          checkedExSourcesTotalBal = add(
+            Number(totalBalance),
+            checkedExSourcesTotalBal
+          );
+          const tokensRows = Object.values(tokenListMap as AssetsMap)
+            .sort((a, b) => sub(Number(b.value), Number(a.value)).toNumber())
+            .reduce((prev: any[], token) => {
+              let { symbol, amount, price, value } = token;
+              prev.push({
+                empty: '',
+                empty2: '',
+                symbol,
+                amount: amount + '\t',
+                price: price + '\t',
+                value: value + '\t',
+              });
+              return prev;
+            }, []);
+
+          let curCipher = ciphers[`${key}cipher`];
+          // curCipher = curCipher.replace(/"/g, "'");
+          // curCipher = '\"' + curCipher + '\"'
+          // curCipher = curCipher.replace(/,/g, "，");
+          let curSourceRows = [
+            {
+              empty: '',
+              label: 'Source' + (idx + 1),
+              value: name,
+            },
+            {
+              empty: '',
+              label: 'Label',
+              value: label,
+            },
+            {
+              empty: '',
+              label: 'ApiCiphertext',
+              value: curCipher ?? '' + '\t',
+            },
+            {
+              empty: '',
+              label: 'Balance(USD)',
+              value: totalBalance + '\t',
+            },
+            {
+              empty: '',
+              TokenListMap: 'TokenListMap',
+              symbol: 'TokenName',
+              amount: 'Amount',
+              price: 'Price(USD)',
+              value: 'Value(USD)',
+            },
+            ...tokensRows,
+          ];
+          assetsRows.push(...curSourceRows);
+        });
+      // on-chain Datas
+      const exSourceLen = activeExSourceNameArr.length;
+
+      activeOnChainSourceNameArr
+        .sort((a, b) =>
+          sub(
+            Number(connectedOnChainSources[b].totalBalance),
+            Number(connectedOnChainSources[a].totalBalance)
+          ).toNumber()
+        )
+        .forEach((key, idx) => {
+          let { name, totalBalance, tokenListMap, label, address } =
+            connectedOnChainSources[key];
+          checkedExSourcesTotalBal = add(
+            Number(totalBalance),
+            checkedExSourcesTotalBal
+          );
+          const tokensRows = Object.values(tokenListMap as AssetsMap)
+            .sort((a, b) => sub(Number(b.value), Number(a.value)).toNumber())
+            .reduce((prev: any[], token) => {
+              let { symbol, amount, price, value, chain, address } =
+                token as any;
+              prev.push({
+                empty: '',
+                empty2: '',
+                symbol: address ? symbol.split('---')[0] : symbol,
+                chain,
+                amount: amount + '\t',
+                price: price + '\t',
+                value: value + '\t',
+              });
+              return prev;
+            }, []);
+
+          let curSourceRows = [
+            {
+              empty: '',
+              label: 'Source' + (exSourceLen + idx + 1),
+              value: name,
+            },
+            {
+              empty: '',
+              label: 'Label',
+              value: label,
+            },
+            {
+              empty: '',
+              label: 'Address',
+              value: address,
+            },
+            {
+              empty: '',
+              label: 'Balance(USD)',
+              value: totalBalance + '\t',
+            },
+            {
+              empty: '',
+              TokenListMap: 'TokenListMap',
+              symbol: 'TokenName',
+              Blockchain: 'Blockchain',
+              amount: 'Amount',
+              price: 'Price(USD)',
+              value: 'Value(USD)',
+            },
+            ...tokensRows,
+          ];
+          assetsRows.push(...curSourceRows);
+        });
+
+      assetsRows.unshift(
+        {
+          label: 'DataType',
+          value: 'Assets',
+        },
+        {
+          empty: '',
+          label: 'TotalBalance(USD)',
+          value: checkedExSourcesTotalBal.toFixed(),
+        }
+      );
+    }
+
+    return assetsRows;
+  }, [connectedExchangeSources, connectedOnChainSources]);
+  const assembleSocialExcelParams = useCallback(async () => {
+    let socialRows: object[] = [];
+    const activeSocialSourceNameArr = Object.keys(connectedSocialSources);
+    if (activeSocialSourceNameArr.length > 0) {
+      socialRows = [
+        {
+          label: 'DataType',
+          value: 'Social',
+        },
+      ];
+      activeSocialSourceNameArr.forEach((key, idx) => {
+        const {
+          name,
+          followers,
+          followings,
+          posts,
+          createdTime,
+          userName,
+          screenName,
+        } = connectedSocialSources[key];
+        const curSourceRows = [
+          {
+            empty: '',
+            label: 'Source' + (idx + 1),
+            value: name,
+          },
+          {
+            empty: '',
+            ProfileDetail: 'ProfileDetail',
+            userName: 'UserName',
+            createdTime: 'CreatedTime',
+            followers: 'Followers',
+            following: 'Following',
+            posts: 'Posts',
+            accountTags: 'AccountTags',
+          },
+          {
+            empty: '',
+            empty2: '',
+            userName: userName || screenName,
+            createdTime: createdTime ? getCurrentDate(createdTime, ' ') : '-',
+            followers: followers || '-',
+            following: followings,
+            posts: posts || '-',
+            accountTags: accTagsFn(connectedSocialSources[key]),
+          },
+        ];
+        socialRows.push(...curSourceRows);
+      });
+    }
+    return socialRows;
+  }, [accTagsFn, connectedSocialSources]);
+  const assembleExcelParams = useCallback(async () => {
+    let { id, address, authSource } = await getUserInfo();
+    const basicRows = [
+      {
+        label: 'AccountID',
+        value: id + '\t',
+      },
+      // {
+      //   label: 'OAuthMethod',
+      //   value: `${authSource}Account`,
+      // },
+      {
+        label: 'PADO Account',
+        value: address,
+      },
+      {
+        label: 'UpdateTime',
+        value: formatFullTime(+new Date()) + '\t',
+      },
+    ];
+    const assetsRows: object[] = await assembleAssetsExcelParams();
+    const socialRows: object[] = await assembleSocialExcelParams();
+    const kycRows: object[] = await assembleKYCExcelParams();
+    const allRows = [...basicRows, ...assetsRows, ...socialRows, ...kycRows];
+    let cvsArr: string[] = allRows.map((i: any) => {
+      const separtor = ';';
+      // if (i.label === 'ApiCiphertext') {
+      //   const specialStr = `${i.empty}${separtor}${i.label}${separtor}${i.value}\n`;
+      //   return specialStr;
+      // }
+      return Object.values(i).join(separtor) + '\n';
+    });
+    // TODO
+    return cvsArr;
+  }, [assembleAssetsExcelParams, assembleSocialExcelParams]);
+  const handleExport = useCallback(async () => {
+    const formatDate = new Date().toLocaleString();
+    let cvsArr: string[] = await assembleExcelParams();
+    exportCsv(cvsArr, `Data File${formatDate}`);
+  }, [assembleExcelParams]);
   const handleAdd = useCallback(() => {
     navigate('/datas');
   }, [navigate]);
@@ -80,7 +430,7 @@ const Overview = memo(() => {
           <div className="content">
             <div className="num">
               <div className="balance">
-                {balanceVisible? formatTotalAssetsBalance: '$***'}
+                {balanceVisible ? formatTotalAssetsBalance : '$***'}
               </div>
               <div className="pnl">
                 <div className="label">PnL</div>

@@ -1,16 +1,7 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-  useMemo,
-  FC,
-} from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { memo, useCallback, useState, useMemo, FC } from 'react';
+import { useSelector } from 'react-redux';
 import { Pagination } from 'antd';
 import { sub, formatNumeral } from '@/utils/utils';
-
-import useAllSources from '@/hooks/useAllSources';
 import './index.scss';
 const PAGESIZE = 10;
 interface TokenTableProps {
@@ -24,23 +15,11 @@ const TokenTable: FC<TokenTableProps> = memo(
   ({ title = 'Tokens', id, listMap, others = {} }) => {
     const { spotAccountTokenMap, flexibleAccountTokenMap } = others;
     const totolCount = Object.values(listMap).length;
-    const { sourceMap, sourceMap2 } = useAllSources();
     const [current, setCurrent] = useState(1);
     const sysConfig = useSelector((state) => state.sysConfig);
     const tokenLogoPrefix = useMemo(() => {
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
-
-    const holdingTokenLogosFn = useCallback(
-      (i) => {
-        const l = Object.keys(listMap).map((i) => {
-          return `${tokenLogoPrefix}icon${i}.png`;
-        });
-        return l;
-      },
-      [sourceMap2, sourceMap]
-    );
-
     const showTokenListFn = useCallback(() => {
       const l = Object.values(listMap);
       const sortFn = (l) => {

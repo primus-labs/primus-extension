@@ -1,9 +1,9 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import { sub, add, div, mul, formatNumeral } from '@/utils/utils';
-import { EASInfo, SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
+import { SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 
 import useAllSources from '@/hooks/useAllSources';
 import PButton from '@/newComponents/PButton';
@@ -16,14 +16,7 @@ import TokenTable from '../TokenTable';
 const MAX = 5;
 
 const Chain = memo(() => {
-  const {
-    totalOnChainAssetsBalance,
-    totalAssetsBalance,
-    formatTotalAssetsBalance,
-    totalPnl,
-    totalPnlPercent,
-    formatTotalPnlPercent,
-  } = useAssetsStatistic();
+  const { totalOnChainAssetsBalance } = useAssetsStatistic();
   const { sourceMap, sourceMap2 } = useAllSources();
   const [starArr, setStarArr] = useState<string[]>();
   const [showMore, setShowMore] = useState<boolean>(false);
@@ -35,7 +28,6 @@ const Chain = memo(() => {
   const connectedOnChainSources = useMemo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);
-  console.log('22connectedSocialSources', sourceMap); // delete
 
   const totalChainAssetsMap = useMemo(() => {
     const reduceF = (prev, curr) => {

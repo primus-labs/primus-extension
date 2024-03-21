@@ -19,17 +19,6 @@
     border: 1px solid var(--border-tokens-border-primary);
     background: var(--layer-tokens-layer-primary);
     @include fcss;
-    .tokenTable.social{
-      .tokenItems{
-        border-top: 0;
-        .tokenItem{
-          >div{
-            &:nth-child(1),&:nth-child(1),&:last-child {
-              @include BodyBody100;
-            }
-          }
-        }
-      }
-    }
+    
   }
 }

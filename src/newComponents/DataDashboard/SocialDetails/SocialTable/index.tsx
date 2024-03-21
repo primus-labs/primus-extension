@@ -1,10 +1,10 @@
 import React, { memo, useCallback, useMemo, FC } from 'react';
 import dayjs from 'dayjs';
 import useAllSources from '@/hooks/useAllSources';
-import { sub, formatNumeral, getCurrentDate } from '@/utils/utils';
+import { sub, gte, formatNumeral, getCurrentDate } from '@/utils/utils';
 import './index.scss';
 
-const TokenTable: FC = memo(({}) => {
+const SocialTable: FC = memo(({}) => {
   const { sourceMap } = useAllSources();
   const connectedSocialSources = useMemo(() => {
     return sourceMap.socialSources;
@@ -15,7 +15,7 @@ const TokenTable: FC = memo(({}) => {
         sub(Number(b.followers), Number(a.followers)).toNumber()
     );
     return orderedSocialList;
-  }, []);
+  }, [connectedSocialSources]);
 
   const formatTxtFn = useCallback((item, key) => {
     let formatTxt;
@@ -79,7 +79,16 @@ const TokenTable: FC = memo(({}) => {
                 {j.id === 'x' ? j.screenName : j.userName ?? j.screenName}
               </div>
               <div>{j.createdTime ? formatDate(j.createdTime) : '-'}</div>
-              <div>{formatTxtFn(j, 'followers')}</div>
+              <div className="followers">
+                <span>{formatTxtFn(j, 'followers')}</span>
+                <span
+                  className={`${
+                    j.pnl ? (gte(Number(j.pnl), 0) ? 'rise' : 'fall') : ''
+                  }`}
+                >
+                  {j.pnl ?gte(Number(j.pnl), 0) ? `+${j.pnl}` : `-${j.pnl}`: '-'}
+                </span>
+              </div>
               <div>{formatTxtFn(j, 'followings')}</div>
               <div className="posts">{formatTxtFn(j, 'posts')}</div>
               <div className="verified">{accTagsFn(j)}</div>
@@ -91,4 +100,4 @@ const TokenTable: FC = memo(({}) => {
   );
 });
 
-export default TokenTable;
+export default SocialTable;
