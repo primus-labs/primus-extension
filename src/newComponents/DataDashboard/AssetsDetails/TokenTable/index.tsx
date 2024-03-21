@@ -81,7 +81,7 @@ const TokenTable: FC<TokenTableProps> = memo(
     };
 
     return (
-      <div className="tokenTable expandInfo">
+      <div className="tokenTable">
         <div className="title">
           <span>{title}</span>
           <div className="num">({Object.keys(listMap).length})</div>

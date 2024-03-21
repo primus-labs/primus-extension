@@ -324,6 +324,15 @@ const Token = memo(() => {
               </div>
               {activeExpand.includes(i.symbol) && (
                 <>
+                  <div className="extraInfo">
+                    <div className="card">
+                      <i className="iconfont icon-iconAmountForAttest"></i>
+                      <div className="txtWrapper">
+                        <div className="label">Tokens</div>
+                        <div className="value">${formatNumeral(i.value)}</div>
+                      </div>
+                    </div>
+                  </div>
                   <TokenTable
                     title="Portfolio"
                     id={i.id}

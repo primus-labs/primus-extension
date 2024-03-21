@@ -2,7 +2,7 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
 
-.tokenTable.expandInfo {
+.tokenTable {
   width: 100%;
   @include fcss;
   gap: var(--spacing-16);
@@ -18,15 +18,20 @@
   .tokenItems {
     width: 100%;
     @include fcss;
-    border-bottom: 1px solid var(--border-tokens-border-primary);
+    border-top: 1px solid var(--border-tokens-border-primary);
     .tokenItem {
       width: 100%;
       @include frbc;
-      border-top: 1px solid var(--border-tokens-border-primary);
+      border-bottom: 1px solid var(--border-tokens-border-primary);
       &.th {
         height: 43px;
         @include Label01;
         color: var(--text-tokens-text-tertiary);
+        > div {
+          width: 120px;
+          text-align: right;
+          @include Label01;
+        }
       }
       &.tr {
         height: 48px;
@@ -42,17 +47,13 @@
           text-align: left;
           > img {
             width: var(--spacing-24);
-            // height: var(--spacing-24);
           }
         }
       }
-      // .token{
-      //   width:
-      // }
     }
   }
   .pageComponent {
-    margin-top: calc(-1* var(--spacing-4));
+    margin-top: calc(-1 * var(--spacing-4));
     width: 100%;
     text-align: right;
   }

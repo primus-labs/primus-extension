@@ -7,6 +7,7 @@ import {
 } from '@/store/actions';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import useMsgs from '@/hooks/useMsgs';
+import useAllSources from '@/hooks/useAllSources';
 import {
   sub,
   add,
@@ -17,30 +18,20 @@ import {
   getTotalBalFromAssetsMap,
 } from '@/utils/utils';
 import { WALLETMAP } from '@/config/wallet';
-
-import useAllSources from '@/hooks/useAllSources';
 import PButton from '@/newComponents/PButton';
 import PStar from '@/newComponents/PStar';
-
-import './index.scss';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import PArrow from '@/newComponents/PArrow';
 import TokenTable from '../TokenTable';
+import './index.scss';
+
 const MAX = 5;
 
 const AssetsDetails = memo(() => {
   const { addMsg } = useMsgs();
-  const {
-    totalOnChainAssetsBalance,
-    totalAssetsBalance,
-    formatTotalAssetsBalance,
-    totalPnl,
-    totalPnlPercent,
-    formatTotalPnlPercent,
-  } = useAssetsStatistic();
+  const { totalAssetsBalance } = useAssetsStatistic();
   const dispatch = useDispatch();
   const { sourceMap, sourceMap2 } = useAllSources();
-  const [current, setCurrent] = useState(1);
 
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
@@ -57,7 +48,6 @@ const AssetsDetails = memo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);
   console.log('22connectedSocialSources', sourceMap); // delete
-
   const connectedAssetsSourcesList = useMemo(() => {
     let l = Object.values(connectedExchangeSources);
     if (Object.keys(connectedOnChainSources).length > 0) {
@@ -104,7 +94,7 @@ const AssetsDetails = memo(() => {
           Number(totalBalance),
           new BigNumber(totalAssetsBalance).toNumber()
         );
-        return mul(Number(digit), 100).toFixed(2);;
+        return mul(Number(digit), 100).toFixed(2);
       }
     },
     [totalAssetsBalance]
