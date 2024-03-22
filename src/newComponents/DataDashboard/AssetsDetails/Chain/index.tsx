@@ -6,6 +6,7 @@ import { sub, add, div, mul, formatNumeral } from '@/utils/utils';
 import { SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 
 import useAllSources from '@/hooks/useAllSources';
+import useNFTs from '@/hooks/useNFTs';
 import PButton from '@/newComponents/PButton';
 import PStar from '@/newComponents/PStar';
 
@@ -13,14 +14,17 @@ import './index.scss';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import PArrow from '@/newComponents/PArrow';
 import TokenTable from '../TokenTable';
+import NFTList from '../NFTList';
 const MAX = 5;
 
 const Chain = memo(() => {
+  const { chainNftsListMap } = useNFTs();
   const { totalOnChainAssetsBalance } = useAssetsStatistic();
   const { sourceMap, sourceMap2 } = useAllSources();
   const [starArr, setStarArr] = useState<string[]>();
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
+  const [tableTab, setTableTab] = useState<string>();
   const sysConfig = useSelector((state) => state.sysConfig);
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
@@ -217,6 +221,20 @@ const Chain = memo(() => {
     }
     resetStarArr();
   }, []);
+  const handleChangeTableTab = useCallback((i) => {
+    setTableTab(i);
+  }, []);
+  const currentAccountNftsFn = useCallback(
+    (id) => {
+      const currentAccountNftsArr = chainNftsListMap[id];
+      if (currentAccountNftsArr) {
+        return currentAccountNftsArr;
+      } else {
+        return [];
+      }
+    },
+    [chainNftsListMap]
+  );
   useEffect(() => {
     resetStarArr();
   }, []);
@@ -264,7 +282,14 @@ const Chain = memo(() => {
               {activeExpand.includes(i.id) && (
                 <>
                   <div className="extraInfo">
-                    <div className="card">
+                    <div
+                      className={`card ${
+                        tableTab === 'Token' ? 'active' : ''
+                      } `}
+                      onClick={() => {
+                        handleChangeTableTab('Token');
+                      }}
+                    >
                       <i className="iconfont icon-iconAmountForAttest"></i>
                       <div className="txtWrapper">
                         <div className="label">Tokens</div>
@@ -273,12 +298,31 @@ const Chain = memo(() => {
                         </div>
                       </div>
                     </div>
+                    <div
+                      className={`card ${tableTab === 'NFT' ? 'active' : ''} `}
+                      onClick={() => {
+                        handleChangeTableTab('NFT');
+                      }}
+                    >
+                      <i className="iconfont icon-iconAmountForAttest"></i>
+                      <div className="txtWrapper">
+                        <div className="label">NFT</div>
+                        <div className="value">
+                          {currentAccountNftsFn(i.id).length}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <TokenTable
-                    title="Tokens"
-                    id={i.id}
-                    listMap={i.tokenListMap}
-                  />
+                  {tableTab === 'Token' && (
+                    <TokenTable
+                      title="Tokens"
+                      id={i.id}
+                      listMap={i.tokenListMap}
+                    />
+                  )}
+                  {tableTab === 'NFT' && (
+                    <NFTList list={currentAccountNftsFn(i.id)} />
+                  )}
                 </>
               )}
             </li>

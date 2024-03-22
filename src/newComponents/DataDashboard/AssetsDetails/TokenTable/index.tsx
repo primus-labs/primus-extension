@@ -112,14 +112,16 @@ const TokenTable: FC<TokenTableProps> = memo(
             );
           })}
         </ul>
-        <div className={'pageComponent'}>
-          <Pagination
-            total={totolCount}
-            onChange={pageChangedFn}
-            showSizeChanger={false}
-            pageSize={PAGESIZE}
-          />
-        </div>
+        {totolCount > 0 && (
+          <div className={'pageComponent'}>
+            <Pagination
+              total={totolCount}
+              onChange={pageChangedFn}
+              showSizeChanger={false}
+              pageSize={PAGESIZE}
+            />
+          </div>
+        )}
       </div>
     );
   }

@@ -8,6 +8,7 @@ import {
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import useMsgs from '@/hooks/useMsgs';
 import useAllSources from '@/hooks/useAllSources';
+import useNFTs from '@/hooks/useNFTs';
 import {
   sub,
   add,
@@ -22,18 +23,21 @@ import PButton from '@/newComponents/PButton';
 import PStar from '@/newComponents/PStar';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import PArrow from '@/newComponents/PArrow';
+import NFTList from '../NFTList';
 import TokenTable from '../TokenTable';
 import './index.scss';
 
 const MAX = 5;
 
 const AssetsDetails = memo(() => {
+  const { accountsNftsListMap } = useNFTs();
   const { addMsg } = useMsgs();
   const { totalAssetsBalance } = useAssetsStatistic();
   const dispatch = useDispatch();
   const { sourceMap, sourceMap2 } = useAllSources();
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
+  const [tableTab, setTableTab] = useState<string>('Token');
   const sysConfig = useSelector((state) => state.sysConfig);
   const nfts = useSelector((state) => state.nfts);
 
@@ -192,6 +196,21 @@ const AssetsDetails = memo(() => {
     },
     [dispatch, connectedOnChainSources]
   );
+  const currentAccountNftsFn = useCallback(
+    (id) => {
+      const currentAccountNftsArr = accountsNftsListMap[id];
+      if (currentAccountNftsArr) {
+        return currentAccountNftsArr;
+      } else {
+        return [];
+      }
+    },
+    [accountsNftsListMap]
+  );
+  const handleChangeTableTab = useCallback((i) => {
+    setTableTab(i);
+  }, []);
+
   return (
     <section className="tableSection portfolio">
       <ul className="dataSourceItems">
@@ -258,7 +277,14 @@ const AssetsDetails = memo(() => {
                   )}
                   {i.id.startsWith('0x') && (
                     <div className="extraInfo">
-                      <div className="card">
+                      <div
+                        className={`card ${
+                          tableTab === 'Token' ? 'active' : ''
+                        } `}
+                        onClick={() => {
+                          handleChangeTableTab('Token');
+                        }}
+                      >
                         <i className="iconfont icon-iconAmountForAttest"></i>
                         <div className="txtWrapper">
                           <div className="label">Token</div>
@@ -267,32 +293,45 @@ const AssetsDetails = memo(() => {
                           </div>
                         </div>
                       </div>
-                      <div className="card">
+                      <div
+                        className={`card ${
+                          tableTab === 'NFT' ? 'active' : ''
+                        } `}
+                        onClick={() => {
+                          handleChangeTableTab('NFT');
+                        }}
+                      >
                         <i className="iconfont icon-iconAmountForAttest"></i>
                         <div className="txtWrapper">
                           <div className="label">NFT</div>
                           <div className="value">
-                            
-                            {/* {Object.values(nfts[i.id])} */}
-                            {/* ${formatNumeral(i.totalBalance)} */}
+                            {currentAccountNftsFn(i.id).length}
                           </div>
                         </div>
                       </div>
                     </div>
                   )}
-                  <TokenTable
-                    title="Tokens"
-                    id={i.id}
-                    listMap={i.tokenListMap}
-                    others={
-                      i.id === 'binance'
-                        ? {
-                            spotAccountTokenMap: i.spotAccountTokenMap,
-                            flexibleAccountTokenMap: i.flexibleAccountTokenMap,
-                          }
-                        : {}
-                    }
-                  />
+
+                  {((i.id.startsWith('0x') && tableTab === 'Token') ||
+                    !i.id.startsWith('0x')) && (
+                    <TokenTable
+                      title="Tokens"
+                      id={i.id}
+                      listMap={i.tokenListMap}
+                      others={
+                        i.id === 'binance'
+                          ? {
+                              spotAccountTokenMap: i.spotAccountTokenMap,
+                              flexibleAccountTokenMap:
+                                i.flexibleAccountTokenMap,
+                            }
+                          : {}
+                      }
+                    />
+                  )}
+                  {i.id.startsWith('0x') && tableTab === 'NFT' && (
+                    <NFTList list={currentAccountNftsFn(i.id)} />
+                  )}
                 </>
               )}
             </li>

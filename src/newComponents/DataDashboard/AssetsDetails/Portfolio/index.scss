@@ -101,6 +101,10 @@
           gap: var(--spacing-8);
           border-radius: var(--spacing-8);
           border: 1px solid var(--border-tokens-border-primary-selected-gray);
+          &.active{
+            background: var(--layer-tokens-layer-on-primary-selected);
+            border-color: var(--border-tokens-border-primary-selected-gray);
+          }
           &.availableForAttestation {
             width: 304px;
           }
