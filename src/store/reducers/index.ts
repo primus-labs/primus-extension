@@ -143,6 +143,7 @@ const initState = {
     //   desc: 'See details in the Data Source page.',
     // },
   },
+  nfts: {},
 };
 
 // reducer
@@ -244,6 +245,11 @@ const reducer: any = function (state = initState, action: any) {
           ...state.activeConnectDataSource,
           ...action.payload,
         },
+      };
+    case 'setNfts':
+      return {
+        ...state,
+        nfts: action.payload,
       };
     default:
       return state;

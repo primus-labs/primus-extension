@@ -93,13 +93,17 @@
       .extraInfo {
         width: 100%;
         @include frsc;
+        gap: var(--spacing-16);
         .card {
           @include frsc;
-          width: 304px;
+          width: calc((100% - var(--spacing-16)/2));
           padding: var(--spacing-16);
           gap: var(--spacing-8);
           border-radius: var(--spacing-8);
           border: 1px solid var(--border-tokens-border-primary-selected-gray);
+          &.availableForAttestation {
+            width: 304px;
+          }
           .iconfont {
             font-size: var(--spacing-24);
           }
@@ -121,5 +125,3 @@
     }
   }
 }
-
-
