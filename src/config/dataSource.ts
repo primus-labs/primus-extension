@@ -34,6 +34,7 @@ import Webgateio from '@/services/webdata/webexchange/webgateio';
 import WebGate from '@/services/webdata/webexchange/webgateio';
 import Webhuobi from '@/services/webdata/webexchange/webhuobi';
 import WebHuoBi from '@/services/webdata/webexchange/webhuobi';
+import WebMexc from '@/services/webdata/webexchange/webmexc';
 
 export type DataSourceItemType = ExchangeMeta & {
   provider?: any;
@@ -242,10 +243,11 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your MEXC account to manage your data or create attestations.',
     requirePassphase: false,
-    constructorF: Mexc,
-    baseName: 'api.mexc.com',
-
-    connectType: 'API',
+    constructorF: WebMexc,
+    baseName: 'www.mexc.com/',
+    accountBalanceUrl: 'https://www.mexc.com/api/platform/asset/api/asset/spot/convert/v2',
+    jumpTo: 'https://www.mexc.com/zh-CN/assets/spot',
+    connectType: 'Web',
   },
   zan: {
     id: 'zan',

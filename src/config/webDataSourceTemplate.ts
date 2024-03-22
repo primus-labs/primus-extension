@@ -1,5 +1,5 @@
 export const webDataSourceTemplate = {
-  bitget:{
+  bitget: {
     dataSource: 'bitget',
     jumpTo: 'https://www.bitget.com/zh-CN/asset/spot',
     datasourceTemplate: {
@@ -27,7 +27,7 @@ export const webDataSourceTemplate = {
       ],
     },
   },
-  gate:{
+  gate: {
     dataSource: 'gate',
     jumpTo: 'https://www.gate.io/zh/myaccount/myfunds/spot',
     datasourceTemplate: {
@@ -36,13 +36,13 @@ export const webDataSourceTemplate = {
           name: 'first',
           url: 'https://www.gate.io/apiw/v2/account/spot/funds',
           headers: [],
-          cookies:['t_token','uid','pver'],
+          cookies: ['t_token', 'uid', 'pver'],
           method: 'GET',
-        }
+        },
       ],
     },
   },
-  huobi:{
+  huobi: {
     dataSource: 'huobi',
     jumpTo: 'https://www.htx.com/zh-cn/finance/account/spot/',
     datasourceTemplate: {
@@ -50,20 +50,35 @@ export const webDataSourceTemplate = {
         {
           name: 'first',
           url: 'https://www.htx.com/-/x/pro/v1/account/spot-account/balance',
-          queryParams:['r'],
-          headers: ['hb-pro-token','token'],
-          cookies:[],
+          queryParams: ['r'],
+          headers: ['hb-pro-token', 'token'],
+          cookies: [],
           method: 'GET',
         },
         {
           name: 'user-info',
           url: 'https://www.htx.com/-/x/otc/v1/user/info',
-          queryParams:['r','x-b3-traceid'],
+          queryParams: ['r', 'x-b3-traceid'],
           headers: ['token'],
-          cookies:[],
+          cookies: [],
           method: 'GET',
-        }
+        },
       ],
     },
-  }
+  },
+  mexc: {
+    dataSource: 'mexc',
+    jumpTo: 'https://www.mexc.com/zh-CN/assets/spot',
+    datasourceTemplate: {
+      requests: [
+        {
+          name: 'first',
+          url: 'https://www.mexc.com/api/platform/asset/api/asset/spot/convert/v2',
+          headers: [],
+          cookies: ['u_id'],
+          method: 'GET',
+        },
+      ],
+    },
+  },
 };

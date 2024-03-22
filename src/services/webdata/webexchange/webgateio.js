@@ -41,17 +41,17 @@ class WebGate extends WebExchange {
         let LPSymbols = this.totalHoldingTokenSymbolList
             .filter((i) => !STABLETOKENLIST.includes(i))
             .concat(BTC)
-            .map((j) => `${j}${USDT}`);
+            .map((j) => `${j}_${USDT}`);
         let res;
         //let errorSymbol;
         const params = {};
         params.url =
-            'https://api.bitget.com/api/v2/spot/market/tickers';
+            'https://api.gateio.ws/api/v4/spot/tickers';
         params.method = 'GET';
         try {
             res = await this.request(params);
-            res.data.forEach((lp) => {
-                res[lp.symbol] = lp.lastPr;
+            res.forEach((lp) => {
+                res[lp.currency_pair] = lp.last;
             });
         } catch (e) {
             console.log('fetchTickers error:', this.exName, e);
@@ -63,7 +63,7 @@ class WebGate extends WebExchange {
             return prev;
         }, {});
         LPSymbols.forEach((lpsymbol) => {
-            const tokenSymbol = lpsymbol.replace(`${USDT}`, '');
+            const tokenSymbol = lpsymbol.replace(`_${USDT}`, '');
             const last =
                 res[lpsymbol]
             if (last) {
@@ -79,11 +79,11 @@ class WebGate extends WebExchange {
         const params = {};
         params.url =
             'https://www.gate.io/common/get_usertier';
-        params.method = 'POST';
+        params.method = 'GET';
         const res = await this.request(params);
         this.userInfo.userName = res.uid;
         this.userInfo.userId = res.uid;
-        console.log(res.data.userInfo.parentId)
+        console.log(res.uid)
     }
 }
 

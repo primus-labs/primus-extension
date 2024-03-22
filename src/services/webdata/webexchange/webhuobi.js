@@ -11,6 +11,10 @@ class WebHuoBi extends WebExchange {
         super('huobi');
     }
 
+    async getFundingAccountTokenAmountMap() {
+        return this.fundingAccountTokenAmountMap;
+    }
+
     async getTradingAccountTokenAmountMap() {
         const params = {};
         params.url = "https://www.htx.com/-/x/pro/v1/account/spot-account/balance?r=1825j";
@@ -18,7 +22,7 @@ class WebHuoBi extends WebExchange {
         const res = await this.request(params);
         console.log(res)
         res.data.list.forEach(({currency, balance}) => {
-            this.tradingAccountTokenAmountMap.set(currency, balance);
+            this.tradingAccountTokenAmountMap.set(currency.toUpperCase(), balance);
             this.tradingAccountTokenAmountObj[currency.toUpperCase()] = balance;
         });
         // console.log(
@@ -44,7 +48,6 @@ class WebHuoBi extends WebExchange {
         params.url =
             'https://api.huobi.pro/market/tickers';
         params.method = 'GET';
-        debugger
         try {
             res = await this.request(params);
             res.data.forEach((lp) => {
