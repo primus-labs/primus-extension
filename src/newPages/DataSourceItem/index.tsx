@@ -84,7 +84,7 @@ const DataSourceItem = memo(() => {
       }
       //if currRequestObj is undefined, try to find locally
       if(!currRequestObj){
-        currRequestObj = webDataSourceTemplate['bitget'];
+        currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
       }
       // TODO END
       chrome.runtime.sendMessage({

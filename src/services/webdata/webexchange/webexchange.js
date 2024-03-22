@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { add, mul, gt, div } from '@/utils/utils';
 import { USDT, BTC, STABLETOKENLIST } from '@/config/constants';
 import { AuthenticationError } from 'ccxt';
+
 const BIGZERO = new BigNumber(0);
 const BIGONE = new BigNumber(1);
 const ONE = 1;
@@ -24,16 +25,20 @@ class WebExchange {
     this.totalAccountBalance = BIGZERO;
     this.userInfo = {};
   }
+
   async getFundingAccountTokenAmountMap() {
     console.log('getFundingAccountTokenAmountMap');
     return this.fundingAccountTokenAmountMap;
   }
+
   async getTradingAccountTokenAmountMap() {
     return this.tradingAccountTokenAmountMap;
   }
+
   async getFlexibleAccountTokenAmountMap() {
     return this.flexibleAccountTokenAmountMap;
   }
+
   async getTotalHoldingTokenSymbolList() {
     if (this.totalHoldingTokenSymbolList !== null) {
       return this.totalHoldingTokenSymbolList;
@@ -55,6 +60,7 @@ class WebExchange {
     //   console.log('exchange getTotalHoldingTokenSymbolList error', error);
     // }
   }
+
   async getTotalAccountTokenAmountMap() {
     await this.getTotalHoldingTokenSymbolList();
     this.spotAccountTokenAmountMap = this.totalHoldingTokenSymbolList.reduce(
@@ -90,6 +96,7 @@ class WebExchange {
 
     return this.totalAccountTokenAmountMap;
   }
+
   async getTokenPriceMap() {
     /*await this.getTotalHoldingTokenSymbolList();
     // transfrom 'X' to 'XUSDT' when you query X's price;
@@ -124,6 +131,7 @@ class WebExchange {
     });
     return this.tokenPriceMap;*/
   }
+
   getTokenMap(amountMap) {
     const obj = this.totalHoldingTokenSymbolList.reduce((prev, curr) => {
       const amount = amountMap.get(curr);
@@ -165,6 +173,7 @@ class WebExchange {
     // console.log('totalAccountTokenMap', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;
   }
+
   async getTotalAccountBalance() {
     await this.getTotalAccountTokenMap();
     const totalAccBal = Object.keys(this.totalAccountTokenMap).reduce(
@@ -178,14 +187,12 @@ class WebExchange {
     // console.log('totalAccountBalance', this.totalAccountBalance);
     return this.totalAccountBalance;
   }
-  async getUserInfo() {
-  }
+
+  async getUserInfo() {}
+
   async getInfo() {
     try {
-      await Promise.all([
-        this.getTotalAccountBalance(),
-        this.getUserInfo(),
-      ]);
+      await Promise.all([this.getTotalAccountBalance(), this.getUserInfo()]);
       //return this.exchange;
     } catch (error) {
       console.log('exchange getInfo error:', error);
@@ -194,7 +201,7 @@ class WebExchange {
   }
 
   async request(fetchParams) {
-    let { method, url, data = {}, config } = fetchParams;
+    let { method, url, data = {}, config, extHeader } = fetchParams;
 
     if (method === 'GET') {
       let dataStr = '';
@@ -212,9 +219,14 @@ class WebExchange {
     const timeoutTimer = setTimeout(() => {
       controller.abort();
     }, timeout);
-    const authInfoName = this.exName + "-auth";
+    const authInfoName = this.exName + '-auth';
     const headerStr = await chrome.storage.local.get(authInfoName);
     const header = JSON.parse(headerStr[authInfoName]);
+    if (extHeader) {
+      extHeader.forEach((value, key) => {
+        header[key] = value;
+      });
+    }
     let requestConfig = {
       method: method,
       headers: header,
@@ -226,13 +238,13 @@ class WebExchange {
       Object.defineProperty(requestConfig, 'body', {
         value: JSON.stringify(data),
       });
-      requestConfig.headers['Content-Type'] = 'application/json'
+      requestConfig.headers['Content-Type'] = 'application/json';
     }
     try {
       const response = await fetch(url, requestConfig);
-      if(response.status === 401){
-        console.log(`response code from ${this.exName} is:${response.status}`)
-        throw new AuthenticationError('AuthenticationError')
+      if (response.status === 401) {
+        console.log(`response code from ${this.exName} is:${response.status}`);
+        throw new AuthenticationError('AuthenticationError');
       }
       const responseJson = await response.json();
       clearTimeout(timeoutTimer);
@@ -240,7 +252,9 @@ class WebExchange {
     } catch (error) {
       if (error.name === 'AbortError') {
         console.log(`fetch ${url} timeout`);
+        console.log(error);
       } else {
+        console.log(error);
         throw new Error(error);
       }
     } finally {
@@ -248,4 +262,5 @@ class WebExchange {
     }
   }
 }
+
 export default WebExchange;

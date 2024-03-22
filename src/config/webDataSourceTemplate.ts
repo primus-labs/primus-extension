@@ -26,5 +26,44 @@ export const webDataSourceTemplate = {
         },
       ],
     },
+  },
+  gate:{
+    dataSource: 'gate',
+    jumpTo: 'https://www.gate.io/zh/myaccount/myfunds/spot',
+    datasourceTemplate: {
+      requests: [
+        {
+          name: 'first',
+          url: 'https://www.gate.io/apiw/v2/account/spot/funds',
+          headers: [],
+          cookies:['t_token','uid','pver'],
+          method: 'GET',
+        }
+      ],
+    },
+  },
+  huobi:{
+    dataSource: 'huobi',
+    jumpTo: 'https://www.htx.com/zh-cn/finance/account/spot/',
+    datasourceTemplate: {
+      requests: [
+        {
+          name: 'first',
+          url: 'https://www.htx.com/-/x/pro/v1/account/spot-account/balance',
+          queryParams:['r'],
+          headers: ['hb-pro-token','token'],
+          cookies:[],
+          method: 'GET',
+        },
+        {
+          name: 'user-info',
+          url: 'https://www.htx.com/-/x/otc/v1/user/info',
+          queryParams:['r','x-b3-traceid'],
+          headers: ['token'],
+          cookies:[],
+          method: 'GET',
+        }
+      ],
+    },
   }
 };

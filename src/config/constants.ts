@@ -33,6 +33,8 @@ import KuCoin from '@/services/exchange/kucoin';
 import Coinbase from '@/services/exchange/coinbase';
 import Huobi from '@/services/exchange/huobi';
 import Gate from '@/services/exchange/gate';
+import WebGate from '@/services/webdata/webexchange/webgateio';
+import WebHuoBi from '@/services/webdata/webexchange/webhuobi';
 import Bitget from '@/services/exchange/bitget';
 import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
@@ -134,8 +136,9 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Assets',
     icon: iconDataSourceGate,
     requirePassphase: false,
-    constructorF: Binance,
-    baseName: 'api.gateio.ws',
+    constructorF: WebGate,
+    baseName: 'www.gate.io',
+    accountBalanceUrl: 'https://www.gate.io/zh/myaccount/myfunds/spot',
   },
   huobi: {
     name: 'Huobi',
@@ -143,7 +146,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceHuobi,
     iconWithCircle: iconDataSourceHuobiWithCircle,
     requirePassphase: false,
-    constructorF: Huobi,
+    constructorF: WebHuoBi,
     baseName: 'api.huobi.pro',
   },
   bitget: {

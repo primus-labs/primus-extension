@@ -30,6 +30,10 @@ import Bybit from '@/services/exchange/bybit';
 import Mexc from '@/services/exchange/mexc';
 import WebTikTok from '@/services/webdata/websocial/webtiktok';
 import type { ExchangeMeta, DataSourceMapType } from '@/types/dataSource';
+import Webgateio from '@/services/webdata/webexchange/webgateio';
+import WebGate from '@/services/webdata/webexchange/webgateio';
+import Webhuobi from '@/services/webdata/webexchange/webhuobi';
+import WebHuoBi from '@/services/webdata/webexchange/webhuobi';
 
 export type DataSourceItemType = ExchangeMeta & {
   provider?: any;
@@ -168,7 +172,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     baseName: 'www.bitget.com',
     accountBalanceUrl: 'https://www.bitget.com/v1/mix/assetsV2',
     jumpTo: 'https://www.bitget.com/zh-CN/asset/spot',
-    connectType: 'API',
+    connectType: 'Web',
   },
   huobi: {
     id: 'huobi',
@@ -180,10 +184,11 @@ export const DATASOURCEMAP: DataSourceMapType = {
       'You can fetch spot account data from your Huobi account to manage your data or create attestations.',
     iconWithCircle: iconDataSourceHuobiWithCircle,
     requirePassphase: false,
-    constructorF: Huobi,
-    baseName: 'api.huobi.pro',
-
-    connectType: 'API',
+    constructorF: WebHuoBi,
+    baseName: 'www.htx.com',
+    accountBalanceUrl: 'https://www.htx.com/-/x/pro/v1/account/spot-account/balance',
+    jumpTo: 'https://www.htx.com/zh-cn/finance/account/spot/',
+    connectType: 'Web',
   },
   bybit: {
     id: 'bybit',
@@ -222,10 +227,11 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch spot account data from your Gate account to manage your data or create attestations.',
     requirePassphase: false,
-    constructorF: Gate,
-    baseName: 'api.gateio.ws',
-
-    connectType: 'API',
+    constructorF: WebGate,
+    baseName: 'www.gate.io',
+    accountBalanceUrl: 'https://www.gate.io/apiw/v2/account/spot/funds',
+    jumpTo: 'https://www.gate.io/zh/myaccount/myfunds/spot',
+    connectType: 'Web',
   },
   mexc: {
     id: 'mexc',
