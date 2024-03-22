@@ -23,7 +23,7 @@ import type {
 import PButton from '@/newComponents/PButton';
 import PEye from '@/newComponents/PEye';
 import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
-
+import AssetsBalance from '@/newComponents/AssetsBalance';
 import './index.scss';
 
 const Overview = memo(() => {
@@ -422,36 +422,7 @@ const Overview = memo(() => {
         </div>
       </div>
       <div className="overviewItems">
-        <section className={`assetsBalance overviewItem`}>
-          <h4 className="title">
-            <span>Assets Balance</span>
-            <PEye onClick={handleShow} open={balanceVisible} />
-          </h4>
-          <div className="content">
-            <div className="num">
-              <div className="balance">
-                {balanceVisible ? formatTotalAssetsBalance : '$***'}
-              </div>
-              <div className="pnl">
-                <div className="label">PnL</div>
-                <div
-                  className={`value ${
-                    gte(Number(totalPnl), 0) ? 'rise' : 'fall'
-                  }`}
-                >
-                  {gte(Number(totalPnl), 0) ? `+$${totalPnl}` : `-$${totalPnl}`}
-                  (
-                  {gte(Number(totalPnlPercent), 0)
-                    ? `${totalPnlPercent}%`
-                    : `${new BigNumber(Number(totalPnlPercent))
-                        .abs()
-                        .toFixed(2)}%`}
-                  )
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <AssetsBalance />
         <section className={`followers overviewItem`}>
           <h4 className="title">
             <span>Followers</span>

@@ -1,3 +1,9 @@
+.rise {
+  color: var(--functional-color-green-green-50);
+}
+.fall {
+  color: var(--functional-color-red-red-50);
+}
 :root {
   --brand-primary-color-bp-10: #e8ffff;
   --brand-primary-color-bp-100: #051619;

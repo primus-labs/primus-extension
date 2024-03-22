@@ -1,0 +1,36 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.assetsBalance {
+  padding: var(--spacing-24);
+  // border-radius: var(--spacing-8);
+  // border: 1px solid var(--border-tokens-border-primary);
+  // background: var(--layer-tokens-layer-primary);
+  @include fcss;
+  gap: var(--spacing-16);
+  width: 296px;
+  .title {
+    @include HeadlineH4;
+    @include frsc;
+    gap: var(--spacing-8);
+  }
+  .content {
+    width: 100%;
+    @include frbc;
+    .num {
+      width: 100%;
+      @include frsc;
+      gap: var(--spacing-16);
+      @include NumberTitle;
+      .pnl {
+        @include Hint;
+        .label {
+          color: var(--text-tokens-text-secondary);
+        }
+      }
+    }
+    .val {
+      @include Title;
+    }
+  }
+}
