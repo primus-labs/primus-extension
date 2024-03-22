@@ -65,6 +65,17 @@ type Msg = {
 type MsgMap = {
   [propName: string]: Msg;
 };
+type NFT = {
+  [propName: string]: {
+    name: string;
+    collectionName: string;
+    imageUri: string;
+    chain: string;
+  };
+};
+type NftsMap = {
+  [propName: string]: NFT;
+};
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -104,4 +115,5 @@ export type UserState = {
   attestationQueryType: string | number;
   activeOnChain: activeOnChainRequest;
   msgs: MsgMap;
+  nfts: NftsMap;
 };

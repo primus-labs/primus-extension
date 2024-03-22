@@ -5,6 +5,7 @@ import {
   checkIfBindConnectedWallet,
 } from '@/services/api/user';
 import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
+import { getOnChainNFTs } from '@/services/api/dataDashboard';
 import { getAssetsOnChains } from '@/services/api/dataSource';
 import { eventReport } from '@/services/api/usertracker';
 import { ONEMINUTE } from '@/config/constants';
@@ -143,6 +144,10 @@ export const setMsgs = (values: any) => ({
 });
 export const setActiveConnectDataSource = (values: any) => ({
   type: 'setActiveConnectDataSource',
+  payload: values,
+});
+export const setNfts = (values: any) => ({
+  type: 'setNfts',
   payload: values,
 });
 export const setConnectedWalletsActionAsync = () => {
@@ -627,5 +632,74 @@ export const initIfHadPwdAsync = () => {
   return async (dispatch: any) => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
     dispatch(setIfHasPwdAction(!!keyStore));
+  };
+};
+
+export const setNftsActionAsync = () => {
+  return async (dispatch: any, getState) => {
+    try {
+      const onChainAssetsSources = getState().onChainAssetsSources;
+      const connectedWalletAddressesArr = Object.keys(onChainAssetsSources);
+      const requestArr = Object.values(onChainAssetsSources).map((r: any) => {
+        const { address, signature, timestamp } = r;
+        return getOnChainNFTs({
+          address,
+          signature,
+          timestamp,
+        });
+      });
+      const resArr = await Promise.all(requestArr);
+      // delete !!!
+      resArr[0] = {
+        rc: 0,
+        mc: 'SUCCESS',
+        msg: '',
+        result: {
+          'Arbitrum One': [
+            {
+              contractAddress: '0xaf1cf02378db203ea9545d62588567c61b1ed7f8', //nft合约地址
+              transactionHash:
+                '0x98a7e58a68e687d1b598f0ce36000b7490a7799345362bfef6a2cb8fb0f3abd6', //transfer hash
+              tokenId: '204', //tokeniD
+              name: 'Vision Emissary A', //nft name
+              collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+              imageUri:
+                'https://s3.ap-northeast-1.amazonaws.com/quest3.xyz/quest/831879261192478866.gif', //nft 图片地址
+              ercType: 'erc721', //nft 类型
+              chain: 'Arbitrum One', //链
+              mintTime: '1698720422000', //mint time
+            },
+          ],
+          Polygon: [
+            {
+              contractAddress: '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
+              transactionHash:
+                '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
+              tokenId: '1',
+              name: 'Airdrop at 3eth.top 🎁',
+              collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+              imageUri:
+                'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
+              ercType: 'erc1155',
+              chain: 'Polygon',
+              mintTime: '1710913406000',
+            },
+          ],
+        },
+      };
+      const obj = resArr.reduce((prev, curr, currK) => {
+        const { rc, result } = curr;
+        if (rc === 0) {
+          prev[connectedWalletAddressesArr[currK]] = result;
+        }
+        return prev;
+      }, {});
+      await chrome.storage.local.set({
+        nfts: JSON.stringify(obj),
+      });
+      dispatch(setNfts(obj));
+    } catch (e) {
+      console.log('setEventsActionAsync e:', e);
+    }
   };
 };

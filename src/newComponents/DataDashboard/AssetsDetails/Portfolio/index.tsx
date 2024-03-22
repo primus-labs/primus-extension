@@ -32,11 +32,10 @@ const AssetsDetails = memo(() => {
   const { totalAssetsBalance } = useAssetsStatistic();
   const dispatch = useDispatch();
   const { sourceMap, sourceMap2 } = useAllSources();
-
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
-
   const sysConfig = useSelector((state) => state.sysConfig);
+  const nfts = useSelector((state) => state.nfts);
 
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
@@ -246,7 +245,7 @@ const AssetsDetails = memo(() => {
                 <>
                   {['okx', 'binance'].includes(i.id) && (
                     <div className="extraInfo">
-                      <div className="card">
+                      <div className="card availableForAttestation">
                         <i className="iconfont icon-iconAmountForAttest"></i>
                         <div className="txtWrapper">
                           <div className="label">Available for Attestation</div>
@@ -265,6 +264,17 @@ const AssetsDetails = memo(() => {
                           <div className="label">Token</div>
                           <div className="value">
                             ${formatNumeral(i.totalBalance)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="card">
+                        <i className="iconfont icon-iconAmountForAttest"></i>
+                        <div className="txtWrapper">
+                          <div className="label">NFT</div>
+                          <div className="value">
+                            
+                            {/* {Object.values(nfts[i.id])} */}
+                            {/* ${formatNumeral(i.totalBalance)} */}
                           </div>
                         </div>
                       </div>
