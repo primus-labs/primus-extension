@@ -11,6 +11,7 @@ import SettingsSetPwdDialog from '@/newComponents/Settings/SettingSetPwdDialog';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
 import useMsgs from '@/hooks/useMsgs';
 import PButton from '@/newComponents/PButton';
+import { useNavigate } from 'react-router-dom';
 
 // eslint-disable-next-line react/display-name
 const Setting = memo(() => {
@@ -28,6 +29,7 @@ const Setting = memo(() => {
   const [hadSetPwd, setHadSetPwd] = useState();
   const [passwordDialogTitle, setPasswordDialogTitle] = useState('');
   const [isChangePwd, setIsChangePwd] = useState(false);
+  const navigate = useNavigate();
 
   const checkIfHadSetPwd = useCallback(async () => {
     // eslint-disable-next-line no-undef
@@ -98,7 +100,9 @@ const Setting = memo(() => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
     // @ts-ignore
     setHadSetPwd(!!keyStore);
-    setShowInputPasswordDialog(true);
+    sessionStorage.setItem('hasInputPsw','');
+    navigate('/home')
+    // setShowInputPasswordDialog(true);
   };
 
   return (
