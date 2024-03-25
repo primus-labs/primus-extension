@@ -595,6 +595,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         refreshTotalScore(points, taskItem.taskIdentifier);
       } else {
         const mc = res.mc;
+        const msgFromServer = res.msg;
         let title;
         let msg;
         let link;
@@ -605,6 +606,12 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           const discordInfo = JSON.parse(res['discord']);
           msg = `No GM messages found for ${discordInfo.userName} on PADO Discord.`;
         }
+
+        if (mc === '-1100012') {
+          title = 'Not qualified';
+          msg = msgFromServer;
+        }
+
         if (mc === '-110008') {
           title = 'No event participated';
           msg = 'Go to Events page to participate.';
