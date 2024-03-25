@@ -1,0 +1,9 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.dataSourcesModule {
+  flex: 1;
+  @include fcss;
+  gap: var(--spacing-16);
+}

@@ -4,7 +4,8 @@ import Overview from '@/newComponents/Home/Overview';
 import Support from '@/newComponents/Home/Support';
 import DataSources from '@/newComponents/Home/DataSources';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
-import AssetsDistribution from '@/newComponents/Home/AssetsDistribution';
+import DataSourcesModule from '@/newComponents/Home/DataSourcesModule';
+import AttestationsModule from '@/newComponents/Home/AttestationsModule';
 import './index.scss';
 
 const Home = memo(() => {
@@ -28,10 +29,10 @@ const Home = memo(() => {
           <Overview />
           <Support />
         </div>
-
         <DataSources />
         <div className="pRow">
-          <AssetsDistribution />
+          <DataSourcesModule />
+          <AttestationsModule/>
         </div>
       </div>
       {showInputPasswordDialog && (

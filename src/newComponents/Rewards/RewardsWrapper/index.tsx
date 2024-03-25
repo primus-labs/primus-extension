@@ -131,15 +131,17 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
   return (
     <div className="rewardsWrapper">
       <h2 className="title">Your rewards from participated events</h2>
-      {/* <RewardsCards list={filterdList} /> */}
-      {/* {filterdList.length === 0 && } */}
-      <div className="hasNoContent">
-        <img src={empty} alt="" />
-        <div className="introTxt">
-          <div className="title">No rewards yet </div>
-          <div className="desc">Go to Events page to participate.</div>
+      {filterdList.length > 0 ? (
+        <RewardsCards list={filterdList} />
+      ) : (
+        <div className="hasNoContent">
+          <img src={empty} alt="" />
+          <div className="introTxt">
+            <div className="title">No rewards yet </div>
+            <div className="desc">Go to Events page to participate.</div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 });

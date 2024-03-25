@@ -51,12 +51,13 @@ const Overview = memo(() => {
       link: '/achievements',
     },
   });
-  const hasData = useMemo(() => {
-    return Object.values(itemMap).some(i =>i.num >0)
-  }, [itemMap]);
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
+  const hasData = useMemo(() => {
+    return Object.values(itemMap).some(i =>i.num >0)
+  }, [itemMap]);
+  
 
   const handleClick = useCallback(
     (link) => {

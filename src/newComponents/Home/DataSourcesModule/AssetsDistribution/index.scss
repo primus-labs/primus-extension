@@ -1,0 +1,36 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.homeAssetsDistribution {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-16);
+ 
+  >.title {
+    @include HeadlineH3;
+    @include frbc;
+    width: 100%;
+  }
+  >.content {
+    width: 100%;
+    border-radius: var(--spacing-8);
+    // border: 1px solid var(--border-tokens-border-primary);
+    background: var(--layer-tokens-layer-primary);
+    .assetsBalance {
+      flex: 1;
+      gap: var(--spacing-8);
+      .content {
+        .num {
+          align-items: flex-end;
+          .pnl {
+            margin-bottom: var(--spacing-4);
+            @include frsc;
+            gap: var(--spacing-8);
+            
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.moduleStatistics {
+  @include fcss;
+  gap: var(--spacing-8);
+  .title {
+    @include HeadlineH4;
+    height: var(--spacing-18);
+  }
+  .desc {
+    @include frss;
+    align-items: flex-end;
+    gap: var(--spacing-24);
+    .splicedIcons {
+      // position: relative;
+      > img {
+        width: var(--spacing-32);
+        @for $i from 1 through 6 {
+          &:nth-child(#{$i}) {
+            left: calc(-1 * ($i - 1) * var(--spacing-4));
+          }
+        }
+      }
+      .hideCircle {
+        width: var(--spacing-32);
+        height: var(--spacing-32);
+        left: calc(-1 * 5 * var(--spacing-4));
+      }
+    }
+    .num {
+      @include NumberTitle;
+    }
+    .operationBtn {
+      height: var(--spacing-24);
+    }
+  }
+}

@@ -1,0 +1,62 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.socialInsights {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-16);
+  > .title {
+    @include HeadlineH3;
+    @include frbc;
+    width: 100%;
+  }
+  > .content {
+    height: 240px;
+    padding: var(--spacing-24);
+    width: 100%;
+    @include pCard;
+    @include fcss;
+    gap: var(--spacing-24);
+    .moduleStatistics {
+      gap: var(--spacing-8);
+      .desc {
+        gap: var(--spacing-16);
+        .splicedIcons {
+          margin-bottom: var(--spacing-6);
+          > img {
+            width: var(--spacing-24);
+          }
+        }
+      }
+    }
+    .descWrapper {
+      width: 100%;
+      @include fcss;
+      gap: var(--spacing-16);
+      .descItems {
+        width: 100%;
+        @include fcss;
+        gap: var(--spacing-8);
+        .descItem {
+          width: 100%;
+          @include frbc;
+          .label {
+            @include BodyBody100;
+          }
+          .value {
+            @include NumberBody100Semibold;
+          }
+        }
+      }
+      .moreBtn {
+        justify-content: flex-end;
+        width: 100%;
+        height: auto;
+        .btnText {
+          margin-bottom: -2px;
+        }
+      }
+    }
+  }
+}
