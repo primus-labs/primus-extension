@@ -423,6 +423,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           }
           const discordUserInfo = JSON.parse(res['discord']);
           ext = {
+            name: discordUserInfo.userName,
             discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
           };
           const finishBody = {

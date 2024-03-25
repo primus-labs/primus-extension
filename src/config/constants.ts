@@ -72,6 +72,7 @@ export const BUSD = 'BUSD';
 export const TUSD = 'TUSD';
 export const BTC = 'BTC';
 export const LDO = 'LDO';
+export const BETH = 'BETH';
 export const STABLETOKENLIST = [USDT, USD, USDC, DAI, BUSD, TUSD];
 export const ONESECOND = 1000;
 export const ONEMINUTE = 60 * ONESECOND;

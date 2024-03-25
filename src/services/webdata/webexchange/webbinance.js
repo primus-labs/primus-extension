@@ -1,7 +1,7 @@
 import WebExchange from './webexchange';
 import BigNumber from 'bignumber.js';
 
-import { USDT, BTC, STABLETOKENLIST, BUSD, TUSD } from '@/config/constants';
+import { USDT, BTC, STABLETOKENLIST, BUSD, TUSD,BETH } from '@/config/constants';
 import { gt } from '@/utils/utils';
 
 const ONE = 1;
@@ -86,6 +86,7 @@ class WebBinance extends WebExchange {
     let LPSymbols = this.totalHoldingTokenSymbolList
       .filter((i) => !STABLETOKENLIST.includes(i))
       .concat(BTC)
+      .concat(BETH)
       .map((j) => `${j}${USDT}`);
     let res;
     //let errorSymbol;
