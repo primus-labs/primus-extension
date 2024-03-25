@@ -82,13 +82,14 @@
     border: 1px solid var(--border-tokens-border-primary);
     border-radius: var(--spacing-8, 8px);
     width: 1120px;
-    height: 138px;
+    height: 82px;
     background: var(--layer-tokens-layer-primary, #fff);
 
     .serialNumDiv {
       display: flex;
-      height: 45px;
-
+      height: 22px;
+      padding-top: 6px;
+      padding-bottom: 6px;
       .serialNumTitle{
         margin-right: auto;
         margin-bottom: auto;
@@ -113,33 +114,8 @@
           height: 16px;
         }
       }
-
-
-
     }
-    .modeDiv {
-      display: flex;
-      //align-items: center;
-      height: 45px;
-      margin-top: 10px;
-      .textDiv {
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 22px;
-        margin-top: auto;
-        margin-bottom: auto;
-        color: var(--text-tokens-text-primary);
-      }
 
-      .iconDiv {
-        cursor: pointer;
-        margin-left: auto;
-        width: 44px;
-        height: 24px;
-        margin-top: auto;
-        margin-bottom: auto;
-      }
-    }
 
   }
 }

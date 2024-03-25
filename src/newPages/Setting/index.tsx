@@ -273,20 +273,7 @@ const Setting = memo(() => {
               icon={<i className="iconfont icon-iconCopy"></i>}
               onClick={copySerialNumFn}
             />
-            {/*<img className={'iconDiv'} src={textCopyIcon} alt={textCopyIcon} onClick={copySerialNumFn} />*/}
           </div>
-        </div>
-        <Divider
-          style={{
-            width: '1072px',
-            marginTop: '0px',
-            marginBottom: '0px',
-            color: '##E0E0E0',
-          }}
-        />
-        <div className={'modeDiv'}>
-          <div className={'textDiv'}>Mode</div>
-          <img className={'iconDiv'} src={mode}></img>
         </div>
       </div>
       {showSetPwdDialog && (
