@@ -24,8 +24,8 @@ class WebBinance extends WebExchange {
     params.data = bodyParam;
     const res = await this.request(params);
     console.log(res);
-    res.data.forEach(({ asset, free }) => {
-      this.fundingAccountTokenAmountMap.set(asset, free);
+    res.data.forEach(({ asset, free,locked }) => {
+      this.fundingAccountTokenAmountMap.set(asset, free+locked);
     });
     // console.log(
     //   'okx fundingAccountTokenAmountMap',
@@ -46,9 +46,9 @@ class WebBinance extends WebExchange {
     params.data = bodyParam;
     const res = await this.request(params);
     console.log('trading:', res);
-    res.data.forEach(({ asset, free }) => {
-      this.tradingAccountTokenAmountMap.set(asset, free);
-      this.tradingAccountTokenAmountObj[asset] = free;
+    res.data.forEach(({ asset, free, locked }) => {
+      this.tradingAccountTokenAmountMap.set(asset, free + locked);
+      this.tradingAccountTokenAmountObj[asset] = free + locked;
     });
     // console.log(
     //   'okx tradingAccountTokenAmountMap',
