@@ -7,7 +7,6 @@ import {
   STABLETOKENLIST,
   BUSD,
   TUSD,
-  BETH,
 } from '@/config/constants';
 import { gt } from '@/utils/utils';
 
