@@ -1,7 +1,14 @@
 import WebExchange from './webexchange';
 import BigNumber from 'bignumber.js';
 
-import { USDT, BTC, STABLETOKENLIST, BUSD, TUSD,BETH } from '@/config/constants';
+import {
+  USDT,
+  BTC,
+  STABLETOKENLIST,
+  BUSD,
+  TUSD,
+  BETH,
+} from '@/config/constants';
 import { gt } from '@/utils/utils';
 
 const ONE = 1;
@@ -24,8 +31,8 @@ class WebBinance extends WebExchange {
     params.data = bodyParam;
     const res = await this.request(params);
     console.log(res);
-    res.data.forEach(({ asset, free,locked }) => {
-      this.fundingAccountTokenAmountMap.set(asset, free+locked);
+    res.data.forEach(({ asset, free, locked }) => {
+      this.fundingAccountTokenAmountMap.set(asset, free + locked);
     });
     // console.log(
     //   'okx fundingAccountTokenAmountMap',
@@ -86,7 +93,6 @@ class WebBinance extends WebExchange {
     let LPSymbols = this.totalHoldingTokenSymbolList
       .filter((i) => !STABLETOKENLIST.includes(i))
       .concat(BTC)
-      .concat(BETH)
       .map((j) => `${j}${USDT}`);
     let res;
     //let errorSymbol;
@@ -102,6 +108,7 @@ class WebBinance extends WebExchange {
       console.log('fetchTickers error:', this.exName, e);
       return;
     }
+    const ethPrice = res['ETHUSDT'];
     //console.log('fetchTickers res:', this.exName, res);
     this.tokenPriceMap = STABLETOKENLIST.reduce((prev, curr) => {
       prev[curr] = ONE + '';
@@ -118,6 +125,7 @@ class WebBinance extends WebExchange {
         this.tokenPriceMap[tokenSymbol] = ZERO + '';
       }
     });
+    this.tokenPriceMap['BETH'] = ethPrice;
     return this.tokenPriceMap;
   }
 
