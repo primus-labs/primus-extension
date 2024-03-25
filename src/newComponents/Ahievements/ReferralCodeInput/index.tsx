@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import './index.scss';
@@ -6,6 +6,7 @@ import PButton from '@/newComponents/PButton';
 import { finishTask } from '@/services/api/achievements';
 import useMsgs from '@/hooks/useMsgs';
 import PInput from '@/newComponents/PInput';
+import PBottomErrorTip from '@/components/PBottomErrorTip';
 
 // import { Button, Input } from 'antd';
 
@@ -19,8 +20,16 @@ interface PButtonProps {
 }
 
 const ReferralCodeInput: React.FC<PButtonProps> = memo(
-  ({ onClose, setReferralTaskFinished, showMsg,required = true, onCancel }) => {
+  ({
+    onClose,
+    setReferralTaskFinished,
+    showMsg,
+    required = true,
+    onCancel,
+  }) => {
     const [referralCode, setReferralCode] = React.useState('');
+    const [errorTip, setErrorTip] = useState('');
+    const [showErrorTip, setShowErrorTip] = useState(false);
     const { msgs, addMsg } = useMsgs();
     const PasteButton = () => {
       return <div> Paste </div>;
@@ -60,17 +69,18 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
         });
         onClose();
         setReferralTaskFinished();
-        if(showMsg) {
+        if (showMsg) {
           addMsg({
             type: 'suc',
             title: `10 points earned!`,
-            desc : "Sign-in using an referral code",
+            desc: 'Sign-in using an referral code',
             link: '',
           });
         }
         //set sign-in task item finished
       } else {
-        alert(res.msg);
+        setShowErrorTip(true);
+        setErrorTip(res.msg);
       }
     };
 
@@ -96,6 +106,7 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
                 {/*</Form.Item>*/}
                 <button onClick={handlePaste}>Paste</button>
               </div>
+              {showErrorTip &&<p className="errorTip">{errorTip}</p>}
             </div>
             <PButton
               text={'Confirm'}

@@ -64,6 +64,14 @@
     .inputComponent:hover{
       border-color: var(--brand-primary-color-bp-50);
     }
+    .errorTip{
+      margin-top: 2px;
+      font-size: 12px;
+      line-height: 18px;
+      font-family: 'Inter-Regular';
+      color: #ff0000
+    }
+
 
     .confirmButton{
       margin-top: 8px;
