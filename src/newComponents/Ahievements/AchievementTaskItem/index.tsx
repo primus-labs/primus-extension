@@ -216,6 +216,120 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           uniqueName: xUserInfo.screenName,
         };
       }
+      if (taskItem.taskIdentifier === 'CONNECT_BITGET_DATA') {
+        const res = await getDataSourceData('bitget');
+        if (!res['bitget']) {
+          addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=bitget',
+            linkText: 'To connect',
+          });
+          return;
+        }
+        const bitgetUserInfo = JSON.parse(res['bitget']);
+        console.log(res);
+        ext = {
+          uniqueName: bitgetUserInfo.userInfo.userName,
+        };
+      }
+
+      if (taskItem.taskIdentifier === 'CONNECT_HUOBI_DATA') {
+        const res = await getDataSourceData('huobi');
+        if (!res['huobi']) {
+          addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=huobi',
+            linkText: 'To connect',
+          });
+          return;
+        }
+        const bitgetUserInfo = JSON.parse(res['huobi']);
+        console.log(res);
+        ext = {
+          uniqueName: bitgetUserInfo.userInfo.userName,
+        };
+      }
+
+      if (taskItem.taskIdentifier === 'CONNECT_MEXC_DATA') {
+        const res = await getDataSourceData('mexc');
+        if (!res['mexc']) {
+          addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=mexc',
+            linkText: 'To connect',
+          });
+          return;
+        }
+        const bitgetUserInfo = JSON.parse(res['mexc']);
+        console.log(res);
+        ext = {
+          uniqueName: bitgetUserInfo.userInfo.userName,
+        };
+      }
+
+      if (taskItem.taskIdentifier === 'CONNECT_GATE_DATA') {
+        const res = await getDataSourceData('gate');
+        if (!res['gate']) {
+          addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=gate',
+            linkText: 'To connect',
+          });
+          return;
+        }
+        const bitgetUserInfo = JSON.parse(res['gate']);
+        console.log(res);
+        ext = {
+          uniqueName: bitgetUserInfo.userInfo.userName,
+        };
+      }
+
+
+      if (taskItem.taskIdentifier === 'CONNECT_BYBIT_DATA') {
+        const res = await getDataSourceData('bybit');
+        if (!res['bybit']) {
+          addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=bybit',
+            linkText: 'To connect',
+          });
+          return;
+        }
+        const bitgetUserInfo = JSON.parse(res['bybit']);
+        console.log(res);
+        ext = {
+          uniqueName: bitgetUserInfo.userInfo.userName,
+        };
+      }
+
+      if (taskItem.taskIdentifier === 'CONNECT_KUCOIN_DATA') {
+        const res = await getDataSourceData('kucoin');
+        if (!res['kucoin']) {
+          addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=kucoin',
+            linkText: 'To connect',
+          });
+          return;
+        }
+        const bitgetUserInfo = JSON.parse(res['kucoin']);
+        console.log(res);
+        ext = {
+          uniqueName: bitgetUserInfo.userInfo.userName,
+        };
+      }
 
       if (taskItem.taskIdentifier === 'FOLLOW_PADOLABS') {
         const res = await getDataSourceData('x');
