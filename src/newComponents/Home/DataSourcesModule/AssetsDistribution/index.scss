@@ -6,20 +6,24 @@
   width: 100%;
   @include fcss;
   gap: var(--spacing-16);
- 
-  >.title {
+
+  > .title {
     @include HeadlineH3;
     @include frbc;
     width: 100%;
   }
-  >.content {
+  > .content {
     width: 100%;
     border-radius: var(--spacing-8);
     // border: 1px solid var(--border-tokens-border-primary);
     background: var(--layer-tokens-layer-primary);
+    padding: var(--spacing-24);
+    @include fcss;
+    gap: var(--spacing-24);
     .assetsBalance {
       flex: 1;
       gap: var(--spacing-8);
+      padding: 0;
       .content {
         .num {
           align-items: flex-end;
@@ -27,9 +31,19 @@
             margin-bottom: var(--spacing-4);
             @include frsc;
             gap: var(--spacing-8);
-            
           }
         }
+      }
+    }
+    .PTabs {
+      width: 100%;
+    }
+    .moreBtn {
+      width: 100%;
+      justify-content: flex-end;
+      height: auto;
+      .btnText {
+        margin-bottom: -5px;
       }
     }
   }

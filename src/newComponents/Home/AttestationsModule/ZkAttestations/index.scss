@@ -16,8 +16,10 @@
     border-radius: var(--spacing-8);
     // border: 1px solid var(--border-tokens-border-primary);
     background: var(--layer-tokens-layer-primary);
+    padding: var(--spacing-24);
+    @include fcss;
+    gap: var(--spacing-24);
     .top {
-      padding: var(--spacing-24);
       .moduleStatistics {
         gap: var(--spacing-8);
         .desc {
@@ -29,6 +31,14 @@
             }
           }
         }
+      }
+    }
+    .moreBtn{
+      width: 100%;
+      justify-content: flex-end;
+      height: auto;
+      .btnText{
+        margin-bottom: -5px;
       }
     }
   }

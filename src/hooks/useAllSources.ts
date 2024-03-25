@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { postMsg, sub } from '@/utils/utils';
-
+import { WALLETMAP } from '@/config/wallet';
 import type { UserState } from '@/types/store';
 import type {
   SocialDataList,
@@ -12,7 +12,7 @@ import type {
   ExchangeMeta,
 } from '@/types/dataSource';
 
-const useAllSources = (sourceName?: undefined | null| string) => {
+const useAllSources = (sourceName?: undefined | null | string) => {
   const exSources = useSelector((state: UserState) => state.exSources);
   const socialSources = useSelector((state: UserState) => state.socialSources);
   const kycSources = useSelector((state: UserState) => state.kycSources);
@@ -42,6 +42,27 @@ const useAllSources = (sourceName?: undefined | null| string) => {
   const allSourceList: SourceDataList = useMemo(() => {
     return [...exList, ...socialList, ...kycList, ...onChainList];
   }, [exList, socialList, kycList]);
+
+  const connectedAssetsSourcesList = useMemo(() => {
+    let l = exList;
+    if (onChainList.length > 0) {
+      const newOnChainList = onChainList.map((i: any) => {
+        const { name, icon } = WALLETMAP['metamask'];
+        return Object.assign(i, { name, icon, id: i.address });
+      });
+      l = l.concat(newOnChainList);
+    }
+    return l;
+  }, [exList, onChainList]);
+  const sortedConnectedAssetsSourcesList = useMemo(() => {
+    const sortFn = (l) => {
+      return l.sort((a: any, b: any) =>
+        sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
+      );
+    };
+    return sortFn(connectedAssetsSourcesList);
+  }, [connectedAssetsSourcesList]);
+
   const allSourceMap: any = useMemo(() => {
     return {
       exSources,
@@ -77,6 +98,7 @@ const useAllSources = (sourceName?: undefined | null| string) => {
     sourceMap: allSourceMap,
     sourceMap2: allSourceMap2,
     activeSourceInfo,
+    sortedConnectedAssetsSourcesList,
   };
 };
 
