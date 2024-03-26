@@ -24,11 +24,11 @@ type ATTESTATIONTYPEITEMTYPEMAP = {
 export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   'Assets Proof': {
     value: 'Assets Proof',
-    label: 'Assets balance ≥ specified amount',
+    label: 'Asset balance',
   },
   'Token Holding': {
     value: 'Token Holding',
-    label: 'Owns a specified token',
+    label: 'Token holding',
   },
 };
 export const ASSETSVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
