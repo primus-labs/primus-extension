@@ -112,7 +112,7 @@ const TokenTable: FC<TokenTableProps> = memo(
             );
           })}
         </ul>
-        {totolCount > 0 && (
+        {totolCount > 10 && (
           <div className={'pageComponent'}>
             <Pagination
               total={totolCount}

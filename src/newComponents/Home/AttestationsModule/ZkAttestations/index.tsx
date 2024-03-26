@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -9,86 +9,136 @@ import './index.scss';
 import ModuleStatistics from '../../ModuleStatistics';
 import PButton from '@/newComponents/PButton';
 const Overview = memo(() => {
-  const { attestationsOnChainLen, attestationsOnChainIconList } =
-    useAttestationsStatistics();
+  const {
+    attestationsSubmitOnChainLen,
+    onChainAttestationsChainsIconList,
+    onChainAttestationsTypeChainMap,
+  } = useAttestationsStatistics();
+  console.log('222attestationsOnChainList', onChainAttestationsTypeChainMap); // delete
   const navigate = useNavigate();
-  const [options, setOptions] = useState({
-    chart: {
-      type: 'bar',
-      height: 350,
-      stacked: true,
-      toolbar: {
-        show: true,
+
+  const xArr = useMemo(() => {
+    if (
+      onChainAttestationsTypeChainMap &&
+      Object.keys(onChainAttestationsTypeChainMap).length > 0
+    ) {
+      const l = Object.keys(onChainAttestationsTypeChainMap).reduce(
+        (prev: any, curr: any) => {
+          const currChainArr = Object.keys(
+            onChainAttestationsTypeChainMap[curr]
+          );
+          currChainArr.forEach((c) => {
+            if (prev.includes(c)) {
+            } else {
+              prev.push(c);
+            }
+          });
+          return prev;
+        },
+        []
+      );
+      return l;
+    } else {
+      return [];
+    }
+  }, [onChainAttestationsTypeChainMap]);
+  const yArr = useMemo(() => {
+    if (
+      onChainAttestationsTypeChainMap &&
+      Object.keys(onChainAttestationsTypeChainMap).length > 0
+    ) {
+      const l = Object.keys(onChainAttestationsTypeChainMap).reduce(
+        (prev: any, curr: any) => {
+          const currTypeAstMap = onChainAttestationsTypeChainMap[curr];
+          const currTypeOnChainsLenArr = xArr.reduce(
+            (prevA: any, chain: any) => {
+              const currTypeAstOnCurrChainLen = Object.values(
+                currTypeAstMap[chain]
+              ).length;
+              prevA.push(currTypeAstOnCurrChainLen);
+              return prevA;
+            },
+            []
+          );
+          prev.push({
+            name: curr,
+            data: currTypeOnChainsLenArr,
+          });
+          return prev;
+        },
+        []
+      );
+      return l;
+    } else {
+      return [];
+    }
+  }, [onChainAttestationsTypeChainMap]);
+  const options = useMemo(() => {
+    return {
+      chart: {
+        type: 'bar',
+        height: 350,
+        stacked: true,
+        
       },
-      zoom: {
-        enabled: true,
-      },
-    },
-    responsive: [
-      {
-        breakpoint: 480,
-        options: {
-          legend: {
-            position: 'bottom',
-            offsetX: -10,
-            offsetY: 0,
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            legend: {
+              position: 'bottom',
+              offsetX: -10,
+              offsetY: 0,
+            },
           },
         },
-      },
-    ],
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        borderRadius: 10,
-        dataLabels: {
-          total: {
-            enabled: true,
-            style: {
-              fontSize: '13px',
-              fontWeight: 900,
+      ],
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          borderRadius: 10,
+          dataLabels: {
+            total: {
+              enabled: true,
+              style: {
+                fontSize: '13px',
+                fontWeight: 900,
+              },
             },
           },
         },
       },
-    },
-    xaxis: {
-      type: 'datetime',
-      categories: [
-        '01/01/2011 GMT',
-        '01/02/2011 GMT',
-        '01/03/2011 GMT',
-        '01/04/2011 GMT',
-        '01/05/2011 GMT',
-        '01/06/2011 GMT',
-      ],
-    },
-    legend: {
-      position: 'right',
-      offsetY: 40,
-    },
-    fill: {
-      opacity: 1,
-    },
-  });
-  const [series, setSeries] = useState([
-    {
-      name: 'PRODUCT A',
-      data: [44, 55, 41, 67, 22, 43],
-    },
-    {
-      name: 'PRODUCT B',
-      data: [13, 23, 20, 8, 13, 27],
-    },
-    {
-      name: 'PRODUCT C',
-      data: [11, 17, 15, 15, 21, 14],
-    },
-    {
-      name: 'PRODUCT D',
-      data: [21, 7, 25, 13, 22, 8],
-    },
-  ]);
-
+      xaxis: {
+        // type: 'datetime',
+        categories: xArr,
+        // categories: [
+        //   '01/01/2011 GMT',
+        //   '01/02/2011 GMT',
+        // ],
+      },
+      legend: {
+        position: 'right',
+        offsetY: 40,
+      },
+      fill: {
+        opacity: 1,
+      },
+    }
+  }, [xArr]);
+  const series = useMemo(() => {
+    return yArr;
+    // return [
+    //   {
+    //     name: 'PRODUCT A',
+    //     data: [44, 55],
+    //   },
+    //   {
+    //     name: 'PRODUCT B',
+    //     data: [13, 23],
+    //   },
+    // ];
+  }, [yArr]);
+  // console.log('222xArr', xArr,'yArr',yArr)// delete
   const handleMore = useCallback(() => {
     navigate('/zkAttestation');
   }, [navigate]);
@@ -102,8 +152,8 @@ const Overview = memo(() => {
         <div className="top">
           <ModuleStatistics
             title="On-chain Attestations"
-            num={attestationsOnChainLen}
-            iconList={attestationsOnChainIconList}
+            num={attestationsSubmitOnChainLen}
+            iconList={onChainAttestationsChainsIconList}
           />
         </div>
         <Chart
@@ -113,6 +163,7 @@ const Overview = memo(() => {
           width={504}
           height={292}
         />
+        
         <PButton
           type="text"
           text="View More"

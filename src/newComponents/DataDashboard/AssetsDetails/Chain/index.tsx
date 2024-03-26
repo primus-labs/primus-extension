@@ -19,147 +19,37 @@ const MAX = 5;
 
 const Chain = memo(() => {
   const { chainNftsListMap } = useNFTs();
-  const { totalOnChainAssetsBalance } = useAssetsStatistic();
+  const { totalOnChainAssetsBalance, sortedChainAssetsList, tokenIconFn } =
+    useAssetsStatistic();
   const { sourceMap, sourceMap2 } = useAllSources();
   const [starArr, setStarArr] = useState<string[]>();
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
-  const [tableTab, setTableTab] = useState<string>();
-  const sysConfig = useSelector((state) => state.sysConfig);
-  const tokenLogoPrefix = useMemo(() => {
-    return sysConfig.TOKEN_LOGO_PREFIX;
-  }, [sysConfig]);
-  const connectedOnChainSources = useMemo(() => {
-    return sourceMap.onChainAssetsSources;
-  }, [sourceMap]);
+  const [tableTab, setTableTab] = useState<string>('Token');
 
-  const totalChainAssetsMap = useMemo(() => {
-    const reduceF = (prev, curr) => {
-      const { chainsAssetsMap } = curr;
-      if (chainsAssetsMap && Object.keys(chainsAssetsMap).length > 0) {
-        Object.keys(chainsAssetsMap).forEach((chain) => {
-          const currObj = chainsAssetsMap[chain];
-          if (chain in prev) {
-            const { totalBalance, tokenListMap } = currObj;
-            const {
-              totalBalance: prevTotalBalance,
-              tokenListMap: prevTokenListMap,
-            } = prev[chain];
-            const innerReduceF = (prevM, currM) => {
-              const symbol = currM.split('---')[0];
-              const currTokenItem = tokenListMap[prevM];
-              const { amount, price, value, isNative, chain } = currTokenItem;
-              if (symbol in prevM) {
-                const { amount: prevAmount, chain } = prevM[symbol];
-                const totalAmount = add(
-                  Number(prevAmount),
-                  Number(amount)
-                ).toFixed();
-                const totalValue = mul(
-                  Number(totalAmount),
-                  Number(price)
-                ).toFixed();
-                prevM[symbol] = {
-                  amount: totalAmount,
-                  price,
-                  value: totalValue,
-                  isNative,
-                  chain,
-                };
-              } else {
-                prevM[symbol] = currTokenItem;
-              }
-            };
+  const sortedChainAssetsList2 = useMemo(() => {
+    const l = sortedChainAssetsList;
 
-            const newTokenListMap = Object.keys(tokenListMap).reduce(
-              innerReduceF,
-              prevTokenListMap
-            );
-            prev[chain] = {
-              ...prev[chain],
-              totalBalance: add(
-                Number(prevTotalBalance),
-                Number(totalBalance)
-              ).toFixed(),
-              tokenListMap: newTokenListMap,
-            };
-          } else {
-            const { icon, name } = SUPPORRTEDQUERYCHAINMAP[chain];
-            prev = {
-              ...prev,
-              [chain]: {
-                ...currObj,
-                id: chain,
-                icon,
-                name,
-              },
-            };
-          }
-        });
-      }
-      return prev;
-    };
-    const tAM = Object.values(connectedOnChainSources).reduce(reduceF, {});
-    return tAM;
-  }, [connectedOnChainSources]);
-
-  const sortedChainAssetsList = useMemo(() => {
-    const l = Object.values(totalChainAssetsMap as any);
-    const sortFn = (l) => {
-      return l.sort((a: any, b: any) =>
-        sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
-      );
-    };
     let noStarL = l.filter((i: any) => !starArr?.includes(i.id));
     let hasStarL = l.filter((i: any) => starArr?.includes(i.id));
 
-    noStarL = sortFn(noStarL);
-    hasStarL = sortFn(hasStarL);
     return [...hasStarL, ...noStarL];
-  }, [totalChainAssetsMap, starArr]);
+  }, [sortedChainAssetsList, starArr]);
 
   const showList = useMemo(() => {
     return showMore
-      ? sortedChainAssetsList
-      : sortedChainAssetsList.slice(0, MAX);
-  }, [sortedChainAssetsList, showMore]);
+      ? sortedChainAssetsList2
+      : sortedChainAssetsList2.slice(0, MAX);
+  }, [sortedChainAssetsList2, showMore]);
 
   const handleShowMore = useCallback(() => {
     setShowMore((f) => !f);
   }, []);
 
-  const balancePercentFn = useCallback(
-    (i) => {
-      const { totalBalance } = i;
-      if (totalBalance === '0') {
-        return '0';
-      } else {
-        const digit = div(
-          Number(totalBalance),
-          new BigNumber(totalOnChainAssetsBalance).toNumber()
-        );
-        return mul(Number(digit), 100).toFixed(2);
-      }
-    },
-    [totalOnChainAssetsBalance]
-  );
-  const iconFn = useCallback(
-    (j) => {
-      if (j.icon) {
-        return j.icon;
-      } else if (j.logo) {
-        return j.logo;
-      } else {
-        const symbol = j.symbol.split('---')[0];
-        return `${tokenLogoPrefix}icon${symbol}.png`;
-      }
-    },
-    [tokenLogoPrefix]
-  );
   const holdingTokenLogosFn = useCallback(
     (i) => {
       const l = Object.values(i.tokenListMap).map((i) => {
-        return iconFn(i);
+        return tokenIconFn(i);
       });
       return l;
     },
@@ -329,7 +219,7 @@ const Chain = memo(() => {
           );
         })}
       </ul>
-      {sortedChainAssetsList.length > MAX && (
+      {sortedChainAssetsList2.length > MAX && (
         <PButton
           type="text"
           text="View More"
