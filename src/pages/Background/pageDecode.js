@@ -302,6 +302,9 @@ export const pageDecodeMsgListener = async (
 
     const formatRequests = [];
     for (const r of requests) {
+      if(r.queryDetail){
+        continue
+      }
       let { headers, cookies, body, url ,urlType} = r;
       let formatUrlKey = url;
       if(urlType === 'REGX'){
