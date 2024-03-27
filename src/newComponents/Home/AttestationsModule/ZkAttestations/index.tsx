@@ -1,20 +1,18 @@
 import React, { memo, useCallback, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Chart from 'react-apexcharts';
-import { setActiveConnectDataSource } from '@/store/actions';
 import useAttestationsStatistics from '@/hooks/useAttestationsStatistics';
+import { EASInfo } from '@/config/chain';
 import './index.scss';
 import ModuleStatistics from '../../ModuleStatistics';
 import PButton from '@/newComponents/PButton';
+import BarChart from '../BarChart';
 const Overview = memo(() => {
   const {
     attestationsSubmitOnChainLen,
     onChainAttestationsChainsIconList,
     onChainAttestationsTypeChainMap,
   } = useAttestationsStatistics();
-  console.log('222attestationsOnChainList', onChainAttestationsTypeChainMap); // delete
+  // console.log('222attestationsOnChainList', onChainAttestationsTypeChainMap); // delete
   const navigate = useNavigate();
 
   const xArr = useMemo(() => {
@@ -22,7 +20,7 @@ const Overview = memo(() => {
       onChainAttestationsTypeChainMap &&
       Object.keys(onChainAttestationsTypeChainMap).length > 0
     ) {
-      const l = Object.keys(onChainAttestationsTypeChainMap).reduce(
+      let l = Object.keys(onChainAttestationsTypeChainMap).reduce(
         (prev: any, curr: any) => {
           const currChainArr = Object.keys(
             onChainAttestationsTypeChainMap[curr]
@@ -37,6 +35,12 @@ const Overview = memo(() => {
         },
         []
       );
+      l = l.map((i) => ({
+        // name: i === 'Linea Goerli' ? 'Linea' : i,
+        name: i.replace(/\s+/g, ''),
+        icon: EASInfo[i].icon,
+        // icon: iconOthers,
+      }));
       return l;
     } else {
       return [];
@@ -52,8 +56,12 @@ const Overview = memo(() => {
           const currTypeAstMap = onChainAttestationsTypeChainMap[curr];
           const currTypeOnChainsLenArr = xArr.reduce(
             (prevA: any, chain: any) => {
+              // const CName = chain.name === 'Linea' ? 'Linea Goerli' : chain.name;
+              const CName = Object.keys(EASInfo).find(
+                (i) => i.replace(/\s+/g, '') === chain.name
+              );
               const currTypeAstOnCurrChainLen = Object.values(
-                currTypeAstMap[chain]
+                currTypeAstMap[CName as string]
               ).length;
               prevA.push(currTypeAstOnCurrChainLen);
               return prevA;
@@ -73,72 +81,7 @@ const Overview = memo(() => {
       return [];
     }
   }, [onChainAttestationsTypeChainMap]);
-  const options = useMemo(() => {
-    return {
-      chart: {
-        type: 'bar',
-        height: 350,
-        stacked: true,
-        
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            legend: {
-              position: 'bottom',
-              offsetX: -10,
-              offsetY: 0,
-            },
-          },
-        },
-      ],
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          borderRadius: 10,
-          dataLabels: {
-            total: {
-              enabled: true,
-              style: {
-                fontSize: '13px',
-                fontWeight: 900,
-              },
-            },
-          },
-        },
-      },
-      xaxis: {
-        // type: 'datetime',
-        categories: xArr,
-        // categories: [
-        //   '01/01/2011 GMT',
-        //   '01/02/2011 GMT',
-        // ],
-      },
-      legend: {
-        position: 'right',
-        offsetY: 40,
-      },
-      fill: {
-        opacity: 1,
-      },
-    }
-  }, [xArr]);
-  const series = useMemo(() => {
-    return yArr;
-    // return [
-    //   {
-    //     name: 'PRODUCT A',
-    //     data: [44, 55],
-    //   },
-    //   {
-    //     name: 'PRODUCT B',
-    //     data: [13, 23],
-    //   },
-    // ];
-  }, [yArr]);
-  // console.log('222xArr', xArr,'yArr',yArr)// delete
+
   const handleMore = useCallback(() => {
     navigate('/zkAttestation');
   }, [navigate]);
@@ -156,14 +99,7 @@ const Overview = memo(() => {
             iconList={onChainAttestationsChainsIconList}
           />
         </div>
-        <Chart
-          options={options}
-          series={series}
-          type="bar"
-          width={504}
-          height={277}
-        />
-        
+        <BarChart xDatas={xArr} yDatas={yArr} />
         <PButton
           type="text"
           text="View More"

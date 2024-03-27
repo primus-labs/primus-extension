@@ -97,6 +97,7 @@ export type ATTESTATIONTYPEITEMTYPE = {
   childMap?: {
     [prodName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
   };
+  chartBarColor?: string;
 };
 export type ASSETSVERIFICATIONCONTENTTYPEITEM = {
   value: string;

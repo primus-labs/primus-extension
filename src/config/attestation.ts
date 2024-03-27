@@ -113,6 +113,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     icon: iconAttestationTypeAssets,
     color: 'yellow',
     childMap: ASSETSVERIFICATIONCONTENTTYPEEMAP,
+    chartBarColor: '#FFB700',
   },
   'Social Activities': {
     id: 'Social Activities',
@@ -126,6 +127,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     icon: iconAttestationTypeIdentity,
     color: 'gray',
     childMap: HUMANITYVERIFICATIONCONTENTTYPEMAP,
+    chartBarColor: '#7B889B',
   },
   'On-chain Transaction': {
     id: 'On-chain Transaction',
@@ -133,6 +135,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     icon: iconAttestationTypeOnChain,
     color: 'blue',
     childMap: ONCHAINVERIFICATIONCONTENTTYPEEMAP,
+    chartBarColor: '#1192E8',
   },
   'Qualification Certificate': {
     id: 'Qualification Certificate',

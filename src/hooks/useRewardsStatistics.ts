@@ -62,10 +62,10 @@ const useRewardsStatistics = function () {
         const { result, iconUrl } = eventsResult[i];
         let title = '',
           desc = '';
-        if (title === LUCKYDRAWEVENTNAME) {
+        if (i === LUCKYDRAWEVENTNAME) {
           title = '1st Commemorative Badge';
           desc = 'PADO event badge';
-        } else if (title === SCROLLEVENTNAME) {
+        } else if (i === SCROLLEVENTNAME) {
           title = 'Scroll zkAttestation Medal';
           desc = 'PADO event badge';
         }

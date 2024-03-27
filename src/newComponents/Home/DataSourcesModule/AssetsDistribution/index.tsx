@@ -10,8 +10,11 @@ import './index.scss';
 import AssetsBalance from '@/newComponents/AssetsBalance';
 import PButton from '@/newComponents/PButton';
 import PPTabs from '@/newComponents/PTabs';
+import BarChart2 from '../BarChart2';
 import useAllSources from '@/hooks/useAllSources';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
+import iconOthers from '@/assets/newImg/home/iconOthers.svg';
+
 const MAXSHOWTOKENLEN = 5;
 const MAXSHOWDATASOURCELEN = 4;
 const tList = [
@@ -95,6 +98,24 @@ const Overview = memo(() => {
       },
     ];
   }, [sortedConnectedAssetsSourcesList]);
+  const reverseShowPortfolioList = useMemo(() => {
+    return showPortfolioList.reverse();
+  }, [
+    sortedConnectedAssetsSourcesList,
+  ]);
+  const xDatasPortfolio = useMemo(() => {
+    const l = reverseShowPortfolioList.map((i) => ({
+      name: i.name,
+      icon: i.icon ?? iconOthers,
+    }));
+    return l;
+  }, [reverseShowPortfolioList, barChartBaseOptions]);
+  const yDatasPortfolio = useMemo(() => {
+    const l = reverseShowPortfolioList.map((i) => i.totalBalance - 0);
+    return l;
+  }, [reverseShowPortfolioList]);
+  
+
   const optionsToken = useMemo(() => {
     return {
       chart: {
@@ -266,6 +287,9 @@ const Overview = memo(() => {
       return allList;
     }
   }, [sortedChainAssetsList]);
+  const reverseShowChainList = useMemo(() => {
+    return showChainList.reverse()
+  }, [showChainList]);
   const optionsChain = useMemo(() => {
     const l = showChainList.map((i) => i.name);
     const fullOptions = { ...barChartBaseOptions };
@@ -280,6 +304,17 @@ const Overview = memo(() => {
       },
     ];
   }, [showChainList]);
+  const xDatasChain = useMemo(() => {
+    const l = reverseShowChainList.map((i) => ({
+      name: i.name,
+      icon: i.icon ?? iconOthers,
+    }));
+    return l;
+  }, [reverseShowPortfolioList, barChartBaseOptions]);
+  const yDatasChain = useMemo(() => {
+    const l = reverseShowChainList.map((i) => i.totalBalance - 0);
+    return l;
+  }, [reverseShowPortfolioList]);
   return (
     <div className="homeAssetsDistribution">
       <div className="title">
@@ -295,6 +330,12 @@ const Overview = memo(() => {
           value={activeTab}
         />
         {activeTab === 'Portfolio' && (
+          <BarChart2 xDatas={xDatasPortfolio} yDatas={yDatasPortfolio} />
+        )}
+        {activeTab === 'Chain' && (
+          <BarChart2 xDatas={xDatasChain} yDatas={yDatasChain} />
+        )}
+        {/* {activeTab === 'Portfolio' && (
           <Chart
             options={optionsPortfolio}
             series={seriesPortfolio}
@@ -302,7 +343,7 @@ const Overview = memo(() => {
             width={504}
             height={221}
           />
-        )}
+        )} */}
         {/* {activeTab === 'Token' && (
           <Chart
             options={optionsToken}
@@ -332,7 +373,7 @@ const Overview = memo(() => {
             </ul>
           </div>
         )}
-        {activeTab === 'Chain' && (
+        {/* {activeTab === 'Chain' && (
           <Chart
             options={optionsChain}
             series={seriesChain}
@@ -340,7 +381,7 @@ const Overview = memo(() => {
             width={504}
             height={221}
           />
-        )}
+        )} */}
         <PButton
           type="text"
           text="View More"
