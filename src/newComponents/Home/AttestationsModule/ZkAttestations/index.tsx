@@ -161,7 +161,7 @@ const Overview = memo(() => {
           series={series}
           type="bar"
           width={504}
-          height={292}
+          height={277}
         />
         
         <PButton

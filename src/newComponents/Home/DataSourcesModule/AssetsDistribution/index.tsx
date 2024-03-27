@@ -13,6 +13,7 @@ import PPTabs from '@/newComponents/PTabs';
 import useAllSources from '@/hooks/useAllSources';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 const MAXSHOWTOKENLEN = 5;
+const MAXSHOWDATASOURCELEN = 4;
 const tList = [
   { label: 'Portfolio', value: 'Portfolio' },
   { label: 'Token', value: 'Token' },
@@ -33,7 +34,7 @@ const Overview = memo(() => {
     sortedChainAssetsList
   ); //delete
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('Token');
+  const [activeTab, setActiveTab] = useState('Portfolio');
   const handleMore = useCallback(() => {
     navigate('/datas');
   }, [navigate]);
@@ -56,16 +57,38 @@ const Overview = memo(() => {
       xaxis: {
         categories: [],
       },
+    };
+  }, []);
+  const showPortfolioList = useMemo(() => {
+    const allList = sortedConnectedAssetsSourcesList;
+    if (allList.length > MAXSHOWDATASOURCELEN) {
+      const prevL = allList.slice(0, MAXSHOWDATASOURCELEN - 1);
+      const otherL = allList.slice(MAXSHOWDATASOURCELEN - 1);
+      const reduceF: (prev: BigNumber, curr: any) => BigNumber = (
+        prev,
+        curr
+      ) => {
+        const { totalBalance } = curr;
+        return add(prev.toNumber(), Number(totalBalance));
+      };
+      let otherTotalBal = otherL.reduce(reduceF, new BigNumber(0));
+      otherTotalBal = `${otherTotalBal.toFixed(2)}`;
+      return [
+        ...prevL,
+        { id: 'Other', name: 'Other', totalBalance: otherTotalBal },
+      ];
+    } else {
+      return allList;
     }
-  },[])
-  const options = useMemo(() => {
-    const l = sortedConnectedAssetsSourcesList.map((i) => i.name);
-    const fullOptions = { ...barChartBaseOptions }
-    fullOptions.xaxis.categories = l
+  }, [sortedConnectedAssetsSourcesList]);
+  const optionsPortfolio = useMemo(() => {
+    const l = showPortfolioList.map((i) => i.name);
+    const fullOptions = { ...barChartBaseOptions };
+    fullOptions.xaxis = { categories: l };
     return fullOptions;
   }, [sortedConnectedAssetsSourcesList, barChartBaseOptions]);
-  const series = useMemo(() => {
-    const l = sortedConnectedAssetsSourcesList.map((i) => i.totalBalance - 0);
+  const seriesPortfolio = useMemo(() => {
+    const l = showPortfolioList.map((i) => i.totalBalance - 0);
     return [
       {
         data: l,
@@ -170,7 +193,6 @@ const Overview = memo(() => {
       // },
     };
   }, []);
-
   const seriesToken = useMemo(() => {
     // function generateData(baseval, count, yrange) {
     //   var i = 0;
@@ -222,20 +244,42 @@ const Overview = memo(() => {
       return allTokenList;
     }
   }, [sortedHoldingTokensList]);
+  const showChainList = useMemo(() => {
+    const allList = sortedChainAssetsList;
+    if (allList.length > MAXSHOWDATASOURCELEN) {
+      const prevL = allList.slice(0, MAXSHOWDATASOURCELEN - 1);
+      const otherL = allList.slice(MAXSHOWDATASOURCELEN - 1);
+      const reduceF: (prev: BigNumber, curr: any) => BigNumber = (
+        prev,
+        curr
+      ) => {
+        const { totalBalance } = curr;
+        return add(prev.toNumber(), Number(totalBalance));
+      };
+      let otherTotalBal = otherL.reduce(reduceF, new BigNumber(0));
+      otherTotalBal = `${otherTotalBal.toFixed(2)}`;
+      return [
+        ...prevL,
+        { id: 'Other', name: 'Other', totalBalance: otherTotalBal },
+      ];
+    } else {
+      return allList;
+    }
+  }, [sortedChainAssetsList]);
   const optionsChain = useMemo(() => {
-    const l = sortedChainAssetsList.map((i) => i.name);
-    const fullOptions = { ...barChartBaseOptions }
-    fullOptions.xaxis.categories = l
+    const l = showChainList.map((i) => i.name);
+    const fullOptions = { ...barChartBaseOptions };
+    fullOptions.xaxis = { categories: l };
     return fullOptions;
-  }, [sortedChainAssetsList, barChartBaseOptions]);
+  }, [showChainList, barChartBaseOptions]);
   const seriesChain = useMemo(() => {
-    const l = sortedChainAssetsList.map((i) => i.totalBalance - 0);
+    const l = showChainList.map((i) => i.totalBalance - 0);
     return [
       {
         data: l,
       },
     ];
-  }, [sortedChainAssetsList]);
+  }, [showChainList]);
   return (
     <div className="homeAssetsDistribution">
       <div className="title">
@@ -252,11 +296,11 @@ const Overview = memo(() => {
         />
         {activeTab === 'Portfolio' && (
           <Chart
-            options={options}
-            series={series}
+            options={optionsPortfolio}
+            series={seriesPortfolio}
             type="bar"
             width={504}
-            height={236}
+            height={221}
           />
         )}
         {/* {activeTab === 'Token' && (
@@ -294,7 +338,7 @@ const Overview = memo(() => {
             series={seriesChain}
             type="bar"
             width={504}
-            height={236}
+            height={221}
           />
         )}
         <PButton
