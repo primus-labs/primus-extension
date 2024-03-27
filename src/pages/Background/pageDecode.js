@@ -34,6 +34,7 @@ export const pageDecodeMsgListener = async (
     });
     return isUrlWithQuery ? queryStr : false;
   };
+
   const onBeforeSendHeadersFn = async (details) => {
     const { url: currRequestUrl, requestHeaders } = details;
     let formatUrlKey = currRequestUrl;
@@ -51,6 +52,16 @@ export const pageDecodeMsgListener = async (
         }
         formatUrlKey = hostUrl;
         return !!curUrlWithQuery;
+      } else if (r.urlType === 'REGX') {
+        var regex = new RegExp(r.url, 'g');
+        const isTarget = currRequestUrl.match(regex);
+        const result = isTarget && isTarget.length > 0;
+        if (result) {
+          chrome.storage.local.set({
+            [r.url]: currRequestUrl,
+          });
+        }
+        return result;
       } else {
         return r.url === currRequestUrl;
       }
@@ -94,6 +105,16 @@ export const pageDecodeMsgListener = async (
         }
         formatUrlKey = hostUrl;
         return curUrlWithQuery;
+      } else if (r.urlType === 'REGX') {
+        var regex = new RegExp(r.url, 'g');
+        const isTarget = currRequestUrl.match(regex);
+        const result = isTarget && isTarget.length > 0;
+        if (result) {
+          chrome.storage.local.set({
+            [r.url]: currRequestUrl,
+          });
+        }
+        return result;
       } else {
         return r.url === currRequestUrl;
       }
@@ -131,12 +152,17 @@ export const pageDecodeMsgListener = async (
       const storageObj = await chrome.storage.local.get(interceptorUrlArr);
       const storageArr = Object.values(storageObj);
       if (storageArr.length === interceptorUrlArr.length) {
-        const f = interceptorRequests.every((r) => {
+        const f = interceptorRequests.every(async (r) => {
           // const storageR = Object.keys(storageObj).find(
           //   (sRKey) => sRKey === r.url
           // );
-          const sRrequestObj = storageObj[r.url]
-            ? JSON.parse(storageObj[r.url])
+          let url = r.url;
+          if (r.urlType === 'REGX') {
+            const realUrl = await chrome.storage.local.get(r.url);
+            url = realUrl[r.url];
+          }
+          const sRrequestObj = storageObj[url]
+            ? storageObj[url]
             : {};
           const headersFlag =
             !r.headers || (!!r.headers && !!sRrequestObj.headers);
@@ -201,7 +227,10 @@ export const pageDecodeMsgListener = async (
     await injectFn();
     checkWebRequestIsReadyFn();
     chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-      if (tabId === tabCreatedByPado.id && (changeInfo.url || changeInfo.title)) {
+      if (
+        tabId === tabCreatedByPado.id &&
+        (changeInfo.url || changeInfo.title)
+      ) {
         await injectFn();
         checkWebRequestIsReadyFn();
       }
@@ -254,10 +283,15 @@ export const pageDecodeMsgListener = async (
 
     const formatRequests = [];
     for (const r of requests) {
-      const { headers, cookies, body, url } = r;
-      const formatUrlKey = url;
+      let { headers, cookies, body, url ,urlType} = r;
+      let formatUrlKey = url;
+      if(urlType === 'REGX'){
+        formatUrlKey = await chrome.storage.local.get(url)
+        formatUrlKey = formatUrlKey[url]
+        url = formatUrlKey
+        r.url = url
+      }
       const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-
       const {
         headers: curRequestHeader,
         body: curRequestBody,
