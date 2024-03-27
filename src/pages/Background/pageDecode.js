@@ -3,13 +3,15 @@ import { assembleAlgorithmParams } from './exData';
 let tabCreatedByPado;
 let activeTemplate = {};
 let currExtentionId;
-
+// let hasGetTwitterRsp = false;
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
   sender,
   sendResponse,
-  password
+  password,
+  fullscreenPort,
+  hasGetTwitterScreenName
 ) => {
   const { name, params } = request;
   activeTemplate = name === 'inject' ? params : activeTemplate;
@@ -39,11 +41,15 @@ export const pageDecodeMsgListener = async (
     const { url: currRequestUrl, requestHeaders } = details;
     let formatUrlKey = currRequestUrl;
     let addQueryStr = '';
+    let needQueryDetail = false;
     const isTarget = requests.some((r) => {
       if (r.queryParams && r.queryParams[0]) {
         const urlStrArr = currRequestUrl.split('?');
         const hostUrl = urlStrArr[0];
         let curUrlWithQuery = r.url === hostUrl;
+        if(r.queryDetail){
+          needQueryDetail = r.queryDetail
+        }
         if (r.url === hostUrl) {
           curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
         }
@@ -60,6 +66,7 @@ export const pageDecodeMsgListener = async (
           chrome.storage.local.set({
             [r.url]: currRequestUrl,
           });
+          formatUrlKey = currRequestUrl
         }
         return result;
       } else {
@@ -89,6 +96,18 @@ export const pageDecodeMsgListener = async (
       await chrome.storage.local.set({
         [formatUrlKey]: JSON.stringify(newCurrRequestObj),
       });
+      if(needQueryDetail && formatUrlKey.startsWith("https://api.twitter.com/1.1/account/settings.json")&&!hasGetTwitterScreenName){
+        const options = {
+          headers: newCurrRequestObj.headers
+        };
+        hasGetTwitterScreenName = true;
+        const res = await fetch(formatUrlKey+"?"+newCurrRequestObj.queryString,options)
+        const result = await res.json();
+        //need to go profile page
+        await chrome.tabs.update(tabCreatedByPado.id, {
+          url: jumpTo + result.screen_name,
+        });
+      }
       checkWebRequestIsReadyFn();
     }
   };

@@ -67,6 +67,7 @@ import {
 import { eventReport } from '@/services/api/usertracker';
 import { switchAccount } from '@/services/wallets/metamask';
 import useAuthorization2 from '@/hooks/useAuthorization2';
+import local = chrome.storage.local;
 
 const onChainObj: any = DATASOURCEMAP.onChain;
 
@@ -876,18 +877,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             currRequestObj.schemaType =
               BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY';
           }
-          if(currRequestObj.schemaType ==='X_FOLLOWER_COUNT#1'||currRequestObj.schemaType ==='X_FOLLOWING_COUNT#1'){
-            const x = await chrome.storage.local.get('x');
-            if(!x){
-              alert("x not connected")
-              return;
-            }
-            const xInfoDetail = JSON.parse(x['x'])
-            if(currRequestObj.jumpTo === 'https://twitter.com/'){
-              currRequestObj.jumpTo = currRequestObj.jumpTo+xInfoDetail['screenName'];
-            }
 
-          }
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'inject',
