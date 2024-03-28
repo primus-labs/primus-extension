@@ -238,15 +238,15 @@ const EASINFOMAP = {
       icon: iconBinance,
       title: 'opBNB',
       rpcUrl: 'https://opbnb-testnet-rpc.bnbchain.org',
-      easContact: '0x5e905F77f59491F03eBB78c204986aaDEB0C6bDa',
-      easProxyFeeContract: '0xBF4221C5f98349FACbB28D0ea7bbc57a6834Bfe1',
+      easContact: '0x80087090A0E2d838001B1C1999D7D7269FC3001f',
+      easProxyFeeContract: '0x80087090A0E2d838001B1C1999D7D7269FC3001f',
       schemas: {
-        'BAS-opBNB-Testnet': {
+        'Ethsign-opBNB-Testnet': {
           schemaUid: '',
           schemaUidTokenHoldings: '',
           schemaUidIdentification: '',
           schemaUidWeb:
-            '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
+            '0x0000000000000000000000000000000000000000000000000000000000000003',
         },
         PolygonID: {
           schemaUid: '',
@@ -773,9 +773,9 @@ const BNBGREENFIELDSCHEMANAMEMAP = {
 };
 export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
 const OPBNBSCHEMANAMEMAP = {
-  development: 'BAS-opBNB-Testnet',
-  test: 'BAS-opBNB-Testnet',
-  production: 'BAS-opBNB-Mainnet',
+  development: 'Ethsign-opBNB-Testnet',
+  test: 'Ethsign-opBNB-Testnet',
+  production: 'Ethsign-opBNB-Testnet',
 };
 export let OPBNBSCHEMANAME = OPBNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDURLMAP = {
