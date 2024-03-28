@@ -238,15 +238,15 @@ const EASINFOMAP = {
       icon: iconBinance,
       title: 'opBNB',
       rpcUrl: 'https://opbnb-testnet-rpc.bnbchain.org',
-      easContact: '0x80087090A0E2d838001B1C1999D7D7269FC3001f',
-      easProxyFeeContract: '0x80087090A0E2d838001B1C1999D7D7269FC3001f',
+      easContact: '0x9A14ff83C1ED71407C00358D6dF98870DD1936f7',
+      easProxyFeeContract: '0x9A14ff83C1ED71407C00358D6dF98870DD1936f7',
       schemas: {
         'Ethsign-opBNB-Testnet': {
           schemaUid: '',
           schemaUidTokenHoldings: '',
           schemaUidIdentification: '',
           schemaUidWeb:
-            '0x0000000000000000000000000000000000000000000000000000000000000003',
+            '0x0000000000000000000000000000000000000000000000000000000000000004',
         },
         PolygonID: {
           schemaUid: '',
