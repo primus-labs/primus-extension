@@ -108,7 +108,8 @@ const WebComeBackDialog: React.FC<InputPasswordProps> = memo(
             <PButton
               text="Confirm"
               className="fullWidth confirmBtn"
-              disabled={password === ''}
+              disabled={
+              password === ''|| password === undefined}
               onClick={handleClickStart}
             ></PButton>
           </main>
