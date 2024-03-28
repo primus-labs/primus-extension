@@ -6,7 +6,7 @@ import { add, sub, div, mul, gte, formatNumeral } from '@/utils/utils';
 import { WALLETMAP } from '@/config/wallet';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 import { SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
-
+import iconOthers from '@/assets/newImg/home/iconOthers.svg';
 const useAssetsStatistic = function () {
   const { sourceMap } = useAllSources();
   const sysConfig = useSelector((state) => state.sysConfig);
@@ -216,6 +216,9 @@ const useAssetsStatistic = function () {
       } else if (j.logo) {
         return j.logo;
       } else {
+        if (j.symbol === 'Others') {
+          return iconOthers;
+        }
         const symbol = j.symbol.split('---')[0];
         return `${tokenLogoPrefix}icon${symbol}.png`;
       }
