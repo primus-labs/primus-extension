@@ -246,7 +246,7 @@ const EASINFOMAP = {
           schemaUidTokenHoldings: '',
           schemaUidIdentification: '',
           schemaUidWeb:
-            '0x0000000000000000000000000000000000000000000000000000000000000004',
+            '0x0000000000000000000000000000000000000000000000000000000000000005',
         },
         PolygonID: {
           schemaUid: '',
