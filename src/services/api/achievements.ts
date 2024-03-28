@@ -60,3 +60,11 @@ export  const shareDiscord = async (data) => {
         data: data
     });
 }
+
+
+export const checkHasFinishJoinDiscord = async () => {
+    return await request({
+        method : 'get',
+        url : '/achievement/discord/gm/check',
+    });
+}

@@ -4,7 +4,7 @@ import './index.scss';
 import PButton from '@/newComponents/PButton';
 import taskItemIcon from '@/assets/newImg/achievements/taskItemIcon.svg';
 import taskFinishedIcon from '@/assets/newImg/achievements/taskFinishedIcon.svg';
-import { finishTask, taskStatusCheck } from '@/services/api/achievements';
+import { checkHasFinishJoinDiscord, finishTask, taskStatusCheck } from '@/services/api/achievements';
 import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { BASEVENTNAME, SocailStoreVersion } from '@/config/constants';
@@ -184,12 +184,25 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
         const res = await getDataSourceData('discord');
         if (!res['discord']) {
-          addMsg({
-            type: 'info',
-            title: 'Not qualified',
-            desc: 'Please complete the Join PADO Discord event first.',
-            link: '',
-          });
+          //check the main wallet whether it has joined discord
+          const checkRsp = await checkHasFinishJoinDiscord()
+          debugger
+          if(checkRsp.result.hasJoinDiscord && checkRsp.result.discordName){
+            addMsg({
+              type: 'info',
+              title: 'Not qualified',
+              desc: `No GM messages found for ${checkRsp.result.discordName} on PADO Discord.`,
+              link: '',
+            });
+          } else{
+            addMsg({
+              type: 'info',
+              title: 'Not qualified',
+              desc: 'Please complete the Join PADO Discord event first.',
+              link: '',
+            });
+          }
+
           return;
         }
         const discordUserInfo = JSON.parse(res['discord']);
