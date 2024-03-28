@@ -113,10 +113,10 @@ function DescEl({ status, resultStatus }) {
           vC = 'Asset balance';
           vV = `>= $${verificationValue}`;
         } else if (verificationContent === 'Token Holding') {
-          vC = 'Owns a specified token';
+          vC = 'Token holding';
         }
       } else if (attestationType === 'Humanity Verification') {
-        if (verificationContent === 'Owns an account') {
+        if (verificationContent === 'Account ownership') {
           return [
             { label: 'Data Source', value: host },
             {

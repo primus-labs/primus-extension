@@ -77,7 +77,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
             i.proofContent === 'Account Ownership' ||
             uiContent === 'Account Ownership'
           ) {
-            i.verificationContent = 'Owns an account';
+            i.verificationContent = 'Account ownership';
             i.verificationValue = 'N/A';
           }
           if (uiContent === 'KYC Status') {

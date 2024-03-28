@@ -80,7 +80,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             className="verificationContent"
             label="Verification Content"
             align="horizontal"
-            placeholder="Select Content"
+            placeholder="Select content"
             list={ONCHAINVERIFICATIONCONTENTTYPELIST}
             onChange={(p) => {
               handleChangePswForm(p, 'verificationContent');
@@ -93,9 +93,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         <div className="formItem">
           <PSelect
             className="account"
-            label="Account"
+            label="Data Account"
             align="horizontal"
-            placeholder="Select Account"
+            placeholder="Select account"
             list={accountList}
             onChange={(p) => {
               handleChangePswForm(p, 'account');

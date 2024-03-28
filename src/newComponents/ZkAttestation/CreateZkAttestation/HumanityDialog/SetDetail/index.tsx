@@ -55,7 +55,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       let supportedContentIdArr: any = [];
 
       if (dataSourceId === 'google') {
-        supportedContentIdArr = ['Owns an account'];
+        supportedContentIdArr = ['Account ownership'];
       } else {
         supportedContentIdArr = Object.keys(
           HUMANITYVERIFICATIONCONTENTTYPEMAP
@@ -80,7 +80,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       let list = [];
       if (pswForm.verificationContent === 'KYC Status') {
         list = [...HUMANITYVERIFICATIONVALUETYPELIST];
-      } else if (pswForm.verificationContent === 'Owns an account') {
+      } else if (pswForm.verificationContent === 'Account ownership') {
         list = [
           {
             label: 'N/A',
@@ -126,7 +126,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
           if (pswForm.verificationContent === 'KYC Status') {
             newValue = 'Basic Verification';
-          } else if (pswForm.verificationContent === 'Owns an account') {
+          } else if (pswForm.verificationContent === 'Account ownership') {
             newValue = 'N/A';
           }
           handleChangePswForm(newValue, 'verificationValue');
@@ -165,7 +165,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               className="verificationContent"
               label="Verification Content"
               align="horizontal"
-              placeholder="Choose Data Source"
+              placeholder="Choose data source"
               list={contentList}
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationContent');
@@ -195,7 +195,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               className="verificationValue"
               label="Verification Value"
               align="horizontal"
-              placeholder="Input Value"
+              placeholder="Input value"
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationValue');
               }}

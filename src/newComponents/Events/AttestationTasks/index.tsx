@@ -92,13 +92,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             verificationContent = name;
             verificationValue = 'Basic Verification';
           } else if (name === 'Account Ownership') {
-            verificationContent = 'Owns an account';
+            verificationContent = 'Account ownership';
             verificationValue = 'N/A';
           }
         } else {
           if (taskId === '100') {
             dataSourceId = 'google';
-            verificationContent = 'Owns an account';
+            verificationContent = 'Account ownership';
             verificationValue = 'N/A';
           }
         }

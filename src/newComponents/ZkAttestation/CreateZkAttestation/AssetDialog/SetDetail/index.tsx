@@ -208,7 +208,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               className="verificationContent"
               label="Verification Content"
               align="horizontal"
-              placeholder="Choose Data Source"
+              placeholder="Choose data source"
               list={contentList}
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationContent');
@@ -226,7 +226,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 className="verificationValue"
                 label="Verification Value"
                 align="horizontal"
-                placeholder="Select Value"
+                placeholder="Select value"
                 list={valueList}
                 onChange={(p) => {
                   handleChangePswForm(p, 'verificationValue');
@@ -240,7 +240,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 className="verificationValue"
                 label="Verification Value"
                 align="horizontal"
-                placeholder="Input Value"
+                placeholder="Input value"
                 onChange={(p) => {
                   handleChangePswForm(p, 'verificationValue');
                 }}
@@ -253,7 +253,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               className="verificationValue"
               label="Verification Value"
               align="horizontal"
-              placeholder="Input Value"
+              placeholder="Input value"
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationValue');
               }}

@@ -64,9 +64,9 @@ export const HUMANITYVERIFICATIONCONTENTTYPEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
     value: 'KYC Status',
     label: 'KYC Status',
   },
-  'Owns an account': {
-    value: 'Owns an account',
-    label: 'Owns an account',
+  'Account ownership': {
+    value: 'Account ownership',
+    label: 'Account ownership',
     templateName: 'Account Ownership',
   },
 };

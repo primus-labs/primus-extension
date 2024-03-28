@@ -126,7 +126,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       // } else if (i.attestationType === 'Humanity Verification') {
       //   if (i.verificationContent === 'KYC Status') {
       //     str = i.verificationContent;
-      //   } else if (i.verificationContent === 'Owns an account') {
+      //   } else if (i.verificationContent === 'Account ownership') {
       //     str = i.verificationContent;
       //   }
       // }
@@ -150,7 +150,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       // else if (i.attestationType === 'Humanity Verification') {
       //   if (i.verificationContent === 'KYC Status') {
       //     str = i.verificationValue;
-      //   } else if (i.verificationContent === 'Owns an account') {
+      //   } else if (i.verificationContent === 'Account ownership') {
       //     str = i.verificationValue;
       //   }
       // }

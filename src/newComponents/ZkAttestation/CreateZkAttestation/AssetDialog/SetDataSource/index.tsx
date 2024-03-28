@@ -45,7 +45,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
           className="dataSourceName"
           label="Data source category"
           align="horizontal"
-          placeholder="Choose Data Source"
+          placeholder="Choose data source"
           list={tList}
           value={dataSourceName}
           onChange={(v) => {

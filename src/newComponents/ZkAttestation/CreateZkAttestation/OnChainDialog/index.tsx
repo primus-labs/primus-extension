@@ -138,7 +138,7 @@ const Nav: React.FC<PButtonProps> = memo(
           <main>
             <header>
               <h1>Create zkAttestation</h1>
-              <h2>You're creating {type.toLowerCase()}.</h2>
+              <h2>You're creating {type.toLowerCase()} proof.</h2>
             </header>
             {step === 1 && (
               <section className="detailWrapper">
