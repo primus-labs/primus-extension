@@ -15,6 +15,8 @@ import {
 } from 'echarts/renderers';
 import { formatNumeral } from '@/utils/utils';
 import './index.scss';
+import { EASInfo } from '@/config/envConstants';
+import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 
 // Register the required components
 echarts.use([
@@ -28,149 +30,183 @@ echarts.use([
 type BarChartProps = {
   xDatas: any[];
   yDatas: any[];
+  tokenMapDatas?: any[];
 };
 
 const MAXSHOWDATASOURCELEN = 4;
-const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
-  console.log('2222xDatas', xDatas, yDatas); //delete
-  const showXDatas = useMemo(() => {
-    let l = [...xDatas];
-    if (xDatas.length < MAXSHOWDATASOURCELEN) {
-      const diffLen = MAXSHOWDATASOURCELEN - xDatas.length;
-      for (var i = 0; i < diffLen; i++) {
-        l.unshift({ name: '', icon: undefined });
-      }
-    }
-    return l;
-  }, [xDatas]);
-  const showYDatas = useMemo(() => {
-    let l = [...yDatas];
-    if (yDatas.length < MAXSHOWDATASOURCELEN) {
-      const diffLen = MAXSHOWDATASOURCELEN - xDatas.length;
-      for (var i = 0; i < diffLen; i++) {
-        l.unshift('');
-      }
-    }
-    return l;
-  }, [yDatas]);
-  const xRichDatasMap = useMemo(() => {
-    let m = showXDatas.reduce(
-      (prev, curr) => {
-        if (curr.name) {
-          prev[curr.name] = {
-            width: 16,
-            height: 16,
-            // align: 'center',
-            backgroundColor: {
-              image: curr.icon,
-            },
-            // fontSize: 0,
-          };
+const PBarChart: FC<BarChartProps> = memo(
+  ({ xDatas = [], yDatas = [], tokenMapDatas }) => {
+    const { tokenIconFn } = useAssetsStatistic();
+    console.log('2222xDatas', xDatas, yDatas); //delete
+    const showXDatas = useMemo(() => {
+      let l = [...xDatas];
+      if (xDatas.length < MAXSHOWDATASOURCELEN) {
+        const diffLen = MAXSHOWDATASOURCELEN - xDatas.length;
+        for (var i = 0; i < diffLen; i++) {
+          l.unshift({ name: '', icon: undefined });
         }
-
-        return prev;
-      },
-      {
-        name: {
-          width: 61,
-          align: 'left',
-          fontSize: 12,
-          lineHeight: 16,
-          fontFamily: 'IBM Plex Sans',
-          color: '#161616',
-        },
       }
-    );
+      return l;
+    }, [xDatas]);
+    const showYDatas = useMemo(() => {
+      let l = [...yDatas];
+      if (yDatas.length < MAXSHOWDATASOURCELEN) {
+        const diffLen = MAXSHOWDATASOURCELEN - yDatas.length;
+        for (var i = 0; i < diffLen; i++) {
+          l.unshift('');
+        }
+      }
+      return l;
+    }, [yDatas]);
+    const xRichDatasMap = useMemo(() => {
+      let m = showXDatas.reduce(
+        (prev, curr) => {
+          if (curr.name) {
+            prev[curr.name] = {
+              width: 16,
+              height: 16,
+              // align: 'center',
+              backgroundColor: {
+                image: curr.icon,
+              },
+              // fontSize: 0,
+            };
+          }
 
-    return m;
-  }, [showXDatas]);
+          return prev;
+        },
+        {
+          name: {
+            width: 61,
+            align: 'left',
+            fontSize: 12,
+            lineHeight: 16,
+            fontFamily: 'IBM Plex Sans',
+            color: '#161616',
+          },
+        }
+      );
 
-  const option = useMemo(() => {
-    return {
-      grid: {
-        y: '0',
-        y2: '20px',
-        x: '88px',
-        x2: '14px',
-      },
-      legend: {},
-      animationDurationUpdate: 300,
-      tooltip: {
+      return m;
+    }, [showXDatas]);
+    const tooltip = useMemo(() => {
+      let obj: any = {
         formatter: (params) => {
           const { name, value } = params;
           return `${name}: $${formatNumeral(value)}`;
         },
-      },
-      xAxis: {
-        axisLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-        data: showXDatas,
-        type: 'value',
-        axisLabel: {
-          fontSize: 10,
-          lineHeight: 16,
-          fontFamily: 'IBM Plex Sans',
-          color: '#6F6F6F',
-          formatter: function (value) {
-            return (
-              '$' +
-              formatNumeral(value, { transferUnit: true, decimalPlaces: 0 })
-            );
-          },
-        },
-      },
-      yAxis: {
-        type: 'category',
-        data: showXDatas.map((i) => i.name),
-        align: 'left',
-        axisLabel: {
-          formatter: function (value) {
-            console.log('222value', value);
-            if (value) {
-              return '{' + value + '| }{name|' + value + '}';
-            } else {
-              return '';
-            }
-          },
-          rich: xRichDatasMap,
-        },
-        axisTick: {
-          show: false,
-        },
-        axisLine: {
-          lineStyle: {
-            color: '#E0E0E0',
-          },
-        },
-        splitLine: {
-          show: false,
-        },
-      },
-      series: {
-        data: showYDatas,
-        type: 'bar',
-        itemStyle: {
-          color: '#00C7F2',
-        },
-      },
-    };
-  }, [xRichDatasMap, showYDatas, showXDatas]);
+      };
+      if (tokenMapDatas) {
+        obj = {
+          backgroundColor: 'rgba(0, 0, 0, 0)',
+          borderColor: 'rgba(0, 0, 0, 0)',
+          padding: 0,
+          renderMode: 'html',
+          // className: 'echartsTooltip',
+          formatter: (params) => {
+            const { name, value, dataIndex } = params;
+            // console.log('222params', params, xDatas, tokenMapDatas, dataIndex);
+            const idx = MAXSHOWDATASOURCELEN - 1 - dataIndex;
+            const currTokenList = tokenMapDatas[idx];
+            const chainIcon = EASInfo[name].icon;
+            let title = `<div class="tooltipTitle"><img src='${chainIcon}'/><div>${name}</div></div>`;
+            let desc = `<div class="tooltipDesc">Token Distribution</div>`;
+            var list = currTokenList
+              .map(function (item: any) {
+                const { symbol, value } = item;
+                const logoIcon = tokenIconFn(item);
+                return `<li><div class="left"><img src='${logoIcon}'/><div>${symbol}</div></div><div class="right">$${formatNumeral(value)}</div></li>`;
+              })
+              .join('');
 
-  return (
-    <div className="pBar2Wrapper">
-      <ReactEChartsCore
-        echarts={echarts}
-        notMerge={true}
-        lazyUpdate={true}
-        theme={'theme_name'}
-        option={option}
-        className="pBar"
-      />
-    </div>
-  );
-});
+            return `<div class="tooltipWrapper">${title}${desc}<ul class="tokenUl">${list}</ul></div>`;
+          },
+        };
+      }
+      return obj;
+    }, [tokenMapDatas]);
+    const option = useMemo(() => {
+      return {
+        grid: {
+          y: '0',
+          y2: '20px',
+          x: '88px',
+          x2: '14px',
+        },
+        legend: {},
+        animationDurationUpdate: 300,
+        tooltip,
+        xAxis: {
+          axisLine: {
+            show: false,
+          },
+          axisTick: {
+            show: false,
+          },
+          data: showXDatas,
+          type: 'value',
+          axisLabel: {
+            fontSize: 10,
+            lineHeight: 16,
+            fontFamily: 'IBM Plex Sans',
+            color: '#6F6F6F',
+            formatter: function (value) {
+              return (
+                '$' +
+                formatNumeral(value, { transferUnit: true, decimalPlaces: 0 })
+              );
+            },
+          },
+        },
+        yAxis: {
+          type: 'category',
+          data: showXDatas.map((i) => i.name),
+          align: 'left',
+          axisLabel: {
+            formatter: function (value) {
+              console.log('222value', value);
+              if (value) {
+                return '{' + value + '| }{name|' + value + '}';
+              } else {
+                return '';
+              }
+            },
+            rich: xRichDatasMap,
+          },
+          axisTick: {
+            show: false,
+          },
+          axisLine: {
+            lineStyle: {
+              color: '#E0E0E0',
+            },
+          },
+          splitLine: {
+            show: false,
+          },
+        },
+        series: {
+          data: showYDatas,
+          type: 'bar',
+          itemStyle: {
+            color: '#00C7F2',
+          },
+        },
+      };
+    }, [xRichDatasMap, showYDatas, showXDatas, tooltip]);
+
+    return (
+      <div className="pBar2Wrapper">
+        <ReactEChartsCore
+          echarts={echarts}
+          notMerge={true}
+          lazyUpdate={true}
+          theme={'theme_name'}
+          option={option}
+          className="pBar"
+        />
+      </div>
+    );
+  }
+);
 export default PBarChart;
