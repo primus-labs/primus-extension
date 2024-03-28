@@ -5,6 +5,7 @@ import './index.scss';
 
 interface PInputProps {
   onChange: (val: string) => void;
+  onFocus?: () => void;
   type?: 'text' | 'password';
   placeholder?: string;
   label?: string;
@@ -24,6 +25,7 @@ interface PInputProps {
 const PInput: React.FC<PInputProps> = memo(
   ({
     onChange,
+    onFocus,
     type = 'text',
     placeholder = '',
     onSearch,
@@ -72,6 +74,12 @@ const PInput: React.FC<PInputProps> = memo(
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       const formatVal = e.target.value.trim();
       onChange(formatVal);
+    };
+
+    const handleFocus = () => {
+      if(onFocus) {
+        onFocus();
+      }
     };
     // const handleCopy = () => {
     //   navigator.clipboard.writeText(inputEl.current?.value);
@@ -127,6 +135,7 @@ const PInput: React.FC<PInputProps> = memo(
             ref={inputEl}
             type={activeType}
             onChange={handleChange}
+            onFocus={handleFocus}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}

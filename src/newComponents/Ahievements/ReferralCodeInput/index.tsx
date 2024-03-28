@@ -102,6 +102,7 @@ const ReferralCodeInput: React.FC<PButtonProps> = memo(
                   className={'CodeInput'}
                   value={referralCode}
                   onChange={(e) => setReferralCode(e)}
+                  onFocus={() => setShowErrorTip(false)}
                 />
                 {/*</Form.Item>*/}
                 <button onClick={handlePaste}>Paste</button>
