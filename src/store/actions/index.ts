@@ -9,6 +9,7 @@ import {
   DEFAULTDATASOURCEPOLLINGTIMENUM,
   SCROLLEVENTNAME,
   BASEVENTNAME,
+  ETHSIGNEVENTNAME,
 } from '@/config/constants';
 import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import {
@@ -310,7 +311,7 @@ export const setBadgeEventPeriodActionAsync = () => {
 export const setEventsActionAsync = () => {
   return async (dispatch: any) => {
     try {
-      const eventNameArr = [BASEVENTNAME];
+      const eventNameArr = [BASEVENTNAME, ETHSIGNEVENTNAME];
       const requestArr = eventNameArr.map((r) => {
         return queryEventDetail({
           event: r,

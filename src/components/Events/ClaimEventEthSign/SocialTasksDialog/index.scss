@@ -1,0 +1,79 @@
+@import '@/assets/css/padoDialog.scss';
+@import '@/assets/css/padoM.scss';
+@import '@/assets/css/pSelectOption.scss';
+@import '@/components/Cred/CredAddWrapper/CredTypesDialog/index.scss';
+
+.padoDialog.socialTasksDialog {
+  padding: 48px 42px;
+  height: 444px;
+  main {
+    gap: var(--spacing-32, 32px);
+    .innerContent {
+      position: relative;
+      .doneIcon {
+        width: var(--spacing-20);
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
+
+    // .socialTasks {
+    //   width: 100%;
+    //   @include fcss;
+    //   gap: var(--spacing-12);
+    //   .task {
+    //     width: 100%;
+    //     @include frbc;
+    //     padding: 0 var(--spacing-20);
+    //     height: 76px;
+    //     @include clickableCard;
+    //     border-radius: var(--spacing-4);
+    //     &.done {
+    //       border: 0;
+    //       background: var(--layer-tokens-layer-on-primary);
+    //       // cursor: default;
+    //       .right{
+    //         display: none;
+    //       }
+    //       // &:hover {
+    //       //   border: 0;
+    //       //   box-shadow: none;
+    //       // }
+    //     }
+    //     .left {
+    //       @include frsc;
+    //       gap: var(--spacing-16);
+    //       .iconWrapper {
+    //         position: relative;
+    //         width: var(--spacing-42);
+    //         height: var(--spacing-42);
+    //         @include frcc;
+    //         .dataSourceIcon {
+    //           width: var(--spacing-40);
+    //         }
+    //         .circleSucIcon {
+    //           position: absolute;
+    //           top: 0;
+    //           left: 0;
+    //           width: 100%;
+    //         }
+    //       }
+    //       .titleWrapper {
+    //         @include fcss;
+    //         gap: var(--spacing-4);
+    //         .title {
+    //           @include HeadlineH3;
+    //           // color: var(--Text-headline)// TODO-newui
+    //         }
+    //         .subTitle {
+    //           @include BodyBody100;
+    //           color: var(--text-tokens-text-secondary);
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+  }
+}

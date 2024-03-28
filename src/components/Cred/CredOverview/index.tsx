@@ -5,6 +5,7 @@ import {
   DATASOURCEMAP,
   SCROLLEVENTNAME,
   BASEVENTNAME,
+  ETHSIGNEVENTNAME,
 } from '@/config/constants';
 
 import PButton from '@/components/PButton';
@@ -16,6 +17,7 @@ import BindPolygonID from '@/components/Cred/BindPolygonID';
 import CredSendToChainWrapper from '../CredSendToChainWrapper';
 import ClaimMysteryBoxWrapper2 from '@/components/Events/ClaimMysteryBoxWrapper2';
 import ClaimEventBAS from '@/components/Events/ClaimBAS';
+import ClaimEventEthSign from '@/components/Events/ClaimEventEthSign';
 import useWallet from '@/hooks/useWallet';
 import { setCredentialsAsync } from '@/store/actions';
 
@@ -36,6 +38,8 @@ const CredOverview = memo(() => {
   const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
     useState<boolean>(false);
   const [claimEventBASVisible, setClaimEventBASVisible] =
+    useState<boolean>(false);
+  const [claimEventEthSignVisible, setClaimEventEthSignVisible] =
     useState<boolean>(false);
   const [claimEventBASStep, setClaimEventBASStep] = useState<number>(1);
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
@@ -259,6 +263,8 @@ const CredOverview = memo(() => {
         setClaimMysteryBoxVisible2(true);
       } else if (fromEvents === BASEVENTNAME) {
         setClaimEventBASVisible(true);
+      } else if (fromEvents === ETHSIGNEVENTNAME) {
+        setClaimEventEthSignVisible(true);
       }
     } else {
       setConnectDialogVisible(true);
@@ -548,7 +554,7 @@ const CredOverview = memo(() => {
   }, [createFlag, proofType, fromEvents]);
   useEffect(() => {
     if (fromEvents) {
-      if (fromEvents === 'Scroll' || fromEvents === BASEVENTNAME) {
+      if (['Scroll', BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
         handleJoinEvent();
       } else {
         handleAdd();
@@ -667,8 +673,16 @@ const CredOverview = memo(() => {
         onSubmit={onSubmitClaimMysteryBoxDialog2}
         onChange={onChangeClaimMysteryBoxDialog2}
       />
-      <ClaimEventBAS
+      <ClaimEventEthSign
         visible={claimEventBASVisible}
+        onClose={onCancelClaimEventBAS}
+        onSubmit={onSubmitClaimEventBAS}
+        onChange={onChangeClaimEventBAS}
+        onAttest={onClaimEventBASAttest}
+        activeStep={claimEventBASStep}
+      />
+      <ClaimEventEthSign
+        visible={claimEventEthSignVisible}
         onClose={onCancelClaimEventBAS}
         onSubmit={onSubmitClaimEventBAS}
         onChange={onChangeClaimEventBAS}
