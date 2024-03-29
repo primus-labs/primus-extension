@@ -892,7 +892,6 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               xFollowerCount;
             currRequestObj.schemaType =
               ethSignEventDetail?.ext?.schemaType || 'X_FOLLOWER_COUNT#1';
-           
           }
 
           await chrome.runtime.sendMessage({
@@ -1068,6 +1067,11 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               ...content,
               ...parsedActiveRequestAttestation,
             };
+            if (fullAttestation.event === ETHSIGNEVENTNAME) {
+              const xFollowerCount = sessionStorage.getItem('xFollowerCount');
+              fullAttestation.xFollowerCount = xFollowerCount;
+              sessionStorage.removeItem('xFollowerCount');
+            }
 
             const credentialsObj = { ...credentialsFromStore };
             credentialsObj[activeRequestId] = fullAttestation;

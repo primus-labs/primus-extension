@@ -29,50 +29,9 @@ interface AdSpaceProps {
 dayjs.extend(utc);
 const AdSpaceEthSign: FC<AdSpaceProps> = memo(({ onClick }) => {
   const dispatch: Dispatch<any> = useDispatch();
-  const [BASEventDetail] = useEventDetail(ETHSIGNEVENTNAME);
-  const BASEventPeriod = useMemo(() => {
-    if (BASEventDetail?.startTime) {
-      const { startTime, endTime } = BASEventDetail;
-      return {
-        startTime,
-        endTime,
-      };
-    } else {
-      return {};
-    }
-  }, [BASEventDetail]);
-  const formatPeriod = useMemo(() => {
-    const { startTime, endTime } = BASEventPeriod;
-    const s = dayjs.utc(+startTime).format('YYYY.MM.DD-h-a');
-    const e = dayjs.utc(+endTime).format('YYYY.MM.DD-h-a');
+  const [BASEventDetail, BASEventPeriod, formatPeriod, eventActiveFlag] =
+    useEventDetail(ETHSIGNEVENTNAME);
 
-    const sArr = s.split('-');
-    const eArr = e.split('-');
-    return `${sArr[0]} ~ ${eArr[0]}`;
-  }, [BASEventPeriod]);
-
-  const eventActiveFlag = useMemo(() => {
-    const { startTime, endTime } = BASEventPeriod;
-    const isUnStart = dayjs().isBefore(dayjs(+startTime))
-    const isActive =
-      dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
-    const isEnd = dayjs().isAfter(dayjs(+endTime));
-    const isLongTerm = BASEventDetail?.ext?.isLongTermEvent;
-    if (isUnStart) {
-      return 0;
-    }
-    if (isActive) {
-      return 1;
-    }
-    if (isEnd && !isLongTerm) {
-      return 2;
-    }
-    if (isLongTerm) {
-      return 3;
-    }
-
-    return 0;
-  }, [BASEventPeriod, BASEventDetail?.ext?.isLongTermEvent]);
   const formatCN = useMemo(() => {
     if (eventActiveFlag === 1) {
       return 'adSpace adSpaceBadge';

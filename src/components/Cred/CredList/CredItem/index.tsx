@@ -8,7 +8,7 @@ import {
   DATASOURCEMAP,
   ETHSIGNEVENTNAME,
   LINEAEVENTNAME,
-  BASEVENTNAME
+  BASEVENTNAME,
 } from '@/config/constants';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import {
@@ -62,10 +62,10 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       let deleteO = {
         icon: iconClear,
         text: 'Delete',
-        disabled: false
+        disabled: false,
       };
       if (item.event) {
-        deleteO.disabled =true
+        deleteO.disabled = true;
       }
       if (item?.provided?.length && item?.provided?.length > 0) {
         return [deleteO];
@@ -237,10 +237,43 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       const m = {
         [ETHSIGNEVENTNAME]: 'SignX',
         [BASEVENTNAME]: 'BAS',
-        [LINEAEVENTNAME]: 'Linea'
+        [LINEAEVENTNAME]: 'Linea',
+      };
+      return m[e];
+    }, []);
+    const identificationProofContentFn = useCallback((item) => {
+      if (item.reqType === 'web') {
+        const c = item.uiTemplate.proofContent;
+        if (c === 'X Followers') {
+          return 'Twitter Followers';
+        }
+        return c;
+      } else {
+        if (item.source === 'google') {
+          return item.proofContent;
+        } else {
+          return 'KYC Status';
+        }
       }
-      return m[e]
-    },[])
+    }, []);
+    const identificationProofResultFn = useCallback((item) => {
+      if (item.reqType === 'web') {
+        const c = item.uiTemplate.proofContent;
+        const sC = item.uiTemplate.subProofContent;
+        const condition = item.uiTemplate.condition;
+        let r = sC ? sC + ' ' + condition : condition;
+        if (c === 'X Followers') {
+          if(item.xFollowerCount === 1) {return 'Get Started'} 
+          if (item.xFollowerCount === 500) {
+            return 'Famous';
+          } 
+        } else {
+          return r;
+        }
+      } else {
+        return credProofConditions;
+      }
+    }, []);
 
     return (
       <div className={expand ? 'credItem expand' : 'credItem'}>
@@ -257,7 +290,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
 
                 <span>{briefTypeName}</span>
                 {item.did && <img src={iconPolygonID} alt="" />}
-                {item.event && <span className="eventName">{eventNameFn(item.event)}</span>}
+                {item.event && (
+                  <span className="eventName">{eventNameFn(item.event)}</span>
+                )}
               </div>
               <div className="conr">
                 <div className="conrItem">
@@ -355,11 +390,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 {item.type === 'IDENTIFICATION_PROOF' && (
                   // TODO!!!
                   <div className="value">
-                    {item.reqType === 'web'
-                      ? item.uiTemplate.proofContent
-                      : item.source === 'google'
-                      ? item.proofContent
-                      : 'KYC Status'}
+                    {identificationProofContentFn(item)}
                   </div>
                 )}
                 {item.type === 'UNISWAP_PROOF' && (
@@ -385,16 +416,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   <span>0</span>
                 </div>
               )}
-              {item.type === 'IDENTIFICATION_PROOF' &&
-                (item.reqType === 'web' ? (
-                  <div className="value">
-                    {item.uiTemplate.subProofContent &&
-                      item.uiTemplate.subProofContent + ' '}
-                    {item.uiTemplate.condition}
-                  </div>
-                ) : (
-                  <div className="value">{credProofConditions}</div>
-                ))}
+              <div className="value">{identificationProofResultFn(item)}</div>
+
               {/* {item.type === 'IDENTIFICATION_PROOF' &&
                 item.reqType !== 'web' && (
                   <div className="value">{credProofConditions}</div>

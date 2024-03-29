@@ -3,7 +3,6 @@ import CredItem from './CredItem';
 import EmptyDataSourceItem from '@/components/DataSourceOverview/DataSourceList/EmptyDataSourceItem';
 
 import type { CredTypeItemType } from '@/types/cred';
-
 import './index.scss';
 
 interface CredListProps {

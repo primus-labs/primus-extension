@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import dayjs from 'dayjs';
 import { setEventsActionAsync, initEventsActionAsync } from '@/store/actions';
+import useEventDetail from '@/hooks/useEventDetail';
 import RewardsDialog from '@/components/RewardsDialog';
 import ClaimWrapper from '../ClaimWrapper';
 import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
@@ -33,6 +34,8 @@ import {
 import { setRewardsDialogVisibleAction } from '@/store/actions';
 
 const EventsOverview = memo(() => {
+  const [BASEventDetail, BASEventPeriod, formatPeriod, ethSignEventActiveFlag] =
+    useEventDetail(ETHSIGNEVENTNAME);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [processDialogVisible, setProcessDialogVisible] = useState<boolean>();
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
@@ -187,8 +190,14 @@ const EventsOverview = memo(() => {
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">
-        <AdSpaceEthSign onClick={handleClickAdEthSign} />
+        {ethSignEventActiveFlag === 1 && (
+          <AdSpaceEthSign onClick={handleClickAdEthSign} />
+        )}
+
         <AdSpaceLineaDeFiVoyage onClick={handleClickAdSpaceLineaDeFiVoyage} />
+        {ethSignEventActiveFlag === 3 && (
+          <AdSpaceEthSign onClick={handleClickAdEthSign} />
+        )}
         <AdSpaceMysteryBAS onClick={handleClickClaimBAS} />
         {/* <AdSpaceBAS onClick={handleClickClaimBAS} /> */}
         {/* <Slider {...settings}> */}

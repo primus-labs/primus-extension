@@ -270,13 +270,13 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     // holdingToken // TODO
     authUseridHash,
     event,
-    setHostName: "true"
+    setHostName: 'true',
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
   if (source === 'tiktok') {
-    params.cipher = "ECDHE-ECDSA-AES128-GCM-SHA256";
-    params.setHostName= "true";
+    params.cipher = 'ECDHE-ECDSA-AES128-GCM-SHA256';
+    params.setHostName = 'true';
   }
   if (type === 'ASSETS_PROOF') {
     params.baseValue = baseValue;
@@ -290,6 +290,9 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     params.baseValue = '0';
     params.holdingToken = holdingToken;
     calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
+  }
+  if (baseValue) {
+    params.baseValue = baseValue;
   }
   if (port) {
     // it's noneed for page decode
