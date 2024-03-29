@@ -4,7 +4,12 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import { DATASOURCEMAP } from '@/config/constants';
+import {
+  DATASOURCEMAP,
+  ETHSIGNEVENTNAME,
+  LINEAEVENTNAME,
+  BASEVENTNAME
+} from '@/config/constants';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import {
   getCurrentDate,
@@ -54,27 +59,22 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const otherOperations = useMemo(() => {
+      let deleteO = {
+        icon: iconClear,
+        text: 'Delete',
+        disabled: false
+      };
+      if (item.event) {
+        deleteO.disabled =true
+      }
       if (item?.provided?.length && item?.provided?.length > 0) {
-        return [
-          {
-            icon: iconClear,
-            text: 'Delete',
-          },
-        ];
+        return [deleteO];
       }
       if (item.type === 'UNISWAP_PROOF') {
-        return [
-          {
-            icon: iconClear,
-            text: 'Delete',
-          },
-        ];
+        return [deleteO];
       }
       return [
-        {
-          icon: iconClear,
-          text: 'Delete',
-        },
+        deleteO,
         {
           icon: iconUpdate,
           text: 'Update',
@@ -233,6 +233,14 @@ const CredItem: React.FC<CredTypeListProps> = memo(
 
       return null;
     }, []);
+    const eventNameFn = useCallback((e) => {
+      const m = {
+        [ETHSIGNEVENTNAME]: 'SignX',
+        [BASEVENTNAME]: 'BAS',
+        [LINEAEVENTNAME]: 'Linea'
+      }
+      return m[e]
+    },[])
 
     return (
       <div className={expand ? 'credItem expand' : 'credItem'}>
@@ -249,6 +257,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
 
                 <span>{briefTypeName}</span>
                 {item.did && <img src={iconPolygonID} alt="" />}
+                {item.event && <span className="eventName">{eventNameFn(item.event)}</span>}
               </div>
               <div className="conr">
                 <div className="conrItem">

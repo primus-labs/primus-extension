@@ -19,7 +19,7 @@ import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDial
 import CredTypesDialog from './CredTypesDialog';
 import SocialTasksDialog from './SocialTasksDialog';
 import useAllSources from '@/hooks/useAllSources';
-import { BASEVENTNAME, ETHSIGNEVENTNAME } from '@/config/constants';
+import { ETHSIGNEVENTNAME } from '@/config/constants';
 import { queryEventDetail } from '@/services/api/event';
 import useEventDetail from '@/hooks/useEventDetail';
 
@@ -40,7 +40,7 @@ interface ClaimWrapperProps {
 }
 const ClaimWrapper: FC<ClaimWrapperProps> = memo(
   ({ visible, onClose, onSubmit, onChange, onAttest, activeStep }) => {
-    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
+    const [BASEventDetail] = useEventDetail(ETHSIGNEVENTNAME);
     const [searchParams] = useSearchParams();
     const BadgesProcess = searchParams.get('ScrollProcess');
     const [step, setStep] = useState<number>(0);
@@ -97,24 +97,16 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       return <AddressInfoHeader address={formatAddress as string} />;
     }, [connectedWallet?.address]);
     const onSubmitClaimDialog = useCallback(async () => {
-      const res = await chrome.storage.local.get([BASEVENTNAME]);
-      if (res[BASEVENTNAME]) {
-        const lastInfo = JSON.parse(res[BASEVENTNAME]);
+      const res = await chrome.storage.local.get([ETHSIGNEVENTNAME]);
+      if (res[ETHSIGNEVENTNAME]) {
+        const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
         lastInfo.status = 1;
         await chrome.storage.local.set({
-          [BASEVENTNAME]: JSON.stringify(lastInfo),
+          [ETHSIGNEVENTNAME]: JSON.stringify(lastInfo),
         });
       }
-      if (eventActiveFlag === 1) {
-        onSubmit();
-      } else if (eventActiveFlag === 3) {
-        setStep(3);
-        setActiveRequest({
-          type: 'suc',
-          title: 'Congratulations',
-          desc: 'Tasks finished！',
-        });
-      }
+      onSubmit();
+      
     }, [onSubmit, eventActiveFlag]);
     // }, [navigate, dispatch, onClose]);
 
@@ -250,16 +242,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
             onSubmit={handleAttest}
           />
         )}
-        {visible && step === 3 && (
-          <AddSourceSucDialog
-            onClose={onClose}
-            onSubmit={onSubmitActiveRequestDialog}
-            type={activeRequest?.type}
-            title={activeRequest?.title}
-            desc={activeRequest?.desc}
-            headerEl={resultDialogHeaderEl}
-          />
-        )}
+        
       </div>
     );
   }

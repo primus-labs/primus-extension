@@ -318,6 +318,9 @@ const CredOverview = memo(() => {
   const onSubmitClaimEventBAS = useCallback(() => {
     setClaimEventBASVisible(false);
   }, []);
+  const onSubmitClaimEventEthSign = useCallback(() => {
+    setClaimEventEthSignVisible(false);
+  }, []);
   const onChangeClaimEventBAS = useCallback(
     async (step: number) => {
       setClaimEventBASStep(1);
@@ -345,8 +348,29 @@ const CredOverview = memo(() => {
     },
     [handleUpChain]
   );
-  const onChangeClaimEventEthSign = useCallback((step: number) => {
-    debugger;
+  const onChangeClaimEventEthSign = useCallback(async (step: number) => {
+    setClaimEventBASStep(1);
+    // step: 4
+    if (step === 4) {
+      // upper chain
+      const { credentials } = await chrome.storage.local.get('credentials');
+      let credArrNew = Object.values(JSON.parse(credentials));
+
+      const res = await chrome.storage.local.get([ETHSIGNEVENTNAME]);
+      if (res[ETHSIGNEVENTNAME]) {
+        const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
+        const lastTasks = lastInfo.steps[1].tasks ?? {};
+        const toBeUpperChainCredRequestids = Object.values(lastTasks);
+        const toBeUpperChainCreds = credArrNew.filter((c: any) =>
+          toBeUpperChainCredRequestids.includes(c.requestid)
+        );
+        const firstToBeUpperChainCred = toBeUpperChainCreds[0];
+        if (firstToBeUpperChainCred) {
+          setClaimEventEthSignVisible(false);
+          handleUpChain(firstToBeUpperChainCred as CredTypeItemType);
+        }
+      }
+    }
   }, []);
   // setClaimEventEthSignStep;
   const onClaimEventBASAttest = (attestId: string) => {
@@ -385,7 +409,7 @@ const CredOverview = memo(() => {
           // if (addSucFlag) {
           setAddDialogVisible(false);
           setClaimEventEthSignVisible(true);
-          setClaimEventEthSignStep(2);
+          setClaimEventEthSignStep(1);
           // } else {
           //   navigate('/cred', { replace: true });
           // }
@@ -471,9 +495,16 @@ const CredOverview = memo(() => {
     [fromEvents, navigate]
   );
   const handleBackToBASEvent = useCallback(() => {
-    setClaimEventBASVisible(true);
-    setSendToChainDialogVisible(false);
-  }, []);
+    
+    if (fromEvents === BASEVENTNAME) {
+      setClaimEventBASVisible(true);
+      setSendToChainDialogVisible(false);
+    } else if (fromEvents === ETHSIGNEVENTNAME) {
+      setClaimEventEthSignVisible(true);
+      setSendToChainDialogVisible(false);
+    }
+    
+  }, [fromEvents]);
   const startFn = useCallback(() => {
     if (connectedWallet?.address) {
       setActiveRequest({
@@ -715,7 +746,7 @@ const CredOverview = memo(() => {
       />
       <ClaimEventEthSign
         visible={claimEventEthSignVisible}
-        onSubmit={onSubmitClaimEventBAS}
+        onSubmit={onSubmitClaimEventEthSign}
         onChange={onChangeClaimEventEthSign}
         onAttest={onClaimEventEthSignAttest}
         activeStep={claimEventEthSignStep}

@@ -80,6 +80,11 @@
           > img {
             width: var(--spacing-18, 18px);
           }
+          .eventName{
+            @extend .Text2;
+            align-self: flex-end;
+            color: #7B7F80;
+          }
         }
         .conr {
           @extend .fcss;

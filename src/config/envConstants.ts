@@ -644,6 +644,38 @@ const EASINFOMAP = {
         decimals: 18,
       },
     },
+    opBNB: {
+      showName: 'opBNB',
+      icon: iconBinance,
+      title: 'opBNB',
+      rpcUrl: 'https://opbnb-mainnet-rpc.bnbchain.org',
+      easContact: '0x9A14ff83C1ED71407C00358D6dF98870DD1936f7',
+      easProxyFeeContract: '0xC769999Dd0abBB7007F6F9aF58aA17F4C45aa3bA',
+      schemas: {
+        'Ethsign-opBNB-Mainnet': {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+          schemaUidWeb:
+            '0x0000000000000000000000000000000000000000000000000000000000000001',
+        },
+        PolygonID: {
+          schemaUid: '',
+          schemaUidTokenHoldings: '',
+          schemaUidIdentification: '',
+        },
+      },
+      chainId: '0xcc', // 204
+      chainName: 'opBNB Mainnet',
+      rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
+      blockExplorerUrls: ['https://mainnet.opbnbscan.com/'],
+      nativeCurrency: {
+        name: 'tBNB',
+        symbol: 'tBNB',
+        decimals: 18,
+      },
+      transactionDetailUrl: 'https://mainnet.opbnbscan.com/tx',
+    },
   },
 };
 export const EASInfo = EASINFOMAP[CURENV];
@@ -775,7 +807,7 @@ export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
 const OPBNBSCHEMANAMEMAP = {
   development: 'Ethsign-opBNB-Testnet',
   test: 'Ethsign-opBNB-Testnet',
-  production: 'Ethsign-opBNB-Testnet',
+  production: 'Ethsign-opBNB-Mainnet',
 };
 export let OPBNBSCHEMANAME = OPBNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDURLMAP = {

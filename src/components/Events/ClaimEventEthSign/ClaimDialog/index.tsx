@@ -166,9 +166,6 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       if (!isComplete) {
         setErrorTip('Please complete the tasks above first.');
       } else {
-        if (eventActiveFlag === 1) {
-          window.open(eventPlateUrl); // TODO-basevent
-        }
         onSubmit();
         navigate('/cred', { replace: true });
       }
@@ -387,9 +384,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             <PButton
               className={btnCN}
               text={btcTxt}
-              suffix={
-                isComplete && <i className="iconfont icon-rightArrow"></i>
-              }
+              
               onClick={hanldeSubmit}
             />
             {errorTip && <PBottomErrorTip text={errorTip} />}

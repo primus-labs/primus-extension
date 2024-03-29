@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import useWallet from '@/hooks/useWallet';
 import useEventDetail from '@/hooks/useEventDetail';
-import { BASEVENTNAME, WALLETLIST } from '@/config/constants';
+
 import { setConnectWalletActionAsync } from '@/store/actions';
 import { strToHexSha256 } from '@/utils/utils';
 import PButton from '@/components/PButton';
@@ -30,7 +30,13 @@ import {
   OPBNBSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/envConstants';
-import { CredVersion, SCROLLEVENTNAME } from '@/config/constants';
+import {
+  CredVersion,
+  SCROLLEVENTNAME,
+  ETHSIGNEVENTNAME,
+  BASEVENTNAME,
+  WALLETLIST,
+} from '@/config/constants';
 import { connectWallet, switchChain } from '@/services/wallets/metamask';
 import {
   attestByDelegationProxy,
@@ -66,6 +72,7 @@ interface CredSendToChainWrapperType {
 const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit, handleBackToBASEvent }) => {
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
+    const [ethSignEventDetail] = useEventDetail(ETHSIGNEVENTNAME);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -98,6 +105,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     const formatChainList = useMemo(() => {
       if (fromEvents) {
         let newList = ONCHAINLIST.map((i) => {
+          if (i.title.indexOf('opBNB') > -1) {
+            i.disabled = true;
+          }
           if (fromEvents === 'Scroll') {
             if (i.title.indexOf('Scroll') > -1) {
               // TODO!!!
@@ -112,6 +122,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               i.disabled = false;
               return { ...i };
             }
+          } else if (fromEvents === ETHSIGNEVENTNAME) {
+            if (i.title.indexOf('opBNB') > -1) {
+              i.disabled = false;
+              return { ...i };
+            }
           } else {
             if (i.title === 'Linea Goerli') {
               i.disabled = false;
@@ -120,14 +135,17 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           }
           return { ...i, disabled: true };
         });
-        if (fromEvents === BASEVENTNAME) {
+        if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
           newList = newList.filter((i) => !i.disabled);
         }
         return newList;
       } else {
-        const filterdList = ONCHAINLIST.filter(
-          (i) => i.title !== 'BNB Greenfield'
-        );
+        const filterdList = ONCHAINLIST.filter((i) => {
+          if (i.title.indexOf('opBNB') > -1) {
+            i.disabled = true;
+          }
+          return i.title !== 'BNB Greenfield';
+        });
         return filterdList;
       }
     }, [fromEvents]);
@@ -168,7 +186,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     }, [activeSendToChainRequest?.type, onSubmit]);
 
     const handleCancelTransferToChain = useCallback(() => {
-      if (fromEvents === BASEVENTNAME) {
+      if (fromEvents) {
         handleBackToBASEvent && handleBackToBASEvent();
       }
     }, [fromEvents, handleBackToBASEvent]);
@@ -176,19 +194,20 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       setStep(3);
     }, []);
 
-    const getBASInfoFn = useCallback(async () => {
-      const res = await chrome.storage.local.get([BASEVENTNAME]);
-      if (res[BASEVENTNAME]) {
-        const lastInfo = JSON.parse(res[BASEVENTNAME]);
-        return lastInfo;
-      } else {
-        return {};
+    const getEventInfoFn = useCallback(async () => {
+      if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+        const res = await chrome.storage.local.get([fromEvents]);
+        if (res[fromEvents]) {
+          const lastInfo = JSON.parse(res[fromEvents]);
+          return lastInfo;
+        }
       }
+      return {};
     }, []);
 
     const toBeUpperChainCredsFn = useCallback(async () => {
       let credArrNew: CredTypeItemType[] = Object.values(credentialsFromStore);
-      const lastBASInfoObj = (await getBASInfoFn()) as any;
+      const lastBASInfoObj = (await getEventInfoFn()) as any;
       // del
       console.log(
         '222toBeUpperChainCredsFn-credArrNew:',
@@ -207,17 +226,14 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       } else {
         return [];
       }
-    }, [credentialsFromStore, getBASInfoFn]);
+    }, [credentialsFromStore, getEventInfoFn]);
     const LineaSchemaNameFn = useCallback(
       (networkName?: string) => {
         const formatNetworkName = networkName ?? activeNetworkName;
         let Name;
         if (formatNetworkName?.startsWith('Linea')) {
           Name = LINEASCHEMANAME;
-        } else if (
-          formatNetworkName &&
-          formatNetworkName.indexOf('BSC') > -1
-        ) {
+        } else if (formatNetworkName && formatNetworkName.indexOf('BSC') > -1) {
           Name = BNBSCHEMANAME;
         } else if (
           formatNetworkName &&
@@ -229,7 +245,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           formatNetworkName.indexOf('BNB Greenfield') > -1
         ) {
           Name = BNBGREENFIELDSCHEMANAME;
-        } else if (formatNetworkName && formatNetworkName.indexOf('opBNB') > -1) {
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('opBNB') > -1
+        ) {
           Name = OPBNBSCHEMANAME;
         } else {
           // Name = 'EAS';
@@ -288,12 +307,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           });
           await initCredList();
 
-          const res = await chrome.storage.local.get([BASEVENTNAME]);
-          if (res[BASEVENTNAME]) {
-            const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          const res = await chrome.storage.local.get([fromEvents]);
+          if (res[fromEvents]) {
+            const lastInfo = JSON.parse(res[fromEvents]);
             lastInfo.steps[2].status = 1;
             await chrome.storage.local.set({
-              [BASEVENTNAME]: JSON.stringify(lastInfo),
+              [fromEvents]: JSON.stringify(lastInfo),
             });
 
             setActiveSendToChainRequest({
@@ -418,9 +437,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       toBeUpperChainCredsFn,
       connectedWallet,
     ]);
-    const BASEventDetailExt = useMemo(() => {
-      return BASEventDetail?.ext;
-    }, [BASEventDetail]);
+    const EventDetailExt = useMemo(() => {
+      if (fromEvents === BASEVENTNAME) return BASEventDetail?.ext;
+      if (fromEvents === ETHSIGNEVENTNAME) return ethSignEventDetail?.ext;
+    }, [BASEventDetail, ethSignEventDetail, fromEvents]);
     const BASEventFn = useCallback(
       async (
         walletObj: any,
@@ -433,7 +453,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             name: 'upperChain',
             params: {
               operation: 'openPadoWebsite',
-              eventName: BASEVENTNAME,
+              eventName: fromEvents,
               chainName: activeNetworkName,
             },
           });
@@ -486,10 +506,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             networkName: formatNetworkName,
             metamaskprovider: walletObj.provider,
             items: upChainItems,
-            eventSchemauid: BASEventDetailExt?.schemaUid,
+            eventSchemauid: EventDetailExt?.schemaUid,
           };
 
           let upChainRes = await bulkAttest(upChainParams);
+          
           // burying point
           console.log('222123upChainParams.items', upChainParams.items);
           let upChainType = upChainParams.items[0].type;
@@ -595,12 +616,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
 
             await initCredList();
 
-            const res = await chrome.storage.local.get([BASEVENTNAME]);
-            if (res[BASEVENTNAME]) {
-              const lastInfo = JSON.parse(res[BASEVENTNAME]);
+            const res = await chrome.storage.local.get([fromEvents]);
+            if (res[fromEvents]) {
+              const lastInfo = JSON.parse(res[fromEvents]);
               lastInfo.steps[2].status = 1;
               await chrome.storage.local.set({
-                [BASEVENTNAME]: JSON.stringify(lastInfo),
+                [fromEvents]: JSON.stringify(lastInfo),
               });
 
               setActiveSendToChainRequest({
@@ -647,12 +668,14 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       },
       [
         activeNetworkName,
-        BASEventDetailExt,
+        EventDetailExt,
         credentialsFromStore,
         initCredList,
         toBeUpperChainCredsFn,
+        fromEvents,
       ]
     );
+
     const scrollEventFn = useCallback(
       async (
         walletObj: any,
@@ -861,7 +884,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
           if (fromEvents === 'Scroll') {
             scrollEventFn(walletObj, LineaSchemaName);
-          } else if (fromEvents === BASEVENTNAME) {
+          } else if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
             BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
           } else {
             let upChainParams: any = {
@@ -885,12 +908,16 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             const cObj = { ...credentialsFromStore };
             const curRequestid = activeCred?.requestid as string;
             const curCredential = cObj[curRequestid];
-            if (curCredential?.event === BASEVENTNAME) {
-              const schemaUidObj = BASEventDetailExt?.schemaUidInfo.find(
+            if (
+              curCredential?.event &&
+              [BASEVENTNAME, ETHSIGNEVENTNAME].includes(curCredential?.event)
+            ) {
+              const schemaUidObj = EventDetailExt?.schemaUidInfo.find(
                 (i) => i.sigFormat === LineaSchemaName
               );
               upChainParams.eventSchemauid = schemaUidObj.schemaUid;
-            } // TODO-basevent
+            }
+
             if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
               const requestParams: any = {
                 rawParam:
@@ -1057,7 +1084,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         initCredList,
         scrollEventFn,
         fromEvents,
-        BASEventDetailExt,
+        EventDetailExt,
         // activeNetworkName,
         BASEventFn,
         LineaSchemaNameFn,
@@ -1113,10 +1140,15 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
 
     useEffect(() => {
       if (visible) {
-        setActiveNetworkName(undefined);
-        setStep(3);
+        if (fromEvents === ETHSIGNEVENTNAME) {
+          handleSubmitTransferToChain('opBNB');
+          // setStep(5);
+        } else {
+          setActiveNetworkName(undefined);
+          setStep(3);
+        }
       }
-    }, [visible]);
+    }, [visible, fromEvents]);
     const onClickClaimNFT = useCallback(() => {
       onSubmitActiveSendToChainRequestDialog();
       navigate('/events');
@@ -1225,7 +1257,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             list={formatChainList}
             tip="Please select one chain to submit attestation"
             checked={false}
-            backable={fromEvents === BASEVENTNAME}
+            backable={[BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)}
             headerType={
               activeCred?.did ? 'polygonIdAttestation' : 'attestation'
             }
@@ -1255,9 +1287,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             onSubmit={onSubmitActiveSendToChainRequestDialog}
             closeable={
               !fromEvents ||
-              fromEvents === 'Scroll' ||
               fromEvents === 'LINEA_DEFI_VOYAGE' ||
-              fromEvents === BASEVENTNAME
+              ['Scroll', BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)
             }
           />
         )}
