@@ -25,7 +25,11 @@ import 'slick-carousel/slick/slick-theme.css';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 import Slider from 'react-slick';
-import { ETHSIGNEVENTNAME, DATASOURCEMAP } from '@/config/constants';
+import {
+  BASEVENTNAME,
+  ETHSIGNEVENTNAME,
+  DATASOURCEMAP,
+} from '@/config/constants';
 import { setRewardsDialogVisibleAction } from '@/store/actions';
 
 const EventsOverview = memo(() => {
@@ -107,101 +111,46 @@ const EventsOverview = memo(() => {
     }
   }, [navigate, dispatch]);
 
-  const initEvent = useCallback(async () => {
-    // let newEventObj = {};
-    // const currentAddress = connectedWallet?.address;
-    // const eventId = ETHSIGNEVENTNAME;
-    // const res = await chrome.storage.local.get([eventId]);
-    // let emptyInfo = {};
-    // let attestation = {};
-    // if (eventId === ETHSIGNEVENTNAME) {
-    //   attestation = {
-    //     '1000': 0,
-    //   };
-    // }
-    // emptyInfo = {
-    //   address: currentAddress,
-    //   taskMap: {
-    //     follow: {
-    //       x: 0,
-    //       discord: 0,
-    //     },
-    //     attestation,
-    //     onChain: {
-    //       onChain: 0,
-    //     },
-    //     check: {
-    //       check: 1,
-    //     },
-    //   },
-    // };
-
-    // // have joined this event
-    // if (res[eventId]) {
-    //   const lastEventObj = JSON.parse(res[eventId]);
-    //   // have joined this event by current connected address
-    //   if (lastEventObj[currentAddress]) {
-    //     const { taskMap } = lastEventObj[currentAddress];
-    //     const finishTasksFlag = Object.values(taskMap).every((taskObj: any) => {
-    //       const currTaskFinishFlag = Object.values(taskObj).every((t) => !!t);
-    //       return currTaskFinishFlag;
-    //     });
-    //     if (finishTasksFlag) {
-    //       lastEventObj[currentAddress] = emptyInfo;
-    //     }
-    //   } else {
-    //     // have joined ,but not by current connected address
-    //     newEventObj = { ...lastEventObj };
-    //     newEventObj[currentAddress] = emptyInfo;
-    //   }
-    //   await chrome.storage.local.set({
-    //     [eventId]: JSON.stringify(newEventObj),
-    //   });
-    // } else {
-    //   //  have not joined this event
-    //   newEventObj = {
-    //     [currentAddress]: emptyInfo,
-    //   };
-    //   await chrome.storage.local.set({
-    //     [eventId]: JSON.stringify(newEventObj),
-    //   });
-    // }
-    navigate(`/cred?fromEvents=${ETHSIGNEVENTNAME}`);
-  }, [connectedWallet?.address]);
-  const handleClickClaimBAS = useCallback(async () => {
-    let isLastFinished = false;
-    const res = await chrome.storage.local.get([ETHSIGNEVENTNAME]);
-    const initFn = async () => {
-      await chrome.storage.local.set({
-        [ETHSIGNEVENTNAME]: JSON.stringify({
-          // status: 0, //  0:start 1:end(suc)
-          steps: [
-            {
-              status: 0,
-            },
-            {
-              status: 0,
-            },
-            {
-              status: 0,
-            },
-          ],
-        }),
-      });
-    };
-    if (res[ETHSIGNEVENTNAME]) {
-      const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
-      isLastFinished = lastInfo.status === 1;
-      if (isLastFinished) {
+  const initEvent = useCallback(
+    async (eventName) => {
+      let isLastFinished = false;
+      const res = await chrome.storage.local.get([eventName]);
+      const initFn = async () => {
+        await chrome.storage.local.set({
+          [eventName]: JSON.stringify({
+            // status: 0, //  0:start 1:end(suc)
+            steps: [
+              {
+                status: 0,
+              },
+              {
+                status: 0,
+              },
+              {
+                status: 0,
+              },
+            ],
+          }),
+        });
+      };
+      if (res[eventName]) {
+        const lastInfo = JSON.parse(res[eventName]);
+        isLastFinished = lastInfo.status === 1;
+        if (isLastFinished) {
+          await initFn();
+        }
+      } else {
         await initFn();
       }
-    } else {
-      await initFn();
-    }
-    navigate(`/cred?fromEvents=${ETHSIGNEVENTNAME}`);
+      navigate(`/cred?fromEvents=${eventName}`);
+    },
+    [navigate]
+  );
+  const handleClickClaimBAS = useCallback(async () => {
+    await initEvent(BASEVENTNAME);
   }, [navigate]);
   const handleClickAdEthSign = useCallback(async () => {
-    await initEvent();
+    await initEvent(ETHSIGNEVENTNAME);
   }, [initEvent]);
   const handleClickAdSpaceLineaDeFiVoyage = useCallback(async () => {
     navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');

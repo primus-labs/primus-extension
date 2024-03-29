@@ -121,39 +121,6 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
     const onSubmitActiveRequestDialog = useCallback(() => {
       onSubmit();
     }, [onSubmit]);
-
-    useEffect(() => {
-      if (visible) {
-        setStep(1);
-        setActiveRequest(undefined);
-      }
-    }, [BadgesProcess, errorDescEl, visible]);
-
-    const onChangeFn = useCallback(
-      (itemId) => {
-        // itemId: 3/4
-        if (itemId === 2) {
-          setStep(1.5);
-        } else if (itemId === 3) {
-          setStep(2);
-        } else {
-          //  (itemId === 4)
-          onChange(itemId);
-        }
-      },
-      [onChange]
-    );
-    const onCredTypeDialogSubmit = useCallback(async () => {
-      setStep(1);
-    }, []);
-    const handleCloseSocialTasksDialog = useCallback(() => {
-      setStep(1);
-    }, []);
-    useEffect(() => {
-      if (visible && activeStep) {
-        setStep(activeStep);
-      }
-    }, [activeStep, visible]);
     const initEvent = useCallback(async () => {
       let newEventObj = {};
       const currentAddress = connectedWallet?.address;
@@ -182,33 +149,37 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           },
         },
       };
-
       // have joined this event
       if (res[eventId]) {
         const lastEventObj = JSON.parse(res[eventId]);
         // have joined this event by current connected address
-        if (lastEventObj[currentAddress]) {
-          const { taskMap } = lastEventObj[currentAddress];
-          const finishTasksFlag = Object.values(taskMap).every((taskObj: any) => {
-            const currTaskFinishFlag = Object.values(taskObj).every((t) => !!t);
-            return currTaskFinishFlag;
-          });
-          debugger
+        // if (lastEventObj[currentAddress]) {
+        const joinAddressArr = Object.keys(lastEventObj);
+        if (joinAddressArr.length > 0) {
+          const { taskMap } = lastEventObj[joinAddressArr[0]];
+          const finishTasksFlag = Object.values(taskMap).every(
+            (taskObj: any) => {
+              const currTaskFinishFlag = Object.values(taskObj).every(
+                (t) => !!t
+              );
+              return currTaskFinishFlag;
+            }
+          );
           if (finishTasksFlag) {
             lastEventObj[currentAddress] = emptyInfo;
           }
-        } else {
-          debugger;
-          // have joined ,but not by current connected address
-          newEventObj = { ...lastEventObj };
-          newEventObj[currentAddress] = emptyInfo;
+          await chrome.storage.local.set({
+            [eventId]: JSON.stringify(newEventObj),
+          });
         }
-        await chrome.storage.local.set({
-          [eventId]: JSON.stringify(newEventObj),
-        });
+        // } else {
+        //   debugger;
+        //   // have joined ,but not by current connected address
+        //   newEventObj = { ...lastEventObj };
+        //   newEventObj[currentAddress] = emptyInfo;
+        // }
       } else {
         //  have not joined this event
-        debugger
         newEventObj = {
           [currentAddress]: emptyInfo,
         };
@@ -217,16 +188,51 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         });
       }
     }, [connectedWallet?.address]);
+    
     useEffect(() => {
       if (visible) {
-        initEvent();
+        setStep(1);
+        setActiveRequest(undefined);
       }
-    }, [visible, initEvent]);
+    }, [BadgesProcess, errorDescEl, visible]);
+
+    const onChangeFn = useCallback(
+      (itemId) => {
+        // itemId: 3/4
+        if (itemId === 2) {
+          setStep(1.5);
+        } else if (itemId === 3) {
+          setStep(2);
+        } else {
+          //  (itemId === 4)
+          onChange(itemId);
+        }
+      },
+      [onChange]
+    );
+    const onCredTypeDialogSubmit = useCallback(async () => {
+      setStep(1);
+    }, []);
+    const handleCloseSocialTasksDialog = useCallback(() => {
+      setStep(1);
+    }, []);
+    const handleAttest = useCallback(
+      (attestationId) => {
+        // setStep(1);
+        onAttest(attestationId);
+      },
+      [onAttest]
+    );
+    useEffect(() => {
+      if (visible && activeStep) {
+        setStep(activeStep);
+      }
+    }, [activeStep, visible]);
+
     return (
       <div className="claimMysteryBoxWrapper">
         {visible && step === 1 && (
           <ClaimDialog
-            onClose={onClose}
             onSubmit={onSubmitClaimDialog}
             onChange={onChangeFn}
             title="SignX Program"
@@ -236,16 +242,12 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         )}
         {visible && step === 1.5 && (
           <SocialTasksDialog
-            onClose={handleCloseSocialTasksDialog}
             onSubmit={handleCloseSocialTasksDialog}
           />
         )}
         {visible && step === 2 && (
           <CredTypesDialog
-            onClose={onClose}
-            onSubmit={onCredTypeDialogSubmit}
-            onChange={onAttest}
-            onBack={onCredTypeDialogSubmit}
+            onSubmit={handleAttest}
           />
         )}
         {visible && step === 3 && (

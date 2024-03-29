@@ -1,30 +1,47 @@
 @import '@/assets/css/padoDialog.scss';
+@import '@/assets/css/pFont.sass';
 @import '@/assets/css/padoM.scss';
 @import '@/assets/css/pSelectOption.scss';
-@import '@/components/Cred/CredAddWrapper/CredTypesDialog/index.scss';
-.padoDialog.credTypesDialog.basCredDialog {
+.padoDialog.createAttestationDialog {
   main {
     gap: var(--spacing-32, 32px);
-    ul.credTypeList {
-      gap: var(--spacing-12, 12px);
-      li {
-        .innerContent {
-          .icon {
-            width: var(--spacing-32, 32px);
+    > h1 {
+      @extend .Headline2;
+      color: var(--Text-headline, #0a1214);
+    }
+    > h2 {
+      @extend .Body2;
+      color: var(--Text-body, #515758);
+    }
+    .formItems {
+      width: 100%;
+      @extend .fcss;
+      gap: var(--spacing-24);
+      .formItem {
+        width: 100%;
+        @extend .frbc;
+        @extend .Body2;
+        .label {
+          color: var(--Text-body, #515758);
+        }
+        .value {
+          color: #161616;
+          @extend .frsc;
+          gap: var(--spacing-8);
+          .xIcon{
+            width: var(--spacing-20);
           }
-          .con {
-            .title {
-              @extend .frsc;
-              gap: var(--spacing-12, 12px);
-              .score {
-                color: var(--Text-body, #515758);
-                @extend .Body3;
-              }
+          .pSelect{
+            width: 130px;
+            height: var(--spacing-30);
+            .selectInput{
+              border-radius: var(--spacing-8);
+              padding: 0 var(--spacing-16);
+              // .showCon{
+
+              // }
             }
           }
-          > img {
-              width: var(--spacing-28, 28px);
-            }
         }
       }
     }

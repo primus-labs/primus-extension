@@ -28,9 +28,15 @@ chrome.runtime.sendMessage(
         jumpTo,
         uiTemplate: { condition, subProofContent },
         processUiTemplate: { proofContent },
+        datasourceTemplate: { responses },
       } = activeTemplate;
       var aactiveOrigin = new URL(jumpTo).origin;
       var aactiveDesc = proofContent;
+      console.log('222proofContent', proofContent, responses);//delete
+      if (proofContent === 'X Followers') {
+        const { op, value } = responses[1].conditions.subconditions[1];
+        aactiveDesc = `${proofContent}  ${op} ${value}`;
+      }
       var padoLeftStr = `<img class="pado-left"></img>`;
       var padoCenterTopStr = `<div class="pado-center-top">PADO Attestation Process</div>`;
       var padoCenterBottomStr = `<div class="pado-center-bottom"></div>`;
@@ -147,7 +153,7 @@ chrome.runtime.sendMessage(
         var loadingTxtEl = document.querySelector('.loadingTxt');
         var progressPercentage = 0;
 
-        function simulateFileUpload() { 
+        function simulateFileUpload() {
           progressPercentage += 1;
           if (progressPercentage > 0 && progressPercentage <= 1.25) {
             loadingTxtEl.innerHTML = 'Connecting to PADO node...';
@@ -157,7 +163,7 @@ chrome.runtime.sendMessage(
             loadingTxtEl.innerHTML = 'MPC-TLS executing...';
           } else if (progressPercentage > 5 && progressPercentage <= 100) {
             loadingTxtEl.innerHTML = 'IZK proving and verifying...';
-          }  else if (progressPercentage > 100) {
+          } else if (progressPercentage > 100) {
             loadingTxtEl.innerHTML = 'Attestation creation completed ...';
             progressPercentage = 100;
             clearInterval(intervalTimer);
@@ -245,7 +251,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       fn();
     } else if (result === 'warn') {
       padoRightEl.innerHTML = '2/3';
-     var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a zkAttestation with another Binance account.</p>`;
+      var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a zkAttestation with another Binance account.</p>`;
       padoCenterCenterEl.innerHTML =
         failReason === 'Not meeting the uniqueness requirement.'
           ? str3

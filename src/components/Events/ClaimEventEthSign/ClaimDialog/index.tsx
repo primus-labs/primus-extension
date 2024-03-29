@@ -26,12 +26,11 @@ import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAsset
 import { SCROLLEVENTNAME } from '@/config/constants';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { switchAccount } from '@/services/wallets/metamask';
-import { BASEVENTNAME } from '@/config/constants';
+import { ETHSIGNEVENTNAME } from '@/config/constants';
 import type { Dispatch } from 'react';
 import useEventDetail from '@/hooks/useEventDetail';
 dayjs.extend(utc);
 interface ClaimDialogProps {
-  onClose: () => void;
   onSubmit: () => void;
   onChange: (step: number) => void;
   title?: string;
@@ -52,7 +51,7 @@ const stepList: StepItem[] = [
   {
     id: 1,
     icon: iconDataSourceOnChainAssets,
-    title: 'Connect address',
+    title: 'Participate address',
     subTitle: '',
     finished: true,
   },
@@ -79,7 +78,7 @@ const stepList: StepItem[] = [
   },
 ];
 const ClaimDialog: FC<ClaimDialogProps> = memo(
-  ({ onClose, onSubmit, onChange, title = '', titleIllustration = false }) => {
+  ({ onSubmit, onChange, title = '', titleIllustration = false }) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const eventId = searchParams.get('fromEvents') as string;
@@ -94,7 +93,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     });
     const [errorTip, setErrorTip] = useState<string>();
 
-    const [BASEventDetail] = useEventDetail(BASEVENTNAME);
+    const [BASEventDetail] = useEventDetail(ETHSIGNEVENTNAME);
     const BASEventPeriod = useMemo(() => {
       if (BASEventDetail?.startTime) {
         const { startTime, endTime } = BASEventDetail;
@@ -323,38 +322,21 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       [isSwitchable, onSwitchAccount, handleChange]
     );
 
-    
-
-    const initTaskStatus = useCallback(async () => {
-      const res = await chrome.storage.local.get([eventId]);
-      const currentAddress = connectedWallet?.address;
-      if (res[eventId]) {
-        const lastEventObj = JSON.parse(res[eventId]);
-        const lastInfo = lastEventObj[currentAddress];
-        if (lastInfo) {
-          debugger
-          const { taskMap } = lastInfo;
-          const obj = {}
-          if (taskMap.follow) {
-            const f = Object.values(taskMap.follow).every(i => !!i)
-            obj.step1 = f? 1: 0
-          }
-          if (taskMap.attestation) {
-            const f = Object.values(taskMap.attestation).every(i => !!i)
-            obj.step2 = f? 1: 0
-          }
-          if (taskMap.onChain) {
-            const f = Object.values(taskMap.onChain).every(i => !!i)
-            obj.step3 = f? 1: 0
-          }
-           setStepObj(obj);
-        } else {
-        }
-      }
-    }, [connectedWallet?.address]);
     useEffect(() => {
-      initTaskStatus();
-    }, [initTaskStatus]);
+      chrome.storage.local.get([ETHSIGNEVENTNAME], (res) => {
+        if (res[ETHSIGNEVENTNAME]) {
+          const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
+          console.log('222ClaimDialog useEffect', lastInfo);
+          const newObj = lastInfo.steps.reduce((prev, curr, currK) => {
+            prev[`step${currK + 1}`] = curr.status;
+            return prev;
+          }, {});
+          setStepObj(newObj);
+          setCredNum(Object.values(lastInfo.steps[1].tasks).length);
+          setCredAddress(lastInfo.address);
+        }
+      });
+    }, []);
 
     return (
       <PMask closeable={false}>

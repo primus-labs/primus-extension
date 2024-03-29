@@ -24,7 +24,7 @@ type CreateAuthWindowCallBack = (
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 // connect & join discord
-const DISCORDINVITEURL = 'https://discord.com/invite/K8Uqm5ww';
+const DISCORDINVITEURL = 'https://discord.com/invite/YxJftNRxhh';
 const useAuthorization2 = () => {
   // const { sourceMap2 } = useAllSources();
   const [allSourceList, allSourceMap] = useAllSources();

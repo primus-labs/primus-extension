@@ -42,6 +42,7 @@ const CredOverview = memo(() => {
   const [claimEventEthSignVisible, setClaimEventEthSignVisible] =
     useState<boolean>(false);
   const [claimEventBASStep, setClaimEventBASStep] = useState<number>(1);
+  const [claimEventEthSignStep, setClaimEventEthSignStep] = useState<number>(1);
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
@@ -344,12 +345,21 @@ const CredOverview = memo(() => {
     },
     [handleUpChain]
   );
+  const onChangeClaimEventEthSign = useCallback((step: number) => {
+    debugger;
+  }, []);
+  // setClaimEventEthSignStep;
   const onClaimEventBASAttest = (attestId: string) => {
     setEventSource(attestId);
     setAddDialogVisible(true);
     if (attestId === GOOGLEWEBPROOFID) {
       setClaimEventBASVisible(false);
     }
+  };
+  const onClaimEventEthSignAttest = (attestId: string) => {
+    setEventSource(attestId);
+    setAddDialogVisible(true);
+    setClaimEventEthSignStep(1);
   };
 
   const handleSubmitBindPolygonid = useCallback(async () => {
@@ -368,6 +378,14 @@ const CredOverview = memo(() => {
           setAddDialogVisible(false);
           setClaimEventBASVisible(true);
           setClaimEventBASStep(2);
+          // } else {
+          //   navigate('/cred', { replace: true });
+          // }
+        } else if (fromEvents === ETHSIGNEVENTNAME) {
+          // if (addSucFlag) {
+          setAddDialogVisible(false);
+          setClaimEventEthSignVisible(true);
+          setClaimEventEthSignStep(2);
           // } else {
           //   navigate('/cred', { replace: true });
           // }
@@ -424,6 +442,10 @@ const CredOverview = memo(() => {
             setSendToChainDialogVisible(false);
             setClaimEventBASVisible(true);
             navigate('/cred', { replace: true });
+          } else if (fromEvents === ETHSIGNEVENTNAME) {
+            setSendToChainDialogVisible(false);
+            setClaimEventEthSignVisible(true);
+            navigate('/cred', { replace: true });
           }
         } else {
           if (fromEvents === 'Scroll') {
@@ -432,6 +454,9 @@ const CredOverview = memo(() => {
           } else if (fromEvents === BASEVENTNAME) {
             setSendToChainDialogVisible(false);
             setClaimEventBASVisible(true);
+          } else if (fromEvents === ETHSIGNEVENTNAME) {
+            setSendToChainDialogVisible(false);
+            setClaimEventEthSignVisible(true);
           } else {
             navigate('/cred');
           }
@@ -516,6 +541,7 @@ const CredOverview = memo(() => {
       setConnectDialogVisible(true);
       setClaimMysteryBoxVisible2(false);
       setClaimEventBASVisible(false);
+      setClaimEventEthSignVisible(false);
       // bindPolygonidVisible;
       // qrcodeVisible;
       // sendToChainDialogVisible;
@@ -574,11 +600,17 @@ const CredOverview = memo(() => {
               setAddDialogVisible(true);
             }
           }
+          if (fromEvents === ETHSIGNEVENTNAME) {
+            if (eventSource !== GOOGLEWEBPROOFID) {
+              setClaimEventEthSignVisible(false);
+              setAddDialogVisible(true);
+            }
+          }
         } else if (
           message.name === 'cancelAttest' ||
           message.name === 'abortAttest'
         ) {
-          if (fromEvents === BASEVENTNAME) {
+          if ([ETHSIGNEVENTNAME, BASEVENTNAME].includes(fromEvents)) {
             // setAddDialogVisible(false);
             setEventSource(undefined);
             // setClaimEventBASVisible(true);
@@ -673,7 +705,7 @@ const CredOverview = memo(() => {
         onSubmit={onSubmitClaimMysteryBoxDialog2}
         onChange={onChangeClaimMysteryBoxDialog2}
       />
-      <ClaimEventEthSign
+      <ClaimEventBAS
         visible={claimEventBASVisible}
         onClose={onCancelClaimEventBAS}
         onSubmit={onSubmitClaimEventBAS}
@@ -683,11 +715,10 @@ const CredOverview = memo(() => {
       />
       <ClaimEventEthSign
         visible={claimEventEthSignVisible}
-        onClose={onCancelClaimEventBAS}
         onSubmit={onSubmitClaimEventBAS}
-        onChange={onChangeClaimEventBAS}
-        onAttest={onClaimEventBASAttest}
-        activeStep={claimEventBASStep}
+        onChange={onChangeClaimEventEthSign}
+        onAttest={onClaimEventEthSignAttest}
+        activeStep={claimEventEthSignStep}
       />
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>

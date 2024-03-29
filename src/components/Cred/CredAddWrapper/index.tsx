@@ -34,6 +34,7 @@ import {
   SCROLLEVENTNAME,
   schemaTypeMap,
   BASEVENTNAME,
+  ETHSIGNEVENTNAME,
   GOOGLEWEBPROOFID,
 } from '@/config/constants';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
@@ -91,6 +92,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     eventSource,
   }) => {
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
+    const [ethSignEventDetail] = useEventDetail(ETHSIGNEVENTNAME);
     const [activeIdentityType, setActiveIdentityType] = useState<string>('');
     const navigate = useNavigate();
     const [scrollEventHistoryObj, setScrollEventHistoryObj] = useState<any>({});
@@ -396,10 +398,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const authorize = useAuthorization2();
     const storeBASEventInfoFn = useCallback(
       async (address: any, taskExtraInfo: any) => {
-        if (fromEvents === BASEVENTNAME) {
-          const res = await chrome.storage.local.get([BASEVENTNAME]);
-          if (res[BASEVENTNAME]) {
-            const lastInfo = JSON.parse(res[BASEVENTNAME]);
+        if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+          const res = await chrome.storage.local.get([fromEvents]);
+          if (res[fromEvents]) {
+            const lastInfo = JSON.parse(res[fromEvents]);
             const lastTasks = lastInfo.steps[1].tasks ?? {};
             if (!lastInfo.address) {
               lastInfo.address = address;
@@ -410,7 +412,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               ...taskExtraInfo, //taskExtraInfo: {[GOOGLEWEBPROOFID]: fullAttestation.requestid,}
             };
             await chrome.storage.local.set({
-              [BASEVENTNAME]: JSON.stringify(lastInfo),
+              [fromEvents]: JSON.stringify(lastInfo),
             });
           }
         }
@@ -421,10 +423,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       async (form: AttestionForm) => {
         const { source, requestid, event } = form;
         // const schemaType = schemaTypeMap[type as keyof typeof schemaTypeMap];
-        const schemaType =
-          event === BASEVENTNAME
-            ? BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY'
-            : 'GOOGLE_ACCOUNT_OWNER';
+        let schemaType = 'GOOGLE_ACCOUNT_OWNER';
+        if (event === BASEVENTNAME) {
+          schemaType =
+            BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY';
+        } else if (event === ETHSIGNEVENTNAME) {
+          schemaType =
+            ethSignEventDetail?.ext?.schemaType || 'X_FOLLOWER_COUNT#1';
+        }
         const attestationId = requestid ?? uuidv4();
         const eventInfo: any = {
           eventType: 'API_ATTESTATION_GENERATE',
@@ -439,10 +445,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         };
         const getCredAddrFn = async () => {
           let credAddress = connectedWallet?.address;
-          if (form.event === BASEVENTNAME) {
-            const res = await chrome.storage.local.get([BASEVENTNAME]);
-            if (res[BASEVENTNAME]) {
-              const lastInfo = JSON.parse(res[BASEVENTNAME]);
+          if (
+            form.event &&
+            [ETHSIGNEVENTNAME, BASEVENTNAME].includes(form.event)
+          ) {
+            const res = await chrome.storage.local.get([form.event]);
+            if (res[form.event]) {
+              const lastInfo = JSON.parse(res[form.event]);
               const lastCredAddress = lastInfo.address;
               if (lastCredAddress) {
                 credAddress = lastCredAddress;
@@ -869,6 +878,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           );
           currRequestObj.requestid = form.requestid;
           currRequestObj.event = form.event;
+
           const currentWindowTabs = await chrome.tabs.query({
             active: true,
             currentWindow: true,
@@ -876,6 +886,13 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (form.event === BASEVENTNAME) {
             currRequestObj.schemaType =
               BASEventDetail?.ext?.schemaType || 'BAS_EVENT_PROOF_OF_HUMANITY';
+          } else if (form.event === ETHSIGNEVENTNAME) {
+            const xFollowerCount = sessionStorage.getItem('xFollowerCount');
+            currRequestObj.datasourceTemplate.responses[1].conditions.subconditions[1].value =
+              xFollowerCount;
+            currRequestObj.schemaType =
+              ethSignEventDetail?.ext?.schemaType || 'X_FOLLOWER_COUNT#1';
+           
           }
 
           await chrome.runtime.sendMessage({
@@ -1384,15 +1401,25 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           if (activeRequest?.type !== 'loading') {
             onSubmitAttestationDialog(form);
           }
+        } else if (fromEvents === ETHSIGNEVENTNAME && eventSource) {
+          let form: AttestionForm = {
+            source: eventSource,
+            type: 'IDENTIFICATION_PROOF',
+            proofContent: 'X Followers',
+            proofClientType: 'Webpage Data',
+            event: ETHSIGNEVENTNAME,
+          };
+          switch (eventSource) {
+            case '15':
+              form.source = 'x';
+              break;
+          }
+          if (activeRequest?.type !== 'loading') {
+            onSubmitAttestationDialog(form);
+          }
         }
       }
-    }, [
-      visible,
-      activeSource,
-      activeCred,
-      fromEvents,
-      eventSource,
-    ]);
+    }, [visible, activeSource, activeCred, fromEvents, eventSource]);
 
     // useEffect(() => {
     //   if (!activeRequest?.type) {
@@ -1445,9 +1472,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       window.location.reload();
     }, [navigate, padoServicePort]);
     const tryAgainFn = useCallback(() => {
-      if (fromEvents === BASEVENTNAME) {
+      if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
         onSubmit();
-        onSubmitAttestationDialog(activeAttestForm)
+        onSubmitAttestationDialog(activeAttestForm);
         return;
       }
       if (
@@ -1487,7 +1514,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           return (
             <PButton
               text={
-                fromEvents === 'Scroll' || fromEvents === BASEVENTNAME
+                ['Scroll', BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)
                   ? 'OK'
                   : 'Submit'
               }
@@ -1531,10 +1558,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
 
         setScrollEventHistoryObj(scrollEventObj);
-      } else if (fromEvents === BASEVENTNAME) {
-        const res = await chrome.storage.local.get([BASEVENTNAME]);
-        if (res[BASEVENTNAME]) {
-          const lastInfo = JSON.parse(res[BASEVENTNAME]);
+      } else if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+        const res = await chrome.storage.local.get([fromEvents]);
+        if (res[fromEvents]) {
+          const lastInfo = JSON.parse(res[fromEvents]);
           setScrollEventHistoryObj(lastInfo);
         }
       }
@@ -1674,7 +1701,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               fromEvents === 'Scroll' ||
               (fromEvents === 'LINEA_DEFI_VOYAGE' &&
                 activeRequest?.type !== 'suc') ||
-              fromEvents === BASEVENTNAME
+              ['Scroll', BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)
             }
           />
         )}
