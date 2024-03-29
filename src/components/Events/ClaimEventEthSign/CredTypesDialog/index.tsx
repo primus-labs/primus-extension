@@ -1,6 +1,4 @@
 import React, { useState, useCallback, memo, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
 import PMask from '@/components/PMask';
 import PBack from '@/components/PBack';
 import PSelect from '@/components/PSelect';
@@ -28,7 +26,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(({ onSubmit }) => {
     { value: '> 1', text: '> 1' },
     { value: '> 500', text: '> 500' },
   ];
-  const [activeIdentityType, setActiveIdentityType] = useState<string>();
+  const [activeIdentityType, setActiveIdentityType] = useState<string>('');
   const handleChangeSelectIdentityType = useCallback((val: string) => {
     setActiveIdentityType(val);
   }, []);
@@ -52,7 +50,6 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(({ onSubmit }) => {
     const listerFn = (message: any) => {
       if (message.type === 'pageDecode') {
         if (message.name === 'cancelAttest' || message.name === 'abortAttest') {
-          setActiveType(undefined);
         }
       }
     };
@@ -63,7 +60,7 @@ const CredTypesDialog: React.FC<CredTypesDialogProps> = memo(({ onSubmit }) => {
   }, []);
 
   return (
-    <PMask closeable={false}>
+    <PMask closeable={false} onClose={() => {}}>
       <div className="padoDialog createAttestationDialog">
         <main>
           <h1>Create Attestation</h1>

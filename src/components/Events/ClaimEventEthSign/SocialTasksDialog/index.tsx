@@ -35,7 +35,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
       subTitle: 'Authorize discord and join',
     },
   };
-  const [questionList, setQuestionList] = useState<any[]>(
+  const [questionList, setQuestionList] = useState<any>(
     Object.values(socialTaskMap)
   );
   const [taskStatusMap, setTaskStatusMap] = useState<TaskStatusMap>({
@@ -184,7 +184,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
   }, [initTaskStatus]);
 
   return (
-    <PMask closeable={false}>
+    <PMask closeable={false} onClose={() => {}}>
       <div className="padoDialog socialTasksDialog">
         <main>
           <header>
@@ -221,7 +221,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
           text="Complete"
           className={`fullWidth confirmBtn ${formLegal ? '' : 'gray'}`}
           onClick={handleSubmit}
-          disabled={!formLegal}
         ></PButton>
       </div>
     </PMask>

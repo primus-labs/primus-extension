@@ -6,11 +6,9 @@ import React, {
   useEffect,
   memo,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PButton from '@/components/PButton';
 import Bridge from '@/components/DataSourceOverview/Bridge/index';
 import AddressInfoHeader from '@/components/Cred/AddressInfoHeader';
@@ -68,7 +66,6 @@ import {
 import { eventReport } from '@/services/api/usertracker';
 import { switchAccount } from '@/services/wallets/metamask';
 import useAuthorization2 from '@/hooks/useAuthorization2';
-import local = chrome.storage.local;
 
 const onChainObj: any = DATASOURCEMAP.onChain;
 
@@ -398,22 +395,24 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
     const authorize = useAuthorization2();
     const storeBASEventInfoFn = useCallback(
       async (address: any, taskExtraInfo: any) => {
-        if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
-          const res = await chrome.storage.local.get([fromEvents]);
-          if (res[fromEvents]) {
-            const lastInfo = JSON.parse(res[fromEvents]);
-            const lastTasks = lastInfo.steps[1].tasks ?? {};
-            if (!lastInfo.address) {
-              lastInfo.address = address;
+        if (fromEvents) {
+          if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+            const res = await chrome.storage.local.get([fromEvents]);
+            if (res[fromEvents]) {
+              const lastInfo = JSON.parse(res[fromEvents]);
+              const lastTasks = lastInfo.steps[1].tasks ?? {};
+              if (!lastInfo.address) {
+                lastInfo.address = address;
+              }
+              lastInfo.steps[1].status = 1;
+              lastInfo.steps[1].tasks = {
+                ...lastTasks,
+                ...taskExtraInfo, //taskExtraInfo: {[GOOGLEWEBPROOFID]: fullAttestation.requestid,}
+              };
+              await chrome.storage.local.set({
+                [fromEvents]: JSON.stringify(lastInfo),
+              });
             }
-            lastInfo.steps[1].status = 1;
-            lastInfo.steps[1].tasks = {
-              ...lastTasks,
-              ...taskExtraInfo, //taskExtraInfo: {[GOOGLEWEBPROOFID]: fullAttestation.requestid,}
-            };
-            await chrome.storage.local.set({
-              [fromEvents]: JSON.stringify(lastInfo),
-            });
           }
         }
       },
@@ -1476,11 +1475,14 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       window.location.reload();
     }, [navigate, padoServicePort]);
     const tryAgainFn = useCallback(() => {
-      if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
-        onSubmit();
-        onSubmitAttestationDialog(activeAttestForm);
-        return;
+      if (fromEvents) {
+        if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+          onSubmit();
+          onSubmitAttestationDialog(activeAttestForm);
+          return;
+        }
       }
+
       if (
         activeAttestForm.type === 'IDENTIFICATION_PROOF' &&
         activeAttestForm.proofClientType === 'Webpage Data'
@@ -1557,16 +1559,20 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
       visible && !fromEvents && startOfflineFn();
     }, [visible, startOfflineFn, fromEvents]);
     const setScrollEventHistoryFn = useCallback(async () => {
-      if (fromEvents === 'Scroll') {
-        const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
-        const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
+      if (fromEvents) {
+        if (fromEvents === 'Scroll') {
+          const { scrollEvent } = await chrome.storage.local.get([
+            'scrollEvent',
+          ]);
+          const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};
 
-        setScrollEventHistoryObj(scrollEventObj);
-      } else if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
-        const res = await chrome.storage.local.get([fromEvents]);
-        if (res[fromEvents]) {
-          const lastInfo = JSON.parse(res[fromEvents]);
-          setScrollEventHistoryObj(lastInfo);
+          setScrollEventHistoryObj(scrollEventObj);
+        } else if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+          const res = await chrome.storage.local.get([fromEvents]);
+          if (res[fromEvents]) {
+            const lastInfo = JSON.parse(res[fromEvents]);
+            setScrollEventHistoryObj(lastInfo);
+          }
         }
       }
     }, [fromEvents]);

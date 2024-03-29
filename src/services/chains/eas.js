@@ -504,7 +504,11 @@ export async function bulkAttest(params) {
   console.log('eas bulkAttest tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas bulkAttest txreceipt=', txreceipt);
-  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
+  if (
+    networkName.startsWith('Linea') ||
+    networkName.indexOf('Scroll') > -1 ||
+    networkName.indexOf('opBNB') > -1
+  ) {
     return txreceipt.transactionHash;
   } else {
     let newAttestationUIDs = [];

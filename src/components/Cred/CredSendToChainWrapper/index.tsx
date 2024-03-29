@@ -60,7 +60,6 @@ import { eventReport } from '@/services/api/usertracker';
 // import { useBAS } from '@/services/chains/useBAS';
 
 import './index.scss';
-import { ObjectEncodingOptions } from 'fs';
 
 interface CredSendToChainWrapperType {
   visible?: boolean;
@@ -195,13 +194,16 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
     }, []);
 
     const getEventInfoFn = useCallback(async () => {
-      if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
-        const res = await chrome.storage.local.get([fromEvents]);
-        if (res[fromEvents]) {
-          const lastInfo = JSON.parse(res[fromEvents]);
-          return lastInfo;
+      if (fromEvents) {
+        if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+          const res = await chrome.storage.local.get([fromEvents]);
+          if (res[fromEvents]) {
+            const lastInfo = JSON.parse(res[fromEvents]);
+            return lastInfo;
+          }
         }
       }
+
       return {};
     }, []);
 
@@ -306,9 +308,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             credentials: JSON.stringify(credentialsFromStore),
           });
           await initCredList();
+          let res: any = {};
+          if (fromEvents) {
+            res = await chrome.storage.local.get([fromEvents]);
+          }
 
-          const res = await chrome.storage.local.get([fromEvents]);
-          if (res[fromEvents]) {
+          if (fromEvents && res[fromEvents]) {
             const lastInfo = JSON.parse(res[fromEvents]);
             lastInfo.steps[2].status = 1;
             await chrome.storage.local.set({
@@ -510,7 +515,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           };
 
           let upChainRes = await bulkAttest(upChainParams);
-          
+
           // burying point
           console.log('222123upChainParams.items', upChainParams.items);
           let upChainType = upChainParams.items[0].type;
@@ -617,7 +622,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             await initCredList();
 
             const res = await chrome.storage.local.get([fromEvents]);
-            if (res[fromEvents]) {
+            if (fromEvents && res[fromEvents]) {
               const lastInfo = JSON.parse(res[fromEvents]);
               lastInfo.steps[2].status = 1;
               await chrome.storage.local.set({
@@ -882,9 +887,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
           let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
+          
           if (fromEvents === 'Scroll') {
             scrollEventFn(walletObj, LineaSchemaName);
-          } else if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+          } else if (
+            fromEvents && [BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)
+          ) {
             BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
           } else {
             let upChainParams: any = {
@@ -1257,7 +1265,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             list={formatChainList}
             tip="Please select one chain to submit attestation"
             checked={false}
-            backable={[BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)}
+            backable={fromEvents ? [BASEVENTNAME, ETHSIGNEVENTNAME].includes(
+              fromEvents
+            ): false}
             headerType={
               activeCred?.did ? 'polygonIdAttestation' : 'attestation'
             }
@@ -1287,8 +1297,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             onSubmit={onSubmitActiveSendToChainRequestDialog}
             closeable={
               !fromEvents ||
-              fromEvents === 'LINEA_DEFI_VOYAGE' ||
-              ['Scroll', BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)
+              [
+                'LINEA_DEFI_VOYAGE',
+                'Scroll',
+                BASEVENTNAME,
+                ETHSIGNEVENTNAME,
+              ].includes(fromEvents)
             }
           />
         )}

@@ -336,7 +336,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, []);
 
     return (
-      <PMask closeable={false}>
+      <PMask closeable={false} onClose={ () => {}}>
         <div className="padoDialog claimDialog claimScrollEventDialog claimEthSignEventDialog ">
           <main>
             <div className="headerWrapper">

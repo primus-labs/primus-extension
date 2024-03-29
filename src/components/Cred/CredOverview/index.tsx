@@ -495,7 +495,6 @@ const CredOverview = memo(() => {
     [fromEvents, navigate]
   );
   const handleBackToBASEvent = useCallback(() => {
-    
     if (fromEvents === BASEVENTNAME) {
       setClaimEventBASVisible(true);
       setSendToChainDialogVisible(false);
@@ -503,7 +502,6 @@ const CredOverview = memo(() => {
       setClaimEventEthSignVisible(true);
       setSendToChainDialogVisible(false);
     }
-    
   }, [fromEvents]);
   const startFn = useCallback(() => {
     if (connectedWallet?.address) {
@@ -641,11 +639,13 @@ const CredOverview = memo(() => {
           message.name === 'cancelAttest' ||
           message.name === 'abortAttest'
         ) {
-          if ([ETHSIGNEVENTNAME, BASEVENTNAME].includes(fromEvents)) {
-            // setAddDialogVisible(false);
-            setEventSource(undefined);
-            // setClaimEventBASVisible(true);
-            // setClaimEventBASStep(2);
+          if (fromEvents) {
+            if ([ETHSIGNEVENTNAME, BASEVENTNAME].includes(fromEvents)) {
+              // setAddDialogVisible(false);
+              setEventSource(undefined);
+              // setClaimEventBASVisible(true);
+              // setClaimEventBASStep(2);
+            }
           }
         }
       }
@@ -750,6 +750,7 @@ const CredOverview = memo(() => {
         onChange={onChangeClaimEventEthSign}
         onAttest={onClaimEventEthSignAttest}
         activeStep={claimEventEthSignStep}
+        onClose={() => {}}
       />
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>
