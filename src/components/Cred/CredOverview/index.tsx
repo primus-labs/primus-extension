@@ -235,7 +235,6 @@ const CredOverview = memo(() => {
     (item: CredTypeItemType) => {
       setActiveCred(item);
       if (connectedWallet?.address) {
-        debugger
         setAddDialogVisible(true);
       } else {
         setConnectDialogVisible(true);
@@ -254,7 +253,6 @@ const CredOverview = memo(() => {
     setActiveCred(undefined);
 
     if (connectedWallet?.address) {
-      debugger
       setAddDialogVisible(true);
     } else {
       setConnectDialogVisible(true);
@@ -308,7 +306,6 @@ const CredOverview = memo(() => {
       setEventSource('binance');
     }
     // setClaimMysteryBoxVisible2(false);
-    debugger
     setAddDialogVisible(true);
   };
 
@@ -384,7 +381,6 @@ const CredOverview = memo(() => {
   // setClaimEventEthSignStep;
   const onClaimEventBASAttest = (attestId: string) => {
     setEventSource(attestId);
-    debugger
     setAddDialogVisible(true);
     if (attestId === GOOGLEWEBPROOFID) {
       setClaimEventBASVisible(false);
@@ -392,7 +388,6 @@ const CredOverview = memo(() => {
   };
   const onClaimEventEthSignAttest = (attestId: string) => {
     setEventSource(attestId);
-    debugger
     setAddDialogVisible(true);
     setClaimEventEthSignStep(1);
   };
@@ -404,7 +399,6 @@ const CredOverview = memo(() => {
   const handleCloseAddDialog = useCallback(
     (addSucFlag?: any) => {
       setActiveSourceName(undefined);
-      debugger
       if (fromEvents) {
         if (fromEvents === 'Scroll') {
           setAddDialogVisible(false);
@@ -546,7 +540,6 @@ const CredOverview = memo(() => {
         setEventSource('');
         setConnectTipDialogVisible(false);
       } else {
-        debugger
         setAddDialogVisible(true);
         setConnectTipDialogVisible(false);
       }
@@ -612,7 +605,6 @@ const CredOverview = memo(() => {
   useEffect(() => {
     if (createFlag || proofType) {
       setActiveSourceName(createFlag);
-      debugger
       setAddDialogVisible(true);
     } else {
       setActiveSourceName(undefined);
@@ -640,14 +632,12 @@ const CredOverview = memo(() => {
           if (fromEvents === BASEVENTNAME) {
             if (eventSource !== GOOGLEWEBPROOFID) {
               setClaimEventBASVisible(false);
-              debugger
               setAddDialogVisible(true);
             }
           }
           if (fromEvents === ETHSIGNEVENTNAME) {
             if (eventSource !== GOOGLEWEBPROOFID) {
               setClaimEventEthSignVisible(false);
-              debugger
               setAddDialogVisible(true);
             }
           }

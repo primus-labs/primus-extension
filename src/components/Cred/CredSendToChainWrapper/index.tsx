@@ -72,6 +72,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit, handleBackToBASEvent }) => {
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const [ethSignEventDetail] = useEventDetail(ETHSIGNEVENTNAME);
+    console.log(
+      '222CredSendToChainWrapper- ethSignEventDetail',
+      ethSignEventDetail
+    ); //delete
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');
@@ -139,15 +143,25 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         }
         return newList;
       } else {
-        const filterdList = ONCHAINLIST.filter((i) => {
-          if (i.title.indexOf('opBNB') > -1) {
+        let filterdList = ONCHAINLIST.filter((i) => {
+          if (
+            activeCred &&
+            activeCred?.event !== ETHSIGNEVENTNAME &&
+            i.title.indexOf('opBNB') > -1
+          ) {
+            i.disabled = true;
+          }
+          const onChainTitlesArr =
+            activeCred?.provided?.map((i: any) => i.title) ?? [];
+          if (onChainTitlesArr.includes(i.title)) {
             i.disabled = true;
           }
           return i.title !== 'BNB Greenfield';
         });
+
         return filterdList;
       }
-    }, [fromEvents]);
+    }, [fromEvents, activeCred]);
 
     const initCredList = useCallback(async () => {
       await dispatch(setCredentialsAsync());
@@ -443,9 +457,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       connectedWallet,
     ]);
     const EventDetailExt = useMemo(() => {
-      if (fromEvents === BASEVENTNAME) return BASEventDetail?.ext;
-      if (fromEvents === ETHSIGNEVENTNAME) return ethSignEventDetail?.ext;
-    }, [BASEventDetail, ethSignEventDetail, fromEvents]);
+      const eventName = fromEvents ?? activeCred?.event;
+      if (eventName === BASEVENTNAME) return BASEventDetail?.ext;
+      if (eventName === ETHSIGNEVENTNAME) return ethSignEventDetail?.ext;
+    }, [BASEventDetail, ethSignEventDetail, fromEvents, activeCred]);
     const BASEventFn = useCallback(
       async (
         walletObj: any,
@@ -609,7 +624,8 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
               // existIndex < 0 &&
               newProvided.push({
                 ...currentChainObj,
-                attestationUID: upChainRes[k],
+                attestationUID:
+                  typeof upChainRes === 'string' ? upChainRes : upChainRes[k],
               });
               credentialsFromStore[i.requestid] = Object.assign(i, {
                 provided: newProvided,
@@ -887,11 +903,12 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
           let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
-          
+
           if (fromEvents === 'Scroll') {
             scrollEventFn(walletObj, LineaSchemaName);
           } else if (
-            fromEvents && [BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)
+            fromEvents &&
+            [BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)
           ) {
             BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
           } else {
@@ -1048,6 +1065,18 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   }
                 }
               }
+              if (fromEvents === ETHSIGNEVENTNAME) {
+                const res = await chrome.storage.local.get([fromEvents]);
+                if (res[fromEvents]) {
+                  const lastInfo = JSON.parse(res[fromEvents]);
+                  lastInfo.steps[2].status = 1;
+                  await chrome.storage.local.set({
+                    [fromEvents]: JSON.stringify(lastInfo),
+                  });
+                }
+              }
+
+              
               setActiveSendToChainRequest({
                 type: 'suc',
                 title: 'Congratulations',
@@ -1265,9 +1294,11 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
             list={formatChainList}
             tip="Please select one chain to submit attestation"
             checked={false}
-            backable={fromEvents ? [BASEVENTNAME, ETHSIGNEVENTNAME].includes(
+            backable={
               fromEvents
-            ): false}
+                ? [BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)
+                : false
+            }
             headerType={
               activeCred?.did ? 'polygonIdAttestation' : 'attestation'
             }
