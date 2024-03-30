@@ -97,14 +97,14 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       return <AddressInfoHeader address={formatAddress as string} />;
     }, [connectedWallet?.address]);
     const onSubmitClaimDialog = useCallback(async () => {
-      // const res = await chrome.storage.local.get([ETHSIGNEVENTNAME]);
-      // if (res[ETHSIGNEVENTNAME]) {
-      //   const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
-      //   lastInfo.status = 1;
-      //   await chrome.storage.local.set({
-      //     [ETHSIGNEVENTNAME]: JSON.stringify(lastInfo),
-      //   });
-      // }
+      const res = await chrome.storage.local.get([ETHSIGNEVENTNAME]);
+      if (res[ETHSIGNEVENTNAME]) {
+        const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
+        lastInfo.status = 1;
+        await chrome.storage.local.set({
+          [ETHSIGNEVENTNAME]: JSON.stringify(lastInfo),
+        });
+      }
       onSubmit();
       
     }, [onSubmit]);

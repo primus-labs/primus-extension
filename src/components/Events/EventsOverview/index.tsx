@@ -139,9 +139,9 @@ const EventsOverview = memo(() => {
       if (res[eventName]) {
         const lastInfo = JSON.parse(res[eventName]);
         isLastFinished = lastInfo.status === 1;
-        if (eventName === ETHSIGNEVENTNAME) {
-          isLastFinished = lastInfo.steps.every((i: any) => i.status === 1);
-        }
+        // if (eventName === ETHSIGNEVENTNAME) {
+        //   isLastFinished = lastInfo.steps.every((i: any) => i.status === 1);
+        // }
         if (isLastFinished) {
           await initFn();
         }

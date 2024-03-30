@@ -67,7 +67,7 @@ const stepList: StepItem[] = [
     id: 3,
     icon: iconStep2,
     title: 'Attest your social engagement',
-    subTitle: 'Attest your X follower number',
+    subTitle: 'Attest your X followers number',
     finished: false,
   },
   {
@@ -80,6 +80,8 @@ const stepList: StepItem[] = [
 ];
 const ClaimDialog: FC<ClaimDialogProps> = memo(
   ({ onSubmit, onChange, onClose, title = '', titleIllustration = false }) => {
+    const [eventDetail, BASEventPeriod, formatPeriod, eventActiveFlag] =
+      useEventDetail(ETHSIGNEVENTNAME);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const eventId = searchParams.get('fromEvents') as string;
@@ -94,37 +96,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     });
     const [errorTip, setErrorTip] = useState<string>();
 
-    const [BASEventDetail] = useEventDetail(ETHSIGNEVENTNAME);
-    const BASEventPeriod = useMemo(() => {
-      if (BASEventDetail?.startTime) {
-        const { startTime, endTime } = BASEventDetail;
-        return {
-          startTime,
-          endTime,
-        };
-      } else {
-        return {};
-      }
-    }, [BASEventDetail]);
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
-    const eventActiveFlag = useMemo(() => {
-      const { startTime, endTime } = BASEventPeriod;
-      const isActive =
-        dayjs().isAfter(dayjs(+startTime)) && dayjs().isBefore(dayjs(+endTime));
-      const isEnd = dayjs().isAfter(dayjs(+endTime));
-      if (isActive) {
-        return 1;
-      }
-      if (isEnd) {
-        return 2;
-      }
-      return 0;
-    }, [BASEventPeriod]);
 
     const formatStepList: StepItem[] = useMemo(() => {
       if (credAddress) {
@@ -148,25 +125,27 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
       return isComplete ? '' : 'gray';
     }, [isComplete]);
     const btcTxt = useMemo(() => {
-      // if (eventActiveFlag === 1) {
-      //   return 'Claim your points';
-      // } else {
-      //   return 'Complete';
-      // }
-      return 'OK';
+      if (eventActiveFlag === 1) {
+        return 'Check your eligibility';
+      } else {
+        return 'Complete';
+      }
     }, [eventActiveFlag]);
 
     const isSwitchable = useMemo(() => {
       return credNum === 0;
     }, [credNum]);
     const eventPlateUrl = useMemo(() => {
-      return BASEventDetail?.ext?.claimPointsUrl;
-    }, [BASEventDetail]);
+      return eventDetail?.ext?.eligibility_check_url;
+    }, [eventDetail]);
 
     const hanldeSubmit = useCallback(() => {
       if (!isComplete) {
         setErrorTip('Please complete the tasks above first.');
       } else {
+        if (eventActiveFlag === 1) {
+          window.open(eventPlateUrl);
+        }
         onSubmit();
         navigate('/cred', { replace: true });
       }
@@ -337,7 +316,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, []);
 
     return (
-      <PMask  onClose={onClose}>
+      <PMask onClose={onClose}>
         <div className="padoDialog claimDialog claimScrollEventDialog claimEthSignEventDialog ">
           <main>
             <div className="headerWrapper">
@@ -375,7 +354,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
 
               <p className="tip">
                 Bridge your opBNB here: &nbsp;
-                <a href="https://opbnb-bridge.bnbchain.org/deposit">
+                <a
+                  href="https://opbnb-bridge.bnbchain.org/deposit"
+                  target="_blank"
+                >
                   opBNB Bridge
                 </a>
               </p>
