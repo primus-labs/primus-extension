@@ -244,9 +244,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     const identificationProofContentFn = useCallback((item) => {
       if (item.reqType === 'web') {
         const c = item.uiTemplate.proofContent;
-        if (c === 'X Followers') {
-          return 'Twitter Followers';
-        }
+        // if (c === 'X Followers') {
+        //   return 'Twitter Followers';
+        // }
         return c;
       } else {
         if (item.source === 'google') {
