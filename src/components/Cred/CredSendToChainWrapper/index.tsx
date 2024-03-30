@@ -72,10 +72,6 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
   ({ visible = true, activeCred, onClose, onSubmit, handleBackToBASEvent }) => {
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
     const [ethSignEventDetail] = useEventDetail(ETHSIGNEVENTNAME);
-    console.log(
-      '222CredSendToChainWrapper- ethSignEventDetail',
-      ethSignEventDetail
-    ); //delete
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const fromEvents = searchParams.get('fromEvents');

@@ -7,7 +7,6 @@ dayjs.extend(utc);
 type UseEventDetail = (eventName: string) => any[];
 const useEventDetail: UseEventDetail = function useEventDetail(eventName) {
   const events = useSelector((state: UserState) => state.events);
-  console.log('222UseEventDetail- events', events); //delete
   const eventDetail = useMemo(() => {
     return events[eventName];
   }, [eventName, events]);

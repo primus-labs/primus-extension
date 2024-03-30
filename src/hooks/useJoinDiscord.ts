@@ -95,7 +95,6 @@ const useAuthorization2 = () => {
       }
       const pollingResultFn = async (state: string, source: string) => {
         const data = await chrome.storage.local.get(['discord']);
-        console.log('222sourceMap2.discord', sourceMap2.discord, data);// delete
         if (!data.discord) {
           return;
         }

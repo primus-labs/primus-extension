@@ -32,7 +32,6 @@ chrome.runtime.sendMessage(
       } = activeTemplate;
       var aactiveOrigin = new URL(jumpTo).origin;
       var aactiveDesc = proofContent;
-      console.log('222proofContent', proofContent, responses);//delete
       if (proofContent === 'X Followers') {
         const { op, value } = responses[1].conditions.subconditions[1];
         aactiveDesc = `${proofContent}  ${op} ${value}`;

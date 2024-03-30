@@ -302,7 +302,7 @@ export const pageDecodeMsgListener = async (
     if (event) {
       form.event = event;
 
-      console.log('222baseValue', activeTemplate); //delete
+      
       if (event === ETHSIGNEVENTNAME) {
         form.baseValue =
           activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
