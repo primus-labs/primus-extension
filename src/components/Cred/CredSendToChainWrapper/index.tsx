@@ -102,8 +102,9 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
       []
     );
     const formatChainList = useMemo(() => {
+      const ll = JSON.parse(JSON.stringify(ONCHAINLIST));
       if (fromEvents) {
-        let newList = ONCHAINLIST.map((i) => {
+        let newList = ll.map((i) => {
           if (i.title.indexOf('opBNB') > -1) {
             i.disabled = true;
           }
@@ -139,7 +140,7 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
         }
         return newList;
       } else {
-        let filterdList = ONCHAINLIST.filter((i) => {
+        let filterdList = ll.filter((i) => {
           if (
             activeCred &&
             activeCred?.event !== ETHSIGNEVENTNAME &&
@@ -150,11 +151,10 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
           const onChainTitlesArr =
             activeCred?.provided?.map((i: any) => i.title) ?? [];
           if (onChainTitlesArr.includes(i.title)) {
-            i.disabled = true;
-          }
+            i.disabled = onChainTitlesArr.includes(i.title);
+          } 
           return i.title !== 'BNB Greenfield';
         });
-
         return filterdList;
       }
     }, [fromEvents, activeCred]);
@@ -1061,18 +1061,23 @@ const CredSendToChainWrapper: FC<CredSendToChainWrapperType> = memo(
                   }
                 }
               }
-              if (fromEvents === ETHSIGNEVENTNAME) {
-                const res = await chrome.storage.local.get([fromEvents]);
-                if (res[fromEvents]) {
-                  const lastInfo = JSON.parse(res[fromEvents]);
+              
+              if (
+                curCredential?.event === ETHSIGNEVENTNAME &&
+                formatNetworkName === 'opBNB'
+              ) {
+                const res = await chrome.storage.local.get([
+                  curCredential?.event,
+                ]);
+                if (res[curCredential?.event]) {
+                  const lastInfo = JSON.parse(res[curCredential?.event]);
                   lastInfo.steps[2].status = 1;
                   await chrome.storage.local.set({
-                    [fromEvents]: JSON.stringify(lastInfo),
+                    [curCredential?.event]: JSON.stringify(lastInfo),
                   });
                 }
               }
 
-              
               setActiveSendToChainRequest({
                 type: 'suc',
                 title: 'Congratulations',
