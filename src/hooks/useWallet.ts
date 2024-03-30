@@ -30,10 +30,12 @@ const useWallet: UseWalletType = function useWallet() {
     async (connectObj?: any) => {
       const { startFn, errorFn, sucFn, network, label } =
         savedConnectInfo.current;
-      const targetNetwork = EASInfo[network as keyof typeof EASInfo];
+      const targetNetwork: any = EASInfo[network as keyof typeof EASInfo];
       if (
         walletConnectProvider &&
         network &&
+        targetNetwork &&
+        targetNetwork?.chainId &&
         parseInt(targetNetwork?.chainId) !== walletConnectChainId
       ) {
         const res = await walletConnectProvider.request({
@@ -96,7 +98,7 @@ const useWallet: UseWalletType = function useWallet() {
       let formatWalletName = walletName ? walletName.toLowerCase() : undefined;
       setWallet(formatWalletName);
       if (formatWalletName === 'walletconnect') {
-        const targetNetwork = EASInfo[network as keyof typeof EASInfo];
+        const targetNetwork:any = EASInfo[network as keyof typeof EASInfo];
         if (walletConnectProvider && network) {
           if (parseInt(targetNetwork?.chainId) !== walletConnectChainId) {
             const res = await walletConnectProvider.request({
