@@ -8,10 +8,12 @@
     > h1 {
       @extend .Headline2;
       color: var(--Text-headline, #0a1214);
+      width: 100%;
+      text-align: center;
     }
     > h2 {
-      @extend .Body2;
-      color: var(--Text-body, #515758);
+      @extend .Headline5;
+      color: var(--Text-headline, #0a1214);
     }
     .formItems {
       width: 100%;

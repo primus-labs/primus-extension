@@ -36,6 +36,7 @@ interface ClaimDialogProps {
   title?: string;
   titleIllustration?: boolean;
   subTitle?: string;
+  onClose: () => void;
 }
 
 type StepItem = {
@@ -78,7 +79,7 @@ const stepList: StepItem[] = [
   },
 ];
 const ClaimDialog: FC<ClaimDialogProps> = memo(
-  ({ onSubmit, onChange, title = '', titleIllustration = false }) => {
+  ({ onSubmit, onChange, onClose, title = '', titleIllustration = false }) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const eventId = searchParams.get('fromEvents') as string;
@@ -251,7 +252,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             setErrorTip('Please complete the tasks above first.');
             return;
           }
-          if (formatStepList[3].finished) {
+          if (formatStepList[2].finished) {
             return;
           }
           onChange(item.id);
@@ -336,7 +337,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, []);
 
     return (
-      <PMask closeable={false} onClose={ () => {}}>
+      <PMask  onClose={onClose}>
         <div className="padoDialog claimDialog claimScrollEventDialog claimEthSignEventDialog ">
           <main>
             <div className="headerWrapper">
@@ -381,12 +382,7 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             </div>
           </main>
           <footer>
-            <PButton
-              className={btnCN}
-              text={btcTxt}
-              
-              onClick={hanldeSubmit}
-            />
+            <PButton className={btnCN} text={btcTxt} onClick={hanldeSubmit} />
             {errorTip && <PBottomErrorTip text={errorTip} />}
           </footer>
         </div>

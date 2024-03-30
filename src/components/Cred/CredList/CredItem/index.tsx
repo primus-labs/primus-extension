@@ -263,10 +263,12 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         const condition = item.uiTemplate.condition;
         let r = sC ? sC + ' ' + condition : condition;
         if (c === 'X Followers') {
-          if(item.xFollowerCount === 1) {return 'Get Started'} 
-          if (item.xFollowerCount === 500) {
+          if (item.xFollowerCount === '1') {
+            return 'Get Started';
+          }
+          if (item.xFollowerCount === '500') {
             return 'Famous';
-          } 
+          }
         } else {
           return r;
         }

@@ -130,7 +130,7 @@ const CredOverview = memo(() => {
   }, [credentialsFromStore]);
   const handleCloseConnectTipDialog = useCallback(() => {
     setConnectTipDialogVisible(false);
-    if (fromEvents === 'Scroll' || fromEvents === 'LINEA_DEFI_VOYAGE') {
+    if (fromEvents && ['Scroll','LINEA_DEFI_VOYAGE',ETHSIGNEVENTNAME].includes(fromEvents)) {
       navigate('/events');
     }
     if (fromEvents === 'NFTs') {
@@ -235,6 +235,7 @@ const CredOverview = memo(() => {
     (item: CredTypeItemType) => {
       setActiveCred(item);
       if (connectedWallet?.address) {
+        debugger
         setAddDialogVisible(true);
       } else {
         setConnectDialogVisible(true);
@@ -253,6 +254,7 @@ const CredOverview = memo(() => {
     setActiveCred(undefined);
 
     if (connectedWallet?.address) {
+      debugger
       setAddDialogVisible(true);
     } else {
       setConnectDialogVisible(true);
@@ -306,12 +308,19 @@ const CredOverview = memo(() => {
       setEventSource('binance');
     }
     // setClaimMysteryBoxVisible2(false);
+    debugger
     setAddDialogVisible(true);
   };
 
   const onCancelClaimEventBAS = useCallback(() => {
     setClaimEventBASVisible(false);
     if (fromEvents === BASEVENTNAME) {
+      navigate('/events');
+    }
+  }, [fromEvents, navigate]);
+  const onCancelClaimEventEthSign = useCallback(() => {
+    setClaimEventEthSignVisible(false);
+    if (fromEvents === ETHSIGNEVENTNAME) {
       navigate('/events');
     }
   }, [fromEvents, navigate]);
@@ -375,6 +384,7 @@ const CredOverview = memo(() => {
   // setClaimEventEthSignStep;
   const onClaimEventBASAttest = (attestId: string) => {
     setEventSource(attestId);
+    debugger
     setAddDialogVisible(true);
     if (attestId === GOOGLEWEBPROOFID) {
       setClaimEventBASVisible(false);
@@ -382,6 +392,7 @@ const CredOverview = memo(() => {
   };
   const onClaimEventEthSignAttest = (attestId: string) => {
     setEventSource(attestId);
+    debugger
     setAddDialogVisible(true);
     setClaimEventEthSignStep(1);
   };
@@ -393,6 +404,7 @@ const CredOverview = memo(() => {
   const handleCloseAddDialog = useCallback(
     (addSucFlag?: any) => {
       setActiveSourceName(undefined);
+      debugger
       if (fromEvents) {
         if (fromEvents === 'Scroll') {
           setAddDialogVisible(false);
@@ -534,6 +546,7 @@ const CredOverview = memo(() => {
         setEventSource('');
         setConnectTipDialogVisible(false);
       } else {
+        debugger
         setAddDialogVisible(true);
         setConnectTipDialogVisible(false);
       }
@@ -556,7 +569,7 @@ const CredOverview = memo(() => {
   );
   const handleCloseConnectWallet = useCallback(() => {
     setConnectDialogVisible(false);
-    if (fromEvents === 'Scroll') {
+    if (fromEvents && ['Scroll', ETHSIGNEVENTNAME].includes(fromEvents)) {
       navigate('/events');
     }
     if (fromEvents === 'LINEA_DEFI_VOYAGE' || fromEvents === 'NFTs') {
@@ -599,6 +612,7 @@ const CredOverview = memo(() => {
   useEffect(() => {
     if (createFlag || proofType) {
       setActiveSourceName(createFlag);
+      debugger
       setAddDialogVisible(true);
     } else {
       setActiveSourceName(undefined);
@@ -626,12 +640,14 @@ const CredOverview = memo(() => {
           if (fromEvents === BASEVENTNAME) {
             if (eventSource !== GOOGLEWEBPROOFID) {
               setClaimEventBASVisible(false);
+              debugger
               setAddDialogVisible(true);
             }
           }
           if (fromEvents === ETHSIGNEVENTNAME) {
             if (eventSource !== GOOGLEWEBPROOFID) {
               setClaimEventEthSignVisible(false);
+              debugger
               setAddDialogVisible(true);
             }
           }
@@ -746,11 +762,11 @@ const CredOverview = memo(() => {
       />
       <ClaimEventEthSign
         visible={claimEventEthSignVisible}
+        onClose={onCancelClaimEventEthSign}
         onSubmit={onSubmitClaimEventEthSign}
         onChange={onChangeClaimEventEthSign}
         onAttest={onClaimEventEthSignAttest}
         activeStep={claimEventEthSignStep}
-        onClose={() => {}}
       />
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>

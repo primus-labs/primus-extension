@@ -97,17 +97,17 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       return <AddressInfoHeader address={formatAddress as string} />;
     }, [connectedWallet?.address]);
     const onSubmitClaimDialog = useCallback(async () => {
-      const res = await chrome.storage.local.get([ETHSIGNEVENTNAME]);
-      if (res[ETHSIGNEVENTNAME]) {
-        const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
-        lastInfo.status = 1;
-        await chrome.storage.local.set({
-          [ETHSIGNEVENTNAME]: JSON.stringify(lastInfo),
-        });
-      }
+      // const res = await chrome.storage.local.get([ETHSIGNEVENTNAME]);
+      // if (res[ETHSIGNEVENTNAME]) {
+      //   const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
+      //   lastInfo.status = 1;
+      //   await chrome.storage.local.set({
+      //     [ETHSIGNEVENTNAME]: JSON.stringify(lastInfo),
+      //   });
+      // }
       onSubmit();
       
-    }, [onSubmit, eventActiveFlag]);
+    }, [onSubmit]);
     // }, [navigate, dispatch, onClose]);
 
     const onSubmitActiveRequestDialog = useCallback(() => {
@@ -227,6 +227,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
           <ClaimDialog
             onSubmit={onSubmitClaimDialog}
             onChange={onChangeFn}
+            onClose={onClose}
             title="SignX Program"
             titleIllustration={true}
             subTitle=""
@@ -235,14 +236,15 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
         {visible && step === 1.5 && (
           <SocialTasksDialog
             onSubmit={handleCloseSocialTasksDialog}
+            onClose={handleCloseSocialTasksDialog}
           />
         )}
         {visible && step === 2 && (
           <CredTypesDialog
             onSubmit={handleAttest}
+            onClose={handleCloseSocialTasksDialog}
           />
         )}
-        
       </div>
     );
   }
