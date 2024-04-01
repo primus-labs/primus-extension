@@ -58,7 +58,7 @@ export const ExchangeStoreVersion = '1.0.0';
 export const SocailStoreVersion = '1.0.0';
 export const KYCStoreVersion = '1.0.0';
 export const padoExtensionVersion = '0.2.26';
-export const CredVersion = '1.0.3';
+export const CredVersion = '1.0.4';
 
 export const USDT = 'USDT';
 export const USD = 'USD';

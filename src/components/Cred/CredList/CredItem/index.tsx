@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import { compareVersions } from '@/utils/utils';
-import { padoExtensionVersion } from '@/config/constants';
+import { CredVersion } from '@/config/constants';
 import {
   DATASOURCEMAP,
   ETHSIGNEVENTNAME,
@@ -52,6 +52,7 @@ interface CredTypeListProps {
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
     console.log('CredItem', item);
+    const activeCred = item;
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
     const [expand, setExpand] = useState(false);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -165,31 +166,39 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         setExpand(true);
       }
     }, [item]);
-    const txDetailUrlFn = useCallback((item: any) => {
-      let chainShowName = item.title;
-      if (item.title === 'BNB') {
-        chainShowName = 'BNB';
-      }
-      if (item.title === 'ArbitrumOne') {
-        chainShowName = 'Arbitrum';
-      }
-      if (item.title === 'BNB Greenfield') {
-        const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
-        return `${chainInfo.bucketDetailUrl}/${item.bucketName}`;
-      }
-      if (item.title === 'opBNB') {
-        const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
-        const compareRes = compareVersions('0.2.25', padoExtensionVersion);
-        if (compareRes > -1) {
-          // old version <= 0.2.25
-          return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
-        } else {
-          return `${chainInfo.bucketDetailUrl}${item.attestationUID}`;
+    const txDetailUrlFn = useCallback(
+      (item: any) => {
+        const cred = activeCred;
+        let chainShowName = item.title;
+        if (item.title === 'BNB') {
+          chainShowName = 'BNB';
         }
-      }
-      const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
-      return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
-    }, []);
+        if (item.title === 'ArbitrumOne') {
+          chainShowName = 'Arbitrum';
+        }
+        if (item.title === 'BNB Greenfield') {
+          const chainInfo = EASInfo[
+            chainShowName as keyof typeof EASInfo
+          ] as any;
+          return `${chainInfo.bucketDetailUrl}/${item.bucketName}`;
+        }
+        if (item.title === 'opBNB') {
+          const chainInfo = EASInfo[
+            chainShowName as keyof typeof EASInfo
+          ] as any;
+          const compareRes = compareVersions('1.0.3', cred.credVersion);
+          if (compareRes > -1) {
+            // old version <= 1.0.3
+            return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
+          } else {
+            return `${chainInfo.bucketDetailUrl}${item.attestationUID}`;
+          }
+        }
+        const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
+        return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
+      },
+      [activeCred]
+    );
     const iconCallback = useCallback((item: CredTypeItemType) => {
       const sourceName = item?.source;
 
