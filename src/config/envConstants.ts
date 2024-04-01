@@ -524,7 +524,8 @@ const EASINFOMAP = {
         decimals: 18,
       },
       transactionDetailUrl: 'https://mainnet.opbnbscan.com/tx',
-      bucketDetailUrl: 'https://scan.sign.global/schema/onchain_evm_204_',
+      bucketDetailUrl:
+        'https://scan.sign.global/attestation/onchain_evm_204_',
     },
     Arbitrum: {
       showName: 'Arbitrum',
