@@ -119,8 +119,8 @@ const EASINFOMAP = {
       ],
       blockExplorerUrls: ['https://goerli.lineascan.build'],
       nativeCurrency: {
-        name: 'LineaETH',
-        symbol: 'LineaETH',
+        name: 'ETH',
+        symbol: 'ETH',
         decimals: 18,
       },
       transactionDetailUrl: 'https://goerli.lineascan.build/tx',
