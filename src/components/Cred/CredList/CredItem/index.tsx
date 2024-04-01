@@ -3,7 +3,8 @@ import type { SyntheticEvent } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-
+import { compareVersions } from '@/utils/utils';
+import { padoExtensionVersion } from '@/config/constants';
 import {
   DATASOURCEMAP,
   ETHSIGNEVENTNAME,
@@ -178,7 +179,13 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       }
       if (item.title === 'opBNB') {
         const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
-        return `${chainInfo.bucketDetailUrl}${item.attestationUID}`;
+        const compareRes = compareVersions('0.2.25', padoExtensionVersion);
+        if (compareRes > -1) {
+          // old version <= 0.2.25
+          return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
+        } else {
+          return `${chainInfo.bucketDetailUrl}${item.attestationUID}`;
+        }
       }
       const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
       return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
