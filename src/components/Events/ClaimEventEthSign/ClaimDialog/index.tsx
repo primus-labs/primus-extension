@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
+import {  utils } from 'ethers';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
@@ -29,6 +30,7 @@ import { switchAccount } from '@/services/wallets/metamask';
 import { ETHSIGNEVENTNAME } from '@/config/constants';
 import type { Dispatch } from 'react';
 import useEventDetail from '@/hooks/useEventDetail';
+import { formatAddress } from '@/utils/utils';
 dayjs.extend(utc);
 interface ClaimDialogProps {
   onSubmit: () => void;
@@ -104,13 +106,10 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     );
 
     const formatStepList: StepItem[] = useMemo(() => {
-      if (credAddress) {
-        stepList[0].subTitle = credAddress;
-      } else {
-        stepList[0].subTitle = connectedWallet?.address;
-      }
+      let formateAddrStr = credAddress ? credAddress : connectedWallet?.address;
+      stepList[0].subTitle = formatAddress(utils.getAddress(formateAddrStr), 7, 5);
       stepList[1].finished = stepObj.step1 === 1;
-
+      
       stepList[2].finished = stepObj.step2 === 1;
       stepList[2].extra = `${credNum}/4`;
       stepList[3].finished = stepObj.step3 === 1;

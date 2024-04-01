@@ -176,6 +176,10 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
         return `${chainInfo.bucketDetailUrl}/${item.bucketName}`;
       }
+      if (item.title === 'opBNB') {
+        const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
+        return `${chainInfo.bucketDetailUrl}${item.attestationUID}`;
+      }
       const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
       return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
     }, []);
@@ -235,9 +239,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
     }, []);
     const eventNameFn = useCallback((e) => {
       const m = {
-        [ETHSIGNEVENTNAME]: 'SignX',
-        [BASEVENTNAME]: 'BAS',
-        [LINEAEVENTNAME]: 'Linea',
+        [ETHSIGNEVENTNAME]: 'SignX Program',
+        [BASEVENTNAME]: 'BAS Event',
+        [LINEAEVENTNAME]: 'Linea Voyage',
       };
       return m[e];
     }, []);

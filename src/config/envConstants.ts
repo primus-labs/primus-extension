@@ -264,6 +264,8 @@ const EASINFOMAP = {
         decimals: 18,
       },
       transactionDetailUrl: 'https://testnet.opbnbscan.com/tx',
+      bucketDetailUrl:
+        'https://testnet-scan.sign.global/attestation/onchain_evm_5611_',
     },
     // Arbitrum: {
     //   showName: 'Arbitrum',
@@ -517,11 +519,12 @@ const EASINFOMAP = {
       rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
       blockExplorerUrls: ['https://mainnet.opbnbscan.com/'],
       nativeCurrency: {
-        name: 'tBNB',
-        symbol: 'tBNB',
+        name: 'BNB',
+        symbol: 'BNB',
         decimals: 18,
       },
       transactionDetailUrl: 'https://mainnet.opbnbscan.com/tx',
+      bucketDetailUrl: 'https://scan.sign.global/schema/onchain_evm_204_',
     },
     Arbitrum: {
       showName: 'Arbitrum',
@@ -630,8 +633,8 @@ const EASINFOMAP = {
       rpcUrls: ['https://greenfield-chain.bnbchain.org'],
       blockExplorerUrls: ['https://greenfieldscan.com/'],
       nativeCurrency: {
-        name: 'tBNB',
-        symbol: 'tBNB',
+        name: 'BNB',
+        symbol: 'BNB',
         decimals: 18,
       },
       transactionDetailUrl: 'https://greenfieldscan.com/tx',
