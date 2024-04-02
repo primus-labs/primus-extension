@@ -19,6 +19,7 @@
     padding: var(--spacing-24);
     @include fcss;
     gap: var(--spacing-24);
+    border: 1px solid var(--border-tokens-border-primary);
     .top {
       .moduleStatistics {
         gap: var(--spacing-8);

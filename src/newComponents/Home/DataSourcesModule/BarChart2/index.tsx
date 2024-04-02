@@ -40,7 +40,7 @@ const PBarChart: FC<BarChartProps> = memo(
     console.log('2222xDatas', xDatas, yDatas); //delete
     const showXDatas = useMemo(() => {
       let l = [...xDatas];
-      if (xDatas.length < MAXSHOWDATASOURCELEN) {
+      if (xDatas.length === 1) {
         const diffLen = MAXSHOWDATASOURCELEN - xDatas.length;
         for (var i = 0; i < diffLen; i++) {
           l.unshift({ name: '', icon: undefined });
@@ -50,7 +50,7 @@ const PBarChart: FC<BarChartProps> = memo(
     }, [xDatas]);
     const showYDatas = useMemo(() => {
       let l = [...yDatas];
-      if (yDatas.length < MAXSHOWDATASOURCELEN) {
+      if (yDatas.length === 1) {
         const diffLen = MAXSHOWDATASOURCELEN - yDatas.length;
         for (var i = 0; i < diffLen; i++) {
           l.unshift('');
@@ -77,12 +77,13 @@ const PBarChart: FC<BarChartProps> = memo(
         },
         {
           name: {
-            width: 61,
+            // width: 61,
             align: 'left',
             fontSize: 12,
             lineHeight: 16,
             fontFamily: 'IBM Plex Sans',
             color: '#161616',
+            padding: [0, 0, 0, 4],
           },
         }
       );
@@ -106,7 +107,10 @@ const PBarChart: FC<BarChartProps> = memo(
           formatter: (params) => {
             const { name, value, dataIndex } = params;
             // console.log('222params', params, xDatas, tokenMapDatas, dataIndex);
-            const idx = MAXSHOWDATASOURCELEN - 1 - dataIndex;
+            const idx =
+              showXDatas.length === MAXSHOWDATASOURCELEN
+                ? MAXSHOWDATASOURCELEN - 1 - dataIndex
+                : dataIndex;
             const currTokenList = tokenMapDatas[idx];
             const chainIcon = EASInfo[name].icon;
             let title = `<div class="tooltipTitle"><img src='${chainIcon}'/><div>${name}</div></div>`;
@@ -188,6 +192,7 @@ const PBarChart: FC<BarChartProps> = memo(
         series: {
           data: showYDatas,
           type: 'bar',
+          barWidth: 32,
           itemStyle: {
             color: '#00C7F2',
           },

@@ -111,7 +111,7 @@ function DescEl({ status, resultStatus }) {
       if (attestationType === 'Assets Certification') {
         if (verificationContent === 'Assets Proof') {
           vC = 'Asset balance';
-          vV = `>= $${verificationValue}`;
+          vV = `> $${verificationValue}`;
         } else if (verificationContent === 'Token Holding') {
           vC = 'Token holding';
         }

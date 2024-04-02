@@ -23,6 +23,7 @@
       gap: var(--spacing-8);
       padding-top: var(--spacing-32);
       // width: calc((100% - 100px)/3);
+      cursor: pointer;
       &:first-child {
         width: 191px;
       }

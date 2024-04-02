@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import useAllSources from './useAllSources';
-import { add, sub, div, mul, gte, formatNumeral } from '@/utils/utils';
+import { gt, add, sub, div, mul, gte, formatNumeral } from '@/utils/utils';
 import { WALLETMAP } from '@/config/wallet';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 import { SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
@@ -42,6 +42,12 @@ const useAssetsStatistic = function () {
     );
     return `${bal.toFixed(2)}`;
   }, [totalExchangeAssetsBalance, totalOnChainAssetsBalance]);
+  const hasTokenAssets = useMemo(() => {
+    return gt(Number(totalAssetsBalance), 0);
+  }, [totalAssetsBalance]);
+  const hasChainAssets = useMemo(() => {
+    return gt(Number(totalOnChainAssetsBalance), 0);
+  }, [totalOnChainAssetsBalance]);
   const formatTotalAssetsBalance = useMemo(() => {
     return totalAssetsBalance ? `$${formatNumeral(totalAssetsBalance)}` : '--';
   }, [totalAssetsBalance]);
@@ -318,6 +324,8 @@ const useAssetsStatistic = function () {
     balancePercentFn,
     tokenIconFn,
     sortedChainAssetsList,
+    hasTokenAssets,
+    hasChainAssets,
   };
 };
 export default useAssetsStatistic;

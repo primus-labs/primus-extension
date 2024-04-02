@@ -136,7 +136,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       let str: any = i.verificationValue;
       if (i.attestationType === 'Assets Certification') {
         if (i.verificationContent === 'Assets Proof') {
-          str = `>= $${i.verificationValue}`;
+          str = `> $${i.verificationValue}`;
         } else if (i.verificationContent === 'Token Holding') {
           const dataSourceIconSrc = `${sysConfig.TOKEN_LOGO_PREFIX}icon${i.verificationValue}.png`;
           str = (

@@ -36,23 +36,23 @@ export const ASSETSVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITE
 export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   '0.01': {
     value: '0.01',
-    label: '$0.01',
+    label: '> $0.01',
   }, //delete
   '10': {
     value: '10',
-    label: '$10',
+    label: '> $10',
   },
   '100': {
     value: '100',
-    label: '$100',
+    label: '> $100',
   },
   '500': {
     value: '500',
-    label: '$500',
+    label: '> $500',
   },
   '1000': {
     value: '1000',
-    label: '$1000',
+    label: '> $1000',
   },
 };
 export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =

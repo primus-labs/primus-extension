@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import Chart from 'react-apexcharts';
-import { sub, add, div, mul, formatNumeral } from '@/utils/utils';
+import { sub, add, div, mul, gt, formatNumeral } from '@/utils/utils';
 
 import { setActiveConnectDataSource } from '@/store/actions';
 import './index.scss';
@@ -17,18 +17,17 @@ import iconOthers from '@/assets/newImg/home/iconOthers.svg';
 
 const MAXSHOWTOKENLEN = 5;
 const MAXSHOWDATASOURCELEN = 4;
-const tList = [
-  { label: 'Portfolio', value: 'Portfolio' },
-  { label: 'Token', value: 'Token' },
-  { label: 'Chain', value: 'Chain' },
-];
+
 const Overview = memo(() => {
   const {
     sortedHoldingTokensList,
     balancePercentFn,
     tokenIconFn,
     sortedChainAssetsList,
+    hasChainAssets,
+    hasTokenAssets
   } = useAssetsStatistic();
+
   const { sortedConnectedAssetsSourcesList } = useAllSources();
   console.log(
     '222',
@@ -39,9 +38,19 @@ const Overview = memo(() => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Portfolio');
   const handleMore = useCallback(() => {
-    navigate('/datas');
+    navigate('/dataDashboard');
   }, [navigate]);
-
+  
+  const tList = useMemo(() => {
+    let arr = [{ label: 'Portfolio', value: 'Portfolio' }];
+    if (hasTokenAssets) {
+      arr.push({ label: 'Token', value: 'Token' });
+    }
+    if (hasChainAssets) {
+      arr.push({ label: 'Chain', value: 'Chain' });
+    }
+    return arr;
+  }, [hasTokenAssets, hasChainAssets]);
   const barChartBaseOptions = useMemo(() => {
     return {
       chart: {
@@ -236,6 +245,7 @@ const Overview = memo(() => {
       { data: [[13, 7, 60]] },
     ];
   }, []);
+
   const showTokenList = useMemo(() => {
     const allTokenList = sortedHoldingTokensList.map((i) => {
       const { symbol, value, logo } = i;
@@ -352,16 +362,17 @@ const Overview = memo(() => {
         {activeTab === 'Portfolio' && (
           <BarChart2 xDatas={xDatasPortfolio} yDatas={yDatasPortfolio} />
         )}
-        {activeTab === 'Chain' && (
+        {/* totalOnChainAssetsBalance,totalAssetsBalance, */}
+        {activeTab === 'Chain' && hasChainAssets && (
           <BarChart2
             xDatas={xDatasChain}
             yDatas={yDatasChain}
             tokenMapDatas={tokenMapDatas}
           />
         )}
-        {activeTab === 'Token' && (
+        {activeTab === 'Token' && hasTokenAssets && (
           <div className="tokenChart">
-            <ul className="tokenItems">
+            <ul className={`tokenItems tokenItems${showTokenList.length}`}>
               {showTokenList.map((i) => {
                 return (
                   <li className="tokenItem">

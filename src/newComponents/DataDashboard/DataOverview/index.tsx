@@ -28,13 +28,6 @@ import './index.scss';
 
 const Overview = memo(() => {
   const { sourceMap } = useAllSources();
-  const {
-    totalAssetsBalance,
-    formatTotalAssetsBalance,
-    totalPnl,
-    totalPnlPercent,
-    formatTotalPnlPercent,
-  } = useAssetsStatistic();
 
   const { totalFollowers, formatTotalFollowers } = useSocialStatistic();
   const navigate = useNavigate();

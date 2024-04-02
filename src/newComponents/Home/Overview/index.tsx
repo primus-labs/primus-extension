@@ -150,7 +150,7 @@ const Overview = memo(() => {
       <ul className="overviewItems">
         {Object.values(itemMap).map((i, k) => {
           return (
-            <li className={`overviewItem ${hasData && 'hasContent'}`} key={k}>
+            <li className={`overviewItem ${hasData && 'hasContent'}`} key={k} onClick={() => {handleClick(i.link)}}>
               <h4 className="title">{i.title}</h4>
               <div className="desc">
                 <div className="num">{i.num}</div>

@@ -3,19 +3,20 @@
 
 .pageAchievementTaskItem {
   padding: 40px;
-  .achievementTasks{
+  .achievementTasks {
     margin-top: 40px;
 
-    .achievementTasksTitle{
+    .achievementTasksTitle {
       margin-top: 40px;
       font-size: 16px;
       font-weight: 600;
       font-family: 'IBM Plex Sans';
       color: var(--text-tokens-text-primary, #161616);
     }
-    .pageComponent{
-      margin-top:20px;
-      float: right;
+    .pageComponent {
+      margin-top: 20px;
+      text-align: right;
+      width: 100%;
     }
   }
 }
