@@ -3,11 +3,15 @@
 @import '@/assets/newCss/dialog.scss';
 @import '../../attestationForm.scss';
 .pFormWrapper.detailForm3 {
-  --verificationContent-width: 132px;
-  --verificationContent-input-width: 147px;
+  --verificationContent-select-width: 1.1666rem;
+}
+@media (max-width: 1470px) {
+  .pFormWrapper.detailForm3 {
+    --verificationContent-select-width: 168px;
+  }
+}
 
-  --verificationContent-select-width: 162px;
-  --verificationValue-select-width: 162px;
+.pFormWrapper.detailForm3 {
   gap: var(--spacing-12) !important;
   .formItem {
     @include attestationForm;
@@ -18,20 +22,23 @@
       @include plainTextFormItem;
     }
     .verificationContent {
-      .selectInput {
-        width: fit-content;
+      &.hasValue {
+        .selectInput {
+          width: var(--verificationContent-select-width);
+        }
       }
       .selectOptionswrapper {
         width: var(--verificationContent-select-width);
       }
     }
     .verificationValue {
-      .selectInput {
-        width: fit-content;
+      &.hasValue {
+        .selectInput {
+          width: var(--verificationContent-select-width);
+        }
       }
       .selectOptionswrapper {
-        width: var(--verificationValue-select-width);
-
+        width: var(--verificationContent-select-width);
         .PDropdown {
           max-height: 240px;
           overflow-y: auto;

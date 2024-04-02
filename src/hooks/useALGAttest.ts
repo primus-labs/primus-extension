@@ -171,7 +171,7 @@ const useAttest = function useAttest() {
             ...content,
             ...parsedActiveRequestAttestation,
             ...activeAttestation,
-            account: sourceMap2[activeAttestation.dataSourceId].userInfo.userName,
+            account: sourceMap2[activeAttestation.dataSourceId]?.userInfo?.userName,
           };
 
           const credentialsObj = { ...credentialsFromStore };

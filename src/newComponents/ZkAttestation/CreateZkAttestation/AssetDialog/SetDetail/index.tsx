@@ -52,7 +52,22 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       (state: UserState) => state.attestLoading
     );
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
-
+    const verificationContentCN = useMemo(() => {
+      let cN = 'verificationContent';
+      const v = pswForm.verificationContent;
+      if (v) {
+        cN += ' hasValue';
+      }
+      return cN;
+    }, [pswForm.verificationContent]);
+    const verificationValueCN = useMemo(() => {
+      let cN = 'verificationValue';
+      const v = pswForm.verificationValue;
+      if (v) {
+        cN += ' hasValue';
+      }
+      return cN;
+    }, [pswForm.verificationValue]);
     const contentList = useMemo(() => {
       let supportedContentIdArr: any = [];
 
@@ -72,10 +87,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     ]);
     const valueList = useMemo(() => {
       let list = [];
-      if (activeDataSouceUserInfo) {
-        if (pswForm.verificationContent === 'Assets Proof') {
-          list = [...ASSETSVERIFICATIONVALUETYPELIST];
-        } else if (pswForm.verificationContent === 'Token Holding') {
+      if (pswForm.verificationContent === 'Assets Proof') {
+        list = [...ASSETSVERIFICATIONVALUETYPELIST];
+      } else if (pswForm.verificationContent === 'Token Holding') {
+        if (activeDataSouceUserInfo) {
           list = Object.keys(activeDataSouceUserInfo.tokenListMap).map((i) => ({
             label: i,
             value: i,
@@ -108,7 +123,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
 
       return totalBalance;
-    }, [ dataSourceId, activeDataSouceUserInfo]);
+    }, [dataSourceId, activeDataSouceUserInfo]);
     // const verificationContentList = useMemo(() => {
 
     // })
@@ -205,10 +220,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             </>
           ) : (
             <PSelect
-              className="verificationContent"
+              className={verificationContentCN}
               label="Verification Content"
               align="horizontal"
-              placeholder="Choose data source"
+              placeholder="Select content"
               list={contentList}
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationContent');
@@ -223,7 +238,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           {pswForm.verificationContent ? (
             activeDataSouceUserInfo ? (
               <PSelect
-                className="verificationValue"
+                className={verificationValueCN}
                 label="Verification Value"
                 align="horizontal"
                 placeholder="Select value"
@@ -235,30 +250,46 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 disabled={presets?.verificationValue}
                 showSelf={false}
               />
-            ) : (
+            ) : pswForm.verificationContent === 'Token Holding' ? (
               <PInput
-                className="verificationValue"
+                className={verificationValueCN}
                 label="Verification Value"
                 align="horizontal"
-                placeholder="Input value"
+                placeholder="USDT"
                 onChange={(p) => {
                   handleChangePswForm(p, 'verificationValue');
                 }}
                 value={pswForm.verificationValue}
                 disabled={!pswForm.verificationContent}
               />
+            ) : (
+              <PSelect
+                className={verificationValueCN}
+                label="Verification Value"
+                align="horizontal"
+                placeholder="Select value"
+                list={valueList}
+                onChange={(p) => {
+                  handleChangePswForm(p, 'verificationValue');
+                }}
+                value={pswForm.verificationValue}
+                disabled={presets?.verificationValue}
+                showSelf={false}
+              />
             )
           ) : (
-            <PInput
-              className="verificationValue"
+            <PSelect
+              className={verificationValueCN}
               label="Verification Value"
               align="horizontal"
-              placeholder="Input value"
+              placeholder="Select value"
+              list={valueList}
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationValue');
               }}
               value={pswForm.verificationValue}
-              disabled={!pswForm.verificationContent}
+              disabled={presets?.verificationValue}
+              showSelf={false}
             />
           )}
         </div>

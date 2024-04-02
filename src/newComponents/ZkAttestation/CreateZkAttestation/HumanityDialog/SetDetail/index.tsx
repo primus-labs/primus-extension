@@ -51,6 +51,22 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const webProofTypes = useSelector(
       (state: UserState) => state.webProofTypes
     );
+    const verificationContentCN = useMemo(() => {
+      let cN = 'verificationContent';
+      const v = pswForm.verificationContent;
+      if (v) {
+        cN += ' hasValue';
+      }
+      return cN;
+    }, [pswForm.verificationContent]);
+    const verificationValueCN = useMemo(() => {
+      let cN = 'verificationValue';
+      const v = pswForm.verificationValue;
+      if (v) {
+        cN += ' hasValue';
+      }
+      return cN;
+    }, [pswForm.verificationValue]);
     const contentList = useMemo(() => {
       let supportedContentIdArr: any = [];
 
@@ -83,8 +99,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       } else if (pswForm.verificationContent === 'Account ownership') {
         list = [
           {
-            label: 'N/A',
-            value: 'N/A',
+            label: 'Account owner',
+            value: 'Account owner',
             // selected: true,
           },
         ];
@@ -127,7 +143,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           if (pswForm.verificationContent === 'KYC Status') {
             newValue = 'Basic Verification';
           } else if (pswForm.verificationContent === 'Account ownership') {
-            newValue = 'N/A';
+            newValue = 'Account owner';
           }
           handleChangePswForm(newValue, 'verificationValue');
         }
@@ -162,10 +178,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             </>
           ) : (
             <PSelect
-              className="verificationContent"
+              className={verificationContentCN}
               label="Verification Content"
               align="horizontal"
-              placeholder="Choose data source"
+              placeholder="Select content"
               list={contentList}
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationContent');
@@ -191,16 +207,18 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               </div>
             </>
           ) : (
-            <PInput
-              className="verificationValue"
+            <PSelect
+              className={verificationValueCN}
               label="Verification Value"
               align="horizontal"
-              placeholder="Input value"
+              placeholder="Select value"
+              list={valueList}
               onChange={(p) => {
                 handleChangePswForm(p, 'verificationValue');
               }}
               value={pswForm.verificationValue}
-              disabled={!pswForm.verificationContent}
+              disabled={presets?.verificationValue}
+              showSelf={false}
             />
           )}
         </div>

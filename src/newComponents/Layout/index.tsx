@@ -78,7 +78,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
             uiContent === 'Account Ownership'
           ) {
             i.verificationContent = 'Account ownership';
-            i.verificationValue = 'N/A';
+            i.verificationValue = 'Account owner';
           }
           if (uiContent === 'KYC Status') {
             i.verificationContent = 'KYC Status';
@@ -114,7 +114,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     dispatch(setNftsActionAsync());
     // dispatch(initConnectedWalletActionAsync());
     // (updateOnChainFn as () => void)();
-  }, [dispatch, ]);
+  }, [dispatch]);
   useEffect(() => {
     initStoreData();
   }, [initStoreData]);

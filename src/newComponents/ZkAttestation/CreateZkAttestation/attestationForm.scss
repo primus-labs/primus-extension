@@ -73,10 +73,10 @@
   .PSelect {
     @include attestationFormItem;
     .selectInput {
-      // width: var(--selectInput-width);
+      width: auto;
       height: var(--spacing-32);
       padding: 0 var(--spacing-7) 0 var(--spacing-11);
-      gap: var(--spacing-16);
+      gap: var(--spacing-8);
     }
     .selectOptionswrapper {
       top: var(--spacing-32);
@@ -87,6 +87,9 @@
         gap: var(--spacing-8);
       }
     }
+  }
+  .confirmBtn {
+    margin-top: var(--spacing-20) !important;
   }
 }
 
@@ -127,7 +130,7 @@
     }
     .detailForm,.detailForm2,.detailForm3 {
       .confirmBtn {
-        margin-top: var(--spacing-16);
+        margin-top: var(--spacing-20);
       }
     }
   }

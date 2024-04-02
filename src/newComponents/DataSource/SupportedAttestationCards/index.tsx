@@ -53,7 +53,7 @@ const attestationTypeMap = {
   4: {
     attestationType: 'Humanity Verification',
     verificationContent: 'Account ownership',
-    verificationValue: 'N/A',
+    verificationValue: 'Account owner',
     desc: 'Account ownership',
     icon: iconAttestationHumanity,
     type: 'Web Data',
