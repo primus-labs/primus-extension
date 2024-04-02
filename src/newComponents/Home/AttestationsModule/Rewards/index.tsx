@@ -10,7 +10,7 @@ const SocialInsights = memo(() => {
   const { rewardsList } = useRewardsStatistics();
   const navigate = useNavigate();
   const handleDetail = useCallback(() => {
-    navigate('/rewards');
+    navigate('/events/rewards');
   }, [navigate]);
 
   return (
@@ -36,6 +36,7 @@ const SocialInsights = memo(() => {
                       <div className="title">{i.title}</div>
                       <div className="desc">
                         <img src={iconPado} alt="" />
+                        &nbsp;
                         <p>{i.desc}</p>
                       </div>
                     </div>

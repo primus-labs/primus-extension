@@ -8,6 +8,7 @@ export const BASEVENTNAME = 'BAS_EVENT_PROOF_OF_HUMANITY';
 export const LINEAEVENTNAME = 'LINEA_DEFI_VOYAGE';
 export const LUCKYDRAWEVENTNAME = 'PRODUCT_DEBUT';
 export const EARLYBIRDNFTEVENTNAME = 'Early_Bird_NFT';
+export const ETHSIGNEVENTNAME = 'SIGNX_X_PROGRAM';
 
 export const eventMetaMap = {
   [BASEVENTNAME]: {

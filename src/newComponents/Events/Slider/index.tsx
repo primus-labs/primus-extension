@@ -3,9 +3,14 @@ import Slider from 'react-slick';
 import { useNavigate } from 'react-router-dom';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
+import {
+  BASEVENTNAME,
+  LINEAEVENTNAME,
+  ETHSIGNEVENTNAME,
+} from '@/config/events';
 import adLinea from '@/assets/newImg/events/adLinea.svg';
 import adBas from '@/assets/newImg/events/adBas.svg';
+import adEthSign from '@/assets/newImg/events/adEthSign.svg';
 import './index.scss';
 
 interface PBackProps {}
@@ -32,6 +37,10 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
       id: BASEVENTNAME,
       adImg: adBas,
       // link: `/events/detail?id=BAS_EVENT_PROOF_OF_HUMANITY`,
+    },
+    [ETHSIGNEVENTNAME]: {
+      id: ETHSIGNEVENTNAME,
+      adImg: adEthSign
     },
   };
   const handleClick = (i: any) => {
