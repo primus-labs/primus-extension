@@ -1167,7 +1167,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           }
         } else if (retcode === '2') {
           const {
-            errlog: { code, desc },
+            errlog: { code, desc, uuid },
           } = details;
           const msg = {
             fullScreenType: 'algorithm',
@@ -1288,6 +1288,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             reason: eventInfoMsg,
             detail: {
               code,
+              uuid,
               desc,
             },
           });
