@@ -15,7 +15,7 @@ import {
 } from 'echarts/renderers';
 import { formatNumeral } from '@/utils/utils';
 import './index.scss';
-import { EASInfo } from '@/config/envConstants';
+import { EASInfo, SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 
 // Register the required components
@@ -72,7 +72,6 @@ const PBarChart: FC<BarChartProps> = memo(
               // fontSize: 0,
             };
           }
-
           return prev;
         },
         {
@@ -90,10 +89,12 @@ const PBarChart: FC<BarChartProps> = memo(
 
       return m;
     }, [showXDatas]);
+
     const tooltip = useMemo(() => {
       let obj: any = {
         formatter: (params) => {
           const { name, value } = params;
+
           return `${name}: $${formatNumeral(value)}`;
         },
       };
@@ -112,14 +113,26 @@ const PBarChart: FC<BarChartProps> = memo(
                 ? MAXSHOWDATASOURCELEN - 1 - dataIndex
                 : dataIndex;
             const currTokenList = tokenMapDatas[idx];
-            const chainIcon = EASInfo[name].icon;
-            let title = `<div class="tooltipTitle"><img src='${chainIcon}'/><div>${name}</div></div>`;
+            const chainName: any = Object.keys(SUPPORRTEDQUERYCHAINMAP).find(
+              (i) => i.replace(/\s+/g, '') === name
+            );
+            // console.log(
+            //   '222formatter',
+            //   EASInfo,
+            //   SUPPORRTEDQUERYCHAINMAP,
+            //   name,
+            //   chainName
+            // );
+
+            const { icon } = SUPPORRTEDQUERYCHAINMAP[chainName];
+            let title = `<div class="tooltipTitle"><img src='${icon}'/><div>${chainName}</div></div>`;
             let desc = `<div class="tooltipDesc">Token Distribution</div>`;
             var list = currTokenList
               .map(function (item: any) {
                 const { symbol, value } = item;
                 const logoIcon = tokenIconFn(item);
-                return `<li><div class="left"><img src='${logoIcon}'/><div>${symbol}</div></div><div class="right">$${formatNumeral(value)}</div></li>`;
+                const showSymbol = symbol.split('---')[0];
+                return `<li><div class="left"><img src='${logoIcon}'/><div>${showSymbol}</div></div><div class="right">$${formatNumeral(value)}</div></li>`;
               })
               .join('');
 
@@ -168,9 +181,10 @@ const PBarChart: FC<BarChartProps> = memo(
           align: 'left',
           axisLabel: {
             formatter: function (value) {
-              console.log('222value', value);
+              // console.log('222value', value);
               if (value) {
-                return '{' + value + '| }{name|' + value + '}';
+                let formatName = value === 'ArbitrumOne' ? 'Arbitrum' : value;
+                return '{' + value + '| }{name|' + formatName + '}';
               } else {
                 return '';
               }

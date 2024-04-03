@@ -392,7 +392,7 @@ const Overview = memo(() => {
   return (
     <div className="dataOverview">
       <div className="title">
-        <span>Data Overview</span>
+        <span>Data Dashboard</span>
         <div className="operations">
           <div className="updateTip">
             <span>Updated 4mins ago</span>

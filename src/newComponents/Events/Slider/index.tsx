@@ -33,14 +33,14 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
       adImg: adLinea,
       // link: '/',
     },
+    [ETHSIGNEVENTNAME]: {
+      id: ETHSIGNEVENTNAME,
+      adImg: adEthSign,
+    },
     [BASEVENTNAME]: {
       id: BASEVENTNAME,
       adImg: adBas,
       // link: `/events/detail?id=BAS_EVENT_PROOF_OF_HUMANITY`,
-    },
-    [ETHSIGNEVENTNAME]: {
-      id: ETHSIGNEVENTNAME,
-      adImg: adEthSign
     },
   };
   const handleClick = (i: any) => {

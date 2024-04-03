@@ -23,8 +23,8 @@ export const list: NavItem[] = [
     link: '/datas',
   },
   {
-    label: 'Data Overview',
-    value: 'Data Overview',
+    label: 'Data Dashboard',
+    value: 'Data Dashboard',
     iconName: 'icon-iconMenuDataOverview',
     link: '/dataDashboard',
   },

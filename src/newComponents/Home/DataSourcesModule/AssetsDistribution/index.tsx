@@ -25,22 +25,57 @@ const Overview = memo(() => {
     tokenIconFn,
     sortedChainAssetsList,
     hasChainAssets,
-    hasTokenAssets
+    hasTokenAssets,
+    metamaskAssets,
   } = useAssetsStatistic();
 
-  const { sortedConnectedAssetsSourcesList } = useAllSources();
-  console.log(
-    '222',
-    sortedConnectedAssetsSourcesList,
-    sortedHoldingTokensList,
-    sortedChainAssetsList
-  ); //delete
+  const { sourceMap } = useAllSources();
+  const connectedExchangeSources = useMemo(() => {
+    return sourceMap.exSources;
+  }, [sourceMap]);
+  const connectedOnChainSources = useMemo(() => {
+    return sourceMap.onChainAssetsSources;
+  }, [sourceMap]);
+  const connectedAssetsSourcesList = useMemo(() => {
+    let l = Object.values(connectedExchangeSources);
+    if (Object.keys(connectedOnChainSources).length > 0) {
+      // const newOnChainList = Object.values(connectedOnChainSources).map(
+      //   (i: any) => {
+      //     const { name, icon } = WALLETMAP['metamask'];
+      //     return Object.assign(i, { name, icon, id: i.address });
+      //   }
+      // );
+      const newOnChainList = [metamaskAssets];
+      l = l.concat(newOnChainList);
+    }
+    return l;
+  }, [connectedExchangeSources, connectedOnChainSources, metamaskAssets]);
+  const sortedConnectedAssetsSourcesList = useMemo(() => {
+    const sortFn = (l) => {
+      return l.sort((a: any, b: any) =>
+        sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
+      );
+    };
+    let noStarL = connectedAssetsSourcesList.filter((i: any) => !i.star);
+    let hasStarL = connectedAssetsSourcesList.filter((i: any) => !!i.star);
+    noStarL = sortFn(noStarL);
+    hasStarL = sortFn(hasStarL);
+    console.log('222sortedConnectedAssetsSourcesList', noStarL, hasStarL); //delete
+    return [...hasStarL, ...noStarL];
+  }, [connectedAssetsSourcesList]);
+
+  // console.log(
+  //   '222',
+  //   sortedConnectedAssetsSourcesList,
+  //   sortedHoldingTokensList,
+  //   sortedChainAssetsList
+  // ); //delete
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Portfolio');
   const handleMore = useCallback(() => {
     navigate('/dataDashboard');
   }, [navigate]);
-  
+
   const tList = useMemo(() => {
     let arr = [{ label: 'Portfolio', value: 'Portfolio' }];
     if (hasTokenAssets) {
@@ -93,20 +128,7 @@ const Overview = memo(() => {
       return allList;
     }
   }, [sortedConnectedAssetsSourcesList]);
-  const optionsPortfolio = useMemo(() => {
-    const l = showPortfolioList.map((i) => i.name);
-    const fullOptions = { ...barChartBaseOptions };
-    fullOptions.xaxis = { categories: l };
-    return fullOptions;
-  }, [sortedConnectedAssetsSourcesList, barChartBaseOptions]);
-  const seriesPortfolio = useMemo(() => {
-    const l = showPortfolioList.map((i) => i.totalBalance - 0);
-    return [
-      {
-        data: l,
-      },
-    ];
-  }, [sortedConnectedAssetsSourcesList]);
+
   const reverseShowPortfolioList = useMemo(() => {
     return showPortfolioList.reverse();
   }, [sortedConnectedAssetsSourcesList]);
@@ -313,7 +335,7 @@ const Overview = memo(() => {
   }, [showChainList]);
   const xDatasChain = useMemo(() => {
     const l = reverseShowChainList.map((i) => ({
-      name: i.name,
+      name: i.name.replace(/\s+/g, ''),
       icon: i.icon ?? iconOthers,
     }));
     return l;
@@ -380,7 +402,7 @@ const Overview = memo(() => {
                       {i.symbol !== 'Other' && (
                         <img src={tokenIconFn(i)} alt="" />
                       )}
-                      <span>{i.symbol}</span>
+                      <span>{i.symbol.split('---')[0]}</span>
                     </div>
                     <div className="balance">${formatNumeral(i.value)}</div>
                     <div className="percent">{balancePercentFn(i)}%</div>

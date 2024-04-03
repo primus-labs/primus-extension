@@ -25,7 +25,7 @@ const AssetsDetails = memo(() => {
   return (
     <div className="assetsDetails">
       <div className="title">
-        <span>Data Overview</span>
+        <span>Data Dashboard</span>
         <div className="operations">
           <PButton
             type="text"

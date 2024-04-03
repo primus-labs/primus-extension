@@ -10,6 +10,20 @@ import iconOthers from '@/assets/newImg/home/iconOthers.svg';
 const useAssetsStatistic = function () {
   const { sourceMap } = useAllSources();
   const sysConfig = useSelector((state) => state.sysConfig);
+  const dataSourceIconFn = (id) => {
+    if (id.startsWith('0x')) {
+      return WALLETMAP['metamask'].icon;
+    } else {
+      return DATASOURCEMAP[id].icon;
+    }
+  };
+  const dataSourceNameFn = (id) => {
+    if (id.startsWith('0x')) {
+      return WALLETMAP['metamask'].name;
+    } else {
+      return DATASOURCEMAP[id].name;
+    }
+  };
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
@@ -35,6 +49,77 @@ const useAssetsStatistic = function () {
     const bal = connectedOnChainSourcesList.reduce(reduceF, new BigNumber(0));
     return `${bal.toFixed(2)}`;
   }, [connectedOnChainSourcesList]);
+  const metamaskAssets = useMemo(() => {
+    const reduceF = (prev, curr) => {
+      const { tokenListMap, address: id } = curr;
+      if (tokenListMap && Object.keys(tokenListMap).length > 0) {
+        Object.keys(tokenListMap).forEach((tokenListMapSymbol) => {
+          // const { symbol, amount } = tokenListMap[tokenListMapSymbol];
+          const symbol = tokenListMapSymbol.split('---')[0];
+          if (symbol in prev) {
+            const {
+              amount: prevAmount,
+              price,
+              portfolio,
+              value,
+            } = prev[symbol];
+            const { amount } = tokenListMap[tokenListMapSymbol];
+            if (!(id in portfolio)) {
+              // from.push(id);
+              portfolio[id] = {
+                icon: dataSourceIconFn(id),
+                symbol: dataSourceNameFn(id),
+                amount,
+                price,
+                value,
+              };
+            }
+            const totalAmount = add(
+              Number(prevAmount),
+              Number(amount)
+            ).toFixed();
+            const totalValue = mul(
+              Number(totalAmount),
+              Number(price)
+            ).toFixed();
+            prev[symbol] = {
+              symbol,
+              price,
+              amount: totalAmount,
+              value: totalValue,
+              portfolio,
+            };
+          } else {
+            const currObj = tokenListMap[tokenListMapSymbol];
+            const { amount, price, value } = currObj;
+            prev = {
+              ...prev,
+              [symbol]: {
+                ...currObj,
+                portfolio: {
+                  [id]: {
+                    icon: dataSourceIconFn(id),
+                    symbol: dataSourceNameFn(id),
+                    amount,
+                    price,
+                    value,
+                  },
+                },
+              },
+            };
+          }
+        });
+      }
+      return prev;
+    };
+    const totalTokenMap = connectedOnChainSourcesList.reduce(reduceF, {});
+    const obj = {
+      tokenListMap:totalTokenMap,
+      ...WALLETMAP['metamask'],
+      totalBalance: totalOnChainAssetsBalance,
+    };
+    return obj;
+  }, [connectedOnChainSourcesList, totalOnChainAssetsBalance]);
   const totalAssetsBalance = useMemo(() => {
     const bal = add(
       Number(totalExchangeAssetsBalance),
@@ -110,20 +195,6 @@ const useAssetsStatistic = function () {
     return l;
   }, [connectedExchangeSourcesList, connectedOnChainSourcesList]);
 
-  const dataSourceIconFn = (id) => {
-    if (id.startsWith('0x')) {
-      return WALLETMAP['metamask'].icon;
-    } else {
-      return DATASOURCEMAP[id].icon;
-    }
-  };
-  const dataSourceNameFn = (id) => {
-    if (id.startsWith('0x')) {
-      return WALLETMAP['metamask'].name;
-    } else {
-      return DATASOURCEMAP[id].name;
-    }
-  };
   const totalAssetsMap = useMemo(() => {
     const reduceF = (prev, curr) => {
       const { tokenListMap, id } = curr;
@@ -234,6 +305,7 @@ const useAssetsStatistic = function () {
 
   const totalChainAssetsMap = useMemo(() => {
     console.log('222connectedOnChainSourcesList', connectedOnChainSourcesList); //delete
+
     const reduceF = (prev, curr) => {
       const { chainsAssetsMap } = curr;
       if (chainsAssetsMap && Object.keys(chainsAssetsMap).length > 0) {
@@ -247,7 +319,8 @@ const useAssetsStatistic = function () {
             } = prev[chain];
             const innerReduceF = (prevM, currM) => {
               const symbol = currM.split('---')[0];
-              const currTokenItem = tokenListMap[prevM];
+              const currTokenItem = tokenListMap[currM];
+
               const { amount, price, value, isNative, chain } = currTokenItem;
               if (symbol in prevM) {
                 const { amount: prevAmount, chain } = prevM[symbol];
@@ -260,6 +333,7 @@ const useAssetsStatistic = function () {
                   Number(price)
                 ).toFixed();
                 prevM[symbol] = {
+                  symbol,
                   amount: totalAmount,
                   price,
                   value: totalValue,
@@ -269,6 +343,7 @@ const useAssetsStatistic = function () {
               } else {
                 prevM[symbol] = currTokenItem;
               }
+              return prevM;
             };
 
             const newTokenListMap = Object.keys(tokenListMap).reduce(
@@ -327,6 +402,7 @@ const useAssetsStatistic = function () {
     sortedChainAssetsList,
     hasTokenAssets,
     hasChainAssets,
+    metamaskAssets,
   };
 };
 export default useAssetsStatistic;

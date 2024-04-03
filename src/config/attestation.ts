@@ -37,7 +37,7 @@ export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   '0.01': {
     value: '0.01',
     label: '> $0.01',
-  }, //delete
+  }, //delete TODO-newui
   '10': {
     value: '10',
     label: '> $10',

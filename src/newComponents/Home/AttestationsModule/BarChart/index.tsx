@@ -11,7 +11,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers';
 import { formatNumeral } from '@/utils/utils';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
-import { EASInfo } from '@/config/chain';
+import { EASInfo, SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 import './index.scss';
 
 // Register the required components
@@ -91,7 +91,7 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
       tooltip: {
         formatter: (params) => {
           const { name, value, seriesName } = params;
-          const CName = Object.keys(EASInfo).find(
+          const CName = Object.keys(SUPPORRTEDQUERYCHAINMAP).find(
             (i) => i.replace(/\s+/g, '') === name
           );
           // console.log('222params', params, formatNumeral(value));

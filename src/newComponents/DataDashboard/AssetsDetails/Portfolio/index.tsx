@@ -32,7 +32,7 @@ const MAX = 5;
 const AssetsDetails = memo(() => {
   const { accountsNftsListMap } = useNFTs();
   const { addMsg } = useMsgs();
-  const { totalAssetsBalance } = useAssetsStatistic();
+  const { totalAssetsBalance, metamaskAssets } = useAssetsStatistic();
   const dispatch = useDispatch();
   const { sourceMap, sourceMap2 } = useAllSources();
   const [showMore, setShowMore] = useState<boolean>(false);
@@ -54,16 +54,17 @@ const AssetsDetails = memo(() => {
   const connectedAssetsSourcesList = useMemo(() => {
     let l = Object.values(connectedExchangeSources);
     if (Object.keys(connectedOnChainSources).length > 0) {
-      const newOnChainList = Object.values(connectedOnChainSources).map(
-        (i: any) => {
-          const { name, icon } = WALLETMAP['metamask'];
-          return Object.assign(i, { name, icon, id: i.address });
-        }
-      );
+      // const newOnChainList = Object.values(connectedOnChainSources).map(
+      //   (i: any) => {
+      //     const { name, icon } = WALLETMAP['metamask'];
+      //     return Object.assign(i, { name, icon, id: i.address });
+      //   }
+      // );
+      const newOnChainList = [metamaskAssets];
       l = l.concat(newOnChainList);
     }
     return l;
-  }, [connectedExchangeSources, connectedOnChainSources]);
+  }, [connectedExchangeSources, connectedOnChainSources, metamaskAssets]);
   const sortedConnectedAssetsSourcesList = useMemo(() => {
     const sortFn = (l) => {
       return l.sort((a: any, b: any) =>
@@ -74,6 +75,7 @@ const AssetsDetails = memo(() => {
     let hasStarL = connectedAssetsSourcesList.filter((i: any) => !!i.star);
     noStarL = sortFn(noStarL);
     hasStarL = sortFn(hasStarL);
+    console.log('222sortedConnectedAssetsSourcesList', noStarL, hasStarL); //delete
     return [...hasStarL, ...noStarL];
   }, [connectedAssetsSourcesList]);
 

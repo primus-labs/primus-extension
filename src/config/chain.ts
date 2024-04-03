@@ -545,30 +545,36 @@ export const SUPPORRTEDQUERYCHAINMAP = {
     name: 'Arbitrum One',
     chainId: 42161,
     icon: iconArbitrum,
+    id: 'Arbitrum One',
   },
   BSC: {
     name: 'BSC',
     chainId: 56,
     icon: iconBinance,
+    id: 'BSC',
   },
   Ethereum: {
     name: 'Ethereum',
     chainId: 1,
     icon: iconChainEthereum,
+    id: 'Ethereum',
   },
   Polygon: {
     name: 'Polygon',
     chainId: 137,
     icon: iconPolygon,
+    id: 'Polygon',
   },
   Avalanche: {
     name: 'Avalanche',
     chainId: 43114,
     icon: iconNetwork6,
+    id: 'Avalanche',
   },
   Optimism: {
     name: 'Optimism',
     chainId: 10,
     icon: iconOptimism,
+    id: 'Optimism',
   },
 };
