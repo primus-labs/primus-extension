@@ -38,6 +38,7 @@ const AssetsDetails = memo(() => {
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
   const [tableTab, setTableTab] = useState<string>('Token');
+  const [starArr, setStarArr] = useState<string[]>();
   const sysConfig = useSelector((state) => state.sysConfig);
   const nfts = useSelector((state) => state.nfts);
 
@@ -71,13 +72,17 @@ const AssetsDetails = memo(() => {
         sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
       );
     };
-    let noStarL = connectedAssetsSourcesList.filter((i: any) => !i.star);
-    let hasStarL = connectedAssetsSourcesList.filter((i: any) => !!i.star);
+    let noStarL = connectedAssetsSourcesList.filter(
+      (i: any) => !starArr?.includes(i.id)
+    );
+    let hasStarL = connectedAssetsSourcesList.filter((i: any) =>
+      starArr?.includes(i.id)
+    );
     noStarL = sortFn(noStarL);
     hasStarL = sortFn(hasStarL);
     console.log('222sortedConnectedAssetsSourcesList', noStarL, hasStarL); //delete
     return [...hasStarL, ...noStarL];
-  }, [connectedAssetsSourcesList]);
+  }, [connectedAssetsSourcesList, starArr]);
 
   const showList = useMemo(() => {
     return showMore
@@ -177,27 +182,70 @@ const AssetsDetails = memo(() => {
     },
     [activeExpand]
   );
-  const handleStar = useCallback(
-    async (i) => {
-      i.star = !i.star;
-      if (i.address?.startsWith('0x')) {
-        const newObj = { ...connectedOnChainSources };
-        newObj[i.address] = i;
-        await chrome.storage.local.set({
-          onChainAssetsSources: JSON.stringify(newObj),
-        });
-        dispatch(setOnChainAssetsSourcesAsync());
-      } else {
-        if (i.type === 'Assets') {
-          await chrome.storage.local.set({
-            [i.id]: JSON.stringify(i),
-          });
-          dispatch(setExSourcesAsync());
-        }
+
+  // const handleStar = useCallback(
+  //   async (i) => {
+  //     debugger;
+  //     i.star = !i.star;
+
+  //     if (i.address?.startsWith('0x')) {
+  //       const newObj = { ...connectedOnChainSources };
+  //       newObj[i.address] = i;
+  //       await chrome.storage.local.set({
+  //         onChainAssetsSources: JSON.stringify(newObj),
+  //       });
+  //       dispatch(setOnChainAssetsSourcesAsync());
+  //     } else {
+  //       if (i.type === 'Assets') {
+  //         await chrome.storage.local.set({
+  //           [i.id]: JSON.stringify(i),
+  //         });
+  //         dispatch(setExSourcesAsync());
+  //       }
+  //     }
+  //   },
+  //   [dispatch, connectedOnChainSources]
+  // );
+
+  const resetStarArr = async () => {
+    const { assetsStarsMap: assetsStarsMapStr } =
+      await chrome.storage.local.get(['assetsStarsMap']);
+    if (assetsStarsMapStr) {
+      const assetsStarsMapObj = JSON.parse(assetsStarsMapStr);
+      if (assetsStarsMapObj.portfolio) {
+        setStarArr(Object.keys(assetsStarsMapObj.portfolio));
       }
-    },
-    [dispatch, connectedOnChainSources]
-  );
+    }
+  };
+  const handleStar = useCallback(async (i) => {
+    const { id: symbol } = i;
+    const { assetsStarsMap: assetsStarsMapStr } =
+      await chrome.storage.local.get(['assetsStarsMap']);
+    if (assetsStarsMapStr) {
+      const assetsStarsMapObj = JSON.parse(assetsStarsMapStr);
+      if (assetsStarsMapObj.portfolio) {
+        if (symbol in assetsStarsMapObj.portfolio) {
+          delete assetsStarsMapObj.portfolio[symbol];
+        } else {
+          assetsStarsMapObj.portfolio[symbol] = 1;
+        }
+        await chrome.storage.local.set({
+          assetsStarsMap: JSON.stringify(assetsStarsMapObj),
+        });
+      }
+    } else {
+      const obj = {
+        token: {},
+        chain: {},
+        portfolio: { [symbol]: 1 },
+      };
+      await chrome.storage.local.set({
+        assetsStarsMap: JSON.stringify(obj),
+      });
+    }
+    resetStarArr();
+  }, []);
+
   const currentAccountNftsFn = useCallback(
     (id) => {
       const currentAccountNftsArr = accountsNftsListMap[id];
@@ -222,7 +270,7 @@ const AssetsDetails = memo(() => {
               <div className="mainInfo">
                 <div className="left">
                   <PStar
-                    open={i.star}
+                    open={starArr?.includes(i.id)}
                     onClick={() => {
                       handleStar(i);
                     }}

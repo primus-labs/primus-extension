@@ -30,11 +30,11 @@ const ZkAttestation = memo(() => {
   }, [connectWalletDialogVisible]);
   const dispatch: Dispatch<any> = useDispatch();
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
-  const [visibleOnChainDialog, setVisibleOnChainDialog] =
-    useState<boolean>(false);
+
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
+  console.log('222credentialsFromStore', credentialsFromStore);
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
   const hasConnected = useMemo(() => {

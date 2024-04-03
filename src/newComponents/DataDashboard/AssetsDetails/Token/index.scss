@@ -5,6 +5,11 @@
   .dataSourceItems {
     .dataSourceItem {
       .mainInfo {
+        .left{
+          img{
+            border-radius: 50%;
+          }
+        }
         .right {
           gap: 88px;
           .amount,.price{

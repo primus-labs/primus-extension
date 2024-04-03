@@ -26,11 +26,29 @@ type BarChartProps = {
   xDatas: any[];
   yDatas: any[];
 };
+const MAXSHOWDATASOURCELEN = 5;
 const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
   console.log('222xDatas', xDatas, yDatas); //delete
 
+  const showXDatas = useMemo(() => {
+    let l = [...xDatas];
+    const diffLen = MAXSHOWDATASOURCELEN - xDatas.length;
+    for (var i = 0; i < diffLen; i++) {
+      l.unshift({ name: '', icon: undefined });
+    }
+    return l;
+  }, [xDatas]);
+  const showYDatas = useMemo(() => {
+    let l = [...yDatas];
+    const diffLen = MAXSHOWDATASOURCELEN - yDatas.length;
+    for (var i = 0; i < diffLen; i++) {
+      l.unshift('');
+    }
+    return l;
+  }, [yDatas]);
+
   const xRichDatasMap = useMemo(() => {
-    return xDatas.reduce((prev, curr) => {
+    return showXDatas.reduce((prev, curr) => {
       prev[curr.name] = {
         width: 24,
         height: 24,
@@ -43,9 +61,9 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
       };
       return prev;
     }, {});
-  }, [xDatas]);
+  }, [showXDatas]);
   const series = useMemo(() => {
-    return yDatas.map((i) => {
+    return showYDatas.map((i) => {
       const { name, data } = i;
       return {
         name,
@@ -59,7 +77,7 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
         barWidth: 32,
       };
     });
-  }, [yDatas]);
+  }, [showYDatas]);
   const option = useMemo(() => {
     return {
       grid: {
@@ -105,7 +123,7 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
         axisTick: {
           show: false,
         },
-        data: xDatas.map((i) => i.name),
+        data: showXDatas.map((i) => i.name),
         axisLabel: {
           fontSize: 6,
           formatter: function (value) {

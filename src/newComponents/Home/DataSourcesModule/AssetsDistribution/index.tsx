@@ -133,7 +133,7 @@ const Overview = memo(() => {
     return showPortfolioList.reverse();
   }, [sortedConnectedAssetsSourcesList]);
   const xDatasPortfolio = useMemo(() => {
-    const l = reverseShowPortfolioList.map((i) => ({
+    const l = reverseShowPortfolioList.map((i: any) => ({
       name: i.name,
       icon: i.icon ?? iconOthers,
     }));
@@ -143,130 +143,6 @@ const Overview = memo(() => {
     const l = reverseShowPortfolioList.map((i) => i.totalBalance - 0);
     return l;
   }, [reverseShowPortfolioList]);
-
-  const optionsToken = useMemo(() => {
-    return {
-      chart: {
-        height: '100%',
-        type: 'bubble',
-        toolbar: {
-          show: false,
-        },
-        zoom: {
-          enabled: false,
-        },
-      },
-      dataLabels: {
-        // enabled: false,
-        style: {
-          fontSize: '12px',
-          fontFamily: 'Inter, ui-sans-serif',
-          fontWeight: '400',
-          colors: ['#fff', '#1f2937', '#fff'],
-        },
-        formatter: (value, b) => {
-          if (value) {
-            // console.log('222formatter', value, b);
-            let a = 'A';
-            if (b.seriesIndex === 1) {
-              a = 'USDT';
-            }
-            let percent = (value / 100) * 100;
-            return value ? `${a}:$${value} (${percent}%)` : '';
-          } else {
-            return '';
-          }
-        },
-      },
-      fill: {
-        opacity: 1,
-      },
-      legend: {
-        show: false,
-      },
-      stroke: {
-        width: 5,
-      },
-      plotOptions: {
-        bubble: {
-          zScaling: false,
-          minBubbleRadius: 40,
-        },
-      },
-      grid: {
-        show: false,
-        padding: {
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-        },
-      },
-      xaxis: {
-        min: 0,
-        max: 15,
-        labels: {
-          show: false,
-        },
-        axisBorder: {
-          show: false,
-        },
-        axisTicks: {
-          show: false,
-        },
-      },
-      yaxis: {
-        min: 0,
-        max: 15,
-        labels: {
-          show: false,
-        },
-      },
-      tooltip: {
-        enabled: false,
-      },
-      states: {
-        hover: {
-          filter: {
-            type: 'none',
-          },
-        },
-      },
-      // colors: ['#22d3ee', '#e5e7eb', '#3b82f6'],
-      // markers: {
-      //   strokeColors: 'rgb(255, 255, 255)',
-      // },
-      // colors: ['#3b82f6', '#22d3ee', '#e5e7eb'],
-      // markers: {
-      //   strokeColors: 'rgb(38, 38, 38)',
-      // },
-    };
-  }, []);
-  const seriesToken = useMemo(() => {
-    // function generateData(baseval, count, yrange) {
-    //   var i = 0;
-    //   var series: any[] = [];
-    //   while (i < count) {
-    //     var x: any = Math.floor(Math.random() * (750 - 1 + 1)) + 1;
-    //     var y: any =
-    //       Math.floor(Math.random() * (yrange.max - yrange.min + 1)) +
-    //       yrange.min;
-    //     var z: any = Math.floor(Math.random() * (75 - 15 + 1)) + 15;
-
-    //     series.push([x, y, z]);
-    //     baseval += 86400000;
-    //     i++;
-    //   }
-    //   return series;
-    // }
-    return [
-      { data: [[3, 6, 70]] },
-      { data: [[5, 4, 45]] },
-      { data: [[8, 9, 90]] },
-      { data: [[11, 5, 30]] },
-      { data: [[13, 7, 60]] },
-    ];
-  }, []);
 
   const showTokenList = useMemo(() => {
     const allTokenList = sortedHoldingTokensList.map((i) => {

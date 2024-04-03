@@ -50,10 +50,21 @@ const useCheckIsConnectedWallet = function useCheckIsConnectedWallet(
           dispatch(setConnectWalletDialogVisibleAction(2));
         }
       } else {
-        dispatch(setConnectWalletDialogVisibleAction(connected ? 0 : 1));
+        dispatch(
+          setConnectWalletDialogVisibleAction(connectedRightChain ? 0 : 1)
+        );
       }
     }
-  }, [switchFlag, connected, connectWalletDialogVisible,connectedWrongChain]);
+    // else {
+    //   dispatch(setConnectWalletDialogVisibleAction(0));
+    // }
+  }, [
+    switchFlag,
+    // connected,
+    connectWalletDialogVisible,
+    connectedWrongChain,
+    connectedRightChain,
+  ]);
   return { connected };
 };
 export default useCheckIsConnectedWallet;
