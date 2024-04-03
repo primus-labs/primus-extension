@@ -186,7 +186,6 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         if (!res['discord']) {
           //check the main wallet whether it has joined discord
           const checkRsp = await checkHasFinishJoinDiscord()
-          debugger
           if(checkRsp.result.hasJoinDiscord && checkRsp.result.discordName){
             addMsg({
               type: 'info',

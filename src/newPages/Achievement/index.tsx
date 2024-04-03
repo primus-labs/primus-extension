@@ -18,7 +18,16 @@ import { useLocation } from 'react-router-dom';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 
 const AchievementHome = memo(() => {
-  useCheckIsConnectedWallet(true);
+  const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
+  useCheckIsConnectedWallet(checkIsConnectFlag);
+  const connectWalletDialogVisible = useSelector(
+    (state) => state.connectWalletDialogVisible
+  );
+  useEffect(() => {
+    if (connectWalletDialogVisible === 0) {
+      setCheckIsConnectFlag(false);
+    }
+  }, [connectWalletDialogVisible]);
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<boolean>(false);
   const [visibleReferralCodeDialog, setVisibleReferralCodeDialog] =
     useState<boolean>(false);

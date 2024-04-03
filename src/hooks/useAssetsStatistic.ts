@@ -233,6 +233,7 @@ const useAssetsStatistic = function () {
   );
 
   const totalChainAssetsMap = useMemo(() => {
+    console.log('222connectedOnChainSourcesList', connectedOnChainSourcesList); //delete
     const reduceF = (prev, curr) => {
       const { chainsAssetsMap } = curr;
       if (chainsAssetsMap && Object.keys(chainsAssetsMap).length > 0) {

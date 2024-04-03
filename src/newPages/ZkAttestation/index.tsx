@@ -17,8 +17,17 @@ import empty from '@/assets/newImg/zkAttestation/empty.svg';
 
 import './index.scss';
 
-const Home = memo(() => {
-  useCheckIsConnectedWallet(true);
+const ZkAttestation = memo(() => {
+  const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
+  useCheckIsConnectedWallet(checkIsConnectFlag);
+  const connectWalletDialogVisible = useSelector(
+    (state) => state.connectWalletDialogVisible
+  );
+  useEffect(() => {
+    if (connectWalletDialogVisible === 0) {
+      setCheckIsConnectFlag(false);
+    }
+  }, [connectWalletDialogVisible]);
   const dispatch: Dispatch<any> = useDispatch();
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
   const [visibleOnChainDialog, setVisibleOnChainDialog] =
@@ -86,4 +95,4 @@ const Home = memo(() => {
     </div>
   );
 });
-export default Home;
+export default ZkAttestation;

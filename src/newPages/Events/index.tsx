@@ -10,21 +10,17 @@ import PastEvents from '@/newComponents/Events/PastEvents';
 
 import './index.scss';
 
-const Home = memo(() => {
-  useCheckIsConnectedWallet(true);
-  const dispatch: Dispatch<any> = useDispatch();
-  const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
-  const [visibleOnChainDialog, setVisibleOnChainDialog] =
-    useState<boolean>(false);
-  const credentialsFromStore = useSelector(
-    (state: UserState) => state.credentials
+const Events = memo(() => {
+  const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
+  useCheckIsConnectedWallet(checkIsConnectFlag);
+  const connectWalletDialogVisible = useSelector(
+    (state) => state.connectWalletDialogVisible
   );
-  const attestLoading = useSelector((state: UserState) => state.attestLoading);
-  const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
-  const hasConnected = useMemo(() => {
-    return Object.keys(credentialsFromStore).length > 0;
-  }, [credentialsFromStore]);
-
+  useEffect(() => {
+    if (connectWalletDialogVisible === 0) {
+      setCheckIsConnectFlag(false);
+    }
+  }, [connectWalletDialogVisible]);
   return (
     <div className="pageEvents">
       <div className="pageContent">
@@ -34,4 +30,4 @@ const Home = memo(() => {
     </div>
   );
 });
-export default Home;
+export default Events;

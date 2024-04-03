@@ -60,7 +60,6 @@ class WebBinance extends WebExchange {
     //   'okx tradingAccountTokenAmountMap',
     //   this.tradingAccountTokenAmountMap
     // );
-    debugger
     return this.tradingAccountTokenAmountMap;
   }
 
