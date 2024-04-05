@@ -210,6 +210,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     name,
     params: { result, failReason, isReady },
   } = request;
+  console.log('222pageDecode onMessage', request);
   if (name === 'attestResult') {
     var padoRightEl = document.querySelector('.pado-right');
     var padoCenterCenterEl = document.querySelector('.pado-center-center');
