@@ -143,12 +143,20 @@ export const connectWalletAsync = (
         } else {
           connectRes = await connectWallet(network);
         }
+        console.log('222metamask connect successfully');
         provider = connectRes[2];
         address = (connectRes[0] as string[])[0];
       }
 
       const type = connectObj?.name ?? 'metamask';
       const checkRes = await checkIfBindConnectedWallet({ address });
+
+      if (checkRes.rc === 0) {
+        console.log(
+          '222metamask connect successfully checkIfBindConnectedWallet',
+          checkRes.result
+        );
+      }
       if (checkRes.rc === 0 && checkRes.result) {
         await dispatch(
           setConnectWalletActionAsync({ name: type, address, provider })
@@ -183,12 +191,19 @@ export const connectWalletAsync = (
           type,
         });
         const { rc, result } = res;
+        if (rc === 0) {
+          console.log(
+            '222metamask connect successfully bindConnectedWallet',
+            result
+          );
+        }
         if (rc === 0 && result) {
           await dispatch(
             setConnectWalletActionAsync({ name: type, address, provider })
           );
           await dispatch(setConnectWalletDialogVisibleAction(false));
           await getChainAssets(signature, timestamp, address, dispatch, label);
+
           sucFn &&
             (await sucFn({
               name: type,
@@ -226,6 +241,8 @@ export const getChainAssets = async (
     );
 
     if (rc === 0) {
+      console.log('222metamask connect successfully getAssetsOnChains', result);
+
       const res = getStatisticalData(result);
       const curAccOnChainAssetsItem: any = {
         address: curConnectedAddr,
@@ -301,7 +318,6 @@ export const setBadgeEventPeriodActionAsync = () => {
             dispatch(setScrollEventPeriodAction(result));
           }
         }
-        
       });
     } catch (e) {
       console.log('setBadgeEventPeriodActionAsync e:', e);
@@ -342,7 +358,6 @@ export const initEventsActionAsync = () => {
     if (eventsDetailStr) {
       const eventsDetailObj = JSON.parse(eventsDetailStr);
       await dispatch(setEventsAction(eventsDetailObj));
-      
     }
     await dispatch(setEventsActionAsync());
   };

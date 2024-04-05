@@ -2,6 +2,7 @@ var dataSourcePageTabId = null;
 var intervalTimer = null;
 var activeTemplate = {};
 var moveFlag = false;
+console.log('222pageDecode injected')
 // var x, y;
 function createDomElement(html) {
   var dom = new DOMParser().parseFromString(html, 'text/html');
@@ -17,6 +18,7 @@ chrome.runtime.sendMessage(
     name: 'injectionCompleted',
   },
   (response, a, b) => {
+    console.log('222pageDecode injectionCompleted');
     if (response.name === 'append') {
       var pMaskEl = document.querySelector('#pado-mask');
       activeTemplate = response.params;
@@ -168,7 +170,7 @@ chrome.runtime.sendMessage(
             clearInterval(intervalTimer);
             if (padoRightNode.innerHTML !== '3/3') {
               padoRightNode.innerHTML = '3/3';
-              var str1 = `<p class="warn-tip">Something went wrong...</p><p>The process has been interrupted for some unknown reason. Please try again later.</p>`;
+              var str1 = `<p class="warn-tip">Request timed out</p><p>The service did not respond within the expected time. Please try again later.</p>`;
               padoCenterCenterNode.innerHTML = str1;
               padoCenterBottomOKNode = createDomElement(
                 `<div class="pado-center-bottom"><button class="okBtn">OK</button></div>`
@@ -254,7 +256,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       padoCenterCenterEl.innerHTML =
         failReason === 'Not meeting the uniqueness requirement.'
           ? str3
-          : `<p class="warn-tip">${failReason.title}</p><p>${failReason.desc}</p>`;
+          : `<p class="warn-tip">${failReason.title}${
+              failReason.code ? `... (error code: ${failReason.code})` : ''
+            }</p><p>${failReason.desc}</p>`;
       fn();
     }
   }

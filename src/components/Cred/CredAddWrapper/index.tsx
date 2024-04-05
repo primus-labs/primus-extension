@@ -144,6 +144,10 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
           name: 'attestResult',
           params: {
             result: 'warn',
+            failReason: {
+              title: 'Request timed out',
+              desc: 'The service did not respond within the expected time. Please try again later',
+            },
           },
         });
       }
@@ -1003,13 +1007,15 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         setIntervalSwitch(true);
       } else if (retcode === '2') {
         // algorithm is not initialized
+        const title = 'The algorithm has not been initialized.';
+        const desc = 'Please try again later.';
         setActiveRequest({
           type: 'error',
           title: 'Failed',
           desc: (
             <>
-              <p>The algorithm has not been initialized.</p>
-              <p>Please try again later.</p>
+              <p>{title}</p>
+              <p>{desc}</p>
             </>
           ),
         });
@@ -1019,6 +1025,20 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
+        if (parsedActiveRequestAttestation.reqType === 'web') {
+          await chrome.runtime.sendMessage({
+            type: 'pageDecode',
+            name: 'attestResult',
+            params: {
+              result: 'warn',
+              failReason: {
+                title,
+                desc,
+              },
+            },
+          });
+        }
+
         var eventInfo: any = {
           eventType: 'ATTESTATION_GENERATE',
           rawData: {
@@ -1243,6 +1263,8 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
               break;
             case 40004:
             case 40005:
+            case 50002:
+            case 50003:
               requestResObj = {
                 type: 'warn',
                 title: 'Unable to proceed',
@@ -1258,6 +1280,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             case 40001:
             case 40002:
             case 40003:
+            case 50001:
             case 99999:
               requestResObj = {
                 type: 'warn',
@@ -1297,6 +1320,7 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             let failReason = {
               title: requestResObj.title,
               desc: requestResObj.desc,
+              code,
             };
 
             await chrome.runtime.sendMessage({
