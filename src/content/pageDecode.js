@@ -157,13 +157,17 @@ chrome.runtime.sendMessage(
 
         function simulateFileUpload() {
           progressPercentage += 1;
-          if (progressPercentage > 0 && progressPercentage <= 1.25) {
+          if (progressPercentage > 0 && progressPercentage <= 3.125) {
+            // 1.25
             loadingTxtEl.innerHTML = 'Connecting to PADO node...';
-          } else if (progressPercentage > 1.25 && progressPercentage <= 2.5) {
+          } else if (progressPercentage > 3.125 && progressPercentage <= 6.25) {
+            // 1.25 - 2.5
             loadingTxtEl.innerHTML = 'Connecting to data source...';
-          } else if (progressPercentage > 2.5 && progressPercentage <= 5) {
+          } else if (progressPercentage > 6.25 && progressPercentage <= 15) {
+            // 2.5 - 5
             loadingTxtEl.innerHTML = 'MPC-TLS executing...';
-          } else if (progressPercentage > 5 && progressPercentage <= 100) {
+          } else if (progressPercentage > 15 && progressPercentage <= 100) {
+            // 5 - 100
             loadingTxtEl.innerHTML = 'IZK proving and verifying...';
           } else if (progressPercentage > 100) {
             loadingTxtEl.innerHTML = 'Attestation creation completed ...';
@@ -195,7 +199,7 @@ chrome.runtime.sendMessage(
           barEl.style.width = `${progressPercentage}%`;
           // progress.innerHTML = `${progressPercentage}%`;
         }
-        intervalTimer = setInterval(simulateFileUpload, (123 / 100) * 1000); // algorithm timeout
+        intervalTimer = setInterval(simulateFileUpload, (303 / 100) * 1000); // algorithm timeout
         var msgObj = {
           type: 'pageDecode',
           name: 'sendRequest',

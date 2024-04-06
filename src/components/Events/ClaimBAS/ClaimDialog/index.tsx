@@ -328,8 +328,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             return prev;
           }, {});
           setStepObj(newObj);
-          setCredNum(Object.values(lastInfo.steps[1].tasks).length);
-          setCredAddress(lastInfo.address);
+          
+          if (lastInfo.steps[1].tasks) {
+            setCredNum(Object.values(lastInfo.steps[1].tasks).length);
+          }
+          if (lastInfo.address) {
+            setCredAddress(lastInfo.address);
+          }
+          
         }
       });
     }, []);
