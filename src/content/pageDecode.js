@@ -2,7 +2,8 @@ var dataSourcePageTabId = null;
 var intervalTimer = null;
 var activeTemplate = {};
 var moveFlag = false;
-console.log('222pageDecode injected')
+var resultFlag = false;
+console.log('222pageDecode injected');
 // var x, y;
 function createDomElement(html) {
   var dom = new DOMParser().parseFromString(html, 'text/html');
@@ -168,7 +169,7 @@ chrome.runtime.sendMessage(
             loadingTxtEl.innerHTML = 'Attestation creation completed ...';
             progressPercentage = 100;
             clearInterval(intervalTimer);
-            if (padoRightNode.innerHTML !== '3/3') {
+            if (!resultFlag) {
               padoRightNode.innerHTML = '3/3';
               var str1 = `<p class="warn-tip">Request timed out</p><p>The service did not respond within the expected time. Please try again later.</p>`;
               padoCenterCenterNode.innerHTML = str1;
@@ -212,6 +213,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } = request;
   console.log('222pageDecode onMessage', request);
   if (name === 'attestResult') {
+    resultFlag = true;
     var padoRightEl = document.querySelector('.pado-right');
     var padoCenterCenterEl = document.querySelector('.pado-center-center');
     var padoCenterEl = document.querySelector('.pado-center');
