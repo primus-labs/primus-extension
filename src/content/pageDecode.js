@@ -157,16 +157,18 @@ chrome.runtime.sendMessage(
 
         function simulateFileUpload() {
           progressPercentage += 1;
-          if (progressPercentage > 0 && progressPercentage <= 3.125) {
+          if (progressPercentage > 0 && progressPercentage <= 1) {
             // 1.25
             loadingTxtEl.innerHTML = 'Connecting to PADO node...';
-          } else if (progressPercentage > 3.125 && progressPercentage <= 6.25) {
+          } else if (progressPercentage > 1 && progressPercentage <= 2) {
+            // 6.25
             // 1.25 - 2.5
             loadingTxtEl.innerHTML = 'Connecting to data source...';
-          } else if (progressPercentage > 6.25 && progressPercentage <= 15) {
+          } else if (progressPercentage > 2 && progressPercentage <= 6) {
+            // 12.5
             // 2.5 - 5
             loadingTxtEl.innerHTML = 'MPC-TLS executing...';
-          } else if (progressPercentage > 15 && progressPercentage <= 100) {
+          } else if (progressPercentage > 6 && progressPercentage <= 100) {
             // 5 - 100
             loadingTxtEl.innerHTML = 'IZK proving and verifying...';
           } else if (progressPercentage > 100) {
