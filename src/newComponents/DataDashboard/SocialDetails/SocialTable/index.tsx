@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, FC } from 'react';
 import dayjs from 'dayjs';
 import useAllSources from '@/hooks/useAllSources';
-import { sub, gte, formatNumeral, getCurrentDate } from '@/utils/utils';
+import { sub, gte, gt, formatNumeral, getCurrentDate } from '@/utils/utils';
 import './index.scss';
 
 const SocialTable: FC = memo(({}) => {
@@ -14,13 +14,14 @@ const SocialTable: FC = memo(({}) => {
       (a: any, b: any) =>
         sub(Number(b.followers), Number(a.followers)).toNumber()
     );
+    debugger;
     return orderedSocialList;
   }, [connectedSocialSources]);
 
   const formatTxtFn = useCallback((item, key) => {
     let formatTxt;
     const val = item[key];
-    if (val === null) {
+    if (val === null || val === undefined) {
       formatTxt = '-';
     } else {
       formatTxt = formatNumeral(val, {
@@ -81,13 +82,16 @@ const SocialTable: FC = memo(({}) => {
               <div>{j.createdTime ? formatDate(j.createdTime) : '-'}</div>
               <div className="followers">
                 <span>{formatTxtFn(j, 'followers')}</span>
-                <span
-                  className={`${
-                    j.pnl ? (gte(Number(j.pnl), 0) ? 'rise' : 'fall') : ''
-                  }`}
-                >
-                  {j.pnl ?gte(Number(j.pnl), 0) ? `+${j.pnl}` : `-${j.pnl}`: '-'}
-                </span>
+                {j.followers !== null &&
+                  j.followers !== undefined &&
+                  j.pnl &&
+                  Number(j.pnl) !== 0 && (
+                    <span
+                      className={`${gte(Number(j.pnl), 0) ? 'rise' : 'fall'}`}
+                    >
+                      {gt(Number(j.pnl), 0) ? `+${j.pnl}` : `-${j.pnl}`}
+                    </span>
+                  )}
               </div>
               <div>{formatTxtFn(j, 'followings')}</div>
               <div className="posts">{formatTxtFn(j, 'posts')}</div>

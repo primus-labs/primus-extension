@@ -13,7 +13,13 @@
         &:last-child {
           @include BodyBody100;
         }
-        &.followers{
+        &.token {
+          gap: var(--spacing-8);
+          > span {
+            white-space: nowrap;
+          }
+        }
+        &.followers {
           @include frsc;
           justify-content: flex-end;
           gap: var(--spacing-4);
