@@ -7,6 +7,7 @@ import React, {
   useEffect,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { utils } from 'ethers';
 import { formatAddress } from '@/utils/utils';
 import { WALLETMAP } from '@/config/wallet';
 import {
@@ -34,7 +35,14 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
   console.log('222connectedWallets', connectedWallets, connectedWallet); //delete
 
   const showAddr = useMemo(() => {
-    return formatAddress(connectedWallet?.address, 4, 4, '...');
+    return formatAddress(
+      connectedWallet?.address
+        ? utils.getAddress(connectedWallet?.address)
+        : '',
+      7,
+      5,
+      '...'
+    );
   }, [connectedWallet?.address]);
 
   /*const handleConnectOther = useCallback(() => {
@@ -44,32 +52,40 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
   const handleConnectOther = () => {
     switchAccount(connectedWallet?.provider);
   };
-  const handleDisConnect = async (wk, addrK) => {
-    // console.log('222', wk, addrK);
-    const newrecords = { ...connectedWallets };
-    delete newrecords[wk][addrK];
-    if (Object.keys(newrecords[wk]).length === 0) {
-      delete newrecords[wk];
-    }
-    const firstWK = Object.keys(newrecords).filter((i) => i !== 'undefined')[0];
-    if (firstWK) {
-      const firstAddrK = Object.keys(connectedWallets[firstWK])[0];
-      await dispatch(
-        setConnectWalletActionAsync({
-          id: 'metamask',
-          name: 'MetaMask',
-          address: firstAddrK,
-          provider: connectedWallet?.provider,
-        })
-      );
-    } else {
-      await dispatch(setConnectWalletActionAsync(undefined));
-    }
-    await chrome.storage.local.set({
-      connectedWallets: JSON.stringify(newrecords),
-    });
-    await dispatch(setConnectedWalletsActionAsync());
-  };
+  const handleDisConnect = useCallback(
+    async (e, wk, addrK) => {
+      e.stopPropagation();
+      // console.log('222', wk, addrK);
+      if (addrK === connectedWallet?.address) {
+        const firstWK = Object.keys(connectedWallets).filter(
+          (i) => i !== 'undefined'
+        )[0];
+        if (firstWK) {
+          const firstAddrK = Object.keys(connectedWallets[firstWK])[0];
+          await dispatch(
+            setConnectWalletActionAsync({
+              id: 'metamask',
+              name: 'MetaMask',
+              address: firstAddrK,
+              provider: connectedWallet?.provider,
+            })
+          );
+        } else {
+          await dispatch(setConnectWalletActionAsync(undefined));
+        }
+      }
+      const newrecords = { ...connectedWallets };
+      delete newrecords[wk][addrK];
+      if (Object.keys(newrecords[wk]).length === 0) {
+        delete newrecords[wk];
+      }
+      await chrome.storage.local.set({
+        connectedWallets: JSON.stringify(newrecords),
+      });
+      await dispatch(setConnectedWalletsActionAsync());
+    },
+    [connectedWallets]
+  );
   const handleChangeAddress = (addr: any) => {
     if (addr === connectedWallet?.address) {
       return;
@@ -120,18 +136,26 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                           ) : (
                             <div className="placeHolder"></div>
                           )}
-                          <span>{formatAddress(addrK, 4, 4, '...')}</span>
+
+                          <span>
+                            {formatAddress(
+                              utils.getAddress(addrK),
+                              7,
+                              5,
+                              '...'
+                            )}
+                          </span>
                         </div>
-                        {addrK === connectedWallet?.address && (
+                        {
                           <img
                             src={iconClose}
                             alt=""
                             className="right iconClose"
-                            onClick={() => {
-                              handleDisConnect(wK, addrK);
+                            onClick={(e) => {
+                              handleDisConnect(e, wK, addrK);
                             }}
                           />
-                        )}
+                        }
                       </div>
                     );
                   })}

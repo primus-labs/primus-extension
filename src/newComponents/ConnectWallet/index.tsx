@@ -1,6 +1,7 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveConnectDataSource } from '@/store/actions';
+import { utils } from 'ethers';
 import useMsgs from '@/hooks/useMsgs';
 import useWallet from '@/hooks/useWallet';
 import { formatAddress } from '@/utils/utils';
@@ -67,7 +68,12 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
   }, [dispatch]);
   const sucFn = useCallback(
     (obj) => {
-      const a = formatAddress(obj?.address, 6, 6, '......');
+      const a = formatAddress(
+        obj?.address ? utils.getAddress(obj?.address) : '',
+        7,
+        5,
+        '...'
+      );
       setActiveRequest({
         type: 'suc',
         title: 'Connected',

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
+import { utils } from 'ethers';
 import { getCurrentDate, formatAddress } from '@/utils/utils';
 import { setCredentialsAsync, setActiveOnChain } from '@/store/actions';
 import useDataSource from '@/hooks/useDataSource';
@@ -331,13 +332,23 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <div className="descItem">
                         <div className="label">Create address</div>
                         <div className="value">
-                          {formatAddress(i.address, 6, 4, '...')}
+                          {formatAddress(
+                            utils.getAddress(i.address),
+                            7,
+                            5,
+                            '...'
+                          )}
                         </div>
                       </div>
                       <div className="descItem">
                         <div className="label">Attest address</div>
                         <div className="value">
-                          {formatAddress(PADOADDRESS, 6, 4, '...')}
+                          {formatAddress(
+                            utils.getAddress(PADOADDRESS),
+                            7,
+                            5,
+                            '...'
+                          )}
                         </div>
                       </div>
                     </div>

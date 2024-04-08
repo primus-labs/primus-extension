@@ -1,12 +1,13 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { utils } from 'ethers';
 import { ONCHAINVERIFICATIONCONTENTTYPELIST } from '@/config/attestation';
 import useDataSource from '@/hooks/useDataSource';
 import {
   gt,
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
-  formatAddress
+  formatAddress,
 } from '@/utils/utils';
 
 import type { UserState } from '@/types/store';
@@ -43,7 +44,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     // different
     const accountList = useMemo(() => {
       let list = Object.values(onChainAssetsSources).map((i: any) => ({
-        label: formatAddress(i.address,6,6),
+        label: formatAddress(utils.getAddress(i.address), 7, 5),
         value: i.address,
         icon: iconWalletMetamask, //TODO-newui
       }));
@@ -53,7 +54,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const formLegal = useMemo(() => {
       return !!(pswForm.verificationContent && pswForm.account);
     }, [pswForm]);
-    
+
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
         return;
@@ -61,7 +62,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       //diffferent
       onSubmit(pswForm);
       return;
-    }, [formLegal, pswForm,]);
+    }, [formLegal, pswForm]);
 
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => ({ ...f, [formKey]: v }));
@@ -70,8 +71,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     // useEffect(() => {
     //   handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
     // }, [activeDataSouceUserInfo]);
-
-   
 
     return (
       <div className="pFormWrapper detailForm2">

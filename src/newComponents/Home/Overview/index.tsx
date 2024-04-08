@@ -55,9 +55,8 @@ const Overview = memo(() => {
     (state: UserState) => state.credentials
   );
   const hasData = useMemo(() => {
-    return Object.values(itemMap).some(i =>i.num >0)
+    return Object.values(itemMap).some((i) => i.num > 0);
   }, [itemMap]);
-  
 
   const handleClick = useCallback(
     (link) => {
@@ -81,7 +80,8 @@ const Overview = memo(() => {
 
     setItemMap((i) => {
       i.dataSource.num = Object.keys(m).length;
-      return i;
+      let newM = { ...i };
+      return newM;
     });
   }, [sourceMap2]);
   const initOnChainFn = useCallback(() => {
@@ -103,7 +103,8 @@ const Overview = memo(() => {
     setOnChains(m);
     setItemMap((m) => {
       m.zkAttestation.num = Object.keys(credentialsFromStore).length;
-      return m;
+      let newM = { ...m };
+      return newM;
     });
   }, [credentialsFromStore]);
   const iconListFn = useCallback(
@@ -119,16 +120,29 @@ const Overview = memo(() => {
     },
     [onChains, connectedDataSources]
   );
-  const getUserInfoFn = async () => {
+  const getUserInfoFn = useCallback(async () => {
     const res = await getUserInfo();
     const { rc, result } = res;
     if (rc === 0) {
       setItemMap((m) => {
         m.achievement.num = result.totalScore;
-        return m;
+        let newM = { ...m };
+        return newM;
       });
     }
-  };
+  }, []);
+  const handleDataSourceDetail = useCallback(
+    (id, k) => {
+      if (id === 'dataSource') {
+        let dataSourceId = (Object.values(connectedDataSources)[k] as any).id;
+        if (dataSourceId.startsWith('0x')) {
+          dataSourceId = 'web3 wallet';
+        }
+        navigate(`/datas/data?dataSourceId=${dataSourceId}`);
+      }
+    },
+    [navigate, connectedDataSources]
+  );
   useEffect(() => {
     initDataFn();
   }, [initDataFn]);
@@ -137,7 +151,7 @@ const Overview = memo(() => {
   }, [initOnChainFn]);
   useEffect(() => {
     getUserInfoFn();
-  }, []);
+  }, [getUserInfoFn]);
   return (
     <div className="homeOverview">
       <div className="title">
@@ -150,13 +164,24 @@ const Overview = memo(() => {
       <ul className="overviewItems">
         {Object.values(itemMap).map((i, k) => {
           return (
-            <li className={`overviewItem ${hasData && 'hasContent'}`} key={k} onClick={() => {handleClick(i.link)}}>
+            <li
+              className={`overviewItem ${hasData && 'hasContent'}`}
+              key={k}
+              onClick={() => {
+                handleClick(i.link);
+              }}
+            >
               <h4 className="title">{i.title}</h4>
               <div className="desc">
                 <div className="num">{i.num}</div>
                 {i.num > 0 ? (
                   ['dataSource', 'zkAttestation'].includes(i.id) && (
-                    <SplicedIcons list={iconListFn(i.id)} />
+                    <SplicedIcons
+                      list={iconListFn(i.id)}
+                      onClick={(k) => {
+                        handleDataSourceDetail(i.id, k);
+                      }}
+                    />
                   )
                 ) : (
                   <PButton

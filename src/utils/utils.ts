@@ -39,8 +39,8 @@ type FormatAddressType = (
 ) => string;
 export const formatAddress: FormatAddressType = function (
   str,
-  startNum = 6,
-  endNum = 4,
+  startNum = 7,
+  endNum = 5,
   sepStr = '...'
 ) {
   const endIdx = -1 * endNum;

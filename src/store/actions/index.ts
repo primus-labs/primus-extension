@@ -189,6 +189,7 @@ export const setConnectWalletActionAsync = (values: any) => {
       await chrome.storage.local.set({
         connectedWallets: JSON.stringify(lastConnectedWalletsObj),
       });
+      
       await dispatch(setConnectedWalletsActionAsync());
       await dispatch(setConnectWalletAction(values));
       await dispatch(setConnectWalletDialogVisibleAction(0));

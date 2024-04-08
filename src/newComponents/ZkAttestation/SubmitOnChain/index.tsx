@@ -10,7 +10,6 @@ import {
   attestByDelegationProxyFee,
   bulkAttest,
 } from '@/services/chains/eas.js';
-import { formatAddress } from '@/utils/utils';
 import { strToHexSha256 } from '@/utils/utils';
 import { compareVersions, getAuthUserIdHash } from '@/utils/utils';
 

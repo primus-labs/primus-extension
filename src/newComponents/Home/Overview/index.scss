@@ -28,20 +28,20 @@
         width: 191px;
       }
       &:nth-child(2) {
-        width: 189px;
+        width: 188px;
       }
       &:nth-child(3) {
         width: 129px;
       }
       &.hasContent {
         &:first-child {
-          min-width: 220px;
+          min-width: 235px;
         }
         &:nth-child(2) {
           min-width: 188px;
         }
         &:nth-child(3) {
-          min-width: 173px;
+          min-width: 158px;
         }
       }
       .title {

@@ -59,6 +59,11 @@
           width: 100%;
           @include frbc;
           @include NumberBody100;
+          &:hover {
+            .right {
+              display: inline-flex;
+            }
+          }
           &.addressItem {
             cursor: pointer;
           }
@@ -79,6 +84,7 @@
             }
           }
           .right {
+            display: none;
             .iconfont {
               font-size: var(--spacing-16);
             }
