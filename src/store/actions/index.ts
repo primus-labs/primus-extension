@@ -538,8 +538,8 @@ export const setSocialSourcesAsync = () => {
     const reduceF = (prev: any, curr: string) => {
       const sourceData = JSON.parse(res[curr]);
       prev[curr] = {
-        ...DATASOURCEMAP[curr],
         ...sourceData,
+        ...DATASOURCEMAP[curr],
       };
       return prev;
     };

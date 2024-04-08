@@ -50,7 +50,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       userInfo: activeDataSouceUserInfo,
       deleteFn: deleteDataSourceFn,
     } = useDataSource(lowerCaseDataSourceName);
-    console.log('2', activeDataSouceUserInfo);
+    console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo);
     const connectedList = useMemo(() => {
       // TODO-newui
       if (activeDataSouceUserInfo) {

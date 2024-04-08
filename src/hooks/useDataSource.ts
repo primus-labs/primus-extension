@@ -56,7 +56,7 @@ const useSource = (sourceName: string) => {
       if (name) {
         lowerCaseName = name.toLowerCase();
         activeDataSouceMetaInfo = DataSouces.find(
-          (i) => i.name.toLowerCase() === lowerCaseName
+          (i) => i.id.toLowerCase() === lowerCaseName
         ) as DataSourceItemType;
       }
       // Delete data source storage

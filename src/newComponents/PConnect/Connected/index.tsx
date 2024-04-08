@@ -56,6 +56,17 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
     async (e, wk, addrK) => {
       e.stopPropagation();
       // console.log('222', wk, addrK);
+      
+      
+      const newrecords = { ...connectedWallets };
+      delete newrecords[wk][addrK];
+      if (Object.keys(newrecords[wk]).length === 0) {
+        delete newrecords[wk];
+      }
+      await chrome.storage.local.set({
+        connectedWallets: JSON.stringify(newrecords),
+      });
+      await dispatch(setConnectedWalletsActionAsync());
       if (addrK === connectedWallet?.address) {
         const firstWK = Object.keys(connectedWallets).filter(
           (i) => i !== 'undefined'
@@ -74,15 +85,6 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
           await dispatch(setConnectWalletActionAsync(undefined));
         }
       }
-      const newrecords = { ...connectedWallets };
-      delete newrecords[wk][addrK];
-      if (Object.keys(newrecords[wk]).length === 0) {
-        delete newrecords[wk];
-      }
-      await chrome.storage.local.set({
-        connectedWallets: JSON.stringify(newrecords),
-      });
-      await dispatch(setConnectedWalletsActionAsync());
     },
     [connectedWallets]
   );

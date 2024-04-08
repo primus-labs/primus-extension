@@ -1,6 +1,6 @@
 import React, { useMemo, memo, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import useMsgs from '@/hooks/useMsgs'
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import useMsgs from '@/hooks/useMsgs';
 import PButton from '@/newComponents/PButton';
 import PClose from '@/newComponents/PClose';
 import './index.scss';
@@ -19,6 +19,9 @@ const PAlert: React.FC<Msg> = memo(
   }) => {
     const { deleteMsg } = useMsgs();
     const navigate = useNavigate();
+    const location = useLocation();
+    const {pathname} = location
+    console.log('222pathname', location,pathname, link);//delete
     const activeIconName = useMemo(() => {
       let cN = '';
       if (type === 'suc') {
@@ -50,7 +53,7 @@ const PAlert: React.FC<Msg> = memo(
                 )}
               </h2>
             )}
-            {link && (
+            {link && !link.startsWith(pathname) && (
               <PButton
                 text={linkText}
                 type="text2"

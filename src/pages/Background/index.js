@@ -223,7 +223,6 @@ const processpadoServiceReq = async (message, port) => {
         if (rc === 0) {
           const { dataInfo, userInfo } = result;
           const lowerCaseSourceName = params.source.toLowerCase();
-
           let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
           const lastData = storageRes[lowerCaseSourceName];
           let pnl = null;

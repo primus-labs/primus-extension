@@ -41,6 +41,7 @@ type LayoutProps = {
   children?: any;
 };
 const Layout: React.FC<LayoutProps> = memo(({ children }) => {
+  const { pathname } = useLocation();
   const theme = useSelector((state: UserState) => state.theme);
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
@@ -163,6 +164,9 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     updateAlgoUrl();
     rem();
   }, []);
+  // useEffect(() => {
+  //   document.body.scrollTop = 0;
+  // }, [pathname]);
 
   return (
     <div className={`PageLayout ${theme}`}>

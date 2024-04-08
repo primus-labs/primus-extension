@@ -31,6 +31,9 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
   const connectWalletDialogVisible = useSelector(
     (state: UserState) => state.connectWalletDialogVisible
   );
+  const requireFetchAssets = useSelector(
+    (state: UserState) => state.requireFetchAssets
+  );
 
   const handleCloseConnectWalletProcessDialog = useCallback(() => {
     onClose();
@@ -79,18 +82,21 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         title: 'Connected',
         desc: a,
       });
-      // addMsg({
-      //   type: 'suc',
-      //   title: 'Data connected!',
-      //   link: '/datas/data?dataSourceId=web3 wallet',
-      // });
+      if (requireFetchAssets) {
+        addMsg({
+          type: 'suc',
+          title: 'Data connected!',
+          link: '/datas/data?dataSourceId=web3 wallet',
+        });
+      }
+      
       dispatch(
         setActiveConnectDataSource({
           loading: 2,
         })
       );
     },
-    [addMsg]
+    [addMsg, requireFetchAssets]
   );
   const handleSubmitConnectWallet = useCallback(
     async (wallet) => {

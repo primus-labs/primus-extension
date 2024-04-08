@@ -90,7 +90,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     );
     const connectionNumFn = useCallback(
       (i) => {
-        const lowerCaseSourceName = i.name.toLowerCase();
+        const lowerCaseSourceName = i.id.toLowerCase();
         if (lowerCaseSourceName === 'web3 wallet') {
           return Object.values(sourceMap.onChainAssetsSources).length;
         } else {
