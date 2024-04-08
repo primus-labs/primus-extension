@@ -1,5 +1,5 @@
-import React, { memo, useEffect, useCallback } from 'react';
-import { useLocation, Outlet } from 'react-router-dom';
+import React, { memo, useEffect, useCallback, useRef } from 'react';
+import { useLocation, Outlet, ScrollRestoration } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import rem from '@/utils/rem.js';
 import {
@@ -41,6 +41,9 @@ type LayoutProps = {
   children?: any;
 };
 const Layout: React.FC<LayoutProps> = memo(({ children }) => {
+  const pageRightInstance = useRef<any>(null);
+  const pageInstance = useRef<any>(null);
+  const pagelayoutInstance = useRef(null);
   const { pathname } = useLocation();
   const theme = useSelector((state: UserState) => state.theme);
   const dispatch: Dispatch<any> = useDispatch();
@@ -164,16 +167,14 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     updateAlgoUrl();
     rem();
   }, []);
-  // useEffect(() => {
-  //   document.body.scrollTop = 0;
-  // }, [pathname]);
 
   return (
-    <div className={`PageLayout ${theme}`}>
+    <div className={`PageLayout ${theme}`} ref={pagelayoutInstance}>
       <Sidebar />
-      <article className="pageRight">
+      <article className="pageRight" ref={pageRightInstance}>
         <Header />
-        <div className="page">
+        <div className="page" ref={pageInstance}>
+          <ScrollRestoration/>
           <Outlet />
         </div>
         <Footer />
