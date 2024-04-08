@@ -53,9 +53,12 @@ const Home = memo(() => {
     }
     return s;
   }, [step]);
-  const timeoutStep1Fn = () => {
-    setStep(2);
-    setTimeoutStep2Switch(true);
+  const timeoutStep1Fn = async () => {
+    const f = await checkIsFirstLogin();
+    if (f) {
+      setStep(2);
+      setTimeoutStep2Switch(true);
+    }
   };
   useTimeout(timeoutStep1Fn, 1300, true, false);
   // const timeoutStep2Fn = () => {
@@ -96,6 +99,8 @@ const Home = memo(() => {
     const { guide } = await chrome.storage.local.get(['guide']);
     if (guide) {
       navigate('/home');
+    } else {
+      return true;
     }
   }, [navigate]);
   const handleReferralCodeClose = () => {
@@ -105,9 +110,9 @@ const Home = memo(() => {
     navigate('/home');
   }, []);
 
-  useEffect(() => {
-    checkIsFirstLogin();
-  }, [checkIsFirstLogin]);
+  // useEffect(() => {
+  //   checkIsFirstLogin();
+  // }, [checkIsFirstLogin]);
   useEffect(() => {
     if (guideImg.current) {
       if (step === 4) {
@@ -150,7 +155,7 @@ const Home = memo(() => {
       )}
       {visibleReferralCodeDialog && (
         <ReferralCodeInput
-          onClose={handleReferralCodeClose}
+          onClose={handleReferralCodeSubmit}
           setReferralTaskFinished={handleReferralCodeSubmit}
           onCancel={handleReferralCodeSubmit}
           required={false}

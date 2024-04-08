@@ -40,12 +40,12 @@ export const list: NavItem[] = [
     iconName: 'icon-iconMenuEvents',
     link: '/events',
   },
-  {
-    label: 'Developer',
-    value: 'Developer',
-    iconName: 'icon-iconMenuDeveloper',
-    link: '/developer',
-  },
+  // {
+  //   label: 'Developer',
+  //   value: 'Developer',
+  //   iconName: 'icon-iconMenuDeveloper',
+  //   link: '/developer',
+  // },
   {
     label: 'Achievements',
     value: 'Achievements',
