@@ -57,7 +57,7 @@ export type WALLETITEMTYPE = {
 export const ExchangeStoreVersion = '1.0.0';
 export const SocailStoreVersion = '1.0.0';
 export const KYCStoreVersion = '1.0.0';
-export const padoExtensionVersion = '0.2.29';
+export const padoExtensionVersion = '0.2.30';
 export const CredVersion = '1.0.4';
 
 export const USDT = 'USDT';
