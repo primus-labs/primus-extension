@@ -218,9 +218,9 @@ const useAssetsStatistic = function () {
               amount: prevAmount,
               price,
               portfolio,
-              value,
+              value: prevValue,
             } = prev[symbol];
-            const { amount } = tokenListMap[tokenListMapSymbol];
+            const { amount, value } = tokenListMap[tokenListMapSymbol];
             if (!(id in portfolio)) {
               // from.push(id);
               portfolio[id] = {

@@ -110,6 +110,9 @@
             background: var(--layer-tokens-layer-on-primary-selected);
             border-color: var(--border-tokens-border-primary-selected-gray);
           }
+          &.disabled {
+            cursor: not-allowed;
+          }
           &.availableForAttestation {
             width: 304px;
           }

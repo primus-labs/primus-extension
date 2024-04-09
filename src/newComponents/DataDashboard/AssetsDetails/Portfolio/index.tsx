@@ -83,7 +83,7 @@ const AssetsDetails = memo(() => {
   const showList = useMemo(() => {
     const showLen = MAX * pageSize;
     return sortedConnectedAssetsSourcesList.slice(0, showLen);
-  }, [sortedConnectedAssetsSourcesList,  pageSize]);
+  }, [sortedConnectedAssetsSourcesList, pageSize]);
 
   const handleShowMore = useCallback(() => {
     setPageSize((p) => {
@@ -320,7 +320,7 @@ const AssetsDetails = memo(() => {
                       </div>
                     </div>
                   )}
-                  {i.id.startsWith('0x') && (
+                  {i.id === 'metamask' && (
                     <div className="extraInfo">
                       <div
                         className={`card ${
@@ -340,10 +340,15 @@ const AssetsDetails = memo(() => {
                       </div>
                       <div
                         className={`card ${
-                          tableTab === 'NFT' ? 'active' : ''
+                          currentAccountNftsFn(i.id).length === 0
+                            ? 'disabled'
+                            : tableTab === 'NFT'
+                            ? 'active'
+                            : ''
                         } `}
                         onClick={() => {
-                          handleChangeTableTab('NFT');
+                          currentAccountNftsFn(i.id).length > 0 &&
+                            handleChangeTableTab('NFT');
                         }}
                       >
                         <i className="iconfont icon-iconAmountForAttest"></i>

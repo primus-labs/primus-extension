@@ -63,8 +63,8 @@ const TokenTable: FC<TokenTableProps> = memo(
             <div className="token">Token</div>
             {!!spotAccountTokenMap && (
               <>
-                <div className="fixed">Earn</div>
-                <div className="flexible">Flexible</div>
+                <div className="fixed">Spot</div>
+                <div className="flexible">Earn</div>
               </>
             )}
             <div className="totalAmount">Total Amount</div>

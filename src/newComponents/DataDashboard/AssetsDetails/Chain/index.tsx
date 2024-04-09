@@ -36,8 +36,6 @@ const Chain = memo(() => {
     return [...hasStarL, ...noStarL];
   }, [sortedChainAssetsList, starArr]);
 
- 
-
   const totalPageSize = useMemo(() => {
     return Math.ceil(sortedChainAssetsList2.length / MAX);
   }, [sortedChainAssetsList2]);
@@ -214,9 +212,16 @@ const Chain = memo(() => {
                       </div>
                     </div>
                     <div
-                      className={`card ${tableTab === 'NFT' ? 'active' : ''} `}
+                      className={`card ${
+                        currentAccountNftsFn(i.id).length === 0
+                          ? 'disabled'
+                          : tableTab === 'NFT'
+                          ? 'active'
+                          : ''
+                      } `}
                       onClick={() => {
-                        handleChangeTableTab('NFT');
+                        currentAccountNftsFn(i.id).length > 0 &&
+                          handleChangeTableTab('NFT');
                       }}
                     >
                       <i className="iconfont icon-iconAmountForAttest"></i>
