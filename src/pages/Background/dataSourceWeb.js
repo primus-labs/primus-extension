@@ -41,7 +41,7 @@ export const dataSourceWebMsgListener = async (
     const exchangeName = activeTemplate.dataSource;
     const exchangeInfo = DATASOURCEMAP[exchangeName];
     const { constructorF, type: sourceType } = exchangeInfo;
-    let isStoreTiktokName = false;
+    //let isStoreTiktokName = false;
 
     const requestUrlList = requests.map((r) => r.url);
     const isUrlWithQueryFn = (url, queryKeyArr) => {
@@ -101,7 +101,7 @@ export const dataSourceWebMsgListener = async (
         });
         checkWebRequestIsReadyFn();
 
-        if (
+        /*if (
           dataSource === 'tiktok' &&
           !isStoreTiktokName &&
           formatUrlKey === 'https://www.tiktok.com/passport/web/account/info/'
@@ -125,7 +125,7 @@ export const dataSourceWebMsgListener = async (
               url: jumpTo + '/@' + tiktokUsername['tiktokUsername'],
             });
           }
-        }
+        }*/
       }
     };
     const onBeforeRequestFn = async (subDetails) => {
@@ -294,10 +294,10 @@ export const dataSourceWebMsgListener = async (
         ['requestBody']
       );
 
-      const tiktokUsername = await chrome.storage.local.get('tiktokUsername');
+      /*const tiktokUsername = await chrome.storage.local.get('tiktokUsername');
       if (dataSource === 'tiktok' && tiktokUsername['tiktokUsername']) {
         jumpTo = jumpTo + '/@' + tiktokUsername['tiktokUsername'];
-      }
+      }*/
       tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });

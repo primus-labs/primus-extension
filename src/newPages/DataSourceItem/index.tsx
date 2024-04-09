@@ -72,7 +72,7 @@ const DataSourceItem = memo(() => {
         (r: any) => r.dataSource === lowerCaseDataSourceName
       );
       // TODO-newui
-      if (lowerCaseDataSourceName === 'tiktok') {
+      /*if (lowerCaseDataSourceName === 'tiktok') {
         currRequestObj.datasourceTemplate.requests[0] = {
           name: 'first',
           url: 'https://www.tiktok.com/api/user/detail/',
@@ -81,7 +81,7 @@ const DataSourceItem = memo(() => {
           headers: ['User-Agent'],
           cookies: ['sessionid', 'tt-target-idc'],
         };
-      }
+      }*/
       //if currRequestObj is undefined, try to find locally
       if(!currRequestObj){
         currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
