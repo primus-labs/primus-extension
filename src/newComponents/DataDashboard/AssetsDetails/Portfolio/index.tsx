@@ -30,7 +30,7 @@ const AssetsDetails = memo(() => {
     useAssetsStatistic();
 
   const { sourceMap, sourceMap2 } = useAllSources();
-  const [showMore, setShowMore] = useState<boolean>(false);
+  const [pageSize, setPageSize] = useState<number>(1);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
   const [tableTab, setTableTab] = useState<string>('Token');
   const [starArr, setStarArr] = useState<string[]>();
@@ -77,16 +77,24 @@ const AssetsDetails = memo(() => {
     console.log('222sortedConnectedAssetsSourcesList', noStarL, hasStarL); //delete
     return [...hasStarL, ...noStarL];
   }, [connectedAssetsSourcesList, starArr]);
-
+  const totalPageSize = useMemo(() => {
+    return Math.ceil(sortedConnectedAssetsSourcesList.length / MAX);
+  }, [sortedConnectedAssetsSourcesList]);
   const showList = useMemo(() => {
-    return showMore
-      ? sortedConnectedAssetsSourcesList
-      : sortedConnectedAssetsSourcesList.slice(0, MAX);
-  }, [sortedConnectedAssetsSourcesList, showMore]);
+    const showLen = MAX * pageSize;
+    return sortedConnectedAssetsSourcesList.slice(0, showLen);
+  }, [sortedConnectedAssetsSourcesList,  pageSize]);
 
   const handleShowMore = useCallback(() => {
-    setShowMore((f) => !f);
-  }, []);
+    setPageSize((p) => {
+      if (p < totalPageSize) {
+        p += 1;
+      } else {
+        p = 1;
+      }
+      return p;
+    });
+  }, [totalPageSize]);
 
   const balancePercentFn = useCallback(
     (i) => {
@@ -242,7 +250,11 @@ const AssetsDetails = memo(() => {
 
   return (
     <section className="tableSection portfolio">
-      <ul className="dataSourceItems">
+      <ul
+        className={`dataSourceItems ${
+          sortedConnectedAssetsSourcesList.length > MAX ? 'noMb' : ''
+        }`}
+      >
         {showList.map((i: any) => {
           return (
             <li className="dataSourceItem" key={i.id}>
@@ -374,10 +386,12 @@ const AssetsDetails = memo(() => {
       {sortedConnectedAssetsSourcesList.length > MAX && (
         <PButton
           type="text"
-          text="View More"
+          text={pageSize === totalPageSize ? 'Collapse' : 'View More'}
           suffix={
             <i
-              className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}
+              className={`iconfont icon-DownArrow ${
+                pageSize === totalPageSize && 'rotate'
+              }`}
             ></i>
           }
           onClick={handleShowMore}

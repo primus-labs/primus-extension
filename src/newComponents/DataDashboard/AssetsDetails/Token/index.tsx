@@ -14,7 +14,7 @@ const Token = memo(() => {
   const { sortedHoldingTokensList, balancePercentFn, tokenIconFn } =
     useAssetsStatistic();
   const [starArr, setStarArr] = useState<string[]>();
-  const [showMore, setShowMore] = useState<boolean>(false);
+  const [pageSize, setPageSize] = useState<number>(1);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
 
   const sortedHoldingTokensList2 = useMemo(() => {
@@ -24,15 +24,24 @@ const Token = memo(() => {
     return [...hasStarL, ...noStarL];
   }, [sortedHoldingTokensList, starArr]);
 
+  const totalPageSize = useMemo(() => {
+    return Math.ceil(sortedHoldingTokensList2.length / MAX);
+  }, [sortedHoldingTokensList2]);
   const showList = useMemo(() => {
-    return showMore
-      ? sortedHoldingTokensList2
-      : sortedHoldingTokensList2.slice(0, MAX);
-  }, [sortedHoldingTokensList2, showMore]);
+    const showLen = MAX * pageSize;
+    return sortedHoldingTokensList2.slice(0, showLen);
+  }, [sortedHoldingTokensList2, pageSize]);
 
   const handleShowMore = useCallback(() => {
-    setShowMore((f) => !f);
-  }, []);
+    setPageSize((p) => {
+      if (p < totalPageSize) {
+        p += 1;
+      } else {
+        p = 1;
+      }
+      return p;
+    });
+  }, [totalPageSize]);
 
   const sortListMapFn = useCallback((i) => {
     const l = Object.values(i);
@@ -168,22 +177,11 @@ const Token = memo(() => {
                 </div>
               </div>
               {activeExpand.includes(i.symbol) && (
-                <>
-                  <div className="extraInfo">
-                    <div className="card">
-                      <i className="iconfont icon-iconAmountForAttest"></i>
-                      <div className="txtWrapper">
-                        <div className="label">Tokens</div>
-                        <div className="value">${formatNumeral(i.value)}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <TokenTable
-                    title="Portfolio"
-                    id={i.id}
-                    listMap={sortListMapFn(i.portfolio)}
-                  />
-                </>
+                <TokenTable
+                  title="Portfolio"
+                  id={i.id}
+                  listMap={sortListMapFn(i.portfolio)}
+                />
               )}
             </li>
           );
@@ -192,10 +190,12 @@ const Token = memo(() => {
       {sortedHoldingTokensList2.length > MAX && (
         <PButton
           type="text"
-          text="View More"
+          text={pageSize === totalPageSize ? 'Collapse' : 'View More'}
           suffix={
             <i
-              className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}
+              className={`iconfont icon-DownArrow ${
+                pageSize === totalPageSize && 'rotate'
+              }`}
             ></i>
           }
           onClick={handleShowMore}

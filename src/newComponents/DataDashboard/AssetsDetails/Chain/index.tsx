@@ -23,7 +23,7 @@ const Chain = memo(() => {
     useAssetsStatistic();
   const { sourceMap, sourceMap2 } = useAllSources();
   const [starArr, setStarArr] = useState<string[]>();
-  const [showMore, setShowMore] = useState<boolean>(false);
+  const [pageSize, setPageSize] = useState<number>(1);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
   const [tableTab, setTableTab] = useState<string>('Token');
 
@@ -36,15 +36,26 @@ const Chain = memo(() => {
     return [...hasStarL, ...noStarL];
   }, [sortedChainAssetsList, starArr]);
 
+ 
+
+  const totalPageSize = useMemo(() => {
+    return Math.ceil(sortedChainAssetsList2.length / MAX);
+  }, [sortedChainAssetsList2]);
   const showList = useMemo(() => {
-    return showMore
-      ? sortedChainAssetsList2
-      : sortedChainAssetsList2.slice(0, MAX);
-  }, [sortedChainAssetsList2, showMore]);
+    const showLen = MAX * pageSize;
+    return sortedChainAssetsList2.slice(0, showLen);
+  }, [sortedChainAssetsList2, pageSize]);
 
   const handleShowMore = useCallback(() => {
-    setShowMore((f) => !f);
-  }, []);
+    setPageSize((p) => {
+      if (p < totalPageSize) {
+        p += 1;
+      } else {
+        p = 1;
+      }
+      return p;
+    });
+  }, [totalPageSize]);
 
   const sortListMapFn = useCallback((i) => {
     const l = Object.values(i);
@@ -236,10 +247,12 @@ const Chain = memo(() => {
       {sortedChainAssetsList2.length > MAX && (
         <PButton
           type="text"
-          text="View More"
+          text={pageSize === totalPageSize ? 'Collapse' : 'View More'}
           suffix={
             <i
-              className={`iconfont icon-DownArrow ${showMore && 'rotate'}`}
+              className={`iconfont icon-DownArrow ${
+                pageSize === totalPageSize && 'rotate'
+              }`}
             ></i>
           }
           onClick={handleShowMore}

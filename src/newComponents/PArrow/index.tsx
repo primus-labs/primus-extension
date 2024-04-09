@@ -19,7 +19,7 @@ const PArrow: React.FC<PArrowProps> = memo(({ onClick }) => {
         icon={
           <i className={`iconfont icon-DownArrow ${active && 'rotate'}`}></i>
         }
-        onClick={onClick}
+        onClick={handleClick}
       />
     </div>
   );

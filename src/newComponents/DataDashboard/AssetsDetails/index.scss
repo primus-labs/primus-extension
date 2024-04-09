@@ -27,6 +27,11 @@
 
     .PTabs {
       width: 100%;
+      .tab{
+        .con{
+          @include frsc;
+        }
+      }
     }
   }
 }
