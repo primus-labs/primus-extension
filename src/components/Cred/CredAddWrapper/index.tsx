@@ -1265,6 +1265,9 @@ const CredAddWrapper: FC<CredAddWrapperType> = memo(
             case 40005:
             case 50002:
             case 50003:
+            case 50004:
+            case 50005:
+            case 50006:
               requestResObj = {
                 type: 'warn',
                 title: 'Unable to proceed',
