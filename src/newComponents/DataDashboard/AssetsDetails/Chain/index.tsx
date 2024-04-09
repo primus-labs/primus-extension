@@ -46,14 +46,24 @@ const Chain = memo(() => {
     setShowMore((f) => !f);
   }, []);
 
+  const sortListMapFn = useCallback((i) => {
+    const l = Object.values(i);
+    const sortFn = (l) => {
+      return l.sort((a: any, b: any) =>
+        sub(Number(b.value), Number(a.value)).toNumber()
+      );
+    };
+    const sortedL = sortFn(l);
+    return sortedL;
+  }, []);
   const holdingTokenLogosFn = useCallback(
     (i) => {
-      const l = Object.values(i.tokenListMap).map((i) => {
+      const l = sortListMapFn(i.tokenListMap).map((i) => {
         return tokenIconFn(i);
       });
       return l;
     },
-    [sourceMap2, sourceMap]
+    [sourceMap2, sortListMapFn]
   );
 
   const handleExpand = useCallback(
@@ -159,7 +169,11 @@ const Chain = memo(() => {
                   <div className="tokensWrapper">
                     <div className="tokens">
                       <div className="label">Token</div>
-                      <SplicedIcons list={holdingTokenLogosFn(i)} max={3} />
+                      <SplicedIcons
+                        list={holdingTokenLogosFn(i)}
+                        max={3}
+                        plusSign={false}
+                      />
                     </div>
                     <PArrow
                       onClick={() => {
@@ -207,7 +221,7 @@ const Chain = memo(() => {
                     <TokenTable
                       title="Tokens"
                       id={i.id}
-                      listMap={i.tokenListMap}
+                      listMap={sortListMapFn(i.tokenListMap)}
                     />
                   )}
                   {tableTab === 'NFT' && (

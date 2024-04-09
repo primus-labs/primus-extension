@@ -22,16 +22,17 @@
       }
       .spiner {
         @include pSpiner(
-          100%,
-          100%,
+          105px,
+          105px,
           5px,
           var(--icon-tokens-icon-primary, #161616),
           var(--layer-tokens-layer-primary, #fff),
           2s
         );
         position: absolute;
-        top: 0;
-        left: 0;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
       .sucCircle {
         position: absolute;

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
@@ -41,6 +41,7 @@ interface PDropdownProps {
 
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const dataSourceName = searchParams.get('dataSourceId') as string;
     const lowerCaseDataSourceName = dataSourceName?.toLowerCase();
@@ -96,9 +97,13 @@ const Cards: React.FC<PDropdownProps> = memo(
         return [];
       }
     }, [activeDataSouceUserInfo, activeDataSouceMetaInfo]);
-    const handleDetail = useCallback((i) => {
-      onClick && onClick(i);
-    }, []);
+    const handleDetail = useCallback(
+      (i) => {
+        // onClick && onClick(i);
+        navigate('/dataDashboard');
+      },
+      [navigate]
+    );
     const formatTime = (datastamp) => {
       return dayjs.utc(+datastamp).format('YYYY.MM.DD hh:mm');
     };

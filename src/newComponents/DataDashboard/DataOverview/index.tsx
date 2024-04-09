@@ -1,4 +1,11 @@
-import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useContext,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
@@ -27,14 +34,16 @@ import AssetsBalance from '@/newComponents/AssetsBalance';
 import './index.scss';
 
 const Overview = memo(() => {
+  const {
+    connectedSocialSourcesMap,
+    connectedSocialSourcesList,
+    hasConnectedSocialDataSources,
+    formatTotalFollowers,
+  } = useSocialStatistic();
+  const { hasConnectedAssetsDataSources } = useAssetsStatistic();
   const { sourceMap } = useAllSources();
-
-  const { totalFollowers, formatTotalFollowers } = useSocialStatistic();
+  console.log('22connectedDataSources', sourceMap); //delete
   const navigate = useNavigate();
-  const [balanceVisible, setBalanceVisible] = useState<boolean>(true);
-  const connectedSocialSources = useMemo(() => {
-    return sourceMap.socialSources;
-  }, [sourceMap]);
   const connectedOnChainSources = useMemo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);
@@ -45,7 +54,6 @@ const Overview = memo(() => {
     return sourceMap.kycSources;
   }, [sourceMap]);
 
-  console.log('22connectedSocialSources', sourceMap);
   const accTagsFn = useCallback((item: any) => {
     let lowerCaseName = item.id;
     let formatTxt;
@@ -292,7 +300,7 @@ const Overview = memo(() => {
   }, [connectedExchangeSources, connectedOnChainSources]);
   const assembleSocialExcelParams = useCallback(async () => {
     let socialRows: object[] = [];
-    const activeSocialSourceNameArr = Object.keys(connectedSocialSources);
+    const activeSocialSourceNameArr = Object.keys(connectedSocialSourcesMap);
     if (activeSocialSourceNameArr.length > 0) {
       socialRows = [
         {
@@ -309,7 +317,7 @@ const Overview = memo(() => {
           createdTime,
           userName,
           screenName,
-        } = connectedSocialSources[key];
+        } = connectedSocialSourcesMap[key];
         const curSourceRows = [
           {
             empty: '',
@@ -334,14 +342,14 @@ const Overview = memo(() => {
             followers: followers || '-',
             following: followings,
             posts: posts || '-',
-            accountTags: accTagsFn(connectedSocialSources[key]),
+            accountTags: accTagsFn(connectedSocialSourcesMap[key]),
           },
         ];
         socialRows.push(...curSourceRows);
       });
     }
     return socialRows;
-  }, [accTagsFn, connectedSocialSources]);
+  }, [accTagsFn, connectedSocialSourcesMap]);
   const assembleExcelParams = useCallback(async () => {
     let { id, address, authSource } = await getUserInfo();
     const basicRows = [
@@ -385,9 +393,6 @@ const Overview = memo(() => {
   const handleAdd = useCallback(() => {
     navigate('/datas');
   }, [navigate]);
-  const handleShow = useCallback(() => {
-    setBalanceVisible((v) => !v);
-  }, []);
 
   return (
     <div className="dataOverview">
@@ -415,27 +420,29 @@ const Overview = memo(() => {
         </div>
       </div>
       <div className="overviewItems">
-        <AssetsBalance />
-        <section className={`followers overviewItem`}>
-          <h4 className="title">
-            <span>Followers</span>
-          </h4>
-          <div className="content">
-            <div className="num">{formatTotalFollowers}</div>
-            <div className="from">
-              <span>From</span>
-              <ul className="sources">
-                {Object.values(connectedSocialSources).map((i: any) => {
-                  return (
-                    <li key={i.id}>
-                      <img src={i.icon} alt="" />
-                    </li>
-                  );
-                })}
-              </ul>
+        {hasConnectedAssetsDataSources && <AssetsBalance />}
+        {hasConnectedSocialDataSources && (
+          <section className={`followers overviewItem`}>
+            <h4 className="title">
+              <span>Followers</span>
+            </h4>
+            <div className="content">
+              <div className="num">{formatTotalFollowers}</div>
+              <div className="from">
+                <span>From</span>
+                <ul className="sources">
+                  {connectedSocialSourcesList.map((i: any) => {
+                    return (
+                      <li key={i.id}>
+                        <img src={i.icon} alt="" />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
         {Object.values(connectedKycSources).length > 0 && (
           <section className={`identity overviewItem`}>
             <h4 className="title">

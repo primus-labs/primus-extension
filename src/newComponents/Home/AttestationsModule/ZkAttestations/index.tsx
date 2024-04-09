@@ -60,9 +60,9 @@ const Overview = memo(() => {
               const CName = Object.keys(EASInfo).find(
                 (i) => i.replace(/\s+/g, '') === chain.name
               );
-              const currTypeAstOnCurrChainLen = Object.values(
+              const currTypeAstOnCurrChainLen = currTypeAstMap[CName as string] ? Object.values(
                 currTypeAstMap[CName as string]
-              ).length;
+              ).length : 0;
               prevA.push(currTypeAstOnCurrChainLen);
               return prevA;
             },

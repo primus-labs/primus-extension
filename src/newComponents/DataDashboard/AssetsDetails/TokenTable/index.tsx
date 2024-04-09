@@ -14,24 +14,17 @@ interface TokenTableProps {
 const TokenTable: FC<TokenTableProps> = memo(
   ({ title = 'Tokens', id, listMap, others = {} }) => {
     const { spotAccountTokenMap, flexibleAccountTokenMap } = others;
-    const totolCount = Object.values(listMap).length;
+    const totolCount = listMap.length;
     const [current, setCurrent] = useState(1);
     const sysConfig = useSelector((state) => state.sysConfig);
     const tokenLogoPrefix = useMemo(() => {
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const showTokenListFn = useCallback(() => {
-      const l = Object.values(listMap);
-      const sortFn = (l) => {
-        return l.sort((a: any, b: any) =>
-          sub(Number(b.value), Number(a.value)).toNumber()
-        );
-      };
-      const sortedL = sortFn(l);
       const startK = (current - 1) * PAGESIZE;
-      let newL = sortedL.slice(startK, startK + PAGESIZE);
+      let newL = listMap.slice(startK, startK + PAGESIZE);
       return newL;
-    }, [current]);
+    }, [current, listMap]);
     const iconFn = useCallback(
       (j) => {
         if (j.icon) {
@@ -63,14 +56,14 @@ const TokenTable: FC<TokenTableProps> = memo(
       <div className="tokenTable">
         <div className="title">
           <span>{title}</span>
-          <div className="num">({Object.keys(listMap).length})</div>
+          <div className="num">({totolCount})</div>
         </div>
         <ul className="tokenItems">
           <li className="tokenItem th">
             <div className="token">Token</div>
             {!!spotAccountTokenMap && (
               <>
-                <div className="fixed">Spot</div>
+                <div className="fixed">Earn</div>
                 <div className="flexible">Flexible</div>
               </>
             )}

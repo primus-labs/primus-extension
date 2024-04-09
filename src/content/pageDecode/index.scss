@@ -38,7 +38,7 @@
     &.verifying {
       padding-top: var(--spacing-32, 32px);
       .center {
-        padding: 0 var(--spacing-24, 24px) 0;
+        padding: var(--spacing-24, 24px) 0;
       }
     }
     &.result {

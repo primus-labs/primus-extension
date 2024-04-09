@@ -14,7 +14,6 @@ const SocialTable: FC = memo(({}) => {
       (a: any, b: any) =>
         sub(Number(b.followers), Number(a.followers)).toNumber()
     );
-    debugger;
     return orderedSocialList;
   }, [connectedSocialSources]);
 

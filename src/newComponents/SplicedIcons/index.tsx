@@ -4,9 +4,10 @@ interface PBackProps {
   list: any[];
   max?: number;
   onClick?: (k: number) => void;
+  plusSign?: boolean;
 }
 const SplicedIcons: React.FC<PBackProps> = memo(
-  ({ list, max = 5, onClick }) => {
+  ({ list, max = 5, onClick, plusSign= true }) => {
     const formatList = useMemo(() => {
       const newList = list.slice(0, max);
       return newList;
@@ -30,7 +31,10 @@ const SplicedIcons: React.FC<PBackProps> = memo(
           );
         })}
         {list.length > max && (
-          <div className="hideCircle">+{list.length - formatList.length}</div>
+          <div className="hideCircle">
+            {plusSign && '+'}
+            {list.length - formatList.length}
+          </div>
         )}
       </div>
     );

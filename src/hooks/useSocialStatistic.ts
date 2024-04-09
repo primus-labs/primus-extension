@@ -6,28 +6,30 @@ import useAllSources from './useAllSources';
 
 const useSocialStatistic = function () {
   const { sourceMap } = useAllSources();
-
-  const connectedSocialSources = useMemo(() => {
+  const connectedSocialSourcesMap = useMemo(() => {
     return sourceMap.socialSources;
   }, [sourceMap]);
+  const connectedSocialSourcesList = useMemo(() => {
+    return Object.values(connectedSocialSourcesMap);
+  }, [connectedSocialSourcesMap]);
   const socialDataSourcesLen = useMemo(() => {
-    return Object.keys(connectedSocialSources).length;
-  }, [connectedSocialSources]);
+    return connectedSocialSourcesList.length;
+  }, [connectedSocialSourcesList]);
+  const hasConnectedSocialDataSources = useMemo(() => {
+    return socialDataSourcesLen > 0;
+  }, [socialDataSourcesLen]);
   const socialDataSourcesIconList = useMemo(() => {
-    return Object.values(connectedSocialSources).map((i: any) => i.icon);
-  }, [connectedSocialSources]);
+    return connectedSocialSourcesList.map((i: any) => i.icon);
+  }, [connectedSocialSourcesList]);
 
   const totalFollowers = useMemo(() => {
     const reduceF: (prev: BigNumber, curr: any) => BigNumber = (prev, curr) => {
       const { followers } = curr;
       return add(prev.toNumber(), Number(followers ?? 0));
     };
-    const bal = Object.values(connectedSocialSources).reduce(
-      reduceF,
-      new BigNumber(0)
-    );
+    const bal = connectedSocialSourcesList.reduce(reduceF, new BigNumber(0));
     return `${bal.toFixed(0)}`;
-  }, [connectedSocialSources]);
+  }, [connectedSocialSourcesList]);
 
   const formatTotalFollowers = useMemo(() => {
     return totalFollowers
@@ -42,12 +44,9 @@ const useSocialStatistic = function () {
       const { followings } = curr;
       return add(prev.toNumber(), Number(followings ?? 0));
     };
-    const bal = Object.values(connectedSocialSources).reduce(
-      reduceF,
-      new BigNumber(0)
-    );
+    const bal = connectedSocialSourcesList.reduce(reduceF, new BigNumber(0));
     return `${bal.toFixed(0)}`;
-  }, [connectedSocialSources]);
+  }, [connectedSocialSourcesList]);
   const formatTotalFollowing = useMemo(() => {
     return totalFollowing
       ? `${formatNumeral(totalFollowing, {
@@ -61,12 +60,9 @@ const useSocialStatistic = function () {
       const { posts } = curr;
       return add(prev.toNumber(), Number(posts ?? 0));
     };
-    const bal = Object.values(connectedSocialSources).reduce(
-      reduceF,
-      new BigNumber(0)
-    );
+    const bal = connectedSocialSourcesList.reduce(reduceF, new BigNumber(0));
     return `${bal.toFixed(0)}`;
-  }, [connectedSocialSources]);
+  }, [connectedSocialSourcesList]);
   const formatTotalPosts = useMemo(() => {
     return totalPosts
       ? `${formatNumeral(totalPosts, {
@@ -76,6 +72,8 @@ const useSocialStatistic = function () {
       : '--';
   }, [totalPosts]);
   return {
+    connectedSocialSourcesMap,
+    connectedSocialSourcesList,
     totalFollowers,
     formatTotalFollowers,
     totalFollowing,
@@ -84,6 +82,7 @@ const useSocialStatistic = function () {
     formatTotalPosts,
     socialDataSourcesLen,
     socialDataSourcesIconList,
+    hasConnectedSocialDataSources,
   };
 };
 export default useSocialStatistic;

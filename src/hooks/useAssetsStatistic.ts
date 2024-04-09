@@ -30,9 +30,20 @@ const useAssetsStatistic = function () {
   const connectedOnChainSourcesList = useMemo(() => {
     return Object.values(sourceMap.onChainAssetsSources);
   }, [sourceMap]);
+
   const connectedExchangeSourcesList = useMemo(() => {
     return Object.values(sourceMap.exSources);
   }, [sourceMap]);
+  const assetsDataSourcesLen = useMemo(() => {
+    let len = connectedExchangeSourcesList.length;
+    if (connectedOnChainSourcesList.length > 0) {
+      len++;
+    }
+    return len;
+  }, [connectedOnChainSourcesList, connectedExchangeSourcesList]);
+  const hasConnectedAssetsDataSources = useMemo(() => {
+    return assetsDataSourcesLen > 0;
+  }, [assetsDataSourcesLen]);
   const totalExchangeAssetsBalance = useMemo(() => {
     const reduceF: (prev: BigNumber, curr: any) => BigNumber = (prev, curr) => {
       const { totalBalance } = curr;
@@ -114,7 +125,7 @@ const useAssetsStatistic = function () {
     };
     const totalTokenMap = connectedOnChainSourcesList.reduce(reduceF, {});
     const obj = {
-      tokenListMap:totalTokenMap,
+      tokenListMap: totalTokenMap,
       ...WALLETMAP['metamask'],
       totalBalance: totalOnChainAssetsBalance,
     };
@@ -393,16 +404,23 @@ const useAssetsStatistic = function () {
     totalOnChainAssetsBalance,
     totalAssetsBalance,
     formatTotalAssetsBalance,
+
     totalPnl,
     totalPnlPercent,
     formatTotalPnlPercent,
-    sortedHoldingTokensList,
+
     balancePercentFn,
     tokenIconFn,
+
+    sortedHoldingTokensList,
     sortedChainAssetsList,
+    metamaskAssets,
+
+    assetsDataSourcesLen,
+
     hasTokenAssets,
     hasChainAssets,
-    metamaskAssets,
+    hasConnectedAssetsDataSources,
   };
 };
 export default useAssetsStatistic;

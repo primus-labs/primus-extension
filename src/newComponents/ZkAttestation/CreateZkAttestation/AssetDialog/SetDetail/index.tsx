@@ -1,5 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import BigNumber from 'bignumber.js';
 import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
@@ -316,7 +317,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               </div>
               {pswForm.verificationContent === 'Assets Proof' && (
                 <div className="balance">
-                  ${Number(totalBalanceForAttest).toFixed(2)}
+                  ${new BigNumber(totalBalanceForAttest).toFixed(2)}
                 </div>
               )}
             </div>

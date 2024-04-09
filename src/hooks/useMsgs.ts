@@ -40,9 +40,9 @@ const useMsgs = function useMsgs() {
       let timer = setTimeout(() => {
         deleteMsg(msgId);
       }, 5000);
-      return () => {
-        clearTimeout(timer);
-      }
+      // return () => {
+      //   clearTimeout(timer);
+      // }
     }
   }, [msgId]);
  

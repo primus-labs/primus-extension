@@ -1,24 +1,18 @@
 import React, { memo, useCallback, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import BigNumber from 'bignumber.js';
-import {
-  setExSourcesAsync,
-  setOnChainAssetsSourcesAsync,
-} from '@/store/actions';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import useMsgs from '@/hooks/useMsgs';
 import useAllSources from '@/hooks/useAllSources';
 import useNFTs from '@/hooks/useNFTs';
 import {
   sub,
-  add,
   div,
   mul,
   formatNumeral,
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
 } from '@/utils/utils';
-import { WALLETMAP } from '@/config/wallet';
 import PButton from '@/newComponents/PButton';
 import PStar from '@/newComponents/PStar';
 import SplicedIcons from '@/newComponents/SplicedIcons';
@@ -32,8 +26,9 @@ const MAX = 5;
 const AssetsDetails = memo(() => {
   const { accountsNftsListMap } = useNFTs();
   const { addMsg } = useMsgs();
-  const { totalAssetsBalance, metamaskAssets } = useAssetsStatistic();
-  const dispatch = useDispatch();
+  const { totalAssetsBalance, metamaskAssets, tokenIconFn } =
+    useAssetsStatistic();
+
   const { sourceMap, sourceMap2 } = useAllSources();
   const [showMore, setShowMore] = useState<boolean>(false);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
@@ -51,7 +46,6 @@ const AssetsDetails = memo(() => {
   const connectedOnChainSources = useMemo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);
-  console.log('22connectedSocialSources', sourceMap); // delete
   const connectedAssetsSourcesList = useMemo(() => {
     let l = Object.values(connectedExchangeSources);
     if (Object.keys(connectedOnChainSources).length > 0) {
@@ -124,14 +118,24 @@ const AssetsDetails = memo(() => {
     },
     [sourceMap2, sourceMap]
   );
+  const sortListMapFn = useCallback((i) => {
+    const l = Object.values(i);
+    const sortFn = (l) => {
+      return l.sort((a: any, b: any) =>
+        sub(Number(b.value), Number(a.value)).toNumber()
+      );
+    };
+    const sortedL = sortFn(l);
+    return sortedL;
+  }, []);
   const holdingTokenLogosFn = useCallback(
     (i) => {
-      const l = Object.keys(i.tokenListMap).map((i) => {
-        return `${tokenLogoPrefix}icon${i}.png`;
+      const l = sortListMapFn(i.tokenListMap).map((i) => {
+        return tokenIconFn(i);
       });
       return l;
     },
-    [sourceMap2, sourceMap]
+    [sortListMapFn, sortListMapFn]
   );
   const totalBalanceForAttestFn = useCallback((activeDataSouceUserInfo) => {
     let totalBalance = '0';
@@ -152,7 +156,7 @@ const AssetsDetails = memo(() => {
       }
     }
 
-    return totalBalance;
+    return new BigNumber(totalBalance).toFixed(2);
   }, []);
 
   const handleExpand = useCallback(
@@ -182,31 +186,6 @@ const AssetsDetails = memo(() => {
     },
     [activeExpand]
   );
-
-  // const handleStar = useCallback(
-  //   async (i) => {
-  //     debugger;
-  //     i.star = !i.star;
-
-  //     if (i.address?.startsWith('0x')) {
-  //       const newObj = { ...connectedOnChainSources };
-  //       newObj[i.address] = i;
-  //       await chrome.storage.local.set({
-  //         onChainAssetsSources: JSON.stringify(newObj),
-  //       });
-  //       dispatch(setOnChainAssetsSourcesAsync());
-  //     } else {
-  //       if (i.type === 'Assets') {
-  //         await chrome.storage.local.set({
-  //           [i.id]: JSON.stringify(i),
-  //         });
-  //         dispatch(setExSourcesAsync());
-  //       }
-  //     }
-  //   },
-  //   [dispatch, connectedOnChainSources]
-  // );
-
   const resetStarArr = async () => {
     const { assetsStarsMap: assetsStarsMapStr } =
       await chrome.storage.local.get(['assetsStarsMap']);
@@ -300,7 +279,11 @@ const AssetsDetails = memo(() => {
                   <div className="tokensWrapper">
                     <div className="tokens">
                       <div className="label">Token</div>
-                      <SplicedIcons list={holdingTokenLogosFn(i)} max={3} />
+                      <SplicedIcons
+                        list={holdingTokenLogosFn(i)}
+                        max={3}
+                        plusSign={false}
+                      />
                     </div>
                     <PArrow
                       onClick={() => {
@@ -367,7 +350,7 @@ const AssetsDetails = memo(() => {
                     <TokenTable
                       title="Tokens"
                       id={i.id}
-                      listMap={i.tokenListMap}
+                      listMap={sortListMapFn(i.tokenListMap)}
                       others={
                         i.id === 'binance'
                           ? {

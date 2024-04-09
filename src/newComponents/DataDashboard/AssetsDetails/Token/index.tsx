@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
-import { formatNumeral } from '@/utils/utils';
+import { sub, formatNumeral } from '@/utils/utils';
 import PButton from '@/newComponents/PButton';
 import PStar from '@/newComponents/PStar';
 import SplicedIcons from '@/newComponents/SplicedIcons';
@@ -34,10 +34,23 @@ const Token = memo(() => {
     setShowMore((f) => !f);
   }, []);
 
-  const holdingTokenLogosFn = useCallback((i) => {
-    const l = Object.values(i.portfolio).map((i: any) => i.icon);
-    return l;
+  const sortListMapFn = useCallback((i) => {
+    const l = Object.values(i);
+    const sortFn = (l) => {
+      return l.sort((a: any, b: any) =>
+        sub(Number(b.value), Number(a.value)).toNumber()
+      );
+    };
+    const sortedL = sortFn(l);
+    return sortedL;
   }, []);
+  const holdingTokenLogosFn = useCallback(
+    (i) => {
+      const l = sortListMapFn(i.portfolio).map((i: any) => i.icon);
+      return l;
+    },
+    [sortListMapFn]
+  );
 
   const handleExpand = useCallback(
     (dataSource) => {
@@ -140,7 +153,11 @@ const Token = memo(() => {
                   <div className="tokensWrapper">
                     <div className="tokens">
                       <div className="label">Portfolio</div>
-                      <SplicedIcons list={holdingTokenLogosFn(i)} max={3} />
+                      <SplicedIcons
+                        list={holdingTokenLogosFn(i)}
+                        max={3}
+                        plusSign={false}
+                      />
                     </div>
                     <PArrow
                       onClick={() => {
@@ -164,7 +181,7 @@ const Token = memo(() => {
                   <TokenTable
                     title="Portfolio"
                     id={i.id}
-                    listMap={i.portfolio}
+                    listMap={sortListMapFn(i.portfolio)}
                   />
                 </>
               )}

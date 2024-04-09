@@ -28,13 +28,14 @@ type BarChartProps = {
 };
 const MAXSHOWDATASOURCELEN = 5;
 const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
-  console.log('222xDatas', xDatas, yDatas); //delete
+  console.log('222chain-xDatas', xDatas, yDatas); //delete
 
   const showXDatas = useMemo(() => {
     let l = [...xDatas];
     const diffLen = MAXSHOWDATASOURCELEN - xDatas.length;
     for (var i = 0; i < diffLen; i++) {
-      l.unshift({ name: '', icon: undefined });
+      // l.unshift({ name: '', icon: undefined });
+      l.push({});
     }
     return l;
   }, [xDatas]);
@@ -42,36 +43,39 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
     let l = [...yDatas];
     const diffLen = MAXSHOWDATASOURCELEN - yDatas.length;
     for (var i = 0; i < diffLen; i++) {
-      l.unshift('');
+      l.push({});
     }
     return l;
   }, [yDatas]);
 
   const xRichDatasMap = useMemo(() => {
     return showXDatas.reduce((prev, curr) => {
-      prev[curr.name] = {
-        width: 24,
-        height: 24,
-        align: 'center',
-        backgroundColor: {
-          image: curr.icon,
-        },
-        fontSize: 0,
-        padding: 0,
-      };
+      if (curr.name) {
+        prev[curr.name] = {
+          width: 24,
+          height: 24,
+          align: 'center',
+          backgroundColor: {
+            image: curr.icon,
+          },
+          fontSize: 0,
+          padding: 0,
+        };
+      }
       return prev;
     }, {});
   }, [showXDatas]);
   const series = useMemo(() => {
     return showYDatas.map((i) => {
       const { name, data } = i;
+      // debugger
       return {
         name,
         stack: 'a',
         type: 'bar',
         data,
         itemStyle: {
-          color: ATTESTATIONTYPEMAP[name].chartBarColor,
+          color: name ? ATTESTATIONTYPEMAP[name].chartBarColor : '#fff',
           // borderRadius: [7, 7, 0, 0],
         },
         barWidth: 32,
@@ -109,10 +113,10 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
       tooltip: {
         formatter: (params) => {
           const { name, value, seriesName } = params;
-          const CName = Object.keys(SUPPORRTEDQUERYCHAINMAP).find(
+          const CName = Object.keys(EASInfo).find(
             (i) => i.replace(/\s+/g, '') === name
           );
-          // console.log('222params', params, formatNumeral(value));
+          // console.log('222params', params, CName);
           return `${seriesName}<br/>${CName}: ${value}`;
         },
       },
@@ -126,10 +130,13 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
         data: showXDatas.map((i) => i.name),
         axisLabel: {
           fontSize: 6,
-          formatter: function (value) {
-            // return "{" + value + "| }\n{value|" + value + "}";
-            // return "{value|" + value + "}";
-            return '{' + value + '| }';
+          formatter: function (value, idx) {
+            
+            if (value) {
+              return '{' + value + '| }';
+            } else {
+              return null;
+            }
           },
           rich: xRichDatasMap,
         },
