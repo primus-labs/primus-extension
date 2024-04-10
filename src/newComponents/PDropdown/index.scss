@@ -54,6 +54,9 @@
         .left {
           @include frsc;
           gap: var(--spacing-16, 16px);
+          .placeHolder {
+            width: var(--spacing-18, 18px);
+          }
           > .iconImg {
             width: var(--spacing-18, 18px);
           }

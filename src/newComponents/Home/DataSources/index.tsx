@@ -47,7 +47,6 @@ const Overview = memo(() => {
   );
   const handleClickCard = useCallback(
     (i) => {
-      debugger;
       if (checkIsConnectedDataSourceFn(i)) {
         handleClick(i);
       }

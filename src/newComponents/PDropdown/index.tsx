@@ -16,10 +16,11 @@ interface PDropdownProps {
   value?: any;
   onClick?: (value: any, item: NavItem) => void;
   list: NavItem[];
+  showSelf?: boolean;
 }
 
 const PDropdown: React.FC<PDropdownProps> = memo(
-  ({ onClick = () => {}, list, value }) => {
+  ({ onClick = () => {}, list, value, showSelf }) => {
     const formatOptionCN = useCallback((item) => {
       let str = 'dropdownOption';
       if (item?.disabled) {
@@ -47,9 +48,12 @@ const PDropdown: React.FC<PDropdownProps> = memo(
               >
                 <div className="dropdownOptionCon">
                   <div className="left">
-                    {value === item.value && (
-                      <i className="iconfont icon-Legal" />
-                    )}
+                    {showSelf &&
+                      (value === item.value ? (
+                        <i className="iconfont icon-Legal" />
+                      ) : (
+                        <div className="placeHolder"></div>
+                      ))}
                     {item.iconName ? (
                       <i className={`iconfont ${item.iconName}`}></i>
                     ) : item.icon ? (

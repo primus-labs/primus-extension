@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import BigNumber from 'bignumber.js';
+import { utils } from 'ethers';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import useMsgs from '@/hooks/useMsgs';
 import useAllSources from '@/hooks/useAllSources';
@@ -12,11 +13,13 @@ import {
   formatNumeral,
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
+  formatAddress,
 } from '@/utils/utils';
 import PButton from '@/newComponents/PButton';
 import PStar from '@/newComponents/PStar';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import PArrow from '@/newComponents/PArrow';
+import PSelect from '@/newComponents/PSelect';
 import NFTList from '../NFTList';
 import TokenTable from '../TokenTable';
 import './index.scss';
@@ -28,12 +31,13 @@ const AssetsDetails = memo(() => {
   const { addMsg } = useMsgs();
   const { totalAssetsBalance, metamaskAssets, tokenIconFn } =
     useAssetsStatistic();
-
-  const { sourceMap, sourceMap2 } = useAllSources();
+  const { sourceMap, sourceMap2, sortedConnectedOnChainAssetsSourcesList } =
+    useAllSources();
   const [pageSize, setPageSize] = useState<number>(1);
   const [activeExpand, setActiveExpand] = useState<string[]>([]);
   const [tableTab, setTableTab] = useState<string>('Token');
   const [starArr, setStarArr] = useState<string[]>();
+  const [accountsForm, setAccountsForm] = useState<object>({ metamask: 'All' });
   const sysConfig = useSelector((state) => state.sysConfig);
   const nfts = useSelector((state) => state.nfts);
 
@@ -98,23 +102,30 @@ const AssetsDetails = memo(() => {
 
   const balancePercentFn = useCallback(
     (i) => {
-      const { totalBalance } = i;
-      if (totalBalance === '0') {
+      let tB = i.totalBalance;
+      if (i.id === 'metamask') {
+        const currentAccount = accountsForm['metamask'];
+        if (currentAccount !== 'All') {
+          tB = sourceMap2[currentAccount].totalBalance;
+        }
+      }
+      if (tB === '0') {
         return '0';
       } else {
         const digit = div(
-          Number(totalBalance),
+          Number(tB),
           new BigNumber(totalAssetsBalance).toNumber()
         );
         return mul(Number(digit), 100).toFixed(2);
       }
     },
-    [totalAssetsBalance]
+    [totalAssetsBalance, accountsForm]
   );
+
   const connectionNumFn = useCallback(
     (i) => {
-      const lowerCaseSourceName = i.name.toLowerCase();
-      if (lowerCaseSourceName === 'web3 wallet') {
+      const lowerCaseSourceName = i.id;
+      if (lowerCaseSourceName === 'metamask') {
         return Object.values(sourceMap.onChainAssetsSources).length;
       } else {
         if (sourceMap2?.[lowerCaseSourceName]) {
@@ -136,14 +147,40 @@ const AssetsDetails = memo(() => {
     const sortedL = sortFn(l);
     return sortedL;
   }, []);
+  const itemTotalBalanceFn = useCallback(
+    (i) => {
+      let tB = i.totalBalance;
+      if (i.id === 'metamask') {
+        const currentAccount = accountsForm['metamask'];
+        if (currentAccount !== 'All') {
+          tB = sourceMap2[currentAccount].totalBalance;
+        }
+      }
+      return formatNumeral(tB);
+    },
+    [accountsForm]
+  );
+  const itemTokenListMapFn = useCallback(
+    (i) => {
+      let tM = i.tokenListMap;
+      if (i.id === 'metamask') {
+        const currentAccount = accountsForm['metamask'];
+        if (currentAccount !== 'All') {
+          tM = sourceMap2[currentAccount].tokenListMap;
+        }
+      }
+      return tM;
+    },
+    [accountsForm]
+  );
   const holdingTokenLogosFn = useCallback(
     (i) => {
-      const l = sortListMapFn(i.tokenListMap).map((i) => {
+      const l = sortListMapFn(itemTokenListMapFn(i)).map((i) => {
         return tokenIconFn(i);
       });
       return l;
     },
-    [sortListMapFn, sortListMapFn]
+    [sortListMapFn, sortListMapFn, itemTokenListMapFn]
   );
   const totalBalanceForAttestFn = useCallback((activeDataSouceUserInfo) => {
     let totalBalance = '0';
@@ -247,6 +284,31 @@ const AssetsDetails = memo(() => {
   const handleChangeTableTab = useCallback((i) => {
     setTableTab(i);
   }, []);
+  const accountsListFn = useCallback(
+    (i) => {
+      if (i.id === 'metamask') {
+        let l = sortedConnectedOnChainAssetsSourcesList.map((i) => {
+          const illlegalAddr = utils.getAddress(i.address);
+          return {
+            label: formatAddress(illlegalAddr),
+            value: i.address,
+          };
+        });
+        l.unshift({
+          label: 'Show all accounts',
+          value: 'All',
+        });
+        return l;
+      }
+      return [];
+    },
+    [sortedConnectedOnChainAssetsSourcesList]
+  );
+  const handleChangeAccountsForm = useCallback((k, v) => {
+    setAccountsForm((f) => {
+      return { ...f, [k]: v };
+    });
+  }, []);
 
   return (
     <section className="tableSection portfolio">
@@ -273,21 +335,34 @@ const AssetsDetails = memo(() => {
                       <div className="num">
                         <i className="iconfont icon-iconConnection"></i>
                         <span>
-                          {connectionNumFn(i) > 1
-                            ? connectionNumFn(i)
-                            : i.userInfo?.userName ?? i.apiKey ?? i.address}
+                          {connectionNumFn(i) > 1 ? (
+                            i.id === 'metamask' ? (
+                              <PSelect
+                                className="accountsSelect"
+                                placeholder=""
+                                list={accountsListFn(i)}
+                                onChange={(p) => {
+                                  handleChangeAccountsForm(i.id, p);
+                                }}
+                                value={accountsForm[i.id]}
+                                showSelf={true}
+                              />
+                            ) : (
+                              connectionNumFn(i)
+                            )
+                          ) : (
+                            i.userInfo?.userName ?? i.apiKey ?? i.address
+                          )}
                         </span>
                       </div>
                     </div>
                     <div className="bottom">
-                      <div className="balance">
-                        ${formatNumeral(i.totalBalance)}
-                      </div>
+                      <div className="balance">${itemTotalBalanceFn(i)}</div>
                       <div className="percent">({balancePercentFn(i)}%)</div>
                     </div>
                   </div>
                 </div>
-                {Object.keys(i.tokenListMap).length > 0 && (
+                {Object.keys(itemTokenListMapFn(i)).length > 0 && (
                   <div className="right">
                     <div className="tokensWrapper">
                       <div className="tokens">
@@ -335,9 +410,7 @@ const AssetsDetails = memo(() => {
                         <i className="iconfont icon-iconAmountForAttest"></i>
                         <div className="txtWrapper">
                           <div className="label">Token</div>
-                          <div className="value">
-                            ${formatNumeral(i.totalBalance)}
-                          </div>
+                          <div className="value">${itemTotalBalanceFn(i)}</div>
                         </div>
                       </div>
                       <div
@@ -369,7 +442,7 @@ const AssetsDetails = memo(() => {
                     <TokenTable
                       title="Tokens"
                       id={i.id}
-                      listMap={sortListMapFn(i.tokenListMap)}
+                      listMap={sortListMapFn(itemTokenListMapFn(i))}
                       others={
                         i.id === 'binance'
                           ? {

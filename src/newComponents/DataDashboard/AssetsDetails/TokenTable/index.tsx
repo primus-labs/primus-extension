@@ -58,7 +58,7 @@ const TokenTable: FC<TokenTableProps> = memo(
           <span>{title}</span>
           <div className="num">({totolCount})</div>
         </div>
-        <ul className="tokenItems">
+        <ul className={ `tokenItems ${totolCount >= 10 ?'fullHeight': ''}`}>
           <li className="tokenItem th">
             <div className="token">
               {title === 'Portfolio' ? 'Portfolio' : 'Token'}

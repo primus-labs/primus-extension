@@ -19,6 +19,9 @@
     width: 100%;
     @include fcss;
     border-top: 1px solid var(--border-tokens-border-primary);
+    &.fullHeight {
+      height: 534px;
+    }
     .tokenItem {
       width: 100%;
       @include frbc;

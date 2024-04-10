@@ -43,6 +43,14 @@ const useAllSources = (sourceName?: undefined | null | string) => {
     return [...exList, ...socialList, ...kycList, ...onChainList];
   }, [exList, socialList, kycList]);
 
+  const sortedConnectedOnChainAssetsSourcesList = useMemo(() => {
+    const sortFn = (l) => {
+      return l.sort((a: any, b: any) =>
+        sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
+      );
+    };
+    return sortFn(onChainList);
+  }, [onChainList]);
   const connectedAssetsSourcesList = useMemo(() => {
     let l = exList;
     if (onChainList.length > 0) {
@@ -99,6 +107,7 @@ const useAllSources = (sourceName?: undefined | null | string) => {
     sourceMap2: allSourceMap2,
     activeSourceInfo,
     sortedConnectedAssetsSourcesList,
+    sortedConnectedOnChainAssetsSourcesList,
   };
 };
 

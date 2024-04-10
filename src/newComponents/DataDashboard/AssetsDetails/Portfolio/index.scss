@@ -52,6 +52,41 @@
                 @include NumberHint;
                 color: var(--text-tokens-text-secondary);
               }
+              .accountsSelect {
+                height: var(--spacing-18);
+                @include frcc;
+                .selectInput {
+                  border: 0;
+                  height: 40px;
+                  // height: var(--spacing);
+                  background: transparent;
+                  width: 134px;
+                  @include frbc;
+                  padding: 0;
+                  @include BodyBody100;
+                  color: var(--text-tokens-text-primary);
+                  gap: 0;
+                }
+                .selectOptionswrapper {
+                  width: 172px;
+                  top: 22px;
+                  .PDropdown {
+                    .dropdownOptions .dropdownOption .dropdownOptionCon {
+                      padding-left: var(--spacing-8);
+                      .left {
+                        .placeHolder {
+                          width: var(--spacing-16);
+                        }
+                        > .iconfont {
+                          font-size: var(--spacing-16);
+                        }
+                        @include BodyBody100;
+                        color: var(--text-tokens-text-primary);
+                      }
+                    }
+                  }
+                }
+              }
             }
             .bottom {
               @include frsc;
