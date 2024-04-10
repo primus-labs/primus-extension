@@ -148,7 +148,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                             )}
                           </span>
                         </div>
-                        {
+                        {addrK !== connectedWallet?.address &&
                           <img
                             src={iconClose}
                             alt=""
