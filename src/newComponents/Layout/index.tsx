@@ -54,7 +54,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   useListener();
   useALGAttest();
   useKeepConnect();
-  // usePollingUpdateAllSources();
+  usePollingUpdateAllSources();
 
   const initStoreData = useCallback(async () => {
     // Compatible with old certificates

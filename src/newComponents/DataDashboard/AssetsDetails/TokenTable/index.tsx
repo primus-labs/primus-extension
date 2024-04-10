@@ -60,7 +60,9 @@ const TokenTable: FC<TokenTableProps> = memo(
         </div>
         <ul className="tokenItems">
           <li className="tokenItem th">
-            <div className="token">Token</div>
+            <div className="token">
+              {title === 'Portfolio' ? 'Portfolio' : 'Token'}
+            </div>
             {!!spotAccountTokenMap && (
               <>
                 <div className="fixed">Spot</div>

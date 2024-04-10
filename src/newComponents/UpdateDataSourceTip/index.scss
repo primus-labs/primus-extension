@@ -2,12 +2,28 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
 
-.updateTip {
+.updateDataSourceTip {
   @include frsc;
   gap: var(--spacing-4);
   @include BodyBody300;
   color: var(--text-tokens-text-tertiary);
-  .rotate {
-    animation: spin 2s linear infinite;
+  button.PButton.icon.updateBtn {
+    .iconfont {
+      font-size: var(--spacing-12);
+      color: var(--text-tokens-text-tertiary);
+      &.rotate {
+        animation: spin 2s linear infinite;
+      }
+      &:not(.disabled):hover {
+        .iconfont {
+          color: var(--button-tokens-button-primary-hover);
+        }
+      }
+      &.disabled {
+        .iconfont {
+          color: var(--text-button-disabled);
+        }
+      }
+    }
   }
 }

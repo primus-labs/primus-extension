@@ -15,7 +15,6 @@ import { setSourceUpdateInfoAction } from '@/store/actions';
 import { ONEMINUTE } from '@/config/constants';
 
 import type { UserState } from '@/types/store';
-import { use } from 'echarts';
 
 const usePollingUpdateAllSources = () => {
   const [updating, updateF] = useUpdateAllSources();
@@ -63,15 +62,15 @@ const usePollingUpdateAllSources = () => {
         lastUpdateFromNow: updatedMintues.current,
       })
     );
-  }, [dispatch, updating]);
+  }, [dispatch, updating, updatedMintues.current]);
   useEffect(() => {
-    // if (!sourceUpdateInfo.pollingFlag) {
+    if (!sourceUpdateInfo.pollingFlag) {
       dispatch(
         setSourceUpdateInfoAction({
           pollingFlag: switchFlag,
         })
       );
-    // }
+    }
   }, [dispatch, switchFlag]);
   useEffect(() => {
     checkIfHadSetPwd();
@@ -82,16 +81,23 @@ const usePollingUpdateAllSources = () => {
   // const [updating, updateF] = useUpdateAllSources(true);
 
   useEffect(() => {
-    dispatch(
-      setSourceUpdateInfoAction({
-        lastUpdating: updating,
-      })
-    );
+    if (updating !== sourceUpdateInfo.lastUpdating) {
+      dispatch(
+        setSourceUpdateInfoAction({
+          lastUpdating: updating,
+        })
+      );
+    }
   }),
     [updating, dispatch];
+  useEffect(() => {
+    if (!sourceUpdateInfo.pollingFlag && !updating) {
+      updatedMintues.current = -1;
+    }
+  }, [sourceUpdateInfo.pollingFlag, updating]);
 
-  useInterval(updateF as () => void, delay, switchFlag, true);
-  // useInterval(countDownFn, 1 * ONEMINUTE, countDownSwitch, true);
+  useInterval(updateF as () => void, delay, sourceUpdateInfo.pollingFlag, true);
+  useInterval(countDownFn, 1 * ONEMINUTE, sourceUpdateInfo.pollingFlag, true);
 };
 
 export default usePollingUpdateAllSources;

@@ -287,23 +287,25 @@ const AssetsDetails = memo(() => {
                     </div>
                   </div>
                 </div>
-                <div className="right">
-                  <div className="tokensWrapper">
-                    <div className="tokens">
-                      <div className="label">Token</div>
-                      <SplicedIcons
-                        list={holdingTokenLogosFn(i)}
-                        max={3}
-                        plusSign={false}
+                {Object.keys(i.tokenListMap).length > 0 && (
+                  <div className="right">
+                    <div className="tokensWrapper">
+                      <div className="tokens">
+                        <div className="label">Token</div>
+                        <SplicedIcons
+                          list={holdingTokenLogosFn(i)}
+                          max={3}
+                          plusSign={false}
+                        />
+                      </div>
+                      <PArrow
+                        onClick={() => {
+                          handleExpand(i);
+                        }}
                       />
                     </div>
-                    <PArrow
-                      onClick={() => {
-                        handleExpand(i);
-                      }}
-                    />
                   </div>
-                </div>
+                )}
               </div>
               {activeExpand.includes(i.id) && (
                 <>

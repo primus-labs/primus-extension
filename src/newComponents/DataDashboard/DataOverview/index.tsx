@@ -396,7 +396,7 @@ const Overview = memo(() => {
       <div className="title">
         <span>Data Dashboard</span>
         <div className="operations">
-          {/* <UpdateDataSourceTip /> */}
+          <UpdateDataSourceTip />
 
           <PButton
             type="secondary"
