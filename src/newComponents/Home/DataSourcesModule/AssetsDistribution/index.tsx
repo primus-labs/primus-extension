@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import Chart from 'react-apexcharts';
 import { sub, add, div, mul, gt, formatNumeral } from '@/utils/utils';
 
-import { setActiveConnectDataSource } from '@/store/actions';
 import './index.scss';
 import AssetsBalance from '@/newComponents/AssetsBalance';
 import PButton from '@/newComponents/PButton';

@@ -69,6 +69,10 @@ export const setSourceUpdateFrequencyAction = (values: string) => ({
   type: 'setSourceUpdateFrequency',
   payload: values,
 });
+export const setSourceUpdateInfoAction = (values: any) => ({
+  type: 'setSourceUpdateInfo',
+  payload: values,
+});
 export const setUserInfoAction = (values: object) => ({
   type: 'setUserInfo',
   payload: values,
@@ -189,7 +193,7 @@ export const setConnectWalletActionAsync = (values: any) => {
       await chrome.storage.local.set({
         connectedWallets: JSON.stringify(lastConnectedWalletsObj),
       });
-      
+
       await dispatch(setConnectedWalletsActionAsync());
       await dispatch(setConnectWalletAction(values));
       await dispatch(setConnectWalletDialogVisibleAction(0));

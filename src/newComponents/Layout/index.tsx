@@ -54,7 +54,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   useListener();
   useALGAttest();
   useKeepConnect();
-  usePollingUpdateAllSources();
+  // usePollingUpdateAllSources();
 
   const initStoreData = useCallback(async () => {
     // Compatible with old certificates
@@ -63,7 +63,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     Object.values(credentialObj).forEach((i: any) => {
-      const compareRes = compareVersions('1.0.3', i.version);
+      const compareRes = compareVersions('1.0.3', i.version);// TODO-newui!!!
       if (compareRes > -1) {
         // attestation version <= '1.0.3'
         if (i.type === 'ASSETS_PROOF') {
@@ -94,9 +94,6 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
           i.verificationValue = i.dataToBeSigned.content;
         }
       }
-      if (i.attestationType === 'Assets Certificate') {
-        i.attestationType = 'Assets Certification';
-      } // delete
     });
     await chrome.storage.local.set({
       credentials: JSON.stringify(credentialObj),

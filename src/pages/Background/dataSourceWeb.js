@@ -330,7 +330,7 @@ export const dataSourceWebMsgListener = async (
         if (tabId === tabCreatedByPado.id) {
           chrome.runtime.sendMessage({
             type: 'dataSourceWeb',
-            name: 'stop', // TODO-newui abortAttest
+            name: 'stop',
           });
         }
       });

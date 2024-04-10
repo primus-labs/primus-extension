@@ -215,5 +215,29 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
       };
     }
   }, [padoServicePort, padoServicePortListener]);
+  const chromeRuntimeListener = useCallback(
+    async (message, sender, sendResponse) => {
+      const { type, name } = message;
+      // console.log('chrome.runtime.onMessage -useListener', message);
+      if (type === 'dataSourceWeb') {
+        if (['stop', 'cancel', 'close'].includes(name)) {
+          await dispatch(
+            setActiveConnectDataSource({
+              loading: 0,
+              dataSourceId: undefined,
+              account: undefined,
+            })
+          );
+        }
+      }
+    },
+    []
+  );
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener(chromeRuntimeListener);
+    return () => {
+      chrome.runtime.onMessage.removeListener(chromeRuntimeListener);
+    };
+  }, [chromeRuntimeListener]);
 };
 export default useAlgorithm;

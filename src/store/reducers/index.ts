@@ -78,6 +78,11 @@ const initState = {
   socialSources: {},
   kycSources: {},
   sourceUpdateFrequency: DEFAULTDATASOURCEPOLLINGTIMENUM,
+  sourceUpdateInfo: {
+    lastUpdateFromNow: 5,
+    lastUpdating: false,
+    pollingFlag: false
+  },
   proofTypes: DEFAULTCREDTYPELIST,
   webProofTypes: [],
   credentials: {},
@@ -173,7 +178,12 @@ const reducer: any = function (state = initState, action: any) {
     case 'setCredentials':
       return { ...state, credentials: action.payload };
     case 'setSourceUpdateFrequency':
-      return { ...state, sourceUpdateFrequency: action.payload };
+      return {
+        ...state, sourceUpdateFrequency: action.payload
+        };
+    case 'setSourceUpdateInfo':
+      return { ...state, sourceUpdateInfo: {...state.sourceUpdateInfo,
+          ...action.payload} };
     case 'setUserInfo':
       return { ...state, userInfo: action.payload };
     case 'setWalletAddress':

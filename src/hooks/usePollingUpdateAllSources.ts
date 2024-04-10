@@ -1,20 +1,35 @@
-import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, {
+  useEffect,
+  useMemo,
+  useCallback,
+  useState,
+  useRef,
+} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 // import useUpdateAllSources from '@/hooks/useUpdateAllSources';
 import useUpdateAllSources from '@/hooks/useUpdateAllSources';
 import useInterval from '@/hooks/useInterval';
 import useAllSources from '@/hooks/useAllSources';
+import { setSourceUpdateInfoAction } from '@/store/actions';
 import { ONEMINUTE } from '@/config/constants';
 
 import type { UserState } from '@/types/store';
+import { use } from 'echarts';
 
 const usePollingUpdateAllSources = () => {
+  const [updating, updateF] = useUpdateAllSources();
+  const updatedMintues = useRef(-1);
+  const [countDownSwitch, setCountDownSwitch] = useState<boolean>(true);
+  const dispatch = useDispatch();
   const { sourceMap2 } = useAllSources();
   const [hadSetPwd, setHadSetPwd] = useState<boolean>(false);
   const userPassword = useSelector((state: UserState) => state.userPassword);
   const sourceUpdateFrequency = useSelector(
     (state: UserState) => state.sourceUpdateFrequency
+  );
+  const sourceUpdateInfo = useSelector(
+    (state: UserState) => state.sourceUpdateInfo
   );
 
   const hasDataSources = useMemo(() => {
@@ -24,6 +39,7 @@ const usePollingUpdateAllSources = () => {
   const switchFlag = useMemo(() => {
     return ((hadSetPwd && !!userPassword) || !hadSetPwd) && hasDataSources;
   }, [userPassword, hasDataSources, hadSetPwd]);
+
   const delay = useMemo(() => {
     if (sourceUpdateFrequency) {
       return Number(sourceUpdateFrequency) * ONEMINUTE;
@@ -35,6 +51,28 @@ const usePollingUpdateAllSources = () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
     setHadSetPwd(!!keyStore);
   }, []);
+  const countDownFn = useCallback(() => {
+    if (!updating) {
+      updatedMintues.current += 1;
+      if (updatedMintues.current >= 5) {
+        updatedMintues.current = 0;
+      }
+    }
+    dispatch(
+      setSourceUpdateInfoAction({
+        lastUpdateFromNow: updatedMintues.current,
+      })
+    );
+  }, [dispatch, updating]);
+  useEffect(() => {
+    // if (!sourceUpdateInfo.pollingFlag) {
+      dispatch(
+        setSourceUpdateInfoAction({
+          pollingFlag: switchFlag,
+        })
+      );
+    // }
+  }, [dispatch, switchFlag]);
   useEffect(() => {
     checkIfHadSetPwd();
   }, [checkIfHadSetPwd]);
@@ -42,9 +80,18 @@ const usePollingUpdateAllSources = () => {
     !!userPassword && checkIfHadSetPwd();
   }, [userPassword, checkIfHadSetPwd]);
   // const [updating, updateF] = useUpdateAllSources(true);
-  const [updating, updateF] = useUpdateAllSources();
+
+  useEffect(() => {
+    dispatch(
+      setSourceUpdateInfoAction({
+        lastUpdating: updating,
+      })
+    );
+  }),
+    [updating, dispatch];
 
   useInterval(updateF as () => void, delay, switchFlag, true);
+  // useInterval(countDownFn, 1 * ONEMINUTE, countDownSwitch, true);
 };
 
 export default usePollingUpdateAllSources;

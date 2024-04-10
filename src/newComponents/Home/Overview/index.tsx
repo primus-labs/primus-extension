@@ -178,9 +178,6 @@ const Overview = memo(() => {
                   ['dataSource', 'zkAttestation'].includes(i.id) && (
                     <SplicedIcons
                       list={iconListFn(i.id)}
-                      onClick={(k) => {
-                        handleDataSourceDetail(i.id, k);
-                      }}
                     />
                   )
                 ) : (

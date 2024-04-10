@@ -78,6 +78,7 @@ const useUpdateExSources = (flag = false) => {
           }
         } else {
           if (msg === 'AuthenticationError') {
+            debugger // TODO-newui
             curSourceUserInfo.expired = '1';
             await chrome.storage.local.set({
               [name]: JSON.stringify(curSourceUserInfo),

@@ -58,6 +58,7 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
               onClick={() => {
                 handleClick(i);
               }}
+              key={i.id}
             />
           );
         })}

@@ -18,11 +18,6 @@ import { gte, sub, add, getCurrentDate, formatFullTime } from '@/utils/utils';
 import { exportCsv } from '@/utils/exportFile';
 
 import { BIGZERO } from '@/config/constants';
-
-import type { ConnectSourceType } from '@/types/dataSource';
-import type { Dispatch } from 'react';
-import type { UserState } from '@/types/store';
-// import type { SocialDatas } from '@/types/dataSource';
 import type {
   DataSourceItemType,
   AssetsMap,
@@ -31,6 +26,7 @@ import PButton from '@/newComponents/PButton';
 import PEye from '@/newComponents/PEye';
 import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 import AssetsBalance from '@/newComponents/AssetsBalance';
+import UpdateDataSourceTip from '@/newComponents/UpdateDataSourceTip';
 import './index.scss';
 
 const Overview = memo(() => {
@@ -44,6 +40,7 @@ const Overview = memo(() => {
   const { sourceMap } = useAllSources();
   console.log('22connectedDataSources', sourceMap); //delete
   const navigate = useNavigate();
+  const sourceUpdateInfo = useSelector((state) => state.sourceUpdateInfo);
   const connectedOnChainSources = useMemo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);
@@ -399,10 +396,8 @@ const Overview = memo(() => {
       <div className="title">
         <span>Data Dashboard</span>
         <div className="operations">
-          <div className="updateTip">
-            <span>Updated 4mins ago</span>
-            <img src={iconUpdate} />
-          </div>
+          {/* <UpdateDataSourceTip /> */}
+
           <PButton
             type="secondary"
             size="s"

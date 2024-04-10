@@ -131,7 +131,6 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
         axisLabel: {
           fontSize: 6,
           formatter: function (value, idx) {
-            
             if (value) {
               return '{' + value + '| }';
             } else {
@@ -145,6 +144,9 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
       yAxis: {
         type: 'value',
         position: 'right',
+        minInterval: 1,
+        // maxInterval: 3,
+        // interval: 3
       },
       series,
     };

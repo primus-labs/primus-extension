@@ -13,7 +13,7 @@ const SplicedIcons: React.FC<PBackProps> = memo(
       return newList;
     }, [list, max]);
     const handleClick = useCallback((e, k) => {
-      e.stopPropagation();
+      // e.stopPropagation();
       onClick && onClick(k);
     }, []);
     return (

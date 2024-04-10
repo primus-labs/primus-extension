@@ -76,6 +76,12 @@ type NFT = {
 type NftsMap = {
   [propName: string]: NFT;
 };
+type SourceUpdateInfo = {
+  lastUpdateFromNow: number;
+  lastUpdating: boolean;
+  pollingFlag: boolean;
+};
+
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
@@ -86,6 +92,8 @@ export type UserState = {
   socialSources: SocialDatas;
   kycSources: any;
   sourceUpdateFrequency: string;
+  sourceUpdateInfo: SourceUpdateInfo;
+
   proofTypes: PROOFTYPEITEM[];
   webProofTypes: any[];
   credentials: CREDENTIALS;

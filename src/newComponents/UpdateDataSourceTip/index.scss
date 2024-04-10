@@ -1,0 +1,13 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.updateTip {
+  @include frsc;
+  gap: var(--spacing-4);
+  @include BodyBody300;
+  color: var(--text-tokens-text-tertiary);
+  .rotate {
+    animation: spin 2s linear infinite;
+  }
+}
