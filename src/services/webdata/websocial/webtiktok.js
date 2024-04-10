@@ -17,7 +17,7 @@ class WebTikTok extends WebSocial {
 
     this.userName = res.data.username;
     this.userInfo.userName = res.data.username;
-    this.createdTime = res.data.connects[0].create_time * 1000;
+    this.createdTime = (res.data.create_time ?? res.data.connects[0]?.create_time) * 1000;
   }
 
 }
