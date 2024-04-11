@@ -10,6 +10,7 @@
     width: 100%;
     padding: var(--spacing-24);
     @include frbc;
+    align-items: flex-end;
     gap: var(--spacing-24);
     @include clickableCard;
 
@@ -43,11 +44,12 @@
 
     .detailBtn {
       width: fit-content;
-      height: var(--spacing-20);
       @include TextLinkLink;
-      height: var(--spacing-18);
+      height: 21px;
+      margin-bottom: -5px;
       .iconfont {
         align-self: flex-start;
+        line-height: 1;
       }
     }
   }

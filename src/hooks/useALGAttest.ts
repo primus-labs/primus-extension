@@ -202,6 +202,7 @@ const useAttest = function useAttest() {
             type: 'suc',
             title: `${activeAttestation.attestationType} is created!`,
             desc: '',
+            link: '/zkAttestation',
           };
           if (pathname !== '/zkAttestation') {
             msgObj.desc = 'You can see details in the zkAttestation page.';

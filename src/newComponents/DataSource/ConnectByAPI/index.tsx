@@ -1,10 +1,11 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setActiveConnectDataSource } from '@/store/actions';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import SetPwd from '@/newComponents/SetPwdDialog/SetPwdForm';
 import SetAPI from '@/newComponents/SetAPIDialog/SetAPIForm';
-import OrderItem from '@/newComponents/OrderItem'
+import OrderItem from '@/newComponents/OrderItem';
 import iconDone from '@/assets/newImg/layout/iconDone.svg';
 import type { UserState } from '@/types/store';
 import './index.scss';
@@ -17,12 +18,13 @@ interface PButtonProps {
 
 const Nav: React.FC<PButtonProps> = memo(
   ({ onClose, onSubmit, sourceName }) => {
+    const dispatch = useDispatch();
     const [step, setStep] = useState<number>(1);
     // const [hadSetPwd, setHadSetPwd] = useState<boolean>(false);
     const lastLoginHasPwd = useSelector(
       (state: UserState) => state.lastLoginHasPwd
     );
-    
+
     const handleSubmitSetPwdDialog = useCallback(() => {
       // onSubmit();
       setStep(2);
@@ -41,12 +43,20 @@ const Nav: React.FC<PButtonProps> = memo(
     useEffect(() => {
       setStep(lastLoginHasPwd ? 3 : 1);
     }, []);
+    const handleClose = useCallback(async () => {
+      await dispatch(
+        setActiveConnectDataSource({
+          loading: 0,
+        })
+      );
+      onClose();
+    }, [onClose, dispatch]);
 
     return (
       <PMask>
         {/* onClose={onClose} closeable={!fromEvents} */}
         <div className="pDialog2 connectByAPIDialog">
-          <PClose onClick={onClose} />
+          <PClose onClick={handleClose} />
           <main>
             <header>
               <h1>Connect by API</h1>

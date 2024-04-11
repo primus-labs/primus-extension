@@ -45,22 +45,17 @@ const ConnectDataSource: React.FC = memo(({}) => {
     return activeDataSouceMetaInfo?.connectType;
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(async () => {
+    await dispatch(
+      setActiveConnectDataSource({
+        loading: 1,
+      })
+    );
     if (lowerCaseDataSourceName === 'web3 wallet') {
-      await dispatch(
-        setActiveConnectDataSource({
-          loading: 1,
-        })
-      );
       await dispatch({ type: 'setRequireFetchAssets', payload: true });
       dispatch(setConnectWalletDialogVisibleAction(1));
       return;
     }
     if (activeConnectType === 'API') {
-      await dispatch(
-        setActiveConnectDataSource({
-          loading: 1,
-        })
-      );
       setVisibleConnectByAPI(true);
     } else if (activeConnectType === 'Web') {
       const currRequestObj = webProofTypes.find(
@@ -87,11 +82,6 @@ const ConnectDataSource: React.FC = memo(({}) => {
         },
       });
     } else if (activeConnectType === 'Auth') {
-      await dispatch(
-        setActiveConnectDataSource({
-          loading: 1,
-        })
-      );
       var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
       authorize(authorizeSourceKey, () => {
         dispatch(setSocialSourcesAsync());

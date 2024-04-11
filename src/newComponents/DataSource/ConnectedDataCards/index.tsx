@@ -116,7 +116,10 @@ const Cards: React.FC<PDropdownProps> = memo(
         // X Tiktok Zan User Name
         // G Account' Email address
         // Web3 Wallet Wallet Address
-        if (['binance', 'okx'].includes(lowerCaseDataSourceName)) {
+        if (['binance'].includes(lowerCaseDataSourceName)) {
+          activeLabel = 'UserID';
+        }
+        if ([ 'okx'].includes(lowerCaseDataSourceName)) {
           activeLabel = 'Account';
         }
         if (

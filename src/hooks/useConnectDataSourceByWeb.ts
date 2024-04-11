@@ -26,26 +26,26 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
-  const padoServicePortListener = useCallback(
-    async function (message: any) {
-      const { type } = message;
-      if (type === 'dataSourceWeb') {
-        const { name } = message;
-        if (name === 'start') {
-          dispatch(setActiveConnectDataSource({loading:1}));
-        }
-      }
-    },
-    [dispatch]
-  );
+  // const padoServicePortListener = useCallback(
+  //   async function (message: any) {
+  //     const { type } = message;
+  //     if (type === 'dataSourceWeb') {
+  //       const { name } = message;
+  //       if (name === 'start') {
+  //         dispatch(setActiveConnectDataSource({loading:1}));
+  //       }
+  //     }
+  //   },
+  //   [dispatch]
+  // );
 
-  useEffect(() => {
-    if (padoServicePort) {
-      padoServicePort.onMessage.addListener(padoServicePortListener);
-      return () => {
-        padoServicePort.onMessage.removeListener(padoServicePortListener);
-      };
-    }
-  }, [padoServicePort, padoServicePortListener]);
+  // useEffect(() => {
+  //   if (padoServicePort) {
+  //     padoServicePort.onMessage.addListener(padoServicePortListener);
+  //     return () => {
+  //       padoServicePort.onMessage.removeListener(padoServicePortListener);
+  //     };
+  //   }
+  // }, [padoServicePort, padoServicePortListener]);
 };
 export default useAlgorithm;

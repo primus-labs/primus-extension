@@ -14,6 +14,8 @@
 }
 
 #pado-extension-content {
+  --text-tokens-text-tertiary: #6f6f6f;
+  --text-tokens-text-primary: #161616;
   @include frcc;
   display: flex;
   position: fixed;
@@ -44,7 +46,7 @@
     &.result {
       // padding-top: var(--spacing-24, 24px);
       .center {
-        padding: var(--spacing-24, 24px) ;
+        padding: var(--spacing-24, 24px);
       }
     }
     .header {
@@ -92,12 +94,12 @@
           gap: var(--spacing-8, 8px);
           &.suc {
             .label {
-              color: var(--text-tokens-text-correct);
+              color: var(--text-tokens-text-correct, #24a148);
             }
           }
           &.fail {
             .label {
-              color: var(--text-tokens-text-error);
+              color: var(--text-tokens-text-error, #fa4d56);
             }
           }
           .label {
@@ -111,7 +113,7 @@
           .value {
             text-align: center;
             width: 100%;
-            color: var(--text-tokens-text-tertiary);
+            color: var(--text-tokens-text-tertiary, #6f6f6f);
           }
         }
       }

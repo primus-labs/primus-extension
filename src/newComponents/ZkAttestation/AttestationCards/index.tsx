@@ -237,7 +237,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                   <div className="header">
                     <PTag
                       text={`${i.attestationType}`}
-                      color={ATTESTATIONTYPEMAP[i.attestationType].color}
+                      color={ATTESTATIONTYPEMAP[i.attestationType]?.color}
                     />
                     <div className="operations">
                       <PButton
@@ -294,8 +294,8 @@ const Cards: React.FC<PDropdownProps> = memo(
                   <div className="brief">
                     <SplicedIcons
                       list={[
-                        ATTESTATIONTYPEMAP[i.attestationType].icon,
-                        getDataSourceMetaInfo(i.source).icon,
+                        ATTESTATIONTYPEMAP[i.attestationType]?.icon,
+                        getDataSourceMetaInfo(i.source)?.icon,
                       ]}
                     />
                     <div className="intro">

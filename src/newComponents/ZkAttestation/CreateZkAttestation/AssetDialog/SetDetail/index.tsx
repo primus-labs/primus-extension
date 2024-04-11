@@ -39,9 +39,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, presets }) => {
     const dataSourceId = presets.dataSourceId;
     // const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
-    // console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
+
     const [activeDataSouceUserInfo, setActiveDataSouceUserInfo] =
       useState<any>();
+    console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
     const dispatch: Dispatch<any> = useDispatch();
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { setActiveConnectDataSource } from '@/store/actions';
 import { switchAccount } from '@/services/wallets/metamask';
 import useDataSource from '@/hooks/useDataSource';
 import useAuthorization from '@/hooks/useAuthorization';
@@ -40,6 +41,9 @@ const DataSourceItem = memo(() => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
+  const activeConnectDataSource = useSelector(
+    (state: UserState) => state.activeConnectDataSource
+  );
   const {
     metaInfo: activeDataSouceMetaInfo,
     userInfo: activeDataSouceUserInfo,
@@ -64,7 +68,13 @@ const DataSourceItem = memo(() => {
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(
     async (from = 1) => {
+      await dispatch(
+        setActiveConnectDataSource({
+          loading: 1,
+        })
+      );
       if (lowerCaseDataSourceName === 'web3 wallet') {
+        // from: 1 first connect wallet,2:switch wallet account connect
         if (from === 2) {
           switchAccount(connectedWallet?.provider);
           return;
@@ -170,6 +180,7 @@ const DataSourceItem = memo(() => {
               <PButton
                 className="connectBtn"
                 text={btnTxtEl}
+                loading={activeConnectDataSource.loading === 1}
                 size="s"
                 onClick={() => {
                   handleConnect(2);
@@ -200,6 +211,7 @@ const DataSourceItem = memo(() => {
               <PButton
                 className="connectBtn"
                 text={btnTxtEl}
+                loading={activeConnectDataSource.loading === 1}
                 size="s"
                 onClick={() => {
                   handleConnect(1);

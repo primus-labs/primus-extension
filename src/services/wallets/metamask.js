@@ -6,6 +6,7 @@ import {
   connectWalletAsync,
   setActiveConnectWallet,
   setActiveOnChain,
+  setActiveConnectDataSource,
 } from '@/store/actions';
 var provider;
 
@@ -46,7 +47,7 @@ export const connectWallet = async (targetNetwork) => {
 export const switchChain = async () => {
   // provider = p ?? provider;
   const connectedChainId = await provider.request({ method: 'eth_chainId' });
-  
+
   let chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency;
   const tNetwork = store.getState().activeConnectWallet.network;
   if (!tNetwork) {
@@ -93,7 +94,7 @@ export const switchChain = async () => {
       } catch (addError) {
         store.dispatch(setActiveConnectWallet({ network: undefined }));
         store.dispatch(setActiveOnChain({ loading: 0 }));
-        
+
         console.error(addError);
       }
     } else if (err.code === 4001) {
@@ -252,6 +253,11 @@ export const switchAccount = async (provider) => {
       console.log('eth_accounts permission successfully requested!');
     }
   } catch (error) {
+    store.dispatch(
+      setActiveConnectDataSource({
+        loading: 3,
+      })
+    );
     if (error.code === 4001) {
       // EIP-1193 userRejectedRequest error
       console.log('Permissions needed to continue.');

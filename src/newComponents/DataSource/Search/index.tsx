@@ -51,6 +51,7 @@ const Search: React.FC = () => {
         value={dataSourceQueryType}
         onChange={handleChangeType}
         prefix={<i className="iconfont icon-iconFilter prefix"></i>}
+        showSelf={true}
       />
       <PInput
         className="serachStr"

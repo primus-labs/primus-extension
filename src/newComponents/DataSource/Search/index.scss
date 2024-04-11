@@ -30,5 +30,19 @@
         color: var(--text-tokens-text-placeholder);
       }
     }
+    .PDropdown .dropdownOptions .dropdownOption {
+      .dropdownOptionCon {
+        padding-left: var(--spacing-8);
+        .left {
+          gap: var(--spacing-8);
+          .iconfont {
+            font-size: var(--spacing-16);
+          }
+          .placeHolder {
+            width: var(--spacing-16);
+          }
+        }
+      }
+    }
   }
 }

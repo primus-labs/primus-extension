@@ -156,7 +156,7 @@ const PSelect: React.FC<PSelectProps> = memo(
           onMouseEnter={handleEnter}
           onMouseLeave={handleLeave}
         >
-          {prefix}
+          {!isOpen && prefix}
           <div className="valueWrapper">
             {value ? (
               <>

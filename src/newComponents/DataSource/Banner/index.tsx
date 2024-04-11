@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import PButton from '@/newComponents/PButton';
 import './index.scss'
+import PTooltip from '@/newComponents/PTooltip';
 
 const Search: React.FC = () => {
   const handleStart = useCallback(() => {}, []);
@@ -16,13 +17,15 @@ const Search: React.FC = () => {
           Real World Assets and data to fulfill Web3 ecosystems.
         </div>
       </div>
-      <PButton
-        className="startBtn"
-        text="Start now"
-        type="secondary"
-        size="s"
-        onClick={handleStart}
-      />
+      <PTooltip title={`coming soon`}>
+        <PButton
+          className="startBtn"
+          text="Start now"
+          type="secondary"
+          size="s"
+          onClick={handleStart}
+        />
+      </PTooltip>
     </div>
   );
 };

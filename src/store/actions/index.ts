@@ -262,6 +262,11 @@ export const connectWalletAsync = (
           })
         );
         await dispatch(setConnectWalletDialogVisibleAction(0));
+        await dispatch(
+          setActiveConnectDataSource({
+            loading: 2,
+          })
+        );
         if (sucFn) {
           sucFn && (await sucFn({ id: type, name: type, address, provider }));
         } else {
@@ -294,6 +299,11 @@ export const connectWalletAsync = (
           );
           await dispatch(setConnectWalletDialogVisibleAction(0));
           await getChainAssets(signature, timestamp, address, dispatch, label);
+          await dispatch(
+            setActiveConnectDataSource({
+              loading: 2,
+            })
+          );
           sucFn &&
             (await sucFn({
               name: type,
@@ -307,6 +317,11 @@ export const connectWalletAsync = (
     } catch (e) {
       console.log('connectWalletAsync catch e=', e);
       errorFn && errorFn();
+      await dispatch(
+        setActiveConnectDataSource({
+          loading: 3,
+        })
+      );
     }
   };
 };

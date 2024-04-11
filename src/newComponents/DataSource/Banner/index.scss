@@ -19,10 +19,23 @@
     width: 873px;
     gap: var(--spacing-4);
     .title {
-      @include HeadlineH4;
+      font-family: IBM Plex Sans;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 22px;
     }
     .desc {
       @include BodyBody100;
+    }
+  }
+  .PTooltip {
+    .tooltip {
+      background: var(--layer-tokens-layer-05);
+      color: var(--text-tokens-text-inverse);
+      &:after {
+        background: var(--layer-tokens-layer-05);
+        transform: rotate(45deg);
+      }
     }
   }
 }
