@@ -1,18 +1,84 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
 .eventsSlider {
   width: 100%;
-  margin-top: -18px;
+  height: 144px;
   .slick-slider {
     .slick-list .slick-slide > div {
       // padding-top: 33px;
-      .sliderImg {
+      // .sliderImg {
+      //   width: 100%;
+      //   height: auto;
+      //   cursor: pointer;
+      // }
+      .homeBanner {
         width: 100%;
-        height: auto;
-        cursor: pointer;
+        height: 144px;
+        @include frsc;
+        border-radius: var(--spacing-8);
+        border: 1px solid var(--border-tokens-border-primary);
+        // background-color: var(--layer-tokens-layer-bp);
+        background-color: #e8ffff; // TODO-newui
+        // background-image: url(../../../assets/newImg/home/bannerBg.svg);
+        // background-repeat: no-repeat;
+        // background-size: 872px 144px;
+        // background-position: right center;
+        position: relative;
+        .bg{
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 872px;
+          height: 144px;
+        }
+        .content {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          padding: 0 33px;
+          @include frbc;
+          .intro {
+            @include fcss;
+            gap: var(--spacing-14);
+            .brief {
+              @include fcss;
+              gap: var(--spacing-2);
+              h1 {
+                @include HeadlineH1;
+                color: var(--text-tokens-text-primary);
+              }
+              h3 {
+                @include BodyBody300;
+                color: var(--text-tokens-text-tertiary);
+                width: 409px;
+              }
+            }
+            .desc {
+              @include frsc;
+              gap: var(--spacing-18);
+              @include Label01;
+              
+              .left,
+              .right {
+                @include frsc;
+                align-items: flex-end;
+                gap: var(--spacing-4);
+                .iconfont {
+                  font-size: var(--spacing-16);
+                  color: var(--Icon-Tokens-icon-primary);
+                }
+              }
+            }
+          }
+          .joinBtn {
+          }
+        }
       }
     }
     .slick-dots {
-      bottom: 130px;
-      height: 0;
+      bottom: 154px;
+      height: 4px;
       gap: var(--spacing-8);
       li {
         width: auto;

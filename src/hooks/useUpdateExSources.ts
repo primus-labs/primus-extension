@@ -77,12 +77,13 @@ const useUpdateExSources = (flag = false) => {
             });
           }
         } else {
-          if (msg === 'AuthenticationError') {
-            debugger // TODO-newui
-            curSourceUserInfo.expired = '1';
-            await chrome.storage.local.set({
-              [name]: JSON.stringify(curSourceUserInfo),
-            });
+          if (msg === 'AuthenticationError') { // TODO-newui
+            if (curSourceUserInfo) {
+              curSourceUserInfo.expired = '1';
+              await chrome.storage.local.set({
+                [name]: JSON.stringify(curSourceUserInfo),
+              });
+            }
           }
         }
       }
