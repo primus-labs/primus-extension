@@ -12,6 +12,7 @@ import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
 import DataSourceBrief from '../DataSourceBrief';
 import ConnectDataSource from '../ConnectDataSource';
+import PTooltip from '@/newComponents/PTooltip';
 
 import './index.scss';
 
@@ -63,8 +64,16 @@ const Cards: React.FC<PDropdownProps> = memo(
 
     const handleDetail = useCallback(
       (i) => {
-        // onClick && onClick(i);
-        navigate(`/datas/data?dataSourceId=${i.id}`);
+        if (sourceMap2[i.id]?.expired === '1') {
+          dispatch(
+            setActiveConnectDataSource({
+              dataSourceId: i.id,
+              loading: 0,
+            })
+          );
+        } else {
+          navigate(`/datas/data?dataSourceId=${i.id}`);
+        }
       },
       [navigate]
     );
@@ -119,25 +128,28 @@ const Cards: React.FC<PDropdownProps> = memo(
                           <i className="iconfont icon-iconConnection"></i>
                           <span>{connectionNumFn(i)}</span>
                         </div>
-
                         {sourceMap2[i.id]?.expired === '1' && (
+                          <PTooltip title={`Login session expired`}>
+                            <PButton
+                              className="reconnectBtn"
+                              type="icon"
+                              icon={<i className="iconfont icon-iconInfo"></i>}
+                              onClick={() => {
+                                handleConnect(i);
+                              }}
+                            />
+                          </PTooltip>
+                        )}
+                        {sourceMap2[i.id]?.expired !== '1' && (
                           <PButton
-                            className="reconnectBtn"
+                            className="deleteBtn"
                             type="icon"
-                            icon={<i className="iconfont icon-iconInfo"></i>}
+                            icon={<i className="iconfont icon-iconDelete"></i>}
                             onClick={() => {
-                              handleConnect(i);
+                              handleDelete(i);
                             }}
                           />
                         )}
-                        {sourceMap2[i.id]?.expired !== '1' && <PButton
-                          className="deleteBtn"
-                          type="icon"
-                          icon={<i className="iconfont icon-iconDelete"></i>}
-                          onClick={() => {
-                            handleDelete(i);
-                          }}
-                        />}
                       </div>
                     )}
                   </div>

@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-
+import { switchAccount } from '@/services/wallets/metamask';
 import useDataSource from '@/hooks/useDataSource';
 import useAuthorization from '@/hooks/useAuthorization';
 import {
   setSocialSourcesAsync,
   setConnectWalletDialogVisibleAction,
 } from '@/store/actions';
-import {DATASOURCEMAP } from '@/config/dataSource';
+import { DATASOURCEMAP } from '@/config/dataSource';
 import type { Dispatch } from 'react';
 
 import type { UserState } from '@/types/store';
@@ -37,6 +37,9 @@ const DataSourceItem = memo(() => {
   const lowerCaseDataSourceName = dataSourceName?.toLocaleLowerCase();
 
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   const {
     metaInfo: activeDataSouceMetaInfo,
     userInfo: activeDataSouceUserInfo,
@@ -59,20 +62,26 @@ const DataSourceItem = memo(() => {
   const btnTxtEl = useMemo(() => {
     return activeConnectType ? 'Connect by ' + activeConnectType : 'Connect';
   }, [activeDataSouceMetaInfo]);
-  const handleConnect = useCallback(async () => {
-    if (lowerCaseDataSourceName === 'web3 wallet') {
-      await dispatch({ type: 'setRequireFetchAssets', payload: true });
-      dispatch(setConnectWalletDialogVisibleAction(1));
-      return;
-    }
-    if (activeConnectType === 'API') {
-      setVisibleConnectByAPI(true);
-    } else if (activeConnectType === 'Web') {
-      let currRequestObj = webProofTypes.find(
-        (r: any) => r.dataSource === lowerCaseDataSourceName
-      );
-      // TODO-newui
-      /*if (lowerCaseDataSourceName === 'tiktok') {
+  const handleConnect = useCallback(
+    async (from = 1) => {
+      if (lowerCaseDataSourceName === 'web3 wallet') {
+        if (from === 2) {
+          switchAccount(connectedWallet?.provider);
+          return;
+        } else {
+          await dispatch({ type: 'setRequireFetchAssets', payload: true });
+          dispatch(setConnectWalletDialogVisibleAction(1));
+          return;
+        }
+      }
+      if (activeConnectType === 'API') {
+        setVisibleConnectByAPI(true);
+      } else if (activeConnectType === 'Web') {
+        let currRequestObj = webProofTypes.find(
+          (r: any) => r.dataSource === lowerCaseDataSourceName
+        );
+        // TODO-newui
+        /*if (lowerCaseDataSourceName === 'tiktok') {
         currRequestObj.datasourceTemplate.requests[0] = {
           name: 'first',
           url: 'https://www.tiktok.com/api/user/detail/',
@@ -82,26 +91,28 @@ const DataSourceItem = memo(() => {
           cookies: ['sessionid', 'tt-target-idc'],
         };
       }*/
-      //if currRequestObj is undefined, try to find locally
-      if(!currRequestObj){
-        currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
+        //if currRequestObj is undefined, try to find locally
+        if (!currRequestObj) {
+          currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
+        }
+        // TODO END
+        chrome.runtime.sendMessage({
+          type: 'dataSourceWeb',
+          name: 'init',
+          operation: 'connect',
+          params: {
+            ...currRequestObj,
+          },
+        });
+      } else if (activeConnectType === 'Auth') {
+        var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
+        authorize(authorizeSourceKey, () => {
+          dispatch(setSocialSourcesAsync());
+        });
       }
-      // TODO END
-      chrome.runtime.sendMessage({
-        type: 'dataSourceWeb',
-        name: 'init',
-        operation: 'connect',
-        params: {
-          ...currRequestObj,
-        },
-      });
-    } else if (activeConnectType === 'Auth') {
-      var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
-      authorize(authorizeSourceKey, () => {
-        dispatch(setSocialSourcesAsync());
-      });
-    }
-  }, [dispatch]);
+    },
+    [dispatch, connectedWallet]
+  );
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
@@ -160,7 +171,9 @@ const DataSourceItem = memo(() => {
                 className="connectBtn"
                 text={btnTxtEl}
                 size="s"
-                onClick={handleConnect}
+                onClick={() => {
+                  handleConnect(2);
+                }}
               />
             )}
           </div>
@@ -188,7 +201,9 @@ const DataSourceItem = memo(() => {
                 className="connectBtn"
                 text={btnTxtEl}
                 size="s"
-                onClick={handleConnect}
+                onClick={() => {
+                  handleConnect(1);
+                }}
               />
             </div>
           )}

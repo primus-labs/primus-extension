@@ -57,6 +57,23 @@
               font-size: var(--spacing-12);
             }
           }
+          .PTooltip {
+            .tooltip {
+              top: 22px;
+              background: var(--layer-tokens-layer-05);
+              color: var(--text-tokens-text-inverse);
+              // left: calc(var(--spacing-8) * -1);
+              left: -114px;
+              width: 136px;
+              height: 28px;
+              transform: none;
+              &:after {
+                background: var(--layer-tokens-layer-05);
+                left:116px;
+                transform: rotate(45deg);
+              }
+            }
+          }
         }
       }
 

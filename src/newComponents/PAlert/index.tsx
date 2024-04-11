@@ -49,7 +49,7 @@ const PAlert: React.FC<Msg> = memo(
               <h2 className="descWrapper">
                 <span className="desc">{desc}</span>
                 {type === 'warn' && code && (
-                  <span className="code">&nbsp;Error code:{code}</span>
+                  <span className="code">&nbsp;{code}</span>
                 )}
               </h2>
             )}

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import {
   setAttestLoading,
   setCredentialsAsync,
@@ -40,6 +40,7 @@ import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 const useAttest = function useAttest() {
+  const { pathname } = useLocation();
   const { sourceMap2 } = useAllSources();
   const { msgs, addMsg } = useMsgs();
   const dispatch: Dispatch<any> = useDispatch();
@@ -171,7 +172,8 @@ const useAttest = function useAttest() {
             ...content,
             ...parsedActiveRequestAttestation,
             ...activeAttestation,
-            account: sourceMap2[activeAttestation.dataSourceId]?.userInfo?.userName,
+            account:
+              sourceMap2[activeAttestation.dataSourceId]?.userInfo?.userName,
           };
 
           const credentialsObj = { ...credentialsFromStore };
@@ -199,7 +201,11 @@ const useAttest = function useAttest() {
           const msgObj = {
             type: 'suc',
             title: `${activeAttestation.attestationType} is created!`,
+            desc: '',
           };
+          if (pathname !== '/zkAttestation') {
+            msgObj.desc = 'You can see details in the zkAttestation page.';
+          }
           if (activeAttestation.dataSourceId === 'coinbase') {
           } else {
             addMsg(msgObj);
@@ -450,6 +456,7 @@ const useAttest = function useAttest() {
       credentialsFromStore,
       activeAttestation,
       sourceMap2,
+      pathname,
     ]
   );
   useAlgorithm(

@@ -1,25 +1,25 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { setMsgs } from '@/store/actions';
 import type { UserState } from '@/types/store';
 
 const useMsgs = function useMsgs() {
+  const { pathname } = useLocation();
   const dispatch = useDispatch();
-  const [msgId, setMsgId] = useState<string>();
+  const [msgObj, setMsgObj] = useState<any>();
   const msgs = useSelector((state: UserState) => state.msgs);
   const addMsg = useCallback(
     (infoObj) => {
       const id = Date.now() + '';
-      setMsgId(id);
+      const newObj = {
+        id,
+        ...infoObj,
+      };
+      setMsgObj(newObj);
       const newMsgs = {
         ...msgs,
-        [id]: {
-          id,
-          ...infoObj,
-          // type: 'error',
-          // title: 'Unable to proceed',
-          // desc: 'Please try again later.',
-        },
+        [id]: newObj,
       };
       dispatch(setMsgs(newMsgs));
     },
@@ -36,16 +36,17 @@ const useMsgs = function useMsgs() {
     [msgs, dispatch]
   );
   useEffect(() => {
-    if (msgId) {
+    if (msgObj?.id) {
+      const delay = msgObj?.link === pathname ? 5000 : 8000;
       let timer = setTimeout(() => {
-        deleteMsg(msgId);
-      }, 5000);
+        deleteMsg(msgObj?.id);
+      }, delay); // TODO-newui
       // return () => {
       //   clearTimeout(timer);
       // }
     }
-  }, [msgId]);
- 
+  }, [msgObj]);
+
   return { msgs, addMsg, deleteMsg };
 };
 export default useMsgs;

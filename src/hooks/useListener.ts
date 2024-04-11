@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation,useNavigate } from 'react-router-dom';
 import {
   setExSourcesAsync,
   setSocialSourcesAsync,
@@ -27,6 +28,8 @@ import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 type UseAlgorithm = () => void;
 
 const useAlgorithm: UseAlgorithm = function useAlgorithm() {
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
   const { sourceMap2 } = useAllSources();
   const { addMsg } = useMsgs();
   const dispatch: Dispatch<any> = useDispatch();
@@ -67,6 +70,9 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
               title: 'Data connected!',
               link: `/datas/data?dataSourceId=${lowerCaseSourceName}`,
             });
+          if (pathname === '/datas') {
+            navigate(`/datas/data?dataSourceId=${lowerCaseSourceName}`);
+          }
           const eventInfo = {
             eventType: 'DATA_SOURCE_INIT',
             rawData: { type: sourceType, dataSource: lowerCaseSourceName },
@@ -204,7 +210,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
         }
       }
     },
-    [activeAttestation.loading, sourceMap2]
+    [activeAttestation.loading, sourceMap2, pathname, navigate]
   );
 
   useEffect(() => {
