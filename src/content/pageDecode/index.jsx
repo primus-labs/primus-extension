@@ -99,6 +99,7 @@ function DescEl({ status, resultStatus }) {
     : activeRequest.datasourceTemplate.host;
 
   var uiTemplate = activeRequest.uiTemplate;
+  const [loadingTxt, setLoadingTxt] = useState();
   const descList = useMemo(() => {
     if (operationType === 'connect') {
       return [{ label: 'Data Source', value: host }];
@@ -137,13 +138,25 @@ function DescEl({ status, resultStatus }) {
       ];
     }
   }, []);
-  const loadingTxt = useMemo(() => {
+  // const loadingTxt = useMemo(() => {
+  //   if (operationType === 'connect') {
+  //     return 'Connecting ...';
+  //   } else {
+  //     return 'Verifying ...';
+  //   }
+  // }, []);
+  useEffect(() => {
+    let str = '';
     if (operationType === 'connect') {
-      return 'Connecting ...';
+      setLoadingTxt('Connecting ...');
     } else {
-      return 'Verifying ...';
+      setLoadingTxt('Verifying ...');
+      // const intervalTimer = setInterval(
+      //   simulateFileUpload,
+      //   (303 / 100) * 1000
+      // );
     }
-  }, []);
+  }, [operationType]);
   const sucTxt = useMemo(() => {
     if (operationType === 'connect') {
       return 'Connect successfully!';
@@ -334,6 +347,8 @@ chrome.runtime.sendMessage(
       }
       // render
       activeRequest = response.params;
+      debugger;
+      console.log('222response', response); //delete
       operationType = response.operation;
       const container = document.getElementById('pado-extension-content');
       const root = createRoot(container);

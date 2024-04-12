@@ -9,7 +9,7 @@ import {
   setSocialSourcesAsync,
   setConnectWalletDialogVisibleAction,
 } from '@/store/actions';
-import { DATASOURCEMAP } from '@/config/dataSource';
+import { DATASOURCEMAP, SUPPORTATTESTDATASOURCES } from '@/config/dataSource';
 import type { Dispatch } from 'react';
 
 import type { UserState } from '@/types/store';
@@ -194,10 +194,12 @@ const DataSourceItem = memo(() => {
                 <h2 className="sectionTitle">Connected data</h2>
                 <ConnectedAccountsCards />
               </div>
-              <div className="attestationTypes sectionInfo">
-                <h2 className="sectionTitle">Create your attestation</h2>
-                <SupportedAttestationCards onClick={handleAttest} />
-              </div>
+              {SUPPORTATTESTDATASOURCES.includes(dataSourceName) && (
+                <div className="attestationTypes sectionInfo">
+                  <h2 className="sectionTitle">Create your attestation</h2>
+                  <SupportedAttestationCards onClick={handleAttest} />
+                </div>
+              )}
             </div>
           ) : (
             <div className="hasNoContent">

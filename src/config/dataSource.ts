@@ -45,7 +45,6 @@ export type DataSourceItemType = ExchangeMeta & {
   id: string;
 };
 
-
 export const DATASOURCEMAP: DataSourceMapType = {
   'web3 wallet': {
     id: 'web3 wallet',
@@ -186,7 +185,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: WebHuoBi,
     baseName: 'www.htx.com',
-    accountBalanceUrl: 'https://www.htx.com/-/x/pro/v1/account/spot-account/balance',
+    accountBalanceUrl:
+      'https://www.htx.com/-/x/pro/v1/account/spot-account/balance',
     jumpTo: 'https://www.htx.com/zh-cn/finance/account/spot/',
     connectType: 'Web',
   },
@@ -244,7 +244,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     requirePassphase: false,
     constructorF: WebMexc,
     baseName: 'www.mexc.com/',
-    accountBalanceUrl: 'https://www.mexc.com/api/platform/asset/api/asset/spot/convert/v2',
+    accountBalanceUrl:
+      'https://www.mexc.com/api/platform/asset/api/asset/spot/convert/v2',
     jumpTo: 'https://www.mexc.com/zh-CN/assets/spot',
     connectType: 'Web',
   },
@@ -284,3 +285,13 @@ export const guideMap = {
   bitget: 'https://docs.padolabs.org/Exchanges-API-Setup/Bitget-API-Key-Setup',
   mexc: 'https://docs.padolabs.org/Exchanges-API-Setup/MEXC-API-Key-Setup',
 };
+
+export const SUPPORTATTESTDATASOURCES = [
+  'web3 wallet',
+  'binance',
+  'okx',
+  'x',
+  'tiktok',
+  'google',
+  'coinbase',
+];

@@ -39,7 +39,6 @@ export type DataSourceItemType = ExchangeMeta & {
   id: string;
 };
 
-
 export const DATASOURCEMAP: DataSourceMapType = {
   'web3 wallet': {
     id: 'web3 wallet',
@@ -275,3 +274,13 @@ export const guideMap = {
   bitget: 'https://docs.padolabs.org/Exchanges-API-Setup/Bitget-API-Key-Setup',
   mexc: 'https://docs.padolabs.org/Exchanges-API-Setup/MEXC-API-Key-Setup',
 };
+
+export const SUPPORTATTESTDATASOURCES = [
+  'web3 wallet',
+  'binance',
+  'okx',
+  'x',
+  'tiktok',
+  'google',
+  'coinbase',
+];

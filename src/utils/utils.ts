@@ -432,6 +432,10 @@ export const getAccount = (metaInfo: any, useInfo: any) => {
     if (lowerCaseDataSourceName === 'google') {
       account = useInfo.email;
     }
+    if (lowerCaseDataSourceName === 'google') {
+      account = useInfo.screenName;
+    }
+    
   }
   return account;
 };

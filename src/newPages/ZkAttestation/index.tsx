@@ -67,9 +67,12 @@ const ZkAttestation = memo(() => {
         {/* <Banner /> */}
         <Slider />
         <AttestationTypeList onClick={handleCreate} />
-        {hasConnected && <Search />}
+
         {hasConnected ? (
-          <AttestationCards />
+          <div className="contentW">
+            <Search />
+            <AttestationCards />
+          </div>
         ) : (
           <div className="hasNoContent">
             <img src={empty} alt="" />

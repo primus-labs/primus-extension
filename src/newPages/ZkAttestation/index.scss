@@ -7,6 +7,10 @@
     padding: 40px 0;
     @include fcss;
     gap: var(--spacing-32);
+    .contentW {
+      @include fcss;
+      gap: var(--spacing-16);
+    }
     .hasNoContent {
       width: 100%;
       flex: 1;
