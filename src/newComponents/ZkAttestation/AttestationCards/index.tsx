@@ -187,10 +187,11 @@ const Cards: React.FC<PDropdownProps> = memo(
       await initCredList();
     }, [initCredList, credentialsFromStore, activeCredId]);
     const handleHideMore = () => {
-      setActiveCredId(undefined);
+      // setActiveCredId(undefined);
     };
     const handleClickDropdownItem = useCallback(
-      (operation: string) => {
+      (operation: string, i) => {
+        setActiveCredId(i.requestid);
         // setActiveItem(operation);
         if (operation === 'Update') {
           // onUpdate(item);
@@ -274,7 +275,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                           icon={<i className="iconfont icon-iconMore"></i>}
                           onClick={() => {}}
                         />
-                        {activeCredId === i.requestid && (
+                       
                           <div
                             className="dropdownWrapper"
                             onMouseEnter={() => {
@@ -284,10 +285,12 @@ const Cards: React.FC<PDropdownProps> = memo(
                           >
                             <PDropdown
                               list={otherOperationsFn(i)}
-                              onClick={handleClickDropdownItem}
+                              onClick={(operationType) => {
+                                handleClickDropdownItem(operationType, i);
+                              }}
                             />
                           </div>
-                        )}
+                        
                       </div>
                     </div>
                   </div>

@@ -1,4 +1,5 @@
 import React, { memo, useState, useCallback, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import './index.scss';
 import ConnectByAPI from '../ConnectByAPI';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +18,7 @@ interface PBackProps {
   dataSourceId: string;
 }
 const ConnectDataSource: React.FC = memo(({}) => {
+  const { pathname } = useLocation();
   useConnectDataSourceByWeb();
   const { addMsg } = useMsgs();
   const authorize = useAuthorization();
@@ -85,11 +87,16 @@ const ConnectDataSource: React.FC = memo(({}) => {
       var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
       authorize(authorizeSourceKey, () => {
         dispatch(setSocialSourcesAsync());
-        addMsg({
+        let msgObj = {
           type: 'suc',
           title: 'Data connected!',
+          desc: '',
           link: `/datas/data?dataSourceId=${lowerCaseDataSourceName}`,
-        });
+        };
+        if (!pathname.startsWith('/datas')) {
+          msgObj.desc = 'See details in the Data Source page.';
+        }
+        addMsg(msgObj);
         dispatch(
           setActiveConnectDataSource({
             loading: 2,
@@ -97,7 +104,7 @@ const ConnectDataSource: React.FC = memo(({}) => {
         );
       });
     }
-  }, [dispatch, lowerCaseDataSourceName, webProofTypes]);
+  }, [dispatch, lowerCaseDataSourceName, webProofTypes, pathname]);
   useEffect(() => {
     if (
       activeConnectDataSource?.dataSourceId &&

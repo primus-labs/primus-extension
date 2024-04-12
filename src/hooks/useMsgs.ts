@@ -9,6 +9,19 @@ const useMsgs = function useMsgs() {
   const dispatch = useDispatch();
   const [msgObj, setMsgObj] = useState<any>();
   const msgs = useSelector((state: UserState) => state.msgs);
+  console.log('222useMsgas-msgs', msgs);
+  const deleteMsg = useCallback(
+    async (id, oldMsgs = {}) => {
+      const lastMsgs =
+        msgs && Object.keys(msgs).length > 0 ? { ...msgs } : oldMsgs;
+    
+      if (lastMsgs[id]) {
+        delete lastMsgs[id];
+        dispatch(setMsgs(lastMsgs));
+      }
+    },
+    [msgs, dispatch, pathname]
+  );
   const addMsg = useCallback(
     (infoObj) => {
       const id = Date.now() + '';
@@ -17,33 +30,35 @@ const useMsgs = function useMsgs() {
         ...infoObj,
       };
       setMsgObj(newObj);
+
       const newMsgs = {
-        ...msgs,
+        // ...msgs,
         [id]: newObj,
       };
       dispatch(setMsgs(newMsgs));
+
+      console.log('222useMsgas-addMsg', msgs, newObj);
+      // const delay = newObj?.link === pathname ? 5000 : 8000;
+      // let timer = setTimeout(() => {
+      //   deleteMsg(newObj?.id, newMsgs);
+      // }, delay);
     },
-    [msgs, dispatch]
+    [msgs, dispatch, deleteMsg]
   );
-  const deleteMsg = useCallback(
-    async (id) => {
-      const lastMsgs = { ...msgs };
-      if (lastMsgs[id]) {
-        delete lastMsgs[id];
-        dispatch(setMsgs(lastMsgs));
-      }
-    },
-    [msgs, dispatch]
-  );
+
   useEffect(() => {
+    console.log('222useMsgs-useEffect', msgObj); //delete
     if (msgObj?.id) {
       const delay = msgObj?.link === pathname ? 5000 : 8000;
       let timer = setTimeout(() => {
         deleteMsg(msgObj?.id);
-      }, delay); // TODO-newui
+      }, delay);
+      console.log('222useMsgs-useEffect2', msgObj?.id, timer); //delete
       // return () => {
       //   clearTimeout(timer);
       // }
+      return () => {
+      }
     }
   }, [msgObj]);
 

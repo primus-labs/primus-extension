@@ -79,8 +79,8 @@ const Cards: React.FC<PDropdownProps> = memo(
     );
     const handleDelete = useCallback(
       (i) => {
-        setActiveDataSourceName(i.name);
-        deleteDataSourceFn(i.name);
+        setActiveDataSourceName(i.id);
+        deleteDataSourceFn(i.id);
         // TODO-newui badge
       },
       [deleteDataSourceFn]

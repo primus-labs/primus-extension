@@ -1,4 +1,5 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveConnectDataSource } from '@/store/actions';
 import { utils } from 'ethers';
@@ -21,6 +22,7 @@ interface PButtonProps {
 }
 
 const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
+  const { pathname } = useLocation();
   const dispatch = useDispatch();
   const { addMsg } = useMsgs();
   const [step, setStep] = useState<number>(1);
@@ -83,20 +85,25 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         desc: a,
       });
       if (requireFetchAssets) {
-        addMsg({
+        let msgObj = {
           type: 'suc',
           title: 'Data connected!',
+          desc: '',
           link: '/datas/data?dataSourceId=web3 wallet',
-        });
+        };
+        if (!pathname.startsWith('/datas')) {
+          msgObj.desc = 'See details in the Data Source page.';
+        }
+        addMsg(msgObj);
       }
-      
+
       dispatch(
         setActiveConnectDataSource({
           loading: 2,
         })
       );
     },
-    [addMsg, requireFetchAssets]
+    [addMsg, requireFetchAssets, pathname]
   );
   const handleSubmitConnectWallet = useCallback(
     async (wallet) => {

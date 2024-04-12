@@ -13,7 +13,9 @@ import {
   gt,
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
+  getAccount,
 } from '@/utils/utils';
+
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
@@ -109,6 +111,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const loading = useMemo(() => {
       return formLegal && attestLoading === 1;
     }, [formLegal, attestLoading]);
+    const activeAccount = useMemo(() => {
+      if (activeDataSouceUserInfo) {
+        const metaInfo = DATASOURCEMAP[dataSourceId];
+        const acc = getAccount(metaInfo, activeDataSouceUserInfo);
+        return acc;
+      } else {
+        return '';
+      }
+    }, [activeDataSouceUserInfo]);
     const totalBalanceForAttest = useMemo(() => {
       let totalBalance = '0';
       if (activeDataSouceUserInfo) {
@@ -295,7 +306,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             />
           )}
         </div>
-        {!!activeDataSouceUserInfo?.userInfo && (
+        {activeAccount && (
           <div className="staticItem">
             <label className="label">
               <span>Data Account</span>
@@ -313,9 +324,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               </PTooltip>
             </label>
             <div className="value">
-              <div className="account">
-                {activeDataSouceUserInfo?.userInfo?.userName}
-              </div>
+              <div className="account">{activeAccount}</div>
               {pswForm.verificationContent === 'Assets Proof' && (
                 <div className="balance">
                   ${new BigNumber(totalBalanceForAttest).toFixed(2)}

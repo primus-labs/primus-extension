@@ -412,3 +412,26 @@ export const getTotalBalFromNumObjAPriceObj = (numObj, priceObj) => {
   const totalBalance = totalAccBal.toFixed();
   return totalBalance;
 };
+
+export const getAccount = (metaInfo: any, useInfo: any) => {
+  let account = '';
+  const lowerCaseDataSourceName = metaInfo.id;
+  if (metaInfo.connectType === 'Web') {
+    let userName = useInfo?.userInfo?.userName;
+    if (userName) {
+      account = userName;
+    } else {
+      account = '';
+    }
+  } else if (metaInfo.connectType === 'API') {
+    account = useInfo.apiKey;
+  } else if (metaInfo.connectType === 'Auth') {
+    if (['x', 'discord'].includes(lowerCaseDataSourceName)) {
+      account = useInfo.userName;
+    }
+    if (lowerCaseDataSourceName === 'google') {
+      account = useInfo.email;
+    }
+  }
+  return account;
+};

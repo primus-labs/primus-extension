@@ -62,7 +62,7 @@ const useAuthorization = () => {
       };
       const padoServicePortListener = async function (message: any) {
         if (message.resMethodName === 'checkIsLogin') {
-          console.log('page_get:checkIsLogin:', message.res);
+          console.log('useAuthorization page_get:checkIsLogin:', message.res);
           if (message.res) {
             // if (message.params?.data_type === 'DATASOURCE') {
             // console.log('remove', newWindowId)

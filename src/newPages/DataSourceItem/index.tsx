@@ -17,7 +17,7 @@ import type { DataSourceItemType } from '@/config/dataSource';
 import PBack from '@/newComponents/PBack';
 import PButton from '@/newComponents/PButton';
 import PTag from '@/newComponents/PTag';
-import ConnectedDataCards from '@/newComponents/DataSource/ConnectedDataCards';
+import ConnectedAccountsCards from '@/newComponents/DataSource/ConnectedAccountsCards';
 import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards';
 import ConnectByAPI from '@/newComponents/DataSource/ConnectByAPI';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
@@ -192,7 +192,7 @@ const DataSourceItem = memo(() => {
             <div className="hasContent">
               <div className="connectedInfo sectionInfo">
                 <h2 className="sectionTitle">Connected data</h2>
-                <ConnectedDataCards />
+                <ConnectedAccountsCards />
               </div>
               <div className="attestationTypes sectionInfo">
                 <h2 className="sectionTitle">Create your attestation</h2>

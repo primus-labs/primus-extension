@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLocation,useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   setExSourcesAsync,
   setSocialSourcesAsync,
@@ -20,7 +20,7 @@ import { DATASOURCEMAP } from '@/config/dataSource';
 import { eventReport } from '@/services/api/usertracker';
 import { requestSignTypedData } from '@/services/wallets/utils';
 import { getUserIdentity } from '@/services/api/user';
-
+import { getAccount } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
@@ -28,8 +28,8 @@ import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 type UseAlgorithm = () => void;
 
 const useAlgorithm: UseAlgorithm = function useAlgorithm() {
-  const { pathname } = useLocation()
-  const navigate = useNavigate()
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { sourceMap2 } = useAllSources();
   const { addMsg } = useMsgs();
   const dispatch: Dispatch<any> = useDispatch();
@@ -58,18 +58,28 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
             dispatch(setSocialSourcesAsync());
           }
           if (activeAttestation.loading === 1) {
+            let acc = getAccount(
+              DATASOURCEMAP[lowerCaseSourceName],
+              sourceMap2[lowerCaseSourceName]
+            );
             setActiveAttestation({
-              account: sourceMap2[lowerCaseSourceName]?.userInfo?.userName,
+              account: acc,
             });
           }
 
           dispatch(setActiveConnectDataSource({ loading: 2 }));
-          !withoutMsg &&
-            addMsg({
+          if (!withoutMsg) {
+            let msgObj = {
               type: 'suc',
               title: 'Data connected!',
-              link: `/datas/data?dataSourceId=${lowerCaseSourceName}`,
-            });
+              desc: '',
+              link: '/datas/data?dataSourceId=web3 wallet',
+            };
+            if (!pathname.startsWith('/datas')) {
+              msgObj.desc = 'See details in the Data Source page.';
+            }
+            addMsg(msgObj);
+          }
           if (pathname === '/datas') {
             navigate(`/datas/data?dataSourceId=${lowerCaseSourceName}`);
           }

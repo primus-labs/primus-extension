@@ -19,7 +19,7 @@ import useTimeout from '@/hooks/useTimeout';
 import useInterval from '@/hooks/useInterval';
 import useAllSources from '@/hooks/useAllSources';
 import { eventReport } from '@/services/api/usertracker';
-import { postMsg, strToHex, base64ToHex, strToHexSha256 } from '@/utils/utils';
+import { postMsg, strToHex, base64ToHex, strToHexSha256, getAccount } from '@/utils/utils';
 
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
@@ -34,6 +34,7 @@ import {
   schemaTypeMap,
   GOOGLEWEBPROOFID,
 } from '@/config/constants';
+
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
@@ -168,12 +169,15 @@ const useAttest = function useAttest() {
           if (activeRequestId !== content?.requestid) {
             return;
           }
+          const acc = getAccount(
+            DATASOURCEMAP[activeAttestation.dataSourceId],
+            sourceMap2[activeAttestation.dataSourceId]
+          );
           const fullAttestation = {
             ...content,
             ...parsedActiveRequestAttestation,
             ...activeAttestation,
-            account:
-              sourceMap2[activeAttestation.dataSourceId]?.userInfo?.userName,
+            account: acc,
           };
 
           const credentialsObj = { ...credentialsFromStore };
@@ -205,7 +209,7 @@ const useAttest = function useAttest() {
             link: '/zkAttestation',
           };
           if (pathname !== '/zkAttestation') {
-            msgObj.desc = 'You can see details in the zkAttestation page.';
+            msgObj.desc = 'See details in the zkAttestation page.';
           }
           if (activeAttestation.dataSourceId === 'coinbase') {
           } else {

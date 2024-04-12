@@ -55,7 +55,13 @@
             position: relative;
             width: var(--spacing-16);
             height: var(--spacing-16);
+            &:hover {
+              .dropdownWrapper {
+                display: flex;
+              }
+            }
             .dropdownWrapper {
+              display: none;
               position: absolute;
               // z-index: 1;
               top: var(--spacing-16);

@@ -8,12 +8,7 @@ import {
 } from '@/config/attestation';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
-import {
-  gt,
-  getTotalBalFromNumObjAPriceObj,
-  getTotalBalFromAssetsMap,
-} from '@/utils/utils';
-
+import { getAccount } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
@@ -113,6 +108,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const loading = useMemo(() => {
       return formLegal && attestLoading === 1;
     }, [formLegal, attestLoading]);
+    const activeAccount = useMemo(() => {
+      if (activeDataSouceUserInfo) {
+        const metaInfo = DATASOURCEMAP[dataSourceId];
+        const acc = getAccount(metaInfo, activeDataSouceUserInfo);
+        return acc;
+      } else {
+        return '';
+      }
+    }, [activeDataSouceUserInfo]);
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
         return;
@@ -155,7 +159,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const initActiveDataSouceUserInfo = useCallback(async () => {
       const res = await chrome.storage.local.get([dataSourceId]);
       if (res[dataSourceId]) {
-        setActiveDataSouceUserInfo(JSON.parse(res[dataSourceId]));
+        const newObj = JSON.parse(res[dataSourceId]);
+        setActiveDataSouceUserInfo(newObj);
       }
     }, []);
     useEffect(() => {
@@ -222,7 +227,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             />
           )}
         </div>
-        {activeDataSouceUserInfo?.userInfo && (
+        {activeAccount && (
           <div className="staticItem">
             <label className="label">
               <span>Data Account</span>
@@ -240,13 +245,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               </PTooltip>
             </label>
             <div className="value">
-              <div className="account">
-                {activeDataSouceUserInfo?.userInfo?.userName}
-              </div>
+              <div className="account">{activeAccount}</div>
             </div>
           </div>
         )}
-
         <PButton
           text={attestLoading === 3 ? 'Try Again' : 'Next'}
           className="fullWidth confirmBtn"

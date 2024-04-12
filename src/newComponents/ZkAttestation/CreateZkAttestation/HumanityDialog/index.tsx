@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -13,7 +13,7 @@ import useEventDetail from '@/hooks/useEventDetail';
 import useAuthorization2 from '@/hooks/useAuthorization2';
 
 import { eventReport } from '@/services/api/usertracker';
-
+import { getAccount, postMsg } from '@/utils/utils';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
@@ -30,6 +30,7 @@ import OrderItem from '@/newComponents/OrderItem';
 import iconDone from '@/assets/newImg/layout/iconDone.svg';
 
 import '../AssetDialog/index.scss';
+import useAllSources from '@/hooks/useAllSources';
 
 interface PButtonProps {
   // sourceName: string;
@@ -41,6 +42,8 @@ interface PButtonProps {
 
 const Nav: React.FC<PButtonProps> = memo(
   ({ type, onClose, onSubmit, presets }) => {
+    const { sourceMap2 } = useAllSources();
+    const { pathname } = useLocation();
     const { msgs, addMsg } = useMsgs();
     const authorize = useAuthorization2();
 
@@ -63,6 +66,12 @@ const Nav: React.FC<PButtonProps> = memo(
     );
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
+    );
+    const activeAttestation = useSelector(
+      (state: UserState) => state.activeAttestation
+    );
+    const padoServicePort = useSelector(
+      (state: UserState) => state.padoServicePort
     );
     const dataSourceMetaInfo: DataSourceMapType = useMemo(() => {
       if (assetForm.dataSourceId) {
@@ -129,6 +138,24 @@ const Nav: React.FC<PButtonProps> = memo(
         }
       }
     }, []);
+    // const fetchGoogleUserInfo = useCallback(() => {
+    //   const source = 'GOOGLE'
+    //   const state = uuidv4();
+    //   postMsg(padoServicePort, {
+    //     fullScreenType: 'padoService',
+    //     reqMethodName: 'checkIsLogin',
+    //     params: {
+    //       state,
+    //       source,
+    //     },
+    //   });
+    //   console.log('page_send:checkIsLogin request');
+    //   const eventInfo = {
+    //     eventType: 'DATA_SOURCE_INIT',
+    //     rawData: { type: 'Social', dataSource: source },
+    //   };
+    //   eventReport(eventInfo);
+    // }, []);
     const fetchAttestForGoogle = useCallback(
       async (form) => {
         const isFromBASEvent = fromEvents === BASEVENTNAME;
@@ -163,6 +190,7 @@ const Nav: React.FC<PButtonProps> = memo(
           //w
           const { signatureInfo, signatureRawInfo } = res;
           const credAddress = await getCredAddrFn();
+
           const fullAttestation = {
             ...signatureInfo,
             ...signatureRawInfo,
@@ -174,17 +202,34 @@ const Nav: React.FC<PButtonProps> = memo(
             sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
             event: fromEvents,
             templateId: '100', // TODO google template id
+            dataSourceId: 'google',
+            account: '',
           };
+          const storeRes = await chrome.storage.local.get(['google']);
+          const acc = getAccount(DATASOURCEMAP['google'], JSON.parse(storeRes['google']));
+          fullAttestation.account = acc;
           if (fromEvents) {
             await storeEventInfoFn(fullAttestation);
           }
-          const credentialsObj = { ...credentialsFromStore };
+          const credentialsObj = {
+            ...credentialsFromStore,
+          };
+
           credentialsObj[attestationId] = fullAttestation;
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),
           });
           await initCredList();
-          alert('Humanity Verification is created!');
+          const msgObj = {
+            type: 'suc',
+            title: 'Humanity Verification is created!',
+            desc: '',
+            link: '/zkAttestation',
+          };
+          if (pathname !== '/zkAttestation') {
+            msgObj.desc = 'See details in the zkAttestation page.';
+          }
+          addMsg(msgObj);
           // setActiveRequest({
           //   type: 'suc',
           //   title: 'Congratulations',
@@ -208,7 +253,6 @@ const Nav: React.FC<PButtonProps> = memo(
             desc: 'Please try again later.',
           });
           // setActiveRequest(undefined);
-          // alert('attestForGoogle network error');
           dispatch(setActiveAttestation({ loading: 3 }));
           dispatch(setAttestLoading(3));
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
@@ -229,6 +273,9 @@ const Nav: React.FC<PButtonProps> = memo(
         storeBASEventInfoFn,
         dispatch,
         addMsg,
+        pathname,
+        activeAttestation,
+        sourceMap2,
       ]
     );
     const handleSubmitSetDetail = useCallback(
@@ -243,7 +290,7 @@ const Nav: React.FC<PButtonProps> = memo(
           // loading: 1,
         };
         dispatch(setActiveAttestation(activeAttestationParams));
-        
+
         if (activeAttestationParams.dataSourceId === 'google') {
           await fetchAttestForGoogle(activeAttestationParams);
         } else {
@@ -330,7 +377,7 @@ const Nav: React.FC<PButtonProps> = memo(
         setStep(2);
       }
     }, [presets]);
-    
+
     return (
       <PMask>
         {/* onClose={onClose} closeable={!fromEvents} */}

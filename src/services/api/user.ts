@@ -45,7 +45,7 @@ type RequestAuthorizationParams = {
 type CheckIsLoginParams = {
   state: string;
   source: string;
-  data_type: string;
+  data_type?: string;
 }
 type CheckIsLoginRes = {
   mc: string;
