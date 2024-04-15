@@ -206,7 +206,10 @@ const Nav: React.FC<PButtonProps> = memo(
             account: '',
           };
           const storeRes = await chrome.storage.local.get(['google']);
-          const acc = getAccount(DATASOURCEMAP['google'], JSON.parse(storeRes['google']));
+          const acc = getAccount(
+            DATASOURCEMAP['google'],
+            JSON.parse(storeRes['google'])
+          );
           fullAttestation.account = acc;
           if (fromEvents) {
             await storeEventInfoFn(fullAttestation);
@@ -338,7 +341,7 @@ const Nav: React.FC<PButtonProps> = memo(
           //     lastSubCondition.value = activeAttestationParams.verificationValue;
           //   }
           // } else if (
-          //   activeAttestationParams.verificationContent === 'Token Holding'
+          //   activeAttestationParams.verificationContent === 'Token holding'
           // ) {
           //   if (lastResponseConditionsSubconditions) {
           //     const firstSubCondition = lastResponseConditionsSubconditions[0];

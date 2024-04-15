@@ -50,6 +50,9 @@
         }
         cursor: not-allowed;
       }
+      &.selected {
+        background: var(--layer-tokens-layer-primary-hover, #f4f4f4);
+      }
       .dropdownOptionCon {
         width: 100%;
         @include frbc;
@@ -57,6 +60,7 @@
         .left {
           @include frsc;
           gap: var(--spacing-16, 16px);
+
           .placeHolder {
             width: var(--spacing-18, 18px);
           }

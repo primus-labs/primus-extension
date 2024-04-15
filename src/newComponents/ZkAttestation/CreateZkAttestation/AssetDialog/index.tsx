@@ -147,7 +147,7 @@ const Nav: React.FC<PButtonProps> = memo(
                 activeAttestationParams.verificationValue;
             }
           } else if (
-            activeAttestationParams.verificationContent === 'Token Holding'
+            activeAttestationParams.verificationContent === 'Token holding'
           ) {
             if (lastResponseConditionsSubconditions) {
               const firstSubCondition = lastResponseConditionsSubconditions[0];
@@ -172,14 +172,7 @@ const Nav: React.FC<PButtonProps> = memo(
           });
         }
       },
-      [
-        assetForm,
-        fromEvents,
-        BASEventDetail,
-        dispatch,
-        type,
-        activeAttestation,
-      ]
+      [assetForm, fromEvents, BASEventDetail, dispatch, type, activeAttestation]
     );
     useEffect(() => {
       if (presets) {

@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import PButton from '@/newComponents/PButton';
 import PTooltip from '@/newComponents/PTooltip';
 import './index.scss';
@@ -22,13 +22,24 @@ interface PDropdownProps {
 
 const PDropdown: React.FC<PDropdownProps> = memo(
   ({ onClick = () => {}, list, value, showSelf }) => {
-    const formatOptionCN = useCallback((item) => {
-      let str = 'dropdownOption';
-      if (item?.disabled) {
-        str += ' disabled';
-      }
-      return str;
+    const includeAll = useMemo(() => {
+      const includeA = list.find((i) => i.value === 'All');
+      return !!includeA;
     }, []);
+    const formatOptionCN = useCallback(
+      (item) => {
+        let str = 'dropdownOption';
+        if (item?.disabled) {
+          str += ' disabled';
+        }
+        if (value === item.value && !includeAll) {
+          str += ' selected';
+        }
+
+        return str;
+      },
+      [includeAll]
+    );
     const handleClickData = (item: NavItem) => {
       if (!item.disabled) {
         onClick(item.value, item);
@@ -47,8 +58,8 @@ const PDropdown: React.FC<PDropdownProps> = memo(
                 }}
               >
                 <div className="dropdownOptionCon">
-                  <div className="left">
-                    {showSelf &&
+                  <div className={`left`}>
+                    {includeAll &&
                       (value === item.value ? (
                         <i className="iconfont icon-Legal" />
                       ) : (
@@ -59,8 +70,7 @@ const PDropdown: React.FC<PDropdownProps> = memo(
                     ) : item.icon ? (
                       <img src={item.icon} alt="" className="iconImg" />
                     ) : undefined}
-
-                    <div className="desc">{item.label}</div>
+                    <div className={`desc`}>{item.label}</div>
                   </div>
                   {item.disabled && item?.tooltip && (
                     <PTooltip title={item?.tooltip}>

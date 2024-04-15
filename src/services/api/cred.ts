@@ -80,19 +80,21 @@ export const validateAttestationForAnt = (data: object, config: any) => {
   });
 };
 
-
 export const regenerateAttestation = (data: any, config?: any) => {
   if (data && data.rawParam) {
-    if (data.rawParam.verificationContent === "Assets Proof") {
+    if (data.rawParam.verificationContent === 'Assets Proof') {
       data.rawParam.ext = {};
       data.rawParam.ext.extRequests = {};
       data.rawParam.ext.extRequests['asset-proof'] = {};
-      data.rawParam.ext.extRequests['asset-proof'].parseSchema = JSON.stringify(data.rawParam.responses[2]);
-    } else if (data.rawParam.verificationContent === "Token Holding") {
+      data.rawParam.ext.extRequests['asset-proof'].parseSchema = JSON.stringify(
+        data.rawParam.responses[2]
+      );
+    } else if (data.rawParam.verificationContent === 'Token holding') {
       data.rawParam.ext = {};
       data.rawParam.ext.extRequests = {};
       data.rawParam.ext.extRequests['token-holding'] = {};
-      data.rawParam.ext.extRequests['token-holding'].parseSchema = JSON.stringify(data.rawParam.responses[2]);
+      data.rawParam.ext.extRequests['token-holding'].parseSchema =
+        JSON.stringify(data.rawParam.responses[2]);
     }
   }
   return request({
@@ -109,12 +111,10 @@ type GETAUTHATTESTATIONParams = {
   schemaType: string;
   address: string;
 };
-export const getAuthAttestation = (
-  data: GETAUTHATTESTATIONParams,
-) => {
+export const getAuthAttestation = (data: GETAUTHATTESTATIONParams) => {
   return request({
     method: 'get',
     url: `/oauth2/attestation`,
-    data
+    data,
   });
 };

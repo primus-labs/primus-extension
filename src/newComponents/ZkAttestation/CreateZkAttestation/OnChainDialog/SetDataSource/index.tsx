@@ -74,7 +74,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
           onChange={(v) => {
             setDataSourceName(v);
           }}
-          showSelf={false}
+         
         />
       </div>
       <PButton

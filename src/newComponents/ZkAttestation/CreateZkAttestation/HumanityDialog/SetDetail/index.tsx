@@ -1,5 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { setAttestLoading } from '@/store/actions';
 import {
   HUMANITYVERIFICATIONCONTENTTYPELIST,
   HUMANITYVERIFICATIONCONTENTTYPEMAP,
@@ -166,6 +167,14 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     useEffect(() => {
       initActiveDataSouceUserInfo();
     }, []);
+    const initAttestLoadingFn = useCallback(() => {
+      if (attestLoading > 1) {
+        dispatch(setAttestLoading(0));
+      }
+    }, [attestLoading, dispatch]);
+    useEffect(() => {
+      initAttestLoadingFn();
+    }, [pswForm]);
     return (
       <div className="pFormWrapper detailForm3">
         <div
@@ -193,7 +202,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationContent}
               disabled={presets?.verificationContent}
-              showSelf={false}
+              
             />
           )}
         </div>
@@ -223,7 +232,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationValue}
               disabled={presets?.verificationValue}
-              showSelf={false}
+              
             />
           )}
         </div>

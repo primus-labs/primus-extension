@@ -121,7 +121,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       // if (i.attestationType === 'Assets Certification') {
       //   if (i.verificationContent === 'Assets Proof') {
       //     str = 'Asset balance';
-      //   } else if (i.verificationContent === 'Token Holding') {
+      //   } else if (i.verificationContent === 'Token holding') {
       //     str = i.verificationContent;
       //   }
       // } else if (i.attestationType === 'Humanity Verification') {
@@ -138,7 +138,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       if (i.attestationType === 'Assets Certification') {
         if (i.verificationContent === 'Assets Proof') {
           str = `> $${i.verificationValue}`;
-        } else if (i.verificationContent === 'Token Holding') {
+        } else if (i.verificationContent === 'Token holding') {
           const dataSourceIconSrc = `${sysConfig.TOKEN_LOGO_PREFIX}icon${i.verificationValue}.png`;
           str = (
             <>

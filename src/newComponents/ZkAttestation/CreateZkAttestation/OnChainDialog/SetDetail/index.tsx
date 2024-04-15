@@ -85,7 +85,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'verificationContent');
             }}
             value={pswForm.verificationContent}
-            showSelf={false}
+            
           />
         </div>
         {/* different */}
@@ -100,7 +100,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'account');
             }}
             value={pswForm.account}
-            showSelf={false}
           />
         </div>
         {/* <div className="staticItem">

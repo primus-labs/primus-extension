@@ -63,7 +63,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     Object.values(credentialObj).forEach((i: any) => {
-      const compareRes = compareVersions('1.0.3', i.version);// TODO-newui!!!
+      const compareRes = compareVersions('1.0.3', i.version); // TODO-newui!!!
       if (compareRes > -1) {
         // attestation version <= '1.0.3'
         if (i.type === 'ASSETS_PROOF') {
@@ -72,7 +72,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
           i.verificationValue = i.baseValue;
         } else if (i.type === 'TOKEN_HOLDINGS') {
           i.attestationType = 'Assets Certification';
-          i.verificationContent = 'Token Holding';
+          i.verificationContent = 'Token holding';
           i.verificationValue = i.holdingToken;
         } else if (i.type === 'IDENTIFICATION_PROOF') {
           i.attestationType = 'Humanity Verification';
@@ -171,7 +171,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
       <article className="pageRight" ref={pageRightInstance}>
         <Header />
         <div className="page" ref={pageInstance}>
-          <ScrollRestoration/>
+          <ScrollRestoration />
           <Outlet />
         </div>
         <Footer />

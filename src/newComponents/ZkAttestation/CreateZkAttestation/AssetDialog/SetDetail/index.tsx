@@ -1,6 +1,7 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
+import { setAttestLoading } from '@/store/actions';
 import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
@@ -75,7 +76,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       let supportedContentIdArr: any = [];
 
       if (dataSourceId === 'coinbase') {
-        supportedContentIdArr = ['Token Holding'];
+        supportedContentIdArr = ['Token holding'];
         let list = supportedContentIdArr.map(
           (i) => ASSETSVERIFICATIONCONTENTTYPEEMAP[i]
         );
@@ -92,7 +93,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       let list = [];
       if (pswForm.verificationContent === 'Assets Proof') {
         list = [...ASSETSVERIFICATIONVALUETYPELIST];
-      } else if (pswForm.verificationContent === 'Token Holding') {
+      } else if (pswForm.verificationContent === 'Token holding') {
         if (activeDataSouceUserInfo) {
           list = Object.keys(activeDataSouceUserInfo.tokenListMap).map((i) => ({
             label: i,
@@ -180,7 +181,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const handleChangePswForm = useCallback(
       (v, formKey, upperFlag?: boolean) => {
         setPswForm((f) => {
-          const newV = upperFlag ? v.toUpperCase(): v;
+          const newV = upperFlag ? v.toUpperCase() : v;
           const newForm = { ...f, [formKey]: newV };
           console.log('newForm', f, newForm);
           return newForm;
@@ -218,6 +219,17 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     useEffect(() => {
       initActiveDataSouceUserInfo();
     }, []);
+    useEffect(() => {
+      initActiveDataSouceUserInfo();
+    }, []);
+    const initAttestLoadingFn = useCallback(() => {
+      if (attestLoading > 1) {
+        dispatch(setAttestLoading(0));
+      }
+    }, [attestLoading, dispatch]);
+    useEffect(() => {
+      initAttestLoadingFn();
+    }, [pswForm]);
 
     return (
       <div className="pFormWrapper detailForm">
@@ -246,7 +258,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationContent}
               disabled={presets?.verificationContent}
-              showSelf={false}
+             
             />
           )}
         </div>
@@ -264,9 +276,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 }}
                 value={pswForm.verificationValue}
                 disabled={presets?.verificationValue}
-                showSelf={false}
+                
               />
-            ) : pswForm.verificationContent === 'Token Holding' ? (
+            ) : pswForm.verificationContent === 'Token holding' ? (
               <PInput
                 className={verificationValueCN}
                 label="Verification Value"
@@ -290,7 +302,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 }}
                 value={pswForm.verificationValue}
                 disabled={presets?.verificationValue}
-                showSelf={false}
+                
               />
             )
           ) : (
@@ -305,7 +317,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationValue}
               disabled={presets?.verificationValue}
-              showSelf={false}
+             
             />
           )}
         </div>

@@ -34,7 +34,7 @@ const attestationTypeMap = {
   },
   2: {
     attestationType: 'Assets Certification',
-    verificationContent: 'Token Holding',
+    verificationContent: 'Token holding',
     desc: 'Token holding',
     icon: iconAttestationAssets,
     type: 'Web Data',
