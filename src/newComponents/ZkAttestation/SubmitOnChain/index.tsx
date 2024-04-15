@@ -25,7 +25,12 @@ import {
   BNBGREENFIELDSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
 } from '@/config/chain';
-import { BASEVENTNAME, SCROLLEVENTNAME, LINEAEVENTNAME } from '@/config/events';
+import {
+  BASEVENTNAME,
+  SCROLLEVENTNAME,
+  LINEAEVENTNAME,
+  ETHSIGNEVENTNAME,
+} from '@/config/events';
 import { PADOADDRESS } from '@/config/envConstants';
 import { CredVersion } from '@/config/attestation';
 
@@ -85,14 +90,90 @@ const Nav: React.FC<PButtonProps> = memo(
     const activeOnChainAttestation = useMemo(() => {
       return credentialsFromStore[activeOnChain.requestid];
     }, [credentialsFromStore, activeOnChain.requestid]);
+
+    // const formatChainList = useMemo(() => {
+    //   const ll = JSON.parse(JSON.stringify(ONCHAINLIST));
+    //   if (fromEvents) {
+    //     let newList = ll.map((i) => {
+    //       if (i.title.indexOf('opBNB') > -1) {
+    //         i.disabled = true;
+    //       }
+    //       if (fromEvents === 'Scroll') {
+    //         if (i.title.indexOf('Scroll') > -1) {
+    //           // TODO!!!
+    //           i.disabled = false;
+    //           return { ...i };
+    //         }
+    //       } else if (fromEvents === BASEVENTNAME) {
+    //         if (
+    //           i.title.indexOf('BSC') > -1 ||
+    //           i.title.indexOf('BNB Greenfield') > -1
+    //         ) {
+    //           i.disabled = false;
+    //           return { ...i };
+    //         }
+    //       } else if (fromEvents === ETHSIGNEVENTNAME) {
+    //         if (i.title.indexOf('opBNB') > -1) {
+    //           i.disabled = false;
+    //           return { ...i };
+    //         }
+    //       } else {
+    //         if (i.title === 'Linea Goerli') {
+    //           i.disabled = false;
+    //           return { ...i };
+    //         }
+    //       }
+    //       return { ...i, disabled: true };
+    //     });
+    //     if ([BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
+    //       newList = newList.filter((i) => !i.disabled);
+    //     }
+    //     return newList;
+    //   } else {
+    //     let filterdList = ll.filter((i) => {
+    //       if (
+    //         activeCred &&
+    //         activeCred?.event !== ETHSIGNEVENTNAME &&
+    //         i.title.indexOf('opBNB') > -1
+    //       ) {
+    //         i.disabled = true;
+    //       }
+    //       const onChainTitlesArr =
+    //         activeCred?.provided?.map((i: any) => i.title) ?? [];
+    //       if (onChainTitlesArr.includes(i.title)) {
+    //         i.disabled = onChainTitlesArr.includes(i.title);
+    //       }
+    //       return i.title !== 'BNB Greenfield';
+    //     });
+    //     return filterdList;
+    //   }
+    // }, [fromEvents, activeCred]);
+
     const formatList = useMemo(() => {
       let l = [...list];
       const activeEvent = activeOnChainAttestation?.event;
+      if (activeEvent) {
+        if (activeEvent === LINEAEVENTNAME) {
+          l = list.filter((i) => i.id === 'Linea Goerli');
+        } else if (activeEvent === BASEVENTNAME) {
+          l = list.filter((i) => i.id === 'BSC');
+        } else if (activeEvent === ETHSIGNEVENTNAME) {
+          l = list.filter((i) => i.id === 'opBNB');
+        } else if (activeEvent === SCROLLEVENTNAME) {
+          l = list.filter((i) => i.id === 'Scroll');
+        }
+      } else {
+        if (activeOnChainAttestation) {
+          const onChainTitlesArr =
+            activeOnChainAttestation?.provided?.map((i: any) => i.title) ?? [];
 
-      if (activeEvent === LINEAEVENTNAME) {
-        l = list.filter((i) => i.id === 'Linea Goerli');
-      } else if (activeEvent === BASEVENTNAME) {
-        l = list.filter((i) => i.id === 'BSC');
+          if (onChainTitlesArr.length > 0) {
+            l = list.filter((i) => {
+              return !onChainTitlesArr.includes(i.id);
+            });
+          }
+          l = l.filter((i) => i.id !== 'opBNB');
+        }
       }
       return l;
     }, [list, activeOnChainAttestation]);
@@ -656,7 +737,6 @@ const Nav: React.FC<PButtonProps> = memo(
     useEffect(() => {
       if (chainId && connected) {
         sucFn(connectedWallet, chainId as string);
-        
       }
     }, [chainId, connected]);
     return (
@@ -668,15 +748,14 @@ const Nav: React.FC<PButtonProps> = memo(
             onSubmit={handleSubmitConnectWallet}
           />
         )}
-        {step === 2 &&
-          connected &&(
-            <SetProcessDialog
-              preset={presetIcon}
-              onClose={handleCloseConnectWalletProcessDialog}
-              onSubmit={() => {}}
-              activeRequest={activeSendToChainRequest}
-            />
-          )}
+        {step === 2 && connected && (
+          <SetProcessDialog
+            preset={presetIcon}
+            onClose={handleCloseConnectWalletProcessDialog}
+            onSubmit={() => {}}
+            activeRequest={activeSendToChainRequest}
+          />
+        )}
       </div>
     );
   }
