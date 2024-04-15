@@ -117,6 +117,13 @@
           width: 100%;
           @include fcss;
           gap: var(--spacing-8);
+          &.descItemsWithNumberValue {
+            .descItem {
+              .value {
+                @include NumberId;
+              }
+            }
+          }
           .descItem {
             width: 100%;
             @include frbc;

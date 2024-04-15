@@ -275,22 +275,21 @@ const Cards: React.FC<PDropdownProps> = memo(
                           icon={<i className="iconfont icon-iconMore"></i>}
                           onClick={() => {}}
                         />
-                       
-                          <div
-                            className="dropdownWrapper"
-                            onMouseEnter={() => {
-                              handleShowMore(i);
+
+                        <div
+                          className="dropdownWrapper"
+                          onMouseEnter={() => {
+                            handleShowMore(i);
+                          }}
+                          onMouseLeave={handleHideMore}
+                        >
+                          <PDropdown
+                            list={otherOperationsFn(i)}
+                            onClick={(operationType) => {
+                              handleClickDropdownItem(operationType, i);
                             }}
-                            onMouseLeave={handleHideMore}
-                          >
-                            <PDropdown
-                              list={otherOperationsFn(i)}
-                              onClick={(operationType) => {
-                                handleClickDropdownItem(operationType, i);
-                              }}
-                            />
-                          </div>
-                        
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -327,7 +326,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                         <div className="value">{getResult(i)}</div>
                       </div>
                     </div>
-                    <div className="descItems">
+                    <div className="descItems descItemsWithNumberValue">
                       <div className="descItem">
                         <div className="label">Data account</div>
                         <div className="value">{i.account}</div>

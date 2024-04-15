@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import PButton from '@/newComponents/PButton';
+import PTooltip from '@/newComponents/PTooltip';
 import './index.scss';
 
 type NavItem = {
@@ -44,7 +45,6 @@ const PDropdown: React.FC<PDropdownProps> = memo(
                 onClick={() => {
                   handleClickData(item);
                 }}
-                title={item.disabled ? item?.tooltip : ''}
               >
                 <div className="dropdownOptionCon">
                   <div className="left">
@@ -59,15 +59,18 @@ const PDropdown: React.FC<PDropdownProps> = memo(
                     ) : item.icon ? (
                       <img src={item.icon} alt="" className="iconImg" />
                     ) : undefined}
+
                     <div className="desc">{item.label}</div>
                   </div>
                   {item.disabled && item?.tooltip && (
-                    <PButton
-                      type="icon"
-                      icon={<i className="iconfont icon-iconInfo"></i>}
-                      onClick={() => {}}
-                      className="tooltipBtn"
-                    />
+                    <PTooltip title={item?.tooltip}>
+                      <PButton
+                        type="icon"
+                        icon={<i className="iconfont icon-iconInfo"></i>}
+                        onClick={() => {}}
+                        className="tooltipBtn"
+                      />
+                    </PTooltip>
                   )}
                 </div>
               </li>

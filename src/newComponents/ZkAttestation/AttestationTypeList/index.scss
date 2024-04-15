@@ -9,7 +9,7 @@
   .attestationTypeCard {
     width: calc((100% - var(--spacing-16) * 3) / 4);
     height: 96px;
-    padding: var(--spacing-16)  var(--spacing-16)   var(--spacing-8) ;
+    padding: var(--spacing-16) var(--spacing-16) var(--spacing-8);
     @include fcss;
     gap: var(--spacing-16);
     @include clickableCard;
@@ -43,8 +43,11 @@
     .bottom {
       display: flex;
       justify-content: flex-end;
-      .createBtn{
+      .createBtn {
         height: var(--spacing-24);
+        .icon-Add {
+          font-weight: 700;
+        }
       }
     }
   }
