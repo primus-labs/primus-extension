@@ -8,6 +8,7 @@
     @include fcss;
     gap: var(--spacing-32);
     .contentW {
+      width: 100%;
       @include fcss;
       gap: var(--spacing-16);
     }

@@ -347,7 +347,6 @@ chrome.runtime.sendMessage(
       }
       // render
       activeRequest = response.params;
-      debugger;
       console.log('222response', response); //delete
       operationType = response.operation;
       const container = document.getElementById('pado-extension-content');

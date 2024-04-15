@@ -21,7 +21,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
       return;
     }
     onSubmit(dataSourceName);
-  }, [formLegal]);
+  }, [formLegal, dataSourceName]);
   const tList = useMemo(() => {
     const sourceNameArr = ['binance', 'okx', 'coinbase'];
     const newArr = sourceNameArr.map((i) => {

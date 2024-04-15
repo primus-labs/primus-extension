@@ -16,7 +16,6 @@ import {
   getAccount,
 } from '@/utils/utils';
 
-
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
@@ -178,13 +177,17 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       loading,
     ]);
 
-    const handleChangePswForm = useCallback((v, formKey) => {
-      setPswForm((f) => {
-        const newForm = { ...f, [formKey]: v };
-        console.log('newForm', f, newForm);
-        return newForm;
-      });
-    }, []);
+    const handleChangePswForm = useCallback(
+      (v, formKey, upperFlag?: boolean) => {
+        setPswForm((f) => {
+          const newV = upperFlag ? v.toUpperCase(): v;
+          const newForm = { ...f, [formKey]: newV };
+          console.log('newForm', f, newForm);
+          return newForm;
+        });
+      },
+      []
+    );
     useEffect(() => {
       if (activeDataSouceUserInfo?.userInfo?.userName) {
         handleChangePswForm(
@@ -270,7 +273,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 align="horizontal"
                 placeholder="USDT"
                 onChange={(p) => {
-                  handleChangePswForm(p, 'verificationValue');
+                  handleChangePswForm(p, 'verificationValue', true);
                 }}
                 value={pswForm.verificationValue}
                 disabled={!pswForm.verificationContent}

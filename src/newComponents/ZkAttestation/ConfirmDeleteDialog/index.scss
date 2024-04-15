@@ -2,7 +2,7 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
 
-.pDialog2.setPwdDialog {
+.pDialog2.confirmDeleteDialog {
   color: var(--text-tokens-text-primary);
   main {
     .detailWrapper {
@@ -47,6 +47,9 @@
           color: var(--text-tokens-text-secondary);
         }
       }
+    }
+    .confirmBtn{
+      margin-top: var(--spacing-8);
     }
   }
 }

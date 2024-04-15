@@ -80,9 +80,10 @@ const Nav: React.FC<PButtonProps> = memo(
           fetchType: 'Web',
           // loading: 1,
         };
-        if (activeAttestation.loading === 3) {
-          activeAttestationParams = { ...activeAttestation };
-        }
+        // if (activeAttestation.loading === 3) {
+        //   debugger
+        //   activeAttestationParams = { ...activeAttestation };
+        // }
         dispatch(setActiveAttestation(activeAttestationParams));
         dispatch(setAttestLoading(1));
         dispatch(setActiveAttestation({ loading: 1 }));
@@ -109,7 +110,6 @@ const Nav: React.FC<PButtonProps> = memo(
           };
           postMsg(padoServicePort, msg);
           console.log(`page_send:getAttestation:`, form);
-          
         } else {
           // 2.check web proof template
           const activeWebProofTemplate = webProofTypes.find(
@@ -172,7 +172,14 @@ const Nav: React.FC<PButtonProps> = memo(
           });
         }
       },
-      [assetForm, fromEvents, BASEventDetail, dispatch, type, activeAttestation]
+      [
+        assetForm,
+        fromEvents,
+        BASEventDetail,
+        dispatch,
+        type,
+        activeAttestation,
+      ]
     );
     useEffect(() => {
       if (presets) {

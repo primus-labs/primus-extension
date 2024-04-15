@@ -426,13 +426,13 @@ export const getAccount = (metaInfo: any, useInfo: any) => {
   } else if (metaInfo.connectType === 'API') {
     account = useInfo.apiKey;
   } else if (metaInfo.connectType === 'Auth') {
-    if (['x', 'discord'].includes(lowerCaseDataSourceName)) {
+    if (['discord'].includes(lowerCaseDataSourceName)) {
       account = useInfo.userName;
     }
     if (lowerCaseDataSourceName === 'google') {
       account = useInfo.email;
     }
-    if (lowerCaseDataSourceName === 'google') {
+    if (['x', 'github'].includes(lowerCaseDataSourceName)) {
       account = useInfo.screenName;
     }
     

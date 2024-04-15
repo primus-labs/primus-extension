@@ -362,6 +362,8 @@ const Cards: React.FC<PDropdownProps> = memo(
                           <span>
                             {i.event
                               ? `(${eventMetaMap[i.event].nameInAttestation})`
+                              : i?.provided?.length > 0
+                              ? `(${i?.provided?.length})`
                               : ''}
                           </span>
                         </div>

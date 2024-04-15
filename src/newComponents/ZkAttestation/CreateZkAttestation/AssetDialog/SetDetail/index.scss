@@ -41,16 +41,26 @@
       }
     }
     .verificationValue {
+      .selectOptionswrapper{
+        .dropdownOptionCon{
+          .left{
+            .iconImg{
+              border-radius: 50%;
+            }
+          }
+        }
+      }
       &.hasValue {
         .selectInput {
           width: var(--verificationValue-select-width);
         }
-        .inputWrapper {
-          width: var(--verificationValue-input-hasValue-width);
-        }
+        // .inputWrapper {
+        //   width: var(--verificationValue-input-hasValue-width);
+        // }
       }
       .selectOptionswrapper {
         width: var(--verificationValue-select-width);
+        
       }
       .selectOptionswrapper {
         .PDropdown {
@@ -59,7 +69,10 @@
         }
       }
       .inputWrapper {
-        width: var(--verificationValue-input-width);
+        width: var(--verificationValue-select-width);
+        .pInput{
+          width: 100%;
+        }
       }
     }
   }
