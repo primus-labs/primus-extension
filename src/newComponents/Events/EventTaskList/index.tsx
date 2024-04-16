@@ -207,7 +207,7 @@ const DataSourceItem = memo(() => {
     JSON.parse(JSON.stringify(eventTaskMap[eventId]))
   );
   // let stepMap = JSON.parse(JSON.stringify(eventTaskMap[eventId]));
-  const eventDetail = useEventDetail(eventId);
+  const [eventDetail] = useEventDetail(eventId);
   const dispatch: Dispatch<any> = useDispatch();
   const metaInfo = eventMetaMap[eventId];
   const [taskStatusMap, setTaskStatusMap] = useState<TaskStatusMap>({
@@ -428,7 +428,7 @@ const DataSourceItem = memo(() => {
   }, [visibleAttestationTasksDialog, initTaskStatus]);
   useEffect(() => {
     if (attestLoading === 2) {
-      setVisibleAttestationTasksDialog(false);
+      // setVisibleAttestationTasksDialog(false);
       initTaskStatus();
     }
   }, [attestLoading, visibleAttestationTasksDialog, initTaskStatus]);

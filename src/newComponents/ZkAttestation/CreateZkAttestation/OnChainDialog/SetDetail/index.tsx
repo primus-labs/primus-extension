@@ -1,6 +1,7 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { utils } from 'ethers';
+import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import { ONCHAINVERIFICATIONCONTENTTYPELIST } from '@/config/attestation';
 import useDataSource from '@/hooks/useDataSource';
 import {
@@ -37,10 +38,14 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
     );
+    const activeAttestation = useSelector(
+      (state: UserState) => state.activeAttestation
+    );
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const onChainAssetsSources = useSelector(
       (state: UserState) => state.onChainAssetsSources
     );
+
     // different
     const accountList = useMemo(() => {
       let list = Object.values(onChainAssetsSources).map((i: any) => ({
@@ -55,14 +60,33 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       return !!(pswForm.verificationContent && pswForm.account);
     }, [pswForm]);
 
+    const loading = useMemo(() => {
+      return formLegal && attestLoading === 1;
+    }, [formLegal, attestLoading]);
+    const formatBtnTxt = useMemo(() => {
+      return attestLoading === 3
+        ? activeAttestation?.btnTxt
+          ? activeAttestation?.btnTxt
+          : 'OK'
+        : 'Next';
+    }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
         return;
       }
-      //diffferent
-      onSubmit(pswForm);
+      if (loading) {
+        return;
+      }
+      if (formatBtnTxt === 'OK') {
+        dispatch(setAttestLoading(2));
+        dispatch(setActiveAttestation(undefined));
+      } else {
+        //different
+        onSubmit(pswForm);
+      }
+
       return;
-    }, [formLegal, pswForm]);
+    }, [formLegal, pswForm, loading, formatBtnTxt, dispatch]);
 
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => ({ ...f, [formKey]: v }));
@@ -85,7 +109,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'verificationContent');
             }}
             value={pswForm.verificationContent}
-            
           />
         </div>
         {/* different */}
@@ -112,10 +135,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           </div>
         </div> */}
         <PButton
-          text={attestLoading === 3 ? 'Try Again' : 'Next'}
+          text={formatBtnTxt}
           className="fullWidth confirmBtn"
           disabled={!formLegal}
-          loading={formLegal && attestLoading === 1}
+          loading={loading}
           onClick={handleClickNext}
         ></PButton>
       </div>

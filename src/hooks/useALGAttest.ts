@@ -19,7 +19,13 @@ import useTimeout from '@/hooks/useTimeout';
 import useInterval from '@/hooks/useInterval';
 import useAllSources from '@/hooks/useAllSources';
 import { eventReport } from '@/services/api/usertracker';
-import { postMsg, strToHex, base64ToHex, strToHexSha256, getAccount } from '@/utils/utils';
+import {
+  postMsg,
+  strToHex,
+  base64ToHex,
+  strToHexSha256,
+  getAccount,
+} from '@/utils/utils';
 
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
@@ -238,8 +244,7 @@ const useAttest = function useAttest() {
             } Account.`;
           }
           let descEl = `${descItem1} Please confirm and try again later.`;
-          let btnTxt =
-            titleItem1 === 'Not met the requirements' ? '' : undefined;
+          let btnTxt = 'Try Again';
 
           if (parsedActiveRequestAttestation.reqType === 'web') {
             let failReason = '';
@@ -279,7 +284,7 @@ const useAttest = function useAttest() {
           dispatch(
             setActiveAttestation({
               loading: 3,
-              msgObj: { ...msgObj, btnTxt: 'Try Again' },
+              msgObj: { ...msgObj, btnTxt },
             })
           );
           // setActiveRequest({

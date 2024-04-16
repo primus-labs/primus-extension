@@ -1,7 +1,7 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
-import { setAttestLoading } from '@/store/actions';
+import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
@@ -54,6 +54,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     });
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
+    );
+    const activeAttestation = useSelector(
+      (state: UserState) => state.activeAttestation
     );
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const verificationContentCN = useMemo(() => {
@@ -140,6 +143,14 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     // const verificationContentList = useMemo(() => {
 
     // })
+
+    const formatBtnTxt = useMemo(() => {
+      return attestLoading === 3
+        ? activeAttestation?.btnTxt
+          ? activeAttestation?.btnTxt
+          : 'OK'
+        : 'Next';
+    }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
         return;
@@ -147,28 +158,53 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (loading) {
         return;
       }
-      if (
-        activeDataSouceUserInfo &&
-        gt(Number(pswForm.verificationValue), Number(totalBalanceForAttest))
-      ) {
-        alert('Not met the requirements');
-        return;
-        // setActiveRequest({
-        //   type: 'warn',
-        //   title: 'Not met the requirements',
-        //   desc: (
-        //     <>
-        //       <p>
-        //         Insufficient assets in your{' '}
-        //         {source === 'okx' ? 'Trading' : 'Spot'} Account.
-        //       </p>
-        //       <p>Please confirm and try again later.</p>
-        //     </>
-        //   ),
-        // });
-        // return;
+      if (formatBtnTxt === 'OK') {
+        dispatch(setAttestLoading(2));
+        dispatch(setActiveAttestation(undefined));
+      } else {
+        //different
+        onSubmit(pswForm);
       }
-      onSubmit(pswForm);
+
+      return;
+    }, [formLegal, pswForm, loading, formatBtnTxt, dispatch]);
+    const handleClickNext = useCallback(async () => {
+      if (!formLegal) {
+        return;
+      }
+      if (loading) {
+        return;
+      }
+      if (formatBtnTxt === 'OK') {
+        dispatch(setAttestLoading(2));
+        dispatch(setActiveAttestation(undefined));
+      } else {
+        //different
+        if (
+          activeDataSouceUserInfo &&
+          gt(Number(pswForm.verificationValue), Number(totalBalanceForAttest))
+        ) {
+          alert('Not met the requirements');
+          return;
+          // setActiveRequest({
+          //   type: 'warn',
+          //   title: 'Not met the requirements',
+          //   desc: (
+          //     <>
+          //       <p>
+          //         Insufficient assets in your{' '}
+          //         {source === 'okx' ? 'Trading' : 'Spot'} Account.
+          //       </p>
+          //       <p>Please confirm and try again later.</p>
+          //     </>
+          //   ),
+          // });
+          // return;
+        }
+
+        onSubmit(pswForm);
+      }
+
       return;
     }, [
       formLegal,
@@ -258,7 +294,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationContent}
               disabled={presets?.verificationContent}
-             
             />
           )}
         </div>
@@ -276,7 +311,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 }}
                 value={pswForm.verificationValue}
                 disabled={presets?.verificationValue}
-                
               />
             ) : pswForm.verificationContent === 'Token Holding' ? (
               <PInput
@@ -302,7 +336,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 }}
                 value={pswForm.verificationValue}
                 disabled={presets?.verificationValue}
-                
               />
             )
           ) : (
@@ -317,7 +350,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationValue}
               disabled={presets?.verificationValue}
-             
             />
           )}
         </div>
@@ -349,7 +381,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           </div>
         )}
         <PButton
-          text={attestLoading === 3 ? 'Try Again' : 'Next'}
+          text={formatBtnTxt}
           className="fullWidth confirmBtn"
           disabled={!formLegal}
           loading={loading}

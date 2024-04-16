@@ -1,6 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAttestLoading } from '@/store/actions';
+import { setActiveAttestation, setAttestLoading } from '@/store/actions';
 import {
   HUMANITYVERIFICATIONCONTENTTYPELIST,
   HUMANITYVERIFICATIONCONTENTTYPEMAP,
@@ -43,6 +43,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     });
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
+    );
+    const activeAttestation = useSelector(
+      (state: UserState) => state.activeAttestation
     );
     const webProofTypes = useSelector(
       (state: UserState) => state.webProofTypes
@@ -118,6 +121,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         return '';
       }
     }, [activeDataSouceUserInfo]);
+    const formatBtnTxt = useMemo(() => {
+      return attestLoading === 3
+        ? activeAttestation?.btnTxt
+          ? activeAttestation?.btnTxt
+          : 'OK'
+        : 'Next';
+    }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
         return;
@@ -125,10 +135,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (loading) {
         return;
       }
-      //different
-      onSubmit(pswForm);
+      if (formatBtnTxt === 'OK') {
+        dispatch(setAttestLoading(2));
+        dispatch(setActiveAttestation(undefined));
+      } else {
+        //different
+        onSubmit(pswForm);
+      }
+
       return;
-    }, [formLegal, pswForm, loading]);
+    }, [formLegal, pswForm, loading, formatBtnTxt, dispatch]);
 
     const handleChangePswForm = useCallback((v, formKey) => {
       setPswForm((f) => ({ ...f, [formKey]: v }));
@@ -202,7 +218,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationContent}
               disabled={presets?.verificationContent}
-              
             />
           )}
         </div>
@@ -232,7 +247,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationValue}
               disabled={presets?.verificationValue}
-              
             />
           )}
         </div>
@@ -259,10 +273,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           </div>
         )}
         <PButton
-          text={attestLoading === 3 ? 'Try Again' : 'Next'}
+          text={formatBtnTxt}
           className="fullWidth confirmBtn"
           disabled={!formLegal}
-          loading={formLegal && attestLoading === 1}
+          loading={loading}
           onClick={handleClickNext}
         ></PButton>
       </div>
