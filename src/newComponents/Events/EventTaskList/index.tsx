@@ -261,6 +261,7 @@ const DataSourceItem = memo(() => {
         return;
       }
       if (isConnect) {
+        setActiveTaskId(undefined);
         doTask(i.id);
       } else {
         setActiveTaskId(i.id);
@@ -304,7 +305,6 @@ const DataSourceItem = memo(() => {
         },
       },
     };
-
     // have joined this event
     if (res[eventId]) {
       const lastEventObj = JSON.parse(res[eventId]);

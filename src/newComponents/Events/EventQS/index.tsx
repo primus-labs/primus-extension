@@ -22,7 +22,7 @@ const basQsMap = {
     id: 2,
     question: 'Do I need to complete all four attestation tasks in Task 2? ',
     answer:
-      'Each attestation task comes with different XPS points and is not tied together. If you want to earn more XPS, the easiest way is to complete all of them in the Task 2 and submit them in one click in the Task 3.',
+      'Each attestation task comes with different XPS points and is not tied together. To maximize your pointes, you have to complete all of them in the Task 2 and submit them in one click in the Task 3.',
   },
   3: {
     id: 3,

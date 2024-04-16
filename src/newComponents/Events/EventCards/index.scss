@@ -62,7 +62,7 @@
         @include fcss;
         gap: var(--spacing-4);
         .title {
-          @include HeadlineH4;
+          @include HeadlineH3;
         }
         .descItems {
           @include fcss;

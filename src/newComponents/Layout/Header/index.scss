@@ -13,14 +13,16 @@
   .pathName {
     @include HeadlineH1;
     @include frsc;
-    height: 100%;
+    height: 60px;
     border-bottom: 4px solid var(--background-tokens-background-brand);
     color: var(--text-tokens-text-primary);
   }
   .PTabs {
     border-bottom: 0;
-    height: 100%;
+    height: 60px;
     .tab {
+      @include fcss;
+
       &.active {
         .border {
           height: 4px;
@@ -35,7 +37,7 @@
       .con {
         @include HeadlineH1;
         @include frsc;
-        height: 100%;
+        height: calc(100% - 4px);
         // color: var(--text-tokens-text-primary);
       }
     }

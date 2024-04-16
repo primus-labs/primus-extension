@@ -53,6 +53,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
                 <div className="title">{i.title}</div>
                 <div className="desc">
                   <img src={iconPado} alt="" />
+                  &nbsp;
                   <p>{i.desc}</p>
                 </div>
               </div>

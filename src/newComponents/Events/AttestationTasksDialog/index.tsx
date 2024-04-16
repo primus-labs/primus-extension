@@ -128,9 +128,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             <header>
               <h1>Attestation Tasks</h1>
               <h2>
-                Complete the tasks below to make your attestations. Make sure
-                you connect the same wallet in the top right corner and in the
-                BAS event page.
+                Make sure you connect the same wallet in the top right corner
+                and in the BAS event page.
               </h2>
             </header>
             <ul className="attestationTasks">

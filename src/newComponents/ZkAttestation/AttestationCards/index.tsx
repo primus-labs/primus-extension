@@ -11,7 +11,10 @@ import useAllSources from '@/hooks/useAllSources';
 import { BASEVENTNAME, eventMetaMap } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
-import { ATTESTATIONTYPEMAP } from '@/config/attestation';
+import {
+  ATTESTATIONTYPEMAP,
+  ASSETSVERIFICATIONCONTENTTYPEEMAP,
+} from '@/config/attestation';
 
 import type { SyntheticEvent, Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -112,11 +115,8 @@ const Cards: React.FC<PDropdownProps> = memo(
     };
     const getContent = (i) => {
       let str = i.verificationContent;
-      if (
-        i.attestationType === 'Assets Certification' &&
-        i.verificationContent === 'Assets Proof'
-      ) {
-        str = 'Asset balance';
+      if (i.attestationType === 'Assets Certification') {
+       str =  ASSETSVERIFICATIONCONTENTTYPEEMAP[i.verificationContent].label;
       }
       // if (i.attestationType === 'Assets Certification') {
       //   if (i.verificationContent === 'Assets Proof') {

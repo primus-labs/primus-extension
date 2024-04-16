@@ -10,6 +10,9 @@
     padding: 40px 0 20px 0;
     @include fcss;
     gap: var(--spacing-40);
+    .eventBrief{
+      margin-top: calc(-1 * var(--spacing-24));
+    }
     .taskList {
       width: 100%;
       @include fcss;

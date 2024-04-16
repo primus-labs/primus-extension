@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-
 import {
   SCROLLEVENTNAME,
   BASEVENTNAME,

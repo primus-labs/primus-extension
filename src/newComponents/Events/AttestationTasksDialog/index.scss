@@ -25,6 +25,10 @@
             border-color: var(--border-tokens-border-primary);
           }
         }
+        &.done{
+          background: var(--layer-tokens-layer-on-primary);
+          border: 0;
+        }
         .left {
           @include frsc;
           gap: var(--spacing-16);
@@ -62,6 +66,9 @@
           }
         }
       }
+    }
+    .confirmBtn{
+      margin-top: var(--spacing-8);
     }
   }
 }

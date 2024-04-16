@@ -4,7 +4,7 @@
 
 .eventBrief {
   @include fcss;
-  gap: var(--spacing-16);
+  gap: var(--spacing-40);
   .picContent {
     width: fit-content;
     height: 100%;

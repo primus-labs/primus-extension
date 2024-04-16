@@ -33,6 +33,7 @@ const DataSourceItem = memo(() => {
   const metaInfo = eventMetaMap[eventId];
   const connectedWallet = useSelector((state) => state.connectedWallet);
   const attestLoading = useSelector((state) => state.attestLoading);
+  const activeOnChain = useSelector((state) => state.activeOnChain);
   const formatPeriod = (period) => {
     const { startTime, endTime } = period;
     const s = dayjs.utc(+startTime).format('MMM.D,YYYY');
@@ -75,10 +76,10 @@ const DataSourceItem = memo(() => {
     initTaskStatus(); // TODO-newui2 after submit to chain
   }, [initTaskStatus]);
   useEffect(() => {
-    if (attestLoading === 2) {
+    if (attestLoading > 1 || activeOnChain?.loading === 0) {
       initTaskStatus();
     }
-  }, [attestLoading]);
+  }, [attestLoading, activeOnChain]);
 
   return (
     <div className="eventBrief">

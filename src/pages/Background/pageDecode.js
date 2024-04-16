@@ -367,7 +367,12 @@ export const pageDecodeMsgListener = async (
 
       const { constructorF } = DATASOURCEMAP[dataSource];
       const ex = new constructorF();
-      await storeDataSource(dataSource, ex, port);
+      
+      // const storageRes = await chrome.storage.local.get([dataSource]);
+      // const hadConnectedCurrDataSource = !!storageRes[dataSource];
+      await storeDataSource(dataSource, ex, port, {
+        withoutMsg: true,
+      });
     }
 
     // if (name === 'attestResult') {

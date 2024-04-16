@@ -201,7 +201,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                         <div className="subTitle">{i.subTitle}</div>
                       </div>
                     </div>
-                    <div className="right">
+                    {/* <div className="right">
                       <PButton
                         text="Finish"
                         type="text"
@@ -209,7 +209,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                           handleTask(i);
                         }}
                       />
-                    </div>
+                    </div> */}
                   </li>
                 );
               })}
