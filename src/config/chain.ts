@@ -341,7 +341,7 @@ const EASINFOMAP = {
       transactionDetailUrl: 'https://lineascan.build/tx',
     },
     BSC: {
-      showName: 'BSC',
+      showName: 'BNB Chain',
       icon: iconBinance,
       title: 'BSC',
       rpcUrl: 'https://bsc-dataseed.binance.org/',
@@ -616,7 +616,7 @@ export const SUPPORRTEDQUERYCHAINMAP = {
     id: 'Arbitrum One',
   },
   BSC: {
-    name: 'BSC',
+    name: 'BNB Chain',
     chainId: 56,
     icon: iconBinance,
     id: 'BSC',

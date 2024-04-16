@@ -341,7 +341,7 @@ const Nav: React.FC<PButtonProps> = memo(
           //     lastSubCondition.value = activeAttestationParams.verificationValue;
           //   }
           // } else if (
-          //   activeAttestationParams.verificationContent === 'Token holding'
+          //   activeAttestationParams.verificationContent === 'Token Holding'
           // ) {
           //   if (lastResponseConditionsSubconditions) {
           //     const firstSubCondition = lastResponseConditionsSubconditions[0];

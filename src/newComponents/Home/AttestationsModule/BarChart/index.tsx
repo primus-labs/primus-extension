@@ -113,9 +113,10 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
       tooltip: {
         formatter: (params) => {
           const { name, value, seriesName } = params;
-          const CName = Object.keys(EASInfo).find(
+          const chainId =  Object.keys(EASInfo).find(
             (i) => i.replace(/\s+/g, '') === name
           );
+          const CName = EASInfo[chainId].showName;
           // console.log('222params', params, CName);
           return `${seriesName}<br/>${CName}: ${value}`;
         },

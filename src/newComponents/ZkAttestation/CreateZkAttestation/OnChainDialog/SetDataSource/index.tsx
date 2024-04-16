@@ -20,7 +20,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
       return;
     }
     onSubmit(dataSourceName);
-  }, [formLegal]);
+  }, [formLegal, dataSourceName]);
   // different
   const tList = useMemo(() => {
     const sourceNameArr = ['web3 wallet'];

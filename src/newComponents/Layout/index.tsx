@@ -72,7 +72,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
           i.verificationValue = i.baseValue;
         } else if (i.type === 'TOKEN_HOLDINGS') {
           i.attestationType = 'Assets Certification';
-          i.verificationContent = 'Token holding';
+          i.verificationContent = 'Token Holding';
           i.verificationValue = i.holdingToken;
         } else if (i.type === 'IDENTIFICATION_PROOF') {
           i.attestationType = 'Humanity Verification';

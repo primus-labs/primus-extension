@@ -76,7 +76,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       let supportedContentIdArr: any = [];
 
       if (dataSourceId === 'coinbase') {
-        supportedContentIdArr = ['Token holding'];
+        supportedContentIdArr = ['Token Holding'];
         let list = supportedContentIdArr.map(
           (i) => ASSETSVERIFICATIONCONTENTTYPEEMAP[i]
         );
@@ -93,7 +93,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       let list = [];
       if (pswForm.verificationContent === 'Assets Proof') {
         list = [...ASSETSVERIFICATIONVALUETYPELIST];
-      } else if (pswForm.verificationContent === 'Token holding') {
+      } else if (pswForm.verificationContent === 'Token Holding') {
         if (activeDataSouceUserInfo) {
           list = Object.keys(activeDataSouceUserInfo.tokenListMap).map((i) => ({
             label: i,
@@ -278,7 +278,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 disabled={presets?.verificationValue}
                 
               />
-            ) : pswForm.verificationContent === 'Token holding' ? (
+            ) : pswForm.verificationContent === 'Token Holding' ? (
               <PInput
                 className={verificationValueCN}
                 label="Verification Value"

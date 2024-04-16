@@ -25,8 +25,8 @@ export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
     value: 'Assets Proof',
     label: 'Asset balance',
   },
-  'Token holding': {
-    value: 'Token holding',
+  'Token Holding': {
+    value: 'Token Holding',
     label: 'Token holding',
   },
 };

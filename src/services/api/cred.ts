@@ -89,7 +89,7 @@ export const regenerateAttestation = (data: any, config?: any) => {
       data.rawParam.ext.extRequests['asset-proof'].parseSchema = JSON.stringify(
         data.rawParam.responses[2]
       );
-    } else if (data.rawParam.verificationContent === 'Token holding') {
+    } else if (data.rawParam.verificationContent === 'Token Holding') {
       data.rawParam.ext = {};
       data.rawParam.ext.extRequests = {};
       data.rawParam.ext.extRequests['token-holding'] = {};
