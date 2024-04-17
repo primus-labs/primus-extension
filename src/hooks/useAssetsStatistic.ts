@@ -128,7 +128,11 @@ const useAssetsStatistic = function () {
       tokenListMap: totalTokenMap,
       ...WALLETMAP['metamask'],
       totalBalance: totalOnChainAssetsBalance,
+      address: '',
     };
+    if (connectedOnChainSourcesList.length === 1) {
+      obj.address = connectedOnChainSourcesList[0]?.address;
+    }
     return obj;
   }, [connectedOnChainSourcesList, totalOnChainAssetsBalance]);
   const totalAssetsBalance = useMemo(() => {

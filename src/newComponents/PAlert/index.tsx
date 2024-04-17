@@ -20,8 +20,8 @@ const PAlert: React.FC<Msg> = memo(
     const { deleteMsg } = useMsgs();
     const navigate = useNavigate();
     const location = useLocation();
-    const {pathname} = location
-    console.log('222pathname', location,pathname, link);//delete
+    const { pathname } = location;
+    console.log('222pathname', location, pathname, link); //delete
     const activeIconName = useMemo(() => {
       let cN = '';
       if (type === 'suc') {
@@ -37,7 +37,8 @@ const PAlert: React.FC<Msg> = memo(
     }, [type]);
     const handleDetail = useCallback(() => {
       navigate(link);
-    }, [navigate]);
+      deleteMsg(id);
+    }, [navigate, deleteMsg, id]);
 
     return (
       <div className={`pAlert ${type}`}>

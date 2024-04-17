@@ -83,8 +83,11 @@ const useAuthorization2 = () => {
               });
             onSubmit && onSubmit(res.result);
           };
-          const storeRes = await chrome.storage.local.get(['google']);
-          if (storeRes['google']) {
+          const lowerCaseSourceName = source.toLowerCase(); // google
+          const storeRes = await chrome.storage.local.get([
+            lowerCaseSourceName,
+          ]);
+          if (storeRes[lowerCaseSourceName]) {
             fn();
           } else {
             const fetchRes = await checkIsLogin({
@@ -94,7 +97,6 @@ const useAuthorization2 = () => {
             const { rc, result, mc } = fetchRes;
             if (rc === 0) {
               const { dataInfo, userInfo } = result;
-              const lowerCaseSourceName = source.toLowerCase();
               let storageRes = await chrome.storage.local.get(
                 lowerCaseSourceName
               );
@@ -119,12 +121,13 @@ const useAuthorization2 = () => {
               await chrome.storage.local.set({
                 [lowerCaseSourceName]: JSON.stringify(socialSourceData),
               });
-              
+
               const eventInfo = {
                 eventType: 'DATA_SOURCE_INIT',
                 rawData: { type: 'Social', dataSource: source },
               };
               eventReport(eventInfo);
+              fn()
             } else {
             }
           }

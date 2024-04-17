@@ -50,7 +50,7 @@
               .num {
                 @include frsc;
                 gap: 2px;
-                @include NumberHint;
+                @include BodyBody100;
                 color: var(--text-tokens-text-secondary);
               }
               .accountsSelect {

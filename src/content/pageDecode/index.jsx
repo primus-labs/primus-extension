@@ -64,7 +64,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
         onClick={handleCancel}
       />
       <PButton
-        text={<div class="loading-spinner"></div>}
+        text={<div className="loading-spinner"></div>}
         type="secondary"
         className="confirmBtn"
         disabled
@@ -91,7 +91,7 @@ function DataSourceLineEl({ list }) {
     </ul>
   );
 }
-function DescEl({ status, resultStatus }) {
+function DescEl({ status, resultStatus ,errorTxt}) {
   var iconSuc = chrome.runtime.getURL(`iconSucc.svg`);
   var iconFail = chrome.runtime.getURL(`iconFail.svg`);
   var host = activeRequest.jumpTo
@@ -99,7 +99,8 @@ function DescEl({ status, resultStatus }) {
     : activeRequest.datasourceTemplate.host;
 
   var uiTemplate = activeRequest.uiTemplate;
-  const [loadingTxt, setLoadingTxt] = useState();
+  const [loadingTxt, setLoadingTxt] = useState('Connecting to PADO node...');
+  
   const descList = useMemo(() => {
     if (operationType === 'connect') {
       return [{ label: 'Data Source', value: host }];
@@ -138,27 +139,50 @@ function DescEl({ status, resultStatus }) {
   useEffect(() => {
     let str = '';
     if (operationType === 'connect') {
-      setLoadingTxt('Connecting ...');
+      str = 'Connecting ...';
+      setLoadingTxt(str);
     } else {
-      setLoadingTxt('Verifying ...');
-      // const intervalTimer = setInterval(
-      //   simulateFileUpload,
-      //   (303 / 100) * 1000
-      // );
+      str = 'Connecting to PADO node...';
+      setLoadingTxt(str);
+      var progressPercentage = 0;
+      function simulateFileUpload() {
+        progressPercentage += 1;
+        if (progressPercentage > 0 && progressPercentage <= 1) {
+          // 1.25
+          str = 'Connecting to PADO node...';
+        } else if (progressPercentage > 1 && progressPercentage <= 2) {
+          // 6.25
+          // 1.25 - 2.5
+          str = 'Connecting to data source...';
+        } else if (progressPercentage > 3 && progressPercentage <= 18) {
+          // 12.5
+          // 2.5 - 5
+          str = 'MPC-TLS executing...';
+        } else if (progressPercentage > 18 && progressPercentage < 300) {
+          // 5 - 100
+          str = 'IZK proving and verifying...';
+        } else if (progressPercentage >= 300) {
+          str = 'Attestation creation completed ...';
+
+          clearInterval(intervalTimer);
+          if (!resultStatus) {
+            setErrorTxt({
+              title: 'Request timed out',
+              desc: 'The service did not respond within the expected time. Please try again later.',
+            });
+          }
+        }
+        setLoadingTxt(str);
+        console.log('222progressPercentage', progressPercentage, 'str', str);
+      }
+      var intervalTimer = setInterval(simulateFileUpload, 1000); // algorithm timeout
     }
-  }, [operationType]);
+  }, [operationType, resultStatus]);
   const sucTxt = useMemo(() => {
     if (operationType === 'connect') {
       return 'Connect successfully!';
     } else {
       return 'Verified!';
-    }
-  }, []);
-  const errorTxt = useMemo(() => {
-    if (operationType === 'connect') {
-      return 'Connect failed.';
-    } else {
-      return 'Error Message.';
     }
   }, []);
 
@@ -178,7 +202,17 @@ function DescEl({ status, resultStatus }) {
     <div className="descWrapper result fail">
       <div className="label">
         <img src={iconFail} alt="" />
-        <span>{errorTxt}</span>
+        {errorTxt && (
+          <>
+            <span>
+              {errorTxt?.title}
+              {errorTxt?.desc && `,${errorTxt?.desc}`}
+            </span>
+            {errorTxt?.code && (
+              <span className="errorCode">{errorTxt?.code}</span>
+            )}
+          </>
+        )}
       </div>
       <div className="value">Please return to PADO and try again.</div>
     </div>
@@ -188,6 +222,16 @@ function PadoCard() {
   const [status, setStatus] = useState('initialized');
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
+  const [errorTxt, setErrorTxt] = useState();
+  useEffect(() => {
+    let str = {};
+    if (operationType === 'connect') {
+      str = { title: 'Connect failed.' };
+    } else {
+      str = { title: 'Error Message.' };
+    }
+    setErrorTxt(str);
+  }, [operationType]);
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
   var iconLink = chrome.runtime.getURL(`iconLink.svg`);
 
@@ -275,9 +319,10 @@ function PadoCard() {
         sessionStorage.setItem('padoAttestRequestReady', '1');
       }
       if (name === 'end') {
-        console.log('content receive:end');
+        console.log('222content receive:end', request);
         setStatus('result');
         setResultStatus(result);
+        setErrorTxt(failReason);
       }
     };
     chrome.runtime.onMessage.addListener(listenerFn);
@@ -301,6 +346,7 @@ function PadoCard() {
         setStatus={setStatus}
         isReadyFetch={isReadyFetch}
         resultStatus={resultStatus}
+        errorTxt ={errorTxt}
       />
     </div>
   );

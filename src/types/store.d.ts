@@ -27,6 +27,7 @@ type rewardsDialogVisibleType = {
 };
 
 type loadingStatus = 0 | 1 | 2; // 0: unstart 1:start loading 2:end
+type attestationLoadingStatus = 0 | 1 | 2; // 0: unstart 1:start loading 2:suc 3: fail
 
 type activeAttestationRequest = {
   dataSourceId?: string;
@@ -34,7 +35,7 @@ type activeAttestationRequest = {
   verificationValue?: string;
   attestationType?: string; // 'Assets Certification'
   fetchType?: string; // Web ,API
-  loading?: 0 | 1 | 2 | 3; // 0: unstart 1:start loading 2:suc 3: fail
+  loading?: attestationLoadingStatus; // 0: unstart 1:start loading 2:suc 3: fail
   presets?: any; // attest params
   // requestId?: string;
   account?: string;
@@ -117,7 +118,8 @@ export type UserState = {
   dataSourceQueryType: string | number;
   activeConnectDataSource: activeConnectDataSourceRequest;
   connectedWallets: any;
-  attestLoading: loadingStatus;
+
+  attestLoading: attestationLoadingStatus;
   activeAttestation: activeAttestationRequest;
   attestationQueryStr: string;
   attestationQueryType: string | number;

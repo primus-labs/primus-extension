@@ -66,10 +66,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const handleCloseAssetDialog = useCallback(() => {
       setVisibleAssetDialog('');
       if (multipleTask) {
-        debugger;
         setStep(1);
       } else {
-        debugger;
         onSubmit();
       }
     }, [multipleTask, onSubmit]);

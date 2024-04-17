@@ -73,7 +73,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
               type: 'suc',
               title: 'Data connected!',
               desc: '',
-              link: '/datas/data?dataSourceId=web3 wallet',
+              link: `/datas/data?dataSourceId=${lowerCaseSourceName}`,
             };
             if (!pathname.startsWith('/datas')) {
               msgObj.desc = 'See details in the Data Source page.';

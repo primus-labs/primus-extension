@@ -19,6 +19,7 @@ const useRewardsStatistics = function () {
   const [eventsResult, setEventsResult] = useState<any>({});
   const events = useSelector((state: UserState) => state.events);
   const rewards = useSelector((state: UserState) => state.rewards);
+  console.log('222rewards', rewards);// delete
   const rewardList = useMemo(() => {
     return Object.values(rewards);
   }, [rewards]);
