@@ -73,7 +73,7 @@ const stepList: StepItem[] = [
     id: 4,
     icon: iconStep3,
     title: 'Submit Attestations',
-    subTitle: 'Submit to BNB Chain or BNB Greenfield',
+    subTitle: 'Submit to BNB Chain',
     finished: false,
   },
 ];

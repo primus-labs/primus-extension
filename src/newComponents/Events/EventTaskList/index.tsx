@@ -123,7 +123,7 @@ const basTaskMap: { [propName: string]: StepItem } = {
   },
   onChain: {
     id: 'onChain',
-    title: 'Submit to BNB Chain or BNB Greenfield',
+    title: 'Submit to BNB Chain',
     finished: false,
     tasksProcess: {
       total: 1,
@@ -356,7 +356,13 @@ const DataSourceItem = memo(() => {
           }
         }
       } else if (taskId === 'check') {
-        window.open(eventDetail?.ext?.intractUrl);
+        let checkUrl = ''
+        if (eventId === LINEAEVENTNAME) {
+          checkUrl = eventDetail?.ext?.intractUrl;
+        } else if (eventId === BASEVENTNAME) {
+          checkUrl = eventDetail?.ext?.claimPointsUrl;
+        }
+        window.open(checkUrl);
       }
     },
     [dispatch, eventDetail, initEvent]
