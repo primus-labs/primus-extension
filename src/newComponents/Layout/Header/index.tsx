@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useCallback, useState } from 'react';
+import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { list } from '@/config/menu';
 import PButton from '@/newComponents/PButton';
@@ -15,7 +15,9 @@ const Nav: React.FC = memo(({}) => {
   const location = useLocation();
   const { pathname } = location;
   console.log('location', location, pathname, list);
-  const [ttt, setTtt] = useState('1');
+  const [ttt, setTtt] = useState(() => {
+    return pathname === '/events/rewards' ? '2' : '1';
+  });
 
   // const handleConnect = useCallback(() => {}, []);
   const pathTitle = useMemo(() => {
@@ -26,10 +28,16 @@ const Nav: React.FC = memo(({}) => {
     );
     return obj?.label;
   }, [pathname]);
+  useEffect(() => {
+    setTtt(() => {
+      return pathname === '/events/rewards' ? '2' : '1';
+    });
+  }, [pathname]);
 
   return (
     <div className="pageHeader">
-      {pathname.startsWith('/events') && !pathname.startsWith('/events/detail') ? (
+      {pathname.startsWith('/events') &&
+      !pathname.startsWith('/events/detail') ? (
         <PPTabs
           list={tList}
           onChange={(ppp) => {

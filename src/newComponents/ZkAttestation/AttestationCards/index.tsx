@@ -306,7 +306,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                       </div>
                       <div className="updateTime">
                         <span> {formatDate(Number(i?.getDataTime))}</span>
-                        <img src={iconUpdate} alt="" className="iconUpdate" />
+                        {/* <img src={iconUpdate} alt="" className="iconUpdate" /> */}
                       </div>
                     </div>
                   </div>

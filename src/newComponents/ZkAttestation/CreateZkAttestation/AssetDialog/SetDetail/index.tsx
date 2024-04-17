@@ -108,12 +108,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
       return list;
     }, [pswForm.verificationContent, activeDataSouceUserInfo]);
-    const formLegal = useMemo(() => {
-      return !!(pswForm.verificationContent && pswForm.verificationValue);
-    }, [pswForm]);
-    const loading = useMemo(() => {
-      return formLegal && attestLoading === 1;
-    }, [formLegal, attestLoading]);
+    
+    
     const activeAccount = useMemo(() => {
       if (activeDataSouceUserInfo) {
         const metaInfo = DATASOURCEMAP[dataSourceId];
@@ -140,6 +136,19 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
       return totalBalance;
     }, [dataSourceId, activeDataSouceUserInfo]);
+    const formLegal = useMemo(() => {
+      const valueLegal =
+        activeDataSouceUserInfo && pswForm.verificationValue
+          ? gt(Number(totalBalanceForAttest),Number(pswForm.verificationValue))
+          : true;
+      return (
+        !!(pswForm.verificationContent && pswForm.verificationValue) &&
+        valueLegal
+      );
+    }, [pswForm, activeDataSouceUserInfo, totalBalanceForAttest]);
+    const loading = useMemo(() => {
+      return formLegal && attestLoading === 1;
+    }, [formLegal, attestLoading]);
     // const verificationContentList = useMemo(() => {
 
     // })
@@ -163,28 +172,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         dispatch(setActiveAttestation(undefined));
       } else {
         //different
-        onSubmit(pswForm);
-      }
-
-      return;
-    }, [formLegal, pswForm, loading, formatBtnTxt, dispatch]);
-    const handleClickNext = useCallback(async () => {
-      if (!formLegal) {
-        return;
-      }
-      if (loading) {
-        return;
-      }
-      if (formatBtnTxt === 'OK') {
-        dispatch(setAttestLoading(2));
-        dispatch(setActiveAttestation(undefined));
-      } else {
-        //different
         if (
           activeDataSouceUserInfo &&
           gt(Number(pswForm.verificationValue), Number(totalBalanceForAttest))
         ) {
-          alert('Not met the requirements');
+          // alert('Not met the requirements');
           return;
           // setActiveRequest({
           //   type: 'warn',

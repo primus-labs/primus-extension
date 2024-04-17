@@ -268,7 +268,7 @@ const DataSourceItem = memo(() => {
         setCheckIsConnectFlag(true);
       }
     },
-    [isConnect]
+    [isConnect, stepList]
   );
 
   const initEvent = useCallback(async () => {
