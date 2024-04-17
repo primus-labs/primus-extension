@@ -396,7 +396,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
             authUrl + '&redirectUrl=https://discord.com/invite/K8Uqm5ww';
           needCheckLogin = true;
         } else {
-          authUrl = 'https://discord.com/invite/K8Uqm5ww';
+          authUrl = 'https://discord.com/invite/YxJftNRxhh';
         }
         var width = 520;
         var height = 620;
