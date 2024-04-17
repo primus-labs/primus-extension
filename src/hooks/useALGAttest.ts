@@ -130,6 +130,19 @@ const useAttest = function useAttest() {
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
+        if (parsedActiveRequestAttestation.reqType === 'web') {
+          await chrome.runtime.sendMessage({
+            type: 'pageDecode',
+            name: 'end',
+            params: {
+              result: 'warn',
+              failReason: {
+                title: msgObj.title,
+                desc: msgObj.desc,
+              },
+            },
+          });
+        }
         var eventInfo: any = {
           eventType: 'ATTESTATION_GENERATE',
           rawData: {
@@ -253,23 +266,16 @@ const useAttest = function useAttest() {
               descEl = 'Not meeting the uniqueness requirement.';
               failReason = 'Not meeting the uniqueness requirement.';
               btnTxt = '';
-              await chrome.runtime.sendMessage({
-                type: 'pageDecode',
-                name: 'end',
-                params: {
-                  result: 'warn',
-                  failReason,
-                },
-              });
             } else {
-              await chrome.runtime.sendMessage({
-                type: 'pageDecode',
-                name: 'end',
-                params: {
-                  result: 'fail',
-                },
-              });
             }
+            await chrome.runtime.sendMessage({
+              type: 'pageDecode',
+              name: 'end',
+              params: {
+                result: 'warn',
+                failReason: { title: titleItem1, desc: descEl },
+              },
+            });
           }
           const msgObj = {
             type: 'error',
@@ -446,6 +452,7 @@ const useAttest = function useAttest() {
           let failReason = {
             title: requestResObj.title,
             desc: requestResObj.desc,
+            code: requestResObj.code,
           };
 
           await chrome.runtime.sendMessage({
@@ -486,21 +493,21 @@ const useAttest = function useAttest() {
     const parsedActiveRequestAttestation = activeRequestAttestation
       ? JSON.parse(activeRequestAttestation)
       : {};
-
+    const msgObj = {
+      type: 'error',
+      title: 'Request Timed Out',
+      desc: 'The service did not respond within the expected time. Please try again later.',
+    };
     if (parsedActiveRequestAttestation.reqType === 'web') {
       await chrome.runtime.sendMessage({
         type: 'pageDecode',
         name: 'end',
         params: {
           result: 'warn',
+          failReason: { title: msgObj.title, desc: msgObj.desc },
         },
       });
     }
-    const msgObj = {
-      type: 'error',
-      title: 'Request Timed Out',
-      desc: 'The service did not respond within the expected time. Please try again later.',
-    };
 
     if (activeAttestation.dataSourceId === 'coinbase') {
     } else {
@@ -558,7 +565,7 @@ const useAttest = function useAttest() {
             desc: 'Please try again later.',
           });
           dispatch(setAttestLoading(3));
-          dispatch(setActiveAttestation({ loading: 3 }));
+          dispatch(setActiveAttestation({ loading: 3, btnTxt: 'Try Again' }));
         } else if (name === 'start') {
           // dispatch(setAttestLoading(1));
           // dispatch(setActiveAttestation({ loading: 1 }));
@@ -581,7 +588,7 @@ const useAttest = function useAttest() {
           //   setIntervalSwitch(false);
           // }
           dispatch(setAttestLoading(3));
-          dispatch(setActiveAttestation({ loading: 3 }));
+          dispatch(setActiveAttestation({ loading: 3, btnTxt: 'Try Again' }));
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
@@ -597,7 +604,7 @@ const useAttest = function useAttest() {
             desc: 'Please try again later.',
           });
           dispatch(setAttestLoading(3));
-          dispatch(setActiveAttestation({ loading: 3 }));
+          dispatch(setActiveAttestation({ loading: 3, btnTxt: 'Try Again' }));
         }
       }
     };

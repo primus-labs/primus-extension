@@ -104,10 +104,13 @@
           }
           .label {
             width: 100%;
+            min-height: var(--spacing-18);
             @include frcc;
+            align-items: flex-start;
             gap: var(--spacing-4, 4px);
             > img {
               width: var(--spacing-16, 16px);
+              margin-top: 1px;
             }
           }
           .value {

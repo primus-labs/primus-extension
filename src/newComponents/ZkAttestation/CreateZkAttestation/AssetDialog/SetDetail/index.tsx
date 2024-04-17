@@ -149,9 +149,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const loading = useMemo(() => {
       return formLegal && attestLoading === 1;
     }, [formLegal, attestLoading]);
-    // const verificationContentList = useMemo(() => {
-
-    // })
 
     const formatBtnTxt = useMemo(() => {
       return attestLoading === 3
