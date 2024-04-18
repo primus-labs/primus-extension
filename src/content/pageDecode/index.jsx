@@ -206,7 +206,6 @@ function DescEl({ status, resultStatus ,errorTxt}) {
           <>
             <span>
               {errorTxt?.title}
-              {errorTxt?.desc && `,${errorTxt?.desc}`}
             </span>
             {errorTxt?.code && (
               <span className="errorCode">{errorTxt?.code}</span>

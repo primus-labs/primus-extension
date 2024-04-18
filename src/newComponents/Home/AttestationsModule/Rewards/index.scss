@@ -90,7 +90,7 @@
               .desc {
                 @include frsc;
                 // gap: var(--spacing-8);
-                @include BodyBody100;
+                @include BodyBody300Bold;
                 > img {
                   width: var(--spacing-16);
                 }

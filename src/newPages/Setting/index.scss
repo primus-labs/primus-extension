@@ -45,6 +45,9 @@
         display: flex;
         .selectDivInput{
           height: 32px;
+          .selectOptionswrapper{
+            top: var(--spacing-32);
+          }
         }
         .textDiv {
           font-size: 14px;

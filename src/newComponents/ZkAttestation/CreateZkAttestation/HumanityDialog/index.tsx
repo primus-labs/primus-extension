@@ -26,6 +26,8 @@ import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import SetDetail from './SetDetail';
 import SetDataSource from './SetDataSource';
+import SetProcessDialog from '@/newComponents/ZkAttestation/SubmitOnChain/SetProcessDialog';
+
 import OrderItem from '@/newComponents/OrderItem';
 import iconDone from '@/assets/newImg/layout/iconDone.svg';
 
@@ -44,7 +46,7 @@ const Nav: React.FC<PButtonProps> = memo(
   ({ type, onClose, onSubmit, presets }) => {
     const { sourceMap2 } = useAllSources();
     const { pathname } = useLocation();
-    const { msgs, addMsg } = useMsgs();
+    const { msgs, addMsg, deleteMsg } = useMsgs();
     const authorize = useAuthorization2();
 
     const dispatch: Dispatch<any> = useDispatch();
@@ -55,6 +57,8 @@ const Nav: React.FC<PButtonProps> = memo(
     const [assetForm, setAssetForm] = useState<any>({});
 
     const [BASEventDetail] = useEventDetail(BASEVENTNAME);
+    const [activeSendToChainRequest, setActiveSendToChainRequest] =
+      useState<any>({});
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
     );
@@ -232,7 +236,12 @@ const Nav: React.FC<PButtonProps> = memo(
           if (pathname !== '/zkAttestation') {
             msgObj.desc = 'See details in the zkAttestation page.';
           }
-          addMsg(msgObj);
+          const msgId = await addMsg(msgObj);
+          const delay = msgObj?.link === pathname ? 5000 : 8000;
+          let timer = setTimeout(() => {
+            // console.log('222deleteMsg-timeout', delay); //delete
+            deleteMsg(msgId);
+          }, delay);
           // setActiveRequest({
           //   type: 'suc',
           //   title: 'Congratulations',
@@ -250,13 +259,24 @@ const Nav: React.FC<PButtonProps> = memo(
           await authorize(form.dataSourceId.toUpperCase(), storeGoogleCred);
         } catch {
           setStep(-1);
-          addMsg({
-            type: 'error',
-            title: 'Unable to proceed',
-            desc: 'Please try again later.',
-          });
+          // addMsg({
+          //   type: 'error',
+          //   title: 'Unable to proceed',
+          //   desc: 'Please try again later.',
+          // });
+          // google attest fail use dialog tip, not alert msg
           // setActiveRequest(undefined);
-          dispatch(setActiveAttestation({ loading: 3 }));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: {
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+                btnTxt: 'Try Again',
+              },
+            })
+          );
           dispatch(setAttestLoading(3));
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
             // attestationId: uniqueId,
@@ -282,7 +302,7 @@ const Nav: React.FC<PButtonProps> = memo(
       ]
     );
     const handleSubmitSetDetail = useCallback(
-      async (form) => {
+      async (form = {}) => {
         // setAssetForm((f) => ({ ...f, ...form }));
         // 1.store attestation in process params in react store
         const activeAttestationParams = {
@@ -380,56 +400,86 @@ const Nav: React.FC<PButtonProps> = memo(
         setStep(2);
       }
     }, [presets]);
+    useEffect(() => {
+      if (assetForm.dataSourceId === 'google') {
+        if (attestLoading === 3) {
+          setStep(3);
+          setActiveSendToChainRequest({
+            ...activeAttestation.msgObj,
+            type: 'fail',
+          });
+        } else if (attestLoading === 0) {
+          setActiveSendToChainRequest({});
+        }
+      }
+    }, [attestLoading, activeAttestation.msgObj, assetForm.dataSourceId]);
 
     return (
-      <PMask>
-        {/* onClose={onClose} closeable={!fromEvents} */}
-        <div className="pDialog2 assetAttestationDialog onChainAttestationDialog">
-          <PClose onClick={onClose} />
-          <main>
-            <header>
-              <h1>Create zkAttestation</h1>
-              <h2>You're creating {type.toLowerCase()}.</h2>
-            </header>
-            {presets ? (
-              <div className="dataSourceWrapper">
-                <label>Data Source</label>
-                {dataSourceEl}
-              </div>
-            ) : (
-              <>
+      <>
+        {step === 3 ? (
+          <SetProcessDialog
+            preset={DATASOURCEMAP['google'].icon}
+            onClose={onClose}
+            onSubmit={handleSubmitSetDetail}
+            activeRequest={activeSendToChainRequest}
+          />
+        ) : (
+          <PMask>
+            {/* onClose={onClose} closeable={!fromEvents} */}
+            <div className="pDialog2 assetAttestationDialog onChainAttestationDialog">
+              <PClose onClick={onClose} />
+              <main>
+                <header>
+                  <h1>Create zkAttestation</h1>
+                  <h2>You're creating {type.toLowerCase()}.</h2>
+                </header>
+                {presets ? (
+                  <div className="dataSourceWrapper">
+                    <label>Data Source</label>
+                    {dataSourceEl}
+                  </div>
+                ) : (
+                  <>
+                    {step === 1 && (
+                      <section className="detailWrapper">
+                        <div className="step step1">
+                          <OrderItem order="1" text="Connect data source" />
+                        </div>
+                      </section>
+                    )}
+                    {step === 2 && (
+                      <section className="detailWrapper">
+                        <div className="step step1 done">
+                          <img className="iconDone" src={iconDone} alt="" />
+                          <div className="txt">
+                            <div className="title">Connect Data Source</div>
+                            {dataSourceEl}
+                          </div>
+                        </div>
+                        <div className="step step2">
+                          <OrderItem
+                            order="2"
+                            text="Confirm attestation details"
+                          />
+                        </div>
+                      </section>
+                    )}
+                  </>
+                )}
                 {step === 1 && (
-                  <section className="detailWrapper">
-                    <div className="step step1">
-                      <OrderItem order="1" text="Connect data source" />
-                    </div>
-                  </section>
+                  <SetDataSource onSubmit={handleSubmitSetPwdDialog} />
                 )}
                 {step === 2 && (
-                  <section className="detailWrapper">
-                    <div className="step step1 done">
-                      <img className="iconDone" src={iconDone} alt="" />
-                      <div className="txt">
-                        <div className="title">Connect Data Source</div>
-                        {dataSourceEl}
-                      </div>
-                    </div>
-                    <div className="step step2">
-                      <OrderItem order="2" text="Confirm attestation details" />
-                    </div>
-                  </section>
+                  <SetDetail
+                    onSubmit={handleSubmitSetDetail}
+                    presets={assetForm}
+                  />
                 )}
-              </>
-            )}
-            {step === 1 && (
-              <SetDataSource onSubmit={handleSubmitSetPwdDialog} />
-            )}
-            {step === 2 && (
-              <SetDetail onSubmit={handleSubmitSetDetail} presets={assetForm} />
-            )}
-          </main>
-        </div>
-      </PMask>
+              </main>
+            </div>
+          </PMask>
+        )}
+      </>
     );
   }
 );

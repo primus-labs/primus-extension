@@ -394,7 +394,7 @@ const Overview = memo(() => {
   return (
     <div className="dataOverview">
       <div className="title">
-        <span>Data Dashboard</span>
+        <span>Data Overview</span>
         <div className="operations">
           <UpdateDataSourceTip />
 
