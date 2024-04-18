@@ -35,6 +35,7 @@ import WebGate from '@/services/webdata/webexchange/webgateio';
 import Webhuobi from '@/services/webdata/webexchange/webhuobi';
 import WebHuoBi from '@/services/webdata/webexchange/webhuobi';
 import WebMexc from '@/services/webdata/webexchange/webmexc';
+import WebTwitter from '@/services/webdata/websocial/webtwitter';
 
 export type DataSourceItemType = ExchangeMeta & {
   provider?: any;
@@ -64,8 +65,8 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: 'Support fetching tweet & followers data for management and attestation creation.',
     unConnectTip:
       'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
-
-    connectType: 'Auth',
+    constructorF: WebTwitter,
+    connectType: 'Web',
   },
   discord: {
     id: 'discord',
