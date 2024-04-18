@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { setSocialSourcesAsync } from '@/store/actions';
 import { getAuthAttestation } from '@/services/api/cred';
 import type { UserState } from '@/types/store';
 import { getCurrentDate, postMsg, sub, getAuthUrl } from '@/utils/utils';
@@ -20,6 +21,7 @@ type CreateAuthWindowCallBack = (
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 // create google account attestation
 const useAuthorization2 = () => {
+  const dispatch = useDispatch();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const [searchParams] = useSearchParams();
   const fromEvents = searchParams.get('id');
@@ -121,13 +123,14 @@ const useAuthorization2 = () => {
               await chrome.storage.local.set({
                 [lowerCaseSourceName]: JSON.stringify(socialSourceData),
               });
+              dispatch(setSocialSourcesAsync());
 
               const eventInfo = {
                 eventType: 'DATA_SOURCE_INIT',
                 rawData: { type: 'Social', dataSource: source },
               };
               eventReport(eventInfo);
-              fn()
+              fn();
             } else {
             }
           }
@@ -139,7 +142,12 @@ const useAuthorization2 = () => {
       }, 1000);
       setCheckIsAuthDialogTimer(timer);
     },
-    [connectedWallet?.address, BASEventDetail?.ext?.schemaType, fromEvents]
+    [
+      connectedWallet?.address,
+      BASEventDetail?.ext?.schemaType,
+      fromEvents,
+      dispatch,
+    ]
   );
   const handleClickOAuthSource: OauthFn = useCallback(
     async (source, onSubmit) => {

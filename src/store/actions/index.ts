@@ -165,6 +165,12 @@ export const setConnectedWalletsActionAsync = () => {
     await dispatch(setConnectedWalletsAction(lastConnectedWalletsObj));
   };
 };
+export const setMsgsAsync = (values) => {
+  return async (dispatch: any) => {
+    await chrome.storage.local.set({ msgs: JSON.stringify(values) });
+    await dispatch(setMsgs(values));
+  };
+};
 
 export const setConnectWalletActionAsync = (values: any) => {
   return async (dispatch: any) => {

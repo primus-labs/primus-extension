@@ -4,7 +4,11 @@ import './index.scss';
 import PButton from '@/newComponents/PButton';
 import taskItemIcon from '@/assets/newImg/achievements/taskItemIcon.svg';
 import taskFinishedIcon from '@/assets/newImg/achievements/taskFinishedIcon.svg';
-import { checkHasFinishJoinDiscord, finishTask, taskStatusCheck } from '@/services/api/achievements';
+import {
+  checkHasFinishJoinDiscord,
+  finishTask,
+  taskStatusCheck,
+} from '@/services/api/achievements';
 import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { BASEVENTNAME, SocailStoreVersion } from '@/config/constants';
@@ -43,7 +47,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
     const onConnectWallet = taskItemWithClick.onConnectWallet;
     const taskToFinished = taskItemWithClick.taskToFinished;
     const [finished, setFinished] = useState(taskItemWithClick.isFinished);
-    const { msgs, addMsg } = useMsgs();
+    const { msgs, addMsg, deleteMsg } = useMsgs();
     const [btnIsLoading, setBtnIsLoading] = useState(false);
 
     const [PADOTabId, setPADOTabId] = useState<number>();
@@ -141,22 +145,29 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
                   };
                   const resFromServer = await finishTask(finishBody);
                   if (resFromServer.rc === 0) {
-                    addMsg({
+                    const msgId = addMsg({
                       type: 'suc',
                       title: `${taskItem.taskXpScore} points earned!`,
                       link: '',
                     });
+                    setTimeout(() => {
+                      deleteMsg(msgId);
+                    }, 5000);
+
                     setFinished(true);
                     refreshTotalScore(
                       taskItem.taskXpScore,
                       taskItem.taskIdentifier
                     );
                   } else {
-                    addMsg({
+                    const msgId = addMsg({
                       type: 'info',
                       title: 'Not qualified',
                       desc: resFromServer.msg,
                     });
+                    setTimeout(() => {
+                      deleteMsg(msgId);
+                    }, 5000);
                   }
                 }
                 await chrome.tabs.remove(xTabId as number);
@@ -185,21 +196,27 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         const res = await getDataSourceData('discord');
         if (!res['discord']) {
           //check the main wallet whether it has joined discord
-          const checkRsp = await checkHasFinishJoinDiscord()
-          if(checkRsp.result.hasJoinDiscord && checkRsp.result.discordName){
-            addMsg({
+          const checkRsp = await checkHasFinishJoinDiscord();
+          if (checkRsp.result.hasJoinDiscord && checkRsp.result.discordName) {
+            const msgId = addMsg({
               type: 'info',
               title: 'Not qualified',
               desc: `No GM messages found for ${checkRsp.result.discordName} on PADO Discord.`,
               link: '',
             });
-          } else{
-            addMsg({
+            setTimeout(() => {
+              deleteMsg(msgId);
+            }, 5000);
+          } else {
+            const msgId = addMsg({
               type: 'info',
               title: 'Not qualified',
               desc: 'Please complete the Join PADO Discord event first.',
               link: '',
             });
+            setTimeout(() => {
+              deleteMsg(msgId);
+            }, 5000);
           }
 
           return;
@@ -213,13 +230,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_X_DATA') {
         const res = await getDataSourceData('x');
         if (!res['x']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=x',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const xUserInfo = JSON.parse(res['x']);
@@ -231,13 +251,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_BITGET_DATA') {
         const res = await getDataSourceData('bitget');
         if (!res['bitget']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=bitget',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['bitget']);
@@ -250,13 +273,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_HUOBI_DATA') {
         const res = await getDataSourceData('huobi');
         if (!res['huobi']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=huobi',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['huobi']);
@@ -269,13 +295,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_MEXC_DATA') {
         const res = await getDataSourceData('mexc');
         if (!res['mexc']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=mexc',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['mexc']);
@@ -288,13 +317,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_GATE_DATA') {
         const res = await getDataSourceData('gate');
         if (!res['gate']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=gate',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['gate']);
@@ -304,17 +336,19 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         };
       }
 
-
       if (taskItem.taskIdentifier === 'CONNECT_BYBIT_DATA') {
         const res = await getDataSourceData('bybit');
         if (!res['bybit']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=bybit',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['bybit']);
@@ -327,13 +361,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_KUCOIN_DATA') {
         const res = await getDataSourceData('kucoin');
         if (!res['kucoin']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=kucoin',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['kucoin']);
@@ -346,13 +383,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'FOLLOW_PADOLABS') {
         const res = await getDataSourceData('x');
         if (!res['x']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=x',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         await onFollowX();
@@ -363,13 +403,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_DISCORD_DATA') {
         const res = await getDataSourceData('discord');
         if (!res['discord']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=discord',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const discordUserInfo = JSON.parse(res['discord']);
@@ -482,13 +525,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_TIKTOK_ACCOUNT_DATA') {
         const res = await getDataSourceData('tiktok');
         if (!res['tiktok']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=tiktok',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const tiktokUserInfo = JSON.parse(res['tiktok']);
@@ -501,13 +547,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_GOOGLE_ACCOUNT_DATA') {
         const res = await getDataSourceData('google');
         if (!res['google']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=google',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const googleUserInfo = JSON.parse(res['google']);
@@ -520,13 +569,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier == 'CONNECT_BINANCE_DATA') {
         const res = await getDataSourceData('binance');
         if (!res['binance']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=binance',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const binanceInfo = JSON.parse(res['binance']);
@@ -544,13 +596,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier == 'CONNECT_COINBASE_DATA') {
         const res = await getDataSourceData('coinbase');
         if (!res['coinbase']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=coinbase',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const coinbaseInfo = JSON.parse(res['coinbase']);
@@ -568,13 +623,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'CONNECT_OKX_DATA') {
         const res = await getDataSourceData('okx');
         if (!res['okx']) {
-          addMsg({
+          const msgId = addMsg({
             type: 'info',
             title: 'Data not connected',
             desc: 'Go to Data Source page to connect.',
             link: '/datas/data?dataSourceId=okx',
             linkText: 'To connect',
           });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
           return;
         }
         const okxInfo = JSON.parse(res['okx']);
@@ -597,12 +655,15 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (res.rc === 0) {
         const points =
           res.result.points !== 0 ? res.result.points : taskItem.taskXpScore;
-        addMsg({
+        const msgId = addMsg({
           type: 'suc',
           title: `${points} points earned!`,
-          desc : taskItem.taskDesc,
+          desc: taskItem.taskDesc,
           link: '',
         });
+        setTimeout(() => {
+          deleteMsg(msgId);
+        }, 5000);
         setFinished(true);
         refreshTotalScore(points, taskItem.taskIdentifier);
       } else {
@@ -649,13 +710,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           msg = 'No new counted referrals.';
         }
 
-        addMsg({
+        const msgId = addMsg({
           type: 'info',
           title: title,
           desc: msg,
           link: link,
           linkText: linkText,
         });
+        setTimeout(() => {
+          deleteMsg(msgId);
+        }, 5000);
       }
     };
 

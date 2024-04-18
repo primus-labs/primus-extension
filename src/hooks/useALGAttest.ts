@@ -107,7 +107,7 @@ const useAttest = function useAttest() {
       } else if (retcode === '2') {
         const msgObj = {
           type: 'error',
-          title: 'Failed',
+          title: 'Failed', // `${activeAttestation.attestationType} failed!`
           desc: 'The algorithm has not been initialized.Please try again later.',
         };
         if (activeAttestation.dataSourceId === 'coinbase') {
@@ -230,8 +230,7 @@ const useAttest = function useAttest() {
           if (pathname !== '/zkAttestation') {
             msgObj.desc = 'See details in the zkAttestation page.';
           }
-          if (activeAttestation.dataSourceId === 'coinbase') {
-          } else {
+          if (activeAttestation.dataSourceId !== 'coinbase') {
             addMsg(msgObj);
           }
           dispatch(setAttestLoading(2));
@@ -282,8 +281,7 @@ const useAttest = function useAttest() {
             title: titleItem1,
             desc: descEl,
           };
-          if (activeAttestation.dataSourceId === 'coinbase') {
-          } else {
+          if (activeAttestation.dataSourceId !== 'coinbase') {
             addMsg(msgObj);
           }
           dispatch(setAttestLoading(3));
@@ -421,8 +419,7 @@ const useAttest = function useAttest() {
         const msgObj = {
           ...requestResObj,
         };
-        if (activeAttestation.dataSourceId === 'coinbase') {
-        } else {
+        if (activeAttestation.dataSourceId !== 'coinbase') {
           addMsg(msgObj);
         }
         dispatch(setAttestLoading(3));
@@ -565,7 +562,7 @@ const useAttest = function useAttest() {
             desc: 'Please try again later.',
           });
           dispatch(setAttestLoading(3));
-          dispatch(setActiveAttestation({ loading: 3, btnTxt: 'Try Again' }));
+          dispatch(setActiveAttestation({ loading: 3, msgObj: { btnTxt: 'Try Again' } }));
         } else if (name === 'start') {
           // dispatch(setAttestLoading(1));
           // dispatch(setActiveAttestation({ loading: 1 }));
@@ -588,7 +585,12 @@ const useAttest = function useAttest() {
           //   setIntervalSwitch(false);
           // }
           dispatch(setAttestLoading(3));
-          dispatch(setActiveAttestation({ loading: 3, btnTxt: 'Try Again' }));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { btnTxt: 'Try Again' },
+            })
+          );
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
@@ -598,13 +600,25 @@ const useAttest = function useAttest() {
         // }
       } else if (type === 'googleAuth') {
         if (name === 'cancelAttest') {
-          addMsg({
-            type: 'error',
-            title: 'Unable to proceed',
-            desc: 'Please try again later.',
-          });
+          // addMsg({
+          //   type: 'error',
+          //   title: 'Unable to proceed',
+          //   desc: 'Please try again later.',
+          // });
+          // google attest fail use dialog tip, not alert msg
           dispatch(setAttestLoading(3));
-          dispatch(setActiveAttestation({ loading: 3, btnTxt: 'Try Again' }));
+
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: {
+                type: 'warn',
+                title: 'Unable to proceed',
+                desc: 'Please try again later.',
+                btnTxt: 'Try Again',
+              },
+            })
+          );
         }
       }
     };

@@ -181,21 +181,23 @@ const Nav: React.FC<PButtonProps> = memo(
       }
     }, [presets]);
     useEffect(() => {
-      if (attestLoading === 2) {
-        setActiveSendToChainRequest({
-          type: 'suc',
-          title: 'Congratulations',
-          desc: 'Attestation created!',
-        });
-      } else if (attestLoading === 3) {
-        setActiveSendToChainRequest({
-          ...activeAttestation.msgObj,
-          type: 'fail',
-        });
-      } else if (attestLoading === 0) {
-        setActiveSendToChainRequest({});
+      if (assetForm.dataSourceId === 'coinbase') {
+        if (attestLoading === 2) {
+          setActiveSendToChainRequest({
+            type: 'suc',
+            title: 'Congratulations',
+            desc: 'Attestation created!',
+          });
+        } else if (attestLoading === 3) {
+          setActiveSendToChainRequest({
+            ...activeAttestation.msgObj,
+            type: 'fail',
+          });
+        } else if (attestLoading === 0) {
+          setActiveSendToChainRequest({});
+        }
       }
-    }, [attestLoading, activeAttestation.msgObj]);
+    }, [attestLoading, activeAttestation.msgObj, assetForm.dataSourceId]);
 
     return (
       <>

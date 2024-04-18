@@ -61,7 +61,7 @@ const Nav: React.FC<PButtonProps> = memo(
           <PClose onClick={handleClose} />
           <main>
             <header>
-              <h1>Connect by APITODO</h1>
+              <h1>Connect by API</h1>
               {step === 3 && <h2>Configure with your READ-ONLY API keys</h2>}
             </header>
 

@@ -100,11 +100,11 @@ const Cards: React.FC<PDropdownProps> = memo(
           label: 'Delete',
           disabled: isDeleteDisable,
         },
-        {
-          value: 'Bind to DID',
-          label: 'Bind to DID',
-          disabled: true,
-        },
+        // {
+        //   value: 'Bind to DID',
+        //   label: 'Bind to DID',
+        //   disabled: true,
+        // },
       ];
     }, []);
     const formatDate = (timestamp) => {
