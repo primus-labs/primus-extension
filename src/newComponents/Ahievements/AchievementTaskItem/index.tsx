@@ -422,6 +422,73 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         };
       }
 
+      if (taskItem.taskIdentifier === 'CONNECT_COINBASE_DATA') {
+        const res = await getDataSourceData('coinbase');
+        if (!res['coinbase']) {
+          const msgId = addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=coinbase',
+            linkText: 'To connect',
+          });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
+          return;
+        }
+        const coinbaseUserInfo = JSON.parse(res['coinbase']);
+        console.log(res);
+        ext = {
+          uniqueName: coinbaseUserInfo.userName,
+        };
+      }
+
+
+      if (taskItem.taskIdentifier === 'CONNECT_GOOGLE_ACCOUNT_DATA') {
+        const res = await getDataSourceData('google');
+        if (!res['google']) {
+          const msgId = addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=google',
+            linkText: 'To connect',
+          });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
+          return;
+        }
+        const googleUserInfo = JSON.parse(res['google']);
+        console.log(res);
+        ext = {
+          uniqueName: googleUserInfo.userName,
+        };
+      }
+
+      if (taskItem.taskIdentifier === 'CONNECT_GITHUB_DATA') {
+        const res = await getDataSourceData('github');
+        if (!res['github']) {
+          const msgId = addMsg({
+            type: 'info',
+            title: 'Data not connected',
+            desc: 'Go to Data Source page to connect.',
+            link: '/datas/data?dataSourceId=github',
+            linkText: 'To connect',
+          });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
+          return;
+        }
+        const githubUserInfo = JSON.parse(res['github']);
+        console.log(res);
+        ext = {
+          uniqueName: githubUserInfo.userName,
+        };
+      }
+
       if (taskItem.taskIdentifier === 'JOIN_PADO_DISCORD') {
         const res = await getDataSourceData('discord');
         let authUrl;
