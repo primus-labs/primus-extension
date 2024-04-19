@@ -18,6 +18,7 @@ import {
   setConnectedWalletsActionAsync,
   initEventsActionAsync,
   setNftsActionAsync,
+  initNftsActionAsync,
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
@@ -112,7 +113,9 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     dispatch(initIfHadPwdAsync());
     dispatch(setConnectedWalletsActionAsync());
     dispatch(initEventsActionAsync());
+    dispatch(initNftsActionAsync());
     dispatch(setNftsActionAsync());
+    
     // dispatch(initConnectedWalletActionAsync());
     // (updateOnChainFn as () => void)();
   }, [dispatch]);

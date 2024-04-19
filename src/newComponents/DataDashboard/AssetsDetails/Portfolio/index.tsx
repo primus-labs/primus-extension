@@ -28,6 +28,7 @@ const MAX = 5;
 
 const AssetsDetails = memo(() => {
   const { accountsNftsListMap } = useNFTs();
+  console.log('222accountsNftsListMap', accountsNftsListMap); //delete
   const { addMsg } = useMsgs();
   const { totalAssetsBalance, metamaskAssets, tokenIconFn } =
     useAssetsStatistic();
@@ -268,15 +269,19 @@ const AssetsDetails = memo(() => {
   }, []);
 
   const currentAccountNftsFn = useCallback(
-    (id) => {
-      const currentAccountNftsArr = accountsNftsListMap[id];
+    (i) => {
+      const { id, address } = i;
+      let currentAccountNftsArr =
+        accountsForm[id] && accountsForm[id]!== 'All'
+          ? accountsNftsListMap[accountsForm[id]]
+          : Object.values(accountsNftsListMap).flat();
       if (currentAccountNftsArr) {
         return currentAccountNftsArr;
       } else {
         return [];
       }
     },
-    [accountsNftsListMap]
+    [accountsNftsListMap, accountsForm]
   );
   const handleChangeTableTab = useCallback((i) => {
     setTableTab(i);
@@ -306,9 +311,6 @@ const AssetsDetails = memo(() => {
       return { ...f, [k]: v };
     });
   }, []);
-
-  
-
 
   return (
     <section className="tableSection portfolio">
@@ -415,14 +417,14 @@ const AssetsDetails = memo(() => {
                       </div>
                       <div
                         className={`card ${
-                          currentAccountNftsFn(i.id).length === 0
+                          currentAccountNftsFn(i).length === 0
                             ? 'disabled'
                             : tableTab === 'NFT'
                             ? 'active'
                             : ''
                         } `}
                         onClick={() => {
-                          currentAccountNftsFn(i.id).length > 0 &&
+                          currentAccountNftsFn(i).length > 0 &&
                             handleChangeTableTab('NFT');
                         }}
                       >
@@ -430,15 +432,15 @@ const AssetsDetails = memo(() => {
                         <div className="txtWrapper">
                           <div className="label">NFT</div>
                           <div className="value">
-                            {currentAccountNftsFn(i.id).length}
+                            {currentAccountNftsFn(i).length}
                           </div>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {((i.id.startsWith('0x') && tableTab === 'Token') ||
-                    !i.id.startsWith('0x')) && (
+                  {((i.id === 'metamask' && tableTab === 'Token') ||
+                    i.id !== 'metamask') && (
                     <TokenTable
                       title="Tokens"
                       id={i.id}
@@ -454,8 +456,8 @@ const AssetsDetails = memo(() => {
                       }
                     />
                   )}
-                  {i.id.startsWith('0x') && tableTab === 'NFT' && (
-                    <NFTList list={currentAccountNftsFn(i.id)} />
+                  {i.id === 'metamask' && tableTab === 'NFT' && (
+                    <NFTList list={currentAccountNftsFn(i)} />
                   )}
                 </>
               )}

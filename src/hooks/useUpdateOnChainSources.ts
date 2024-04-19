@@ -59,14 +59,13 @@ const useUpdateOnChainSources = () => {
       // Signature is permanently valid
       if (signature) {
         try {
-          await getChainAssets(
+          await getChainAssets({
             signature,
             timestamp,
             address,
             dispatch,
-            undefined,
-            false
-          );
+            requireReport: false,
+          });
           // const { rc, result } = await getAssetsOnChains(
           //   {
           //     signature,

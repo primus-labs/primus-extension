@@ -262,13 +262,14 @@ export const connectWalletAsync = (
             return;
           }
           try {
-            await getChainAssets(
+            await getChainAssets({
               signature,
               timestamp,
               address,
               dispatch,
-              label
-            );
+              label,
+            });
+            dispatch(setNftsActionAsync([address]));
           } catch {}
         }
         await dispatch(
@@ -317,13 +318,14 @@ export const connectWalletAsync = (
           );
           await dispatch(setConnectWalletDialogVisibleAction(0));
           try {
-            await getChainAssets(
+            await getChainAssets({
               signature,
               timestamp,
               address,
               dispatch,
-              label
-            );
+              label,
+            });
+            dispatch(setNftsActionAsync([address]));
           } catch {}
 
           await dispatch(
@@ -359,7 +361,8 @@ const storeOnChainAssets = async ({
   signature,
   rawData,
   dispatch,
-}) => {
+  requireUpdate,
+}: any) => {
   const res = getStatisticalData(rawData ?? {});
   const curAccOnChainAssetsItem: any = {
     address: curConnectedAddr,
@@ -378,7 +381,7 @@ const storeOnChainAssets = async ({
   const lastOnChainAssetsMap = lastOnChainAssetsMapStr
     ? JSON.parse(lastOnChainAssetsMapStr)
     : {};
-  if (curConnectedAddr in lastOnChainAssetsMap) {
+  if (curConnectedAddr in lastOnChainAssetsMap && requireUpdate) {
     const lastCurConnectedAddrInfo = lastOnChainAssetsMap[curConnectedAddr];
     const pnl = sub(
       curAccOnChainAssetsItem.totalBalance,
@@ -395,25 +398,15 @@ const storeOnChainAssets = async ({
 
   await dispatch(setOnChainAssetsSourcesAsync());
 };
-export const getChainAssets = async (
-  signature: string,
-  timestamp: string,
-  curConnectedAddr: string,
-  dispatch: any,
-  label?: string,
-  requireReport = true
-) => {
+export const getChainAssets = async ({
+  signature,
+  timestamp,
+  address: curConnectedAddr,
+  dispatch,
+  label,
+  requireReport = true,
+}) => {
   try {
-    // const { rc, result, msg } = await getAssetsOnChains(
-    //   {
-    //     signature,
-    //     timestamp,
-    //     address: curConnectedAddr,
-    //   },
-    //   {
-    //     timeout: ONEMINUTE,
-    //   }
-    // );
     await storeOnChainAssets({
       curConnectedAddr,
       label,
@@ -421,6 +414,7 @@ export const getChainAssets = async (
       signature,
       rawData: { nativeToken: {}, erc20Token: {} },
       dispatch,
+      requireUpdate: false,
     });
     const { rc, result, msg } = await sendRequestAssetsOnChains({
       signature,
@@ -444,6 +438,7 @@ export const getChainAssets = async (
             signature,
             rawData: requestRes.data,
             dispatch,
+            requireUpdate: true,
           });
           if (requireReport) {
             const eventInfo = {
@@ -722,69 +717,113 @@ export const initIfHadPwdAsync = () => {
   };
 };
 
-export const setNftsActionAsync = () => {
+export const getChainAssetsNFT = async ({
+  signature,
+  timestamp,
+  address: curConnectedAddr,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { rc, result, msg } = await sendRequestAssetsOnChains({
+        signature,
+        timestamp,
+        address: curConnectedAddr,
+        type: 'NFT',
+      });
+      if (rc === 0 && result) {
+        const pollingFn = async () => {
+          const { rc: requestRc, result: requestRes } =
+            await requestAssetsOnChains({
+              type: 'NFT',
+              address: curConnectedAddr,
+            });
+          if (requestRc === 0 && requestRes.status === 'SUCCESS') {
+            clearInterval(pollingTimer);
+            // mock data  delete
+            // requestRes.data = {
+            //   'Arbitrum One': [
+            //     {
+            //       contractAddress: '0xaf1cf02378db203ea9545d62588567c61b1ed7f8', //nft合约地址
+            //       transactionHash:
+            //         '0x98a7e58a68e687d1b598f0ce36000b7490a7799345362bfef6a2cb8fb0f3abd6', //transfer hash
+            //       tokenId: '204', //tokeniD
+            //       name: 'Vision Emissary A', //nft name
+            //       collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+            //       imageUri:
+            //         'https://s3.ap-northeast-1.amazonaws.com/quest3.xyz/quest/831879261192478866.gif', //nft 图片地址
+            //       ercType: 'erc721', //nft 类型
+            //       chain: 'Arbitrum One', //链
+            //       mintTime: '1698720422000', //mint time
+            //     },
+            //   ],
+            //   Polygon: [
+            //     {
+            //       contractAddress: '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
+            //       transactionHash:
+            //         '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
+            //       tokenId: '1',
+            //       name: 'Airdrop at 3eth.top 🎁',
+            //       collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+            //       imageUri:
+            //         'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
+            //       ercType: 'erc1155',
+            //       chain: 'Polygon',
+            //       mintTime: '1710913406000',
+            //     },
+            //   ],
+            // };
+            return resolve(requestRes.data);
+          }
+        };
+        let pollingTimer = setInterval(pollingFn, 1000);
+      }
+    } catch (e) {
+      reject(e);
+      console.log('getChainAssets catch e=', e);
+    }
+  });
+};
+export const initNftsActionAsync = () => {
+  return async (dispatch: any) => {
+    try {
+      const { nfts: nftsStr } = await chrome.storage.local.get(['nfts']);
+      const nftsObj = nftsStr ? JSON.parse(nftsStr) : {};
+      dispatch(setNfts(nftsObj));
+    } catch (e) {
+      console.log('setEventsActionAsync e:', e);
+    }
+  };
+};
+export const setNftsActionAsync = (walletAddrArr) => {
   return async (dispatch: any, getState) => {
     try {
       const onChainAssetsSources = getState().onChainAssetsSources;
-      const connectedWalletAddressesArr = Object.keys(onChainAssetsSources);
-      const requestArr = Object.values(onChainAssetsSources).map((r: any) => {
-        const { address, signature, timestamp } = r;
-        return getOnChainNFTs({
-          address,
-          signature,
-          timestamp,
-        });
-      });
-      const resArr = await Promise.all(requestArr);
-      // delete !!!
-      resArr[0] = {
-        rc: 0,
-        mc: 'SUCCESS',
-        msg: '',
-        result: {
-          'Arbitrum One': [
-            {
-              contractAddress: '0xaf1cf02378db203ea9545d62588567c61b1ed7f8', //nft合约地址
-              transactionHash:
-                '0x98a7e58a68e687d1b598f0ce36000b7490a7799345362bfef6a2cb8fb0f3abd6', //transfer hash
-              tokenId: '204', //tokeniD
-              name: 'Vision Emissary A', //nft name
-              collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
-              imageUri:
-                'https://s3.ap-northeast-1.amazonaws.com/quest3.xyz/quest/831879261192478866.gif', //nft 图片地址
-              ercType: 'erc721', //nft 类型
-              chain: 'Arbitrum One', //链
-              mintTime: '1698720422000', //mint time
-            },
-          ],
-          Polygon: [
-            {
-              contractAddress: '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
-              transactionHash:
-                '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
-              tokenId: '1',
-              name: 'Airdrop at 3eth.top 🎁',
-              collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
-              imageUri:
-                'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
-              ercType: 'erc1155',
-              chain: 'Polygon',
-              mintTime: '1710913406000',
-            },
-          ],
-        },
-      };
-      const obj = resArr.reduce((prev, curr, currK) => {
-        const { rc, result } = curr;
-        if (rc === 0) {
-          prev[connectedWalletAddressesArr[currK]] = result;
+      const connectedWalletAddressesArr =
+        walletAddrArr? walletAddrArr: Object.keys(onChainAssetsSources);
+      const requestArr = Object.values(onChainAssetsSources).map(
+        async (r: any) => {
+          const { address, signature, timestamp } = r;
+          return await getChainAssetsNFT({
+            address,
+            signature,
+            timestamp,
+          });
         }
+      );
+      const resArr = await Promise.all(requestArr);
+      const { nfts: nftsStr } = await chrome.storage.local.get(['nfts']);
+      const nftsObj = nftsStr ? JSON.parse(nftsStr) : {};
+      const obj = resArr.reduce((prev: any, curr, currK) => {
+        const addr = connectedWalletAddressesArr[currK];
+        prev[addr] = curr;
+        nftsObj[addr] = curr;
         return prev;
       }, {});
+
       await chrome.storage.local.set({
-        nfts: JSON.stringify(obj),
+        nfts: JSON.stringify(nftsObj),
       });
-      dispatch(setNfts(obj));
+      dispatch(setNfts(nftsObj));
     } catch (e) {
       console.log('setEventsActionAsync e:', e);
     }
