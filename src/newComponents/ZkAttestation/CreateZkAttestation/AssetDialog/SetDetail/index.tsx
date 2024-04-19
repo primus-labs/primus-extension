@@ -108,8 +108,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
       return list;
     }, [pswForm.verificationContent, activeDataSouceUserInfo]);
-    
-    
+
     const activeAccount = useMemo(() => {
       if (activeDataSouceUserInfo) {
         const metaInfo = DATASOURCEMAP[dataSourceId];
@@ -137,10 +136,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       return totalBalance;
     }, [dataSourceId, activeDataSouceUserInfo]);
     const formLegal = useMemo(() => {
-      const valueLegal =
-        activeDataSouceUserInfo && pswForm.verificationValue
-          ? gt(Number(totalBalanceForAttest),Number(pswForm.verificationValue))
-          : true;
+      let valueLegal = true;
+      if (pswForm.verificationContent === 'Assets Proof') {
+        if (activeDataSouceUserInfo) {
+          valueLegal = gt(
+            Number(totalBalanceForAttest),
+            Number(pswForm.verificationValue)
+          );
+        }
+      }
+
       return (
         !!(pswForm.verificationContent && pswForm.verificationValue) &&
         valueLegal
@@ -347,9 +352,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             <label className="label">
               <span>Data Account</span>
               <PTooltip
-                title={`Your ${
-                  DATASOURCEMAP[presets.dataSourceId].name
-                } UserID`}
+                title={`Your ${DATASOURCEMAP[presets.dataSourceId].name} ${
+                  presets.dataSourceId === 'coinbase' ? 'API Key' : 'UserID'
+                }`}
               >
                 <PButton
                   type="icon"

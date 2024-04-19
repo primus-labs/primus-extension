@@ -6,6 +6,7 @@ import { gt, add, sub, div, mul, gte, formatNumeral } from '@/utils/utils';
 import { WALLETMAP } from '@/config/wallet';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 import { SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
+import { tokenLogoPath } from '@/config/envConstants';
 import iconOthers from '@/assets/newImg/home/iconOthers.svg';
 const useAssetsStatistic = function () {
   const { sourceMap } = useAllSources();
@@ -301,22 +302,33 @@ const useAssetsStatistic = function () {
     },
     [totalAssetsBalance]
   );
-  const tokenIconFn = useCallback(
-    (j) => {
-      if (j.icon) {
-        return j.icon;
-      } else if (j.logo) {
-        return j.logo;
-      } else {
-        if (j.symbol === 'Others') {
-          return iconOthers;
-        }
-        const symbol = j.symbol.split('---')[0];
-        return `${tokenLogoPrefix}icon${symbol}.png`;
+  const tokenIconFn = useCallback((j, sourceId = 'binance') => {
+    let source = 'binance';
+    if (!sourceId.startsWith('0x')) {
+      source = sourceId;
+    }
+    if (j.portfolio) {
+      const sourceName = Object.keys(j.portfolio).find(
+        (i) => !i.startsWith('0x')
+      );
+      if (sourceName) {
+        source = sourceName;
       }
-    },
-    [tokenLogoPrefix]
-  );
+    }
+
+    if (j.icon) {
+      return j.icon;
+    } else if (j.logo) {
+      return j.logo;
+    } else {
+      if (j.symbol === 'Others') {
+        return iconOthers;
+      }
+      const symbol = j.symbol.split('---')[0];
+      // return `${tokenLogoPrefix}icon${symbol}.png`;
+      return `${tokenLogoPath}?symbol=${symbol}&source=${source}`;
+    }
+  }, []);
 
   const totalChainAssetsMap = useMemo(() => {
     console.log('222connectedOnChainSourcesList', connectedOnChainSourcesList); //delete

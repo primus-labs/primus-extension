@@ -1,8 +1,10 @@
 import React, { memo, useCallback, useState, useMemo, FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Pagination } from 'antd';
+import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import { sub, formatNumeral } from '@/utils/utils';
 import './index.scss';
+import idex from 'ccxt/js/src/pro/idex';
 const PAGESIZE = 10;
 interface TokenTableProps {
   title: string;
@@ -13,6 +15,7 @@ interface TokenTableProps {
 
 const TokenTable: FC<TokenTableProps> = memo(
   ({ title = 'Tokens', id, listMap, others = {} }) => {
+    const { tokenIconFn } = useAssetsStatistic();
     const { spotAccountTokenMap, flexibleAccountTokenMap } = others;
     const totolCount = listMap.length;
     const [current, setCurrent] = useState(1);
@@ -25,19 +28,7 @@ const TokenTable: FC<TokenTableProps> = memo(
       let newL = listMap.slice(startK, startK + PAGESIZE);
       return newL;
     }, [current, listMap]);
-    const iconFn = useCallback(
-      (j) => {
-        if (j.icon) {
-          return j.icon;
-        } else if (j.logo) {
-          return j.logo;
-        } else {
-          const symbol = j.symbol.split('---')[0];
-          return `${tokenLogoPrefix}icon${symbol}.png`;
-        }
-      },
-      [tokenLogoPrefix]
-    );
+  
 
     const pageChangedFn = (page) => {
       if (page === 'pre') {
@@ -58,7 +49,7 @@ const TokenTable: FC<TokenTableProps> = memo(
           <span>{title}</span>
           <div className="num">({totolCount})</div>
         </div>
-        <ul className={ `tokenItems ${totolCount >= 10 ?'fullHeight': ''}`}>
+        <ul className={`tokenItems ${totolCount >= 10 ? 'fullHeight' : ''}`}>
           <li className="tokenItem th">
             <div className="token">
               {title === 'Portfolio' ? 'Portfolio' : 'Token'}
@@ -77,7 +68,7 @@ const TokenTable: FC<TokenTableProps> = memo(
             return (
               <li className="tokenItem tr" key={j.symbol}>
                 <div className="token">
-                  <img src={iconFn(j)} alt="" />
+                  <img src={tokenIconFn(j, id)} alt="" />
                   <span>{j.symbol.split('---')[0]}</span>
                 </div>
                 {!!spotAccountTokenMap && (

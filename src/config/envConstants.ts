@@ -7,13 +7,13 @@ import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
 import { postMsg } from '@/utils/utils';
 import store from '@/store';
-import type {UserState} from '@/types/store'
+import type { UserState } from '@/types/store';
 type ENVTYPE = 'development' | 'test' | 'production';
 
 export const CURENV = process.env.NODE_ENV as ENVTYPE;
 // export const CURENV = 'development';
 // export const CURENV = 'production';
-console.log('222CURENV', CURENV,process.env)
+console.log('222CURENV', CURENV, process.env);
 const PADOURLMAP = {
   development: 'wss://api-dev.padolabs.org/algorithm',
   test: '18.179.8.186:8888',
@@ -41,7 +41,7 @@ const PADOSERVERURLMAP = {
   production: 'https://api.padolabs.org',
 };
 export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
-
+export const tokenLogoPath = PADOSERVERURL + '/public/token/logo';
 const EASINFOMAP = {
   development: {
     'Scroll Sepolia': {
@@ -746,7 +746,7 @@ export const getProxyUrl = async () => {
     );
     return algorithmUrlObj.proxyUrl;
   } else {
-    return ''
+    return '';
   }
 };
 

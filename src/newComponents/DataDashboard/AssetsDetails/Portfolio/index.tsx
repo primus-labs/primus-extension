@@ -41,9 +41,6 @@ const AssetsDetails = memo(() => {
   const sysConfig = useSelector((state) => state.sysConfig);
   const nfts = useSelector((state) => state.nfts);
 
-  const tokenLogoPrefix = useMemo(() => {
-    return sysConfig.TOKEN_LOGO_PREFIX;
-  }, [sysConfig]);
   const connectedExchangeSources = useMemo(() => {
     return sourceMap.exSources;
   }, [sourceMap]);
@@ -175,8 +172,8 @@ const AssetsDetails = memo(() => {
   );
   const holdingTokenLogosFn = useCallback(
     (i) => {
-      const l = sortListMapFn(itemTokenListMapFn(i)).map((i) => {
-        return tokenIconFn(i);
+      const l = sortListMapFn(itemTokenListMapFn(i)).map((j) => {
+        return tokenIconFn(j, i.id);
       });
       return l;
     },
@@ -309,6 +306,9 @@ const AssetsDetails = memo(() => {
       return { ...f, [k]: v };
     });
   }, []);
+
+  
+
 
   return (
     <section className="tableSection portfolio">

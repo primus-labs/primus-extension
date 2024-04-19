@@ -5,7 +5,10 @@ import PInput from '@/newComponents/PInput';
 import PButton from '@/newComponents/PButton';
 
 import { postMsg } from '@/utils/utils';
-import { initWalletAddressActionAsync } from '@/store/actions';
+import {
+  initWalletAddressActionAsync,
+  initIfHadPwdAsync,
+} from '@/store/actions';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -89,6 +92,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
             console.log('page_get:bindUserAddress:', res);
             if (res) {
               await dispatch(initWalletAddressActionAsync());
+              await dispatch(initIfHadPwdAsync());
               onSubmit();
             } else {
             }

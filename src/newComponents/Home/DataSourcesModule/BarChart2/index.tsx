@@ -37,7 +37,7 @@ const MAXSHOWDATASOURCELEN = 4;
 const PBarChart: FC<BarChartProps> = memo(
   ({ xDatas = [], yDatas = [], tokenMapDatas }) => {
     const { tokenIconFn } = useAssetsStatistic();
-    console.log('2222xDatas', xDatas, yDatas); //delete
+    // console.log('2222xDatas', xDatas, yDatas); //delete
     const showXDatas = useMemo(() => {
       let l = [...xDatas];
       if (xDatas.length === 1) {

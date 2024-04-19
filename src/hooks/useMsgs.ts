@@ -31,7 +31,6 @@ const useMsgs = function useMsgs() {
         ...infoObj,
       };
       setMsgObj(newObj);
-      debugger;
       const newMsgs = {
         // ...msgs,
         [id]: newObj,

@@ -103,6 +103,7 @@ const useAuthorization2 = () => {
         const discordObj = JSON.parse(data.discord);
         let ext = {
           discordUserId: discordObj.uniqueId.replace('DISCORD_', ''),
+          // name: eventId //TODO-newui
         };
         const finishBody = {
           taskIdentifier: 'JOIN_PADO_DISCORD',
