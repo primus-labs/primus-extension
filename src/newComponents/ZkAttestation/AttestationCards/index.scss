@@ -142,6 +142,7 @@
               gap: var(--spacing-8);
               .dataSourceIcon {
                 width: var(--spacing-16);
+                border-radius: 50%;
               }
               &.onChain {
                 @include frsc;

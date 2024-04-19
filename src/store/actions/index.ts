@@ -449,7 +449,7 @@ export const getChainAssets = async ({
           }
         }
       };
-      let pollingTimer = setInterval(pollingFn, 1000);
+      let pollingTimer = setInterval(pollingFn, 3000);
     }
   } catch (e) {
     console.log('getChainAssets catch e=', e);
@@ -775,7 +775,7 @@ export const getChainAssetsNFT = async ({
             return resolve(requestRes.data);
           }
         };
-        let pollingTimer = setInterval(pollingFn, 1000);
+        let pollingTimer = setInterval(pollingFn, 3000);
       }
     } catch (e) {
       reject(e);
