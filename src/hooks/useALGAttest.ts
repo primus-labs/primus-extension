@@ -68,6 +68,13 @@ const useAttest = function useAttest() {
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
+  const sysConfig = useSelector((state: UserState) => state.sysConfig);
+  const attestTipMap = useMemo(() => {
+    const configStr = sysConfig.ATTESTATION_PROCESS_NOTE;
+    const configObj = configStr ? JSON.parse(configStr) : {};
+    return configObj;
+  }, [sysConfig]);
+  console.log('222attestTipMap', attestTipMap); // delete
   // const msgs = useSelector((state: UserState) => state.msgs);
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const initCredList = useCallback(async () => {
@@ -107,8 +114,9 @@ const useAttest = function useAttest() {
       } else if (retcode === '2') {
         const msgObj = {
           type: 'error',
-          title: 'Failed', // `${activeAttestation.attestationType} failed!`
+          title: `${activeAttestation.attestationType} failed!`,
           desc: 'The algorithm has not been initialized.Please try again later.',
+          sourcePageTip: `${activeAttestation.attestationType} failed!`,
         };
         if (activeAttestation.dataSourceId === 'coinbase') {
         } else {
@@ -131,14 +139,14 @@ const useAttest = function useAttest() {
           ? JSON.parse(activeRequestAttestation)
           : {};
         if (parsedActiveRequestAttestation.reqType === 'web') {
+          
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'end',
             params: {
               result: 'warn',
               failReason: {
-                title: msgObj.title,
-                desc: msgObj.desc,
+                ...msgObj,
               },
             },
           });
@@ -247,42 +255,59 @@ const useAttest = function useAttest() {
           !content.signature ||
           content.balanceGreaterThanBaseValue === 'false'
         ) {
-          var titleItem1 = 'Not met the requirements';
-          let descItem1 =
-            'Your request did not meet the necessary requirements.';
+          // attestTipMap
+          let title = `${activeAttestation.attestationType} failed!`;
+          let msgObj = {
+            type: 'error',
+            title,
+            desc: '',
+            sourcePageTip: '',
+          };
           if (activeAttestation?.verificationContent === 'Assets Proof') {
-            descItem1 = `Insufficient assets in your ${
-              activeAttestation?.dataSourceId === 'okx' ? 'Trading' : 'Spot'
-            } Account.`;
+            let type, desc, title;
+            if (activeAttestation?.dataSourceId === 'okx') {
+              type = attestTipMap['00101'].type;
+              desc = attestTipMap['00101'].desc;
+              title = attestTipMap['00101'].title;
+            } else if (activeAttestation?.dataSourceId === 'binance') {
+              type = attestTipMap['00102'].type;
+              desc = attestTipMap['00102'].desc;
+              title = attestTipMap['00102'].title;
+            }
+            Object.assign(msgObj, {
+              type,
+              desc,
+              sourcePageTip: title,
+            });
           }
-          let descEl = `${descItem1} Please confirm and try again later.`;
-          let btnTxt = 'Try Again';
+          let btnTxt = '';
 
           if (parsedActiveRequestAttestation.reqType === 'web') {
-            let failReason = '';
             if (!content.signature && content.encodedData) {
-              titleItem1 = 'Unable to proceed';
-              descEl = 'Not meeting the uniqueness requirement.';
-              failReason = 'Not meeting the uniqueness requirement.';
-              btnTxt = '';
+              // linea event had bund
+              Object.assign(msgObj, {
+                type: attestTipMap['00103'].type,
+                desc: attestTipMap['00103'].desc,
+                sourcePageTip: attestTipMap['00103'].title,
+              });
             } else {
+              Object.assign(msgObj, {
+                type: attestTipMap['00104'].type,
+                desc: attestTipMap['00104'].desc,
+                sourcePageTip: attestTipMap['00104'].title,
+              });
             }
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
               name: 'end',
               params: {
                 result: 'warn',
-                failReason: { title: titleItem1, desc: descEl },
+                failReason: { ...msgObj },
               },
             });
-          }
-          const msgObj = {
-            type: 'error',
-            title: titleItem1,
-            desc: descEl,
-          };
-          if (activeAttestation.dataSourceId !== 'coinbase') {
-            addMsg(msgObj);
+            if (activeAttestation.dataSourceId !== 'coinbase') {
+              addMsg(msgObj);
+            }
           }
           dispatch(setAttestLoading(3));
           dispatch(
@@ -291,12 +316,6 @@ const useAttest = function useAttest() {
               msgObj: { ...msgObj, btnTxt },
             })
           );
-          // setActiveRequest({
-          //   type: 'warn',
-          //   title: titleItem1,
-          //   desc: descEl,
-          //   btnTxt,// TODO-newui
-          // });
 
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
             status: 'FAILED',
@@ -316,109 +335,26 @@ const useAttest = function useAttest() {
         };
         postMsg(padoServicePort, msg);
         var eventInfoMsg = 'Something went wrong';
-        let requestResObj: ActiveRequestType = {
+        let title = `${activeAttestation.attestationType} failed!`;
+        let msgObj = {
           type: 'warn',
-          title: 'Something went wrong',
-          desc: 'Please try again later.',
+          title,
+          desc: '',
+          sourcePageTip: '',
+          code: '',
         };
-
-        switch (code * 1) {
-          case 10001:
-            requestResObj = {
-              type: 'warn',
-              title: 'Unstable Internet Connection',
-              desc: 'Looks like your internet condition is not stable enough to complete the zkAttestation flow. Please try again later.',
-              code: `Error code: ${code}`,
-            };
-            break;
-          case 10002:
-            requestResObj = {
-              type: 'warn',
-              title: 'Connection broken',
-              desc: 'The attestation process has been interrupted due to some unkown network error. Please try again later.',
-              code: `Error code: ${code}`,
-            };
-            break;
-          case 10003:
-            requestResObj = {
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: "Can't connect attestation servier due to unstable internet condition. Please try again later.",
-              code: `Error code: ${code}`,
-            };
-            break;
-          case 10004:
-            requestResObj = {
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: "Can't connect data source servier due to untable internet condition. Please try again later.",
-              code: `Error code: ${code}`,
-            };
-            break;
-
-          case 20005:
-            requestResObj = {
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: "Can't complete the attestation due to some workflow error. Please try again later.",
-              code: `Error code: ${code}`,
-            };
-            break;
-          case 30002:
-            requestResObj = {
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: "Can't complete the attestation flow due to some data source error. Please try again later.",
-              code: `Error code: ${code}`,
-            };
-            break;
-          case 30003:
-          case 30004:
-            requestResObj = {
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: "Can't complete the attestation flow due to some data source error. Please try again later.",
-              code: `Error code: ${code}`,
-            };
-            break;
-          case 40004:
-          case 40005:
-            requestResObj = {
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: 'Please try again later.',
-              code: `Error code: ${code}`,
-            };
-            break;
-          case 20001:
-          case 20002:
-          case 20003:
-          case 20004:
-          case 30001:
-          case 40001:
-          case 40002:
-          case 40003:
-          case 99999:
-            requestResObj = {
-              type: 'warn',
-              title: 'Something went wrong',
-              desc: 'Please try again later.',
-              code: `Error code: ${code}`,
-            };
-            break;
-          default:
-            requestResObj = {
-              type: 'warn',
-              title: 'Something went wrong',
-              desc: 'Please try again later.',
-              code: `Error code: ${code}`,
-            };
-            break;
+        let codeTipObj = attestTipMap[code];
+        if (codeTipObj) {
+        } else {
+          codeTipObj = attestTipMap['99999'];
         }
+        Object.assign(msgObj, {
+          type: codeTipObj.type,
+          desc: codeTipObj.desc,
+          sourcePageTip: codeTipObj.title,
+          code: `Error code: ${code}`,
+        });
 
-        const msgObj = {
-          ...requestResObj,
-        };
         if (activeAttestation.dataSourceId !== 'coinbase') {
           addMsg(msgObj);
         }
@@ -446,18 +382,13 @@ const useAttest = function useAttest() {
         });
         eventReport(eventInfo);
         if (parsedActiveRequestAttestation.reqType === 'web') {
-          let failReason = {
-            title: requestResObj.title,
-            desc: requestResObj.desc,
-            code: requestResObj.code,
-          };
-
+          
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'end',
             params: {
               result: 'warn',
-              failReason,
+              failReason: { ...msgObj },
             },
           });
         }
@@ -471,6 +402,7 @@ const useAttest = function useAttest() {
       activeAttestation,
       sourceMap2,
       pathname,
+      attestTipMap,
     ]
   );
   useAlgorithm(
@@ -491,9 +423,10 @@ const useAttest = function useAttest() {
       ? JSON.parse(activeRequestAttestation)
       : {};
     const msgObj = {
-      type: 'error',
-      title: 'Request Timed Out',
-      desc: 'The service did not respond within the expected time. Please try again later.',
+      type: attestTipMap['00002'].type,
+      title: `${activeAttestation.attestationType} failed!`,
+      desc: attestTipMap['00002'].desc,
+      sourcePageTip: attestTipMap['00002'].title,
     };
     if (parsedActiveRequestAttestation.reqType === 'web') {
       await chrome.runtime.sendMessage({
@@ -501,7 +434,7 @@ const useAttest = function useAttest() {
         name: 'end',
         params: {
           result: 'warn',
-          failReason: { title: msgObj.title, desc: msgObj.desc },
+          failReason: { ...msgObj },
         },
       });
     }
@@ -538,7 +471,12 @@ const useAttest = function useAttest() {
     };
     console.log('after timeout port', padoServicePort);
     postMsg(padoServicePort, msg);
-  }, [padoServicePort, clearFetchAttestationTimer, activeAttestation]);
+  }, [
+    padoServicePort,
+    clearFetchAttestationTimer,
+    activeAttestation,
+    attestTipMap,
+  ]);
   const intervalFn = useCallback(() => {
     const msg = {
       fullScreenType: 'algorithm',
@@ -555,14 +493,21 @@ const useAttest = function useAttest() {
     const listerFn = (message: any) => {
       const { type, name } = message;
       if (type === 'pageDecode') {
+        console.log('222message', message, activeAttestation);
+        let title = `${activeAttestation.attestationType} failed!`;
         if (name === 'cancel') {
           addMsg({
             type: 'error',
-            title: 'Unable to proceed',
-            desc: 'Please try again later.',
+            title,
+            desc: 'Unable to proceed. Please try again later.',
           });
           dispatch(setAttestLoading(3));
-          dispatch(setActiveAttestation({ loading: 3, msgObj: { btnTxt: 'Try Again' } }));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { btnTxt: 'Try Again' },
+            })
+          );
         } else if (name === 'start') {
           // dispatch(setAttestLoading(1));
           // dispatch(setActiveAttestation({ loading: 1 }));
@@ -570,8 +515,8 @@ const useAttest = function useAttest() {
           if (attestLoading === 1) {
             addMsg({
               type: 'error',
-              title: 'Unable to proceed',
-              desc: 'Please try again later.',
+              title,
+              desc: 'Unable to proceed. Please try again later.',
             });
           }
           // if (activeRequest?.type === 'loading' || !activeRequest?.type) {//TODO-newui
@@ -600,14 +545,8 @@ const useAttest = function useAttest() {
         // }
       } else if (type === 'googleAuth') {
         if (name === 'cancelAttest') {
-          // addMsg({
-          //   type: 'error',
-          //   title: 'Unable to proceed',
-          //   desc: 'Please try again later.',
-          // });
           // google attest fail use dialog tip, not alert msg
           dispatch(setAttestLoading(3));
-
           dispatch(
             setActiveAttestation({
               loading: 3,
@@ -626,6 +565,6 @@ const useAttest = function useAttest() {
     return () => {
       chrome.runtime.onMessage.removeListener(listerFn);
     };
-  }, [dispatch, attestLoading]);
+  }, [dispatch, attestLoading, activeAttestation]);
 };
 export default useAttest;

@@ -91,7 +91,8 @@ function DataSourceLineEl({ list }) {
     </ul>
   );
 }
-function DescEl({ status, resultStatus ,errorTxt}) {
+function DescEl({ status, resultStatus, errorTxt }) {
+  console.log('222DescEl', errorTxt);
   var iconSuc = chrome.runtime.getURL(`iconSucc.svg`);
   var iconFail = chrome.runtime.getURL(`iconFail.svg`);
   var host = activeRequest.jumpTo
@@ -100,7 +101,12 @@ function DescEl({ status, resultStatus ,errorTxt}) {
 
   var uiTemplate = activeRequest.uiTemplate;
   const [loadingTxt, setLoadingTxt] = useState('Connecting to PADO node...');
-  
+  const [errorTxtSelf, setErrorTxtSelf] = useState({
+    sourcePageTip: 'Error Message.',
+  });
+  useEffect(() => {
+    setErrorTxtSelf(errorTxt);
+  }, [errorTxt]);
   const descList = useMemo(() => {
     if (operationType === 'connect') {
       return [{ label: 'Data Source', value: host }];
@@ -147,10 +153,10 @@ function DescEl({ status, resultStatus ,errorTxt}) {
       var progressPercentage = 0;
       function simulateFileUpload() {
         progressPercentage += 1;
-        if (progressPercentage > 0 && progressPercentage <= 1) {
+        if (progressPercentage > 0 && progressPercentage <= 2) {
           // 1.25
           str = 'Connecting to PADO node...';
-        } else if (progressPercentage > 1 && progressPercentage <= 2) {
+        } else if (progressPercentage > 2 && progressPercentage <= 3) {
           // 6.25
           // 1.25 - 2.5
           str = 'Connecting to data source...';
@@ -166,14 +172,12 @@ function DescEl({ status, resultStatus ,errorTxt}) {
 
           clearInterval(intervalTimer);
           if (!resultStatus) {
-            setErrorTxt({
-              title: 'Request timed out',
-              desc: 'The service did not respond within the expected time. Please try again later.',
+            setErrorTxtSelf({
+              sourcePageTip: 'Request Timed Out',
             });
           }
         }
         setLoadingTxt(str);
-        console.log('222progressPercentage', progressPercentage, 'str', str);
       }
       var intervalTimer = setInterval(simulateFileUpload, 1000); // algorithm timeout
     }
@@ -202,13 +206,11 @@ function DescEl({ status, resultStatus ,errorTxt}) {
     <div className="descWrapper result fail">
       <div className="label">
         <img src={iconFail} alt="" />
-        {errorTxt && (
+        {errorTxtSelf && (
           <>
-            <span>
-              {errorTxt?.title}
-            </span>
-            {errorTxt?.code && (
-              <span className="errorCode">{errorTxt?.code}</span>
+            <span>{errorTxtSelf?.sourcePageTip}</span>
+            {errorTxtSelf?.code && (
+              <span className="errorCode">{errorTxtSelf?.code}</span>
             )}
           </>
         )}
@@ -318,7 +320,7 @@ function PadoCard() {
         sessionStorage.setItem('padoAttestRequestReady', '1');
       }
       if (name === 'end') {
-        console.log('222content receive:end', request);
+        console.log('222content receive:end', request, failReason);
         setStatus('result');
         setResultStatus(result);
         setErrorTxt(failReason);
@@ -338,14 +340,18 @@ function PadoCard() {
       </div>
       <div className="center">
         <p className="title">PADO Attestation Process</p>
-        <DescEl status={status} resultStatus={resultStatus} />
+        <DescEl
+          status={status}
+          resultStatus={resultStatus}
+          errorTxt={errorTxt}
+        />
       </div>
       <FooterEl
         status={status}
         setStatus={setStatus}
         isReadyFetch={isReadyFetch}
         resultStatus={resultStatus}
-        errorTxt ={errorTxt}
+        errorTxt={errorTxt}
       />
     </div>
   );
