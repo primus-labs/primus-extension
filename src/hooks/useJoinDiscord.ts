@@ -13,7 +13,7 @@ import useAllSources from './useAllSources';
 import { schemaTypeMap } from '../config/constants';
 import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
-import { finishTask } from '@/services/api/achievements';
+import { finishTaskForEvent } from '@/services/api/achievements';
 
 type CreateAuthWindowCallBack = (
   state: string,
@@ -105,11 +105,7 @@ const useAuthorization2 = () => {
           discordUserId: discordObj.uniqueId.replace('DISCORD_', ''),
           // name: eventId //TODO-newui
         };
-        const finishBody = {
-          taskIdentifier: 'JOIN_PADO_DISCORD',
-          ext: ext,
-        };
-        const finishCheckRsp = await finishTask(finishBody);
+        const finishCheckRsp = await finishTaskForEvent(ext);
         if (finishCheckRsp.rc === 0) {
           // setFinished(true);
           clearInterval(joinTimer);

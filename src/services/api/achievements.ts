@@ -28,6 +28,12 @@ export const finishTask = async (data) =>{
         data:data
     });
 }
+export const finishTaskForEvent = async (data) => {
+  return await request({
+    method: 'get',
+    url: `/public/discord/check/joined?discordUserId=${data.discordUserId}`,
+  });
+};
 
 export const taskStatusCheck = async (tasks) => {
     return await request({
