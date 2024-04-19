@@ -65,7 +65,12 @@ const useUpdateOnChainSources = () => {
             address,
             dispatch,
             requireReport: false,
+            label: undefined,
           });
+          setQueryObj((obj) => ({
+            ...obj,
+            [address]: 1,
+          }));
           // const { rc, result } = await getAssetsOnChains(
           //   {
           //     signature,
