@@ -272,9 +272,14 @@ const AssetsDetails = memo(() => {
     (i) => {
       const { id, address } = i;
       let currentAccountNftsArr =
-        accountsForm[id] && accountsForm[id]!== 'All'
+        accountsForm[id] && accountsForm[id] !== 'All'
           ? accountsNftsListMap[accountsForm[id]]
           : Object.values(accountsNftsListMap).flat();
+      console.log(
+        '222currentAccountNftsFn',
+        accountsNftsListMap,
+        accountsForm[id]
+      ); //delete
       if (currentAccountNftsArr) {
         return currentAccountNftsArr;
       } else {

@@ -49,7 +49,9 @@ const TokenTable: FC<TokenTableProps> = memo(
           <span>{title}</span>
           <div className="num">({totolCount})</div>
         </div>
-        <ul className={`tokenItems ${totolCount >= 10 ? 'fullHeight' : ''}`}>
+        <ul
+          className={`tokenItems ${totolCount >= PAGESIZE ? 'fullHeight' : ''}`}
+        >
           <li className="tokenItem th">
             <div className="token">
               {title === 'Portfolio' ? 'Portfolio' : 'Token'}
@@ -98,7 +100,7 @@ const TokenTable: FC<TokenTableProps> = memo(
             );
           })}
         </ul>
-        {totolCount > 10 && (
+        {totolCount > PAGESIZE && (
           <div className={'pageComponent'}>
             <Pagination
               total={totolCount}

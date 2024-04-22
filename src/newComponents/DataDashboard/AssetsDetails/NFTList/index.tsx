@@ -2,7 +2,7 @@ import React, { memo, useCallback, useState, useMemo, FC } from 'react';
 import { Pagination } from 'antd';
 import { SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 import './index.scss';
-const PAGESIZE = 10;
+const PAGESIZE = 8;
 interface NFTListProps {
   list: any;
 }
@@ -10,7 +10,11 @@ interface NFTListProps {
 const NFTList: FC<NFTListProps> = memo(({ list }) => {
   const totolCount = list.length;
   const [current, setCurrent] = useState(1);
-
+  const showList = useMemo(() => {
+    const startK = (current - 1) * PAGESIZE;
+    let newL = list.slice(startK, startK + PAGESIZE);
+    return newL;
+  }, [current, list]);
   const pageChangedFn = (page) => {
     if (page === 'pre') {
       page = current - 1;
@@ -26,8 +30,8 @@ const NFTList: FC<NFTListProps> = memo(({ list }) => {
 
   return (
     <div className="NFTList">
-      <ul className="NFTItems">
-        {list.map((i, k) => {
+      <ul className={`NFTItems ${totolCount >= PAGESIZE ? 'fullHeight' : ''}`}>
+        {showList.map((i, k) => {
           return (
             <li className="NFTItem" key={k}>
               <div className="imgWrapper" style={{}}>
@@ -44,7 +48,7 @@ const NFTList: FC<NFTListProps> = memo(({ list }) => {
           );
         })}
       </ul>
-      {totolCount > 0 && (
+      {totolCount > PAGESIZE && (
         <div className={'pageComponent'}>
           <Pagination
             total={totolCount}

@@ -57,7 +57,8 @@
     }
   }
   .pageComponent {
-    margin-top: calc(-1 * var(--spacing-4));
+    padding: var(--spacing-8) 0;
+    margin-bottom: calc(-1 * var(--spacing-16));
     width: 100%;
     text-align: right;
   }

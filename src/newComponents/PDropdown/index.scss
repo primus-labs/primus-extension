@@ -44,9 +44,10 @@
         cursor: not-allowed;
         // TODO-newui
         // background: var(--button-tokens-button-disabled);
-
         .left {
-          opacity: 0.2;
+          .desc {
+            opacity: 0.2;
+          }
         }
         cursor: not-allowed;
       }

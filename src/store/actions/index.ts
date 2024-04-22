@@ -781,10 +781,10 @@ export const getChainAssetsNFT = async ({
             // }
             // if (
             //   curConnectedAddr.toLowerCase() ===
-            //   '0x5d7c98311806211B866d42dc573C39d1e20ABbb1'
+            //   '0x53F7a6ab7b8E6Fcfda90C543a05d635867dF0E72'.toLowerCase()
             // ) {
             //   requestRes.data = {
-            //     'BSC': [
+            //     BSC: [
             //       {
             //         contractAddress:
             //           '0xaf1cf02378db203ea9545d62588567c61b1ed7f8', //nft合约地址
@@ -800,10 +800,95 @@ export const getChainAssetsNFT = async ({
             //         mintTime: '1698720422000', //mint time
             //       },
             //     ],
-               
+            //     Polygon: [
+            //       {
+            //         contractAddress:
+            //           '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
+            //         transactionHash:
+            //           '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
+            //         tokenId: '1',
+            //         name: 'Airdrop at 3eth.top 🎁',
+            //         collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+            //         imageUri:
+            //           'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
+            //         ercType: 'erc1155',
+            //         chain: 'Polygon',
+            //         mintTime: '1710913406000',
+            //       },
+            //       {
+            //         contractAddress:
+            //           '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
+            //         transactionHash:
+            //           '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
+            //         tokenId: '1',
+            //         name: 'Airdrop at 3eth.top 🎁',
+            //         collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+            //         imageUri:
+            //           'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
+            //         ercType: 'erc1155',
+            //         chain: 'Polygon',
+            //         mintTime: '1710913406000',
+            //       },
+            //       {
+            //         contractAddress:
+            //           '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
+            //         transactionHash:
+            //           '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
+            //         tokenId: '1',
+            //         name: 'Airdrop at 3eth.top 🎁',
+            //         collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+            //         imageUri:
+            //           'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
+            //         ercType: 'erc1155',
+            //         chain: 'Polygon',
+            //         mintTime: '1710913406000',
+            //       },
+            //       {
+            //         contractAddress:
+            //           '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
+            //         transactionHash:
+            //           '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
+            //         tokenId: '1',
+            //         name: 'Airdrop at 3eth.top 🎁',
+            //         collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+            //         imageUri:
+            //           'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
+            //         ercType: 'erc1155',
+            //         chain: 'Polygon',
+            //         mintTime: '1710913406000',
+            //       },
+            //       {
+            //         contractAddress:
+            //           '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
+            //         transactionHash:
+            //           '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
+            //         tokenId: '1',
+            //         name: 'Airdrop at 3eth.top 🎁',
+            //         collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+            //         imageUri:
+            //           'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
+            //         ercType: 'erc1155',
+            //         chain: 'Polygon',
+            //         mintTime: '1710913406000',
+            //       },
+            //       {
+            //         contractAddress:
+            //           '0xcc3feb3a247f288799e9ec52772f7a67a85559ce',
+            //         transactionHash:
+            //           '0xa4468bd679c39c7b439f6dd0f2735829f090f9997ebe594a36667c78dd516d1b',
+            //         tokenId: '1',
+            //         name: 'Airdrop at 3eth.top 🎁',
+            //         collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
+            //         imageUri:
+            //           'ipfs://bafybeiepa5aouj66wsnd4lter3euxicxkoy47ljkrjfvupc5b27gqfnkfm/eth.jpg',
+            //         ercType: 'erc1155',
+            //         chain: 'Polygon',
+            //         mintTime: '1710913406000',
+            //       },
+            //     ],
             //   };
             // }
-              return resolve(requestRes.data);
+            return resolve(requestRes.data);
           }
         };
         let pollingTimer = setInterval(pollingFn, 3000);
@@ -843,6 +928,7 @@ export const setNftsActionAsync = (walletAddrArr) => {
         }
       );
       const resArr = await Promise.all(requestArr);
+      // debugger;
       const { nfts: nftsStr } = await chrome.storage.local.get(['nfts']);
       const nftsObj = nftsStr ? JSON.parse(nftsStr) : {};
       const obj = resArr.reduce((prev: any, curr, currK) => {
