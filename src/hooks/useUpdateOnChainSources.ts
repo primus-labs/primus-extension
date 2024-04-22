@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // import useAllSources from './useAllSources';
-import { getChainAssets } from '@/store/actions';
+import { getChainAssets, setNftsActionAsync } from '@/store/actions';
 import { DATASOURCEMAP } from '@/config/constants';
 import { getCurrentDate, getStatisticalData, sub } from '@/utils/utils';
 import { setOnChainAssetsSourcesAsync } from '@/store/actions';
@@ -53,13 +53,20 @@ const useUpdateOnChainSources = () => {
 
     list.forEach(async (item) => {
       const lastCurConnectedAddrInfo = onChainAssetsSourcesObj[item];
-
       const { signature, timestamp, address } =
         lastCurConnectedAddrInfo as onChainAssetsData;
       // Signature is permanently valid
       if (signature) {
         try {
           await getChainAssets({
+            signature,
+            timestamp,
+            address,
+            dispatch,
+            requireReport: false,
+            label: undefined,
+          });
+          await setNftsActionAsync({
             signature,
             timestamp,
             address,

@@ -114,7 +114,6 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     dispatch(setConnectedWalletsActionAsync());
     dispatch(initEventsActionAsync());
     dispatch(initNftsActionAsync());
-    dispatch(setNftsActionAsync());
     
     // dispatch(initConnectedWalletActionAsync());
     // (updateOnChainFn as () => void)();

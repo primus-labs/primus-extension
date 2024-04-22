@@ -75,7 +75,6 @@ const useAttest = function useAttest() {
     const configObj = configStr ? JSON.parse(configStr) : {};
     return configObj;
   }, [sysConfig]);
-  console.log('222attestTipMap', attestTipMap); // delete
   // const msgs = useSelector((state: UserState) => state.msgs);
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const initCredList = useCallback(async () => {

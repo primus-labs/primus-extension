@@ -269,7 +269,7 @@ export const connectWalletAsync = (
               dispatch,
               label,
             });
-            dispatch(setNftsActionAsync([address]));
+            dispatch(setNftsActionAsync([{ signature, timestamp, address }]));
           } catch {}
         }
         await dispatch(
@@ -325,7 +325,7 @@ export const connectWalletAsync = (
               dispatch,
               label,
             });
-            dispatch(setNftsActionAsync([address]));
+            dispatch(setNftsActionAsync([{ signature, timestamp, address }]));
           } catch {}
 
           await dispatch(
@@ -910,28 +910,29 @@ export const initNftsActionAsync = () => {
     }
   };
 };
-export const setNftsActionAsync = (walletAddrArr) => {
+export const setNftsActionAsync: (arr?: any[]) => void = (walletArr) => {
   return async (dispatch: any, getState) => {
     try {
       const onChainAssetsSources = getState().onChainAssetsSources;
-      const connectedWalletAddressesArr = walletAddrArr
-        ? walletAddrArr
-        : Object.keys(onChainAssetsSources);
-      const requestArr = Object.values(onChainAssetsSources).map(
-        async (r: any) => {
-          const { address, signature, timestamp } = r;
-          return await getChainAssetsNFT({
-            address,
-            signature,
-            timestamp,
-          });
-        }
-      );
+      let connectedWalletAddressesArr = Object.keys(onChainAssetsSources);
+      let rawArr = Object.values(onChainAssetsSources);
+      if (walletArr) {
+        connectedWalletAddressesArr = walletArr.map((i) => i.address);
+        rawArr = walletArr;
+      }
+      const requestArr = rawArr.map(async (r: any) => {
+        const { address, signature, timestamp } = r;
+        return await getChainAssetsNFT({
+          address,
+          signature,
+          timestamp,
+        });
+      });
       const resArr = await Promise.all(requestArr);
       // debugger;
       const { nfts: nftsStr } = await chrome.storage.local.get(['nfts']);
       const nftsObj = nftsStr ? JSON.parse(nftsStr) : {};
-      const obj = resArr.reduce((prev: any, curr, currK) => {
+      resArr.reduce((prev: any, curr, currK) => {
         const addr = connectedWalletAddressesArr[currK];
         prev[addr] = curr;
         nftsObj[addr] = curr;

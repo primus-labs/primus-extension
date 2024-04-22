@@ -13,7 +13,6 @@ import { useSelector } from 'react-redux';
 const ExpiredTips = memo(() => {
   const dispatch = useDispatch();
   const { sourceMap, sourceMap2 } = useAllSources();
-  console.log('222ExpiredTips-sourceMap2', sourceMap2);
   const [showList, setShowList] = useState<string[]>([]);
   const activeConnectDataSource = useSelector(
     (state) => state.activeConnectDataSource
