@@ -28,7 +28,6 @@ const TokenTable: FC<TokenTableProps> = memo(
       let newL = listMap.slice(startK, startK + PAGESIZE);
       return newL;
     }, [current, listMap]);
-  
 
     const pageChangedFn = (page) => {
       if (page === 'pre') {
@@ -45,10 +44,12 @@ const TokenTable: FC<TokenTableProps> = memo(
 
     return (
       <div className="tokenTable">
-        <div className="title">
-          <span>{title}</span>
-          <div className="num">({totolCount})</div>
-        </div>
+        {title && (
+          <div className="title">
+            <span>{title}</span>
+            <div className="num">({totolCount})</div>
+          </div>
+        )}
         <ul
           className={`tokenItems ${totolCount >= PAGESIZE ? 'fullHeight' : ''}`}
         >

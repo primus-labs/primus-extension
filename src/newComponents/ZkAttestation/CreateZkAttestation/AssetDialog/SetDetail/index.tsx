@@ -26,6 +26,7 @@ import PInput from '@/newComponents/PInput';
 
 import './index.scss';
 import useAllSources from '@/hooks/useAllSources';
+import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 type PswFormType = {
   dataSourceId: string;
   verificationContent: string;
@@ -41,7 +42,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, presets }) => {
     const dataSourceId = presets.dataSourceId;
     // const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
-
+    const { tokenIconFn } = useAssetsStatistic();
     const [activeDataSouceUserInfo, setActiveDataSouceUserInfo] =
       useState<any>();
     console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
@@ -93,15 +94,25 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       ASSETSVERIFICATIONCONTENTTYPELIST,
     ]);
     const valueList = useMemo(() => {
-      let list = [];
+      let list: any = [];
       if (pswForm.verificationContent === 'Assets Proof') {
         list = [...ASSETSVERIFICATIONVALUETYPELIST];
       } else if (pswForm.verificationContent === 'Token Holding') {
         if (activeDataSouceUserInfo) {
-          list = Object.keys(activeDataSouceUserInfo.tokenListMap).map((i) => ({
+          let symbolList: any[] = [];
+          if (dataSourceId === 'okx') {
+            symbolList = Object.keys(
+              activeDataSouceUserInfo.tradingAccountTokenAmountObj
+            );
+          } else if (dataSourceId === 'binance') {
+            symbolList = Object.keys(
+              activeDataSouceUserInfo.spotAccountTokenMap
+            );
+          }
+          list = symbolList.map((i) => ({
             label: i,
             value: i,
-            icon: `${sysConfig.TOKEN_LOGO_PREFIX}icon${i}.png`,
+            icon: tokenIconFn({ symbol: i }, dataSourceId),
           }));
         }
       }

@@ -447,7 +447,7 @@ const AssetsDetails = memo(() => {
                   {((i.id === 'metamask' && tableTab === 'Token') ||
                     i.id !== 'metamask') && (
                     <TokenTable
-                      title="Tokens"
+                      title={i.id === 'metamask' ? '' : 'Tokens'}
                       id={i.id}
                       listMap={sortListMapFn(itemTokenListMapFn(i))}
                       others={

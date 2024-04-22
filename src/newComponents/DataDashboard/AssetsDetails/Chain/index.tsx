@@ -235,7 +235,7 @@ const Chain = memo(() => {
                   </div>
                   {tableTab === 'Token' && (
                     <TokenTable
-                      title="Tokens"
+                      title=""
                       id={i.id}
                       listMap={sortListMapFn(i.tokenListMap)}
                     />

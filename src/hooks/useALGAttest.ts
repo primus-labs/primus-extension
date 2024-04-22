@@ -69,6 +69,7 @@ const useAttest = function useAttest() {
     (state: UserState) => state.credentials
   );
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
+
   const attestTipMap = useMemo(() => {
     const configStr = sysConfig.ATTESTATION_PROCESS_NOTE;
     const configObj = configStr ? JSON.parse(configStr) : {};
@@ -109,7 +110,7 @@ const useAttest = function useAttest() {
     async (res: any) => {
       const { retcode, retdesc } = JSON.parse(res);
       if (retcode === '0') {
-        setTimeoutSwitch(true);
+        // setTimeoutSwitch(true);
         setIntervalSwitch(true);
       } else if (retcode === '2') {
         const msgObj = {
@@ -139,7 +140,6 @@ const useAttest = function useAttest() {
           ? JSON.parse(activeRequestAttestation)
           : {};
         if (parsedActiveRequestAttestation.reqType === 'web') {
-          
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'end',
@@ -382,7 +382,6 @@ const useAttest = function useAttest() {
         });
         eventReport(eventInfo);
         if (parsedActiveRequestAttestation.reqType === 'web') {
-          
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'end',
@@ -566,5 +565,12 @@ const useAttest = function useAttest() {
       chrome.runtime.onMessage.removeListener(listerFn);
     };
   }, [dispatch, attestLoading, activeAttestation]);
+  useEffect(() => {
+    if (attestLoading === 1) {
+      if (activeAttestation.dataSourceId !== 'google') {
+        setTimeoutSwitch(true);
+      }
+    }
+  }, [attestLoading, activeAttestation]);
 };
 export default useAttest;
