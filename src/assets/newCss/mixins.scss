@@ -1,7 +1,7 @@
 @mixin shadow($x: 0px, $y: 0px, $blur: 12px, $color: rgba(0, 0, 0, 0.1)) {
   box-shadow: $x $y $blur $color;
 }
-@mixin card-xs_shadow {
+@mixin card-xs_shadow($color: rgba(0, 0, 0, 0.1)) {
   @include shadow(0, 4px, 24px);
 }
 @mixin card-s_shadow {

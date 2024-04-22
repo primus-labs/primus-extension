@@ -139,9 +139,6 @@ const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
           return (
             <li
               className="dataCard"
-              onClick={() => {
-                handleDetail(i);
-              }}
               key={i.initTime}
             >
               <div className="brief">

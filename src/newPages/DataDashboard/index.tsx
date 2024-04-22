@@ -5,6 +5,7 @@ import Empty from '@/newComponents/Empty';
 import DataOverview from '@/newComponents/DataDashboard/DataOverview';
 import AssetsDetails from '@/newComponents/DataDashboard/AssetsDetails';
 import SocialDetails from '@/newComponents/DataDashboard/SocialDetails';
+import ExpiredTips from '@/newComponents/DataDashboard/ExpiredTips';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import useSocialStatistic from '@/hooks/useSocialStatistic';
 
@@ -24,6 +25,7 @@ const DataDashboard: React.FC = memo(({}) => {
       <div className="pageContent">
         {hasContent ? (
           <>
+            <ExpiredTips />
             <DataOverview />
             {hasConnectedAssetsDataSources && <AssetsDetails />}
             {hasConnectedSocialDataSources && <SocialDetails />}

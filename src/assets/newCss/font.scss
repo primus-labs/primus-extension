@@ -142,6 +142,14 @@
   line-height: 24px;
   letter-spacing: 0px;
 }
+@mixin BodyBody2 {
+  font-size: 14px;
+  font-family: Inter;
+  font-weight: 700;
+  letter-spacing: 0px;
+  line-height: 24px;
+}
+
 @mixin BodyShort01 {
   font-family: 'IBM Plex Sans';
   font-size: 14px;
@@ -312,17 +320,4 @@
   line-height: 125%;
 }
 
-.body-body-1 {
-  font-size: 14px;
-  font-family: Inter;
-  font-weight: 400;
-  letter-spacing: 0px;
-  line-height: 24px;
-}
-.body-body-2 {
-  font-size: 14px;
-  font-family: Inter;
-  font-weight: 700;
-  letter-spacing: 0px;
-  line-height: 24px;
-}
+
