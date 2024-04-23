@@ -47,6 +47,7 @@ import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 const useAttest = function useAttest() {
+  
   const { pathname } = useLocation();
   const { sourceMap2 } = useAllSources();
   const { msgs, addMsg } = useMsgs();
@@ -159,12 +160,14 @@ const useAttest = function useAttest() {
             // attestationId: uniqueId,
             status: 'FAILED',
             reason: 'algorithm is not initialized',
+            event: fromEvents,
+            address: parsedActiveRequestAttestation?.address
           },
         };
         eventReport(eventInfo);
       }
     },
-    [dispatch, activeAttestation.dataSourceId]
+    [dispatch, activeAttestation.dataSourceId, fromEvents]
   );
   const getAttestationResultCallback = useCallback(
     async (res: any) => {
@@ -248,6 +251,8 @@ const useAttest = function useAttest() {
             attestationId: uniqueId,
             status: 'SUCCESS',
             reason: '',
+            event: fromEvents,
+            address: fullAttestation?.address,
           });
           eventReport(eventInfo);
         } else if (
@@ -319,6 +324,8 @@ const useAttest = function useAttest() {
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
             status: 'FAILED',
             reason: 'Not met the requirements',
+            event: fromEvents,
+            address: parsedActiveRequestAttestation?.address,
           });
           eventReport(eventInfo);
         }
@@ -378,6 +385,8 @@ const useAttest = function useAttest() {
             code,
             desc,
           },
+          event: fromEvents,
+          address: parsedActiveRequestAttestation?.address,
         });
         eventReport(eventInfo);
         if (parsedActiveRequestAttestation.reqType === 'web') {
@@ -458,6 +467,8 @@ const useAttest = function useAttest() {
         // attestationId: uniqueId,
         status: 'FAILED',
         reason: 'timeout',
+        event: fromEvents,
+        address: parsedActiveRequestAttestation?.address,
       },
     };
     eventReport(eventInfo);

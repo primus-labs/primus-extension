@@ -486,6 +486,7 @@ export async function bulkAttest(params) {
     } catch (error) {
       console.log('eas bulkAttest caught error:\n', error);
     }
+    console.log('222er', er);
     if (er.data && er.data.message.indexOf('insufficient funds') > -1) {
       return {
         error: 1,

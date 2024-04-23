@@ -347,6 +347,8 @@ const Nav: React.FC<PButtonProps> = memo(
                 type: eventType,
                 source: i.source,
                 attestationId: uniqueId,
+                event: i.event,
+                address: i.address,
               },
             };
             return eventInfo;
@@ -374,6 +376,7 @@ const Nav: React.FC<PButtonProps> = memo(
                   rawData: Object.assign(i.rawData, {
                     status: 'FAILED',
                     reason: upChainRes.message,
+
                   }),
                 };
               });
@@ -625,6 +628,8 @@ const Nav: React.FC<PButtonProps> = memo(
                 type: eventType,
                 source: curCredential.source,
                 attestationId: uniqueId,
+                event: activeOnChainAttestation.event,
+                address: activeOnChainAttestation.address,
               },
             };
             if (upChainRes) {
