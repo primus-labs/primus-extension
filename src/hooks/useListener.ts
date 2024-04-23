@@ -80,7 +80,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
             }
             addMsg(msgObj);
           }
-          if (pathname === '/datas') {
+          if (!withoutMsg && pathname === '/datas') {
             navigate(`/datas/data?dataSourceId=${lowerCaseSourceName}`);
           }
           const eventInfo = {

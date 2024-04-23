@@ -131,18 +131,6 @@ const Overview = memo(() => {
       });
     }
   }, []);
-  const handleDataSourceDetail = useCallback(
-    (id, k) => {
-      if (id === 'dataSource') {
-        let dataSourceId = (Object.values(connectedDataSources)[k] as any).id;
-        if (dataSourceId.startsWith('0x')) {
-          dataSourceId = 'web3 wallet';
-        }
-        navigate(`/datas/data?dataSourceId=${dataSourceId}`);
-      }
-    },
-    [navigate, connectedDataSources]
-  );
   useEffect(() => {
     initDataFn();
   }, [initDataFn]);
