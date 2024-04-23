@@ -387,6 +387,26 @@ var options = {
           to: path.join(__dirname, 'build'),
           force: true,
         },
+        {
+          from: 'src/assets/img/iconDataSourceBitget.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceMEXC.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceHuobi.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceGate.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
       ],
     }),
     new CopyWebpackPlugin({

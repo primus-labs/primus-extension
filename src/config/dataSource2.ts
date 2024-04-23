@@ -165,7 +165,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     // constructorF: Bitget,
     baseName: 'api.bitget.com',
 
-    connectType: 'API',
+    connectType: 'Web',
   },
   huobi: {
     id: 'huobi',
@@ -180,7 +180,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     // constructorF: Huobi,
     baseName: 'api.huobi.pro',
 
-    connectType: 'API',
+    connectType: 'Web',
   },
   bybit: {
     id: 'bybit',
@@ -222,7 +222,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     // constructorF: Gate,
     baseName: 'api.gateio.ws',
 
-    connectType: 'API',
+    connectType: 'Web',
   },
   mexc: {
     id: 'mexc',
@@ -236,7 +236,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     // constructorF: Mexc,
     baseName: 'api.mexc.com',
 
-    connectType: 'API',
+    connectType: 'Web',
   },
   zan: {
     id: 'zan',

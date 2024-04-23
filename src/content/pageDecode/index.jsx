@@ -40,7 +40,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     sessionStorage.setItem('padoAttestRequestStatus', status);
   }, []);
   return status === 'initialized' ? (
-    <div className="footer initialized">
+    <div className="pado-extension-footer initialized">
       <PButton
         text="Cancel"
         type="text2"
@@ -56,7 +56,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
       />
     </div>
   ) : status === 'verifying' ? (
-    <div className="footer verifying">
+    <div className="pado-extension-footer verifying">
       <PButton
         text="Cancel"
         type="text2"
@@ -72,7 +72,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
       />
     </div>
   ) : (
-    <div className="footer result ">
+    <div className="pado-extension-footer result ">
       <PButton text="OK" type="text2" onClick={handleOK} />
     </div>
   );
@@ -242,6 +242,10 @@ function PadoCard() {
     okx: chrome.runtime.getURL(`iconDataSourceOKX.svg`),
     x: chrome.runtime.getURL(`iconDataSourceTwitter.svg`),
     tiktok: chrome.runtime.getURL(`iconDataSourceTikTok.svg`),
+    bitget: chrome.runtime.getURL(`iconDataSourceBitget.svg`),
+    gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
+    mexc: chrome.runtime.getURL(`iconDataSourceMEXC.svg`),
+    huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
   };
   var iconDataSource = iconMap[activeRequest.dataSource];
 
@@ -333,7 +337,7 @@ function PadoCard() {
   }, []);
   return (
     <div className={`pado-extension-card  ${status}`}>
-      <div className="header">
+      <div className="pado-extension-header">
         <img src={iconPado} className="iconPado" />
         <img src={iconLink} className="iconLink" />
         <img src={iconDataSource} className="iconSource" />

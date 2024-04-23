@@ -33,7 +33,11 @@
         "iconDataSourceCoinbase.svg",
         "iconDataSourceOKX.svg",
         "iconDataSourceTwitter.svg",
-        "iconDataSourceTikTok.svg"
+        "iconDataSourceTikTok.svg",
+        "iconDataSourceBitget.svg",
+        "iconDataSourceGate.svg",
+        "iconDataSourceMEXC.svg",
+        "iconDataSourceHuobi.svg"
       ],
       "matches": ["<all_urls>"]
     }
