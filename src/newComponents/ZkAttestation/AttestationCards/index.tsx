@@ -45,8 +45,8 @@ interface PDropdownProps {
   // list: NavItem[];
 }
 const Cards: React.FC<PDropdownProps> = memo(
-  ({ onClick = (item: NavItem) => { } }) => {
-    const { tokenIconFn } = useAssetsStatistic(); 
+  ({ onClick = (item: NavItem) => {} }) => {
+    const { tokenIconFn } = useAssetsStatistic();
     const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
     const [activeDataSourceName, setActiveDataSourceName] =
@@ -118,7 +118,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     const getContent = (i) => {
       let str = i.verificationContent;
       if (i.attestationType === 'Assets Certification') {
-       str =  ASSETSVERIFICATIONCONTENTTYPEEMAP[i.verificationContent].label;
+        str = ASSETSVERIFICATIONCONTENTTYPEEMAP[i.verificationContent].label;
       }
       // if (i.attestationType === 'Assets Certification') {
       //   if (i.verificationContent === 'Assets Proof') {
@@ -272,7 +272,11 @@ const Cards: React.FC<PDropdownProps> = memo(
                           handleShowMore(i);
                         }}
                         onMouseLeave={handleHideMore}
-                        className="moreBtnWrapper"
+                        className={
+                          i.event || i?.provided?.length > 0
+                            ? 'moreBtnWrapper'
+                            : 'moreBtnWrapper withHover'
+                        }
                       >
                         <PButton
                           className="moreBtn"

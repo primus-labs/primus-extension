@@ -11,6 +11,7 @@ import {
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
 import {
+  mul,
   gt,
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
@@ -98,19 +99,39 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (pswForm.verificationContent === 'Assets Proof') {
         list = [...ASSETSVERIFICATIONVALUETYPELIST];
       } else if (pswForm.verificationContent === 'Token Holding') {
-        
         if (activeDataSouceUserInfo) {
           let symbolList: any[] = [];
           if (dataSourceId === 'okx') {
             symbolList = Object.keys(
               activeDataSouceUserInfo.tradingAccountTokenAmountObj
-            );
+            ).filter((t) => {
+              const curVal = mul(
+                Number(activeDataSouceUserInfo.tradingAccountTokenAmountObj[t]),
+                activeDataSouceUserInfo.tokenPriceMap[t]
+              ).toFixed();
+              const f = gt(Number(curVal), 0.01);
+              return f;
+            });
           } else if (dataSourceId === 'binance') {
             symbolList = Object.keys(
               activeDataSouceUserInfo.spotAccountTokenMap
-            );
+            ).filter((t) => {
+              const f = gt(
+                Number(activeDataSouceUserInfo.spotAccountTokenMap[t].value),
+                0.01
+              );
+              return f;
+            });
           } else {
-            symbolList = Object.keys(activeDataSouceUserInfo.tokenListMap);
+            symbolList = Object.keys(
+              activeDataSouceUserInfo.tokenListMap
+            ).filter((t) => {
+              const f = gt(
+                Number(activeDataSouceUserInfo.spotAccountTokenMap[t].value),
+                0.01
+              );
+              return f;
+            });
           }
           list = symbolList.map((i) => ({
             label: i,

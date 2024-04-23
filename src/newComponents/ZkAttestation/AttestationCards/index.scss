@@ -55,7 +55,12 @@
             position: relative;
             width: var(--spacing-16);
             height: var(--spacing-16);
-            &:hover {
+            &:not(.withHover) {
+              .moreBtn {
+                cursor: default;
+              }
+            }
+            &.withHover:hover {
               .dropdownWrapper {
                 display: flex;
               }
