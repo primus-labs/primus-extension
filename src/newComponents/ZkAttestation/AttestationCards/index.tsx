@@ -29,6 +29,7 @@ import SplicedIcons from '@/newComponents/SplicedIcons';
 import './index.scss';
 import { formatDate, div } from '../../../utils/utils';
 import request from '@/utils/request';
+import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 
 type NavItem = {
   type: string;
@@ -44,7 +45,8 @@ interface PDropdownProps {
   // list: NavItem[];
 }
 const Cards: React.FC<PDropdownProps> = memo(
-  ({ onClick = (item: NavItem) => {} }) => {
+  ({ onClick = (item: NavItem) => { } }) => {
+    const { tokenIconFn } = useAssetsStatistic(); 
     const dispatch: Dispatch<any> = useDispatch();
     const navigate = useNavigate();
     const [activeDataSourceName, setActiveDataSourceName] =
@@ -139,7 +141,10 @@ const Cards: React.FC<PDropdownProps> = memo(
         if (i.verificationContent === 'Assets Proof') {
           str = `> $${i.verificationValue}`;
         } else if (i.verificationContent === 'Token Holding') {
-          const dataSourceIconSrc = `${sysConfig.TOKEN_LOGO_PREFIX}icon${i.verificationValue}.png`;
+          const dataSourceIconSrc = tokenIconFn(
+            { symbol: i.verificationValue },
+            i.dataSourceId ?? i.source
+          );
           str = (
             <>
               <img src={dataSourceIconSrc} className="dataSourceIcon" alt="" />
