@@ -130,7 +130,15 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose }) => {
                         <td style={{ width: '64px', textAlign: 'left' }}>
                           +{item.score}
                         </td>
-                        <td style={{ textAlign: 'left' }}>
+                        <td
+                          style={{
+                            textAlign: 'left',
+                            maxWidth: '240px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
                           {item.recordTaskIdentifier ===
                           'CAMPAIGN_PARTICIPATION'
                             ? `${item.task} : ${EVENTNAMEMAP[item.ext]}`
