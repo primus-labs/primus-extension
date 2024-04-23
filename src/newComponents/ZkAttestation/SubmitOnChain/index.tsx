@@ -241,15 +241,20 @@ const Nav: React.FC<PButtonProps> = memo(
         const toBeUpperChainCredRequestids = [
           ...new Set(Object.values(lastBASInfoObj?.taskMap?.attestation)),
         ];
-        const Creds = credArrNew.filter((c: any) =>
-          toBeUpperChainCredRequestids.includes(c.requestid)
-        );
+        let Creds = [activeOnChainAttestation];
+        if (fromEvents === BASEVENTNAME) {
+          Creds = credArrNew.filter(
+            (c: any) =>
+              toBeUpperChainCredRequestids.includes(c.requestid) &&
+              (!c.provided || c?.provided.length === 0)
+          );
+        }
         console.log('222toBeUpperChainCreds:', Creds);
         return Creds;
       } else {
         return [];
       }
-    }, [credentialsFromStore, getBASInfoFn]);
+    }, [credentialsFromStore, getBASInfoFn, fromEvents]);
     const BASEventFn = useCallback(
       async (
         walletObj: any,
@@ -321,7 +326,7 @@ const Nav: React.FC<PButtonProps> = memo(
           let upChainRes = await bulkAttest(upChainParams);
           // burying point
           console.log('222123upChainParams.items', upChainParams.items);
-          let upChainType = upChainParams.items[0].type;
+          let upChainType = upChainParams.items[0]?.type;
           if (upChainType === 'web') {
             upChainType = firstToBeUpperChainCred?.schemaType;
           }
@@ -477,35 +482,48 @@ const Nav: React.FC<PButtonProps> = memo(
         toBeUpperChainCredsFn,
       ]
     );
-    const storeEventInfoFn = useCallback(async (fullAttestation) => {
-      const {
-        event: eventId,
-        address: currentAddress,
-        requestid,
-      } = fullAttestation;
-      if (eventId) {
-        const res = await chrome.storage.local.get([eventId]);
-        if (res[eventId]) {
-          const lastEventObj = JSON.parse(res[eventId]);
-          const lastInfo = lastEventObj[currentAddress];
-          if (lastInfo) {
-            const { taskMap } = lastInfo;
-            taskMap.onChain['onChain'] = requestid;
-            await chrome.storage.local.set({
-              [eventId]: JSON.stringify(lastEventObj),
-            });
+    const storeEventInfoFn = useCallback(
+      async (fullAttestation) => {
+        const {
+          event: eventId,
+          address: currentAddress,
+          requestid,
+        } = fullAttestation;
+        if (eventId) {
+          const res = await chrome.storage.local.get([eventId]);
+          if (res[eventId]) {
+            const lastEventObj = JSON.parse(res[eventId]);
+            const lastInfo = lastEventObj[currentAddress];
+            if (lastInfo) {
+              const { taskMap } = lastInfo;
+              if (eventId === BASEVENTNAME) {
+                if (fromEvents === BASEVENTNAME) {
+                  taskMap.onChain['onChain'] = requestid;
+                  await chrome.storage.local.set({
+                    [eventId]: JSON.stringify(lastEventObj),
+                  });
+                }
+              } else {
+                taskMap.onChain['onChain'] = requestid;
+                await chrome.storage.local.set({
+                  [eventId]: JSON.stringify(lastEventObj),
+                });
+              }
+            }
           }
         }
-      }
-    }, []);
+      },
+      [fromEvents]
+    );
 
     const sucFn = useCallback(
       async (walletObj: any, formatNetworkName?: string) => {
         try {
           let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
-          if (fromEvents === 'Scroll') {
+          const eventId = fromEvents ?? activeOnChainAttestation.event;
+          if (eventId === 'Scroll') {
             // scrollEventFn(walletObj, LineaSchemaName);// TODO-newui
-          } else if (fromEvents === BASEVENTNAME) {
+          } else if (eventId === BASEVENTNAME) {
             BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
           } else {
             let curType = activeOnChainAttestation?.type;

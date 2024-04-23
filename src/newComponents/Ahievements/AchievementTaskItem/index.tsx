@@ -11,7 +11,15 @@ import {
 } from '@/services/api/achievements';
 import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
-import { BASEVENTNAME, SocailStoreVersion } from '@/config/constants';
+
+import {
+  SCROLLEVENTNAME,
+  BASEVENTNAME,
+  LINEAEVENTNAME,
+  LUCKYDRAWEVENTNAME,
+  ETHSIGNEVENTNAME,
+} from '@/config/events';
+import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
 import useMsgs from '@/hooks/useMsgs';
 import { eventReport } from '@/services/api/usertracker';
@@ -52,6 +60,9 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
 
     const [PADOTabId, setPADOTabId] = useState<number>();
     const [xTabId, setXTabId] = useState<number>();
+    const connectedWallets = useSelector(
+      (state: UserState) => state.connectedWallets
+    );
     // useEffect(() => {
     //   const handleAutoTask = async () => {
     //     const windows = await chrome.windows.getAll()
@@ -444,7 +455,6 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         };
       }
 
-
       if (taskItem.taskIdentifier === 'CONNECT_GOOGLE_ACCOUNT_DATA') {
         const res = await getDataSourceData('google');
         if (!res['google']) {
@@ -586,7 +596,56 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       }
 
       if (taskItem.taskIdentifier === 'CAMPAIGN_PARTICIPATION') {
-        ext = {};
+        // debugger
+        const accountArr = Object.keys(connectedWallets.metamask);
+        let joinedEventIdArr: string[] = [];
+        const eventIdArr = [
+          SCROLLEVENTNAME,
+          BASEVENTNAME,
+          LINEAEVENTNAME,
+          LUCKYDRAWEVENTNAME,
+          ETHSIGNEVENTNAME,
+        ];
+
+        for (const eventIdItem of eventIdArr) {
+          const res = await chrome.storage.local.get([eventIdItem]);
+          if (res[eventIdItem]) {
+            const lastEventObj = JSON.parse(res[eventIdItem]);
+            accountArr.forEach((addr) => {
+              const currentAddress = addr;
+              const lastInfo = lastEventObj[currentAddress];
+              if (lastInfo) {
+                const { taskMap } = lastInfo;
+                let requiredTaskMap = { ...taskMap };
+                delete requiredTaskMap.check;
+                const statusM = Object.keys(requiredTaskMap).reduce(
+                  (prev, curr) => {
+                    const currTask = taskMap[curr];
+                    // tasksProcess
+                    if (currTask) {
+                      const taskLen = Object.keys(currTask).length;
+                      const doneTaskLen = Object.values(currTask).filter(
+                        (i) => !!i
+                      ).length;
+                      const allDone = taskLen === doneTaskLen;
+                      prev[curr] = allDone ? 1 : 0;
+                    }
+                    return prev;
+                  },
+                  {}
+                );
+                const f = Object.values(statusM).every((i) => !!i);
+                if (f && !joinedEventIdArr.includes(eventIdItem)) {
+                  joinedEventIdArr.push(eventIdItem);
+                }
+              }
+            });
+          }
+        }
+
+        ext = {
+          events: joinedEventIdArr.join(','),
+        };
       }
 
       if (taskItem.taskIdentifier === 'CONNECT_TIKTOK_ACCOUNT_DATA') {

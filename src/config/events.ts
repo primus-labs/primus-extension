@@ -9,7 +9,13 @@ export const LINEAEVENTNAME = 'LINEA_DEFI_VOYAGE';
 export const LUCKYDRAWEVENTNAME = 'PRODUCT_DEBUT';
 export const EARLYBIRDNFTEVENTNAME = 'Early_Bird_NFT';
 export const ETHSIGNEVENTNAME = 'SIGNX_X_PROGRAM';
-
+export const EVENTNAMEMAP = {
+  [ETHSIGNEVENTNAME]: 'SignX Program',
+  [BASEVENTNAME]: 'BAS Event',
+  [LINEAEVENTNAME]: 'Linea Voyage',
+  [SCROLLEVENTNAME]: 'Scroll zkAttestation',
+  [LUCKYDRAWEVENTNAME]: 'PADO Lucky Draw',
+};
 export const eventMetaMap = {
   [BASEVENTNAME]: {
     combineType: '1',
