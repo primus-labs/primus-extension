@@ -7,6 +7,28 @@
   .pageContent {
     @include fcss;
     gap: var(--spacing-32);
+    .noAccountTip {
+      width: 100%;
+      height: 56px;
+      padding: 0 var(--spacing-16);
+      @include frbc;
+      background: var(--layer-tokens-layer-blue-background);
+      border-radius: var(--spacing-4);
+      .left,
+      .right {
+        @include frsc;
+        gap: var(--spacing-8);
+      }
+      .left {
+        .iconfont {
+          font-size: var(--spacing-16);
+          color: #1192e8;
+        }
+        > p {
+          @include BodyBody1;
+        }
+      }
+    }
     .pRow {
       width: 100%;
       @include frss;

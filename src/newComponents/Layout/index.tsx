@@ -47,6 +47,8 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   const pagelayoutInstance = useRef(null);
   const { pathname } = useLocation();
   const theme = useSelector((state: UserState) => state.theme);
+  const userInfo = useSelector((state: UserState) => state.userInfo);
+  console.log('222userInfo', userInfo);
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
@@ -114,7 +116,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     dispatch(setConnectedWalletsActionAsync());
     dispatch(initEventsActionAsync());
     dispatch(initNftsActionAsync());
-    
+
     // dispatch(initConnectedWalletActionAsync());
     // (updateOnChainFn as () => void)();
   }, [dispatch]);
@@ -168,7 +170,12 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   }, []);
 
   return (
-    <div className={`PageLayout ${theme}`} ref={pagelayoutInstance}>
+    <div
+      className={`PageLayout ${theme} ${
+        userInfo?.token ? '' : 'pointerEventNone'
+      }`}
+      ref={pagelayoutInstance}
+    >
       <Sidebar />
       <article className="pageRight" ref={pageRightInstance}>
         <Header />

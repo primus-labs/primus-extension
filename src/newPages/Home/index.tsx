@@ -7,10 +7,12 @@ import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
 import DataSourcesModule from '@/newComponents/Home/DataSourcesModule';
 import AttestationsModule from '@/newComponents/Home/AttestationsModule';
 import './index.scss';
+import { useSelector } from 'react-redux';
 
 const Home = memo(() => {
   const [showInputPasswordDialog, setShowInputPasswordDialog] =
     useState<boolean>(false);
+  const userInfo = useSelector((state) => state.userInfo);
 
   const checkIfHadSetPwd = useCallback(async () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
@@ -24,6 +26,24 @@ const Home = memo(() => {
   return (
     <div className="pageHome">
       <div className="pageContent">
+        {!userInfo?.token && (
+          <div className="noAccountTip">
+            <div className="left">
+              <i className="iconfont icon-iconInfoColorful"></i>
+              <p>
+                Waiting for the PADO serial number to be bound. The PADO
+                extension will be available in a few seconds...
+              </p>
+            </div>
+            {/* <div className="right">
+              <PClose
+                onClick={() => {
+                  handleClose(i);
+                }}
+              />
+            </div> */}
+          </div>
+        )}
         <Slider />
         <div className="pRow">
           <Overview />
@@ -32,7 +52,7 @@ const Home = memo(() => {
         <DataSources />
         <div className="pRow">
           <DataSourcesModule />
-          <AttestationsModule/>
+          <AttestationsModule />
         </div>
       </div>
       {showInputPasswordDialog && (

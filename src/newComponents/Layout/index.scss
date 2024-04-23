@@ -13,6 +13,9 @@
   //   left: 0;
   //   top: 0;
   // }
+  &.pointerEventNone{
+    pointer-events: none;
+  }
   .pageRight {
     width: calc(100% - 240px);
     margin-left: 240px;

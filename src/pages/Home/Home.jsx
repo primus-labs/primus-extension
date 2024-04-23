@@ -19,8 +19,10 @@ import page4 from '@/assets/newImg/guide/page4.svg';
 import page5 from '@/assets/newImg/guide/page5.svg';
 import iconLogoPado from '@/assets/newImg/guide/iconLogoPado.svg';
 import './home.scss';
+import useCreateAccount from '@/hooks/useCreateAccount';
 
 const Home = memo(() => {
+  const { createAccountFn } = useCreateAccount();
   const guideImg = useRef(null);
   useListener();
   const navigate = useNavigate();
@@ -65,32 +67,34 @@ const Home = memo(() => {
   //   setStep(2);
   // };
   // useTimeout(timeoutStep2Fn, 1000, timeoutStep2Switch, false);
+  const initAccount = useCallback(async () => {
+    const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
+      await chrome.storage.local.get([
+        'keyStore',
+        'padoCreatedWalletAddress',
+        'privateKey',
+        'userInfo',
+      ]);
+    if (!privateKey && !keyStore && !userInfo) {
+      const msg = {
+        fullScreenType: 'wallet',
+        reqMethodName: 'create',
+        params: {},
+      };
+      postMsg(padoServicePort, msg);
+    }
+    if (privateKey && !userInfo) {
+      createAccountFn();
+    }
+  }, []);
   const handleClick = useCallback(async () => {
     if (step <= 4) {
       setStep((p) => p + 1);
     } else {
       setStep(1);
-
-      const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
-        await chrome.storage.local.get([
-          'keyStore',
-          'padoCreatedWalletAddress',
-          'privateKey',
-          'userInfo',
-        ]);
-      if (!keyStore && !privateKey) {
-        const msg = {
-          fullScreenType: 'wallet',
-          reqMethodName: 'create',
-          params: {},
-        };
-        postMsg(padoServicePort, msg);
-      }
-
       chrome.storage.local.set({
         guide: '1',
       });
-
       setVisibleReferralCodeDialog(true);
     }
   }, [step]);
@@ -124,6 +128,9 @@ const Home = memo(() => {
       }
     }
   }, [step, guideImg]);
+  useEffect(() => {
+    initAccount();
+  }, [initAccount]);
 
   return (
     <div
