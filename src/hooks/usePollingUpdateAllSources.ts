@@ -22,7 +22,7 @@ const usePollingUpdateAllSources = () => {
   const [countDownSwitch, setCountDownSwitch] = useState<boolean>(true);
   const dispatch = useDispatch();
   const { sourceMap2 } = useAllSources();
-  const [hadSetPwd, setHadSetPwd] = useState<boolean>(false);
+  const [hadSetPwd, setHadSetPwd] = useState<number>(0);
   const userPassword = useSelector((state: UserState) => state.userPassword);
   const sourceUpdateFrequency = useSelector(
     (state: UserState) => state.sourceUpdateFrequency
@@ -36,7 +36,13 @@ const usePollingUpdateAllSources = () => {
     return allDataSources.length > 0;
   }, [sourceMap2]);
   const switchFlag = useMemo(() => {
-    return ((hadSetPwd && !!userPassword) || !hadSetPwd) && hasDataSources;
+    let f = false;
+    if (hadSetPwd > 0) {
+      f =
+        ((hadSetPwd === 1 && !!userPassword) || hadSetPwd === 2) &&
+        hasDataSources;
+    }
+    return f;
   }, [userPassword, hasDataSources, hadSetPwd]);
 
   const delay = useMemo(() => {
@@ -48,7 +54,7 @@ const usePollingUpdateAllSources = () => {
   }, [sourceUpdateFrequency]);
   const checkIfHadSetPwd = useCallback(async () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
-    setHadSetPwd(!!keyStore);
+    setHadSetPwd(keyStore ? 1 : 2);
   }, []);
   const countDownFn = useCallback(() => {
     if (!updating) {
@@ -74,10 +80,12 @@ const usePollingUpdateAllSources = () => {
   }, [dispatch, switchFlag]);
   useEffect(() => {
     checkIfHadSetPwd();
-  }, [checkIfHadSetPwd]);
+  }, []);
   useEffect(() => {
-    !!userPassword && checkIfHadSetPwd();
-  }, [userPassword, checkIfHadSetPwd]);
+    if (!!userPassword) {
+      checkIfHadSetPwd();
+    }
+  }, [userPassword]);
   // const [updating, updateF] = useUpdateAllSources(true);
 
   useEffect(() => {
@@ -95,7 +103,8 @@ const usePollingUpdateAllSources = () => {
       updatedMintues.current = -1;
     }
   }, [sourceUpdateInfo.pollingFlag, updating]);
-
+  useEffect(() => {
+  }, [sourceUpdateInfo.pollingFlag]);
   useInterval(updateF as () => void, delay, sourceUpdateInfo.pollingFlag, true);
   useInterval(countDownFn, 1 * ONEMINUTE, sourceUpdateInfo.pollingFlag, true);
 };

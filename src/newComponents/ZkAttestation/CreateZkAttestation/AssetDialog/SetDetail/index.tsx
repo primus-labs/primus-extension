@@ -98,6 +98,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (pswForm.verificationContent === 'Assets Proof') {
         list = [...ASSETSVERIFICATIONVALUETYPELIST];
       } else if (pswForm.verificationContent === 'Token Holding') {
+        
         if (activeDataSouceUserInfo) {
           let symbolList: any[] = [];
           if (dataSourceId === 'okx') {
@@ -108,6 +109,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             symbolList = Object.keys(
               activeDataSouceUserInfo.spotAccountTokenMap
             );
+          } else {
+            symbolList = Object.keys(activeDataSouceUserInfo.tokenListMap);
           }
           list = symbolList.map((i) => ({
             label: i,
@@ -116,7 +119,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           }));
         }
       }
-
+      console.log('222valueList', list, pswForm.verificationContent);
       return list;
     }, [pswForm.verificationContent, activeDataSouceUserInfo]);
 

@@ -68,7 +68,6 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
   const series = useMemo(() => {
     return showYDatas.map((i) => {
       const { name, data } = i;
-      // debugger
       return {
         name,
         stack: 'a',

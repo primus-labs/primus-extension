@@ -596,7 +596,6 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       }
 
       if (taskItem.taskIdentifier === 'CAMPAIGN_PARTICIPATION') {
-        // debugger
         const accountArr = Object.keys(connectedWallets.metamask);
         let joinedEventIdArr: string[] = [];
         const eventIdArr = [
