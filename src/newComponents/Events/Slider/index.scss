@@ -24,7 +24,16 @@
         // background-size: 872px 144px;
         // background-position: right center;
         position: relative;
-        .bg{
+        &.SIGNX_X_PROGRAM {
+          .content {
+            .intro {
+              .brief {
+                gap: var(--spacing-8);
+              }
+            }
+          }
+        }
+        .bg {
           position: absolute;
           right: 0;
           top: 50%;
@@ -39,8 +48,9 @@
           padding: 0 33px;
           @include frbc;
           .intro {
-            @include fcss;
+            @include fcbs;
             gap: var(--spacing-14);
+            height: 94px;
             .brief {
               @include fcss;
               gap: var(--spacing-2);
@@ -56,13 +66,12 @@
             }
             .desc {
               @include frsc;
-              gap: var(--spacing-18);
+              gap: var(--spacing-36);
               @include Label01;
-              
+
               .left,
               .right {
                 @include frsc;
-                align-items: flex-end;
                 gap: var(--spacing-4);
                 .iconfont {
                   font-size: var(--spacing-16);

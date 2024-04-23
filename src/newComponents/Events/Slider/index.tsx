@@ -24,7 +24,7 @@ var settings = {
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
-  autoplay: true,
+  // autoplay: true,
   pauseOnHover: true,
   nextArrow: <></>,
   prevArrow: <></>,
@@ -35,24 +35,27 @@ const eventIntroMap = {
     id: LINEAEVENTNAME,
     title: 'The Linea Voyage: Proof of Humanity',
     desc: 'Complete an attestation with a KYCed account on Binance. Bringing more PoH attestations to Verax and Linea ecosystem!',
-    pointIconFont: 'icon-iconBlockChain',
-    pointDesc: 'LXP',
+    points: [
+      { pointIconFont: 'icon-iconBlockChain', pointDesc: 'LXP' },
+      { pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' },
+    ],
     bg: bannerBgLinea,
   },
   [ETHSIGNEVENTNAME]: {
     id: ETHSIGNEVENTNAME,
     title: 'SignX Program',
     desc: 'Attest your X followers, building trust in trustless systems.',
-    pointIconFont: 'icon-iconGift',
-    pointDesc: 'PADO Points',
+    points: [{ pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' }],
     bg: bannerBgEthSign,
   },
   [BASEVENTNAME]: {
     id: BASEVENTNAME,
     title: 'BNBChain Attestation Alliance',
     desc: 'Bringing more traditional data attestations to the BNB ecosystem. Finish simple tasks to win your XP！',
-    pointIconFont: 'icon-iconBlockChain',
-    pointDesc: 'BAS XP',
+    points: [
+      { pointIconFont: 'icon-iconBlockChain', pointDesc: 'BAS XP' },
+      { pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' },
+    ],
     bg: bannerBgBas,
   },
 };
@@ -82,7 +85,7 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
       <Slider {...settings}>
         {Object.values(eventIntroMap).map((i) => {
           return (
-            <div className="homeBanner" key={i.id}>
+            <div className={`homeBanner ${i.id}`} key={i.id}>
               <img src={i.bg} alt="" className="bg" />
               <div className="content">
                 <div className="intro">
@@ -91,10 +94,14 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
                     <h3>{i.desc}</h3>
                   </div>
                   <div className="desc">
-                    <div className="left">
-                      <div className={`iconfont ${i.pointIconFont}`}></div>
-                      <span>{i.pointDesc}</span>
-                    </div>
+                    {i.points.map((p) => {
+                      return (
+                        <div className="left">
+                          <div className={`iconfont ${p.pointIconFont}`}></div>
+                          <span>{p.pointDesc}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
                 <PButton
@@ -102,7 +109,9 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
                   type="primary"
                   size="m"
                   className="joinBtn"
-                  onClick={() => {handleClick(i)}}
+                  onClick={() => {
+                    handleClick(i);
+                  }}
                 />
               </div>
             </div>
