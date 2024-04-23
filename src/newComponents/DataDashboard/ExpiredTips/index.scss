@@ -17,7 +17,6 @@
       @include frbc;
       background: var(--layer-tokens-layer-blue-background);
       border-radius: var(--spacing-4);
-      @include card-xs_shadow(rgba(0, 0, 0, 0.06));
       .left,
       .right {
         @include frsc;
