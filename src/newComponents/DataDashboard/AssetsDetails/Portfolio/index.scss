@@ -109,6 +109,7 @@
           .tokensWrapper {
             width: 228px;
             @include frbc;
+            flex-direction: row-reverse;
             .tokens {
               @include fcss;
               gap: var(--spacing-4);

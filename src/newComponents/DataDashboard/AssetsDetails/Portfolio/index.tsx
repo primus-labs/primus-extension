@@ -372,19 +372,21 @@ const AssetsDetails = memo(() => {
                 {Object.keys(itemTokenListMapFn(i)).length > 0 && (
                   <div className="right">
                     <div className="tokensWrapper">
-                      <div className="tokens">
-                        <div className="label">Token</div>
-                        <SplicedIcons
-                          list={holdingTokenLogosFn(i)}
-                          max={3}
-                          plusSign={false}
-                        />
-                      </div>
                       <PArrow
                         onClick={() => {
                           handleExpand(i);
                         }}
                       />
+                      {!activeExpand.includes(i.id) && (
+                        <div className="tokens">
+                          <div className="label">Token</div>
+                          <SplicedIcons
+                            list={holdingTokenLogosFn(i)}
+                            max={3}
+                            plusSign={false}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

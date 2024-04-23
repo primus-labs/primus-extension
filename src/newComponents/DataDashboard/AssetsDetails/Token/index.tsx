@@ -160,19 +160,21 @@ const Token = memo(() => {
                     </div>
                   </div>
                   <div className="tokensWrapper">
-                    <div className="tokens">
-                      <div className="label">Portfolio</div>
-                      <SplicedIcons
-                        list={holdingTokenLogosFn(i)}
-                        max={3}
-                        plusSign={false}
-                      />
-                    </div>
                     <PArrow
                       onClick={() => {
                         handleExpand(i);
                       }}
                     />
+                    {!activeExpand.includes(i.symbol) && (
+                      <div className="tokens">
+                        <div className="label">Portfolio</div>
+                        <SplicedIcons
+                          list={holdingTokenLogosFn(i)}
+                          max={3}
+                          plusSign={false}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
