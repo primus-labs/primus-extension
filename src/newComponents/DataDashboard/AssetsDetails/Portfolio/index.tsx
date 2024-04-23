@@ -416,7 +416,12 @@ const AssetsDetails = memo(() => {
                       >
                         <i className="iconfont icon-iconAmountForAttest"></i>
                         <div className="txtWrapper">
-                          <div className="label">Token</div>
+                          <div className="label">
+                            Token&nbsp;
+                            <span>
+                              ({sortListMapFn(itemTokenListMapFn(i)).length})
+                            </span>
+                          </div>
                           <div className="value">${itemTotalBalanceFn(i)}</div>
                         </div>
                       </div>

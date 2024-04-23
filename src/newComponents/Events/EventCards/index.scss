@@ -29,7 +29,7 @@
           height: 100%;
           background-repeat: no-repeat;
           background-image: url('~@/assets/newImg/events/bgCombineType0.svg');
-          background-size: contain;
+          background-size: cover;
           &.combine {
             background-image: url('~@/assets/newImg/events/bgCombineType1.svg');
           }

@@ -157,6 +157,11 @@
           }
           .txtWrapper {
             @include BodyBody100Semibold;
+            .label {
+              > span {
+                @include NumberBody100Semibold;
+              }
+            }
             .value {
               @include NumberBody100;
             }
