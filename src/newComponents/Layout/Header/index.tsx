@@ -50,7 +50,7 @@ const Nav: React.FC = memo(({}) => {
       )}
 
       <div className="rightActions">
-        <i className="iconfont icon-iconBell"></i>
+        {/* <i className="iconfont icon-iconBell"></i> */}
         {/* <PButton
           className="connectBtn"
           text="Connect wallet"
