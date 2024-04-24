@@ -3,64 +3,67 @@
 
 .pageHeader {
   width: 100%;
-  flex: 0 0 auto;
   height: 60px;
-  @include frbc;
-  padding: 0 var(--spacing-24) 0 var(--spacing-40);
+  // padding: 0 var(--spacing-24) 0 var(--spacing-40);
   border-bottom: 1px solid var(--border-tokens-border-primary);
-  // Background Tokens/background-navi
   background: var(--background-tokens-background-navi);
-  .pathName {
-    @include HeadlineH1;
-    @include frsc;
-    height: 60px;
-    border-bottom: 4px solid var(--background-tokens-background-brand);
-    color: var(--text-tokens-text-primary);
-  }
-  .PTabs {
-    border-bottom: 0;
-    height: 60px;
-    .tab {
-      @include fcss;
+  @include frcc;
+  .pageContent {
+    height: 100%;
+    @include frbc;
 
-      &.active {
-        .border {
-          height: 4px;
-          background: var(--background-tokens-background-brand);
-        }
-      }
-      &:not(.active) {
-        .border {
-          height: 0;
-        }
-      }
-      .con {
-        @include HeadlineH1;
-        @include frsc;
-        height: calc(100% - 4px);
-        // color: var(--text-tokens-text-primary);
-      }
-    }
-  }
-  .rightActions {
-    @include frsc;
-    gap: var(--spacing-8);
-    .icon-iconBell {
-      font-size: var(--spacing-24);
-      color: var(--button-tokens-button-primary);
-      margin-right: var(--spacing-8);
-    }
-    .connectBtn {
-      // width: 131px;
-      height: var(--spacing-32);
-    }
-    .avatar {
-      width: var(--spacing-32);
-      height: var(--spacing-32);
+    .pathName {
+      @include HeadlineH1;
       @include frsc;
-      > img {
+      height: 60px;
+      border-bottom: 4px solid var(--background-tokens-background-brand);
+      color: var(--text-tokens-text-primary);
+    }
+    .PTabs {
+      border-bottom: 0;
+      height: 60px;
+      .tab {
+        @include fcss;
+
+        &.active {
+          .border {
+            height: 4px;
+            background: var(--background-tokens-background-brand);
+          }
+        }
+        &:not(.active) {
+          .border {
+            height: 0;
+          }
+        }
+        .con {
+          @include HeadlineH1;
+          @include frsc;
+          height: calc(100% - 4px);
+          // color: var(--text-tokens-text-primary);
+        }
+      }
+    }
+    .rightActions {
+      @include frsc;
+      gap: var(--spacing-8);
+      .icon-iconBell {
+        font-size: var(--spacing-24);
+        color: var(--button-tokens-button-primary);
+        margin-right: var(--spacing-8);
+      }
+      .connectBtn {
+        // width: 131px;
+        height: var(--spacing-32);
+      }
+      .avatar {
         width: var(--spacing-32);
         height: var(--spacing-32);
+        @include frsc;
+        > img {
+          width: var(--spacing-32);
+          height: var(--spacing-32);
+        }
       }
     }
   }

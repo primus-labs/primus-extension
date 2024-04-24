@@ -71,7 +71,7 @@ const AchievementHome = memo(() => {
 
   const onConnectWallet = async () => {
     if (!connected) {
-      await dispatch(setConnectWalletDialogVisibleAction(connected?0:1));
+      await dispatch(setConnectWalletDialogVisibleAction(connected ? 0 : 1));
       await getAchievementTaskListFn(current);
     }
   };
@@ -213,44 +213,46 @@ const AchievementHome = memo(() => {
 
   return (
     <div className="pageAchievementTaskItem">
-      <AchievementTopCard
-        referrals={referrals}
-        countedReferrals={countedReferrals}
-        totalScore={totalScore}
-        referralCode={referralCode}
-        handleRewardsHistory={handleRewordHistory}
-        handleSharePoints={handleSharePoints}
-        handleShareReferralCode={handleShareReferralCode}
-      ></AchievementTopCard>
-      <div className={'achievementTasks'}>
-        <div className={'achievementTasksTitle'}>Task list</div>
-        <AchievementTaskItemList />
-        <div className={'pageComponent'}>
-          <Pagination
-            total={totolCount}
-            onChange={pageChangedFn}
-            showSizeChanger={false}
-            pageSize={size}
-          />
+      <div className="pageContent">
+        <AchievementTopCard
+          referrals={referrals}
+          countedReferrals={countedReferrals}
+          totalScore={totalScore}
+          referralCode={referralCode}
+          handleRewardsHistory={handleRewordHistory}
+          handleSharePoints={handleSharePoints}
+          handleShareReferralCode={handleShareReferralCode}
+        ></AchievementTopCard>
+        <div className={'achievementTasks'}>
+          <div className={'achievementTasksTitle'}>Task list</div>
+          <AchievementTaskItemList />
+          <div className={'pageComponent'}>
+            <Pagination
+              total={totolCount}
+              onChange={pageChangedFn}
+              showSizeChanger={false}
+              pageSize={size}
+            />
+          </div>
         </div>
+        {visibleAssetDialog && (
+          <AchievementRewardHistory onClose={handleCloseAssetDialog} />
+        )}
+        {visibleReferralCodeDialog && (
+          <ReferralCodeInput
+            onClose={handleReferralCodeClose}
+            showMsg={true}
+            setReferralTaskFinished={handleReferralCodeTaskFinish}
+          />
+        )}
+        {visibleShareDiag && (
+          <ShareComponent
+            onClose={handleSharePageClose}
+            shareType={shareType}
+            scoreShareProps={{ score: totalScore, referralCode: referralCode }}
+          />
+        )}
       </div>
-      {visibleAssetDialog && (
-        <AchievementRewardHistory onClose={handleCloseAssetDialog} />
-      )}
-      {visibleReferralCodeDialog && (
-        <ReferralCodeInput
-          onClose={handleReferralCodeClose}
-          showMsg={true}
-          setReferralTaskFinished={handleReferralCodeTaskFinish}
-        />
-      )}
-      {visibleShareDiag && (
-        <ShareComponent
-          onClose={handleSharePageClose}
-          shareType={shareType}
-          scoreShareProps={{ score: totalScore, referralCode: referralCode }}
-        />
-      )}
     </div>
   );
 });

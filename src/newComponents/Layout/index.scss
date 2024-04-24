@@ -17,8 +17,8 @@
     pointer-events: none;
   }
   .pageRight {
-    width: calc(100% - 240px);
-    margin-left: 240px;
+    width: calc(100% - var(--sidebar-width));
+    margin-left: var(--sidebar-width);
     @include fcbs;
     flex: 1;
     // height: 100vh;

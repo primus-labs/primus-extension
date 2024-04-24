@@ -6,7 +6,7 @@
   left: 0;
   left: 0;
   @include fcbs;
-  width: 240px;
+  width: var(--sidebar-width);
   height: 100%;
   border-right: 1px solid var(--border-tokens-border-primary);
   background: var(--background-tokens-background-navi, #fff);

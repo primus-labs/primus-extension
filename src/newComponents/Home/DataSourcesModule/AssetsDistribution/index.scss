@@ -3,7 +3,7 @@
 @import '@/assets/newCss/mixins.scss';
 
 .homeAssetsDistribution {
-  width: 552px;
+  width: 100%;
   @include fcss;
   gap: var(--spacing-16);
 

@@ -3,7 +3,7 @@
 @import '@/assets/newCss/mixins.scss';
 
 .attestationsModule {
-  flex: 1;
+  width: calc((100% - var(--spacing-16)) / 2);
   @include fcss;
   gap: var(--spacing-16);
 }

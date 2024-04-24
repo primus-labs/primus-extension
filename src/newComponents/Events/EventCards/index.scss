@@ -3,13 +3,15 @@
 @import '@/assets/newCss/mixins.scss';
 
 .currentEventsCards {
+  --eventCard-width: 356px;
   @include frss;
   flex-wrap: wrap;
   row-gap: var(--spacing-16);
-  column-gap: var(--spacing-23);
+  // column-gap: var(--spacing-23);
+  column-gap: calc((100% - var(--eventCard-width) * 4) / 3);
   width: 100%;
   .dataSourceCard {
-    width: calc((100% - var(--spacing-23) * 2) / 3);
+    width: var(--eventCard-width);
     height: 358px;
     @include fcss;
     @include clickableCard;
@@ -83,5 +85,10 @@
         }
       }
     }
+  }
+}
+@media (max-width: 1819px) {
+  .currentEventsCards {
+    column-gap: calc((100% - var(--eventCard-width) * 3) / 2);
   }
 }

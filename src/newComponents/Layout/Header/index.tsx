@@ -36,29 +36,30 @@ const Nav: React.FC = memo(({}) => {
 
   return (
     <div className="pageHeader">
-      {pathname.startsWith('/events') &&
-      !pathname.startsWith('/events/detail') ? (
-        <PPTabs
-          list={tList}
-          onChange={(ppp) => {
-            setTtt(ppp);
-          }}
-          value={ttt}
-        />
-      ) : (
-        <div className="pathName">{pathTitle}</div>
-      )}
-
-      <div className="rightActions">
-        {/* <i className="iconfont icon-iconBell"></i> */}
-        {/* <PButton
+      <div className="pageContent">
+        {pathname.startsWith('/events') &&
+        !pathname.startsWith('/events/detail') ? (
+          <PPTabs
+            list={tList}
+            onChange={(ppp) => {
+              setTtt(ppp);
+            }}
+            value={ttt}
+          />
+        ) : (
+          <div className="pathName">{pathTitle}</div>
+        )}
+        <div className="rightActions">
+          {/* <i className="iconfont icon-iconBell"></i> */}
+          {/* <PButton
           className="connectBtn"
           text="Connect wallet"
           onClick={handleConnect}
         /> */}
-        <PConnect />
-        <div className="avatar">
-          <img src={iconAvatar} alt="" />
+          <PConnect />
+          <div className="avatar">
+            <img src={iconAvatar} alt="" />
+          </div>
         </div>
       </div>
     </div>

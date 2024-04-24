@@ -100,199 +100,200 @@ const Setting = memo(() => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);
     // @ts-ignore
     setHadSetPwd(!!keyStore);
-    sessionStorage.setItem('hasInputPsw','');
-    navigate('/home')
+    sessionStorage.setItem('hasInputPsw', '');
+    navigate('/home');
     // setShowInputPasswordDialog(true);
   };
 
   return (
     <div className={'outerDiv'}>
-      <div className={'cardDiv1'}>
-        <div className={'currencyDiv'}>
-          <div className={'descDiv'}>
-            <div className={'title'}>Preferred currency</div>
-            <div className={'content'}>
-              Choose the currency shown to your asset balance
+      <div className="pageContent">
+        <div className={'cardDiv1'}>
+          <div className={'currencyDiv'}>
+            <div className={'descDiv'}>
+              <div className={'title'}>Preferred currency</div>
+              <div className={'content'}>
+                Choose the currency shown to your asset balance
+              </div>
+            </div>
+            <div
+              className={'selectDiv'}
+              style={{
+                width: '149px',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {/*<Select*/}
+              {/*  style={{ width: '149px', height: '32px' }}*/}
+              {/*  defaultValue={currencyChosen}*/}
+              {/*  options={currencyItems}*/}
+              {/*  onChange={(v) => {*/}
+              {/*    setCurrencyChosen(v);*/}
+              {/*  }}>*/}
+              {/*</Select>*/}
+              <PSelect
+                className={'selectDivInput'}
+                list={currencyItems}
+                onChange={(v) => {
+                  setCurrencyChosen(v);
+                }}
+                value={currencyChosen}
+              />
             </div>
           </div>
-          <div
-            className={'selectDiv'}
+          <Divider
             style={{
-              width: '149px',
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              width: '1072px',
+              marginTop: '16px',
+              marginBottom: '16px',
+              color: '##E0E0E0',
             }}
-          >
-            {/*<Select*/}
-            {/*  style={{ width: '149px', height: '32px' }}*/}
-            {/*  defaultValue={currencyChosen}*/}
-            {/*  options={currencyItems}*/}
-            {/*  onChange={(v) => {*/}
-            {/*    setCurrencyChosen(v);*/}
-            {/*  }}>*/}
-            {/*</Select>*/}
-            <PSelect
-              className={'selectDivInput'}
-              list={currencyItems}
-              onChange={(v) => {
-                setCurrencyChosen(v);
+          />
+          <div className={'currencyDiv'}>
+            <div className={'descDiv'}>
+              <p className={'title'}>Data update frequency</p>
+              <p className={'content'}>
+                Select the frequency to automatically update your fetched data
+                sources.
+              </p>
+            </div>
+            <div
+              className={'selectDiv'}
+              style={{
+                width: '149px',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
-              value={currencyChosen}
-            />
+            >
+              {/*<Select*/}
+              {/*  style={{ width: '149px', height: '32px' }}*/}
+              {/*  defaultValue={updateFrequencyChosen}*/}
+              {/*  options={updateFrequencyItems}*/}
+              {/*  onChange={(v) => {*/}
+              {/*    setUpdateFrequencyChosen(v);*/}
+              {/*  }}>*/}
+              {/*</Select>*/}
+
+              <PSelect
+                className={'selectDivInput'}
+                list={updateFrequencyItems}
+                onChange={(v) => {
+                  setUpdateFrequencyChosen(v);
+                }}
+                value={updateFrequencyChosen}
+              />
+            </div>
           </div>
         </div>
-        <Divider
-          style={{
-            width: '1072px',
-            marginTop: '16px',
-            marginBottom: '16px',
-            color: '##E0E0E0',
-          }}
-        />
-        <div className={'currencyDiv'}>
-          <div className={'descDiv'}>
-            <p className={'title'}>Data update frequency</p>
-            <p className={'content'}>
-              Select the frequency to automatically update your fetched data
-              sources.
-            </p>
-          </div>
-          <div
-            className={'selectDiv'}
-            style={{
-              width: '149px',
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {/*<Select*/}
-            {/*  style={{ width: '149px', height: '32px' }}*/}
-            {/*  defaultValue={updateFrequencyChosen}*/}
-            {/*  options={updateFrequencyItems}*/}
-            {/*  onChange={(v) => {*/}
-            {/*    setUpdateFrequencyChosen(v);*/}
-            {/*  }}>*/}
-            {/*</Select>*/}
 
-            <PSelect
-              className={'selectDivInput'}
-              list={updateFrequencyItems}
-              onChange={(v) => {
-                setUpdateFrequencyChosen(v);
+        <div className={'cardDiv1'}>
+          <div className={'currencyDiv'}>
+            <div className={'descDiv'}>
+              <p className={'title'}>Account</p>
+              <p className={'content'}>Bounded wallet address</p>
+            </div>
+            <div className={'selectDiv'}>
+              <div className={'textDiv'}>{mainWallet}</div>
+              <PButton
+                type="icon"
+                className={'iconDiv'}
+                icon={<i className="iconfont icon-iconCopy"></i>}
+                onClick={copyMainWalletFn}
+              />
+              {/*<img className={'iconDiv'} src={textCopyIcon} alt={textCopyIcon} onClick={copyMainWalletFn} />*/}
+            </div>
+          </div>
+          <Divider
+            style={{
+              width: '1072px',
+              marginTop: '16px',
+              marginBottom: '16px',
+              color: '##E0E0E0',
+            }}
+          />
+
+          <div className={'currencyDiv'}>
+            <div className={'descDiv'}>
+              <p className={'title'}>Setup password</p>
+              <p className={'content'}>
+                Set a password to secure the data on your computer.
+              </p>
+            </div>
+            <div
+              className={'selectDiv'}
+              style={{
+                width: '149px',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
-              value={updateFrequencyChosen}
-            />
+            >
+              {hadSetPwd && (
+                <PButton
+                  className={'changePwdBtn'}
+                  text={'Change Password'}
+                  type="secondary"
+                  onClick={() => {
+                    setShowSetPwdDialog(true);
+                    setPasswordDialogTitle('Change Password');
+                    setIsChangePwd(true);
+                  }}
+                />
+              )}
+              {!hadSetPwd && (
+                <PButton
+                  className={'changePwdBtn'}
+                  text={'Setup Password'}
+                  type="secondary"
+                  onClick={() => {
+                    setShowSetPwdDialog(true);
+                    setPasswordDialogTitle('Setup Password');
+                    setIsChangePwd(false);
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={'cardDiv1'}>
-        <div className={'currencyDiv'}>
-          <div className={'descDiv'}>
-            <p className={'title'}>Account</p>
-            <p className={'content'}>Bounded wallet address</p>
-          </div>
-          <div className={'selectDiv'}>
-            <div className={'textDiv'}>{mainWallet}</div>
-            <PButton
-              type="icon"
-              className={'iconDiv'}
-              icon={<i className="iconfont icon-iconCopy"></i>}
-              onClick={copyMainWalletFn}
-            />
-            {/*<img className={'iconDiv'} src={textCopyIcon} alt={textCopyIcon} onClick={copyMainWalletFn} />*/}
+        <div className={'cardDiv3'}>
+          <div className={'serialNumDiv'}>
+            <div className={'serialNumTitle'}>Serial number</div>
+            <div className={'serialNumTxt'}>
+              <div className={'textDiv'}>{serialNum}</div>
+              <PButton
+                type="icon"
+                className={'iconDiv'}
+                icon={<i className="iconfont icon-iconCopy"></i>}
+                onClick={copySerialNumFn}
+              />
+            </div>
           </div>
         </div>
-        <Divider
-          style={{
-            width: '1072px',
-            marginTop: '16px',
-            marginBottom: '16px',
-            color: '##E0E0E0',
-          }}
-        />
-
-        <div className={'currencyDiv'}>
-          <div className={'descDiv'}>
-            <p className={'title'}>Setup password</p>
-            <p className={'content'}>
-              Set a password to secure the data on your computer.
-            </p>
-          </div>
-          <div
-            className={'selectDiv'}
-            style={{
-              width: '149px',
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+        {showSetPwdDialog && (
+          <SettingsSetPwdDialog
+            isChangePwd={isChangePwd}
+            title={passwordDialogTitle}
+            onClose={() => {
+              setShowSetPwdDialog(false);
             }}
-          >
-            {hadSetPwd && (
-              <PButton
-                className={'changePwdBtn'}
-                text={"Change Password"}
-                type="secondary"
-                onClick={() => {
-                  setShowSetPwdDialog(true);
-                  setPasswordDialogTitle('Change Password');
-                  setIsChangePwd(true);
-                }}
-              />
-
-            )}
-            {!hadSetPwd && (
-              <PButton
-                className={'changePwdBtn'}
-                text={"Setup Password"}
-                type="secondary"
-                onClick={() => {
-                  setShowSetPwdDialog(true);
-                  setPasswordDialogTitle('Setup Password');
-                  setIsChangePwd(false);
-                }}
-              />
-            )}
-          </div>
-        </div>
+            onSubmit={() => {}}
+            resetPwsSuccessCallback={resetPwsSuccessCallbackFn}
+          />
+        )}
+        {showInputPasswordDialog && (
+          <WebComeBackDialog
+            onSubmit={() => {}}
+            showDialog={setShowInputPasswordDialog}
+          />
+        )}
       </div>
-
-      <div className={'cardDiv3'}>
-        <div className={'serialNumDiv'}>
-          <div className={'serialNumTitle'}>Serial number</div>
-          <div className={'serialNumTxt'}>
-            <div className={'textDiv'}>{serialNum}</div>
-            <PButton
-              type="icon"
-              className={'iconDiv'}
-              icon={<i className="iconfont icon-iconCopy"></i>}
-              onClick={copySerialNumFn}
-            />
-          </div>
-        </div>
-      </div>
-      {showSetPwdDialog && (
-        <SettingsSetPwdDialog
-          isChangePwd={isChangePwd}
-          title={passwordDialogTitle}
-          onClose={() => {
-            setShowSetPwdDialog(false);
-          }}
-          onSubmit={() => {}}
-          resetPwsSuccessCallback={resetPwsSuccessCallbackFn}
-        />
-      )}
-      {showInputPasswordDialog && (
-        <WebComeBackDialog
-          onSubmit={() => {}}
-          showDialog={setShowInputPasswordDialog}
-        />
-      )}
     </div>
   );
 });

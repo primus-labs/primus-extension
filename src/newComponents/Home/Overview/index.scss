@@ -54,7 +54,7 @@
         .splicedIcons {
           // position: relative;
           > img {
-            width: var(--spacing-34);
+            width: var(--spacing-32);
             @for $i from 1 through 6 {
               &:nth-child(#{$i}) {
                 left: calc(-1 * ($i - 1) * var(--spacing-4));
@@ -62,8 +62,8 @@
             }
           }
           .hideCircle {
-            width: var(--spacing-34);
-            height: var(--spacing-34);
+            width: var(--spacing-32);
+            height: var(--spacing-32);
             left: calc(-1 * 5 * var(--spacing-4));
           }
         }

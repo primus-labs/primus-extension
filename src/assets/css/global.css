@@ -48,7 +48,7 @@ body {
   --pHeaderHeight: 105px; */
 }
 #app-container {
-  --spacing-2: 0.0138rem;
+  /* --spacing-2: 0.0138rem;
   --spacing-7: 0.0486rem;
 
   --spacing-4: 0.0272rem;
@@ -79,7 +79,41 @@ body {
   --spacing-80: 0.5442rem;
   --spacing-100: 0.6803rem;
   --pHeaderHeight: 0.7143rem;
-  --pageCenter-width: 7.0204rem;
+  --pageCenter-width: 7.0204rem; */
+
+  --spacing-2: 2px;
+    --spacing-7: 7px;
+
+    --spacing-4: 4px;
+    --spacing-6: 6px;
+    --spacing-8: 8px;
+    --spacing-10: 10px;
+    --spacing-11: 11px;
+    --spacing-12: 12px;
+    --spacing-14: 14px;
+    --spacing-16: 16px;
+    --spacing-18: 18px;
+    --spacing-20: 20px;
+    --spacing-22: 22px;
+    --spacing-23: 23px;
+    --spacing-24: 24px;
+    --spacing-28: 28px;
+    --spacing-30: 30px;
+    --spacing-32: 32px;
+
+    --spacing-36: 36px;
+    --spacing-40: 40px;
+    --spacing-42: 42px;
+    --spacing-48: 48px;
+    --spacing-52: 52px;
+    --spacing-60: 60px;
+    --spacing-64: 64px;
+    --spacing-68: 68px;
+    --spacing-80: 80px;
+    --spacing-100: 100px;
+    --pHeaderHeight: 105px;
+
+    --pageCenter-width: 1032px;
 }
 
 @media (max-width: 1470px) {

@@ -20,37 +20,38 @@ const SocialInsights = memo(() => {
       </div>
       <div className="content">
         <ul className="rewardItems">
-          {rewardsList.map((i, k) => {
-            return (
-              <li className="rewardItem" key={k}>
-                <div className="bg">
-                  <img src={i.img} alt="" />
-                  <div className="bgMask"></div>
-                </div>
-                <div className="content">
-                  <div className="cardContent">
-                    <div className="picWrapper">
-                      <img src={i.img} alt="" />
-                    </div>
-                    <div className="txtWrapper">
-                      <div className="title">{i.title}</div>
-                      <div className="desc">
-                        <img src={iconPado} alt="" />
-                        &nbsp;
-                        <p>{i.desc}</p>
+          {rewardsList
+            .map((i, k) => {
+              return (
+                <li className="rewardItem" key={k}>
+                  <div className="bg">
+                    <img src={i.img} alt="" />
+                    <div className="bgMask"></div>
+                  </div>
+                  <div className="content">
+                    <div className="cardContent">
+                      <div className="picWrapper">
+                        <img src={i.img} alt="" />
+                      </div>
+                      <div className="txtWrapper">
+                        <div className="title">{i.title}</div>
+                        <div className="desc">
+                          <img src={iconPado} alt="" />
+                          &nbsp;
+                          <p>{i.desc}</p>
+                        </div>
                       </div>
                     </div>
+                    <PButton
+                      type="text"
+                      text="View Details"
+                      onClick={handleDetail}
+                      className="detailsBtn"
+                    />
                   </div>
-                  <PButton
-                    type="text"
-                    text="View Details"
-                    onClick={handleDetail}
-                    className="detailsBtn"
-                  />
-                </div>
-              </li>
-            );
-          })}
+                </li>
+              );
+            })}
         </ul>
       </div>
     </div>

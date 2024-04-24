@@ -3,10 +3,14 @@
 @import '@/assets/newCss/mixins.scss';
 
 .dataSourcesModule {
-  flex: 1;
+  width: calc((100% - var(--spacing-16)) / 2);
   @include fcss;
   gap: var(--spacing-16);
   &.fdRow {
+    width: 100%;
     flex-direction: row;
+    .homeAssetsDistribution,.socialInsights {
+      flex: 1;
+    }
   }
 }

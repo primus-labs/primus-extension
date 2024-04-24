@@ -6,8 +6,9 @@
   @include frbs;
   flex-wrap: wrap;
   row-gap: var(--spacing-16);
+  column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);
   .supportSttestationCard {
-    width: 363px;
+    width: var(--dataSourceCard-width);
     height: 164px;
     padding: var(--spacing-24);
     @include frbc;
@@ -74,5 +75,11 @@
         align-self: flex-start;
       }
     }
+  }
+}
+
+@media (max-width: 1819px) {
+  .supportSttestationCards {
+    column-gap: calc((100% - var(--dataSourceCard-width) * 3) / 2);
   }
 }

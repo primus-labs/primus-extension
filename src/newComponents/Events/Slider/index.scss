@@ -1,10 +1,12 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 .eventsSlider {
+  --slider-height: 144px;
   width: 100%;
-  height: 144px;
+  height: var(--slider-height);
   .slick-slider {
     .slick-list .slick-slide > div {
+      height: var(--slider-height);
       // padding-top: 33px;
       // .sliderImg {
       //   width: 100%;
@@ -68,7 +70,6 @@
               @include frsc;
               gap: var(--spacing-36);
               @include Label01;
-
               .left,
               .right {
                 @include frsc;
@@ -86,9 +87,12 @@
       }
     }
     .slick-dots {
-      bottom: 154px;
+      // bottom: 154px;
       height: 4px;
       gap: var(--spacing-8);
+      display: flex !important;
+      @include frcc;
+      bottom: 12px;
       li {
         width: auto;
         height: auto;
