@@ -6,8 +6,8 @@ import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import AssetDialog from './AssetDialog';
 import HumanityDialog from './HumanityDialog';
-
 import OnChainDialog from './OnChainDialog';
+import SocialDialog from './SocialDialog';
 
 interface PBackProps {
   type: string;
@@ -57,6 +57,14 @@ const PClose: React.FC<PBackProps> = memo(
             )}
             {type === 'On-chain Transaction' && (
               <OnChainDialog
+                presets={presets}
+                type={type}
+                onClose={handleClose}
+                onSubmit={onSubmit}
+              />
+            )}
+            {type === 'Social Connections' && (
+              <SocialDialog
                 presets={presets}
                 type={type}
                 onClose={handleClose}

@@ -30,13 +30,12 @@ export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
     label: 'Token holding',
   },
 };
-export const ASSETSVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
-  Object.values(ASSETSVERIFICATIONCONTENTTYPEEMAP);
+
 export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  '0.01': {
-    value: '0.01',
-    label: '> $0.01',
-  }, //delete TODO-newui
+  // '0.01': {
+  //   value: '0.01',
+  //   label: '> $0.01',
+  // }, //delete TODO-newui
   '10': {
     value: '10',
     label: '> $10',
@@ -56,6 +55,32 @@ export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 };
 export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
+
+export const ASSETSVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(ASSETSVERIFICATIONCONTENTTYPEEMAP);
+
+// Social Connections content/value options
+export const SOCIALVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  'X Followers': {
+    value: 'X Followers',
+    label: 'Followers number',
+  },
+};
+export const SOCIALVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(SOCIALVERIFICATIONCONTENTTYPEEMAP);
+export const SOCIALVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  '1': {
+    value: '1',
+    label: '> 1',
+  },
+  '500': {
+    value: '500',
+    label: '> 500',
+  },
+};
+export const SOCIALVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(SOCIALVERIFICATIONVALUETYPEEMAP);
+
 
 // Humanity Verification content/value options
 export const HUMANITYVERIFICATIONCONTENTTYPEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
@@ -100,8 +125,10 @@ export const ONCHAINVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEIT
 
 export const ALLVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   ...ASSETSVERIFICATIONCONTENTTYPEEMAP,
+
   ...HUMANITYVERIFICATIONCONTENTTYPEMAP,
   ...ONCHAINVERIFICATIONCONTENTTYPEEMAP,
+  ...SOCIALVERIFICATIONCONTENTTYPEEMAP,
 };
 
 export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
@@ -113,12 +140,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     childMap: ASSETSVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#FFB700',
   },
-  'Social Activities': {
-    id: 'Social Activities',
-    name: 'Social Activities',
-    icon: iconAttestationTypeSocial,
-    disabled: true,
-  },
+
   'Humanity Verification': {
     id: 'Humanity Verification',
     name: 'Humanity Verification',
@@ -126,6 +148,14 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     color: 'gray',
     childMap: HUMANITYVERIFICATIONCONTENTTYPEMAP,
     chartBarColor: '#7B889B',
+  },
+  'Social Connections': {
+    id: 'Social Connections',
+    name: 'Social Connections',
+    icon: iconAttestationTypeSocial,
+    color: 'teal',
+    childMap: SOCIALVERIFICATIONCONTENTTYPEEMAP,
+    chartBarColor: '#08BDBA',
   },
   'On-chain Transaction': {
     id: 'On-chain Transaction',

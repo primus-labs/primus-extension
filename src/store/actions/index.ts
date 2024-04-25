@@ -21,6 +21,7 @@ import {
   BASEVENTNAME,
   LINEAEVENTNAME,
   LUCKYDRAWEVENTNAME,
+  ETHSIGNEVENTNAME,
 } from '@/config/events';
 import { WALLETMAP } from '@/config/wallet';
 // import { EASInfo } from '@/config/chain';
@@ -499,6 +500,7 @@ export const setEventsActionAsync = () => {
         SCROLLEVENTNAME,
         LINEAEVENTNAME,
         BASEVENTNAME,
+        ETHSIGNEVENTNAME,
       ];
       const requestArr = eventNameArr.map((r) => {
         return queryEventDetail({

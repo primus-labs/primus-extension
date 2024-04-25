@@ -8,10 +8,13 @@
   color: var(--tag-tokens-tag-yellow-text);
   padding: var(--spacing-4) var(--spacing-8);
   border-radius: var(--spacing-16);
+  &.teal {
+    background-color: var(--tag-tokens-tag-teal);
+    color: var(--tag-tokens-tag-teal-text);
+  }
   &.yellow {
     background-color: var(--tag-tokens-tag-yellow);
     color: var(--tag-tokens-tag-yellow-text);
-
   }
   &.blue {
     background-color: var(--tag-tokens-tag-blue);
@@ -29,6 +32,7 @@
     background-color: var(--layer-tokens-layer-cool-gray-background);
     color: var(--base-color-cool-gray-cool-gray-90);
   }
+
   > .iconfont {
     font-size: var(--spacing-12);
   }

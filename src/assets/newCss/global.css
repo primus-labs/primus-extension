@@ -214,6 +214,8 @@
   --tag-tokens-tag-purple-text: var(--base-color-purple-purple-90);
   --tag-tokens-tag-yellow: var(--base-color-yellow-yellow-10);
   --tag-tokens-tag-yellow-text: var(--base-color-yellow-yellow-90);
+  --tag-tokens-tag-teal: var(--base-color-teal-teal-10);
+  --tag-tokens-tag-teal-text: var(--base-color-teal-teal-90);
   --text-tokens-text-bp: var(--brand-primary-color-bp-60);
   --text-tokens-text-correct: var(--functional-color-green-green-50);
   --text-tokens-text-hover: var(--neutral-color-gray-30);
@@ -313,6 +315,10 @@
   --tag-tokens-tag-purple-text: var(--base-color-purple-purple-10);
   --tag-tokens-tag-yellow: var(--base-color-yellow-yellow-90);
   --tag-tokens-tag-yellow-text: var(--base-color-yellow-yellow-10);
+  --tag-tokens-tag-teal: var(--base-color-teal-teal-90);
+  --tag-tokens-tag-teal-text: var(--base-color-teal-teal-10);
+  /* --tag-tokens-tag-yellow: var(--base-color-yellow-yellow-90);
+  --tag-tokens-tag-yellow-text: var(--base-color-yellow-yellow-10); */
   --text-tokens-text-bp: var(--brand-primary-color-bp-50);
   --text-tokens-text-correct: var(--functional-color-green-green-50);
   --text-tokens-text-hover: var(--neutral-color-gray-30);

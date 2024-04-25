@@ -48,7 +48,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
           </li>
         );
       })}
-      <li className="attestationTypeCard addCard" onClick={handleAdd}>
+      {/* <li className="attestationTypeCard addCard" onClick={handleAdd}>
         <PButton
           text="Create new attestations"
           type="text2"
@@ -56,7 +56,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
           prefix={<i className="iconfont icon-Add"></i>}
           className="createBtn"
         />
-      </li>
+      </li> */}
     </ul>
   );
 });

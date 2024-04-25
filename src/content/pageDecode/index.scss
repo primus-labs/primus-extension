@@ -106,6 +106,15 @@
           &.fail {
             .label {
               color: var(--text-tokens-text-error, #fa4d56);
+              gap: var(--spacing-8);
+              @include fccc;
+              .errorTipWrapper {
+                @include frsc;
+                gap: var(--spacing-4);
+              }
+              .errorCode{
+                @include Hint
+              }
             }
           }
           .label {

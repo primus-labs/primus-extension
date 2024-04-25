@@ -47,7 +47,6 @@ import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
 const useAttest = function useAttest() {
-  
   const { pathname } = useLocation();
   const { sourceMap2 } = useAllSources();
   const { msgs, addMsg } = useMsgs();
@@ -161,7 +160,7 @@ const useAttest = function useAttest() {
             status: 'FAILED',
             reason: 'algorithm is not initialized',
             event: fromEvents,
-            address: parsedActiveRequestAttestation?.address
+            address: parsedActiveRequestAttestation?.address,
           },
         };
         eventReport(eventInfo);
@@ -202,12 +201,17 @@ const useAttest = function useAttest() {
             DATASOURCEMAP[activeAttestation.dataSourceId],
             sourceMap2[activeAttestation.dataSourceId]
           );
-          const fullAttestation = {
+          let fullAttestation = {
             ...content,
             ...parsedActiveRequestAttestation,
             ...activeAttestation,
             account: acc,
           };
+          if (fullAttestation.verificationContent === 'X Followers') {
+            const xFollowerCount = sessionStorage.getItem('xFollowerCount');
+            fullAttestation.xFollowerCount = xFollowerCount;
+            sessionStorage.removeItem('xFollowerCount');
+          }
 
           const credentialsObj = { ...credentialsFromStore };
           credentialsObj[activeRequestId] = fullAttestation;
@@ -215,6 +219,7 @@ const useAttest = function useAttest() {
             credentials: JSON.stringify(credentialsObj),
           });
           await chrome.storage.local.remove(['activeRequestAttestation']);
+
           await initCredList();
           if (fullAttestation.reqType === 'web') {
             if (fullAttestation.event) {

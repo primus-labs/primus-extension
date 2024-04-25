@@ -3,7 +3,7 @@
 @import '@/assets/newCss/mixins.scss';
 .supportSttestationCards {
   width: 100%;
-  @include frbs;
+  @include frss;
   flex-wrap: wrap;
   row-gap: var(--spacing-16);
   column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);

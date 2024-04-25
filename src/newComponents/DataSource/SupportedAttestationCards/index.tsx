@@ -4,7 +4,7 @@ import PButton from '@/newComponents/PButton';
 import iconAttestationHumanity from '@/assets/newImg/zkAttestation/iconAttestationTypeIdentity.svg';
 import iconAttestationAssets from '@/assets/newImg/zkAttestation/iconAttestationTypeAssets.svg';
 import iconAttestationOnChain from '@/assets/newImg/zkAttestation/iconAttestationTypeOnChain.svg';
-
+import iconAttestationTypeSocial from '@/assets/newImg/zkAttestation/iconAttestationTypeSocial.svg';
 import './index.scss';
 
 type NavItem = {
@@ -70,6 +70,15 @@ const attestationTypeMap = {
     id: '5',
     webTemplateId: '2323',
   },
+  16: {
+    attestationType: 'Social Connections',
+    verificationContent: 'X Followers',
+    desc: 'Followers number',
+    icon: iconAttestationTypeSocial,
+    type: 'Web Data',
+    id: '16',
+    webTemplateId: '16',
+  },
 };
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
@@ -91,11 +100,13 @@ const Cards: React.FC<PDropdownProps> = memo(
           attestationTypeMap[5],
         ];
       if (
-        dataSourceName === 'x' ||
         dataSourceName === 'tiktok' ||
         dataSourceName === 'google'
       )
         return [attestationTypeMap[4]];
+      if (dataSourceName === 'x') {
+        return [attestationTypeMap[4], attestationTypeMap[16]];
+      }
       if (dataSourceName === 'coinbase') return [attestationTypeMap[2]];
       // if (dataSourceName === 'zan') return [attestationTypeMap[5]];
       return [];
