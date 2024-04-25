@@ -13,6 +13,7 @@ import {
   LUCKYDRAWEVENTNAME,
   eventMetaMap,
   EARLYBIRDNFTEVENTNAME,
+  ETHSIGNEVENTNAME,
 } from '@/config/events';
 import { EASInfo } from '@/config/chain';
 import type { Dispatch } from 'react';
@@ -193,10 +194,45 @@ const earlyBirdNftTskMap = {
     operationName: 'Claim',
   },
 };
+const ethSignTaskMap: { [propName: string]: StepItem } = {
+  follow: {
+    id: 'follow',
+    title: 'Follow PADO social medial',
+    finished: false,
+    tasksProcess: {
+      total: 2,
+      current: 0,
+    },
+    tasks: {
+      1: socialTaskMap[1],
+      2: socialTaskMap[2],
+    },
+  },
+  attestation: {
+    id: 'attestation',
+    title: 'Complete an attestation about your X followers',
+
+    finished: false,
+    tasksProcess: {
+      total: 1,
+      current: 0,
+    },
+  },
+  onChain: {
+    id: 'onChain',
+    title: 'Submit to opBNB',
+    finished: false,
+    tasksProcess: {
+      total: 1,
+      current: 0,
+    },
+  },
+};
 const eventTaskMap = {
   [BASEVENTNAME]: basTaskMap,
   [LINEAEVENTNAME]: lineaTaskMap,
   [EARLYBIRDNFTEVENTNAME]: earlyBirdNftTskMap,
+  [ETHSIGNEVENTNAME]: ethSignTaskMap,
 };
 const initStatusMap = { follow: 0, attestation: 0, onChain: 0, check: 0 };
 const DataSourceItem = memo(() => {
@@ -305,8 +341,11 @@ const DataSourceItem = memo(() => {
         },
       },
     };
-    // have joined this event
+    if (eventId == ETHSIGNEVENTNAME) {
+      delete emptyInfo.taskMap.check;
+    }
     if (res[eventId]) {
+      // have joined this event
       const lastEventObj = JSON.parse(res[eventId]);
       // have joined this event by current connected address
       if (lastEventObj[currentAddress]) {
@@ -356,7 +395,7 @@ const DataSourceItem = memo(() => {
           }
         }
       } else if (taskId === 'check') {
-        let checkUrl = ''
+        let checkUrl = '';
         if (eventId === LINEAEVENTNAME) {
           checkUrl = eventDetail?.ext?.intractUrl;
         } else if (eventId === BASEVENTNAME) {
@@ -379,7 +418,7 @@ const DataSourceItem = memo(() => {
 
       if (lastInfo) {
         const { taskMap } = lastInfo;
-        const newStepMap = {...stepMap}
+        const newStepMap = { ...stepMap };
         const statusM = Object.keys(taskMap).reduce((prev, curr) => {
           const currTask = taskMap[curr];
           // tasksProcess

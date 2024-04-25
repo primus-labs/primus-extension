@@ -23,7 +23,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
   const filterdList = useMemo(() => {
     var eventNames = [SCROLLEVENTNAME, LUCKYDRAWEVENTNAME];
     const l = eventNames.map((eName) => {
-      const details = events[eName] || { startTime: '0', endTime :'0'};
+      const details = events[eName] || { startTime: '0', endTime: '0' };
 
       const { startTime, endTime, ext } = details;
       // const metaInfo = eventMetaMap[eName];
@@ -53,7 +53,17 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
 
           title: 'Scroll zkAttestation Launch Compaign',
           desc: 'Join this Campaign on QuestN to submit your first zkAttestation on-chain.',
-          gift: 'Limited event badge',
+
+          points: [
+            {
+              pointIconFont: 'icon-iconCalendar',
+              pointDesc: 'Nov. 20,2023-Dec.01,2023',
+            },
+            {
+              pointIconFont: 'icon-iconGift',
+              pointDesc: 'Limited event badge',
+            },
+          ],
         };
       } else if (eName === LUCKYDRAWEVENTNAME) {
         return {
@@ -68,7 +78,17 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
 
           title: 'PADO Lucky Draw for Product Debut',
           desc: 'Create an attestation to confirm your humanity through an exchange accounts.',
-          gift: '1000 usdt & limited commemorative badges',
+
+          points: [
+            {
+              pointIconFont: 'icon-iconCalendar',
+              pointDesc: 'Oct. 23,2023-Oct.29,2023',
+            },
+            {
+              pointIconFont: 'icon-iconGift',
+              pointDesc: '1000 usdt & limited commemorative badges',
+            },
+          ],
         };
       }
     });

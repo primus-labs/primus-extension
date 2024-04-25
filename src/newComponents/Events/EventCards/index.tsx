@@ -22,6 +22,7 @@ type NavItem = {
   title: string;
   desc: string;
   gift: string;
+  points: any;
 };
 interface PDropdownProps {
   onClick?: (item: NavItem) => void;
@@ -85,7 +86,15 @@ const Cards: React.FC<PDropdownProps> = memo(
                 <div className="txtWrapper">
                   <div className="title">{i.title}</div>
                   <div className="descItems">
-                    {i.periodType === '1' && (
+                    {i.points.map((p) => {
+                      return (
+                        <div className="descItem">
+                          <div className={`iconfont ${p.pointIconFont}`}></div>
+                          <span>{p.pointDesc}</span>
+                        </div>
+                      );
+                    })}
+                    {/* {i.periodType === '1' && (
                       <div className="descItem">
                         <i className="iconfont icon-iconBlockChain"></i>
                         <span>{i.chainDesc}</span>
@@ -100,7 +109,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                     <div className="descItem">
                       <i className="iconfont icon-iconGift"></i>
                       <span>{i.gift}</span>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="desc">{i.desc}</div>
                 </div>

@@ -95,7 +95,15 @@ const DataSourceItem = memo(() => {
       </div>
       <div className="txtWrapper">
         <div className="descItems">
-          {metaInfo.periodType === '1' && (
+          {metaInfo.points.map((p) => {
+            return (
+              <div className="descItem">
+                <div className={`iconfont ${p.pointIconFont}`}></div>
+                <span>{p.pointDesc}</span>
+              </div>
+            );
+          })}
+          {/* {metaInfo.periodType === '1' && (
             <div className="descItem">
               <i className="iconfont icon-iconBlockChain"></i>
               <span>{metaInfo.chainDesc}</span>
@@ -110,7 +118,7 @@ const DataSourceItem = memo(() => {
           <div className="descItem">
             <i className="iconfont icon-iconGift"></i>
             <span>{metaInfo.gift}</span>
-          </div>
+          </div> */}
         </div>
         <div className="desc">{metaInfo.longDesc}</div>
       </div>
