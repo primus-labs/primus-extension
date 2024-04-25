@@ -343,7 +343,7 @@ function PadoCard() {
         <img src={iconDataSource} className="iconSource" />
       </div>
       <div className="center">
-        <p className="title">PADO Attestation Process</p>
+        <div className="title">PADO Attestation Process</div>
         <DescEl
           status={status}
           resultStatus={resultStatus}

@@ -13,7 +13,7 @@ function removeStorageValuesFn() {
   activeRequest = null;
   operationType = null;
 }
-function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
+function FooterEl({ status, setStatus, isReadyFetch=false, resultStatus }) {
   const handleOK = useCallback(async () => {
     removeStorageValuesFn();
     var msgObj = {
@@ -280,7 +280,7 @@ function PadoCard() {
         <img src={iconDataSource} className="iconSource" />
       </div>
       <div className="center">
-        <p className="title">PADO Data Connection Process</p>
+        <div className="title">PADO Data Connection Process</div>
         <DescEl status={status} resultStatus={resultStatus} />
       </div>
       <FooterEl
