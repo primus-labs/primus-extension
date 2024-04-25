@@ -13,6 +13,8 @@
     .dataSourceCard {
       width: 356px;
       height: 358px;
+      @include pCard;
+      pointer-events: none;
     }
   }
 }

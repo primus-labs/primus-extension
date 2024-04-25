@@ -129,6 +129,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     accountBalanceUrl: 'https://api.binance.com/api/v3/account',
 
     connectType: 'API',
+    hidden: true,
   },
   google: {
     id: 'google',
@@ -195,6 +196,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     baseName: 'api.bybit.com',
 
     connectType: 'API',
+    hidden: true,
   },
   kucoin: {
     id: 'kucoin',
@@ -209,6 +211,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     baseName: 'api.kucoin.com',
 
     connectType: 'API',
+    hidden: true,
   },
   gate: {
     id: 'gate',
@@ -249,6 +252,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     disabled: true,
 
     connectType: 'API',
+    hidden: true,
   },
 
   /*youtube: {

@@ -57,6 +57,7 @@
           @include frcc;
           @include HeadlineH0;
           color: var(--text-tokens-text-inverse);
+          border-radius: 7px 7px 0 0 ;
         }
       }
       .txtWrapper {

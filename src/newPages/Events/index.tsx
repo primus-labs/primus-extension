@@ -25,7 +25,7 @@ const Events = memo(() => {
     <div className="pageEvents">
       <div className="pageContent">
         <CurrentEvents />
-        <PastEvents />
+        <PastEvents/>
       </div>
     </div>
   );

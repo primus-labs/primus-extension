@@ -29,7 +29,7 @@ interface PDropdownProps {
   onClick?: (item: NavItem) => void;
   // list: NavItem[];
 }
-const list = Object.values(DATASOURCEMAP);
+const list = Object.values(DATASOURCEMAP).filter(i => !i.hidden);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
     const dispatch = useDispatch();
