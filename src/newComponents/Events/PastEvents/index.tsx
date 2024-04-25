@@ -76,7 +76,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
   }, [events]);
   const handleJoin = useCallback((i) => {}, []);
   return (
-    <div className="currentEvents">
+    <div className="currentEvents pastEvents">
       <h2 className="title">Past events</h2>
       <EventsCards list={filterdList} onClick={handleJoin} />
     </div>

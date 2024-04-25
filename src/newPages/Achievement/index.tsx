@@ -225,7 +225,10 @@ const AchievementHome = memo(() => {
         ></AchievementTopCard>
         <div className={'achievementTasks'}>
           <div className={'achievementTasksTitle'}>Task list</div>
-          <AchievementTaskItemList />
+          <div className="achievementTasksList">
+            <AchievementTaskItemList />
+          </div>
+
           <div className={'pageComponent'}>
             <Pagination
               total={totolCount}
