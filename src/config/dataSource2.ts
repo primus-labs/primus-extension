@@ -60,7 +60,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip:
       'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
 
-    connectType: 'Auth',
+    connectType: 'Web',
   },
   discord: {
     id: 'discord',
