@@ -2,6 +2,7 @@
 @import '@/assets/newCss/font.scss';
 .homeOverview {
   --overviewItems-gap: 0.6944rem;
+  --overviewItems-width: 4.9167rem;
   --overviewItems-first-width: 1.3264rem;
   --overviewItems-second-width: 1.3056rem;
   --overviewItems-third-width: 1.8958rem;
@@ -11,6 +12,7 @@
 }
 // @media (max-width: 1819px) {
 //   .homeOverview {
+//     --overviewItems-width: 708px;
 //     --overviewItems-gap: 100px;
 //     --overviewItems-first-width: 191px;
 //     --overviewItems-second-width: 188px;
@@ -24,18 +26,22 @@
   @include fcss;
   gap: var(--spacing-16);
   flex: 1;
+  // width: 5.7569rem;
   .title {
     @include HeadlineH3;
   }
   .overviewItems {
     height: 142px;
     width: 100%;
-    @include frsc;
-    gap: var(--overviewItems-gap);
+    @include frbc;
+    // gap: var(--overviewItems-gap);
     border-radius: var(--spacing-8);
     border: 1px solid var(--border-tokens-border-primary);
     background: var(--layer-tokens-layer-primary);
     padding: 0 var(--spacing-24);
+    &.hasContent{
+      width: 100%;
+    }
     .overviewItem {
       height: 100%;
       @include fcss;
@@ -54,12 +60,15 @@
       }
       &.hasContent {
         &:first-child {
+          width: auto;
           min-width: var(--overviewItems-first-minWidth);
         }
         &:nth-child(2) {
+          width: auto;
           min-width: var(--overviewItems-second-minWidth);
         }
         &:nth-child(3) {
+          width: auto;
           min-width: var(--overviewItems-third-minWidth);
         }
       }

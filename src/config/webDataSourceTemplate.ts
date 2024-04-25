@@ -1,7 +1,7 @@
 export const webDataSourceTemplate = {
   bitget: {
     dataSource: 'bitget',
-    jumpTo: 'https://www.bitget.com/zh-CN/asset/spot',
+    jumpTo: 'https://www.bitget.com/asset/spot',
     datasourceTemplate: {
       requests: [
         {
@@ -29,11 +29,11 @@ export const webDataSourceTemplate = {
   },
   gate: {
     dataSource: 'gate',
-    jumpTo: 'https://www.gate.io/zh/myaccount/myfunds/spot',
+    jumpTo: 'https://www.gate.io/myaccount/myfunds/spot',
     datasourceTemplate: {
       requests: [
         {
-          name: 'first',
+          name: 'info',
           url: 'https://www.gate.io/apiw/v2/account/spot/funds',
           headers: [],
           cookies: ['t_token', 'uid', 'pver'],
@@ -44,7 +44,7 @@ export const webDataSourceTemplate = {
   },
   huobi: {
     dataSource: 'huobi',
-    jumpTo: 'https://www.htx.com/zh-cn/finance/account/spot/',
+    jumpTo: 'https://www.htx.com/en-us/finance/account/spot/',
     datasourceTemplate: {
       requests: [
         {
@@ -68,11 +68,11 @@ export const webDataSourceTemplate = {
   },
   mexc: {
     dataSource: 'mexc',
-    jumpTo: 'https://www.mexc.com/zh-CN/assets/spot',
+    jumpTo: 'https://www.mexc.com/assets/spot',
     datasourceTemplate: {
       requests: [
         {
-          name: 'first',
+          name: 'info',
           url: 'https://www.mexc.com/api/platform/asset/api/asset/spot/convert/v2',
           headers: [],
           cookies: ['u_id'],

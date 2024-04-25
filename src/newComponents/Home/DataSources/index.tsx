@@ -17,7 +17,7 @@ const Overview = memo(() => {
   const [activeConnectDataSourceId, setActiveConnectDataSourceId] =
     useState<string>();
   const navigate = useNavigate();
-  const dataSourceList = ['web3 wallet', 'x', 'tiktok', 'okx', 'binance'];
+  const dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance', 'okx'];
   const checkIsConnectedDataSourceFn = useCallback(
     (i) => {
       let hasConnectCurrent = !!sourceMap2[i];

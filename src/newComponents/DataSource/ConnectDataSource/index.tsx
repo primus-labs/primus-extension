@@ -13,6 +13,7 @@ import useMsgs from '@/hooks/useMsgs';
 import useDataSource from '@/hooks/useDataSource';
 import useAuthorization from '@/hooks/useAuthorization';
 import { DATASOURCEMAP } from '@/config/dataSource2';
+import { webDataSourceTemplate } from '@/config/webDataSourceTemplate';
 import type { UserState } from '@/types/store';
 interface PBackProps {
   dataSourceId: string;
@@ -60,7 +61,7 @@ const ConnectDataSource: React.FC = memo(({}) => {
     if (activeConnectType === 'API') {
       setVisibleConnectByAPI(true);
     } else if (activeConnectType === 'Web') {
-      const currRequestObj = webProofTypes.find(
+      let currRequestObj = webProofTypes.find(
         (r: any) => r.dataSource === lowerCaseDataSourceName
       );
       // TODO-newui
@@ -75,6 +76,9 @@ const ConnectDataSource: React.FC = memo(({}) => {
         };
       }*/
       // TODO END
+      if (!currRequestObj) {
+        currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
+      }
       chrome.runtime.sendMessage({
         type: 'dataSourceWeb',
         name: 'init',

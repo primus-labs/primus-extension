@@ -13,7 +13,7 @@ function removeStorageValuesFn() {
   activeRequest = null;
   operationType = null;
 }
-function FooterEl({ status, setStatus, isReadyFetch=false, resultStatus }) {
+function FooterEl({ status, setStatus, isReadyFetch = false, resultStatus }) {
   const handleOK = useCallback(async () => {
     removeStorageValuesFn();
     var msgObj = {
