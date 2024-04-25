@@ -149,7 +149,7 @@ const Setting = memo(() => {
               width: '1072px',
               marginTop: '16px',
               marginBottom: '16px',
-              color: '##E0E0E0',
+              color: 'var(--border-tokens-border-primary)',
             }}
           />
           <div className={'currencyDiv'}>

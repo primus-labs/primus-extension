@@ -1,6 +1,21 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
-
+.pageAchievementTopCard {
+  --leftCard-width: 4.2917rem;
+  --rightCard-width: 3.375rem;
+  --descRow-width: 1.7847rem;
+  --descRow-left-width: 0.8611rem;
+  --descRow-right-width: 0.8472rem;
+}
+@media (max-width: 1819px) {
+  .pageAchievementTopCard {
+    --leftCard-width: 618px;
+    --rightCard-width: 486px;
+    --descRow-width: 257px;
+    --descRow-left-width: 124px;
+    --descRow-right-width: 122px;
+  }
+}
 .pageAchievementTopCard {
   height: 174px;
   width: 100%;
@@ -10,7 +25,7 @@
   border-radius: 24px;
 
   .leftCard {
-    width: 618px;
+    width: var(--leftCard-width);
     height: 174px;
     border-radius: var(--spacing-8, 8px);
     border: 1px solid var(--border-tokens-border-primary);
@@ -29,6 +44,7 @@
       .pointsShare {
         margin-left: auto;
         display: flex;
+        gap: var(--spacing-4);
         height: 16px;
         //cursor: pointer;
 
@@ -36,7 +52,6 @@
           font-family: 'IBM Plex Sans';
           font-size: 14px;
           font-weight: 500;
-          width: 152px;
           height: 16px;
           color: var(--text-tokens-text-primary, #161616);
         }
@@ -49,14 +64,11 @@
     }
 
     .pointsEarned {
-      width: 116px;
       height: 66px;
       gap: var(--spacing-8);
 
-
       .points-score {
-        margin-top:10px;
-        width: 116px;
+        margin-top: 10px;
         height: 40px;
         font-size: 32px;
         font-weight: 600;
@@ -66,7 +78,7 @@
 
       .reward-history {
         padding-top: 22px;
-        width: 150px;
+        white-space: nowrap;
         height: 18px;
         gap: var(--spacing-5);
         display: flex;
@@ -92,7 +104,7 @@
   }
 
   .rightCard {
-    width: 486px;
+    width: var(--rightCard-width);
     height: 174px;
     border: 1px;
     border-radius: var(--spacing-8, 8px);
@@ -112,6 +124,7 @@
       .referralShare {
         margin-left: auto;
         display: flex;
+        gap: var(--spacing-4);
         height: 16px;
         cursor: pointer;
 
@@ -120,7 +133,6 @@
           font-family: 'IBM Plex Sans';
           font-size: 14px;
           font-weight: 500;
-          width: 152px;
           height: 16px;
           color: var(--text-tokens-text-primary, #161616);
         }
@@ -133,8 +145,7 @@
       }
     }
     .referral-times {
-      margin-top:10px;
-      width: 116px;
+      margin-top: 10px;
       height: 40px;
       font-size: 32px;
       font-weight: 600;
@@ -143,7 +154,7 @@
     }
     .referral {
       margin-top: 16px;
-      width: 280px;
+      width: var(--descRow-width);
       height: 44px;
       gap: var(--spacing-8);
       .referral-counted-referrals {
@@ -152,16 +163,18 @@
         display: flex;
         font-weight: 500;
         line-height: 18px;
+        @include frbc;
+        width: 100%;
 
         .referral-counted-referrals-text {
           font-weight: 400;
           color: var(--text-tokens-text-tertiary);
-          width: 190px;
+          width: var(--descRow-left-width);
         }
 
         .referral-counted-referrals-count {
           color: var(--text-tokens-text-primary, #161616);
-          width: 14px;
+          width: var(--descRow-right-width);
         }
       }
 
@@ -170,17 +183,19 @@
         padding-top: 10px;
         font-family: 'IBM Plex Sans';
         display: flex;
+        width: 100%;
+        @include frbc;
 
         .referral-code-text {
-          width: 190px;
+          width: var(--descRow-left-width);
           color: var(--text-tokens-text-tertiary);
         }
 
         .referral-code-main {
           display: flex;
-
+          width: var(--descRow-right-width);
           .referral-code-main-text {
-            font-family: "IBM Plex Mono";
+            font-family: 'IBM Plex Mono';
             font-size: 14px;
             font-weight: 500;
             line-height: 18px;
@@ -194,8 +209,6 @@
         }
       }
     }
-
-
 
     //background-color: #0e6027;
   }
@@ -211,5 +224,4 @@
     font-weight: 600;
     color: var(--text-tokens-text-primary, #161616);
   }
-
 }

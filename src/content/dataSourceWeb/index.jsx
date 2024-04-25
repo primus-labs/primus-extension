@@ -262,7 +262,7 @@ function PadoCard() {
         sessionStorage.setItem('padoRequestReady', '1');
       }
       if (name === 'end') {
-        console.log('content receive:end');
+        console.log('content receive:end', request);
         setStatus('result');
         setResultStatus(result);
       }

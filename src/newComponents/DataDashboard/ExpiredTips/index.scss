@@ -7,7 +7,7 @@
   margin: 0 calc(-1 * var(--spacing-24));
   @include fccc;
   .expiredTipItems {
-    width: 1120px;
+    width: var(--pageContent-width);
     @include fccc;
     gap: var(--spacing-24);
     .expiredTipItem {
