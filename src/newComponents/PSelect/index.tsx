@@ -37,6 +37,7 @@ interface PSelectProps {
 
   showIcon?: boolean;
   showSelf?: boolean;
+  optionSuffix?: any;
 }
 
 const PSelect: React.FC<PSelectProps> = memo(
@@ -52,6 +53,7 @@ const PSelect: React.FC<PSelectProps> = memo(
     label,
     className,
     align = 'vertical',
+    optionSuffix = ''
   }) => {
     const [optionsVisible, setOptionsVisible] = useState(false);
 
@@ -192,6 +194,7 @@ const PSelect: React.FC<PSelectProps> = memo(
               onClick={handleClickDropdownItem}
               value={value}
               showSelf={showSelf}
+              optionSuffix={optionSuffix}
             />
           </div>
         )}

@@ -113,7 +113,7 @@ export const HUMANITYVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITE
 export const ONCHAINVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   '1': {
     value: '1',
-    label: 'Largest ETH/USDC Uniswap Transaction',
+    label: 'Largest ETH/USDC Uniswap transaction',
   },
   // '2': {
   //   value: '2',

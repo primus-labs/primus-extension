@@ -18,21 +18,26 @@ import PButton from '@/newComponents/PButton';
 
 import './index.scss';
 import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
+import iconProviderBrevis from '@/assets/newImg/zkAttestation/iconProviderBrevis.svg';
 type PswFormType = {
   verificationContent: '';
-  // verificationValue: ''; // different
+  verificationValue: '';
   account: string;
 };
 interface SetPwdDialogProps {
   onSubmit: (form: PswFormType) => void;
-  dataSourceId: string;
+  // dataSourceId: string;
+  presets: any;
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
-  ({ onSubmit, dataSourceId }) => {
-    const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
-    const dispatch: Dispatch<any> = useDispatch();
+  ({ onSubmit, presets }) => {
+    const dispatch = useDispatch();
+    const { dataSourceId } = presets;
+    const [activeDataSouceUserInfo, setActiveDataSouceUserInfo] =
+      useState<any>();
     const [pswForm, setPswForm] = useState<PswFormType>({
       verificationContent: '',
+      verificationValue: '',
       account: '',
     });
     const attestLoading = useSelector(
@@ -41,11 +46,28 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const activeAttestation = useSelector(
       (state: UserState) => state.activeAttestation
     );
-    const sysConfig = useSelector((state: UserState) => state.sysConfig);
+    const webProofTypes = useSelector(
+      (state: UserState) => state.webProofTypes
+    );
     const onChainAssetsSources = useSelector(
       (state: UserState) => state.onChainAssetsSources
     );
-
+    const verificationContentCN = useMemo(() => {
+      let cN = 'verificationContent';
+      const v = pswForm.verificationContent;
+      if (v) {
+        cN += ' hasValue';
+      }
+      return cN;
+    }, [pswForm.verificationContent]);
+    const accountCN = useMemo(() => {
+      let cN = 'account';
+      const v = pswForm.account;
+      if (v) {
+        cN += ' hasValue';
+      }
+      return cN;
+    }, [pswForm.account]);
     // different
     const accountList = useMemo(() => {
       let list = Object.values(onChainAssetsSources).map((i: any) => ({
@@ -95,12 +117,21 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     // useEffect(() => {
     //   handleChangePswForm(activeDataSouceUserInfo.userInfo.userName, 'account');
     // }, [activeDataSouceUserInfo]);
+    const optionSuffixEl = () => {
+      return (
+        <div className="optionSuffixProvider">
+          <span>By</span>
+          <img src={iconProviderBrevis} alt="" />
+          <span>Brevis</span>
+        </div>
+      );
+    };
 
     return (
       <div className="pFormWrapper detailForm2">
         <div className="formItem">
           <PSelect
-            className="verificationContent"
+            className={verificationContentCN}
             label="Verification Content"
             align="horizontal"
             placeholder="Select content"
@@ -109,12 +140,13 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'verificationContent');
             }}
             value={pswForm.verificationContent}
+            optionSuffix={optionSuffixEl()}
           />
         </div>
         {/* different */}
         <div className="formItem">
           <PSelect
-            className="account"
+            className={accountCN}
             label="Data Account"
             align="horizontal"
             placeholder="Select account"

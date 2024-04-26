@@ -18,10 +18,11 @@ interface PDropdownProps {
   onClick?: (value: any, item: NavItem) => void;
   list: NavItem[];
   showSelf?: boolean;
+  optionSuffix?: any;
 }
 
 const PDropdown: React.FC<PDropdownProps> = memo(
-  ({ onClick = () => {}, list, value, showSelf }) => {
+  ({ onClick = () => {}, list, value, showSelf, optionSuffix }) => {
     const includeAll = useMemo(() => {
       const includeA = list.find((i) => i.value === 'All');
       return !!includeA;
@@ -82,6 +83,7 @@ const PDropdown: React.FC<PDropdownProps> = memo(
                       />
                     </PTooltip>
                   )}
+                  {optionSuffix}
                 </div>
               </li>
             );

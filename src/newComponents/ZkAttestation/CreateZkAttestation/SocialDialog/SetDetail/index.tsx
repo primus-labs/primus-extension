@@ -184,6 +184,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     useEffect(() => {
       initAttestLoadingFn();
     }, [pswForm]);
+
     return (
       <div className="pFormWrapper detailForm3 detailForm4">
         <div
@@ -211,6 +212,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationContent}
               disabled={presets?.verificationContent}
+              
             />
           )}
         </div>
