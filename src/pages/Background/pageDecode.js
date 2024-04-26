@@ -270,9 +270,10 @@ export const pageDecodeMsgListener = async (
         form.event = event;
       }
       // "X Followers" required update baseValue
+      console.log('222activeTemplate', activeTemplate);
       if (activeTemplate.id === '15') {
         form.baseValue =
-          activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
+          activeTemplate.datasourceTemplate.responses[2].conditions.value;
       }
       if (activeTemplate.requestid) {
         form.requestid = activeTemplate.requestid;

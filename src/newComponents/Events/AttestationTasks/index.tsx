@@ -95,7 +95,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           (i) => i.id === taskId
         );
         if (activeWebProofTemplate) {
-          debugger
           const { dataSource, name } = activeWebProofTemplate;
           dataSourceId = dataSource;
           if (name === 'KYC Status') {
