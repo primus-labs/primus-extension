@@ -332,7 +332,7 @@ const Social: React.FC<PButtonProps> = memo(
         // handle X Followers
         if (activeAttestationParams.verificationContent === 'X Followers') {
           const xFollowerCount = sessionStorage.getItem('xFollowerCount');
-          currRequestTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
+          currRequestTemplate.datasourceTemplate.responses[2].conditions.value =
             xFollowerCount;
           currRequestTemplate.schemaType =
             currentEventDetail?.ext?.schemaType || 'X_FOLLOWER_COUNT#1';
