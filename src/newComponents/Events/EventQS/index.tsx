@@ -124,7 +124,7 @@ const ethSignQsMap = {
     id: 3,
     question: 'Can I join this event with a different wallet address?',
     answer:
-      'Yes, you can join this event with different wallet address. When you change the connected wallet above the task list, the task status will reset and you can go through it with the newly connected wallet address. Remember, you also need to connect the new address on the BAS attestation alliance campaign page to earn your BAS XPS with this new address.',
+      'Yes, you can join this event with different wallet address. When you change the connected wallet above the task list, the task status will reset and you can go through it with the newly connected wallet address.',
     expand: true,
   },
   4: {

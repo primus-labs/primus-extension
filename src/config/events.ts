@@ -151,10 +151,6 @@ export const eventMetaMap = {
     chainDesc: 'Linea Voyage XP',
     gift: '100 PADO points',
     points: [
-      {
-        pointIconFont: 'icon-iconBlockChain',
-        pointDesc: 'Linea Voyage XP',
-      },
       { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
     ],
 
