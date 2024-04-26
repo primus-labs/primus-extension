@@ -273,6 +273,8 @@ const DataSourceItem = memo(() => {
       return (l = ['Linea Goerli']);
     } else if (eventId === BASEVENTNAME) {
       return ['BSC'];
+    } else if (eventId === ETHSIGNEVENTNAME) {
+      return ['opBNB']
     }
     return l;
   }, [eventId]);
@@ -323,6 +325,10 @@ const DataSourceItem = memo(() => {
         6: 0, // tiktok account
         100: 0, // google account
         3: 0, //  x account
+      };
+    } else if (eventId === ETHSIGNEVENTNAME) {
+      attestation = {
+        15: 0, //  x followers
       };
     }
     emptyInfo = {
@@ -415,7 +421,6 @@ const DataSourceItem = memo(() => {
     if (res[eventId]) {
       const lastEventObj = JSON.parse(res[eventId]);
       const lastInfo = lastEventObj[currentAddress];
-
       if (lastInfo) {
         const { taskMap } = lastInfo;
         const newStepMap = { ...stepMap };

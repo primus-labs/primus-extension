@@ -185,7 +185,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       initAttestLoadingFn();
     }, [pswForm]);
     return (
-      <div className="pFormWrapper detailForm3">
+      <div className="pFormWrapper detailForm3 detailForm4">
         <div
           className={`formItem ${presets.verificationContent ? 'preset' : ''}`}
         >

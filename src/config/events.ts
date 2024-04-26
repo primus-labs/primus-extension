@@ -165,7 +165,7 @@ export const eventMetaMap = {
         discord: 0,
       },
       attestation: {
-        16: 0,
+        15: 0,
       },
       onChain: {
         opBNB: 0,

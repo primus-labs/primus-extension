@@ -13,7 +13,7 @@ import iconCircleSuc from '@/assets/newImg/layout/iconCircleSuc.svg';
 import AttestationTasksDialog from '../AttestationTasksDialog';
 import './index.scss';
 
-import { LINEAEVENTNAME, BASEVENTNAME, eventMetaMap } from '@/config/events';
+import { LINEAEVENTNAME, BASEVENTNAME, eventMetaMap, ETHSIGNEVENTNAME } from '@/config/events';
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -85,11 +85,17 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           verificationContent,
           verificationValue,
           dataSourceId;
-        attestationType = 'Humanity Verification';
+        if (eventId === ETHSIGNEVENTNAME) {
+          attestationType = 'Social Connections';
+        } else {
+          attestationType = 'Humanity Verification';
+        }
+        
         const activeWebProofTemplate = webProofTypes.find(
           (i) => i.id === taskId
         );
         if (activeWebProofTemplate) {
+          debugger
           const { dataSource, name } = activeWebProofTemplate;
           dataSourceId = dataSource;
           if (name === 'KYC Status') {
@@ -98,7 +104,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           } else if (name === 'Account Ownership') {
             verificationContent = 'Account ownership';
             verificationValue = 'Account owner';
+          } else if (name === "X Followers") {
+            verificationContent = 'X Followers';
           }
+          
         } else {
           if (taskId === '100') {
             dataSourceId = 'google';
