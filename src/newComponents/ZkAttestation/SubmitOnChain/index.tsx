@@ -24,6 +24,7 @@ import {
   BNBSCHEMANAME,
   BNBGREENFIELDSCHEMANAME,
   FIRSTVERSIONSUPPORTEDNETWORKNAME,
+  OPBNBSCHEMANAME,
 } from '@/config/chain';
 import {
   BASEVENTNAME,
@@ -172,7 +173,7 @@ const Nav: React.FC<PButtonProps> = memo(
               return !onChainTitlesArr.includes(i.id);
             });
           }
-          l = l.filter((i) => i.id !== 'opBNB');
+          // l = l.filter((i) => i.id !== 'opBNB');
         }
       }
       return l;
@@ -217,6 +218,11 @@ const Nav: React.FC<PButtonProps> = memo(
           formatNetworkName.indexOf('BNB Greenfield') > -1
         ) {
           Name = BNBGREENFIELDSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('opBNB') > -1
+        ) {
+          Name = OPBNBSCHEMANAME;
         } else {
           Name = 'EAS';
           // Name = 'EAS-Ethereum';

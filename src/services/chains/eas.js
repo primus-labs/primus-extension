@@ -13,7 +13,7 @@ import { lineaportalabi } from './lineaportalabi';
 
 //const { keccak256, toUtf8Bytes, splitSignature } = utils;
 import { _TypedDataEncoder } from '@ethersproject/hash';
-import { EASInfo } from '@/config/envConstants';
+import { EASInfo } from '@/config/chain';
 //var ethereumjsUtil = require('ethereumjs-util');
 
 export async function testeas() {

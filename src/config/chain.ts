@@ -591,6 +591,11 @@ const BNBGREENFIELDSCHEMANAMEMAP = {
   production: 'BNB Greenfield Mainnet',
 };
 export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
+const OPBNBSCHEMANAMEMAP = {
+  development: 'Ethsign-opBNB-Testnet',
+  production: 'Ethsign-opBNB-Mainnet',
+};
+export let OPBNBSCHEMANAME = OPBNBSCHEMANAMEMAP[CURENV];
 const BNBGREENFIELDURLMAP = {
   development: 'http://api-dev.padolabs.org:9095/',
   production: 'https://events.padolabs.org/',
