@@ -112,11 +112,17 @@ const useAttest = function useAttest() {
         // setTimeoutSwitch(true);
         setIntervalSwitch(true);
       } else if (retcode === '2') {
+        const errorMsgTitle = [
+          'Assets Certification',
+          'Humanity Verification',
+        ].includes(activeAttestation.attestationType)
+          ? `${activeAttestation.attestationType} failed!`
+          : `${activeAttestation.attestationType} proof failed!`;
         const msgObj = {
           type: 'error',
-          title: `${activeAttestation.attestationType} failed!`,
+          title: errorMsgTitle,
           desc: 'The algorithm has not been initialized.Please try again later.',
-          sourcePageTip: `${activeAttestation.attestationType} failed!`,
+          sourcePageTip: errorMsgTitle,
         };
         if (activeAttestation.dataSourceId === 'coinbase') {
         } else {
@@ -178,6 +184,12 @@ const useAttest = function useAttest() {
       const parsedActiveRequestAttestation = activeRequestAttestation
         ? JSON.parse(activeRequestAttestation)
         : {};
+      const errorMsgTitle = [
+        'Assets Certification',
+        'Humanity Verification',
+      ].includes(activeAttestation.attestationType)
+        ? `${activeAttestation.attestationType} failed!`
+        : `${activeAttestation.attestationType} proof failed!`;
       var eventInfo: any = {
         eventType: 'ATTESTATION_GENERATE',
         rawData: {
@@ -265,7 +277,7 @@ const useAttest = function useAttest() {
           content.balanceGreaterThanBaseValue === 'false'
         ) {
           // attestTipMap
-          let title = `${activeAttestation.attestationType} failed!`;
+          let title = errorMsgTitle;
           let msgObj = {
             type: 'error',
             title,
@@ -346,7 +358,7 @@ const useAttest = function useAttest() {
         };
         postMsg(padoServicePort, msg);
         var eventInfoMsg = 'Something went wrong';
-        let title = `${activeAttestation.attestationType} failed!`;
+        let title = errorMsgTitle;
         let msgObj = {
           type: 'warn',
           title,
@@ -434,9 +446,15 @@ const useAttest = function useAttest() {
     const parsedActiveRequestAttestation = activeRequestAttestation
       ? JSON.parse(activeRequestAttestation)
       : {};
+    const errorMsgTitle = [
+      'Assets Certification',
+      'Humanity Verification',
+    ].includes(activeAttestation.attestationType)
+      ? `${activeAttestation.attestationType} failed!`
+      : `${activeAttestation.attestationType} proof failed!`;
     const msgObj = {
       type: attestTipMap['00002'].type,
-      title: `${activeAttestation.attestationType} failed!`,
+      title: errorMsgTitle,
       desc: attestTipMap['00002'].desc,
       sourcePageTip: attestTipMap['00002'].title,
     };
@@ -508,7 +526,14 @@ const useAttest = function useAttest() {
       const { type, name } = message;
       if (type === 'pageDecode') {
         console.log('222message', message, activeAttestation);
-        let title = `${activeAttestation.attestationType} failed!`;
+        const errorMsgTitle = [
+          'Assets Certification',
+          'Humanity Verification',
+        ].includes(activeAttestation.attestationType)
+          ? `${activeAttestation.attestationType} failed!`
+          : `${activeAttestation.attestationType} proof failed!`;
+        let title = errorMsgTitle;
+        
         if (name === 'cancel') {
           addMsg({
             type: 'error',
