@@ -19,20 +19,16 @@ interface PDropdownProps {
 }
 
 const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
-  
   const supportList = useMemo(() => {
     return ATTESTATIONTYPELIST.filter((i) => !i.disabled);
   }, []);
 
-  const handleAdd = () => {};
+  const handleClick = useCallback(() => {}, []);
   return (
     <ul className="allAttestationTypeCards">
       {supportList.map((i) => {
         return (
-          <li
-            className="attestationTypeCard"
-            key={i.name}
-          >
+          <li className="attestationTypeCard" key={i.name}>
             <div className="top">
               <img src={i.icon} alt="" className="typeIcon" />
               <div className="typeName">{i.name}</div>
@@ -42,7 +38,9 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
                 className="createBtn"
                 text="Create"
                 type="text"
-                onClick={() => {onClick(i);}}
+                onClick={() => {
+                  handleClick(i);
+                }}
               />
             </div>
           </li>

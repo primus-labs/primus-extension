@@ -15,11 +15,11 @@ import { checkLotteryResults } from '@/services/api/event';
 import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
 import type { UserState } from '@/types/store';
 
-const useRewardsStatistics = function () {
+const useRewardsStatistics = function (eventFilter = '') {
   const [eventsResult, setEventsResult] = useState<any>({});
   const events = useSelector((state: UserState) => state.events);
   const rewards = useSelector((state: UserState) => state.rewards);
-  console.log('222rewards', rewards);// delete
+  console.log('222rewards', rewards); // delete
   const rewardList = useMemo(() => {
     return Object.values(rewards);
   }, [rewards]);
@@ -45,57 +45,91 @@ const useRewardsStatistics = function () {
       //   link: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98/${tokenId}`,
       // },
     ];
+    let earlyBirdE: any = [];
+    let scrollE: any = [];
+    let luckyDrawE: any = [];
+    let brevisE: any = [];
     // early bird nft
     if (joinedNFTsFlag) {
       const { image, tokenId } = joinedNFTsFlag;
-      list.push({
+      const obj = {
         id: EARLYBIRDNFTEVENTNAME,
         img: image,
         title: 'Early Adopters #001',
         desc: 'PADO Early Bird NFT',
         linkIcon: iconOpenSea,
         link: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98/${tokenId}`,
-      });
+      };
+      list.push(obj);
+      earlyBirdE.push(obj);
     }
     // lucky draw & scroll
-    const eventNameArr = [LUCKYDRAWEVENTNAME, SCROLLEVENTNAME];
-    eventNameArr.forEach((i) => {
-      if (eventsResult[i]) {
-        const { result, iconUrl } = eventsResult[i];
+    const fn = (eName) => {
+      if (eventsResult[eName]) {
+        const { result, iconUrl } = eventsResult[eName];
         let title = '',
           desc = '';
-        if (i === LUCKYDRAWEVENTNAME) {
+        if (eName === LUCKYDRAWEVENTNAME) {
           title = '1st Commemorative Badge';
           desc = 'PADO event badge';
-        } else if (i === SCROLLEVENTNAME) {
+        } else if (eName === SCROLLEVENTNAME) {
           title = 'Scroll zkAttestation Medal';
           desc = 'PADO event badge';
         }
         if (result) {
           list.push({
-            id: i,
+            id: eName,
             img: iconUrl,
             title,
             desc,
           });
         }
       }
-    });
+    };
+    const luckyDrawItem: any = fn(LUCKYDRAWEVENTNAME);
+    if (luckyDrawItem) {
+      list.push();
+      luckyDrawE.push(fn(LUCKYDRAWEVENTNAME));
+    }
+    const scrollItem:any = fn(SCROLLEVENTNAME);
+    if (scrollItem) {
+      list.push(fn(SCROLLEVENTNAME));
+      scrollE.push(fn(SCROLLEVENTNAME));
+    }
+
     // brevis
     if (joinedBrevisFlag) {
       joinedBrevisRewardList.forEach((i: any) => {
         const { image, title, name } = i;
-        list.push({
+        const obj = {
           id: 'brevis' + Date.now(),
           img: image,
           title,
           desc: name,
-        });
+        };
+        list.push(obj);
+        brevisE.push(obj);
       });
     }
 
-    return list;
-  }, [eventsResult, joinedNFTsFlag, joinedBrevisFlag, joinedBrevisRewardList]);
+    if (eventFilter === EARLYBIRDNFTEVENTNAME) {
+      return earlyBirdE;
+    } else if (eventFilter === SCROLLEVENTNAME) {
+      return scrollE;
+    } else if (eventFilter === LUCKYDRAWEVENTNAME) {
+      return luckyDrawE;
+    } else if (eventFilter === 'brevis') {
+      return brevisE;
+    } else {
+      return list;
+    }
+  }, [
+    eventsResult,
+    joinedNFTsFlag,
+    joinedBrevisFlag,
+    joinedBrevisRewardList,
+    eventFilter,
+  ]);
   const fetchLotteryResults = useCallback(async () => {
     try {
       const eventNameArr = [LUCKYDRAWEVENTNAME, SCROLLEVENTNAME];

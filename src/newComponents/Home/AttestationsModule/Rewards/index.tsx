@@ -6,8 +6,9 @@ import PButton from '@/newComponents/PButton';
 import { useNavigate } from 'react-router-dom';
 import useRewardsStatistics from '@/hooks/useRewardsStatistics';
 import iconPado from '@/assets/newImg/layout/iconPado.svg';
-const SocialInsights = memo(() => {
+const Rewards = memo(() => {
   const { rewardsList } = useRewardsStatistics();
+  console.log('rewardsList', rewardsList);
   const navigate = useNavigate();
   const handleDetail = useCallback(() => {
     navigate('/events/rewards');
@@ -20,18 +21,18 @@ const SocialInsights = memo(() => {
       </div>
       <div className="content">
         <ul className="rewardItems">
-          {rewardsList
+          {rewardsList.filter(i => i)
             .map((i, k) => {
               return (
                 <li className="rewardItem" key={k}>
                   <div className="bg">
-                    <img src={i.img} alt="" />
+                    <img src={i?.img} alt="" />
                     <div className="bgMask"></div>
                   </div>
                   <div className="content">
                     <div className="cardContent">
                       <div className="picWrapper">
-                        <img src={i.img} alt="" />
+                        <img src={i?.img} alt="" />
                       </div>
                       <div className="txtWrapper">
                         <div className="title">{i.title}</div>
@@ -58,4 +59,4 @@ const SocialInsights = memo(() => {
   );
 });
 
-export default SocialInsights;
+export default Rewards;

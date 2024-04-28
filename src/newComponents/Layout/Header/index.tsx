@@ -13,11 +13,21 @@ const tList = [
 ];
 const Nav: React.FC = memo(({}) => {
   const location = useLocation();
-  const { pathname } = location;
+  const { pathname, search } = location;
   console.log('location', location, pathname, list);
   const [ttt, setTtt] = useState(() => {
     return pathname === '/events/rewards' ? '2' : '1';
   });
+  const menuList = useMemo(() => {
+    const l = tList.map((i) => {
+      const purePathName = i.link.split('?')[0];
+      if (purePathName === '/events/rewards') {
+        i.link = `${purePathName}${search}`;
+      }
+      return i;
+    });
+    return l;
+  }, [tList, search]);
 
   // const handleConnect = useCallback(() => {}, []);
   const pathTitle = useMemo(() => {
@@ -38,9 +48,11 @@ const Nav: React.FC = memo(({}) => {
     <div className="pageHeader">
       <div className="pageContent">
         {pathname.startsWith('/events') &&
-        !pathname.startsWith('/events/detail') ? (
+        !['?id=LINEA_DEFI_VOYAGE', '?id=BAS_EVENT_PROOF_OF_HUMANITY'].includes(
+          search
+        ) ? (
           <PPTabs
-            list={tList}
+            list={menuList}
             onChange={(ppp) => {
               setTtt(ppp);
             }}

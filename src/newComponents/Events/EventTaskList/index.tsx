@@ -6,6 +6,7 @@ import utc from 'dayjs-plugin-utc';
 import { setActiveOnChain, initRewardsActionAsync } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import useEventDetail from '@/hooks/useEventDetail';
+import { setActiveConnectWallet } from '@/store/actions';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
 import { eventReport } from '@/services/api/usertracker';
@@ -262,6 +263,9 @@ const DataSourceItem = memo(() => {
     useState<boolean>(false);
   const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
   const [isConnect, setIsConnect] = useState<boolean>(false);
+  const [chainId, setChainId] = useState<string | number>('');
+  const [claiming, setClaiming] = useState<boolean>(false);
+  const [givenNFT, setGivenNFT] = useState<boolean>(false);
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
@@ -274,18 +278,17 @@ const DataSourceItem = memo(() => {
   const rewards = useSelector((state: UserState) => state.rewards);
 
   const stepList = useMemo(() => {
-    return Object.values(stepMap);
+    const l = Object.values(stepMap);
+    return l;
   }, [stepMap]);
   const taskIds = useMemo(() => {
     let l: string[] = [];
-    if (eventId === LINEAEVENTNAME) {
-      return (l = ['Linea Goerli']); // TODO-newui
+    if (eventId === LINEAEVENTNAME || eventId === EARLYBIRDNFTEVENTNAME) {
+      return (l = ['Linea Goerli']);
     } else if (eventId === BASEVENTNAME) {
       return ['BSC'];
     } else if (eventId === ETHSIGNEVENTNAME) {
       return ['opBNB'];
-    } else if (eventId === EARLYBIRDNFTEVENTNAME) {
-      return ['Linea Goerli'];
     }
     return l;
   }, [eventId]);
@@ -374,15 +377,7 @@ const DataSourceItem = memo(() => {
         },
       },
     };
-    if (eventId == ETHSIGNEVENTNAME) {
-      delete emptyInfo.taskMap.check;
-    } else if (eventId == EARLYBIRDNFTEVENTNAME) {
-      delete emptyInfo.taskMap.check;
-      const nftFlag = Object.values(rewards).find((r) => !r.type);
-      emptyInfo.taskMap.claim = {
-        claim: nftFlag ? 1 : 0,
-      };
-    }
+
     if (res[eventId]) {
       // have joined this event
       const lastEventObj = JSON.parse(res[eventId]);
@@ -395,20 +390,123 @@ const DataSourceItem = memo(() => {
         newEventObj = { ...lastEventObj };
         newEventObj[currentAddress] = emptyInfo;
       }
-      await chrome.storage.local.set({
-        [eventId]: JSON.stringify(newEventObj),
-      });
     } else {
       //  have not joined this event
       newEventObj = {
         [currentAddress]: emptyInfo,
       };
-      await chrome.storage.local.set({
-        [eventId]: JSON.stringify(newEventObj),
-      });
     }
+
+    if (eventId == ETHSIGNEVENTNAME) {
+      delete newEventObj[currentAddress].taskMap.check;
+    } else if (eventId == EARLYBIRDNFTEVENTNAME) {
+      delete newEventObj[currentAddress].taskMap.check;
+
+      // const nftFlag = Object.values(rewards).find((r) => !r.type);
+      // newEventObj[currentAddress].taskMap.claim = {
+      //   claim: nftFlag ? 1 : 0,
+      // };
+      // setStepMap((m) => {
+      //   Object.values(m).forEach((i: any) => {
+      //     i.finished = true;
+      //   });
+      //   return m;
+      // });
+
+      // setGivenNFT(true);
+      // debugger;
+    }
+
+    await chrome.storage.local.set({
+      [eventId]: JSON.stringify(newEventObj),
+    });
     setVisibleSocialTasksDialog(true);
-  }, [connectedWallet?.address, rewards]);
+  }, [connectedWallet?.address, rewards, eventId]);
+  const claimEarlyBirdNFT = useCallback(async () => {
+    let eventSingnature = '';
+    const activeNetworkName = CLAIMNFTNETWORKNAME;
+    let attestationId;
+    const res = await chrome.storage.local.get([eventId]);
+    const currentAddress = connectedWallet?.address;
+    if (res[eventId]) {
+      const lastEventObj = JSON.parse(res[eventId]);
+      const lastInfo = lastEventObj[currentAddress];
+      if (lastInfo) {
+        const { taskMap } = lastInfo;
+        attestationId = Object.values(taskMap.attestation)[0];
+      }
+    }
+    const activeCred = credentialsFromStore[attestationId as string];
+    try {
+      const requestParams: any = {
+        rawParam: activeCred,
+        greaterThanBaseValue: true,
+        signature: activeCred.signature,
+        metamaskAddress: connectedWallet?.address,
+      };
+      const { rc, result, msg } = await getEventSignature(requestParams);
+      if (rc === 0) {
+        eventSingnature = result.signature;
+        const upChainParams = {
+          networkName: activeNetworkName,
+          metamaskprovider: connectedWallet?.provider,
+          receipt: connectedWallet?.address,
+          signature: '0x' + eventSingnature,
+        };
+        const mintRes = await mintWithSignature(upChainParams);
+        const nftInfo = await getNFTInfo(mintRes[1]);
+        const newRewards = { ...rewards };
+        newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
+        await chrome.storage.local.set({
+          rewards: JSON.stringify(newRewards),
+        });
+        await dispatch(initRewardsActionAsync());
+        // setActiveRequest({
+        //   type: 'suc',
+        //   title: 'Congratulations',
+        //   desc: 'Successfully get your rewards.',
+        // });
+
+        if (eventId === EARLYBIRDNFTEVENTNAME) {
+          const res = await chrome.storage.local.get([eventId]);
+          if (res[eventId]) {
+            const lastEventObj = JSON.parse(res[eventId]);
+            const lastInfo = lastEventObj[currentAddress];
+            if (lastInfo) {
+              const { taskMap } = lastInfo;
+              taskMap.claim['claim'] = 1;
+              await chrome.storage.local.set({
+                [eventId]: JSON.stringify(lastEventObj),
+              });
+            }
+          }
+        }
+        setClaiming(false);
+        const eventInfo = {
+          eventType: 'EVENTS',
+          rawData: { name: 'Get on-boarding reward', issuer: 'PADO' },
+        };
+        eventReport(eventInfo);
+      } else {
+        alert(msg);
+        setClaiming(false);
+      }
+    } catch {
+      setClaiming(false);
+    }
+  }, [connectedWallet, credentialsFromStore]);
+  const handleClaim = useCallback(async () => {
+    if (claiming) {
+      return;
+    }
+    setClaiming(true);
+    setChainId(CLAIMNFTNETWORKNAME);
+    await dispatch(
+      setActiveConnectWallet({ network: EASInfo[CLAIMNFTNETWORKNAME] })
+    );
+    setCheckIsConnectFlag(true);
+  }, [claiming]);
+
   const doTask = useCallback(
     async (taskId) => {
       if (taskId === 'follow') {
@@ -442,65 +540,12 @@ const DataSourceItem = memo(() => {
         }
         window.open(checkUrl);
       } else if (taskId === 'claim') {
-        claimEarlyBirdNFT();
+        handleClaim();
       }
     },
-    [dispatch, eventDetail, initEvent]
+    [dispatch, eventDetail, initEvent, handleClaim]
   );
-  const claimEarlyBirdNFT = useCallback(async () => {
-    let eventSingnature = '';
-    const activeNetworkName = CLAIMNFTNETWORKNAME;
-    const getAttestationIdFn = async () => {
-      const res = await chrome.storage.local.get([eventId]);
-      const currentAddress = connectedWallet?.address;
-      if (res[eventId]) {
-        const lastEventObj = JSON.parse(res[eventId]);
-        const lastInfo = lastEventObj[currentAddress];
-        if (lastInfo) {
-          const { taskMap } = lastInfo;
-          return Object.values(taskMap.attestation)[0];
-        }
-      }
-    };
-    let attestationId = await getAttestationIdFn();
-    const activeCred = credentialsFromStore[attestationId as string];
-    try {
-      const requestParams: any = {
-        rawParam: activeCred,
-        greaterThanBaseValue: true,
-        signature: activeCred.signature,
-        metamaskAddress: connectedWallet?.address,
-      };
-      const { rc, result } = await getEventSignature(requestParams);
-      if (rc === 0) {
-        eventSingnature = result.signature;
-        const upChainParams = {
-          networkName: activeNetworkName,
-          metamaskprovider: connectedWallet?.provider,
-          receipt: connectedWallet?.address,
-          signature: '0x' + eventSingnature,
-        };
-        const mintRes = await mintWithSignature(upChainParams);
-        const nftInfo = await getNFTInfo(mintRes[1]);
-        const newRewards = { ...rewards };
-        newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
-        await chrome.storage.local.set({
-          rewards: JSON.stringify(newRewards),
-        });
-        await dispatch(initRewardsActionAsync());
-        // setActiveRequest({
-        //   type: 'suc',
-        //   title: 'Congratulations',
-        //   desc: 'Successfully get your rewards.',
-        // });
-        const eventInfo = {
-          eventType: 'EVENTS',
-          rawData: { name: 'Get on-boarding reward', issuer: 'PADO' },
-        };
-        eventReport(eventInfo);
-      }
-    } catch {}
-  }, [connectedWallet, credentialsFromStore]);
+
   const handleCloseSocialTasksDialog = useCallback(() => {
     setVisibleSocialTasksDialog(false);
   }, []);
@@ -513,6 +558,7 @@ const DataSourceItem = memo(() => {
       if (lastInfo) {
         const { taskMap } = lastInfo;
         const newStepMap = { ...stepMap };
+
         const statusM = Object.keys(taskMap).reduce((prev, curr) => {
           const currTask = taskMap[curr];
           // tasksProcess
@@ -526,11 +572,21 @@ const DataSourceItem = memo(() => {
             newStepMap[curr].tasksProcess.total = taskLen;
             newStepMap[curr].tasksProcess.current = doneTaskLen;
             newStepMap[curr].finished = allDone;
+            // if (eventId == EARLYBIRDNFTEVENTNAME) {
+              
+            //   const nftFlag = Object.values(rewards).find((r) => !r.type);
+            //   if (nftFlag) {
+            //     newStepMap[curr].finished = 1;
+            //     newStepMap['claim'].claim = 1;
+            //     setGivenNFT(true);
+            //   }
+            // }
 
             prev[curr] = allDone ? 1 : 0;
           }
           return prev;
         }, {});
+
         setStepMap(newStepMap);
         setTaskStatusMap({ ...statusM });
       } else {
@@ -538,7 +594,7 @@ const DataSourceItem = memo(() => {
         setTaskStatusMap({ ...initStatusMap });
       }
     }
-  }, [connectedWallet?.address]);
+  }, [connectedWallet?.address, eventId, rewards]);
   const handleCloseAttestationTasksDialog = useCallback(() => {
     setVisibleAttestationTasksDialog(false);
   }, []);
@@ -547,11 +603,11 @@ const DataSourceItem = memo(() => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (connected) {
+    if (connected && activeTaskId && !chainId) {
       doTask(activeTaskId);
       setIsConnect(true);
     }
-  }, [connected, activeTaskId]);
+  }, [connected, activeTaskId, chainId]);
   useEffect(() => {
     initTaskStatus();
   }, [initTaskStatus]);
@@ -559,7 +615,7 @@ const DataSourceItem = memo(() => {
     if (!visibleSocialTasksDialog) {
       initTaskStatus();
     }
-  }, [visibleSocialTasksDialog]);
+  }, [visibleSocialTasksDialog, initTaskStatus]);
   useEffect(() => {
     if (!visibleAttestationTasksDialog) {
       initTaskStatus();
@@ -576,6 +632,12 @@ const DataSourceItem = memo(() => {
       initTaskStatus();
     }
   }, [activeOnChain.loading, initTaskStatus]);
+  useEffect(() => {
+    if (chainId && connected) {
+      claimEarlyBirdNFT();
+      setChainId('');
+    }
+  }, [chainId, connected]);
   // useEffect(() => {
   //   setStepList(Object.values(stepMap));
   // }, []);
@@ -588,6 +650,12 @@ const DataSourceItem = memo(() => {
       }
     },
     [eventId]
+  );
+  const btnDisabledFn = useCallback(
+    (k) => {
+      return k > 0 ? !stepList[k - 1].finished : false;
+    },
+    [stepList]
   );
 
   return (
@@ -641,7 +709,8 @@ const DataSourceItem = memo(() => {
                       onClick={() => {
                         handleTask(i, k);
                       }}
-                      disabled={k > 0 ? !stepList[k - 1].finished : false}
+                      disabled={btnDisabledFn(k)}
+                      loading={k === 3 && claiming}
                     />
                   </>
                 )}

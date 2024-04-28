@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import useRewardsStatistics from '@/hooks/useRewardsStatistics';
 import {
   SCROLLEVENTNAME,
@@ -25,7 +26,9 @@ interface PDropdownProps {
   // list: NavItem[];
 }
 const Cards: React.FC<PDropdownProps> = memo(({}) => {
-  const { rewardsList } = useRewardsStatistics();
+  const [searchParams] = useSearchParams();
+  const eventId = searchParams.get('id') as string;
+  const { rewardsList } = useRewardsStatistics(eventId);
   console.log('222rewardsList', rewardsList);
   return (
     <div className="rewardsWrapper">
