@@ -552,6 +552,14 @@ const DataSourceItem = memo(() => {
   const initTaskStatus = useCallback(async () => {
     const res = await chrome.storage.local.get([eventId]);
     const currentAddress = connectedWallet?.address;
+    if (eventId == EARLYBIRDNFTEVENTNAME) {
+      const nftFlag = Object.values(rewards).find((r) => !r.type);
+      if (nftFlag) {
+        // newStepMap[curr].finished = 1;
+        // newStepMap['claim'].claim = 1;
+        setGivenNFT(true);
+      }
+    }
     if (res[eventId]) {
       const lastEventObj = JSON.parse(res[eventId]);
       const lastInfo = lastEventObj[currentAddress];
@@ -568,19 +576,9 @@ const DataSourceItem = memo(() => {
               (i) => !!i
             ).length;
             const allDone = taskLen === doneTaskLen;
-
             newStepMap[curr].tasksProcess.total = taskLen;
             newStepMap[curr].tasksProcess.current = doneTaskLen;
             newStepMap[curr].finished = allDone;
-            // if (eventId == EARLYBIRDNFTEVENTNAME) {
-              
-            //   const nftFlag = Object.values(rewards).find((r) => !r.type);
-            //   if (nftFlag) {
-            //     newStepMap[curr].finished = 1;
-            //     newStepMap['claim'].claim = 1;
-            //     setGivenNFT(true);
-            //   }
-            // }
 
             prev[curr] = allDone ? 1 : 0;
           }
@@ -679,7 +677,7 @@ const DataSourceItem = memo(() => {
               </div>
 
               <div className="right">
-                {taskStatusMap[i.id] ? (
+                {taskStatusMap[i.id] || (k === 3 && givenNFT) ? (
                   <i className="iconfont icon-iconResultSuc"></i>
                 ) : (
                   <>
@@ -709,7 +707,7 @@ const DataSourceItem = memo(() => {
                       onClick={() => {
                         handleTask(i, k);
                       }}
-                      disabled={btnDisabledFn(k)}
+                      disabled={givenNFT ? givenNFT : btnDisabledFn(k)}
                       loading={k === 3 && claiming}
                     />
                   </>
