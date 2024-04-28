@@ -3,9 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
-import { setActiveOnChain } from '@/store/actions';
+import { setActiveOnChain, initRewardsActionAsync } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import useEventDetail from '@/hooks/useEventDetail';
+import { mintWithSignature } from '@/services/chains/erc721';
+import { getEventSignature, getNFTInfo } from '@/services/api/event';
+import { eventReport } from '@/services/api/usertracker';
 import {
   SCROLLEVENTNAME,
   BASEVENTNAME,
@@ -15,7 +18,8 @@ import {
   EARLYBIRDNFTEVENTNAME,
   ETHSIGNEVENTNAME,
 } from '@/config/events';
-import { EASInfo } from '@/config/chain';
+import { EASInfo, CLAIMNFTNETWORKNAME } from '@/config/chain';
+
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import PButton from '@/newComponents/PButton';
@@ -167,7 +171,7 @@ const earlyBirdNftTskMap = {
   },
   onChain: {
     id: 'onChain',
-    title: 'Submit on-chain',
+    title: 'Submit to Linea',
     finished: false,
     tasksProcess: {
       total: 1,
@@ -264,21 +268,40 @@ const DataSourceItem = memo(() => {
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
+  const credentialsFromStore = useSelector(
+    (state: UserState) => state.credentials
+  );
+  const rewards = useSelector((state: UserState) => state.rewards);
+
   const stepList = useMemo(() => {
     return Object.values(stepMap);
   }, [stepMap]);
   const taskIds = useMemo(() => {
     let l: string[] = [];
     if (eventId === LINEAEVENTNAME) {
-      return (l = ['Linea Goerli']);
+      return (l = ['Linea Goerli']); // TODO-newui
     } else if (eventId === BASEVENTNAME) {
       return ['BSC'];
     } else if (eventId === ETHSIGNEVENTNAME) {
-      return ['opBNB']
+      return ['opBNB'];
+    } else if (eventId === EARLYBIRDNFTEVENTNAME) {
+      return ['Linea Goerli'];
     }
     return l;
   }, [eventId]);
   const formatList = useMemo(() => {
+    if (taskIds[0] === 'All') {
+      const allL = Object.values(EASInfo).map((i: any) => {
+        const { title, showName, icon, disabled } = i;
+        return {
+          id: title,
+          name: showName,
+          icon,
+          disabled,
+        };
+      });
+      return allL;
+    }
     let l = taskIds.map((i) => {
       const { title, showName, icon, disabled } = EASInfo[i];
       return {
@@ -330,6 +353,10 @@ const DataSourceItem = memo(() => {
       attestation = {
         15: 0, //  x followers
       };
+    } else if (eventId === EARLYBIRDNFTEVENTNAME) {
+      attestation = {
+        'Assets Certification': 0, // asset certification
+      };
     }
     emptyInfo = {
       address: currentAddress,
@@ -349,6 +376,12 @@ const DataSourceItem = memo(() => {
     };
     if (eventId == ETHSIGNEVENTNAME) {
       delete emptyInfo.taskMap.check;
+    } else if (eventId == EARLYBIRDNFTEVENTNAME) {
+      delete emptyInfo.taskMap.check;
+      const nftFlag = Object.values(rewards).find((r) => !r.type);
+      emptyInfo.taskMap.claim = {
+        claim: nftFlag ? 1 : 0,
+      };
     }
     if (res[eventId]) {
       // have joined this event
@@ -375,7 +408,7 @@ const DataSourceItem = memo(() => {
       });
     }
     setVisibleSocialTasksDialog(true);
-  }, [connectedWallet?.address]);
+  }, [connectedWallet?.address, rewards]);
   const doTask = useCallback(
     async (taskId) => {
       if (taskId === 'follow') {
@@ -408,10 +441,66 @@ const DataSourceItem = memo(() => {
           checkUrl = eventDetail?.ext?.claimPointsUrl;
         }
         window.open(checkUrl);
+      } else if (taskId === 'claim') {
+        claimEarlyBirdNFT();
       }
     },
     [dispatch, eventDetail, initEvent]
   );
+  const claimEarlyBirdNFT = useCallback(async () => {
+    let eventSingnature = '';
+    const activeNetworkName = CLAIMNFTNETWORKNAME;
+    const getAttestationIdFn = async () => {
+      const res = await chrome.storage.local.get([eventId]);
+      const currentAddress = connectedWallet?.address;
+      if (res[eventId]) {
+        const lastEventObj = JSON.parse(res[eventId]);
+        const lastInfo = lastEventObj[currentAddress];
+        if (lastInfo) {
+          const { taskMap } = lastInfo;
+          return Object.values(taskMap.attestation)[0];
+        }
+      }
+    };
+    let attestationId = await getAttestationIdFn();
+    const activeCred = credentialsFromStore[attestationId as string];
+    try {
+      const requestParams: any = {
+        rawParam: activeCred,
+        greaterThanBaseValue: true,
+        signature: activeCred.signature,
+        metamaskAddress: connectedWallet?.address,
+      };
+      const { rc, result } = await getEventSignature(requestParams);
+      if (rc === 0) {
+        eventSingnature = result.signature;
+        const upChainParams = {
+          networkName: activeNetworkName,
+          metamaskprovider: connectedWallet?.provider,
+          receipt: connectedWallet?.address,
+          signature: '0x' + eventSingnature,
+        };
+        const mintRes = await mintWithSignature(upChainParams);
+        const nftInfo = await getNFTInfo(mintRes[1]);
+        const newRewards = { ...rewards };
+        newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
+        await chrome.storage.local.set({
+          rewards: JSON.stringify(newRewards),
+        });
+        await dispatch(initRewardsActionAsync());
+        // setActiveRequest({
+        //   type: 'suc',
+        //   title: 'Congratulations',
+        //   desc: 'Successfully get your rewards.',
+        // });
+        const eventInfo = {
+          eventType: 'EVENTS',
+          rawData: { name: 'Get on-boarding reward', issuer: 'PADO' },
+        };
+        eventReport(eventInfo);
+      }
+    } catch {}
+  }, [connectedWallet, credentialsFromStore]);
   const handleCloseSocialTasksDialog = useCallback(() => {
     setVisibleSocialTasksDialog(false);
   }, []);
@@ -490,6 +579,16 @@ const DataSourceItem = memo(() => {
   // useEffect(() => {
   //   setStepList(Object.values(stepMap));
   // }, []);
+  const btnTxtFn = useCallback(
+    (k) => {
+      if (k === 3) {
+        return eventId === EARLYBIRDNFTEVENTNAME ? 'Claim' : 'Check';
+      } else {
+        return 'Finish';
+      }
+    },
+    [eventId]
+  );
 
   return (
     <div className="eventTaskList">
@@ -537,7 +636,7 @@ const DataSourceItem = memo(() => {
                       </div>
                     )}
                     <PButton
-                      text={k === 3 ? 'Check' : 'Finish'}
+                      text={btnTxtFn(k)}
                       type="primary"
                       onClick={() => {
                         handleTask(i, k);

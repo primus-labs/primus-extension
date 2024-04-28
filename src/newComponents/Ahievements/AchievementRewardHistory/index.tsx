@@ -120,7 +120,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose }) => {
                   <tr>
                     <th style={{ width: '64px', textAlign: 'left' }}>Point</th>
                     <th style={{ textAlign: 'left' }}>Source</th>
-                    <th style={{ textAlign: 'right' }}>Time(UTC)</th>
+                    <th style={{ textAlign: 'right' }}>Time (UTC)</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -89,31 +89,31 @@ const Nav: React.FC<PButtonProps> = memo(
           setStep(3);
           const curConnectedAddr = connectedWallet?.address;
           // if did‘t connected with the selected account
-          if (curConnectedAddr.toLowerCase() !== form?.account?.toLowerCase()) {
-            const formatAddr = formatAddress(
-              form?.account || '',
-              7,
-              5,
-              '......'
-            );
-            setActiveSendToChainRequest({
-              type: 'loading',
-              title: 'Attesting...',
-              desc: `Check your wallet to confirm the connection with ${formatAddr}`,
-            });
-            await switchAccount(connectedWallet?.provider);
-            // setActiveRequest(undefined);
-            // setActiveSourceName(form?.sourceUseridHash);
-            // setStep(1);
-            return;
-          } else {
+          // if (curConnectedAddr.toLowerCase() !== form?.account?.toLowerCase()) {
+          //   const formatAddr = formatAddress(
+          //     form?.account || '',
+          //     7,
+          //     5,
+          //     '......'
+          //   );
+          //   setActiveSendToChainRequest({
+          //     type: 'loading',
+          //     title: 'Attesting...',
+          //     desc: `Check your wallet to confirm the connection with ${formatAddr}`,
+          //   });
+          //   await switchAccount(connectedWallet?.provider);
+          //   // setActiveRequest(undefined);
+          //   // setActiveSourceName(form?.sourceUseridHash);
+          //   // setStep(1);
+          //   return;
+          // } else {
             setActiveSendToChainRequest({
               type: 'loading',
               title: 'Attesting...',
               desc: `This may take a few seconds.`,
             });
             attestBrevisFn(activeAttestationParams);
-          }
+          // }
         }
       },
       [assetForm, fromEvents, BASEventDetail, dispatch, type, connectedWallet]

@@ -219,8 +219,8 @@ const useAttestBrevis = () => {
     try {
       const curRequestId = uuidv4();
       setUniSwapProofRequestId(curRequestId);
-      const curConnectedAddr = connectedWallet?.address;
-      // const curConnectedAddr = '0xd4b69e8d62c880e9dd55d419d5e07435c3538342'; // stone TODO DEL!!!222123
+      // const curConnectedAddr = connectedWallet?.address;
+      const curConnectedAddr = '0xfb19212dc11a7c6f00aadf685cc00f97b4c17011'; // stone TODO DEL!!!222123
       const timestamp: string = +new Date() + '';
       const signature = await requestSign(form?.account, timestamp); // TODO DEL !!!
       // if (!signature) {

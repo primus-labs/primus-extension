@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/dataSource';
+import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 
 import type { UserState } from '@/types/store';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
@@ -13,7 +14,13 @@ import iconCircleSuc from '@/assets/newImg/layout/iconCircleSuc.svg';
 import AttestationTasksDialog from '../AttestationTasksDialog';
 import './index.scss';
 
-import { LINEAEVENTNAME, BASEVENTNAME, eventMetaMap, ETHSIGNEVENTNAME } from '@/config/events';
+import {
+  LINEAEVENTNAME,
+  BASEVENTNAME,
+  eventMetaMap,
+  ETHSIGNEVENTNAME,
+  EARLYBIRDNFTEVENTNAME,
+} from '@/config/events';
 interface SetPwdDialogProps {
   onClose: () => void;
   onSubmit: () => void;
@@ -87,10 +94,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           dataSourceId;
         if (eventId === ETHSIGNEVENTNAME) {
           attestationType = 'Social Connections';
+        } else if (eventId === EARLYBIRDNFTEVENTNAME) {
+          attestationType = 'Assets Certification';
         } else {
           attestationType = 'Humanity Verification';
         }
-        
+
         const activeWebProofTemplate = webProofTypes.find(
           (i) => i.id === taskId
         );
@@ -103,25 +112,30 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           } else if (name === 'Account Ownership') {
             verificationContent = 'Account ownership';
             verificationValue = 'Account owner';
-          } else if (name === "X Followers") {
+          } else if (name === 'X Followers') {
             verificationContent = 'X Followers';
           }
-          
         } else {
           if (taskId === '100') {
             dataSourceId = 'google';
             verificationContent = 'Account ownership';
             verificationValue = 'Account owner';
+          } else if (taskId === 'Assets Certification') {
+            dataSourceId = '';
+            verificationContent = '';
+            verificationValue = '';
           }
         }
         setVisibleAssetDialog(attestationType);
-        const presetsP = {
-          verificationContent,
-          verificationValue,
-          dataSourceId,
-          // account: ''
-        };
-        setAttestationPresets(presetsP);
+        if (!(taskId in ATTESTATIONTYPEMAP)) {
+          const presetsP = {
+            verificationContent,
+            verificationValue,
+            dataSourceId,
+            // account: ''
+          };
+          setAttestationPresets(presetsP);
+        }
       },
       [webProofTypes]
     );

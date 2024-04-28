@@ -133,7 +133,7 @@ export const eventMetaMap = {
         discord: 0,
       },
       attestation: {
-        // TODOnewui ???
+        'Assets Certification': 0,
       },
       onChain: {
         // TODOnewui ???
@@ -150,9 +150,7 @@ export const eventMetaMap = {
 
     chainDesc: 'Linea Voyage XP',
     gift: '100 PADO points',
-    points: [
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
-    ],
+    points: [{ pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' }],
 
     nameInAttestation: 'SignX Program',
     picTxt: 'SignX Program',

@@ -27,7 +27,11 @@ import {
   getAccount,
 } from '@/utils/utils';
 
-import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
+import {
+  BASEVENTNAME,
+  EARLYBIRDNFTEVENTNAME,
+  LINEAEVENTNAME,
+} from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import {
   ATTESTATIONPOLLINGTIMEOUT,
@@ -40,6 +44,7 @@ import {
   schemaTypeMap,
   GOOGLEWEBPROOFID,
 } from '@/config/constants';
+import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -98,7 +103,12 @@ const useAttest = function useAttest() {
       const lastInfo = lastEventObj[currentAddress];
       if (lastInfo) {
         const { taskMap } = lastInfo;
-        taskMap.attestation[templateId] = requestid;
+        const attestationTypeId = Object.keys(taskMap.attestation)[0];
+        if ((attestationTypeId as string) in ATTESTATIONTYPEMAP) {
+          taskMap.attestation[attestationTypeId as string] = requestid;
+        } else {
+          taskMap.attestation[templateId] = requestid;
+        }
         await chrome.storage.local.set({
           [eventId]: JSON.stringify(lastEventObj),
         });
@@ -533,7 +543,7 @@ const useAttest = function useAttest() {
           ? `${activeAttestation.attestationType} failed!`
           : `${activeAttestation.attestationType} proof failed!`;
         let title = errorMsgTitle;
-        
+
         if (name === 'cancel') {
           addMsg({
             type: 'error',
