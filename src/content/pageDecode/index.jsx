@@ -123,7 +123,13 @@ function DescEl({ status, resultStatus, errorTxt }) {
         } else if (verificationContent === 'Token Holding') {
           vC = 'Token holding';
         }
+      } else if (attestationType === 'Social Connections') {
+        if (verificationContent === 'X Followers') {
+          vC = 'Followers number';
+          vV = `> ${verificationValue}`;
+        } 
       }
+
 
       return [
         { label: 'Data Source', value: host },

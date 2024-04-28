@@ -13,6 +13,7 @@ import { lineaportalabi } from './lineaportalabi';
 
 //const { keccak256, toUtf8Bytes, splitSignature } = utils;
 import { _TypedDataEncoder } from '@ethersproject/hash';
+import { defaultAbiCoder } from 'ethers/lib/utils';
 import { EASInfo } from '@/config/chain';
 //var ethereumjsUtil = require('ethereumjs-util');
 
@@ -387,12 +388,13 @@ export async function attestByDelegationProxyFee(params) {
   console.log('eas attestByDelegationProxyFee tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
-  if (
-    networkName.startsWith('Linea') ||
-    networkName.indexOf('Scroll') > -1 ||
-    networkName.indexOf('opBNB') > -1
-  ) {
+  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
     return txreceipt.transactionHash;
+  } else if (networkName.indexOf('opBNB') > -1) {
+    const data = txreceipt.logs[1].data;
+    const res = defaultAbiCoder.decode(['uint64', 'string'], data);
+    console.log(res[0]._hex);
+    return res[0]._hex;
   } else {
     const newAttestationUID = txreceipt.logs[txreceipt.logs.length - 1].data;
     return newAttestationUID;
@@ -486,7 +488,6 @@ export async function bulkAttest(params) {
     } catch (error) {
       console.log('eas bulkAttest caught error:\n', error);
     }
-    console.log('222er', er);
     if (er.data && er.data.message.indexOf('insufficient funds') > -1) {
       return {
         error: 1,
@@ -507,6 +508,11 @@ export async function bulkAttest(params) {
   console.log('eas bulkAttest txreceipt=', txreceipt);
   if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
     return txreceipt.transactionHash;
+  } else if (networkName.indexOf('opBNB') > -1) {
+    const data = txreceipt.logs[1].data;
+    const res = defaultAbiCoder.decode(['uint64', 'string'], data);
+    console.log(res[0]._hex);
+    return res[0]._hex;
   } else {
     let newAttestationUIDs = [];
     for (let i = 0; i < bulkParams.length; i++) {

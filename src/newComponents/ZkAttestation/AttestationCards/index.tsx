@@ -8,9 +8,11 @@ import { getCurrentDate, formatAddress } from '@/utils/utils';
 import { setCredentialsAsync, setActiveOnChain } from '@/store/actions';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
-import { BASEVENTNAME, eventMetaMap } from '@/config/events';
+import { compareVersions } from '@/utils/utils';
+import { BASEVENTNAME, ETHSIGNEVENTNAME, eventMetaMap } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import { PADOADDRESS, EASInfo } from '@/config/envConstants';
+import { PADOADDRESS } from '@/config/envConstants';
+import { EASInfo } from '@/config/chain';
 import {
   ATTESTATIONTYPEMAP,
   ASSETSVERIFICATIONCONTENTTYPEEMAP,
@@ -152,6 +154,10 @@ const Cards: React.FC<PDropdownProps> = memo(
             </>
           );
         }
+      } else if (i.attestationType === 'Social Connections') {
+        if (i.verificationContent === 'X Followers') {
+          str = `> ${i.verificationValue}`;
+        }
       }
       // else if (i.attestationType === 'Humanity Verification') {
       //   if (i.verificationContent === 'KYC Status') {
@@ -165,6 +171,18 @@ const Cards: React.FC<PDropdownProps> = memo(
     const getResult = (i) => {
       if (['coinbase', 'google'].includes(i.source)) {
         return 'Verified';
+      }
+      if (i.attestationType === 'Social Connections') {
+        if (i.verificationContent === 'X Followers') {
+          if (i.event === ETHSIGNEVENTNAME) {
+            if (i.verificationValue === '1') {
+              return 'Get Started';
+            }
+            if (i.verificationValue === '500') {
+              return 'Famous';
+            }
+          }
+        }
       }
       return i?.uiTemplate?.condition;
     };
@@ -214,7 +232,8 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleCloseConfirmDeleteDialog = useCallback(() => {
       setConfirmDeleteDialogVisible(false);
     }, []);
-    const txDetailUrlFn = useCallback((item: any) => {
+
+    const txDetailUrlFn = useCallback((item: any, currentCred) => {
       let chainShowName = item.title;
       if (item.title === 'BNB') {
         chainShowName = 'BNB';
@@ -225,6 +244,17 @@ const Cards: React.FC<PDropdownProps> = memo(
       if (item.title === 'BNB Greenfield') {
         const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
         return `${chainInfo.bucketDetailUrl}/${item.bucketName}`;
+      }
+      if (item.title === 'opBNB') {
+        // debugger;
+        const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
+        const compareRes = compareVersions('1.0.3', currentCred.credVersion);
+        if (compareRes > -1) {
+          // old version <= 1.0.3
+          return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
+        } else {
+          return `${chainInfo.bucketDetailUrl}${item.attestationUID}`;
+        }
       }
       const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
       return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
@@ -380,7 +410,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                           <div className="chains">
                             {i.provided?.map((c, k) => (
                               <a
-                                href={txDetailUrlFn(c)}
+                                href={txDetailUrlFn(c, i)}
                                 target="_blank"
                                 rel="noreferrer"
                                 key={k}

@@ -83,7 +83,6 @@ const Nav: React.FC<PButtonProps> = memo(
         // form.sourceUseridHash = activeSource?.address?.toLowerCase() as string;
         dispatch(setActiveAttestation({ activeAttestationParams, loading: 1 }));
         dispatch(setAttestLoading(1));
-        debugger;
         // 2.check select account if connected
         // 3.request
         if (activeAttestationParams.dataSourceId === 'web3 wallet') {

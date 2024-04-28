@@ -66,7 +66,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     Object.values(credentialObj).forEach((i: any) => {
-      const compareRes = compareVersions('1.0.3', i.version); // TODO-newui!!!
+      const compareRes = compareVersions('1.0.4', i.version); // TODO-newui!!!
       if (compareRes > -1) {
         // attestation version <= '1.0.3'
         if (i.type === 'ASSETS_PROOF') {

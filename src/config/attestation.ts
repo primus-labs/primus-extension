@@ -187,7 +187,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
 export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
   Object.values(ATTESTATIONTYPEMAP);
 
-export const CredVersion = '1.0.4';
+export const CredVersion = '1.0.5';
 // const attestationTypeMap = {
 //   1: {
 //     title: 'On-chain Transaction Proof',
