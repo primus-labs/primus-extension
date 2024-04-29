@@ -77,19 +77,13 @@ class WebHuoBi extends WebExchange {
 
     async getUserInfo() {
         const params = {};
-        const authInfoName = this.exName + "-auth";
-        const headerStr = await chrome.storage.local.get(authInfoName);
-        const header = JSON.parse(headerStr[authInfoName]);
         params.url =
-            'https://www.htx.com/-/x/otc/v1/user/info?r=gr0ks&x-b3-traceid=51caf5b1eb47a48e42e7c88ccf72ef1b';
+            'https://www.htx.com/-/x/hbg/v1/open/profit/web/balance-assets?r=ddr88';
         params.method = 'GET';
-        const extHeader = new Map();
-        extHeader.set('token',header['hb-pro-token'])
-        params.extHeader = extHeader;
         const res = await this.request(params);
-        this.userInfo.userName = res.data.uid;
-        this.userInfo.userId = res.data.uid;
-        console.log(res.data.uid)
+        this.userInfo.userName = res.data.userId;
+        this.userInfo.userId = res.data.userId;
+        console.log(res.data.userId)
     }
 }
 
