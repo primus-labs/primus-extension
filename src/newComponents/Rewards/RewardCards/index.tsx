@@ -58,7 +58,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
               </div>
             </div>
             {i.link && (
-              <a href={i.link} className="iconLink">
+              <a href={i.link} target="_blank" className="iconLink">
                 <img src={i.linkIcon} alt="" />
               </a>
             )}
