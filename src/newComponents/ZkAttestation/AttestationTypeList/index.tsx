@@ -23,7 +23,15 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
     return ATTESTATIONTYPELIST.filter((i) => !i.disabled);
   }, []);
 
-  const handleClick = useCallback(() => {}, []);
+  const handleClick = useCallback(
+    (i) => {
+      if (i.id === 'On-chain Transaction') {
+      } else {
+        onClick(i);
+      }
+    },
+    [onClick]
+  );
   return (
     <ul className="allAttestationTypeCards">
       {supportList.map((i) => {
