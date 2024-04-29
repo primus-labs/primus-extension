@@ -16,6 +16,7 @@ const ZERO = 0;
 class WebBinance extends WebExchange {
   constructor() {
     super('binance');
+    this.tradingAccountFreeTokenAmountObj = {};
   }
 
   async getFundingAccountTokenAmountMap() {
@@ -55,6 +56,7 @@ class WebBinance extends WebExchange {
     res.data.forEach(({ asset, free, locked }) => {
       this.tradingAccountTokenAmountMap.set(asset, Number(free) + Number(locked));
       this.tradingAccountTokenAmountObj[asset] = Number(free) + Number(locked);
+      this.tradingAccountFreeTokenAmountObj[asset] = Number(free);
     });
     // console.log(
     //   'okx tradingAccountTokenAmountMap',
