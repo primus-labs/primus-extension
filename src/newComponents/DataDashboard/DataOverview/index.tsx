@@ -28,6 +28,7 @@ import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 import AssetsBalance from '@/newComponents/AssetsBalance';
 import UpdateDataSourceTip from '@/newComponents/UpdateDataSourceTip';
 import './index.scss';
+import { UserState } from '@/types/store';
 
 const Overview = memo(() => {
   const {
@@ -40,7 +41,7 @@ const Overview = memo(() => {
   const { sourceMap } = useAllSources();
   console.log('22connectedDataSources', sourceMap); //delete
   const navigate = useNavigate();
-  const sourceUpdateInfo = useSelector((state) => state.sourceUpdateInfo);
+  const sourceUpdateInfo = useSelector((state:UserState) => state.sourceUpdateInfo);
   const connectedOnChainSources = useMemo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);

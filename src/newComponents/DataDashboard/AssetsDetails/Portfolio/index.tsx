@@ -23,6 +23,7 @@ import PSelect from '@/newComponents/PSelect';
 import NFTList from '../NFTList';
 import TokenTable from '../TokenTable';
 import './index.scss';
+import { UserState } from '@/types/store';
 
 const MAX = 5;
 
@@ -39,8 +40,8 @@ const AssetsDetails = memo(() => {
   const [tableTab, setTableTab] = useState<string>('Token');
   const [starArr, setStarArr] = useState<string[]>();
   const [accountsForm, setAccountsForm] = useState<object>({ metamask: 'All' });
-  const sysConfig = useSelector((state) => state.sysConfig);
-  const nfts = useSelector((state) => state.nfts);
+  const sysConfig = useSelector((state:UserState) => state.sysConfig);
+  const nfts = useSelector((state: UserState) => state.nfts);
 
   const connectedExchangeSources = useMemo(() => {
     return sourceMap.exSources;

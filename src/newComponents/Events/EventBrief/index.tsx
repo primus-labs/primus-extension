@@ -9,6 +9,7 @@ import SplicedIcons from '@/newComponents/SplicedIcons';
 import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
 import tagCompleted from '@/assets/newImg/events/tagCompleted.png';
+import { UserState } from '@/types/store';
 // import tagCompleted from '@/assets/newImg/events/iconPado.svg';
 
 dayjs.extend(utc);
@@ -31,9 +32,9 @@ const DataSourceItem = memo(() => {
   const [isComplete, setIsComplete] = useState<boolean>(false);
   // const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const metaInfo = eventMetaMap[eventId];
-  const connectedWallet = useSelector((state) => state.connectedWallet);
-  const attestLoading = useSelector((state) => state.attestLoading);
-  const activeOnChain = useSelector((state) => state.activeOnChain);
+  const connectedWallet = useSelector((state:UserState) => state.connectedWallet);
+  const attestLoading = useSelector((state: UserState) => state.attestLoading);
+  const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
   const formatPeriod = (period) => {
     const { startTime, endTime } = period;
     const s = dayjs.utc(+startTime).format('MMM.D,YYYY');

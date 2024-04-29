@@ -48,7 +48,7 @@ const Search: React.FC = () => {
         className="serachType"
         placeholder="Select source type"
         list={tList}
-        value={dataSourceQueryType}
+        value={dataSourceQueryType as string}
         onChange={handleChangeType}
         prefix={<i className="iconfont icon-iconFilter prefix"></i>}
         showSelf={true}

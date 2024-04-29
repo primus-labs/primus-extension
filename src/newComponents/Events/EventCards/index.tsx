@@ -25,76 +25,72 @@ type NavItem = {
   points: any;
 };
 interface PDropdownProps {
-  onClick?: (item: NavItem) => void;
-  list: NavItem[];
+  list: any[];
 }
-const Cards: React.FC<PDropdownProps> = memo(
-  ({ list, onClick = (item: NavItem) => {} }) => {
-    const navigate = useNavigate();
-    const checkIsActive = (i) => {
-      if (i.periodType === '1') {
-        return true;
-      }
-      if (i.periodType === '0') {
-        return false; // TODO-newui
-      }
-    };
-    const formatPeriod = (period) => {
-      const { startTime, endTime } = period;
-      const s = dayjs.utc(+startTime).format('MMM.D,YYYY');
-      const e = dayjs.utc(+endTime).format('MMM.D,YYYY');
+const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
+  const navigate = useNavigate();
+  const checkIsActive = (i) => {
+    if (i.periodType === '1') {
+      return true;
+    }
+    if (i.periodType === '0') {
+      return false; // TODO-newui
+    }
+  };
+  const formatPeriod = (period) => {
+    const { startTime, endTime } = period;
+    const s = dayjs.utc(+startTime).format('MMM.D,YYYY');
+    const e = dayjs.utc(+endTime).format('MMM.D,YYYY');
 
-      return `${s}-${e}`;
-    };
-    const handleJoin = (i) => {
-      if (checkIsActive(i)) {
-        navigate(`/events/detail?id=${i.id}`);
-      }
-    };
-    // useEffect(() => {
-    //   chrome.storage.local.remove([BASEVENTNAME]);
-    // }, []);
-    return (
-      <ul className="currentEventsCards">
-        {list.map((i) => {
-          return (
-            <li
-              className="dataSourceCard"
-              onClick={() => {
-                handleJoin(i);
-              }}
-              key={i.id}
-            >
-              <div className="cardContent">
-                <div className="picWrapper">
-                  <div
-                    className={`picContent ${
-                      i.combineType === '1' && 'combine'
-                    }`}
-                  >
-                    <SplicedIcons
-                      list={
-                        i.combineType === '1'
-                          ? [i.parterIcon, iconPado]
-                          : [iconPado]
-                      }
-                    />
-                    <span>{i.picTxt}</span>
-                  </div>
-                  {!checkIsActive(i) && <div className="endMask">END</div>}
+    return `${s}-${e}`;
+  };
+  const handleJoin = (i) => {
+    if (checkIsActive(i)) {
+      navigate(`/events/detail?id=${i.id}`);
+    }
+  };
+  // useEffect(() => {
+  //   chrome.storage.local.remove([BASEVENTNAME]);
+  // }, []);
+  return (
+    <ul className="currentEventsCards">
+      {list.map((i) => {
+        return (
+          <li
+            className="dataSourceCard"
+            onClick={() => {
+              handleJoin(i);
+            }}
+            key={i.id}
+          >
+            <div className="cardContent">
+              <div className="picWrapper">
+                <div
+                  className={`picContent ${i.combineType === '1' && 'combine'}`}
+                >
+                  <SplicedIcons
+                    list={
+                      i.combineType === '1'
+                        ? [i.parterIcon, iconPado]
+                        : [iconPado]
+                    }
+                  />
+                  <span>{i.picTxt}</span>
                 </div>
-                <div className="txtWrapper">
-                  <div className="title">{i.title}</div>
-                  <div className="descItems">
-                    {i.points.map((p) => {
-                      return (
-                        <div className="descItem">
-                          <div className={`iconfont ${p.pointIconFont}`}></div>
-                          <span>{p.pointDesc}</span>
-                        </div>
-                      );
-                    })}
-                    {/* {i.periodType === '1' && (
+                {!checkIsActive(i) && <div className="endMask">END</div>}
+              </div>
+              <div className="txtWrapper">
+                <div className="title">{i.title}</div>
+                <div className="descItems">
+                  {i.points.map((p) => {
+                    return (
+                      <div className="descItem">
+                        <div className={`iconfont ${p.pointIconFont}`}></div>
+                        <span>{p.pointDesc}</span>
+                      </div>
+                    );
+                  })}
+                  {/* {i.periodType === '1' && (
                       <div className="descItem">
                         <i className="iconfont icon-iconBlockChain"></i>
                         <span>{i.chainDesc}</span>
@@ -110,16 +106,15 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <i className="iconfont icon-iconGift"></i>
                       <span>{i.gift}</span>
                     </div> */}
-                  </div>
-                  <div className="desc">{i.desc}</div>
                 </div>
+                <div className="desc">{i.desc}</div>
               </div>
-            </li>
-          );
-        })}
-      </ul>
-    );
-  }
-);
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+});
 
 export default Cards;

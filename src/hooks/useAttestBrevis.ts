@@ -18,7 +18,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { initRewardsActionAsync, setCredentialsAsync } from '@/store/actions';
 import { CredVersion } from '@/config/attestation';
-
+import type { Dispatch } from 'react';
 type CreateAuthWindowCallBack = (
   state: string,
   source: string,
@@ -37,7 +37,7 @@ const useAttestBrevis = () => {
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
   const [checkIsJoinDialogTimer, setCheckIsJoinDialogTimer] = useState<any>();
 
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<any> = useDispatch();
   const [uniSwapProofRequestId, setUniSwapProofRequestId] =
     useState<string>('');
   const [activeSourceName, setActiveSourceName] = useState<string>();
@@ -76,7 +76,7 @@ const useAttestBrevis = () => {
   const [pollingUniProofIntervalSwitch, setPollingUniProofIntervalSwitch] =
     useState<boolean>(false);
   const initCredList = useCallback(async () => {
-    await dispatch(setCredentialsAsync());
+    dispatch(setCredentialsAsync());
   }, [dispatch]);
   const pollingUniProofResult = useCallback(async () => {
     try {

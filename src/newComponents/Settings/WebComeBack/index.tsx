@@ -7,6 +7,7 @@ import PInput from '@/newComponents/PInput';
 import PButton from '@/newComponents/PButton';
 import { postMsg } from '@/utils/utils';
 import { useDispatch, useSelector } from 'react-redux';
+import { UserState } from '@/types/store';
 
 interface InputPasswordProps {
   onSubmit: () => void;
@@ -24,7 +25,7 @@ const WebComeBackDialog: React.FC<InputPasswordProps> = memo(
     const [searchParams] = useSearchParams();
     const [password, setPassword] = useState<any>();
     const dispatch = useDispatch();
-    const padoServicePort = useSelector((state) => state.padoServicePort);
+    const padoServicePort = useSelector((state: UserState) => state.padoServicePort);
     const navigate = useNavigate();
     const [errorMsg, setErrorMsg] = useState('');
     const [hadSetPwd, setHadSetPwd] = useState();

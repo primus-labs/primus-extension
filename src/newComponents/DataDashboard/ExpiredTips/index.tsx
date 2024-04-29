@@ -9,13 +9,14 @@ import './index.scss';
 import { ONEMINUTE } from '@/config/constants';
 import useInterval from '@/hooks/useInterval';
 import { useSelector } from 'react-redux';
+import { UserState } from '@/types/store';
 
 const ExpiredTips = memo(() => {
   const dispatch = useDispatch();
   const { sourceMap, sourceMap2 } = useAllSources();
   const [showList, setShowList] = useState<string[]>([]);
   const activeConnectDataSource = useSelector(
-    (state) => state.activeConnectDataSource
+    (state:UserState) => state.activeConnectDataSource
   );
 
   const checkFn = useCallback(async () => {

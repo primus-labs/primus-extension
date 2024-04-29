@@ -87,8 +87,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [formLegal, attestLoading]);
     const formatBtnTxt = useMemo(() => {
       return attestLoading === 3
-        ? activeAttestation?.btnTxt
-          ? activeAttestation?.btnTxt
+        ? activeAttestation?.msgObj?.btnTxt
+          ? activeAttestation?.msgObj?.btnTxt
           : 'OK'
         : 'Next';
     }, [attestLoading, activeAttestation]);

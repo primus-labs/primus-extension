@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
+import React, { useState, useEffect, memo, useCallback, FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PInput from '@/components/PInput/index';
 import PHeader from '@/components/Layout/PHeader';
@@ -51,7 +51,7 @@ const DEFAULTAUTHSOURCELIST = [
     enabled: '0',
   },
 ];
-const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
+const AuthDialog: FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
   const [pwd, setPwd] = useState<string>();
   const [oAuthSources, setOAuthSources] = useState<AuthSourcesItems>(
     DEFAULTAUTHSOURCELIST
@@ -66,7 +66,7 @@ const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
 
   const authorize = useAuthorization();
 
-  const handleClickNext = async() => {
+  const handleClickNext = async () => {
     if (!activeSource) {
       setErrorTip('Please select one Auth to sign up');
       return;
@@ -76,7 +76,7 @@ const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
       return;
     }
     await chrome.storage.local.set({
-      invitationCode: pwd
+      invitationCode: pwd,
     });
     const upperCaseSourceName = activeSource.toUpperCase();
     const dataType = 'LOGIN';
@@ -117,10 +117,10 @@ const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
     if (item.enabled !== '0') {
       return;
     }
-    
+
     if (source === activeSource) {
       setActiveSource(undefined);
-      return
+      return;
     }
     setActiveSource(source);
     // setErrorTip(undefined);
@@ -160,9 +160,7 @@ const AuthDialog: React.FC<authDialogProps> = memo(({ onClose, onSubmit }) => {
               return (
                 <li
                   key={item.id}
-                  className={
-                    liClassNameFn(item)
-                  }
+                  className={liClassNameFn(item)}
                   onClick={() => {
                     handleClickOAuthSource(item);
                   }}

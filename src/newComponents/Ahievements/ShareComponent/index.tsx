@@ -44,6 +44,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
         return;
       }
       setIsSharing(true);
+      // @ts-ignore
       const base64Imag = await toPng(domEl.current);
       try {
         const rsp = await shareTwitter({
@@ -74,6 +75,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
         return;
       }
       setIsSharing(true);
+      // @ts-ignore
       const base64Imag = await toPng(domEl.current);
       try {
         const rsp = await shareDiscord({
@@ -103,6 +105,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
         return;
       }
       setIsSharing(true);
+      // @ts-ignore
       const base64Imag = await toPng(domEl.current);
       try {
         const rsp = await shareTelegram({
@@ -139,77 +142,129 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                 <img className={'white-circle'} src={whiteCircle}></img>
                 <img className={'blue-rectangle'} src={blueRect}></img>
                 <img className="logo" src={padoLogo}></img>
-                {shareType === 'score' &&
+                {shareType === 'score' && (
                   <div className={'shareContent'}>
                     <div className="title">My achievements in PADO</div>
-                    <div style={{
-                      fontWeight: '600',
-                      fontSize: '32px',
-                      marginLeft: '24px',
-                      marginTop: '20px',
-                    }}>{scoreShareProps.score}<a
-                      style={{ fontWeight: '400', fontSize: '12px', marginLeft: '5px', marginTop: '10px' }}>xp</a></div>
-                    <div style={{
+                    <div
+                      style={{
+                        fontWeight: '600',
+                        fontSize: '32px',
+                        marginLeft: '24px',
+                        marginTop: '20px',
+                      }}
+                    >
+                      {scoreShareProps.score}
+                      <a
+                        style={{
+                          fontWeight: '400',
+                          fontSize: '12px',
+                          marginLeft: '5px',
+                          marginTop: '10px',
+                        }}
+                      >
+                        xp
+                      </a>
+                    </div>
+                    <div
+                      style={{
+                        fontWeight: '400',
+                        fontSize: '12px',
+                        color: '#161616',
+                        marginLeft: '24px',
+                        marginTop: '10px',
+                      }}
+                    >
+                      My referral code: <a>{scoreShareProps.referralCode}</a>
+                    </div>
+                  </div>
+                )}
+
+                {shareType === 'referralCode' && (
+                  <div className={'shareContent'}>
+                    <div className="title">
+                      Sign up to PADO and use my referral code to earn extra
+                      points!
+                    </div>
+                    <div
+                      style={{
+                        fontWeight: '600',
+                        fontSize: '32px',
+                        marginLeft: '24px',
+                        marginTop: '20px',
+                      }}
+                    >
+                      {scoreShareProps.referralCode}
+                    </div>
+                  </div>
+                )}
+
+                <div className={'downloadApp'}>
+                  <a
+                    style={{
                       fontWeight: '400',
                       fontSize: '12px',
                       color: '#161616',
-                      marginLeft: '24px',
-                      marginTop: '10px',
-                    }}>My referral
-                      code: <a>{scoreShareProps.referralCode}</a></div>
-                  </div>
-                }
-
-                {shareType === 'referralCode' &&
-                  <div className={'shareContent'}>
-                    <div className="title">Sign up to PADO and use my referral code to earn extra points!</div>
-                    <div style={{
-                      fontWeight: '600',
-                      fontSize: '32px',
-                      marginLeft: '24px',
-                      marginTop: '20px',
-                    }}>{scoreShareProps.referralCode}</div>
-                  </div>
-                }
-
-                <div className={'downloadApp'}>
-                  <a style={{ fontWeight: '400', fontSize: '12px', color: '#161616' }} target={"_blank"} href={'https://chromewebstore.google.com/detail/pado/oeiomhmbaapihbilkfkhmlajkeegnjhe'}>
-                    Download PADO<img src={lineLogo} style={{ marginLeft: '5px' }} />
-
+                    }}
+                    target={'_blank'}
+                    href={
+                      'https://chromewebstore.google.com/detail/pado/oeiomhmbaapihbilkfkhmlajkeegnjhe'
+                    }
+                  >
+                    Download PADO
+                    <img src={lineLogo} style={{ marginLeft: '5px' }} />
                   </a>
                 </div>
               </div>
-              {!isShowDiscordCopyBtn &&
-              <div className={'shareMedia'}>
-                Share to
-                <div className={'shareIcon'}>
-                  <img src={x} style={{ margin: '0 10px', cursor: 'pointer' }} onClick={shareTwitterImg} />
-                  <img src={discord} style={{ margin: '0 10px', cursor: 'pointer' }} onClick={toDiscordSharePage} />
-                  <img src={telegram} style={{ margin: '0 10px', cursor: 'pointer' }} onClick={shareTelegramImg} />
+              {!isShowDiscordCopyBtn && (
+                <div className={'shareMedia'}>
+                  Share to
+                  <div className={'shareIcon'}>
+                    <img
+                      src={x}
+                      style={{ margin: '0 10px', cursor: 'pointer' }}
+                      onClick={shareTwitterImg}
+                    />
+                    <img
+                      src={discord}
+                      style={{ margin: '0 10px', cursor: 'pointer' }}
+                      onClick={toDiscordSharePage}
+                    />
+                    <img
+                      src={telegram}
+                      style={{ margin: '0 10px', cursor: 'pointer' }}
+                      onClick={shareTelegramImg}
+                    />
+                  </div>
                 </div>
-              </div>
-              }
-              {
-                isShowDiscordCopyBtn &&
+              )}
+              {isShowDiscordCopyBtn && (
                 <div className={'shareDiscordCopy'}>
                   Copy and paste the snapshot to your Discord channel.
-                  <PButton className={'shareDiscordCopyBtn'} onClick={shareDiscordImg} text={'Copy to share'}/>
+                  <PButton
+                    className={'shareDiscordCopyBtn'}
+                    onClick={shareDiscordImg}
+                    text={'Copy to share'}
+                  />
                 </div>
-              }
-
+              )}
             </div>
           </main>
         </div>
-        <Spin spinning={isSharing} fullscreen indicator={
-          <LoadingOutlined
-            style={{
-              fontSize: 24,
-              color: '#6F6F6F',
-            }}
-            spin
-          />
-        } />
-
+        <Spin
+          spinning={isSharing}
+          fullscreen
+          indicator={
+            <LoadingOutlined
+              style={{
+                fontSize: 24,
+                color: '#6F6F6F',
+              }}
+              spin
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            />
+          }
+        />
       </PMask>
     );
   },

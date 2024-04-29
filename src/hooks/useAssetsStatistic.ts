@@ -8,9 +8,10 @@ import { DATASOURCEMAP } from '@/config/dataSource2';
 import { SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 import { tokenLogoPath } from '@/config/envConstants';
 import iconOthers from '@/assets/newImg/home/iconOthers.svg';
+import { UserState } from '@/types/store';
 const useAssetsStatistic = function () {
   const { sourceMap } = useAllSources();
-  const sysConfig = useSelector((state) => state.sysConfig);
+  const sysConfig = useSelector((state:UserState) => state.sysConfig);
   const dataSourceIconFn = (id) => {
     if (id.startsWith('0x')) {
       return WALLETMAP['metamask'].icon;
@@ -132,7 +133,7 @@ const useAssetsStatistic = function () {
       address: '',
     };
     if (connectedOnChainSourcesList.length === 1) {
-      obj.address = connectedOnChainSourcesList[0]?.address;
+      obj.address = (connectedOnChainSourcesList[0] as any)?.address;
     }
     return obj;
   }, [connectedOnChainSourcesList, totalOnChainAssetsBalance]);

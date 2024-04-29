@@ -16,12 +16,13 @@ import { setConnectWalletDialogVisibleAction } from '@/store/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
+import { UserState } from '@/types/store';
 
 const AchievementHome = memo(() => {
   const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
   useCheckIsConnectedWallet(checkIsConnectFlag);
   const connectWalletDialogVisible = useSelector(
-    (state) => state.connectWalletDialogVisible
+    (state:UserState) => state.connectWalletDialogVisible
   );
   useEffect(() => {
     if (connectWalletDialogVisible === 0) {
@@ -50,8 +51,10 @@ const AchievementHome = memo(() => {
 
   const dispatch = useDispatch();
   const [connected, setConnected] = useState<boolean>(false);
-  const connectedWallet = useSelector((state) => state.connectedWallet);
-  const activeConnectWallet = useSelector((state) => state.activeConnectWallet);
+  const connectedWallet = useSelector((state:UserState) => state.connectedWallet);
+  const activeConnectWallet = useSelector(
+    (state: UserState) => state.activeConnectWallet
+  );
 
   useEffect(() => {
     setConnected(!!connectedWallet?.address && !activeConnectWallet?.network);

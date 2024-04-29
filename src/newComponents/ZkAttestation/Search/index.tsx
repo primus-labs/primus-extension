@@ -47,7 +47,7 @@ const Search: React.FC = () => {
         className="serachType"
         placeholder="Select verification category"
         list={tList}
-        value={attestationQueryType}
+        value={attestationQueryType as string}
         onChange={handleChangeType}
         prefix={<i className="iconfont icon-iconFilter prefix"></i>}
       />

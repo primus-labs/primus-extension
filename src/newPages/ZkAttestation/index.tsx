@@ -5,7 +5,6 @@ import { setActiveOnChain } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
-import Banner from '@/newComponents/Home/Banner';
 import Slider from '@/newComponents/Events/Slider';
 import AttestationTypeList from '@/newComponents/ZkAttestation/AttestationTypeList';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
@@ -21,7 +20,7 @@ const ZkAttestation = memo(() => {
   const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
   useCheckIsConnectedWallet(checkIsConnectFlag);
   const connectWalletDialogVisible = useSelector(
-    (state) => state.connectWalletDialogVisible
+    (state:UserState) => state.connectWalletDialogVisible
   );
   useEffect(() => {
     if (connectWalletDialogVisible === 0) {

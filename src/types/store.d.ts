@@ -27,18 +27,19 @@ type rewardsDialogVisibleType = {
 };
 
 type loadingStatus = 0 | 1 | 2; // 0: unstart 1:start loading 2:end
-type attestationLoadingStatus = 0 | 1 | 2; // 0: unstart 1:start loading 2:suc 3: fail
+type attestationLoadingStatus = 0 | 1 | 2 | 3; // 0: unstart 1:start loading 2:suc 3: fail
 
 type activeAttestationRequest = {
-  dataSourceId?: string;
+  dataSourceId: string;
   verificationContent?: string;
   verificationValue?: string;
-  attestationType?: string; // 'Assets Certification'
+  attestationType: string; // 'Assets Certification'
   fetchType?: string; // Web ,API
   loading?: attestationLoadingStatus; // 0: unstart 1:start loading 2:suc 3: fail
   presets?: any; // attest params
   // requestId?: string;
   account?: string;
+  msgObj?: any;
 };
 type activeConnectDataSourceRequest = {
   dataSourceId?: string;

@@ -45,7 +45,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const connectedWallet = useSelector(
       (state: UserState) => state.connectedWallet
     );
-    const activeOnChain = useSelector((state) => state.activeOnChain);
+    const activeOnChain = useSelector((state:UserState) => state.activeOnChain);
     const taskIds = useMemo(() => {
       let l: string[] = [];
       l = Object.keys(eventMetaInfo.taskMap.attestation);

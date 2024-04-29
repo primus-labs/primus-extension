@@ -66,14 +66,14 @@ const useUpdateOnChainSources = () => {
             requireReport: false,
             label: undefined,
           });
-          await setNftsActionAsync({
+          await setNftsActionAsync([{
             signature,
             timestamp,
             address,
             dispatch,
             requireReport: false,
             label: undefined,
-          });
+          }]);
           setQueryObj((obj) => ({
             ...obj,
             [address]: 1,

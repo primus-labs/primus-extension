@@ -8,11 +8,12 @@ import DataSourcesModule from '@/newComponents/Home/DataSourcesModule';
 import AttestationsModule from '@/newComponents/Home/AttestationsModule';
 import './index.scss';
 import { useSelector } from 'react-redux';
+import { UserState } from '@/types/store';
 
 const Home = memo(() => {
   const [showInputPasswordDialog, setShowInputPasswordDialog] =
     useState<boolean>(false);
-  const userInfo = useSelector((state) => state.userInfo);
+  const userInfo = useSelector((state: UserState) => state.userInfo);
 
   const checkIfHadSetPwd = useCallback(async () => {
     let { keyStore } = await chrome.storage.local.get(['keyStore']);

@@ -15,6 +15,7 @@ import useAuthorization from '@/hooks/useAuthorization';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 import { webDataSourceTemplate } from '@/config/webDataSourceTemplate';
 import type { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
 interface PBackProps {
   dataSourceId: string;
 }
@@ -24,15 +25,15 @@ const ConnectDataSource: React.FC = memo(({}) => {
   const { addMsg } = useMsgs();
   const authorize = useAuthorization();
 
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<any> = useDispatch();
   const [visibleConnectByWeb, setVisibleConnectByAPI] =
     useState<boolean>(false);
   const activeConnectDataSource = useSelector(
-    (state) => state.activeConnectDataSource
+    (state: UserState) => state.activeConnectDataSource
   );
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const lowerCaseDataSourceName = useMemo(() => {
-    return activeConnectDataSource?.dataSourceId;
+    return activeConnectDataSource?.dataSourceId as string;
   }, [activeConnectDataSource]);
   const activeDataSouceMetaInfo = useMemo(() => {
     if (lowerCaseDataSourceName) {
@@ -118,7 +119,7 @@ const ConnectDataSource: React.FC = memo(({}) => {
     }
   }, [handleConnect, activeConnectDataSource]);
   useEffect(() => {
-    if (activeConnectDataSource?.loading > 1) {
+    if (activeConnectDataSource?.loading && activeConnectDataSource?.loading > 1) {
       dispatch(
         setActiveConnectDataSource({
           loading: 0,

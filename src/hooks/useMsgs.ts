@@ -3,10 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { setMsgsAsync } from '@/store/actions';
 import type { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
 
 const useMsgs = function useMsgs() {
   const { pathname } = useLocation();
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<any> = useDispatch();
   const [msgObj, setMsgObj] = useState<any>();
   const msgs = useSelector((state: UserState) => state.msgs);
   const deleteMsg = useCallback(

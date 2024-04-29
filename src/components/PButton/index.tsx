@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import type { SyntheticEvent } from 'react';
-import "./index.scss";
+import './index.scss';
 
 interface PButtonProps {
   prefix?: any;
@@ -14,9 +14,9 @@ const PButton: React.FC<PButtonProps> = memo(
     const formatClassName = useMemo(() => {
       let defaultCN = 'pButton';
       if (className) {
-        defaultCN += ' '+className;
+        defaultCN += ' ' + className;
       }
-      
+
       return defaultCN;
     }, [className]);
     const handleClick = (e: SyntheticEvent) => {

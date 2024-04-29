@@ -388,7 +388,11 @@ export async function attestByDelegationProxyFee(params) {
   console.log('eas attestByDelegationProxyFee tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas attestByDelegationProxyFee txreceipt=', txreceipt);
-  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
+  if (
+    networkName.startsWith('Linea') ||
+    networkName.indexOf('Scroll') > -1
+  )
+  {
     return txreceipt.transactionHash;
   } else if (networkName.indexOf('opBNB') > -1) {
     const data = txreceipt.logs[1].data;
@@ -459,7 +463,6 @@ export async function bulkAttest(params) {
       schemauid = eventSchemauid;
     }
     console.log('bulkAttest schemauid=', schemauid);
-
     const paramsobj = {
       schema: schemauid,
       data: {
@@ -506,7 +509,10 @@ export async function bulkAttest(params) {
   console.log('eas bulkAttest tx=', tx);
   const txreceipt = await tx.wait();
   console.log('eas bulkAttest txreceipt=', txreceipt);
-  if (networkName.startsWith('Linea') || networkName.indexOf('Scroll') > -1) {
+  if (
+    networkName.startsWith('Linea') ||
+    networkName.indexOf('Scroll') > -1
+  ) {
     return txreceipt.transactionHash;
   } else if (networkName.indexOf('opBNB') > -1) {
     const data = txreceipt.logs[1].data;

@@ -7,6 +7,8 @@ import {
   connectWalletAsync,
 } from '@/store/actions';
 import { connectWallet, switchChain } from '@/services/wallets/metamask';
+import { UserState } from '@/types/store';
+import type { Dispatch } from 'react';
 // import { switchChain } from '@/services/wallets/metamask';
 // check if had connected wallet when switchFlag is true
 // if not connected,connect wallet
@@ -15,12 +17,16 @@ import { connectWallet, switchChain } from '@/services/wallets/metamask';
 const useCheckIsConnectedWallet = function useCheckIsConnectedWallet(
   switchFlag = true
 ) {
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<any> = useDispatch();
   const [connected, setConnected] = useState<boolean>(false);
-  const connectedWallet = useSelector((state) => state.connectedWallet);
-  const activeConnectWallet = useSelector((state) => state.activeConnectWallet);
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
+  const activeConnectWallet = useSelector(
+    (state: UserState) => state.activeConnectWallet
+  );
   const connectWalletDialogVisible = useSelector(
-    (state) => state.connectWalletDialogVisible
+    (state: UserState) => state.connectWalletDialogVisible
   );
   const hasConnected = useMemo(() => {
     return !!connectedWallet?.address;

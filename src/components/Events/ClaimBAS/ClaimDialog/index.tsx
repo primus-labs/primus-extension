@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
+import { utils } from 'ethers';
 import PMask from '@/components/PMask';
 import PButton from '@/components/PButton';
 import ClaimDialogHeaderDialog from '@/components/Events/ClaimWrapper/ClaimDialogHeader';
@@ -28,6 +29,8 @@ import { switchAccount } from '@/services/wallets/metamask';
 import { BASEVENTNAME } from '@/config/constants';
 import type { Dispatch } from 'react';
 import useEventDetail from '@/hooks/useEventDetail';
+import { formatAddress } from '@/utils/utils';
+
 dayjs.extend(utc);
 interface ClaimDialogProps {
   onClose: () => void;
@@ -73,7 +76,7 @@ const stepList: StepItem[] = [
     id: 4,
     icon: iconStep3,
     title: 'Submit Attestations',
-    subTitle: 'Submit to BNB Chain',
+    subTitle: 'Submit to BNB Chain or BNB Greenfield',
     finished: false,
   },
 ];
@@ -123,11 +126,12 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
     }, [BASEventPeriod]);
 
     const formatStepList: StepItem[] = useMemo(() => {
-      if (credAddress) {
-        stepList[0].subTitle = credAddress;
-      } else {
-        stepList[0].subTitle = connectedWallet?.address;
-      }
+      let formateAddrStr = credAddress ? credAddress : connectedWallet?.address;
+      stepList[0].subTitle = formatAddress(
+        utils.getAddress(formateAddrStr),
+        7,
+        5
+      );
       stepList[1].finished = stepObj.step1 === 1;
 
       stepList[2].finished = stepObj.step2 === 1;
@@ -324,8 +328,14 @@ const ClaimDialog: FC<ClaimDialogProps> = memo(
             return prev;
           }, {});
           setStepObj(newObj);
-          setCredNum(Object.values(lastInfo.steps[1].tasks).length);
-          setCredAddress(lastInfo.address);
+          
+          if (lastInfo.steps[1].tasks) {
+            setCredNum(Object.values(lastInfo.steps[1].tasks).length);
+          }
+          if (lastInfo.address) {
+            setCredAddress(lastInfo.address);
+          }
+          
         }
       });
     }, []);

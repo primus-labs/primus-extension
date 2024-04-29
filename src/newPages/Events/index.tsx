@@ -14,7 +14,7 @@ const Events = memo(() => {
   const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
   useCheckIsConnectedWallet(checkIsConnectFlag);
   const connectWalletDialogVisible = useSelector(
-    (state) => state.connectWalletDialogVisible
+    (state: UserState) => state.connectWalletDialogVisible
   );
   useEffect(() => {
     if (connectWalletDialogVisible === 0) {

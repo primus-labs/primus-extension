@@ -12,6 +12,7 @@ import useInterval from './useInterval';
 import { BASEVENTNAME } from '@/config/constants';
 import useEventDetail from './useEventDetail';
 import { SocailStoreVersion } from '@/config/constants';
+import type { Dispatch } from 'react';
 type CreateAuthWindowCallBack = (
   state: string,
   source: string,
@@ -21,7 +22,7 @@ type CreateAuthWindowCallBack = (
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 // create google account attestation
 const useAuthorization2 = () => {
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<any> = useDispatch();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const [searchParams] = useSearchParams();
   const fromEvents = searchParams.get('id');

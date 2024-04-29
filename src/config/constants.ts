@@ -61,8 +61,8 @@ export type WALLETITEMTYPE = {
 export const ExchangeStoreVersion = '1.0.1';
 export const SocailStoreVersion = '1.0.0';
 export const KYCStoreVersion = '1.0.0';
-export const padoExtensionVersion = '0.3.0';
-export const CredVersion = '1.0.5';
+export const padoExtensionVersion = '0.2.33';
+export const CredVersion = '1.0.4';
 
 export const USDT = 'USDT';
 export const USD = 'USD';
@@ -294,6 +294,8 @@ export const supportAttestDataSourceNameList = ['Binance', 'Coinbase', 'OKX', 'Z
 export const BADGELOTTRYTIMESTR = '2023-10-29 12:00:00';
 export const SCROLLEVENTNAME = 'SCROLL_LAUNCH_CAMPAIGN';
 export const BASEVENTNAME = 'BAS_EVENT_PROOF_OF_HUMANITY';
+export const ETHSIGNEVENTNAME = 'SIGNX_X_PROGRAM';
+export const LINEAEVENTNAME = 'LINEA_DEFI_VOYAGE';
 // schemauid: 0x07656ef97ae97711b79c9e79b3e0409712a8bb9bf26f3495ad15f48cdd49cfac
 // schemaType: BAS_EVENT_PROOF_OF_HUMANITY
 export const GOOGLEWEBPROOFID = '100'

@@ -114,14 +114,16 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
           value: r.name,
           text: r.name,
         };
-        if (fromEvents === 'LINEA_DEFI_VOYAGE') {
-          if (r.name !== 'KYC Status') {
-            obj.disabled = true;
+        if (r.name !== 'X Followers') {
+          if (fromEvents === 'LINEA_DEFI_VOYAGE') {
+            if (r.name !== 'KYC Status') {
+              obj.disabled = true;
+            }
           }
-        }
-        const isExist = newArr.find((i: any) => i.value === obj.value);
-        if (!isExist) {
-          newArr.push(obj);
+          const isExist = newArr.find((i: any) => i.value === obj.value);
+          if (!isExist) {
+            newArr.push(obj);
+          }
         }
         return obj;
       });
@@ -365,8 +367,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
         return [];
       }
     }, [exSources, activeToken]);
-   
-    
+
     const formatTabList = useMemo(() => {
       if (fromEvents) {
         const newList = tabList.map((i) => {
@@ -424,7 +425,7 @@ const AttestationDialog: React.FC<AttestationDialogProps> = memo(
       },
       [activeIdentityType, activeCred]
     );
-    
+
     const handleClickNext = async () => {
       if (
         activeTab === 'API Data' &&

@@ -5,10 +5,11 @@ import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 import './index.scss';
 import { useDispatch } from 'react-redux';
 import PButton from '@/newComponents/PButton';
+import { UserState } from '@/types/store';
 
 const UpdateDataSourceTip = memo(() => {
   const dispatch = useDispatch();
-  const sourceUpdateInfo = useSelector((state) => state.sourceUpdateInfo);
+  const sourceUpdateInfo = useSelector((state: UserState) => state.sourceUpdateInfo);
   const handleClick = () => {
     dispatch(
       setSourceUpdateInfoAction({

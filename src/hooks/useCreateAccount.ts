@@ -6,10 +6,11 @@ import {
 } from '@/store/actions';
 import { requestSignTypedData } from '@/services/wallets/utils';
 import { getUserIdentity } from '@/services/api/user';
+import type { Dispatch } from 'react';
 
-type UseCreateAccount = () => void;
+type UseCreateAccount = () => {createAccountFn: () => void};
 const useCreateAccount: UseCreateAccount = function useCreateAccount() {
-  const dispatch = useDispatch();
+  const dispatch:Dispatch<any> = useDispatch();
   const fn = useCallback(async () => {
     const { privateKey, padoCreatedWalletAddress: address } =
       await chrome.storage.local.get([

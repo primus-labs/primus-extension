@@ -93,7 +93,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       return list;
     }, [webProofTypes, dataSourceId]);
     const valueList = useMemo(() => {
-      let list = [];
+      let list: any[] = [];
+      // @ts-ignore
       if (pswForm.verificationContent === 'X Followers') {
         list = [...SOCIALVERIFICATIONVALUETYPELIST];
       }

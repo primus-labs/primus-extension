@@ -3,8 +3,14 @@ import type { SyntheticEvent } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-
-import { DATASOURCEMAP } from '@/config/constants';
+import { compareVersions } from '@/utils/utils';
+import { CredVersion } from '@/config/constants';
+import {
+  DATASOURCEMAP,
+  ETHSIGNEVENTNAME,
+  LINEAEVENTNAME,
+  BASEVENTNAME,
+} from '@/config/constants';
 import { PADOADDRESS, EASInfo } from '@/config/envConstants';
 import {
   getCurrentDate,
@@ -46,6 +52,7 @@ interface CredTypeListProps {
 const CredItem: React.FC<CredTypeListProps> = memo(
   ({ item, onUpChain, onViewQrcode, onBindPolygonID, onUpdate, onDelete }) => {
     console.log('CredItem', item);
+    const activeCred = item;
     const [dorpdownVisible, setDorpdownVisible] = useState<boolean>(false);
     const [expand, setExpand] = useState(false);
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
@@ -54,27 +61,22 @@ const CredItem: React.FC<CredTypeListProps> = memo(
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);
     const otherOperations = useMemo(() => {
+      let deleteO = {
+        icon: iconClear,
+        text: 'Delete',
+        disabled: false,
+      };
+      if (item.event) {
+        deleteO.disabled = true;
+      }
       if (item?.provided?.length && item?.provided?.length > 0) {
-        return [
-          {
-            icon: iconClear,
-            text: 'Delete',
-          },
-        ];
+        return [deleteO];
       }
       if (item.type === 'UNISWAP_PROOF') {
-        return [
-          {
-            icon: iconClear,
-            text: 'Delete',
-          },
-        ];
+        return [deleteO];
       }
       return [
-        {
-          icon: iconClear,
-          text: 'Delete',
-        },
+        deleteO,
         {
           icon: iconUpdate,
           text: 'Update',
@@ -164,21 +166,39 @@ const CredItem: React.FC<CredTypeListProps> = memo(
         setExpand(true);
       }
     }, [item]);
-    const txDetailUrlFn = useCallback((item: any) => {
-      let chainShowName = item.title;
-      if (item.title === 'BNB') {
-        chainShowName = 'BNB';
-      }
-      if (item.title === 'ArbitrumOne') {
-        chainShowName = 'Arbitrum';
-      }
-      if (item.title === 'BNB Greenfield') {
+    const txDetailUrlFn = useCallback(
+      (item: any) => {
+        const cred = activeCred;
+        let chainShowName = item.title;
+        if (item.title === 'BNB') {
+          chainShowName = 'BNB';
+        }
+        if (item.title === 'ArbitrumOne') {
+          chainShowName = 'Arbitrum';
+        }
+        if (item.title === 'BNB Greenfield') {
+          const chainInfo = EASInfo[
+            chainShowName as keyof typeof EASInfo
+          ] as any;
+          return `${chainInfo.bucketDetailUrl}/${item.bucketName}`;
+        }
+        if (item.title === 'opBNB') {
+          const chainInfo = EASInfo[
+            chainShowName as keyof typeof EASInfo
+          ] as any;
+          const compareRes = compareVersions('1.0.3', cred.credVersion);
+          if (compareRes > -1) {
+            // old version <= 1.0.3
+            return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
+          } else {
+            return `${chainInfo.bucketDetailUrl}${item.attestationUID}`;
+          }
+        }
         const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
-        return `${chainInfo.bucketDetailUrl}/${item.bucketName}`;
-      }
-      const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
-      return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
-    }, []);
+        return `${chainInfo?.transactionDetailUrl}/${item.attestationUID}`;
+      },
+      [activeCred]
+    );
     const iconCallback = useCallback((item: CredTypeItemType) => {
       const sourceName = item?.source;
 
@@ -233,6 +253,49 @@ const CredItem: React.FC<CredTypeListProps> = memo(
 
       return null;
     }, []);
+    const eventNameFn = useCallback((e) => {
+      const m = {
+        [ETHSIGNEVENTNAME]: 'SignX Program',
+        [BASEVENTNAME]: 'BAS Event',
+        [LINEAEVENTNAME]: 'Linea Voyage',
+      };
+      return m[e];
+    }, []);
+    const identificationProofContentFn = useCallback((item) => {
+      if (item.reqType === 'web') {
+        const c = item.uiTemplate.proofContent;
+        // if (c === 'X Followers') {
+        //   return 'Twitter Followers';
+        // }
+        return c;
+      } else {
+        if (item.source === 'google') {
+          return item.proofContent;
+        } else {
+          return 'KYC Status';
+        }
+      }
+    }, []);
+    const identificationProofResultFn = useCallback((item) => {
+      if (item.reqType === 'web') {
+        const c = item.uiTemplate.proofContent;
+        const sC = item.uiTemplate.subProofContent;
+        const condition = item.uiTemplate.condition;
+        let r = sC ? sC + ' ' + condition : condition;
+        if (c === 'X Followers') {
+          if (item.xFollowerCount === '1') {
+            return 'Get Started';
+          }
+          if (item.xFollowerCount === '500') {
+            return 'Famous';
+          }
+        } else {
+          return r;
+        }
+      } else {
+        return credProofConditions;
+      }
+    }, []);
 
     return (
       <div className={expand ? 'credItem expand' : 'credItem'}>
@@ -249,6 +312,9 @@ const CredItem: React.FC<CredTypeListProps> = memo(
 
                 <span>{briefTypeName}</span>
                 {item.did && <img src={iconPolygonID} alt="" />}
+                {item.event && (
+                  <span className="eventName">{eventNameFn(item.event)}</span>
+                )}
               </div>
               <div className="conr">
                 <div className="conrItem">
@@ -346,11 +412,7 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                 {item.type === 'IDENTIFICATION_PROOF' && (
                   // TODO!!!
                   <div className="value">
-                    {item.reqType === 'web'
-                      ? item.uiTemplate.proofContent
-                      : item.source === 'google'
-                      ? item.proofContent
-                      : 'KYC Status'}
+                    {identificationProofContentFn(item)}
                   </div>
                 )}
                 {item.type === 'UNISWAP_PROOF' && (
@@ -376,16 +438,8 @@ const CredItem: React.FC<CredTypeListProps> = memo(
                   <span>0</span>
                 </div>
               )}
-              {item.type === 'IDENTIFICATION_PROOF' &&
-                (item.reqType === 'web' ? (
-                  <div className="value">
-                    {item.uiTemplate.subProofContent &&
-                      item.uiTemplate.subProofContent + ' '}
-                    {item.uiTemplate.condition}
-                  </div>
-                ) : (
-                  <div className="value">{credProofConditions}</div>
-                ))}
+              <div className="value">{identificationProofResultFn(item)}</div>
+
               {/* {item.type === 'IDENTIFICATION_PROOF' &&
                 item.reqType !== 'web' && (
                   <div className="value">{credProofConditions}</div>

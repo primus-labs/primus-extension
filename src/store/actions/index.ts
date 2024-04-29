@@ -241,6 +241,7 @@ export const connectWalletAsync = (
         } else {
           connectRes = await connectWallet(network);
         }
+        console.log('222metamask connect successfully');
         provider = connectRes[2];
         address = (connectRes[0] as string[])[0];
       }
@@ -254,6 +255,13 @@ export const connectWalletAsync = (
             }
           : undefined;
       const checkRes = await checkIfBindConnectedWallet({ address });
+
+      if (checkRes.rc === 0) {
+        console.log(
+          '222metamask connect successfully checkIfBindConnectedWallet',
+          checkRes.result
+        );
+      }
       if (checkRes.rc === 0 && checkRes.result) {
         if (requireFetchAssets) {
           const timestamp: string = +new Date() + '';
@@ -308,6 +316,12 @@ export const connectWalletAsync = (
           type,
         });
         const { rc, result } = res;
+        if (rc === 0) {
+          console.log(
+            '222metamask connect successfully bindConnectedWallet',
+            result
+          );
+        }
         if (rc === 0 && result) {
           await dispatch(
             setConnectWalletActionAsync({

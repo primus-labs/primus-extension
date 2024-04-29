@@ -36,7 +36,7 @@ type StepItem = {
   id: string;
   title: string;
   // subTitle: string;
-  finished?: boolean;
+  finished: boolean;
   extra?: string;
   tasksProcess?: any;
   tasks?: any;
@@ -244,7 +244,7 @@ const DataSourceItem = memo(() => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
-  const [stepMap, setStepMap] = useState<any>(
+  const [stepMap, setStepMap] = useState<{ [propName: string]: StepItem }>(
     JSON.parse(JSON.stringify(eventTaskMap[eventId]))
   );
   // let stepMap = JSON.parse(JSON.stringify(eventTaskMap[eventId]));
@@ -277,7 +277,7 @@ const DataSourceItem = memo(() => {
   );
   const rewards = useSelector((state: UserState) => state.rewards);
 
-  const stepList = useMemo(() => {
+  const stepList: StepItem[] = useMemo(() => {
     const l = Object.values(stepMap);
     return l;
   }, [stepMap]);

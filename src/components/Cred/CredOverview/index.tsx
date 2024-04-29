@@ -5,6 +5,7 @@ import {
   DATASOURCEMAP,
   SCROLLEVENTNAME,
   BASEVENTNAME,
+  ETHSIGNEVENTNAME,
 } from '@/config/constants';
 
 import PButton from '@/components/PButton';
@@ -16,6 +17,7 @@ import BindPolygonID from '@/components/Cred/BindPolygonID';
 import CredSendToChainWrapper from '../CredSendToChainWrapper';
 import ClaimMysteryBoxWrapper2 from '@/components/Events/ClaimMysteryBoxWrapper2';
 import ClaimEventBAS from '@/components/Events/ClaimBAS';
+import ClaimEventEthSign from '@/components/Events/ClaimEventEthSign';
 import useWallet from '@/hooks/useWallet';
 import { setCredentialsAsync } from '@/store/actions';
 
@@ -37,7 +39,10 @@ const CredOverview = memo(() => {
     useState<boolean>(false);
   const [claimEventBASVisible, setClaimEventBASVisible] =
     useState<boolean>(false);
+  const [claimEventEthSignVisible, setClaimEventEthSignVisible] =
+    useState<boolean>(false);
   const [claimEventBASStep, setClaimEventBASStep] = useState<number>(1);
+  const [claimEventEthSignStep, setClaimEventEthSignStep] = useState<number>(1);
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
   const [connectTipDialogVisible, setConnectTipDialogVisible] =
     useState<boolean>();
@@ -123,7 +128,7 @@ const CredOverview = memo(() => {
   }, [credentialsFromStore]);
   const handleCloseConnectTipDialog = useCallback(() => {
     setConnectTipDialogVisible(false);
-    if (fromEvents === 'Scroll' || fromEvents === 'LINEA_DEFI_VOYAGE') {
+    if (fromEvents && ['Scroll','LINEA_DEFI_VOYAGE',ETHSIGNEVENTNAME].includes(fromEvents)) {
       navigate('/events');
     }
     if (fromEvents === 'NFTs') {
@@ -257,6 +262,8 @@ const CredOverview = memo(() => {
         setClaimMysteryBoxVisible2(true);
       } else if (fromEvents === BASEVENTNAME) {
         setClaimEventBASVisible(true);
+      } else if (fromEvents === ETHSIGNEVENTNAME) {
+        setClaimEventEthSignVisible(true);
       }
     } else {
       setConnectDialogVisible(true);
@@ -306,8 +313,17 @@ const CredOverview = memo(() => {
       navigate('/events');
     }
   }, [fromEvents, navigate]);
+  const onCancelClaimEventEthSign = useCallback(() => {
+    setClaimEventEthSignVisible(false);
+    if (fromEvents === ETHSIGNEVENTNAME) {
+      navigate('/events');
+    }
+  }, [fromEvents, navigate]);
   const onSubmitClaimEventBAS = useCallback(() => {
     setClaimEventBASVisible(false);
+  }, []);
+  const onSubmitClaimEventEthSign = useCallback(() => {
+    setClaimEventEthSignVisible(false);
   }, []);
   const onChangeClaimEventBAS = useCallback(
     async (step: number) => {
@@ -336,12 +352,42 @@ const CredOverview = memo(() => {
     },
     [handleUpChain]
   );
+  const onChangeClaimEventEthSign = useCallback(async (step: number) => {
+    setClaimEventBASStep(1);
+    // step: 4
+    if (step === 4) {
+      // upper chain
+      const { credentials } = await chrome.storage.local.get('credentials');
+      let credArrNew = Object.values(JSON.parse(credentials));
+
+      const res = await chrome.storage.local.get([ETHSIGNEVENTNAME]);
+      if (res[ETHSIGNEVENTNAME]) {
+        const lastInfo = JSON.parse(res[ETHSIGNEVENTNAME]);
+        const lastTasks = lastInfo.steps[1].tasks ?? {};
+        const toBeUpperChainCredRequestids = Object.values(lastTasks);
+        const toBeUpperChainCreds = credArrNew.filter((c: any) =>
+          toBeUpperChainCredRequestids.includes(c.requestid)
+        );
+        const firstToBeUpperChainCred = toBeUpperChainCreds[0];
+        if (firstToBeUpperChainCred) {
+          setClaimEventEthSignVisible(false);
+          handleUpChain(firstToBeUpperChainCred as CredTypeItemType);
+        }
+      }
+    }
+  }, []);
+  // setClaimEventEthSignStep;
   const onClaimEventBASAttest = (attestId: string) => {
     setEventSource(attestId);
     setAddDialogVisible(true);
     if (attestId === GOOGLEWEBPROOFID) {
       setClaimEventBASVisible(false);
     }
+  };
+  const onClaimEventEthSignAttest = (attestId: string) => {
+    setEventSource(attestId);
+    setAddDialogVisible(true);
+    setClaimEventEthSignStep(1);
   };
 
   const handleSubmitBindPolygonid = useCallback(async () => {
@@ -360,6 +406,14 @@ const CredOverview = memo(() => {
           setAddDialogVisible(false);
           setClaimEventBASVisible(true);
           setClaimEventBASStep(2);
+          // } else {
+          //   navigate('/cred', { replace: true });
+          // }
+        } else if (fromEvents === ETHSIGNEVENTNAME) {
+          // if (addSucFlag) {
+          setAddDialogVisible(false);
+          setClaimEventEthSignVisible(true);
+          setClaimEventEthSignStep(1);
           // } else {
           //   navigate('/cred', { replace: true });
           // }
@@ -416,6 +470,10 @@ const CredOverview = memo(() => {
             setSendToChainDialogVisible(false);
             setClaimEventBASVisible(true);
             navigate('/cred', { replace: true });
+          } else if (fromEvents === ETHSIGNEVENTNAME) {
+            setSendToChainDialogVisible(false);
+            setClaimEventEthSignVisible(true);
+            navigate('/cred', { replace: true });
           }
         } else {
           if (fromEvents === 'Scroll') {
@@ -424,6 +482,9 @@ const CredOverview = memo(() => {
           } else if (fromEvents === BASEVENTNAME) {
             setSendToChainDialogVisible(false);
             setClaimEventBASVisible(true);
+          } else if (fromEvents === ETHSIGNEVENTNAME) {
+            setSendToChainDialogVisible(false);
+            setClaimEventEthSignVisible(true);
           } else {
             navigate('/cred');
           }
@@ -438,9 +499,14 @@ const CredOverview = memo(() => {
     [fromEvents, navigate]
   );
   const handleBackToBASEvent = useCallback(() => {
-    setClaimEventBASVisible(true);
-    setSendToChainDialogVisible(false);
-  }, []);
+    if (fromEvents === BASEVENTNAME) {
+      setClaimEventBASVisible(true);
+      setSendToChainDialogVisible(false);
+    } else if (fromEvents === ETHSIGNEVENTNAME) {
+      setClaimEventEthSignVisible(true);
+      setSendToChainDialogVisible(false);
+    }
+  }, [fromEvents]);
   const startFn = useCallback(() => {
     if (connectedWallet?.address) {
       setActiveRequest({
@@ -494,7 +560,7 @@ const CredOverview = memo(() => {
   );
   const handleCloseConnectWallet = useCallback(() => {
     setConnectDialogVisible(false);
-    if (fromEvents === 'Scroll') {
+    if (fromEvents && ['Scroll', ETHSIGNEVENTNAME].includes(fromEvents)) {
       navigate('/events');
     }
     if (fromEvents === 'LINEA_DEFI_VOYAGE' || fromEvents === 'NFTs') {
@@ -508,6 +574,7 @@ const CredOverview = memo(() => {
       setConnectDialogVisible(true);
       setClaimMysteryBoxVisible2(false);
       setClaimEventBASVisible(false);
+      setClaimEventEthSignVisible(false);
       // bindPolygonidVisible;
       // qrcodeVisible;
       // sendToChainDialogVisible;
@@ -542,7 +609,7 @@ const CredOverview = memo(() => {
   }, [createFlag, proofType, fromEvents]);
   useEffect(() => {
     if (fromEvents) {
-      if (fromEvents === 'Scroll' || fromEvents === BASEVENTNAME) {
+      if (['Scroll', BASEVENTNAME, ETHSIGNEVENTNAME].includes(fromEvents)) {
         handleJoinEvent();
       } else {
         handleAdd();
@@ -562,15 +629,23 @@ const CredOverview = memo(() => {
               setAddDialogVisible(true);
             }
           }
+          if (fromEvents === ETHSIGNEVENTNAME) {
+            if (eventSource !== GOOGLEWEBPROOFID) {
+              setClaimEventEthSignVisible(false);
+              setAddDialogVisible(true);
+            }
+          }
         } else if (
           message.name === 'cancelAttest' ||
           message.name === 'abortAttest'
         ) {
-          if (fromEvents === BASEVENTNAME) {
-            // setAddDialogVisible(false);
-            setEventSource(undefined);
-            // setClaimEventBASVisible(true);
-            // setClaimEventBASStep(2);
+          if (fromEvents) {
+            if ([ETHSIGNEVENTNAME, BASEVENTNAME].includes(fromEvents)) {
+              // setAddDialogVisible(false);
+              setEventSource(undefined);
+              // setClaimEventBASVisible(true);
+              // setClaimEventBASStep(2);
+            }
           }
         }
       }
@@ -668,6 +743,14 @@ const CredOverview = memo(() => {
         onChange={onChangeClaimEventBAS}
         onAttest={onClaimEventBASAttest}
         activeStep={claimEventBASStep}
+      />
+      <ClaimEventEthSign
+        visible={claimEventEthSignVisible}
+        onClose={onCancelClaimEventEthSign}
+        onSubmit={onSubmitClaimEventEthSign}
+        onChange={onChangeClaimEventEthSign}
+        onAttest={onClaimEventEthSignAttest}
+        activeStep={claimEventEthSignStep}
       />
       {credList.length > 0 && <DataAddBar onClick={handleAdd} />}
     </div>

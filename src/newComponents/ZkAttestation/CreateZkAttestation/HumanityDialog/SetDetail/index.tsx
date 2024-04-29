@@ -92,9 +92,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       return list;
     }, [webProofTypes, dataSourceId]);
     const valueList = useMemo(() => {
-      let list = [];
+      let list: any[] = [];
+      // @ts-ignore
       if (pswForm.verificationContent === 'KYC Status') {
         list = [...HUMANITYVERIFICATIONVALUETYPELIST];
+        // @ts-ignore
       } else if (pswForm.verificationContent === 'Account ownership') {
         list = [
           {

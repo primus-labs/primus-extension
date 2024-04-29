@@ -89,7 +89,7 @@ const Nav: React.FC<PButtonProps> = memo(
       return BASEventDetail?.ext;
     }, [BASEventDetail]);
     const activeOnChainAttestation = useMemo(() => {
-      return credentialsFromStore[activeOnChain.requestid];
+      return credentialsFromStore[activeOnChain.requestid as string];
     }, [credentialsFromStore, activeOnChain.requestid]);
 
     // const formatChainList = useMemo(() => {
@@ -155,12 +155,16 @@ const Nav: React.FC<PButtonProps> = memo(
       const activeEvent = activeOnChainAttestation?.event;
       if (activeEvent) {
         if (activeEvent === LINEAEVENTNAME) {
+          // @ts-ignore
           l = list.filter((i) => i.id === 'Linea Goerli');
         } else if (activeEvent === BASEVENTNAME) {
+          // @ts-ignore
           l = list.filter((i) => i.id === 'BSC');
         } else if (activeEvent === ETHSIGNEVENTNAME) {
+          // @ts-ignore
           l = list.filter((i) => i.id === 'opBNB');
         } else if (activeEvent === SCROLLEVENTNAME) {
+          // @ts-ignore
           l = list.filter((i) => i.id === 'Scroll');
         }
       } else {
@@ -169,6 +173,7 @@ const Nav: React.FC<PButtonProps> = memo(
             activeOnChainAttestation?.provided?.map((i: any) => i.title) ?? [];
 
           if (onChainTitlesArr.length > 0) {
+            // @ts-ignore
             l = list.filter((i) => {
               return !onChainTitlesArr.includes(i.id);
             });

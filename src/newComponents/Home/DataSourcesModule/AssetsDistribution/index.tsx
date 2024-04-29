@@ -117,7 +117,7 @@ const Overview = memo(() => {
         const { totalBalance } = curr;
         return add(prev.toNumber(), Number(totalBalance));
       };
-      let otherTotalBal = otherL.reduce(reduceF, new BigNumber(0));
+      let otherTotalBal: any = otherL.reduce(reduceF, new BigNumber(0));
       otherTotalBal = `${otherTotalBal.toFixed(2)}`;
       return [
         ...prevL,
@@ -139,7 +139,7 @@ const Overview = memo(() => {
     return l;
   }, [reverseShowPortfolioList, barChartBaseOptions]);
   const yDatasPortfolio = useMemo(() => {
-    const l = reverseShowPortfolioList.map((i) => i.totalBalance - 0);
+    const l = reverseShowPortfolioList.map((i: any) => i.totalBalance - 0);
     return l;
   }, [reverseShowPortfolioList]);
 

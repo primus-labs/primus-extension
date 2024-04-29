@@ -5,6 +5,7 @@ import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import { sub, formatNumeral } from '@/utils/utils';
 import './index.scss';
 import idex from 'ccxt/js/src/pro/idex';
+import { UserState } from '@/types/store';
 const PAGESIZE = 10;
 interface TokenTableProps {
   title: string;
@@ -19,7 +20,7 @@ const TokenTable: FC<TokenTableProps> = memo(
     const { spotAccountTokenMap, flexibleAccountTokenMap } = others;
     const totolCount = listMap.length;
     const [current, setCurrent] = useState(1);
-    const sysConfig = useSelector((state) => state.sysConfig);
+    const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const tokenLogoPrefix = useMemo(() => {
       return sysConfig.TOKEN_LOGO_PREFIX;
     }, [sysConfig]);

@@ -461,13 +461,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.resType === 'algorithm' && fullscreenPort) {
     postMsg(fullscreenPort, message);
   }
+  let hasGetTwitterScreenName = false
   if (message.type === 'pageDecode') {
     pageDecodeMsgListener(
       message,
       sender,
       sendResponse,
       USERPASSWORD,
-      fullscreenPort
+      fullscreenPort,
+      hasGetTwitterScreenName
     );
   }
   if (message.type === 'padoWebsite') {

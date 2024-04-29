@@ -3,8 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'react';
 import dayjs from 'dayjs';
-import { initEventsActionAsync } from '@/store/actions';
-
+import { setEventsActionAsync, initEventsActionAsync } from '@/store/actions';
+import useEventDetail from '@/hooks/useEventDetail';
 import RewardsDialog from '@/components/RewardsDialog';
 import ClaimWrapper from '../ClaimWrapper';
 import ClaimMysteryBoxWrapper from '../ClaimMysteryBoxWrapper';
@@ -16,6 +16,7 @@ import AdSpaceMysteryBox from '../AdSpaceMysteryBox';
 import AdSpaceMysteryBox2 from '../AdSpaceMysteryBox2';
 import AdSpaceMysteryBAS from '../AdSpaceMysteryBAS';
 import AdSpaceLineaDeFiVoyage from '../AdSpaceLineaDeFiVoyage';
+import AdSpaceEthSign from '../AdSpaceEthSign';
 import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/ConnectWalletDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import './index.scss';
@@ -25,9 +26,16 @@ import 'slick-carousel/slick/slick-theme.css';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 import Slider from 'react-slick';
-import { BASEVENTNAME, DATASOURCEMAP } from '@/config/constants';
+import {
+  BASEVENTNAME,
+  ETHSIGNEVENTNAME,
+  DATASOURCEMAP,
+} from '@/config/constants';
 import { setRewardsDialogVisibleAction } from '@/store/actions';
+
 const EventsOverview = memo(() => {
+  const [BASEventDetail, BASEventPeriod, formatPeriod, ethSignEventActiveFlag] =
+    useEventDetail(ETHSIGNEVENTNAME);
   const [activeRequest, setActiveRequest] = useState<ActiveRequestType>();
   const [processDialogVisible, setProcessDialogVisible] = useState<boolean>();
   const [connectDialogVisible, setConnectDialogVisible] = useState<boolean>();
@@ -53,6 +61,9 @@ const EventsOverview = memo(() => {
   const [claimMysteryBoxVisible2, setClaimMysteryBoxVisible2] =
     useState<boolean>(false);
 
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   const scrollEventPeriod = useSelector(
     (state: UserState) => state.scrollEventPeriod
   );
@@ -102,38 +113,51 @@ const EventsOverview = memo(() => {
       navigate(`/cred?fromEvents=Scroll`);
     }
   }, [navigate, dispatch]);
-  const handleClickClaimBAS = useCallback(async () => {
-    let isLastFinished = false;
-    const res = await chrome.storage.local.get([BASEVENTNAME]);
-    const initFn = async () => {
-      await chrome.storage.local.set({
-        [BASEVENTNAME]: JSON.stringify({
-          // status: 0, //  0:start 1:end(suc)
-          steps: [
-            {
-              status: 0,
-            },
-            {
-              status: 0,
-            },
-            {
-              status: 0,
-            },
-          ],
-        }),
-      });
-    };
-    if (res[BASEVENTNAME]) {
-      const lastInfo = JSON.parse(res[BASEVENTNAME]);
-      isLastFinished = lastInfo.status === 1;
-      if (isLastFinished) {
+
+  const initEvent = useCallback(
+    async (eventName) => {
+      let isLastFinished = false;
+      const res = await chrome.storage.local.get([eventName]);
+      const initFn = async () => {
+        await chrome.storage.local.set({
+          [eventName]: JSON.stringify({
+            // status: 0, //  0:start 1:end(suc)
+            steps: [
+              {
+                status: 0,
+              },
+              {
+                status: 0,
+              },
+              {
+                status: 0,
+              },
+            ],
+          }),
+        });
+      };
+      if (res[eventName]) {
+        const lastInfo = JSON.parse(res[eventName]);
+        isLastFinished = lastInfo.status === 1;
+        // if (eventName === ETHSIGNEVENTNAME) {
+        //   isLastFinished = lastInfo.steps.every((i: any) => i.status === 1);
+        // }
+        if (isLastFinished) {
+          await initFn();
+        }
+      } else {
         await initFn();
       }
-    } else {
-      await initFn();
-    }
-    navigate(`/cred?fromEvents=${BASEVENTNAME}`);
+      navigate(`/cred?fromEvents=${eventName}`);
+    },
+    [navigate]
+  );
+  const handleClickClaimBAS = useCallback(async () => {
+    await initEvent(BASEVENTNAME);
   }, [navigate]);
+  const handleClickAdEthSign = useCallback(async () => {
+    await initEvent(ETHSIGNEVENTNAME);
+  }, [initEvent]);
   const handleClickAdSpaceLineaDeFiVoyage = useCallback(async () => {
     navigate('/cred?fromEvents=LINEA_DEFI_VOYAGE');
   }, [navigate]);
@@ -163,13 +187,20 @@ const EventsOverview = memo(() => {
     }
   }, [ScrollProcess, dispatch]);
   useEffect(() => {
-    dispatch(initEventsActionAsync())
+    dispatch(initEventsActionAsync());
   }, [dispatch]);
 
   return (
     <div className="eventOverview">
       <div className="eventOverviewContent">
+        {ethSignEventActiveFlag === 1 && (
+          <AdSpaceEthSign onClick={handleClickAdEthSign} />
+        )}
+
         <AdSpaceLineaDeFiVoyage onClick={handleClickAdSpaceLineaDeFiVoyage} />
+        {ethSignEventActiveFlag === 3 && (
+          <AdSpaceEthSign onClick={handleClickAdEthSign} />
+        )}
         <AdSpaceMysteryBAS onClick={handleClickClaimBAS} />
         {/* <AdSpaceBAS onClick={handleClickClaimBAS} /> */}
         {/* <Slider {...settings}> */}

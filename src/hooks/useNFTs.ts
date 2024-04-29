@@ -1,8 +1,9 @@
+import { UserState } from '@/types/store';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 const useNFTs = function useNFTs() {
-  const nfts = useSelector((state) => state.nfts);
+  const nfts = useSelector((state:UserState) => state.nfts);
   const accountsNftsListMap = useMemo(() => {
     const m = Object.keys(nfts).reduce((prevM, currM) => {
       const currentAccountNfts = nfts[currM];

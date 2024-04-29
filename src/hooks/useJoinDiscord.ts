@@ -24,7 +24,7 @@ type CreateAuthWindowCallBack = (
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 // connect & join discord
-const DISCORDINVITEURL = 'https://discord.com/invite/K8Uqm5ww';
+const DISCORDINVITEURL = 'https://discord.com/invite/YxJftNRxhh';
 const useAuthorization2 = () => {
   const { sourceMap2 } = useAllSources();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
@@ -93,7 +93,6 @@ const useAuthorization2 = () => {
       }
       const pollingResultFn = async (state: string, source: string) => {
         const data = await chrome.storage.local.get(['discord']);
-        console.log('222sourceMap2.discord', sourceMap2.discord, data);// delete
         if (!data.discord) {
           return;
         }
