@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { utils } from 'ethers';
 import { getCurrentDate, formatAddress } from '@/utils/utils';
 import { setCredentialsAsync, setActiveOnChain } from '@/store/actions';
+import { getUserInfo } from '@/services/api/achievements';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
 import { compareVersions } from '@/utils/utils';
@@ -18,19 +19,18 @@ import {
   ASSETSVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
 
-import type { SyntheticEvent, Dispatch } from 'react';
+import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
-import type { CredTypeItemType } from '@/types/cred';
+// import type { CredTypeItemType } from '@/types/cred';
 
+import ShareComponent from '@/newComponents/Ahievements/ShareComponent';
 import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
 import PDropdown from '@/newComponents/PDropdown';
-import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
+// import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 import ConfirmDeleteDialog from '../ConfirmDeleteDialog';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import './index.scss';
-import { formatDate, div } from '../../../utils/utils';
-import request from '@/utils/request';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 
 type NavItem = {
@@ -56,15 +56,17 @@ const Cards: React.FC<PDropdownProps> = memo(
     const [confirmDeleteDialogVisible, setConfirmDeleteDialogVisible] =
       useState<boolean>(false);
     const [activeCredId, setActiveCredId] = useState<string>();
+    const [visibleShareDiag, setVisibleShareDiag] = useState<boolean>(false);
+    const [shareType, setShareType] = useState('attestation');
+    const [totalScore, setTotalScore] = useState(0);
+    const [referralCode, setRefferralCode] = useState('');
 
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
 
-    console.log('222credentialsFromStore', credentialsFromStore); //delete
-    const { deleteFn: deleteDataSourceFn } =
-      useDataSource(activeDataSourceName);
+    // console.log('222credentialsFromStore', credentialsFromStore); //delete
     const attestationQueryStr = useSelector(
       (state: UserState) => state.attestationQueryStr
     );
@@ -192,7 +194,10 @@ const Cards: React.FC<PDropdownProps> = memo(
       },
       [dispatch]
     );
-    const handleShare = useCallback((i) => {}, []);
+    const handleShare = useCallback((i) => {
+      setActiveCredId(i.requestid);
+      setVisibleShareDiag(true);
+    }, []);
     const handleCopy = useCallback((i) => {}, []);
     const handleShowMore = useCallback((i) => {
       setActiveCredId(i.requestid);
@@ -262,6 +267,21 @@ const Cards: React.FC<PDropdownProps> = memo(
     // useEffect(() => {
     //   handleDeleteCred(credentialsFromStore[]);
     // }, [credentialsFromStore, handleDeleteCred]);
+    const handleSharePageClose = () => {
+      setActiveCredId(undefined);
+      setVisibleShareDiag(false);
+    };
+    const getUserInfoFn = async () => {
+      const res = await getUserInfo();
+      const { rc, result } = res;
+      if (rc === 0) {
+        setRefferralCode(result.referralCode);
+        setTotalScore(result.totalScore);
+      }
+    };
+    useEffect(() => {
+      getUserInfoFn();
+    }, []);
 
     return (
       <div className="attestationsWrapper">
@@ -284,7 +304,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                           handleShare(i);
                         }}
                       />
-                      <div title="Copy link to share">
+                      {/* <div title="Copy link to share">
                         <PButton
                           className="copyBtn"
                           type="icon"
@@ -293,7 +313,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                             handleCopy(i);
                           }}
                         />
-                      </div>
+                      </div> */}
                       <div
                         onClick={() => {
                           handleShowMore(i);
@@ -441,6 +461,18 @@ const Cards: React.FC<PDropdownProps> = memo(
           <ConfirmDeleteDialog
             onClose={handleCloseConfirmDeleteDialog}
             onSubmit={handleSubmitConfirmDeleteDialog}
+          />
+        )}
+        {visibleShareDiag && (
+          <ShareComponent
+            onClose={handleSharePageClose}
+            shareType={shareType}
+            scoreShareProps={{
+              score: totalScore,
+              referralCode,
+              attestationType:
+                credentialsFromStore[activeCredId as string].attestationType,
+            }}
           />
         )}
       </div>

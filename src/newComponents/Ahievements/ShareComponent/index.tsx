@@ -12,12 +12,15 @@ import discord from '@/assets/newImg/achievements/discord.svg';
 import telegram from '@/assets/newImg/achievements/telegram.svg';
 // @ts-ignore
 import { toPng } from 'html-to-image';
-import { shareDiscord, shareTelegram, shareTwitter } from '@/services/api/achievements';
+import {
+  shareDiscord,
+  shareTelegram,
+  shareTwitter,
+} from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import PButton from '@/newComponents/PButton';
-
 
 interface PButtonProps {
   // sourceName: string;
@@ -29,11 +32,11 @@ interface PButtonProps {
 interface ScoreShareProps {
   score: number;
   referralCode: string;
+  attestationType?: string;
 }
 
 const ShareComponent: React.FC<PButtonProps> = memo(
   ({ onClose, shareType, scoreShareProps }) => {
-
     const domEl = useRef(null);
 
     const [isSharing, setIsSharing] = useState(false);
@@ -51,7 +54,8 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
-          shareType: shareType ==='score'?"score".toUpperCase():"referralCode"
+          shareType:
+            shareType === 'score' ? 'score'.toUpperCase() : 'referralCode',
         });
         console.log(rsp);
         if (rsp.rc === 0) {
@@ -66,10 +70,9 @@ const ShareComponent: React.FC<PButtonProps> = memo(
       }
     };
 
-
-    const toDiscordSharePage = async ()=>{
-      setIsShowDiscordCopyBtn(true)
-    }
+    const toDiscordSharePage = async () => {
+      setIsShowDiscordCopyBtn(true);
+    };
     const shareDiscordImg = async () => {
       if (isSharing) {
         return;
@@ -82,8 +85,8 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
-          shareType: shareType ==='score'?"score".toUpperCase():"referralCode"
-
+          shareType:
+            shareType === 'score' ? 'score'.toUpperCase() : 'referralCode',
         });
         console.log(rsp);
         if (rsp.rc === 0) {
@@ -96,7 +99,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
         console.log(e);
       } finally {
         setIsSharing(false);
-        setIsShowDiscordCopyBtn(false)
+        setIsShowDiscordCopyBtn(false);
       }
     };
 
@@ -112,7 +115,8 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
-          shareType: shareType ==='score'?"score".toUpperCase():"referralCode"
+          shareType:
+            shareType === 'score' ? 'score'.toUpperCase() : 'referralCode',
         });
         console.log(rsp);
         if (rsp.rc === 0) {
@@ -197,6 +201,20 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                     </div>
                   </div>
                 )}
+                {shareType === 'attestation' && (
+                  <div className="shareContent attestation">
+                    <div className="title">
+                      I created 1 {scoreShareProps.attestationType} on PADO.
+                    </div>
+                    <div className="desc">
+                      Sign up to PADO today and use my referral code{' '}
+                      <span className="inviteCode">
+                        {scoreShareProps.referralCode}
+                      </span>{' '}
+                      for extra points!
+                    </div>
+                  </div>
+                )}
 
                 <div className={'downloadApp'}>
                   <a
@@ -267,7 +285,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
         />
       </PMask>
     );
-  },
+  }
 );
 
 export default ShareComponent;

@@ -2,7 +2,6 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
 
-
 .pDialog2.share-div {
   width: 448px;
   height: 454px;
@@ -16,14 +15,13 @@
   main {
     display: flex;
     .shareDiv {
-
       .container {
         width: 400px;
         height: 240px;
         border: 1px;
         border-radius: 8px;
         border: 1px solid #e0e0e0;
-        background-color: #E8FFFF;
+        background-color: #e8ffff;
         position: relative;
         overflow: hidden;
 
@@ -37,7 +35,6 @@
           position: absolute;
           margin-left: 210px;
           z-index: 1;
-
         }
 
         .blue-rectangle {
@@ -55,10 +52,28 @@
           margin-left: 24px;
           margin-top: 30px;
         }
-        .shareContent{
+        .shareContent {
           position: absolute;
           margin-top: 110px;
           width: 250px;
+          &.attestation {
+            width: 227px;
+            box-sizing: border-box;
+            .desc {
+              width: 100%;
+              margin-left: 24px;
+              padding-top: 12px;
+              font-size: 12px;
+              line-height: 18px;
+              font-weight: 400;
+              font-family: 'IBM Plex Sans';
+              .inviteCode {
+                font-size: 14px;
+                font-weight: 500;
+                margin-top: 12px;
+              }
+            }
+          }
           .title {
             margin-left: 24px;
             margin-top: -20px;
@@ -66,13 +81,13 @@
             font-weight: 500;
           }
         }
-        .downloadApp{
+        .downloadApp {
           position: absolute;
           margin-top: 200px;
           margin-left: 24px;
           font-weight: 400;
           font-size: 12px;
-          color: #161616
+          color: #161616;
         }
       }
 
@@ -81,18 +96,17 @@
         font-size: 14px;
         font-weight: 400;
         width: 400px;
-        text-align:center;
+        text-align: center;
         .shareTitle {
           width: 400px;
           align-content: center;
         }
-        .shareIcon{
+        .shareIcon {
           margin-top: 15px;
-          margin:20px
-
+          margin: 20px;
         }
       }
-      .shareDiscordCopy{
+      .shareDiscordCopy {
         margin-top: 20px;
         font-size: 14px;
         font-weight: 400;
@@ -106,8 +120,5 @@
         }
       }
     }
-
-
   }
 }
-
