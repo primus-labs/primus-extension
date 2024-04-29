@@ -1,5 +1,7 @@
-import React, { memo, useRef, useState } from 'react';
+import React, { memo, useRef, useState, useCallback } from 'react';
 import './index.scss';
+import TokenPie from '@/newComponents/Home/DataSourcesModule/TokenPie';
+import PButton from '@/newComponents/PButton';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import padoLogo from '@/assets/newImg/achievements/pado.svg';
@@ -10,6 +12,7 @@ import blueRect from '@/assets/newImg/achievements/blueRect.svg';
 import x from '@/assets/newImg/achievements/x.svg';
 import discord from '@/assets/newImg/achievements/discord.svg';
 import telegram from '@/assets/newImg/achievements/telegram.svg';
+import bgShare from '@/assets/newImg/dataDashboard/bgShare.svg';
 // @ts-ignore
 import { toPng } from 'html-to-image';
 import {
@@ -20,7 +23,6 @@ import {
 import copy from 'copy-to-clipboard';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import PButton from '@/newComponents/PButton';
 
 interface PButtonProps {
   // sourceName: string;
@@ -33,6 +35,7 @@ interface ScoreShareProps {
   score: number;
   referralCode: string;
   attestationType?: string;
+  totalBalance?: string;
 }
 
 const ShareComponent: React.FC<PButtonProps> = memo(
@@ -54,8 +57,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
-          shareType:
-            shareType === 'score' ? 'score'.toUpperCase() : 'referralCode',
+          shareType,
         });
         console.log(rsp);
         if (rsp.rc === 0) {
@@ -85,8 +87,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
-          shareType:
-            shareType === 'score' ? 'score'.toUpperCase() : 'referralCode',
+          shareType,
         });
         console.log(rsp);
         if (rsp.rc === 0) {
@@ -115,8 +116,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
           base64Image: base64Imag,
           referralCode: scoreShareProps.referralCode,
           points: scoreShareProps.score,
-          shareType:
-            shareType === 'score' ? 'score'.toUpperCase() : 'referralCode',
+          shareType,
         });
         console.log(rsp);
         if (rsp.rc === 0) {
@@ -130,10 +130,15 @@ const ShareComponent: React.FC<PButtonProps> = memo(
         setIsSharing(false);
       }
     };
+    const handleDownload = useCallback(() => {
+      window.open(
+        'https://chromewebstore.google.com/detail/pado/oeiomhmbaapihbilkfkhmlajkeegnjhe'
+      );
+    }, []);
 
     return (
       <PMask>
-        <div className="pDialog2 share-div">
+        <div className={`pDialog2 share-div ${shareType}`}>
           <PClose onClick={onClose} />
           <main>
             <header>
@@ -141,97 +146,135 @@ const ShareComponent: React.FC<PButtonProps> = memo(
             </header>
             <div className={'shareDiv'}>
               <div className={'shareTitle'}></div>
-              <div className="container" id="domEl" ref={domEl}>
-                <img className={'green-circle'} src={greenCircle}></img>
-                <img className={'white-circle'} src={whiteCircle}></img>
-                <img className={'blue-rectangle'} src={blueRect}></img>
-                <img className="logo" src={padoLogo}></img>
-                {shareType === 'score' && (
-                  <div className={'shareContent'}>
-                    <div className="title">My achievements in PADO</div>
-                    <div
-                      style={{
-                        fontWeight: '600',
-                        fontSize: '32px',
-                        marginLeft: '24px',
-                        marginTop: '20px',
-                      }}
-                    >
-                      {scoreShareProps.score}
+              <div className={`container `} id="domEl" ref={domEl}>
+                {['score', 'referralCode', 'certificate'].includes(
+                  shareType
+                ) && (
+                  <>
+                    <img className={'green-circle'} src={greenCircle}></img>
+                    <img className={'white-circle'} src={whiteCircle}></img>
+                    <img className={'blue-rectangle'} src={blueRect}></img>
+                    <img className="logo" src={padoLogo}></img>
+                    {shareType === 'score' && (
+                      <div className={'shareContent'}>
+                        <div className="title">My achievements in PADO</div>
+                        <div
+                          style={{
+                            fontWeight: '600',
+                            fontSize: '32px',
+                            marginLeft: '24px',
+                            marginTop: '20px',
+                          }}
+                        >
+                          {scoreShareProps.score}
+                          <a
+                            style={{
+                              fontWeight: '400',
+                              fontSize: '12px',
+                              marginLeft: '5px',
+                              marginTop: '10px',
+                            }}
+                          >
+                            xp
+                          </a>
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: '400',
+                            fontSize: '12px',
+                            color: '#161616',
+                            marginLeft: '24px',
+                            marginTop: '10px',
+                          }}
+                        >
+                          My referral code:{' '}
+                          <a>{scoreShareProps.referralCode}</a>
+                        </div>
+                      </div>
+                    )}
+                    {shareType === 'referralCode' && (
+                      <div className={'shareContent'}>
+                        <div className="title">
+                          Sign up to PADO and use my referral code to earn extra
+                          points!
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: '600',
+                            fontSize: '32px',
+                            marginLeft: '24px',
+                            marginTop: '20px',
+                          }}
+                        >
+                          {scoreShareProps.referralCode}
+                        </div>
+                      </div>
+                    )}
+                    {shareType === 'certificate' && (
+                      <div className="shareContent attestation">
+                        <div className="title">
+                          I created 1 {scoreShareProps.attestationType} on PADO.
+                        </div>
+                        <div className="desc">
+                          Sign up to PADO today and use my referral code{' '}
+                          <span className="inviteCode">
+                            {scoreShareProps.referralCode}
+                          </span>{' '}
+                          for extra points!
+                        </div>
+                      </div>
+                    )}
+                    <div className={'downloadApp'}>
                       <a
                         style={{
                           fontWeight: '400',
                           fontSize: '12px',
-                          marginLeft: '5px',
-                          marginTop: '10px',
+                          color: '#161616',
                         }}
+                        target={'_blank'}
+                        href={
+                          'https://chromewebstore.google.com/detail/pado/oeiomhmbaapihbilkfkhmlajkeegnjhe'
+                        }
                       >
-                        xp
+                        Download PADO
+                        <img src={lineLogo} style={{ marginLeft: '5px' }} />
                       </a>
                     </div>
-                    <div
-                      style={{
-                        fontWeight: '400',
-                        fontSize: '12px',
-                        color: '#161616',
-                        marginLeft: '24px',
-                        marginTop: '10px',
-                      }}
-                    >
-                      My referral code: <a>{scoreShareProps.referralCode}</a>
-                    </div>
-                  </div>
+                  </>
                 )}
+                {shareType === 'data_dashboard' && (
+                  <div className={'shareContent data_dashboard'}>
+                    <div className="topCon">
+                      <img className="left" src={padoLogo}></img>
+                      <div className="right">
+                        <div className="title">Checkout My Balance on PADO</div>
+                        <div className="desc">
+                          My referral code:{' '}
+                          <div className="inviteCode">
+                            {scoreShareProps.referralCode}
+                            {/* {scoreShareProps.totalBalance} */}
+                          </div>
+                        </div>
 
-                {shareType === 'referralCode' && (
-                  <div className={'shareContent'}>
-                    <div className="title">
-                      Sign up to PADO and use my referral code to earn extra
-                      points!
+                        <PButton
+                          type="text"
+                          text="Download PADO"
+                          className="downloadBtn"
+                          onClick={handleDownload}
+                        />
+                      </div>
                     </div>
-                    <div
-                      style={{
-                        fontWeight: '600',
-                        fontSize: '32px',
-                        marginLeft: '24px',
-                        marginTop: '20px',
-                      }}
-                    >
-                      {scoreShareProps.referralCode}
-                    </div>
-                  </div>
-                )}
-                {shareType === 'attestation' && (
-                  <div className="shareContent attestation">
-                    <div className="title">
-                      I created 1 {scoreShareProps.attestationType} on PADO.
-                    </div>
-                    <div className="desc">
-                      Sign up to PADO today and use my referral code{' '}
-                      <span className="inviteCode">
-                        {scoreShareProps.referralCode}
-                      </span>{' '}
-                      for extra points!
+                    <div className="centerCon">
+                      <div className="title">
+                        <div className="label">Total Balance</div>
+                        <div className="value">
+                          {scoreShareProps.totalBalance}
+                        </div>
+                      </div>
+                      <TokenPie />
                     </div>
                   </div>
                 )}
-
-                <div className={'downloadApp'}>
-                  <a
-                    style={{
-                      fontWeight: '400',
-                      fontSize: '12px',
-                      color: '#161616',
-                    }}
-                    target={'_blank'}
-                    href={
-                      'https://chromewebstore.google.com/detail/pado/oeiomhmbaapihbilkfkhmlajkeegnjhe'
-                    }
-                  >
-                    Download PADO
-                    <img src={lineLogo} style={{ marginLeft: '5px' }} />
-                  </a>
-                </div>
               </div>
               {!isShowDiscordCopyBtn && (
                 <div className={'shareMedia'}>

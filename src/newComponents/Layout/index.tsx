@@ -70,11 +70,11 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
       if (compareRes > -1) {
         // attestation version <= '1.0.3'
         if (i.type === 'ASSETS_PROOF') {
-          i.attestationType = 'Assets Certification';
+          i.attestationType = 'Assets Verification';
           i.verificationContent = 'Assets Proof';
           i.verificationValue = i.baseValue;
         } else if (i.type === 'TOKEN_HOLDINGS') {
-          i.attestationType = 'Assets Certification';
+          i.attestationType = 'Assets Verification';
           i.verificationContent = 'Token Holding';
           i.verificationValue = i.holdingToken;
         } else if (i.type === 'IDENTIFICATION_PROOF') {

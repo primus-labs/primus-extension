@@ -133,7 +133,7 @@ export const eventMetaMap = {
         discord: 0,
       },
       attestation: {
-        'Assets Certification': 0,
+        'Assets Verification': 0,
       },
       onChain: {
         // TODOnewui ???

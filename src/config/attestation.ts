@@ -19,7 +19,7 @@ type ATTESTATIONTYPEITEMTYPEMAP = {
   [propName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
 };
 
-// Assets Certification content/value options
+// Assets Verification content/value options
 export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   'Assets Proof': {
     value: 'Assets Proof',
@@ -81,7 +81,6 @@ export const SOCIALVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 export const SOCIALVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(SOCIALVERIFICATIONVALUETYPEEMAP);
 
-
 // Humanity Verification content/value options
 export const HUMANITYVERIFICATIONCONTENTTYPEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   'KYC Status': {
@@ -132,9 +131,9 @@ export const ALLVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 };
 
 export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
-  'Assets Certification': {
-    id: 'Assets Certification',
-    name: 'Assets Certification',
+  'Assets Verification': {
+    id: 'Assets Verification',
+    name: 'Assets Verification',
     icon: iconAttestationTypeAssets,
     color: 'yellow',
     childMap: ASSETSVERIFICATIONCONTENTTYPEEMAP,
@@ -198,7 +197,7 @@ export const CredVersion = '1.0.5';
 //     webTemplateId: '2',
 //   },
 //   2: {
-//     title: 'Assets Certification Proof',
+//     title: 'Assets Verification Proof',
 //     desc: 'Owns the specified token',
 //     icon: iconAttestationAssets,
 //     type: 'Web Data',
@@ -206,7 +205,7 @@ export const CredVersion = '1.0.5';
 //     webTemplateId: '2323',
 //   },
 //   3: {
-//     title: 'Assets Certification Proof',
+//     title: 'Assets Verification Proof',
 //     desc: 'Asset balance ≥ specified amount',
 //     icon: iconAttestationAssets,
 //     id: '3',

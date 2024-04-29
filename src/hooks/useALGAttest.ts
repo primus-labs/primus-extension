@@ -123,7 +123,7 @@ const useAttest = function useAttest() {
         setIntervalSwitch(true);
       } else if (retcode === '2') {
         const errorMsgTitle = [
-          'Assets Certification',
+          'Assets Verification',
           'Humanity Verification',
         ].includes(activeAttestation.attestationType)
           ? `${activeAttestation.attestationType} failed!`
@@ -195,7 +195,7 @@ const useAttest = function useAttest() {
         ? JSON.parse(activeRequestAttestation)
         : {};
       const errorMsgTitle = [
-        'Assets Certification',
+        'Assets Verification',
         'Humanity Verification',
       ].includes(activeAttestation.attestationType)
         ? `${activeAttestation.attestationType} failed!`
@@ -457,7 +457,7 @@ const useAttest = function useAttest() {
       ? JSON.parse(activeRequestAttestation)
       : {};
     const errorMsgTitle = [
-      'Assets Certification',
+      'Assets Verification',
       'Humanity Verification',
     ].includes(activeAttestation.attestationType)
       ? `${activeAttestation.attestationType} failed!`
@@ -537,7 +537,7 @@ const useAttest = function useAttest() {
       if (type === 'pageDecode') {
         console.log('222message', message, activeAttestation);
         const errorMsgTitle = [
-          'Assets Certification',
+          'Assets Verification',
           'Humanity Verification',
         ].includes(activeAttestation.attestationType)
           ? `${activeAttestation.attestationType} failed!`

@@ -1,17 +1,17 @@
 import React, { memo, useCallback, useState, useMemo, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import Chart from 'react-apexcharts';
-import { sub, add, div, mul, gt, formatNumeral } from '@/utils/utils';
+import { sub, add } from '@/utils/utils';
+import useAllSources from '@/hooks/useAllSources';
+import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 
 import './index.scss';
 import AssetsBalance from '@/newComponents/AssetsBalance';
 import PButton from '@/newComponents/PButton';
 import PPTabs from '@/newComponents/PTabs';
 import BarChart2 from '../BarChart2';
-import useAllSources from '@/hooks/useAllSources';
-import useAssetsStatistic from '@/hooks/useAssetsStatistic';
+import TokenPie from '../TokenPie';
+
 import iconOthers from '@/assets/newImg/home/iconOthers.svg';
 
 const MAXSHOWTOKENLEN = 5;
@@ -19,9 +19,6 @@ const MAXSHOWDATASOURCELEN = 4;
 
 const Overview = memo(() => {
   const {
-    sortedHoldingTokensList,
-    balancePercentFn,
-    tokenIconFn,
     sortedChainAssetsList,
     hasChainAssets,
     hasTokenAssets,
@@ -143,32 +140,6 @@ const Overview = memo(() => {
     return l;
   }, [reverseShowPortfolioList]);
 
-  const showTokenList = useMemo(() => {
-    const allTokenList = sortedHoldingTokensList.map((i) => {
-      const { symbol, value, logo } = i;
-      return {
-        symbol,
-        value,
-      };
-    });
-    if (allTokenList.length > MAXSHOWTOKENLEN) {
-      const prevL = allTokenList.slice(0, MAXSHOWTOKENLEN - 1);
-      const otherL = allTokenList.slice(MAXSHOWTOKENLEN - 1);
-      const reduceF: (prev: BigNumber, curr: any) => BigNumber = (
-        prev,
-        curr
-      ) => {
-        const { value: totalBalance } = curr;
-        return add(prev.toNumber(), Number(totalBalance));
-      };
-      let otherTotalBal = otherL.reduce(reduceF, new BigNumber(0));
-      otherTotalBal = `${otherTotalBal.toFixed(2)}`;
-
-      return [...prevL, { symbol: 'Other', value: otherTotalBal }];
-    } else {
-      return allTokenList;
-    }
-  }, [sortedHoldingTokensList]);
   const showChainList = useMemo(() => {
     const allList = sortedChainAssetsList;
     if (allList.length > MAXSHOWDATASOURCELEN) {
@@ -193,20 +164,6 @@ const Overview = memo(() => {
   }, [sortedChainAssetsList]);
   const reverseShowChainList = useMemo(() => {
     return showChainList.reverse();
-  }, [showChainList]);
-  const optionsChain = useMemo(() => {
-    const l = showChainList.map((i) => i.name);
-    const fullOptions = { ...barChartBaseOptions };
-    fullOptions.xaxis = { categories: l };
-    return fullOptions;
-  }, [showChainList, barChartBaseOptions]);
-  const seriesChain = useMemo(() => {
-    const l = showChainList.map((i) => i.totalBalance - 0);
-    return [
-      {
-        data: l,
-      },
-    ];
   }, [showChainList]);
   const xDatasChain = useMemo(() => {
     const l = reverseShowChainList.map((i) => ({
@@ -267,26 +224,7 @@ const Overview = memo(() => {
             tokenMapDatas={tokenMapDatas}
           />
         )}
-        {activeTab === 'Token' && hasTokenAssets && (
-          <div className="tokenChart">
-            <ul className={`tokenItems tokenItems${showTokenList.length}`}>
-              {showTokenList.map((i) => {
-                return (
-                  <li className="tokenItem">
-                    <div className="symbol">
-                      {i.symbol !== 'Other' && (
-                        <img src={tokenIconFn(i)} alt="" />
-                      )}
-                      <span>{i.symbol.split('---')[0]}</span>
-                    </div>
-                    <div className="balance">${formatNumeral(i.value)}</div>
-                    <div className="percent">{balancePercentFn(i)}%</div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
+        {activeTab === 'Token' && hasTokenAssets && <TokenPie />}
         <PButton
           type="text"
           text="View More"

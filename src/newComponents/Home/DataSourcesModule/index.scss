@@ -9,8 +9,9 @@
   &.fdRow {
     width: 100%;
     flex-direction: row;
-    .homeAssetsDistribution,.socialInsights {
-      flex: 1;
+    .homeAssetsDistribution,
+    .socialInsights {
+      width: calc((var(--pageContent-width) - var(--spacing-16)) / 2);
     }
   }
 }

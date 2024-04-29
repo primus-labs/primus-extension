@@ -57,7 +57,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       useState<boolean>(false);
     const [activeCredId, setActiveCredId] = useState<string>();
     const [visibleShareDiag, setVisibleShareDiag] = useState<boolean>(false);
-    const [shareType, setShareType] = useState('attestation');
+    const [shareType, setShareType] = useState('certificate');
     const [totalScore, setTotalScore] = useState(0);
     const [referralCode, setRefferralCode] = useState('');
 
@@ -121,10 +121,10 @@ const Cards: React.FC<PDropdownProps> = memo(
     };
     const getContent = (i) => {
       let str = i.verificationContent;
-      if (i.attestationType === 'Assets Certification') {
+      if (i.attestationType === 'Assets Verification') {
         str = ASSETSVERIFICATIONCONTENTTYPEEMAP[i.verificationContent].label;
       }
-      // if (i.attestationType === 'Assets Certification') {
+      // if (i.attestationType === 'Assets Verification') {
       //   if (i.verificationContent === 'Assets Proof') {
       //     str = 'Asset balance';
       //   } else if (i.verificationContent === 'Token Holding') {
@@ -141,7 +141,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     };
     const getValue = (i) => {
       let str: any = i.verificationValue;
-      if (i.attestationType === 'Assets Certification') {
+      if (i.attestationType === 'Assets Verification') {
         if (i.verificationContent === 'Assets Proof') {
           str = `> $${i.verificationValue}`;
         } else if (i.verificationContent === 'Token Holding') {

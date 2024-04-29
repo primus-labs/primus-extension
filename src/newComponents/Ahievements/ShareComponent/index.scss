@@ -5,6 +5,13 @@
 .pDialog2.share-div {
   width: 448px;
   height: 454px;
+  &.data_dashboard {
+    height: 587px;
+    main .shareDiv .container {
+      background-color: #fff;
+      height: 373px;
+    }
+  }
   .PClose {
     height: 36px;
     .closeBtn {
@@ -71,6 +78,74 @@
                 font-size: 14px;
                 font-weight: 500;
                 margin-top: 12px;
+              }
+            }
+          }
+          &.data_dashboard {
+            width: 100%;
+            margin-top: 0;
+            .topCon {
+              width: 400px;
+              height: 90px;
+              background: url('../../../assets/newImg/dataDashboard/bgShare.svg');
+              background-repeat: no-repeat;
+              @include frss;
+              gap: 8px;
+              padding: 16px 24px;
+              .left {
+                width: 24px;
+              }
+              .right {
+                @include fcss;
+                gap: 4px;
+                .title {
+                  @include BodyBody100Semibold;
+                  margin-left: 0;
+                  margin-top: 0;
+                }
+                .desc {
+                  font-size: 12px;
+                  line-height: 16px;
+                  font-weight: 400;
+                  font-family: 'IBM Plex Sans';
+                  @include frsc;
+                  .inviteCode {
+                    font-weight: 500;
+                  }
+                }
+                .downloadBtn {
+                  height: 16px;
+                }
+              }
+            }
+            .centerCon {
+              padding: 24px;
+              @include fcsc;
+              // gap: 16px;
+              .title {
+                @include fcss;
+                gap: 5.8px;
+                margin-left: 0;
+                margin-top: 0;
+                .label {
+                  font-family: IBM Plex Sans;
+                  font-size: 10.14px;
+                  font-weight: normal;
+                  line-height: 125%;
+                  letter-spacing: 0px;
+                }
+                .value {
+                  font-family: IBM Plex Mono;
+                  font-size: 23.19px;
+                  font-weight: 600;
+                  line-height: 28.99px;
+                  letter-spacing: 0px;
+                }
+              }
+              .tokenPie {
+                // width: 100%;
+                transform: scale(0.72);
+                margin-top: -16px;
               }
             }
           }

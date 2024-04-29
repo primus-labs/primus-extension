@@ -39,7 +39,7 @@ const PClose: React.FC<PBackProps> = memo(
       <div className="createZkAttestation">
         {connected ? (
           <>
-            {type === 'Assets Certification' && (
+            {type === 'Assets Verification' && (
               <AssetDialog
                 presets={presets}
                 type={type}

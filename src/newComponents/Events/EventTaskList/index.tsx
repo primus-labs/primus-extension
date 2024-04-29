@@ -358,7 +358,7 @@ const DataSourceItem = memo(() => {
       };
     } else if (eventId === EARLYBIRDNFTEVENTNAME) {
       attestation = {
-        'Assets Certification': 0, // asset certification
+        'Assets Verification': 0, // asset certification
       };
     }
     emptyInfo = {

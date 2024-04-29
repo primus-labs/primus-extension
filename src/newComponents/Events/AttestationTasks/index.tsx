@@ -95,7 +95,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         if (eventId === ETHSIGNEVENTNAME) {
           attestationType = 'Social Connections';
         } else if (eventId === EARLYBIRDNFTEVENTNAME) {
-          attestationType = 'Assets Certification';
+          attestationType = 'Assets Verification';
         } else {
           attestationType = 'Humanity Verification';
         }
@@ -120,7 +120,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             dataSourceId = 'google';
             verificationContent = 'Account ownership';
             verificationValue = 'Account owner';
-          } else if (taskId === 'Assets Certification') {
+          } else if (taskId === 'Assets Verification') {
             dataSourceId = '';
             verificationContent = '';
             verificationValue = '';

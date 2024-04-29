@@ -33,7 +33,7 @@ type activeAttestationRequest = {
   dataSourceId: string;
   verificationContent?: string;
   verificationValue?: string;
-  attestationType: string; // 'Assets Certification'
+  attestationType: string; // 'Assets Verification'
   fetchType?: string; // Web ,API
   loading?: attestationLoadingStatus; // 0: unstart 1:start loading 2:suc 3: fail
   presets?: any; // attest params

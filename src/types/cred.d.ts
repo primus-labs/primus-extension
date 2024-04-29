@@ -49,7 +49,7 @@ export type CredTypeItemType = {
   dataSourceId?: string;
   verificationContent?: string;
   verificationValue?: string;
-  attestationType?: string; // 'Assets Certification'
+  attestationType?: string; // 'Assets Verification'
   fetchType?: string; // Web ,API
   account?: string;
   credVersion: string;

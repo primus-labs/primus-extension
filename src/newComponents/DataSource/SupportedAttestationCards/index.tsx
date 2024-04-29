@@ -33,7 +33,7 @@ const attestationTypeMap = {
     webTemplateId: '2',
   },
   2: {
-    attestationType: 'Assets Certification',
+    attestationType: 'Assets Verification',
     verificationContent: 'Token Holding',
     desc: 'Token holding',
     icon: iconAttestationAssets,
@@ -42,7 +42,7 @@ const attestationTypeMap = {
     webTemplateId: '2323',
   },
   3: {
-    attestationType: 'Assets Certification',
+    attestationType: 'Assets Verification',
     verificationContent: 'Assets Proof',
     desc: 'Asset balance',
     icon: iconAttestationAssets,
@@ -99,10 +99,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           attestationTypeMap[3],
           attestationTypeMap[5],
         ];
-      if (
-        dataSourceName === 'tiktok' ||
-        dataSourceName === 'google'
-      )
+      if (dataSourceName === 'tiktok' || dataSourceName === 'google')
         return [attestationTypeMap[4]];
       if (dataSourceName === 'x') {
         return [attestationTypeMap[4], attestationTypeMap[16]];

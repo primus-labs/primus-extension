@@ -11,7 +11,7 @@ import iconOthers from '@/assets/newImg/home/iconOthers.svg';
 import { UserState } from '@/types/store';
 const useAssetsStatistic = function () {
   const { sourceMap } = useAllSources();
-  const sysConfig = useSelector((state:UserState) => state.sysConfig);
+  const sysConfig = useSelector((state: UserState) => state.sysConfig);
   const dataSourceIconFn = (id) => {
     if (id.startsWith('0x')) {
       return WALLETMAP['metamask'].icon;
@@ -182,6 +182,9 @@ const useAssetsStatistic = function () {
       const lastV = sub(currVN, Number(totalPnl));
       const lastVN = lastV.toNumber();
       const p = div(sub(currVN, lastVN).toNumber(), lastVN);
+      if (lastVN === 0) {
+        return 100;
+      }
       return p.toFixed(2);
     } else {
       return '';

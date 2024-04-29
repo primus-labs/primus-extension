@@ -116,7 +116,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
 
       let vC = verificationContent,
         vV = verificationValue;
-      if (attestationType === 'Assets Certification') {
+      if (attestationType === 'Assets Verification') {
         if (verificationContent === 'Assets Proof') {
           vC = 'Asset balance';
           vV = `> $${verificationValue}`;
@@ -127,9 +127,8 @@ function DescEl({ status, resultStatus, errorTxt }) {
         if (verificationContent === 'X Followers') {
           vC = 'Followers number';
           vV = `> ${verificationValue}`;
-        } 
+        }
       }
-
 
       return [
         { label: 'Data Source', value: host },
@@ -215,9 +214,9 @@ function DescEl({ status, resultStatus, errorTxt }) {
           <img src={iconFail} alt="" />
           <span>{errorTxtSelf?.sourcePageTip}</span>
         </div>
-          {errorTxtSelf?.code && (
-            <span className="errorCode">{errorTxtSelf?.code}</span>
-          )}
+        {errorTxtSelf?.code && (
+          <span className="errorCode">{errorTxtSelf?.code}</span>
+        )}
       </div>
       <div className="value">Please return to PADO and try again.</div>
     </div>
