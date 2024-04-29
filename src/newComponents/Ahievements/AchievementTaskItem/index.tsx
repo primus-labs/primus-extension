@@ -204,39 +204,36 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         ext = {};
       }
       if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
-        const res = await getDataSourceData('discord');
-        if (!res['discord']) {
-          //check the main wallet whether it has joined discord
-          const checkRsp = await checkHasFinishJoinDiscord();
-          if (checkRsp.result.hasJoinDiscord && checkRsp.result.discordName) {
-            const msgId = addMsg({
-              type: 'info',
-              title: 'Not qualified',
-              desc: `No GM messages found for ${checkRsp.result.discordName} on PADO Discord.`,
-              link: '',
-            });
-            setTimeout(() => {
-              deleteMsg(msgId);
-            }, 5000);
-          } else {
-            const msgId = addMsg({
-              type: 'info',
-              title: 'Not qualified',
-              desc: 'Please complete the Join PADO Discord event first.',
-              link: '',
-            });
-            setTimeout(() => {
-              deleteMsg(msgId);
-            }, 5000);
-          }
+        //check the main wallet whether it has joined discord
+        const checkRsp = await checkHasFinishJoinDiscord();
+        debugger
+        if(!checkRsp.result.hasJoinDiscord){
+          const msgId = addMsg({
+            type: 'info',
+            title: 'Not qualified',
+            desc: 'Please complete the Join PADO Discord event first.',
+            link: '',
+          });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
+          return
+        }else if (checkRsp.result.hasJoinDiscord && !checkRsp.result.hasSendGm) {
+          const msgId = addMsg({
+            type: 'info',
+            title: 'Not qualified',
+            desc: `No GM messages found for ${checkRsp.result.discordName} on PADO Discord.`,
+            link: '',
+          });
+          setTimeout(() => {
+            deleteMsg(msgId);
+          }, 5000);
+          return
 
-          return;
+        } else {
+          ext = {
+          };
         }
-        const discordUserInfo = JSON.parse(res['discord']);
-        ext = {
-          name: discordUserInfo.userName,
-          discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
-        };
       }
       if (taskItem.taskIdentifier === 'CONNECT_X_DATA') {
         const res = await getDataSourceData('x');
