@@ -20,6 +20,7 @@ const useRewardsStatistics = function (eventFilter = '') {
   const events = useSelector((state: UserState) => state.events);
   const rewards = useSelector((state: UserState) => state.rewards);
   console.log('222rewards', rewards); // delete
+  const earlyBirdNFTs = useSelector((state: UserState) => state.earlyBirdNFTs);
   const rewardList = useMemo(() => {
     return Object.values(rewards);
   }, [rewards]);
@@ -50,18 +51,21 @@ const useRewardsStatistics = function (eventFilter = '') {
     let luckyDrawE: any = [];
     let brevisE: any = [];
     // early bird nft
-    if (joinedNFTsFlag) {
-      const { image, tokenId } = joinedNFTsFlag;
-      const obj = {
-        id: EARLYBIRDNFTEVENTNAME,
-        img: image,
-        title: 'Early Adopters #001',
-        desc: 'PADO Early Bird NFT',
-        linkIcon: iconOpenSea,
-        link: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98/${tokenId}`,
-      };
-      list.push(obj);
-      earlyBirdE.push(obj);
+    // description;
+    if (Object.keys(earlyBirdNFTs).length > 0) {
+      Object.keys(earlyBirdNFTs).forEach((i: any) => {
+        const { name, image, description, tokenId, address } = earlyBirdNFTs[i];
+        const obj = {
+          id: EARLYBIRDNFTEVENTNAME + '-' + address,
+          img: image,
+          title: name,
+          desc: description,
+          linkIcon: iconOpenSea,
+          link: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98/${tokenId}`,
+        };
+        list.push(obj);
+        earlyBirdE.push(obj);
+      });
     }
     // lucky draw & scroll
     const fn = (eName) => {
@@ -91,7 +95,7 @@ const useRewardsStatistics = function (eventFilter = '') {
       list.push();
       luckyDrawE.push(fn(LUCKYDRAWEVENTNAME));
     }
-    const scrollItem:any = fn(SCROLLEVENTNAME);
+    const scrollItem: any = fn(SCROLLEVENTNAME);
     if (scrollItem) {
       list.push(fn(SCROLLEVENTNAME));
       scrollE.push(fn(SCROLLEVENTNAME));
@@ -125,10 +129,10 @@ const useRewardsStatistics = function (eventFilter = '') {
     }
   }, [
     eventsResult,
-    joinedNFTsFlag,
     joinedBrevisFlag,
     joinedBrevisRewardList,
     eventFilter,
+    earlyBirdNFTs,
   ]);
   const fetchLotteryResults = useCallback(async () => {
     try {

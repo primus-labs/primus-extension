@@ -17,6 +17,7 @@ export const EVENTNAMEMAP = {
   [LINEAEVENTNAME]: 'Linea Voyage',
   [SCROLLEVENTNAME]: 'Scroll zkAttestation',
   [LUCKYDRAWEVENTNAME]: 'PADO Lucky Draw',
+  [EARLYBIRDNFTEVENTNAME]: 'Early Bird NFT',
 };
 export const eventMetaMap = {
   [BASEVENTNAME]: {

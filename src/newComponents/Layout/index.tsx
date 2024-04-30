@@ -19,6 +19,7 @@ import {
   initEventsActionAsync,
   setNftsActionAsync,
   initNftsActionAsync,
+  setEarlyBirdNFTAsync,
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
@@ -48,6 +49,9 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   const { pathname } = useLocation();
   const theme = useSelector((state: UserState) => state.theme);
   const userInfo = useSelector((state: UserState) => state.userInfo);
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   console.log('222userInfo', userInfo);
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
@@ -116,10 +120,16 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     dispatch(setConnectedWalletsActionAsync());
     dispatch(initEventsActionAsync());
     dispatch(initNftsActionAsync());
-
+    dispatch(setEarlyBirdNFTAsync());
     // dispatch(initConnectedWalletActionAsync());
     // (updateOnChainFn as () => void)();
   }, [dispatch]);
+  // useEffect(() => {
+  //   if (connectedWallet?.address) {
+  //     dispatch(setEarlyBirdNFTAsync());
+  //   }
+  // }, [connectedWallet?.address]);
+
   useEffect(() => {
     initStoreData();
   }, [initStoreData]);

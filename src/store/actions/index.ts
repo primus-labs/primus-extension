@@ -5,6 +5,7 @@ import {
   checkIfBindConnectedWallet,
 } from '@/services/api/user';
 import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
+import { checkEarlyBirdNFT } from '@/services/api/event';
 import { getOnChainNFTs } from '@/services/api/dataDashboard';
 import {
   getAssetsOnChains,
@@ -16,6 +17,7 @@ import { ONEMINUTE } from '@/config/constants';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 import { getProofTypes } from '@/services/api/config';
+import { getEARLYBIRDNFT, getTest } from '@/services/chains/erc721';
 import {
   SCROLLEVENTNAME,
   BASEVENTNAME,
@@ -24,6 +26,8 @@ import {
   ETHSIGNEVENTNAME,
 } from '@/config/events';
 import { WALLETMAP } from '@/config/wallet';
+import { CLAIMNFTNETWORKNAME } from '@/config/chain';
+
 // import { EASInfo } from '@/config/chain';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
@@ -157,6 +161,10 @@ export const setActiveConnectDataSource = (values: any) => ({
 });
 export const setNfts = (values: any) => ({
   type: 'setNfts',
+  payload: values,
+});
+export const setEarlyBirdNFTs = (values: any) => ({
+  type: 'setEarlyBirdNFTs',
   payload: values,
 });
 export const setConnectedWalletsActionAsync = () => {
@@ -961,6 +969,31 @@ export const setNftsActionAsync: (arr?: any[]) => void = (walletArr) => {
       dispatch(setNfts(nftsObj));
     } catch (e) {
       console.log('setEventsActionAsync e:', e);
+    }
+  };
+};
+
+export const setEarlyBirdNFTAsync = () => {
+  return async (dispatch: any, getState) => {
+    try {
+      const { rc, result } = await checkEarlyBirdNFT();
+      if (rc === 0 && result) {
+        const requestArr = Object.keys(result).map(async (addr: any) => {
+          return await getEARLYBIRDNFT({
+            networkName: CLAIMNFTNETWORKNAME,
+            tokenId: Number(result[addr]),
+          });
+        });
+        const nftsInfoArr = await Promise.all(requestArr);
+        let obj: any = {};
+        nftsInfoArr.forEach((i, k) => {
+          const addr = Object.keys(result)[k];
+          obj[addr] = { ...i, address: addr };
+        });
+        dispatch(setEarlyBirdNFTs(obj));
+      }
+    } catch (e) {
+      console.log('setEarlyBirdNFTAsync e:', e);
     }
   };
 };

@@ -81,7 +81,7 @@ const initState = {
   sourceUpdateInfo: {
     lastUpdateFromNow: 5,
     lastUpdating: false,
-    pollingFlag: false
+    pollingFlag: false,
   },
   proofTypes: DEFAULTCREDTYPELIST,
   webProofTypes: [],
@@ -149,6 +149,7 @@ const initState = {
     // },
   },
   nfts: {},
+  earlyBirdNFTs: {}
 };
 
 // reducer
@@ -179,11 +180,14 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, credentials: action.payload };
     case 'setSourceUpdateFrequency':
       return {
-        ...state, sourceUpdateFrequency: action.payload
-        };
+        ...state,
+        sourceUpdateFrequency: action.payload,
+      };
     case 'setSourceUpdateInfo':
-      return { ...state, sourceUpdateInfo: {...state.sourceUpdateInfo,
-          ...action.payload} };
+      return {
+        ...state,
+        sourceUpdateInfo: { ...state.sourceUpdateInfo, ...action.payload },
+      };
     case 'setUserInfo':
       return { ...state, userInfo: action.payload };
     case 'setWalletAddress':
@@ -260,6 +264,12 @@ const reducer: any = function (state = initState, action: any) {
       return {
         ...state,
         nfts: action.payload,
+      };
+    case 'setEarlyBirdNFTs':
+      debugger
+      return {
+        ...state,
+        earlyBirdNFTs: action.payload,
       };
     default:
       return state;

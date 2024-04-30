@@ -83,6 +83,9 @@
         gap: var(--spacing-5);
         display: flex;
         cursor: pointer;
+        .reward-history-icon{
+          font-size: 16px;;
+        }
       }
 
       .reward-history-icon {

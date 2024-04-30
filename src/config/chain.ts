@@ -10,7 +10,8 @@ import iconNetwork5 from '@/assets/img/iconNetwork5.png';
 import iconNetwork6 from '@/assets/img/iconNetwork6.png';
 import iconChainEthereum from '@/assets/img/iconChainEthereum.svg';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
-import { CURENV } from './envConstants';
+// import { CURENV } from './envConstants';
+export const CURENV = process.env.NODE_ENV as any;
 
 const EASINFOMAP = {
   development: {

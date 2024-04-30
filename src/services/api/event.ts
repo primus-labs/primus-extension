@@ -82,3 +82,9 @@ export const queryEventDetail = (data?: CheckLotteryResultsParams) => {
     data,
   });
 };
+export const checkEarlyBirdNFT = () => {
+  return request({
+    method: 'get',
+    url: `/event/early-bird/check`,
+  });
+};

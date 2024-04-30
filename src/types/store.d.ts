@@ -127,4 +127,5 @@ export type UserState = {
   activeOnChain: activeOnChainRequest;
   msgs: MsgMap;
   nfts: NftsMap;
+  earlyBirdNFTs: any;
 };
