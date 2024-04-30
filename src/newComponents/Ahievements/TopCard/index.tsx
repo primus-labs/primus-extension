@@ -68,6 +68,7 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(({
           <div className="points-score">{totalScore}</div>
           <div className="reward-history" onClick={handleRewardsHistory}>
             <img className="reward-history-icon" src={pointsEarnedIcon} />
+            
             <div className="reward-history-text">
               Rewards History
             </div>
