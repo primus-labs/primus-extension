@@ -11,6 +11,9 @@
     @include HeadlineH3;
     @include frbc;
     width: 100%;
+    .moreBtn{
+      height: auto;
+    }
   }
   .dataSourceItems {
     width: 100%;
@@ -29,6 +32,31 @@
       .connectBtn {
         height: var(--spacing-24);
         align-self: flex-end;
+      }
+      .dataSourceItemTop {
+        width: 100%;
+        @include frbs;
+        .PTooltip {
+          .icon-iconInfo {
+            font-size: 12px;
+            color: var(--icon-tokens-icon-error);
+          }
+          .tooltip {
+            top: 22px;
+            background: var(--layer-tokens-layer-05);
+            color: var(--text-tokens-text-inverse);
+            // left: calc(var(--spacing-8) * -1);
+            left: -114px;
+            width: 136px;
+            height: 28px;
+            transform: none;
+            &:after {
+              background: var(--layer-tokens-layer-05);
+              left: 116px;
+              transform: rotate(45deg);
+            }
+          }
+        }
       }
     }
   }

@@ -7,6 +7,7 @@ import './index.scss';
 import PButton from '@/newComponents/PButton';
 import DataSourceBrief from '@/newComponents/DataSource/DataSourceBrief';
 import ConnectDataSource from '@/newComponents/DataSource/ConnectDataSource';
+import PTooltip from '@/newComponents/PTooltip';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useAllSources from '@/hooks/useAllSources';
@@ -20,7 +21,7 @@ const Overview = memo(() => {
   const dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance', 'okx'];
   const checkIsConnectedDataSourceFn = useCallback(
     (i) => {
-      let hasConnectCurrent = !!sourceMap2[i];
+      let hasConnectCurrent = !!sourceMap2[i] && sourceMap2[i]?.expired !== '1';
       if (i === 'web3 wallet') {
         hasConnectCurrent =
           Object.keys(sourceMap.onChainAssetsSources).length > 0;
@@ -77,7 +78,21 @@ const Overview = memo(() => {
                 handleClickCard(i);
               }}
             >
-              <DataSourceBrief id={i} />
+              <div className="dataSourceItemTop">
+                <DataSourceBrief id={i} />
+                {sourceMap2[i]?.expired === '1' && (
+                  <PTooltip title={`Login session expired`}>
+                    <PButton
+                      className="reconnectBtn"
+                      type="icon"
+                      icon={<i className="iconfont icon-iconInfo"></i>}
+                      onClick={() => {
+                        handleClick(i);
+                      }}
+                    />
+                  </PTooltip>
+                )}
+              </div>
               <PButton
                 className="connectBtn"
                 text="Connect"

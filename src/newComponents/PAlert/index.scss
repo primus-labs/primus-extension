@@ -49,8 +49,7 @@
       h2 {
         @include BodyBody1;
         .code {
-          @include Hint;
-          color: var(--text-tokens-text-secondary);
+          color: var(--text-tokens-text-tertiary);
         }
       }
       .detailBtn {

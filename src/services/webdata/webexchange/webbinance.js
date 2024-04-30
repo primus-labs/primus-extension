@@ -1,13 +1,7 @@
 import WebExchange from './webexchange';
 import BigNumber from 'bignumber.js';
 
-import {
-  USDT,
-  BTC,
-  STABLETOKENLIST,
-  BUSD,
-  TUSD,
-} from '@/config/constants';
+import { USDT, BTC, STABLETOKENLIST, BUSD, TUSD } from '@/config/constants';
 import { gt } from '@/utils/utils';
 
 const ONE = 1;
@@ -32,7 +26,10 @@ class WebBinance extends WebExchange {
     const res = await this.request(params);
     console.log(res);
     res.data.forEach(({ asset, free, locked }) => {
-      this.fundingAccountTokenAmountMap.set(asset, Number(free) + Number(locked));
+      this.fundingAccountTokenAmountMap.set(
+        asset,
+        Number(free) + Number(locked)
+      );
     });
     // console.log(
     //   'okx fundingAccountTokenAmountMap',
@@ -54,9 +51,14 @@ class WebBinance extends WebExchange {
     const res = await this.request(params);
     console.log('trading:', res);
     res.data.forEach(({ asset, free, locked }) => {
-      this.tradingAccountTokenAmountMap.set(asset, Number(free) + Number(locked));
+      this.tradingAccountTokenAmountMap.set(
+        asset,
+        Number(free) + Number(locked)
+      );
       this.tradingAccountTokenAmountObj[asset] = Number(free) + Number(locked);
-      this.tradingAccountFreeTokenAmountObj[asset] = Number(free);
+      if (gt(Number(free), 0)) {
+        this.tradingAccountFreeTokenAmountObj[asset] = Number(free);
+      }
     });
     // console.log(
     //   'okx tradingAccountTokenAmountMap',

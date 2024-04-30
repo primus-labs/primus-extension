@@ -114,10 +114,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             });
           } else if (dataSourceId === 'binance') {
             symbolList = Object.keys(
-              activeDataSouceUserInfo.tradingAccountTokenAmountObj
+              activeDataSouceUserInfo.tradingAccountFreeTokenAmountObj
             ).filter((t) => {
               const curVal = mul(
-                Number(activeDataSouceUserInfo.tradingAccountTokenAmountObj[t]),
+                Number(
+                  activeDataSouceUserInfo.tradingAccountFreeTokenAmountObj[t]
+                ),
                 activeDataSouceUserInfo.tokenPriceMap[t]
               ).toFixed();
               const f = gt(Number(curVal), 0.01);

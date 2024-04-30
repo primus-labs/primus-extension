@@ -48,14 +48,14 @@ const AssetsDetails = memo(() => {
     <div className="assetsDetails">
       <div className="title">
         <span>Assets Details</span>
-        <div className="operations">
+        {/* <div className="operations">
           <PButton
             type="text"
             text="Share on social media"
-            suffix={<i className="iconfont icon-iconShare"></i>}
+            suffix={<i className="iconfont icon-iconShareActive"></i>}
             onClick={handleShare}
           />
-        </div>
+        </div> */}
       </div>
       <div className="content">
         <PPTabs

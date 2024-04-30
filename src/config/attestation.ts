@@ -138,6 +138,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     color: 'yellow',
     childMap: ASSETSVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#FFB700',
+    show: true,
   },
 
   'Humanity Verification': {
@@ -147,6 +148,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     color: 'gray',
     childMap: HUMANITYVERIFICATIONCONTENTTYPEMAP,
     chartBarColor: '#7B889B',
+    show: true,
   },
   'Social Connections': {
     id: 'Social Connections',
@@ -155,6 +157,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     color: 'teal',
     childMap: SOCIALVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#08BDBA',
+    show: true,
   },
   'On-chain Transaction': {
     id: 'On-chain Transaction',
@@ -163,6 +166,8 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     color: 'blue',
     childMap: ONCHAINVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#1192E8',
+    disabled: true,
+    show: true,
   },
   'Qualification Certificate': {
     id: 'Qualification Certificate',

@@ -299,7 +299,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <PButton
                         className="shareBtn"
                         type="icon"
-                        icon={<i className="iconfont icon-iconShare"></i>}
+                        icon={<i className="iconfont icon-iconShareActive"></i>}
                         onClick={() => {
                           handleShare(i);
                         }}
