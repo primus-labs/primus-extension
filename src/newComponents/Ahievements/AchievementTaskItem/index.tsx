@@ -833,6 +833,8 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         if(mc === '-110010' && taskItem.taskIdentifier === "REFER_TO_NEW_USER_SUBMIT_FIRST_ATTESTATION"){
           title = 'Not qualified';
           msg = 'No new counted referrals.';
+          link = '';
+          linkText = '';
         }
 
         if (mc === '-110011') {
