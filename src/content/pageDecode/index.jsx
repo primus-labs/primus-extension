@@ -345,8 +345,8 @@ function PadoCard() {
         <img src={iconLink} className="iconLink" />
         <img src={iconDataSource} className="iconSource" />
       </div>
-      <div className="center">
-        <div className="title">PADO Attestation Process</div>
+      <div className="pado-extenstion-center">
+        <div className="pado-extenstion-center-title">PADO Attestation Process</div>
         <DescEl
           status={status}
           resultStatus={resultStatus}

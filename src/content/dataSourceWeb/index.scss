@@ -28,6 +28,7 @@
   z-index: 1000;
   bottom: 30px;
   right: 35px;
+  box-sizing: border-box;
   .pado-extension-card {
     @include fcss;
     @include pCard;
@@ -39,19 +40,19 @@
     border: 0;
     &.initialized {
       padding-top: var(--spacing-32, 32px);
-      .center {
+      .pado-extenstion-center {
         padding: var(--spacing-24, 24px) 0;
       }
     }
     &.verifying {
       padding-top: var(--spacing-32, 32px);
-      .center {
+      .pado-extenstion-center {
         padding: var(--spacing-24, 24px) 0;
       }
     }
     &.result {
       // padding-top: var(--spacing-24, 24px);
-      .center {
+      .pado-extenstion-center {
         padding: var(--spacing-24, 24px) 0;
       }
     }
@@ -67,13 +68,13 @@
         width: var(--spacing-16, 16px);
       }
     }
-    .center {
+    .pado-extenstion-center {
       width: 100%;
       @include fccs;
       gap: var(--spacing-16, 16px);
       color: var(--text-tokens-text-primary);
       @include BodyBody100;
-      .title {
+      .pado-extension-center-title {
         width: 100%;
         @include HeadlineH2;
         text-align: center;
