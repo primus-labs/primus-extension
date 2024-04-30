@@ -18,6 +18,7 @@ import {
   LINEAEVENTNAME,
   LUCKYDRAWEVENTNAME,
   ETHSIGNEVENTNAME,
+  EARLYBIRDNFTEVENTNAME,
 } from '@/config/events';
 import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
@@ -206,7 +207,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
         //check the main wallet whether it has joined discord
         const checkRsp = await checkHasFinishJoinDiscord();
-        if(!checkRsp.result.hasJoinDiscord){
+        if (!checkRsp.result.hasJoinDiscord) {
           const msgId = addMsg({
             type: 'info',
             title: 'Not qualified',
@@ -216,8 +217,11 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           setTimeout(() => {
             deleteMsg(msgId);
           }, 5000);
-          return
-        }else if (checkRsp.result.hasJoinDiscord && !checkRsp.result.hasSendGm) {
+          return;
+        } else if (
+          checkRsp.result.hasJoinDiscord &&
+          !checkRsp.result.hasSendGm
+        ) {
           const msgId = addMsg({
             type: 'info',
             title: 'Not qualified',
@@ -227,11 +231,9 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           setTimeout(() => {
             deleteMsg(msgId);
           }, 5000);
-          return
-
+          return;
         } else {
-          ext = {
-          };
+          ext = {};
         }
       }
       if (taskItem.taskIdentifier === 'CONNECT_X_DATA') {
@@ -600,8 +602,8 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           LINEAEVENTNAME,
           LUCKYDRAWEVENTNAME,
           ETHSIGNEVENTNAME,
+          EARLYBIRDNFTEVENTNAME,
         ];
-
         for (const eventIdItem of eventIdArr) {
           const res = await chrome.storage.local.get([eventIdItem]);
           if (res[eventIdItem]) {
@@ -629,6 +631,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
                   },
                   {}
                 );
+
                 const f = Object.values(statusM).every((i) => !!i);
                 if (f && !joinedEventIdArr.includes(eventIdItem)) {
                   joinedEventIdArr.push(eventIdItem);
@@ -637,7 +640,8 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
             });
           }
         }
-
+        
+        joinedEventIdArr = joinedEventIdArr.map((i) => i.toUpperCase());
         ext = {
           events: joinedEventIdArr.join(','),
         };

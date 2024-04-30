@@ -417,10 +417,9 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <div className="descItem onChain">
                         <div className="label">
                           <span>On-chain</span>
-
                           <span>
                             {i.event
-                              ? `(${eventMetaMap[i.event].nameInAttestation})`
+                              ? `(${eventMetaMap[i.event]?.nameInAttestation})`
                               : i?.provided?.length > 0
                               ? `(${i?.provided?.length})`
                               : ''}

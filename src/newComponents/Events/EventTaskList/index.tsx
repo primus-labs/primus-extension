@@ -709,6 +709,7 @@ const DataSourceItem = memo(() => {
                       }}
                       disabled={givenNFT ? givenNFT : btnDisabledFn(k)}
                       loading={k === 3 && claiming}
+                      className="finishBtn"
                     />
                   </>
                 )}
