@@ -159,8 +159,30 @@
           .txtWrapper {
             @include BodyBody100Semibold;
             .label {
+              width: 100%;
+              @include frsc;
+              gap: var(--spacing-8);
               > span {
                 @include NumberBody100Semibold;
+                white-space: nowrap;
+              }
+              .PTooltip {
+                .icon-iconInfo {
+                  font-size: var(--spacing-12);
+                }
+                .tooltip {
+                  top: 22px;
+                  background: var(--layer-tokens-layer-05);
+                  color: var(--text-tokens-text-inverse);
+                  // left: calc(var(--spacing-8) * -1);
+                  left: -8px;
+                  transform: none;
+                  &:after {
+                    background: var(--layer-tokens-layer-05);
+                    left: 10px;
+                    transform: rotate(45deg);
+                  }
+                }
               }
             }
             .value {

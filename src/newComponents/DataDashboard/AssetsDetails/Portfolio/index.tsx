@@ -15,6 +15,7 @@ import {
   getTotalBalFromAssetsMap,
   formatAddress,
 } from '@/utils/utils';
+import PTooltip from '@/newComponents/PTooltip';
 import PButton from '@/newComponents/PButton';
 import PStar from '@/newComponents/PStar';
 import SplicedIcons from '@/newComponents/SplicedIcons';
@@ -40,7 +41,7 @@ const AssetsDetails = memo(() => {
   const [tableTab, setTableTab] = useState<string>('Token');
   const [starArr, setStarArr] = useState<string[]>();
   const [accountsForm, setAccountsForm] = useState<object>({ metamask: 'All' });
-  const sysConfig = useSelector((state:UserState) => state.sysConfig);
+  const sysConfig = useSelector((state: UserState) => state.sysConfig);
   const nfts = useSelector((state: UserState) => state.nfts);
 
   const connectedExchangeSources = useMemo(() => {
@@ -186,21 +187,34 @@ const AssetsDetails = memo(() => {
 
     if (activeDataSouceUserInfo) {
       const { id: dataSourceId } = activeDataSouceUserInfo;
-      if (dataSourceId === 'okx') {
+      if (dataSourceId === 'okx' || dataSourceId === 'binance') {
         totalBalance = getTotalBalFromNumObjAPriceObj(
           activeDataSouceUserInfo?.tradingAccountTokenAmountObj,
           activeDataSouceUserInfo?.tokenPriceMap
         );
-      } else if (dataSourceId === 'binance') {
-        totalBalance = getTotalBalFromAssetsMap(
-          activeDataSouceUserInfo?.spotAccountTokenMap
-        );
-      } else {
+      }
+      // else if (dataSourceId === 'binance') {
+      //   // totalBalance = getTotalBalFromAssetsMap(
+      //   //   activeDataSouceUserInfo?.spotAccountTokenMap
+      //   // );
+      // }
+      else {
         totalBalance = activeDataSouceUserInfo?.totalBalance;
       }
     }
 
     return new BigNumber(totalBalance).toFixed(2);
+  }, []);
+  const tootipFn = useCallback((activeDataSouceUserInfo) => {
+    if (activeDataSouceUserInfo) {
+      const { id: dataSourceId } = activeDataSouceUserInfo;
+      if (dataSourceId === 'okx') {
+        return 'Assets in Trading account';
+      } else if (dataSourceId === 'binance') {
+        return 'Assets in Spot account';
+      }
+    }
+    return '';
   }, []);
 
   const handleExpand = useCallback(
@@ -399,7 +413,19 @@ const AssetsDetails = memo(() => {
                       <div className="card availableForAttestation">
                         <i className="iconfont icon-iconAmountForAttest"></i>
                         <div className="txtWrapper">
-                          <div className="label">Available for Attestation</div>
+                          <div className="label">
+                            <span>Available for Attestation</span>
+                            <PTooltip title={tootipFn(i)}>
+                              <PButton
+                                type="icon"
+                                icon={
+                                  <i className="iconfont icon-iconInfo"></i>
+                                }
+                                onClick={() => {}}
+                                className="tooltipBtn"
+                              />
+                            </PTooltip>
+                          </div>
                           <div className="value">
                             ${totalBalanceForAttestFn(i)}
                           </div>

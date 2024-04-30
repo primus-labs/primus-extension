@@ -114,14 +114,24 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             });
           } else if (dataSourceId === 'binance') {
             symbolList = Object.keys(
-              activeDataSouceUserInfo.spotAccountTokenMap
+              activeDataSouceUserInfo.tradingAccountTokenAmountObj
             ).filter((t) => {
-              const f = gt(
-                Number(activeDataSouceUserInfo.spotAccountTokenMap[t].value),
-                0.01
-              );
+              const curVal = mul(
+                Number(activeDataSouceUserInfo.tradingAccountTokenAmountObj[t]),
+                activeDataSouceUserInfo.tokenPriceMap[t]
+              ).toFixed();
+              const f = gt(Number(curVal), 0.01);
               return f;
             });
+            // symbolList = Object.keys(
+            //   activeDataSouceUserInfo.spotAccountTokenMap
+            // ).filter((t) => {
+            //   const f = gt(
+            //     Number(activeDataSouceUserInfo.spotAccountTokenMap[t].value),
+            //     0.01
+            //   );
+            //   return f;
+            // });
           } else {
             symbolList = Object.keys(
               activeDataSouceUserInfo.tokenListMap
@@ -156,16 +166,17 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const totalBalanceForAttest = useMemo(() => {
       let totalBalance = '0';
       if (activeDataSouceUserInfo) {
-        if (dataSourceId === 'okx') {
+        if (dataSourceId === 'okx' || dataSourceId === 'binance') {
           totalBalance = getTotalBalFromNumObjAPriceObj(
             activeDataSouceUserInfo?.tradingAccountTokenAmountObj,
             activeDataSouceUserInfo?.tokenPriceMap
           );
-        } else if (dataSourceId === 'binance') {
-          totalBalance = getTotalBalFromAssetsMap(
-            activeDataSouceUserInfo?.spotAccountTokenMap
-          );
         }
+        // else if (dataSourceId === 'binance') {
+        //   totalBalance = getTotalBalFromAssetsMap(
+        //     activeDataSouceUserInfo?.spotAccountTokenMap
+        //   );
+        // }
       }
 
       return totalBalance;

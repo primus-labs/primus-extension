@@ -31,10 +31,14 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
         label: '', // TODO-newui
         flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
         spotAccountTokenMap: ex.spotAccountTokenMap,
+        tradingAccountFreeTokenAmountObj: ex.tradingAccountFreeTokenAmountObj,
         tokenPriceMap: ex.tokenPriceMap,
-        tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
         userInfo: ex.userInfo, // new add
       };
+      if (dataSourceId === 'binance') {
+        newSourceUserData.tradingAccountTokenAmountObj =
+          ex.tradingAccountTokenAmountObj;
+      }
       if (pnl !== null && pnl !== undefined) {
         newSourceUserData.pnl = pnl;
       }
