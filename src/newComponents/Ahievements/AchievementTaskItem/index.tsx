@@ -807,7 +807,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         }
 
         if (mc === '-110008') {
-          title = 'No event participated';
+          title = 'No new event participated';
           msg = 'Go to Events page to participate.';
           link = '/events';
           linkText = 'View details';
@@ -824,6 +824,11 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           msg = 'Go to zkAttestation page to submit.';
           link = '/zkAttestation';
           linkText = 'View details';
+        }
+
+        if(mc === '-110010' && taskItem.taskIdentifier === "REFER_TO_NEW_USER_SUBMIT_FIRST_ATTESTATION"){
+          title = 'Not qualified';
+          msg = 'No new counted referrals.';
         }
 
         if (mc === '-110011') {
