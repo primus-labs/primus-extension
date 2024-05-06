@@ -526,8 +526,7 @@ const EASINFOMAP = {
         decimals: 18,
       },
       transactionDetailUrl: 'https://mainnet.opbnbscan.com/tx',
-      bucketDetailUrl:
-        'https://scan.sign.global/attestation/onchain_evm_204_',
+      bucketDetailUrl: 'https://scan.sign.global/attestation/onchain_evm_204_',
     },
     Arbitrum: {
       showName: 'Arbitrum',
@@ -836,3 +835,10 @@ const CLAIMNFTNETWORKNAMEMAP = {
   production: 'Polygon',
 };
 export let CLAIMNFTNETWORKNAME = CLAIMNFTNETWORKNAMEMAP[CURENV];
+
+const OPENSEALINKMAP = {
+  development:
+    'https://testnets.opensea.io/assets/sepolia/0xe71e7b07158963095a5ea841addbd6f20e599292',
+  production: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98`,
+};
+export let OPENSEALINK = OPENSEALINKMAP[CURENV];

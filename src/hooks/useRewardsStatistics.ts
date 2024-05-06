@@ -13,6 +13,7 @@ import {
 } from '@/config/events';
 import { checkLotteryResults } from '@/services/api/event';
 import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
+import { OPENSEALINK } from '@/config/envConstants';
 import type { UserState } from '@/types/store';
 
 const useRewardsStatistics = function (eventFilter = '') {
@@ -63,7 +64,7 @@ const useRewardsStatistics = function (eventFilter = '') {
           title: name,
           desc: description,
           linkIcon: iconOpenSea,
-          link: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98/${tokenId}`,
+          link: `${OPENSEALINK}/${tokenId}`,
         };
         list.push(obj);
         earlyBirdE.push(obj);
