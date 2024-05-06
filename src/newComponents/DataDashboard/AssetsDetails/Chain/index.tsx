@@ -190,7 +190,7 @@ const Chain = memo(() => {
                           plusSign={false}
                         />
                       </div>
-                    )}  
+                    )}
                   </div>
                 </div>
               </div>

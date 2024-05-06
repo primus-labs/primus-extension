@@ -85,7 +85,10 @@ const Cards: React.FC<PDropdownProps> = memo(
     const [searchParams] = useSearchParams();
     const dataSourceName = searchParams.get('dataSourceId');
     const supportList = useMemo(() => {
-      if (dataSourceName === 'web3 wallet') return [attestationTypeMap[1]];
+      if (dataSourceName === 'web3 wallet') {
+        // return [attestationTypeMap[1]];
+        return [];
+      }
       if (dataSourceName === 'binance')
         return [
           attestationTypeMap[2],

@@ -36,7 +36,10 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
     <ul className="allAttestationTypeCards">
       {supportList.map((i) => {
         return (
-          <li className={ `attestationTypeCard ${i.disabled && 'disabled'}`} key={i.name}>
+          <li
+            className={`attestationTypeCard ${i.disabled && 'disabled'}`}
+            key={i.name}
+          >
             <div className="top">
               <img src={i.icon} alt="" className="typeIcon" />
               <div className="typeName">{i.name}</div>
@@ -49,6 +52,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
                 onClick={() => {
                   handleClick(i);
                 }}
+                disabled={i.disabled}
               />
             </div>
           </li>

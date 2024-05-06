@@ -17,6 +17,11 @@
     &.disabled{
       pointer-events: none;
       cursor: not-allowed;
+      .top{
+        .typeName{
+          color: var(--text-tokens-text-disabled);
+        }
+      }
     }
     &.addCard {
       padding: var(--spacing-16);

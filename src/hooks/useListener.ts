@@ -103,8 +103,8 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
           if (msg === 'AuthenticationError') {
             msgObj = {
               type: 'error',
-              title: 'Invalid input',
-              desc: 'Please check your API Key or Secret Key.',
+              title: 'Failed to connect',
+              desc: 'Please confirm your login status.',
             };
           } else if (msg === 'ExchangeNotAvailable') {
             msgObj = {

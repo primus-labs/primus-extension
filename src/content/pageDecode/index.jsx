@@ -95,9 +95,9 @@ function DescEl({ status, resultStatus, errorTxt }) {
   console.log('222DescEl', errorTxt);
   var iconSuc = chrome.runtime.getURL(`iconSucc.svg`);
   var iconFail = chrome.runtime.getURL(`iconFail.svg`);
-  var host = activeRequest.jumpTo
+  var host = activeRequest?.jumpTo
     ? new URL(activeRequest.jumpTo).origin
-    : activeRequest.datasourceTemplate.host;
+    : activeRequest?.datasourceTemplate.host;
 
   var uiTemplate = activeRequest.uiTemplate;
   const [loadingTxt, setLoadingTxt] = useState('Connecting to PADO node...');
