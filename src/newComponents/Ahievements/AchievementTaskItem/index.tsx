@@ -498,8 +498,17 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         }
         const githubUserInfo = JSON.parse(res['github']);
         console.log(res);
+        let uniqueName = githubUserInfo.userName;
+        if (
+          uniqueName === '' ||
+          uniqueName === undefined ||
+          uniqueName === null
+        ) {
+          //if name is empty ,use uniqueId
+          uniqueName = githubUserInfo.uniqueId;
+        }
         ext = {
-          uniqueName: githubUserInfo.userName,
+          uniqueName: uniqueName,
         };
       }
 
