@@ -290,6 +290,7 @@ export const pageDecodeMsgListener = async (
       // injectFn();
     }
     if (name === 'initCompleted') {
+      console.log('content_scripts-bg-decode receive:initCompleted');
       sendResponse({
         name: 'append',
         params: {

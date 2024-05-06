@@ -337,6 +337,7 @@ export const dataSourceWebMsgListener = async (
       // injectFn();
     }
     if (name === 'initCompleted') {
+      console.log('content_scripts-bg-web receive:initCompleted');
       sendResponse({
         name: 'append',
         params: {

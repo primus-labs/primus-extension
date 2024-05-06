@@ -346,7 +346,9 @@ function PadoCard() {
         <img src={iconDataSource} className="iconSource" />
       </div>
       <div className="pado-extenstion-center">
-        <div className="pado-extenstion-center-title">PADO Attestation Process</div>
+        <div className="pado-extenstion-center-title">
+          PADO Attestation Process
+        </div>
         <DescEl
           status={status}
           resultStatus={resultStatus}
@@ -370,7 +372,7 @@ function createDomElement(html) {
 var padoStr = `<div id="pado-extension-content"></div>`;
 var injectEl = createDomElement(padoStr);
 document.body.appendChild(injectEl);
-
+console.log('content_scripts-content-decode inject');
 chrome.runtime.sendMessage(
   {
     type: 'pageDecode',
@@ -378,6 +380,7 @@ chrome.runtime.sendMessage(
   },
   (response, a, b) => {
     if (response.name === 'append') {
+      console.log('content_scripts-content-decode receive:append');
       // hide in login page
       var disabledPathList = ['login', 'register'];
       var isDisabled = disabledPathList.some(

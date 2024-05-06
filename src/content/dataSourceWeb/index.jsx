@@ -301,7 +301,7 @@ function createDomElement(html) {
 var padoStr = `<div id="pado-extension-content"></div>`;
 var injectEl = createDomElement(padoStr);
 document.body.appendChild(injectEl);
-
+console.log('content_scripts-content-web inject');
 chrome.runtime.sendMessage(
   {
     type: 'dataSourceWeb',
@@ -309,6 +309,7 @@ chrome.runtime.sendMessage(
   },
   (response, a, b) => {
     if (response.name === 'append') {
+      console.log('content_scripts-content-web receive:append');
       // hide in login page
       var disabledPathList = ['login', 'register'];
       var isDisabled = disabledPathList.some(
