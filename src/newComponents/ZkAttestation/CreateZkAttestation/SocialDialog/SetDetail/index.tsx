@@ -129,6 +129,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (loading) {
         return;
       }
+      // @ts-ignore
+      if (pswForm?.verificationContent === 'X Followers') {
+        sessionStorage.setItem('xFollowerCount', pswForm.verificationValue);
+      }
+
       if (formatBtnTxt === 'OK') {
         dispatch(setAttestLoading(2));
         dispatch(setActiveAttestation(undefined));
@@ -213,7 +218,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationContent}
               disabled={presets?.verificationContent}
-              
             />
           )}
         </div>

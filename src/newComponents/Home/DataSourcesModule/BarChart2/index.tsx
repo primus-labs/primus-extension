@@ -37,7 +37,7 @@ const MAXSHOWDATASOURCELEN = 4;
 const PBarChart: FC<BarChartProps> = memo(
   ({ xDatas = [], yDatas = [], tokenMapDatas }) => {
     const { tokenIconFn } = useAssetsStatistic();
-    // console.log('2222xDatas', xDatas, yDatas); //delete
+    console.log('2222xDatas', xDatas, yDatas); //delete
     const showXDatas = useMemo(() => {
       let l = [...xDatas];
       if (xDatas.length === 1) {
@@ -107,7 +107,7 @@ const PBarChart: FC<BarChartProps> = memo(
           // className: 'echartsTooltip',
           formatter: (params) => {
             const { name, value, dataIndex } = params;
-            // console.log('222params', params, xDatas, tokenMapDatas, dataIndex);
+            console.log('222params', params, xDatas, tokenMapDatas, dataIndex);//delete
             const idx =
               showXDatas.length === MAXSHOWDATASOURCELEN
                 ? MAXSHOWDATASOURCELEN - 1 - dataIndex

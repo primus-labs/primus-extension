@@ -61,7 +61,7 @@ const Overview = memo(() => {
   }, [connectedAssetsSourcesList]);
 
   // console.log(
-  //   '222',
+  //   '222useAssetsStatistic',
   //   sortedConnectedAssetsSourcesList,
   //   sortedHoldingTokensList,
   //   sortedChainAssetsList
@@ -178,6 +178,7 @@ const Overview = memo(() => {
   }, [reverseShowPortfolioList]);
   const tokenMapDatas = useMemo(() => {
     const l = reverseShowChainList.map((i) => {
+      i.tokenListMap = i.tokenListMap ?? {};
       const allList = Object.values(i.tokenListMap);
       const MAXSHOWTOEKNLEN = 6;
       let showList = [...allList];

@@ -32,8 +32,14 @@ const AssetsDetails = memo(() => {
   const { accountsNftsListMap } = useNFTs();
   console.log('222accountsNftsListMap', accountsNftsListMap); //delete
   const { addMsg } = useMsgs();
-  const { totalAssetsBalance, metamaskAssets, tokenIconFn } =
-    useAssetsStatistic();
+  const {
+    totalAssetsBalance,
+    metamaskAssets,
+    tokenIconFn,
+    sortedHoldingTokensList,
+    sortedChainAssetsList,
+  } = useAssetsStatistic();
+
   const { sourceMap, sourceMap2, sortedConnectedOnChainAssetsSourcesList } =
     useAllSources();
   const [pageSize, setPageSize] = useState<number>(1);
@@ -81,6 +87,12 @@ const AssetsDetails = memo(() => {
     console.log('222sortedConnectedAssetsSourcesList', noStarL, hasStarL); //delete
     return [...hasStarL, ...noStarL];
   }, [connectedAssetsSourcesList, starArr]);
+  console.log(
+    '222useAssetsStatistic',
+    sortedConnectedAssetsSourcesList,
+    sortedHoldingTokensList,
+    sortedChainAssetsList
+  ); //delete
   const totalPageSize = useMemo(() => {
     return Math.ceil(sortedConnectedAssetsSourcesList.length / MAX);
   }, [sortedConnectedAssetsSourcesList]);

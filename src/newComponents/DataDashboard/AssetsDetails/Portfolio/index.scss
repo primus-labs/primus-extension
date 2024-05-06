@@ -157,7 +157,7 @@
             font-size: var(--spacing-24);
           }
           .txtWrapper {
-            
+            @include BodyBody100Semibold;
             .label {
               width: 100%;
               @include frsc;
