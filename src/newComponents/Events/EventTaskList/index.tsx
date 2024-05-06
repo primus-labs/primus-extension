@@ -269,6 +269,7 @@ const DataSourceItem = memo(() => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
+  const earlyBirdNFTs = useSelector((state: UserState) => state.earlyBirdNFTs);
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
@@ -553,12 +554,15 @@ const DataSourceItem = memo(() => {
     const res = await chrome.storage.local.get([eventId]);
     const currentAddress = connectedWallet?.address;
     if (eventId == EARLYBIRDNFTEVENTNAME) {
-      const nftFlag = Object.values(rewards).find((r) => !r.type);
-      if (nftFlag) {
-        // newStepMap[curr].finished = 1;
-        // newStepMap['claim'].claim = 1;
+      if (Object.keys(earlyBirdNFTs).length > 0) {
         setGivenNFT(true);
       }
+      // const nftFlag = Object.values(rewards).find((r) => !r.type);
+      // if (nftFlag) {
+      //   // newStepMap[curr].finished = 1;
+      //   // newStepMap['claim'].claim = 1;
+      //   setGivenNFT(true);
+      // }
     }
     if (res[eventId]) {
       const lastEventObj = JSON.parse(res[eventId]);
@@ -592,7 +596,7 @@ const DataSourceItem = memo(() => {
         setTaskStatusMap({ ...initStatusMap });
       }
     }
-  }, [connectedWallet?.address, eventId, rewards]);
+  }, [connectedWallet?.address, eventId, rewards, earlyBirdNFTs]);
   const handleCloseAttestationTasksDialog = useCallback(() => {
     setVisibleAttestationTasksDialog(false);
   }, []);

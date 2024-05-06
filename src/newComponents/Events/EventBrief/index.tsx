@@ -8,6 +8,7 @@ import type { Dispatch } from 'react';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
+import { EARLYBIRDNFTEVENTNAME } from '@/config/events';
 import tagCompleted from '@/assets/newImg/events/tagCompleted.png';
 import { UserState } from '@/types/store';
 // import tagCompleted from '@/assets/newImg/events/iconPado.svg';
@@ -32,9 +33,12 @@ const DataSourceItem = memo(() => {
   const [isComplete, setIsComplete] = useState<boolean>(false);
   // const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
   const metaInfo = eventMetaMap[eventId];
-  const connectedWallet = useSelector((state:UserState) => state.connectedWallet);
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
+  const earlyBirdNFTs = useSelector((state: UserState) => state.earlyBirdNFTs);
   const formatPeriod = (period) => {
     const { startTime, endTime } = period;
     const s = dayjs.utc(+startTime).format('MMM.D,YYYY');
@@ -71,7 +75,12 @@ const DataSourceItem = memo(() => {
         setIsComplete(false);
       }
     }
-  }, [connectedWallet?.address]);
+    if (eventId == EARLYBIRDNFTEVENTNAME) {
+      if (Object.keys(earlyBirdNFTs).length > 0) {
+        setIsComplete(true);
+      }
+    }
+  }, [connectedWallet?.address, earlyBirdNFTs]);
   useEffect(() => {
     initTaskStatus(); // TODO-newui2 after submit to chain
   }, [initTaskStatus]);

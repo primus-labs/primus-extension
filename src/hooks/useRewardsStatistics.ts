@@ -11,7 +11,6 @@ import {
   LUCKYDRAWEVENTNAME,
   EARLYBIRDNFTEVENTNAME,
 } from '@/config/events';
-import { checkLotteryResults } from '@/services/api/event';
 import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
 import { OPENSEALINK } from '@/config/envConstants';
 import type { UserState } from '@/types/store';
