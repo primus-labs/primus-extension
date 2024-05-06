@@ -21,13 +21,14 @@ const Rewards = memo(() => {
       </div>
       <div className="content">
         <ul className="rewardItems">
-          {rewardsList.filter(i => i)
+          {rewardsList
+            .filter((i) => i)
             .map((i, k) => {
               return (
                 <li className="rewardItem" key={k}>
                   <div className="bg">
                     <img src={i?.img} alt="" />
-                    <div className="bgMask"></div>
+                    <div className="bgMaskTop"></div>
                   </div>
                   <div className="content">
                     <div className="cardContent">
