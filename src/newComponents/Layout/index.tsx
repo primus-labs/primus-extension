@@ -20,6 +20,7 @@ import {
   setNftsActionAsync,
   initNftsActionAsync,
   setEarlyBirdNFTAsync,
+  setEventsLotteryResultsAsync,
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
@@ -121,6 +122,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     dispatch(initEventsActionAsync());
     dispatch(initNftsActionAsync());
     dispatch(setEarlyBirdNFTAsync());
+    dispatch(setEventsLotteryResultsAsync());
     // dispatch(initConnectedWalletActionAsync());
     // (updateOnChainFn as () => void)();
   }, [dispatch]);

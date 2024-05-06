@@ -6,6 +6,7 @@ import {
 } from '@/services/api/user';
 import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
 import { checkEarlyBirdNFT } from '@/services/api/event';
+import { checkLotteryResults } from '@/services/api/event';
 import { getOnChainNFTs } from '@/services/api/dataDashboard';
 import {
   getAssetsOnChains,
@@ -165,6 +166,10 @@ export const setNfts = (values: any) => ({
 });
 export const setEarlyBirdNFTs = (values: any) => ({
   type: 'setEarlyBirdNFTs',
+  payload: values,
+});
+export const setEventsLotteryResults = (values: any) => ({
+  type: 'setEventsLotteryResults',
   payload: values,
 });
 export const setConnectedWalletsActionAsync = () => {
@@ -994,6 +999,30 @@ export const setEarlyBirdNFTAsync = () => {
       }
     } catch (e) {
       console.log('setEarlyBirdNFTAsync e:', e);
+    }
+  };
+};
+
+export const setEventsLotteryResultsAsync = () => {
+  return async (dispatch: any) => {
+    try {
+      const eventNameArr = [LUCKYDRAWEVENTNAME, SCROLLEVENTNAME];
+      const requestArr = eventNameArr.map((r) => {
+        return checkLotteryResults({
+          event: r,
+        });
+      });
+      const resArr = await Promise.all(requestArr);
+      const obj = resArr.reduce((prev, curr, currK) => {
+        const { rc, result } = curr;
+        if (rc === 0) {
+          prev[eventNameArr[currK]] = result;
+        }
+        return prev;
+      }, {});
+      dispatch(setEventsLotteryResults(obj));
+    } catch (e) {
+      console.log('fetchLotteryResults catch e=', e);
     }
   };
 };

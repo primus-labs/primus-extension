@@ -128,4 +128,5 @@ export type UserState = {
   msgs: MsgMap;
   nfts: NftsMap;
   earlyBirdNFTs: any;
+  eventsLotteryResults: any;
 };

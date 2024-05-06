@@ -16,9 +16,11 @@ import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
 import type { UserState } from '@/types/store';
 
 const useRewardsStatistics = function (eventFilter = '') {
-  const [eventsResult, setEventsResult] = useState<any>({});
   const events = useSelector((state: UserState) => state.events);
   const rewards = useSelector((state: UserState) => state.rewards);
+  const eventsLotteryResults = useSelector(
+    (state: UserState) => state.eventsLotteryResults
+  );
   console.log('222rewards', rewards); // delete
   const earlyBirdNFTs = useSelector((state: UserState) => state.earlyBirdNFTs);
   const rewardList = useMemo(() => {
@@ -69,8 +71,8 @@ const useRewardsStatistics = function (eventFilter = '') {
     }
     // lucky draw & scroll
     const fn = (eName) => {
-      if (eventsResult[eName]) {
-        const { result, iconUrl } = eventsResult[eName];
+      if (eventsLotteryResults[eName]) {
+        const { result, iconUrl } = eventsLotteryResults[eName];
         let title = '',
           desc = '';
         if (eName === LUCKYDRAWEVENTNAME) {
@@ -128,36 +130,36 @@ const useRewardsStatistics = function (eventFilter = '') {
       return list;
     }
   }, [
-    eventsResult,
+    eventsLotteryResults,
     joinedBrevisFlag,
     joinedBrevisRewardList,
     eventFilter,
     earlyBirdNFTs,
   ]);
-  const fetchLotteryResults = useCallback(async () => {
-    try {
-      const eventNameArr = [LUCKYDRAWEVENTNAME, SCROLLEVENTNAME];
-      const requestArr = eventNameArr.map((r) => {
-        return checkLotteryResults({
-          event: r,
-        });
-      });
-      const resArr = await Promise.all(requestArr);
-      const obj = resArr.reduce((prev, curr, currK) => {
-        const { rc, result } = curr;
-        if (rc === 0) {
-          prev[eventNameArr[currK]] = result;
-        }
-        return prev;
-      }, {});
-      setEventsResult(obj);
-    } catch (e) {
-      console.log('fetchLotteryResults catch e=', e);
-    }
-  }, []);
-  useEffect(() => {
-    fetchLotteryResults();
-  }, []);
+  // const fetchLotteryResults = useCallback(async () => {
+  //   try {
+  //     const eventNameArr = [LUCKYDRAWEVENTNAME, SCROLLEVENTNAME];
+  //     const requestArr = eventNameArr.map((r) => {
+  //       return checkLotteryResults({
+  //         event: r,
+  //       });
+  //     });
+  //     const resArr = await Promise.all(requestArr);
+  //     const obj = resArr.reduce((prev, curr, currK) => {
+  //       const { rc, result } = curr;
+  //       if (rc === 0) {
+  //         prev[eventNameArr[currK]] = result;
+  //       }
+  //       return prev;
+  //     }, {});
+  //     setEventsResult(obj);
+  //   } catch (e) {
+  //     console.log('fetchLotteryResults catch e=', e);
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   fetchLotteryResults();
+  // }, []);
   return {
     rewardsList: filterdList,
   };

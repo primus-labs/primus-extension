@@ -61,8 +61,14 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
 
     const [PADOTabId, setPADOTabId] = useState<number>();
     const [xTabId, setXTabId] = useState<number>();
+    const earlyBirdNFTs = useSelector(
+      (state: UserState) => state.earlyBirdNFTs
+    );
     const connectedWallets = useSelector(
       (state: UserState) => state.connectedWallets
+    );
+    const eventsLotteryResults = useSelector(
+      (state: UserState) => state.eventsLotteryResults
     );
     // useEffect(() => {
     //   const handleAutoTask = async () => {
@@ -598,12 +604,22 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         let joinedEventIdArr: string[] = [];
         const eventIdArr = [
           SCROLLEVENTNAME,
+
           BASEVENTNAME,
           LINEAEVENTNAME,
+
           LUCKYDRAWEVENTNAME,
+
           ETHSIGNEVENTNAME,
+
           EARLYBIRDNFTEVENTNAME,
         ];
+
+        let earlyBirdE: any = [];
+        let scrollE: any = [];
+        let luckyDrawE: any = [];
+        let brevisE: any = [];
+
         for (const eventIdItem of eventIdArr) {
           const res = await chrome.storage.local.get([eventIdItem]);
           if (res[eventIdItem]) {
@@ -640,7 +656,25 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
             });
           }
         }
-        
+        if (
+          Object.keys(earlyBirdNFTs).length > 0 &&
+          !joinedEventIdArr.includes(EARLYBIRDNFTEVENTNAME)
+        ) {
+          joinedEventIdArr.push(EARLYBIRDNFTEVENTNAME);
+        }
+        if (
+          eventsLotteryResults[SCROLLEVENTNAME] &&
+          eventsLotteryResults[LUCKYDRAWEVENTNAME]
+        ) {
+          joinedEventIdArr.push(SCROLLEVENTNAME);
+        }
+        if (
+          eventsLotteryResults[LUCKYDRAWEVENTNAME] &&
+          !joinedEventIdArr.includes(LUCKYDRAWEVENTNAME)
+        ) {
+          joinedEventIdArr.push(LUCKYDRAWEVENTNAME);
+        }
+
         joinedEventIdArr = joinedEventIdArr.map((i) => i.toUpperCase());
         ext = {
           events: joinedEventIdArr.join(','),
@@ -830,7 +864,11 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           linkText = 'View details';
         }
 
-        if(mc === '-110010' && taskItem.taskIdentifier === "REFER_TO_NEW_USER_SUBMIT_FIRST_ATTESTATION"){
+        if (
+          mc === '-110010' &&
+          taskItem.taskIdentifier ===
+            'REFER_TO_NEW_USER_SUBMIT_FIRST_ATTESTATION'
+        ) {
           title = 'Not qualified';
           msg = 'No new counted referrals.';
           link = '';

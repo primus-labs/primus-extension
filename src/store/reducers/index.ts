@@ -149,7 +149,8 @@ const initState = {
     // },
   },
   nfts: {},
-  earlyBirdNFTs: {}
+  earlyBirdNFTs: {},
+  eventsLotteryResults: {},
 };
 
 // reducer
@@ -266,10 +267,14 @@ const reducer: any = function (state = initState, action: any) {
         nfts: action.payload,
       };
     case 'setEarlyBirdNFTs':
-      debugger
       return {
         ...state,
         earlyBirdNFTs: action.payload,
+      };
+    case 'setEventsLotteryResults':
+      return {
+        ...state,
+        eventsLotteryResults: action.payload,
       };
     default:
       return state;
