@@ -107,25 +107,27 @@ const PBarChart: FC<BarChartProps> = memo(
           // className: 'echartsTooltip',
           formatter: (params) => {
             const { name, value, dataIndex } = params;
-            console.log('222params', params, xDatas, tokenMapDatas, dataIndex);//delete
+            console.log('222params', params, xDatas, tokenMapDatas, dataIndex); //delete
             const idx =
               showXDatas.length === MAXSHOWDATASOURCELEN
                 ? MAXSHOWDATASOURCELEN - 1 - dataIndex
                 : dataIndex;
             const currTokenList = tokenMapDatas[idx];
-            const chainName: any = Object.keys(SUPPORRTEDQUERYCHAINMAP).find(
-              (i) => i.replace(/\s+/g, '') === name
+            const chainKey: any = Object.keys(SUPPORRTEDQUERYCHAINMAP).find(
+              (i) =>
+                SUPPORRTEDQUERYCHAINMAP[i].name.replace(/\s+/g, '') === name
             );
-            // console.log(
-            //   '222formatter',
-            //   EASInfo,
-            //   SUPPORRTEDQUERYCHAINMAP,
-            //   name,
-            //   chainName
-            // );
 
-            const { icon } = SUPPORRTEDQUERYCHAINMAP[chainName];
-            let title = `<div class="tooltipTitle"><img src='${icon}'/><div>${chainName}</div></div>`;
+            console.log(
+              '222formatter',
+              EASInfo,
+              SUPPORRTEDQUERYCHAINMAP,
+              name,
+              chainKey
+            );
+
+            const { icon } = SUPPORRTEDQUERYCHAINMAP[chainKey];
+            let title = `<div class="tooltipTitle"><img src='${icon}'/><div>${SUPPORRTEDQUERYCHAINMAP[chainKey]?.name}</div></div>`;
             let desc = `<div class="tooltipDesc">Token Distribution</div>`;
             var list = currTokenList
               .map(function (item: any) {
@@ -183,7 +185,20 @@ const PBarChart: FC<BarChartProps> = memo(
             formatter: function (value) {
               // console.log('222value', value);
               if (value) {
-                let formatName = value === 'ArbitrumOne' ? 'Arbitrum' : value;
+                let formatName = value;
+                if (tokenMapDatas) {
+                  const chainKey: any = Object.keys(
+                    SUPPORRTEDQUERYCHAINMAP
+                  ).find(
+                    (i) =>
+                      SUPPORRTEDQUERYCHAINMAP[i].name.replace(/\s+/g, '') ===
+                      value
+                  );
+                  formatName = SUPPORRTEDQUERYCHAINMAP[chainKey].name;
+                }
+                formatName = value === 'ArbitrumOne' ? 'Arbitrum' : formatName;
+                
+
                 return '{' + value + '| }{name|' + formatName + '}';
               } else {
                 return '';
