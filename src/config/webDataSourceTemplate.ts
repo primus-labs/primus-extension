@@ -12,7 +12,7 @@ export const webDataSourceTemplate = {
         },
         {
           name: 'kyc',
-          url: 'https://www.bitget.com/v1/user/overview/userinfo',
+          url: 'https://www.bitget.com/v1/user/kyc/realNameStatus',
           method: 'POST',
           headers: ['cookie'],
           cookies: ['bt_newsessionid'],

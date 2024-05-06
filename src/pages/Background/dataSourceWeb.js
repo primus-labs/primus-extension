@@ -203,14 +203,14 @@ export const dataSourceWebMsgListener = async (
       isReadyRequest = await checkReadyStatusFn();
       if (isReadyRequest) {
         console.log('web requests are captured');
+        chrome.tabs.sendMessage(tabCreatedByPado.id, {
+          type: 'dataSourceWeb',
+          name: 'webRequestIsReady',
+          params: {
+            isReady: isReadyRequest,
+          },
+        });
       }
-      chrome.tabs.sendMessage(tabCreatedByPado.id, {
-        type: 'dataSourceWeb',
-        name: 'webRequestIsReady',
-        params: {
-          isReady: isReadyRequest,
-        },
-      });
     };
     const formatRequestsFn = async () => {
       const formatRequests = [];

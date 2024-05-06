@@ -98,12 +98,12 @@ class WebBitGet extends WebExchange {
     async getUserInfo() {
         const params = {};
         params.url =
-            'https://www.bitget.com/v1/user/overview/userinfo';
+            'https://www.bitget.com/v1/user/kyc/realNameStatus';
         params.method = 'POST';
         const res = await this.request(params);
-        this.userInfo.userName = res.data.userInfo.parentId;
-        this.userInfo.userId = res.data.userInfo.parentId;
-        console.log(res.data.userInfo.parentId)
+        this.userInfo.userName = res.data.uid;
+        this.userInfo.userId = res.data.uid;
+        console.log(`bitget uid is: ${res.data.uid}`)
     }
 }
 
