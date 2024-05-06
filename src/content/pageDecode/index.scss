@@ -38,6 +38,7 @@
     width: 384px;
     // height: 216px;
     border: 0;
+    box-sizing: border-box;
     &.initialized {
       padding-top: var(--spacing-32, 32px);
       .pado-extenstion-center {
