@@ -149,6 +149,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     childMap: ASSETSVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#FFB700',
     show: true,
+    shortName: 'assets',
   },
 
   'Humanity Verification': {
@@ -162,6 +163,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     childMap: HUMANITYVERIFICATIONCONTENTTYPEMAP,
     chartBarColor: '#7B889B',
     show: true,
+    shortName: 'humanity',
   },
   'Social Connections': {
     id: 'Social Connections',
@@ -174,6 +176,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     childMap: SOCIALVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#08BDBA',
     show: true,
+    shortName: 'social',
   },
   'On-chain Transaction': {
     id: 'On-chain Transaction',
@@ -187,6 +190,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     chartBarColor: '#1192E8',
     disabled: true,
     show: true,
+    shortName: 'on-chain',
   },
   'Qualification Certificate': {
     id: 'Qualification Certificate',
@@ -196,6 +200,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
       light: iconAttestationTypeQualification,
     },
     disabled: true,
+    shortName: 'qualification',
   },
   'Game Achievements': {
     id: 'Game Achievements',
@@ -205,6 +210,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
       light: iconAttestationTypeGame,
     },
     disabled: true,
+    shortName: 'game',
   },
   'AIGC Proof': {
     id: 'AIGC Proof',
@@ -214,6 +220,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
       light: iconAttestationTypeAIGC,
     },
     disabled: true,
+    shortName: 'AIGC',
   },
 };
 export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =

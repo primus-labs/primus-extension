@@ -100,6 +100,7 @@ export type ATTESTATIONTYPEITEMTYPE = {
   };
   chartBarColor?: string;
   show?: boolean;
+  shortName: string;
 };
 export type ASSETSVERIFICATIONCONTENTTYPEITEM = {
   value: string;

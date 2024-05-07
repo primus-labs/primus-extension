@@ -21,6 +21,7 @@ import {
   shareTwitter,
 } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
+import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
@@ -213,7 +214,13 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                     {shareType === 'certificate' && (
                       <div className="shareContent attestation">
                         <div className="title">
-                          I created 1 {scoreShareProps.attestationType} on PADO.
+                          I created 1{' '}
+                          {
+                            ATTESTATIONTYPEMAP[
+                              scoreShareProps.attestationType as string
+                            ].shortName
+                          }{' '}
+                          attestation on PADO.
                         </div>
                         <div className="desc">
                           Sign up to PADO today and use my referral code{' '}

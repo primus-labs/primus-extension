@@ -2,7 +2,7 @@ import iconPolygon from '@/assets/img/iconPolygon.svg';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
 import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
-import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
+import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.png';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
 import iconNetwork3 from '@/assets/img/iconNetwork3.png';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';

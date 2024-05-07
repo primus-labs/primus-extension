@@ -163,7 +163,7 @@
               @include frsc;
               gap: var(--spacing-4);
               > span {
-                @include NumberBody100Semibold;
+                @include BodyBody100Semibold;
                 white-space: nowrap;
               }
               .PTooltip {

@@ -88,12 +88,13 @@
 }
 .dark {
   .PDropdown {
-    .dropdownOptions {
-      .dropdownOption {
-        &:not(.disabled):hover {
-          background: var(--neutral-color-gray-90);
-        }
-      }
-    }
+    background: var(--layer-tokens-layer-04);
+    // .dropdownOptions {
+    //   .dropdownOption {
+    //     &:not(.disabled):hover {
+    //       background: var(--neutral-color-gray-90);
+    //     }
+    //   }
+    // }
   }
 }

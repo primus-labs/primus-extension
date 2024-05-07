@@ -88,7 +88,7 @@
 .dark {
   .PSelect {
     .selectInput {
-      background: var(--background-tokens-background);
+      // background: var(--background-tokens-background);
       &.disabled {
         border: 1px solid var(--button-tokens-button-disabled, #262626);
       }
