@@ -172,13 +172,9 @@
                 }
                 .tooltip {
                   top: 22px;
-                  background: var(--layer-tokens-layer-05);
-                  color: var(--text-tokens-text-inverse);
-                  // left: calc(var(--spacing-8) * -1);
                   left: -8px;
                   transform: none;
                   &:after {
-                    background: var(--layer-tokens-layer-05);
                     left: 10px;
                     transform: rotate(45deg);
                   }

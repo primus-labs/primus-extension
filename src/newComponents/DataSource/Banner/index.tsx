@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import PButton from '@/newComponents/PButton';
-import './index.scss'
+import './index.scss';
 import PTooltip from '@/newComponents/PTooltip';
 
 const Search: React.FC = () => {
@@ -12,9 +12,14 @@ const Search: React.FC = () => {
           Didn't find the data source you want to connect?
         </div>
         <div className="desc">
-          Become a developer and contribute to our community! Use our data
-          source templates to develop your own solution stacks. Connect more
-          Real World Assets and data to fulfill Web3 ecosystems.
+          <p>
+            {' '}
+            Become a developer and contribute to our community! Use our data
+            source templates to develop your own solution stacks.
+          </p>
+          <p>
+            Connect more Real World Assets and data to fulfill Web3 ecosystems.
+          </p>
         </div>
       </div>
       <PTooltip title={`coming soon`}>

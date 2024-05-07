@@ -28,13 +28,10 @@
         height: var(--spacing-12);
         .tooltip {
           @include Hint;
-          background: var(--layer-tokens-layer-05);
-          color: var(--text-tokens-text-inverse);
           left: -39px;
           bottom: auto;
           top: 21px;
           &:after {
-            background: var(--layer-tokens-layer-05);
             transform: rotate(45deg);
             left: auto;
             right: calc(1 * var(--spacing-8));

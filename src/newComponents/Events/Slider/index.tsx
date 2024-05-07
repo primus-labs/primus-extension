@@ -34,29 +34,35 @@ const eventIntroMap = {
   [LINEAEVENTNAME]: {
     id: LINEAEVENTNAME,
     title: 'The Linea Voyage: Proof of Humanity',
-    desc: 'Complete an attestation with a KYCed account on Binance. Bringing more PoH attestations to Verax and Linea ecosystem!',
+    desc: [
+      'Complete an attestation with a KYCed account on Binance.',
+      'Bringing more PoH attestations to Verax and Linea ecosystem!',
+    ],
     points: [
       { pointIconFont: 'icon-iconBlockChain', pointDesc: 'LXP' },
       { pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' },
     ],
     bg: bannerBgLinea,
   },
-  [ETHSIGNEVENTNAME]: {
-    id: ETHSIGNEVENTNAME,
-    title: 'SignX Program',
-    desc: 'Attest your X followers, building trust in trustless systems.',
-    points: [{ pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' }],
-    bg: bannerBgEthSign,
-  },
   [BASEVENTNAME]: {
     id: BASEVENTNAME,
     title: 'BNBChain Attestation Alliance',
-    desc: 'Bringing more traditional data attestations to the BNB ecosystem. Finish simple tasks to win your XP！',
+    desc: [
+      'Bringing more traditional data attestations to the BNB ecosystem.',
+      'Finish simple tasks to win your XP！',
+    ],
     points: [
       { pointIconFont: 'icon-iconBlockChain', pointDesc: 'BAS XP' },
       { pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' },
     ],
     bg: bannerBgBas,
+  },
+  [ETHSIGNEVENTNAME]: {
+    id: ETHSIGNEVENTNAME,
+    title: 'SignX Program',
+    desc: ['Attest your X followers, building trust in trustless systems.'],
+    points: [{ pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' }],
+    bg: bannerBgEthSign,
   },
 };
 const PBack: React.FC<PBackProps> = memo(({}) => {
@@ -91,7 +97,11 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
                 <div className="intro">
                   <div className="brief">
                     <h1>{i.title}</h1>
-                    <h3>{i.desc}</h3>
+                    <h3>
+                      {i.desc.map((d) => {
+                        return <p>{d}</p>;
+                      })}
+                    </h3>
                   </div>
                   <div className="desc">
                     {i.points.map((p) => {

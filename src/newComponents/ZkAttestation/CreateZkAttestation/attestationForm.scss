@@ -44,12 +44,12 @@
     .PTooltip {
       .tooltip {
         top: 22px;
-        background: var(--layer-tokens-layer-05);
-        color: var(--text-tokens-text-inverse);
+        // background: var(--layer-tokens-layer-05);
+        // color: var(--text-tokens-text-inverse);
         left: calc(var(--spacing-8) * -1);
         transform: none;
         &:after {
-          background: var(--layer-tokens-layer-05);
+          // background: var(--layer-tokens-layer-05);
           left: var(--spacing-8);
           transform: rotate(45deg);
         }
