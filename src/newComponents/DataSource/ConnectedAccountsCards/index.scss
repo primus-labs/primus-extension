@@ -45,12 +45,12 @@
     .detailBtn {
       width: fit-content;
       @include TextLinkLink;
-      height: 21px;
-      margin-bottom: -5px;
-      .iconfont {
-        align-self: flex-start;
-        line-height: 1;
-      }
+      height: 16px;
+      // margin-bottom: -5px;
+      // .iconfont {
+      //   align-self: flex-start;
+      //   line-height: 1;
+      // }
     }
   }
 }

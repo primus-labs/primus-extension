@@ -11,7 +11,8 @@ type mediaItemsMap = {
     id: string;
     name: string;
     link: string;
-    icon: any;
+    icon?: any;
+    iconName?: string;
   };
 };
 const Overview = memo(() => {
@@ -59,18 +60,16 @@ const Overview = memo(() => {
       docs: {
         id: 'docs',
         link: 'https://docs.padolabs.org/',
-        icon: iconAlarm,
+        // icon: iconAlarm,
+        iconName: 'icon-iconAlarm',
         name: 'Support Docs',
       },
     };
     return m;
   }, []);
-  const handleClick = useCallback(
-    (link) => {
-      window.open(link)
-    },
-    []
-  );
+  const handleClick = useCallback((link) => {
+    window.open(link);
+  }, []);
   return (
     <div className="homeSupport">
       <div className="title">
@@ -88,7 +87,11 @@ const Overview = memo(() => {
                   handleClick(i.link);
                 }}
               >
-                <img src={i.icon} alt="" />
+                {i.iconName ? (
+                  <i className={`iconfont ${i.iconName}`}></i>
+                ) : (
+                  <img src={i.icon} alt="" />
+                )}
                 <span>{i.name}</span>
               </li>
             );

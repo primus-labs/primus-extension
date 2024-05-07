@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import useSocialStatistic from '@/hooks/useSocialStatistic';
 import ModuleStatistics from '../../ModuleStatistics';
 import './index.scss';
@@ -10,6 +10,9 @@ const Rewards = memo(() => {
   const { rewardsList } = useRewardsStatistics();
   console.log('rewardsList', rewardsList);
   const navigate = useNavigate();
+  const showList = useMemo(() => {
+    return rewardsList.slice(0,2)
+  }, [rewardsList]);
   const handleDetail = useCallback(() => {
     navigate('/events/rewards');
   }, [navigate]);
@@ -21,7 +24,7 @@ const Rewards = memo(() => {
       </div>
       <div className="content">
         <ul className="rewardItems">
-          {rewardsList
+          {showList
             .filter((i) => i)
             .map((i, k) => {
               return (

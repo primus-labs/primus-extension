@@ -44,6 +44,10 @@
         > img {
           width: var(--spacing-16);
         }
+        > .iconfont {
+          font-size: var(--spacing-16);
+          color: var(--icon-tokens-icon-primary);
+        }
       }
     }
   }

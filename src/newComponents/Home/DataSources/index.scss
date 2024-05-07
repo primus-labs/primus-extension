@@ -11,7 +11,7 @@
     @include HeadlineH3;
     @include frbc;
     width: 100%;
-    .moreBtn{
+    .moreBtn {
       height: auto;
     }
   }
@@ -32,6 +32,9 @@
       .connectBtn {
         height: var(--spacing-24);
         align-self: flex-end;
+        .btnText {
+          line-height: var(--spacing-24);
+        }
       }
       .dataSourceItemTop {
         width: 100%;
