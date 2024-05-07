@@ -20,25 +20,27 @@ const useAllSources = (sourceName?: undefined | null | string) => {
     (state: UserState) => state.onChainAssetsSources
   );
   const exList = useMemo(() => {
-    const sourceArr: ExDataList = Object.values({ ...exSources });
+    const sourceArr: ExDataList = Object.values({ ...JSON.parse(JSON.stringify(exSources)) });
     const orderedExList = sourceArr.sort((a, b) =>
       sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
     );
     return orderedExList;
   }, [exSources]);
   const socialList = useMemo(() => {
-    const sourceArr: SocialDataList = Object.values({ ...socialSources });
+    const sourceArr: SocialDataList = Object.values({ ...JSON.parse(JSON.stringify(socialSources)) });
     const orderedSocialList = sourceArr.sort((a, b) =>
       sub(Number(b.followers), Number(a.followers)).toNumber()
     );
     return orderedSocialList;
   }, [socialSources]);
   const kycList: KYCDataList = useMemo(() => {
-    return Object.values({ ...kycSources });
+    return Object.values({ ...JSON.parse(JSON.stringify(kycSources)) });
   }, [kycSources]);
   const onChainList: any = useMemo(() => {
-    return Object.values({ ...onChainAssetsSources });
-  }, [kycSources]);
+    const l = Object.values({ ...JSON.parse(JSON.stringify(onChainAssetsSources)) });
+    console.log('check-onChainList', l, onChainAssetsSources); // delete
+    return l;
+  }, [onChainAssetsSources]);
   const allSourceList: SourceDataList = useMemo(() => {
     return [...exList, ...socialList, ...kycList, ...onChainList];
   }, [exList, socialList, kycList]);
@@ -49,7 +51,8 @@ const useAllSources = (sourceName?: undefined | null | string) => {
         sub(Number(b.totalBalance), Number(a.totalBalance)).toNumber()
       );
     };
-    return sortFn(onChainList);
+    const l = sortFn(onChainList);
+    return l;
   }, [onChainList]);
   const connectedAssetsSourcesList = useMemo(() => {
     let l = exList;
@@ -102,6 +105,7 @@ const useAllSources = (sourceName?: undefined | null | string) => {
   }, [exSources, socialSources, kycSources, onChainAssetsSources]);
   // sourceName
   return {
+    connectedOnChainSourcesList: onChainList,
     sourceList: allSourceList,
     sourceMap: allSourceMap,
     sourceMap2: allSourceMap2,

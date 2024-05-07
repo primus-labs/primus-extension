@@ -10,7 +10,7 @@ import { tokenLogoPath } from '@/config/envConstants';
 import iconOthers from '@/assets/newImg/home/iconOthers.svg';
 import { UserState } from '@/types/store';
 const useAssetsStatistic = function () {
-  const { sourceMap } = useAllSources();
+  const { sourceMap, connectedOnChainSourcesList } = useAllSources();
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
   const dataSourceIconFn = (id) => {
     if (id.startsWith('0x')) {
@@ -29,9 +29,7 @@ const useAssetsStatistic = function () {
   const tokenLogoPrefix = useMemo(() => {
     return sysConfig.TOKEN_LOGO_PREFIX;
   }, [sysConfig]);
-  const connectedOnChainSourcesList = useMemo(() => {
-    return Object.values(sourceMap.onChainAssetsSources);
-  }, [sourceMap]);
+  
 
   const connectedExchangeSourcesList = useMemo(() => {
     return Object.values(sourceMap.exSources);
@@ -335,8 +333,6 @@ const useAssetsStatistic = function () {
   }, []);
 
   const totalChainAssetsMap = useMemo(() => {
-    console.log('222connectedOnChainSourcesList', connectedOnChainSourcesList); //delete
-
     const reduceF = (prev, curr) => {
       const { chainsAssetsMap } = curr;
       if (chainsAssetsMap && Object.keys(chainsAssetsMap).length > 0) {
@@ -352,9 +348,9 @@ const useAssetsStatistic = function () {
               const symbol = currM.split('---')[0];
               const currTokenItem = tokenListMap[currM];
 
-              const { amount, price, value, isNative, chain } = currTokenItem;
+              const { amount, price, value, isNative } = currTokenItem;
               if (symbol in prevM) {
-                const { amount: prevAmount, chain } = prevM[symbol];
+                const { amount: prevAmount } = prevM[symbol];
                 const totalAmount = add(
                   Number(prevAmount),
                   Number(amount)

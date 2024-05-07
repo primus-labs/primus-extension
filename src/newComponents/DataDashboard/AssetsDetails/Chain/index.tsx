@@ -208,11 +208,11 @@ const Chain = memo(() => {
                       <i className="iconfont icon-iconAmountForAttest"></i>
                       <div className="txtWrapper">
                         <div className="label">
-                          Tokens &nbsp;
+                          <div>Tokens</div>
                           <span>({sortListMapFn(i.tokenListMap).length})</span>
                         </div>
                         <div className="value">
-                          ${formatNumeral(totalOnChainAssetsBalance)}
+                          ${formatNumeral(i.totalBalance)}
                         </div>
                       </div>
                     </div>

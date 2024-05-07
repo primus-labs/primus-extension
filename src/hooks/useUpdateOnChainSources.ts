@@ -2,13 +2,8 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // import useAllSources from './useAllSources';
 import { getChainAssets, setNftsActionAsync } from '@/store/actions';
-import { DATASOURCEMAP } from '@/config/constants';
-import { getCurrentDate, getStatisticalData, sub } from '@/utils/utils';
 import { setOnChainAssetsSourcesAsync } from '@/store/actions';
 
-import { getAssetsOnChains } from '@/services/api/dataSource';
-import { ONEMINUTE } from '@/config/constants';
-import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import type { onChainAssetsData } from '@/types/dataSource';
 

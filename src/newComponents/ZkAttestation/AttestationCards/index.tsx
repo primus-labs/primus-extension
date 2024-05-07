@@ -251,7 +251,6 @@ const Cards: React.FC<PDropdownProps> = memo(
         return `${chainInfo.bucketDetailUrl}/${item.bucketName}`;
       }
       if (item.title === 'opBNB') {
-        // debugger;
         const chainInfo = EASInfo[chainShowName as keyof typeof EASInfo] as any;
         const compareRes = compareVersions('1.0.3', currentCred.credVersion);
         if (compareRes > -1) {

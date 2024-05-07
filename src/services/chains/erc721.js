@@ -62,7 +62,6 @@ export async function getEARLYBIRDNFT(params) {
     let provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const contract = new ethers.Contract(contractAddress, abi, provider);
     const nftJSON = await contract.tokenURI(tokenId);
-    // debugger
     const nftInfo = await getNFTInfo(nftJSON);
     return { ...nftInfo, tokenId };
     return nftJSON;

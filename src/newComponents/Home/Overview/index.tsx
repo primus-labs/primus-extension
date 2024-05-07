@@ -121,14 +121,18 @@ const Overview = memo(() => {
     [onChains, connectedDataSources]
   );
   const getUserInfoFn = useCallback(async () => {
-    const res = await getUserInfo();
-    const { rc, result } = res;
-    if (rc === 0) {
-      setItemMap((m) => {
-        m.achievement.num = result.totalScore;
-        let newM = { ...m };
-        return newM;
-      });
+    try {
+      const res = await getUserInfo();
+      const { rc, result } = res;
+      if (rc === 0) {
+        setItemMap((m) => {
+          m.achievement.num = result.totalScore;
+          let newM = { ...m };
+          return newM;
+        });
+      }
+    } catch (e) {
+      console.log('fetch userInfo error:', e);
     }
   }, []);
   useEffect(() => {
@@ -164,9 +168,7 @@ const Overview = memo(() => {
                 <div className="num">{i.num}</div>
                 {i.num > 0 ? (
                   ['dataSource', 'zkAttestation'].includes(i.id) && (
-                    <SplicedIcons
-                      list={iconListFn(i.id)}
-                    />
+                    <SplicedIcons list={iconListFn(i.id)} />
                   )
                 ) : (
                   <PButton

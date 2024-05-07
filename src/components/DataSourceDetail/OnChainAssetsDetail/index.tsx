@@ -17,8 +17,6 @@ import {
   sub,
   formatNumeral,
   formatAddress,
-  getCurrentDate,
-  getStatisticalData,
 } from '@/utils/utils';
 import {
   BTC,

@@ -404,6 +404,7 @@ const storeOnChainAssets = async ({
     walletName: 'MetaMask', // TODO-newui
     updateTime: Date.now() + '',
   };
+
   const { onChainAssetsSources: lastOnChainAssetsMapStr } =
     await chrome.storage.local.get(['onChainAssetsSources']);
 
@@ -441,7 +442,7 @@ export const getChainAssets = async ({
       label,
       timestamp,
       signature,
-      rawData: { nativeToken: {}, erc20Token: {} },
+      rawData: { nativeToken: [], erc20Token: {} },
       dispatch,
       requireUpdate: false,
     });
@@ -970,7 +971,6 @@ export const setNftsActionAsync: (arr?: any[]) => void = (walletArr) => {
         });
       });
       const resArr = await Promise.all(requestArr);
-      // debugger;
       const { nfts: nftsStr } = await chrome.storage.local.get(['nfts']);
       const nftsObj = nftsStr ? JSON.parse(nftsStr) : {};
       resArr.reduce((prev: any, curr, currK) => {
