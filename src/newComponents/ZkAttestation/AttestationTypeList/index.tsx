@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { ATTESTATIONTYPELIST } from '@/config/attestation';
 import PButton from '@/newComponents/PButton';
 import './index.scss';
+import { useSelector } from 'react-redux';
+import { UserState } from '@/types/store';
 
 type NavItem = {
   type: string;
@@ -18,7 +20,8 @@ interface PDropdownProps {
   // list: NavItem[];
 }
 
-const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
+const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => { } }) => {
+  const theme = useSelector((state: UserState) => state.theme)
   const supportList = useMemo(() => {
     return ATTESTATIONTYPELIST.filter((i) => !!i.show);
   }, []);
@@ -41,7 +44,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
             key={i.name}
           >
             <div className="top">
-              <img src={i.icon} alt="" className="typeIcon" />
+              <img src={i.icon[theme]} alt="" className="typeIcon" />
               <div className="typeName">{i.name}</div>
             </div>
             <div className="bottom">

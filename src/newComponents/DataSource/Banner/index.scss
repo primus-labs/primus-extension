@@ -30,10 +30,10 @@
   }
   .PTooltip {
     .tooltip {
-      background: var(--layer-tokens-layer-05);
-      color: var(--text-tokens-text-inverse);
+      // background: var(--layer-tokens-layer-05);
+      // color: var(--text-tokens-text-inverse);
       &:after {
-        background: var(--layer-tokens-layer-05);
+        // background: var(--layer-tokens-layer-05);
         transform: rotate(45deg);
       }
     }

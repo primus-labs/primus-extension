@@ -6,8 +6,8 @@
   .pageContent {
     .achievementTasks {
       margin-top: 40px;
-      .achievementTasksList{
-        height:616px;
+      .achievementTasksList {
+        height: 600px;
       }
       .achievementTasksTitle {
         margin-top: 40px;
@@ -17,9 +17,11 @@
         color: var(--text-tokens-text-primary, #161616);
       }
       .pageComponent {
-        margin-top: 20px;
+        margin-top: 12px;
         text-align: right;
-        width: 100%;
+        // width: 100%;
+        @include frss;
+        justify-content: flex-end;
       }
     }
   }

@@ -33,7 +33,6 @@
       flex-shrink: 0;
       &:not(.disabled):hover {
         background: var(--layer-tokens-layer-primary-hover, #f4f4f4);
-
         .dropdownOptionCon {
           .desc {
             color: var(--text-tokens-text-primary, #161616);
@@ -92,7 +91,7 @@
     .dropdownOptions {
       .dropdownOption {
         &:not(.disabled):hover {
-          background: var(--Neutral-color-Gray-90);
+          background: var(--neutral-color-gray-90);
         }
       }
     }

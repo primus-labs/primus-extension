@@ -65,7 +65,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       (state: UserState) => state.credentials
     );
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
-
+    const theme = useSelector((state:UserState) => state.theme)
     // console.log('222credentialsFromStore', credentialsFromStore); //delete
     const attestationQueryStr = useSelector(
       (state: UserState) => state.attestationQueryStr
@@ -354,7 +354,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                   <div className="brief">
                     <SplicedIcons
                       list={[
-                        ATTESTATIONTYPEMAP[i.attestationType]?.icon,
+                        ATTESTATIONTYPEMAP[i.attestationType]?.icon[theme],
                         getDataSourceMetaInfo(i.source)?.icon,
                       ]}
                     />

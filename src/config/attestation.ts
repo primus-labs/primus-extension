@@ -5,6 +5,13 @@ import iconAttestationTypeOnChain from '@/assets/newImg/zkAttestation/iconAttest
 import iconAttestationTypeQualification from '@/assets/newImg/zkAttestation/iconAttestationTypeQualification.svg';
 import iconAttestationTypeGame from '@/assets/newImg/zkAttestation/iconAttestationTypeGame.svg';
 import iconAttestationTypeAIGC from '@/assets/newImg/zkAttestation/iconAttestationTypeAIGC.svg';
+import iconAttestationTypeAssetsForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeAssetsForDark.svg';
+import iconAttestationTypeSocialForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeSocialForDark.svg';
+import iconAttestationTypeIdentityForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeIdentityForDark.svg';
+import iconAttestationTypeOnChainForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeOnChainForDark.svg';
+import iconAttestationTypeQualificationForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeQualificationForDark.svg';
+import iconAttestationTypeGameForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeGameForDark.svg';
+import iconAttestationTypeAIGCForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeAIGCForDark.svg';
 
 import type {
   ATTESTATIONTYPEITEMTYPE,
@@ -134,7 +141,10 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'Assets Verification': {
     id: 'Assets Verification',
     name: 'Assets Verification',
-    icon: iconAttestationTypeAssets,
+    icon: {
+      dark: iconAttestationTypeAssetsForDark,
+      light: iconAttestationTypeAssets,
+    },
     color: 'yellow',
     childMap: ASSETSVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#FFB700',
@@ -144,7 +154,10 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'Humanity Verification': {
     id: 'Humanity Verification',
     name: 'Humanity Verification',
-    icon: iconAttestationTypeIdentity,
+    icon: {
+      dark: iconAttestationTypeIdentityForDark,
+      light: iconAttestationTypeIdentity,
+    },
     color: 'gray',
     childMap: HUMANITYVERIFICATIONCONTENTTYPEMAP,
     chartBarColor: '#7B889B',
@@ -153,7 +166,10 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'Social Connections': {
     id: 'Social Connections',
     name: 'Social Connections',
-    icon: iconAttestationTypeSocial,
+    icon: {
+      dark: iconAttestationTypeSocialForDark,
+      light: iconAttestationTypeSocial,
+    },
     color: 'teal',
     childMap: SOCIALVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#08BDBA',
@@ -162,7 +178,10 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'On-chain Transaction': {
     id: 'On-chain Transaction',
     name: 'On-chain Transaction',
-    icon: iconAttestationTypeOnChain,
+    icon: {
+      dark: iconAttestationTypeOnChainForDark,
+      light: iconAttestationTypeOnChain,
+    },
     color: 'blue',
     childMap: ONCHAINVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#1192E8',
@@ -172,19 +191,28 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'Qualification Certificate': {
     id: 'Qualification Certificate',
     name: 'Qualification Certificate',
-    icon: iconAttestationTypeQualification,
+    icon: {
+      dark: iconAttestationTypeQualificationForDark,
+      light: iconAttestationTypeQualification,
+    },
     disabled: true,
   },
   'Game Achievements': {
     id: 'Game Achievements',
     name: 'Game Achievements',
-    icon: iconAttestationTypeGame,
+    icon: {
+      dark: iconAttestationTypeGameForDark,
+      light: iconAttestationTypeGame,
+    },
     disabled: true,
   },
   'AIGC Proof': {
     id: 'AIGC Proof',
     name: 'AIGC Proof',
-    icon: iconAttestationTypeAIGC,
+    icon: {
+      dark: iconAttestationTypeAIGCForDark,
+      light: iconAttestationTypeAIGC,
+    },
     disabled: true,
   },
 };

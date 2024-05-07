@@ -1,4 +1,5 @@
-import React, { memo, useMemo, FC } from 'react';
+import React, { memo, useMemo, FC, useState ,useEffect} from 'react';
+import { useSelector } from 'react-redux';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
@@ -13,6 +14,7 @@ import { formatNumeral } from '@/utils/utils';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 import { EASInfo, SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 import './index.scss';
+import type { UserState } from '@/types/store';
 
 // Register the required components
 echarts.use([
@@ -29,7 +31,12 @@ type BarChartProps = {
 const MAXSHOWDATASOURCELEN = 5;
 const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
   console.log('222chain-xDatas', xDatas, yDatas); //delete
-
+  const [colorMap, setColorMap] = useState<any>({
+    borderChartColor: '#f4f4f4',
+    xAxisLabelColor: '#6f6f6f',
+    yAxisLabelColor: '#161616',
+  });
+  const theme = useSelector((state: UserState) => state.theme);
   const showXDatas = useMemo(() => {
     let l = [...xDatas];
     const diffLen = MAXSHOWDATASOURCELEN - xDatas.length;
@@ -98,7 +105,7 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
         itemHeight: 8,
         itemGap: 32,
         textStyle: {
-          color: '#161616',
+          color: colorMap.yAxisLabelColor,
           fontFamily: 'IBM Plex Sans',
           fontSize: 12,
           lineHeight: 16,
@@ -112,7 +119,7 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
       tooltip: {
         formatter: (params) => {
           const { name, value, seriesName } = params;
-          const chainId =  Object.keys(EASInfo).find(
+          const chainId = Object.keys(EASInfo).find(
             (i) => i.replace(/\s+/g, '') === name
           );
           const CName = EASInfo[chainId].showName;
@@ -140,6 +147,11 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
           rich: xRichDatasMap,
         },
         type: 'category',
+        splitLine: {
+          lineStyle: {
+            color: colorMap.borderChartColor,
+          },
+        },
       },
       yAxis: {
         type: 'value',
@@ -147,11 +159,37 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
         minInterval: 1,
         // maxInterval: 3,
         // interval: 3
+        splitLine: {
+          lineStyle: {
+            color: colorMap.borderChartColor,
+          },
+        },
       },
       series,
     };
-  }, [series, xRichDatasMap]);
-
+  }, [series, xRichDatasMap, colorMap]);
+  useEffect(() => {
+    setColorMap(() => {
+      // var mainColor = getComputedStyle(
+      //   document.documentElement
+      // ).getPropertyValue('--border-tokens-border-chart');
+      // return mainColor;
+      // --border-tokens-border-chart,--text-tokens-text-tertiary,--text-tokens-text-primary,
+      if (theme === 'dark') {
+        return {
+          borderChartColor: '#262626',
+          xAxisLabelColor: '#8d8d8d',
+          yAxisLabelColor: '#f4f4f4',
+        };
+      } else {
+        return {
+          borderChartColor: '#f4f4f4',
+          xAxisLabelColor: '#6f6f6f',
+          yAxisLabelColor: '#161616',
+        };
+      }
+    });
+  }, [theme]);
   return (
     <div className="pBarWrapper">
       <ReactEChartsCore

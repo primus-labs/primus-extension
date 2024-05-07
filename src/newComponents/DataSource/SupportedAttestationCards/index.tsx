@@ -1,11 +1,15 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import PButton from '@/newComponents/PButton';
 import iconAttestationHumanity from '@/assets/newImg/zkAttestation/iconAttestationTypeIdentity.svg';
 import iconAttestationAssets from '@/assets/newImg/zkAttestation/iconAttestationTypeAssets.svg';
 import iconAttestationOnChain from '@/assets/newImg/zkAttestation/iconAttestationTypeOnChain.svg';
 import iconAttestationTypeSocial from '@/assets/newImg/zkAttestation/iconAttestationTypeSocial.svg';
 import './index.scss';
+
+import { UserState } from '@/types/store';
+import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 
 type NavItem = {
   type: string;
@@ -28,7 +32,6 @@ const attestationTypeMap = {
     verificationContent: '1',
     desc: 'Largest ETH/USDC Uniswap transaction',
     type: 'Powered by Brevis',
-    icon: iconAttestationOnChain,
     id: '1',
     webTemplateId: '2',
   },
@@ -36,7 +39,6 @@ const attestationTypeMap = {
     attestationType: 'Assets Verification',
     verificationContent: 'Token Holding',
     desc: 'Token holding',
-    icon: iconAttestationAssets,
     type: 'Web Data',
     id: '2',
     webTemplateId: '2323',
@@ -45,7 +47,6 @@ const attestationTypeMap = {
     attestationType: 'Assets Verification',
     verificationContent: 'Assets Proof',
     desc: 'Asset balance',
-    icon: iconAttestationAssets,
     id: '3',
     webTemplateId: '2323',
     type: 'Web Data',
@@ -55,7 +56,6 @@ const attestationTypeMap = {
     verificationContent: 'Account ownership',
     verificationValue: 'Account owner',
     desc: 'Account ownership',
-    icon: iconAttestationHumanity,
     type: 'Web Data',
     id: '4',
     webTemplateId: '2323',
@@ -65,7 +65,6 @@ const attestationTypeMap = {
     verificationContent: 'KYC Status',
     verificationValue: 'Basic Verification',
     desc: 'KYC status',
-    icon: iconAttestationHumanity,
     type: 'Web Data',
     id: '5',
     webTemplateId: '2323',
@@ -74,7 +73,6 @@ const attestationTypeMap = {
     attestationType: 'Social Connections',
     verificationContent: 'X Followers',
     desc: 'Followers number',
-    icon: iconAttestationTypeSocial,
     type: 'Web Data',
     id: '16',
     webTemplateId: '16',
@@ -84,6 +82,7 @@ const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
     const [searchParams] = useSearchParams();
     const dataSourceName = searchParams.get('dataSourceId');
+    const theme = useSelector((state: UserState) => state.theme);
     const supportList = useMemo(() => {
       if (dataSourceName === 'web3 wallet') {
         // return [attestationTypeMap[1]];
@@ -120,7 +119,10 @@ const Cards: React.FC<PDropdownProps> = memo(
           return (
             <li className="supportSttestationCard" key={i.id}>
               <div className="left">
-                <img src={i.icon} alt="" />
+                <img
+                  src={ATTESTATIONTYPEMAP[i.attestationType].icon[theme]}
+                  alt=""
+                />
                 <div className="introTxt">
                   <div className="title">{i.attestationType}</div>
                   <div className="desc">{i.desc}</div>

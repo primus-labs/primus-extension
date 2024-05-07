@@ -54,10 +54,11 @@
           width: 100%;
           height: 100%;
           background: rgba(0, 0, 0, 0.2);
+          backdrop-filter: blur(4px);
           @include frcc;
           @include HeadlineH0;
           color: var(--text-tokens-text-inverse);
-          border-radius: 7px 7px 0 0 ;
+          border-radius: 7px 7px 0 0;
         }
       }
       .txtWrapper {
@@ -83,6 +84,26 @@
           margin-top: var(--spacing-4);
           @include BodyBody100;
           color: var(--text-tokens-text-tertiary);
+        }
+      }
+    }
+  }
+}
+.dark {
+  .currentEventsCards {
+    .dataSourceCard {
+      .cardContent {
+        .picWrapper {
+          .picContent {
+            background-image: url('~@/assets/newImg/events/bgCombineType0ForDark.svg');
+            &.combine {
+              background-image: url('~@/assets/newImg/events/bgCombineType1ForDark.svg');
+            }
+            
+          }
+          .endMask {
+              color: var(--text-tokens-text-primary);
+            }
         }
       }
     }

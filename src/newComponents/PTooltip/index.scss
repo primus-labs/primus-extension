@@ -17,10 +17,10 @@
     transform: translateX(-50%);
     padding: 6px 10px;
     border-radius: var(--Radius-radius-xxs, 2px);
-    background: var(--layer-tokens-layer-primary, #fff);
+    background: var(--layer-tokens-layer-05);
     box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.15);
     @include BodyBody300;
-    color: var(--text-tokens-text-primary, #f4f4f4);
+    color: var(--text-tokens-text-inverse);
 
     &:after {
       position: absolute;
@@ -32,12 +32,19 @@
       width: var(--spacing-8, 8px);
       height: var(--spacing-8, 8px);
       border-radius: 1px;
-      background: var(--layer-tokens-layer-primary, #fff);
+      background: var(--layer-tokens-layer-05);
 
       // box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.15),0 0 0 0 transparent,0 0 0 0 transparent,0px 2px 8px 0px rgba(0, 0, 0, 0.15),;
     }
-    >div{
+    > div {
       white-space: nowrap;
+    }
+  }
+}
+.dark {
+  .PTooltip {
+    .tooltip {
+      color: var(--text-tokens-text-primary);
     }
   }
 }

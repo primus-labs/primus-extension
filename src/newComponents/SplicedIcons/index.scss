@@ -17,7 +17,7 @@ $element-count: 100;
     }
   }
   .hideCircle {
-    background: var(--neutral-color-gray-20);
+    background: var(--layer-tokens-layer-02);
     width: var(--spacing-40);
     height: var(--spacing-40);
     position: relative;
@@ -31,3 +31,5 @@ $element-count: 100;
     line-height: 16px;
   }
 }
+
+

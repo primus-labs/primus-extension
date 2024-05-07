@@ -5,7 +5,7 @@
   @include frsc;
   gap: var(--spacing-32, 32px);
   height: var(--spacing-32, 32px);
-  border-bottom: 1px solid var(--border-tokens-border--primary, #e0e0e0);
+  border-bottom: 1px solid var(--border-tokens-border-primary, #e0e0e0);
   .tab {
     cursor: pointer;
     @include frsc;

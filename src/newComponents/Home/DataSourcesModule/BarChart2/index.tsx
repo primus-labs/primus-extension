@@ -1,4 +1,5 @@
-import React, { memo, useMemo, FC } from 'react';
+import React, { memo, useMemo, FC, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
@@ -17,6 +18,7 @@ import { formatNumeral } from '@/utils/utils';
 import './index.scss';
 import { EASInfo, SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
+import { UserState } from '../../../../types/store';
 
 // Register the required components
 echarts.use([
@@ -38,6 +40,12 @@ const PBarChart: FC<BarChartProps> = memo(
   ({ xDatas = [], yDatas = [], tokenMapDatas }) => {
     const { tokenIconFn } = useAssetsStatistic();
     console.log('2222xDatas', xDatas, yDatas); //delete
+    const [colorMap, setColorMap] = useState<any>({
+      borderChartColor: '#f4f4f4',
+      xAxisLabelColor: '#6f6f6f',
+      yAxisLabelColor: '#161616',
+    });
+    const theme = useSelector((state: UserState) => state.theme);
     const showXDatas = useMemo(() => {
       let l = [...xDatas];
       if (xDatas.length === 1) {
@@ -81,14 +89,14 @@ const PBarChart: FC<BarChartProps> = memo(
             fontSize: 12,
             lineHeight: 16,
             fontFamily: 'IBM Plex Sans',
-            color: '#161616',
+            color: colorMap.yAxisLabelColor,
             padding: [0, 0, 0, 4],
           },
         }
       );
 
       return m;
-    }, [showXDatas]);
+    }, [showXDatas, colorMap]);
 
     const tooltip = useMemo(() => {
       let obj: any = {
@@ -162,18 +170,25 @@ const PBarChart: FC<BarChartProps> = memo(
           axisTick: {
             show: false,
           },
+
           data: showXDatas,
           type: 'value',
           axisLabel: {
             fontSize: 10,
             lineHeight: 16,
             fontFamily: 'IBM Plex Sans',
-            color: '#6F6F6F',
+            color: colorMap.xAxisLabelColor,
+            // color: '#f4f4f4',
             formatter: function (value) {
               return (
                 '$' +
                 formatNumeral(value, { transferUnit: true, decimalPlaces: 0 })
               );
+            },
+          },
+          splitLine: {
+            lineStyle: {
+              color: colorMap.borderChartColor,
             },
           },
         },
@@ -182,6 +197,7 @@ const PBarChart: FC<BarChartProps> = memo(
           data: showXDatas.map((i) => i.name),
           align: 'left',
           axisLabel: {
+            color: colorMap.yAxisLabelColor,
             formatter: function (value) {
               // console.log('222value', value);
               if (value) {
@@ -197,7 +213,6 @@ const PBarChart: FC<BarChartProps> = memo(
                   formatName = SUPPORRTEDQUERYCHAINMAP[chainKey].name;
                 }
                 formatName = value === 'ArbitrumOne' ? 'Arbitrum' : formatName;
-                
 
                 return '{' + value + '| }{name|' + formatName + '}';
               } else {
@@ -211,7 +226,7 @@ const PBarChart: FC<BarChartProps> = memo(
           },
           axisLine: {
             lineStyle: {
-              color: '#E0E0E0',
+              color: colorMap.borderChartColor,
             },
           },
           splitLine: {
@@ -227,7 +242,29 @@ const PBarChart: FC<BarChartProps> = memo(
           },
         },
       };
-    }, [xRichDatasMap, showYDatas, showXDatas, tooltip]);
+    }, [xRichDatasMap, showYDatas, showXDatas, tooltip, colorMap]);
+    useEffect(() => {
+      setColorMap(() => {
+        // var mainColor = getComputedStyle(
+        //   document.documentElement
+        // ).getPropertyValue('--border-tokens-border-chart');
+        // return mainColor;
+        // --border-tokens-border-chart,--text-tokens-text-tertiary,--text-tokens-text-primary,
+        if (theme === 'dark') {
+          return {
+            borderChartColor: '#262626',
+            xAxisLabelColor: '#8d8d8d',
+            yAxisLabelColor: '#f4f4f4',
+          };
+        } else {
+          return {
+            borderChartColor: '#f4f4f4',
+            xAxisLabelColor: '#6f6f6f',
+            yAxisLabelColor: '#161616',
+          };
+        }
+      });
+    }, [theme]);
 
     return (
       <div className="pBar2Wrapper">

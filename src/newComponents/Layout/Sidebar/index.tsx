@@ -26,7 +26,7 @@ const Sidebar: React.FC<PButtonProps> = memo(({}) => {
         <Nav />
       </div>
       <div className="sidebarBottom">
-        {/* <PSwitch /> */}
+        <PSwitch />
       </div>
     </div>
   );
