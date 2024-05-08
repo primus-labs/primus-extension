@@ -167,15 +167,7 @@ const Nav: React.FC<PButtonProps> = memo(
           ? BASEventDetail?.ext?.schemaType
           : 'GOOGLE_ACCOUNT_OWNER';
         const attestationId = uuidv4();
-        const eventInfo: any = {
-          eventType: 'API_ATTESTATION_GENERATE',
-          rawData: {
-            source: form.dataSourceId,
-            schemaType,
-            sigFormat: 'EAS-Ethereum',
-            attestationId: attestationId,
-          },
-        };
+
         const getCredAddrFn = async () => {
           let credAddress = connectedWallet?.address;
           if (isFromBASEvent) {
@@ -190,10 +182,21 @@ const Nav: React.FC<PButtonProps> = memo(
           }
           return credAddress;
         };
+        const credAddress = await getCredAddrFn();
+        const eventInfo: any = {
+          eventType: 'API_ATTESTATION_GENERATE',
+          rawData: {
+            source: form.dataSourceId,
+            schemaType,
+            sigFormat: 'EAS-Ethereum',
+            attestationId: attestationId,
+            event: fromEvents,
+            address: credAddress,
+          },
+        };
         const storeGoogleCred = async (res: any) => {
           //w
           const { signatureInfo, signatureRawInfo } = res;
-          const credAddress = await getCredAddrFn();
 
           const fullAttestation = {
             ...signatureInfo,

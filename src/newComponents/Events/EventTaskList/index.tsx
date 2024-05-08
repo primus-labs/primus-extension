@@ -163,7 +163,7 @@ const earlyBirdNftTskMap = {
   },
   attestation: {
     id: 'attestation',
-    title: 'Complete an asset certification',
+    title: 'Complete attestation',
     finished: false,
     tasksProcess: {
       total: 1,

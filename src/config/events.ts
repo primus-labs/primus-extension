@@ -113,7 +113,7 @@ export const eventMetaMap = {
     // icon: iconDataSourceBinance,
     title: 'PADO Early Bird NFT Rewards',
     longDesc:
-      'For trying things out, make an asset certification, submit it to Linea, and share your referral code. This will grant you the eligibility to mint the PADO early bird NFT.',
+      'For trying things out, make attestation, submit it to Linea, and share your referral code. This will grant you the eligibility to mint the PADO early bird NFT.',
     periodType: '1',
     // chainDesc: 'Early Bird NFT',
     // gift: '100 PADO points',

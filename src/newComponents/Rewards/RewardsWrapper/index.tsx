@@ -1,22 +1,10 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import useRewardsStatistics from '@/hooks/useRewardsStatistics';
-import {
-  SCROLLEVENTNAME,
-  BASEVENTNAME,
-  LINEAEVENTNAME,
-  LUCKYDRAWEVENTNAME,
-  eventMetaMap,
-  EARLYBIRDNFTEVENTNAME,
-} from '@/config/events';
-import { checkLotteryResults } from '@/services/api/event';
-import type { UserState } from '@/types/store';
+import { EVENTNAMEMAP } from '@/config/events';
 import RewardsCards from '../RewardCards';
-import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
-import mysteryBoxImg from '@/assets/img/events/mysteryBoxImg.svg';
-import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
+import PBack from '@/newComponents/PBack';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
 
 import './index.scss';
@@ -26,13 +14,22 @@ interface PDropdownProps {
   // list: NavItem[];
 }
 const Cards: React.FC<PDropdownProps> = memo(({}) => {
+  const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
   const { rewardsList } = useRewardsStatistics(eventId);
   console.log('222rewardsList', rewardsList);
+  const handleBack = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
   return (
     <div className="rewardsWrapper">
-      <h2 className="title">Your rewards from participated events</h2>
+      <PBack onBack={handleBack} withLabel />
+      <h2 className="title">
+        Your rewards from {eventId ? EVENTNAMEMAP[eventId] : 'participated'}{' '}
+        events
+      </h2>
       {rewardsList.length > 0 ? (
         <RewardsCards list={rewardsList} />
       ) : (

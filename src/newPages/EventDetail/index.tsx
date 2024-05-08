@@ -1,19 +1,12 @@
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, {  useCallback, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
-import { eventMetaMap } from '@/config/events';
-import type { Dispatch } from 'react';
-import type { UserState } from '@/types/store';
 import EventQS from '@/newComponents/Events/EventQS';
 import EventBrief from '@/newComponents/Events/EventBrief';
 import EventTaskList from '@/newComponents/Events/EventTaskList';
 
 import PBack from '@/newComponents/PBack';
-import PButton from '@/newComponents/PButton';
-import SplicedIcons from '@/newComponents/SplicedIcons';
-import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
 
 dayjs.extend(utc);
@@ -68,19 +61,9 @@ const stepList: StepItem[] = [
 ];
 
 const DataSourceItem = memo(() => {
-  const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
-  const [attestationPresets, setAttestationPresets] = useState<any>();
-
-  const [visibleConnectByWeb, setVisibleConnectByAPI] =
-    useState<boolean>(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
-
-  // const webProofTypes = useSelector((state: UserState) => state.webProofTypes);
-
-  const dispatch: Dispatch<any> = useDispatch();
-  const metaInfo = eventMetaMap[eventId];
 
   const handleBack = useCallback(() => {
     navigate(-1);

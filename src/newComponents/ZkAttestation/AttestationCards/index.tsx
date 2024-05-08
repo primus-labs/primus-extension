@@ -97,22 +97,29 @@ const Cards: React.FC<PDropdownProps> = memo(
       }
       return newList;
     }, [credentialsFromStore, attestationQueryStr, attestationQueryType]);
-    const otherOperationsFn = useCallback((i) => {
+    const isDisableMoreFn = useCallback((i) => {
       const isDeleteDisable =
         (i?.provided?.length && i?.provided?.length > 0) || i.event;
-      return [
-        {
-          value: 'Delete',
-          label: 'Delete',
-          disabled: isDeleteDisable,
-        },
-        // {
-        //   value: 'Bind to DID',
-        //   label: 'Bind to DID',
-        //   disabled: true,
-        // },
-      ];
+      return isDeleteDisable;
     }, []);
+    const otherOperationsFn = useCallback(
+      (i) => {
+        const isDeleteDisable = isDisableMoreFn(i);
+        return [
+          {
+            value: 'Delete',
+            label: 'Delete',
+            disabled: isDeleteDisable,
+          },
+          // {
+          //   value: 'Bind to DID',
+          //   label: 'Bind to DID',
+          //   disabled: true,
+          // },
+        ];
+      },
+      [isDisableMoreFn]
+    );
     const formatDate = (timestamp) => {
       return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
     };
@@ -332,6 +339,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                           type="icon"
                           icon={<i className="iconfont icon-iconMore"></i>}
                           onClick={() => {}}
+                          disabled={isDisableMoreFn(i)}
                         />
 
                         <div
