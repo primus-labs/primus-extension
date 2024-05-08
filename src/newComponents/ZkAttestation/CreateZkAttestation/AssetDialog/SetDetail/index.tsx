@@ -61,6 +61,19 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       (state: UserState) => state.activeAttestation
     );
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
+    const verificationValueTooltip = useMemo(() => {
+      if (pswForm.verificationContent === 'Token Holding') {
+        if (dataSourceId === 'binance') {
+          return 'Tokens in Spot account';
+        } else if (dataSourceId === 'okx') {
+          return 'Tokens in Trading account';
+        } else {
+          return '';
+        }
+      } else {
+        return '';
+      }
+    }, [pswForm.verificationContent]);
     const verificationContentCN = useMemo(() => {
       let cN = 'verificationContent';
       const v = pswForm.verificationContent;
@@ -353,6 +366,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 }}
                 value={pswForm.verificationValue}
                 disabled={presets?.verificationValue}
+                tooltip={
+                  verificationValueTooltip
+                    ? { text: verificationValueTooltip }
+                    : null
+                }
               />
             ) : pswForm.verificationContent === 'Token Holding' ? (
               <PInput
@@ -365,6 +383,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 }}
                 value={pswForm.verificationValue}
                 disabled={!pswForm.verificationContent}
+                tooltip={
+                  verificationValueTooltip
+                    ? { text: verificationValueTooltip }
+                    : null
+                }
               />
             ) : (
               <PSelect
@@ -378,6 +401,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 }}
                 value={pswForm.verificationValue}
                 disabled={presets?.verificationValue}
+                tooltip={
+                  verificationValueTooltip
+                    ? { text: verificationValueTooltip }
+                    : null
+                }
               />
             )
           ) : (
@@ -392,6 +420,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               }}
               value={pswForm.verificationValue}
               disabled={presets?.verificationValue}
+              tooltip={
+                verificationValueTooltip
+                  ? { text: verificationValueTooltip }
+                  : null
+              }
             />
           )}
         </div>

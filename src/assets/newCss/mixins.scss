@@ -1,7 +1,13 @@
-@mixin shadow($x: 0px, $y: 0px, $blur: 12px, $color: rgba(0, 0, 0, 0.1)) {
+.light,.white,#pado-extension-content,.light #pado-extension-content,.white #pado-extension-content {
+  --shadow-color: rgba(0, 0, 0, 0.06);
+}
+.dark,.black,.dark #pado-extension-content,.black #pado-extension-content {
+  --shadow-color: rgba(0, 0, 0, 0.12);
+}
+@mixin shadow($x: 0px, $y: 0px, $blur: 12px, $color: var(--shadow-color)) {
   box-shadow: $x $y $blur $color;
 }
-@mixin card-xs_shadow($color: rgba(0, 0, 0, 0.1)) {
+@mixin card-xs_shadow {
   @include shadow(0, 4px, 24px);
 }
 @mixin card-s_shadow {

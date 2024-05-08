@@ -13,18 +13,13 @@ import {
 import useAllSources from '@/hooks/useAllSources';
 import useCreateAccount from './useCreateAccount';
 import useMsgs from './useMsgs';
-import { postMsg } from '@/utils/utils';
-import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
-import { STARTOFFLINETIMEOUT } from '@/config/constants';
 
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { eventReport } from '@/services/api/usertracker';
-import { requestSignTypedData } from '@/services/wallets/utils';
-import { getUserIdentity } from '@/services/api/user';
 import { getAccount } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
-import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
+import type { ObjectType, SysConfigItem } from '@/types/home';
 
 type UseAlgorithm = () => void;
 

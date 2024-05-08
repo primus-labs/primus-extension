@@ -169,6 +169,7 @@ function DescEl({ status, resultStatus }) {
 }
 function PadoCard() {
   const [status, setStatus] = useState('initialized');
+  const [colorTheme, setColorTheme] = useState('');
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
@@ -272,8 +273,35 @@ function PadoCard() {
       chrome.runtime.onMessage.removeListener(listenerFn);
     };
   }, []);
+  useEffect(() => {
+    // for mexc
+    const htmlTheme = document.documentElement.getAttribute('data-theme');
+    if (htmlTheme) {
+      setColorTheme(htmlTheme);
+    }
+    // for gate
+    const hasDarkClass = document.body.classList.contains('classic-dark');
+    if (hasDarkClass) {
+      setColorTheme('dark');
+    }
+    // const switchColorThemeSectionEl = document.querySelector(
+    //   '.responsive-item-content'
+    // );// for mexc
+    // if (switchColorThemeSectionEl) {
+    //   switchColorThemeSectionEl.addEventListener('click', function () {
+    //     alert('click');
+    //   });
+    // }
+    // const switchColorThemeSectionEl =
+    //   document.querySelector('.theme_container');// for gate
+    // if (switchColorThemeSectionEl) {
+    //   switchColorThemeSectionEl.addEventListener('click', function () {
+    //     alert('click');
+    //   });
+    // }
+  }, []);
   return (
-    <div className={`pado-extension-card  ${status}`}>
+    <div className={`pado-extension-card  ${status} ${colorTheme}`}>
       <div className="pado-extension-header">
         <img src={iconPado} className="iconPado" />
         <img src={iconLink} className="iconLink" />

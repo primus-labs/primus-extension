@@ -25,7 +25,7 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
   }, [navigate]);
   return (
     <div className="rewardsWrapper">
-      <PBack onBack={handleBack} withLabel />
+      {eventId && <PBack onBack={handleBack} withLabel />}
       <h2 className="title">
         Your rewards from {eventId ? EVENTNAMEMAP[eventId] : 'participated'}{' '}
         events

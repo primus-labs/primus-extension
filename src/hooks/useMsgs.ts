@@ -53,10 +53,13 @@ const useMsgs = function useMsgs() {
     // console.log('222useMsgs-useEffect1', msgObj);
     if (msgObj?.id) {
       const delay = msgObj?.link && msgObj?.link !== pathname ? 8000 : 5000;
-      let timer = setTimeout(() => {
-        // console.log('222useMsgs-useEffect-timeout', delay); //delete
-        deleteMsg(msgObj?.id);
-      }, delay);
+      if (msgObj.type === 'error') {
+        let timer = setTimeout(() => {
+          // console.log('222useMsgs-useEffect-timeout', delay); //delete
+          deleteMsg(msgObj?.id);
+        }, delay);
+      }
+
       // console.log('222useMsgs-useEffect2', msgObj?.id, timer);
       //delete
       // return () => {

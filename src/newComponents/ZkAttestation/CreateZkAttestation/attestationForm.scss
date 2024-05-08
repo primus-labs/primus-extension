@@ -1,5 +1,6 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
+
 @mixin inputSelectWidth($inputWidth: 182px, $selectWidth: 182px) {
   .selectInput {
     width: $inputWidth;
@@ -11,10 +12,6 @@
 @mixin attestationFormItem {
   width: 100%;
   @include frbc;
-  > label {
-    @include BodyBody100;
-    color: var(--text-tokens-text-tertiary);
-  }
 }
 @mixin plainTextFormItem {
   width: 100%;
@@ -30,7 +27,16 @@
   .label {
     @include frsc;
     gap: var(--spacing-4);
-    .infoBtn {
+  }
+  .value {
+    @include frsc;
+  }
+
+  > label {
+    @include BodyBody100;
+    color: var(--text-tokens-text-tertiary);
+    .infoBtn,
+    .tooltipBtn {
       .iconfont {
         font-size: var(--spacing-12);
         color: var(--icon-tokens-icon-tertiary);
@@ -44,20 +50,14 @@
     .PTooltip {
       .tooltip {
         top: 22px;
-        // background: var(--layer-tokens-layer-05);
-        // color: var(--text-tokens-text-inverse);
         left: calc(var(--spacing-8) * -1);
         transform: none;
         &:after {
-          // background: var(--layer-tokens-layer-05);
           left: var(--spacing-8);
           transform: rotate(45deg);
         }
       }
     }
-  }
-  .value {
-    @include frsc;
   }
 }
 @mixin attestationForm {
@@ -90,6 +90,36 @@
   }
   .confirmBtn {
     margin-top: var(--spacing-20) !important;
+  }
+  .verificationValue,
+  .staticItem {
+    > label {
+      @include BodyBody100;
+      color: var(--text-tokens-text-tertiary);
+      .infoBtn,
+      .tooltipBtn {
+        .iconfont {
+          font-size: var(--spacing-12);
+          color: var(--icon-tokens-icon-tertiary);
+        }
+        &:hover {
+          .iconfont {
+            color: var(--icon-tokens-icon-tertiary);
+          }
+        }
+      }
+      .PTooltip {
+        .tooltip {
+          top: 22px;
+          left: calc(var(--spacing-8) * -1);
+          transform: none;
+          &:after {
+            left: var(--spacing-8);
+            transform: rotate(45deg);
+          }
+        }
+      }
+    }
   }
 }
 
@@ -128,7 +158,9 @@
         margin-top: var(--spacing-8);
       }
     }
-    .detailForm,.detailForm2,.detailForm3 {
+    .detailForm,
+    .detailForm2,
+    .detailForm3 {
       .confirmBtn {
         margin-top: var(--spacing-20);
       }

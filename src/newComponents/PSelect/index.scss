@@ -6,7 +6,7 @@
   @include fcss;
   gap: var(--spacing-4, 4px);
   position: relative;
-  &.horizontal{
+  &.horizontal {
     @include frss;
   }
   > label {
@@ -14,6 +14,13 @@
     @include Label01;
     @include frsc;
     padding-bottom: var(--spacing-4, 4px);
+    @include frsc;
+    gap: var(--spacing-4);
+    .tooltipBtn {
+      &.icon {
+        width: var(--spacing-12, 12px);
+      }
+    }
   }
   &.disabled {
     > label {
@@ -60,7 +67,8 @@
       .placeholder {
         color: var(--text-tokens-text-placeholder, #a8a8a8);
       }
-      .iconfont,.iconImg{
+      .iconfont,
+      .iconImg {
         font-size: var(--spacing-16);
         width: var(--spacing-16);
         border-radius: 50%;

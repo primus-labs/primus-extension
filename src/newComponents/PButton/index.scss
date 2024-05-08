@@ -23,11 +23,15 @@
 button.PButton {
   @include frcc;
   @include Button;
+  
   color: var(--text-tokens-text-inverse, #fff);
   box-sizing: border-box;
   cursor: pointer;
   width: fit-content;
   white-space: nowrap;
+  .btnText{
+    @include Button;
+  }
   &.disabled {
     cursor: not-allowed;
   }

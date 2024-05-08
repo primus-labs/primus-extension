@@ -8,6 +8,8 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import PDropdown from '../PDropdown';
+import PTooltip from '@/newComponents/PTooltip';
+import PButton from '@/newComponents/PButton';
 // import iconClear from '@/assets/img/iconClear.svg';
 
 import type { MouseEvent } from 'react';
@@ -38,6 +40,7 @@ interface PSelectProps {
   showIcon?: boolean;
   showSelf?: boolean;
   optionSuffix?: any;
+  tooltip?: any;
 }
 
 const PSelect: React.FC<PSelectProps> = memo(
@@ -53,7 +56,8 @@ const PSelect: React.FC<PSelectProps> = memo(
     label,
     className,
     align = 'vertical',
-    optionSuffix = ''
+    optionSuffix = '',
+    tooltip,
   }) => {
     const [optionsVisible, setOptionsVisible] = useState(false);
 
@@ -150,6 +154,16 @@ const PSelect: React.FC<PSelectProps> = memo(
         {label && (
           <label>
             <span>{label}</span>
+            {tooltip && (
+              <PTooltip title={tooltip.text}>
+                <PButton
+                  type="icon"
+                  icon={<i className="iconfont icon-iconInfo"></i>}
+                  onClick={() => {}}
+                  className="tooltipBtn"
+                />
+              </PTooltip>
+            )}
           </label>
         )}
         <div
