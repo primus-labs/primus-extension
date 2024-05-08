@@ -131,7 +131,7 @@
     --sidebar-width: 224px;
   }
 }
-.light {
+.light,.white {
   --background-tokens-background: var(--neutral-color-gray-05);
   --background-tokens-background-brand: var(--brand-primary-color-bp-50);
   --background-tokens-background-hover: var(--neutral-color-gray-10);
@@ -231,7 +231,7 @@
 
   --border-disabled: var(--neutral-color-gray-10);
 }
-.dark {
+.dark,.black {
   --background-tokens-background: var(--neutral-color-gray-100);
   --background-tokens-background-brand: var(--brand-primary-color-bp-50);
   --background-tokens-background-hover: var(--neutral-color-gray-90);

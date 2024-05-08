@@ -1038,3 +1038,12 @@ export const setEventsLotteryResultsAsync = () => {
     }
   };
 };
+
+export const initSetThemeAction = () => {
+  return (dispatch: any) => {
+    const lastColorTheme = localStorage.getItem('colorTheme');
+    if (lastColorTheme) {
+      dispatch(setThemeAction(lastColorTheme));
+    }
+  };
+};

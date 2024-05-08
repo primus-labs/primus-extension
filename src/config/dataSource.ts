@@ -9,7 +9,7 @@ import iconDataSourceGate from '@/assets/img/iconDataSourceGate.svg';
 import iconDataSourceBitget from '@/assets/img/iconDataSourceBitget.svg';
 import iconDataSourceBybit from '@/assets/img/iconDataSourceBybit.svg';
 import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.svg';
-import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.png';
+import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.svg';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
 import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';

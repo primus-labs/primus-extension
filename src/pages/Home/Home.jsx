@@ -18,6 +18,7 @@ import page3 from '@/assets/newImg/guide/page3.svg';
 import page4 from '@/assets/newImg/guide/page4.svg';
 import page5 from '@/assets/newImg/guide/page5.svg';
 import iconLogoPado from '@/assets/newImg/guide/iconLogoPado.svg';
+import iconLogoPadoForDark from '@/assets/newImg/guide/iconLogoPadoForDark.svg';
 import './home.scss';
 import useCreateAccount from '@/hooks/useCreateAccount';
 
@@ -30,7 +31,9 @@ const Home = memo(() => {
   const [step, setStep] = useState(0);
   const [timeoutStep2Switch, setTimeoutStep2Switch] = useState(false);
   const [showInputPasswordDialog, setShowInputPasswordDialog] = useState(false);
+  const [lastTheme, setLastTheme] = useState('light');
   const padoServicePort = useSelector((state) => state.padoServicePort);
+
   const imgSrc = useMemo(() => {
     let s = page1;
     switch (step) {
@@ -131,10 +134,16 @@ const Home = memo(() => {
   useEffect(() => {
     initAccount();
   }, [initAccount]);
+  useEffect(() => {
+    const cT = localStorage.getItem('colorTheme');
+    if (cT) {
+      setLastTheme(cT);
+    }
+  }, []);
 
   return (
     <div
-      className={`pageGuide ${
+      className={`pageGuide ${lastTheme} ${
         [0, 4, 5].includes(step)
           ? 'fixedH'
           : [1, 2, 3].includes(step)
@@ -153,7 +162,10 @@ const Home = memo(() => {
       )}
       {step === 0 && (
         <div className="animationWrapper animate__animated animate__fadeIn">
-          <img src={iconLogoPado} alt="" />
+          <img
+            src={lastTheme === 'dark' ? iconLogoPadoForDark : iconLogoPado}
+            alt=""
+          />
           {/* <i></i>
           <div className="logonTxt">
             Liberate Data and Computation with Cryptography

@@ -258,9 +258,15 @@ const useAttest = function useAttest() {
           }
           setCredRequestId(activeRequestId);
           // suc
+          const sucMsgTitle = [
+            'Assets Verification',
+            'Humanity Verification',
+          ].includes(activeAttestation.attestationType)
+            ? `${activeAttestation.attestationType} is created!`
+            : `${activeAttestation.attestationType} proof is created!`;
           const msgObj = {
             type: 'suc',
-            title: `${activeAttestation.attestationType} is created!`,
+            title: sucMsgTitle,
             desc: '',
             link: '/zkAttestation',
           };
