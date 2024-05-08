@@ -139,6 +139,7 @@ const useAttest = function useAttest() {
           addMsg(msgObj);
         }
         dispatch(setAttestLoading(3));
+        debugger
         dispatch(
           setActiveAttestation({
             loading: 3,
@@ -398,6 +399,7 @@ const useAttest = function useAttest() {
           addMsg(msgObj);
         }
         dispatch(setAttestLoading(3));
+        debugger
         dispatch(
           setActiveAttestation({
             loading: 3,
@@ -490,6 +492,7 @@ const useAttest = function useAttest() {
       addMsg(msgObj);
     }
     dispatch(setAttestLoading(3));
+    debugger
     dispatch(
       setActiveAttestation({
         loading: 3,
@@ -557,6 +560,7 @@ const useAttest = function useAttest() {
             desc: 'Unable to proceed. Please try again later.',
           });
           dispatch(setAttestLoading(3));
+          debugger
           dispatch(
             setActiveAttestation({
               loading: 3,
@@ -585,6 +589,7 @@ const useAttest = function useAttest() {
           //   setIntervalSwitch(false);
           // }
           dispatch(setAttestLoading(3));
+          debugger
           dispatch(
             setActiveAttestation({
               loading: 3,
@@ -602,6 +607,7 @@ const useAttest = function useAttest() {
         if (name === 'cancelAttest') {
           // google attest fail use dialog tip, not alert msg
           dispatch(setAttestLoading(3));
+          debugger
           dispatch(
             setActiveAttestation({
               loading: 3,

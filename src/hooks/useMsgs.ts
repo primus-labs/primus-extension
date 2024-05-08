@@ -46,14 +46,14 @@ const useMsgs = function useMsgs() {
       // }, delay);
       return id;
     },
-    [msgs, dispatch, deleteMsg, pathname]
+    [msgs, dispatch, pathname]
   );
 
   useEffect(() => {
     // console.log('222useMsgs-useEffect1', msgObj);
     if (msgObj?.id) {
       const delay = msgObj?.link && msgObj?.link !== pathname ? 8000 : 5000;
-      if (msgObj.type === 'error') {
+      if (msgObj.type !== 'error') {
         let timer = setTimeout(() => {
           // console.log('222useMsgs-useEffect-timeout', delay); //delete
           deleteMsg(msgObj?.id);

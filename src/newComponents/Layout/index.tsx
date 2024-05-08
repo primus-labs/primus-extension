@@ -12,16 +12,17 @@ import {
   initUserInfoActionAsync,
   setCredentialsAsync,
   initWalletAddressActionAsync,
-  initRewardsActionAsync,
+  // initRewardsActionAsync,
   setOnChainAssetsSourcesAsync,
   initIfHadPwdAsync,
   setConnectedWalletsActionAsync,
   initEventsActionAsync,
   setNftsActionAsync,
   initNftsActionAsync,
-  setEarlyBirdNFTAsync,
-  setEventsLotteryResultsAsync,
+  // setEarlyBirdNFTAsync,
+  // setEventsLotteryResultsAsync,
   initSetThemeAction,
+  initSetNewRewardsAction,
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
@@ -116,15 +117,16 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     dispatch(initUserInfoActionAsync());
     dispatch(setCredentialsAsync());
     dispatch(initWalletAddressActionAsync());
-    dispatch(initRewardsActionAsync());
+    // dispatch(initRewardsActionAsync());
     dispatch(setOnChainAssetsSourcesAsync());
     dispatch(initIfHadPwdAsync());
     dispatch(setConnectedWalletsActionAsync());
     dispatch(initEventsActionAsync());
     dispatch(initNftsActionAsync());
-    dispatch(setEarlyBirdNFTAsync());
-    dispatch(setEventsLotteryResultsAsync());
+    // dispatch(setEarlyBirdNFTAsync());
+    // dispatch(setEventsLotteryResultsAsync());
     dispatch(initSetThemeAction());
+    dispatch(initSetNewRewardsAction());
     // dispatch(initConnectedWalletActionAsync());
     // (updateOnChainFn as () => void)();
   }, [dispatch]);

@@ -151,6 +151,7 @@ const initState = {
   nfts: {},
   earlyBirdNFTs: {},
   eventsLotteryResults: {},
+  newRewards: {},
 };
 
 // reducer
@@ -276,6 +277,8 @@ const reducer: any = function (state = initState, action: any) {
         ...state,
         eventsLotteryResults: action.payload,
       };
+    case 'setNewRewards':
+      return { ...state, newRewards: action.payload };
     default:
       return state;
   }

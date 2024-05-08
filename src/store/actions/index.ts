@@ -26,6 +26,7 @@ import {
   LINEAEVENTNAME,
   LUCKYDRAWEVENTNAME,
   ETHSIGNEVENTNAME,
+  EARLYBIRDNFTEVENTNAME,
 } from '@/config/events';
 import { WALLETMAP } from '@/config/wallet';
 import { CLAIMNFTNETWORKNAME } from '@/config/chain';
@@ -990,9 +991,125 @@ export const setNftsActionAsync: (arr?: any[]) => void = (walletArr) => {
   };
 };
 
-export const setEarlyBirdNFTAsync = () => {
-  return async (dispatch: any, getState) => {
+// export const setEarlyBirdNFTAsync = () => {
+//   return async (dispatch: any, getState) => {
+//     try {
+//       const { rc, result } = await checkEarlyBirdNFT();
+//       if (rc === 0 && result) {
+//         const requestArr = Object.keys(result).map(async (addr: any) => {
+//           return await getEARLYBIRDNFT({
+//             networkName: CLAIMNFTNETWORKNAME,
+//             tokenId: Number(result[addr]),
+//           });
+//         });
+//         const nftsInfoArr = await Promise.all(requestArr);
+//         let obj: any = {};
+//         nftsInfoArr.forEach((i, k) => {
+//           const addr = Object.keys(result)[k];
+//           obj[addr] = { ...i, address: addr };
+//         });
+//         dispatch(setEarlyBirdNFTs(obj));
+//       }
+//     } catch (e) {
+//       console.log('setEarlyBirdNFTAsync e:', e);
+//     }
+//   };
+// };
+
+// export const setEventsLotteryResultsAsync = () => {
+//   return async (dispatch: any) => {
+//     try {
+//       const eventNameArr = [LUCKYDRAWEVENTNAME, SCROLLEVENTNAME];
+//       const requestArr = eventNameArr.map((r) => {
+//         return checkLotteryResults({
+//           event: r,
+//         });
+//       });
+//       const resArr = await Promise.all(requestArr);
+//       const obj = resArr.reduce((prev, curr, currK) => {
+//         const { rc, result } = curr;
+//         if (rc === 0) {
+//           prev[eventNameArr[currK]] = result;
+//         }
+//         return prev;
+//       }, {});
+//       dispatch(setEventsLotteryResults(obj));
+//     } catch (e) {
+//       console.log('fetchLotteryResults catch e=', e);
+//     }
+//   };
+// };
+
+export const initSetThemeAction = () => {
+  return (dispatch: any) => {
+    const lastColorTheme = localStorage.getItem('colorTheme');
+    if (lastColorTheme) {
+      dispatch(setThemeAction(lastColorTheme));
+    }
+  };
+};
+
+export const setNewRewards = (values: any) => ({
+  type: 'setNewRewards',
+  payload: values,
+});
+export const initSetNewRewardsAction = () => {
+  return async (dispatch: any) => {
     try {
+      const { newRewards } = await chrome.storage.local.get(['newRewards']);
+      if (newRewards) {
+        dispatch(setNewRewards(JSON.parse(newRewards)));
+      }
+
+      let newRewardsObj: any = {};
+      // handle scroll & lucky draw
+      // check lottery result  action:setEventsLotteryResultsAsync;
+      const eventNameArr = [LUCKYDRAWEVENTNAME, SCROLLEVENTNAME];
+      const requestArr = eventNameArr.map((r) => {
+        return checkLotteryResults({
+          event: r,
+        });
+      });
+      const resArr = await Promise.all(requestArr);
+      const lotteryResultObj = resArr.reduce((prev, curr, currK) => {
+        const { rc, result } = curr;
+        if (rc === 0) {
+          prev[eventNameArr[currK]] = result;
+        }
+        return prev;
+      }, {});
+      dispatch(setEventsLotteryResults(lotteryResultObj));
+      const fn = (eName) => {
+        const extraInfoObj = {
+          [LUCKYDRAWEVENTNAME]: {
+            title: '1st Commemorative Badge',
+            desc: 'PADO event badge',
+          },
+          [SCROLLEVENTNAME]: {
+            title: 'Scroll zkAttestation Medal',
+            desc: 'PADO event badge',
+          },
+        };
+        if (lotteryResultObj[eName]) {
+          const { result, iconUrl } = lotteryResultObj[eName];
+          if (result) {
+            const { title, desc } = extraInfoObj[eName];
+            newRewardsObj[eName] = {
+              [eName]: {
+                id: eName,
+                img: iconUrl,
+                title,
+                desc,
+              },
+            };
+          }
+        }
+      };
+      fn(LUCKYDRAWEVENTNAME);
+      fn(SCROLLEVENTNAME);
+
+      // handle early bird nft
+      // action: setEarlyBirdNFTAsync
       const { rc, result } = await checkEarlyBirdNFT();
       if (rc === 0 && result) {
         const requestArr = Object.keys(result).map(async (addr: any) => {
@@ -1002,48 +1119,42 @@ export const setEarlyBirdNFTAsync = () => {
           });
         });
         const nftsInfoArr = await Promise.all(requestArr);
-        let obj: any = {};
+        let earlyBirdNFTObj: any = {};
         nftsInfoArr.forEach((i, k) => {
           const addr = Object.keys(result)[k];
-          obj[addr] = { ...i, address: addr };
+          earlyBirdNFTObj[addr] = { ...i, address: addr };
         });
-        dispatch(setEarlyBirdNFTs(obj));
+        newRewardsObj[EARLYBIRDNFTEVENTNAME] = earlyBirdNFTObj;
+        dispatch(setEarlyBirdNFTs(earlyBirdNFTObj));
       }
-    } catch (e) {
-      console.log('setEarlyBirdNFTAsync e:', e);
-    }
-  };
-};
 
-export const setEventsLotteryResultsAsync = () => {
-  return async (dispatch: any) => {
-    try {
-      const eventNameArr = [LUCKYDRAWEVENTNAME, SCROLLEVENTNAME];
-      const requestArr = eventNameArr.map((r) => {
-        return checkLotteryResults({
-          event: r,
+      // handle brevis
+      // action: initRewardsActionAsync
+      const { rewards } = await chrome.storage.local.get(['rewards']);
+      if (rewards) {
+        const rewardsObj = JSON.parse(rewards);
+        dispatch(setRewardsAction(rewardsObj));
+        const joinedBrevisRewardList = Object.values(rewardsObj).filter(
+          (r: any) => r?.event === 'brevis' && r.type === 'NFT'
+        );
+        let brevisNFTsObj = {};
+        joinedBrevisRewardList.forEach((i: any) => {
+          const { image, title, name } = i;
+          const brevisId = 'brevis-' + Date.now();
+          brevisNFTsObj[brevisId] = {
+            id: brevisId,
+            img: image,
+            title,
+            desc: name,
+          };
         });
-      });
-      const resArr = await Promise.all(requestArr);
-      const obj = resArr.reduce((prev, curr, currK) => {
-        const { rc, result } = curr;
-        if (rc === 0) {
-          prev[eventNameArr[currK]] = result;
-        }
-        return prev;
-      }, {});
-      dispatch(setEventsLotteryResults(obj));
+        newRewardsObj['brevis'] = brevisNFTsObj;
+      }
+      chrome.storage.local.set({ newRewards: JSON.stringify(newRewardsObj) });
+      dispatch(setNewRewards(newRewardsObj));
+      debugger
     } catch (e) {
       console.log('fetchLotteryResults catch e=', e);
-    }
-  };
-};
-
-export const initSetThemeAction = () => {
-  return (dispatch: any) => {
-    const lastColorTheme = localStorage.getItem('colorTheme');
-    if (lastColorTheme) {
-      dispatch(setThemeAction(lastColorTheme));
     }
   };
 };
