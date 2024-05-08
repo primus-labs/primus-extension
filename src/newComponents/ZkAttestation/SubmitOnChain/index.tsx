@@ -4,14 +4,12 @@ import { useSearchParams } from 'react-router-dom';
 import { setCredentialsAsync, setActiveConnectWallet } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import useEventDetail from '@/hooks/useEventDetail';
-import useWallet from '@/hooks/useWallet';
 import {
-  attestByDelegationProxy,
   attestByDelegationProxyFee,
   bulkAttest,
 } from '@/services/chains/eas.js';
 import { strToHexSha256 } from '@/utils/utils';
-import { compareVersions, getAuthUserIdHash } from '@/utils/utils';
+import { getAuthUserIdHash } from '@/utils/utils';
 
 import { regenerateAttestation } from '@/services/api/cred';
 import { eventReport } from '@/services/api/usertracker';

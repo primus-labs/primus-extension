@@ -6,7 +6,10 @@ import utc from 'dayjs-plugin-utc';
 import { setActiveOnChain, initRewardsActionAsync } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import useEventDetail from '@/hooks/useEventDetail';
-import { setActiveConnectWallet } from '@/store/actions';
+import {
+  setActiveConnectWallet,
+  initSetNewRewardsAction,
+} from '@/store/actions';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
 import { eventReport } from '@/services/api/usertracker';
@@ -634,6 +637,14 @@ const DataSourceItem = memo(() => {
       initTaskStatus();
     }
   }, [activeOnChain.loading, initTaskStatus]);
+  useEffect(() => {
+    if (activeOnChain.loading === 0) {
+      initTaskStatus();
+      if (eventId === EARLYBIRDNFTEVENTNAME) {
+        dispatch(initSetNewRewardsAction());
+      }
+    }
+  }, [activeOnChain.loading, initTaskStatus, eventId]);
   useEffect(() => {
     if (chainId && connected) {
       claimEarlyBirdNFT();
