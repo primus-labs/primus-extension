@@ -96,7 +96,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           );
         });
       }
-      console.log('222credentialsFromStore-sorted', newList);
+      console.log('222credentialsFromStore-compatible-sorted', newList);
       return newList;
     }, [credentialsFromStore, attestationQueryStr, attestationQueryType]);
     const isDisableMoreFn = useCallback((i) => {

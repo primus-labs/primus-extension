@@ -119,7 +119,7 @@ const PInput: React.FC<PInputProps> = memo(
         {label && (
           <label>
             <span>{label}</span>
-            {tooltip.link && (
+            {tooltip?.link && (
               <PButton
                 className="tooltipBtn"
                 type="icon"
@@ -127,7 +127,7 @@ const PInput: React.FC<PInputProps> = memo(
                 onClick={onClickTooltip}
               />
             )}
-            {tooltip.text && (
+            {tooltip?.text && (
               <PTooltip title={tooltip.text}>
                 <PButton
                   type="icon"

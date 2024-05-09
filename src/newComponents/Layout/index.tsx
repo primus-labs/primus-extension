@@ -32,6 +32,7 @@ import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 
 import { postMsg, compareVersions } from '@/utils/utils';
 import { updateAlgoUrl } from '@/config/envConstants';
+import { DATASOURCEMAP } from '@/config/dataSource';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
@@ -67,7 +68,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   usePollingUpdateAllSources();
 
   const initStoreData = useCallback(async () => {
-    // Compatible with old certificates
+    // Compatible with old attestations
     const { credentials: credentialsStr } = await chrome.storage.local.get([
       'credentials',
     ]);
@@ -77,7 +78,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
         i.credVersion && compareVersions('1.0.5', i.credVersion); // TODO-newui!!!
       // google attestation has no set credVersion
       if (!i.credVersion || compareRes > -1) {
-        // attestation version <= '1.0.4'
+        // attestation credVersion <= '1.0.4'
         if (i.type === 'ASSETS_PROOF') {
           i.attestationType = 'Assets Verification';
           i.verificationContent = 'Assets Proof';
@@ -110,6 +111,30 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     await chrome.storage.local.set({
       credentials: JSON.stringify(credentialObj),
     });
+    // Compatible with old data sources (include x,zan)
+    const sourceNameList = Object.keys(DATASOURCEMAP).filter(
+      (i) => DATASOURCEMAP[i].type === 'Assets'
+    );
+    let dataSourceStoragesRes = await chrome.storage.local.get(
+      sourceNameList.concat(['x', 'zan'])
+    );
+    for (const dataSourceKey of Object.keys(dataSourceStoragesRes)) {
+      if (dataSourceStoragesRes[dataSourceKey]) {
+        const currentDataSourceObj = JSON.parse(
+          dataSourceStoragesRes[dataSourceKey]
+        );
+        if (currentDataSourceObj?.version) {
+          const compareRes = compareVersions(
+            '1.0.1',
+            currentDataSourceObj?.version
+          );
+          if (compareRes > -1) {
+            // dataSource version <= '1.0.0'
+            await chrome.storage.local.remove([dataSourceKey]);
+          }
+        }
+      }
+    }
 
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
