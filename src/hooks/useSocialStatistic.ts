@@ -32,7 +32,7 @@ const useSocialStatistic = function () {
   }, [connectedSocialSourcesList]);
 
   const formatTotalFollowers = useMemo(() => {
-    // const s = '12000'
+    // const s = '12000000'
     return totalFollowers
       ? `${formatNumeral(totalFollowers, {
           transferUnit: true,
