@@ -64,6 +64,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
+    
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const theme = useSelector((state:UserState) => state.theme)
     // console.log('222credentialsFromStore', credentialsFromStore); //delete
@@ -95,6 +96,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           );
         });
       }
+      console.log('222credentialsFromStore-sorted', newList);
       return newList;
     }, [credentialsFromStore, attestationQueryStr, attestationQueryType]);
     const isDisableMoreFn = useCallback((i) => {

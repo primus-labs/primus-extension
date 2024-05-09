@@ -73,9 +73,11 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
     Object.values(credentialObj).forEach((i: any) => {
-      const compareRes = compareVersions('1.0.4', i.version); // TODO-newui!!!
-      if (compareRes > -1) {
-        // attestation version <= '1.0.3'
+      const compareRes =
+        i.credVersion && compareVersions('1.0.5', i.credVersion); // TODO-newui!!!
+      // google attestation has no set credVersion
+      if (!i.credVersion || compareRes > -1) {
+        // attestation version <= '1.0.4'
         if (i.type === 'ASSETS_PROOF') {
           i.attestationType = 'Assets Verification';
           i.verificationContent = 'Assets Proof';
