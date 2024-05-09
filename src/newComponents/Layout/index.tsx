@@ -73,7 +73,9 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
       'credentials',
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-    Object.values(credentialObj).forEach((i: any) => {
+    const newCredentialObj = JSON.parse(JSON.stringify(credentialObj));
+    for (const credentialKey of Object.keys(credentialObj)) {
+      const i = newCredentialObj[credentialKey];
       const compareRes =
         i.credVersion && compareVersions('1.0.5', i.credVersion); // TODO-newui!!!
       // google attestation has no set credVersion
@@ -102,14 +104,16 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
             i.verificationValue = 'Basic Verification';
           }
         } else if (i.type === 'UNISWAP_PROOF') {
-          i.attestationType = 'On-chain Transaction';
-          i.verificationContent = 'Largest ETH/USDC Uniwap Transaction';
-          i.verificationValue = i.dataToBeSigned.content;
+          delete newCredentialObj[credentialKey];
+          // i.attestationType = 'On-chain Transaction';
+          // i.verificationContent = 'Largest ETH/USDC Uniwap Transaction';
+          // i.verificationValue = i.dataToBeSigned.content;
         }
       }
-    });
+    }
+
     await chrome.storage.local.set({
-      credentials: JSON.stringify(credentialObj),
+      credentials: JSON.stringify(newCredentialObj),
     });
     // Compatible with old data sources (include x,zan)
     const sourceNameList = Object.keys(DATASOURCEMAP).filter(
