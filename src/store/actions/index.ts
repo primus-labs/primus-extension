@@ -1152,7 +1152,6 @@ export const initSetNewRewardsAction = () => {
       }
       chrome.storage.local.set({ newRewards: JSON.stringify(newRewardsObj) });
       dispatch(setNewRewards(newRewardsObj));
-      debugger
     } catch (e) {
       console.log('fetchLotteryResults catch e=', e);
     }

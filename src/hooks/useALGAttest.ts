@@ -139,7 +139,6 @@ const useAttest = function useAttest() {
           addMsg(msgObj);
         }
         dispatch(setAttestLoading(3));
-        debugger
         dispatch(
           setActiveAttestation({
             loading: 3,
@@ -399,7 +398,6 @@ const useAttest = function useAttest() {
           addMsg(msgObj);
         }
         dispatch(setAttestLoading(3));
-        debugger
         dispatch(
           setActiveAttestation({
             loading: 3,
@@ -492,7 +490,6 @@ const useAttest = function useAttest() {
       addMsg(msgObj);
     }
     dispatch(setAttestLoading(3));
-    debugger
     dispatch(
       setActiveAttestation({
         loading: 3,
@@ -560,7 +557,6 @@ const useAttest = function useAttest() {
             desc: 'Unable to proceed. Please try again later.',
           });
           dispatch(setAttestLoading(3));
-          debugger
           dispatch(
             setActiveAttestation({
               loading: 3,
@@ -577,6 +573,13 @@ const useAttest = function useAttest() {
               title,
               desc: 'Unable to proceed. Please try again later.',
             });
+            dispatch(setAttestLoading(3));
+            dispatch(
+              setActiveAttestation({
+                loading: 3,
+                msgObj: { btnTxt: 'Try Again' },
+              })
+            );
           }
           // if (activeRequest?.type === 'loading' || !activeRequest?.type) {//TODO-newui
           //   setActiveRequest({
@@ -588,14 +591,7 @@ const useAttest = function useAttest() {
           // if (activeRequest?.type === 'loading') {
           //   setIntervalSwitch(false);
           // }
-          dispatch(setAttestLoading(3));
-          debugger
-          dispatch(
-            setActiveAttestation({
-              loading: 3,
-              msgObj: { btnTxt: 'Try Again' },
-            })
-          );
+          
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
@@ -607,7 +603,6 @@ const useAttest = function useAttest() {
         if (name === 'cancelAttest') {
           // google attest fail use dialog tip, not alert msg
           dispatch(setAttestLoading(3));
-          debugger
           dispatch(
             setActiveAttestation({
               loading: 3,

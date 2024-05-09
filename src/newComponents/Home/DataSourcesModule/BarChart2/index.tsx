@@ -182,7 +182,7 @@ const PBarChart: FC<BarChartProps> = memo(
             formatter: function (value) {
               return (
                 '$' +
-                formatNumeral(value, { transferUnit: true, decimalPlaces: 0 })
+                formatNumeral(value, { transferUnit: false, decimalPlaces: 0 })
               );
             },
           },

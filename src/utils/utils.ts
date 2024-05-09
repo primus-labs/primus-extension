@@ -128,16 +128,19 @@ type NumeralParams = {
   decimalPlaces?: number;
   withThousandSepartor?: boolean;
   transferUnit?: boolean;
+  transferUnitThreshold?: number;
 };
 export function formatNumeral(num: string | number, params?: NumeralParams) {
   const {
     decimalPlaces = 2,
     withThousandSepartor = true,
     transferUnit = false,
+    transferUnitThreshold = 0,
   } = params ?? {
     decimalPlaces: 2,
     withThousandSepartor: true,
     transferUnit: false,
+    transferUnitThreshold: 0,
   };
   num = new BigNumber(num).toFixed(6); // fix: < 0.0000001 numeral error
   let formatReg = '0';
@@ -145,10 +148,17 @@ export function formatNumeral(num: string | number, params?: NumeralParams) {
     formatReg = '0,0';
   }
   if (decimalPlaces) {
-    formatReg += `.${'0'.repeat(decimalPlaces)}`;
+    if (
+      !transferUnitThreshold ||
+      (transferUnitThreshold && new BigNumber(num).gte(transferUnitThreshold))
+    ) {
+      formatReg += `.${'0'.repeat(decimalPlaces)}`;
+    }
   }
   if (transferUnit) {
-    formatReg += `a`;
+    if (new BigNumber(num).gte(transferUnitThreshold)) {
+      formatReg += `a`;
+    }
   }
   return numeral(num).format(formatReg).toUpperCase();
 }
@@ -435,7 +445,6 @@ export const getAccount = (metaInfo: any, useInfo: any) => {
     if (['x', 'github'].includes(lowerCaseDataSourceName)) {
       account = useInfo?.screenName;
     }
-    
   }
   return account;
 };

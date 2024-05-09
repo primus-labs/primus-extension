@@ -116,7 +116,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
     }, [activeDataSouceUserInfo]);
     const formatBtnTxt = useMemo(() => {
-      debugger
       return attestLoading === 3
         ? activeAttestation?.msgObj?.btnTxt
           ? activeAttestation?.msgObj?.btnTxt

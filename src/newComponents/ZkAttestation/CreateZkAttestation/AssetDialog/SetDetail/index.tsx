@@ -63,9 +63,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const verificationValueTooltip = useMemo(() => {
       if (pswForm.verificationContent === 'Token Holding') {
-        if (dataSourceId === 'binance') {
+        if (presets.dataSourceId === 'binance') {
           return 'Tokens in Spot account';
-        } else if (dataSourceId === 'okx') {
+        } else if (presets.dataSourceId === 'okx') {
           return 'Tokens in Trading account';
         } else {
           return '';
@@ -73,7 +73,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       } else {
         return '';
       }
-    }, [pswForm.verificationContent]);
+    }, [pswForm.verificationContent, presets.dataSourceId]);
     const verificationContentCN = useMemo(() => {
       let cN = 'verificationContent';
       const v = pswForm.verificationContent;
