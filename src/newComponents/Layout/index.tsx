@@ -33,7 +33,7 @@ import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import { postMsg, compareVersions } from '@/utils/utils';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { DATASOURCEMAP } from '@/config/dataSource';
-
+import { ETHSIGNEVENTNAME, BASEVENTNAME } from '@/config/constants';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 
@@ -43,6 +43,7 @@ import Sidebar from './Sidebar';
 import PMsgs from '@/newComponents/PMsgs';
 
 import './index.scss';
+
 type LayoutProps = {
   children?: any;
 };
@@ -103,6 +104,11 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
             i.verificationContent = 'KYC Status';
             i.verificationValue = 'Basic Verification';
           }
+          if (uiContent === 'X Followers') {
+            i.attestationType = 'Social Connections';
+            i.verificationContent = 'X Followers';
+            i.verificationValue = i.baseValue;
+          }
         } else if (i.type === 'UNISWAP_PROOF') {
           delete newCredentialObj[credentialKey];
           // i.attestationType = 'On-chain Transaction';
@@ -111,7 +117,6 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
         }
       }
     }
-
     await chrome.storage.local.set({
       credentials: JSON.stringify(newCredentialObj),
     });
@@ -139,7 +144,27 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
         }
       }
     }
+    // Compatible with old event participation
+    let eventsParticipationStoragesRes = await chrome.storage.local.get(
+      sourceNameList.concat([BASEVENTNAME, ETHSIGNEVENTNAME])
+    );
+    for (const eventsParticipationKey of Object.keys(
+      eventsParticipationStoragesRes
+    )) {
+      if (eventsParticipationStoragesRes[eventsParticipationKey]) {
+        const eventsParticipationObj = JSON.parse(
+          eventsParticipationStoragesRes[eventsParticipationKey]
+        );
+        if (
+          'steps' in eventsParticipationObj ||
+          'address' in eventsParticipationObj
+        ) {
+          await chrome.storage.local.remove([eventsParticipationKey]);
+        }
+      }
+    }
 
+    // await chrome.storage.local.remove(sourceNameList.concat(['x', 'zan']));
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
     dispatch(setKYCsAsync());

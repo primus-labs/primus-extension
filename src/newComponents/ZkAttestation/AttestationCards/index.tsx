@@ -195,7 +195,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           }
         }
       }
-      return i?.uiTemplate?.condition;
+      return i?.uiTemplate?.condition ?? 'Verified';
     };
     const handleOnChain = useCallback(
       (i) => {
