@@ -4,6 +4,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 import ActiveHeader from '@/components/Layout/ActiveHeader';
 import BackgroundAnimation from '@/components/Layout/BackgroundAnimation';
+import UpgradeTipDialog from '@/components/UpgradeTipDialog';
 import rem from '@/utils/rem.js';
 import {
   setSysConfigAction,
@@ -27,7 +28,7 @@ import type { UserState } from '@/types/store';
 import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 
 import { updateAlgoUrl } from '@/config/envConstants';
-import {BASEVENTNAME} from '@/config/constants'
+import { BASEVENTNAME } from '@/config/constants';
 
 const Layout = memo(() => {
   const location = useLocation();
@@ -36,7 +37,9 @@ const Layout = memo(() => {
     (state: UserState) => state.padoServicePort
   );
   const userPassword = useSelector((state: UserState) => state.userPassword);
-
+  const requireUpgrade = useSelector(
+    (state: UserState) => state.requireUpgrade
+  );
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
   usePollingUpdateAllSources();
@@ -190,7 +193,7 @@ const Layout = memo(() => {
     dispatch(initWalletAddressActionAsync());
     dispatch(initRewardsActionAsync());
     dispatch(setOnChainAssetsSourcesAsync());
-    
+
     // dispatch(initConnectedWalletActionAsync());
     (updateOnChainFn as () => void)();
   }, [dispatch, updateOnChainFn]);
@@ -204,10 +207,11 @@ const Layout = memo(() => {
   return (
     <div className="pageApp">
       <BackgroundAnimation />
-      <div className="pageLayer">
+      <div className={`pageLayer ${requireUpgrade && 'requireUpgrade'}`}>
         <ActiveHeader />
         <Outlet />
       </div>
+      <UpgradeTipDialog />
     </div>
   );
 });

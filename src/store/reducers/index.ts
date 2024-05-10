@@ -96,8 +96,8 @@ const initState = {
     startTime: '1699243200000',
     endTime: '1700971200000',
   },
-  events: {
-  },
+  events: {},
+  requireUpgrade: false
 };
 
 // reducer
@@ -152,6 +152,8 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, scrollEventPeriod: action.payload };
     case 'setEventsAction':
       return { ...state, events: action.payload };
+    case 'setRequireUpgrade':
+      return { ...state, requireUpgrade: action.payload };
     default:
       return state;
   }

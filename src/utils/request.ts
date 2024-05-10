@@ -1,5 +1,6 @@
 import { PADOSERVERURL } from '@/config/envConstants';
 import { DEFAULTFETCHTIMEOUT, padoExtensionVersion } from '@/config/constants';
+import store from '@/store';
 type FetchParams = {
   method: string;
   url: string;
@@ -38,7 +39,10 @@ const request = async (fetchParams: FetchParams) => {
   if (userInfo) {
     const userInfoObj = JSON.parse(userInfo);
     const { id, token } = userInfoObj;
-    if (!url.startsWith('https://pado-online.s3.ap-northeast-1.amazonaws.com') && token) {
+    if (
+      !url.startsWith('https://pado-online.s3.ap-northeast-1.amazonaws.com') &&
+      token
+    ) {
       golbalHeader.Authorization = `Bearer ${token}`;
     }
     if (url.includes('/public/event/report')) {
@@ -75,6 +79,12 @@ const request = async (fetchParams: FetchParams) => {
     const response = await fetch(url, requestConfig);
     const responseJson = await response.json();
     clearTimeout(timeoutTimer);
+    if (responseJson.rc === 1 && responseJson.mc === '-999999') {
+      store.dispatch({
+        type: 'setRequireUpgrade',
+        payload: true,
+      });
+    }
     return responseJson;
   } catch (error: any) {
     if (error.name === 'AbortError') {
@@ -82,7 +92,6 @@ const request = async (fetchParams: FetchParams) => {
     } else {
       throw new Error(error);
     }
-    
   } finally {
     clearTimeout(timeoutTimer);
   }
@@ -92,7 +101,7 @@ export default request;
 export const dataSourceRequest = async (fetchParams: FetchParams2) => {
   let { method, url, data = {}, header, timeout } = fetchParams;
   method = method.toUpperCase();
- 
+
   if (method === 'GET') {
     let dataStr = '';
     Object.keys(data).forEach((key) => {
@@ -131,6 +140,13 @@ export const dataSourceRequest = async (fetchParams: FetchParams2) => {
     const response = await fetch(url, requestConfig);
     const responseJson = await response.json();
     clearTimeout(timeoutTimer);
+    if (responseJson.rc === 1 && responseJson.mc === '-999999') {
+      store.dispatch({
+        type: 'setRequireUpgrade',
+        payload: true
+      });
+    }
+
     return responseJson;
   } catch (error: any) {
     if (error.name === 'AbortError') {
@@ -142,5 +158,3 @@ export const dataSourceRequest = async (fetchParams: FetchParams2) => {
     clearTimeout(timeoutTimer);
   }
 };
-
-
