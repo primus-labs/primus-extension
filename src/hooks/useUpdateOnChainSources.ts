@@ -6,6 +6,7 @@ import { setOnChainAssetsSourcesAsync } from '@/store/actions';
 
 import type { Dispatch } from 'react';
 import type { onChainAssetsData } from '@/types/dataSource';
+import { ecdsa } from 'ccxt/js/src/base/functions';
 
 type queryObjType = {
   [propName: string]: any;
@@ -61,14 +62,19 @@ const useUpdateOnChainSources = () => {
             requireReport: false,
             label: undefined,
           });
-          await setNftsActionAsync([{
-            signature,
-            timestamp,
-            address,
-            dispatch,
-            requireReport: false,
-            label: undefined,
-          }]);
+          await dispatch(
+            setNftsActionAsync([
+              {
+                signature,
+                timestamp,
+                address,
+                dispatch,
+                requireReport: false,
+                label: undefined,
+              },
+            ])
+          );
+
           setQueryObj((obj) => ({
             ...obj,
             [address]: 1,
@@ -114,7 +120,9 @@ const useUpdateOnChainSources = () => {
           //   });
           // } else {
           // }
-        } catch (e) {}
+        } catch (e) {
+          console.log('fetchOnChainDatas error:', e);
+        }
       }
     });
   }, []);

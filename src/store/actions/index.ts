@@ -963,6 +963,7 @@ export const setNftsActionAsync: (arr?: any[]) => void = (walletArr) => {
         connectedWalletAddressesArr = walletArr.map((i) => i.address);
         rawArr = walletArr;
       }
+      
       const requestArr = rawArr.map(async (r: any) => {
         const { address, signature, timestamp } = r;
         return await getChainAssetsNFT({

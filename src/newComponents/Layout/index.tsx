@@ -81,7 +81,6 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
         i.credVersion && compareVersions('1.0.5', i.credVersion); // TODO-newui!!!
       // google attestation has no set credVersion
       if (!i.credVersion || compareRes > -1) {
-        debugger
         // attestation credVersion <= '1.0.4'
         if (i.type === 'ASSETS_PROOF') {
           i.attestationType = 'Assets Verification';
