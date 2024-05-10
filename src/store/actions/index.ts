@@ -1122,7 +1122,13 @@ export const initSetNewRewardsAction = () => {
         let earlyBirdNFTObj: any = {};
         nftsInfoArr.forEach((i, k) => {
           const addr = Object.keys(result)[k];
-          earlyBirdNFTObj[addr] = { ...i, address: addr };
+          earlyBirdNFTObj[addr] = {
+            ...i,
+            address: addr,
+            title: i.name,
+            desc: i.description,
+            img: i.image
+          };
         });
         newRewardsObj[EARLYBIRDNFTEVENTNAME] = earlyBirdNFTObj;
         dispatch(setEarlyBirdNFTs(earlyBirdNFTObj));
@@ -1153,7 +1159,7 @@ export const initSetNewRewardsAction = () => {
       chrome.storage.local.set({ newRewards: JSON.stringify(newRewardsObj) });
       dispatch(setNewRewards(newRewardsObj));
     } catch (e) {
-      console.log('fetchLotteryResults catch e=', e);
+      console.log('initSetNewRewardsAction catch e=', e);
     }
   };
 };
