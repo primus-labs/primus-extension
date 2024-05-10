@@ -397,7 +397,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                     <div className="descItems descItemsWithNumberValue">
                       <div className="descItem">
                         <div className="label">Data account</div>
-                        <div className="value">{i.account}</div>
+                        <div className="value">{i.account ?? i.sourceUseridHash}</div>
                       </div>
                       <div className="descItem">
                         <div className="label">Create address</div>
