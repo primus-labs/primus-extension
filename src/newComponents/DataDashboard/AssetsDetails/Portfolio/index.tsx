@@ -121,7 +121,12 @@ const AssetsDetails = memo(() => {
           tB = sourceMap2[currentAccount].totalBalance;
         }
       }
-      if (tB === '0' || totalAssetsBalance === '0') {
+      if (
+        !tB ||
+        !totalAssetsBalance ||
+        Number(tB) === 0 ||
+        Number(totalAssetsBalance) === 0
+      ) {
         return '0';
       } else {
         const digit = div(
