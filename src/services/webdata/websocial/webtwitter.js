@@ -118,7 +118,7 @@ class WebTwitter extends WebSocial {
       let count = 0;
       let newCursor;
       for (let i = 0; i < entries.length; i++) {
-        if (!entries[i].entryId.indexOf('cursor') == 0) {
+        if (!entries[i].entryId.indexOf('cursor') === 0 && !entries[i].entryId.indexOf('who-to-follow') === 0) {
           count++;
         }
         if (entries[i].entryId.indexOf('cursor-bottom') == 0) {
