@@ -612,12 +612,12 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         const accountArr = Object.keys(connectedWallets.metamask);
         let joinedEventIdArr: string[] = [];
         const eventIdArr = [
-          SCROLLEVENTNAME,
+          // SCROLLEVENTNAME,
 
           BASEVENTNAME,
           LINEAEVENTNAME,
 
-          LUCKYDRAWEVENTNAME,
+          // LUCKYDRAWEVENTNAME,
 
           ETHSIGNEVENTNAME,
 

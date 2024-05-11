@@ -80,8 +80,8 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
       const compareRes =
         i.credVersion && compareVersions('1.0.5', i.credVersion); // TODO-newui!!!
       // google attestation has no set credVersion
-      if (!i.credVersion || compareRes > -1) {
-        // attestation credVersion <= '1.0.4'
+      if (!i.credVersion || compareRes > 0) {
+        // attestation credVersion < '1.0.5'
         if (i.type === 'ASSETS_PROOF') {
           i.attestationType = 'Assets Verification';
           i.verificationContent = 'Assets Proof';
@@ -140,8 +140,8 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
             '1.0.1',
             currentDataSourceObj?.version
           );
-          if (compareRes > -1) {
-            // dataSource version <= '1.0.0'
+          if (compareRes > 0) {
+            // dataSource version < '1.0.1'
             await chrome.storage.local.remove([dataSourceKey]);
           }
         }
