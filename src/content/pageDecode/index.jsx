@@ -3,7 +3,10 @@ import { createRoot } from 'react-dom/client';
 // import rem from '@/utils/rem.js';
 import PButton from '@/newComponents/PButton';
 import './index.scss';
-
+console.log(
+  '222padoAttestRequestStatus',
+  sessionStorage.getItem('padoAttestRequestStatus')
+);
 let activeRequest;
 let operationType;
 let attestType;
@@ -37,7 +40,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     };
     await chrome.runtime.sendMessage(msgObj);
     setStatus('verifying');
-    sessionStorage.setItem('padoAttestRequestStatus', status);
+    sessionStorage.setItem('padoAttestRequestStatus', 'verifying');
   }, []);
   return status === 'initialized' ? (
     <div className="pado-extension-footer initialized">
@@ -329,6 +332,7 @@ function PadoCard() {
       if (name === 'end') {
         console.log('222content receive:end', request, failReason);
         setStatus('result');
+        sessionStorage.setItem('padoAttestRequestStatus', 'result');
         setResultStatus(result);
         setErrorTxt(failReason);
       }

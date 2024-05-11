@@ -176,9 +176,9 @@ const Nav: React.FC<PButtonProps> = memo(
               return !onChainTitlesArr.includes(i.id);
             });
           }
-          if (activeOnChainAttestation.verificationContent !== 'X Followers') {
-            l = l.filter((i) => i.id !== 'opBNB');
-          }
+          // if (activeOnChainAttestation.verificationContent !== 'X Followers') {
+          //   l = l.filter((i) => i.id !== 'opBNB');
+          // }
         }
       }
       return l;
