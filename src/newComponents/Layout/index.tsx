@@ -32,7 +32,8 @@ import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 
 import { postMsg, compareVersions } from '@/utils/utils';
 import { updateAlgoUrl } from '@/config/envConstants';
-
+import { DATASOURCEMAP } from '@/config/dataSource';
+import { ETHSIGNEVENTNAME, BASEVENTNAME } from '@/config/constants';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 
@@ -42,6 +43,7 @@ import Sidebar from './Sidebar';
 import PMsgs from '@/newComponents/PMsgs';
 
 import './index.scss';
+
 type LayoutProps = {
   children?: any;
 };
@@ -67,15 +69,19 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   usePollingUpdateAllSources();
 
   const initStoreData = useCallback(async () => {
-    // Compatible with old certificates
+    // Compatible with old attestations
     const { credentials: credentialsStr } = await chrome.storage.local.get([
       'credentials',
     ]);
     const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-    Object.values(credentialObj).forEach((i: any) => {
-      const compareRes = compareVersions('1.0.4', i.version); // TODO-newui!!!
-      if (compareRes > -1) {
-        // attestation version <= '1.0.3'
+    const newCredentialObj = JSON.parse(JSON.stringify(credentialObj));
+    for (const credentialKey of Object.keys(credentialObj)) {
+      const i = newCredentialObj[credentialKey];
+      const compareRes =
+        i.credVersion && compareVersions('1.0.5', i.credVersion); // TODO-newui!!!
+      // google attestation has no set credVersion
+      if (!i.credVersion || compareRes > -1) {
+        // attestation credVersion <= '1.0.4'
         if (i.type === 'ASSETS_PROOF') {
           i.attestationType = 'Assets Verification';
           i.verificationContent = 'Assets Proof';
@@ -98,17 +104,70 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
             i.verificationContent = 'KYC Status';
             i.verificationValue = 'Basic Verification';
           }
+          if (uiContent === 'X Followers') {
+            i.attestationType = 'Social Connections';
+            i.verificationContent = 'X Followers';
+            i.verificationValue = i.baseValue;
+          }
         } else if (i.type === 'UNISWAP_PROOF') {
-          i.attestationType = 'On-chain Transaction';
-          i.verificationContent = 'Largest ETH/USDC Uniwap Transaction';
-          i.verificationValue = i.dataToBeSigned.content;
+          delete newCredentialObj[credentialKey];
+          // i.attestationType = 'On-chain Transaction';
+          // i.verificationContent = 'Largest ETH/USDC Uniwap Transaction';
+          // i.verificationValue = i.dataToBeSigned.content;
+        }
+        if (i.did) {
+          delete newCredentialObj[credentialKey];
         }
       }
-    });
+    }
     await chrome.storage.local.set({
-      credentials: JSON.stringify(credentialObj),
+      credentials: JSON.stringify(newCredentialObj),
     });
+    // Compatible with old data sources (include x,zan)
+    const sourceNameList = Object.keys(DATASOURCEMAP).filter(
+      (i) => DATASOURCEMAP[i].type === 'Assets'
+    );
+    let dataSourceStoragesRes = await chrome.storage.local.get(
+      sourceNameList.concat(['x', 'zan'])
+    );
+    for (const dataSourceKey of Object.keys(dataSourceStoragesRes)) {
+      if (dataSourceStoragesRes[dataSourceKey]) {
+        const currentDataSourceObj = JSON.parse(
+          dataSourceStoragesRes[dataSourceKey]
+        );
+        if (currentDataSourceObj?.version) {
+          const compareRes = compareVersions(
+            '1.0.1',
+            currentDataSourceObj?.version
+          );
+          if (compareRes > -1) {
+            // dataSource version <= '1.0.0'
+            await chrome.storage.local.remove([dataSourceKey]);
+          }
+        }
+      }
+    }
+    // Compatible with old event participation
+    let eventsParticipationStoragesRes = await chrome.storage.local.get(
+      sourceNameList.concat([BASEVENTNAME, ETHSIGNEVENTNAME])
+    );
+    for (const eventsParticipationKey of Object.keys(
+      eventsParticipationStoragesRes
+    )) {
+      if (eventsParticipationStoragesRes[eventsParticipationKey]) {
+        const eventsParticipationObj = JSON.parse(
+          eventsParticipationStoragesRes[eventsParticipationKey]
+        );
+        if (
+          'steps' in eventsParticipationObj ||
+          'address' in eventsParticipationObj
+        ) {
+          await chrome.storage.local.remove([eventsParticipationKey]);
+        }
+      }
+    }
 
+    // await chrome.storage.local.remove(sourceNameList.concat(['x', 'zan']));
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
     dispatch(setKYCsAsync());

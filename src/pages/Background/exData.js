@@ -1,7 +1,7 @@
 import { encrypt, decrypt } from '@/utils/crypto';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { SCROLLEVENTNAME, BASEVENTNAME } from '@/config/events';
-import { ExchangeStoreVersion, schemaTypeMap } from '@/config/constants';
+import { schemaTypeMap } from '@/config/constants';
 import { CredVersion } from '@/config/attestation';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';

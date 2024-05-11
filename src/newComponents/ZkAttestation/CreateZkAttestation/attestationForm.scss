@@ -12,6 +12,10 @@
 @mixin attestationFormItem {
   width: 100%;
   @include frbc;
+  > label {
+    @include BodyBody100;
+    color: var(--text-tokens-text-tertiary);
+  }
 }
 @mixin plainTextFormItem {
   width: 100%;

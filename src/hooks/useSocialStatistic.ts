@@ -32,10 +32,12 @@ const useSocialStatistic = function () {
   }, [connectedSocialSourcesList]);
 
   const formatTotalFollowers = useMemo(() => {
+    // const s = '12000000'
     return totalFollowers
       ? `${formatNumeral(totalFollowers, {
           transferUnit: true,
-          decimalPlaces: 0,
+          decimalPlaces: 2,
+          transferUnitThreshold: 1000,
         })}`
       : '--';
   }, [totalFollowers]);
@@ -50,7 +52,7 @@ const useSocialStatistic = function () {
   const formatTotalFollowing = useMemo(() => {
     return totalFollowing
       ? `${formatNumeral(totalFollowing, {
-          transferUnit: true,
+          transferUnit: false,
           decimalPlaces: 0,
         })}`
       : '--';
@@ -66,7 +68,7 @@ const useSocialStatistic = function () {
   const formatTotalPosts = useMemo(() => {
     return totalPosts
       ? `${formatNumeral(totalPosts, {
-          transferUnit: true,
+          transferUnit: false,
           decimalPlaces: 0,
         })}`
       : '--';

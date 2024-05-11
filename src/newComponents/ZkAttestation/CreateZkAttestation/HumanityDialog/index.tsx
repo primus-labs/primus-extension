@@ -17,7 +17,7 @@ import { getAccount, postMsg } from '@/utils/utils';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
-import { CredVersion, GOOGLEWEBPROOFID } from '@/config/constants';
+import { CredVersion } from '@/config/constants';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
@@ -211,6 +211,7 @@ const Nav: React.FC<PButtonProps> = memo(
             templateId: '100', // TODO google template id
             dataSourceId: 'google',
             account: '',
+            credVersion: CredVersion,
           };
           const storeRes = await chrome.storage.local.get(['google']);
           const acc = getAccount(

@@ -427,7 +427,7 @@ const Overview = memo(() => {
               <div className="from">
                 <span>From</span>
                 <ul className="sources">
-                  {connectedSocialSourcesList.map((i: any) => {
+                  {connectedSocialSourcesList.filter((i:any) => i.id !== 'google').map((i: any) => {
                     return (
                       <li key={i.id}>
                         <img src={i.icon} alt="" />

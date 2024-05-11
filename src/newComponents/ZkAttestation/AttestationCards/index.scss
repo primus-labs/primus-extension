@@ -143,16 +143,18 @@
                 gap: var(--spacing-4);
               }
               .value {
-                max-width: 190px;
+                max-width: 128px;
                 white-space: nowrap;  
                 overflow: hidden;  
                 text-overflow: ellipsis;  
                 @include BodyBody100;
                 @include frsc;
-                gap: var(--spacing-8);
+                // gap: var(--spacing-8);
+                display: block;
                 .dataSourceIcon {
                   width: var(--spacing-16);
                   border-radius: 50%;
+                  margin-right: var(--spacing-8);
                 }
                 &.onChain {
                   @include frsc;

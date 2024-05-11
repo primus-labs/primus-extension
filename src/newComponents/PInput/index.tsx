@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, memo, useEffect } from 'react';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import PButton from '@/newComponents/PButton';
+import PTooltip from '@/newComponents/PTooltip';
 import './index.scss';
 
 interface PInputProps {
@@ -77,7 +78,7 @@ const PInput: React.FC<PInputProps> = memo(
     };
 
     const handleFocus = () => {
-      if(onFocus) {
+      if (onFocus) {
         onFocus();
       }
     };
@@ -118,13 +119,23 @@ const PInput: React.FC<PInputProps> = memo(
         {label && (
           <label>
             <span>{label}</span>
-            {tooltip && (
+            {tooltip?.link && (
               <PButton
                 className="tooltipBtn"
                 type="icon"
                 icon={<i className="iconfont icon-iconTooltip"></i>}
                 onClick={onClickTooltip}
               />
+            )}
+            {tooltip?.text && (
+              <PTooltip title={tooltip.text}>
+                <PButton
+                  type="icon"
+                  icon={<i className="iconfont icon-iconInfo"></i>}
+                  onClick={() => {}}
+                  className="tooltipBtn"
+                />
+              </PTooltip>
             )}
           </label>
         )}

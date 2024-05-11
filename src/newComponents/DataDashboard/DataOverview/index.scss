@@ -4,11 +4,13 @@
 .dataOverview {
   --overviewItem-width: 2.0556rem;
   --overviewItem-first-width: 2.6319rem;
+  --overviewItem-second-width: 2.0556rem;
 }
 // @media (max-width: 1819px) {
 //   .dataOverview {
 //     --overviewItem-width: 296px;
 //     --overviewItem-first-width: 379px;
+//     --overviewItem-second-width: 296px;
 //   }
 // }
 .dataOverview {
@@ -41,9 +43,15 @@
       background: var(--layer-tokens-layer-primary);
       @include fcss;
       gap: var(--spacing-16);
-      width: var(--overviewItem-width);
+      // width: var(--overviewItem-width);
       &:first-child {
         width: var(--overviewItem-first-width);
+      }
+      &:nth-child(2) {
+        min-width: var(--overviewItem-second-width);
+        .content {
+          gap: 48px;
+        }
       }
       .title {
         @include HeadlineH4;
