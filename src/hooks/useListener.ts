@@ -28,13 +28,16 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { sourceMap2 } = useAllSources();
-  const { addMsg } = useMsgs();
+  const { addMsg, deleteErrorMsgs } = useMsgs();
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
   );
   const activeAttestation = useSelector(
     (state: UserState) => state.activeAttestation
+  );
+  const activeConnectDataSource = useSelector(
+    (state: UserState) => state.activeConnectDataSource
   );
   const padoServicePortListener = useCallback(
     async function (message: any) {
@@ -253,5 +256,20 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
       chrome.runtime.onMessage.removeListener(chromeRuntimeListener);
     };
   }, [chromeRuntimeListener]);
+  useEffect(() => {
+    if (pathname) {
+      deleteErrorMsgs();
+      // @ts-ignore
+      if (activeConnectDataSource?.loading > 0) {
+        dispatch(
+          setActiveConnectDataSource({
+            loading: 0,
+            dataSourceId: undefined,
+            account: undefined,
+          })
+        );
+      }
+    }
+  }, [pathname]);
 };
 export default useAlgorithm;

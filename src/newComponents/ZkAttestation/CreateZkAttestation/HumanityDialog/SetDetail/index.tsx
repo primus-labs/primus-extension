@@ -1,6 +1,7 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveAttestation, setAttestLoading } from '@/store/actions';
+import useMsgs from '@/hooks/useMsgs';
 import {
   HUMANITYVERIFICATIONCONTENTTYPELIST,
   HUMANITYVERIFICATIONCONTENTTYPEMAP,
@@ -30,6 +31,7 @@ interface SetPwdDialogProps {
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, presets }) => {
+    const { deleteErrorMsgs } = useMsgs();
     const { dataSourceId } = presets;
     // const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
     // console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo); //delete
@@ -141,6 +143,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         dispatch(setAttestLoading(2));
         dispatch(setActiveAttestation(undefined));
       } else {
+        if (formatBtnTxt === 'Try Again') {
+          deleteErrorMsgs();
+        }
         //different
         onSubmit(pswForm);
       }

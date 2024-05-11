@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { setActiveConnectDataSource } from '@/store/actions';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
@@ -19,6 +20,7 @@ interface PButtonProps {
 const Nav: React.FC<PButtonProps> = memo(
   ({ onClose, onSubmit, sourceName }) => {
     const dispatch = useDispatch();
+    const { pathname } = useLocation();
     const [step, setStep] = useState<number>(1);
     // const [hadSetPwd, setHadSetPwd] = useState<boolean>(false);
     const lastLoginHasPwd = useSelector(
@@ -53,6 +55,18 @@ const Nav: React.FC<PButtonProps> = memo(
       );
       onClose();
     }, [onClose, dispatch]);
+    // useEffect(() => {
+    //   if (pathname) {
+    //     debugger
+    //     dispatch(
+    //       setActiveConnectDataSource({
+    //         loading: 0,
+    //         dataSourceId: undefined,
+    //         account: undefined,
+    //       })
+    //     );
+    //   }
+    // }, [pathname]);
 
     return (
       <PMask>

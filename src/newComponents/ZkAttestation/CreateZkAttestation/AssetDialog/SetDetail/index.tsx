@@ -2,6 +2,7 @@ import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { setAttestLoading, setActiveAttestation } from '@/store/actions';
+import useMsgs from '@/hooks/useMsgs';
 import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
@@ -41,6 +42,7 @@ interface SetPwdDialogProps {
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, presets }) => {
+    const { deleteErrorMsgs } = useMsgs();
     const dataSourceId = presets.dataSourceId;
     // const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
     const { tokenIconFn } = useAssetsStatistic();
@@ -234,6 +236,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         dispatch(setAttestLoading(2));
         dispatch(setActiveAttestation(undefined));
       } else {
+        if (formatBtnTxt === 'Try Again') {
+          deleteErrorMsgs();
+        }
         //different
         if (
           activeDataSouceUserInfo &&

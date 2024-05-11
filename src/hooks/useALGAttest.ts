@@ -591,7 +591,6 @@ const useAttest = function useAttest() {
           // if (activeRequest?.type === 'loading') {
           //   setIntervalSwitch(false);
           // }
-          
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
@@ -599,6 +598,9 @@ const useAttest = function useAttest() {
         // ) {
         //   LINEA_DEFI_VOYAGETryAgainFn();
         // }
+        if (['stop', 'cancel', 'close'].includes(name)) {
+          clearFetchAttestationTimer();
+        }
       } else if (type === 'googleAuth') {
         if (name === 'cancelAttest') {
           // google attest fail use dialog tip, not alert msg

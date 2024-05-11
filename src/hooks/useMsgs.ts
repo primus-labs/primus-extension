@@ -24,6 +24,20 @@ const useMsgs = function useMsgs() {
     },
     [msgs, dispatch, pathname]
   );
+  const deleteErrorMsgs = useCallback(async () => {
+    const { msgs: lastMsgsStr } = await chrome.storage.local.get(['msgs']);
+    if (lastMsgsStr) {
+      const lastMsgs = JSON.parse(lastMsgsStr);
+      const toBeDeleteIds = Object.keys(lastMsgs).filter(
+        (i) => lastMsgs[i].type === 'error' || lastMsgs[i].type === 'warn'
+      );
+      toBeDeleteIds.forEach((i) => {
+        delete lastMsgs[i];
+      });
+      dispatch(setMsgsAsync(lastMsgs));
+    }
+  }, [msgs, dispatch]);
+
   const addMsg = useCallback(
     (infoObj) => {
       const id = Date.now() + '';
@@ -52,7 +66,10 @@ const useMsgs = function useMsgs() {
   useEffect(() => {
     // console.log('222useMsgs-useEffect1', msgObj);
     if (msgObj?.id) {
-      const delay = msgObj?.link && msgObj?.link !== pathname ? 8000 : 5000;
+      let delay = msgObj?.link && msgObj?.link !== pathname ? 8000 : 5000;
+      if (msgObj?.type === 'suc') {
+        delay = 8000;
+      }
       if (msgObj.type !== 'error') {
         let timer = setTimeout(() => {
           // console.log('222useMsgs-useEffect-timeout', delay); //delete
@@ -69,6 +86,6 @@ const useMsgs = function useMsgs() {
     }
   }, [msgObj]);
 
-  return { msgs, addMsg, deleteMsg };
+  return { msgs, addMsg, deleteMsg, deleteErrorMsgs };
 };
 export default useMsgs;
