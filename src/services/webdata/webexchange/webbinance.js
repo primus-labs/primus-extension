@@ -84,6 +84,35 @@ class WebBinance extends WebExchange {
       });
       maxPage = res.total;
     }
+    //get from lanchpad
+    let needBreak = false;
+    let lanchPadPage = 1;
+    while (!needBreak){
+      const params = {};
+      params.url =
+        'https://www.binance.com/bapi/lending/v2/private/launchpool/positions?pageIndex=' +
+        lanchPadPage +
+        '&pageSize=20&hasAmount=true';
+      params.method = 'GET';
+      const res = await this.request(params);
+      console.log('LanchPad', res);
+      if(res.data.total==="0"||res.data.total===0){
+        needBreak = true;
+        break
+      }
+      res.data.positions.forEach(({ asset, amount }) => {
+        const amt = new BigNumber(amount).toFixed();
+        if(this.flexibleAccountTokenAmountMap.has(asset)){
+          //if asset exists, need to plus
+          const oldAmt = this.flexibleAccountTokenAmountMap.get(asset)
+          this.flexibleAccountTokenAmountMap.set(asset, new BigNumber(oldAmt).plus(amt).toFixed())
+        }else {
+          this.flexibleAccountTokenAmountMap.set(asset, amt);
+
+        }
+      });
+      lanchPadPage = lanchPadPage+1
+    }
     return this.flexibleAccountTokenAmountMap;
   }
 
