@@ -1,30 +1,15 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
-import utc from 'dayjs-plugin-utc';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
-import { eventReport } from '@/services/api/usertracker';
-import {
-  setExSourcesAsync,
-  setSocialSourcesAsync,
-  setKYCsAsync,
-  setCredentialsAsync,
-  setOnChainAssetsSourcesAsync,
-} from '@/store/actions';
 import { getAccount } from '@/utils/utils';
-import type { SyntheticEvent } from 'react';
 import type { Dispatch } from 'react';
-import type { DataSourceItemType } from '@/config/dataSource';
-
-import PTag from '@/newComponents/PTag';
 import PButton from '@/newComponents/PButton';
 import connectData from '@/assets/newImg/dataSource/connectedData.svg';
 
 import './index.scss';
-
-const DataSouces = Object.values(DATASOURCEMAP);
 
 type NavItem = {
   type: string;
@@ -117,7 +102,8 @@ const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
         }
         return (
           <span>
-            {activeLabel}: {i.account}
+            {activeLabel}:{' '}
+            {`${lowerCaseDataSourceName === 'x' ? '@' : ''}${i.account}`}
           </span>
         );
       }
@@ -137,10 +123,7 @@ const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
       <ul className="connectedDataCards">
         {connectedList.map((i) => {
           return (
-            <li
-              className="dataCard"
-              key={i.initTime}
-            >
+            <li className="dataCard" key={i.initTime}>
               <div className="brief">
                 <img src={connectData} alt="" />
                 <div className="introTxt">

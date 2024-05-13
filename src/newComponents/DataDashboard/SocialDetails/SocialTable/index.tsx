@@ -76,7 +76,7 @@ const SocialTable: FC = memo(({}) => {
                 <span>{j.name}</span>
               </div>
               <div>
-                {j.id === 'x' ? j.screenName : j.userName ?? j.screenName}
+                {j.id === 'x' ? '@'+j.screenName : j.userName ?? j.screenName}
               </div>
               <div>{j.createdTime ? formatDate(j.createdTime) : '-'}</div>
               <div className="followers">

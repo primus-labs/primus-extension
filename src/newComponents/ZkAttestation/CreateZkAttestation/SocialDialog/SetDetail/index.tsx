@@ -112,7 +112,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (activeDataSouceUserInfo) {
         const metaInfo = DATASOURCEMAP[dataSourceId];
         const acc = getAccount(metaInfo, activeDataSouceUserInfo);
-        return acc;
+        return `${dataSourceId === 'x' ? '@' : ''}${acc}`;
       } else {
         return '';
       }
