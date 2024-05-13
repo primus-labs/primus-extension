@@ -9,7 +9,7 @@ export type NavItem = {
   toBeActive?: boolean;
 };
 
-export const list: NavItem[] = [
+export const menuList: NavItem[] = [
   {
     label: 'Home',
     value: 'Home',

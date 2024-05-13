@@ -29,7 +29,6 @@ import {
 
 import {
   BASEVENTNAME,
-  EARLYBIRDNFTEVENTNAME,
   LINEAEVENTNAME,
 } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';

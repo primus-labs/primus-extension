@@ -12,7 +12,6 @@ import PClose from '@/newComponents/PClose';
 import iconCircleSuc from '@/assets/newImg/layout/iconCircleSuc.svg';
 import './index.scss';
 
-import { LINEAEVENTNAME } from '@/config/events';
 
 type TaskStatusMap = {
   [propName: string]: number;

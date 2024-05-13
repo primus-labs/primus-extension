@@ -13,8 +13,8 @@ import useEventDetail from '@/hooks/useEventDetail';
 import useAuthorization2 from '@/hooks/useAuthorization2';
 
 import { eventReport } from '@/services/api/usertracker';
-import { getAccount, postMsg } from '@/utils/utils';
-import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
+import { getAccount } from '@/utils/utils';
+import { BASEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { CredVersion } from '@/config/attestation';

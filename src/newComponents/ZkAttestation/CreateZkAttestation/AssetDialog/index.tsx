@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { setActiveAttestation, setAttestLoading } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import { postMsg } from '@/utils/utils';
-import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
+import { BASEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';

@@ -27,7 +27,6 @@ import type { UserState } from '@/types/store';
 import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 
 import { updateAlgoUrl } from '@/config/envConstants';
-import {BASEVENTNAME} from '@/config/constants'
 
 const Layout = memo(() => {
   const location = useLocation();

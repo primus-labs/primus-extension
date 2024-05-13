@@ -10,7 +10,7 @@ import { getUserInfo } from '@/services/api/achievements';
 import useDataSource from '@/hooks/useDataSource';
 import useAllSources from '@/hooks/useAllSources';
 import { compareVersions } from '@/utils/utils';
-import { BASEVENTNAME, ETHSIGNEVENTNAME, eventMetaMap } from '@/config/events';
+import { ETHSIGNEVENTNAME, eventMetaMap } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOADDRESS } from '@/config/envConstants';
 import { EASInfo } from '@/config/chain';

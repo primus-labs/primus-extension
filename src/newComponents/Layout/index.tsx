@@ -33,7 +33,7 @@ import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import { postMsg, compareVersions } from '@/utils/utils';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import { ETHSIGNEVENTNAME, BASEVENTNAME } from '@/config/constants';
+import { ETHSIGNEVENTNAME, BASEVENTNAME } from '@/config/events';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 

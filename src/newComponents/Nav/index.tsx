@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useCallback } from 'react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
-import {list} from '@/config/menu'
+import { menuList } from '@/config/menu';
 import './index.scss';
 
 interface PButtonProps {}
@@ -13,7 +13,7 @@ const Nav: React.FC<PButtonProps> = memo(({}) => {
   const pathname = location.pathname;
   console.log('pathname', pathname)
   const formatList = useMemo(() => {
-    return [...list];
+    return [...menuList];
   }, []);
   
   const formatOptionCN = useCallback((item) => {

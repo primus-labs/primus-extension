@@ -9,7 +9,7 @@ import { getCurrentDate, postMsg, sub, getAuthUrl } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
 import { checkIsLogin } from '@/services/api/user';
 import useInterval from './useInterval';
-import { BASEVENTNAME } from '@/config/constants';
+import { BASEVENTNAME } from '@/config/events';
 import useEventDetail from './useEventDetail';
 import { SocailStoreVersion } from '@/config/constants';
 import type { Dispatch } from 'react';

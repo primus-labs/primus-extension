@@ -2,11 +2,8 @@ import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 
 import EventsCards from '@/newComponents/Events/EventCards';
 import {
-  SCROLLEVENTNAME,
   BASEVENTNAME,
   LINEAEVENTNAME,
-  LUCKYDRAWEVENTNAME,
-  eventMetaMap,
   EARLYBIRDNFTEVENTNAME,
   ETHSIGNEVENTNAME,
 } from '@/config/events';

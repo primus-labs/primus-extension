@@ -1,12 +1,9 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
-  SCROLLEVENTNAME,
   BASEVENTNAME,
   LINEAEVENTNAME,
   EARLYBIRDNFTEVENTNAME,
-  LUCKYDRAWEVENTNAME,
-  eventMetaMap,
   ETHSIGNEVENTNAME,
 } from '@/config/events';
 import PButton from '@/newComponents/PButton';

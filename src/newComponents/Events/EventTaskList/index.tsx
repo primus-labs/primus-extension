@@ -14,10 +14,8 @@ import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
 import { eventReport } from '@/services/api/usertracker';
 import {
-  SCROLLEVENTNAME,
   BASEVENTNAME,
   LINEAEVENTNAME,
-  LUCKYDRAWEVENTNAME,
   eventMetaMap,
   EARLYBIRDNFTEVENTNAME,
   ETHSIGNEVENTNAME,

@@ -1,7 +1,6 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { list } from '@/config/menu';
-import PButton from '@/newComponents/PButton';
+import { menuList } from '@/config/menu';
 import PConnect from '@/newComponents/PConnect';
 import PPTabs from '@/newComponents/PTabs';
 
@@ -14,7 +13,7 @@ const tList = [
 const Nav: React.FC = memo(({}) => {
   const location = useLocation();
   const { pathname, search } = location;
-  console.log('location', location, pathname, list);
+  console.log('location', location, pathname, menuList);
   const [ttt, setTtt] = useState(() => {
     return pathname === '/events/rewards' ? '2' : '1';
   });
@@ -31,7 +30,7 @@ const Nav: React.FC = memo(({}) => {
 
   // const handleConnect = useCallback(() => {}, []);
   const pathTitle = useMemo(() => {
-    const obj = list.find(
+    const obj = menuList.find(
       (i) =>
         i.link === pathname ||
         (i.link !== '/' && pathname.startsWith(i.link as string))

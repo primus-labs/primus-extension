@@ -1,7 +1,5 @@
 import { SETSYSCONFIG } from '../actions';
-import { connectWallet } from '@/services/wallets/metamask';
 import {
-  BASEVENTNAME,
   DEFAULTDATASOURCEPOLLINGTIMENUM,
 } from '@/config/constants';
 

@@ -1,4 +1,4 @@
-import { BASEVENTNAME } from '@/config/constants';
+import { BASEVENTNAME } from '@/config/events';
 import { BNBGREENFIELDURL } from '@/config/envConstants';
 let tabCreatedByPado;
 let currExtentionId;

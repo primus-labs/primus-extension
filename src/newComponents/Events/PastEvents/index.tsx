@@ -3,10 +3,7 @@ import { useSelector } from 'react-redux';
 
 import {
   SCROLLEVENTNAME,
-  BASEVENTNAME,
-  LINEAEVENTNAME,
   LUCKYDRAWEVENTNAME,
-  eventMetaMap,
 } from '@/config/events';
 import type { UserState } from '@/types/store';
 

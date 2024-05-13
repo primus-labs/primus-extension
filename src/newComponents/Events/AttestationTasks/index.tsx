@@ -14,8 +14,6 @@ import AttestationTasksDialog from '../AttestationTasksDialog';
 import './index.scss';
 
 import {
-  LINEAEVENTNAME,
-  BASEVENTNAME,
   eventMetaMap,
   ETHSIGNEVENTNAME,
   EARLYBIRDNFTEVENTNAME,

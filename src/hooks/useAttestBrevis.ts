@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserState } from '@/types/store';
 import { eventReport } from '@/services/api/usertracker';
 import useInterval from './useInterval';
-import { BASEVENTNAME } from '@/config/constants';
+import { BASEVENTNAME } from '@/config/events';
 import useEventDetail from './useEventDetail';
 import useAllSources from './useAllSources';
 import { formatAddress } from '@/utils/utils';

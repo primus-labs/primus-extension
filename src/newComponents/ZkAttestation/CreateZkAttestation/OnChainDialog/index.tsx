@@ -5,7 +5,7 @@ import { setActiveAttestation } from '@/store/actions';
 import { setAttestLoading } from '@/store/actions';
 import useAttestBrevis from '@/hooks/useAttestBrevis';
 import useEventDetail from '@/hooks/useEventDetail';
-import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
+import { BASEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { formatAddress } from '@/utils/utils';

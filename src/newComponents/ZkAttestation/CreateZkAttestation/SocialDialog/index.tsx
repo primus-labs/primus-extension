@@ -17,7 +17,6 @@ import { getAccount, postMsg } from '@/utils/utils';
 import {
   BASEVENTNAME,
   ETHSIGNEVENTNAME,
-  LINEAEVENTNAME,
 } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';

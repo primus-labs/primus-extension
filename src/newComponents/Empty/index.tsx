@@ -1,14 +1,5 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
-import {
-  SCROLLEVENTNAME,
-  LUCKYDRAWEVENTNAME,
-  EARLYBIRDNFTEVENTNAME,
-} from '@/config/events';
-import { checkLotteryResults } from '@/services/api/event';
-import type { UserState } from '@/types/store';
-import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
