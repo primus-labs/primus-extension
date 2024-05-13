@@ -66,10 +66,10 @@ const useMsgs = function useMsgs() {
   useEffect(() => {
     // console.log('222useMsgs-useEffect1', msgObj);
     if (msgObj?.id) {
-      let delay = msgObj?.link && msgObj?.link !== pathname ? 8000 : 5000;
-      if (msgObj?.type === 'suc') {
-        delay = 8000;
-      }
+      let delay = msgObj?.link && msgObj?.link !== pathname ? 10000 : 8000;
+      // if (msgObj?.type === 'suc') {
+      //   delay = 8000;
+      // }
       if (msgObj.type !== 'error') {
         let timer = setTimeout(() => {
           // console.log('222useMsgs-useEffect-timeout', delay); //delete
