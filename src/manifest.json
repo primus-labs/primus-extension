@@ -30,13 +30,13 @@
         "iconFail.svg",
         "iconLink.svg",
         "iconDataSourceBinance.svg",
-        "iconDataSourceCoinbase.svg",
+        "iconDataSourceCoinbase.png",
         "iconDataSourceOKX.svg",
-        "iconDataSourceTwitter.svg",
+        "iconDataSourceX.png",
         "iconDataSourceTikTok.svg",
         "iconDataSourceBitget.svg",
         "iconDataSourceGate.svg",
-        "iconDataSourceMEXC.svg",
+        "iconDataSourceMEXC.png",
         "iconDataSourceHuobi.svg"
       ],
       "matches": ["<all_urls>"]

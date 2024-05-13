@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import type { WALLETITEMTYPE } from '@/config/constants';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
-import iconConnectWalletSuc from '@/assets/newImg/layout/iconConnectWalletSuc.svg';
+import iconConnectWalletSuc from '@/assets/newImg/layout/iconConnectWalletSuc.png';
 import iconConnectWalletFail from '@/assets/newImg/layout/iconConnectWalletFail.svg';
 import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import './index.scss';

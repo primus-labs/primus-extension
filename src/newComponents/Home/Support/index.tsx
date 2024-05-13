@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import iconAlarm from '@/assets/newImg/home/iconAlarm.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
-import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
+import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.png';
+import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.png';
 
 type mediaItemsMap = {
   [propName: string]: {

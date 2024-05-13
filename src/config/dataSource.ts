@@ -1,21 +1,21 @@
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
+import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.png';
 import iconDataSourceOKX from '@/assets/img/iconDataSourceOKX.svg';
 import iconDataSourceKucoin from '@/assets/img/iconDataSourceKucoin.svg';
-import iconDataSourceCoinbase from '@/assets/img/iconDataSourceCoinbase.svg';
+import iconDataSourceCoinbase from '@/assets/img/iconDataSourceCoinbase.png';
 import iconDataSourceHuobi from '@/assets/img/iconDataSourceHuobi.svg';
 import iconDataSourceHuobiWithCircle from '@/assets/img/iconDataSourceHuobiWithCircle.svg';
 import iconDataSourceGate from '@/assets/img/iconDataSourceGate.svg';
 import iconDataSourceBitget from '@/assets/img/iconDataSourceBitget.svg';
 import iconDataSourceBybit from '@/assets/img/iconDataSourceBybit.svg';
-import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.svg';
+import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.png';
 import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.svg';
-import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.svg';
+import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.png';
 import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
-import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.svg';
+import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.png';
 
 import Binance from '@/services/webdata/webexchange/webbinance';
 

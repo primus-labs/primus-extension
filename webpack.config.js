@@ -368,7 +368,7 @@ var options = {
           force: true,
         },
         {
-          from: 'src/assets/img/iconDataSourceCoinbase.svg',
+          from: 'src/assets/img/iconDataSourceCoinbase.png',
           to: path.join(__dirname, 'build'),
           force: true,
         },
@@ -378,7 +378,7 @@ var options = {
           force: true,
         },
         {
-          from: 'src/assets/img/iconDataSourceTwitter.svg',
+          from: 'src/assets/img/iconDataSourceX.png',
           to: path.join(__dirname, 'build'),
           force: true,
         },
@@ -393,7 +393,7 @@ var options = {
           force: true,
         },
         {
-          from: 'src/assets/img/iconDataSourceMEXC.svg',
+          from: 'src/assets/img/iconDataSourceMEXC.png',
           to: path.join(__dirname, 'build'),
           force: true,
         },

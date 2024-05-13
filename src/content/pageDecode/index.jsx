@@ -244,13 +244,13 @@ function PadoCard() {
 
   const iconMap = {
     binance: chrome.runtime.getURL(`iconDataSourceBinance.svg`),
-    coinbase: chrome.runtime.getURL(`iconDataSourceCoinbase.svg`),
+    coinbase: chrome.runtime.getURL(`iconDataSourceCoinbase.png`),
     okx: chrome.runtime.getURL(`iconDataSourceOKX.svg`),
-    x: chrome.runtime.getURL(`iconDataSourceTwitter.svg`),
+    x: chrome.runtime.getURL(`iconDataSourcePng.png`),
     tiktok: chrome.runtime.getURL(`iconDataSourceTikTok.svg`),
     bitget: chrome.runtime.getURL(`iconDataSourceBitget.svg`),
     gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
-    mexc: chrome.runtime.getURL(`iconDataSourceMEXC.svg`),
+    mexc: chrome.runtime.getURL(`iconDataSourceMEXC.png`),
     huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
   };
   var iconDataSource = iconMap[activeRequest.dataSource];

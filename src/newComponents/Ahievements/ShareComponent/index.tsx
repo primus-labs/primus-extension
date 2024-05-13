@@ -9,8 +9,8 @@ import lineLogo from '@/assets/newImg/achievements/line.svg';
 import greenCircle from '@/assets/newImg/achievements/greenCircle.svg';
 import whiteCircle from '@/assets/newImg/achievements/whiteCircle.svg';
 import blueRect from '@/assets/newImg/achievements/blueRect.svg';
-import x from '@/assets/newImg/achievements/x.svg';
-import discord from '@/assets/newImg/achievements/discord.svg';
+import x from '@/assets/img/iconDataSourceX.png';
+import discord from '@/assets/img/iconDataSourceDiscord.png';
 import telegram from '@/assets/newImg/achievements/telegram.svg';
 import bgShare from '@/assets/newImg/dataDashboard/bgShare.svg';
 // @ts-ignore

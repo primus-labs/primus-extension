@@ -1,14 +1,14 @@
-import iconPolygon from '@/assets/img/iconPolygon.svg';
+import iconPolygon from '@/assets/img/iconPolygon.png';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
-import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
+import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.png';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.png';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
 import iconNetwork3 from '@/assets/img/iconNetwork3.png';
 import iconNetwork4 from '@/assets/img/iconNetwork4.svg';
 import iconNetwork5 from '@/assets/img/iconNetwork5.png';
 import iconNetwork6 from '@/assets/img/iconNetwork6.png';
-import iconChainEthereum from '@/assets/img/iconChainEthereum.svg';
+import iconChainEthereum from '@/assets/img/iconUpChainEthereum.png';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
 // import { CURENV } from './envConstants';
 export const CURENV = process.env.NODE_ENV as any;

@@ -1,7 +1,7 @@
-import iconPolygon from '@/assets/img/iconPolygon.svg';
+import iconPolygon from '@/assets/img/iconPolygon.png';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
-import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
+import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.png';
 import { getAlgoUrl } from '@/services/api/algorithm';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
