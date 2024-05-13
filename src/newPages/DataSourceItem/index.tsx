@@ -68,30 +68,33 @@ const DataSourceItem = memo(() => {
   }, [activeDataSouceMetaInfo]);
   const handleConnect = useCallback(
     async (from = 1) => {
-      await dispatch(
-        setActiveConnectDataSource({
-          loading: 1,
-        })
-      );
-      if (lowerCaseDataSourceName === 'web3 wallet') {
-        // from: 1 first connect wallet,2:switch wallet account connect
-        if (from === 2) {
-          switchAccount(connectedWallet?.provider);
-          return;
-        } else {
-          await dispatch({ type: 'setRequireFetchAssets', payload: true });
-          dispatch(setConnectWalletDialogVisibleAction(1));
-          return;
-        }
-      }
-      if (activeConnectType === 'API') {
-        setVisibleConnectByAPI(true);
-      } else if (activeConnectType === 'Web') {
-        let currRequestObj = webProofTypes.find(
-          (r: any) => r.dataSource === lowerCaseDataSourceName
+      if (activeConnectDataSource.loading === 1) {
+        return;
+      } else {
+        await dispatch(
+          setActiveConnectDataSource({
+            loading: 1,
+          })
         );
-        // TODO-newui
-        /*if (lowerCaseDataSourceName === 'tiktok') {
+        if (lowerCaseDataSourceName === 'web3 wallet') {
+          // from: 1 first connect wallet,2:switch wallet account connect
+          if (from === 2) {
+            switchAccount(connectedWallet?.provider);
+            return;
+          } else {
+            await dispatch({ type: 'setRequireFetchAssets', payload: true });
+            dispatch(setConnectWalletDialogVisibleAction(1));
+            return;
+          }
+        }
+        if (activeConnectType === 'API') {
+          setVisibleConnectByAPI(true);
+        } else if (activeConnectType === 'Web') {
+          let currRequestObj = webProofTypes.find(
+            (r: any) => r.dataSource === lowerCaseDataSourceName
+          );
+          // TODO-newui
+          /*if (lowerCaseDataSourceName === 'tiktok') {
         currRequestObj.datasourceTemplate.requests[0] = {
           name: 'first',
           url: 'https://www.tiktok.com/api/user/detail/',
@@ -101,27 +104,28 @@ const DataSourceItem = memo(() => {
           cookies: ['sessionid', 'tt-target-idc'],
         };
       }*/
-        //if currRequestObj is undefined, try to find locally
-        if (!currRequestObj) {
-          currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
+          //if currRequestObj is undefined, try to find locally
+          if (!currRequestObj) {
+            currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
+          }
+          // TODO END
+          chrome.runtime.sendMessage({
+            type: 'dataSourceWeb',
+            name: 'init',
+            operation: 'connect',
+            params: {
+              ...currRequestObj,
+            },
+          });
+        } else if (activeConnectType === 'Auth') {
+          var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
+          authorize(authorizeSourceKey, () => {
+            dispatch(setSocialSourcesAsync());
+          });
         }
-        // TODO END
-        chrome.runtime.sendMessage({
-          type: 'dataSourceWeb',
-          name: 'init',
-          operation: 'connect',
-          params: {
-            ...currRequestObj,
-          },
-        });
-      } else if (activeConnectType === 'Auth') {
-        var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
-        authorize(authorizeSourceKey, () => {
-          dispatch(setSocialSourcesAsync());
-        });
       }
     },
-    [dispatch, connectedWallet]
+    [dispatch, connectedWallet, activeConnectDataSource]
   );
   const handleBack = useCallback(() => {
     navigate(-1);
@@ -213,7 +217,11 @@ const DataSourceItem = memo(() => {
               <PButton
                 className="connectBtn"
                 text={btnTxtEl}
-                loading={activeConnectDataSource.loading === 1}
+                loading={
+                  activeConnectDataSource.dataSourceId ===
+                    lowerCaseDataSourceName &&
+                  activeConnectDataSource.loading === 1
+                }
                 size="s"
                 onClick={() => {
                   handleConnect(1);

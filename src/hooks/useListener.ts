@@ -268,6 +268,11 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
             account: undefined,
           })
         );
+        chrome.runtime.sendMessage({
+          type: 'dataSourceWeb',
+          name: 'cancelByPado',
+          operation: 'connect',
+        });
       }
     }
   }, [pathname]);

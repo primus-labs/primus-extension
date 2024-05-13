@@ -29,7 +29,7 @@ interface PDropdownProps {
   onClick?: (item: NavItem) => void;
   // list: NavItem[];
 }
-const list = Object.values(DATASOURCEMAP).filter(i => !i.hidden);
+const list = Object.values(DATASOURCEMAP).filter((i) => !i.hidden);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
     const dispatch = useDispatch();
@@ -38,6 +38,9 @@ const Cards: React.FC<PDropdownProps> = memo(
       useState<string>('');
     const { deleteFn: deleteDataSourceFn } =
       useDataSource(activeDataSourceName);
+    const activeConnectDataSource = useSelector(
+      (state: UserState) => state.activeConnectDataSource
+    );
     const dataSourceQueryStr = useSelector(
       (state: UserState) => state.dataSourceQueryStr
     );
@@ -65,17 +68,21 @@ const Cards: React.FC<PDropdownProps> = memo(
     const handleDetail = useCallback(
       (i) => {
         if (sourceMap2[i.id]?.expired === '1') {
-          dispatch(
-            setActiveConnectDataSource({
-              dataSourceId: i.id,
-              loading: 0,
-            })
-          );
+          if (activeConnectDataSource.loading === 1) {
+            return;
+          } else {
+            dispatch(
+              setActiveConnectDataSource({
+                dataSourceId: i.id,
+                loading: 0,
+              })
+            );
+          }
         } else {
           navigate(`/datas/data?dataSourceId=${i.id}`);
         }
       },
-      [navigate]
+      [navigate, activeConnectDataSource]
     );
     const handleDelete = useCallback(
       (i) => {
@@ -160,6 +167,10 @@ const Cards: React.FC<PDropdownProps> = memo(
                   className="connectBtn"
                   text="Connect"
                   type="text"
+                  loading={
+                    activeConnectDataSource.dataSourceId === i.id &&
+                    activeConnectDataSource.loading === 1
+                  }
                   onClick={() => {
                     handleDetail(i);
                   }}

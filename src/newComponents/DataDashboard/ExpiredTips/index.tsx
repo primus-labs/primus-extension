@@ -16,7 +16,7 @@ const ExpiredTips = memo(() => {
   const { sourceMap, sourceMap2 } = useAllSources();
   const [showList, setShowList] = useState<string[]>([]);
   const activeConnectDataSource = useSelector(
-    (state:UserState) => state.activeConnectDataSource
+    (state: UserState) => state.activeConnectDataSource
   );
 
   const checkFn = useCallback(async () => {
@@ -27,14 +27,18 @@ const ExpiredTips = memo(() => {
   }, [sourceMap2]);
   const handleConnect = useCallback(
     (name) => {
-      dispatch(
-        setActiveConnectDataSource({
-          dataSourceId: name,
-          loading: 0,
-        })
-      );
+      if (activeConnectDataSource.loading === 1) {
+        return;
+      } else {
+        dispatch(
+          setActiveConnectDataSource({
+            dataSourceId: name,
+            loading: 0,
+          })
+        );
+      }
     },
-    [dispatch]
+    [dispatch, activeConnectDataSource]
   );
   const handleClose = useCallback((name) => {
     setShowList((l) => {
@@ -65,6 +69,7 @@ const ExpiredTips = memo(() => {
                 <PButton
                   type="text2"
                   text="To connect"
+                  loading={activeConnectDataSource.loading === 1}
                   onClick={() => {
                     handleConnect(i);
                   }}

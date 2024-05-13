@@ -356,60 +356,9 @@ export const dataSourceWebMsgListener = async (
         const ex = new constructorF();
         await storeDataSource(exchangeName, ex, port);
       }
-      // operation : connect attest
-      /*const dataSourceCookies = await chrome.cookies.getAll({
-      url: new URL(jumpTo).origin,
-    });
-    const cookiesObj = dataSourceCookies.reduce((prev, curr) => {
-      const { name, value } = curr;
-      prev[name] = value;
-      return prev;
-    }, {});*/
-      // const { category } = activeTemplate;
-      // const form = {
-      //   source: dataSource,
-      //   type: category,
-      //   label: null, // TODO
-      //   exUserId: null,
-      // };
-      // // console.log(WorkerGlobalScope.location)
-      // if (event) {
-      //   form.event = event;
-      // }
-      // if (activeTemplate.requestid) {
-      //   form.requestid = activeTemplate.requestid;
-      // }
-      // let aligorithmParams = await assembleAlgorithmParams(form, password);
-      // Object.assign(aligorithmParams, {
-      //   reqType: 'web',
-      //   host: host,
-      //   schemaType,
-      //   requests: formatRequests,
-      //   responses,
-      //   uiTemplate,
-      //   templateId: id,
-      // });
-      // await chrome.storage.local.set({
-      //   activeRequestAttestation: JSON.stringify(aligorithmParams),
-      // });
-      // console.log('222222pageDecode-aligorithmParams', aligorithmParams);
-      // chrome.runtime.sendMessage({
-      //   type: 'algorithm',
-      //   method: 'getAttestation',
-      //   params: aligorithmParams,
-      // });
     }
-    // if (name === 'attestResult') {
-    //   // to send back your response  to the current tab
-    //   chrome.tabs.sendMessage(
-    //     tabCreatedByPado.id,
-    //     request,
-    //     function (response) {}
-    //   );
-    //   chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
-    //   chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
-    // }
-    if (name === 'close' || name === 'cancel') {
+   
+    if (name === 'close' || name === 'cancel' || name === 'cancelByPado') {
       await chrome.tabs.update(currExtentionId, {
         active: true,
       });

@@ -111,7 +111,9 @@ button.PButton {
       }
     }
   }
-  .loading-spinner {
+  .spinnerWrapper{
+    @include frcc;
+    .loading-spinner {
     // width: var(--spacing-16,16px);
     // height: var(--spacing-16,16px);
     // border-radius: 50%;
@@ -120,6 +122,9 @@ button.PButton {
     // animation: spin 1s linear infinite;
     @include pSpiner;
   }
+  }
+  
+
 }
 .dark {
   button.PButton {

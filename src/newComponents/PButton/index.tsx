@@ -87,7 +87,9 @@ const PButton: React.FC<PButtonProps> = memo(
         ) : (
           <>
             {loading ? (
-              <div className="loading-spinner"></div>
+              <div className="spinnerWrapper">
+                <div className="loading-spinner"></div>
+              </div>
             ) : (
               <span className="btnText">{text}</span>
             )}

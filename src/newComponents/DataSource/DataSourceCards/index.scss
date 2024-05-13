@@ -89,13 +89,16 @@
         //   align-self: flex-start;
         //   // line-height: 1;
         // }
+        .spinnerWrapper {
+          width: 55px;
+        }
       }
     }
   }
 }
 @media (max-width: 1819px) {
-  .dataSourceCardsWrapper{
-    .dataSourceCards{
+  .dataSourceCardsWrapper {
+    .dataSourceCards {
       column-gap: calc((100% - var(--dataSourceCard-width) * 3) / 2);
     }
   }

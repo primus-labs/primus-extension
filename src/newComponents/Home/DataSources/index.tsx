@@ -11,10 +11,14 @@ import PTooltip from '@/newComponents/PTooltip';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useAllSources from '@/hooks/useAllSources';
+import { UserState } from '@/types/store';
 
 const Overview = memo(() => {
   const { sourceMap, sourceMap2 } = useAllSources();
   const dispatch = useDispatch();
+  const activeConnectDataSource = useSelector(
+    (state: UserState) => state.activeConnectDataSource
+  );
   const [activeConnectDataSourceId, setActiveConnectDataSourceId] =
     useState<string>();
   const navigate = useNavigate();
@@ -36,15 +40,19 @@ const Overview = memo(() => {
       if (checkIsConnectedDataSourceFn(i)) {
         navigate(`/datas/data?dataSourceId=${i}`);
       } else {
-        dispatch(
-          setActiveConnectDataSource({
-            dataSourceId: i,
-            loading: 0,
-          })
-        );
+        if (activeConnectDataSource.loading === 1) {
+          return;
+        } else {
+          dispatch(
+            setActiveConnectDataSource({
+              dataSourceId: i,
+              loading: 0,
+            })
+          );
+        }
       }
     },
-    [dispatch, sourceMap, sourceMap2, navigate]
+    [dispatch, sourceMap, sourceMap2, navigate, activeConnectDataSource]
   );
   const handleClickCard = useCallback(
     (i) => {
@@ -97,6 +105,10 @@ const Overview = memo(() => {
                 className="connectBtn"
                 text="Connect"
                 type="text"
+                loading={
+                  activeConnectDataSource.dataSourceId === i &&
+                  activeConnectDataSource.loading === 1
+                }
                 onClick={() => {
                   handleClick(i);
                 }}
