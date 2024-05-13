@@ -24,9 +24,11 @@ import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestati
 import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
 import { webDataSourceTemplate } from '@/config/webDataSourceTemplate';
+import useMsgs from '@/hooks/useMsgs';
 const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
+  const { addMsg } = useMsgs();
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
   const [attestationPresets, setAttestationPresets] = useState<any>();
 
@@ -51,6 +53,7 @@ const DataSourceItem = memo(() => {
   } = useDataSource(lowerCaseDataSourceName);
   const authorize = useAuthorization();
   const dispatch: Dispatch<any> = useDispatch();
+  const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const activeConnectType = useMemo(() => {
     return activeDataSouceMetaInfo?.connectType;
   }, [activeDataSouceMetaInfo]);
@@ -140,23 +143,35 @@ const DataSourceItem = memo(() => {
   const handleSubmitAssetDialog = useCallback(() => {
     setVisibleAssetDialog('');
   }, []);
-  const handleAttest = useCallback((i) => {
-    setVisibleAssetDialog(i.attestationType);
-    const presetsP = Object.keys({
-      verificationContent: '',
-      verificationValue: '',
-      // account: ''
-    }).reduce(
-      (prev, curr) => {
-        if (i[curr]) {
-          prev[curr] = i[curr];
-        }
-        return prev;
-      },
-      { dataSourceId: lowerCaseDataSourceName }
-    );
-    setAttestationPresets(presetsP);
-  }, []);
+  const handleAttest = useCallback(
+    (i) => {
+      if (attestLoading === 1) {
+        addMsg({
+          type: 'info',
+          title: 'Cannot process now',
+          desc: 'Another attestation task is running. Please try again later.',
+        });
+        return;
+      } else {
+        setVisibleAssetDialog(i.attestationType);
+        const presetsP = Object.keys({
+          verificationContent: '',
+          verificationValue: '',
+          // account: ''
+        }).reduce(
+          (prev, curr) => {
+            if (i[curr]) {
+              prev[curr] = i[curr];
+            }
+            return prev;
+          },
+          { dataSourceId: lowerCaseDataSourceName }
+        );
+        setAttestationPresets(presetsP);
+      }
+    },
+    [attestLoading]
+  );
   return (
     <div className="pageDataSourceItem">
       <div className="pageContent">

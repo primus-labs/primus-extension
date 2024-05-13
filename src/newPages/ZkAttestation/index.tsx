@@ -15,12 +15,14 @@ import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
 
 import './index.scss';
+import useMsgs from '@/hooks/useMsgs';
 
 const ZkAttestation = memo(() => {
+  const { addMsg } = useMsgs();
   const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
   useCheckIsConnectedWallet(checkIsConnectFlag);
   const connectWalletDialogVisible = useSelector(
-    (state:UserState) => state.connectWalletDialogVisible
+    (state: UserState) => state.connectWalletDialogVisible
   );
   useEffect(() => {
     if (connectWalletDialogVisible === 0) {
@@ -40,9 +42,21 @@ const ZkAttestation = memo(() => {
     return Object.keys(credentialsFromStore).length > 0;
   }, [credentialsFromStore]);
 
-  const handleCreate = useCallback((typeItem) => {
-    setVisibleAssetDialog(typeItem.id);
-  }, []);
+  const handleCreate = useCallback(
+    (typeItem) => {
+      if (attestLoading === 1) {
+        addMsg({
+          type: 'info',
+          title: 'Cannot process now',
+          desc: 'Another attestation task is running. Please try again later.',
+        });
+        return;
+      } else {
+        setVisibleAssetDialog(typeItem.id);
+      }
+    },
+    [attestLoading]
+  );
   const handleCloseAssetDialog = useCallback(() => {
     setVisibleAssetDialog('');
   }, []);

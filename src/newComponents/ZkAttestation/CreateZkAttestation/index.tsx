@@ -24,8 +24,8 @@ const PClose: React.FC<PBackProps> = memo(
     // const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
     const { connected } = useCheckIsConnectedWallet(true);
     const handleClose = useCallback(() => {
-      dispatch(setAttestLoading(0));
-      dispatch(setActiveAttestation({ loading: 0 }));
+      // dispatch(setAttestLoading(0));
+      // dispatch(setActiveAttestation({ loading: 0 }));
       onClose();
     }, [onClose]);
     useEffect(() => {

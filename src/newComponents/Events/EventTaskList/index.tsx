@@ -32,6 +32,7 @@ import AttestationTasks from '../AttestationTasks';
 import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
 
 import './index.scss';
+import useMsgs from '@/hooks/useMsgs';
 
 dayjs.extend(utc);
 
@@ -244,6 +245,7 @@ const eventTaskMap = {
 };
 const initStatusMap = { follow: 0, attestation: 0, onChain: 0, check: 0 };
 const DataSourceItem = memo(() => {
+  const { addMsg } = useMsgs();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
@@ -516,7 +518,16 @@ const DataSourceItem = memo(() => {
       if (taskId === 'follow') {
         initEvent();
       } else if (taskId === 'attestation') {
-        setVisibleAttestationTasksDialog(true);
+        if (attestLoading === 1) {
+          addMsg({
+            type: 'info',
+            title: 'Cannot process now',
+            desc: 'Another attestation task is running. Please try again later.',
+          });
+          return;
+        } else {
+          setVisibleAttestationTasksDialog(true);
+        }
       } else if (taskId === 'onChain') {
         const res = await chrome.storage.local.get([eventId]);
         const currentAddress = connectedWallet?.address;
@@ -547,7 +558,7 @@ const DataSourceItem = memo(() => {
         handleClaim();
       }
     },
-    [dispatch, eventDetail, initEvent, handleClaim]
+    [dispatch, eventDetail, initEvent, handleClaim, attestLoading]
   );
 
   const handleCloseSocialTasksDialog = useCallback(() => {
