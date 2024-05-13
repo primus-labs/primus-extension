@@ -63,8 +63,25 @@ const lineaQsMap = {
     id: 3,
     question:
       'What does the “not meet the uniqueness requirement” error message mean?',
-    answer:
-      "Due to Linea’s requirements, each Binance KYC'ed account should be linked to only one wallet address. If you encounter this error message, it could mean either:Your Binance account is already linked to a different wallet address.Your currently connected wallet address is already linked to another Binance account through attestation.",
+    answer: (
+      <>
+        Due to Linea’s requirements, each Binance KYC'ed account should be
+        linked to only one wallet address. If you encounter this error message,
+        it could mean either:
+        <ul className="subReasonItems">
+          <li>
+            <i className="dot"></i>
+            Your Binance account is already linked to a different wallet
+            address.
+          </li>
+          <li>
+            <i className="dot"></i>
+            Your currently connected wallet address is already linked to another
+            Binance account through attestation.
+          </li>
+        </ul>
+      </>
+    ),
     expand: true,
   },
   4: {
@@ -139,7 +156,7 @@ const eventQsMap = {
   [BASEVENTNAME]: basQsMap,
   [LINEAEVENTNAME]: lineaQsMap,
   [EARLYBIRDNFTEVENTNAME]: earluBirdQsMap,
-  [ETHSIGNEVENTNAME]: ethSignQsMap
+  [ETHSIGNEVENTNAME]: ethSignQsMap,
 };
 const DataSourceItem = memo(() => {
   const [questionList, setQuestionList] = useState<any[]>([]);
@@ -152,7 +169,7 @@ const DataSourceItem = memo(() => {
     setQuestionList(Object.values(questionMap));
   }, []);
   useEffect(() => {
-    setQuestionList(Object.values(questionMap))
+    setQuestionList(Object.values(questionMap));
   }, []);
   return (
     <div className="qsList">

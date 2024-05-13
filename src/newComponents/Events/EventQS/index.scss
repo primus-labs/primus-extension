@@ -33,6 +33,20 @@
       .answer {
         @include BodyBody200;
         color: var(--text-tokens-text-secondary);
+        .subReasonItems {
+          @include fcss;
+          > li {
+            @include frsc;
+            gap: 6px;
+            .dot {
+              margin: 0 6px;
+              width: 2.5px;
+              height: 2.5px;
+              border-radius: 50%;
+              background: var(--text-tokens-text-secondary);
+            }
+          }
+        }
       }
     }
   }
