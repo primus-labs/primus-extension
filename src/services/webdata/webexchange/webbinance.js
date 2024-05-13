@@ -96,7 +96,7 @@ class WebBinance extends WebExchange {
       params.method = 'GET';
       const res = await this.request(params);
       console.log('LanchPad', res);
-      if(res.data.total==="0"||res.data.total===0){
+      if(res.data.total==="0" || res.data.total===0 ||res.data.positions.length===0){
         needBreak = true;
         break
       }
