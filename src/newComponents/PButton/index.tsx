@@ -84,6 +84,31 @@ const PButton: React.FC<PButtonProps> = memo(
         {prefix}
         {type === 'icon' ? (
           icon
+        ) : loading ? (
+          <>
+            {type === 'text' ? (
+              <>
+                <span className="btnText">{text}</span>
+                <div className="spinnerWrapper">
+                  <div className="loading-spinner"></div>
+                </div>
+              </>
+            ) : (
+              <div className="spinnerWrapper">
+                <div className="loading-spinner"></div>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <span className="btnText">{text}</span>
+            {type === 'text' && (
+              <i className="iconfont icon-LinkArrow"></i>
+            )}
+          </>
+        )}
+        {/* {type === 'icon' ? (
+          icon
         ) : (
           <>
             {loading ? (
@@ -93,10 +118,11 @@ const PButton: React.FC<PButtonProps> = memo(
             ) : (
               <span className="btnText">{text}</span>
             )}
-            {type === 'text' &&
-              (suffix ?? <i className="iconfont icon-LinkArrow"></i>)}
+            {type === 'text' && suffix && (
+              <i className="iconfont icon-LinkArrow"></i>
+            )}
           </>
-        )}
+        )} */}
       </button>
     );
   }

@@ -36,7 +36,12 @@
           line-height: var(--spacing-24);
         }
         .spinnerWrapper{
-          width: 55px;
+          width: 16px;
+          .loading-spinner {
+            width: var(--spacing-12);
+            height: var(--spacing-12);
+            border-width: 1px;
+          }
         }
       }
       .dataSourceItemTop {

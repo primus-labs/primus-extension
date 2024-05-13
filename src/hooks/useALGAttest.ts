@@ -36,13 +36,6 @@ import { DATASOURCEMAP } from '@/config/dataSource';
 import {
   ATTESTATIONPOLLINGTIMEOUT,
   ATTESTATIONPOLLINGTIME,
-  BIGZERO,
-  ONESECOND,
-  ONEMINUTE,
-  CredVersion,
-  SCROLLEVENTNAME,
-  schemaTypeMap,
-  GOOGLEWEBPROOFID,
 } from '@/config/constants';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 

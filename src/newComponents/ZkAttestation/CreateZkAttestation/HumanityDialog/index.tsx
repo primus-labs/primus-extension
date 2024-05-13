@@ -17,7 +17,7 @@ import { getAccount, postMsg } from '@/utils/utils';
 import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
-import { CredVersion } from '@/config/constants';
+import { CredVersion } from '@/config/attestation';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';

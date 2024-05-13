@@ -21,7 +21,6 @@ import {
 } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
-import { CredVersion, GOOGLEWEBPROOFID } from '@/config/constants';
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';

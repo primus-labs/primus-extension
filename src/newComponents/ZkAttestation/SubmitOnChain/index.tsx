@@ -31,7 +31,6 @@ import {
   ETHSIGNEVENTNAME,
 } from '@/config/events';
 import { PADOADDRESS } from '@/config/envConstants';
-import { CredVersion } from '@/config/attestation';
 
 import type { CredTypeItemType } from '@/types/cred';
 import type { Dispatch } from 'react';
@@ -563,8 +562,6 @@ const Nav: React.FC<PButtonProps> = memo(
                 activeOnChainAttestation?.schemaName ?? LineaSchemaName, // TODO-basevent
             };
 
-            let versionForComparison = activeOnChainAttestation?.version ?? '';
-
             let upChainRes;
             const cObj = { ...credentialsFromStore };
             const curRequestid = activeOnChainAttestation?.requestid as string;
@@ -612,7 +609,6 @@ const Nav: React.FC<PButtonProps> = memo(
                 upChainParams.signature = result.result.signature;
                 upChainParams.data = result.result.encodedData;
               }
-              versionForComparison = CredVersion;
             }
 
             upChainRes = await attestByDelegationProxyFee(upChainParams);
