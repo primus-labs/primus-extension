@@ -10,7 +10,7 @@ import routes from '@/router';
 import { Provider } from 'react-redux';
 import store from '@/store/index';
 // export const EASInfo = EASINFOMAP[CURENV];
-import { EASInfo } from '@/config/envConstants';
+import { EASInfo } from '@/config/chain';
 const router = createHashRouter(routes);
 const container = document.getElementById('app-container');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript

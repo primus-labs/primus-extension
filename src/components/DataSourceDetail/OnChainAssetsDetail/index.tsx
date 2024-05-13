@@ -20,7 +20,6 @@ import {
 } from '@/utils/utils';
 import {
   BTC,
-  DATASOURCEMAP,
   SUPPORRTEDQUERYCHAINMAP,
 } from '@/config/constants';
 import { getTokenPrice } from '@/services/api/dataSource';

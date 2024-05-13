@@ -1,6 +1,4 @@
 import React, { useState, useCallback, memo, useMemo } from 'react';
-import { ONCHAINLIST } from '@/config/chain';
-import type { WALLETITEMTYPE } from '@/config/constants';
 import PMask from '@/newComponents/PMask';
 import PButton from '@/newComponents/PButton';
 import PClose from '@/newComponents/PClose';

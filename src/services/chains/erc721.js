@@ -1,5 +1,5 @@
 import { ethers, utils } from 'ethers';
-import { EASInfo } from '@/config/envConstants';
+import { EASInfo } from '@/config/chain';
 import { getNFTInfo } from '@/services/api/event';
 /*
 params = {

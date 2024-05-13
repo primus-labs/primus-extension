@@ -16,7 +16,6 @@ import {
 import { eventReport } from '@/services/api/usertracker';
 import { getProofTypes } from '@/services/api/config';
 import { getEARLYBIRDNFT } from '@/services/chains/erc721';
-import { ONEMINUTE } from '@/config/constants';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 
@@ -31,7 +30,6 @@ import {
 import { WALLETMAP } from '@/config/wallet';
 import { CLAIMNFTNETWORKNAME } from '@/config/chain';
 
-// import { EASInfo } from '@/config/chain';
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import type { PROOFTYPEITEM } from '@/types/cred';

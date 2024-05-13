@@ -5,7 +5,7 @@ import {
   connectWalletAsync,
   setConnectWalletActionAsync,
 } from '@/store/actions';
-import { EASInfo } from '@/config/envConstants';
+import { EASInfo } from '@/config/chain';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/types/store';
 

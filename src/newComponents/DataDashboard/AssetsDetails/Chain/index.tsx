@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import { sub, add, div, mul, formatNumeral } from '@/utils/utils';
-import { SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
 
 import useAllSources from '@/hooks/useAllSources';
 import useNFTs from '@/hooks/useNFTs';

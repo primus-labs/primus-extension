@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { DATASOURCEMAP } from '@/config/dataSource';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 
 import type { UserState } from '@/types/store';

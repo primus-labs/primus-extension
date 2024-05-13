@@ -29,7 +29,6 @@ import Slider from 'react-slick';
 import {
   BASEVENTNAME,
   ETHSIGNEVENTNAME,
-  DATASOURCEMAP,
 } from '@/config/constants';
 import { setRewardsDialogVisibleAction } from '@/store/actions';
 

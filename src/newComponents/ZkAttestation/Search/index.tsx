@@ -1,7 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-import { DATASOURCEMAPVALUES } from '@/config/dataSource';
+import { useDispatch, useSelector } from 'react-redux';
 import { ATTESTATIONTYPEMAP, ATTESTATIONTYPELIST } from '@/config/attestation';
 
 import type { UserState } from '@/types/store';

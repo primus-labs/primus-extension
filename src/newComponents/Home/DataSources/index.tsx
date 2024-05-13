@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setActiveConnectDataSource } from '@/store/actions';
-import { DATASOURCEMAP } from '@/config/dataSource2';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';

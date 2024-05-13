@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DATASOURCEMAP } from '@/config/dataSource';
 import { setExSourcesAsync } from '@/store/actions';
 
 import type { UserState } from '@/types/store';

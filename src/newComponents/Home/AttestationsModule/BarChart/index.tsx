@@ -12,7 +12,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers';
 import { formatNumeral } from '@/utils/utils';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
-import { EASInfo, SUPPORRTEDQUERYCHAINMAP } from '@/config/chain';
+import { EASInfo } from '@/config/chain';
 import './index.scss';
 import type { UserState } from '@/types/store';
 

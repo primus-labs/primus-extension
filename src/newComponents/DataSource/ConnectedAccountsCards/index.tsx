@@ -2,7 +2,6 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
-import { DATASOURCEMAP } from '@/config/dataSource';
 import useDataSource from '@/hooks/useDataSource';
 import { getAccount } from '@/utils/utils';
 import type { Dispatch } from 'react';
