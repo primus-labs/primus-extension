@@ -64,9 +64,9 @@ const Cards: React.FC<PDropdownProps> = memo(
     const credentialsFromStore = useSelector(
       (state: UserState) => state.credentials
     );
-    
+
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
-    const theme = useSelector((state:UserState) => state.theme)
+    const theme = useSelector((state: UserState) => state.theme);
     // console.log('222credentialsFromStore', credentialsFromStore); //delete
     const attestationQueryStr = useSelector(
       (state: UserState) => state.attestationQueryStr
@@ -451,15 +451,17 @@ const Cards: React.FC<PDropdownProps> = memo(
                               </a>
                             ))}
                           </div>
-                          {!(i.event && i?.provided?.length > 0) && (
-                            <PButton
-                              icon={<i className="iconfont icon-Add"></i>}
-                              type="icon"
-                              onClick={() => {
-                                handleOnChain(i);
-                              }}
-                            />
-                          )}
+                          {i.type !== 'ASSETS_PROOF' &&
+                            i.type !== 'TOKEN_HOLDINGS' &&
+                            !(i.event && i?.provided?.length > 0) && (
+                              <PButton
+                                icon={<i className="iconfont icon-Add"></i>}
+                                type="icon"
+                                onClick={() => {
+                                  handleOnChain(i);
+                                }}
+                              />
+                            )}
                         </div>
                       </div>
                     </div>

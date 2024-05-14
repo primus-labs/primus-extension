@@ -86,10 +86,17 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
           i.attestationType = 'Assets Verification';
           i.verificationContent = 'Assets Proof';
           i.verificationValue = i.baseValue;
+
+          if (!i.provided || i?.provided?.length === 0) {
+            delete newCredentialObj[credentialKey];
+          }
         } else if (i.type === 'TOKEN_HOLDINGS') {
           i.attestationType = 'Assets Verification';
           i.verificationContent = 'Token Holding';
           i.verificationValue = i.holdingToken;
+          if (!i.provided || i?.provided?.length === 0) {
+            delete newCredentialObj[credentialKey];
+          }
         } else if (i.type === 'IDENTIFICATION_PROOF') {
           i.attestationType = 'Humanity Verification';
           const uiContent = i?.uiTemplate?.proofContent;
