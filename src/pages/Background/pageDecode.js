@@ -251,7 +251,7 @@ export const pageDecodeMsgListener = async (
       tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });
-      console.log('222pageDEcode tabCreatedByPado', tabCreatedByPado);
+      console.log('222pageDecode tabCreatedByPado', tabCreatedByPado);
       const injectFn = async () => {
         await chrome.scripting.executeScript({
           target: {

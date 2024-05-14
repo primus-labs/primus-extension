@@ -293,7 +293,7 @@ export const dataSourceWebMsgListener = async (
       tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });
-      console.log('222pageDEcode tabCreatedByPado', tabCreatedByPado);
+      console.log('222pageWeb tabCreatedByPado', tabCreatedByPado);
       const injectFn = async () => {
         await chrome.scripting.executeScript({
           target: {
