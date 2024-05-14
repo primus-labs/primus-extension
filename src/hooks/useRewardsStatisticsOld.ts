@@ -72,16 +72,16 @@ const useRewardsStatistics = function (eventFilter = '') {
     const fn = (eName) => {
       if (eventsLotteryResults[eName]) {
         const { result, iconUrl } = eventsLotteryResults[eName];
-        let title = '',
-          desc = '';
-        if (eName === LUCKYDRAWEVENTNAME) {
-          title = '1st Commemorative Badge';
-          desc = 'PADO event badge';
-        } else if (eName === SCROLLEVENTNAME) {
-          title = 'Scroll zkAttestation Medal';
-          desc = 'PADO event badge';
-        }
         if (result) {
+          let title = '',
+            desc = '';
+          if (eName === LUCKYDRAWEVENTNAME) {
+            title = '1st Commemorative Badge';
+            desc = 'PADO event badge';
+          } else if (eName === SCROLLEVENTNAME) {
+            title = 'Scroll zkAttestation Medal';
+            desc = 'PADO event badge';
+          }
           list.push({
             id: eName,
             img: iconUrl,

@@ -628,7 +628,6 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         let scrollE: any = [];
         let luckyDrawE: any = [];
         let brevisE: any = [];
-
         for (const eventIdItem of eventIdArr) {
           const res = await chrome.storage.local.get([eventIdItem]);
           if (res[eventIdItem]) {
@@ -672,13 +671,13 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           joinedEventIdArr.push(EARLYBIRDNFTEVENTNAME);
         }
         if (
-          eventsLotteryResults[SCROLLEVENTNAME] &&
-          eventsLotteryResults[LUCKYDRAWEVENTNAME]
+          eventsLotteryResults[SCROLLEVENTNAME]?.result &&
+          !joinedEventIdArr.includes(SCROLLEVENTNAME)
         ) {
           joinedEventIdArr.push(SCROLLEVENTNAME);
         }
         if (
-          eventsLotteryResults[LUCKYDRAWEVENTNAME] &&
+          eventsLotteryResults[LUCKYDRAWEVENTNAME]?.result &&
           !joinedEventIdArr.includes(LUCKYDRAWEVENTNAME)
         ) {
           joinedEventIdArr.push(LUCKYDRAWEVENTNAME);
