@@ -5,6 +5,8 @@ import PButton from '@/newComponents/PButton';
 import iconAlarm from '@/assets/newImg/home/iconAlarm.svg';
 import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.svg';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.png';
+import { useSelector } from 'react-redux';
+import { UserState } from '@/types/store';
 
 type mediaItemsMap = {
   [propName: string]: {
@@ -16,17 +18,7 @@ type mediaItemsMap = {
   };
 };
 const Overview = memo(() => {
-  const navigate = useNavigate();
-  const itemMap = {
-    x: {
-      id: 'x',
-      link: 'https://twitter.com/padolabs',
-    },
-    discord: {
-      id: 'discord',
-      link: 'https://discord.com/invite/YxJftNRxhh',
-    },
-  };
+  const sysConfig = useSelector((state: UserState) => state.sysConfig);
   const formatItemsMap = useMemo(() => {
     // const m: mediaItemsMap = Object.keys(itemMap).reduce((prev, curr) => {
     //   const { icon, name } = DATASOURCEMETAMAP[curr];
@@ -59,16 +51,17 @@ const Overview = memo(() => {
       },
       docs: {
         id: 'docs',
-        link: 'https://docs.padolabs.org/',
+        link: sysConfig.SUPPORT_DOCS_LINK ?? 'https://docs.padolabs.org/',
         // icon: iconAlarm,
         iconName: 'icon-iconAlarm',
         name: 'Support Docs',
       },
     };
     return m;
-  }, []);
+  }, [sysConfig]);
   const handleClick = useCallback((link) => {
     window.open(link);
+    
   }, []);
   return (
     <div className="homeSupport">

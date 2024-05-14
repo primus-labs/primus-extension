@@ -200,6 +200,7 @@ const reducer: any = function (state = initState, action: any) {
     case 'setOnChainAssetsSources':
       return { ...state, onChainAssetsSources: action.payload };
     case SETSYSCONFIG:
+      debugger
       return { ...state, sysConfig: action.payload };
     case 'setConnectWalletDialogVisible':
       return { ...state, connectWalletDialogVisible: action.payload };
