@@ -105,9 +105,9 @@ const DataSourceItem = memo(() => {
       </div>
       <div className="txtWrapper">
         <div className="descItems">
-          {metaInfo.points.map((p) => {
+          {metaInfo.points.map((p, index) => {
             return (
-              <div className="descItem">
+              <div className="descItem" key={index}>
                 <div className={`iconfont ${p.pointIconFont}`}></div>
                 <span>{p.pointDesc}</span>
               </div>

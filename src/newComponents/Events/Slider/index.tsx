@@ -98,15 +98,15 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
                   <div className="brief">
                     <h1>{i.title}</h1>
                     <h3>
-                      {i.desc.map((d) => {
-                        return <p>{d}</p>;
+                      {i.desc.map((d, index) => {
+                        return <p key={index}>{d}</p>;
                       })}
                     </h3>
                   </div>
                   <div className="desc">
-                    {i.points.map((p) => {
+                    {i.points.map((p, index) => {
                       return (
-                        <div className="left">
+                        <div className="left" key={index}>
                           <div className={`iconfont ${p.pointIconFont}`}></div>
                           <span>{p.pointDesc}</span>
                         </div>

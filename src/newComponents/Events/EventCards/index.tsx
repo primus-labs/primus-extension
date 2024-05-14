@@ -81,9 +81,9 @@ const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
               <div className="txtWrapper">
                 <div className="title">{i.title}</div>
                 <div className="descItems">
-                  {i.points.map((p) => {
+                  {i.points.map((p, index) => {
                     return (
-                      <div className="descItem">
+                      <div className="descItem" key={index}>
                         <div className={`iconfont ${p.pointIconFont}`}></div>
                         <span>{p.pointDesc}</span>
                       </div>

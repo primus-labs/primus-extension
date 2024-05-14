@@ -128,7 +128,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose }) => {
                 <tbody>
                   {achievements.map((item: AchievementRecords, index) => {
                     return (
-                      <tr>
+                      <tr key={index}>
                         <td style={{ width: '64px', textAlign: 'left' }}>
                           +{item.score}
                         </td>

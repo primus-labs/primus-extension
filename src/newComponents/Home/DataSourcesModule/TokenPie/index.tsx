@@ -37,9 +37,9 @@ const TokenPie: FC = memo(() => {
   return (
     <div className="tokenPie">
       <ul className={`tokenItems tokenItems${showTokenList.length}`}>
-        {showTokenList.map((i) => {
+        {showTokenList.map((i, index) => {
           return (
-            <li className="tokenItem">
+            <li className="tokenItem" key={index}>
               <div className="symbol">
                 {i.symbol !== 'Other' && <img src={tokenIconFn(i)} alt="" />}
                 <span>{i.symbol.split('---')[0]}</span>
