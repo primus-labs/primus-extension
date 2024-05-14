@@ -7,7 +7,7 @@ import PBack from '@/components/PBack';
 import './index.scss';
 import iconGoogle from '@/assets/img/iconGoogle.svg';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.png';
+import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
 
 import type { UserState } from '@/types/store';

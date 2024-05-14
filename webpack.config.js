@@ -378,7 +378,7 @@ var options = {
           force: true,
         },
         {
-          from: 'src/assets/img/iconDataSourceX.png',
+          from: 'src/assets/img/iconDataSourceX.svg',
           to: path.join(__dirname, 'build'),
           force: true,
         },

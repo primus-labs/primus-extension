@@ -17,7 +17,7 @@ import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
 import iconSuc from '@/assets/img/iconSuc.svg';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.png';
+import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconQuestN from '@/assets/img/events/iconQuestN.svg';
 import { queryEventDetail } from '@/services/api/event';

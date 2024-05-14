@@ -179,7 +179,7 @@ function PadoCard() {
     binance: chrome.runtime.getURL(`iconDataSourceBinance.svg`),
     coinbase: chrome.runtime.getURL(`iconDataSourceCoinbase.png`),
     okx: chrome.runtime.getURL(`iconDataSourceOKX.svg`),
-    x: chrome.runtime.getURL(`iconDataSourceX.png`),
+    x: chrome.runtime.getURL(`iconDataSourceX.svg`),
     tiktok: chrome.runtime.getURL(`iconDataSourceTikTok.svg`),
     bitget: chrome.runtime.getURL(`iconDataSourceBitget.svg`),
     gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),

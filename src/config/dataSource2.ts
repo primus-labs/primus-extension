@@ -1,5 +1,5 @@
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.png';
+import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.svg';
 import iconDataSourceOKX from '@/assets/img/iconDataSourceOKX.svg';
 import iconDataSourceKucoin from '@/assets/img/iconDataSourceKucoin.svg';
 import iconDataSourceCoinbase from '@/assets/img/iconDataSourceCoinbase.png';
