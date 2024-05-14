@@ -25,17 +25,19 @@ const useMsgs = function useMsgs() {
     [msgs, dispatch, pathname]
   );
   const deleteErrorMsgs = useCallback(async () => {
-    const { msgs: lastMsgsStr } = await chrome.storage.local.get(['msgs']);
-    if (lastMsgsStr) {
-      const lastMsgs = JSON.parse(lastMsgsStr);
-      const toBeDeleteIds = Object.keys(lastMsgs).filter(
-        (i) => lastMsgs[i].type === 'error' || lastMsgs[i].type === 'warn'
-      );
-      toBeDeleteIds.forEach((i) => {
-        delete lastMsgs[i];
-      });
-      dispatch(setMsgsAsync(lastMsgs));
-    }
+    // const { msgs: lastMsgsStr } = await chrome.storage.local.get(['msgs']);
+    // if (lastMsgsStr) {
+    //   const lastMsgs = JSON.parse(lastMsgsStr);
+    //   const toBeDeleteIds = Object.keys(lastMsgs).filter(
+    //     (i) => lastMsgs[i].type === 'error' || lastMsgs[i].type === 'warn'
+    //   );
+    //   toBeDeleteIds.forEach((i) => {
+    //     delete lastMsgs[i];
+    //   });
+    //   dispatch(setMsgsAsync(lastMsgs));
+    // }
+    await chrome.storage.local.remove(['msgs']);
+    dispatch(setMsgsAsync({}));
   }, [msgs, dispatch]);
 
   const addMsg = useCallback(

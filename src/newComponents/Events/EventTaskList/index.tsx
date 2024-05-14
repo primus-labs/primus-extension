@@ -448,7 +448,7 @@ const DataSourceItem = memo(() => {
         signature: activeCred.signature,
         metamaskAddress: connectedWallet?.address,
       };
-      const { rc, result, msg } = await getEventSignature(requestParams);
+      const { rc, result, msg, mc } = await getEventSignature(requestParams);
       if (rc === 0) {
         eventSingnature = result.signature;
         const upChainParams = {
@@ -492,7 +492,15 @@ const DataSourceItem = memo(() => {
         };
         eventReport(eventInfo);
       } else {
-        alert(msg);
+        if (mc === 'NFT_001') {
+          addMsg({
+            type: 'info',
+            title: 'Cannot claim',
+            desc: 'This address has claimed the Early Bird NFT already.',
+          });
+        } else {
+          alert(msg);
+        }
         setClaiming(false);
       }
     } catch {
