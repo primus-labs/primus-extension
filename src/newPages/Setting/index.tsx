@@ -195,7 +195,7 @@ const Setting = memo(() => {
           <div className={'currencyDiv'}>
             <div className={'descDiv'}>
               <p className={'title'}>Account</p>
-              <p className={'content'}>Bounded wallet address</p>
+              <p className={'content'}>Bound wallet address</p>
             </div>
             <div className={'selectDiv'}>
               <div className={'textDiv'}>{mainWallet}</div>
