@@ -47,14 +47,14 @@ const lineaQsMap = {
     question: 'Does the connected wallet address matter?',
     answer:
       'The wallet address connected in the top right corner serves two key functions: it records your task complete process and determines your eligibility for events checking. Changing the connected wallet address will also impact the tasks process displayed in the task list. Make sure you connect the same wallet address here and on the Linea event page.',
-    expand: true,
+    // expand: true,
   },
   2: {
     id: 2,
     question: 'What should I do if the attestation process fails? ',
     answer:
       'As the attestation is under MPC-TLS process, it often depends on your internet condition. A quick.solution is to connect with a new Wifi network/connection, or change to a different VPN node, if possible. If you get an error message with an error code, feel free to contact us in the Discord #help channel.',
-    expand: true,
+    // expand: true,
   },
   3: {
     id: 3,
@@ -79,21 +79,21 @@ const lineaQsMap = {
         </ul>
       </>
     ),
-    expand: true,
+    // expand: true,
   },
   4: {
     id: 4,
     question: 'Can I join this event with a different wallet address? ',
     answer:
       'No, you cannot use another wallet address to join this event. As Linea requires an uniqueness Binance account binding requirement, only one Binance account can bind to one wallet address during the attestation process. If you have already complete this event using one wallet address, you will see “Not meet the uniqueness requirement” error message while using a different wallet address to join this event again.',
-    expand: true,
+    // expand: true,
   },
   5: {
     id: 5,
     question: 'How are PADO points for this event counted?',
     answer:
       'For PADO points, it is counted based on your PADO extension account, which means PADO points will not be double counted when you switch wallet address.',
-    expand: true,
+    // expand: true,
   },
 };
 const earluBirdQsMap = {
@@ -102,21 +102,21 @@ const earluBirdQsMap = {
     question: 'Can I join this event with a different wallet address? ',
     answer:
       'No, the Early Bird NFT event is only available to early active users, based on the PADO extension account and the wallet address that participated in the event. If you have already claimed an NFT through your current PADO extension, you will not be able to claim again by connecting another wallet through the top right corner.',
-    expand: true,
+    // expand: true,
   },
   2: {
     id: 2,
     question: 'What should I do if the attestation process fails? ',
     answer:
       'As the attestation is under MPC-TLS process, it often depends on your internet condition. A quick.solution is to connect with a new Wifi network/connection, or change to a different VPN node, if possible. If you get an error message with an error code, feel free to contact us in the Discord #help channel.',
-    expand: true,
+    // expand: true,
   },
   3: {
     id: 3,
     question: 'How are PADO points for this event counted?',
     answer:
       'For PADO points, it is counted based on your PADO extension account, which means PADO points will not be double counted when you switch wallet address.',
-    expand: true,
+    // expand: true,
   },
 };
 const ethSignQsMap = {
@@ -125,28 +125,28 @@ const ethSignQsMap = {
     question: 'Does the connected wallet address matter? ',
     answer:
       'The wallet address connected in the top right corner serves two key functions: it records your task complete process and determines your eligibility for events checking. Changing the connected wallet address will also impact the tasks process displayed in the task list.',
-    expand: true,
+    // expand: true,
   },
   2: {
     id: 2,
     question: 'What should I do if the attestation process fails?',
     answer:
       'As the attestation is under MPC-TLS process, it often depends on your internet condition. A quick.solution is to connect with a new Wifi network/connection, or change to a different VPN node, if possible. If you get an error message with an error code, feel free to contact us in the Discord #help channel.',
-    expand: true,
+    // expand: true,
   },
   3: {
     id: 3,
     question: 'Can I join this event with a different wallet address?',
     answer:
       'Yes, you can join this event with different wallet address. When you change the connected wallet above the task list, the task status will reset and you can go through it with the newly connected wallet address.',
-    expand: true,
+    // expand: true,
   },
   4: {
     id: 4,
     question: 'How are PADO points for this event counted?',
     answer:
       'For PADO points, it is counted based on your PADO extension account, which means PADO points will not be double counted when you switch wallet address.',
-    expand: true,
+    // expand: true,
   },
 };
 const eventQsMap = {
