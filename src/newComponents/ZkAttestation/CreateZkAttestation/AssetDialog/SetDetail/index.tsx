@@ -232,13 +232,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (loading) {
         return;
       }
+      deleteErrorMsgs();
       if (formatBtnTxt === 'OK') {
         dispatch(setAttestLoading(2));
         dispatch(setActiveAttestation(undefined));
       } else {
-        if (formatBtnTxt === 'Try Again') {
-          deleteErrorMsgs();
-        }
         //different
         if (
           activeDataSouceUserInfo &&

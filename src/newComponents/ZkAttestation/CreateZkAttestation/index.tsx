@@ -8,6 +8,7 @@ import AssetDialog from './AssetDialog';
 import HumanityDialog from './HumanityDialog';
 import OnChainDialog from './OnChainDialog';
 import SocialDialog from './SocialDialog';
+import useMsgs from '@/hooks/useMsgs';
 
 interface PBackProps {
   type: string;
@@ -17,6 +18,7 @@ interface PBackProps {
 }
 const PClose: React.FC<PBackProps> = memo(
   ({ type, onClose, onSubmit, presets }) => {
+    const { deleteErrorMsgs } = useMsgs();
     const dispatch: Dispatch<any> = useDispatch();
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
@@ -26,6 +28,7 @@ const PClose: React.FC<PBackProps> = memo(
     const handleClose = useCallback(() => {
       // dispatch(setAttestLoading(0));
       // dispatch(setActiveAttestation({ loading: 0 }));
+      deleteErrorMsgs();
       onClose();
     }, [onClose]);
     useEffect(() => {

@@ -135,14 +135,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (pswForm?.verificationContent === 'X Followers') {
         sessionStorage.setItem('xFollowerCount', pswForm.verificationValue);
       }
-
+      deleteErrorMsgs();
       if (formatBtnTxt === 'OK') {
         dispatch(setAttestLoading(2));
         dispatch(setActiveAttestation(undefined));
       } else {
-        if (formatBtnTxt === 'Try Again') {
-          deleteErrorMsgs();
-        }
         //different
         onSubmit(pswForm);
       }
