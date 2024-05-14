@@ -19,17 +19,12 @@ type ConnectedWallet = {
   address: string;
   provider: any;
   name: string;
-<<<<<<< HEAD
-=======
   id: string;
->>>>>>> feature/newui
 };
 type rewardsDialogVisibleType = {
   visible: boolean;
   tab?: string;
 };
-<<<<<<< HEAD
-=======
 
 type loadingStatus = 0 | 1 | 2; // 0: unstart 1:start loading 2:end
 type attestationLoadingStatus = 0 | 1 | 2 | 3; // 0: unstart 1:start loading 2:suc 3: fail
@@ -89,7 +84,6 @@ type SourceUpdateInfo = {
   pollingFlag: boolean;
 };
 
->>>>>>> feature/newui
 export type UserState = {
   padoServicePort: chrome.runtime.Port;
   sysConfig: SysConfigInfo;
