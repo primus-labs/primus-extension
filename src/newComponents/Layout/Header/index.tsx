@@ -17,7 +17,7 @@ const Nav: React.FC = memo(({}) => {
   const [ttt, setTtt] = useState(() => {
     return pathname === '/events/rewards' ? '2' : '1';
   });
-  const menuList = useMemo(() => {
+  const tabList = useMemo(() => {
     const l = tList.map((i) => {
       const purePathName = i.link.split('?')[0];
       if (purePathName === '/events/rewards') {
@@ -51,7 +51,7 @@ const Nav: React.FC = memo(({}) => {
           search
         ) ? (
           <PPTabs
-            list={menuList}
+            list={tabList}
             onChange={(ppp) => {
               setTtt(ppp);
             }}
