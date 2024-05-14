@@ -1,0 +1,130 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+
+.pDialog2.setPwdDialog {
+  color: var(--text-tokens-text-primary);
+  main {
+    .detailWrapper {
+      @include fcss;
+      .step {
+        width: 100%;
+        &:first-child {
+          padding-top: 0;
+        }
+        &:last-child {
+          border-bottom: 0;
+          padding-bottom: 0;
+        }
+        &.done {
+          @include frsc;
+          gap: var(--spacing-12);
+          .iconDone {
+            width: var(--spacing-24);
+          }
+          .txt {
+            @include BodyBody100Semibold;
+          }
+        }
+        @include fcss;
+        gap: var(--spacing-16);
+        padding: var(--spacing-24) 0;
+        border-bottom: 1px solid var(--border-tokens-border-primary);
+        .tit {
+          @include frsc;
+          gap: var(--spacing-12);
+          @include BodyBody100Semibold;
+          .order {
+            @include frcc;
+            width: var(--spacing-24);
+            height: var(--spacing-24);
+            border-radius: 50%;
+            background: var(--layer-tokens-layer-02);
+          }
+        }
+        .con {
+          @include BodyBody100;
+          color: var(--text-tokens-text-secondary);
+        }
+      }
+    }
+    .formWrapper.pswForm {
+      .formItem {
+        @include fcss;
+        gap: var(--spacing-4);
+        .validateWrapper {
+          @include fcss;
+          @include BodyBody300;
+          gap: var(--spacing-4);
+          .descTitle {
+            color: var(--text-tokens-text-secondary);
+          }
+          ul.descItems {
+            @include fcss;
+            gap: var(--spacing-4);
+            .descItem {
+              @include frsc;
+              gap: var(--spacing-8);
+              &.legal,
+              &.illegal {
+                .iconfont {
+                  font-size: var(--spacing-12);
+                }
+              }
+              &.legal {
+                color: var(--text-tokens-text-correct);
+              }
+              &.illegal {
+                color: var(--text-tokens-text-error);
+              }
+            }
+          }
+        }
+      }
+    }
+    // .formWrapper {
+    //   width: 100%;
+    //   .validateWrapper {
+    //     @extend .fcss;
+    //     @extend .Text2;
+    //     gap: 2px;
+    //     padding: var(--spacing-8) 0 var(--spacing-24, 24px) 0;
+    //     color: var(--Text-hint, #7b7f80);
+    //     ul.descItems {
+    //       @extend .fcss;
+    //       gap: 2px;
+    //       .descItem {
+    //         @extend .frsc;
+    //         text-indent: 24px;
+    //         position: relative;
+
+    //         &.checked {
+    //           color: var(--Text-headline, #0a1214);
+    //           text-indent: 0;
+    //           gap: var(--spacing-8, 8px);
+    //           .iconfont {
+    //             font-size: 16px;
+    //           }
+    //           // &::before {
+    //           //   background: url(../../../assets/img/iconChecked.svg);
+    //           //   background-size: 100% 100%;
+    //           //   width: 18px;
+    //           //   height: 18px;
+    //           //   position: absolute;
+    //           //   content: '';
+    //           //   top: 50%;
+    //           //   left: 0;
+    //           //   transform: translateY(-50%);
+    //           // }
+    //         }
+    //       }
+    //     }
+    //   }
+    //   .errorTip {
+    //     padding-top: 8px;
+    //     @extend .Text2;
+    //     color: var(--Warning, #f42d2d);
+    //   }
+    // }
+  }
+}

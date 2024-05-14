@@ -35,7 +35,7 @@ export type SocialDataSourceData = {
 };
 export type ExchangeMeta = {
   name: string;
-  type: 'Social' | 'Assets' | 'Identity';
+  type: 'Social' | 'Assets' | 'Identity' | 'Humanity';
   icon: any;
   iconWithCircle?: any;
   requirePassphase?: boolean;
@@ -128,3 +128,7 @@ export type SourceDataList = (ExData | SocialData | KYCData | onChainData)[];
 
 export type AssetData = onChainAssetsData | exData;
 export type AssetDataList = AssetData[];
+
+export type DataSourceMapType = {
+  [propName: string]: DataSourceItemType;
+};

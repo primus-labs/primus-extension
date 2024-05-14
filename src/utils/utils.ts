@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
 import { PADOSERVERURL } from '@/config/envConstants';
+import { BIGZERO } from '@/config/constants';
+import type { AssetsMap } from '@/types/dataSource';
 
 var ethereumjsUtil = require('ethereumjs-util');
 
@@ -37,8 +39,8 @@ type FormatAddressType = (
 ) => string;
 export const formatAddress: FormatAddressType = function (
   str,
-  startNum = 6,
-  endNum = 4,
+  startNum = 7,
+  endNum = 5,
   sepStr = '...'
 ) {
   const endIdx = -1 * endNum;
@@ -126,16 +128,19 @@ type NumeralParams = {
   decimalPlaces?: number;
   withThousandSepartor?: boolean;
   transferUnit?: boolean;
+  transferUnitThreshold?: number;
 };
 export function formatNumeral(num: string | number, params?: NumeralParams) {
   const {
     decimalPlaces = 2,
     withThousandSepartor = true,
     transferUnit = false,
+    transferUnitThreshold = 0,
   } = params ?? {
     decimalPlaces: 2,
     withThousandSepartor: true,
     transferUnit: false,
+    transferUnitThreshold: 0,
   };
   num = new BigNumber(num).toFixed(6); // fix: < 0.0000001 numeral error
   let formatReg = '0';
@@ -143,10 +148,17 @@ export function formatNumeral(num: string | number, params?: NumeralParams) {
     formatReg = '0,0';
   }
   if (decimalPlaces) {
-    formatReg += `.${'0'.repeat(decimalPlaces)}`;
+    if (
+      !transferUnitThreshold ||
+      (transferUnitThreshold && new BigNumber(num).gte(transferUnitThreshold))
+    ) {
+      formatReg += `.${'0'.repeat(decimalPlaces)}`;
+    }
   }
   if (transferUnit) {
-    formatReg += `a`;
+    if (new BigNumber(num).gte(transferUnitThreshold)) {
+      formatReg += `a`;
+    }
   }
   return numeral(num).format(formatReg).toUpperCase();
 }
@@ -155,7 +167,7 @@ export function postMsg(port: chrome.runtime.Port, msg: any) {
   try {
     port.postMessage(msg);
   } catch (error: any) {
-    console.log('postMsg error: ', error)
+    console.log('postMsg error: ', error);
     // throw new Error(error);
   }
 }
@@ -174,7 +186,7 @@ export function strToHexSha256(str: string) {
 }
 export function base64ToHex(base64Str: string) {
   const value = Buffer.from(base64Str, 'base64');
-  const returnValue = "0x" + value.toString();
+  const returnValue = '0x' + value.toString();
   return returnValue;
 }
 
@@ -184,7 +196,7 @@ type AuthParams = {
   token: string;
 };
 export function getAuthUrl(authParams: AuthParams) {
-  const { source, state,token } = authParams;
+  const { source, state, token } = authParams;
   return `${PADOSERVERURL}/oauth2/render/${source}?state=${state}&pado-token=${token}`;
 }
 
@@ -298,7 +310,7 @@ export const getStatisticalData = (res: any) => {
 
     // native token
     const curChainNativeToken: any = nativeToken.find(
-      (i:any) => i.chain === curChainName
+      (i: any) => i.chain === curChainName
     );
     const { balance, currentUsdPrice, currency } = curChainNativeToken;
     const curChainNativeTokenAmount = div(parseInt(balance), Math.pow(10, 18));
@@ -364,29 +376,75 @@ export const getStatisticalData = (res: any) => {
 // v1>v2 => 1
 // v1=v2 => 0
 // v1< v2 => -1
-export function compareVersions(v1:string, v2:string) {
+export function compareVersions(v1: string, v2: string) {
   var v1parts = v1.split('.');
   var v2parts = v2.split('.');
-  
+
   for (var i = 0; i < v1parts.length; ++i) {
     if (v2parts.length === i) {
       return 1;
     }
-    
+
     if (v1parts[i] === v2parts[i]) {
       continue;
-    }
-    else if (v1parts[i] > v2parts[i]) {
+    } else if (v1parts[i] > v2parts[i]) {
       return 1;
-    }
-    else {
+    } else {
       return -1;
     }
   }
-  
+
   if (v1parts.length !== v2parts.length) {
     return -1;
   }
-  
+
   return 0;
 }
+
+export const getTotalBalFromAssetsMap = (targetMap: AssetsMap) => {
+  const totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
+    const obj = targetMap[curr as keyof typeof targetMap];
+    const curValue = obj.value;
+    prev = add(Number(prev), Number(curValue));
+    return prev;
+  }, BIGZERO);
+  const totalBalance = totalAccBal.toFixed();
+  return totalBalance;
+};
+export const getTotalBalFromNumObjAPriceObj = (numObj, priceObj) => {
+  const totalAccBal = Object.keys(numObj).reduce((prev, curr) => {
+    const num = numObj[curr as keyof typeof numObj];
+    const price = priceObj[curr as keyof typeof priceObj];
+    const curValue = mul(num, price).toFixed();
+    prev = add(Number(prev), Number(curValue));
+    return prev;
+  }, BIGZERO);
+  const totalBalance = totalAccBal.toFixed();
+  return totalBalance;
+};
+
+export const getAccount = (metaInfo: any, useInfo: any) => {
+  let account = '';
+  const lowerCaseDataSourceName = metaInfo.id;
+  if (metaInfo.connectType === 'Web') {
+    let userName = useInfo?.userInfo?.userName;
+    if (userName) {
+      account = userName;
+    } else {
+      account = '';
+    }
+  } else if (metaInfo.connectType === 'API') {
+    account = useInfo.apiKey;
+  } else if (metaInfo.connectType === 'Auth') {
+    if (['discord'].includes(lowerCaseDataSourceName)) {
+      account = useInfo?.userName;
+    }
+    if (lowerCaseDataSourceName === 'google') {
+      account = useInfo?.email;
+    }
+    if (['x', 'github'].includes(lowerCaseDataSourceName)) {
+      account = useInfo?.screenName;
+    }
+  }
+  return account;
+};

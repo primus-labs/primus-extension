@@ -4,6 +4,9 @@ import store from '@/store';
 import {
   setConnectWalletActionAsync,
   connectWalletAsync,
+  setActiveConnectWallet,
+  setActiveOnChain,
+  setActiveConnectDataSource,
 } from '@/store/actions';
 var provider;
 
@@ -24,9 +27,9 @@ export const connectWallet = async (targetNetwork) => {
       provider.request({ method: 'eth_chainId' }),
     ]);
 
-    if (targetNetwork) {
-      await switchChain(chainId, targetNetwork);
-    }
+    // if (targetNetwork) {
+    await switchChain();
+    // }
     subscribeToEvents();
     return [accounts, chainId, provider];
   } catch (e) {
@@ -41,10 +44,22 @@ export const connectWallet = async (targetNetwork) => {
     }
   }
 };
-export const switchChain = async (connectedChainId, targetNetwork, p) => {
-  provider = p ?? provider;
-  const { chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
-    targetNetwork;
+export const switchChain = async () => {
+  // provider = p ?? provider;
+  const connectedChainId = await provider.request({ method: 'eth_chainId' });
+
+  let chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency;
+  const tNetwork = store.getState().activeConnectWallet.network;
+  if (!tNetwork) {
+    return;
+  }
+  if (tNetwork && parseInt(tNetwork.chainId) === parseInt(connectedChainId)) {
+    store.dispatch(setActiveConnectWallet({ network: undefined }));
+  }
+
+  ({ chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
+    tNetwork);
+
   const obj = {
     chainId,
     chainName,
@@ -53,7 +68,7 @@ export const switchChain = async (connectedChainId, targetNetwork, p) => {
     nativeCurrency,
   };
 
-  if (connectedChainId === obj.chainId) {
+  if (parseInt(connectedChainId) === parseInt(obj.chainId)) {
     console.log(`The current chain is already:${obj.chainName}`);
     return;
   } else {
@@ -77,11 +92,18 @@ export const switchChain = async (connectedChainId, targetNetwork, p) => {
           params: [obj],
         });
       } catch (addError) {
+        store.dispatch(setActiveConnectWallet({ network: undefined }));
+        store.dispatch(setActiveOnChain({ loading: 0 }));
+
         console.error(addError);
       }
     } else if (err.code === 4001) {
+      store.dispatch(setActiveConnectWallet({ network: undefined }));
+      store.dispatch(setActiveOnChain({ loading: 0 }));
       throw new Error(err.code);
     } else {
+      store.dispatch(setActiveConnectWallet({ network: undefined }));
+      store.dispatch(setActiveOnChain({ loading: 0 }));
     }
     return true;
   }
@@ -99,7 +121,7 @@ export const requestSign = async (
   try {
     if (walletName === 'walletconnect') {
       const provider = new ethers.providers.Web3Provider(walletProvider);
-      const signer = provider.getSigner();  
+      const signer = provider.getSigner();
       const typedData = {
         types: {
           // EIP712Domain: [{ name: 'name', type: 'string' }],
@@ -166,11 +188,25 @@ const subscribeToEvents = () => {
 };
 
 const handleChainChanged = (chainId) => {
-  console.log('metamask chainId changes: ', chainId, provider);
+  const requiredChain = store.getState().activeConnectWallet.network;
+  console.log(
+    'metamask chainId changes: ',
+    chainId,
+    provider,
+    'switch to chain:',
+    requiredChain
+  );
   const addr = provider.selectedAddress;
-  const name = store.getState().connectedWallet?.name;
+  const curConnectedWallet = store.getState().connectedWallet;
+  const name = curConnectedWallet?.name;
+  const id = curConnectedWallet?.id;
+  if (requiredChain && parseInt(requiredChain.chainId) === parseInt(chainId)) {
+    store.dispatch(setActiveConnectWallet({ network: undefined }));
+  }
+
   store.dispatch(
     setConnectWalletActionAsync({
+      id,
       name,
       address: addr,
       provider,
@@ -187,9 +223,10 @@ const handleAccountsChanged = async (accounts) => {
     // await store.dispatch(setConnectWalletActionAsync(undefined));
     store.dispatch(
       connectWalletAsync({
+        id: 'metamask',
         address: addr,
         provider,
-        name: 'metamask'
+        name: 'metamask',
       })
     );
   } else {
@@ -216,6 +253,11 @@ export const switchAccount = async (provider) => {
       console.log('eth_accounts permission successfully requested!');
     }
   } catch (error) {
+    store.dispatch(
+      setActiveConnectDataSource({
+        loading: 3,
+      })
+    );
     if (error.code === 4001) {
       // EIP-1193 userRejectedRequest error
       console.log('Permissions needed to continue.');

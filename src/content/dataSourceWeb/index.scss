@@ -1,0 +1,157 @@
+@import '@/assets/css/global.css';
+@import '@/assets/newCss/global.css';
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#pado-extension-content {
+  ul,
+  li,
+  p {
+    margin: 0;
+    padding: 0;
+  }
+  // --text-tokens-text-tertiary: #6f6f6f;
+  // --text-tokens-text-primary: #161616;
+  @include frcc;
+  display: flex;
+  position: fixed;
+  z-index: 1000;
+  bottom: 30px;
+  right: 35px;
+  box-sizing: border-box;
+  .pado-extension-card {
+    @include fcss;
+    @include pCard;
+    @include card-xs_shadow;
+    padding: var(--spacing-32, 32px) var(--spacing-24, 24px)
+      var(--spacing-24, 24px);
+    width: 384px;
+    // height: 216px;
+    border: 0;
+    box-sizing: border-box;
+    &.initialized {
+      padding-top: var(--spacing-32, 32px);
+      .pado-extenstion-center {
+        padding: var(--spacing-24, 24px) 0;
+      }
+    }
+    &.verifying {
+      padding-top: var(--spacing-32, 32px);
+      .pado-extenstion-center {
+        padding: var(--spacing-24, 24px) 0;
+      }
+    }
+    &.result {
+      // padding-top: var(--spacing-24, 24px);
+      .pado-extenstion-center {
+        padding: var(--spacing-24, 24px) 0;
+      }
+    }
+    .pado-extension-header {
+      width: 100%;
+      @include frcc;
+      gap: var(--spacing-8, 8px);
+      .iconPado,
+      .iconSource {
+        width: var(--spacing-32, 32px);
+      }
+      .iconLink {
+        width: var(--spacing-16, 16px);
+      }
+    }
+    .pado-extenstion-center {
+      width: 100%;
+      @include fccs;
+      gap: var(--spacing-16, 16px);
+      color: var(--text-tokens-text-primary);
+      @include BodyBody100;
+      .pado-extension-center-title {
+        width: 100%;
+        @include HeadlineH2;
+        text-align: center;
+      }
+      .descWrapper {
+        width: 100%;
+        &.initialized {
+          @include fcss;
+          gap: var(--spacing-8, 8px);
+          .descItem {
+            width: 100%;
+            @include frbc;
+            .label {
+              color: var(--text-tokens-text-tertiary);
+            }
+          }
+        }
+        &.verifying {
+          @include frcc;
+          color: var(--text-tokens-text-tertiary);
+        }
+        &.result {
+          @include fccs;
+          gap: var(--spacing-8, 8px);
+          &.suc {
+            .label {
+              color: var(--text-tokens-text-correct, #24a148);
+            }
+          }
+          &.fail {
+            .label {
+              color: var(--text-tokens-text-error, #fa4d56);
+            }
+          }
+          .label {
+            width: 100%;
+            @include frcc;
+            gap: var(--spacing-4, 4px);
+            > img {
+              width: var(--spacing-16, 16px);
+            }
+          }
+          .value {
+            text-align: center;
+            width: 100%;
+            color: var(--text-tokens-text-tertiary, #6f6f6f);
+          }
+        }
+      }
+    }
+    .pado-extension-footer {
+      width: 100%;
+      @include frsc;
+      justify-content: flex-end;
+      &.initialized {
+        gap: var(--spacing-16, 16px);
+      }
+      &.verifying {
+        gap: var(--spacing-16, 16px);
+        .confirmBtn {
+          padding: 7px 32px;
+        }
+      }
+      .cancelBtn {
+      }
+      .confirmBtn {
+        height: 32px;
+        .loading-spinner {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          border: 2px solid var(--icon-tokens-icon-primary, #161616);
+          border-top: 2px solid var(--layer-tokens-layer-primary, #fff);
+          animation: spin 1s linear infinite;
+        }
+      }
+    }
+  }
+}

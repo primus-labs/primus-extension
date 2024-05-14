@@ -1,0 +1,52 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.pBar2Wrapper {
+  width: 100%;
+  height: 236px;
+  .pBar {
+    height: 236px !important;
+  }
+}
+.tooltipWrapper {
+  width: 250px;
+  padding: var(--spacing-24) var(--spacing-16);
+  gap: var(--spacing-8);
+  @include fcss;
+  background: var(--layer-tokens-layer-03);
+  border-radius: var(--spacing-4);
+  .tooltipTitle {
+    width: 100%;
+    @include frsc;
+    gap: var(--spacing-4);
+    @include BodyBody100Semibold;
+    color: #f3f3f3;
+    > img {
+      width: var(--spacing-16);
+      border-radius: 50%;
+    }
+  }
+  .tooltipDesc {
+    @include BodyBody100;
+  }
+  .tokenUl {
+    width: 100%;
+    @include fcss;
+    gap: var(--spacing-8);
+    li {
+      width: 100%;
+      @include frbc;
+      @include BodyBody100;
+      color: var(--text-tokens-text-inverse);
+      .left {
+        @include frsc;
+        gap: var(--spacing-4);
+        > img {
+          width: var(--spacing-16);
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+}

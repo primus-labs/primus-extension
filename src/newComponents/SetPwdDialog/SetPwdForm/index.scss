@@ -1,0 +1,41 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+
+.pFormWrapper.pswForm {
+  .formItem {
+    @include fcss;
+    gap: var(--spacing-4);
+    .validateWrapper {
+      @include fcss;
+      @include BodyBody300;
+      gap: var(--spacing-4);
+      .descTitle {
+        color: var(--text-tokens-text-secondary);
+      }
+      ul.descItems {
+        @include fcss;
+        gap: var(--spacing-4);
+        .descItem {
+          @include frsc;
+          gap: var(--spacing-8);
+          &.legal,
+          &.illegal {
+            .iconfont {
+              font-size: var(--spacing-12);
+            }
+          }
+          &.legal {
+            color: var(--text-tokens-text-correct);
+          }
+          &.illegal {
+            color: var(--text-tokens-text-error);
+          }
+        }
+      }
+    }
+  }
+  .confirmBtn{
+    margin-top: var(--spacing-8);
+  }
+}

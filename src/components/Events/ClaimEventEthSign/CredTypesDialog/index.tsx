@@ -3,7 +3,7 @@ import PMask from '@/components/PMask';
 import PSelect from '@/components/PSelect';
 
 import './index.scss';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
+import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.svg';
 import PButton from '@/components/PButton';
 interface CredTypesDialogProps {
   onSubmit: (attetsationId: string) => void;

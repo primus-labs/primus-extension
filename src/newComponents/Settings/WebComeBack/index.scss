@@ -1,0 +1,68 @@
+@import '@/assets/newCss/flex';
+@import '@/assets/newCss/font';
+@import '@/assets/newCss/dialog';
+.backMask{
+  backdrop-filter: blur(10px);
+}
+.pDialog2.inputPassword {
+  color: var(--text-tokens-text-primary);
+
+  main {
+    .detailWrapper {
+      @include fcss;
+
+      .step {
+        width: 100%;
+
+        &:first-child {
+          padding-top: 0;
+        }
+
+        &:last-child {
+          border-bottom: 0;
+          padding-bottom: 0;
+        }
+
+        &.done {
+          @include frsc;
+          gap: var(--spacing-12);
+
+          .iconDone {
+            width: var(--spacing-24);
+          }
+
+          .txt {
+            @include BodyBody100Semibold;
+          }
+        }
+
+        @include fcss;
+        gap: var(--spacing-16);
+        padding: var(--spacing-24) 0;
+        border-bottom: 1px solid var(--border-tokens-border-primary);
+
+        .tit {
+          @include frsc;
+          gap: var(--spacing-12);
+          @include BodyBody100Semibold;
+
+          .order {
+            @include frcc;
+            width: var(--spacing-24);
+            height: var(--spacing-24);
+            border-radius: 50%;
+            background: var(--layer-tokens-layer-02);
+          }
+        }
+
+        .con {
+          @include BodyBody100;
+          color: var(--text-tokens-text-secondary);
+        }
+      }
+    }
+  }
+  .confirmBtn{
+    margin-top: var(--spacing-8);
+  }
+}

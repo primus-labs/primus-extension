@@ -7,7 +7,7 @@ Module.onRuntimeInitialized = async () => {
 };
 
 var AlgorithmInited = false;
-var ClientVersion = "1.1.0";
+var ClientVersion = "1.1.1";
 
 function init() {
     console.log("init");

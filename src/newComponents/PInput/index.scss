@@ -1,0 +1,81 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.PInputWrapper {
+  @include fcss;
+  gap: var(--spacing-4, 4px);
+  width: 100%;
+  &.horizontal{
+    @include frss;
+  }
+  &.disabled {
+    > label {
+      color: var(--text-tokens-text-placeholder, #a8a8a8);
+    }
+    > .inputWrapper {
+      border: 1px solid var(--border-disabled, #f4f4f4);
+      // TODO-newui
+      .pInput {
+        color: var(--text-tokens-text-disabled);
+      }
+    }
+  }
+  &.error {
+    > .inputWrapper {
+      border: 1px solid var(--text-tokens-text-error, #fa4d56);
+    }
+  }
+  > label {
+    color: var(--text-tokens-text-primary, #161616);
+    @include Label01;
+    @include frsc;
+    padding-bottom: var(--spacing-4, 4px);
+    gap: var(--spacing-4);
+    .tooltipBtn {
+      &.icon {
+        width: var(--spacing-12, 12px);
+      }
+    }
+  }
+  > .inputWrapper {
+    width: 100%;
+    @include frsc;
+    gap: var(--spacing-16, 16px);
+    border-radius: var(--Radius-radius-xs, 4px);
+    border: 1px solid var(--border-tokens-border--primary, #e0e0e0);
+    background: var(--layer-tokens-layer-primary, #fff);
+    height: var(--spacing-40, 40px);
+    padding: 0 var(--spacing-16, 16px);
+    &:focus-within {
+      border: 1px solid var(--Brand-Primary-Color-BP-50, #00c7f2);
+    }
+    .pInput {
+      @include BodyBody100;
+      color: var(--text-tokens-text-primary, #161616);
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      border: 0;
+      &::placeholder {
+        color: var(--text-tokens-text-placeholder, #a8a8a8);
+      }
+    }
+    .iconfont {
+      font-size: var(--spacing-16, 16px);
+      cursor: pointer;
+      color: var(--icon-tokens-icon-primary);
+    }
+    .prefix{
+      width: var(--spacing-16, 16px);
+    }
+  }
+  > .tip {
+    @include Error;
+    &.error {
+      color: var(--text-tokens-text-error, #fa4d56);
+    }
+    &.help {
+      color: var(--dark-text-text-tertiary, #8d8d8d);
+    }
+  }
+}

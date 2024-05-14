@@ -1,0 +1,10 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+
+.connectWallet {
+  display: none;
+  &.visible {
+    display: flex;
+  }
+}

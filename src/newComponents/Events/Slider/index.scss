@@ -1,0 +1,134 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+.eventsSlider {
+  --slider-height: 144px;
+  width: 100%;
+  height: var(--slider-height);
+  .slick-slider {
+    .slick-list .slick-slide > div {
+      height: var(--slider-height);
+      // padding-top: 33px;
+      // .sliderImg {
+      //   width: 100%;
+      //   height: auto;
+      //   cursor: pointer;
+      // }
+      .homeBanner {
+        width: 100%;
+        height: 144px;
+        @include frsc;
+        border-radius: var(--spacing-8);
+        border: 1px solid var(--border-tokens-border-primary);
+        // background-color: var(--layer-tokens-layer-bp);
+        background-color: var(--layer-tokens-layer-bp-light); // TODO-newui
+        // background-image: url(../../../assets/newImg/home/bannerBg.svg);
+        // background-repeat: no-repeat;
+        // background-size: 872px 144px;
+        // background-position: right center;
+        position: relative;
+        &.SIGNX_X_PROGRAM {
+          .content {
+            .intro {
+              .brief {
+                gap: var(--spacing-8);
+              }
+            }
+          }
+        }
+        .bg {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 872px;
+          height: 144px;
+        }
+        .content {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          padding: 0 33px;
+          @include frbc;
+          .intro {
+            @include fcbs;
+            gap: var(--spacing-14);
+            height: 94px;
+            .brief {
+              @include fcss;
+              gap: var(--spacing-2);
+              h1 {
+                @include HeadlineH1;
+                color: var(--text-tokens-text-primary);
+              }
+              h3 {
+                @include BodyBody300;
+                color: var(--text-tokens-text-tertiary);
+                width: 409px;
+              }
+            }
+            .desc {
+              @include frsc;
+              gap: var(--spacing-36);
+              @include Label01;
+              .left,
+              .right {
+                @include frsc;
+                gap: var(--spacing-4);
+                .iconfont {
+                  font-size: var(--spacing-16);
+                  color: var(--Icon-Tokens-icon-primary);
+                }
+              }
+            }
+          }
+          .joinBtn {
+          }
+        }
+      }
+    }
+    .slick-dots {
+      // bottom: 154px;
+      height: 4px;
+      gap: var(--spacing-8);
+      display: flex !important;
+      @include frcc;
+      bottom: 12px;
+      li {
+        width: auto;
+        height: auto;
+        width: var(--spacing-4);
+        height: var(--spacing-4);
+        padding: 0;
+        margin: 0;
+        &.slick-active {
+          button {
+            &:before {
+              color: var(--layer-tokens-layer-03);
+            }
+          }
+        }
+        button {
+          width: auto;
+          height: auto;
+          padding: 0;
+          &:before {
+            width: auto;
+            height: var(--spacing-4);
+            padding: 0;
+            line-height: 0;
+            font-size: var(--spacing-4);
+
+            color: var(--layer-tokens-layer-secondary);
+            opacity: 1;
+            // width: var(--spacing-4);
+            // height: var(--spacing-4);
+            // border-radius: 50%;
+            // background: var(--Layer-Tokens-layer-03);
+            // content: '';
+            // padding: 0;
+          }
+        }
+      }
+    }
+  }
+}

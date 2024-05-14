@@ -1,0 +1,16 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pageDataDashboard {
+  @include fcss;
+  margin: 0 auto;
+  .pageContent {
+    padding: 40px 0;
+    @include fcss;
+    gap: var(--spacing-40);
+    .pEmpty {
+      padding-top: 152px;
+    }
+  }
+  
+}

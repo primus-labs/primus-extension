@@ -22,3 +22,14 @@ export type FilterOption = {
   defaultValue: boolean;
 };
 export type FilterOptionList = FilterOption[];
+
+export type newWALLETITEMTYPE = {
+  icon: any;
+  name: string;
+  id: string | number;
+  value?: string | number;
+  disabled?: boolean;
+};
+export type WALLETMAPTYPE = {
+  [propName: string]: newWALLETITEMTYPE;
+};

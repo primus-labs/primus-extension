@@ -10,6 +10,7 @@ var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 var ReactRefreshTypeScript = require('react-refresh-typescript');
 var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 var alias = {
@@ -36,6 +37,20 @@ var options = {
   entry: {
     home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
+    dataSourceWeb: path.join(
+      __dirname,
+      'src',
+      'content',
+      'dataSourceWeb',
+      'index.jsx'
+    ),
+    pageDecode: path.join(
+      __dirname,
+      'src',
+      'content',
+      'pageDecode',
+      'index.jsx'
+    ),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
     //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },
@@ -47,6 +62,7 @@ var options = {
     path: path.resolve(__dirname, 'build'),
     clean: true,
     publicPath: ASSET_PATH,
+    // chunkFilename: '[id].[chunkhash].js',
   },
   module: {
     rules: [
@@ -193,7 +209,9 @@ var options = {
             } else {
               let jsonobj = JSON.parse(content.toString());
               //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
-              jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9095/*");
+              jsonobj.content_scripts[0].matches.push(
+                'http://api-dev.padolabs.org:9095/*'
+              );
               jsonobj.content_scripts[0].matches.push(
                 'http://localhost:3001/*'
               );
@@ -290,24 +308,24 @@ var options = {
         },
       ],
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'src/content/pageDecode.js',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'src/content/pageDecode.css',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-      ],
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: 'src/content/pageDecode.js',
+    //       to: path.join(__dirname, 'build'),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: 'src/content/pageDecode.css',
+    //       to: path.join(__dirname, 'build'),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
     new CopyWebpackPlugin({
       patterns: [
         {
@@ -321,6 +339,71 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/content/iconExtension.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/iconPado.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/iconSucc.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/iconFail.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/iconLink.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceBinance.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceCoinbase.png',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceOKX.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceX.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceTikTok.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceBitget.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceMEXC.png',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceHuobi.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceGate.svg',
           to: path.join(__dirname, 'build'),
           force: true,
         },
@@ -388,8 +471,22 @@ var options = {
     }),
     new MiniCssExtractPlugin({
       // 定义输出文件名和目录
-      filename: 'static/css/main.css',
+      // filename: 'static/css/main.css',
+      filename: 'static/css/[name].css',
     }),
+    // new CircularDependencyPlugin({
+    //   // exclude detection of files based on a RegExp
+    //   exclude: /a\.js|node_modules/,
+    //   // include specific files based on a RegExp
+    //   include: /src/,
+    //   // add errors to webpack instead of warnings
+    //   failOnError: true,
+    //   // allow import cycles that include an asyncronous import,
+    //   // e.g. via import(/* webpackMode: "weak" */ './file.js')
+    //   allowAsyncCycles: false,
+    //   // set the current working directory for displaying module paths
+    //   cwd: process.cwd(),
+    // }),
   ].filter(Boolean),
   infrastructureLogging: {
     level: 'info',

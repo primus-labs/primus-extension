@@ -1,0 +1,49 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.homeAssetsDistribution {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-16);
+
+  > .title {
+    @include HeadlineH3;
+    @include frbc;
+    width: 100%;
+  }
+  > .content {
+    width: 100%;
+    border-radius: var(--spacing-8);
+    // border: 1px solid var(--border-tokens-border-primary);
+    background: var(--layer-tokens-layer-primary);
+    padding: var(--spacing-24);
+    @include fcss;
+    gap: var(--spacing-24);
+    border: 1px solid var(--border-tokens-border-primary);
+    .assetsBalance {
+      flex: 1;
+      gap: var(--spacing-8);
+      padding: 0;
+      .content {
+        .num {
+          align-items: flex-end;
+          .pnl {
+            margin-bottom: var(--spacing-4);
+            @include frsc;
+            gap: var(--spacing-8);
+          }
+        }
+      }
+    }
+    .PTabs {
+      width: 100%;
+    }
+    
+    .moreBtn {
+      width: 100%;
+      justify-content: flex-end;
+      height: 16px;
+    }
+  }
+}

@@ -1,0 +1,27 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+// @import '@/assets/newCss/mixins.scss';
+.pEmpty {
+  width: 100%;
+  @include fccc;
+  gap: var(--spacing-16);
+  > img {
+    width: 160px;
+  }
+  .introTxt {
+    @include fcsc;
+    width: 500px;
+    gap: var(--spacing-16);
+    .title {
+      @include HeadlineH1;
+      color: var(--text-tokens-text-primary);
+    }
+    .desc {
+      @include BodyBody100;
+      color: var(--text-tokens-text-secondary);
+    }
+  }
+  .submitBtn {
+    margin-top: var(--spacing-24);
+  }
+}

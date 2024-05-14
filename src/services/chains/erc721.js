@@ -1,5 +1,6 @@
-import { ethers,utils } from 'ethers';
-import { EASInfo } from '@/config/envConstants';
+import { ethers, utils } from 'ethers';
+import { EASInfo } from '@/config/chain';
+import { getNFTInfo } from '@/services/api/event';
 /*
 params = {
     networkName: networkName,
@@ -44,20 +45,42 @@ export async function mintWithSignature(params) {
   console.log('erc721 nftInfo=', nftInfo);
   return [Number(tokenId), nftInfo];
 }
+export async function getTest() {
+  
+}
+export async function getEARLYBIRDNFT(params) {
+  try {
+    let { networkName, tokenId } = params;
+    // let tokenId = 3
+    const contractAddress = EASInfo[networkName].erc721Contract;
+    const rpcUrl = EASInfo[networkName].rpcUrl;
+    const abi = [
+      'function mintWithSignature(bool, address, uint256, uint256, uint256, bytes) payable public',
+      // 'function owner() public view virtual returns (address)',
+      'function tokenURI(uint256) public view virtual override returns (string)',
+    ];
+    let provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const contract = new ethers.Contract(contractAddress, abi, provider);
+    const nftJSON = await contract.tokenURI(tokenId);
+    const nftInfo = await getNFTInfo(nftJSON);
+    return { ...nftInfo, tokenId };
+    return nftJSON;
+  } catch (e) {
+    console.log('222getEARLYBIRDNFT', e);
+  }
+}
 
 export async function submitUniswapTxProof(params) {
   try {
     let { metamaskprovider, txHash, proof, auxiBlkVerifyInfo } = params;
     console.log('submitUniswapTxProof params===', params);
     const contractAddress = '0x0e38FDbDebB447B76568a57A71165fC0a669C9F8';
-    const abi = [
-      'function submitUniswapTxProof(bytes,bytes,bytes) external',
-    ];
+    const abi = ['function submitUniswapTxProof(bytes,bytes,bytes) external'];
     let provider = new ethers.providers.Web3Provider(metamaskprovider);
     await provider.send('eth_requestAccounts', []);
     let signer = provider.getSigner();
     const contract = new ethers.Contract(contractAddress, abi, signer);
-    
+
     function getRawTransaction(tx) {
       function addKey(accum, key) {
         if (key in tx) {
@@ -85,10 +108,10 @@ export async function submitUniswapTxProof(params) {
       }
 
       return raw;
-    };
+    }
 
     const txObj = await new ethers.getDefaultProvider().getTransaction(txHash);
-   
+
     const txParams = getRawTransaction(txObj);
     const tx = await contract.submitUniswapTxProof(
       txParams,

@@ -16,12 +16,6 @@ import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/Connec
 import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
-import {
-  ONCHAINLIST,
-  PADOADDRESS,
-  EASInfo,
-  CLAIMNFTNETWORKNAME,
-} from '@/config/envConstants';
 import { connectWallet } from '@/services/wallets/metamask';
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
@@ -63,7 +57,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       return credArr;
     }, [credentialsFromStore]);
 
-    const [sourceList, sourceMap] = useAllSources();
+    const { sourceMap } = useAllSources();
     const hasSource = useMemo(() => {
       const exLen =
         (sourceMap.exSources && Object.keys(sourceMap.exSources).length) ?? 0;

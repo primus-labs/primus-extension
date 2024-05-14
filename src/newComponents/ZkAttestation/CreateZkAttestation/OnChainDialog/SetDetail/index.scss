@@ -1,0 +1,58 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+@import '../../attestationForm.scss';
+.pFormWrapper.detailForm2 {
+  --verificationContent-input-width: 137px;
+  --verificationContent-select-width: 349px;
+  --account-input-width: 139px;
+  --account-select-width: 178px;
+  gap: var(--spacing-12) !important;
+  .formItem {
+    @include attestationForm;
+
+    .verificationContent {
+      &.hasValue {
+        .selectInput {
+          width: 291px;
+          gap: 0;
+        }
+      }
+      .selectInput {
+        width: var(--verificationContent-input-width);
+      }
+      .selectOptionswrapper {
+        width: var(--verificationContent-select-width);
+      }
+      .optionSuffixProvider {
+        @include Hint;
+        @include frsc;
+        gap: var(--spacing-2);
+        > img {
+          width: var(--spacing-12);
+        }
+      }
+    }
+    .account {
+      &.hasValue {
+        .selectInput {
+          width: var(--account-select-width);
+          
+        }
+      }
+      .selectInput {
+        width: var(--account-input-width);
+      }
+      .selectOptionswrapper {
+        width: var(--account-select-width);
+      }
+      .selectOptionswrapper {
+        width: var(--account-select-width);
+        .PDropdown {
+          max-height: 240px;
+          overflow-y: auto;
+        }
+      }
+    }
+  }
+}

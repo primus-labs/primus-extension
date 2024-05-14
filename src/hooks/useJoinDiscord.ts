@@ -5,15 +5,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { getAuthAttestation } from '@/services/api/cred';
 import type { UserState } from '@/types/store';
 import { postMsg, getAuthUrl, getCurrentDate } from '@/utils/utils';
-import { eventReport } from '@/services/api/usertracker';
-import useInterval from './useInterval';
-import { BASEVENTNAME } from '@/config/constants';
+import { BASEVENTNAME } from '@/config/events';
 import useEventDetail from './useEventDetail';
 import useAllSources from './useAllSources';
 import { schemaTypeMap } from '../config/constants';
 import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
-import { finishTask } from '@/services/api/achievements';
+import { finishTaskForEvent } from '@/services/api/achievements';
 
 type CreateAuthWindowCallBack = (
   state: string,
@@ -26,9 +24,7 @@ type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 // connect & join discord
 const DISCORDINVITEURL = 'https://discord.com/invite/YxJftNRxhh';
 const useAuthorization2 = () => {
-  // const { sourceMap2 } = useAllSources();
-  const [allSourceList, allSourceMap] = useAllSources();
-  const sourceMap2 = allSourceMap.socialSources;
+  const { sourceMap2 } = useAllSources();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const [searchParams] = useSearchParams();
   const fromEvents = searchParams.get('fromEvents');
@@ -104,12 +100,9 @@ const useAuthorization2 = () => {
         const discordObj = JSON.parse(data.discord);
         let ext = {
           discordUserId: discordObj.uniqueId.replace('DISCORD_', ''),
+          // name: eventId //TODO-newui
         };
-        const finishBody = {
-          taskIdentifier: 'JOIN_PADO_DISCORD',
-          ext: ext,
-        };
-        const finishCheckRsp = await finishTask(finishBody);
+        const finishCheckRsp = await finishTaskForEvent(ext);
         if (finishCheckRsp.rc === 0) {
           // setFinished(true);
           clearInterval(joinTimer);

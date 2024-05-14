@@ -1,0 +1,200 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+
+.pDialog2.share-div {
+  width: 448px;
+  height: 454px;
+  &.data_dashboard {
+    height: 587px;
+    main .shareDiv .container {
+      background-color: #fff;
+      height: 373px;
+    }
+  }
+  .PClose {
+    height: 36px;
+    .closeBtn {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+  }
+  main {
+    display: flex;
+    .shareDiv {
+      color: #161616;
+      .container {
+        width: 400px;
+        height: 240px;
+        border: 1px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        background-color: #e8ffff;
+        position: relative;
+        overflow: hidden;
+
+        .green-circle {
+          margin-left: 30px;
+          position: absolute;
+          z-index: 2;
+        }
+
+        .white-circle {
+          position: absolute;
+          margin-left: 210px;
+          z-index: 1;
+        }
+
+        .blue-rectangle {
+          position: absolute;
+          z-index: 0;
+          margin-left: 240px;
+          margin-top: -30px;
+          height: 300px;
+        }
+
+        .logo {
+          position: absolute;
+          width: 40px;
+          height: 40px;
+          margin-left: 24px;
+          margin-top: 30px;
+        }
+        .shareContent {
+          position: absolute;
+          margin-top: 110px;
+          width: 250px;
+          &.attestation {
+            width: 227px;
+            box-sizing: border-box;
+            .desc {
+              width: 100%;
+              margin-left: 24px;
+              padding-top: 12px;
+              font-size: 12px;
+              line-height: 18px;
+              font-weight: 400;
+              font-family: 'IBM Plex Sans';
+              .inviteCode {
+                font-size: 14px;
+                font-weight: 500;
+                margin-top: 12px;
+              }
+            }
+          }
+          &.data_dashboard {
+            width: 100%;
+            margin-top: 0;
+            .topCon {
+              width: 400px;
+              height: 90px;
+              background: url('../../../assets/newImg/dataDashboard/bgShare.svg');
+              background-repeat: no-repeat;
+              @include frss;
+              gap: 8px;
+              padding: 16px 24px;
+              .left {
+                width: 24px;
+              }
+              .right {
+                @include fcss;
+                gap: 4px;
+                .title {
+                  @include BodyBody100Semibold;
+                  margin-left: 0;
+                  margin-top: 0;
+                }
+                .desc {
+                  font-size: 12px;
+                  line-height: 16px;
+                  font-weight: 400;
+                  font-family: 'IBM Plex Sans';
+                  @include frsc;
+                  .inviteCode {
+                    font-weight: 500;
+                  }
+                }
+                .downloadBtn {
+                  height: 16px;
+                }
+              }
+            }
+            .centerCon {
+              padding: 24px;
+              @include fcsc;
+              // gap: 16px;
+              .title {
+                @include fcss;
+                gap: 5.8px;
+                margin-left: 0;
+                margin-top: 0;
+                .label {
+                  font-family: IBM Plex Sans;
+                  font-size: 10.14px;
+                  font-weight: normal;
+                  line-height: 125%;
+                  letter-spacing: 0px;
+                }
+                .value {
+                  font-family: IBM Plex Mono;
+                  font-size: 23.19px;
+                  font-weight: 600;
+                  line-height: 28.99px;
+                  letter-spacing: 0px;
+                }
+              }
+              .tokenPie {
+                // width: 100%;
+                transform: scale(0.72);
+                margin-top: -16px;
+              }
+            }
+          }
+          .title {
+            margin-left: 24px;
+            margin-top: -20px;
+            font-size: 14px;
+            font-weight: 500;
+          }
+        }
+        .downloadApp {
+          position: absolute;
+          margin-top: 200px;
+          margin-left: 24px;
+          font-weight: 400;
+          font-size: 12px;
+          color: #161616;
+        }
+      }
+
+      .shareMedia {
+        margin-top: 20px;
+        font-size: 14px;
+        font-weight: 400;
+        width: 400px;
+        text-align: center;
+        .shareTitle {
+          width: 400px;
+          align-content: center;
+        }
+        .shareIcon {
+          margin-top: 15px;
+          margin: 20px;
+        }
+      }
+      .shareDiscordCopy {
+        margin-top: 20px;
+        font-size: 14px;
+        font-weight: 400;
+        width: 400px;
+        .shareDiscordCopyBtn {
+          margin-top: 15px;
+          width: 400px;
+          height: 40px;
+          align-content: center;
+          letter-spacing: 0.16px;
+        }
+      }
+    }
+  }
+}

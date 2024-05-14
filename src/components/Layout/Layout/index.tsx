@@ -28,7 +28,6 @@ import type { UserState } from '@/types/store';
 import type { ObjectType, SysConfigItem, GetSysConfigMsg } from '@/types/home';
 
 import { updateAlgoUrl } from '@/config/envConstants';
-import { BASEVENTNAME } from '@/config/constants';
 
 const Layout = memo(() => {
   const location = useLocation();
@@ -40,6 +39,8 @@ const Layout = memo(() => {
   const requireUpgrade = useSelector(
     (state: UserState) => state.requireUpgrade
   );
+  const theme = useSelector((state: UserState) => state.theme);
+
   const dispatch: Dispatch<any> = useDispatch();
   const navigate = useNavigate();
   usePollingUpdateAllSources();
@@ -205,13 +206,14 @@ const Layout = memo(() => {
   }, []);
 
   return (
-    <div className="pageApp">
+    <div className={`pageApp ${theme}`}>
       <BackgroundAnimation />
       <div className={`pageLayer ${requireUpgrade && 'requireUpgrade'}`}>
         <ActiveHeader />
         <Outlet />
       </div>
       <UpgradeTipDialog />
+      
     </div>
   );
 });

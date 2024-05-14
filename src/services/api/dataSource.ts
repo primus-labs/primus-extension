@@ -11,6 +11,17 @@ type GETASSETSONCHAINSParams = {
   timestamp: string;
   address: string;
 };
+type SENDREQUESTASSETSONCHAINSParams = {
+  signature: string;
+  timestamp: string;
+  address: string;
+  type: string;
+  chains?: string;
+};
+type REQUESTASSETSONCHAINSParams = {
+  type: string;
+  address: string;
+};
 type GETTOKENPRICEParams = {
   currency: string;
   source: string;
@@ -46,11 +57,28 @@ export const getSupportedQueryableChains = () => {
   });
 };
 
-export const getAssetsOnChains = (data: GETASSETSONCHAINSParams,config?: any) => {
+export const getAssetsOnChains = (
+  data: GETASSETSONCHAINSParams,
+  config?: any
+) => {
   return request({
     method: 'get',
     url: `/chain/token?signature=${data.signature}&timestamp=${data.timestamp}&address=${data.address}`,
-    config
+    config,
+  });
+};
+export const sendRequestAssetsOnChains = (
+  data: SENDREQUESTASSETSONCHAINSParams
+) => {
+  return request({
+    method: 'get',
+    url: `/chain/assets/request?signature=${data.signature}&timestamp=${data.timestamp}&address=${data.address}&type=${data.type}`,
+  });
+};
+export const requestAssetsOnChains = (data: REQUESTASSETSONCHAINSParams) => {
+  return request({
+    method: 'get',
+    url: `/chain/assets/result?type=${data.type}&address=${data.address}`,
   });
 };
 

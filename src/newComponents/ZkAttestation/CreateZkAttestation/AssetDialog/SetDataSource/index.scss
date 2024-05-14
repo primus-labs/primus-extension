@@ -1,0 +1,29 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+@import '../../attestationForm.scss';
+.pFormWrapper.dataSourceNameForm {
+  --select-width: 1.1875rem;
+}
+@media (max-width: 1470px) {
+  .pFormWrapper.dataSourceNameForm {
+    --select-width: 171px;
+  }
+}
+.pFormWrapper.dataSourceNameForm {
+  .formItem {
+    @include attestationForm;
+    .dataSourceName {
+      @include inputSelectWidth(var(--select-width), var(--select-width));
+      .selectInput {
+        gap: 0;
+      }
+      .selectOptionswrapper {
+        .PDropdown {
+          overflow: unset;
+        }
+      }
+      
+    }
+  }
+}

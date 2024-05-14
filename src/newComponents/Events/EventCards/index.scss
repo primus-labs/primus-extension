@@ -1,0 +1,116 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.currentEventsCards {
+  --eventCard-width: 356px;
+  @include frss;
+  flex-wrap: wrap;
+  row-gap: var(--spacing-16);
+  // column-gap: var(--spacing-23);
+  column-gap: calc((100% - var(--eventCard-width) * 4) / 3);
+  width: 100%;
+  .dataSourceCard {
+    width: var(--eventCard-width);
+    height: 358px;
+    @include fcss;
+    @include clickableCard;
+    .cardContent {
+      width: 100%;
+      height: 100%;
+      @include fcss;
+
+      .picWrapper {
+        width: 100%;
+        height: 200px;
+        position: relative;
+        @include frsc;
+
+        .picContent {
+          width: 100%;
+          height: 100%;
+          background-repeat: no-repeat;
+          background-image: url('~@/assets/newImg/events/bgCombineType0.svg');
+          background-size: cover;
+          &.combine {
+            background-image: url('~@/assets/newImg/events/bgCombineType1.svg');
+          }
+          @include frsc;
+          gap: var(--spacing-16);
+          @include HeadlineH3;
+          padding-left: var(--spacing-40);
+          .splicedIcons {
+            margin-right: calc(-1 * var(--spacing-8));
+            > img {
+              width: var(--spacing-52);
+            }
+          }
+          > span {
+            width: 146px;
+          }
+        }
+        .endMask {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.2);
+          backdrop-filter: blur(4px);
+          @include frcc;
+          @include HeadlineH0;
+          color: var(--text-tokens-text-inverse);
+          border-radius: 7px 7px 0 0;
+        }
+      }
+      .txtWrapper {
+        padding: var(--spacing-24);
+        @include fcss;
+        gap: var(--spacing-4);
+        .title {
+          @include HeadlineH3;
+        }
+        .descItems {
+          @include fcss;
+          gap: var(--spacing-4);
+          .descItem {
+            @include frsc;
+            gap: var(--spacing-8);
+            @include Label01;
+            .iconfont {
+              font-size: var(--spacing-16);
+            }
+          }
+        }
+        .desc {
+          margin-top: var(--spacing-4);
+          @include BodyBody100;
+          color: var(--text-tokens-text-tertiary);
+        }
+      }
+    }
+  }
+}
+.dark {
+  .currentEventsCards {
+    .dataSourceCard {
+      .cardContent {
+        .picWrapper {
+          .picContent {
+            background-image: url('~@/assets/newImg/events/bgCombineType0ForDark.svg');
+            &.combine {
+              background-image: url('~@/assets/newImg/events/bgCombineType1ForDark.svg');
+            }
+            
+          }
+          .endMask {
+              color: var(--text-tokens-text-primary);
+            }
+        }
+      }
+    }
+  }
+}
+@media (max-width: 1819px) {
+  .currentEventsCards {
+    column-gap: calc((100% - var(--eventCard-width) * 3) / 2);
+  }
+}

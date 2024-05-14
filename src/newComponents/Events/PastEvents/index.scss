@@ -1,0 +1,20 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+.currentEvents.pastEvents {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-16);
+  > h2 {
+    @include HeadlineH3;
+  }
+  .currentEventsCards {
+    column-gap: var(--spacing-16);
+    .dataSourceCard {
+      width: 356px;
+      height: 358px;
+      @include pCard;
+      pointer-events: none;
+    }
+  }
+}

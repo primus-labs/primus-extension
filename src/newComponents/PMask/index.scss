@@ -1,0 +1,23 @@
+
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pMask2 {
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  // background: var(--neutral-color-black);
+  // opacity: 0.3;
+  background: rgba(0,0,0,0.3);
+
+  // backdrop-filter: blur(16px);
+  width: 100%;
+  height: 100%;
+  @include frcc;
+}
+.dark{
+  .pMask2{
+    background: rgba(255,255,255,0.1);
+  }
+}

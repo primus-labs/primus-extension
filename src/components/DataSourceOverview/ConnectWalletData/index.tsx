@@ -120,13 +120,13 @@ const ConnectWalletData: React.FC<KYCVerifyProps> = memo(
               });
               return;
             }
-            await getChainAssets(
-              signature,
-              timestamp,
-              curConnectedAddr,
-              dispatch,
-              walletLabel
-            );
+            // await getChainAssets(
+            //   signature,
+            //   timestamp,
+            //   curConnectedAddr,
+            //   dispatch,
+            //   walletLabel
+            // );
           }
           setActiveRequest({
             type: 'suc',

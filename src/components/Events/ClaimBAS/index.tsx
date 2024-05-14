@@ -17,7 +17,6 @@ import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/Connec
 import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 import CredTypesDialog from './CredTypesDialog';
-import useAllSources from '@/hooks/useAllSources';
 import { BASEVENTNAME } from '@/config/constants';
 import { queryEventDetail } from '@/services/api/event';
 import useEventDetail from '@/hooks/useEventDetail';

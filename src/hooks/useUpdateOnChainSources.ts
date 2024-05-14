@@ -1,29 +1,24 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DATASOURCEMAP } from '@/config/constants';
-import {
-  getCurrentDate,
-  getStatisticalData,
-  sub,
-} from '@/utils/utils';
+// import useAllSources from './useAllSources';
+import { getChainAssets, setNftsActionAsync } from '@/store/actions';
 import { setOnChainAssetsSourcesAsync } from '@/store/actions';
 
-import { getAssetsOnChains } from '@/services/api/dataSource';
-import { ONEMINUTE } from '@/config/constants';
-import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import type { onChainAssetsData } from '@/types/dataSource';
-
+import { ecdsa } from 'ccxt/js/src/base/functions';
 
 type queryObjType = {
   [propName: string]: any;
 };
 const useUpdateOnChainSources = () => {
+  // const { sourceMap } = useAllSources();
   const dispatch: Dispatch<any> = useDispatch();
-  // const onChainAssetsSources = useSelector(
-  //   (state: UserState) => state.onChainAssetsSources
-  // );
+
   const [queryObj, setQueryObj] = useState<queryObjType>();
+  // const onChainAssetsSources = useMemo(() => {
+  //   return sourceMap.onChainAssetsSources;
+  // }, [sourceMap]);
   const loading = useMemo(() => {
     const len = (queryObj && Object.keys(queryObj).length) || 0;
     if (queryObj && len > 0) {
@@ -51,57 +46,83 @@ const useUpdateOnChainSources = () => {
         list.push(i);
       });
     }
-    
+
     list.forEach(async (item) => {
       const lastCurConnectedAddrInfo = onChainAssetsSourcesObj[item];
-
       const { signature, timestamp, address } =
         lastCurConnectedAddrInfo as onChainAssetsData;
       // Signature is permanently valid
       if (signature) {
         try {
-          const { rc, result } = await getAssetsOnChains(
-            {
-              signature,
-              timestamp,
-              address,
-            },
-            {
-              timeout: ONEMINUTE,
-            }
+          await getChainAssets({
+            signature,
+            timestamp,
+            address,
+            dispatch,
+            requireReport: false,
+            label: undefined,
+          });
+          await dispatch(
+            setNftsActionAsync([
+              {
+                signature,
+                timestamp,
+                address,
+                dispatch,
+                requireReport: false,
+                label: undefined,
+              },
+            ])
           );
-          if (rc === 0) {
-            const res = getStatisticalData(result);
-            const curAccOnChainAssetsItem: any = {
-              address,
-              timestamp,
-              signature,
-              date: getCurrentDate(),
-              updateTimestamp: +new Date(),
-              ...res,
-              ...DATASOURCEMAP['onChain'],
-            };
-            const pnl = sub(
-              curAccOnChainAssetsItem.totalBalance,
-              lastCurConnectedAddrInfo.totalBalance
-            ).toFixed();
 
-            curAccOnChainAssetsItem.pnl = pnl;
-            curAccOnChainAssetsItem.label = lastCurConnectedAddrInfo.label;
+          setQueryObj((obj) => ({
+            ...obj,
+            [address]: 1,
+          }));
+          // const { rc, result } = await getAssetsOnChains(
+          //   {
+          //     signature,
+          //     timestamp,
+          //     address,
+          //   },
+          //   {
+          //     timeout: ONEMINUTE,
+          //   }
+          // );
+          // if (rc === 0) {
+          //   const res = getStatisticalData(result);
+          //   const curAccOnChainAssetsItem: any = {
+          //     address,
+          //     timestamp,
+          //     signature,
+          //     date: getCurrentDate(),
+          //     updateTimestamp: +new Date(),
+          //     ...res,
+          //     ...DATASOURCEMAP['onChain'],
+          //   };
+          //   const pnl = sub(
+          //     curAccOnChainAssetsItem.totalBalance,
+          //     lastCurConnectedAddrInfo.totalBalance
+          //   ).toFixed();
 
-            const newOnChainAssetsMap = Object.assign(onChainAssetsSourcesObj, {
-              [address]: curAccOnChainAssetsItem,
-            });
-            setQueryObj((obj) => ({
-              ...obj,
-              [address]: curAccOnChainAssetsItem,
-            }));
-            await chrome.storage.local.set({
-              onChainAssetsSources: JSON.stringify(newOnChainAssetsMap),
-            });
-          } else {
-          }
-        } catch (e) {}
+          //   curAccOnChainAssetsItem.pnl = pnl;
+          //   curAccOnChainAssetsItem.label = lastCurConnectedAddrInfo.label;
+
+          //   const newOnChainAssetsMap = Object.assign(onChainAssetsSourcesObj, {
+          //     [address]: curAccOnChainAssetsItem,
+          //   });
+          //   setQueryObj((obj) => ({
+          //     ...obj,
+          //     [address]: curAccOnChainAssetsItem,
+          //   }));
+          //   await chrome.storage.local.set({
+          //     onChainAssetsSources: JSON.stringify(newOnChainAssetsMap),
+          //   });
+          // } else {
+          // }
+        } catch (e) {
+          console.log('fetchOnChainDatas error:', e);
+        }
       }
     });
   }, []);
@@ -111,7 +132,6 @@ const useUpdateOnChainSources = () => {
       dispatch(setOnChainAssetsSourcesAsync());
     }
   }, [loading, dispatch]);
-
 
   return [loading, fetchOnChainDatas];
 };

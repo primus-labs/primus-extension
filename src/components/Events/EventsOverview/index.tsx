@@ -22,14 +22,12 @@ import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDial
 import './index.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-// import { BADGELOTTRYTIMESTR } from '@/config/constants';
 import type { UserState } from '@/types/store';
 import type { ActiveRequestType } from '@/types/config';
 import Slider from 'react-slick';
 import {
   BASEVENTNAME,
   ETHSIGNEVENTNAME,
-  DATASOURCEMAP,
 } from '@/config/constants';
 import { setRewardsDialogVisibleAction } from '@/store/actions';
 

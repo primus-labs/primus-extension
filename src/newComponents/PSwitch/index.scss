@@ -1,0 +1,21 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pSwitch {
+  width: 44px;
+  height: var(--spacing-24);
+  @include frsc;
+  background: var(--layer-tokens-layer-02);
+  border-radius: 100px;
+  padding: 2px;
+  &.dark{
+    justify-content: flex-end;
+  }
+  .iconfont{
+    font-size: var(--spacing-20);
+  }
+  >img{
+    width: var(--spacing-20);
+  }
+ 
+}

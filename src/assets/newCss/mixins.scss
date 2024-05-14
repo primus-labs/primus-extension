@@ -1,0 +1,77 @@
+.light,.white,#pado-extension-content,.light #pado-extension-content,.white #pado-extension-content {
+  --shadow-color: rgba(0, 0, 0, 0.06);
+}
+.dark,.black,.dark #pado-extension-content,.black #pado-extension-content {
+  --shadow-color: rgba(0, 0, 0, 0.12);
+}
+@mixin shadow($x: 0px, $y: 0px, $blur: 12px, $color: var(--shadow-color)) {
+  box-shadow: $x $y $blur $color;
+}
+@mixin card-xs_shadow {
+  @include shadow(0, 4px, 24px);
+}
+@mixin card-s_shadow {
+  @include shadow(0, 8px, 24px);
+}
+@mixin card-m_shadow {
+  @include shadow(0, 12px, 24px);
+}
+@mixin card-l_shadow {
+  @include shadow(0, 16px, 24px);
+}
+@mixin dropdown-shadow-tooltip {
+  @include shadow(0, 0, 12px);
+}
+@mixin dropdown-shadow {
+  @include shadow(0, 0, 20px, rgba(0, 0, 0, 0.15));
+}
+
+@mixin pCard {
+  border-radius: var(--spacing-8, 8px);
+  border: 1px solid var(--border-tokens-border-primary);
+  background: var(--layer-tokens-layer-primary, #fff);
+}
+@mixin clickableCard {
+  @include pCard;
+  cursor: pointer;
+  &:not(.disabled):hover {
+    border-color: var(--border-tokens-border-bp); // TODO
+    @include card-xs_shadow;
+  }
+  &.done {
+    cursor:default;
+    &:hover {
+      box-shadow: none;
+    }
+  }
+  .PButton.text:hover {
+    color: var(--button-tokens-button-bp-hover);
+    .iconfont {
+      color: var(--button-tokens-button-bp-hover);
+    }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@mixin pSpiner(
+  $width: var(--spacing-16, 16px),
+  $height: var(--spacing-16, 16px),
+  $borderWidth: 2px,
+  $borderColor: var(--layer-tokens-layer-primary, #fff),
+  $borderTopColor: var(--icon-tokens-icon-primary, #161616),
+  $time: 1s
+) {
+  width: $width;
+  height: $height;
+  border-radius: 50%;
+  border: $borderWidth solid $borderColor;
+  border-top: $borderWidth solid $borderTopColor;
+  animation: spin $time linear infinite;
+}

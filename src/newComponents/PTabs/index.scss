@@ -1,0 +1,43 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.PTabs {
+  @include frsc;
+  gap: var(--spacing-32, 32px);
+  height: var(--spacing-32, 32px);
+  border-bottom: 1px solid var(--border-tokens-border-primary, #e0e0e0);
+  .tab {
+    cursor: pointer;
+    @include frsc;
+    height: 100%;
+    @include Label02;
+    color: var(--text-tokens-text-placeholder, #a8a8a8);
+
+    position: relative;
+    .con {
+      height: 100%;
+    }
+    .border {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      // background: var(--border-tokens-border--primary, #e0e0e0);
+      // border-bottom: 1px solid var(--border-tokens-border--primary, #e0e0e0);
+    }
+    &.disabled {
+      color: var(--text-tokens-text-disabled, #c6c6c6);
+      cursor: not-allowed;
+    }
+    &:not(.disabled):hover {
+      color: var(--text-tokens-text-tertiary, #6f6f6f);
+    }
+    &.active {
+      color: var(--text-tokens-text-primary, #161616);
+      .border {
+        height: 2px;
+        background: var(--text-tokens-text-primary, #161616);
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@ import {
   connectWalletAsync,
   setConnectWalletActionAsync,
 } from '@/store/actions';
-import { EASInfo } from '@/config/envConstants';
+import { EASInfo } from '@/config/chain';
 import { useSelector } from 'react-redux';
 import type { UserState } from '@/types/store';
 
@@ -46,6 +46,7 @@ const useWallet: UseWalletType = function useWallet() {
           connectWalletAsync(
             {
               name: 'walletconnect',
+              id: 'walletconnect',
               provider: walletConnectProvider,
               address: walletConnectAddress,
             },
@@ -53,7 +54,7 @@ const useWallet: UseWalletType = function useWallet() {
             errorFn,
             sucFn,
             targetNetwork,
-            label
+            label,
           )
         );
       } else {
@@ -64,7 +65,7 @@ const useWallet: UseWalletType = function useWallet() {
             errorFn,
             sucFn,
             targetNetwork,
-            label
+            label,
           )
         );
       }
@@ -78,15 +79,15 @@ const useWallet: UseWalletType = function useWallet() {
   );
   const connect = useCallback(
     async (
-      walletName?: string,
+      walletId?: string,
       startFn?: () => void,
       errorFn?: () => void,
       sucFn?: (walletObj: any, network?: string, label?: string) => void,
       network?: any,
-      label?: string
+      label?: string,
     ) => {
       savedConnectInfo.current = {
-        walletName,
+        walletId,
         startFn,
         errorFn,
         sucFn: (walletObj: any) => {
@@ -95,10 +96,10 @@ const useWallet: UseWalletType = function useWallet() {
         network,
         label,
       };
-      let formatWalletName = walletName ? walletName.toLowerCase() : undefined;
-      setWallet(formatWalletName);
-      if (formatWalletName === 'walletconnect') {
-        const targetNetwork:any = EASInfo[network as keyof typeof EASInfo];
+
+      setWallet(walletId);
+      if (walletId === 'walletconnect') {
+        const targetNetwork: any = EASInfo[network as keyof typeof EASInfo];
         if (walletConnectProvider && network) {
           if (parseInt(targetNetwork?.chainId) !== walletConnectChainId) {
             const res = await walletConnectProvider.request({
@@ -109,7 +110,7 @@ const useWallet: UseWalletType = function useWallet() {
         } else {
           openWalletConnectDialog();
         }
-      } else if (formatWalletName === 'metamask') {
+      } else if (walletId === 'metamask') {
         // savedMetaMaskCallback.current();
         connectWalletAsyncFn(undefined);
       } else {
@@ -133,6 +134,7 @@ const useWallet: UseWalletType = function useWallet() {
       // savedWalletConnectCallback.current();
       connectWalletAsyncFn({
         name: 'walletconnect',
+        id: 'walletconnect',
         provider: walletConnectProvider,
         address: walletConnectAddress,
       });

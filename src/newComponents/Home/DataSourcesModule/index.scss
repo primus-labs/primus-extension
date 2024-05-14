@@ -1,0 +1,17 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.dataSourcesModule {
+  width: calc((100% - var(--spacing-16)) / 2);
+  @include fcss;
+  gap: var(--spacing-16);
+  &.fdRow {
+    width: 100%;
+    flex-direction: row;
+    .homeAssetsDistribution,
+    .socialInsights {
+      width: calc((var(--pageContent-width) - var(--spacing-16)) / 2);
+    }
+  }
+}

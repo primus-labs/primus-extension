@@ -1,0 +1,30 @@
+
+@import '../Portfolio/index.scss';
+
+.tableSection.token {
+  .dataSourceItems {
+    .dataSourceItem {
+      .mainInfo {
+        .left{
+          img{
+            border-radius: 50%;
+          }
+        }
+        .right {
+          gap: 88px;
+          .amount,.price{
+            width: 108px;
+            @include fcss;
+            gap: var(--spacing-4);
+            .label{
+              @include Hint;
+            }
+            .value{
+              @include NumberBody100;
+            }
+          }
+        }
+      }
+    }
+  }
+}

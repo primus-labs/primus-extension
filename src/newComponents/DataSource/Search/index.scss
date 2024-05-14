@@ -1,0 +1,48 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+.dataSourceSearchBar {
+  --searchInput-width: 2.78rem;
+  --searchSelect-width: 1.59rem;
+}
+@media (max-width: 1470px) {
+  .dataSourceSearchBar {
+    --searchInput-width: 400px;
+    --searchSelect-width: 228px;
+  }
+}
+.dataSourceSearchBar {
+  @include frss;
+  gap: var(--spacing-8, 8px);
+  .serachStr {
+    width: var(--searchInput-width);
+    gap: var(--spacing-4);
+    .inputWrapper {
+      padding: 0 var(--spacing-11);
+      gap: var(--spacing-4);
+    }
+  }
+  .serachType {
+    width: var(--searchSelect-width);
+    .selectInput {
+      gap: var(--spacing-4);
+      padding: 0 var(--spacing-11);
+      .prefix {
+        color: var(--text-tokens-text-placeholder);
+      }
+    }
+    .PDropdown .dropdownOptions .dropdownOption {
+      .dropdownOptionCon {
+        padding-left: var(--spacing-8);
+        .left {
+          gap: var(--spacing-8);
+          .iconfont {
+            font-size: var(--spacing-16);
+          }
+          .placeHolder {
+            width: var(--spacing-16);
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+.rewardsWrapper {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-16);
+  > h2 {
+    @include HeadlineH3;
+  }
+  .hasNoContent {
+    padding-top: 140px;
+    width: 100%;
+    flex: 1;
+    @include fccc;
+    // padding-top: 167px;
+    > img {
+      width: 160px;
+    }
+    .introTxt {
+      padding-top: var(--spacing-16);
+      @include fcsc;
+      width: 500px;
+      gap: var(--spacing-16);
+      .title {
+        @include HeadlineH1;
+        color: var(--text-tokens-text-primary);
+      }
+      .desc {
+        @include BodyBody100;
+        color: var(--text-tokens-text-secondary);
+      }
+    }
+  }
+}

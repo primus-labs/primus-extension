@@ -7,7 +7,7 @@ import PBack from '@/components/PBack';
 import './index.scss';
 import iconGoogle from '@/assets/img/iconGoogle.svg';
 import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceTwitter.svg';
+import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.svg';
 import iconSuc from '@/assets/img/iconSuc.svg';
 
 import type { UserState } from '@/types/store';
@@ -15,8 +15,7 @@ import type { PROOFTYPEITEM } from '@/types/cred';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import PButton from '@/components/PButton';
 import { BASEVENTNAME, GOOGLEWEBPROOFID } from '@/config/constants';
-import { queryEventDetail } from '@/services/api/event';
-import iconTikTok from '@/assets/img/credit/iconTikTok.svg';
+import iconTikTok from '@/assets/img/iconDataSourceTikTok.svg';
 
 interface CredTypesDialogProps {
   onClose: () => void;

@@ -2,12 +2,15 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+import 'animate.css';
 import '@/assets/css/global.css';
+import '@/assets/newCss/global.css';
+
 import routes from '@/router';
 import { Provider } from 'react-redux';
 import store from '@/store/index';
 // export const EASInfo = EASINFOMAP[CURENV];
-import {EASInfo} from '@/config/envConstants'
+import { EASInfo } from '@/config/chain';
 const router = createHashRouter(routes);
 const container = document.getElementById('app-container');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
@@ -15,15 +18,17 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 // 1. Get projectId
 const projectId = '0dabe09aae6ef261e2a469af9ccb9b76';
 
-const supportChains = Object.values(EASInfo).filter((i) => !i.disabled).map(i => {
-  return {
-    chainId: parseInt(i.chainId),
-    name: i.title,
-    currency: i.nativeCurrency.symbol,
-    explorerUrl: i.blockExplorerUrls[0],
-    rpcUrl: i.rpcUrls[0],
-  };
-})
+const supportChains = Object.values(EASInfo)
+  .filter((i) => !i.disabled)
+  .map((i) => {
+    return {
+      chainId: parseInt(i.chainId),
+      name: i.title,
+      currency: i.nativeCurrency.symbol,
+      explorerUrl: i.blockExplorerUrls[0],
+      rpcUrl: i.rpcUrls[0],
+    };
+  });
 // 2. Set chains
 const chains = [
   {
@@ -91,7 +96,7 @@ console.log('Page initialization');
 root.render(
   <>
     <Provider store={store}>
-      <RouterProvider router={router} />
+        <RouterProvider router={router} />
     </Provider>
   </>
 );

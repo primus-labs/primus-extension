@@ -17,26 +17,13 @@ import ClaimDialog from '@/components/Events/ClaimWrapper/ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
 import {
-  ONCHAINLIST,
-  PADOADDRESS,
-  EASInfo,
-  CLAIMNFTNETWORKNAME,
-} from '@/config/envConstants';
-import { connectWallet } from '@/services/wallets/metamask';
-import { mintWithSignature } from '@/services/chains/erc721';
-import { getEventSignature, getNFTInfo } from '@/services/api/event';
-import {
-  initRewardsActionAsync,
   setRewardsDialogVisibleAction,
 } from '@/store/actions';
-import { getAuthUserIdHash } from '@/utils/utils';
 import useAllSources from '@/hooks/useAllSources';
-import type { WALLETITEMTYPE } from '@/types/config';
 import type { ActiveRequestType } from '@/types/config';
 import type { UserState } from '@/types/store';
 import type { CredTypeItemType } from '@/types/cred';
 import type { Dispatch } from 'react';
-import { eventReport } from '@/services/api/usertracker';
 
 import '@/components/Events/ClaimWrapper/index.scss';
 dayjs.extend(utc);
@@ -63,7 +50,7 @@ const ClaimWrapper: FC<ClaimWrapperProps> = memo(
       return credArr;
     }, [credentialsFromStore]);
 
-    const [sourceList, sourceMap] = useAllSources();
+    const { sourceMap } = useAllSources();
     const hasSource = useMemo(() => {
       const exLen =
         (sourceMap.exSources && Object.keys(sourceMap.exSources).length) ?? 0;

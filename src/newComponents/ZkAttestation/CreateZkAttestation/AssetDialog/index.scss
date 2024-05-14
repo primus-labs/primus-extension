@@ -1,0 +1,27 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+@import '../attestationForm.scss';
+
+.pDialog2.assetAttestationDialog {
+  @include attestationDialog;
+  main {
+    > .dataSourceWrapper {
+      width: 100%;
+      @include frbc;
+      @include BodyBody100;
+      margin-bottom: -12px;
+      > label {
+        color: var(--text-tokens-text-tertiary);
+      }
+      .dataSourceIntro {
+        @include frsc;
+        gap: var(--spacing-4);
+
+        > img {
+          width: var(--spacing-16);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+.orderItem {
+  @include frsc;
+  gap: var(--spacing-12);
+  @include BodyBody100Semibold;
+  .order {
+    @include frcc;
+    width: var(--spacing-24);
+    height: var(--spacing-24);
+    border-radius: 50%;
+    background: var(--layer-tokens-layer-02);
+  }
+}

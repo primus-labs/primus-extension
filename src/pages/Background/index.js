@@ -5,7 +5,7 @@ import {
   refreshAuthData,
 } from '@/services/api/user';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
-import { getCurrentDate, postMsg } from '@/utils/utils';
+import { getCurrentDate, postMsg, sub } from '@/utils/utils';
 import { SocailStoreVersion } from '@/config/constants';
 import {
   default as processExReq,
@@ -18,6 +18,7 @@ import { eventReport } from '@/services/api/usertracker';
 import './pageDecode.js';
 import { pageDecodeMsgListener } from './pageDecode.js';
 import { PadoWebsiteMsgListener } from './pageWebsite.js';
+import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -70,9 +71,6 @@ const processFullscreenReq = (message, port) => {
       break;
     case 'networkreq':
       processExReq(message, port, USERPASSWORD);
-      break;
-    case 'storage':
-      processStorageReq(message, port);
       break;
     case 'wallet':
       processWalletReq(message, port);
@@ -225,12 +223,25 @@ const processpadoServiceReq = async (message, port) => {
         if (rc === 0) {
           const { dataInfo, userInfo } = result;
           const lowerCaseSourceName = params.source.toLowerCase();
+          let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
+          const lastData = storageRes[lowerCaseSourceName];
+          let pnl = null;
+          if (lastData) {
+            const lastTotalBal = JSON.parse(lastData).followers;
+            pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
+          }
+          if (pnl !== null && pnl !== undefined) {
+            dataInfo.pnl = pnl;
+          }
+
           const socialSourceData = {
             ...dataInfo,
             date: getCurrentDate(),
             timestamp: +new Date(),
             version: SocailStoreVersion,
           };
+          socialSourceData.userInfo = {};
+          socialSourceData.userInfo.userName = socialSourceData.userName;
           await chrome.storage.local.set({
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           });
@@ -271,6 +282,18 @@ const processpadoServiceReq = async (message, port) => {
         if (rc === 0) {
           const lowerCaseSourceName = params.source.toLowerCase();
           const { dataInfo, userInfo } = result;
+
+          let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
+          const lastData = storageRes[lowerCaseSourceName];
+          let pnl = null;
+          if (lastData) {
+            const lastTotalBal = JSON.parse(lastData).followers;
+            pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
+          }
+          if (pnl !== null && pnl !== undefined) {
+            dataInfo.pnl = pnl;
+          }
+
           const socialSourceData = {
             ...dataInfo,
             date: getCurrentDate(),
@@ -318,23 +341,9 @@ const processpadoServiceReq = async (message, port) => {
   }
 };
 
-const processStorageReq = async (message, port) => {
-  // console.log('processStorageReq message', message);
-  const { type, key, value } = message;
-  switch (type) {
-    case 'set':
-      await chrome.storage.local.set({ [key]: value });
-      break;
-    case 'remove':
-      await chrome.storage.local.remove(key);
-      break;
-    default:
-      break;
-  }
-};
 
 const processWalletReq = async (message, port) => {
-  // console.log('processWalletReq message', message);
+  console.log('processWalletReq message', message);
   const {
     reqMethodName,
     params: { password },
@@ -398,13 +407,7 @@ const processWalletReq = async (message, port) => {
           acc = web3EthAccount.privateKeyToAccount(privateKey);
         } else {
           acc = web3EthAccount.create();
-          transferMsg = {
-            fullScreenType: 'storage',
-            type: 'set',
-            key: 'privateKey',
-            value: acc.privateKey,
-          };
-          await processStorageReq(transferMsg, port);
+          await chrome.storage.local.set({ privateKey: acc.privateKey });
         }
         postMsg(port, { resMethodName: reqMethodName, res: acc.address });
       } catch {
@@ -483,4 +486,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.runtime.sendMessage(message);
     }
   }
+  if (message.type === 'dataSourceWeb') {
+    dataSourceWebMsgListener(
+      message,
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort
+    );
+  }
+  
 });

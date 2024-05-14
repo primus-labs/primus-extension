@@ -1,0 +1,95 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+@import '../../attestationForm.scss';
+.pFormWrapper.detailForm {
+  --verificationContent-width: 0.92rem;
+  --verificationContent-input-width: 1.02rem;
+  --verificationContent-select-width: 0.9513rem;
+  --verificationValue-select-width: 0.8541rem;
+  --verificationValue-input-width: 0.6111rem;
+  --verificationValue-input-hasValue-width: 0.4166rem;
+}
+@media (max-width: 1470px) {
+  .pFormWrapper.detailForm {
+    --verificationContent-width: 132px;
+    --verificationContent-input-width: 147px;
+    --verificationContent-select-width: 137px;
+    --verificationValue-select-width: 123px;
+    --verificationValue-input-width: 88px;
+    --verificationValue-input-hasValue-width: 60px;
+  }
+}
+.pFormWrapper.detailForm {
+  gap: var(--spacing-12) !important;
+  .formItem {
+    @include attestationForm;
+    &.preset {
+      @include hasPresetFormItem;
+    }
+    &.hasDefaultValue {
+      @include plainTextFormItem;
+    }
+    .verificationContent {
+      &.hasValue {
+        .selectInput {
+          width: var(--verificationContent-select-width);
+        }
+      }
+      .selectOptionswrapper {
+        width: var(--verificationContent-select-width);
+      }
+    }
+    .verificationValue {
+      .selectOptionswrapper{
+        .dropdownOptionCon{
+          .left{
+            .iconImg{
+              border-radius: 50%;
+            }
+          }
+        }
+      }
+      &.hasValue {
+        .selectInput {
+          width: var(--verificationValue-select-width);
+        }
+        // .inputWrapper {
+        //   width: var(--verificationValue-input-hasValue-width);
+        // }
+      }
+      .selectOptionswrapper {
+        width: var(--verificationValue-select-width);
+        
+      }
+      .selectOptionswrapper {
+        .PDropdown {
+          max-height: 240px;
+          overflow-y: auto;
+        }
+      }
+      .inputWrapper {
+        width: var(--verificationValue-select-width);
+        .pInput{
+          width: 100%;
+        }
+      }
+    }
+  }
+  .staticItem {
+    @include hasPresetFormItem;
+    @include plainTextFormItem;
+    .value {
+      height: var(--spacing-32);
+      border-radius: var(--spacing-4);
+      background: var(--border-tokens-border-chart);
+      padding: var(--spacing-4) var(--spacing-12);
+      .balance {
+        @include BodyBody300;
+        margin-left: var(--spacing-6);
+        color: var(--text-tokens-text-placeholder);
+      }
+    }
+  }
+  
+}

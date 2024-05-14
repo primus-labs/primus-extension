@@ -2,8 +2,6 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
-import { WALLETLIST } from '@/config/constants';
-import type { WALLETITEMTYPE } from '@/config/constants';
 import SourceGroup from '@/components/DataSourceOverview/SourceGroups/SourceGroup';
 import PBack from '@/components/PBack';
 import PMask from '@/components/PMask';
@@ -11,11 +9,6 @@ import PButton from '@/components/PButton';
 import PSelect from '@/components/PSelect';
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import {formatAddress} from '@/utils/utils'
-import { DATASOURCEMAP } from '@/config/constants';
-import { formatNumeral } from '@/utils/utils';
-import iconGreater from '@/assets/img/iconGreater.svg';
-import iconInfoGray from '@/assets/img/iconInfoGray.svg';
-import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 
 import type { CredTypeItemType } from '@/types/cred';
 import type { ExchangeMeta } from '@/types/dataSource';

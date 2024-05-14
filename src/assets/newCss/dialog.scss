@@ -1,0 +1,93 @@
+@import './flex.scss';
+@import './mixins.scss';
+// .padoDialog {
+//     --padoDialog-width: 3.4014rem;
+//     --padoDialog-height: 4.2313rem;
+//     --padoDialog-padding: .3265rem .2857rem .2177rem;
+//     --padoDialog-footerBotton-height: .3265rem;
+//   }
+// @media (max-width: 1470px) {
+//   .padoDialog {
+//     --padoDialog-width: 500px;
+//     --padoDialog-height: 622px;
+//     --padoDialog-padding: 48px 42px 32px;
+//     --padoDialog-footerBotton-height: 48px;
+//   }
+// }
+
+.padoDialogHeaderStyle {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-24);
+  h1 {
+    @include HeadlineH0;
+    color: var(--text-tokens-text-primary);
+  }
+  h2 {
+    @include BodyBody100;
+    color: var(--text-tokens-text-secondary);
+  }
+}
+.pDialog2 {
+  @include fcbc;
+  width: var(--padoDialog-width, 448px);
+  // height: var(--padoDialog-height, 516px);
+  border-radius: var(--spacing-8, 8px);
+  background: var(--layer-tokens-layer-primary, #fff);
+  padding: var(--spacing-24, 24px);
+  color: var(--text-tokens-text-primary);
+  position: relative;
+  .PClose {
+    position: absolute;
+    
+    top: var(--spacing-24, 24px);
+    right: var(--spacing-24,24px);
+    top: 24px;
+    right: 24px;
+  }
+  > main {
+    @include fcss;
+    width: 100%;
+    gap: var(--spacing-24);
+    > header {
+      @extend .padoDialogHeaderStyle;
+    }
+    .pFormWrapper {
+      @include fcss;
+      width: 100%;
+      gap: var(--spacing-24);
+      .formItem {
+        width: 100%;
+      }
+      > .PButton {
+        width: 100%;
+        height: var(--spacing-40, 40px);
+      }
+    }
+  }
+  > footer {
+    width: 100%;
+    > .PButton {
+      width: 100%;
+      height: var(--spacing-40, 40px);
+    }
+  }
+}
+
+@mixin detailWrapper {
+  width: 100%;
+  @include fcss;
+  .step {
+    width: 100%;
+    gap: var(--spacing-16);
+    padding: var(--spacing-24) 0;
+    border-bottom: 1px solid var(--border-tokens-border-primary);
+    &:first-child {
+      padding-top: 0;
+    }
+    &:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+  }
+}

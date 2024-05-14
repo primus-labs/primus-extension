@@ -1,7 +1,7 @@
-import iconPolygon from '@/assets/img/iconPolygon.svg';
+import iconPolygon from '@/assets/img/iconPolygon.png';
 import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
-import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.svg';
+import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.png';
 import { getAlgoUrl } from '@/services/api/algorithm';
 import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
@@ -10,8 +10,10 @@ import store from '@/store';
 import type { UserState } from '@/types/store';
 type ENVTYPE = 'development' | 'test' | 'production';
 
-const CURENV = process.env.NODE_ENV as ENVTYPE;
-// const CURENV = 'production';
+export const CURENV = process.env.NODE_ENV as ENVTYPE;
+// export const CURENV = 'development';
+// export const CURENV = 'production';
+console.log('222CURENV', CURENV, process.env);
 const PADOURLMAP = {
   development: 'wss://api-dev.padolabs.org/algorithm',
   test: '18.179.8.186:8888',
@@ -39,7 +41,7 @@ const PADOSERVERURLMAP = {
   production: 'https://api.padolabs.org',
 };
 export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
-
+export const tokenLogoPath = PADOSERVERURL + '/public/token/logo';
 const EASINFOMAP = {
   development: {
     'Scroll Sepolia': {
@@ -524,8 +526,7 @@ const EASINFOMAP = {
         decimals: 18,
       },
       transactionDetailUrl: 'https://mainnet.opbnbscan.com/tx',
-      bucketDetailUrl:
-        'https://scan.sign.global/attestation/onchain_evm_204_',
+      bucketDetailUrl: 'https://scan.sign.global/attestation/onchain_evm_204_',
     },
     Arbitrum: {
       showName: 'Arbitrum',
@@ -834,3 +835,10 @@ const CLAIMNFTNETWORKNAMEMAP = {
   production: 'Polygon',
 };
 export let CLAIMNFTNETWORKNAME = CLAIMNFTNETWORKNAMEMAP[CURENV];
+
+const OPENSEALINKMAP = {
+  development:
+    'https://testnets.opensea.io/assets/sepolia/0xe71e7b07158963095a5ea841addbd6f20e599292',
+  production: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98`,
+};
+export let OPENSEALINK = OPENSEALINKMAP[CURENV];

@@ -1,0 +1,88 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+
+.pDialog2.referral-code {
+  width: 448px;
+  height: fit-content;
+  padding: 24px;
+  .PClose {
+    // height: 36px;
+    .closeBtn {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+  }
+  main {
+    gap: 24px;
+
+    .detailWrapper {
+      @include detailWrapper;
+
+      .step {
+
+      }
+    }
+
+    .inputDesc {
+      font-size: 14px;
+      font-weight: 400;
+      height: 18px;
+      font-family: 'IBM Plex Sans';
+      color: var(--text-tokens-text-secondary, #525252);
+    }
+
+    .inputTitle {
+      font-size: 14px;
+      font-weight: 400;
+      height: 18px;
+    }
+
+    .inputComponent {
+      display: flex;
+      position: relative;
+      width: 400px;
+      height: 40px;
+      margin-top:3px;
+      & * .inputWrapper{
+        margin-top:3px;
+        width: 400px;
+        height: 40px;
+      }
+
+      button {
+        position: absolute;
+        font-size: 14px;
+        font-family: 'IBM Plex Sans';
+        color: var(--text-tokens-text-primary, #161616);
+        letter-spacing: 0.16px;
+        font-weight: 500;
+        margin-top: 13px;
+        right: 10px;
+      }
+    }
+    .inputComponent:hover{
+      border-color: var(--brand-primary-color-bp-50);
+    }
+    .errorTip{
+      margin-top: 2px;
+      font-size: 12px;
+      line-height: 18px;
+      font-family: 'Inter-Regular';
+      color: #ff0000
+    }
+
+
+    .confirmButton{
+      margin-top: 8px;
+      font-size: 14px;
+      font-family: 'IBM Plex Sans';
+      width: 400px;
+      height: 40px;
+    }
+    .skipBtn{
+      margin-top: -16px;
+      height: 40px;
+    }
+  }
+}

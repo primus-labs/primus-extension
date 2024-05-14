@@ -1,0 +1,100 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.PDropdown {
+  width: 100%;
+  border-radius: var(--Radius-radius-xs, 4px);
+  background: var(--layer-tokens-layer-primary, #fff);
+  box-shadow: 0px 6px 24px 0px rgba(0, 0, 0, 0.1);
+  overflow-y: hidden;
+  &::-webkit-scrollbar {
+    width: var(--spacing-4);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--spacing-4);
+  }
+  .dropdownOptions {
+    @include fcss;
+    width: 100%;
+    padding: var(--spacing-8, 8px) 0px;
+    // border-radius: var(--Radius-radius-xs, 4px);
+    // background: var(--layer-tokens-layer-primary, #fff);
+    // box-shadow: 0px 6px 24px 0px rgba(0, 0, 0, 0.1);
+    .dropdownOption {
+      @include frsc;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--Radius-radius-xxs, 2px);
+      box-sizing: border-box;
+      height: var(--spacing-32, 32px);
+      gap: var(--spacing-8, 8px);
+      flex-shrink: 0;
+      &:not(.disabled):hover {
+        background: var(--layer-tokens-layer-primary-hover, #f4f4f4);
+        .dropdownOptionCon {
+          .desc {
+            color: var(--text-tokens-text-primary, #161616);
+          }
+        }
+      }
+      &.disabled {
+        cursor: not-allowed;
+        // TODO-newui
+        // background: var(--button-tokens-button-disabled);
+        .left {
+          .desc {
+            opacity: 0.2;
+          }
+        }
+        cursor: not-allowed;
+      }
+      &.selected {
+        background: var(--layer-tokens-layer-primary-hover, #f4f4f4);
+      }
+      .dropdownOptionCon {
+        width: 100%;
+        @include frbc;
+        padding: 0 var(--spacing-16, 16px);
+        .left {
+          @include frsc;
+          gap: var(--spacing-16, 16px);
+
+          .placeHolder {
+            width: var(--spacing-18, 18px);
+          }
+          > .iconImg {
+            width: var(--spacing-18, 18px);
+          }
+          > .iconfont {
+            font-size: var(--spacing-18, 18px);
+          }
+          .desc {
+            @include BodyBody100;
+            color: var(--text-tokens-text-secondary, #525252);
+          }
+        }
+
+        .tooltipBtn {
+          line-height: 1;
+          .iconfont {
+            font-size: var(--spacing-12);
+          }
+        }
+      }
+    }
+  }
+}
+.dark {
+  .PDropdown {
+    background: var(--layer-tokens-layer-04);
+    // .dropdownOptions {
+    //   .dropdownOption {
+    //     &:not(.disabled):hover {
+    //       background: var(--neutral-color-gray-90);
+    //     }
+    //   }
+    // }
+  }
+}

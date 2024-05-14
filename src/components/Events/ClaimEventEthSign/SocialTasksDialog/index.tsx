@@ -9,7 +9,6 @@ import PButton from '@/components/PButton';
 import iconSuc from '@/assets/img/iconSuc.svg';
 
 import './index.scss';
-import discord from '@/assets/newImg/achievements/discord.svg';
 interface SetPwdDialogProps {
   onSubmit: () => void;
   onClose: () => void;

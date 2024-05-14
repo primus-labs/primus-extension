@@ -13,8 +13,8 @@ import { lineaportalabi } from './lineaportalabi';
 
 //const { keccak256, toUtf8Bytes, splitSignature } = utils;
 import { _TypedDataEncoder } from '@ethersproject/hash';
-import { EASInfo } from '@/config/envConstants';
 import { defaultAbiCoder } from 'ethers/lib/utils';
+import { EASInfo } from '@/config/chain';
 //var ethereumjsUtil = require('ethereumjs-util');
 
 export async function testeas() {
@@ -394,13 +394,11 @@ export async function attestByDelegationProxyFee(params) {
   )
   {
     return txreceipt.transactionHash;
-  }else if(    networkName.indexOf('opBNB') > -1
-  ){
-    const data = txreceipt.logs[1].data
-    const res = defaultAbiCoder.decode(["uint64", "string"]
-      , data)
-    console.log(res[0]._hex)
-    return res[0]._hex
+  } else if (networkName.indexOf('opBNB') > -1) {
+    const data = txreceipt.logs[1].data;
+    const res = defaultAbiCoder.decode(['uint64', 'string'], data);
+    console.log(res[0]._hex);
+    return res[0]._hex;
   } else {
     const newAttestationUID = txreceipt.logs[txreceipt.logs.length - 1].data;
     return newAttestationUID;
@@ -516,12 +514,11 @@ export async function bulkAttest(params) {
     networkName.indexOf('Scroll') > -1
   ) {
     return txreceipt.transactionHash;
-  } else if(networkName.indexOf('opBNB') > -1){
-    const data = txreceipt.logs[1].data
-    const res = defaultAbiCoder.decode(["uint64", "string"]
-      , data)
-    console.log(res[0]._hex)
-    return res[0]._hex
+  } else if (networkName.indexOf('opBNB') > -1) {
+    const data = txreceipt.logs[1].data;
+    const res = defaultAbiCoder.decode(['uint64', 'string'], data);
+    console.log(res[0]._hex);
+    return res[0]._hex;
   } else {
     let newAttestationUIDs = [];
     for (let i = 0; i < bulkParams.length; i++) {

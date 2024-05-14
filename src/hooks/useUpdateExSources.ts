@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DATASOURCEMAP } from '@/config/constants';
 import { setExSourcesAsync } from '@/store/actions';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import { postMsg } from '@/utils/utils';
+import useAllSources from './useAllSources';
 type ExKeysStorages = {
   [propName: string]: any;
 };
@@ -13,6 +13,7 @@ type queryObjType = {
   [propName: string]: any;
 };
 const useUpdateExSources = (flag = false) => {
+  const { sourceMap } = useAllSources();
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort
@@ -28,51 +29,72 @@ const useUpdateExSources = (flag = false) => {
       return false;
     }
   }, [queryObj]);
+
+  const exSources = useMemo(() => {
+    return sourceMap.exSources;
+  }, [sourceMap]);
   const fetchExDatas = useCallback(
     async (name?: string) => {
-      const sourceNameList = name
-        ? [name]
-        : Object.keys(DATASOURCEMAP).filter(
-            (i) =>
-              DATASOURCEMAP[i].type === 'Assets' &&
-              DATASOURCEMAP[i].name !== 'On-chain'
-          );
-      const exCipherKeys = sourceNameList.map((i) => `${i}cipher`);
-      let res: ExKeysStorages = await chrome.storage.local.get(exCipherKeys);
-      const list = Object.keys(res).map((i) => {
-        const exName = i.split('cipher')[0];
-        setQueryObj((obj) => ({ ...obj, [exName]: undefined }));
-        return exName;
+      const list = name ? [name] : Object.keys(exSources);
+      list.map((i) => {
+        setQueryObj((obj) => ({ ...obj, [i]: undefined }));
       });
       list.forEach(async (item) => {
         const reqType = `set-${item}`;
         const msg: any = {
           fullScreenType: 'networkreq',
           type: reqType,
-          params: {},
+          params: {
+            withoutMsg: true,
+          },
         };
         postMsg(padoServicePort, msg);
         console.log(`page_send:${reqType} request`);
       });
     },
-    [padoServicePort]
+    [padoServicePort, exSources]
   );
-  const padoServicePortListener = function (message: any) {
-    const { resType, res } = message;
-    if (resType?.startsWith(`set-`)) {
-      console.log(`page_get:${resType}:`, message.res);
-      const name = resType.split('-')[1];
-      setQueryObj((obj) => ({ ...obj, [name]: true }));
-    }
-    // TODO request fail
-    // padoServicePort.onMessage.removeListener(padoServicePortListener);
-  };
+  const padoServicePortListener = useCallback(
+    async function (message: any) {
+      const { resType, res, msg } = message;
+      if (resType?.startsWith(`set-`)) {
+        console.log(`page_get:${resType}:`, message.res, 'useUpdateExSources');
+        const name = resType.split('-')[1];
+        setQueryObj((obj = {}) => {
+          if (name in (obj as object)) {
+            return { ...obj, [name]: true };
+          } else {
+            return obj;
+          }
+        });
+        const curSourceUserInfo = exSources[name];
+        if (res) {
+          if (curSourceUserInfo?.expired === '1') {
+            delete curSourceUserInfo.expired;
+            await chrome.storage.local.set({
+              [name]: JSON.stringify(curSourceUserInfo),
+            });
+          }
+        } else {
+          if (msg === 'AuthenticationError') { // TODO-newui
+            if (curSourceUserInfo) {
+              curSourceUserInfo.expired = '1';
+              await chrome.storage.local.set({
+                [name]: JSON.stringify(curSourceUserInfo),
+              });
+            }
+          }
+        }
+      }
+    },
+    [exSources]
+  );
   useEffect(() => {
     padoServicePort.onMessage.addListener(padoServicePortListener);
     return () => {
       padoServicePort.onMessage.removeListener(padoServicePortListener);
     };
-  }, [padoServicePort.onMessage]);
+  }, [padoServicePort.onMessage, padoServicePortListener]);
   useEffect(() => {
     if (!loading) {
       dispatch(setExSourcesAsync());

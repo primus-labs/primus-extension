@@ -1,0 +1,105 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.PSelect {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-4, 4px);
+  position: relative;
+  &.horizontal {
+    @include frss;
+  }
+  > label {
+    color: var(--text-tokens-text-primary, #161616);
+    @include Label01;
+    @include frsc;
+    padding-bottom: var(--spacing-4, 4px);
+    @include frsc;
+    gap: var(--spacing-4);
+    .tooltipBtn {
+      &.icon {
+        width: var(--spacing-12, 12px);
+      }
+    }
+  }
+  &.disabled {
+    > label {
+      color: var(--text-tokens-text-placeholder, #a8a8a8);
+    }
+  }
+  .selectInput {
+    width: 100%;
+    @include frsc;
+    gap: var(--spacing-16, 16px);
+    border-radius: var(--Radius-radius-xs, 4px);
+    border: 1px solid var(--border-tokens-border--primary, #e0e0e0);
+    background: var(--layer-tokens-layer-primary, #fff);
+    height: var(--spacing-40, 40px);
+    padding: 0 var(--spacing-16, 16px);
+    &:not(.disabled).toBeActive {
+      cursor: pointer;
+    }
+    &:not(.disabled).active {
+      border: 1px solid var(--Brand-Primary-Color-BP-50, #00c7f2);
+    }
+    &.disabled {
+      border: 1px solid var(--border-disabled, #f4f4f4);
+      .valueWrapper {
+        color: var(--text-tokens-text-disabled, #c6c6c6);
+        .placeholder {
+          color: var(--text-tokens-text-disabled, #c6c6c6);
+        }
+      }
+      .iconfont {
+        color: var(--icon-tokens-icon-disabled);
+      }
+    }
+
+    .valueWrapper {
+      color: var(--text-tokens-text-primary, #161616);
+      @include BodyBody100;
+      @include frsc;
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      border: 0;
+      gap: var(--spacing-8);
+      .placeholder {
+        color: var(--text-tokens-text-placeholder, #a8a8a8);
+      }
+      .iconfont,
+      .iconImg {
+        font-size: var(--spacing-16);
+        width: var(--spacing-16);
+        border-radius: 50%;
+      }
+    }
+    .iconfont {
+      color: var(--icon-tokens-icon-primary);
+      font-size: var(--spacing-16, 16px);
+    }
+  }
+  .selectOptionswrapper {
+    position: absolute;
+    z-index: 2;
+    top: var(--spacing-40, 40px);
+    padding-top: var(--spacing-4, 4px);
+    width: 100%;
+    &.withLabel {
+      top: 66px;
+    }
+    .PDropdown {
+      width: 100%;
+    }
+  }
+}
+.dark {
+  .PSelect {
+    .selectInput {
+      // background: var(--background-tokens-background);
+      &.disabled {
+        border: 1px solid var(--button-tokens-button-disabled, #262626);
+      }
+    }
+  }
+}

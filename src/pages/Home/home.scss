@@ -1,5 +1,50 @@
-@import '@/assets/css/pFlex.sass';
-
-@import '@/pages/Home/pageIndex.scss';
-
-@import "@/assets/css/padoM.scss";
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+.pageGuide {
+  cursor: pointer;
+  @include frcc;
+  height: 100vh;
+  background: #F9F9F9;
+  &.dark{
+    background: #161616;
+  }
+  &.fixedH {
+    height: 100vh;
+  }
+  &.autoH {
+    height: fit-content;
+  }
+  .guideImg {
+    width: 100vw;
+    &.animate__animated {
+      animation-duration: 0.2s;
+    }
+  }
+  .animationWrapper {
+    @include frsc;
+    gap: 40px;
+    font-family: Overpass;
+    font-size: 32px;
+    font-weight: normal;
+    line-height: 140%;
+    letter-spacing: 0px;
+    color: rgba(0, 0, 0, 0.8);
+    &.animate__animated {
+      animation-duration: 0.8s;
+    }
+    > img {
+      width: 140px;
+    }
+    > i {
+      width: 1px;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .logonTxt {
+      width: 471px;
+    }
+  }
+}
+// #app-container{
+//   height: fit-content;
+// }

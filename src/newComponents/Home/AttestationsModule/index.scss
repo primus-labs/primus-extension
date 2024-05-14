@@ -1,0 +1,9 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.attestationsModule {
+  width: calc((100% - var(--spacing-16)) / 2);
+  @include fcss;
+  gap: var(--spacing-16);
+}

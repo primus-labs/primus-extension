@@ -28,6 +28,12 @@ export const finishTask = async (data) =>{
         data:data
     });
 }
+export const finishTaskForEvent = async (data) => {
+  return await request({
+    method: 'get',
+    url: `/public/discord/check/joined?discordUserId=${data.discordUserId}`,
+  });
+};
 
 export const taskStatusCheck = async (tasks) => {
     return await request({
@@ -58,5 +64,13 @@ export  const shareDiscord = async (data) => {
         method : 'post',
         url : '/media/share/discord',
         data: data
+    });
+}
+
+
+export const checkHasFinishJoinDiscord = async () => {
+    return await request({
+        method : 'get',
+        url : '/achievement/discord/gm/check',
     });
 }

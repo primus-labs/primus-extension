@@ -1,0 +1,29 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+
+.pDialog2.connectByAPIDialog {
+  main {
+    .detailWrapper {
+      @include detailWrapper;
+      .step {
+        @include fcss;
+        gap: var(--spacing-16);
+        &.done {
+          @include frsc;
+          gap: var(--spacing-12);
+          .iconDone {
+            width: var(--spacing-24);
+          }
+          .txt {
+            @include BodyBody100Semibold;
+          }
+        }
+        .con {
+          @include BodyBody100;
+          color: var(--text-tokens-text-secondary);
+        }
+      }
+    }
+  }
+}

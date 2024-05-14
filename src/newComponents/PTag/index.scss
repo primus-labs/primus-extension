@@ -1,0 +1,60 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.pTag {
+  @include frsc;
+  gap: var(--spacing-4);
+  @include Hint;
+  color: var(--tag-tokens-tag-yellow-text);
+  padding: var(--spacing-4) var(--spacing-8);
+  border-radius: var(--spacing-16);
+  &.teal {
+    background-color: var(--tag-tokens-tag-teal);
+    color: var(--tag-tokens-tag-teal-text);
+  }
+  &.yellow {
+    background-color: var(--tag-tokens-tag-yellow);
+    color: var(--tag-tokens-tag-yellow-text);
+  }
+  &.blue {
+    background-color: var(--tag-tokens-tag-blue);
+    color: var(--tag-tokens-tag-blue-text);
+  }
+  &.purple {
+    background-color: var(--tag-tokens-tag-purple);
+    color: var(--tag-tokens-tag-purple-text);
+  }
+  &.brand {
+    background-color: var(--tag-tokens-tag-brand);
+    color: var(--tag-tokens-tag-brand-text);
+  }
+  &.gray {
+    background-color: var(--layer-tokens-layer-cool-gray-background);
+    color: var(--tag-tokens-tag-cool-gray-text);
+  }
+
+  > .iconfont {
+    font-size: var(--spacing-12);
+  }
+}
+
+.dark {
+  .pTag {
+    &.yellow {
+      background-color: var(--tag-tokens-tag-yellow);
+      color: var(-tag-tokens-tag-yellow-text);
+    }
+    &.blue {
+      background-color: var(--tag-tokens-tag-blue);
+      color: var(--tag-tokens-tag-blue-text);
+    }
+    &.purple {
+      background-color: var(--tag-tokens-tag-purple);
+      color: var(--tag-tokens-tag-purple-text);
+    }
+    &.brand {
+      background-color: var(--tag-tokens-tag-brand);
+      color: var(--tag-tokens-tag-brand-text);
+    }
+  }
+}

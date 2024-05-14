@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useCallback } from 'react';
-
 import { postMsg } from '@/utils/utils';
 import { useSelector } from 'react-redux';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
@@ -36,12 +35,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   );
   const padoServicePortListener = useCallback(
     async function (message: any) {
-      const {
-        resType,
-        resMethodName,
-        res,
-        params,
-      } = message;
+      const { resType, resMethodName, res, params } = message;
       if (resType === 'algorithm') {
         console.log(`page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
@@ -143,5 +137,23 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
       };
     }
   }, [padoServicePort, padoServicePortListener]);
+
+  useEffect(() => {
+    console.log('updated port in page layout', padoServicePort.name);
+    const beforeunloadFn = () => {
+      const msg = {
+        fullScreenType: 'algorithm',
+        reqMethodName: 'stop',
+        params: {
+          noRestart: true,
+        },
+      };
+      postMsg(padoServicePort, msg);
+    };
+    window.addEventListener('beforeunload', beforeunloadFn);
+    return () => {
+      window.removeEventListener('beforeunload', beforeunloadFn);
+    };
+  }, [padoServicePort]);
 };
 export default useAlgorithm;

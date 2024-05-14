@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { setSocialSourcesAsync } from '@/store/actions';
 import { getAuthAttestation } from '@/services/api/cred';
 import type { UserState } from '@/types/store';
-import { postMsg, getAuthUrl } from '@/utils/utils';
+import { getCurrentDate, postMsg, sub, getAuthUrl } from '@/utils/utils';
 import { eventReport } from '@/services/api/usertracker';
+import { checkIsLogin } from '@/services/api/user';
 import useInterval from './useInterval';
-import { BASEVENTNAME } from '@/config/constants';
+import { BASEVENTNAME } from '@/config/events';
 import useEventDetail from './useEventDetail';
-import { schemaTypeMap } from '../config/constants';
+import { SocailStoreVersion } from '@/config/constants';
+import type { Dispatch } from 'react';
 type CreateAuthWindowCallBack = (
   state: string,
   source: string,
@@ -17,14 +20,19 @@ type CreateAuthWindowCallBack = (
   onSubmit?: (p: any) => void
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
+// create google account attestation
 const useAuthorization2 = () => {
+  const dispatch: Dispatch<any> = useDispatch();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const [searchParams] = useSearchParams();
-  const fromEvents = searchParams.get('fromEvents');
+  const fromEvents = searchParams.get('id');
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
+  );
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
   );
   // const pollingResultFn = async (state: string, source: string) => {
   //   const res = await getAuthAttestation({
@@ -50,7 +58,7 @@ const useAuthorization2 = () => {
               name: 'cancelAttest',
             });
             clearInterval(timer);
-            timer = null
+            timer = null;
           }
         }
       });
@@ -70,21 +78,77 @@ const useAuthorization2 = () => {
             clearInterval(timer);
             timer = null;
           }
-          setAuthWindowId(undefined);
-          newWindowId &&
-            chrome.windows.get(newWindowId, {}, (win) => {
-              win?.id && chrome.windows.remove(newWindowId);
+          const fn = () => {
+            setAuthWindowId(undefined);
+            newWindowId &&
+              chrome.windows.get(newWindowId, {}, (win) => {
+                win?.id && chrome.windows.remove(newWindowId);
+              });
+            onSubmit && onSubmit(res.result);
+          };
+          const lowerCaseSourceName = source.toLowerCase(); // google
+          const storeRes = await chrome.storage.local.get([
+            lowerCaseSourceName,
+          ]);
+          if (storeRes[lowerCaseSourceName]) {
+            fn();
+          } else {
+            const fetchRes = await checkIsLogin({
+              state,
+              source,
             });
-          onSubmit && onSubmit(res.result);
+            const { rc, result, mc } = fetchRes;
+            if (rc === 0) {
+              const { dataInfo, userInfo } = result;
+              let storageRes = await chrome.storage.local.get(
+                lowerCaseSourceName
+              );
+              const lastData = storageRes[lowerCaseSourceName];
+              let pnl: any = null;
+              if (lastData) {
+                const lastTotalBal = JSON.parse(lastData).followers;
+                pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
+              }
+              if (pnl !== null && pnl !== undefined) {
+                dataInfo.pnl = pnl;
+              }
+
+              const socialSourceData = {
+                ...dataInfo,
+                date: getCurrentDate(),
+                timestamp: +new Date(),
+                version: SocailStoreVersion,
+              };
+              socialSourceData.userInfo = {};
+              socialSourceData.userInfo.userName = socialSourceData.userName;
+              await chrome.storage.local.set({
+                [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+              });
+              dispatch(setSocialSourcesAsync());
+
+              const eventInfo = {
+                eventType: 'DATA_SOURCE_INIT',
+                rawData: { type: 'Social', dataSource: source },
+              };
+              eventReport(eventInfo);
+              fn();
+            } else {
+            }
+          }
         } else {
         }
       };
-      let timer:any = setInterval(() => {
+      let timer: any = setInterval(() => {
         pollingResultFn(state, source);
       }, 1000);
       setCheckIsAuthDialogTimer(timer);
     },
-    [connectedWallet?.address, BASEventDetail?.ext?.schemaType, fromEvents]
+    [
+      connectedWallet?.address,
+      BASEventDetail?.ext?.schemaType,
+      fromEvents,
+      dispatch,
+    ]
   );
   const handleClickOAuthSource: OauthFn = useCallback(
     async (source, onSubmit) => {

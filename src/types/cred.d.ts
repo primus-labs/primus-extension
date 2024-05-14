@@ -45,7 +45,14 @@ export type CredTypeItemType = {
   rawParam?: any;
   dataToBeSigned?: any;
   proofContent?: any;
-  credVersion?: any;
+
+  dataSourceId?: string;
+  verificationContent?: string;
+  verificationValue?: string;
+  attestationType?: string; // 'Assets Verification'
+  fetchType?: string; // Web ,API
+  account?: string;
+  credVersion: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;
@@ -80,4 +87,23 @@ export type AttestionForm = {
   proofContent?: string;
   event?: string;
   sourceUseridHash?: string;
+};
+
+export type ATTESTATIONTYPEITEMTYPE = {
+  id: string;
+  name: string;
+  icon: any;
+  disabled?: boolean;
+  color?: string;
+  childMap?: {
+    [prodName: string]: ASSETSVERIFICATIONCONTENTTYPEITEM;
+  };
+  chartBarColor?: string;
+  show?: boolean;
+  shortName: string;
+};
+export type ASSETSVERIFICATIONCONTENTTYPEITEM = {
+  value: string;
+  label: string;
+  templateName?: string;
 };

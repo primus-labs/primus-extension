@@ -1,0 +1,16 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.sidebar {
+  @include fcss;
+  width: 240px;
+  height: 100%;
+  @include Button;
+  border-right: 1px solid var(--border-tokens-border--primary, #e0e0e0);
+  background: var(--background-tokens-background-nav, #fff);
+  padding: var(--spacing-16, 16px) 0px;
+  gap: var(--spacing-16, 16px);
+  .logo {
+    width: 76.19px;
+  }
+}

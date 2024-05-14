@@ -23,7 +23,7 @@ import iconStep1 from '@/assets/img/events/iconStep1.svg';
 import iconStep2 from '@/assets/img/events/iconStep2.svg';
 import iconStep3 from '@/assets/img/events/iconStep3.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
-import { SCROLLEVENTNAME } from '@/config/constants';
+
 import PBottomErrorTip from '@/components/PBottomErrorTip';
 import { switchAccount } from '@/services/wallets/metamask';
 import { BASEVENTNAME } from '@/config/constants';

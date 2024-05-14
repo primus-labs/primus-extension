@@ -1,0 +1,58 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+// .walletListWrapper {
+//   --pSelectOption-width: 1.3333rem;
+//   --pSelectOption-inner-width: 1.1156rem;
+// }
+// @media (max-width: 1470px) {
+//   .walletListWrapper {
+//     --pSelectOption-width: 196px;
+//     --pSelectOption-inner-width: 164px;
+//   }
+// }
+.pOptionsWrapper {
+  width: 100%;
+  ul.pOptions {
+    @include fcss;
+    width: 100%;
+    gap: var(--spacing-24, 24px);
+    li.pOption {
+      width: 100%;
+      @include frsc;
+      height: var(--spacing-48);
+      border: 1px solid var(--border-tokens-border-primary);
+      border-radius: var(--spacing-4);
+      padding-left: var(--spacing-20);
+      cursor: pointer;
+      &.disabled{
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      &:not(.disabled):hover,
+      &.active {
+        border-color: var(--border-tokens-border-bp);
+        @include card-xs_shadow;
+      }
+      .optionInfo {
+        width: 100%;
+        gap: var(--spacing-16, 16px);
+        @include frsc;
+
+        img.icon {
+          width: var(--spacing-24);
+        }
+        .name {
+          font-family: IBM Plex Sans;
+          font-size: 16px;
+          font-weight: 500;
+          line-height: 22px;
+          letter-spacing: 0px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}

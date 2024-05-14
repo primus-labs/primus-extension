@@ -1,0 +1,37 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  left: 0;
+  @include fcbs;
+  width: var(--sidebar-width);
+  height: 100%;
+  border-right: 1px solid var(--border-tokens-border-primary);
+  background: var(--background-tokens-background-navi, #fff);
+
+  padding: var(--spacing-16, 16px) 0px var(--spacing-32) 0;
+  gap: var(--spacing-16, 16px);
+  .sidebarTop {
+    width: 100%;
+    @include fcss;
+    gap: var(--spacing-16, 16px);
+    .logoWrapper {
+      @include frsc;
+      height: var(--spacing-40);
+      padding-left: var(--spacing-24);
+      .logo {
+        width: 80.09px;
+      }
+    }
+  }
+  .sidebarBottom {
+    padding-left: var(--spacing-24);
+  }
+}
+// .light {
+//   .sidebar {
+//     background: var(--background-tokens-background-navi, #fff);
+//   }
+// }

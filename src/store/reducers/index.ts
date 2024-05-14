@@ -1,6 +1,7 @@
 import { SETSYSCONFIG } from '../actions';
-import { connectWallet } from '@/services/wallets/metamask';
-import { BASEVENTNAME, DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import {
+  DEFAULTDATASOURCEPOLLINGTIMENUM,
+} from '@/config/constants';
 
 const DEFAULTCREDTYPELIST = [
   {
@@ -75,16 +76,23 @@ const initState = {
   socialSources: {},
   kycSources: {},
   sourceUpdateFrequency: DEFAULTDATASOURCEPOLLINGTIMENUM,
+  sourceUpdateInfo: {
+    lastUpdateFromNow: 5,
+    lastUpdating: false,
+    pollingFlag: false,
+  },
   proofTypes: DEFAULTCREDTYPELIST,
   webProofTypes: [],
   credentials: {},
   userInfo: {},
-  walletAddress: '',
+  walletAddress: '', // created account when click start
   rewards: {},
   effective: true,
   onChainAssetsSources: {},
-  connectWalletDialogVisible: false,
-  connectedWallet: null,
+  connectWalletDialogVisible: 0,
+  activeConnectWallet: {}, // connect wallet in process
+  requireFetchAssets: false,
+  connectedWallet: null, // user connected
   rewardsDialogVisible: {
     visible: false,
   },
@@ -97,7 +105,52 @@ const initState = {
     endTime: '1700971200000',
   },
   events: {},
-  requireUpgrade: false
+  requireUpgrade: false,
+  theme: 'light',
+  connectByAPILoading: 0,
+  lastLoginHasPwd: false,
+  dataSourceQueryStr: '',
+  dataSourceQueryType: '',
+  activeConnectDataSource: {}, // connect data source in progress
+  connectedWallets: {}, // had connected wallets and accounts
+  attestLoading: 0,
+  activeAttestation: {}, // attestation in progress
+  attestationQueryStr: '',
+  attestationQueryType: '',
+  activeOnChain: {}, // attestation on chain in progress
+
+  msgs: {
+    // '0': {
+    //   id: 0,
+    //   type: 'suc',
+    //   title: 'Data Connected',
+    //   desc: 'See details in the Data Source page.',
+    //   link: '/',
+    // },
+    // '1': {
+    //   id: '1',
+    //   type: 'error',
+    //   title: 'Data Connected',
+    //   desc: 'See details in the Data Source page.',
+    // },
+    // '2': {
+    //   id: '2',
+    //   type: 'warn',
+    //   title: 'Data Connected',
+    //   desc: 'See details in the Data Source page.',
+    //   code: '2330'
+    // },
+    // '3': {
+    //   id: '3',
+    //   type: 'info',
+    //   title: 'Data Connected',
+    //   desc: 'See details in the Data Source page.',
+    // },
+  },
+  nfts: {},
+  earlyBirdNFTs: {},
+  eventsLotteryResults: {},
+  newRewards: {},
 };
 
 // reducer
@@ -127,7 +180,15 @@ const reducer: any = function (state = initState, action: any) {
     case 'setCredentials':
       return { ...state, credentials: action.payload };
     case 'setSourceUpdateFrequency':
-      return { ...state, sourceUpdateFrequency: action.payload };
+      return {
+        ...state,
+        sourceUpdateFrequency: action.payload,
+      };
+    case 'setSourceUpdateInfo':
+      return {
+        ...state,
+        sourceUpdateInfo: { ...state.sourceUpdateInfo, ...action.payload },
+      };
     case 'setUserInfo':
       return { ...state, userInfo: action.payload };
     case 'setWalletAddress':
@@ -142,6 +203,16 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, sysConfig: action.payload };
     case 'setConnectWalletDialogVisible':
       return { ...state, connectWalletDialogVisible: action.payload };
+    case 'setActiveConnectWallet':
+      return {
+        ...state,
+        activeConnectWallet: {
+          ...state.activeConnectWallet,
+          ...action.payload,
+        },
+      };
+    case 'setRequireFetchAssets':
+      return { ...state, requireFetchAssets: action.payload };
     case 'setConnectWallet':
       return { ...state, connectedWallet: action.payload };
     case 'setRewardsDialogVisibleAction':
@@ -154,6 +225,61 @@ const reducer: any = function (state = initState, action: any) {
       return { ...state, events: action.payload };
     case 'setRequireUpgrade':
       return { ...state, requireUpgrade: action.payload };
+    case 'setThemeAction':
+      return { ...state, theme: action.payload };
+    case 'setConnectByAPILoading':
+      return { ...state, connectByAPILoading: action.payload };
+    case 'setIfHasPwd':
+      return { ...state, lastLoginHasPwd: action.payload };
+    case 'setDataSourceQueryStr':
+      return { ...state, dataSourceQueryStr: action.payload };
+    case 'setDataSourceQueryType':
+      return { ...state, dataSourceQueryType: action.payload };
+    case 'setConnectedWallets':
+      return { ...state, connectedWallets: action.payload };
+    case 'setAttestLoading':
+      return { ...state, attestLoading: action.payload };
+    case 'setActiveAttestation':
+      return {
+        ...state,
+        activeAttestation: { ...state.activeAttestation, ...action.payload },
+      };
+    case 'setAttestationQueryStr':
+      return { ...state, attestationQueryStr: action.payload };
+    case 'setAttestationQueryType':
+      return { ...state, attestationQueryType: action.payload };
+    case 'setActiveOnChain':
+      return {
+        ...state,
+        activeOnChain: { ...state.activeOnChain, ...action.payload },
+      };
+    case 'setMsgs':
+      return { ...state, msgs: action.payload };
+    case 'setActiveConnectDataSource':
+      return {
+        ...state,
+        activeConnectDataSource: {
+          ...state.activeConnectDataSource,
+          ...action.payload,
+        },
+      };
+    case 'setNfts':
+      return {
+        ...state,
+        nfts: action.payload,
+      };
+    case 'setEarlyBirdNFTs':
+      return {
+        ...state,
+        earlyBirdNFTs: action.payload,
+      };
+    case 'setEventsLotteryResults':
+      return {
+        ...state,
+        eventsLotteryResults: action.payload,
+      };
+    case 'setNewRewards':
+      return { ...state, newRewards: action.payload };
     default:
       return state;
   }

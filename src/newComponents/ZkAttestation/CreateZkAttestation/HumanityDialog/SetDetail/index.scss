@@ -1,0 +1,64 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+@import '../../attestationForm.scss';
+.pFormWrapper.detailForm3 {
+  --verificationContent-select-width: 1.1666rem;
+}
+@media (max-width: 1470px) {
+  .pFormWrapper.detailForm3 {
+    --verificationContent-select-width: 168px;
+  }
+}
+
+.pFormWrapper.detailForm3 {
+  gap: var(--spacing-12) !important;
+  .formItem {
+    @include attestationForm;
+    &.preset {
+      @include hasPresetFormItem;
+    }
+    &.hasDefaultValue {
+      @include plainTextFormItem;
+    }
+    .verificationContent {
+      &.hasValue {
+        .selectInput {
+          width: var(--verificationContent-select-width);
+        }
+      }
+      .selectOptionswrapper {
+        width: var(--verificationContent-select-width);
+      }
+    }
+    .verificationValue {
+      &.hasValue {
+        .selectInput {
+          width: var(--verificationContent-select-width);
+        }
+      }
+      .selectOptionswrapper {
+        width: var(--verificationContent-select-width);
+        .PDropdown {
+          max-height: 240px;
+          overflow-y: auto;
+        }
+      }
+    }
+  }
+  .staticItem {
+    @include hasPresetFormItem;
+    @include plainTextFormItem;
+    .value {
+      height: var(--spacing-32);
+      border-radius: var(--spacing-4);
+      background: var(--border-tokens-border-chart);
+      padding: var(--spacing-4) var(--spacing-12);
+      .balance {
+        @include BodyBody300;
+        margin-left: var(--spacing-6);
+        color: var(--text-tokens-text-placeholder);
+      }
+    }
+  }
+}

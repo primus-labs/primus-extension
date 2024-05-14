@@ -1,14 +1,11 @@
 import { encrypt, decrypt } from '@/utils/crypto';
-import {
-  DATASOURCEMAP,
-  CredVersion,
-  ExchangeStoreVersion,
-  schemaTypeMap,
-  SCROLLEVENTNAME,
-  BASEVENTNAME,
-} from '@/config/constants';
+import { DATASOURCEMAP } from '@/config/dataSource';
+import { SCROLLEVENTNAME, BASEVENTNAME } from '@/config/events';
+import { schemaTypeMap } from '@/config/constants';
+import { CredVersion } from '@/config/attestation';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
+import { storeDataSource } from './dataSourceUtils';
 
 export let EXCHANGEINFO = {
   binance: {
@@ -61,165 +58,91 @@ const getExchange = async (message, USERPASSWORD, port) => {
     type,
     params: { apiKey },
   } = message;
-  const exchangeName = type.split('-')[1];
+  const exchangeName = type.split('-')[1];  
   // console.log('getExchange exData type:', type);
   // get ex constructor params
-  let exParams = {};
-  if (apiKey) {
-    exParams = message.params;
-  } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
-    exParams = EXCHANGEINFO[exchangeName];
-  } else {
-    const cipherData = await chrome.storage.local.get(exchangeName + 'cipher');
-    if (!USERPASSWORD) {
-      postMsg(port, {
-        resType: 'lock',
-      });
-    }
-    if (cipherData) {
-      try {
-        const apiKeyInfo = JSON.parse(
-          decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
-        );
-        exParams = { ...apiKeyInfo };
-      } catch (err) {
-        console.log('decrypt', err);
-      }
-    }
-  }
-
   // request ex data
   const exchangeInfo = DATASOURCEMAP[exchangeName];
   const constructorF = exchangeInfo.constructorF;
-  const ex = new constructorF(exParams);
+  let exParams = {};
+  let ex;
+  if (exchangeInfo.connectType === 'API') {
+    if (apiKey) {
+      exParams = message.params;
+    } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
+      exParams = EXCHANGEINFO[exchangeName];
+    } else {
+      const cipherData = await chrome.storage.local.get(
+        exchangeName + 'cipher'
+      );
+      if (!USERPASSWORD) {
+        postMsg(port, {
+          resType: 'lock',
+        });
+      }
+      if (cipherData) {
+        try {
+          const apiKeyInfo = JSON.parse(
+            decrypt(cipherData[exchangeName + 'cipher'], USERPASSWORD)
+          );
+          exParams = { ...apiKeyInfo };
+        } catch (err) {
+          console.log('decrypt', err);
+        }
+      }
+    }
+
+    ex = new constructorF(exParams);
+  } else if (exchangeInfo.connectType === 'Web') {
+    ex = new constructorF();
+  }
   return { ex: ex, exParams: exParams };
 };
 
 const processNetworkReq = async (message, port, USERPASSWORD) => {
   var {
     type,
-    params: { apiKey, secretKey, passphase, name, exData, label },
+    params: { apiKey, secretKey, passphase, name, exData, label, withoutMsg },
   } = message;
   const exchangeName = type.split('-')[1];
-  switch (type) {
-    case 'set-binance':
-    case 'set-okx':
-    case 'set-kucoin':
-    case 'set-coinbase':
-    case 'set-huobi':
-    case 'set-bitget':
-    case 'set-bybit':
-    case 'set-gate':
-    case 'set-mexc':
-      console.log('exData type:', type);
-      try {
-        const exchange = await getExchange(message, USERPASSWORD, port);
-        const ex = exchange.ex;
-        const exParams = exchange.exParams;
-        await ex.getInfo();
-        // compute changes from last time => pnl
-        let storageRes = await chrome.storage.local.get(exchangeName);
-        const lastData = storageRes[exchangeName];
-        let pnl = null;
-        if (lastData) {
-          const lastTotalBal = JSON.parse(lastData).totalBalance;
-          pnl = sub(ex.totalAccountBalance, lastTotalBal).toFixed();
-        }
-        const exData = {
-          totalBalance: ex.totalAccountBalance,
-          tokenListMap: ex.totalAccountTokenMap,
-          apiKey: exParams.apiKey,
-          date: getCurrentDate(),
-          timestamp: +new Date(),
-          version: ExchangeStoreVersion,
-          label: exParams.label,
-          flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
-          spotAccountTokenMap: ex.spotAccountTokenMap,
-          tokenPriceMap: ex.tokenPriceMap,
-          tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
+  if (type.startsWith('set-')) {
+    console.log('exData type:', type);
+    try {
+      const exchange = await getExchange(message, USERPASSWORD, port);
+      const ex = exchange.ex;
+      const exParams = exchange.exParams;
+      await storeDataSource(exchangeName, ex, port, {
+        apiKey: exParams?.apiKey,
+        withoutMsg: withoutMsg,
+      });
+      if (apiKey) {
+        const { apiKey, secretKey, passphase } = exParams;
+        const exCipherData = {
+          apiKey,
+          secretKey,
+          passphase,
+          label,
         };
-        if (pnl !== null && pnl !== undefined) {
-          exData.pnl = pnl;
-        }
-        // store data
-        if (apiKey) {
-          const { apiKey, secretKey, passphase } = exParams;
-          const exCipherData = {
-            apiKey,
-            secretKey,
-            passphase,
-            label,
-          };
-          const encryptedKey = encrypt(
-            JSON.stringify(exCipherData),
-            USERPASSWORD
-          );
-          // TODO get storage from store first,then store new info of new apikey
-          await chrome.storage.local.set({
-            [exchangeName]: JSON.stringify(exData),
-            [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
-          });
-          EXCHANGEINFO[exchangeName] = exParams;
-          postMsg(port, { resType: type, res: true });
-        } else if (EXCHANGEINFO[exchangeName]?.apiKey) {
-          await chrome.storage.local.set({
-            [exchangeName]: JSON.stringify(exData),
-          });
-          postMsg(port, { resType: type, res: true });
-        } else {
-          await chrome.storage.local.set({
-            [exchangeName]: JSON.stringify(exData),
-          });
-          EXCHANGEINFO[exchangeName] = exParams;
-          postMsg(port, { resType: type, res: true });
-        }
-      } catch (error) {
-        console.log(
-          'exData',
-          error,
-          error.message,
-          error.message.indexOf('AuthenticationError')
+        const encryptedKey = encrypt(
+          JSON.stringify(exCipherData),
+          USERPASSWORD
         );
-        if (error.message.indexOf('AuthenticationError') > -1) {
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'AuthenticationError',
-          });
-        } else if (error.message.indexOf('ExchangeNotAvailable') > -1) {
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'ExchangeNotAvailable',
-          });
-        } else if (error.message.indexOf('InvalidNonce') > -1) {
-          postMsg(port, { resType: type, res: false, msg: 'InvalidNonce' });
-        } else if (error.message.indexOf('RequestTimeout') > -1) {
-          // postMsg(port,{ resType: type, res: false, msg: 'RequestTimeout' }) // cctx-10s
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'TypeError: Failed to fetch',
-          });
-        } else if (error.message.indexOf('NetworkError') > -1) {
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'TypeError: Failed to fetch',
-          });
-        } else if (error.message.indexOf('TypeError: Failed to fetch') > -1) {
-          postMsg(port, {
-            resType: type,
-            res: false,
-            msg: 'TypeError: Failed to fetch',
-          });
-        } else {
-          postMsg(port, { resType: type, res: false, msg: 'UnhnowError' });
-        }
+        // TODO get storage from store first,then store new info of new apikey
+        await chrome.storage.local.set({
+          [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
+        });
+        EXCHANGEINFO[exchangeName] = exParams;
+      } else {
+        EXCHANGEINFO[exchangeName] = exParams;
       }
-      break;
-    default:
-      break;
+    } catch (error) {
+      console.log(
+        'exData-',
+        error,
+        error.message,
+        error.message.indexOf('AuthenticationError')
+      );
+    }
   }
 };
 export default processNetworkReq;
@@ -301,6 +224,41 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
       USERPASSWORD,
       port
     );
+    if (source === 'coinbase') {
+      extRequestsOrderInfo.name = 'token-holding';
+      const request0 = {
+        name: 'first',
+        url: 'https://api.coinbase.com/v2/time',
+      };
+      const response1 = {
+        conditions: {
+          type: 'CONDITION_EXPANSION',
+          op: '&',
+          subconditions: [
+            {
+              type: 'FIELD_RANGE',
+              field: '$.data.balance.currency',
+              op: 'STREQ',
+              value: holdingToken,
+            },
+            {
+              type: 'FIELD_RANGE',
+              field: '$.data.balance.amount',
+              op: '>',
+              value: '0',
+            },
+          ],
+        },
+      };
+      Object.assign(params, {
+        reqType: 'web',
+        host: baseName,
+        requests: [request0, extRequestsOrderInfo],
+        responses: [{}, response1],
+      });
+      return params;
+    }
+
     let extRequestsOrder;
     if (source === 'binance') {
       extRequestsOrder = 'asset-balances';
@@ -336,21 +294,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
     Object.assign(params, {
       ext,
-      exchange: {
-        apikey: 'xxx',
-        apisecret: 'xxx',
-        apipassword: 'xxx',
-      },
-      schema: [
-        // TODO
-        { name: 'source', type: 'string' },
-        { name: 'sourceUseridHash', type: 'string' },
-        { name: 'authUseridHash', type: 'string' },
-        { name: 'receipt', type: 'string' },
-        { name: 'getDataTime', type: 'string' },
-        { name: 'baseValue', type: 'string' },
-        { name: 'balanceGreaterThanBaseValue', type: 'string' },
-      ],
     });
   } else {
     Object.assign(params, {
@@ -435,9 +378,9 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
       }
       signres = await sign('coinbase', data, USERPASSWORD, port);
       signres.headers['CB-VERSION'] = '2018-05-30';
-      signres.parseSchema =
-        'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
-      signres.decryptFlag = 'false';
+      //signres.parseSchema =
+      //  'MAP_A_PURE_NUMBER_REGEX:VK:"amount":"(.*?)"[\\s\\S]*?"currency":"(.*?)"';
+      //signres.decryptFlag = 'false';
       extRequestsOrderInfo = { ...signres };
       break;
     case 'okx':

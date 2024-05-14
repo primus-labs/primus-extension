@@ -1,0 +1,25 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/dialog.scss';
+@import '../../attestationForm.scss';
+@import '../../HumanityDialog/SetDetail/index.scss';
+
+.pFormWrapper.detailForm3.detailForm4 {
+  --verificationContent-select-width: 0.8542rem;
+}
+@media (max-width: 1470px) {
+  .pFormWrapper.detailForm3.detailForm4 {
+    --verificationContent-select-width: 123px;
+  }
+}
+.pFormWrapper.detailForm3.detailForm4 {
+  --verificationContent-select-width: 123px;
+  .formItem {
+    
+    .verificationValue {
+      .selectInput {
+        width: var(--verificationContent-select-width);
+      }
+    }
+  }
+}

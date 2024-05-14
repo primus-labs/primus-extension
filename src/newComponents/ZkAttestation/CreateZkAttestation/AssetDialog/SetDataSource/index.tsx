@@ -1,0 +1,68 @@
+import React, { useState, useMemo, memo, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { DATASOURCEMAP } from '@/config/dataSource';
+import useAllSources from '@/hooks/useAllSources';
+import PSelect from '@/newComponents/PSelect';
+import PButton from '@/newComponents/PButton';
+
+import './index.scss';
+interface SetPwdDialogProps {
+  onSubmit: (dataSourceId: string) => void;
+}
+
+const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
+  const [dataSourceName, setDataSourceName] = useState<string>('');
+  const { sourceMap2 } = useAllSources();
+  const formLegal = useMemo(() => {
+    return !!dataSourceName;
+  }, [dataSourceName]);
+  const handleClickNext = useCallback(async () => {
+    if (!formLegal) {
+      return;
+    }
+    onSubmit(dataSourceName);
+  }, [formLegal, dataSourceName]);
+  const tList = useMemo(() => {
+    // const sourceNameArr = ['binance', 'okx', 'coinbase'];
+    const sourceNameArr = ['binance', 'okx'];
+    const newArr = sourceNameArr.map((i) => {
+      const metaInfo = DATASOURCEMAP[i];
+      const isDisabled = i==='coinbase' && !sourceMap2[i];
+      return {
+        label: metaInfo.name,
+        value: metaInfo.id,
+        icon: metaInfo.icon,
+        disabled: isDisabled,
+        tooltip: 'Add Data Source first',
+      };
+    });
+    return newArr;
+  }, [sourceMap2]);
+
+  return (
+    <div className="pFormWrapper attestationForm dataSourceNameForm">
+      <div className="formItem">
+        <PSelect
+          className="dataSourceName"
+          label="Data source category"
+          align="horizontal"
+          placeholder="Choose data source"
+          list={tList}
+          value={dataSourceName}
+          onChange={(v) => {
+            setDataSourceName(v);
+          }}
+          
+        />
+      </div>
+      <PButton
+        text="Next"
+        className="fullWidth confirmBtn"
+        disabled={!formLegal}
+        onClick={handleClickNext}
+      ></PButton>
+    </div>
+  );
+});
+
+export default SetPwdDialog;

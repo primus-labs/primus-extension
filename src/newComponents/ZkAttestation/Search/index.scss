@@ -1,0 +1,28 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/newComponents/DataSource/Search/index.scss';
+// .dataSourceSearchBar.attestationSearchBar {
+//   --searchSelect-width: 1.67rem;
+// }
+// @media (max-width: 1470px) {
+//   .dataSourceSearchBar {
+//     --searchSelect-width: 240px;
+//   }
+// }
+.dataSourceSearchBar.attestationSearchBar {
+   --searchSelect-width: 249px;
+  .serachType {
+    width: var(--searchSelect-width);
+    height: var(--spacing-32);
+    .selectOptionswrapper {
+      top: var(--spacing-32);
+    }
+  }
+  .serachStr {
+    height: var(--spacing-32);
+    .inputWrapper {
+      height: var(--spacing-32);
+    }
+  }
+}

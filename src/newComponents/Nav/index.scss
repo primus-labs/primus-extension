@@ -1,0 +1,36 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.navWrapper {
+  @include fcss;
+  width: 100%;
+  .navItems {
+    width: 100%;
+    @include fcss;
+    gap: var(--spacing-16, 16px);
+    .navItem {
+      width: 100%;
+      @include frsc;
+      gap: var(--spacing-8, 8px);
+      flex: 0 0 auto;
+      height: var(--spacing-40, 40px);
+      padding: 0 var(--spacing-24, 24px);
+      @include HeadlineH3;
+      color: var(--text-tokens-text-primary, #161616);
+      cursor: pointer;
+      &:hover{
+        @include HeadlineH2;
+      }
+      &.active {
+        @include HeadlineH2;
+        background: var(--background-tokens-background-navi-selected, #e8ffff);
+        border-right: var(--spacing-4) solid
+          var(--layer-tokens-layer--BP, #00c7f2);
+      }
+      .iconfont {
+        font-size: var(--spacing-20, 20px);
+        color: var(--icon-tokens-icon-primary);
+      }
+    }
+  }
+}

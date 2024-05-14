@@ -1,0 +1,12 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+.pMsgs {
+  position: fixed;
+  z-index: 2;
+  top: 76px;
+  right: 40px;
+  content: '';
+  @include fcss;
+  gap: 16px;
+  width: 320px;
+}

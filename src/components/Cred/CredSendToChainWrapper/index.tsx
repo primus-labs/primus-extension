@@ -22,7 +22,6 @@ import ConnectWalletDialog from './ConnectWalletDialog';
 import {
   ONCHAINLIST,
   PADOADDRESS,
-  EASInfo,
   LINEASCHEMANAME,
   SCROLLSCHEMANAME,
   BNBSCHEMANAME,

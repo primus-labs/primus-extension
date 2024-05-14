@@ -13,7 +13,6 @@ import ConnectWalletDialog from '@/components/Cred/CredSendToChainWrapper/Connec
 import ClaimDialog from './ClaimDialog';
 import AddSourceSucDialog from '@/components/DataSourceOverview/AddSourceSucDialog';
 
-import useAllSources from '@/hooks/useAllSources';
 import {
   ONCHAINLIST,
   PADOADDRESS,

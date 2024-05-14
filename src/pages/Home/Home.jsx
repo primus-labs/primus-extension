@@ -1,105 +1,185 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-
-import AsideAnimation from '@/components/Layout/AsideAnimation';
-import PButton from '@/components/PButton'
+import useListener from '@/hooks/useListener';
+import useTimeout from '@/hooks/useTimeout';
 import { postMsg } from '@/utils/utils';
-import { requestSignTypedData } from '@/services/wallets/utils';
-import { getUserIdentity } from '@/services/api/user';
-import { initWalletAddressActionAsync } from '@/store/actions';
+import ReferralCodeInput from '@/newComponents/Ahievements/ReferralCodeInput';
+import page1 from '@/assets/newImg/guide/page1.png';
+import page2 from '@/assets/newImg/guide/page2.png';
+import page3 from '@/assets/newImg/guide/page3.png';
+import page4 from '@/assets/newImg/guide/page4.png';
+import page5 from '@/assets/newImg/guide/page5.png';
+import iconLogoPado from '@/assets/newImg/guide/iconLogoPado.svg';
+import iconLogoPadoForDark from '@/assets/newImg/guide/iconLogoPadoForDark.svg';
 import './home.scss';
+import useCreateAccount from '@/hooks/useCreateAccount';
 
 const Home = memo(() => {
-  const [searchParams] = useSearchParams();
-  const backUrl = searchParams.get('backUrl');
-  const dispatch = useDispatch();
+  const { createAccountFn } = useCreateAccount();
+  const guideImg = useRef(null);
+  useListener();
   const navigate = useNavigate();
+  const [visibleReferralCodeDialog, setVisibleReferralCodeDialog] = useState();
+  const [step, setStep] = useState(0);
+  const [timeoutStep2Switch, setTimeoutStep2Switch] = useState(false);
+  const [showInputPasswordDialog, setShowInputPasswordDialog] = useState(false);
+  const [lastTheme, setLastTheme] = useState('light');
   const padoServicePort = useSelector((state) => state.padoServicePort);
 
-  const handleClickStart = useCallback(() => {
-    const padoServicePortListener = async function (message) {
-      if (message.resMethodName === 'create') {
-        console.log('page_get:create:', message.res);
-        if (message.res) {
-          const { privateKey } = await chrome.storage.local.get(['privateKey']);
-          const privateKeyStr = privateKey?.substr(2);
-          // const address = message.res.toLowerCase();
-          const address = message.res;
-          const timestamp = +new Date() + '';
-          await chrome.storage.local.set({ padoCreatedWalletAddress: address });
-          await dispatch(initWalletAddressActionAsync());
+  const imgSrc = useMemo(() => {
+    let s = page1;
+    switch (step) {
+      case 1:
+        s = page1;
+        break;
+      case 2:
+        s = page2;
+        break;
+      case 3:
+        s = page3;
+        break;
+      case 4:
+        s = page4;
+        break;
+      case 5:
+        s = page5;
+        break;
+      default:
+        s = page1;
+        break;
+    }
+    return s;
+  }, [step]);
+  const timeoutStep1Fn = async () => {
+    const f = await checkIsFirstLogin();
+    if (f) {
+      setStep(2);
+      setTimeoutStep2Switch(true);
+    }
+  };
+  useTimeout(timeoutStep1Fn, 1300, true, false);
+  // const timeoutStep2Fn = () => {
+  //   setStep(2);
+  // };
+  // useTimeout(timeoutStep2Fn, 1000, timeoutStep2Switch, false);
+  const initAccount = useCallback(async () => {
+    const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
+      await chrome.storage.local.get([
+        'keyStore',
+        'padoCreatedWalletAddress',
+        'privateKey',
+        'userInfo',
+      ]);
+    if (!privateKey && !keyStore && !userInfo) {
+      const msg = {
+        fullScreenType: 'wallet',
+        reqMethodName: 'create',
+        params: {},
+      };
+      postMsg(padoServicePort, msg);
+    }
+    if (privateKey && !userInfo) {
+      createAccountFn();
+    }
+  }, []);
+  const handleClick = useCallback(async () => {
+    if (step <= 4) {
+      setStep((p) => p + 1);
+    } else {
+      setStep(1);
+      chrome.storage.local.set({
+        guide: '1',
+      });
+      setVisibleReferralCodeDialog(true);
+    }
+  }, [step]);
 
-          try {
-            const signature = await requestSignTypedData(
-              privateKeyStr,
-              address,
-              timestamp
-            );
-            const res = await getUserIdentity({
-              signature,
-              timestamp,
-              address,
-            });
-            const { rc, result } = res;
-            if (rc === 0) {
-              const { bearerToken, identifier } = result;
-              await chrome.storage.local.set({
-                userInfo: JSON.stringify({
-                  id: identifier,
-                  token: bearerToken,
-                }),
-              });
-              const targetUrl = backUrl
-                ? decodeURIComponent(backUrl)
-                : '/events';
-              navigate(targetUrl);
-            }
-          } catch (e) {
-            console.log('handleClickStart error', e);
-          }
-        }
-      }
-    };
-    padoServicePort.onMessage.addListener(padoServicePortListener);
-
-    const msg = {
-      fullScreenType: 'wallet',
-      reqMethodName: 'create',
-      params: {},
-    };
-    postMsg(padoServicePort, msg);
-  }, [padoServicePort]);
-
-  const checkActiveStep = useCallback(async () => {
-    let { userInfo } = await chrome.storage.local.get(['userInfo']);
-    if (userInfo) {
-      navigate('/lock');
+  const checkIsFirstLogin = useCallback(async () => {
+    const { guide } = await chrome.storage.local.get(['guide']);
+    if (guide) {
+      navigate('/home');
+    } else {
       return true;
     }
-    return false;
   }, [navigate]);
+  const handleReferralCodeClose = () => {
+    setVisibleReferralCodeDialog(false);
+  };
+  const handleReferralCodeSubmit = useCallback(() => {
+    navigate('/home');
+  }, []);
 
+  // useEffect(() => {
+  //   checkIsFirstLogin();
+  // }, [checkIsFirstLogin]);
   useEffect(() => {
-    checkActiveStep();
-  }, [checkActiveStep]);
+    if (guideImg.current) {
+      if (step === 4) {
+        guideImg.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
+        // guideImg.current.scrollTop = (460 / 1440) * window.innerWidth;
+      }
+      if ([0, 1, 2, 3].includes(step)) {
+        guideImg.current.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }
+    }
+  }, [step, guideImg]);
+  useEffect(() => {
+    initAccount();
+  }, [initAccount]);
+  useEffect(() => {
+    const cT = localStorage.getItem('colorTheme');
+    if (cT) {
+      setLastTheme(cT);
+    }
+  }, []);
 
   return (
-    <div className="pageIndex pageHome">
-      <main className="appContent">
-        <AsideAnimation />
-        <article>
-          <section className="descWrapper">
-            <h1>Welcome to PADO Attestation Service</h1>
-            <p>Liberate Data and Computation with Cryptography.</p>
-          </section>
-          <PButton
-            text="Click here to start"
-            suffix={<i className="iconfont icon-rightArrow"></i>}
-            onClick={handleClickStart}
+    <div
+      className={`pageGuide ${lastTheme} ${
+        [0, 4, 5].includes(step)
+          ? 'fixedH'
+          : [1, 2, 3].includes(step)
+          ? 'autoH'
+          : ''
+      }`}
+    >
+      {step > 0 && (
+        <img
+          ref={guideImg}
+          src={imgSrc}
+          alt=""
+          onClick={handleClick}
+          className={`guideImg animate__animated animate__fadeIn`}
+        />
+      )}
+      {step === 0 && (
+        <div className="animationWrapper animate__animated animate__fadeIn">
+          <img
+            src={lastTheme === 'dark' ? iconLogoPadoForDark : iconLogoPado}
+            alt=""
           />
-        </article>
-      </main>
+          {/* <i></i>
+          <div className="logonTxt">
+            Liberate Data and Computation with Cryptography
+          </div> */}
+        </div>
+      )}
+      {visibleReferralCodeDialog && (
+        <ReferralCodeInput
+          onClose={handleReferralCodeSubmit}
+          setReferralTaskFinished={handleReferralCodeSubmit}
+          onCancel={handleReferralCodeSubmit}
+          required={false}
+        />
+      )}
     </div>
   );
 });

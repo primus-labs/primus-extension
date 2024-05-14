@@ -1,0 +1,70 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+
+.eventTaskList {
+  width: 100%;
+  @include fcss;
+  gap: var(--spacing-16);
+  .title {
+    @include HeadlineH2;
+  }
+  .eventTasks {
+    @include fcss;
+    width: 100%;
+    gap: var(--spacing-16);
+    .task {
+      width: 100%;
+      @include clickableCard;
+      border-radius: var(--spacing-4);
+      @include frbc;
+      padding: 0 var(--spacing-40) 0 var(--spacing-24);
+      height: 72px;
+      &.done,&.disabled {
+        cursor: default;
+        &:hover{
+          border-color: var(--border-tokens-border-primary);
+        }
+      }
+      .left {
+        @include frsc;
+        gap: var(--spacing-16);
+        @include HeadlineH3;
+      }
+      .right {
+        @include frsc;
+        gap: var(--spacing-40);
+        .iconfont {
+          color: var(--layer-tokens-layer-bp);
+          font-size: var(--spacing-24);
+        }
+        .process {
+          @include fcss;
+          align-items: flex-end;
+          gap: var(--spacing-4);
+          .txt {
+            @include Label01;
+            color: var(--text-tokens-text-secondary);
+          }
+          .bar {
+            width: 148px;
+            height: var(--spacing-4);
+            background: var(--neutral-color-gray-10);
+            border-radius: var(--spacing-4);
+            .current {
+              height: 100%;
+              background: var(--layer-tokens-layer-bp);
+              border-radius: var(--spacing-4);
+            }
+          }
+        }
+        .PButton {
+          height: var(--spacing-32);
+        }
+        .finishBtn{
+          width: 72px;
+        }
+      }
+    }
+  }
+}

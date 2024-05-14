@@ -1,0 +1,196 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+@import '@/assets/newCss/mixins.scss';
+.attestationsWrapper {
+  width: 100%;
+  .attestationCards {
+    @include frss;
+    flex-wrap: wrap;
+    gap: var(--spacing-16);
+    column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);
+    width: 100%;
+    .attestationCard {
+      // width: calc((100% - var(--spacing-16) * 2) / 3);
+      width: var(--dataSourceCard-width);
+      // height: 204px;
+      padding: var(--spacing-16) var(--spacing-24);
+      @include fcss;
+      gap: var(--spacing-24);
+
+      @include clickableCard;
+      cursor: default;
+      min-height: 368px;
+      padding: var(--spacing-16);
+
+      .cardContent {
+        width: 100%;
+        height: 100%;
+        @include fcbs;
+        gap: var(--spacing-16);
+        .header {
+          width: 100%;
+          @include frbc;
+          // .connections {
+          //   align-self: flex-start;
+          //   @include frsc;
+          //   gap: var(--spacing-8);
+          //   color: var(--text-tokens-text-secondary);
+          //   .num {
+          //     @include Hint;
+          //     @include frsc;
+          //     gap: var(--spacing-2, 2px);
+          //     .iconfont {
+          //       font-size: var(--spacing-16);
+          //     }
+          //   }
+          //   .deleteBtn {
+          //     > .iconfont {
+          //       font-size: var(--spacing-12);
+          //     }
+          //   }
+          // }
+          .operations {
+            @include frsc;
+            gap: var(--spacing-8);
+            .moreBtnWrapper {
+              position: relative;
+              width: var(--spacing-16);
+              height: var(--spacing-16);
+              &:not(.withHover) {
+                .moreBtn {
+                  cursor: default;
+                }
+              }
+              &.withHover:hover {
+                .dropdownWrapper {
+                  display: flex;
+                }
+              }
+              .dropdownWrapper {
+                display: none;
+                position: absolute;
+                // z-index: 1;
+                top: var(--spacing-16);
+                right: 0;
+                padding-top: var(--spacing-7);
+                width: fit-content;
+                // .PDropdown {
+                //   width: 100%;
+                // }
+                .dropdownOption {
+                  width: 154px;
+                }
+              }
+            }
+          }
+        }
+        .brief {
+          @include frsc;
+          gap: var(--spacing-16);
+
+          .splicedIcons > img:nth-child(2) {
+            left: calc(-1 * var(--spacing-8));
+          }
+          .intro {
+            @include fcss;
+            gap: var(--spacing-2);
+            color: var(--text-tokens-text-primary);
+            .name {
+              @include BodyBody100Semibold;
+            }
+            .updateTime {
+              @include frsc;
+              gap: var(--spacing-8);
+              @include NumberHint;
+              // .iconfont {
+              //   font-size: var(--spacing-12);
+              //   color: var(--icon-tokens-icon-primary);
+              // }
+              .iconUpdate {
+                width: var(--spacing-12);
+              }
+            }
+          }
+        }
+        .details {
+          width: 100%;
+          @include fcss;
+          gap: var(--spacing-16);
+          padding: var(--spacing-24) var(--spacing-16);
+          border-radius: var(--spacing-8);
+          background: var(--layer-tokens-layer-on-primary);
+          .descItems {
+            width: 100%;
+            @include fcss;
+            gap: var(--spacing-8);
+            &.descItemsWithNumberValue {
+              .descItem {
+                .value {
+                  @include NumberId;
+                }
+              }
+            }
+            .descItem {
+              width: 100%;
+              @include frbc;
+              &.onChain {
+                height: var(--spacing-24);
+              }
+              .label {
+                @include BodyBody100;
+                color: var(--text-tokens-text-tertiary);
+                @include frsc;
+                gap: var(--spacing-4);
+              }
+              .value {
+                max-width: 132px;
+                white-space: nowrap;  
+                overflow: hidden;  
+                text-overflow: ellipsis;  
+                @include BodyBody100;
+                @include frsc;
+                // gap: var(--spacing-8);
+                display: block;
+                .dataSourceIcon {
+                  width: var(--spacing-16);
+                  border-radius: 50%;
+                  margin-right: var(--spacing-8);
+                }
+                &.onChain {
+                  @include frsc;
+                  gap: var(--spacing-4);
+                  .chains {
+                    @include frsc;
+                    gap: var(--spacing-4);
+                    img {
+                      width: var(--spacing-24);
+                    }
+                  }
+                }
+              }
+              .icon-Add {
+                font-size: var(--spacing-24);
+              }
+            }
+          }
+        }
+      }
+      .connectBtn {
+        width: fit-content;
+        align-self: flex-end;
+        @include TextLinkLink;
+        .iconfont {
+          align-self: flex-start;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1819px) {
+  .attestationsWrapper {
+    .attestationCards {
+      column-gap: calc((100% - var(--dataSourceCard-width) * 3) / 2);
+    }
+  }
+}
