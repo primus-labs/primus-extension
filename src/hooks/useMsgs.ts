@@ -72,7 +72,7 @@ const useMsgs = function useMsgs() {
       // if (msgObj?.type === 'suc') {
       //   delay = 8000;
       // }
-      if (msgObj.type !== 'error') {
+      if (msgObj.type === 'suc' && msgObj.type === 'info') {
         let timer = setTimeout(() => {
           // console.log('222useMsgs-useEffect-timeout', delay); //delete
           deleteMsg(msgObj?.id);
