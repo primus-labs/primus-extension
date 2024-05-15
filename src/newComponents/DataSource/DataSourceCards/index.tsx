@@ -92,7 +92,7 @@ const Cards: React.FC<PDropdownProps> = memo(
         await deleteDataSourceFn(i.id);
         addMsg({
           type: 'info',
-          title: 'X data deleted',
+          title: `${DATASOURCEMAP[i.id].name} data deleted`,
           showTime: 5000,
         });
       },

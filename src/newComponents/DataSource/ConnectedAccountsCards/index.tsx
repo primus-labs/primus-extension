@@ -10,6 +10,7 @@ import connectData from '@/assets/newImg/dataSource/connectedData.svg';
 
 import './index.scss';
 import useMsgs from '@/hooks/useMsgs';
+import { DATASOURCEMAP } from '@/config/dataSource';
 
 type NavItem = {
   type: string;
@@ -119,7 +120,7 @@ const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
         }
         const msgId = await addMsg({
           type: 'info',
-          title: 'X data deleted',
+          title: `${DATASOURCEMAP[lowerCaseDataSourceName].name} data deleted`,
           showTime: 5000,
         });
         setTimeout(() => {
