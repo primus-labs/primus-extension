@@ -15,6 +15,7 @@ import ConnectDataSource from '../ConnectDataSource';
 import PTooltip from '@/newComponents/PTooltip';
 
 import './index.scss';
+import useMsgs from '@/hooks/useMsgs';
 
 type NavItem = {
   type: string;
@@ -32,6 +33,7 @@ interface PDropdownProps {
 const list = Object.values(DATASOURCEMAP).filter((i) => !i.hidden);
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
+    const { addMsg } = useMsgs();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [activeDataSourceName, setActiveDataSourceName] =
@@ -85,10 +87,14 @@ const Cards: React.FC<PDropdownProps> = memo(
       [navigate, activeConnectDataSource]
     );
     const handleDelete = useCallback(
-      (i) => {
+      async (i) => {
         setActiveDataSourceName(i.id);
-        deleteDataSourceFn(i.id);
-        // TODO-newui badge
+        await deleteDataSourceFn(i.id);
+        addMsg({
+          type: 'info',
+          title: 'X data deleted',
+          showTime: 5000,
+        });
       },
       [deleteDataSourceFn]
     );

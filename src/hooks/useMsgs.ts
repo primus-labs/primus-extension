@@ -72,6 +72,9 @@ const useMsgs = function useMsgs() {
       // if (msgObj?.type === 'suc') {
       //   delay = 8000;
       // }
+      if (msgObj?.showTime) {
+        delay = msgObj?.showTime;
+      }
       if (msgObj.type === 'suc' || msgObj.type === 'info') {
         let timer = setTimeout(() => {
           // console.log('222useMsgs-useEffect-timeout', delay); //delete
@@ -86,7 +89,7 @@ const useMsgs = function useMsgs() {
       // }
       return () => {};
     }
-  }, [msgObj]);
+  }, [msgObj?.id]);
 
   return { msgs, addMsg, deleteMsg, deleteErrorMsgs };
 };

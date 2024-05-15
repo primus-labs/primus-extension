@@ -9,6 +9,7 @@ import PButton from '@/newComponents/PButton';
 import connectData from '@/assets/newImg/dataSource/connectedData.svg';
 
 import './index.scss';
+import useMsgs from '@/hooks/useMsgs';
 
 type NavItem = {
   type: string;
@@ -26,6 +27,7 @@ interface PDropdownProps {
 
 const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
+    const { addMsg, deleteMsg } = useMsgs();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const dataSourceName = searchParams.get('dataSourceId') as string;
@@ -111,10 +113,18 @@ const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
     const handleDelete = useCallback(
       async (i: any) => {
         if (lowerCaseDataSourceName === 'web3 wallet') {
-          deleteDataSourceFn(i.account);
+          await deleteDataSourceFn(i.account);
         } else {
-          deleteDataSourceFn(lowerCaseDataSourceName);
+          await deleteDataSourceFn(lowerCaseDataSourceName);
         }
+        const msgId = await addMsg({
+          type: 'info',
+          title: 'X data deleted',
+          showTime: 5000,
+        });
+        setTimeout(() => {
+          deleteMsg(msgId);
+        }, 5000);
       },
       [deleteDataSourceFn]
     );
