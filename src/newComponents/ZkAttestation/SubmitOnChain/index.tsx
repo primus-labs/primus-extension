@@ -456,6 +456,7 @@ const Nav: React.FC<PButtonProps> = memo(
                 rawData: Object.assign(i.rawData, {
                   status: 'SUCCESS',
                   reason: '',
+                  txHash: upChainRes[0]
                 }),
               };
             });
@@ -702,6 +703,7 @@ const Nav: React.FC<PButtonProps> = memo(
               eventInfo.rawData = Object.assign(eventInfo.rawData, {
                 status: 'SUCCESS',
                 reason: '',
+                txHash: upChainRes,
               });
               eventReport(eventInfo);
             } else {
