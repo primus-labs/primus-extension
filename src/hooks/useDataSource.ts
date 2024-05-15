@@ -100,22 +100,22 @@ const useSource = (sourceName: string) => {
       }
 
       // Delete credentials storage related to the exchange
-      const { credentials: credentialsStr } = await chrome.storage.local.get([
-        'credentials',
-      ]);
-      const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
-      let newCredentialObj = { ...credentialObj };
-      Object.keys(credentialObj).forEach((key) => {
-        if (lowerCaseName === credentialObj[key].source) {
-          const curCred = newCredentialObj[key];
-          if (!curCred.provided) {
-            delete newCredentialObj[key];
-          }
-        }
-      });
-      await chrome.storage.local.set({
-        credentials: JSON.stringify(newCredentialObj),
-      });
+      // const { credentials: credentialsStr } = await chrome.storage.local.get([
+      //   'credentials',
+      // ]);
+      // const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
+      // let newCredentialObj = { ...credentialObj };
+      // Object.keys(credentialObj).forEach((key) => {
+      //   if (lowerCaseName === credentialObj[key].source) {
+      //     const curCred = newCredentialObj[key];
+      //     if (!curCred.provided) {
+      //       delete newCredentialObj[key];
+      //     }
+      //   }
+      // });
+      // await chrome.storage.local.set({
+      //   credentials: JSON.stringify(newCredentialObj),
+      // });
       // Delete on-chain datas // TODO-newui
 
       // dispatch action & report event
