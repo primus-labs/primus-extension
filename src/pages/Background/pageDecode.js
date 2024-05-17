@@ -107,7 +107,7 @@ export const pageDecodeMsgListener = async (
       if (
         needQueryDetail &&
         formatUrlKey.startsWith(
-          'https://api.twitter.com/1.1/account/settings.json'
+          'https://api.x.com/1.1/account/settings.json'
         ) &&
         !hasGetTwitterScreenName
       ) {

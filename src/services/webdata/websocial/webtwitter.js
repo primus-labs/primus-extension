@@ -7,7 +7,7 @@ class WebTwitter extends WebSocial {
 
   async getInfo() {
     const params = {};
-    params.url = 'https://api.twitter.com/1.1/account/settings.json';
+    params.url = 'https://api.x.com/1.1/account/settings.json';
     params.method = 'GET';
     const storageStr = await chrome.storage.local.get([params.url]);
     const storageObj = JSON.parse(storageStr[params.url]);
@@ -46,7 +46,7 @@ class WebTwitter extends WebSocial {
       '&fieldToggles=' +
       encodeURIComponent(JSON.stringify(fieldToggles));
     const profileUrl =
-      'https://twitter.com/i/api/graphql/qW5u-DAuXpMEG0zA1F7UGQ/UserByScreenName' +
+      'https://x.com/i/api/graphql/qW5u-DAuXpMEG0zA1F7UGQ/UserByScreenName' +
       profileUrlParams;
     params.url = profileUrl;
     const res2 = await this.request(params);
@@ -97,7 +97,7 @@ class WebTwitter extends WebSocial {
       '&features=' +
       encodeURIComponent(featuresStr);
     const fullUrl =
-      'https://twitter.com/i/api/graphql/9zyyd1hebl7oNWIPdA8HRw/UserTweets' +
+      'https://x.com/i/api/graphql/9zyyd1hebl7oNWIPdA8HRw/UserTweets' +
       urlParam;
     const params = {};
     params.url = fullUrl;

@@ -38,7 +38,7 @@ const Overview = memo(() => {
     const m: mediaItemsMap = {
       x: {
         id: 'x',
-        link: 'https://twitter.com/padolabs',
+        link: 'https://x.com/padolabs',
         name: 'X',
         icon: iconDataSourceTwitter,
       },
