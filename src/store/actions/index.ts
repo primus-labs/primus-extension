@@ -240,6 +240,7 @@ export const connectWalletAsync = (
     const requireFetchAssets = getState().requireFetchAssets;
     let activeNetworkId = getState().activeConnectWallet.network;
     // let activeNetwork = EASInfo[activeNetworkId as keyof typeof EASInfo]
+
     try {
       let address;
       let provider;
@@ -961,7 +962,7 @@ export const setNftsActionAsync: (arr?: any[]) => void = (walletArr) => {
         connectedWalletAddressesArr = walletArr.map((i) => i.address);
         rawArr = walletArr;
       }
-      
+
       const requestArr = rawArr.map(async (r: any) => {
         const { address, signature, timestamp } = r;
         return await getChainAssetsNFT({
@@ -1126,7 +1127,7 @@ export const initSetNewRewardsAction = () => {
             address: addr,
             title: i.name,
             desc: i.description,
-            img: i.image
+            img: i.image,
           };
         });
         newRewardsObj[EARLYBIRDNFTEVENTNAME] = earlyBirdNFTObj;

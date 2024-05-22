@@ -242,6 +242,7 @@ const handleDisconnect = () => {
 };
 export const switchAccount = async (provider) => {
   try {
+    const prevActiveAccount = provider.selectedAddress;
     const permissions = await provider.request({
       method: 'wallet_requestPermissions',
       params: [{ eth_accounts: {} }],
@@ -251,6 +252,17 @@ export const switchAccount = async (provider) => {
     );
     if (accountsPermission) {
       console.log('eth_accounts permission successfully requested!');
+      const currActiveAccount = provider.selectedAddress;
+      if (prevActiveAccount === currActiveAccount) {
+        store.dispatch(
+          connectWalletAsync({
+            id: 'metamask',
+            address: currActiveAccount,
+            provider,
+            name: 'metamask',
+          })
+        );
+      }
     }
   } catch (error) {
     store.dispatch(

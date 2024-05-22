@@ -80,12 +80,16 @@ const DataSourceItem = memo(() => {
           })
         );
         if (lowerCaseDataSourceName === 'web3 wallet') {
+          await dispatch({ type: 'setRequireFetchAssets', payload: true });
           // from: 1 first connect wallet,2:switch wallet account connect
           if (from === 2) {
-            switchAccount(connectedWallet?.provider);
+            if (connectedWallet?.provider) {
+              switchAccount(connectedWallet?.provider);
+            } else {
+              dispatch(setConnectWalletDialogVisibleAction(1));
+            }
             return;
           } else {
-            await dispatch({ type: 'setRequireFetchAssets', payload: true });
             dispatch(setConnectWalletDialogVisibleAction(1));
             return;
           }
