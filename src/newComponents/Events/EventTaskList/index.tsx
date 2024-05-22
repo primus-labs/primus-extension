@@ -458,6 +458,7 @@ const DataSourceItem = memo(() => {
           signature: '0x' + eventSingnature,
         };
         const mintRes = await mintWithSignature(upChainParams);
+        setGivenNFT(true);
         const nftInfo = await getNFTInfo(mintRes[1]);
         const newRewards = { ...rewards };
         newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
@@ -503,7 +504,8 @@ const DataSourceItem = memo(() => {
         }
         setClaiming(false);
       }
-    } catch {
+    } catch (e) {
+      console.log('claim early bird e:', e)
       setClaiming(false);
     }
   }, [connectedWallet, credentialsFromStore]);
