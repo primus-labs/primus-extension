@@ -12,7 +12,7 @@ import iconChainEthereum from '@/assets/img/iconUpChainEthereum.png';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
 // import { CURENV } from './envConstants';
 export const CURENV = process.env.NODE_ENV as any;
-
+// export const CURENV = 'production';
 const EASINFOMAP = {
   development: {
     'Scroll Sepolia': {
@@ -545,27 +545,27 @@ const EASINFOMAP = {
     //   ],
     //   blockExplorerUrls: ['https://etherscan.io/'],
     // },
-    // Polygon: {
-    //   showName: 'Polygon',
-    //   icon: iconPolygon,
-    //   title: 'Polygon',
-    //   disabled: true,
-    //   rpcUrl: '',
-    //   erc721Contract: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
-    //   easContact: '',
-    //   easProxyContrac: '',
-    //   schemaUid: '',
-    //   schemaUidTokenHoldings: '',
-    //   chainId: '0x89', // numToHex
-    //   chainName: 'Polygon Mainnet',
-    //   rpcUrls: ['https://polygon-rpc.com'],
-    //   blockExplorerUrls: ['https://polygonscan.com/'],
-    //   nativeCurrency: {
-    //     name: 'MATIC',
-    //     symbol: 'MATIC',
-    //     decimals: 18,
-    //   },
-    // },
+    Polygon: {
+      showName: 'Polygon',
+      icon: iconPolygon,
+      title: 'Polygon',
+      disabled: true,
+      rpcUrl: '',
+      erc721Contract: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
+      easContact: '',
+      easProxyContrac: '',
+      schemaUid: '',
+      schemaUidTokenHoldings: '',
+      chainId: '0x89', // numToHex
+      chainName: 'Polygon Mainnet',
+      rpcUrls: ['https://polygon-rpc.com'],
+      blockExplorerUrls: ['https://polygonscan.com/'],
+      nativeCurrency: {
+        name: 'MATIC',
+        symbol: 'MATIC',
+        decimals: 18,
+      },
+    },
   },
 };
 export const EASInfo = EASINFOMAP[CURENV];

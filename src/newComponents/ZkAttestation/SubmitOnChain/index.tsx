@@ -168,7 +168,7 @@ const Nav: React.FC<PButtonProps> = memo(
         if (activeOnChainAttestation) {
           const onChainTitlesArr =
             activeOnChainAttestation?.provided?.map((i: any) => i.title) ?? [];
-
+          onChainTitlesArr.push('Polygon');
           if (onChainTitlesArr.length > 0) {
             // @ts-ignore
             l = list.filter((i) => {
