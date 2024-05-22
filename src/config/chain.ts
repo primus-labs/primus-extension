@@ -550,7 +550,7 @@ const EASINFOMAP = {
       icon: iconPolygon,
       title: 'Polygon',
       disabled: true,
-      rpcUrl: '',
+      rpcUrl: 'https://polygon-rpc.com',
       erc721Contract: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
       easContact: '',
       easProxyContrac: '',

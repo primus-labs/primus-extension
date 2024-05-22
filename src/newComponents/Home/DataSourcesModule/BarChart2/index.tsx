@@ -158,7 +158,7 @@ const PBarChart: FC<BarChartProps> = memo(
           y: '0',
           y2: '20px',
           x: '88px',
-          x2: '14px',
+          x2: '18px',
         },
         legend: {},
         animationDurationUpdate: 300,
