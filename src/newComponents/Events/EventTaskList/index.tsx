@@ -405,6 +405,7 @@ const DataSourceItem = memo(() => {
       delete newEventObj[currentAddress].taskMap.check;
     } else if (eventId == EARLYBIRDNFTEVENTNAME) {
       delete newEventObj[currentAddress].taskMap.check;
+      newEventObj[currentAddress].taskMap.claim = { claim: 0 };
 
       // const nftFlag = Object.values(rewards).find((r) => !r.type);
       // newEventObj[currentAddress].taskMap.claim = {
@@ -460,12 +461,35 @@ const DataSourceItem = memo(() => {
         const mintRes = await mintWithSignature(upChainParams);
         setGivenNFT(true);
         const nftInfo = await getNFTInfo(mintRes[1]);
-        const newRewards = { ...rewards };
-        newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
+        const claimNFTObj = {
+          ...nftInfo,
+          tokenId: mintRes[0],
+          address: connectedWallet?.address,
+          title: nftInfo.name,
+          desc: nftInfo.description,
+          img: nftInfo.image,
+        };
+        // const newRewards = { ...rewards };
+        // newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
+        const { newRewards } = await chrome.storage.local.get(['newRewards']);
+        let newRewardsObj = {};
+        const claimAddr = connectedWallet?.address;
+        if (newRewards) {
+          newRewardsObj = JSON.parse(newRewards);
+          if (newRewardsObj[EARLYBIRDNFTEVENTNAME]) {
+            newRewardsObj[EARLYBIRDNFTEVENTNAME][claimAddr] = claimNFTObj;
+          } else {
+            newRewardsObj[EARLYBIRDNFTEVENTNAME] = { [claimAddr]: claimNFTObj };
+          }
+        } else {
+          newRewardsObj = {
+            [EARLYBIRDNFTEVENTNAME]: { [claimAddr]: claimNFTObj },
+          };
+        }
         await chrome.storage.local.set({
-          rewards: JSON.stringify(newRewards),
+          newRewards: JSON.stringify(newRewardsObj),
         });
-        await dispatch(initRewardsActionAsync());
+        await dispatch(initSetNewRewardsAction());
         // setActiveRequest({
         //   type: 'suc',
         //   title: 'Congratulations',
@@ -505,7 +529,7 @@ const DataSourceItem = memo(() => {
         setClaiming(false);
       }
     } catch (e) {
-      console.log('claim early bird e:', e)
+      console.log('claim early bird e:', e);
       setClaiming(false);
     }
   }, [connectedWallet, credentialsFromStore]);
