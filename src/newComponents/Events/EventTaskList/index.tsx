@@ -532,7 +532,7 @@ const DataSourceItem = memo(() => {
       console.log('claim early bird e:', e);
       setClaiming(false);
     }
-  }, [connectedWallet, credentialsFromStore]);
+  }, [connectedWallet, credentialsFromStore, dispatch]);
   const handleClaim = useCallback(async () => {
     if (claiming) {
       return;

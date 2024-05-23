@@ -29,11 +29,14 @@ import {
 } from '@/config/events';
 import { WALLETMAP } from '@/config/wallet';
 import { CLAIMNFTNETWORKNAME } from '@/config/chain';
+import { OPENSEALINK } from '@/config/envConstants';
 
 import type { ExchangeMeta } from '@/types/dataSource';
 import type { DataSourceStorages } from '@/pages/DataSourceOverview';
 import type { PROOFTYPEITEM } from '@/types/cred';
 import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
+import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
+
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
 type ExInfo = {
@@ -1122,12 +1125,15 @@ export const initSetNewRewardsAction = () => {
         let earlyBirdNFTObj: any = {};
         nftsInfoArr.forEach((i, k) => {
           const addr = Object.keys(result)[k];
+          const tokenId = result[addr]
           earlyBirdNFTObj[addr] = {
             ...i,
             address: addr,
             title: i.name,
             desc: i.description,
             img: i.image,
+            linkIcon: iconOpenSea,
+            link: `${OPENSEALINK}/${tokenId}`,
           };
         });
         newRewardsObj[EARLYBIRDNFTEVENTNAME] = earlyBirdNFTObj;

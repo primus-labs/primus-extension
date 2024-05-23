@@ -30,9 +30,9 @@ const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
     const { startTime, endTime } = period;
     const s = dayjs.utc(+startTime).format('MMM.D,YYYY');
     const e = dayjs.utc(+endTime).format('MMM.D,YYYY');
-
     return `${s}-${e}`;
   };
+  console.log('list', list)
   const handleJoin = (i) => {};
   return (
     <ul className="rewardCards">
