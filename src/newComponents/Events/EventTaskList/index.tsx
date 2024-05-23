@@ -3,13 +3,16 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
-import { setActiveOnChain, initRewardsActionAsync } from '@/store/actions';
-import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
-import useEventDetail from '@/hooks/useEventDetail';
 import {
   setActiveConnectWallet,
   initSetNewRewardsAction,
+  setNewRewards,
 } from '@/store/actions';
+import { setActiveOnChain, initRewardsActionAsync } from '@/store/actions';
+import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
+import useEventDetail from '@/hooks/useEventDetail';
+import useMsgs from '@/hooks/useMsgs';
+
 import { mintWithSignature } from '@/services/chains/erc721';
 import { getEventSignature, getNFTInfo } from '@/services/api/event';
 import { eventReport } from '@/services/api/usertracker';
@@ -21,6 +24,7 @@ import {
   ETHSIGNEVENTNAME,
 } from '@/config/events';
 import { EASInfo, CLAIMNFTNETWORKNAME } from '@/config/chain';
+import { OPENSEALINK } from '@/config/envConstants';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -28,9 +32,9 @@ import PButton from '@/newComponents/PButton';
 import SocialTasksDialog from '../SocialTasksDialog';
 import AttestationTasks from '../AttestationTasks';
 import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
-
+import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
 import './index.scss';
-import useMsgs from '@/hooks/useMsgs';
+
 
 dayjs.extend(utc);
 
@@ -461,13 +465,16 @@ const DataSourceItem = memo(() => {
         const mintRes = await mintWithSignature(upChainParams);
         setGivenNFT(true);
         const nftInfo = await getNFTInfo(mintRes[1]);
+        const tokenId = mintRes[0];
         const claimNFTObj = {
           ...nftInfo,
-          tokenId: mintRes[0],
+          tokenId,
           address: connectedWallet?.address,
           title: nftInfo.name,
           desc: nftInfo.description,
           img: nftInfo.image,
+          linkIcon: iconOpenSea,
+          link: `${OPENSEALINK}/${tokenId}`,
         };
         // const newRewards = { ...rewards };
         // newRewards[mintRes[0]] = { ...nftInfo, tokenId: mintRes[0] };
@@ -489,7 +496,7 @@ const DataSourceItem = memo(() => {
         await chrome.storage.local.set({
           newRewards: JSON.stringify(newRewardsObj),
         });
-        await dispatch(initSetNewRewardsAction());
+        await dispatch(setNewRewards(newRewardsObj));
         // setActiveRequest({
         //   type: 'suc',
         //   title: 'Congratulations',
