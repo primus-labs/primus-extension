@@ -1,0 +1,43 @@
+@import '@/assets/newCss/flex.scss';
+@import '@/assets/newCss/font.scss';
+
+.notification {
+  // width: 100%;
+  @include fcss;
+  // gap: var(--spacing-4, 4px);
+  position: relative;
+  .bellWrapper {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    position: relative;
+    .dot {
+      position: absolute;
+      content: '';
+      top: 13px;
+      right: 1px;
+      width: var(--spacing-8);
+      height: var(--spacing-8);
+      border-radius: 50%;
+      background-color: var(--icon-tokens-icon-error);
+    }
+    .bellBtn {
+      line-height: 1;
+      .icon-iconBell {
+        font-size: var(--spacing-24);
+      }
+    }
+  }
+
+  .selectOptionswrapper {
+    position: absolute;
+    z-index: 2;
+    top: 36px;
+    left: -173px;
+    padding-top: var(--spacing-12);
+    width: 384px;
+    max-height: 604px;
+    .PDropdown {
+      width: 100%;
+    }
+  }
+}

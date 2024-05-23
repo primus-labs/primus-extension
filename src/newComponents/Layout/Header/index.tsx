@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { menuList } from '@/config/menu';
 import PConnect from '@/newComponents/PConnect';
 import PPTabs from '@/newComponents/PTabs';
+import Notification from '@/newComponents/Notification';
 
 import iconAvatar from '@/assets/newImg/layout/iconAvatar.svg';
 import './index.scss';
@@ -67,6 +68,7 @@ const Nav: React.FC = memo(({}) => {
           text="Connect wallet"
           onClick={handleConnect}
         /> */}
+          <Notification />
           <PConnect />
           <div className="avatar">
             <img src={iconAvatar} alt="" />

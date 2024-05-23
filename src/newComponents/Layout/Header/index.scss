@@ -47,10 +47,13 @@
     .rightActions {
       @include frsc;
       gap: var(--spacing-8);
-      .icon-iconBell {
-        font-size: var(--spacing-24);
-        color: var(--button-tokens-button-primary);
-        margin-right: var(--spacing-8);
+      // .icon-iconBell {
+      //   font-size: var(--spacing-24);
+      //   color: var(--button-tokens-button-primary);
+      //   margin-right: var(--spacing-8);
+      // }
+      .notification{
+        margin-right: 8px;
       }
       .connectBtn {
         // width: 131px;
