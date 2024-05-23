@@ -6,10 +6,12 @@
   max-height: 604px;
   overflow-y: auto;
   padding: var(--spacing-24);
+  padding-bottom: 42px;
   @include fcss;
   gap: var(--spacing-24);
-
   @include pCard;
+  @include shadow;
+  border: 0;
   > h6 {
     @include HeadlineH0;
   }
