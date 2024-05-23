@@ -12,14 +12,16 @@ import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
 import useMsgs from '@/hooks/useMsgs';
 import PButton from '@/newComponents/PButton';
 import { useNavigate } from 'react-router-dom';
-
+import {  DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 // eslint-disable-next-line react/display-name
 const Setting = memo(() => {
   const [currencies, setCurrencies] = useState([]);
   const [currencyChosen, setCurrencyChosen] = useState('USD');
 
   const [updateFrequency, setUpdateFrequency] = useState([]);
-  const [updateFrequencyChosen, setUpdateFrequencyChosen] = useState('5');
+  const [updateFrequencyChosen, setUpdateFrequencyChosen] = useState(
+    DEFAULTDATASOURCEPOLLINGTIMENUM
+  );
   const [mainWallet, setMainWallet] = useState('');
   const [serialNum, setSerialNum] = useState('');
 
@@ -51,7 +53,7 @@ const Setting = memo(() => {
     // @ts-ignore
     setCurrencies(['USD']);
     // @ts-ignore
-    setUpdateFrequency(['5']);
+    setUpdateFrequency([DEFAULTDATASOURCEPOLLINGTIMENUM]);
     getUserIgetUserInfoFnnfoFn();
     checkIfHadSetPwd();
   }, []);

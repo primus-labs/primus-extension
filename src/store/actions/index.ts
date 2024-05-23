@@ -294,6 +294,7 @@ export const connectWalletAsync = (
               address,
               dispatch,
               label,
+              requireReport: false
             });
             dispatch(setNftsActionAsync([{ signature, timestamp, address }]));
           } catch {}
@@ -456,6 +457,16 @@ export const getChainAssets = async ({
       type: 'TOKEN',
     });
     if (rc === 0 && result) {
+      if (requireReport) {
+        const eventInfo = {
+          eventType: 'DATA_SOURCE_INIT',
+          rawData: {
+            type: 'Assets',
+            dataSource: 'onchain-ConnectWallet',
+          },
+        };
+        eventReport(eventInfo);
+      }
       const pollingFn = async () => {
         try {
           const { rc: requestRc, result: requestRes } =
@@ -463,33 +474,28 @@ export const getChainAssets = async ({
               type: 'TOKEN',
               address: curConnectedAddr,
             });
-          if (requestRc === 0 && requestRes.status === 'SUCCESS') {
-            clearInterval(pollingTimer);
-            await storeOnChainAssets({
-              curConnectedAddr,
-              label,
-              timestamp,
-              signature,
-              rawData: requestRes.data,
-              dispatch,
-              requireUpdate: true,
-            });
-            if (requireReport) {
-              const eventInfo = {
-                eventType: 'DATA_SOURCE_INIT',
-                rawData: {
-                  type: 'Assets',
-                  dataSource: 'onchain-ConnectWallet',
-                },
-              };
-              eventReport(eventInfo);
+          if (requestRc === 0) {
+
+            if (requestRes.status === 'SUCCESS') {
+              clearInterval(pollingTimer);
+            }
+            if (requestRes?.data?.nativeToken && requestRes?.data?.erc20Token) {
+              await storeOnChainAssets({
+                curConnectedAddr,
+                label,
+                timestamp,
+                signature,
+                rawData: requestRes.data,
+                dispatch,
+                requireUpdate: true,
+              });
             }
           }
         } catch (err) {
           console.log('getChainAssetsResult catch err=', err);
         }
       };
-      let pollingTimer = setInterval(pollingFn, 3000);
+      let pollingTimer = setInterval(pollingFn, 5000);
     }
   } catch (e) {
     console.log('getChainAssets catch e=', e);

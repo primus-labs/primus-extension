@@ -12,7 +12,7 @@ import useUpdateAllSources from '@/hooks/useUpdateAllSources';
 import useInterval from '@/hooks/useInterval';
 import useAllSources from '@/hooks/useAllSources';
 import { setSourceUpdateInfoAction } from '@/store/actions';
-import { ONEMINUTE } from '@/config/constants';
+import { ONEMINUTE, DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 
 import type { UserState } from '@/types/store';
 
@@ -59,7 +59,7 @@ const usePollingUpdateAllSources = () => {
   const countDownFn = useCallback(() => {
     if (!updating) {
       updatedMintues.current += 1;
-      if (updatedMintues.current >= 5) {
+      if (updatedMintues.current >= Number(DEFAULTDATASOURCEPOLLINGTIMENUM)) {
         updatedMintues.current = 0;
       }
     }
@@ -103,8 +103,7 @@ const usePollingUpdateAllSources = () => {
       updatedMintues.current = -1;
     }
   }, [sourceUpdateInfo.pollingFlag, updating]);
-  useEffect(() => {
-  }, [sourceUpdateInfo.pollingFlag]);
+  useEffect(() => {}, [sourceUpdateInfo.pollingFlag]);
   useInterval(updateF as () => void, delay, sourceUpdateInfo.pollingFlag, true);
   useInterval(countDownFn, 1 * ONEMINUTE, sourceUpdateInfo.pollingFlag, true);
 };
