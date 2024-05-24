@@ -307,12 +307,80 @@ export const getStatisticalData = (res: any) => {
       curChainAssetMapReduceF,
       {}
     );
+    // // native token
+    // const curChainNativeToken: any = nativeToken.find(
+    //   (i: any) => i.chain === curChainName
+    // );
+    // const { balance, currentUsdPrice, currency } = curChainNativeToken;
+    // const curChainNativeTokenAmount = div(parseInt(balance), Math.pow(10, 18));
+    // const curChainNativeTokenAmountNum = curChainNativeTokenAmount.toNumber();
+    // const price = currentUsdPrice ?? 0;
+    // if (gt(curChainNativeTokenAmountNum, 0) && gt(price, 0)) {
+    //   const rawValue = mul(curChainNativeTokenAmountNum, price);
+    //   if (gt(rawValue.toNumber(), 0.01)) {
+    //     const value = rawValue.toFixed();
+    //     const tokenInfoObj = {
+    //       symbol: currency,
+    //       amount: curChainNativeTokenAmount.toFixed(),
+    //       price,
+    //       value,
+    //       isNative: true,
+    //       chain: curChainName,
+    //     };
+    //     if (currency in tokenMap) {
+    //       const { amount: lastAmt } = tokenMap[currency];
+    //       const newAmt = add(Number(lastAmt), curChainNativeTokenAmountNum);
+    //       const newValue = mul(newAmt.toNumber(), price).toFixed();
+    //       tokenMap[currency] = {
+    //         ...tokenMap[currency],
+    //         amount: newAmt.toFixed(),
+    //         value: newValue,
+    //       };
+    //     } else {
+    //       tokenMap[currency] = tokenInfoObj;
+    //     }
+    //     curChainTotalBalance = add(curChainTotalBalance, rawValue.toNumber());
+    //     totalBalance = add(totalBalance, rawValue.toNumber());
 
+    //     curChainAssetMap[currency] = {
+    //       symbol: currency,
+    //       amount: curChainNativeTokenAmount.toFixed(),
+    //       price,
+    //       value,
+    //       isNative: true,
+    //     };
+    //   }
+    // }
+    if (gt(curChainTotalBalance.toNumber(), 0)) {
+      prevChainsAssetMap[curChainName] = {
+        totalBalance: curChainTotalBalance.toFixed(),
+        tokenListMap: curChainAssetMap,
+      };
+    }
+
+    return prevChainsAssetMap;
+  };
+  let chainsAssetsMap = Object.keys(erc20Token).reduce(
+    chainsAssetsMapReduceF,
+    {}
+  );
+  const chainsAssetsMapReduceF2: (
+    prevChainsAssetMap: any,
+    curChain: any
+  ) => any = (prevChainsAssetMap, curChainNativeToken) => {
     // native token
-    const curChainNativeToken: any = nativeToken.find(
-      (i: any) => i.chain === curChainName
-    );
-    const { balance, currentUsdPrice, currency } = curChainNativeToken;
+    const {
+      balance,
+      currentUsdPrice,
+      currency,
+      chain: curChainName,
+    } = curChainNativeToken;
+
+    let { totalBalance: curChainTotalBalance, tokenListMap: curChainAssetMap } =
+      prevChainsAssetMap[curChainName] ?? {
+        totalBalance: '0',
+        tokenListMap: {},
+      };
     const curChainNativeTokenAmount = div(parseInt(balance), Math.pow(10, 18));
     const curChainNativeTokenAmountNum = curChainNativeTokenAmount.toNumber();
     const price = currentUsdPrice ?? 0;
@@ -352,18 +420,17 @@ export const getStatisticalData = (res: any) => {
         };
       }
     }
-    if (gt(curChainTotalBalance.toNumber(), 0)) {
+    if (gt(curChainTotalBalance, 0)) {
       prevChainsAssetMap[curChainName] = {
         totalBalance: curChainTotalBalance.toFixed(),
         tokenListMap: curChainAssetMap,
       };
     }
-
     return prevChainsAssetMap;
   };
-  const chainsAssetsMap = Object.keys(erc20Token).reduce(
-    chainsAssetsMapReduceF,
-    {}
+  chainsAssetsMap = nativeToken.reduce(
+    chainsAssetsMapReduceF2,
+    chainsAssetsMap
   );
   return {
     tokenListMap: tokenMap,

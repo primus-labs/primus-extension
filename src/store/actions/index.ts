@@ -294,7 +294,7 @@ export const connectWalletAsync = (
               address,
               dispatch,
               label,
-              requireReport: false
+              requireReport: false,
             });
             dispatch(setNftsActionAsync([{ signature, timestamp, address }]));
           } catch {}
@@ -441,15 +441,17 @@ export const getChainAssets = async ({
   requireReport = true,
 }) => {
   try {
-    await storeOnChainAssets({
-      curConnectedAddr,
-      label,
-      timestamp,
-      signature,
-      rawData: { nativeToken: [], erc20Token: {} },
-      dispatch,
-      requireUpdate: false,
-    });
+    if (requireReport) {
+      await storeOnChainAssets({
+        curConnectedAddr,
+        label,
+        timestamp,
+        signature,
+        rawData: { nativeToken: [], erc20Token: {} },
+        dispatch,
+        requireUpdate: false,
+      });
+    }
     const { rc, result, msg } = await sendRequestAssetsOnChains({
       signature,
       timestamp,
@@ -475,11 +477,13 @@ export const getChainAssets = async ({
               address: curConnectedAddr,
             });
           if (requestRc === 0) {
-
             if (requestRes.status === 'SUCCESS') {
               clearInterval(pollingTimer);
             }
-            if (requestRes?.data?.nativeToken && requestRes?.data?.erc20Token) {
+            if (
+              requestRes?.data?.erc20Token &&
+              requestRes?.data?.nativeToken?.length > 0
+            ) {
               await storeOnChainAssets({
                 curConnectedAddr,
                 label,
@@ -1131,7 +1135,7 @@ export const initSetNewRewardsAction = () => {
         let earlyBirdNFTObj: any = {};
         nftsInfoArr.forEach((i, k) => {
           const addr = Object.keys(result)[k];
-          const tokenId = result[addr]
+          const tokenId = result[addr];
           earlyBirdNFTObj[addr] = {
             ...i,
             address: addr,
