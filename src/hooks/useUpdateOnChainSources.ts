@@ -46,34 +46,43 @@ const useUpdateOnChainSources = () => {
         list.push(i);
       });
     }
-
-    list.forEach(async (item) => {
+    for (const item of list) {
       const lastCurConnectedAddrInfo = onChainAssetsSourcesObj[item];
       const { signature, timestamp, address } =
         lastCurConnectedAddrInfo as onChainAssetsData;
       // Signature is permanently valid
       if (signature) {
         try {
-          await getChainAssets({
-            signature,
-            timestamp,
-            address,
-            dispatch,
-            requireReport: false,
-            label: undefined,
-          });
-          await dispatch(
-            setNftsActionAsync([
-              {
-                signature,
-                timestamp,
-                address,
-                dispatch,
-                requireReport: false,
-                label: undefined,
-              },
-            ])
+          const getAssetsLoadingObj2 = sessionStorage.getItem(
+            'getAssetsLoadingObj2'
           );
+          let lastObj = getAssetsLoadingObj2
+            ? JSON.parse(getAssetsLoadingObj2)
+            : {};
+          if (lastObj[address]?.token !== '1') {
+            await getChainAssets({
+              signature,
+              timestamp,
+              address,
+              dispatch,
+              requireReport: false,
+              label: undefined,
+            });
+          }
+          if (lastObj[address]?.NFT !== '1') {
+            await dispatch(
+              setNftsActionAsync([
+                {
+                  signature,
+                  timestamp,
+                  address,
+                  dispatch,
+                  requireReport: false,
+                  label: undefined,
+                },
+              ])
+            );
+          }
 
           setQueryObj((obj) => ({
             ...obj,
@@ -124,7 +133,7 @@ const useUpdateOnChainSources = () => {
           console.log('fetchOnChainDatas error:', e);
         }
       }
-    });
+    };
   }, []);
 
   useEffect(() => {

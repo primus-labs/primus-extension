@@ -442,6 +442,17 @@ export const getChainAssets = async ({
   requireReport = true,
 }) => {
   try {
+   
+    const getAssetsLoadingObj2 = sessionStorage.getItem('getAssetsLoadingObj2');
+    let lastObj = getAssetsLoadingObj2 ? JSON.parse(getAssetsLoadingObj2) : {};
+    if (lastObj[curConnectedAddr]?.token === '1') {
+      return;
+    } else {
+      lastObj[curConnectedAddr] = {
+        token: '1',
+      };
+      sessionStorage.setItem('getAssetsLoadingObj2', JSON.stringify(lastObj));
+    }
     if (requireReport) {
       await storeOnChainAssets({
         curConnectedAddr,
@@ -459,6 +470,7 @@ export const getChainAssets = async ({
       address: curConnectedAddr,
       type: 'TOKEN',
     });
+
     if (rc === 0 && result) {
       if (requireReport) {
         const eventInfo = {
@@ -480,6 +492,14 @@ export const getChainAssets = async ({
           if (requestRc === 0) {
             if (requestRes.status === 'SUCCESS') {
               clearInterval(pollingTimer);
+              lastObj[curConnectedAddr] = {
+                token: '0',
+              };
+              
+              sessionStorage.setItem(
+                'getAssetsLoadingObj2',
+                JSON.stringify(lastObj)
+              );
             }
             if (
               requestRes?.data?.erc20Token &&
@@ -503,7 +523,7 @@ export const getChainAssets = async ({
       let pollingTimer = setInterval(pollingFn, 5000);
     }
   } catch (e) {
-    console.log('getChainAssets catch e=', e);
+    console.log('getChainAssets-fn catch e=', e);
   }
 };
 
@@ -776,6 +796,21 @@ export const getChainAssetsNFT = async ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
+     
+      const getAssetsLoadingObj2 = sessionStorage.getItem(
+        'getAssetsLoadingObj2'
+      );
+      let lastObj = getAssetsLoadingObj2
+        ? JSON.parse(getAssetsLoadingObj2)
+        : {};
+      if (lastObj[curConnectedAddr]?.NFT === '1') {
+        return;
+      } else {
+        lastObj[curConnectedAddr] = {
+          NFT: '1',
+        };
+        sessionStorage.setItem('getAssetsLoadingObj2', JSON.stringify(lastObj));
+      }
       const { rc, result, msg } = await sendRequestAssetsOnChains({
         signature,
         timestamp,
@@ -790,8 +825,18 @@ export const getChainAssetsNFT = async ({
                 type: 'NFT',
                 address: curConnectedAddr,
               });
-            if (requestRc === 0 && requestRes.status === 'SUCCESS') {
-              clearInterval(pollingTimer);
+            if (requestRc === 0) {
+              if (requestRes.status === 'SUCCESS') {
+                clearInterval(pollingTimer);
+                lastObj[curConnectedAddr] = {
+                  NFT: '0',
+                };
+                sessionStorage.setItem(
+                  'getAssetsLoadingObj2',
+                  JSON.stringify(lastObj)
+                );
+              }
+
               // mock data  delete
               // if (
               //   curConnectedAddr.toLowerCase() ===
@@ -951,7 +996,7 @@ export const getChainAssetsNFT = async ({
       }
     } catch (e) {
       reject(e);
-      console.log('getChainAssets catch e=', e);
+      console.log('getChainAssets-fn catch e=', e);
     }
   });
 };
