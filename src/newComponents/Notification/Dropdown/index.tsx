@@ -11,7 +11,7 @@ const NotificationDropdown: React.FC = memo(({}) => {
   const dispatch: Dispatch<any> = useDispatch();
   const notifications = useSelector((state: UserState) => state.notifications);
   const list = useMemo(() => {
-    return Object.values(notifications);
+    return Object.values(notifications).sort((a: any, b: any) => b.id - a.id);
   }, [notifications]);
 
   const handleShowMore = async (id) => {
@@ -46,41 +46,40 @@ const NotificationDropdown: React.FC = memo(({}) => {
                 >
                   {item.desc}
                 </div>
-                {item.desc.length > 41 && item.collapse && (
-                  <PButton
-                    type="text"
-                    text={'More'}
-                    suffix={
-                      <i
-                        className={`iconfont icon-DownArrow rotate
-                        `}
-                      ></i>
-                    }
-                    onClick={() => {
-                      handleShowMore(item.id);
-                    }}
-                    className="moreBtn"
-                  />
-                )}
+                {item.desc.length > 41 &&
+                  !item.disableCollapse &&
+                  item.collapse && (
+                    <PButton
+                      type="text"
+                      text={'More'}
+                      suffix={<i className={`iconfont icon-DownArrow `}></i>}
+                      onClick={() => {
+                        handleShowMore(item.id);
+                      }}
+                      className="moreBtn"
+                    />
+                  )}
               </div>
               <div className="time">
                 <span className="timeCon">{item.time}</span>
-                {item.desc.length > 41 && !item.collapse && (
-                  <PButton
-                    type="text"
-                    text={'Collapse'}
-                    suffix={
-                      <i
-                        className={`iconfont icon-DownArrow
+                {item.desc.length > 41 &&
+                  !item.disableCollapse &&
+                  !item.collapse && (
+                    <PButton
+                      type="text"
+                      text={'Collapse'}
+                      suffix={
+                        <i
+                          className={`iconfont icon-DownArrow rotate
                         }`}
-                      ></i>
-                    }
-                    onClick={() => {
-                      handleShowMore(item.id);
-                    }}
-                    className="moreBtn"
-                  />
-                )}
+                        ></i>
+                      }
+                      onClick={() => {
+                        handleShowMore(item.id);
+                      }}
+                      className="moreBtn"
+                    />
+                  )}
               </div>
             </li>
           );

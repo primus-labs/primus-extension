@@ -64,6 +64,9 @@
           .btnText {
             @include BodyBody300Bold;
           }
+          .rotate{
+            transform: rotate(180deg);
+          }
         }
       }
     }

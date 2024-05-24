@@ -947,7 +947,7 @@ export const getChainAssetsNFT = async ({
             console.log('getChainAssetsResult catch err=', err);
           }
         };
-        let pollingTimer = setInterval(pollingFn, 3000);
+        let pollingTimer = setInterval(pollingFn, 5000);
       }
     } catch (e) {
       reject(e);

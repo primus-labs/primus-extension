@@ -9,6 +9,7 @@ type NavItem = {
   desc?: any;
   time?: any;
   collapse?: boolean;
+  disableCollapse?: boolean;
 };
 type EventDetailType = {
   startTime: string;

@@ -187,6 +187,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
             desc: 'Refine the data in the dashboard, and update the OKX asset attestation API due to their recent change.',
             time: '2024/05/24 18:00',
             collapse: false,
+            disableCollapse: true,
           },
           '1': {
             id: '1',
