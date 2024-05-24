@@ -23,6 +23,7 @@ import {
   // setEventsLotteryResultsAsync,
   initSetThemeAction,
   initSetNewRewardsAction,
+  initSetNotificationsAction,
 } from '@/store/actions';
 import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
@@ -175,6 +176,28 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     }
 
     // await chrome.storage.local.remove(sourceNameList.concat(['x', 'zan']));
+    // init notifications
+    const { notifications } = await chrome.storage.local.get(['notifications']);
+    if (!notifications) {
+      await chrome.storage.local.set({
+        notifications: JSON.stringify({
+          '2': {
+            id: '2',
+            title: 'A new version 0.3.5 is updated.',
+            desc: 'Refine the data in the dashboard, and update the OKX asset attestation API due to their recent change.',
+            time: '2024/05/24 18:00',
+            collapse: false,
+          },
+          '1': {
+            id: '1',
+            title: 'A new version 0.3.4 is updated.',
+            desc: 'Optimized the Web3 data acquisition method, added a link button on the Early Bird NFT image to jump to OpenSea.',
+            time: '2024/05/23 20:00',
+            collapse: true,
+          },
+        }),
+      });
+    }
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
     dispatch(setKYCsAsync());
@@ -193,6 +216,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     // dispatch(setEventsLotteryResultsAsync());
     dispatch(initSetThemeAction());
     dispatch(initSetNewRewardsAction());
+    dispatch(initSetNotificationsAction());
     // dispatch(initConnectedWalletActionAsync());
     // (updateOnChainFn as () => void)();
   }, [dispatch]);

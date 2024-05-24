@@ -3,6 +3,13 @@ import type { PROOFTYPEITEM, CREDENTIALS } from './cred';
 import type { ExDatas, SocialDatas, onChainAssetsDatas } from './dataSource';
 import type { SysConfigInfo } from './config';
 import type { Rewards } from './event';
+type NavItem = {
+  id: string;
+  title?: any;
+  desc?: any;
+  time?: any;
+  collapse?: boolean;
+};
 type EventDetailType = {
   startTime: string;
   endTime: string;
@@ -131,4 +138,7 @@ export type UserState = {
   earlyBirdNFTs: any;
   eventsLotteryResults: any;
   newRewards: any;
+  notifications: {
+    [propName: string]: NavItem;
+  };
 };

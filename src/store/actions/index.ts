@@ -175,6 +175,7 @@ export const setEventsLotteryResults = (values: any) => ({
   type: 'setEventsLotteryResults',
   payload: values,
 });
+
 export const setConnectedWalletsActionAsync = () => {
   return async (dispatch: any) => {
     const { connectedWallets: lastConnectedWalletsStr } =
@@ -1176,6 +1177,19 @@ export const initSetNewRewardsAction = () => {
       dispatch(setNewRewards(newRewardsObj));
     } catch (e) {
       console.log('initSetNewRewardsAction catch e=', e);
+    }
+  };
+};
+
+export const setNotifications = (values: any) => ({
+  type: 'setNotifications',
+  payload: values,
+});
+export const initSetNotificationsAction = () => {
+  return async (dispatch: any) => {
+    const { notifications } = await chrome.storage.local.get(['notifications']);
+    if (notifications) {
+      dispatch(setNotifications(JSON.parse(notifications)));
     }
   };
 };

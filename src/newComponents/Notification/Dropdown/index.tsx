@@ -1,71 +1,87 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import PButton from '@/newComponents/PButton';
 import PTooltip from '@/newComponents/PTooltip';
 import './index.scss';
-
-type NavItem = {
-  id: string;
-  title?: any;
-  desc?: any;
-  time?: any;
-  collapse?: boolean;
-};
+import { useDispatch, useSelector } from 'react-redux';
+import { initSetNotificationsAction } from '@/store/actions';
+import { UserState } from '@/types/store';
+import { Dispatch } from 'react';
 
 const NotificationDropdown: React.FC = memo(({}) => {
-  const list: NavItem[] = [
-    {
-      id: '0',
-      title: 'A new version 0.3.4 is updated.',
-      desc: 'Optimized the Web3 data acquisition method, added a link button on the Early Bird NFT image to jump to OpenSea.',
-      time: '2024/05/23 20:00',
-      collapse: true,
-    },
-  ];
+  const dispatch: Dispatch<any> = useDispatch();
+  const notifications = useSelector((state: UserState) => state.notifications);
+  const list = useMemo(() => {
+    return Object.values(notifications);
+  }, [notifications]);
 
-  const handleClickData = (item: NavItem) => {
-    // if (!item.disabled) {
-    //   onClick(item.value, item);
-    // }
+  const handleShowMore = async (id) => {
+    const { notifications } = await chrome.storage.local.get(['notifications']);
+    if (notifications) {
+      const lastObj = JSON.parse(notifications);
+      lastObj[id].collapse = !lastObj[id].collapse;
+      await chrome.storage.local.set({
+        notifications: JSON.stringify(lastObj),
+      });
+      dispatch(initSetNotificationsAction());
+    }
   };
-  const handleShowMore = (item) => {
-    item.collapse = !item.collapse;
-  };
+
   return (
     <div className="notificationDropdown">
       <h6>Notification</h6>
       <ul className="dropdownOptions">
-        {list.map((item) => {
+        {list.map((item, k) => {
           return (
-            <li
-              className="dropdownOption"
-              key={item.id}
-              
-            >
+            <li className="dropdownOption" key={item.id}>
               <div className="title">{item.title}</div>
               <div className="desc">
-                {/* <div className={`descCon ${item.desc.length > 41? item.collapse? 'collapse': 'expand': ''}`}> */}
-                <div className={`descCon`}>
+                <div
+                  className={`descCon ${
+                    item.desc.length > 41
+                      ? item.collapse
+                        ? 'collapse'
+                        : 'expand'
+                      : ''
+                  }`}
+                >
                   {item.desc}
                 </div>
-                {/* {item.desc.length > 41 && (
+                {item.desc.length > 41 && item.collapse && (
                   <PButton
                     type="text"
-                    text={!item.collapse ? 'Collapse' : 'More'}
+                    text={'More'}
                     suffix={
                       <i
-                        className={`iconfont icon-DownArrow ${
-                          !item.collapse && 'rotate'
+                        className={`iconfont icon-DownArrow rotate
+                        `}
+                      ></i>
+                    }
+                    onClick={() => {
+                      handleShowMore(item.id);
+                    }}
+                    className="moreBtn"
+                  />
+                )}
+              </div>
+              <div className="time">
+                <span className="timeCon">{item.time}</span>
+                {item.desc.length > 41 && !item.collapse && (
+                  <PButton
+                    type="text"
+                    text={'Collapse'}
+                    suffix={
+                      <i
+                        className={`iconfont icon-DownArrow
                         }`}
                       ></i>
                     }
                     onClick={() => {
-                      handleShowMore(item);
+                      handleShowMore(item.id);
                     }}
                     className="moreBtn"
                   />
-                )} */}
+                )}
               </div>
-              <div className="time">{item.time}</div>
             </li>
           );
         })}

@@ -17,6 +17,7 @@ interface PSelectProps {
   className?: string;
 }
 
+const LASTNOTIFICATIONID = '2'
 const Notification: React.FC<PSelectProps> = memo(({ className }) => {
   const [optionsVisible, setOptionsVisible] = useState(false);
   const [dotVisible, setDotVisible] = useState(true);
@@ -33,12 +34,12 @@ const Notification: React.FC<PSelectProps> = memo(({ className }) => {
   const handleEnter = async () => {
     setOptionsVisible(true);
     await chrome.storage.local.set({
-      readNotification: '1',
+      readNotification: LASTNOTIFICATIONID,
     });
     await updateDotVisible();
   };
   const handleLeave = () => {
-    setOptionsVisible(false);
+    setOptionsVisible(false);  
   };
 
   useEffect(() => {
@@ -60,7 +61,7 @@ const Notification: React.FC<PSelectProps> = memo(({ className }) => {
     const { readNotification } = await chrome.storage.local.get([
       'readNotification',
     ]);
-    setDotVisible(readNotification !== '1');
+    setDotVisible(readNotification !== LASTNOTIFICATIONID);
   };
   useEffect(() => {
     updateDotVisible();

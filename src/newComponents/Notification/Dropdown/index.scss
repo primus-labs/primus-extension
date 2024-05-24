@@ -39,12 +39,32 @@
         gap: 8px;
         .descCon {
           flex: 1;
+          &.collapse {
+            width: 280px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+        .moreBtn {
+          height: 16px;
+          .btnText {
+            @include BodyBody300Bold;
+          }
         }
       }
       .time {
+        width: 100%;
         @include NumberHint;
         color: var(--text-tokens-text-tertiary);
         padding-top: 8px;
+        @include frbc;
+        .moreBtn {
+          height: 16px;
+          .btnText {
+            @include BodyBody300Bold;
+          }
+        }
       }
     }
   }

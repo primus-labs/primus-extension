@@ -1,7 +1,5 @@
 import { SETSYSCONFIG } from '../actions';
-import {
-  DEFAULTDATASOURCEPOLLINGTIMENUM,
-} from '@/config/constants';
+import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 
 const DEFAULTCREDTYPELIST = [
   {
@@ -151,6 +149,9 @@ const initState = {
   earlyBirdNFTs: {},
   eventsLotteryResults: {},
   newRewards: {},
+  notifications: {
+   
+  },
 };
 
 // reducer
@@ -280,6 +281,8 @@ const reducer: any = function (state = initState, action: any) {
       };
     case 'setNewRewards':
       return { ...state, newRewards: action.payload };
+    case 'setNotifications':
+      return { ...state, notifications: action.payload };
     default:
       return state;
   }
