@@ -1,7 +1,7 @@
 import { assembleAlgorithmParams } from './exData';
 import { storeDataSource } from './dataSourceUtils';
 import { DATASOURCEMAP } from '@/config/dataSource';
-
+import { eventReport } from '@/services/api/usertracker';
 let tabCreatedByPado;
 let activeTemplate = {};
 let currExtentionId;
@@ -55,9 +55,9 @@ export const pageDecodeMsgListener = async (
           const urlStrArr = currRequestUrl.split('?');
           const hostUrl = urlStrArr[0];
           let curUrlWithQuery = r.url === hostUrl;
-        if (r.queryDetail) {
-          needQueryDetail = r.queryDetail;
-        }
+          if (r.queryDetail) {
+            needQueryDetail = r.queryDetail;
+          }
           if (r.url === hostUrl) {
             curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
           }
@@ -66,17 +66,17 @@ export const pageDecodeMsgListener = async (
           }
           formatUrlKey = hostUrl;
           return !!curUrlWithQuery;
-      } else if (r.urlType === 'REGX') {
-        var regex = new RegExp(r.url, 'g');
-        const isTarget = currRequestUrl.match(regex);
-        const result = isTarget && isTarget.length > 0;
-        if (result) {
-          chrome.storage.local.set({
-            [r.url]: currRequestUrl,
-          });
-          formatUrlKey = currRequestUrl;
-        }
-        return result;
+        } else if (r.urlType === 'REGX') {
+          var regex = new RegExp(r.url, 'g');
+          const isTarget = currRequestUrl.match(regex);
+          const result = isTarget && isTarget.length > 0;
+          if (result) {
+            chrome.storage.local.set({
+              [r.url]: currRequestUrl,
+            });
+            formatUrlKey = currRequestUrl;
+          }
+          return result;
         } else {
           return r.url === currRequestUrl;
         }
@@ -104,27 +104,27 @@ export const pageDecodeMsgListener = async (
         await chrome.storage.local.set({
           [formatUrlKey]: JSON.stringify(newCurrRequestObj),
         });
-      if (
-        needQueryDetail &&
-        formatUrlKey.startsWith(
-          'https://api.x.com/1.1/account/settings.json'
-        ) &&
-        !hasGetTwitterScreenName
-      ) {
-        const options = {
-          headers: newCurrRequestObj.headers,
-        };
-        hasGetTwitterScreenName = true;
-        const res = await fetch(
-          formatUrlKey + '?' + newCurrRequestObj.queryString,
-          options
-        );
-        const result = await res.json();
-        //need to go profile page
-        await chrome.tabs.update(tabCreatedByPado.id, {
-          url: jumpTo + result.screen_name,
-        });
-      }
+        if (
+          needQueryDetail &&
+          formatUrlKey.startsWith(
+            'https://api.x.com/1.1/account/settings.json'
+          ) &&
+          !hasGetTwitterScreenName
+        ) {
+          const options = {
+            headers: newCurrRequestObj.headers,
+          };
+          hasGetTwitterScreenName = true;
+          const res = await fetch(
+            formatUrlKey + '?' + newCurrRequestObj.queryString,
+            options
+          );
+          const result = await res.json();
+          //need to go profile page
+          await chrome.tabs.update(tabCreatedByPado.id, {
+            url: jumpTo + result.screen_name,
+          });
+        }
         checkWebRequestIsReadyFn();
       }
     };
@@ -141,16 +141,16 @@ export const pageDecodeMsgListener = async (
           }
           formatUrlKey = hostUrl;
           return curUrlWithQuery;
-      } else if (r.urlType === 'REGX') {
-        var regex = new RegExp(r.url, 'g');
-        const isTarget = currRequestUrl.match(regex);
-        const result = isTarget && isTarget.length > 0;
-        if (result) {
-          chrome.storage.local.set({
-            [r.url]: currRequestUrl,
-          });
-        }
-        return result;
+        } else if (r.urlType === 'REGX') {
+          var regex = new RegExp(r.url, 'g');
+          const isTarget = currRequestUrl.match(regex);
+          const result = isTarget && isTarget.length > 0;
+          if (result) {
+            chrome.storage.local.set({
+              [r.url]: currRequestUrl,
+            });
+          }
+          return result;
         } else {
           return r.url === currRequestUrl;
         }
@@ -192,11 +192,11 @@ export const pageDecodeMsgListener = async (
             // const storageR = Object.keys(storageObj).find(
             //   (sRKey) => sRKey === r.url
             // );
-          let url = r.url;
-          if (r.urlType === 'REGX') {
-            const realUrl = await chrome.storage.local.get(r.url);
-            url = realUrl[r.url];
-          }
+            let url = r.url;
+            if (r.urlType === 'REGX') {
+              const realUrl = await chrome.storage.local.get(r.url);
+              url = realUrl[r.url];
+            }
             const sRrequestObj = storageObj[url]
               ? JSON.parse(storageObj[url])
               : {};
@@ -326,26 +326,41 @@ export const pageDecodeMsgListener = async (
       console.log('222activeTemplate', activeTemplate);
       if (activeTemplate.id === '15') {
         form.baseValue =
-          activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;;
+          activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
       }
       if (activeTemplate.requestid) {
         form.requestid = activeTemplate.requestid;
       }
       let aligorithmParams = await assembleAlgorithmParams(form, password);
 
+      var eventInfo = {
+        eventType: 'ATTESTATION_START',
+        rawData: {
+          source: aligorithmParams.source,
+          schemaType: aligorithmParams.schemaType,
+          sigFormat: aligorithmParams.sigFormat,
+          attestationId: aligorithmParams.requestid,
+          // status: '',
+          // reason: '',
+          event: aligorithmParams.events,
+          address: aligorithmParams?.user?.address,
+        },
+      };
+      eventReport(eventInfo);
+
       const formatRequests = [];
       for (const r of requests) {
-      if (r.queryDetail) {
-        continue;
-      }
-      let { headers, cookies, body, url, urlType } = r;
-      let formatUrlKey = url;
-      if (urlType === 'REGX') {
-        formatUrlKey = await chrome.storage.local.get(url);
-        formatUrlKey = formatUrlKey[url];
-        url = formatUrlKey;
-        r.url = url;
-      }
+        if (r.queryDetail) {
+          continue;
+        }
+        let { headers, cookies, body, url, urlType } = r;
+        let formatUrlKey = url;
+        if (urlType === 'REGX') {
+          formatUrlKey = await chrome.storage.local.get(url);
+          formatUrlKey = formatUrlKey[url];
+          url = formatUrlKey;
+          r.url = url;
+        }
         const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
 
         const {

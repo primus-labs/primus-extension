@@ -178,16 +178,23 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     // await chrome.storage.local.remove(sourceNameList.concat(['x', 'zan']));
     // init notifications
     const { notifications } = await chrome.storage.local.get(['notifications']);
-    if (!notifications) {
+    // if (!notifications) {
       await chrome.storage.local.set({
         notifications: JSON.stringify({
+          '3': {
+            id: '3',
+            title: 'A new version 0.3.6 is updated.',
+            desc: 'Just a little polish, nothing major.',
+            time: '2024/05/27 20:00',
+            collapse: false,
+            disableCollapse: true,
+          },
           '2': {
             id: '2',
             title: 'A new version 0.3.5 is updated.',
             desc: 'Refine the data in the dashboard, and update the OKX asset attestation API due to their recent change.',
             time: '2024/05/24 19:00',
-            collapse: false,
-            disableCollapse: true,
+            collapse: true,
           },
           '1': {
             id: '1',
@@ -198,7 +205,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
           },
         }),
       });
-    }
+    // }
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
     dispatch(setKYCsAsync());

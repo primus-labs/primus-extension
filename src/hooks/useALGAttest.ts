@@ -27,10 +27,7 @@ import {
   getAccount,
 } from '@/utils/utils';
 
-import {
-  BASEVENTNAME,
-  LINEAEVENTNAME,
-} from '@/config/events';
+import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import {
   ATTESTATIONPOLLINGTIMEOUT,
@@ -172,6 +169,11 @@ const useAttest = function useAttest() {
           },
         };
         eventReport(eventInfo);
+        var eventInfoEnd = {
+          ...eventInfo,
+          eventType: 'ATTESTATION_END',
+        };
+        eventReport(eventInfoEnd);
       }
     },
     [dispatch, activeAttestation.dataSourceId, fromEvents]
@@ -280,6 +282,11 @@ const useAttest = function useAttest() {
             address: fullAttestation?.address,
           });
           eventReport(eventInfo);
+          var eventInfoEnd = {
+            ...eventInfo,
+            eventType: 'ATTESTATION_END',
+          };
+          eventReport(eventInfoEnd);
         } else if (
           !content.signature ||
           content.balanceGreaterThanBaseValue === 'false'
@@ -353,6 +360,11 @@ const useAttest = function useAttest() {
             address: parsedActiveRequestAttestation?.address,
           });
           eventReport(eventInfo);
+          var eventInfoEnd = {
+            ...eventInfo,
+            eventType: 'ATTESTATION_END',
+          };
+          eventReport(eventInfoEnd);
         }
       } else if (retcode === '2') {
         clearFetchAttestationTimer();
@@ -414,6 +426,11 @@ const useAttest = function useAttest() {
           address: parsedActiveRequestAttestation?.address,
         });
         eventReport(eventInfo);
+        var eventInfoEnd = {
+          ...eventInfo,
+          eventType: 'ATTESTATION_END',
+        };
+        eventReport(eventInfoEnd);
         if (parsedActiveRequestAttestation.reqType === 'web') {
           await chrome.runtime.sendMessage({
             type: 'pageDecode',
@@ -503,6 +520,11 @@ const useAttest = function useAttest() {
       },
     };
     eventReport(eventInfo);
+    var eventInfoEnd = {
+      ...eventInfo,
+      eventType: 'ATTESTATION_END',
+    };
+    eventReport(eventInfoEnd);
 
     const msg = {
       fullScreenType: 'algorithm',
