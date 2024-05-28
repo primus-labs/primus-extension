@@ -52,7 +52,7 @@
         .NFTName {
           width: 100%;
           @include HeadlineH3;
-          color: #000;
+          color: var(--text-tokens-text-primary);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
