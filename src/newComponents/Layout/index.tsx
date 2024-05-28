@@ -185,7 +185,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
             id: '3',
             title: 'A new version 0.3.6 is updated.',
             desc: 'Just a little polish, nothing major.',
-            time: '2024/05/27 20:00',
+            time: '2024/05/28 12:00',
             collapse: false,
             disableCollapse: true,
           },
