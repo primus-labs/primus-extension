@@ -363,6 +363,7 @@ export const connectWalletAsync = (
               label,
             });
             dispatch(setNftsActionAsync([{ signature, timestamp, address }]));
+            dispatch(initSetNewRewardsAction());
           } catch {}
 
           await dispatch(
