@@ -165,6 +165,7 @@ export function formatNumeral(num: string | number, params?: NumeralParams) {
 
 export function postMsg(port: chrome.runtime.Port, msg: any) {
   try {
+    console.log('postMsg port: ', port, 'msg:', msg);
     port.postMessage(msg);
   } catch (error: any) {
     console.log('postMsg error: ', error);
