@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import {
@@ -7,6 +8,7 @@ import {
 import { queryBadgeEventPeriod, queryEventDetail } from '@/services/api/event';
 import { checkEarlyBirdNFT } from '@/services/api/event';
 import { checkLotteryResults } from '@/services/api/event';
+import { getNotifications } from '@/services/api/config';
 import { getOnChainNFTs } from '@/services/api/dataDashboard';
 import {
   getAssetsOnChains,
@@ -442,7 +444,6 @@ export const getChainAssets = async ({
   requireReport = true,
 }) => {
   try {
-   
     const getAssetsLoadingObj2 = sessionStorage.getItem('getAssetsLoadingObj2');
     let lastObj = getAssetsLoadingObj2 ? JSON.parse(getAssetsLoadingObj2) : {};
     if (lastObj[curConnectedAddr]?.token === '1') {
@@ -495,7 +496,7 @@ export const getChainAssets = async ({
               lastObj[curConnectedAddr] = {
                 token: '0',
               };
-              
+
               sessionStorage.setItem(
                 'getAssetsLoadingObj2',
                 JSON.stringify(lastObj)
@@ -796,7 +797,6 @@ export const getChainAssetsNFT = async ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-     
       const getAssetsLoadingObj2 = sessionStorage.getItem(
         'getAssetsLoadingObj2'
       );
@@ -1236,5 +1236,32 @@ export const initSetNotificationsAction = () => {
     if (notifications) {
       dispatch(setNotifications(JSON.parse(notifications)));
     }
+    try {
+      const res = await getNotifications({
+        fromId: '100',
+        limit: 100,
+        direction: 'NEXT',
+      });
+      const { rc, result } = res;
+      if (rc === 0 && result.items) {
+        const newN = result.items.reduce((prev, curr, k) => {
+          const { id, title, content, link, publishTime } = curr;
+          prev[id] = {
+            id,
+            title,
+            desc: content,
+            link,
+            time: dayjs(publishTime).format('YYYY/MM/DD hh:mm'),
+            // collapse: k !== 0,
+            // disableCollapse: k === 0,
+          };
+          return prev;
+        }, {});
+        await chrome.storage.local.set({
+          notifications: JSON.stringify(newN),
+        });
+        dispatch(setNotifications(newN));
+      }
+    } catch {}
   };
 };

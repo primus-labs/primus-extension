@@ -176,36 +176,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     }
 
     // await chrome.storage.local.remove(sourceNameList.concat(['x', 'zan']));
-    // init notifications
-    const { notifications } = await chrome.storage.local.get(['notifications']);
-    // if (!notifications) {
-      await chrome.storage.local.set({
-        notifications: JSON.stringify({
-          '3': {
-            id: '3',
-            title: 'A new version 0.3.6 is updated.',
-            desc: 'Just a little polish, nothing major.',
-            time: '2024/05/28 12:00',
-            collapse: false,
-            disableCollapse: true,
-          },
-          '2': {
-            id: '2',
-            title: 'A new version 0.3.5 is updated.',
-            desc: 'Refine the data in the dashboard, and update the OKX asset attestation API due to their recent change.',
-            time: '2024/05/24 19:00',
-            collapse: true,
-          },
-          '1': {
-            id: '1',
-            title: 'A new version 0.3.4 is updated.',
-            desc: 'Optimized the Web3 data acquisition method, added a link button on the Early Bird NFT image to jump to OpenSea.',
-            time: '2024/05/23 20:00',
-            collapse: true,
-          },
-        }),
-      });
-    // }
+   
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
     dispatch(setKYCsAsync());

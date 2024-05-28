@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState, useEffect } from 'react';
 import PButton from '@/newComponents/PButton';
 import PTooltip from '@/newComponents/PTooltip';
 import './index.scss';
@@ -10,20 +10,32 @@ import { Dispatch } from 'react';
 const NotificationDropdown: React.FC = memo(({}) => {
   const dispatch: Dispatch<any> = useDispatch();
   const notifications = useSelector((state: UserState) => state.notifications);
-  const list = useMemo(() => {
-    return Object.values(notifications).sort((a: any, b: any) => b.id - a.id);
+  const [list, setList] = useState<any>([]);
+  // const list = useMemo(() => {
+  //   return Object.values(notifications).sort((a: any, b: any) => b.id - a.id);
+  // }, [notifications]);
+  useEffect(() => {
+    let l: any[] = Object.values(notifications).sort(
+      (a: any, b: any) => b.id - a.id
+    );
+    if (l) {
+      l = l.map((item, k) => {
+        item.collapse = k !== 0;
+        item.disableCollapse = k === 0;
+        return item;
+      });
+      setList(l);
+    } else {
+      setList([]);
+    }
   }, [notifications]);
 
   const handleShowMore = async (id) => {
-    const { notifications } = await chrome.storage.local.get(['notifications']);
-    if (notifications) {
-      const lastObj = JSON.parse(notifications);
-      lastObj[id].collapse = !lastObj[id].collapse;
-      await chrome.storage.local.set({
-        notifications: JSON.stringify(lastObj),
-      });
-      dispatch(initSetNotificationsAction());
-    }
+    setList((l) => {
+      const item = l.find((i) => i.id === id);
+      item.collapse = !item.collapse;
+      return [...l];
+    });
   };
 
   return (
@@ -32,8 +44,8 @@ const NotificationDropdown: React.FC = memo(({}) => {
       <ul className="dropdownOptions">
         {list.map((item, k) => {
           return (
-            <li className="dropdownOption" key={item.id}>
-              <div className="title">{item.title}</div>
+            <li className="dropdownOption" key={item?.id}>
+              <div className="title">{item?.title}</div>
               <div className="desc">
                 <div
                   className={`descCon ${
