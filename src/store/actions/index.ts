@@ -1,4 +1,6 @@
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'; 
+import utc from 'dayjs-plugin-utc';
+dayjs.extend(utc);
 import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import {
@@ -20,7 +22,6 @@ import { getProofTypes } from '@/services/api/config';
 import { getEARLYBIRDNFT } from '@/services/chains/erc721';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
-
 import {
   SCROLLEVENTNAME,
   BASEVENTNAME,
@@ -1251,7 +1252,7 @@ export const initSetNotificationsAction = () => {
             title,
             desc: content,
             link,
-            time: dayjs(publishTime).format('YYYY/MM/DD hh:mm'),
+            time:  dayjs.utc(publishTime-0).format('YYYY/MM/DD hh:mm'),
             // collapse: k !== 0,
             // disableCollapse: k === 0,
           };

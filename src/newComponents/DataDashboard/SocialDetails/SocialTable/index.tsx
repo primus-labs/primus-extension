@@ -93,7 +93,7 @@ const SocialTable: FC = memo(({}) => {
                   )}
               </div>
               <div>{formatTxtFn(j, 'followings')}</div>
-              <div className="posts">{formatTxtFn(j, 'posts')}</div>
+              <div className="posts">{j.id === 'x' ? '-':formatTxtFn(j, 'posts')}</div>
               <div className="verified">{accTagsFn(j)}</div>
             </li>
           );
