@@ -423,6 +423,13 @@ export const pageDecodeMsgListener = async (
         [authInfoName]: JSON.stringify(activeHeader),
       });
 
+      if (dataSource === "binance") {
+        for (const fr of formatRequests) {
+          if (fr.headers) {
+            fr.headers["Accept-Encoding"] = "*";
+          }
+        }
+      }
       Object.assign(aligorithmParams, {
         reqType: 'web',
         host: host,
