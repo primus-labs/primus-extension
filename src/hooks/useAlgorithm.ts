@@ -36,7 +36,6 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   );
   const padoServicePortListener = useCallback(
     async function (message: any) {
-      console.log(`yy-page_get:`, message); //delete
       const { resType, resMethodName, res, params } = message;
       if (resType === 'algorithm') {
         console.log(`page_get:${resMethodName}:`, res);
