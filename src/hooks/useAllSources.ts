@@ -19,12 +19,6 @@ const useAllSources = (sourceName?: undefined | null | string) => {
   const onChainAssetsSources = useSelector(
     (state: UserState) => state.onChainAssetsSources
   );
-  console.log(
-    '222useAllSources-compatible',
-    exSources,
-    socialSources,
-    onChainAssetsSources
-  );//delete
   const exList = useMemo(() => {
     const sourceArr: ExDataList = Object.values({ ...JSON.parse(JSON.stringify(exSources)) });
     const orderedExList = sourceArr.sort((a, b) =>

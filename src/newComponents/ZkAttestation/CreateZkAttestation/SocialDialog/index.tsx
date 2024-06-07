@@ -14,10 +14,7 @@ import useAuthorization2 from '@/hooks/useAuthorization2';
 
 import { eventReport } from '@/services/api/usertracker';
 import { getAccount, postMsg } from '@/utils/utils';
-import {
-  BASEVENTNAME,
-  ETHSIGNEVENTNAME,
-} from '@/config/events';
+import { BASEVENTNAME, ETHSIGNEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import type { Dispatch } from 'react';
@@ -146,7 +143,7 @@ const Social: React.FC<PButtonProps> = memo(
         }
       }
     }, []);
-   
+
     const handleSubmitSetDetail = useCallback(
       async (form = {}) => {
         // setAssetForm((f) => ({ ...f, ...form }));
@@ -175,7 +172,7 @@ const Social: React.FC<PButtonProps> = memo(
               i.name === contentObj.value)
         );
         // sessionStorage.setItem('xFollowerCount', form?.verificationValue);
-        
+
         // TODO-newui get account from attestation???
         let currRequestTemplate = {
           ...activeWebProofTemplate,
@@ -195,6 +192,19 @@ const Social: React.FC<PButtonProps> = memo(
           currRequestTemplate.schemaType =
             currentEventDetail?.ext?.schemaType || 'X_FOLLOWER_COUNT#1';
         }
+        
+        const requestid = uuidv4();
+        var eventInfo = {
+          eventType: 'ATTESTATION_NEXT',
+          rawData: {
+            source: activeAttestationParams.dataSource,
+            event: activeAttestationParams.event,
+            order: '1',
+            requestid,
+          },
+        };
+        eventReport(eventInfo);
+
         // 3.send msg to content
         const currentWindowTabs = await chrome.tabs.query({
           active: true,
@@ -205,6 +215,7 @@ const Social: React.FC<PButtonProps> = memo(
           name: 'init',
           params: {
             ...currRequestTemplate,
+            requestid,
           },
           extensionTabId: currentWindowTabs[0].id,
           operation: 'attest',

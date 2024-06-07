@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
+// import { eventReport } from '@/services/api/usertracker';
 // import rem from '@/utils/rem.js';
 import PButton from '../PButton';
 import './index.scss';
@@ -10,6 +11,110 @@ console.log(
 let activeRequest;
 let operationType;
 let attestType;
+let PADOSERVERURL;
+let padoExtensionVersion;
+let activeRequestid;
+
+const request = async (fetchParams) => {
+  let { method, url, data = {}, config } = fetchParams;
+  const baseUrl = PADOSERVERURL;
+  method = method.toUpperCase();
+  url = url.startsWith('http') || url.startsWith('https') ? url : baseUrl + url;
+
+  if (method === 'GET') {
+    let dataStr = '';
+    Object.keys(data).forEach((key) => {
+      dataStr += key + '=' + data[key] + '&';
+    });
+    if (dataStr !== '') {
+      dataStr = dataStr.substr(0, dataStr.lastIndexOf('&'));
+      url = url + '?' + dataStr;
+    }
+  }
+  let golbalHeader = {
+    'client-type': 'WEB',
+    'client-version': padoExtensionVersion,
+  };
+  const { userInfo } = await chrome.storage.local.get(['userInfo']);
+  if (userInfo) {
+    const userInfoObj = JSON.parse(userInfo);
+    const { id, token } = userInfoObj;
+    if (
+      !url.startsWith('https://pado-online.s3.ap-northeast-1.amazonaws.com') &&
+      token
+    ) {
+      golbalHeader.Authorization = `Bearer ${token}`;
+    }
+    if (url.includes('/public/event/report')) {
+      golbalHeader['user-id'] = id;
+    }
+  }
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const timeout = config?.timeout ?? 60000;
+  const timeoutTimer = setTimeout(() => {
+    controller.abort();
+  }, timeout);
+  let requestConfig = {
+    credentials: 'same-origin',
+    method: method,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...golbalHeader,
+
+      ...config?.extraHeader,
+    },
+    mode: 'cors', //  same-origin | no-cors（default）|cores;
+    cache: config?.cache ?? 'default', //  default | no-store | reload | no-cache | force-cache | only-if-cached 。
+    signal: signal,
+  };
+
+  if (method === 'POST') {
+    Object.defineProperty(requestConfig, 'body', {
+      value: JSON.stringify(data),
+    });
+  }
+  try {
+    const response = await fetch(url, requestConfig);
+    const responseJson = await response.json();
+    clearTimeout(timeoutTimer);
+    if (responseJson.rc === 1 && responseJson.mc === '-999999') {
+      store.dispatch({
+        type: 'setRequireUpgrade',
+        payload: true,
+      });
+    }
+    return responseJson;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log(`fetch ${url} timeout`);
+    } else {
+      throw new Error(error);
+    }
+  } finally {
+    clearTimeout(timeoutTimer);
+  }
+};
+const eventReport = async (data) => {
+  let storedata= {};
+  storedata.eventType = data.eventType;
+  const { keyStore } = await chrome.storage.local.get(['keyStore']);
+  if (keyStore) {
+    const { address } = JSON.parse(keyStore);
+    storedata.walletAddressOnChainId = '0x' + address;
+  }
+  if (data.rawData) {
+    storedata.rawData = JSON.stringify(data.rawData);
+  }
+
+  return request({
+    method: 'post',
+    url: `/public/event/report`,
+    data: storedata,
+  });
+};
+
 function removeStorageValuesFn() {
   sessionStorage.removeItem('padoAttestRequestStatus');
   sessionStorage.removeItem('padoAttestRequestReady');
@@ -34,6 +139,17 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     await chrome.runtime.sendMessage(msgObj);
   }, []);
   const handleConfirm = useCallback(async () => {
+    var eventInfo = {
+      eventType: 'ATTESTATION_START',
+      rawData: {
+        source: activeRequest.dataSourceId,
+        event: activeRequest.event,
+        order: '2',
+        requestid: activeRequestid,
+      },
+    };
+    eventReport(eventInfo);
+
     var msgObj = {
       type: 'pageDecode',
       name: 'start',
@@ -401,7 +517,12 @@ chrome.runtime.sendMessage(
         return;
       }
       // render
-      activeRequest = response.params;
+      activeRequest = { ...response.params };
+      delete activeRequest.PADOSERVERURL
+      delete activeRequest.padoExtensionVersion;
+      PADOSERVERURL = response.params.PADOSERVERURL;
+      padoExtensionVersion = response.params.padoExtensionVersion;
+      activeRequestid =response.params.requestid
       console.log('222response', response); //delete
       operationType = response.operation;
       const container = document.getElementById('pado-extension-content');

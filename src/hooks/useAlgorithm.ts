@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import type { UserState } from '@/types/store';
+import { eventReport } from '@/services/api/usertracker';
 
 type UseAlgorithm = (
   getAttestationCallback: (res: any) => void,
@@ -35,6 +36,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   );
   const padoServicePortListener = useCallback(
     async function (message: any) {
+      console.log(`yy-page_get:`, message); //delete
       const { resType, resMethodName, res, params } = message;
       if (resType === 'algorithm') {
         console.log(`page_get:${resMethodName}:`, res);
@@ -67,8 +69,17 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
           }
         }
         if (resMethodName === `getAttestation`) {
+          debugger
+          // TODO wheather wait getAttestation msg back
           if (res) {
-            // TODO wheather wait getAttestation msg back
+            var eventInfo = {
+              eventType: 'ATTESTATION_START_FRONTEND',
+              rawData: {
+                requestid: message.requestid,
+                order: '7',
+              },
+            };
+            eventReport(eventInfo);
             const handler = () => savedCallback.current(res);
             handler();
           }

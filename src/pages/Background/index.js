@@ -341,7 +341,6 @@ const processpadoServiceReq = async (message, port) => {
   }
 };
 
-
 const processWalletReq = async (message, port) => {
   console.log('processWalletReq message', message);
   const {
@@ -456,12 +455,28 @@ const onDisconnectFullScreen = (port) => {
   fullscreenPort = null;
 };
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log('background onMessage message', message, fullscreenPort);
-  if (message.resType === 'algorithm' && fullscreenPort) {
-    postMsg(fullscreenPort, message);
+
+  if (message.resType === 'algorithm') {
+    if (message.resMethodName === `getAttestation`) {
+      var eventInfo = {
+        eventType: 'ATTESTATION_START_BACKGROUND',
+        rawData: {
+          fullscreenPort: !!fullscreenPort,
+          res: !!message.res,
+          requestid: message.requestid,
+          order: '6',
+        },
+      };
+      eventReport(eventInfo);
+    }
+
+    if (fullscreenPort) {
+      postMsg(fullscreenPort, message);
+    }
   }
-  let hasGetTwitterScreenName = false
+  let hasGetTwitterScreenName = false;
   if (message.type === 'pageDecode') {
     pageDecodeMsgListener(
       message,
@@ -495,5 +510,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       fullscreenPort
     );
   }
-  
 });

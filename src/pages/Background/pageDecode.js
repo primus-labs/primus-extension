@@ -1,7 +1,10 @@
 import { assembleAlgorithmParams } from './exData';
 import { storeDataSource } from './dataSourceUtils';
 import { DATASOURCEMAP } from '@/config/dataSource';
+import { PADOSERVERURL } from '@/config/envConstants';
+import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
+
 let tabCreatedByPado;
 let activeTemplate = {};
 let currExtentionId;
@@ -295,6 +298,8 @@ export const pageDecodeMsgListener = async (
         name: 'append',
         params: {
           ...activeTemplate,
+          PADOSERVERURL,
+          padoExtensionVersion,
         },
         dataSourcePageTabId: tabCreatedByPado.id,
         isReady: isReadyRequest,
@@ -311,12 +316,13 @@ export const pageDecodeMsgListener = async (
       return prev;
     }, {});*/
 
-      const { category } = activeTemplate;
+      const { category, requestid } = activeTemplate;
       const form = {
         source: dataSource,
         type: category,
         label: null, // TODO
         exUserId: null,
+        requestid,
       };
       // console.log(WorkerGlobalScope.location)
       if (event) {
@@ -332,22 +338,6 @@ export const pageDecodeMsgListener = async (
         form.requestid = activeTemplate.requestid;
       }
       let aligorithmParams = await assembleAlgorithmParams(form, password);
-
-      var eventInfo = {
-        eventType: 'ATTESTATION_START',
-        rawData: {
-          source: aligorithmParams.source,
-          schemaType: aligorithmParams.schemaType,
-          sigFormat: aligorithmParams.sigFormat,
-          attestationId: aligorithmParams.requestid,
-          // status: '',
-          // reason: '',
-          event: aligorithmParams.events,
-          address: aligorithmParams?.user?.address,
-        },
-      };
-      eventReport(eventInfo);
-
       const formatRequests = [];
       for (const r of requests) {
         if (r.queryDetail) {
@@ -415,7 +405,6 @@ export const pageDecodeMsgListener = async (
 
         formatRequests.push(r);
       }
-
       const activeInfo = formatRequests.find((i) => i.headers);
       const activeHeader = Object.assign({}, activeInfo.headers);
       const authInfoName = dataSource + '-auth';
@@ -423,7 +412,7 @@ export const pageDecodeMsgListener = async (
         [authInfoName]: JSON.stringify(activeHeader),
       });
 
-      if (dataSource === "binance") {
+      if (dataSource === 'binance') {
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers["Accept-Encoding"] = "identity";
@@ -449,10 +438,30 @@ export const pageDecodeMsgListener = async (
       });
       console.log('222222pageDecode-aligorithmParams', aligorithmParams);
 
+      var eventInfo = {
+        eventType: 'ATTESTATION_START_PAGEDECODE',
+        rawData: {
+          source: aligorithmParams.source,
+          schemaType: aligorithmParams.schemaType,
+          sigFormat: aligorithmParams.sigFormat,
+          attestationId: aligorithmParams.requestid,
+          event: aligorithmParams.event,
+          address: aligorithmParams?.user?.address,
+          requestid: aligorithmParams.requestid,
+          order: '3',
+        },
+      };
+      eventReport(eventInfo);
+
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
-        params: aligorithmParams,
+        params: {
+          ...aligorithmParams,
+          PADOSERVERURL,
+          padoExtensionVersion,
+          requestid: aligorithmParams.requestid,
+        },
       });
 
       const { constructorF } = DATASOURCEMAP[dataSource];

@@ -372,6 +372,17 @@ const Nav: React.FC<PButtonProps> = memo(
           //     firstSubCondition.value = activeAttestationParams.verificationValue;
           //   }
           // }
+          const requestid = uuidv4();
+          var eventInfo = {
+            eventType: 'ATTESTATION_NEXT',
+            rawData: {
+              source: activeAttestationParams.dataSourceId,
+              event: fromEvents,
+              order: '1',
+              requestid,
+            },
+          };
+          eventReport(eventInfo);
 
           // 3.send msg to content
           const currentWindowTabs = await chrome.tabs.query({
@@ -383,6 +394,7 @@ const Nav: React.FC<PButtonProps> = memo(
             name: 'init',
             params: {
               ...currRequestTemplate,
+              requestid,
             },
             extensionTabId: currentWindowTabs[0].id,
             operation: 'attest',

@@ -1,11 +1,14 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import { setActiveAttestation, setAttestLoading } from '@/store/actions';
 import useEventDetail from '@/hooks/useEventDetail';
 import { postMsg } from '@/utils/utils';
 import { BASEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
+import { eventReport } from '@/services/api/usertracker';
+
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
@@ -155,6 +158,17 @@ const Nav: React.FC<PButtonProps> = memo(
                 activeAttestationParams.verificationValue;
             }
           }
+          const requestid=uuidv4()
+          var eventInfo = {
+            eventType: 'ATTESTATION_NEXT',
+            rawData: {
+              source: activeAttestationParams.dataSource,
+              event: activeAttestationParams.event,
+              order: '1',
+              requestid
+            },
+          };
+          eventReport(eventInfo);
 
           // 3.send msg to content
           const currentWindowTabs = await chrome.tabs.query({
@@ -166,6 +180,7 @@ const Nav: React.FC<PButtonProps> = memo(
             name: 'init',
             params: {
               ...currRequestTemplate,
+              requestid
             },
             extensionTabId: currentWindowTabs[0].id,
             operation: 'attest',
