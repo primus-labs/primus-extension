@@ -426,7 +426,7 @@ export const pageDecodeMsgListener = async (
       if (dataSource === "binance") {
         for (const fr of formatRequests) {
           if (fr.headers) {
-            fr.headers["Accept-Encoding"] = "*";
+            fr.headers["Accept-Encoding"] = "identity";
           }
         }
       }
