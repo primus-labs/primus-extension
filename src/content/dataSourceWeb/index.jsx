@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 // import rem from '@/utils/rem.js';
-import PButton from '@/newComponents/PButton';
+import PButton from '../PButton';
 import './index.scss';
 
 let activeRequest;
