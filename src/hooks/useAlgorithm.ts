@@ -68,7 +68,6 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
           }
         }
         if (resMethodName === `getAttestation`) {
-          debugger
           // TODO wheather wait getAttestation msg back
           if (res) {
             var eventInfo = {
