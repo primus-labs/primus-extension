@@ -505,7 +505,7 @@ const useAttest = function useAttest() {
         msgObj: { ...msgObj, btnTxt: 'Try Again' },
       })
     );
-
+    const { beginAttest } = await chrome.storage.local.get(['beginAttest']);
     var eventInfo: any = {
       eventType: 'ATTESTATION_GENERATE',
       rawData: {
@@ -519,7 +519,10 @@ const useAttest = function useAttest() {
         address: parsedActiveRequestAttestation?.address,
       },
     };
-    eventReport(eventInfo);
+
+    if (beginAttest === '1') {
+      eventReport(eventInfo);
+    }
     var eventInfoEnd = {
       ...eventInfo,
       eventType: 'ATTESTATION_END',

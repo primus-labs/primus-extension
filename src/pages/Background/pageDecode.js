@@ -307,6 +307,9 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'start') {
+      await chrome.storage.local.set({
+        beginAttest: '1',
+      });
       /*const dataSourceCookies = await chrome.cookies.getAll({
       url: new URL(jumpTo).origin,
     });

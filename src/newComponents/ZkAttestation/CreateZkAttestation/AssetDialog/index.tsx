@@ -169,6 +169,7 @@ const Nav: React.FC<PButtonProps> = memo(
             },
           };
           eventReport(eventInfo);
+          chrome.storage.local.remove(['beginAttest']);
 
           // 3.send msg to content
           const currentWindowTabs = await chrome.tabs.query({
