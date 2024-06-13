@@ -3,7 +3,7 @@
 @import '@/assets/newCss/mixins.scss';
 .notificationDropdown {
   width: 100%;
-  max-height: 604px;
+  // max-height: 622px;
   overflow-y: auto;
   padding: var(--spacing-24);
   padding-bottom: 42px;
@@ -17,10 +17,22 @@
   }
   &::-webkit-scrollbar {
     width: var(--spacing-4);
+    display: none;
   }
   &::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: var(--spacing-4);
+  }
+  .scrollWrapper {
+    height: 496px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      width: var(--spacing-4);
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: var(--spacing-4);
+    }
   }
   .dropdownOptions {
     @include fcss;
@@ -64,7 +76,7 @@
           .btnText {
             @include BodyBody300Bold;
           }
-          .rotate{
+          .rotate {
             transform: rotate(180deg);
           }
         }

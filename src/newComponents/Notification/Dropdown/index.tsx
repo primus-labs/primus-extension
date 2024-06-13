@@ -41,62 +41,64 @@ const NotificationDropdown: React.FC = memo(({}) => {
   return (
     <div className="notificationDropdown">
       <h6>Notification</h6>
-      <ul className="dropdownOptions">
-        {list.map((item, k) => {
-          return (
-            <li className="dropdownOption" key={item?.id}>
-              <div className="title">{item?.title}</div>
-              <div className="desc">
-                <div
-                  className={`descCon ${
-                    item.desc.length > 41
-                      ? item.collapse
-                        ? 'collapse'
-                        : 'expand'
-                      : ''
-                  }`}
-                >
-                  {item.desc}
+      <div className="scrollWrapper">
+        <ul className="dropdownOptions">
+          {list.map((item, k) => {
+            return (
+              <li className="dropdownOption" key={item?.id}>
+                <div className="title">{item?.title}</div>
+                <div className="desc">
+                  <div
+                    className={`descCon ${
+                      item.desc.length > 41
+                        ? item.collapse
+                          ? 'collapse'
+                          : 'expand'
+                        : ''
+                    }`}
+                  >
+                    {item.desc}
+                  </div>
+                  {item.desc.length > 41 &&
+                    !item.disableCollapse &&
+                    item.collapse && (
+                      <PButton
+                        type="text"
+                        text={'More'}
+                        suffix={<i className={`iconfont icon-DownArrow `}></i>}
+                        onClick={() => {
+                          handleShowMore(item.id);
+                        }}
+                        className="moreBtn"
+                      />
+                    )}
                 </div>
-                {item.desc.length > 41 &&
-                  !item.disableCollapse &&
-                  item.collapse && (
-                    <PButton
-                      type="text"
-                      text={'More'}
-                      suffix={<i className={`iconfont icon-DownArrow `}></i>}
-                      onClick={() => {
-                        handleShowMore(item.id);
-                      }}
-                      className="moreBtn"
-                    />
-                  )}
-              </div>
-              <div className="time">
-                <span className="timeCon">{item.time}</span>
-                {item.desc.length > 41 &&
-                  !item.disableCollapse &&
-                  !item.collapse && (
-                    <PButton
-                      type="text"
-                      text={'Collapse'}
-                      suffix={
-                        <i
-                          className={`iconfont icon-DownArrow rotate
+                <div className="time">
+                  <span className="timeCon">{item.time}</span>
+                  {item.desc.length > 41 &&
+                    !item.disableCollapse &&
+                    !item.collapse && (
+                      <PButton
+                        type="text"
+                        text={'Collapse'}
+                        suffix={
+                          <i
+                            className={`iconfont icon-DownArrow rotate
                         }`}
-                        ></i>
-                      }
-                      onClick={() => {
-                        handleShowMore(item.id);
-                      }}
-                      className="moreBtn"
-                    />
-                  )}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                          ></i>
+                        }
+                        onClick={() => {
+                          handleShowMore(item.id);
+                        }}
+                        className="moreBtn"
+                      />
+                    )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 });
