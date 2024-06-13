@@ -41,7 +41,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         console.log(`page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
           console.log(`page_get:start:`, message.res);
-          var eventInfo = {
+          let eventInfo = {
             eventType: 'ATTESTATION_INIT_2',
             rawData: {},
           };
@@ -75,7 +75,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         if (resMethodName === `getAttestation`) {
           // TODO wheather wait getAttestation msg back
           if (res) {
-            var eventInfo = {
+            let eventInfo = {
               eventType: 'ATTESTATION_START_FRONTEND',
               rawData: {
                 requestid: message.requestid,
