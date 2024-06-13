@@ -2,105 +2,105 @@
 let PADOSERVERURL;
 let padoExtensionVersion;
 
-const request = async (fetchParams) => {
-  let { method, url, data = {}, config } = fetchParams;
-  const baseUrl = PADOSERVERURL;
-  method = method.toUpperCase();
-  url = url.startsWith('http') || url.startsWith('https') ? url : baseUrl + url;
+// const request = async (fetchParams) => {
+//   let { method, url, data = {}, config } = fetchParams;
+//   const baseUrl = PADOSERVERURL;
+//   method = method.toUpperCase();
+//   url = url.startsWith('http') || url.startsWith('https') ? url : baseUrl + url;
 
-  if (method === 'GET') {
-    let dataStr = '';
-    Object.keys(data).forEach((key) => {
-      dataStr += key + '=' + data[key] + '&';
-    });
-    if (dataStr !== '') {
-      dataStr = dataStr.substr(0, dataStr.lastIndexOf('&'));
-      url = url + '?' + dataStr;
-    }
-  }
-  let golbalHeader = {
-    'client-type': 'WEB',
-    'client-version': padoExtensionVersion,
-  };
-  const { userInfo } = await chrome.storage.local.get(['userInfo']);
-  if (userInfo) {
-    const userInfoObj = JSON.parse(userInfo);
-    const { id, token } = userInfoObj;
-    if (
-      !url.startsWith('https://pado-online.s3.ap-northeast-1.amazonaws.com') &&
-      token
-    ) {
-      golbalHeader.Authorization = `Bearer ${token}`;
-    }
-    if (url.includes('/public/event/report')) {
-      golbalHeader['user-id'] = id;
-    }
-  }
-  const controller = new AbortController();
-  const signal = controller.signal;
-  const timeout = config?.timeout ?? 60000;
-  const timeoutTimer = setTimeout(() => {
-    controller.abort();
-  }, timeout);
-  let requestConfig = {
-    credentials: 'same-origin',
-    method: method,
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      ...golbalHeader,
+//   if (method === 'GET') {
+//     let dataStr = '';
+//     Object.keys(data).forEach((key) => {
+//       dataStr += key + '=' + data[key] + '&';
+//     });
+//     if (dataStr !== '') {
+//       dataStr = dataStr.substr(0, dataStr.lastIndexOf('&'));
+//       url = url + '?' + dataStr;
+//     }
+//   }
+//   let golbalHeader = {
+//     'client-type': 'WEB',
+//     'client-version': padoExtensionVersion,
+//   };
+//   const { userInfo } = await chrome.storage.local.get(['userInfo']);
+//   if (userInfo) {
+//     const userInfoObj = JSON.parse(userInfo);
+//     const { id, token } = userInfoObj;
+//     if (
+//       !url.startsWith('https://pado-online.s3.ap-northeast-1.amazonaws.com') &&
+//       token
+//     ) {
+//       golbalHeader.Authorization = `Bearer ${token}`;
+//     }
+//     if (url.includes('/public/event/report')) {
+//       golbalHeader['user-id'] = id;
+//     }
+//   }
+//   const controller = new AbortController();
+//   const signal = controller.signal;
+//   const timeout = config?.timeout ?? 60000;
+//   const timeoutTimer = setTimeout(() => {
+//     controller.abort();
+//   }, timeout);
+//   let requestConfig = {
+//     credentials: 'same-origin',
+//     method: method,
+//     headers: {
+//       Accept: 'application/json',
+//       'Content-Type': 'application/json',
+//       ...golbalHeader,
 
-      ...config?.extraHeader,
-    },
-    mode: 'cors', //  same-origin | no-cors（default）|cores;
-    cache: config?.cache ?? 'default', //  default | no-store | reload | no-cache | force-cache | only-if-cached 。
-    signal: signal,
-  };
+//       ...config?.extraHeader,
+//     },
+//     mode: 'cors', //  same-origin | no-cors（default）|cores;
+//     cache: config?.cache ?? 'default', //  default | no-store | reload | no-cache | force-cache | only-if-cached 。
+//     signal: signal,
+//   };
 
-  if (method === 'POST') {
-    Object.defineProperty(requestConfig, 'body', {
-      value: JSON.stringify(data),
-    });
-  }
-  try {
-    const response = await fetch(url, requestConfig);
-    const responseJson = await response.json();
-    clearTimeout(timeoutTimer);
-    if (responseJson.rc === 1 && responseJson.mc === '-999999') {
-      store.dispatch({
-        type: 'setRequireUpgrade',
-        payload: true,
-      });
-    }
-    return responseJson;
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      console.log(`fetch ${url} timeout`);
-    } else {
-      throw new Error(error);
-    }
-  } finally {
-    clearTimeout(timeoutTimer);
-  }
-};
-const eventReport = async (data) => {
-  let storedata = {};
-  storedata.eventType = data.eventType;
-  const { keyStore } = await chrome.storage.local.get(['keyStore']);
-  if (keyStore) {
-    const { address } = JSON.parse(keyStore);
-    storedata.walletAddressOnChainId = '0x' + address;
-  }
-  if (data.rawData) {
-    storedata.rawData = JSON.stringify(data.rawData);
-  }
+//   if (method === 'POST') {
+//     Object.defineProperty(requestConfig, 'body', {
+//       value: JSON.stringify(data),
+//     });
+//   }
+//   try {
+//     const response = await fetch(url, requestConfig);
+//     const responseJson = await response.json();
+//     clearTimeout(timeoutTimer);
+//     if (responseJson.rc === 1 && responseJson.mc === '-999999') {
+//       store.dispatch({
+//         type: 'setRequireUpgrade',
+//         payload: true,
+//       });
+//     }
+//     return responseJson;
+//   } catch (error) {
+//     if (error.name === 'AbortError') {
+//       console.log(`fetch ${url} timeout`);
+//     } else {
+//       throw new Error(error);
+//     }
+//   } finally {
+//     clearTimeout(timeoutTimer);
+//   }
+// };
+// const eventReport = async (data) => {
+//   let storedata = {};
+//   storedata.eventType = data.eventType;
+//   const { keyStore } = await chrome.storage.local.get(['keyStore']);
+//   if (keyStore) {
+//     const { address } = JSON.parse(keyStore);
+//     storedata.walletAddressOnChainId = '0x' + address;
+//   }
+//   if (data.rawData) {
+//     storedata.rawData = JSON.stringify(data.rawData);
+//   }
 
-  return request({
-    method: 'post',
-    url: `/public/event/report`,
-    data: storedata,
-  });
-};
+//   return request({
+//     method: 'post',
+//     url: `/public/event/report`,
+//     data: storedata,
+//   });
+// };
 
 Module = {};
 Module.onRuntimeInitialized = async () => {
@@ -226,11 +226,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       requestid: message.params.requestid,
       order: '4',
     };
-    var eventInfo = {
-      eventType: 'ATTESTATION_START_OFFSCREEN',
-      rawData,
-    };
-    eventReport(eventInfo);
+    chrome.runtime.sendMessage({
+      resType: 'report',
+      name: 'offscreenReceiveGetAttestation',
+      params: {
+        ...rawData,
+      },
+    });
 
     const activeParams = { ...message.params };
     delete activeParams.PADOSERVERURL;
@@ -253,11 +255,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             test.params.holdingToken = message.params.holdingToken;
         }
         call(JSON.stringify(test));*/
-    var eventInfo = {
-      eventType: 'ATTESTATION_START_OFFSCREEN_SUC',
-      rawData: { ...rawData, order: '5' },
-    };
-    eventReport(eventInfo);
+    // var eventInfo = {
+    //   eventType: 'ATTESTATION_START_OFFSCREEN_SUC',
+    //   rawData: { ...rawData, order: '5' },
+    // };
+    // eventReport(eventInfo);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'getAttestation',
@@ -273,7 +275,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       resType: 'algorithm',
       resMethodName: 'getAttestationResult',
       res: res,
-      
     });
   } else if (
     message.type === 'algorithm' &&

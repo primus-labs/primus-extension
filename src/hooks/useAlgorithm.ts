@@ -41,6 +41,11 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         console.log(`page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
           console.log(`page_get:start:`, message.res);
+          var eventInfo = {
+            eventType: 'ATTESTATION_INIT_2',
+            rawData: {},
+          };
+          eventReport(eventInfo);
           const msg = {
             fullScreenType: 'algorithm',
             reqMethodName: 'init',

@@ -127,6 +127,11 @@ const processAlgorithmReq = async (message, port) => {
       }
       break;
     case 'init':
+      var eventInfo = {
+        eventType: 'ATTESTATION_INIT_3',
+        rawData: {},
+      };
+      eventReport(eventInfo);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'init',
@@ -459,7 +464,21 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log('background onMessage message', message, fullscreenPort);
 
   if (message.resType === 'algorithm') {
-    if (message.resMethodName === `getAttestation`) {
+    if (message.resMethodName === `start`) {
+      var eventInfo = {
+        eventType: 'ATTESTATION_INIT_1',
+        rawData: {
+        },
+      };
+      eventReport(eventInfo);
+    } else if (message.resMethodName === `init`) {
+      var eventInfo = {
+        eventType: 'ATTESTATION_INIT_4',
+        rawData: {
+        },
+      };
+      eventReport(eventInfo);
+    } else if (message.resMethodName === `getAttestation`) {
       var eventInfo = {
         eventType: 'ATTESTATION_START_BACKGROUND',
         rawData: {
@@ -475,6 +494,17 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (fullscreenPort) {
       postMsg(fullscreenPort, message);
     }
+  }
+  if (message.resType === 'report') {
+    if (message.name === `offscreenReceiveGetAttestation`) {
+      var eventInfo = {
+        eventType: 'ATTESTATION_START_OFFSCREEN',
+        rawData: {
+          ...message.params
+        },
+      };
+      eventReport(eventInfo);
+    } 
   }
   let hasGetTwitterScreenName = false;
   if (message.type === 'pageDecode') {
