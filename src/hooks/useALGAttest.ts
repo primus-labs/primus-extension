@@ -180,6 +180,7 @@ const useAttest = function useAttest() {
   );
   const getAttestationResultCallback = useCallback(
     async (res: any) => {
+      await chrome.storage.local.set({ getAttestationResultRes: res });
       const { retcode, content, retdesc, details } = JSON.parse(res);
       const { activeRequestAttestation } = await chrome.storage.local.get([
         'activeRequestAttestation',
@@ -505,7 +506,12 @@ const useAttest = function useAttest() {
         msgObj: { ...msgObj, btnTxt: 'Try Again' },
       })
     );
-    const { beginAttest } = await chrome.storage.local.get(['beginAttest']);
+    const { beginAttest, getAttestationResultRes } =
+      await chrome.storage.local.get([
+        'beginAttest',
+        'getAttestationResultRes',
+      ]);
+
     var eventInfo: any = {
       eventType: 'ATTESTATION_GENERATE',
       rawData: {
@@ -521,6 +527,7 @@ const useAttest = function useAttest() {
     };
 
     if (beginAttest === '1') {
+      eventInfo.rawData.getAttestationResultRes = getAttestationResultRes;
       eventReport(eventInfo);
     }
     var eventInfoEnd = {
