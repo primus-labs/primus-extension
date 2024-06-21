@@ -1,22 +1,29 @@
-@import '@/assets/css/pVars.sass'
-@import '@/assets/css/pFont.sass'
-@import '@/assets/css/pFlex.sass'
+
+@import '@/assets/newCss/flex.scss'
 
 .ErrorBoundary
   width: 100vw
   height: 100vh
-  @extend .fccc
+  @include fccc
   gap: 50px
   p
-    @extend .xxlLBlackBoldFont
+    
+    
+    font-size: 48px
+    line-height: 58px
+    font-family: 'Inter-Bold'
+    color: rgba(0,0,0,1)
     font-family: 'Inter-Black' 
   button.refreshBtn
     width: 343px
     height: 80px
-    border-radius: $xxLBorderRadius
-    @extend .frcc
+    border-radius: 100px
+    @include frcc
     background: linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)
-    @extend .lLBlackSemiBoldFont
+    font-size: 24px
+    line-height: 29px
+    font-family: 'Inter-SemiBold'
+    color: rgba(0,0,0,1)
     &:hover,&:active
       border: 0
       background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), linear-gradient(269.39deg, #70FFBA 0.52%, #78DEFF 100.71%)

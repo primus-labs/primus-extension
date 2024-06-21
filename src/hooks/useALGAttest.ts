@@ -40,7 +40,7 @@ import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 
-const useAttest = function useAttest() {
+const useALGAttest = function useAttest() {
   const { pathname } = useLocation();
   const { sourceMap2 } = useAllSources();
   const { msgs, addMsg } = useMsgs();
@@ -656,4 +656,4 @@ const useAttest = function useAttest() {
     }
   }, [attestLoading, activeAttestation]);
 };
-export default useAttest;
+export default useALGAttest;

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { WALLETITEMTYPE } from '@/config/constants';
-import WalletList from '@/components/WalletList';
+
 import PButton from '@/components/PButton';
 import PBack from '@/components/PBack';
 import PMask from '@/newComponents/PMask';
@@ -65,7 +65,6 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
               <h1>Connect Your Wallet</h1>
               <h2>{desc}</h2>
             </header>
-            {/* <WalletList onClick={onChangeWallet} /> */}
             <POptions onClick={handleChangeWallet} />
           </main>
         </div>

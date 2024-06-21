@@ -17,7 +17,6 @@ import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
 import PTooltip from '@/newComponents/PTooltip';
-import PInput from '@/newComponents/PInput';
 
 import './index.scss';
 type PswFormType = {

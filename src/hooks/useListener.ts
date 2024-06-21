@@ -20,10 +20,11 @@ import { getAccount } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import type { ObjectType, SysConfigItem } from '@/types/home';
+import useListener from '@/hooks/useListener';
 
-type UseAlgorithm = () => void;
+type UseListener = () => void;
 
-const useAlgorithm: UseAlgorithm = function useAlgorithm() {
+const useListener: UseListener = function useListener() {
   const { createAccountFn } = useCreateAccount();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -277,4 +278,4 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm() {
     }
   }, [pathname]);
 };
-export default useAlgorithm;
+export default useListener;

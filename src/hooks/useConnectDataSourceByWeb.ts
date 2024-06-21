@@ -19,33 +19,34 @@ import { getUserIdentity } from '@/services/api/user';
 
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
-type UseAlgorithm = () => void;
+type UseConnectDataSourceByWeb = () => void;
 
-const useAlgorithm: UseAlgorithm = function useAlgorithm() {
-  const dispatch: Dispatch<any> = useDispatch();
-  const padoServicePort = useSelector(
-    (state: UserState) => state.padoServicePort
-  );
-  // const padoServicePortListener = useCallback(
-  //   async function (message: any) {
-  //     const { type } = message;
-  //     if (type === 'dataSourceWeb') {
-  //       const { name } = message;
-  //       if (name === 'start') {
-  //         dispatch(setActiveConnectDataSource({loading:1}));
-  //       }
-  //     }
-  //   },
-  //   [dispatch]
-  // );
+const useConnectDataSourceByWeb: UseConnectDataSourceByWeb =
+  function useConnectDataSourceByWeb() {
+    const dispatch: Dispatch<any> = useDispatch();
+    const padoServicePort = useSelector(
+      (state: UserState) => state.padoServicePort
+    );
+    // const padoServicePortListener = useCallback(
+    //   async function (message: any) {
+    //     const { type } = message;
+    //     if (type === 'dataSourceWeb') {
+    //       const { name } = message;
+    //       if (name === 'start') {
+    //         dispatch(setActiveConnectDataSource({loading:1}));
+    //       }
+    //     }
+    //   },
+    //   [dispatch]
+    // );
 
-  // useEffect(() => {
-  //   if (padoServicePort) {
-  //     padoServicePort.onMessage.addListener(padoServicePortListener);
-  //     return () => {
-  //       padoServicePort.onMessage.removeListener(padoServicePortListener);
-  //     };
-  //   }
-  // }, [padoServicePort, padoServicePortListener]);
-};
-export default useAlgorithm;
+    // useEffect(() => {
+    //   if (padoServicePort) {
+    //     padoServicePort.onMessage.addListener(padoServicePortListener);
+    //     return () => {
+    //       padoServicePort.onMessage.removeListener(padoServicePortListener);
+    //     };
+    //   }
+    // }, [padoServicePort, padoServicePortListener]);
+  };
+export default useConnectDataSourceByWeb;

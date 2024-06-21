@@ -15,7 +15,6 @@
   .policy {
     @include TextLinkLink;
     text-decoration-line: underline;
-    // @extend .TextLinkLink;
     color: var(--text-tokens-text-primary);
   }
 }

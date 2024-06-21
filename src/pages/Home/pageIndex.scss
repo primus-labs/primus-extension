@@ -1,31 +1,31 @@
-@import '@/assets/css/pFlex.sass';
+@import '@/assets/newCss/flex.scss';
 @import '@/components/PButton/index.scss';
 .pageIndex {
-  @extend .frcc;
+  @include frcc;
   height: 100vh;
   margin-top: calc(-1 * var(--pHeaderHeight, 105px));
   .appContent {
-    @extend .frsc;
+    @include frsc;
     // gap: 87px;
     // width: 1248px;
     article {
-      @extend .fcss;
+      @include fcss;
       // width: 515px;
       // gap: 88px;
       .descWrapper {
-        @extend .fcss;
+        @include fcss;
         gap: var(--spacing-16, 16px);
         h1 {
           color: var(--Text-headline, #0a1214);
-          @extend .Headline1;
+          @include Headline1;
         }
         p {
           color: var(--Text-body, #515758);
-          @extend .Body1;
+          @include Body1;
         }
       }
       .pButton {
-        @extend .buttonStyle1;
+        @include buttonStyle1;
         border-width: 2PX !important;
         // width: 256px;
         // height: 60px;

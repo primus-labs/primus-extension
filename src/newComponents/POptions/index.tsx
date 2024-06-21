@@ -4,6 +4,7 @@ import type { SyntheticEvent } from 'react';
 import type { newWALLETITEMTYPE, WALLETMAPTYPE } from '@/types/config';
 
 import './index.scss';
+import POptions from '@/newComponents/POptions';
 
 
 interface DataSourcesDialogProps {
@@ -11,7 +12,7 @@ interface DataSourcesDialogProps {
   list?: newWALLETITEMTYPE[];
 }
 
-const WalletList: React.FC<DataSourcesDialogProps> = memo(
+const POptions: React.FC<DataSourcesDialogProps> = memo(
   ({ onClick, list = WALLETLIST }) => {
     const [activeItem, setActiveItem] = useState<newWALLETITEMTYPE>();
     const liClassName = useCallback(
@@ -66,4 +67,4 @@ const WalletList: React.FC<DataSourcesDialogProps> = memo(
   }
 );
 
-export default WalletList;
+export default POptions;

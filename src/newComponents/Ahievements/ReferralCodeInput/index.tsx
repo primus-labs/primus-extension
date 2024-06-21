@@ -6,7 +6,6 @@ import PButton from '@/newComponents/PButton';
 import { finishTask } from '@/services/api/achievements';
 import useMsgs from '@/hooks/useMsgs';
 import PInput from '@/newComponents/PInput';
-import PBottomErrorTip from '@/components/PBottomErrorTip';
 
 // import { Button, Input } from 'antd';
 

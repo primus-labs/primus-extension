@@ -80,22 +80,6 @@ const router = [
         path: 'developer',
         element: <ComingSoon />,
       },
-      // {
-      //   path: 'dataDetail',
-      //   element: <DataSourceDetail />,
-      // },
-      // {
-      //   path: 'lock',
-      //   element: <Lock />,
-      // },
-      // {
-      //   path: 'cred',
-      //   element: <Cred />,
-      // },
-      // {
-      //   path: 'events',
-      //   element: <Events />,
-      // },
       {
         path: 'achievements',
         element: <Achievement />,

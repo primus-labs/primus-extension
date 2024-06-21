@@ -3,7 +3,7 @@ import iconArbitrum from '@/assets/img/iconArbitrum.svg';
 import iconBinance from '@/assets/img/iconBinance.png';
 import iconUpChainEthereum from '@/assets/img/iconUpChainEthereum.png';
 import { getAlgoUrl } from '@/services/api/algorithm';
-import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.svg';
+import iconNetworkLinea from '@/assets/img/credit/iconNetworkLinea.png';
 import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
 import { postMsg } from '@/utils/utils';
 import store from '@/store';
