@@ -1,4 +1,4 @@
-@import '@/assets/css/pFlex.sass';
+@import '@/assets/newCss/flex.scss';
 .pQRCodeWrapper {
   --pQRCodeWrapper-svg-width: 1.7007rem;
 }
@@ -8,7 +8,7 @@
   }
 }
 .pQRCodeWrapper {
-  @extend .frcc;
+  @include frcc;
   > svg {
     width: var(--pQRCodeWrapper-svg-width, 250px);
     height: var(--pQRCodeWrapper-svg-width, 250px);

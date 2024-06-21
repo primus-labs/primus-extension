@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import './index.scss';
-// import iconClose from '@/assets/img/iconClose.svg';
 
 interface PMaskProps {
   children?: any;

@@ -9,7 +9,6 @@ import React, {
 import { useSelector } from 'react-redux';
 import PButton from '@/newComponents/PButton';
 import Dropdown from './Dropdown';
-// import iconClear from '@/assets/img/iconClear.svg';
 import type { UserState } from '@/types/store';
 import type { MouseEvent } from 'react';
 import './index.scss';

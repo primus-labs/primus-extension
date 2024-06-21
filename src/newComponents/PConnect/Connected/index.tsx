@@ -148,7 +148,8 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                             )}
                           </span>
                         </div>
-                        {addrK !== connectedWallet?.address &&
+                        
+                        {addrK !== connectedWallet?.address && (
                           <img
                             src={iconClose}
                             alt=""
@@ -157,7 +158,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                               handleDisConnect(e, wK, addrK);
                             }}
                           />
-                        }
+                        )}
                       </div>
                     );
                   })}

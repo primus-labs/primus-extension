@@ -1,9 +1,0 @@
-@import '@/assets/css/padoDialog.scss';
-
-@import '@/assets/css/pFlex.sass';
-.padoDialog.TransferToChainDialog {
-  padding: 36px 42px 32px;
-  main {
-    gap: var(--spacing-24, 24px);
-  }
-}
