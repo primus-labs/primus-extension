@@ -115,11 +115,11 @@ export const getProvider = () => {
 export const requestSign = async (
   address,
   timestamp,
-  { walletName, walletProvider } = {}
+  { walletId, walletName, walletProvider } = {}
 ) => {
   let res = '';
   try {
-    if (walletName === 'walletconnect') {
+    if (walletId === 'walletconnect') {
       const provider = new ethers.providers.Web3Provider(walletProvider);
       const signer = provider.getSigner();
       const typedData = {

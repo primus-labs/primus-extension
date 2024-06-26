@@ -16,7 +16,7 @@ export const WALLETMAP: WALLETMAPTYPE = {
     icon: iconWalletWalletConnect,
     name: 'WalletConnect',
     id: 'walletconnect',
-    disabled: true,
+    // disabled: true,
   },
   coinbasewallet: {
     icon: iconWalletCoinbaseWallet,

@@ -54,7 +54,7 @@ const useWallet: UseWalletType = function useWallet() {
             errorFn,
             sucFn,
             targetNetwork,
-            label,
+            label
           )
         );
       } else {
@@ -65,7 +65,7 @@ const useWallet: UseWalletType = function useWallet() {
             errorFn,
             sucFn,
             targetNetwork,
-            label,
+            label
           )
         );
       }
@@ -84,7 +84,7 @@ const useWallet: UseWalletType = function useWallet() {
       errorFn?: () => void,
       sucFn?: (walletObj: any, network?: string, label?: string) => void,
       network?: any,
-      label?: string,
+      label?: string
     ) => {
       savedConnectInfo.current = {
         walletId,
@@ -126,21 +126,27 @@ const useWallet: UseWalletType = function useWallet() {
     ]
   );
   useEffect(() => {
-    if (
-      wallet === 'walletconnect' &&
-      walletConnectIsConnect &&
-      walletConnectProvider
-    ) {
-      // savedWalletConnectCallback.current();
-      connectWalletAsyncFn({
-        name: 'walletconnect',
-        id: 'walletconnect',
-        provider: walletConnectProvider,
-        address: walletConnectAddress,
-      });
-    }
-    if (connectedWallet?.name === 'walletconnect' && !walletConnectIsConnect) {
-      dispatch(setConnectWalletActionAsync(undefined));
+    if (connectedWallet) {
+      if (
+        connectedWallet?.name === 'walletconnect' &&
+        !walletConnectIsConnect
+      ) {
+        dispatch(setConnectWalletActionAsync(undefined));
+      }
+    } else {
+      if (
+        wallet === 'walletconnect' &&
+        walletConnectIsConnect &&
+        walletConnectProvider
+      ) {
+        // savedWalletConnectCallback.current();
+        connectWalletAsyncFn({
+          name: 'walletconnect',
+          id: 'walletconnect',
+          provider: walletConnectProvider,
+          address: walletConnectAddress,
+        });
+      }
     }
   }, [
     wallet,

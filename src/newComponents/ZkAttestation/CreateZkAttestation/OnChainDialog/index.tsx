@@ -7,10 +7,6 @@ import useAttestBrevis from '@/hooks/useAttestBrevis';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
-import { formatAddress } from '@/utils/utils';
-import { switchAccount, requestSign } from '@/services/wallets/metamask';
-
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';

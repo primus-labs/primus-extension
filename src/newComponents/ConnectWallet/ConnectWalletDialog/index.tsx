@@ -49,7 +49,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
       onClose && onClose();
     }, [onClose]);
     const handleChangeWallet = useCallback(
-      (item) => {
+      (item, itemId) => {
         onSubmit(item);
       },
       [onSubmit]

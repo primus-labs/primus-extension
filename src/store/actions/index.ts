@@ -272,6 +272,7 @@ export const connectWalletAsync = (
         type === 'walletconnect'
           ? {
               walletName,
+              walletId: type,
               walletProvider: connectObj.provider,
             }
           : undefined;
