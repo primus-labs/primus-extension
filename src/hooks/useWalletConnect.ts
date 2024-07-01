@@ -7,11 +7,8 @@ import {
   useWeb3ModalState,
   useWeb3ModalEvents,
 } from '@web3modal/ethers5/react';
-;
-
 type UseWalletConnectType = () => any;
 const useWalletConnect: UseWalletConnectType = function useWalletConnect() {
-  
   const { open: openWalletConnectDialog } = useWeb3Modal();
   const {
     address: walletConnectAddress,
@@ -24,7 +21,9 @@ const useWalletConnect: UseWalletConnectType = function useWalletConnect() {
   const events = useWeb3ModalEvents();
   console.log('events', events);
   const { disconnect: disconnectWalletConnect } = useDisconnect();
-
+  useEffect(() => {
+    console.log('222walletConnectChainId changed', walletConnectChainId);
+  }, [walletConnectChainId]);
   return {
     openWalletConnectDialog,
     disconnectWalletConnect,

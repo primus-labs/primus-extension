@@ -57,7 +57,6 @@ const Nav: React.FC<PButtonProps> = memo(
     }, [onClose, dispatch]);
     // useEffect(() => {
     //   if (pathname) {
-    //     debugger
     //     dispatch(
     //       setActiveConnectDataSource({
     //         loading: 0,

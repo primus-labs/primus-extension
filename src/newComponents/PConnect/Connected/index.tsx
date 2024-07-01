@@ -8,11 +8,13 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { utils } from 'ethers';
+
 import { formatAddress } from '@/utils/utils';
 import { WALLETMAP } from '@/config/wallet';
 import {
   setConnectWalletActionAsync,
   setConnectedWalletsActionAsync,
+  setConnectWalletDialogVisibleAction,
 } from '@/store/actions';
 
 import PButton from '@/newComponents/PButton';
@@ -20,10 +22,12 @@ import iconClose from '@/assets/newImg/layout/iconClose.svg';
 import './index.scss';
 import type { UserState } from '@/types/store';
 import { switchAccount } from '@/services/wallets/metamask';
+import useWalletConnect from '@/hooks/useWalletConnect';
 interface PConnectProps {
   onConnect: () => void;
 }
 const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
+  const { disconnectWalletConnect } = useWalletConnect();
   const dispatch: React.Dispatch<any> = useDispatch();
   const connectedWallets = useSelector(
     (state: UserState) => state.connectedWallets
@@ -50,14 +54,14 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
     onConnect();
   }, [onConnect]);*/
   const handleConnectOther = () => {
-    switchAccount(connectedWallet?.provider);
+    dispatch(setConnectWalletDialogVisibleAction(1));
+    // switchAccount(connectedWallet?.provider);
   };
   const handleDisConnect = useCallback(
     async (e, wk, addrK) => {
       e.stopPropagation();
       // console.log('222', wk, addrK);
-      
-      
+
       const newrecords = { ...connectedWallets };
       delete newrecords[wk][addrK];
       if (Object.keys(newrecords[wk]).length === 0) {
@@ -67,39 +71,46 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
         connectedWallets: JSON.stringify(newrecords),
       });
       await dispatch(setConnectedWalletsActionAsync());
-      if (addrK === connectedWallet?.address) {
-        const firstWK = Object.keys(connectedWallets).filter(
-          (i) => i !== 'undefined'
-        )[0];
-        if (firstWK) {
-          const firstAddrK = Object.keys(connectedWallets[firstWK])[0];
-          await dispatch(
-            setConnectWalletActionAsync({
-              id: 'metamask',
-              name: 'MetaMask',
-              address: firstAddrK,
-              provider: connectedWallet?.provider,
-            })
-          );
-        } else {
-          await dispatch(setConnectWalletActionAsync(undefined));
-        }
+      if (wk === 'walletconnect') {
+        disconnectWalletConnect();
       }
+      await dispatch(setConnectWalletActionAsync(undefined));
+      // if (wk === connectedWallet?.id && addrK === connectedWallet?.address) {
+      //   const firstWK = Object.keys(connectedWallets).filter(
+      //     (i) => i !== 'undefined'
+      //   )[0];
+      //   if (firstWK) {
+      //     const firstAddrK = Object.keys(connectedWallets[firstWK])[0];
+      //     await dispatch(
+      //       setConnectWalletActionAsync({
+      //         id: firstWK,
+      //         name: WALLETMAP[firstWK],
+      //         address: firstAddrK,
+      //         provider: connectedWallet?.provider,
+      //       })
+      //     );
+      //   } else {
+      //     await dispatch(setConnectWalletActionAsync(undefined));
+      //   }
+      // }
     },
-    [connectedWallets]
+    [connectedWallets, disconnectWalletConnect]
   );
-  const handleChangeAddress = (addr: any) => {
-    if (addr === connectedWallet?.address) {
-      return;
+  const handleChangeAddress = (addr: any, wk: string) => {
+    const metamaskId = 'metamask';
+    if (wk === metamaskId) {
+      if (addr === connectedWallet?.address) {
+        return;
+      }
+      dispatch(
+        setConnectWalletActionAsync({
+          id: metamaskId,
+          name: WALLETMAP[metamaskId].name,
+          address: addr,
+          provider: connectedWallet?.provider,
+        })
+      );
     }
-    dispatch(
-      setConnectWalletActionAsync({
-        id: 'metamask',
-        name: 'MetaMask',
-        address: addr,
-        provider: connectedWallet?.provider,
-      })
-    );
   };
 
   return (
@@ -129,16 +140,16 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                     return (
                       <div
                         className="recordItem addressItem"
-                        onClick={() => handleChangeAddress(addrK)}
+                        onClick={() => handleChangeAddress(addrK, wK)}
                         key={addrKIdx}
                       >
                         <div className="left">
-                          {addrK === connectedWallet?.address ? (
+                          {wK === connectedWallet?.id &&
+                          addrK === connectedWallet?.address ? (
                             <i className="iconfont icon-Legal"></i>
                           ) : (
                             <div className="placeHolder"></div>
                           )}
-
                           <span>
                             {formatAddress(
                               utils.getAddress(addrK),
@@ -148,7 +159,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                             )}
                           </span>
                         </div>
-                        
+
                         {addrK !== connectedWallet?.address && (
                           <img
                             src={iconClose}

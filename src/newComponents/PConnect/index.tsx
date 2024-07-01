@@ -15,17 +15,13 @@ const PConnect = memo(() => {
     (state: UserState) => state.connectedWallet
   );
   const handleConnect = useCallback(() => {
-    //   setConnectWalletDialogVisible1(true);
-    // }, []);
     dispatch(setConnectWalletDialogVisibleAction(1));
   }, [dispatch]);
 
   const handleCloseConnectWallet = useCallback(() => {
-    // setConnectWalletDialogVisible1(false);
     dispatch(setConnectWalletDialogVisibleAction(0));
   }, [dispatch]);
   const handleSubmitConnectWallet = useCallback(() => {
-    // setConnectWalletDialogVisible1(false);
     dispatch(setConnectWalletDialogVisibleAction(0));
   }, [dispatch]);
   return (

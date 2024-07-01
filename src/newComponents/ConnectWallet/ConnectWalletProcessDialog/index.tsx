@@ -22,13 +22,7 @@ interface DataSourcesDialogProps {
   activeRequest: any;
 }
 const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
-  ({ onClose, onSubmit, activeRequest }) => {
-    const [searchParams] = useSearchParams();
-    const fromEvents = searchParams.get('fromEvents');
-
-    const [accountAddr, setAccountAddr] = useState<any>();
-    const [errorTip, setErrorTip] = useState<string>();
-    const [activeItem, setActiveItem] = useState<WALLETITEMTYPE>();
+  ({ onClose, activeRequest }) => {
 
     const handleClose = useCallback(() => {
       onClose && onClose();

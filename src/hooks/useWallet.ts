@@ -4,6 +4,7 @@ import useWalletConnect from './useWalletConnect';
 import {
   connectWalletAsync,
   setConnectWalletActionAsync,
+  setActiveConnectWallet,
 } from '@/store/actions';
 import { EASInfo } from '@/config/chain';
 import { useSelector } from 'react-redux';
@@ -16,6 +17,9 @@ const useWallet: UseWalletType = function useWallet() {
   const savedConnectInfo = useRef<any>();
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
+  );
+  const activeConnectWallet = useSelector(
+    (state: UserState) => state.activeConnectWallet
   );
   const {
     openWalletConnectDialog,
@@ -30,18 +34,22 @@ const useWallet: UseWalletType = function useWallet() {
     async (connectObj?: any) => {
       const { startFn, errorFn, sucFn, network, label } =
         savedConnectInfo.current;
-      const targetNetwork: any = EASInfo[network as keyof typeof EASInfo];
-      if (
-        walletConnectProvider &&
-        network &&
-        targetNetwork &&
-        targetNetwork?.chainId &&
-        parseInt(targetNetwork?.chainId) !== walletConnectChainId
-      ) {
-        const res = await walletConnectProvider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: targetNetwork.chainId }],
-        });
+      const targetNetwork = activeConnectWallet.network;
+      // const targetNetwork: any = EASInfo[network as keyof typeof EASInfo];
+      if (walletConnectProvider && targetNetwork) {
+        if (
+          targetNetwork?.chainId &&
+          parseInt(targetNetwork?.chainId) !== walletConnectChainId
+        ) {
+          const res = await walletConnectProvider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: targetNetwork.chainId }],
+          });
+          dispatch(setActiveConnectWallet({ network: undefined }));
+        } else {
+          dispatch(setActiveConnectWallet({ network: undefined }));
+        }
+
         dispatch(
           connectWalletAsync(
             {
@@ -99,16 +107,43 @@ const useWallet: UseWalletType = function useWallet() {
 
       setWallet(walletId);
       if (walletId === 'walletconnect') {
-        const targetNetwork: any = EASInfo[network as keyof typeof EASInfo];
-        if (walletConnectProvider && network) {
+        // let network = activeConnectWallet.network;
+        // const targetNetwork: any = EASInfo[network as keyof typeof EASInfo];
+
+        const targetNetwork = activeConnectWallet.network;
+
+        if (walletConnectProvider && targetNetwork) {
           if (parseInt(targetNetwork?.chainId) !== walletConnectChainId) {
-            const res = await walletConnectProvider.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: targetNetwork.chainId }],
+            try {
+              const res = await walletConnectProvider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: targetNetwork.chainId }],
+              });
+              dispatch(setActiveConnectWallet({ network: undefined }));
+            } catch (e) {
+              console.log('222switchEthereumChain error:', e);
+            }
+          } else {
+            dispatch(setActiveConnectWallet({ network: undefined }));
+            connectWalletAsyncFn({
+              name: 'walletconnect',
+              id: 'walletconnect',
+              provider: walletConnectProvider,
+              address: walletConnectAddress,
             });
           }
         } else {
-          openWalletConnectDialog();
+          const { connectedWalletAddress } = await chrome.storage.local.get([
+            'connectedWalletAddress',
+          ]);
+          if (
+            connectedWalletAddress &&
+            JSON.parse(connectedWalletAddress).id === 'walletconnect'
+          ) {
+            // Initialize the page, using the last account connection by default
+          } else {
+            openWalletConnectDialog();
+          }
         }
       } else if (walletId === 'metamask') {
         // savedMetaMaskCallback.current();
@@ -123,14 +158,12 @@ const useWallet: UseWalletType = function useWallet() {
       connectWalletAsyncFn,
       walletConnectProvider,
       walletConnectChainId,
+      activeConnectWallet,
     ]
   );
   useEffect(() => {
     if (connectedWallet) {
-      if (
-        connectedWallet?.name === 'walletconnect' &&
-        !walletConnectIsConnect
-      ) {
+      if (connectedWallet?.id === 'walletconnect' && !walletConnectIsConnect) {
         dispatch(setConnectWalletActionAsync(undefined));
       }
     } else {

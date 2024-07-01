@@ -84,7 +84,6 @@ const Nav: React.FC<PButtonProps> = memo(
           // loading: 1,
         };
         // if (activeAttestation.loading === 3) {
-        //   debugger
         //   activeAttestationParams = { ...activeAttestation };
         // }
         dispatch(setActiveAttestation(activeAttestationParams));

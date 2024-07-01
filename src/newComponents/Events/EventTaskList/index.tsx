@@ -423,7 +423,6 @@ const DataSourceItem = memo(() => {
       // });
 
       // setGivenNFT(true);
-      // debugger;
     }
 
     await chrome.storage.local.set({

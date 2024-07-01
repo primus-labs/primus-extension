@@ -3,16 +3,12 @@ import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveConnectDataSource } from '@/store/actions';
 import { utils } from 'ethers';
+import { switchAccount } from '@/services/wallets/metamask';
 import useMsgs from '@/hooks/useMsgs';
 import useWallet from '@/hooks/useWallet';
 import { formatAddress } from '@/utils/utils';
-import PMask from '@/newComponents/PMask';
-import PClose from '@/newComponents/PClose';
 import ConnectWalletDialog from './ConnectWalletDialog';
 import ConnectWalletProcessDialog from './ConnectWalletProcessDialog';
-import SetAPI from '@/newComponents/SetAPIDialog/SetAPIForm';
-
-import iconDone from '@/assets/newImg/layout/iconDone.svg';
 import type { UserState } from '@/types/store';
 import './index.scss';
 
@@ -107,7 +103,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
   );
   const handleSubmitConnectWallet = useCallback(
     async (wallet) => {
-      if (wallet?.id === 'metamask') {
+      if (wallet?.id === 'metamask' || wallet?.id === 'walletconnect') {
         // setActiveRequest({
         //   type: 'loading',
         //   title: 'Verify ownership',
@@ -115,9 +111,18 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         // });
         setStep(2);
       }
-      connect(wallet?.id, startFn, errorFn, sucFn, undefined, undefined);
+      if (
+        wallet?.id === 'metamask' &&
+        connectedWallet?.id === 'metamask' &&
+        connectedWallet?.provider
+      ) {
+        startFn();
+        switchAccount(connectedWallet?.provider);
+      } else {
+        connect(wallet?.id, startFn, errorFn, sucFn, undefined, undefined);
+      }
     },
-    [connect, errorFn]
+    [connect, errorFn, connectedWallet]
   );
   const checkIfHadBound = useCallback(async () => {
     const { connectedWalletAddress } = await chrome.storage.local.get([
@@ -125,6 +130,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
     ]);
     if (connectedWalletAddress) {
       const lastConnectedInfo = JSON.parse(connectedWalletAddress);
+
       handleSubmitConnectWallet(lastConnectedInfo);
     }
   }, [handleSubmitConnectWallet]);
@@ -136,7 +142,13 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       setStep(1);
       setActiveRequest({});
     } else if (connectWalletDialogVisible === 2) {
-      handleSubmitConnectWallet({ id: 'metamask' });
+      // handleSubmitConnectWallet({ id: 'metamask' });
+      if (connectedWallet.id === 'walletconnect') {
+        // setStep(2);
+        // setActiveRequest({});
+        // startFn()
+      }
+      handleSubmitConnectWallet(connectedWallet);
     }
   }, [connectWalletDialogVisible]);
   return (

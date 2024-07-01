@@ -56,6 +56,7 @@ const AssetsDetails = memo(() => {
   const connectedOnChainSources = useMemo(() => {
     return sourceMap.onChainAssetsSources;
   }, [sourceMap]);
+  console.log('222222connectedOnChainSources', connectedOnChainSources);
   const connectedAssetsSourcesList = useMemo(() => {
     let l = Object.values(connectedExchangeSources);
     if (Object.keys(connectedOnChainSources).length > 0) {

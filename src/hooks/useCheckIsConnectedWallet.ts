@@ -1,12 +1,7 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import {
-  setActiveConnectWallet,
-  setConnectWalletDialogVisibleAction,
-  connectWalletAsync,
-} from '@/store/actions';
-import { connectWallet, switchChain } from '@/services/wallets/metamask';
+import { setConnectWalletDialogVisibleAction } from '@/store/actions';
 import { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 // import { switchChain } from '@/services/wallets/metamask';
@@ -44,7 +39,7 @@ const useCheckIsConnectedWallet = function useCheckIsConnectedWallet(
     if (switchFlag) {
       setConnected(connectedRightChain);
     }
-  }, [switchFlag, connectedRightChain, dispatch]);
+  }, [switchFlag, connectedRightChain]);
   useEffect(() => {
     if (switchFlag) {
       // const hasConnected = !!connectedWallet?.address;
@@ -61,9 +56,6 @@ const useCheckIsConnectedWallet = function useCheckIsConnectedWallet(
         );
       }
     }
-    // else {
-    //   dispatch(setConnectWalletDialogVisibleAction(0));
-    // }
   }, [
     switchFlag,
     // connected,

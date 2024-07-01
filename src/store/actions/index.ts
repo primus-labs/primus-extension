@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'; 
+import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 dayjs.extend(utc);
 import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
@@ -277,7 +277,6 @@ export const connectWalletAsync = (
             }
           : undefined;
       const checkRes = await checkIfBindConnectedWallet({ address });
-
       if (checkRes.rc === 0) {
         console.log(
           '222metamask connect successfully checkIfBindConnectedWallet',
@@ -324,8 +323,6 @@ export const connectWalletAsync = (
           return;
         }
       } else {
-        // startFn && (await startFn());
-        //await dispatch(setConnectWalletDialogVisibleAction(1));
         const timestamp: string = +new Date() + '';
         const signature = await requestSign(address, timestamp, walletInfo);
         if (!signature) {
@@ -1254,7 +1251,7 @@ export const initSetNotificationsAction = () => {
             title,
             desc: content,
             link,
-            time:  dayjs.utc(publishTime-0).format('YYYY/MM/DD hh:mm'),
+            time: dayjs.utc(publishTime - 0).format('YYYY/MM/DD hh:mm'),
             // collapse: k !== 0,
             // disableCollapse: k === 0,
           };
