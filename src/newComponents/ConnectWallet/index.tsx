@@ -111,16 +111,16 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
         // });
         setStep(2);
       }
-      if (
-        wallet?.id === 'metamask' &&
-        connectedWallet?.id === 'metamask' &&
-        connectedWallet?.provider
-      ) {
-        startFn();
-        switchAccount(connectedWallet?.provider);
-      } else {
+      // if (
+      //   wallet?.id === 'metamask' &&
+      //   connectedWallet?.id === 'metamask' &&
+      //   connectedWallet?.provider
+      // ) {
+      //   startFn();
+      //   switchAccount(connectedWallet?.provider);
+      // } else {
         connect(wallet?.id, startFn, errorFn, sucFn, undefined, undefined);
-      }
+      // }
     },
     [connect, errorFn, connectedWallet]
   );
@@ -143,11 +143,11 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       setActiveRequest({});
     } else if (connectWalletDialogVisible === 2) {
       // handleSubmitConnectWallet({ id: 'metamask' });
-      if (connectedWallet.id === 'walletconnect') {
+      // if (connectedWallet.id === 'walletconnect') {
         // setStep(2);
         // setActiveRequest({});
         // startFn()
-      }
+      // }
       handleSubmitConnectWallet(connectedWallet);
     }
   }, [connectWalletDialogVisible]);
