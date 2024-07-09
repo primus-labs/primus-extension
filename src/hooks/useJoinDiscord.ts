@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,8 +22,12 @@ type CreateAuthWindowCallBack = (
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 // connect & join discord
-const DISCORDINVITEURL = 'https://discord.com/invite/YxJftNRxhh';
+
 const useAuthorization2 = () => {
+  const sysConfig = useSelector((state: UserState) => state.sysConfig);
+  const DISCORDINVITEURL = useMemo(() => {
+    return sysConfig.DISCORD_INVITE_LINK;
+  }, [sysConfig]);
   const { sourceMap2 } = useAllSources();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const [searchParams] = useSearchParams();
@@ -31,7 +35,7 @@ const useAuthorization2 = () => {
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
   const [checkIsJoinDialogTimer, setCheckIsJoinDialogTimer] = useState<any>();
-  
+
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
@@ -120,11 +124,7 @@ const useAuthorization2 = () => {
       }, 1000);
       setCheckIsJoinDialogTimer(joinTimer);
     },
-    [
-      connectedWallet?.address,
-      BASEventDetail?.ext?.schemaType,
-      fromEvents,
-    ]
+    [connectedWallet?.address, BASEventDetail?.ext?.schemaType, fromEvents]
   );
   const handleClickOAuthSource: OauthFn = useCallback(
     async (source, onSubmit) => {
@@ -142,10 +142,10 @@ const useAuthorization2 = () => {
           state,
           token: parseUserInfo.token,
         });
-        let needCheckLogin = false
+        let needCheckLogin = false;
         if (sourceMap2['discord']) {
           authUrl = DISCORDINVITEURL;
-          needCheckLogin = false
+          needCheckLogin = false;
         } else {
           authUrl = `${authUrl}&redirectUrl=${DISCORDINVITEURL}`;
           needCheckLogin = true;
@@ -189,7 +189,7 @@ const useAuthorization2 = () => {
       }
       fn();
     },
-    [authWindowId, createAuthWindowCallBack, sourceMap2]
+    [authWindowId, createAuthWindowCallBack, sourceMap2, DISCORDINVITEURL]
   );
   useEffect(() => {
     return () => {

@@ -27,8 +27,7 @@ type CreateAuthWindowCallBack = (
   needCheckLogin?: boolean
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
-// connect & join discord
-const DISCORDINVITEURL = 'https://discord.com/invite/K8Uqm5ww';
+
 const useAttestBrevis = () => {
   const { sourceMap2 } = useAllSources();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);

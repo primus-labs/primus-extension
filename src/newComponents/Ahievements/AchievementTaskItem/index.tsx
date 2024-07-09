@@ -1,4 +1,11 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from 'react';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';
@@ -49,6 +56,10 @@ export type TaskItemWithClick = {
 
 const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
   (taskItemWithClick: TaskItemWithClick) => {
+    const sysConfig = useSelector((state: UserState) => state.sysConfig);
+    const DISCORDINVITEURL = useMemo(() => {
+      return sysConfig.DISCORD_INVITE_LINK;
+    }, [sysConfig]);
     const taskItem = taskItemWithClick.taskItem;
     const showCodeDiag = taskItemWithClick.showCodeDiag;
     const refreshTotalScore = taskItemWithClick.refreshTotalScore;
@@ -525,11 +536,10 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
             state: state,
             token: parseUserInfo.token,
           });
-          authUrl =
-            authUrl + '&redirectUrl=https://discord.com/invite/K8Uqm5ww';
+          authUrl = authUrl + `&redirectUrl=${DISCORDINVITEURL}`;
           needCheckLogin = true;
         } else {
-          authUrl = 'https://discord.com/invite/YxJftNRxhh';
+          authUrl = DISCORDINVITEURL;
         }
         var width = 520;
         var height = 620;

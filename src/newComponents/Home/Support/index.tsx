@@ -19,6 +19,7 @@ type mediaItemsMap = {
 };
 const Overview = memo(() => {
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
+
   const formatItemsMap = useMemo(() => {
     // const m: mediaItemsMap = Object.keys(itemMap).reduce((prev, curr) => {
     //   const { icon, name } = DATASOURCEMETAMAP[curr];
@@ -38,14 +39,13 @@ const Overview = memo(() => {
     const m: mediaItemsMap = {
       x: {
         id: 'x',
-        link: 'https://x.com/padolabs',
+        link: sysConfig.TWITTER_HOME_LINK ?? 'https://x.com/padolabs',
         name: 'X',
         icon: iconDataSourceTwitter,
       },
-
       discord: {
         id: 'discord',
-        link: 'https://discord.com/invite/YxJftNRxhh',
+        link: sysConfig.DISCORD_INVITE_LINK ?? 'https://discord.gg/pdrNxRrApX',
         name: 'Discord',
         icon: iconDataSourceDiscord,
       },
@@ -61,7 +61,6 @@ const Overview = memo(() => {
   }, [sysConfig]);
   const handleClick = useCallback((link) => {
     window.open(link);
-    
   }, []);
   return (
     <div className="homeSupport">
