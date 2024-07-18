@@ -156,6 +156,8 @@ const Nav: React.FC<PButtonProps> = memo(
               const firstSubCondition = lastResponseConditionsSubconditions[0];
               firstSubCondition.value =
                 activeAttestationParams.verificationValue;
+              firstSubCondition.subconditions[0].value =
+                activeAttestationParams.verificationValue;
             }
           }
           const requestid=uuidv4()

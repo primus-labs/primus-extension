@@ -729,7 +729,7 @@ export const updateAlgoUrl = async () => {
         if (!isInited) {
           console.log('updateAlgoUrl onopen update url new');
           PADOURL = `wss://${item.algorithmDomain}/algorithmV2`;
-          PROXYURL = `wss://${item.algoProxyDomain}/algoproxyV2`;
+          PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
           const jsonobj = {
             padoUrl: PADOURL,
             proxyUrl: PROXYURL,
