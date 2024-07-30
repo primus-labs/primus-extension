@@ -57,19 +57,19 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         if (resMethodName === `init`) {
           if (res) {
             // algorithm is ready
-            if (!cancelCallStartOfflineFlag) {
-              const padoUrl = await getPadoUrl();
-              const proxyUrl = await getProxyUrl();
-              postMsg(padoServicePort, {
-                fullScreenType: 'algorithm',
-                reqMethodName: 'startOffline',
-                params: {
-                  offlineTimeout: STARTOFFLINETIMEOUT,
-                  padoUrl,
-                  proxyUrl,
-                },
-              });
-            }
+            // if (!cancelCallStartOfflineFlag) {
+            //   const padoUrl = await getPadoUrl();
+            //   const proxyUrl = await getProxyUrl();
+            //   postMsg(padoServicePort, {
+            //     fullScreenType: 'algorithm',
+            //     reqMethodName: 'startOffline',
+            //     params: {
+            //       offlineTimeout: STARTOFFLINETIMEOUT,
+            //       padoUrl,
+            //       proxyUrl,
+            //     },
+            //   });
+            // }
           }
         }
         if (resMethodName === `getAttestation`) {
