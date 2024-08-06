@@ -1,3 +1,4 @@
+const packageJson = require('../../package.json');
 import iconTool1 from '@/assets/img/iconTool1.svg';
 import iconPolygonID from '@/assets/img/iconPolygonID.svg';
 import iconPolygon from '@/assets/img/iconPolygon.png';
@@ -61,7 +62,7 @@ export type WALLETITEMTYPE = {
 export const ExchangeStoreVersion = '1.0.1';
 export const SocailStoreVersion = '1.0.1';
 export const KYCStoreVersion = '1.0.0';
-export const padoExtensionVersion = '0.3.11';
+export const padoExtensionVersion = packageJson.version;
 export const CredVersion = '1.0.5';
 
 export const USDT = 'USDT';
@@ -289,8 +290,12 @@ export const schemaTypeMap = {
   IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
 };
 
-
-export const supportAttestDataSourceNameList = ['Binance', 'Coinbase', 'OKX', 'ZAN']
+export const supportAttestDataSourceNameList = [
+  'Binance',
+  'Coinbase',
+  'OKX',
+  'ZAN',
+];
 export const BADGELOTTRYTIMESTR = '2023-10-29 12:00:00';
 export const SCROLLEVENTNAME = 'SCROLL_LAUNCH_CAMPAIGN';
 export const BASEVENTNAME = 'BAS_EVENT_PROOF_OF_HUMANITY';
@@ -298,7 +303,4 @@ export const ETHSIGNEVENTNAME = 'SIGNX_X_PROGRAM';
 export const LINEAEVENTNAME = 'LINEA_DEFI_VOYAGE';
 // schemauid: 0x07656ef97ae97711b79c9e79b3e0409712a8bb9bf26f3495ad15f48cdd49cfac
 // schemaType: BAS_EVENT_PROOF_OF_HUMANITY
-export const GOOGLEWEBPROOFID = '100'
-
-
-
+export const GOOGLEWEBPROOFID = '100';
