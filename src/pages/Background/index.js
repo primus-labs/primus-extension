@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import {
   getAllOAuthSources,
   checkIsLogin,
@@ -462,23 +464,21 @@ const onDisconnectFullScreen = (port) => {
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log('background onMessage message', message, fullscreenPort);
-
-  if (message.resType === 'algorithm') {
-    if (message.resMethodName === `start`) {
+  const { resType, resMethodName, type, name, params } = message;
+  if (resType === 'algorithm') {
+    if (resMethodName === `start`) {
       var eventInfo = {
         eventType: 'ATTESTATION_INIT_1',
-        rawData: {
-        },
+        rawData: {},
       };
       eventReport(eventInfo);
-    } else if (message.resMethodName === `init`) {
+    } else if (resMethodName === `init`) {
       var eventInfo = {
         eventType: 'ATTESTATION_INIT_4',
-        rawData: {
-        },
+        rawData: {},
       };
       eventReport(eventInfo);
-    } else if (message.resMethodName === `getAttestation`) {
+    } else if (resMethodName === `getAttestation`) {
       var eventInfo = {
         eventType: 'ATTESTATION_START_BACKGROUND',
         rawData: {
@@ -490,24 +490,49 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       };
       eventReport(eventInfo);
     }
-
-    if (fullscreenPort) {
-      postMsg(fullscreenPort, message);
+    const { beginAttestFromJSSDK } = await chrome.storage.local.get([
+      'beginAttestFromJSSDK',
+    ]);
+    if (beginAttestFromJSSDK === '1') {
+      if (resMethodName === 'start') {
+        processAlgorithmReq({
+          reqMethodName: 'init',
+        });
+        window.postMessage({
+          target: 'padoZKAttestJSSDK',
+          origin: 'padoExtension',
+          name: 'initAttestRes',
+          params: true,
+        });
+        // jssdk-init-completed
+      }
+      if (resMethodName === 'getAttestation') {
+        window.postMessage({
+          target: 'padoZKAttestJSSDK',
+          origin: 'padoExtension',
+          name: 'getAttestationRes',
+          params: true,
+        });
+      }
+    } else {
+      if (fullscreenPort) {
+        postMsg(fullscreenPort, message);
+      }
     }
   }
-  if (message.resType === 'report') {
-    if (message.name === `offscreenReceiveGetAttestation`) {
+  if (resType === 'report') {
+    if (name === `offscreenReceiveGetAttestation`) {
       var eventInfo = {
         eventType: 'ATTESTATION_START_OFFSCREEN',
         rawData: {
-          ...message.params
+          ...params,
         },
       };
       eventReport(eventInfo);
-    } 
+    }
   }
   let hasGetTwitterScreenName = false;
-  if (message.type === 'pageDecode') {
+  if (type === 'pageDecode') {
     pageDecodeMsgListener(
       message,
       sender,
@@ -517,21 +542,21 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       hasGetTwitterScreenName
     );
   }
-  if (message.type === 'padoWebsite') {
+  if (type === 'padoWebsite') {
     PadoWebsiteMsgListener(message, sender, sendResponse);
   }
-  if (message.type === 'xFollow') {
+  if (type === 'xFollow') {
     const { name } = message;
     if (name === 'follow') {
     }
   }
-  if (message.type === 'googleAuth') {
+  if (type === 'googleAuth') {
     const { name } = message;
     if (name === 'cancelAttest') {
       chrome.runtime.sendMessage(message);
     }
   }
-  if (message.type === 'dataSourceWeb') {
+  if (type === 'dataSourceWeb') {
     dataSourceWebMsgListener(
       message,
       sender,
@@ -539,5 +564,108 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       USERPASSWORD,
       fullscreenPort
     );
+  }
+  if (type === 'padoZKAttestationJSSDK') {
+    if (name === 'initAttest') {
+      processAlgorithmReq({
+        reqMethodName: 'start',
+      });
+      chrome.storage.local.set({ beginAttestFromJSSDK: '1' });
+    }
+    if (name === 'startAttest') {
+      const requestid = uuidv4();
+      const userForm = {
+        dataSourceId: 'x',
+        verificationContent: 'Account ownership',
+        verificationValue: 'Account owner',
+      };
+      const activeAttestationParams = {
+        ...userForm,
+        attestationType: 'Humanity Verification',
+        fetchType: 'Web',
+      };
+      const templateObj = {
+        id: '3',
+        schemaType: 'X_ACCOUNT_OWNER#1',
+        name: 'Account Ownership',
+        category: 'IDENTIFICATION_PROOF',
+        description: 'You must own the account',
+        dataSource: 'x',
+        bgImg:
+          'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconWebCredTwitter.svg',
+        schemaUid:
+          '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
+        jumpTo: 'https://x.com/home',
+        uiTemplate: {
+          title: 'Identity',
+          proofContent: 'Account Ownership',
+          subProofContent: '',
+          condition: 'Verified',
+        },
+        processUiTemplate: {
+          dataSource: 'https://x.com/',
+          proofContent: 'Account Ownership',
+          successMsg: 'Verified',
+          failedMsg: 'Not eligible',
+        },
+        datasourceTemplate: {
+          cipher: 'ECDHE-ECDSA-AES128-GCM-SHA256',
+          reqType: 'web',
+          host: 'api.x.com',
+          requests: [
+            {
+              name: 'first',
+              url: 'https://api.x.com/1.1/jot/ces/p2',
+              method: 'POST',
+            },
+            {
+              name: 'owner',
+              url: 'https://api.x.com/1.1/account/settings.json',
+              queryParams: ['include_mention_filter'],
+              method: 'GET',
+              headers: ['authorization', 'x-csrf-token', 'User-Agent'],
+              cookies: ['auth_token', 'ct0'],
+            },
+          ],
+          responses: [
+            {},
+            {
+              conditions: {
+                type: 'CONDITION_EXPANSION',
+                op: 'BOOLEAN_AND',
+                subconditions: [
+                  {
+                    type: 'FIELD_VALUE',
+                    field: '.screen_name',
+                    op: 'SHA256',
+                  },
+                  {
+                    type: 'FIELD_RANGE',
+                    field: '.screen_name',
+                    op: 'STRNEQ',
+                    value: '',
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      };
+      const currRequestTemplate = { ...activeAttestationParams, templateObj };
+      const currentWindowTabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      chrome.runtime.sendMessage({
+        type: 'pageDecode',
+        name: 'init',
+        params: {
+          ...currRequestTemplate,
+          requestid,
+        },
+        extensionTabId: currentWindowTabs[0].id,
+        operation: 'attest',
+      });
+    }
   }
 });

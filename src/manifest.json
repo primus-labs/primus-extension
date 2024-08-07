@@ -53,12 +53,15 @@
       "js": ["padoWebsite.js"]
     },
     {
-      "matches": ["https://twitter.com/intent/follow?screen_name=padolabs"],
+      "matches": [
+        "https://twitter.com/intent/follow?screen_name=padolabs",
+        "https://x.com/intent/follow?screen_name=padolabs"
+      ],
       "js": ["xFollow.js"]
     },
     {
-      "matches": ["https://x.com/intent/follow?screen_name=padolabs"],
-      "js": ["xFollow.js"]
+      "matches": ["<all_urls>"],
+      "js": ["jssdk.bundle.js"]
     }
   ]
 }
