@@ -35,6 +35,7 @@ const padoServices = {
 };
 
 let USERPASSWORD = '';
+let dappTabId = null;
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     showIndex();
@@ -493,25 +494,39 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     const { beginAttestFromJSSDK } = await chrome.storage.local.get([
       'beginAttestFromJSSDK',
     ]);
+    console.log('333pado-bg-beginAttestFromJSSDK', beginAttestFromJSSDK);
     if (beginAttestFromJSSDK === '1') {
       if (resMethodName === 'start') {
         processAlgorithmReq({
           reqMethodName: 'init',
         });
-        window.postMessage({
-          target: 'padoZKAttestJSSDK',
-          origin: 'padoExtension',
+        console.log('333jssdk-init-completed');
+        
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
           name: 'initAttestRes',
-          params: true,
         });
-        // jssdk-init-completed
       }
       if (resMethodName === 'getAttestation') {
-        window.postMessage({
-          target: 'padoZKAttestJSSDK',
-          origin: 'padoExtension',
+        console.log('333-bg-recceive-getAttestation', message.res);
+       
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
           name: 'getAttestationRes',
-          params: true,
+          params: message.res,
+        });
+      }
+      if (resMethodName === 'getAttestationResult') {
+        console.log(
+          '333-bg-recceive-getAttestationResult',
+          message.res,
+          params
+        );
+
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'getAttestationResultRes',
+          params:message.res
         });
       }
     } else {
@@ -571,6 +586,14 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         reqMethodName: 'start',
       });
       chrome.storage.local.set({ beginAttestFromJSSDK: '1' });
+      // 在background.js中
+      const currentWindowTabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      dappTabId = currentWindowTabs[0].id;
+
+      console.log('pado-bg-receive-initAttest', dappTabId);
     }
     if (name === 'startAttest') {
       const requestid = uuidv4();
@@ -651,21 +674,59 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           ],
         },
       };
-      const currRequestTemplate = { ...activeAttestationParams, templateObj };
+      const currRequestTemplate = {
+        ...activeAttestationParams,
+        ...templateObj,
+      };
       const currentWindowTabs = await chrome.tabs.query({
         active: true,
         currentWindow: true,
       });
-      chrome.runtime.sendMessage({
-        type: 'pageDecode',
-        name: 'init',
-        params: {
-          ...currRequestTemplate,
-          requestid,
+      console.log('333-bg-startAttest', currentWindowTabs);
+      pageDecodeMsgListener(
+        {
+          type: 'pageDecode',
+          name: 'init',
+          params: {
+            ...currRequestTemplate,
+            requestid,
+          },
+          extensionTabId: currentWindowTabs[0]?.id,
+          operation: 'attest',
         },
-        extensionTabId: currentWindowTabs[0].id,
-        operation: 'attest',
+        sender,
+        sendResponse,
+        USERPASSWORD,
+        fullscreenPort,
+        hasGetTwitterScreenName
+      );
+    }
+
+    if (name === 'getAttestationResult') {
+      processAlgorithmReq({
+        reqMethodName: 'getAttestationResult',
+        params: {},
       });
+    }
+    if (name === 'attestResult') {
+      // TODO-sdk
+      if (params.result) {
+        pageDecodeMsgListener(
+          {
+            type: 'pageDecode',
+            name: 'end',
+            params: {
+              result: 'success',
+            }
+          },
+         sender,
+         sendResponse,
+         USERPASSWORD,
+         fullscreenPort,
+         hasGetTwitterScreenName
+       )
+      }
+       
     }
   }
 });

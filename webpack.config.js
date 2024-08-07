@@ -51,13 +51,7 @@ var options = {
       'pageDecode',
       'index.jsx'
     ),
-    pageDecode: path.join(
-      __dirname,
-      'src',
-      'content',
-      'jssdk',
-      'index.js'
-    ),
+    jssdk: path.join(__dirname, 'src', 'content', 'jssdk', 'index.js'),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
     //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },

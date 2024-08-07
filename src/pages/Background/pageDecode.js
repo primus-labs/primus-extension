@@ -22,10 +22,13 @@ export const pageDecodeMsgListener = async (
   hasGetTwitterScreenName
 ) => {
   const { name, params, operation } = request;
+  console.log('333-bg-pageDecodeMsgListener', request);
   if (name === 'init') {
     activeTemplate = params;
+    console.log('333-bg-pageDecodeMsgListener2');
   }
   if (activeTemplate.dataSource) {
+     console.log('333-bg-pageDecodeMsgListener3');
     let {
       dataSource,
       jumpTo,
@@ -35,7 +38,7 @@ export const pageDecodeMsgListener = async (
       id,
       event,
     } = activeTemplate;
-
+console.log('333-bg-pageDecodeMsgListener4');
     const requestUrlList = requests.map((r) => r.url);
     const isUrlWithQueryFn = (url, queryKeyArr) => {
       const urlStrArr = url.split('?');
@@ -234,12 +237,14 @@ export const pageDecodeMsgListener = async (
     };
 
     if (name === 'init') {
+      console.log('333-bg-pageDecodeMsgListener5');
+      console.log('333-content-startAttest');
       operationType = request.operation;
       const currentWindowTabs = await chrome.tabs.query({
         active: true,
         currentWindow: true,
       });
-      currExtentionId = currentWindowTabs[0].id;
+      currExtentionId = currentWindowTabs[0]?.id;
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
         { urls: ['<all_urls>'] },
@@ -307,6 +312,7 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'start') {
+      console.log('333-pagedecode-start1')
       await chrome.storage.local.set({
         beginAttest: '1',
       });
@@ -333,6 +339,7 @@ export const pageDecodeMsgListener = async (
       }
       // "X Followers" required update baseValue
       console.log('222activeTemplate', activeTemplate);
+      console.log('333-pagedecode-start2');
       if (activeTemplate.id === '15') {
         form.baseValue =
           activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
@@ -408,6 +415,7 @@ export const pageDecodeMsgListener = async (
 
         formatRequests.push(r);
       }
+      console.log('333-pagedecode-start3');
       const activeInfo = formatRequests.find((i) => i.headers);
       const activeHeader = Object.assign({}, activeInfo.headers);
       const authInfoName = dataSource + '-auth';
@@ -422,6 +430,7 @@ export const pageDecodeMsgListener = async (
           }
         }
       }
+      console.log('333-pagedecode-start4');
       Object.assign(aligorithmParams, {
         reqType: 'web',
         host: host,
