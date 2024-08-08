@@ -12,6 +12,7 @@ window.addEventListener('message', (e) => {
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
         name: 'startAttest',
+        params,
       });
     }
     
@@ -19,15 +20,16 @@ window.addEventListener('message', (e) => {
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
         name: 'getAttestationResult',
+        params
       });
     }
-    if (name === 'attestResult') {
-      chrome.runtime.sendMessage({
-        type: 'padoZKAttestationJSSDK',
-        name: 'attestResult',
-        params,
-      });
-    }
+    // if (name === 'attestResult') {
+    //   chrome.runtime.sendMessage({
+    //     type: 'padoZKAttestationJSSDK',
+    //     name: 'attestResult',
+    //     params,
+    //   });
+    // }
     
   }
 });
@@ -45,13 +47,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       // jssdk-init-completed
     }
     if (name === 'getAttestationRes') {
-      console.log('333-content-sdk-recceive-getAttestation', params);
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
         name: 'getAttestationRes',
         params,
       });
+      console.log('333-content-sdk-recceive-getAttestation', params);
     }
     if (name === 'getAttestationResultRes') {
       window.postMessage({

@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import {
   getAllOAuthSources,
   checkIsLogin,
@@ -7,7 +5,13 @@ import {
   refreshAuthData,
 } from '@/services/api/user';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
-import { getCurrentDate, postMsg, sub } from '@/utils/utils';
+import {
+  getCurrentDate,
+  postMsg,
+  sub,
+  getAccount,
+  strToHexSha256,
+} from '@/utils/utils';
 import { SocailStoreVersion } from '@/config/constants';
 import {
   default as processExReq,
@@ -21,6 +25,7 @@ import './pageDecode.js';
 import { pageDecodeMsgListener } from './pageDecode.js';
 import { PadoWebsiteMsgListener } from './pageWebsite.js';
 import { dataSourceWebMsgListener } from './dataSourceWeb.js';
+import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -35,7 +40,7 @@ const padoServices = {
 };
 
 let USERPASSWORD = '';
-let dappTabId = null;
+
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     showIndex();
@@ -501,32 +506,344 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           reqMethodName: 'init',
         });
         console.log('333jssdk-init-completed');
-        
+        const { padoZKAttestationJSSDKDappId: dappTabId } =
+          await chrome.local.storage.get(['padoZKAttestationJSSDKDappId']);
         chrome.tabs.sendMessage(dappTabId, {
           type: 'padoZKAttestationJSSDK',
           name: 'initAttestRes',
         });
       }
       if (resMethodName === 'getAttestation') {
+        let hasGetTwitterScreenName = false;
         console.log('333-bg-recceive-getAttestation', message.res);
-       
+        const { padoZKAttestationJSSDKDappId: dappTabId } =
+          await chrome.local.storage.get(['padoZKAttestationJSSDKDappId']);
+
+        const { retcode } = JSON.parse(params);
+        const msgObj = {};
+        let result = null;
+        if (retcode === '0') {
+          result = true;
+        } else if (retcode === '2') {
+          result = false;
+          // TODO-sdk
+          const errorMsgTitle = `Humanity Verification failed!`;
+          msgObj = {
+            type: 'error',
+            title: errorMsgTitle,
+            desc: 'The algorithm has not been initialized.Please try again later.',
+            sourcePageTip: errorMsgTitle,
+          };
+          // algorithm is not initialized
+          pageDecodeMsgListener(
+            {
+              name: 'end',
+              params: {
+                result: 'warn',
+                failReason: {
+                  ...msgObj,
+                },
+              },
+            },
+            sender,
+            sendResponse,
+            USERPASSWORD,
+            fullscreenPort,
+            hasGetTwitterScreenName
+          );
+        }
         chrome.tabs.sendMessage(dappTabId, {
           type: 'padoZKAttestationJSSDK',
           name: 'getAttestationRes',
-          params: message.res,
+          params: { result, msgObj },
         });
       }
       if (resMethodName === 'getAttestationResult') {
+        let hasGetTwitterScreenName = false;
         console.log(
           '333-bg-recceive-getAttestationResult',
           message.res,
           params
         );
+        const {
+          padoZKAttestationJSSDKDappId: dappTabId,
+          configMap,
+          activeRequestAttestation,
+          padoZKAttestationJSSDKActiveRequestAttestation,
+        } = await chrome.local.storage.get([
+          'padoZKAttestationJSSDKDappId',
+          'configMap',
+          'activeRequestAttestation',
+          'padoZKAttestationJSSDKActiveRequestAttestation',
+        ]);
+        const attestTipMap = configMap.ATTESTATION_PROCESS_NOTE ?? {};
+
+        const { retcode, content, retdesc, details } = JSON.parse(message.res);
+
+        // TODO-sdk activeAttestation
+        const activeAttestation = JSON.parse(
+          padoZKAttestationJSSDKActiveRequestAttestation
+        );
+        const parsedActiveRequestAttestation = activeRequestAttestation
+          ? JSON.parse(activeRequestAttestation)
+          : {};
+        const errorMsgTitle = [
+          'Assets Verification',
+          'Humanity Verification',
+        ].includes(activeAttestation.attestationType)
+          ? `${activeAttestation.attestationType} failed!`
+          : `${activeAttestation.attestationType} proof failed!`;
+        var eventInfo = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData: {
+            source: parsedActiveRequestAttestation.source,
+            schemaType: parsedActiveRequestAttestation.schemaType,
+            sigFormat: parsedActiveRequestAttestation.sigFormat,
+          },
+        };
+
+        if (retcode === '0') {
+          // clearFetchAttestationTimer();
+
+          if (
+            content.balanceGreaterThanBaseValue === 'true' &&
+            content.signature
+          ) {
+            const activeRequestId = parsedActiveRequestAttestation.requestid;
+            if (activeRequestId !== content?.requestid) {
+              return;
+            }
+            const acc = getAccount(
+              DATASOURCEMAP[activeAttestation.dataSourceId],
+              sourceMap2[activeAttestation.dataSourceId]
+            );
+            let fullAttestation = {
+              ...content,
+              ...parsedActiveRequestAttestation,
+              ...activeAttestation,
+              account: acc,
+            };
+            if (fullAttestation.verificationContent === 'X Followers') {
+              const xFollowerCount = sessionStorage.getItem('xFollowerCount');
+              fullAttestation.xFollowerCount = xFollowerCount;
+              sessionStorage.removeItem('xFollowerCount');
+            }
+
+            const credentialsObj = { ...credentialsFromStore };
+            credentialsObj[activeRequestId] = fullAttestation;
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(credentialsObj),
+            });
+            await chrome.storage.local.remove(['activeRequestAttestation']);
+
+            await initCredList();
+            if (fullAttestation.reqType === 'web') {
+               pageDecodeMsgListener(
+                 {
+                   name: 'end',
+                   params: {
+                     result: 'success',
+                   },
+                 },
+                 sender,
+                 sendResponse,
+                 USERPASSWORD,
+                 fullscreenPort,
+                 hasGetTwitterScreenName
+               );
+              chrome.tabs.sendMessage(dappTabId, {
+                type: 'padoZKAttestationJSSDK',
+                name: 'startAttestationRes',
+                params: { result: true },
+              });
+            }
+            
+            // suc
+            const sucMsgTitle = [
+              'Assets Verification',
+              'Humanity Verification',
+            ].includes(activeAttestation.attestationType)
+              ? `${activeAttestation.attestationType} is created!`
+              : `${activeAttestation.attestationType} proof is created!`;
+            const msgObj = {
+              type: 'suc',
+              title: sucMsgTitle,
+              desc: '',
+              link: '/zkAttestation',
+            };
+            if (pathname !== '/zkAttestation') {
+              msgObj.desc = 'See details in the zkAttestation page.';
+            }
+           
+
+            const uniqueId = strToHexSha256(fullAttestation.signature);
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              attestationId: uniqueId,
+              status: 'SUCCESS',
+              reason: '',
+              event: fromEvents,
+              address: fullAttestation?.address, // TODO-sdk
+            });
+            eventReport(eventInfo);
+            var eventInfoEnd = {
+              ...eventInfo,
+              eventType: 'ATTESTATION_END',
+            };
+            eventReport(eventInfoEnd);
+          } else if (
+            !content.signature ||
+            content.balanceGreaterThanBaseValue === 'false'
+          ) {
+            // attestTipMap
+            let title = errorMsgTitle;
+            let msgObj = {
+              type: 'error',
+              title,
+              desc: '',
+              sourcePageTip: '',
+            };
+            if (activeAttestation?.verificationContent === 'Assets Proof') {
+              let type, desc, title;
+              if (activeAttestation?.dataSourceId === 'okx') {
+                type = attestTipMap['00101'].type;
+                desc = attestTipMap['00101'].desc;
+                title = attestTipMap['00101'].title;
+              } else if (activeAttestation?.dataSourceId === 'binance') {
+                type = attestTipMap['00102'].type;
+                desc = attestTipMap['00102'].desc;
+                title = attestTipMap['00102'].title;
+              }
+              Object.assign(msgObj, {
+                type,
+                desc,
+                sourcePageTip: title,
+              });
+            }
+            let btnTxt = '';
+
+            if (parsedActiveRequestAttestation.reqType === 'web') {
+              if (!content.signature && content.encodedData) {
+                // linea event had bund
+                Object.assign(msgObj, {
+                  type: attestTipMap['00103'].type,
+                  desc: attestTipMap['00103'].desc,
+                  sourcePageTip: attestTipMap['00103'].title,
+                });
+              } else {
+                Object.assign(msgObj, {
+                  type: attestTipMap['00104'].type,
+                  desc: attestTipMap['00104'].desc,
+                  sourcePageTip: attestTipMap['00104'].title,
+                });
+              }
+              pageDecodeMsgListener(
+                {
+                  name: 'end',
+                  params: {
+                    result: 'warn',
+                    failReason: { ...msgObj },
+                  },
+                },
+                sender,
+                sendResponse,
+                USERPASSWORD,
+                fullscreenPort,
+                hasGetTwitterScreenName
+              );
+              chrome.tabs.sendMessage(dappTabId, {
+                type: 'padoZKAttestationJSSDK',
+                name: 'startAttestationRes',
+                params: { result: false, msgObj },
+              });
+            }
+
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              status: 'FAILED',
+              reason: 'Not met the requirements',
+              event: fromEvents,
+              address: parsedActiveRequestAttestation?.address,
+            });
+            eventReport(eventInfo);
+            var eventInfoEnd = {
+              ...eventInfo,
+              eventType: 'ATTESTATION_END',
+            };
+            eventReport(eventInfoEnd);
+          }
+        } else if (retcode === '2') {
+          const {
+            errlog: { code, desc },
+          } = details;
+          processAlgorithmReq({reqMethodName: 'stop'})
+          var eventInfoMsg = 'Something went wrong';
+          let title = errorMsgTitle;
+          let msgObj = {
+            type: 'warn',
+            title,
+            desc: '',
+            sourcePageTip: '',
+            code: '',
+          };
+          let codeTipObj = attestTipMap[code];
+          if (codeTipObj) {
+          } else {
+            codeTipObj = attestTipMap['99999'];
+          }
+          Object.assign(msgObj, {
+            type: codeTipObj.type,
+            desc: codeTipObj.desc,
+            sourcePageTip: codeTipObj.title,
+            code: `Error code: ${code}`,
+          });
+
+          
+          if (
+            retdesc.indexOf('connect to proxy error') > -1 ||
+            retdesc.indexOf('WebSocket On Error') > -1 ||
+            retdesc.indexOf('connection error') > -1
+          ) {
+            eventInfoMsg = 'Unstable internet connection';
+          }
+          eventInfo.rawData = Object.assign(eventInfo.rawData, {
+            status: 'FAILED',
+            reason: eventInfoMsg,
+            detail: {
+              code,
+              desc,
+            },
+            event: fromEvents,
+            address: parsedActiveRequestAttestation?.address,
+          });
+          eventReport(eventInfo);
+          var eventInfoEnd = {
+            ...eventInfo,
+            eventType: 'ATTESTATION_END',
+          };
+          eventReport(eventInfoEnd);
+          if (parsedActiveRequestAttestation.reqType === 'web') {
+            pageDecodeMsgListener(
+              {
+                result: 'warn',
+                failReason: { ...msgObj },
+              },
+              sender,
+              sendResponse,
+              USERPASSWORD,
+              fullscreenPort,
+              hasGetTwitterScreenName
+            );
+            chrome.tabs.sendMessage(dappTabId, {
+              type: 'padoZKAttestationJSSDK',
+              name: 'startAttestationRes',
+              params: { result: false, msgObj },
+            });
+          }
+        }
 
         chrome.tabs.sendMessage(dappTabId, {
           type: 'padoZKAttestationJSSDK',
           name: 'getAttestationResultRes',
-          params:message.res
+          params: message.res,
         });
       }
     } else {
@@ -581,152 +898,14 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     );
   }
   if (type === 'padoZKAttestationJSSDK') {
-    if (name === 'initAttest') {
-      processAlgorithmReq({
-        reqMethodName: 'start',
-      });
-      chrome.storage.local.set({ beginAttestFromJSSDK: '1' });
-      // 在background.js中
-      const currentWindowTabs = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      dappTabId = currentWindowTabs[0].id;
-
-      console.log('pado-bg-receive-initAttest', dappTabId);
-    }
-    if (name === 'startAttest') {
-      const requestid = uuidv4();
-      const userForm = {
-        dataSourceId: 'x',
-        verificationContent: 'Account ownership',
-        verificationValue: 'Account owner',
-      };
-      const activeAttestationParams = {
-        ...userForm,
-        attestationType: 'Humanity Verification',
-        fetchType: 'Web',
-      };
-      const templateObj = {
-        id: '3',
-        schemaType: 'X_ACCOUNT_OWNER#1',
-        name: 'Account Ownership',
-        category: 'IDENTIFICATION_PROOF',
-        description: 'You must own the account',
-        dataSource: 'x',
-        bgImg:
-          'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconWebCredTwitter.svg',
-        schemaUid:
-          '0x5f868b117fd34565f3626396ba91ef0c9a607a0e406972655c5137c6d4291af9',
-        jumpTo: 'https://x.com/home',
-        uiTemplate: {
-          title: 'Identity',
-          proofContent: 'Account Ownership',
-          subProofContent: '',
-          condition: 'Verified',
-        },
-        processUiTemplate: {
-          dataSource: 'https://x.com/',
-          proofContent: 'Account Ownership',
-          successMsg: 'Verified',
-          failedMsg: 'Not eligible',
-        },
-        datasourceTemplate: {
-          cipher: 'ECDHE-ECDSA-AES128-GCM-SHA256',
-          reqType: 'web',
-          host: 'api.x.com',
-          requests: [
-            {
-              name: 'first',
-              url: 'https://api.x.com/1.1/jot/ces/p2',
-              method: 'POST',
-            },
-            {
-              name: 'owner',
-              url: 'https://api.x.com/1.1/account/settings.json',
-              queryParams: ['include_mention_filter'],
-              method: 'GET',
-              headers: ['authorization', 'x-csrf-token', 'User-Agent'],
-              cookies: ['auth_token', 'ct0'],
-            },
-          ],
-          responses: [
-            {},
-            {
-              conditions: {
-                type: 'CONDITION_EXPANSION',
-                op: 'BOOLEAN_AND',
-                subconditions: [
-                  {
-                    type: 'FIELD_VALUE',
-                    field: '.screen_name',
-                    op: 'SHA256',
-                  },
-                  {
-                    type: 'FIELD_RANGE',
-                    field: '.screen_name',
-                    op: 'STRNEQ',
-                    value: '',
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      };
-      const currRequestTemplate = {
-        ...activeAttestationParams,
-        ...templateObj,
-      };
-      const currentWindowTabs = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      console.log('333-bg-startAttest', currentWindowTabs);
-      pageDecodeMsgListener(
-        {
-          type: 'pageDecode',
-          name: 'init',
-          params: {
-            ...currRequestTemplate,
-            requestid,
-          },
-          extensionTabId: currentWindowTabs[0]?.id,
-          operation: 'attest',
-        },
-        sender,
-        sendResponse,
-        USERPASSWORD,
-        fullscreenPort,
-        hasGetTwitterScreenName
-      );
-    }
-
-    if (name === 'getAttestationResult') {
-      processAlgorithmReq({
-        reqMethodName: 'getAttestationResult',
-        params: {},
-      });
-    }
-    if (name === 'attestResult') {
-      // TODO-sdk
-      if (params.result) {
-        pageDecodeMsgListener(
-          {
-            type: 'pageDecode',
-            name: 'end',
-            params: {
-              result: 'success',
-            }
-          },
-         sender,
-         sendResponse,
-         USERPASSWORD,
-         fullscreenPort,
-         hasGetTwitterScreenName
-       )
-      }
-       
-    }
+    padoZKAttestationJSSDKMsgListener(
+      message,
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort,
+      processAlgorithmReq,
+      pageDecodeMsgListener
+    );
   }
 });

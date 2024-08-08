@@ -431,9 +431,10 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
 }
 async function assembleUserInfoParams(form) {
   const { event } = form;
-  const { connectedWalletAddress, userInfo } = await chrome.storage.local.get([
+  const { connectedWalletAddress, userInfo,padoZKAttestationJSSDKWalletAddress } = await chrome.storage.local.get([
     'connectedWalletAddress',
     'userInfo',
+    'padoZKAttestationJSSDKWalletAddress',
   ]);
   let formatAddress;
   const { address } = JSON.parse(connectedWalletAddress);
@@ -454,13 +455,15 @@ async function assembleUserInfoParams(form) {
       }
     }
   }
+  if (padoZKAttestationJSSDKWalletAddress) {
+    formatAddress = padoZKAttestationJSSDKWalletAddress;
+  }
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
     userid: id,
     address: formatAddress,
     token: loginToken,
   };
-
   return user;
 }
 

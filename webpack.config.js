@@ -51,7 +51,13 @@ var options = {
       'pageDecode',
       'index.jsx'
     ),
-    jssdk: path.join(__dirname, 'src', 'content', 'jssdk', 'index.js'),
+    padoZKAttestationJSSDK: path.join(
+      __dirname,
+      'src',
+      'content',
+      'padoZKAttestationJSSDK',
+      'index.js'
+    ),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
     //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },
