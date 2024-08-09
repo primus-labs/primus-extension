@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
-
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
+import { pageDecodeMsgListener } from './pageDecode.js';
+
 let hasGetTwitterScreenName = false;
 const fetchAttestationTemplateList = async () => {
   try {
@@ -35,42 +36,40 @@ const fetchConfigure = async () => {
     }
   } catch {}
 };
-fetchAttestationTemplateList();
-fetchConfigure();
+
 export const padoZKAttestationJSSDKMsgListener = async (
   request,
   sender,
   sendResponse,
   USERPASSWORD,
   fullscreenPort,
-  processAlgorithmReq,
-  pageDecodeMsgListener
+  processAlgorithmReq
 ) => {
   const { name, params } = request;
   if (name === 'initAttest') {
+     const currentWindowTabs = await chrome.tabs.query({
+       active: true,
+       currentWindow: true,
+     });
+     const dappTabId = currentWindowTabs[0].id;
+     await chrome.storage.local.set({
+       padoZKAttestationJSSDKDappTabId: dappTabId,
+       padoZKAttestationJSSDKBeginAttest: '1',
+     });
     processAlgorithmReq({
       reqMethodName: 'start',
     });
-
-    const currentWindowTabs = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-    const dappTabId = currentWindowTabs[0].id;
-    await chrome.storage.local.set({
-      padoZKAttestationJSSDKDappId: dappTabId,
-    });
+    await fetchAttestationTemplateList();
+    await fetchConfigure();
+   
     console.log('333pado-bg-receive-initAttest', dappTabId);
   }
   if (name === 'startAttest') {
     chrome.storage.local.set({
-      beginAttestFromJSSDK: '1',
       padoZKAttestationJSSDKWalletAddress: params.walletAddress,
     });
-    await fetchAttestationTemplateList();
-    await fetchConfigure();
     const { webProofTypes } = await chrome.storage.local.get(['webProofTypes']);
-    let webProofTypesList = []
+    let webProofTypesList = [];
     if (webProofTypes) {
       webProofTypesList = JSON.parse(webProofTypes);
     } else {
@@ -80,7 +79,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ]);
       webProofTypesList = JSON.parse(webProofTypes);
     }
-    
+
     const activeWebProofTemplate = webProofTypesList.find(
       (i) => i.id === params.attestationTypeId
     );
@@ -149,11 +148,46 @@ export const padoZKAttestationJSSDKMsgListener = async (
       params: {},
     });
   }
-  if (name === 'attestResult') {
-    // TODO-sdk
-    
+  // if (name === 'attestResult') {
+  //   // TODO-sdk
+
+  //   pageDecodeMsgListener(
+  //     params,
+  //     sender,
+  //     sendResponse,
+  //     USERPASSWORD,
+  //     fullscreenPort,
+  //     hasGetTwitterScreenName
+  //   );
+  // }
+  if (name === 'getAttestationResultTimeout') {
+    await chrome.storage.local.remove([
+      'padoZKAttestationJSSDKBeginAttest',
+      'padoZKAttestationJSSDKWalletAddress',
+      'padoZKAttestationJSSDKActiveRequestAttestation',
+      'activeRequestAttestation',
+    ]);
+
+    const { configMap } = await chrome.storage.local.get(['configMap']);
+    const attestTipMap = JSON.parse(configMap).ATTESTATION_PROCESS_NOTE ?? {};
+    const errorMsgTitle = 'Humanity Verification failed!';
+
+    const msgObj = {
+      type: attestTipMap['00002'].type,
+      title: errorMsgTitle,
+      desc: attestTipMap['00002'].desc,
+      sourcePageTip: attestTipMap['00002'].title,
+    };
     pageDecodeMsgListener(
-      params,
+      {
+        name: 'end',
+        params: {
+          result: 'warn',
+          failReason: {
+            ...msgObj,
+          },
+        },
+      },
       sender,
       sendResponse,
       USERPASSWORD,

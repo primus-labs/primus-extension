@@ -139,6 +139,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     await chrome.runtime.sendMessage(msgObj);
   }, []);
   const handleConfirm = useCallback(async () => {
+    
     var eventInfo = {
       eventType: 'ATTESTATION_START',
       rawData: {
@@ -148,6 +149,11 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
         requestid: activeRequestid,
       },
     };
+    const { padoZKAttestationJSSDKBeginAttest } =
+    await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+    if (padoZKAttestationJSSDKBeginAttest === '1') {
+      eventInfo.rawData.origin = 'padoAttestationJSSDK'
+    }
     eventReport(eventInfo);
 
     var msgObj = {

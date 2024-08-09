@@ -28,7 +28,7 @@ export const pageDecodeMsgListener = async (
     console.log('333-bg-pageDecodeMsgListener2');
   }
   if (activeTemplate.dataSource) {
-     console.log('333-bg-pageDecodeMsgListener3');
+    console.log('333-bg-pageDecodeMsgListener3');
     let {
       dataSource,
       jumpTo,
@@ -38,7 +38,7 @@ export const pageDecodeMsgListener = async (
       id,
       event,
     } = activeTemplate;
-console.log('333-bg-pageDecodeMsgListener4');
+    console.log('333-bg-pageDecodeMsgListener4');
     const requestUrlList = requests.map((r) => r.url);
     const isUrlWithQueryFn = (url, queryKeyArr) => {
       const urlStrArr = url.split('?');
@@ -312,7 +312,7 @@ console.log('333-bg-pageDecodeMsgListener4');
       });
     }
     if (name === 'start') {
-      console.log('333-pagedecode-start1')
+      console.log('333-pagedecode-start1');
       await chrome.storage.local.set({
         beginAttest: '1',
       });
@@ -426,7 +426,7 @@ console.log('333-bg-pageDecodeMsgListener4');
       if (dataSource === 'binance') {
         for (const fr of formatRequests) {
           if (fr.headers) {
-            fr.headers["Accept-Encoding"] = "identity";
+            fr.headers['Accept-Encoding'] = 'identity';
           }
         }
       }
@@ -463,6 +463,11 @@ console.log('333-bg-pageDecodeMsgListener4');
           order: '3',
         },
       };
+      const { padoZKAttestationJSSDKBeginAttest } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      if (padoZKAttestationJSSDKBeginAttest === '1') {
+        eventInfo.rawData.origin = 'padoAttestationJSSDK';
+      }
       eventReport(eventInfo);
 
       chrome.runtime.sendMessage({
