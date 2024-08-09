@@ -63,7 +63,10 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
     await chrome.storage.local.set({
       [dataSourceId]: JSON.stringify(newSourceUserData),
     });
-    postMsg(port, { resType, res: true, connectType, withoutMsg });
+    if (port) {
+      postMsg(port, { resType, res: true, connectType, withoutMsg });
+    }
+    
   } catch (error) {
     console.log(
       'connect source  error',

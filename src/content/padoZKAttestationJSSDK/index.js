@@ -53,9 +53,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         name: 'getAttestationRes',
         params,
       });
-      console.log('333-content-sdk-recceive-getAttestation', params);
+      console.log('333-content-sdk-receive-getAttestation', params);
     }
     if (name === 'getAttestationResultRes') {
+      console.log('333-content-sdk-receive-getAttestationResultRes', params);
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
@@ -63,5 +64,15 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         params,
       });
     }
+    if (name === 'startAttestationRes') {
+      console.log('333-content-sdk-receive-startAttestationRes', params);
+      window.postMessage({
+        target: 'padoZKAttestationJSSDK',
+        origin: 'padoExtension',
+        name: 'getAttestationResultRes',
+        params,
+      });
+    }
+    ;
   }
 });

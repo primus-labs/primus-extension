@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
+let hasGetTwitterScreenName = false;
 const fetchAttestationTemplateList = async () => {
   try {
     const fetchRes = await getProofTypes({
@@ -9,9 +10,10 @@ const fetchAttestationTemplateList = async () => {
     });
     const { rc, mc, result } = fetchRes;
     if (rc === 0) {
-      await chrome.local.storage.set({
-        webProofTypes: JSON.stringify(result2),
+      await chrome.storage.local.set({
+        webProofTypes: JSON.stringify(result),
       });
+      console.log('333-bg-sdk-fetchAttestationTemplateList', result);
     } else {
       // alert('getProofTypes network error');
     }
@@ -29,6 +31,7 @@ const fetchConfigure = async () => {
       await chrome.storage.local.set({
         configMap: JSON.stringify(configMap),
       });
+      console.log('333-bg-sdk-fetchConfigure', configMap);
     }
   } catch {}
 };
@@ -53,8 +56,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
       active: true,
       currentWindow: true,
     });
-    dappTabId = currentWindowTabs[0].id;
-    await chrome.local.storage.set({
+    const dappTabId = currentWindowTabs[0].id;
+    await chrome.storage.local.set({
       padoZKAttestationJSSDKDappId: dappTabId,
     });
     console.log('333pado-bg-receive-initAttest', dappTabId);
@@ -64,17 +67,29 @@ export const padoZKAttestationJSSDKMsgListener = async (
       beginAttestFromJSSDK: '1',
       padoZKAttestationJSSDKWalletAddress: params.walletAddress,
     });
-    const { webProofTypes } = await chrome.local.storage.get(['webProofTypes']);
-    const webProofTypesList = JSON.parse(webProofTypes);
-    const templateObj = webProofTypesList.find(
+    await fetchAttestationTemplateList();
+    await fetchConfigure();
+    const { webProofTypes } = await chrome.storage.local.get(['webProofTypes']);
+    let webProofTypesList = []
+    if (webProofTypes) {
+      webProofTypesList = JSON.parse(webProofTypes);
+    } else {
+      await fetchAttestationTemplateList();
+      const { webProofTypes } = await chrome.storage.local.get([
+        'webProofTypes',
+      ]);
+      webProofTypesList = JSON.parse(webProofTypes);
+    }
+    
+    const activeWebProofTemplate = webProofTypesList.find(
       (i) => i.id === params.attestationTypeId
     );
-    const verificationContent = Object.values(
+    const verificationContent = Object.keys(
       ALLVERIFICATIONCONTENTTYPEEMAP
     ).find((k) => {
       const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
       const { name } = activeWebProofTemplate;
-      return name === obj.label || name === contentObj.templateName;
+      return name === obj.label || name === obj.templateName;
     });
     let verificationValue;
     if (verificationContent === 'KYC Status') {
@@ -102,7 +117,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     });
     const currRequestTemplate = {
       ...activeAttestationParams,
-      ...templateObj,
+      ...activeWebProofTemplate,
     };
     const currentWindowTabs = await chrome.tabs.query({
       active: true,
@@ -136,7 +151,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
   if (name === 'attestResult') {
     // TODO-sdk
-    let hasGetTwitterScreenName = false;
+    
     pageDecodeMsgListener(
       params,
       sender,
