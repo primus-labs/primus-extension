@@ -30,6 +30,14 @@ window.addEventListener('message', (e) => {
         params,
       });
     }
+    
+    if (name === 'verifyAttestation') {
+      chrome.runtime.sendMessage({
+        type: 'padoZKAttestationJSSDK',
+        name: 'verifyAttestation',
+        params,
+      });
+    }
     // if (name === 'attestResult') {
     //   chrome.runtime.sendMessage({
     //     type: 'padoZKAttestationJSSDK',
@@ -80,6 +88,14 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         params,
       });
     }
-    ;
+    if (name === 'verifyAttestationRes') {
+      console.log('333-content-sdk-receive-verifyAttestationRes', params);
+      window.postMessage({
+        target: 'padoZKAttestationJSSDK',
+        origin: 'padoExtension',
+        name: 'verifyAttestationRes',
+        params,
+      });
+    }
   }
 });

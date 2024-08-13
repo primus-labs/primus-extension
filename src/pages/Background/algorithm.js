@@ -181,9 +181,10 @@ export const algorithmMsgListener = async (
           if (fullAttestation.verificationContent === 'X Followers') {
             let count = 0;
             if (padoZKAttestationJSSDKBeginAttest === '1') {
-              const { padoZKAttestationJSSDKXFollowerCount } = await chrome.storage.local.get([
-                'padoZKAttestationJSSDKXFollowerCount',
-              ]);
+              const { padoZKAttestationJSSDKXFollowerCount } =
+                await chrome.storage.local.get([
+                  'padoZKAttestationJSSDKXFollowerCount',
+                ]);
               count = padoZKAttestationJSSDKXFollowerCount;
             } else {
               const xFollowerCount = sessionStorage.getItem('xFollowerCount');
@@ -215,7 +216,7 @@ export const algorithmMsgListener = async (
               fullscreenPort,
               hasGetTwitterScreenName
             );
-console.log('333-bg-success2');
+            console.log('333-bg-success2');
             await chrome.storage.local.remove([
               'padoZKAttestationJSSDKBeginAttest',
               'activeRequestAttestation',
@@ -225,7 +226,7 @@ console.log('333-bg-success2');
             chrome.tabs.sendMessage(dappTabId, {
               type: 'padoZKAttestationJSSDK',
               name: 'startAttestationRes',
-              params: { result: true },
+              params: { result: true, attestationRequestId: activeRequestId },
             });
           }
 

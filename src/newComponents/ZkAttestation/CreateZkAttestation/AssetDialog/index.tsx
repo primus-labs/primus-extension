@@ -83,8 +83,6 @@ const Nav: React.FC<PButtonProps> = memo(
           fetchType: 'Web',
           // loading: 1,
         };
-        console.log('333form', form, assetForm, activeAttestationParams);
-        debugger
         // if (activeAttestation.loading === 3) {
         //   debugger
         //   activeAttestationParams = { ...activeAttestation };

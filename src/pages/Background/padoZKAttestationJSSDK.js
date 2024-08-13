@@ -1,6 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
+import { ethers, utils } from 'ethers';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
+import { regenerateAttestation } from '@/services/api/cred';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
+import {
+  LINEASCHEMANAME,
+  SCROLLSCHEMANAME,
+  BNBSCHEMANAME,
+  BNBGREENFIELDSCHEMANAME,
+  OPBNBSCHEMANAME,
+} from '@/config/chain';
+import { PADOADDRESS } from '@/config/envConstants';
 import { pageDecodeMsgListener } from './pageDecode.js';
 import { getDataSourceAccount } from './dataSourceUtils';
 
@@ -269,11 +279,116 @@ export const padoZKAttestationJSSDKMsgListener = async (
       reqMethodName: 'stop',
     });
     const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-      await chrome.storage.local.get([padoZKAttestationJSSDKDappTabId]);
+      await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
     chrome.tabs.sendMessage(dappTabId, {
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
       params: { result: false, msgObj, reStartFlag: true },
     });
+  }
+  if (name === 'verifyAttestation') {
+    const { attestationRequestId, chainName } = params;
+    const currentWindowTabs = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    const dappTabId = currentWindowTabs[0].id;
+    await chrome.storage.local.set({
+      padoZKAttestationJSSDKDappTabId: dappTabId,
+    });
+    console.log('33333-1', dappTabId);
+    const { credentials } = await chrome.storage.local.get(['credentials']);
+    const curCredential = JSON.parse(credentials)[attestationRequestId];
+    console.log(
+      '333-bg-sdk-receive-verifyAttestation',
+      curCredential,
+      attestationRequestId,
+      chainName
+    );
+    let verifyResult = false;
+    let verifyMsg = '';
+    if (curCredential) {
+      const { signature, sourceUseridHash } = curCredential;
+      const schemaNameFn = (networkName) => {
+        const formatNetworkName = networkName;
+        let Name;
+        if (formatNetworkName?.startsWith('Linea')) {
+          Name = LINEASCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          (formatNetworkName.indexOf('BSC') > -1 ||
+            formatNetworkName.indexOf('BNB Greenfield') > -1)
+        ) {
+          Name = BNBSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('Scroll') > -1
+        ) {
+          Name = SCROLLSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('BNB Greenfield') > -1
+        ) {
+          Name = BNBGREENFIELDSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('opBNB') > -1
+        ) {
+          Name = OPBNBSCHEMANAME;
+        } else {
+          Name = 'EAS';
+          // Name = 'EAS-Ethereum';
+        }
+        return Name;
+      };
+      const requestParams = {
+        rawParam: Object.assign(curCredential, {
+          ext: null,
+        }),
+        greaterThanBaseValue: true,
+        signature: signature,
+        newSigFormat: schemaNameFn(chainName),
+        sourceUseridHash: sourceUseridHash,
+      };
+      const { rc, result } = await regenerateAttestation(requestParams);
+      if (rc === 0) {
+        const {
+          eip712MessageRawDataWithSignature: {
+            domain,
+            message,
+            signature,
+            types,
+          },
+        } = result;
+        try {
+          delete domain.salt;
+          const result = utils.verifyTypedData(
+            domain,
+            types,
+            message,
+            signature
+          );
+          console.log('333Verification successful:', result);
+          verifyResult = PADOADDRESS.toLowerCase() === result.toLowerCase();
+          verifyMsg = verifyResult
+            ? 'Verification successful'
+            : 'Validation failed';
+        } catch (error) {
+          console.error('Verification failed:', error);
+          verifyResult = false;
+          verifyMsg = 'Something went wrong';
+        }
+      }
+    } else {
+      verifyResult = false;
+      verifyMsg = "Can't find the proof";
+    }
+    
+    chrome.tabs.sendMessage(dappTabId, {
+      type: 'padoZKAttestationJSSDK',
+      name: 'verifyAttestationRes',
+      params: { result: verifyResult, msg: verifyMsg },
+    });
+    console.log('33333-2', dappTabId);
   }
 };
