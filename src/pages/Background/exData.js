@@ -76,9 +76,11 @@ const getExchange = async (message, USERPASSWORD, port) => {
         exchangeName + 'cipher'
       );
       if (!USERPASSWORD) {
-        postMsg(port, {
-          resType: 'lock',
-        });
+        if (port) {
+          postMsg(port, {
+            resType: 'lock',
+          });
+        }
       }
       if (cipherData) {
         try {

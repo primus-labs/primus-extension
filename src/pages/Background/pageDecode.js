@@ -25,7 +25,7 @@ export const pageDecodeMsgListener = async (
   console.log('333-bg-pageDecodeMsgListener', request);
   if (name === 'init') {
     activeTemplate = params;
-    console.log('333-bg-pageDecodeMsgListener2');
+    console.log('333-bg-pageDecodeMsgListener2', activeTemplate);
   }
   if (activeTemplate.dataSource) {
     console.log('333-bg-pageDecodeMsgListener3');
