@@ -131,7 +131,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
     });
     await fetchAttestationTemplateList();
     await fetchConfigure();
-
     console.log('333pado-bg-receive-initAttest', dappTabId);
   }
   if (name === 'startAttest') {
