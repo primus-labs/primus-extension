@@ -439,8 +439,9 @@ async function assembleUserInfoParams(form) {
     'padoZKAttestationJSSDKWalletAddress',
   ]);
   let formatAddress;
-  const { address } = JSON.parse(connectedWalletAddress);
-  formatAddress = address;
+  if (connectedWalletAddress) {
+    formatAddress = JSON.parse(connectedWalletAddress).address;
+  }
   if (event === SCROLLEVENTNAME) {
     const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
     const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};

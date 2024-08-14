@@ -1,7 +1,55 @@
 import { eventReport } from '@/services/api/usertracker';
+import { regenerateAttestation } from '@/services/api/cred';
 import { pageDecodeMsgListener } from './pageDecode.js';
 import { postMsg, strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from './dataSourceUtils';
+import {
+  LINEASCHEMANAME,
+  SCROLLSCHEMANAME,
+  BNBSCHEMANAME,
+  BNBGREENFIELDSCHEMANAME,
+  OPBNBSCHEMANAME,
+} from '@/config/chain';
+const regenerateAttest = async (orginAttestation, chainName) => {
+  const { signature, sourceUseridHash } = orginAttestation;
+  const requestParams = {
+    rawParam: Object.assign(orginAttestation, {
+      ext: null,
+    }),
+    greaterThanBaseValue: true,
+    signature,
+    newSigFormat: schemaNameFn(chainName),
+    sourceUseridHash: sourceUseridHash,
+  };
+  const regenerateAttestRes = await regenerateAttestation(requestParams);
+  return regenerateAttestRes;
+};
+const schemaNameFn = (networkName) => {
+  const formatNetworkName = networkName;
+  let Name;
+  if (formatNetworkName?.startsWith('Linea')) {
+    Name = LINEASCHEMANAME;
+  } else if (
+    formatNetworkName &&
+    (formatNetworkName.indexOf('BSC') > -1 ||
+      formatNetworkName.indexOf('BNB Greenfield') > -1)
+  ) {
+    Name = BNBSCHEMANAME;
+  } else if (formatNetworkName && formatNetworkName.indexOf('Scroll') > -1) {
+    Name = SCROLLSCHEMANAME;
+  } else if (
+    formatNetworkName &&
+    formatNetworkName.indexOf('BNB Greenfield') > -1
+  ) {
+    Name = BNBGREENFIELDSCHEMANAME;
+  } else if (formatNetworkName && formatNetworkName.indexOf('opBNB') > -1) {
+    Name = OPBNBSCHEMANAME;
+  } else {
+    Name = 'EAS';
+    // Name = 'EAS-Ethereum';
+  }
+  return Name;
+};
 export const algorithmMsgListener = async (
   message,
   sender,
@@ -123,11 +171,11 @@ export const algorithmMsgListener = async (
 
       const attestTipMap =
         JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
-      console.log('333-bg-recceive-getAttestationResult2');
+      console.log('333-bg-recceive-getAttestationResult2', dappTabId);
       const { retcode, content, retdesc, details } = JSON.parse(message.res);
       console.log('333-bg-recceive-getAttestationResult3', message.res);
-      // TODO-sdk activeAttestation
-      const activeAttestation = JSON.parse(
+      // TODO-sdk activeAttestationParams
+      const activeAttestationParams = JSON.parse(
         padoZKAttestationJSSDKActiveRequestAttestation
       );
       const parsedActiveRequestAttestation = activeRequestAttestation
@@ -136,9 +184,9 @@ export const algorithmMsgListener = async (
       const errorMsgTitle = [
         'Assets Verification',
         'Humanity Verification',
-      ].includes(activeAttestation.attestationType)
-        ? `${activeAttestation.attestationType} failed!`
-        : `${activeAttestation.attestationType} proof failed!`;
+      ].includes(activeAttestationParams.attestationType)
+        ? `${activeAttestationParams.attestationType} failed!`
+        : `${activeAttestationParams.attestationType} proof failed!`;
       var eventInfo = {
         eventType: 'ATTESTATION_GENERATE',
         rawData: {
@@ -168,13 +216,13 @@ export const algorithmMsgListener = async (
             return;
           }
           const acc = await getDataSourceAccount(
-            activeAttestation.dataSourceId
+            activeAttestationParams.dataSourceId
           );
           console.log('333-bg-recceive-getAttestationResult6', acc);
           let fullAttestation = {
             ...content,
             ...parsedActiveRequestAttestation,
-            ...activeAttestation,
+            ...activeAttestationParams,
             account: acc,
           };
           console.log('333-bg-recceive-getAttestationResult7', fullAttestation);
@@ -203,46 +251,52 @@ export const algorithmMsgListener = async (
           });
           console.log('333-bg-success', fullAttestation);
           if (fullAttestation.reqType === 'web') {
-            pageDecodeMsgListener(
-              {
-                name: 'end',
-                params: {
-                  result: 'success',
-                },
-              },
-              sender,
-              sendResponse,
-              USERPASSWORD,
-              fullscreenPort,
-              hasGetTwitterScreenName
+            ;
+            const { rc, result} = await regenerateAttest(
+              fullAttestation,
+              activeAttestationParams.chainName
             );
-            console.log('333-bg-success2');
-            await chrome.storage.local.remove([
-              'padoZKAttestationJSSDKBeginAttest',
-              'activeRequestAttestation',
-              'padoZKAttestationJSSDKActiveRequestAttestation',
-            ]);
-            console.log('333-bg-success3');
-            chrome.tabs.sendMessage(dappTabId, {
-              type: 'padoZKAttestationJSSDK',
-              name: 'startAttestationRes',
-              params: { result: true, attestationRequestId: activeRequestId },
-            });
+            if (rc === 0) {
+              const {
+                eip712MessageRawDataWithSignature
+              } = result;
+              pageDecodeMsgListener(
+                {
+                  name: 'end',
+                  params: {
+                    result: 'success',
+                  },
+                },
+                sender,
+                sendResponse,
+                USERPASSWORD,
+                fullscreenPort,
+                hasGetTwitterScreenName
+              );
+              console.log('333-bg-success2');
+              await chrome.storage.local.remove([
+                'padoZKAttestationJSSDKBeginAttest',
+                'activeRequestAttestation',
+                'padoZKAttestationJSSDKActiveRequestAttestation',
+              ]);
+              console.log(
+                '333-bg-success3',
+                dappTabId,
+                activeRequestId,
+                eip712MessageRawDataWithSignature
+              );
+              chrome.tabs.sendMessage(dappTabId, {
+                type: 'padoZKAttestationJSSDK',
+                name: 'startAttestationRes',
+                params: {
+                  result: true,
+                  attestationRequestId: activeRequestId,
+                  eip712MessageRawDataWithSignature,
+                },
+              });
+            }
+            
           }
-
-          // suc
-          const sucMsgTitle = [
-            'Assets Verification',
-            'Humanity Verification',
-          ].includes(activeAttestation.attestationType)
-            ? `${activeAttestation.attestationType} is created!`
-            : `${activeAttestation.attestationType} proof is created!`;
-          const msgObj = {
-            type: 'suc',
-            title: sucMsgTitle,
-            desc: '',
-            link: '/zkAttestation',
-          };
 
           const uniqueId = strToHexSha256(fullAttestation.signature);
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
@@ -270,13 +324,13 @@ export const algorithmMsgListener = async (
             desc: '',
             sourcePageTip: '',
           };
-          if (activeAttestation?.verificationContent === 'Assets Proof') {
+          if (activeAttestationParams?.verificationContent === 'Assets Proof') {
             let type, desc, title;
-            if (activeAttestation?.dataSourceId === 'okx') {
+            if (activeAttestationParams?.dataSourceId === 'okx') {
               type = attestTipMap['00101'].type;
               desc = attestTipMap['00101'].desc;
               title = attestTipMap['00101'].title;
-            } else if (activeAttestation?.dataSourceId === 'binance') {
+            } else if (activeAttestationParams?.dataSourceId === 'binance') {
               type = attestTipMap['00102'].type;
               desc = attestTipMap['00102'].desc;
               title = attestTipMap['00102'].title;
