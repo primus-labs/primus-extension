@@ -1,3 +1,4 @@
+console.log('333web 2', +new Date());
 window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
   if (target === 'padoExtension') {
@@ -30,32 +31,18 @@ window.addEventListener('message', (e) => {
         params,
       });
     }
-    if (name === 'sendToChainRes') {
-      chrome.runtime.sendMessage({
-        type: 'padoZKAttestationJSSDK',
-        name: 'sendToChainRes',
-        params,
+    if (name === 'checkIsInstalled') {
+      window.postMessage({
+        target: 'padoZKAttestationJSSDK',
+        origin: 'padoExtension',
+        name: 'checkIsInstalledRes',
+        params: true,
       });
     }
-
-    // if (name === 'verifyAttestation') {
+    // if (name === 'sendToChainRes') {
     //   chrome.runtime.sendMessage({
     //     type: 'padoZKAttestationJSSDK',
-    //     name: 'verifyAttestation',
-    //     params,
-    //   });
-    // }
-    // if (name === 'sendToChain') {
-    //   chrome.runtime.sendMessage({
-    //     type: 'padoZKAttestationJSSDK',
-    //     name: 'sendToChain',
-    //     params,
-    //   });
-    // }
-    // if (name === 'attestResult') {
-    //   chrome.runtime.sendMessage({
-    //     type: 'padoZKAttestationJSSDK',
-    //     name: 'attestResult',
+    //     name: 'sendToChainRes',
     //     params,
     //   });
     // }
@@ -74,6 +61,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       });
       // jssdk-init-completed
     }
+
     if (name === 'getAttestationRes') {
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
@@ -83,15 +71,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       });
       console.log('333-content-sdk-receive-getAttestation', params);
     }
-    // if (name === 'getAttestationResultRes') {
-    //   console.log('333-content-sdk-receive-getAttestationResultRes', params);
-    //   window.postMessage({
-    //     target: 'padoZKAttestationJSSDK',
-    //     origin: 'padoExtension',
-    //     name: 'getAttestationResultRes',
-    //     params,
-    //   });
-    // }
+
     if (name === 'startAttestationRes') {
       console.log('333-content-sdk-receive-startAttestationRes', params);
       window.postMessage({
@@ -101,15 +81,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         params,
       });
     }
-    // if (name === 'verifyAttestationRes') {
-    //   console.log('333-content-sdk-receive-verifyAttestationRes', params);
-    //   window.postMessage({
-    //     target: 'padoZKAttestationJSSDK',
-    //     origin: 'padoExtension',
-    //     name: 'verifyAttestationRes',
-    //     params,
-    //   });
-    // }
+
     if (name === 'sendToChainRes') {
       console.log('333-content-sdk-receive-sendToChainRes', params);
       window.postMessage({

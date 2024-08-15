@@ -11,7 +11,31 @@ let currExtentionId;
 
 let isReadyRequest = false;
 let operationType = null;
-
+const handlerForSdk = async () => {
+  const {
+    padoZKAttestationJSSDKBeginAttest,
+    padoZKAttestationJSSDKDappTabId: dappTabId,
+  } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKDappTabId',
+  ]);
+  if (padoZKAttestationJSSDKBeginAttest === '1') {
+    await chrome.storage.local.remove([
+      'padoZKAttestationJSSDKBeginAttest',
+      'padoZKAttestationJSSDKActiveRequestAttestation',
+      'padoZKAttestationJSSDKXFollowerCount',
+      'activeRequestAttestation',
+    ]);
+    chrome.tabs.sendMessage(dappTabId, {
+      type: 'padoZKAttestationJSSDK',
+      name: 'getAttestationRes',
+      params: {
+        result: false,
+        msgObj: { desc: 'The user closed the verification page' },
+      },
+    });
+  }
+};
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -286,13 +310,14 @@ export const pageDecodeMsgListener = async (
         }
       });
 
-      chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+      chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
         if (tabId === tabCreatedByPado.id) {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             // name: 'abortAttest',
             name: 'stop',
           });
+          handlerForSdk();
         }
       });
       // injectFn();
@@ -514,6 +539,7 @@ export const pageDecodeMsgListener = async (
         active: true,
       });
       await chrome.tabs.remove(tabCreatedByPado.id);
+      handlerForSdk();
     }
     if (name === 'end') {
       if (tabCreatedByPado) {

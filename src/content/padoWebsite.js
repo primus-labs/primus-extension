@@ -22,7 +22,7 @@ window.addEventListener(
   (e) => {
     const { target, name, params } = e.data;
     if (target === 'padoExtension') {
-      console.log('padoExtension content onMessage', e.data);
+      // console.log('padoExtension content onMessage', e.data);
       if (name === 'event') {
         const { eventName, methodName, path } = params;
         chrome.runtime.sendMessage({

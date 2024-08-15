@@ -1,21 +1,22 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ethers, utils } from 'ethers';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
-import { eventReport } from '@/services/api/usertracker';
-import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
+// import { eventReport } from '@/services/api/usertracker';
+// import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
-import {
-  LINEASCHEMANAME,
-  SCROLLSCHEMANAME,
-  BNBSCHEMANAME,
-  BNBGREENFIELDSCHEMANAME,
-  OPBNBSCHEMANAME,
-  CURENV,
-  ONCHAINLIST,
-} from '@/config/chain';
-import { PADOADDRESS } from '@/config/envConstants';
-import { regenerateAttestation } from '@/services/api/cred';
-import { strToHexSha256 } from '@/utils/utils';
+import { updateAlgoUrl } from '@/config/envConstants';
+// import {
+//   LINEASCHEMANAME,
+//   SCROLLSCHEMANAME,
+//   BNBSCHEMANAME,
+//   BNBGREENFIELDSCHEMANAME,
+//   OPBNBSCHEMANAME,
+//   CURENV,
+//   ONCHAINLIST,
+// } from '@/config/chain';
+// import { PADOADDRESS } from '@/config/envConstants';
+// import { regenerateAttestation } from '@/services/api/cred';
+// import { strToHexSha256 } from '@/utils/utils';
 import { pageDecodeMsgListener } from './pageDecode.js';
 import { getDataSourceAccount } from './dataSourceUtils';
 
@@ -65,52 +66,11 @@ const storeDappTabId = async () => {
   return dappTabId;
 };
 
-const schemaNameFn = (networkName) => {
-  const formatNetworkName = networkName;
-  let Name;
-  if (formatNetworkName?.startsWith('Linea')) {
-    Name = LINEASCHEMANAME;
-  } else if (
-    formatNetworkName &&
-    (formatNetworkName.indexOf('BSC') > -1 ||
-      formatNetworkName.indexOf('BNB Greenfield') > -1)
-  ) {
-    Name = BNBSCHEMANAME;
-  } else if (formatNetworkName && formatNetworkName.indexOf('Scroll') > -1) {
-    Name = SCROLLSCHEMANAME;
-  } else if (
-    formatNetworkName &&
-    formatNetworkName.indexOf('BNB Greenfield') > -1
-  ) {
-    Name = BNBGREENFIELDSCHEMANAME;
-  } else if (formatNetworkName && formatNetworkName.indexOf('opBNB') > -1) {
-    Name = OPBNBSCHEMANAME;
-  } else {
-    Name = 'EAS';
-    // Name = 'EAS-Ethereum';
-  }
-  return Name;
-};
-
-// const regenerateAttest = async (orginAttestation, chainName) => {
-//   const { signature, sourceUseridHash } = orginAttestation;
-//   const requestParams = {
-//     rawParam: Object.assign(orginAttestation, {
-//       ext: null,
-//     }),
-//     greaterThanBaseValue: true,
-//     signature,
-//     newSigFormat: schemaNameFn(chainName),
-//     sourceUseridHash: sourceUseridHash,
-//   };
-//   const regenerateAttestRes = await regenerateAttestation(requestParams);
-//   return regenerateAttestRes;
+// const getAttestation = async (attetstationRequestId) => {
+//   const { credentials } = await chrome.storage.local.get(['credentials']);
+//   const curCredential = JSON.parse(credentials)[attetstationRequestId];
+//   return curCredential;
 // };
-const getAttestation = async (attetstationRequestId) => {
-  const { credentials } = await chrome.storage.local.get(['credentials']);
-  const curCredential = JSON.parse(credentials)[attetstationRequestId];
-  return curCredential;
-};
 
 export const padoZKAttestationJSSDKMsgListener = async (
   request,
@@ -129,12 +89,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
     processAlgorithmReq({
       reqMethodName: 'start',
     });
+    updateAlgoUrl();
     await fetchAttestationTemplateList();
     await fetchConfigure();
     console.log('333pado-bg-receive-initAttest', dappTabId);
   }
   if (name === 'startAttest') {
     chrome.storage.local.set({
+      padoZKAttestationJSSDKBeginAttest: '1',
       padoZKAttestationJSSDKWalletAddress: params.walletAddress,
     });
     const { webProofTypes } = await chrome.storage.local.get(['webProofTypes']);
@@ -278,18 +240,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       params: {},
     });
   }
-  // if (name === 'attestResult') {
-  //   // TODO-sdk
-
-  //   pageDecodeMsgListener(
-  //     params,
-  //     sender,
-  //     sendResponse,
-  //     USERPASSWORD,
-  //     fullscreenPort,
-  //     hasGetTwitterScreenName
-  //   );
-  // }
+  
   if (name === 'getAttestationResultTimeout') {
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
@@ -338,201 +289,24 @@ export const padoZKAttestationJSSDKMsgListener = async (
       params: { result: false, msgObj, reStartFlag: true },
     });
   }
-  if (name === 'sendToChainRes') {
-    const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
-    const curCredential = await getAttestation(attestationRequestId);
-    console.log(
-      '333-bg-sdk-receive-sendToChainRes',
-      curCredential,
-      attestationRequestId,
-      chainName
-    );
-    if (curCredential) {
-        const { address, schemaType, source } = curCredential;
-        console.log('333-bg-sdk-receive-sendToChain2');
-        try {
-          const eventType = `${schemaType}-${schemaNameFn(chainName)}`;
-          console.log('333-bg-sdk-receive-sendToChain3', eventType);
-          let upchainNetwork = chainName;
-          if (CURENV === 'production' && chainName === 'Linea Goerli') {
-            upchainNetwork = 'Linea Mainnet';
-            console.log('333-CURENV', CURENV, upchainNetwork);
-          }
-          // const uniqueId = strToHexSha256(upChainParams.signature);
-          var eventInfo = {
-            eventType: 'UPPER_CHAIN',
-            rawData: {
-              network: upchainNetwork,
-              type: eventType,
-              source: source,
-              // attestationId: uniqueId,
-              address,
-            },
-          };
-          if (upChainRes) {
-            if (upChainRes.error) {
-              // if (upChainRes.error === 1) {
-              //   sendToChainResult = false;
-              //   sendToChainMsg = 'Your balance is insufficient';
-              // } else if (upChainRes.error === 2) {
-              //   sendToChainResult = false;
-              //   sendToChainMsg = 'Please try again later.';
-              // }
-              eventInfo.rawData = Object.assign(eventInfo.rawData, {
-                status: 'FAILED',
-                reason: upChainRes.message,
-              });
-              eventReport(eventInfo);
-              return;
-            }
-            const newProvided = curCredential.provided ?? [];
-            const currentChainObj = ONCHAINLIST.find(
-              (i) => chainName === i.title
-            );
-            currentChainObj.attestationUID = upChainRes;
-            currentChainObj.submitAddress = address; // TODO-sdk
-            newProvided.push(currentChainObj);
-            const { credentials } = await chrome.storage.local.get([
-              'credentials',
-            ]);
-            const cObj = { ...JSON.parse(credentials) };
-
-            cObj[attestationRequestId] = Object.assign(curCredential, {
-              provided: newProvided,
-            });
-            await chrome.storage.local.set({
-              credentials: JSON.stringify(cObj),
-            });
-
-            if (curCredential.reqType === 'web') {
-              if (newProvided.length && newProvided.length > 0) {
-                const flag = newProvided.some(
-                  (i) => i.chainName.indexOf('Linea') > -1
-                );
-                if (flag) {
-                  await chrome.storage.local.set({
-                    mysteryBoxRewards: '1',
-                  });
-                }
-              }
-            }
-            // sendToChainResult = true;
-            // sendToChainMsg = 'Your attestation is recorded on-chain!';
-            eventInfo.rawData = Object.assign(eventInfo.rawData, {
-              status: 'SUCCESS',
-              reason: '',
-              txHash: upChainRes,
-            });
-            eventReport(eventInfo);
-          } else {
-            // sendToChainResult = true;
-            // sendToChainMsg = 'Please try again later.';
-            eventInfo.rawData = Object.assign(eventInfo.rawData, {
-              status: 'FAILED',
-              reason: 'attestByDelegationProxyFee error',
-            });
-            eventReport(eventInfo);
-          }
-        } catch {}
-      
-    } 
-  }
-  // if (name === 'verifyAttestation') {
-  //   const { attestationRequestId, chainName } = params;
-  //   const dappTabId = await storeDappTabId();
+  
+  // if (name === 'sendToChainRes') {
+  //   const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
   //   const curCredential = await getAttestation(attestationRequestId);
   //   console.log(
-  //     '333-bg-sdk-receive-verifyAttestation',
+  //     '333-bg-sdk-receive-sendToChainRes',
   //     curCredential,
   //     attestationRequestId,
   //     chainName
   //   );
-  //   let verifyResult = false;
-  //   let verifyMsg = '';
   //   if (curCredential) {
-  //     const { rc, result } = await regenerateAttest(curCredential, chainName);
-  //     if (rc === 0) {
-  //       const {
-  //         eip712MessageRawDataWithSignature: {
-  //           domain,
-  //           message,
-  //           signature,
-  //           types,
-  //         },
-  //       } = result;
+  //       const { address, schemaType, source } = curCredential;
+  //       console.log('333-bg-sdk-receive-sendToChain2');
   //       try {
-  //         delete domain.salt;
-  //         const result = utils.verifyTypedData(
-  //           domain,
-  //           types,
-  //           message,
-  //           signature
-  //         );
-  //         console.log('333Verification successful:', result);
-  //         verifyResult = PADOADDRESS.toLowerCase() === result.toLowerCase();
-  //         verifyMsg = verifyResult
-  //           ? 'Verification successful'
-  //           : 'Validation failed';
-  //       } catch (error) {
-  //         console.error('Verification failed:', error);
-  //         verifyResult = false;
-  //         verifyMsg = 'Something went wrong';
-  //       }
-  //     }
-  //   } else {
-  //     verifyResult = false;
-  //     verifyMsg = "Can't find the proof";
-  //   }
-
-  //   chrome.tabs.sendMessage(dappTabId, {
-  //     type: 'padoZKAttestationJSSDK',
-  //     name: 'verifyAttestationRes',
-  //     params: { result: verifyResult, msg: verifyMsg },
-  //   });
-  //   console.log('33333-2', dappTabId);
-  // }
-  // if (name === 'sendToChain') {
-  //   const { attestationRequestId, chainName, walletObj } = params;
-  //   console.log('333-bg-sdk-receive-sendToChain1', params);
-  //   const dappTabId = await storeDappTabId();
-  //   const curCredential = await getAttestation(attestationRequestId);
-  //   console.log(
-  //     '333-bg-sdk-receive-sendToChain',
-  //     curCredential,
-  //     attestationRequestId,
-  //     chainName
-  //   );
-  //   let sendToChainResult = false;
-  //   let sendToChainMsg = '';
-  //   if (curCredential) {
-  //     const { rc, result } = await regenerateAttest(curCredential, chainName);
-  //     if (rc === 0) {
-  //       // const walletObj = {
-  //       //   provider: window.ethereum,
-  //       //   address: '0x8283bf1eC5A3099D60D4cbDfEEe333aA4441E981',
-  //       // };
-  //       const { address, schemaName, schemaType, source } = curCredential;
-  //       const { signature, encodedData } = result.result;
-  //       let upChainParams = {
-  //         networkName: chainName,
-  //         metamaskprovider: walletObj.provider, // TODO-sdk
-  //         receipt: address,
-  //         attesteraddr: PADOADDRESS,
-  //         data: encodedData,
-  //         signature,
-  //         type: 'web',
-  //         schemaName: schemaName || schemaNameFn(chainName),
-  //       };
-  //       console.log('333-bg-sdk-receive-sendToChain2', upChainParams);
-  //       try {
-  //         let upChainRes = await attestByDelegationProxyFee(upChainParams);
-  //         console.log('333-bg-sdk-receive-sendToChain3', upChainRes);
-  //         const eventType = `${schemaType}-${upChainParams.schemaName}`;
-  //         let upchainNetwork = upChainParams.networkName;
-  //         if (
-  //           CURENV === 'production' &&
-  //           upChainParams.networkName === 'Linea Goerli'
-  //         ) {
+  //         const eventType = `${schemaType}-${schemaNameFn(chainName)}`;
+  //         console.log('333-bg-sdk-receive-sendToChain3', eventType);
+  //         let upchainNetwork = chainName;
+  //         if (CURENV === 'production' && chainName === 'Linea Goerli') {
   //           upchainNetwork = 'Linea Mainnet';
   //           console.log('333-CURENV', CURENV, upchainNetwork);
   //         }
@@ -549,13 +323,13 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //         };
   //         if (upChainRes) {
   //           if (upChainRes.error) {
-  //             if (upChainRes.error === 1) {
-  //               sendToChainResult = false;
-  //               sendToChainMsg = 'Your balance is insufficient';
-  //             } else if (upChainRes.error === 2) {
-  //               sendToChainResult = false;
-  //               sendToChainMsg = 'Please try again later.';
-  //             }
+  //             // if (upChainRes.error === 1) {
+  //             //   sendToChainResult = false;
+  //             //   sendToChainMsg = 'Your balance is insufficient';
+  //             // } else if (upChainRes.error === 2) {
+  //             //   sendToChainResult = false;
+  //             //   sendToChainMsg = 'Please try again later.';
+  //             // }
   //             eventInfo.rawData = Object.assign(eventInfo.rawData, {
   //               status: 'FAILED',
   //               reason: upChainRes.message,
@@ -568,7 +342,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //             (i) => chainName === i.title
   //           );
   //           currentChainObj.attestationUID = upChainRes;
-  //           currentChainObj.submitAddress = walletObj.address;
+  //           currentChainObj.submitAddress = address; // TODO-sdk
   //           newProvided.push(currentChainObj);
   //           const { credentials } = await chrome.storage.local.get([
   //             'credentials',
@@ -594,8 +368,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //               }
   //             }
   //           }
-  //           sendToChainResult = true;
-  //           sendToChainMsg = 'Your attestation is recorded on-chain!';
+  //           // sendToChainResult = true;
+  //           // sendToChainMsg = 'Your attestation is recorded on-chain!';
   //           eventInfo.rawData = Object.assign(eventInfo.rawData, {
   //             status: 'SUCCESS',
   //             reason: '',
@@ -603,8 +377,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //           });
   //           eventReport(eventInfo);
   //         } else {
-  //           sendToChainResult = true;
-  //           sendToChainMsg = 'Please try again later.';
+  //           // sendToChainResult = true;
+  //           // sendToChainMsg = 'Please try again later.';
   //           eventInfo.rawData = Object.assign(eventInfo.rawData, {
   //             status: 'FAILED',
   //             reason: 'attestByDelegationProxyFee error',
@@ -612,18 +386,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //           eventReport(eventInfo);
   //         }
   //       } catch {}
-  //     }
-  //   } else {
-  //     sendToChainResult = false;
-  //     sendToChainMsg = "Can't find the proof";
-  //   }
-
-  //   chrome.tabs.sendMessage(dappTabId, {
-  //     type: 'padoZKAttestationJSSDK',
-  //     name: 'sendToChainRes',
-  //     params: { result: sendToChainResult, msg: sendToChainMsg },
-  //   });
-  //   console.log('333-bg-sdk-send-sendToChainRes', dappTabId);
+      
+  //   } 
   // }
   
 };

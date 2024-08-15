@@ -131,6 +131,24 @@ const processAlgorithmReq = async (message, port) => {
           `${new Date().toLocaleString()} offscreen document created`
         );
       } else {
+        const {
+          padoZKAttestationJSSDKBeginAttest,
+          padoZKAttestationJSSDKDappTabId:dappTabId 
+        } = await chrome.storage.local.get([
+          'padoZKAttestationJSSDKBeginAttest',
+          'padoZKAttestationJSSDKDappTabId',
+        ]);
+        console.log(
+          '333-bg-processAlgorithmReq-start',
+          padoZKAttestationJSSDKBeginAttest,
+          dappTabId
+        );
+        if (padoZKAttestationJSSDKBeginAttest === '1') {
+          chrome.tabs.sendMessage(dappTabId, {
+            type: 'padoZKAttestationJSSDK',
+            name: 'initAttestRes',
+          });
+        }
         console.log(
           `${new Date().toLocaleString()} offscreen document has already created`
         );

@@ -61,7 +61,8 @@
     },
     {
       "matches": ["<all_urls>"],
-      "js": ["padoZKAttestationJSSDK.bundle.js"]
+      "js": ["padoZKAttestationJSSDK.bundle.js"],
+      "run_at": "document_start"
     }
   ]
 }

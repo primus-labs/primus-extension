@@ -44,7 +44,11 @@ const schemaNameFn = (networkName) => {
     Name = BNBGREENFIELDSCHEMANAME;
   } else if (formatNetworkName && formatNetworkName.indexOf('opBNB') > -1) {
     Name = OPBNBSCHEMANAME;
-  } else {
+  } else if (formatNetworkName && formatNetworkName.startsWith('Sepolia')) {
+    Name = 'EAS-Sepolia';
+  } else if (formatNetworkName && formatNetworkName.startsWith('Arbitrum')) {
+    Name = 'EAS-Ethereum';
+  }else {
     Name = 'EAS';
     // Name = 'EAS-Ethereum';
   }
@@ -117,8 +121,8 @@ export const algorithmMsgListener = async (
         await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
 
       const { retcode } = JSON.parse(message.res);
-      const msgObj = {};
-      let result = null;
+      let msgObj = {};
+      let result = false;
       if (retcode === '0') {
         result = true;
       } else if (retcode === '2') {
@@ -224,6 +228,7 @@ export const algorithmMsgListener = async (
             ...parsedActiveRequestAttestation,
             ...activeAttestationParams,
             account: acc,
+            attestOrgin: 'sdk'
           };
           console.log('333-bg-recceive-getAttestationResult7', fullAttestation);
           if (fullAttestation.verificationContent === 'X Followers') {
@@ -234,17 +239,13 @@ export const algorithmMsgListener = async (
                   'padoZKAttestationJSSDKXFollowerCount',
                 ]);
               count = padoZKAttestationJSSDKXFollowerCount;
-            } else {
-              const xFollowerCount = sessionStorage.getItem('xFollowerCount');
-              count = xFollowerCount;
-              sessionStorage.removeItem('xFollowerCount');
             }
             fullAttestation.xFollowerCount = count;
           }
           const { credentials } = await chrome.storage.local.get([
             'credentials',
           ]);
-          const credentialsObj = { ...JSON.parse(credentials) };
+          const credentialsObj = credentials? { ...JSON.parse(credentials) }: {};
           credentialsObj[activeRequestId] = fullAttestation;
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),
@@ -276,8 +277,9 @@ export const algorithmMsgListener = async (
               console.log('333-bg-success2');
               await chrome.storage.local.remove([
                 'padoZKAttestationJSSDKBeginAttest',
-                'activeRequestAttestation',
                 'padoZKAttestationJSSDKActiveRequestAttestation',
+                'padoZKAttestationJSSDKXFollowerCount',
+                'activeRequestAttestation',
               ]);
               console.log(
                 '333-bg-success3',
@@ -374,8 +376,9 @@ export const algorithmMsgListener = async (
 
             await chrome.storage.local.remove([
               'padoZKAttestationJSSDKBeginAttest',
-              'activeRequestAttestation',
               'padoZKAttestationJSSDKActiveRequestAttestation',
+              'padoZKAttestationJSSDKXFollowerCount',
+              'activeRequestAttestation',
             ]);
             chrome.tabs.sendMessage(dappTabId, {
               type: 'padoZKAttestationJSSDK',
@@ -462,8 +465,9 @@ export const algorithmMsgListener = async (
           );
           await chrome.storage.local.remove([
             'padoZKAttestationJSSDKBeginAttest',
-            'activeRequestAttestation',
             'padoZKAttestationJSSDKActiveRequestAttestation',
+            'padoZKAttestationJSSDKXFollowerCount',
+            'activeRequestAttestation',
           ]);
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
