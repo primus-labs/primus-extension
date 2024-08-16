@@ -95,9 +95,17 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttest', dappTabId);
   }
   if (name === 'startAttest') {
+    const {
+      attestationTypeId,
+      tokenSymbol,
+      assetsBalance,
+      followersCount,
+      chainName,
+      walletAddress,
+    } = params;
     chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
-      padoZKAttestationJSSDKWalletAddress: params.walletAddress,
+      padoZKAttestationJSSDKWalletAddress: walletAddress,
     });
     const { webProofTypes } = await chrome.storage.local.get(['webProofTypes']);
     let webProofTypesList = [];
@@ -110,15 +118,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ]);
       webProofTypesList = JSON.parse(webProofTypes);
     }
-    const {
-      attestationParams: {
-        attestationTypeId,
-        tokenSymbol,
-        assetsBalance,
-        followersCount,
-      },
-      chainName,
-    } = params;
+
     const activeWebProofTemplate = webProofTypesList.find(
       (i) => i.id === attestationTypeId
     );
@@ -201,7 +201,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
 
     await chrome.storage.local.set({
-      padoZKAttestationJSSDKActiveRequestAttestation: JSON.stringify(
+      padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
         Object.assign({ chainName }, activeAttestationParams)
       ),
     });
@@ -240,21 +240,28 @@ export const padoZKAttestationJSSDKMsgListener = async (
       params: {},
     });
   }
-  
+
   if (name === 'getAttestationResultTimeout') {
-    await chrome.storage.local.remove([
-      'padoZKAttestationJSSDKBeginAttest',
-      'padoZKAttestationJSSDKWalletAddress',
-      'padoZKAttestationJSSDKActiveRequestAttestation',
-      'activeRequestAttestation',
-    ]);
-
-    const { configMap } = await chrome.storage.local.get(['configMap']);
-
+    const { configMap, padoZKAttestationJSSDKAttestationPresetParams } =
+      await chrome.storage.local.get([
+        'configMap',
+        'padoZKAttestationJSSDKAttestationPresetParams',
+      ]);
     const attestTipMap =
       JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
-    console.log('333-bg-getAttestationResultTimeout');
-    const errorMsgTitle = 'Humanity Verification failed!';
+    console.log(
+      '333-bg-getAttestationResultTimeout',
+      padoZKAttestationJSSDKAttestationPresetParams
+    );
+    const activeAttestationParams = JSON.parse(
+      padoZKAttestationJSSDKAttestationPresetParams
+    );
+    const errorMsgTitle = [
+      'Assets Verification',
+      'Humanity Verification',
+    ].includes(activeAttestationParams.attestationType)
+      ? `${activeAttestationParams.attestationType} failed!`
+      : `${activeAttestationParams.attestationType} proof failed!`;
 
     const msgObj = {
       type: attestTipMap['00002'].type,
@@ -262,6 +269,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
       desc: attestTipMap['00002'].desc,
       sourcePageTip: attestTipMap['00002'].title,
     };
+    await chrome.storage.local.remove([
+      'padoZKAttestationJSSDKBeginAttest',
+      'padoZKAttestationJSSDKWalletAddress',
+      'padoZKAttestationJSSDKAttestationPresetParams',
+      'activeRequestAttestation',
+    ]);
     pageDecodeMsgListener(
       {
         name: 'end',
@@ -289,7 +302,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       params: { result: false, msgObj, reStartFlag: true },
     });
   }
-  
+
   // if (name === 'sendToChainRes') {
   //   const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
   //   const curCredential = await getAttestation(attestationRequestId);
@@ -342,7 +355,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //             (i) => chainName === i.title
   //           );
   //           currentChainObj.attestationUID = upChainRes;
-  //           currentChainObj.submitAddress = address; // TODO-sdk
+  //           currentChainObj.submitAddress = address;
   //           newProvided.push(currentChainObj);
   //           const { credentials } = await chrome.storage.local.get([
   //             'credentials',
@@ -386,8 +399,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //           eventReport(eventInfo);
   //         }
   //       } catch {}
-      
-  //   } 
+
+  //   }
   // }
-  
 };

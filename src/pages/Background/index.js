@@ -133,7 +133,7 @@ const processAlgorithmReq = async (message, port) => {
       } else {
         const {
           padoZKAttestationJSSDKBeginAttest,
-          padoZKAttestationJSSDKDappTabId:dappTabId 
+          padoZKAttestationJSSDKDappTabId: dappTabId,
         } = await chrome.storage.local.get([
           'padoZKAttestationJSSDKBeginAttest',
           'padoZKAttestationJSSDKDappTabId',
@@ -512,7 +512,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.origin = 'padoAttestationJSSDK';
+        eventInfo.rawData.attestOrgin = 'padoAttestationJSSDK';
       }
       eventReport(eventInfo);
     }
@@ -525,7 +525,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName
+      hasGetTwitterScreenName,
+      processAlgorithmReq
     );
   }
   if (type === 'padoWebsite') {
@@ -558,7 +559,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      processAlgorithmReq,
+      processAlgorithmReq
     );
   }
 });

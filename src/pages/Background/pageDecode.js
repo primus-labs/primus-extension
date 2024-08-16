@@ -11,7 +11,7 @@ let currExtentionId;
 
 let isReadyRequest = false;
 let operationType = null;
-const handlerForSdk = async () => {
+const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKDappTabId: dappTabId,
@@ -22,16 +22,23 @@ const handlerForSdk = async () => {
   if (padoZKAttestationJSSDKBeginAttest === '1') {
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
-      'padoZKAttestationJSSDKActiveRequestAttestation',
+      'padoZKAttestationJSSDKAttestationPresetParams',
       'padoZKAttestationJSSDKXFollowerCount',
       'activeRequestAttestation',
     ]);
+    if (processAlgorithmReq) {
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+      });
+    }
+    let desc = `The user ${operation} the attestation`;
     chrome.tabs.sendMessage(dappTabId, {
       type: 'padoZKAttestationJSSDK',
-      name: 'getAttestationRes',
+      name: 'startAttestationRes',
       params: {
         result: false,
-        msgObj: { desc: 'The user closed the verification page' },
+        msgObj: { desc },
+        reStartFlag: true,
       },
     });
   }
@@ -43,7 +50,8 @@ export const pageDecodeMsgListener = async (
   sendResponse,
   password,
   port,
-  hasGetTwitterScreenName
+  hasGetTwitterScreenName,
+  processAlgorithmReq
 ) => {
   const { name, params, operation } = request;
   console.log('333-bg-pageDecodeMsgListener', request);
@@ -317,7 +325,7 @@ export const pageDecodeMsgListener = async (
             // name: 'abortAttest',
             name: 'stop',
           });
-          handlerForSdk();
+          handlerForSdk(processAlgorithmReq, 'close');
         }
       });
       // injectFn();
@@ -491,7 +499,7 @@ export const pageDecodeMsgListener = async (
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.origin = 'padoAttestationJSSDK';
+        eventInfo.rawData.attestOrgin = 'padoAttestationJSSDK';
       }
       eventReport(eventInfo);
 
@@ -539,7 +547,7 @@ export const pageDecodeMsgListener = async (
         active: true,
       });
       await chrome.tabs.remove(tabCreatedByPado.id);
-      handlerForSdk();
+      handlerForSdk(processAlgorithmReq, 'cancel');
     }
     if (name === 'end') {
       if (tabCreatedByPado) {
