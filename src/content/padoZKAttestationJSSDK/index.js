@@ -9,10 +9,10 @@ window.addEventListener('message', (e) => {
         name: 'initAttest',
       });
     }
-    if (name === 'startAttest') {
+    if (name === 'startAttestation') {
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
-        name: 'startAttest',
+        name: 'startAttestation',
         params,
       });
     }

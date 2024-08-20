@@ -146,6 +146,14 @@ const Social: React.FC<PButtonProps> = memo(
 
     const handleSubmitSetDetail = useCallback(
       async (form = {}) => {
+        const { activeRequestAttestation: lastActiveRequestAttestationStr } =
+          await chrome.storage.local.get(['activeRequestAttestation']);
+        if (lastActiveRequestAttestationStr) {
+          alert(
+            'A proof is currently being generated. Please try again later.'
+          );
+          return;
+        }
         // setAssetForm((f) => ({ ...f, ...form }));
         // 1.store attestation in process params in react store
         const activeAttestationParams = {

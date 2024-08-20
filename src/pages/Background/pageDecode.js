@@ -24,8 +24,8 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'padoZKAttestationJSSDKXFollowerCount',
-      'activeRequestAttestation',
     ]);
+    // 'activeRequestAttestation',
     if (processAlgorithmReq) {
       processAlgorithmReq({
         reqMethodName: 'stop',
@@ -270,7 +270,7 @@ export const pageDecodeMsgListener = async (
 
     if (name === 'init') {
       console.log('333-bg-pageDecodeMsgListener5');
-      console.log('333-content-startAttest');
+      console.log('333-content-startAttestation');
       operationType = request.operation;
       const currentWindowTabs = await chrome.tabs.query({
         active: true,

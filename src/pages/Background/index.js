@@ -42,6 +42,20 @@ const padoServices = {
 };
 
 let USERPASSWORD = '';
+let resetAttesting = async () => {
+  await chrome.storage.local.remove(['activeRequestAttestation']);
+};
+let resetAttestingTimeout;
+let setAttestingTimeoutFn = (flag) => {
+  if (flag === 'set') {
+    setTimeout(resetAttesting, 50000);
+  }
+  if (flag === 'clear') {
+    if (resetAttestingTimeout) {
+      clearTimeout(resetAttestingTimeout);
+    }
+  }
+};
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -87,6 +101,11 @@ const processFullscreenReq = (message, port) => {
       break;
     case 'algorithm':
       processAlgorithmReq(message, port);
+      break;
+    case 'common':
+      if (reqMethodName === 'clearAttesting') {
+        setAttestingTimeoutFn('clear');
+      }
       break;
     default:
       break;
@@ -526,7 +545,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       USERPASSWORD,
       fullscreenPort,
       hasGetTwitterScreenName,
-      processAlgorithmReq
+      processAlgorithmReq,
+      setAttestingTimeoutFn
     );
   }
   if (type === 'padoWebsite') {

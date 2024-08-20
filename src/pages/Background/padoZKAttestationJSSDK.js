@@ -59,7 +59,7 @@ const storeDappTabId = async () => {
     active: true,
     currentWindow: true,
   });
-  const dappTabId = currentWindowTabs[0].id;
+  const dappTabId = currentWindowTabs[0]?.id;
   await chrome.storage.local.set({
     padoZKAttestationJSSDKDappTabId: dappTabId,
   });
@@ -94,7 +94,20 @@ export const padoZKAttestationJSSDKMsgListener = async (
     await fetchConfigure();
     console.log('333pado-bg-receive-initAttest', dappTabId);
   }
-  if (name === 'startAttest') {
+  if (name === 'startAttestation') {
+    const { activeRequestAttestation: lastActiveRequestAttestationStr } =
+      await chrome.storage.local.get(['activeRequestAttestation']);
+    if (lastActiveRequestAttestationStr) {
+      const desc =
+        'A proof is currently being generated. Please try again later.';
+      chrome.tabs.sendMessage(dappTabId, {
+        type: 'padoZKAttestationJSSDK',
+        name: 'getAttestationRes',
+        params: { result: false, msgObj: { desc } },
+      });
+      return;
+    }
+
     const {
       attestationTypeId,
       tokenSymbol,
