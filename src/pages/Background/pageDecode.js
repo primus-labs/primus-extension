@@ -24,7 +24,7 @@ const handlerForSdk = async (
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (padoZKAttestationJSSDKBeginAttest === '1') {
-    await setAttestingTimeoutFn()
+    await setAttestingTimeoutFn('clear')
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -557,6 +557,7 @@ export const pageDecodeMsgListener = async (
       handlerForSdk(processAlgorithmReq, 'cancel', setAttestingTimeoutFn);
     }
     if (name === 'end') {
+      console.log('333-bg-pageDecode-noMeet', tabCreatedByPado);
       if (tabCreatedByPado) {
         chrome.tabs.sendMessage(
           tabCreatedByPado.id,
@@ -571,6 +572,7 @@ export const pageDecodeMsgListener = async (
     }
   } else {
     if (name === 'end') {
+      
       if (tabCreatedByPado) {
         chrome.tabs.sendMessage(
           tabCreatedByPado.id,

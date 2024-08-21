@@ -324,9 +324,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
 
   if (name === 'stopOffscreen') {
-    await setAttestingTimeoutFn();
-
-    const { activeRequestAttestation } = await chrome.storage.local.set([
+    const { activeRequestAttestation } = await chrome.storage.local.get([
       'activeRequestAttestation',
     ]);
     if (activeRequestAttestation) {
@@ -335,7 +333,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         processAlgorithmReq({
           reqMethodName: 'stop',
         });
-        await setAttestingTimeoutFn();
+        await setAttestingTimeoutFn('clear');
         await chrome.storage.local.remove([
           'padoZKAttestationJSSDKBeginAttest',
           'padoZKAttestationJSSDKAttestationPresetParams',

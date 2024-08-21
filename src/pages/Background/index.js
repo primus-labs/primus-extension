@@ -13,7 +13,10 @@ import {
   getAccount,
   strToHexSha256,
 } from '@/utils/utils';
-import { SocailStoreVersion } from '@/config/constants';
+import {
+  SocailStoreVersion,
+  ATTESTATIONPOLLINGTIMEOUT,
+} from '@/config/constants';
 import {
   default as processExReq,
   clear,
@@ -48,7 +51,7 @@ let resetAttesting = async () => {
 let resetAttestingTimeout;
 let setAttestingTimeoutFn = (flag) => {
   if (flag === 'set') {
-    setTimeout(resetAttesting, 50000);
+    setTimeout(resetAttesting, ATTESTATIONPOLLINGTIMEOUT);
   }
   if (flag === 'clear') {
     if (resetAttestingTimeout) {
@@ -186,13 +189,14 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestation':
+      setAttestingTimeoutFn('clear')
       const attestationParams = await assembleAlgorithmParams(
         params,
         USERPASSWORD,
         port
       );
       const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.set(['padoZKAttestationJSSDKBeginAttest']);
+        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       const f = { ...attestationParams };
       if (padoZKAttestationJSSDKBeginAttest === '1') {
         attestationParams.attestOrgin = 'padoAttestationJSSDK';

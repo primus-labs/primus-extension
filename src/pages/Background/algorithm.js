@@ -332,6 +332,11 @@ export const algorithmMsgListener = async (
           !content.signature ||
           content.balanceGreaterThanBaseValue === 'false'
         ) {
+          console.log(
+            '333-bg-al-notMeet1',
+            activeAttestationParams,
+            parsedActiveRequestAttestation
+          );
           // attestTipMap
           let title = errorMsgTitle;
           let msgObj = {
@@ -367,6 +372,7 @@ export const algorithmMsgListener = async (
                 sourcePageTip: attestTipMap['00103'].title,
               });
             } else {
+              console.log('333-bg-al-notMeet2', attestTipMap);
               Object.assign(msgObj, {
                 type: attestTipMap['00104'].type,
                 desc: attestTipMap['00104'].desc,
@@ -432,7 +438,11 @@ export const algorithmMsgListener = async (
         };
         let codeTipObj = attestTipMap[code];
 
-        console.log('333codeTipObj', codeTipObj);
+        console.log(
+          '333codeTipObj',
+          codeTipObj,
+          parsedActiveRequestAttestation
+        );
         if (codeTipObj) {
         } else {
           codeTipObj = attestTipMap['99999'];
