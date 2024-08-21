@@ -114,7 +114,7 @@ export const algorithmMsgListener = async (
       console.log('333jssdk-init-completed', dappTabId);
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
-        name: 'initAttestRes',
+        name: 'initAttestationRes',
       });
     }
     if (resMethodName === 'getAttestation') {
@@ -219,7 +219,7 @@ export const algorithmMsgListener = async (
 
       if (retcode === '0') {
         console.log('333-bg-recceive-getAttestationResult4');
-        await setAttestingTimeoutFn('clear')
+        await setAttestingTimeoutFn('clear');
         if (
           content.balanceGreaterThanBaseValue === 'true' &&
           content.signature

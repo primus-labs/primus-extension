@@ -115,9 +115,9 @@ setTimeout(() => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   var { type, name, params } = request;
-  const { operation } = params;
   if (type === 'padoWebsite') {
     if (name === 'upperChain') {
+      const { operation } = params;
       if (operation === 'upperChain') {
         localStorage.setItem(
           'attestOffChainWithGreenFieldWithFixValue',

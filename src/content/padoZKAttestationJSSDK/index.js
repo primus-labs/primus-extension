@@ -3,10 +3,10 @@ window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
   if (target === 'padoExtension') {
     // console.log('333pado-content-sdk-listen-message', e.data);
-    if (name === 'initAttest') {
+    if (name === 'initAttestation') {
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
-        name: 'initAttest',
+        name: 'initAttestation',
       });
     }
     if (name === 'startAttestation') {
@@ -16,7 +16,6 @@ window.addEventListener('message', (e) => {
         params,
       });
     }
-
     if (name === 'getAttestationResult') {
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
@@ -39,6 +38,13 @@ window.addEventListener('message', (e) => {
         params: true,
       });
     }
+    if (name === 'stopOffscreen') {
+      window.postMessage({
+        target: 'padoZKAttestationJSSDK',
+        origin: 'padoExtension',
+        name: 'stopOffscreen',
+      });
+    }
     // if (name === 'sendToChainRes') {
     //   chrome.runtime.sendMessage({
     //     type: 'padoZKAttestationJSSDK',
@@ -52,11 +58,11 @@ window.addEventListener('message', (e) => {
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   const { type, name, params } = message;
   if (type === 'padoZKAttestationJSSDK') {
-    if (name === 'initAttestRes') {
+    if (name === 'initAttestationRes') {
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
-        name: 'initAttestRes',
+        name: 'initAttestationRes',
         params: true,
       });
       // jssdk-init-completed

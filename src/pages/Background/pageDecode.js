@@ -11,7 +11,11 @@ let currExtentionId;
 
 let isReadyRequest = false;
 let operationType = null;
-const handlerForSdk = async (processAlgorithmReq, operation) => {
+const handlerForSdk = async (
+  processAlgorithmReq,
+  operation,
+  setAttestingTimeoutFn
+) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKDappTabId: dappTabId,
@@ -20,12 +24,14 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (padoZKAttestationJSSDKBeginAttest === '1') {
+    await setAttestingTimeoutFn()
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'padoZKAttestationJSSDKXFollowerCount',
+      'activeRequestAttestation',
     ]);
-    // 'activeRequestAttestation',
+
     if (processAlgorithmReq) {
       processAlgorithmReq({
         reqMethodName: 'stop',
@@ -51,7 +57,8 @@ export const pageDecodeMsgListener = async (
   password,
   port,
   hasGetTwitterScreenName,
-  processAlgorithmReq
+  processAlgorithmReq,
+  setAttestingTimeoutFn
 ) => {
   const { name, params, operation } = request;
   console.log('333-bg-pageDecodeMsgListener', request);
@@ -325,7 +332,7 @@ export const pageDecodeMsgListener = async (
             // name: 'abortAttest',
             name: 'stop',
           });
-          handlerForSdk(processAlgorithmReq, 'close');
+          handlerForSdk(processAlgorithmReq, 'close', setAttestingTimeoutFn);
         }
       });
       // injectFn();
@@ -547,7 +554,7 @@ export const pageDecodeMsgListener = async (
         active: true,
       });
       await chrome.tabs.remove(tabCreatedByPado.id);
-      handlerForSdk(processAlgorithmReq, 'cancel');
+      handlerForSdk(processAlgorithmReq, 'cancel', setAttestingTimeoutFn);
     }
     if (name === 'end') {
       if (tabCreatedByPado) {

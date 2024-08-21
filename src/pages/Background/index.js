@@ -103,7 +103,7 @@ const processFullscreenReq = (message, port) => {
       processAlgorithmReq(message, port);
       break;
     case 'common':
-      if (reqMethodName === 'clearAttesting') {
+      if (message.reqMethodName === 'clearAttesting') {
         setAttestingTimeoutFn('clear');
       }
       break;
@@ -165,7 +165,7 @@ const processAlgorithmReq = async (message, port) => {
         if (padoZKAttestationJSSDKBeginAttest === '1') {
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
-            name: 'initAttestRes',
+            name: 'initAttestationRes',
           });
         }
         console.log(
@@ -191,18 +191,21 @@ const processAlgorithmReq = async (message, port) => {
         USERPASSWORD,
         port
       );
-
+      const { padoZKAttestationJSSDKBeginAttest } =
+        await chrome.storage.local.set(['padoZKAttestationJSSDKBeginAttest']);
+      const f = { ...attestationParams };
+      if (padoZKAttestationJSSDKBeginAttest === '1') {
+        attestationParams.attestOrgin = 'padoAttestationJSSDK';
+      }
       await chrome.storage.local.set({
-        activeRequestAttestation: JSON.stringify(attestationParams),
+        activeRequestAttestation: JSON.stringify(f),
       });
-
       if (
         attestationParams.source === 'binance' &&
         process.env.NODE_ENV === 'production'
       ) {
         attestationParams.proxyUrl = 'wss://api.padolabs.org/algoproxy';
       }
-
       console.log('attestationParams=', attestationParams);
       chrome.runtime.sendMessage({
         type: 'algorithm',
@@ -517,7 +520,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      processAlgorithmReq
+      processAlgorithmReq,
+      setAttestingTimeoutFn
     );
   }
   if (resType === 'report') {
@@ -579,7 +583,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      processAlgorithmReq
+      processAlgorithmReq,
+      setAttestingTimeoutFn
     );
   }
 });

@@ -78,10 +78,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
   sendResponse,
   USERPASSWORD,
   fullscreenPort,
-  processAlgorithmReq
+  processAlgorithmReq,
+  setAttestingTimeoutFn
 ) => {
   const { name, params } = request;
-  if (name === 'initAttest') {
+  if (name === 'initAttestation') {
     const dappTabId = await storeDappTabId();
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
@@ -92,17 +93,23 @@ export const padoZKAttestationJSSDKMsgListener = async (
     updateAlgoUrl();
     await fetchAttestationTemplateList();
     await fetchConfigure();
-    console.log('333pado-bg-receive-initAttest', dappTabId);
+    console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
-    const { activeRequestAttestation: lastActiveRequestAttestationStr } =
-      await chrome.storage.local.get(['activeRequestAttestation']);
+    const {
+      activeRequestAttestation: lastActiveRequestAttestationStr,
+      padoZKAttestationJSSDKDappTabId: dappTabId,
+    } = await chrome.storage.local.get([
+      'activeRequestAttestation',
+      'padoZKAttestationJSSDKDappTabId',
+    ]);
     if (lastActiveRequestAttestationStr) {
       const desc =
         'A proof is currently being generated. Please try again later.';
+      
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
-        name: 'getAttestationRes',
+        name: 'startAttestationRes',
         params: { result: false, msgObj: { desc } },
       });
       return;
@@ -314,6 +321,29 @@ export const padoZKAttestationJSSDKMsgListener = async (
       name: 'startAttestationRes',
       params: { result: false, msgObj, reStartFlag: true },
     });
+  }
+
+  if (name === 'stopOffscreen') {
+    await setAttestingTimeoutFn();
+
+    const { activeRequestAttestation } = await chrome.storage.local.set([
+      'activeRequestAttestation',
+    ]);
+    if (activeRequestAttestation) {
+      const activeRequestAttestationObj = JSON.parse(activeRequestAttestation);
+      if (!activeRequestAttestationObj.attestOrgin === 'padoAttestationJSSDK') {
+        processAlgorithmReq({
+          reqMethodName: 'stop',
+        });
+        await setAttestingTimeoutFn();
+        await chrome.storage.local.remove([
+          'padoZKAttestationJSSDKBeginAttest',
+          'padoZKAttestationJSSDKAttestationPresetParams',
+          'padoZKAttestationJSSDKXFollowerCount',
+          'activeRequestAttestation',
+        ]);
+      }
+    }
   }
 
   // if (name === 'sendToChainRes') {
