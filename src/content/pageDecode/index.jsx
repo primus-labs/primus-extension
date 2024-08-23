@@ -298,7 +298,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
           // 5 - 100
           str = 'IZK proving and verifying...';
         } else if (progressPercentage >= 300) {
-          str = 'Attestation creation completed ...';
+          str = 'IZK proving and verifying ...';
 
           clearInterval(intervalTimer);
           if (!resultStatus) {

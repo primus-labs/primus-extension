@@ -24,7 +24,9 @@ const handlerForSdk = async (
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (padoZKAttestationJSSDKBeginAttest === '1') {
-    await setAttestingTimeoutFn('clear')
+    if (setAttestingTimeoutFn) {
+      await setAttestingTimeoutFn('clear');
+    }
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -38,14 +40,19 @@ const handlerForSdk = async (
       });
     }
     let desc = `The user ${operation} the attestation`;
+    let resParams = { result: false };
+    if (!resParams.result) {
+      resParams.errorData = {
+        title: '',
+        desc: desc,
+        code: '00004',
+      };
+      resParams.reStartFlag = true;
+    }
     chrome.tabs.sendMessage(dappTabId, {
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
-      params: {
-        result: false,
-        msgObj: { desc },
-        reStartFlag: true,
-      },
+      params: resParams,
     });
   }
 };
@@ -332,7 +339,7 @@ export const pageDecodeMsgListener = async (
             // name: 'abortAttest',
             name: 'stop',
           });
-          handlerForSdk(processAlgorithmReq, 'close', setAttestingTimeoutFn);
+          handlerForSdk(processAlgorithmReq, 'cancel', setAttestingTimeoutFn);
         }
       });
       // injectFn();
@@ -506,7 +513,7 @@ export const pageDecodeMsgListener = async (
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrgin = 'padoAttestationJSSDK';
+        eventInfo.rawData.attestOrigin = 'padoAttestationJSSDK';
       }
       eventReport(eventInfo);
 
@@ -572,7 +579,6 @@ export const pageDecodeMsgListener = async (
     }
   } else {
     if (name === 'end') {
-      
       if (tabCreatedByPado) {
         chrome.tabs.sendMessage(
           tabCreatedByPado.id,

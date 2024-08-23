@@ -436,6 +436,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                               : i?.provided?.length > 0
                               ? `(${i?.provided?.length})`
                               : ''}
+                            {i.attestOrigin ? `(${i.attestOrigin})` : ''}
                           </span>
                         </div>
                         <div className="value onChain">

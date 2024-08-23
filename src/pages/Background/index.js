@@ -189,7 +189,7 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestation':
-      setAttestingTimeoutFn('clear')
+      setAttestingTimeoutFn('clear');
       const attestationParams = await assembleAlgorithmParams(
         params,
         USERPASSWORD,
@@ -199,7 +199,7 @@ const processAlgorithmReq = async (message, port) => {
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       const f = { ...attestationParams };
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        attestationParams.attestOrgin = 'padoAttestationJSSDK';
+        attestationParams.attestOrigin = 'padoAttestationJSSDK';
       }
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(f),
@@ -539,7 +539,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrgin = 'padoAttestationJSSDK';
+        eventInfo.rawData.attestOrigin = 'padoAttestationJSSDK';
       }
       eventReport(eventInfo);
     }

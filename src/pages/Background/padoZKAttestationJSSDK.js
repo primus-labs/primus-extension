@@ -106,11 +106,18 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (lastActiveRequestAttestationStr) {
       const desc =
         'A proof is currently being generated. Please try again later.';
-      
+      let resParams = { result: false };
+      if (!resParams.result) {
+        resParams.errorData = {
+          title: '',
+          desc,
+          code: '00003',
+        };
+      }
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestationRes',
-        params: { result: false, msgObj: { desc } },
+        params: resParams,
       });
       return;
     }
@@ -250,7 +257,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName
+      hasGetTwitterScreenName,
+      undefined,
+      setAttestingTimeoutFn
     );
   }
 
@@ -309,17 +318,28 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName
+      hasGetTwitterScreenName,
+      undefined,
+      setAttestingTimeoutFn
     );
     processAlgorithmReq({
       reqMethodName: 'stop',
     });
     const { padoZKAttestationJSSDKDappTabId: dappTabId } =
       await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+    let resParams = { result: false };
+    if (!resParams.result) {
+      resParams.errorData = {
+        title: msgObj.title,
+        desc: msgObj.desc,
+        code: code,
+      };
+      resParams.reStartFlag = true;
+    }
     chrome.tabs.sendMessage(dappTabId, {
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
-      params: { result: false, msgObj, reStartFlag: true },
+      params: resParams,
     });
   }
 
@@ -329,7 +349,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     ]);
     if (activeRequestAttestation) {
       const activeRequestAttestationObj = JSON.parse(activeRequestAttestation);
-      if (!activeRequestAttestationObj.attestOrgin === 'padoAttestationJSSDK') {
+      if (
+        !activeRequestAttestationObj.attestOrigin === 'padoAttestationJSSDK'
+      ) {
         processAlgorithmReq({
           reqMethodName: 'stop',
         });
