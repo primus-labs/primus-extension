@@ -291,12 +291,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
     ].includes(activeAttestationParams.attestationType)
       ? `${activeAttestationParams.attestationType} failed!`
       : `${activeAttestationParams.attestationType} proof failed!`;
-
+    const code = '00002';
     const msgObj = {
-      type: attestTipMap['00002'].type,
+      type: attestTipMap[code].type,
       title: errorMsgTitle,
-      desc: attestTipMap['00002'].desc,
-      sourcePageTip: attestTipMap['00002'].title,
+      desc: attestTipMap[code].desc,
+      sourcePageTip: attestTipMap[code].title,
     };
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
@@ -332,7 +332,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       resParams.errorData = {
         title: msgObj.title,
         desc: msgObj.desc,
-        code: code,
+        code,
       };
       resParams.reStartFlag = true;
     }

@@ -39,10 +39,10 @@ export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 };
 
 export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  '0.01': {
-    value: '0.01',
-    label: '> $0.01',
-  }, //delete TODO-newui
+  // '0.01': {
+  //   value: '0.01',
+  //   label: '> $0.01',
+  // }, //delete TODO-newui
   '10': {
     value: '10',
     label: '> $10',
