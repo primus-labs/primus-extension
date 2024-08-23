@@ -2,8 +2,6 @@ import React, { useState, useCallback, memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { WALLETITEMTYPE } from '@/config/constants';
 
-import PButton from '@/components/PButton';
-import PBack from '@/components/PBack';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import POptions from '@/newComponents/POptions'

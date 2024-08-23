@@ -1,14 +1,10 @@
 import React, {
   memo,
   useCallback,
-  useEffect,
-  useState,
   useMemo,
-  useContext,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import BigNumber from 'bignumber.js';
 import { getUserInfo } from '@/services/api/achievements';
 
 import useAllSources from '@/hooks/useAllSources';
@@ -18,18 +14,13 @@ import { gte, sub, add, getCurrentDate, formatFullTime } from '@/utils/utils';
 import { exportCsv } from '@/utils/exportFile';
 
 import { BIGZERO } from '@/config/constants';
-import type {
-  DataSourceItemType,
-  AssetsMap,
-} from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
+
 import PButton from '@/newComponents/PButton';
-import PEye from '@/newComponents/PEye';
-import iconUpdate from '@/assets/newImg/layout/iconUpdate.svg';
 import AssetsBalance from '@/newComponents/AssetsBalance';
 import UpdateDataSourceTip from '@/newComponents/UpdateDataSourceTip';
 import './index.scss';
 import { UserState } from '@/types/store';
-
+import type {  AssetsMap } from '@/types/dataSource';
 const Overview = memo(() => {
   const {
     connectedSocialSourcesMap,
@@ -161,8 +152,8 @@ const Overview = memo(() => {
             checkedExSourcesTotalBal
           );
           const tokensRows = Object.values(tokenListMap as AssetsMap)
-            .sort((a, b) => sub(Number(b.value), Number(a.value)).toNumber())
-            .reduce((prev: any[], token) => {
+            .sort((a:any, b:any) => sub(Number(b.value), Number(a.value)).toNumber())
+            .reduce((prev: any[], token:any) => {
               let { symbol, amount, price, value } = token;
               prev.push({
                 empty: '',
@@ -230,7 +221,7 @@ const Overview = memo(() => {
             checkedExSourcesTotalBal
           );
           const tokensRows = Object.values(tokenListMap as AssetsMap)
-            .sort((a, b) => sub(Number(b.value), Number(a.value)).toNumber())
+            .sort((a:any, b:any) => sub(Number(b.value), Number(a.value)).toNumber())
             .reduce((prev: any[], token) => {
               let { symbol, amount, price, value, chain, address } =
                 token as any;

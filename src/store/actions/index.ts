@@ -34,12 +34,19 @@ import { WALLETMAP } from '@/config/wallet';
 import { CLAIMNFTNETWORKNAME } from '@/config/chain';
 import { OPENSEALINK } from '@/config/envConstants';
 
-import type { ExchangeMeta } from '@/types/dataSource';
-import type { DataSourceStorages } from '@/pages/DataSourceOverview';
+import type { ExchangeMeta, AssetsMap } from '@/types/dataSource';
 import type { PROOFTYPEITEM } from '@/types/cred';
-import type { AssetsMap } from '@/components/DataSourceOverview/DataSourceList/DataSourceItem';
 import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
 
+
+export type DataSourceStorages = {
+  binance?: any;
+  okx?: any;
+  kucoin?: any;
+  x?: any;
+  coinbase?: any;
+  [propName: string]: any;
+};
 export const SETSYSCONFIG = 'SETSYSCONFIG';
 
 type ExInfo = {

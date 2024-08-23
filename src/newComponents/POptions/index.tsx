@@ -4,8 +4,6 @@ import type { SyntheticEvent } from 'react';
 import type { newWALLETITEMTYPE, WALLETMAPTYPE } from '@/types/config';
 
 import './index.scss';
-import POptions from '@/newComponents/POptions';
-
 
 interface DataSourcesDialogProps {
   onClick: (item?: newWALLETITEMTYPE, val?: string | number) => void;

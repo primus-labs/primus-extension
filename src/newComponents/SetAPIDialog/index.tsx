@@ -2,20 +2,9 @@ import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
-import PInput from '@/newComponents/PInput';
 import PMask from '@/newComponents/PMask';
-import PBack from '@/components/PBack';
-import PButton from '@/newComponents/PButton';
-import PEye from '@/newComponents/PEye';
 import PClose from '@/newComponents/PClose';
 import SetAPIForm from './SetAPIForm';
-
-import { postMsg } from '@/utils/utils';
-import { initWalletAddressActionAsync } from '@/store/actions';
-
-import type { Dispatch } from 'react';
-import type { UserState } from '@/types/store';
-import iconDone from '@/assets/newImg/layout/iconDone.svg';
 
 import './index.scss';
 interface SetPwdDialogProps {
@@ -24,17 +13,12 @@ interface SetPwdDialogProps {
   onSubmit: () => void;
   // onCancel: () => void;
 }
-type PswFormType = {
-  password: '';
-  confirmation: '';
-};
+
 
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onClose, onSubmit, sourceName }) => {
     const [searchParams] = useSearchParams();
-    const fromEvents = searchParams.get('fromEvents');
-    const [accountAddr, setAccountAddr] = useState<any>();
-
+    
     return (
       <PMask>
         {/* onClose={onClose} closeable={!fromEvents} */}

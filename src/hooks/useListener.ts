@@ -1,11 +1,10 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   setExSourcesAsync,
   setSocialSourcesAsync,
   setConnectByAPILoading,
-  initWalletAddressActionAsync,
   setSysConfigAction,
   setActiveConnectDataSource,
   setActiveAttestation,
@@ -20,7 +19,6 @@ import { getAccount } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import type { ObjectType, SysConfigItem } from '@/types/home';
-import useListener from '@/hooks/useListener';
 
 type UseListener = () => void;
 
