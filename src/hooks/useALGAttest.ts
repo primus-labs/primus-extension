@@ -206,19 +206,20 @@ const useALGAttest = function useAttest() {
 
       if (retcode === '0') {
         clearFetchAttestationTimer();
+        console.log('333-Attesting-remove1');
         await chrome.storage.local.remove(['activeRequestAttestation'])
-        const commonMsg = {
-          fullScreenType: 'common',
-          reqMethodName: 'clearAttesting',
-          params: {},
-        };
-        postMsg(padoServicePort, commonMsg);
+        
 
         if (
           content.balanceGreaterThanBaseValue === 'true' &&
           content.signature
         ) {
           const activeRequestId = parsedActiveRequestAttestation.requestid;
+          console.log(
+            '333-debug',
+            content?.requestid,
+            parsedActiveRequestAttestation
+          );
           if (activeRequestId !== content?.requestid) {
             return;
           }
@@ -376,13 +377,9 @@ const useALGAttest = function useAttest() {
         }
       } else if (retcode === '2') {
         clearFetchAttestationTimer();
+        console.log('333-Attesting-remove2');
         await chrome.storage.local.remove(['activeRequestAttestation']);
-        const commonMsg = {
-          fullScreenType: 'common',
-          reqMethodName: 'clearAttesting',
-          params: {},
-        };
-        postMsg(padoServicePort, commonMsg);
+        
         const {
           errlog: { code, desc },
         } = details;
@@ -557,6 +554,7 @@ const useALGAttest = function useAttest() {
     };
     console.log('after timeout port', padoServicePort);
     postMsg(padoServicePort, msg);
+    console.log('333-Attesting-remove3');
     await chrome.storage.local.remove(['activeRequestAttestation']);
   }, [
     padoServicePort,
@@ -639,7 +637,11 @@ const useALGAttest = function useAttest() {
         // }
         if (['stop', 'cancel', 'close'].includes(name)) {
           clearFetchAttestationTimer();
-          chrome.storage.local.remove(['activeRequestAttestation']);
+          if (['stop', 'cancel'].includes(name)) {
+            console.log('333-Attesting-remove4');
+            chrome.storage.local.remove(['activeRequestAttestation']);
+            
+          }
         }
       } else if (type === 'googleAuth') {
         if (name === 'cancelAttest') {

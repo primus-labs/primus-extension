@@ -78,8 +78,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   sendResponse,
   USERPASSWORD,
   fullscreenPort,
-  processAlgorithmReq,
-  setAttestingTimeoutFn
+  processAlgorithmReq
 ) => {
   const { name, params } = request;
   if (name === 'initAttestation') {
@@ -257,9 +256,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName,
-      undefined,
-      setAttestingTimeoutFn
+      hasGetTwitterScreenName
     );
   }
 
@@ -318,9 +315,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName,
-      undefined,
-      setAttestingTimeoutFn
+      hasGetTwitterScreenName
     );
     processAlgorithmReq({
       reqMethodName: 'stop',
@@ -354,8 +349,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ) {
         processAlgorithmReq({
           reqMethodName: 'stop',
-        });
-        await setAttestingTimeoutFn('clear');
+        })
+        console.log('333-Attesting-remove10');
         await chrome.storage.local.remove([
           'padoZKAttestationJSSDKBeginAttest',
           'padoZKAttestationJSSDKAttestationPresetParams',

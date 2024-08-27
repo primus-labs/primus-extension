@@ -45,20 +45,6 @@ const padoServices = {
 };
 
 let USERPASSWORD = '';
-let resetAttesting = async () => {
-  await chrome.storage.local.remove(['activeRequestAttestation']);
-};
-let resetAttestingTimeout;
-let setAttestingTimeoutFn = (flag) => {
-  if (flag === 'set') {
-    setTimeout(resetAttesting, ATTESTATIONPOLLINGTIMEOUT);
-  }
-  if (flag === 'clear') {
-    if (resetAttestingTimeout) {
-      clearTimeout(resetAttestingTimeout);
-    }
-  }
-};
 
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -104,11 +90,6 @@ const processFullscreenReq = (message, port) => {
       break;
     case 'algorithm':
       processAlgorithmReq(message, port);
-      break;
-    case 'common':
-      if (message.reqMethodName === 'clearAttesting') {
-        setAttestingTimeoutFn('clear');
-      }
       break;
     default:
       break;
@@ -189,7 +170,6 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestation':
-      setAttestingTimeoutFn('clear');
       const attestationParams = await assembleAlgorithmParams(
         params,
         USERPASSWORD,
@@ -234,6 +214,8 @@ const processAlgorithmReq = async (message, port) => {
       break;
     case 'stop':
       await chrome.offscreen.closeDocument();
+      console.log('333-Attesting-remove9');
+      await chrome.storage.local.remove(['activeRequestAttestation']);
       postMsg(fullscreenPort, {
         resType: 'algorithm',
         resMethodName: 'stop',
@@ -524,8 +506,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      processAlgorithmReq,
-      setAttestingTimeoutFn
+      processAlgorithmReq
     );
   }
   if (resType === 'report') {
@@ -553,8 +534,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       USERPASSWORD,
       fullscreenPort,
       hasGetTwitterScreenName,
-      processAlgorithmReq,
-      setAttestingTimeoutFn
+      processAlgorithmReq
     );
   }
   if (type === 'padoWebsite') {
@@ -587,8 +567,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      processAlgorithmReq,
-      setAttestingTimeoutFn
+      processAlgorithmReq
     );
   }
 });

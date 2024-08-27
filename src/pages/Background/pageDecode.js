@@ -13,8 +13,7 @@ let isReadyRequest = false;
 let operationType = null;
 const handlerForSdk = async (
   processAlgorithmReq,
-  operation,
-  setAttestingTimeoutFn
+  operation
 ) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
@@ -24,9 +23,7 @@ const handlerForSdk = async (
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (padoZKAttestationJSSDKBeginAttest === '1') {
-    if (setAttestingTimeoutFn) {
-      await setAttestingTimeoutFn('clear');
-    }
+    console.log('333-Attesting-remove11');
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -64,8 +61,7 @@ export const pageDecodeMsgListener = async (
   password,
   port,
   hasGetTwitterScreenName,
-  processAlgorithmReq,
-  setAttestingTimeoutFn
+  processAlgorithmReq
 ) => {
   const { name, params, operation } = request;
   console.log('333-bg-pageDecodeMsgListener', request);
@@ -311,12 +307,10 @@ export const pageDecodeMsgListener = async (
           target: {
             tabId: tabCreatedByPado.id,
           },
-          // files: ['pageDecode.js'],
           files: ['pageDecode.bundle.js'],
         });
         await chrome.scripting.insertCSS({
           target: { tabId: tabCreatedByPado.id },
-          // files: ['pageDecode.css'],
           files: ['static/css/pageDecode.css'],
         });
       };
@@ -339,7 +333,7 @@ export const pageDecodeMsgListener = async (
             // name: 'abortAttest',
             name: 'stop',
           });
-          handlerForSdk(processAlgorithmReq, 'cancel', setAttestingTimeoutFn);
+          handlerForSdk(processAlgorithmReq, 'cancel');
         }
       });
       // injectFn();
@@ -561,7 +555,7 @@ export const pageDecodeMsgListener = async (
         active: true,
       });
       await chrome.tabs.remove(tabCreatedByPado.id);
-      handlerForSdk(processAlgorithmReq, 'cancel', setAttestingTimeoutFn);
+      handlerForSdk(processAlgorithmReq, 'cancel');
     }
     if (name === 'end') {
       console.log('333-bg-pageDecode-noMeet', tabCreatedByPado);

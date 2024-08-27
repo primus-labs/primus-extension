@@ -60,8 +60,7 @@ export const algorithmMsgListener = async (
   sendResponse,
   USERPASSWORD,
   fullscreenPort,
-  processAlgorithmReq,
-  setAttestingTimeoutFn
+  processAlgorithmReq
 ) => {
   const { resMethodName } = message;
   let hasGetTwitterScreenName = false;
@@ -81,7 +80,6 @@ export const algorithmMsgListener = async (
     };
     eventReport(eventInfo);
   } else if (resMethodName === `getAttestation`) {
-    setAttestingTimeoutFn('set');
     var eventInfo = {
       eventType: 'ATTESTATION_START_BACKGROUND',
       rawData: {
@@ -167,7 +165,6 @@ export const algorithmMsgListener = async (
           fullscreenPort,
           hasGetTwitterScreenName,
           undefined,
-          setAttestingTimeoutFn
         );
       }
       let resParams = { result };
@@ -232,7 +229,6 @@ export const algorithmMsgListener = async (
 
       if (retcode === '0') {
         console.log('333-bg-recceive-getAttestationResult4');
-        await setAttestingTimeoutFn('clear');
         if (
           content.balanceGreaterThanBaseValue === 'true' &&
           content.signature
@@ -300,10 +296,10 @@ export const algorithmMsgListener = async (
                 USERPASSWORD,
                 fullscreenPort,
                 hasGetTwitterScreenName,
-                undefined,
-                setAttestingTimeoutFn
+                undefined
               );
               console.log('333-bg-success2');
+              console.log('333-Attesting-remove5');
               await chrome.storage.local.remove([
                 'padoZKAttestationJSSDKBeginAttest',
                 'padoZKAttestationJSSDKWalletAddress',
@@ -405,11 +401,9 @@ export const algorithmMsgListener = async (
               sendResponse,
               USERPASSWORD,
               fullscreenPort,
-              hasGetTwitterScreenName,
-              undefined,
-              setAttestingTimeoutFn
+              hasGetTwitterScreenName
             );
-
+console.log('333-Attesting-remove6');
             await chrome.storage.local.remove([
               'padoZKAttestationJSSDKBeginAttest',
               'padoZKAttestationJSSDKWalletAddress',
@@ -446,7 +440,6 @@ export const algorithmMsgListener = async (
           eventReport(eventInfoEnd);
         }
       } else if (retcode === '2') {
-        await setAttestingTimeoutFn('clear');
         const {
           errlog: { code, desc },
         } = details;
@@ -511,10 +504,9 @@ export const algorithmMsgListener = async (
             sendResponse,
             USERPASSWORD,
             fullscreenPort,
-            hasGetTwitterScreenName,
-            undefined,
-            setAttestingTimeoutFn
+            hasGetTwitterScreenName
           );
+          console.log('333-Attesting-remove7');
           await chrome.storage.local.remove([
             'padoZKAttestationJSSDKBeginAttest',
             'padoZKAttestationJSSDKWalletAddress',
