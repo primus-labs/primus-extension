@@ -204,18 +204,12 @@ const AssetsDetails = memo(() => {
 
     if (activeDataSouceUserInfo) {
       const { id: dataSourceId } = activeDataSouceUserInfo;
-      if (dataSourceId === 'okx' || dataSourceId === 'binance') {
+      if (dataSourceId === 'binance') {
         totalBalance = getTotalBalFromNumObjAPriceObj(
           activeDataSouceUserInfo?.tradingAccountTokenAmountObj,
           activeDataSouceUserInfo?.tokenPriceMap
         );
-      }
-      // else if (dataSourceId === 'binance') {
-      //   // totalBalance = getTotalBalFromAssetsMap(
-      //   //   activeDataSouceUserInfo?.spotAccountTokenMap
-      //   // );
-      // }
-      else {
+      } else {
         totalBalance = activeDataSouceUserInfo?.totalBalance;
       }
     }
@@ -425,7 +419,7 @@ const AssetsDetails = memo(() => {
               </div>
               {activeExpand.includes(i.id) && (
                 <>
-                  {['okx', 'binance'].includes(i.id) && (
+                  {['binance'].includes(i.id) && (
                     <div className="extraInfo">
                       <div className="card availableForAttestation">
                         <i className="iconfont icon-iconAmountForAttest"></i>

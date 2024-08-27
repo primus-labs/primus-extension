@@ -183,17 +183,14 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const totalBalanceForAttest = useMemo(() => {
       let totalBalance = '0';
       if (activeDataSouceUserInfo) {
-        if (dataSourceId === 'okx' || dataSourceId === 'binance') {
+        if (dataSourceId === 'binance') {
           totalBalance = getTotalBalFromNumObjAPriceObj(
             activeDataSouceUserInfo?.tradingAccountTokenAmountObj,
             activeDataSouceUserInfo?.tokenPriceMap
           );
+        } else {
+          totalBalance = activeDataSouceUserInfo?.totalBalance;
         }
-        // else if (dataSourceId === 'binance') {
-        //   totalBalance = getTotalBalFromAssetsMap(
-        //     activeDataSouceUserInfo?.spotAccountTokenMap
-        //   );
-        // }
       }
 
       return totalBalance;

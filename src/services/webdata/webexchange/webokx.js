@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { add, mul, gt } from '@/utils/utils';
 import { USDT, BTC, STABLETOKENLIST } from '@/config/constants';
 import WebExchange from './webexchange';
 const BIGZERO = new BigNumber(0);
@@ -79,7 +80,9 @@ class WebOKX extends WebExchange {
     LPSymbols.forEach((lpsymbol) => {
       const tokenSymbol = lpsymbol.replace(`-${USDT}`, '');
       if (res[lpsymbol]) {
-        this.tokenPriceMap[tokenSymbol] = new BigNumber(res[lpsymbol]).toFixed();
+        this.tokenPriceMap[tokenSymbol] = new BigNumber(
+          res[lpsymbol]
+        ).toFixed();
       } else {
         this.tokenPriceMap[tokenSymbol] = ZERO + '';
       }
@@ -90,12 +93,52 @@ class WebOKX extends WebExchange {
   async getUserInfo() {
     const params = {};
     params.url =
-      'https://www.okx.com/v3/users/security/profile?t=' +
-      new Date().getTime();
+      'https://www.okx.com/v3/users/security/profile?t=' + new Date().getTime();
     params.method = 'GET';
     const res = await this.request(params);
     this.userInfo.userName = res.data.uuid;
     this.userInfo.userId = res.data.uuid;
+  }
+
+  async getTotalAccountTokenMap() {
+    await this.getTokenPriceMap()
+    const params = {};
+    params.url = 
+      'https://www.okx.com/v2/asset/balance/balance-portfolio?valuationUnit=USDT&operationControl=true&t=' +
+      new Date().getTime();
+    params.method = 'GET';
+    const res = await this.request(params);
+    console.log('333-getTotalAccountTokenMap', res);
+    res.data.crypto.balances.forEach(i => {
+      const { currency, balance } = i
+      const price = this.tokenPriceMap[currency] || ZERO + '';
+      const value = mul(balance, price).toFixed();
+      // hidden tokens value less than
+      if (gt(value, '0.01')) {
+        this.totalAccountTokenMap[currency] = {
+          symbol: currency,
+          amount: balance,
+          price,
+          value 
+        };
+      }
+    })
+     console.log('333-getTotalAccountTokenMap2', this.totalAccountTokenMap);
+    return this.totalAccountTokenMap;
+
+  }
+  async getTotalAccountBalance() {
+    await this.getTotalAccountTokenMap();
+    const totalAccBal = Object.keys(this.totalAccountTokenMap).reduce(
+      (prev, curr) => {
+        prev = add(prev, this.totalAccountTokenMap[curr].value);
+        return prev;
+      },
+      BIGZERO
+    );
+    this.totalAccountBalance = totalAccBal.toFixed();
+    // // console.log('totalAccountBalance', this.totalAccountBalance);
+    return this.totalAccountBalance;
   }
 }
 
