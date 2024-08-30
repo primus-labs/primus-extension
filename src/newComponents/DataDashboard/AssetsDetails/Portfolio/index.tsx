@@ -219,9 +219,7 @@ const AssetsDetails = memo(() => {
   const tootipFn = useCallback((activeDataSouceUserInfo) => {
     if (activeDataSouceUserInfo) {
       const { id: dataSourceId } = activeDataSouceUserInfo;
-      if (dataSourceId === 'okx') {
-        return 'Assets in Trading account';
-      } else if (dataSourceId === 'binance') {
+      if (dataSourceId === 'binance') {
         return 'Assets in Spot account';
       }
     }

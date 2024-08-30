@@ -3,8 +3,10 @@ import {
   checkIsLogin,
   bindUserAddress,
   refreshAuthData,
+  getUserIdentity,
 } from '@/services/api/user';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
+import { requestSignTypedData } from '@/services/wallets/utils';
 
 import {
   getCurrentDate,
@@ -45,11 +47,48 @@ const padoServices = {
 };
 
 let USERPASSWORD = '';
-
+const creatUserInfo = async () => {
+  const { userInfo } = await chrome.storage.local.get(['userInfo']);
+  if (!userInfo) {
+    let web3EthAccount = new Web3EthAccounts();
+    let { privateKey, address } = web3EthAccount.create();
+    await chrome.storage.local.set({
+      privateKey,
+      padoCreatedWalletAddress: address,
+    });
+    const privateKeyStr = privateKey?.substr(2);
+    const timestamp = +new Date() + '';
+    try {
+      const signature = await requestSignTypedData(
+        privateKeyStr,
+        address,
+        timestamp
+      );
+      const res = await getUserIdentity({
+        signature,
+        timestamp,
+        address,
+      });
+      const { rc, result } = res;
+      if (rc === 0) {
+        const { bearerToken, identifier } = result;
+        await chrome.storage.local.set({
+          userInfo: JSON.stringify({
+            id: identifier,
+            token: bearerToken,
+          }),
+        });
+        console.log('333-extenstion-install-creatUserInfo');
+      }
+    } catch (e) {
+      console.log('getUserIdentity error', e);
+    }
+  }
+};
 chrome.runtime.onInstalled.addListener(({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    showIndex();
-
+    // showIndex();
+    creatUserInfo()
     const eventInfo = {
       eventType: 'EXTENSION_INSTALL',
       rawData: '',

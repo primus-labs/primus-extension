@@ -67,8 +67,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       if (pswForm.verificationContent === 'Token Holding') {
         if (presets.dataSourceId === 'binance') {
           return 'Tokens in Spot account';
-        } else if (presets.dataSourceId === 'okx') {
-          return 'Tokens in Trading account';
         } else {
           return '';
         }
@@ -117,16 +115,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         if (activeDataSouceUserInfo) {
           let symbolList: any[] = [];
           if (dataSourceId === 'okx') {
-            symbolList = Object.keys(
-              activeDataSouceUserInfo.tradingAccountTokenAmountObj
-            ).filter((t) => {
-              const curVal = mul(
-                Number(activeDataSouceUserInfo.tradingAccountTokenAmountObj[t]),
-                activeDataSouceUserInfo.tokenPriceMap[t]
-              ).toFixed();
-              const f = gt(Number(curVal), 0.01);
-              return f;
-            });
+            symbolList = Object.values(activeDataSouceUserInfo.tokenListMap).map((i:any)=>i.symbol);
           } else if (dataSourceId === 'binance') {
             symbolList = Object.keys(
               activeDataSouceUserInfo.tradingAccountFreeTokenAmountObj

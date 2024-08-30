@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ethers, utils } from 'ethers';
+
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 // import { eventReport } from '@/services/api/usertracker';
 // import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
+
 // import {
 //   LINEASCHEMANAME,
 //   SCROLLSCHEMANAME,
@@ -66,6 +67,8 @@ const storeDappTabId = async () => {
   return dappTabId;
 };
 
+
+
 // const getAttestation = async (attetstationRequestId) => {
 //   const { credentials } = await chrome.storage.local.get(['credentials']);
 //   const curCredential = JSON.parse(credentials)[attetstationRequestId];
@@ -82,6 +85,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
 ) => {
   const { name, params } = request;
   if (name === 'initAttestation') {
+   
     const dappTabId = await storeDappTabId();
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
@@ -349,7 +353,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ) {
         processAlgorithmReq({
           reqMethodName: 'stop',
-        })
+        });
         console.log('333-Attesting-remove10');
         await chrome.storage.local.remove([
           'padoZKAttestationJSSDKBeginAttest',

@@ -48,7 +48,9 @@
         "https://padolabs.org/*",
         "https://www.padolabs.org/*",
         "https://events.padolabs.org/*",
-        "http://api-dev.padolabs.org:9094/*"
+        "http://api-dev.padolabs.org:9094/*",
+        "http://api-dev.padolabs.org:8081/*",
+        "https://primuslabs.xyz/*"
       ],
       "js": ["padoWebsite.js"]
     },
