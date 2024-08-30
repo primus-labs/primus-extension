@@ -207,8 +207,7 @@ const useALGAttest = function useAttest() {
       if (retcode === '0') {
         clearFetchAttestationTimer();
         console.log('333-Attesting-remove1');
-        await chrome.storage.local.remove(['activeRequestAttestation'])
-        
+        await chrome.storage.local.remove(['activeRequestAttestation']);
 
         if (
           content.balanceGreaterThanBaseValue === 'true' &&
@@ -244,7 +243,7 @@ const useALGAttest = function useAttest() {
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),
           });
-          
+
           await initCredList();
           if (fullAttestation.reqType === 'web') {
             if (fullAttestation.event) {
@@ -379,7 +378,7 @@ const useALGAttest = function useAttest() {
         clearFetchAttestationTimer();
         console.log('333-Attesting-remove2');
         await chrome.storage.local.remove(['activeRequestAttestation']);
-        
+
         const {
           errlog: { code, desc },
         } = details;
@@ -575,9 +574,14 @@ const useALGAttest = function useAttest() {
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);
 
   useEffect(() => {
-    const listerFn = (message: any) => {
+    const listerFn = async (message: any) => {
       const { type, name } = message;
       if (type === 'pageDecode') {
+        const { padoZKAttestationJSSDKBeginAttest } =
+          await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+        if (padoZKAttestationJSSDKBeginAttest === '1') {
+          return;
+        }
         console.log('222message', message, activeAttestation);
         const errorMsgTitle = [
           'Assets Verification',
@@ -640,7 +644,6 @@ const useALGAttest = function useAttest() {
           if (['stop', 'cancel'].includes(name)) {
             console.log('333-Attesting-remove4');
             chrome.storage.local.remove(['activeRequestAttestation']);
-            
           }
         }
       } else if (type === 'googleAuth') {
