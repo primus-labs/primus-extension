@@ -86,7 +86,25 @@ export const padoZKAttestationJSSDKMsgListener = async (
 ) => {
   const { name, params } = request;
   if (name === 'initAttestation') {
-   
+    await fetchAttestationTemplateList();
+    await fetchConfigure();
+    const sdkSupportHosts =
+      JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST) ?? [];
+    if (!sdkSupportHosts.includes(params.hostname)) {
+      chrome.tabs.sendMessage(dappTabId, {
+        type: 'padoZKAttestationJSSDK',
+        name: 'initAttestationRes',
+        params: {
+          result: false,
+          errorData: {
+            title: '',
+            desc: 'Your dapp is not authorized',
+            code: '00009',
+          },
+        },
+      });
+
+    }
     const dappTabId = await storeDappTabId();
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
@@ -95,8 +113,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       reqMethodName: 'start',
     });
     updateAlgoUrl();
-    await fetchAttestationTemplateList();
-    await fetchConfigure();
+    
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {

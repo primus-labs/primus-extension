@@ -127,6 +127,9 @@ export const algorithmMsgListener = async (
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestationRes',
+        params: {
+          result: true,
+        },
       });
     }
     if (resMethodName === 'getAttestation') {

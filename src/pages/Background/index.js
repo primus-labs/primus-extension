@@ -189,6 +189,9 @@ const processAlgorithmReq = async (message, port) => {
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
             name: 'initAttestationRes',
+            params: {
+              result: true
+            }
           });
         }
         console.log(

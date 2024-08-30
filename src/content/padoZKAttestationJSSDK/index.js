@@ -7,6 +7,9 @@ window.addEventListener('message', (e) => {
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestation',
+        params: {
+          hostname: window.location.hostname
+        },
       });
     }
     if (name === 'startAttestation') {
