@@ -64,8 +64,18 @@ export const algorithmMsgListener = async (
 ) => {
   const { resMethodName } = message;
   let hasGetTwitterScreenName = false;
-  const { padoZKAttestationJSSDKBeginAttest } = await chrome.storage.local.get([
+  const {
+    padoZKAttestationJSSDKBeginAttest,
+    padoZKAttestationJSSDKDappTabId: dappTabId,
+    configMap,
+    activeRequestAttestation,
+    padoZKAttestationJSSDKAttestationPresetParams,
+  } = await chrome.storage.local.get([
     'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKDappTabId',
+    'configMap',
+    'activeRequestAttestation',
+    'padoZKAttestationJSSDKAttestationPresetParams',
   ]);
   if (resMethodName === `start`) {
     var eventInfo = {
@@ -90,7 +100,11 @@ export const algorithmMsgListener = async (
       },
     };
     if (padoZKAttestationJSSDKBeginAttest === '1') {
-      eventInfo.rawData.attestOrigin = 'padoAttestationJSSDK';
+      eventInfo.rawData.attestOrigin =
+        padoZKAttestationJSSDKAttestationPresetParams
+          ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
+              .attestOrigin
+          : '';
     }
     eventReport(eventInfo);
   }
@@ -117,14 +131,6 @@ export const algorithmMsgListener = async (
     }
     if (resMethodName === 'getAttestation') {
       console.log('333-bg-receive-getAttestation', message.res);
-      const {
-        padoZKAttestationJSSDKDappTabId: dappTabId,
-        padoZKAttestationJSSDKAttestationPresetParams,
-      } = await chrome.storage.local.get([
-        'padoZKAttestationJSSDKDappTabId',
-        'padoZKAttestationJSSDKAttestationPresetParams',
-      ]);
-
       const { retcode } = JSON.parse(message.res);
       let msgObj = {};
       let result = false;
@@ -164,7 +170,7 @@ export const algorithmMsgListener = async (
           USERPASSWORD,
           fullscreenPort,
           hasGetTwitterScreenName,
-          undefined,
+          undefined
         );
       }
       let resParams = { result };
@@ -183,18 +189,6 @@ export const algorithmMsgListener = async (
     }
     if (resMethodName === 'getAttestationResult') {
       console.log('333-bg-recceive-getAttestationResult', message.res);
-      const {
-        padoZKAttestationJSSDKDappTabId: dappTabId,
-        configMap,
-        activeRequestAttestation,
-        padoZKAttestationJSSDKAttestationPresetParams,
-      } = await chrome.storage.local.get([
-        'padoZKAttestationJSSDKDappTabId',
-        'configMap',
-        'activeRequestAttestation',
-        'padoZKAttestationJSSDKAttestationPresetParams',
-      ]);
-
       const attestTipMap =
         JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
       console.log('333-bg-recceive-getAttestationResult2', dappTabId);
@@ -224,7 +218,9 @@ export const algorithmMsgListener = async (
         },
       };
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrigin = 'padoAttestationJSSDK';
+        eventInfo.rawData.attestOrigin = activeAttestationParams
+          ? activeAttestationParams.attestOrigin
+          : '';
       }
 
       if (retcode === '0') {
@@ -252,7 +248,6 @@ export const algorithmMsgListener = async (
             ...parsedActiveRequestAttestation,
             ...activeAttestationParams,
             account: acc,
-            attestOrigin: 'padoAttestationJSSDK',
           };
           console.log('333-bg-recceive-getAttestationResult7', fullAttestation);
           if (fullAttestation.verificationContent === 'X Followers') {
@@ -403,7 +398,7 @@ export const algorithmMsgListener = async (
               fullscreenPort,
               hasGetTwitterScreenName
             );
-console.log('333-Attesting-remove6');
+            console.log('333-Attesting-remove6');
             await chrome.storage.local.remove([
               'padoZKAttestationJSSDKBeginAttest',
               'padoZKAttestationJSSDKWalletAddress',

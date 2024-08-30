@@ -132,6 +132,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       followersCount,
       chainName,
       walletAddress,
+      dappName,
     } = params;
     chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
@@ -184,6 +185,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       verificationContent,
       verificationValue,
       fetchType: 'Web',
+      attestOrigin: dappName
     };
     const acc = await getDataSourceAccount(
       activeAttestationParams.dataSourceId
@@ -349,7 +351,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (activeRequestAttestation) {
       const activeRequestAttestationObj = JSON.parse(activeRequestAttestation);
       if (
-        !activeRequestAttestationObj.attestOrigin === 'padoAttestationJSSDK'
+        !activeRequestAttestationObj.attestOrigin
       ) {
         processAlgorithmReq({
           reqMethodName: 'stop',

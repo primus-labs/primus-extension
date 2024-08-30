@@ -504,10 +504,19 @@ export const pageDecodeMsgListener = async (
           order: '3',
         },
       };
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      const {
+        padoZKAttestationJSSDKBeginAttest,
+        padoZKAttestationJSSDKAttestationPresetParams,
+      } = await chrome.storage.local.get([
+        'padoZKAttestationJSSDKBeginAttest',
+        'padoZKAttestationJSSDKAttestationPresetParams',
+      ]);
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrigin = 'padoAttestationJSSDK';
+        eventInfo.rawData.attestOrigin =
+          padoZKAttestationJSSDKAttestationPresetParams
+            ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
+                .attestOrigin
+            : '';
       }
       eventReport(eventInfo);
 

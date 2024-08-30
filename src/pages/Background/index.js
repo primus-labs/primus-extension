@@ -217,9 +217,6 @@ const processAlgorithmReq = async (message, port) => {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       const f = { ...attestationParams };
-      if (padoZKAttestationJSSDKBeginAttest === '1') {
-        attestationParams.attestOrigin = 'padoAttestationJSSDK';
-      }
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(f),
       });
@@ -556,10 +553,15 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           ...params,
         },
       };
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      const {
+        padoZKAttestationJSSDKBeginAttest,
+        padoZKAttestationJSSDKAttestationPresetParams,
+      } = await chrome.storage.local.get([
+        'padoZKAttestationJSSDKBeginAttest',
+        'padoZKAttestationJSSDKAttestationPresetParams',
+      ]);
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrigin = 'padoAttestationJSSDK';
+        eventInfo.rawData.attestOrigin = padoZKAttestationJSSDKAttestationPresetParams?JSON.parse(padoZKAttestationJSSDKAttestationPresetParams).attestOrigin: '';
       }
       eventReport(eventInfo);
     }
