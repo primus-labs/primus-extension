@@ -46,11 +46,16 @@ const handlerForSdk = async (
       };
       resParams.reStartFlag = true;
     }
-    chrome.tabs.sendMessage(dappTabId, {
+    try {
+      chrome.tabs.sendMessage(dappTabId, {
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
       params: resParams,
     });
+    } catch (error) {
+      console.log('handlerForSdk error:', handlerForSdk);
+    }
+    
   }
 };
 // inject-dynamic
@@ -560,9 +565,13 @@ export const pageDecodeMsgListener = async (
     //   await chrome.tabs.remove(dataSourcePageTabId);
     // }
     if (name === 'close' || name === 'cancel') {
-      await chrome.tabs.update(currExtentionId, {
-        active: true,
-      });
+      try {
+        await chrome.tabs.update(currExtentionId, {
+          active: true,
+        });
+      } catch (error) {
+        console.log('cancel error:', error);
+      }
       await chrome.tabs.remove(tabCreatedByPado.id);
       handlerForSdk(processAlgorithmReq, 'cancel');
     }

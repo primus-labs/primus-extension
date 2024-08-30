@@ -5,6 +5,7 @@ import { getSysConfig, getProofTypes } from '@/services/api/config';
 // import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
+import { pageDecodeMsgListener } from './pageDecode.js';
 
 // import {
 //   LINEASCHEMANAME,
@@ -344,28 +345,28 @@ export const padoZKAttestationJSSDKMsgListener = async (
     });
   }
 
-  if (name === 'stopOffscreen') {
-    const { activeRequestAttestation } = await chrome.storage.local.get([
-      'activeRequestAttestation',
-    ]);
-    if (activeRequestAttestation) {
-      const activeRequestAttestationObj = JSON.parse(activeRequestAttestation);
-      if (
-        !activeRequestAttestationObj.attestOrigin
-      ) {
-        processAlgorithmReq({
-          reqMethodName: 'stop',
-        });
-        console.log('333-Attesting-remove10');
-        await chrome.storage.local.remove([
-          'padoZKAttestationJSSDKBeginAttest',
-          'padoZKAttestationJSSDKAttestationPresetParams',
-          'padoZKAttestationJSSDKXFollowerCount',
-          'activeRequestAttestation',
-        ]);
-      }
-    }
-  }
+  // if (name === 'stopOffscreen') {
+  //   const { activeRequestAttestation } = await chrome.storage.local.get([
+  //     'activeRequestAttestation',
+  //   ]);
+  //   if (activeRequestAttestation) {
+  //     const activeRequestAttestationObj = JSON.parse(activeRequestAttestation);
+  //     if (
+  //       !activeRequestAttestationObj.attestOrigin
+  //     ) {
+  //       processAlgorithmReq({
+  //         reqMethodName: 'stop',
+  //       });
+  //       console.log('333-Attesting-remove10');
+  //       await chrome.storage.local.remove([
+  //         'padoZKAttestationJSSDKBeginAttest',
+  //         'padoZKAttestationJSSDKAttestationPresetParams',
+  //         'padoZKAttestationJSSDKXFollowerCount',
+  //         'activeRequestAttestation',
+  //       ]);
+  //     }
+  //   }
+  // }
 
   // if (name === 'sendToChainRes') {
   //   const { attestationRequestId, chainName, onChainRes: upChainRes } = params;

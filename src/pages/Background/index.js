@@ -608,7 +608,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      processAlgorithmReq
+      processAlgorithmReq,
     );
   }
 });

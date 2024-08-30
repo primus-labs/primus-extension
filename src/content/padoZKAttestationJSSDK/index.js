@@ -38,13 +38,21 @@ window.addEventListener('message', (e) => {
         params: true,
       });
     }
-    if (name === 'stopOffscreen') {
-      window.postMessage({
-        target: 'padoZKAttestationJSSDK',
-        origin: 'padoExtension',
-        name: 'stopOffscreen',
-      });
+    
+    if (name === 'beforeunload') {
+      var msgObj = {
+        type: 'pageDecode',
+        name: 'cancel',
+      };
+      chrome.runtime.sendMessage(msgObj);
     }
+    // if (name === 'stopOffscreen') {
+    //   window.postMessage({
+    //     target: 'padoZKAttestationJSSDK',
+    //     origin: 'padoExtension',
+    //     name: 'stopOffscreen',
+    //   });
+    // }
     // if (name === 'sendToChainRes') {
     //   chrome.runtime.sendMessage({
     //     type: 'padoZKAttestationJSSDK',
