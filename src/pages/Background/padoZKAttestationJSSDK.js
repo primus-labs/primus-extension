@@ -19,7 +19,6 @@ import { pageDecodeMsgListener } from './pageDecode.js';
 // import { PADOADDRESS } from '@/config/envConstants';
 // import { regenerateAttestation } from '@/services/api/cred';
 // import { strToHexSha256 } from '@/utils/utils';
-import { pageDecodeMsgListener } from './pageDecode.js';
 import { getDataSourceAccount } from './dataSourceUtils';
 
 let hasGetTwitterScreenName = false;
@@ -68,8 +67,6 @@ const storeDappTabId = async () => {
   return dappTabId;
 };
 
-
-
 // const getAttestation = async (attetstationRequestId) => {
 //   const { credentials } = await chrome.storage.local.get(['credentials']);
 //   const curCredential = JSON.parse(credentials)[attetstationRequestId];
@@ -85,11 +82,21 @@ export const padoZKAttestationJSSDKMsgListener = async (
   processAlgorithmReq
 ) => {
   const { name, params } = request;
+
   if (name === 'initAttestation') {
     await fetchAttestationTemplateList();
     await fetchConfigure();
+    const { configMap } = await chrome.storage.local.get(['configMap']);
     const sdkSupportHosts =
       JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST) ?? [];
+    console.log(
+      '333-bg-sdk-padoZKAttestationJSSDKMsgListener-sdkSupportHosts',
+      sdkSupportHosts,
+      params.hostname
+    );
+    const dappTabId = await storeDappTabId();
+    // if (params.hostname === 'localhost') {
+    // } else
     if (!sdkSupportHosts.includes(params.hostname)) {
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
@@ -103,9 +110,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
           },
         },
       });
-
+      return;
     }
-    const dappTabId = await storeDappTabId();
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
     });
@@ -113,7 +119,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       reqMethodName: 'start',
     });
     updateAlgoUrl();
-    
+
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
@@ -203,7 +209,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       verificationContent,
       verificationValue,
       fetchType: 'Web',
-      attestOrigin: dappName
+      attestOrigin: dappName,
     };
     const acc = await getDataSourceAccount(
       activeAttestationParams.dataSourceId
@@ -485,3 +491,19 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //   }
   // }
 };
+
+chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+  const {
+    padoZKAttestationJSSDKBeginAttest,
+    padoZKAttestationJSSDKDappTabId: dappTabId,
+  } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKDappTabId',
+  ]);
+  if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest === '1') {
+    pageDecodeMsgListener({
+      type: 'pageDecode',
+      name: 'cancel',
+    });
+  }
+});

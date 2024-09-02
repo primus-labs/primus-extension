@@ -199,7 +199,7 @@ export const algorithmMsgListener = async (
         return;
       }
       const { retcode, content, retdesc, details } = JSON.parse(message.res);
-      console.log('333-bg-recceive-getAttestationResult3', message.res);
+      console.log('333-bg-recceive-getAttestationResult3');
       const activeAttestationParams = JSON.parse(
         padoZKAttestationJSSDKAttestationPresetParams
       );
@@ -227,7 +227,10 @@ export const algorithmMsgListener = async (
       }
 
       if (retcode === '0') {
-        console.log('333-bg-recceive-getAttestationResult4');
+        console.log(
+          '333-bg-recceive-getAttestationResult4',
+          activeAttestationParams
+        );
         if (
           content.balanceGreaterThanBaseValue === 'true' &&
           content.signature

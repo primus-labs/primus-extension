@@ -565,6 +565,7 @@ export const pageDecodeMsgListener = async (
     //   await chrome.tabs.remove(dataSourcePageTabId);
     // }
     if (name === 'close' || name === 'cancel') {
+      console.log('333-content-padoZKAttestationJSSDK-beforeunload2',);
       try {
         await chrome.tabs.update(currExtentionId, {
           active: true,
@@ -572,6 +573,10 @@ export const pageDecodeMsgListener = async (
       } catch (error) {
         console.log('cancel error:', error);
       }
+      console.log(
+        '333-content-padoZKAttestationJSSDK-beforeunload3',
+        tabCreatedByPado.id
+      );
       await chrome.tabs.remove(tabCreatedByPado.id);
       handlerForSdk(processAlgorithmReq, 'cancel');
     }

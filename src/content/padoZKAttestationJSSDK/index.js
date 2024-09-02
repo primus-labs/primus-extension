@@ -42,13 +42,14 @@ window.addEventListener('message', (e) => {
       });
     }
     
-    if (name === 'beforeunload') {
-      var msgObj = {
-        type: 'pageDecode',
-        name: 'cancel',
-      };
-      chrome.runtime.sendMessage(msgObj);
-    }
+    // if (name === 'beforeunload') {
+    //   console.log('333-content-padoZKAttestationJSSDK-beforeunload')
+    //   var msgObj = {
+    //     type: 'pageDecode',
+    //     name: 'cancel',
+    //   };
+    //   chrome.runtime.sendMessage(msgObj);
+    // }
     // if (name === 'stopOffscreen') {
     //   window.postMessage({
     //     target: 'padoZKAttestationJSSDK',
@@ -74,7 +75,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
         name: 'initAttestationRes',
-        params: true,
+        params,
       });
       // jssdk-init-completed
     }
