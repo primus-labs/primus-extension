@@ -1,24 +1,24 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { getSysConfig, getProofTypes } from '@/services/api/config';
-// import { eventReport } from '@/services/api/usertracker';
-// import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
+import { eventReport } from '@/services/api/usertracker';
+import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { pageDecodeMsgListener } from './pageDecode.js';
 
-// import {
-//   LINEASCHEMANAME,
-//   SCROLLSCHEMANAME,
-//   BNBSCHEMANAME,
-//   BNBGREENFIELDSCHEMANAME,
-//   OPBNBSCHEMANAME,
-//   CURENV,
-//   ONCHAINLIST,
-// } from '@/config/chain';
-// import { PADOADDRESS } from '@/config/envConstants';
-// import { regenerateAttestation } from '@/services/api/cred';
-// import { strToHexSha256 } from '@/utils/utils';
+import {
+  LINEASCHEMANAME,
+  SCROLLSCHEMANAME,
+  BNBSCHEMANAME,
+  BNBGREENFIELDSCHEMANAME,
+  OPBNBSCHEMANAME,
+  CURENV,
+  ONCHAINLIST,
+} from '@/config/chain';
+import { PADOADDRESS } from '@/config/envConstants';
+import { regenerateAttestation } from '@/services/api/cred';
+import { strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from './dataSourceUtils';
 
 let hasGetTwitterScreenName = false;
@@ -67,11 +67,11 @@ const storeDappTabId = async () => {
   return dappTabId;
 };
 
-// const getAttestation = async (attetstationRequestId) => {
-//   const { credentials } = await chrome.storage.local.get(['credentials']);
-//   const curCredential = JSON.parse(credentials)[attetstationRequestId];
-//   return curCredential;
-// };
+const getAttestation = async (attetstationRequestId) => {
+  const { credentials } = await chrome.storage.local.get(['credentials']);
+  const curCredential = JSON.parse(credentials)[attetstationRequestId];
+  return curCredential;
+};
 
 export const padoZKAttestationJSSDKMsgListener = async (
   request,
@@ -95,9 +95,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
       params.hostname
     );
     const dappTabId = await storeDappTabId();
-    // if (params.hostname === 'localhost') {
-    // } else
-    if (!sdkSupportHosts.includes(params.hostname)) {
+    if (params.hostname === 'localhost') {
+    } else if (!sdkSupportHosts.includes(params.hostname)) {
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestationRes',
@@ -391,105 +390,137 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //   }
   // }
 
-  // if (name === 'sendToChainRes') {
-  //   const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
-  //   const curCredential = await getAttestation(attestationRequestId);
-  //   console.log(
-  //     '333-bg-sdk-receive-sendToChainRes',
-  //     curCredential,
-  //     attestationRequestId,
-  //     chainName
-  //   );
-  //   if (curCredential) {
-  //       const { address, schemaType, source } = curCredential;
-  //       console.log('333-bg-sdk-receive-sendToChain2');
-  //       try {
-  //         const eventType = `${schemaType}-${schemaNameFn(chainName)}`;
-  //         console.log('333-bg-sdk-receive-sendToChain3', eventType);
-  //         let upchainNetwork = chainName;
-  //         if (CURENV === 'production' && chainName === 'Linea Goerli') {
-  //           upchainNetwork = 'Linea Mainnet';
-  //           console.log('333-CURENV', CURENV, upchainNetwork);
-  //         }
-  //         // const uniqueId = strToHexSha256(upChainParams.signature);
-  //         var eventInfo = {
-  //           eventType: 'UPPER_CHAIN',
-  //           rawData: {
-  //             network: upchainNetwork,
-  //             type: eventType,
-  //             source: source,
-  //             // attestationId: uniqueId,
-  //             address,
-  //           },
-  //         };
-  //         if (upChainRes) {
-  //           if (upChainRes.error) {
-  //             // if (upChainRes.error === 1) {
-  //             //   sendToChainResult = false;
-  //             //   sendToChainMsg = 'Your balance is insufficient';
-  //             // } else if (upChainRes.error === 2) {
-  //             //   sendToChainResult = false;
-  //             //   sendToChainMsg = 'Please try again later.';
-  //             // }
-  //             eventInfo.rawData = Object.assign(eventInfo.rawData, {
-  //               status: 'FAILED',
-  //               reason: upChainRes.message,
-  //             });
-  //             eventReport(eventInfo);
-  //             return;
-  //           }
-  //           const newProvided = curCredential.provided ?? [];
-  //           const currentChainObj = ONCHAINLIST.find(
-  //             (i) => chainName === i.title
-  //           );
-  //           currentChainObj.attestationUID = upChainRes;
-  //           currentChainObj.submitAddress = address;
-  //           newProvided.push(currentChainObj);
-  //           const { credentials } = await chrome.storage.local.get([
-  //             'credentials',
-  //           ]);
-  //           const cObj = { ...JSON.parse(credentials) };
+  if (name === 'sendToChainRes') {
+    const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
+    const curCredential = await getAttestation(attestationRequestId);
+    console.log(
+      '333-bg-sdk-receive-sendToChainRes',
+      curCredential,
+      attestationRequestId,
+      chainName
+    );
+    if (curCredential) {
+      const { address, schemaType, source } = curCredential;
+      console.log('333-bg-sdk-receive-sendToChain2');
+      const schemaNameFn = (networkName) => {
+        const formatNetworkName = networkName;
+        let Name;
+        if (formatNetworkName?.startsWith('Linea')) {
+          Name = LINEASCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          (formatNetworkName.indexOf('BSC') > -1 ||
+            formatNetworkName.indexOf('BNB Greenfield') > -1)
+        ) {
+          Name = BNBSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('Scroll') > -1
+        ) {
+          Name = SCROLLSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('BNB Greenfield') > -1
+        ) {
+          Name = BNBGREENFIELDSCHEMANAME;
+        } else if (
+          formatNetworkName &&
+          formatNetworkName.indexOf('opBNB') > -1
+        ) {
+          Name = OPBNBSCHEMANAME;
+        } else {
+          Name = 'EAS';
+          // Name = 'EAS-Ethereum';
+        }
+        return Name;
+      };
+      try {
+        const eventType = `${schemaType}-${schemaNameFn(chainName)}`;
+        console.log('333-bg-sdk-receive-sendToChain3', eventType);
+        let upchainNetwork = chainName;
+        if (CURENV === 'production' && chainName === 'Linea Goerli') {
+          upchainNetwork = 'Linea Mainnet';
+          console.log('333-CURENV', CURENV, upchainNetwork);
+        }
+        // const uniqueId = strToHexSha256(upChainParams.signature);
+        var eventInfo = {
+          eventType: 'UPPER_CHAIN',
+          rawData: {
+            network: upchainNetwork,
+            type: eventType,
+            source: source,
+            // attestationId: uniqueId,
+            address,
+          },
+        };
+        eventInfo.rawData.attestOrigin = curCredential.attestOrigin;
+        if (upChainRes) {
+          if (upChainRes.error) {
+            // if (upChainRes.error === 1) {
+            //   sendToChainResult = false;
+            //   sendToChainMsg = 'Your balance is insufficient';
+            // } else if (upChainRes.error === 2) {
+            //   sendToChainResult = false;
+            //   sendToChainMsg = 'Please try again later.';
+            // }
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              status: 'FAILED',
+              reason: upChainRes.message,
+            });
+            eventReport(eventInfo);
+            return;
+          }
+          const newProvided = curCredential.provided ?? [];
+          const currentChainObj = ONCHAINLIST.find(
+            (i) => chainName === i.title
+          );
+          currentChainObj.attestationUID = upChainRes;
+          currentChainObj.submitAddress = address;
+          newProvided.push(currentChainObj);
+          const { credentials } = await chrome.storage.local.get([
+            'credentials',
+          ]);
+          const cObj = { ...JSON.parse(credentials) };
 
-  //           cObj[attestationRequestId] = Object.assign(curCredential, {
-  //             provided: newProvided,
-  //           });
-  //           await chrome.storage.local.set({
-  //             credentials: JSON.stringify(cObj),
-  //           });
+          cObj[attestationRequestId] = Object.assign(curCredential, {
+            provided: newProvided,
+          });
+          await chrome.storage.local.set({
+            credentials: JSON.stringify(cObj),
+          });
 
-  //           if (curCredential.reqType === 'web') {
-  //             if (newProvided.length && newProvided.length > 0) {
-  //               const flag = newProvided.some(
-  //                 (i) => i.chainName.indexOf('Linea') > -1
-  //               );
-  //               if (flag) {
-  //                 await chrome.storage.local.set({
-  //                   mysteryBoxRewards: '1',
-  //                 });
-  //               }
-  //             }
-  //           }
-  //           // sendToChainResult = true;
-  //           // sendToChainMsg = 'Your attestation is recorded on-chain!';
-  //           eventInfo.rawData = Object.assign(eventInfo.rawData, {
-  //             status: 'SUCCESS',
-  //             reason: '',
-  //             txHash: upChainRes,
-  //           });
-  //           eventReport(eventInfo);
-  //         } else {
-  //           // sendToChainResult = true;
-  //           // sendToChainMsg = 'Please try again later.';
-  //           eventInfo.rawData = Object.assign(eventInfo.rawData, {
-  //             status: 'FAILED',
-  //             reason: 'attestByDelegationProxyFee error',
-  //           });
-  //           eventReport(eventInfo);
-  //         }
-  //       } catch {}
-
-  //   }
-  // }
+          if (curCredential.reqType === 'web') {
+            if (newProvided.length && newProvided.length > 0) {
+              const flag = newProvided.some(
+                (i) => i.chainName.indexOf('Linea') > -1
+              );
+              if (flag) {
+                await chrome.storage.local.set({
+                  mysteryBoxRewards: '1',
+                });
+              }
+            }
+          }
+          // sendToChainResult = true;
+          // sendToChainMsg = 'Your attestation is recorded on-chain!';
+          eventInfo.rawData = Object.assign(eventInfo.rawData, {
+            status: 'SUCCESS',
+            reason: '',
+            txHash: upChainRes,
+          });
+          eventReport(eventInfo);
+        } else {
+          // sendToChainResult = true;
+          // sendToChainMsg = 'Please try again later.';
+          eventInfo.rawData = Object.assign(eventInfo.rawData, {
+            status: 'FAILED',
+            reason: 'attestByDelegationProxyFee error',
+          });
+          eventReport(eventInfo);
+        }
+      } catch {}
+    }
+  }
 };
 
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {

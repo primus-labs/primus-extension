@@ -495,11 +495,15 @@ export const algorithmMsgListener = async (
           eventType: 'ATTESTATION_END',
         };
         eventReport(eventInfoEnd);
+
         if (parsedActiveRequestAttestation.reqType === 'web') {
           pageDecodeMsgListener(
             {
-              result: 'warn',
-              failReason: { ...msgObj },
+              name: 'end',
+              params: {
+                result: 'warn',
+                failReason: { ...msgObj },
+              }
             },
             sender,
             sendResponse,

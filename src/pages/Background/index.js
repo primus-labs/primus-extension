@@ -255,7 +255,7 @@ const processAlgorithmReq = async (message, port) => {
       await chrome.offscreen.closeDocument();
       console.log('333-Attesting-remove9');
       await chrome.storage.local.remove(['activeRequestAttestation']);
-      postMsg(fullscreenPort, {
+      fullscreenPort && postMsg(fullscreenPort, {
         resType: 'algorithm',
         resMethodName: 'stop',
         res: { retcode: 0 },
@@ -263,7 +263,7 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'lineaEventStartOffline':
-      postMsg(fullscreenPort, {
+      fullscreenPort && postMsg(fullscreenPort, {
         resType: 'algorithm',
         resMethodName: 'lineaEventStartOffline',
         res: {},

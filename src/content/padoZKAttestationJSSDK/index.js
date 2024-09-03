@@ -57,13 +57,13 @@ window.addEventListener('message', (e) => {
     //     name: 'stopOffscreen',
     //   });
     // }
-    // if (name === 'sendToChainRes') {
-    //   chrome.runtime.sendMessage({
-    //     type: 'padoZKAttestationJSSDK',
-    //     name: 'sendToChainRes',
-    //     params,
-    //   });
-    // }
+    if (name === 'sendToChainRes') {
+      chrome.runtime.sendMessage({
+        type: 'padoZKAttestationJSSDK',
+        name: 'sendToChainRes',
+        params,
+      });
+    }
   }
 });
 

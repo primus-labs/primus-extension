@@ -431,15 +431,18 @@ const Cards: React.FC<PDropdownProps> = memo(
                         <div className="label">
                           <span>On-chain</span>
                           <span>
-                            {i.event
+                            {!i.attestOrigin && (i.event
                               ? `(${eventMetaMap[i.event]?.nameInAttestation})`
                               : i?.provided?.length > 0
                               ? `(${i?.provided?.length})`
-                              : ''}
-                            {i.attestOrigin ? `(${i.attestOrigin})` : ''}
+                              : '')}
                           </span>
+                          {i.attestOrigin && '('}
+                          <span className="attestOrigin">{i.attestOrigin}</span>
+                          {i.attestOrigin && ')'}
                         </div>
                         <div className="value onChain">
+                          {/* <span>12345466789111</span> */}
                           <div className="chains">
                             {i.provided?.map((c, k) => (
                               <a

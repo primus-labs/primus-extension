@@ -581,8 +581,10 @@ export const pageDecodeMsgListener = async (
       handlerForSdk(processAlgorithmReq, 'cancel');
     }
     if (name === 'end') {
-      console.log('333-bg-pageDecode-noMeet', tabCreatedByPado);
+     
       if (tabCreatedByPado) {
+        console.log('333-bg-pageDecode-noMeet', tabCreatedByPado, request);
+        
         chrome.tabs.sendMessage(
           tabCreatedByPado.id,
           request,
@@ -596,6 +598,7 @@ export const pageDecodeMsgListener = async (
     }
   } else {
     if (name === 'end') {
+      console.log('333-bg-pageDecode-noMeet22', tabCreatedByPado.id);
       if (tabCreatedByPado) {
         chrome.tabs.sendMessage(
           tabCreatedByPado.id,

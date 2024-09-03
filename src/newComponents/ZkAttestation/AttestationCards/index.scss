@@ -141,12 +141,18 @@
                 color: var(--text-tokens-text-tertiary);
                 @include frsc;
                 gap: var(--spacing-4);
+                .attestOrigin {
+                  max-width: 76px;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
               }
               .value {
                 max-width: 132px;
-                white-space: nowrap;  
-                overflow: hidden;  
-                text-overflow: ellipsis;  
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
                 @include BodyBody100;
                 @include frsc;
                 // gap: var(--spacing-8);
