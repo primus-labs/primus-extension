@@ -32,7 +32,7 @@ const fetchAttestationTemplateList = async () => {
       await chrome.storage.local.set({
         webProofTypes: JSON.stringify(result),
       });
-      console.log('333-bg-sdk-fetchAttestationTemplateList', result);
+      // console.log('333-bg-sdk-fetchAttestationTemplateList', result);
     } else {
       // alert('getProofTypes network error');
     }
@@ -50,7 +50,7 @@ const fetchConfigure = async () => {
       await chrome.storage.local.set({
         configMap: JSON.stringify(configMap),
       });
-      console.log('333-bg-sdk-fetchConfigure', configMap);
+      // console.log('333-bg-sdk-fetchConfigure', configMap);
     }
   } catch {}
 };
@@ -149,13 +149,13 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
 
     const {
-      attestationTypeId,
+      attestationTypeID,
       tokenSymbol,
       assetsBalance,
-      followersCount,
+      followersNO,
       chainName,
       walletAddress,
-      dappName,
+      dappSymbol,
     } = params;
     chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
@@ -174,7 +174,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
 
     const activeWebProofTemplate = webProofTypesList.find(
-      (i) => i.id === attestationTypeId
+      (i) => i.id === attestationTypeID
     );
     const verificationContent = Object.keys(
       ALLVERIFICATIONCONTENTTYPEEMAP
@@ -196,7 +196,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     } else if (verificationContent === 'Token Holding') {
       verificationValue = tokenSymbol;
     } else if (verificationContent === 'X Followers') {
-      verificationValue = followersCount;
+      verificationValue = followersNO;
       await chrome.storage.local.set({
         padoZKAttestationJSSDKXFollowerCount: verificationValue,
       });
@@ -208,7 +208,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       verificationContent,
       verificationValue,
       fetchType: 'Web',
-      attestOrigin: dappName,
+      attestOrigin: dappSymbol,
     };
     const acc = await getDataSourceAccount(
       activeAttestationParams.dataSourceId
@@ -252,7 +252,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     } else if (['X Followers'].includes(verificationContent)) {
       activeAttestationParams.attestationType = 'Social Connections';
       activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
-        followersCount;
+        followersNO;
     }
 
     await chrome.storage.local.set({
@@ -265,11 +265,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ...activeWebProofTemplate,
     };
 
-    console.log(
-      '333-bg-startAttest',
-      activeAttestationParams,
-      activeWebProofTemplate
-    );
+    // console.log(
+    //   '333-bg-startAttest',
+    //   activeAttestationParams,
+    //   activeWebProofTemplate
+    // );
     pageDecodeMsgListener(
       {
         type: 'pageDecode',
@@ -304,10 +304,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ]);
     const attestTipMap =
       JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
-    console.log(
-      '333-bg-getAttestationResultTimeout',
-      padoZKAttestationJSSDKAttestationPresetParams
-    );
+    // console.log(
+    //   '333-bg-getAttestationResultTimeout',
+    //   padoZKAttestationJSSDKAttestationPresetParams
+    // );
     const activeAttestationParams = JSON.parse(
       padoZKAttestationJSSDKAttestationPresetParams
     );
@@ -401,7 +401,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     );
     if (curCredential) {
       const { address, schemaType, source } = curCredential;
-      console.log('333-bg-sdk-receive-sendToChain2');
+      // console.log('333-bg-sdk-receive-sendToChain2');
       const schemaNameFn = (networkName) => {
         const formatNetworkName = networkName;
         let Name;
@@ -436,11 +436,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
       };
       try {
         const eventType = `${schemaType}-${schemaNameFn(chainName)}`;
-        console.log('333-bg-sdk-receive-sendToChain3', eventType);
+        // console.log('333-bg-sdk-receive-sendToChain3', eventType);
         let upchainNetwork = chainName;
         if (CURENV === 'production' && chainName === 'Linea Goerli') {
           upchainNetwork = 'Linea Mainnet';
-          console.log('333-CURENV', CURENV, upchainNetwork);
+          // console.log('333-CURENV', CURENV, upchainNetwork);
         }
         // const uniqueId = strToHexSha256(upChainParams.signature);
         var eventInfo = {

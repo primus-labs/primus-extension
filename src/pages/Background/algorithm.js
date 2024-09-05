@@ -108,22 +108,19 @@ export const algorithmMsgListener = async (
     }
     eventReport(eventInfo);
   }
-  console.log(
-    '333pado-bg-padoZKAttestationJSSDKBeginAttest',
-    padoZKAttestationJSSDKBeginAttest
-  );
+  // console.log(
+  //   '333pado-bg-padoZKAttestationJSSDKBeginAttest',
+  //   padoZKAttestationJSSDKBeginAttest
+  // );
   if (padoZKAttestationJSSDKBeginAttest === '1') {
-    console.log('333-1');
     if (resMethodName === 'start') {
-      console.log('333-2');
       processAlgorithmReq({
         reqMethodName: 'init',
       });
-      console.log('333-3');
 
       const { padoZKAttestationJSSDKDappTabId: dappTabId } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-      console.log('333jssdk-init-completed', dappTabId);
+      // console.log('333jssdk-init-completed', dappTabId);
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestationRes',
@@ -133,7 +130,7 @@ export const algorithmMsgListener = async (
       });
     }
     if (resMethodName === 'getAttestation') {
-      console.log('333-bg-receive-getAttestation', message.res);
+      // console.log('333-bg-receive-getAttestation', message.res);
       const { retcode } = JSON.parse(message.res);
       let msgObj = {};
       let result = false;
@@ -191,15 +188,15 @@ export const algorithmMsgListener = async (
       });
     }
     if (resMethodName === 'getAttestationResult') {
-      console.log('333-bg-recceive-getAttestationResult', message.res);
+      // console.log('333-bg-recceive-getAttestationResult', message.res);
       const attestTipMap =
         JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
-      console.log('333-bg-recceive-getAttestationResult2', dappTabId);
+      // console.log('333-bg-recceive-getAttestationResult2', dappTabId);
       if (!message.res) {
         return;
       }
       const { retcode, content, retdesc, details } = JSON.parse(message.res);
-      console.log('333-bg-recceive-getAttestationResult3');
+      // console.log('333-bg-recceive-getAttestationResult3');
       const activeAttestationParams = JSON.parse(
         padoZKAttestationJSSDKAttestationPresetParams
       );
@@ -227,10 +224,10 @@ export const algorithmMsgListener = async (
       }
 
       if (retcode === '0') {
-        console.log(
-          '333-bg-recceive-getAttestationResult4',
-          activeAttestationParams
-        );
+        // console.log(
+        //   '333-bg-recceive-getAttestationResult4',
+        //   activeAttestationParams
+        // );
         if (
           content.balanceGreaterThanBaseValue === 'true' &&
           content.signature
@@ -248,14 +245,14 @@ export const algorithmMsgListener = async (
           const acc = await getDataSourceAccount(
             activeAttestationParams.dataSourceId
           );
-          console.log('333-bg-recceive-getAttestationResult6', acc);
+          // console.log('333-bg-recceive-getAttestationResult6', acc);
           let fullAttestation = {
             ...content,
             ...parsedActiveRequestAttestation,
             ...activeAttestationParams,
             account: acc,
           };
-          console.log('333-bg-recceive-getAttestationResult7', fullAttestation);
+          // console.log('333-bg-recceive-getAttestationResult7', fullAttestation);
           if (fullAttestation.verificationContent === 'X Followers') {
             let count = 0;
             if (padoZKAttestationJSSDKBeginAttest === '1') {
@@ -277,7 +274,7 @@ export const algorithmMsgListener = async (
           await chrome.storage.local.set({
             credentials: JSON.stringify(credentialsObj),
           });
-          console.log('333-bg-success', fullAttestation);
+          // console.log('333-bg-success', fullAttestation);
           if (fullAttestation.reqType === 'web') {
             const { rc, result } = await regenerateAttest(
               fullAttestation,
@@ -299,8 +296,7 @@ export const algorithmMsgListener = async (
                 hasGetTwitterScreenName,
                 undefined
               );
-              console.log('333-bg-success2');
-              console.log('333-Attesting-remove5');
+              // console.log('333-bg-success2');
               await chrome.storage.local.remove([
                 'padoZKAttestationJSSDKBeginAttest',
                 'padoZKAttestationJSSDKWalletAddress',
@@ -308,12 +304,12 @@ export const algorithmMsgListener = async (
                 'padoZKAttestationJSSDKXFollowerCount',
                 'activeRequestAttestation',
               ]);
-              console.log(
-                '333-bg-success3',
-                dappTabId,
-                activeRequestId,
-                eip712MessageRawDataWithSignature
-              );
+              // console.log(
+              //   '333-bg-success3',
+              //   dappTabId,
+              //   activeRequestId,
+              //   eip712MessageRawDataWithSignature
+              // );
               chrome.tabs.sendMessage(dappTabId, {
                 type: 'padoZKAttestationJSSDK',
                 name: 'startAttestationRes',
@@ -346,11 +342,11 @@ export const algorithmMsgListener = async (
           !content.signature ||
           content.balanceGreaterThanBaseValue === 'false'
         ) {
-          console.log(
-            '333-bg-al-notMeet1',
-            activeAttestationParams,
-            parsedActiveRequestAttestation
-          );
+          // console.log(
+          //   '333-bg-al-notMeet1',
+          //   activeAttestationParams,
+          //   parsedActiveRequestAttestation
+          // );
           // attestTipMap
           let title = errorMsgTitle;
           let msgObj = {
@@ -382,7 +378,7 @@ export const algorithmMsgListener = async (
               errorCode = '00103';
               // linea event had bund
             } else {
-              console.log('333-bg-al-notMeet2', attestTipMap);
+              // console.log('333-bg-al-notMeet2', attestTipMap);
               errorCode = '00104';
             }
             Object.assign(msgObj, {
@@ -404,7 +400,6 @@ export const algorithmMsgListener = async (
               fullscreenPort,
               hasGetTwitterScreenName
             );
-            console.log('333-Attesting-remove6');
             await chrome.storage.local.remove([
               'padoZKAttestationJSSDKBeginAttest',
               'padoZKAttestationJSSDKWalletAddress',
@@ -456,11 +451,11 @@ export const algorithmMsgListener = async (
         };
         let codeTipObj = attestTipMap[code];
 
-        console.log(
-          '333codeTipObj',
-          codeTipObj,
-          parsedActiveRequestAttestation
-        );
+        // console.log(
+        //   '333codeTipObj',
+        //   codeTipObj,
+        //   parsedActiveRequestAttestation
+        // );
         if (codeTipObj) {
         } else {
           codeTipObj = attestTipMap['99999'];
@@ -511,7 +506,6 @@ export const algorithmMsgListener = async (
             fullscreenPort,
             hasGetTwitterScreenName
           );
-          console.log('333-Attesting-remove7');
           await chrome.storage.local.remove([
             'padoZKAttestationJSSDKBeginAttest',
             'padoZKAttestationJSSDKWalletAddress',

@@ -87,7 +87,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         name: 'getAttestationRes',
         params,
       });
-      console.log('333-content-sdk-receive-getAttestation', params);
+      // console.log('333-content-sdk-receive-getAttestation', params);
     }
 
     if (name === 'startAttestationRes') {
@@ -101,7 +101,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 
     if (name === 'sendToChainRes') {
-      console.log('333-content-sdk-receive-sendToChainRes', params);
+      // console.log('333-content-sdk-receive-sendToChainRes', params);
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',

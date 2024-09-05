@@ -78,7 +78,6 @@ const creatUserInfo = async () => {
             token: bearerToken,
           }),
         });
-        console.log('333-extenstion-install-creatUserInfo');
       }
     } catch (e) {
       console.log('getUserIdentity error', e);
@@ -180,11 +179,7 @@ const processAlgorithmReq = async (message, port) => {
           'padoZKAttestationJSSDKBeginAttest',
           'padoZKAttestationJSSDKDappTabId',
         ]);
-        console.log(
-          '333-bg-processAlgorithmReq-start',
-          padoZKAttestationJSSDKBeginAttest,
-          dappTabId
-        );
+        
         if (padoZKAttestationJSSDKBeginAttest === '1') {
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
@@ -253,7 +248,6 @@ const processAlgorithmReq = async (message, port) => {
       break;
     case 'stop':
       await chrome.offscreen.closeDocument();
-      console.log('333-Attesting-remove9');
       await chrome.storage.local.remove(['activeRequestAttestation']);
       fullscreenPort && postMsg(fullscreenPort, {
         resType: 'algorithm',
