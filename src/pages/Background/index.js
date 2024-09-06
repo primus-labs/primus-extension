@@ -156,6 +156,9 @@ const processAlgorithmReq = async (message, port) => {
   console.log(
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
   );
+  const { padoZKAttestationJSSDKBeginAttest } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKBeginAttest',
+  ]);
   switch (reqMethodName) {
     case 'start':
       const offscreenDocumentPath = 'offscreen.html';
@@ -212,8 +215,7 @@ const processAlgorithmReq = async (message, port) => {
         USERPASSWORD,
         port
       );
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      
       const f = { ...attestationParams };
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(f),
@@ -247,14 +249,18 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'stop':
-      await chrome.offscreen.closeDocument();
-      await chrome.storage.local.remove(['activeRequestAttestation']);
-      fullscreenPort && postMsg(fullscreenPort, {
-        resType: 'algorithm',
-        resMethodName: 'stop',
-        res: { retcode: 0 },
-        params,
-      });
+      if (padoZKAttestationJSSDKBeginAttest !== '1') {
+        await chrome.offscreen.closeDocument();
+        await chrome.storage.local.remove(['activeRequestAttestation']);
+        fullscreenPort &&
+          postMsg(fullscreenPort, {
+            resType: 'algorithm',
+            resMethodName: 'stop',
+            res: { retcode: 0 },
+            params,
+          });
+      }
+      
       break;
     case 'lineaEventStartOffline':
       fullscreenPort && postMsg(fullscreenPort, {
