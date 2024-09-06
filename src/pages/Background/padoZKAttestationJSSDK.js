@@ -130,6 +130,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       'padoZKAttestationJSSDKDappTabId',
     ]);
     if (lastActiveRequestAttestationStr) {
+      await chrome.storage.local.remove(['padoZKAttestationJSSDKBeginAttest']);
       const desc =
         'A proof is currently being generated. Please try again later.';
       let resParams = { result: false };

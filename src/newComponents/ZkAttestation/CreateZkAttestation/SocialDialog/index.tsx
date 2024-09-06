@@ -153,6 +153,10 @@ const Social: React.FC<PButtonProps> = memo(
             'A proof is currently being generated. Please try again later.'
           );
           return;
+        } else {
+          await chrome.storage.local.remove([
+            'padoZKAttestationJSSDKBeginAttest',
+          ]);
         }
         // setAssetForm((f) => ({ ...f, ...form }));
         // 1.store attestation in process params in react store

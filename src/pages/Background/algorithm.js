@@ -108,10 +108,7 @@ export const algorithmMsgListener = async (
     }
     eventReport(eventInfo);
   }
-  // console.log(
-  //   '333pado-bg-padoZKAttestationJSSDKBeginAttest',
-  //   padoZKAttestationJSSDKBeginAttest
-  // );
+
   if (padoZKAttestationJSSDKBeginAttest === '1') {
     if (resMethodName === 'start') {
       processAlgorithmReq({
@@ -498,7 +495,7 @@ export const algorithmMsgListener = async (
               params: {
                 result: 'warn',
                 failReason: { ...msgObj },
-              }
+              },
             },
             sender,
             sendResponse,

@@ -80,7 +80,11 @@ const Nav: React.FC<PButtonProps> = memo(
           alert(
             'A proof is currently being generated. Please try again later.'
           );
-          return
+          return;
+        } else {
+          await chrome.storage.local.remove([
+            'padoZKAttestationJSSDKBeginAttest',
+          ]);
         }
         // setAssetForm((f) => ({ ...f, ...form }));
         // 1.store attestation in process params in react store
@@ -168,14 +172,14 @@ const Nav: React.FC<PButtonProps> = memo(
                 activeAttestationParams.verificationValue;
             }
           }
-          const requestid=uuidv4()
+          const requestid = uuidv4();
           var eventInfo = {
             eventType: 'ATTESTATION_NEXT',
             rawData: {
               source: activeAttestationParams.dataSource,
               event: activeAttestationParams.event,
               order: '1',
-              requestid
+              requestid,
             },
           };
           eventReport(eventInfo);
@@ -194,7 +198,7 @@ const Nav: React.FC<PButtonProps> = memo(
             name: 'init',
             params: {
               ...currRequestTemplate,
-              requestid
+              requestid,
             },
             extensionTabId: currentWindowTabs[0].id,
             operation: 'attest',
