@@ -473,7 +473,7 @@ function PadoCard() {
       </div>
       <div className="pado-extenstion-center">
         <div className="pado-extenstion-center-title">
-          PADO Attestation Process
+          PADO zkAttestation Process
         </div>
         <DescEl
           status={status}
