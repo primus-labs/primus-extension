@@ -155,6 +155,13 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
   useEffect(() => {
     console.log('updated port in page layout', padoServicePort.name);
     const beforeunloadFn = async () => {
+      
+      const { padoZKAttestationJSSDKBeginAttest } =
+        await chrome.storage.local.get([
+          'padoZKAttestationJSSDKBeginAttest',
+          'activeRequestAttestation',
+        ]);
+      if (padoZKAttestationJSSDKBeginAttest !== '1') {
         const msg = {
           fullScreenType: 'algorithm',
           reqMethodName: 'stop',
@@ -163,6 +170,8 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
           },
         };
         postMsg(padoServicePort, msg);
+
+      }
     };
     window.addEventListener('beforeunload', beforeunloadFn);
     return () => {
