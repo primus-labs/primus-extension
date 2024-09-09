@@ -8,7 +8,7 @@ const DEFAULTCREDTYPELIST = [
     credTitle: 'Assets Proof',
     credIntroduce: 'Assets balance in Binance, OKX',
     credLogoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredAsset.svg',
+      'https://storage.googleapis.com/primus-online/others/iconCredAsset.svg',
     credDetails:
       'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
     credProofContent: 'Balance of assets',
@@ -24,7 +24,7 @@ const DEFAULTCREDTYPELIST = [
     credTitle: 'Token Holdings Proof',
     credIntroduce: 'Ownership in Binance, Coinbase, OKX',
     credLogoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredToken.svg',
+      'https://storage.googleapis.com/primus-online/others/iconCredToken.svg',
     credDetails:
       'Proving you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
     credProofContent: 'Hold this kind of Token',
@@ -39,7 +39,7 @@ const DEFAULTCREDTYPELIST = [
     credTitle: 'Identity Proof',
     credIntroduce: 'eKYC, Nationality, Membership',
     credLogoUrl:
-      'https://pado-online.s3.ap-northeast-1.amazonaws.com/others/iconCredCred.svg',
+      'https://storage.googleapis.com/primus-online/others/iconCredCred.svg',
     credDetails:
       'Proving you have completed the identity verification process. PADO verifies the authenticity of the verification result.',
     credProofContent: 'Identity verification',

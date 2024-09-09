@@ -40,7 +40,7 @@ const request = async (fetchParams: FetchParams) => {
     const userInfoObj = JSON.parse(userInfo);
     const { id, token } = userInfoObj;
     if (
-      !url.startsWith('https://pado-online.s3.ap-northeast-1.amazonaws.com') &&
+      !url.startsWith('https://storage.googleapis.com/primus-online') &&
       token
     ) {
       golbalHeader.Authorization = `Bearer ${token}`;
