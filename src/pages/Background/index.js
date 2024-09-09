@@ -84,15 +84,18 @@ const creatUserInfo = async () => {
     }
   }
 };
-chrome.runtime.onInstalled.addListener(({ reason, version }) => {
+chrome.runtime.onInstalled.addListener(async ({ reason, version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     // showIndex();
-    creatUserInfo()
+    creatUserInfo();
     const eventInfo = {
       eventType: 'EXTENSION_INSTALL',
       rawData: '',
     };
     eventReport(eventInfo);
+  } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    await chrome.storage.local.remove(['activeRequestAttestation']);
+    console.log('333-bg-update');
   }
 });
 
@@ -179,14 +182,14 @@ const processAlgorithmReq = async (message, port) => {
           'padoZKAttestationJSSDKBeginAttest',
           'padoZKAttestationJSSDKDappTabId',
         ]);
-        
+
         if (padoZKAttestationJSSDKBeginAttest === '1') {
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
             name: 'initAttestationRes',
             params: {
-              result: true
-            }
+              result: true,
+            },
           });
         }
         console.log(
@@ -247,21 +250,35 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'stop':
-      await chrome.offscreen.closeDocument();
-      await chrome.storage.local.remove(['activeRequestAttestation']);
-      fullscreenPort && postMsg(fullscreenPort, {
-        resType: 'algorithm',
-        resMethodName: 'stop',
-        res: { retcode: 0 },
-        params,
-      });
+      const stopFn = async () => {
+        console.log('333-bg-stop', params);
+        await chrome.offscreen.closeDocument();
+        await chrome.storage.local.remove(['activeRequestAttestation']);
+        fullscreenPort &&
+          postMsg(fullscreenPort, {
+            resType: 'algorithm',
+            resMethodName: 'stop',
+            res: { retcode: 0 },
+            params,
+          });
+      };
+      if (params?.from === 'beforeunload') {
+        const { padoZKAttestationJSSDKBeginAttest } =
+          await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+        if (padoZKAttestationJSSDKBeginAttest !== '1') {
+          await stopFn();
+        }
+      } else {
+        await stopFn();
+      }
       break;
     case 'lineaEventStartOffline':
-      fullscreenPort && postMsg(fullscreenPort, {
-        resType: 'algorithm',
-        resMethodName: 'lineaEventStartOffline',
-        res: {},
-      });
+      fullscreenPort &&
+        postMsg(fullscreenPort, {
+          resType: 'algorithm',
+          resMethodName: 'lineaEventStartOffline',
+          res: {},
+        });
       break;
     default:
       break;
@@ -558,7 +575,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
       if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrigin = padoZKAttestationJSSDKAttestationPresetParams?JSON.parse(padoZKAttestationJSSDKAttestationPresetParams).attestOrigin: '';
+        eventInfo.rawData.attestOrigin =
+          padoZKAttestationJSSDKAttestationPresetParams
+            ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
+                .attestOrigin
+            : '';
       }
       eventReport(eventInfo);
     }
@@ -605,7 +626,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      processAlgorithmReq,
+      processAlgorithmReq
     );
   }
 });
