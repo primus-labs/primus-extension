@@ -311,7 +311,7 @@ const Nav: React.FC<PButtonProps> = memo(
           await chrome.storage.local.get(['activeRequestAttestation']);
         if (lastActiveRequestAttestationStr) {
           alert(
-            'A proof is currently being generated. Please try again later.'
+            'A zkAttestation process is currently being generated. Please try again later.'
           );
           return;
         } else {
