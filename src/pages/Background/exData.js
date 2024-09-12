@@ -182,7 +182,8 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     //version: CredVersion,
     baseName, // host, such as "api.binance.com"
     padoUrl: padoUrl, // client <----> pado-server // TODO
-    proxyUrl: proxyUrl, // TODO
+    proxyUrl: proxyUrl,
+    errLogUrl: 'wss://api.padolabs.org/logs',
     // if cipher non-exist or empty use default. options:
     //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
     cipher: '', // TODO
