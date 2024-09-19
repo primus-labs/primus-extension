@@ -34,6 +34,7 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
         tokenPriceMap: ex.tokenPriceMap,
         tradingAccountTokenAmountObj: ex.tradingAccountTokenAmountObj,
         userInfo: ex.userInfo, // new add
+        spot30dVol: ex.spot30dVol,
       };
       if (dataSourceId === 'binance') {
         newSourceUserData.tradingAccountFreeTokenAmountObj =

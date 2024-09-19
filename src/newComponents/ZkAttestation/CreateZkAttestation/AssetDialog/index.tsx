@@ -74,7 +74,6 @@ const Nav: React.FC<PButtonProps> = memo(
     }, []);
     const handleSubmitSetDetail = useCallback(
       async (form = {}) => {
-        debugger
         const { activeRequestAttestation: lastActiveRequestAttestationStr } =
           await chrome.storage.local.get(['activeRequestAttestation']);
         if (lastActiveRequestAttestationStr) {
@@ -133,7 +132,6 @@ const Nav: React.FC<PButtonProps> = memo(
               i.dataSource === activeAttestationParams.dataSourceId &&
               i.name === activeAttestationParams.verificationContent
           );
-          debugger
           const currRequestTemplate = {
             ...activeWebProofTemplate,
             schemaType:
@@ -150,10 +148,15 @@ const Nav: React.FC<PButtonProps> = memo(
           const lastResponseConditions = lastResponse.conditions;
           const lastResponseConditionsSubconditions =
             lastResponseConditions.subconditions;
-          if (activeAttestationParams.verificationContent === 'Assets Proof') {
+          if (
+            ['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
+              activeAttestationParams.verificationContent
+            )
+          ) {
             // change verification value
             lastResponseConditions.value =
               activeAttestationParams.verificationValue;
+            lastResponseConditions.op = '>=';
             // for okx
             if (lastResponseConditionsSubconditions) {
               const lastSubCondition =
@@ -174,7 +177,6 @@ const Nav: React.FC<PButtonProps> = memo(
                 activeAttestationParams.verificationValue;
             }
           }
-          debugger
           const requestid = uuidv4();
           var eventInfo = {
             eventType: 'ATTESTATION_NEXT',

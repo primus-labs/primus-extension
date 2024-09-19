@@ -13,6 +13,18 @@ class WebBinance extends WebExchange {
     this.tradingAccountFreeTokenAmountObj = {};
   }
 
+  async getVipFeeSummary() {
+    const params = {};
+    params.url =
+      'https://www.binance.com/bapi/accounts/v1/private/vip/vip-portal/vip-fee/vip-fee-summary';
+    params.method = 'GET';
+    const res = await this.request(params);
+    console.log(res);
+    if (res.code === '00000') {
+      this.spot30dVol = res.data.spot30dVol
+    }
+    return this.spot30dVol;
+  }
   async getFundingAccountTokenAmountMap() {
     const params = {};
     params.url =
@@ -87,7 +99,7 @@ class WebBinance extends WebExchange {
     //get from lanchpad
     let needBreak = false;
     let lanchPadPage = 1;
-    while (!needBreak){
+    while (!needBreak) {
       const params = {};
       params.url =
         'https://www.binance.com/bapi/lending/v2/private/launchpool/positions?pageIndex=' +
@@ -96,22 +108,28 @@ class WebBinance extends WebExchange {
       params.method = 'GET';
       const res = await this.request(params);
       console.log('LanchPad', res);
-      if(res.data.total==="0" || res.data.total===0 ||res.data.positions.length===0){
+      if (
+        res.data.total === '0' ||
+        res.data.total === 0 ||
+        res.data.positions.length === 0
+      ) {
         needBreak = true;
-        break
+        break;
       }
       res.data.positions.forEach(({ asset, amount }) => {
         const amt = new BigNumber(amount).toFixed();
-        if(this.flexibleAccountTokenAmountMap.has(asset)){
+        if (this.flexibleAccountTokenAmountMap.has(asset)) {
           //if asset exists, need to plus
-          const oldAmt = this.flexibleAccountTokenAmountMap.get(asset)
-          this.flexibleAccountTokenAmountMap.set(asset, new BigNumber(oldAmt).plus(amt).toFixed())
-        }else {
+          const oldAmt = this.flexibleAccountTokenAmountMap.get(asset);
+          this.flexibleAccountTokenAmountMap.set(
+            asset,
+            new BigNumber(oldAmt).plus(amt).toFixed()
+          );
+        } else {
           this.flexibleAccountTokenAmountMap.set(asset, amt);
-
         }
       });
-      lanchPadPage = lanchPadPage+1
+      lanchPadPage = lanchPadPage + 1;
     }
     return this.flexibleAccountTokenAmountMap;
   }

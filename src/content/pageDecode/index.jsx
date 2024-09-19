@@ -248,6 +248,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
         } else if (verificationContent === 'Token Holding') {
           vC = 'Token holding';
         } else if (verificationContent === 'Spot 30-Day Trade Vol') {
+          vC = 'Spot 30-day trade vol';
           vV = `> $${verificationValue}`;
         }
       } else if (attestationType === 'Social Connections') {

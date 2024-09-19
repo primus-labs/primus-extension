@@ -69,13 +69,29 @@ const attestationTypeMap = {
     id: '5',
     webTemplateId: '2323',
   },
-  16: {
+  15: {
     attestationType: 'Social Connections',
     verificationContent: 'X Followers',
     desc: 'Followers number',
     type: 'Web Data',
+    id: '15',
+    webTemplateId: '15',
+  },
+  16: {
+    attestationType: 'Assets Verification',
+    verificationContent: 'Spot 30-Day Trade Vol',
+    desc: 'Spot 30-day trade vol',
+    type: 'Web Data',
     id: '16',
     webTemplateId: '16',
+  },
+  17: {
+    attestationType: 'Assets Verification',
+    verificationContent: 'Spot 30-Day Trade Vol',
+    desc: 'Spot 30-day trade vol',
+    type: 'Web Data',
+    id: '17',
+    webTemplateId: '17',
   },
 };
 const Cards: React.FC<PDropdownProps> = memo(
@@ -92,6 +108,7 @@ const Cards: React.FC<PDropdownProps> = memo(
         return [
           attestationTypeMap[2],
           attestationTypeMap[3],
+          attestationTypeMap[16],
           attestationTypeMap[4],
           attestationTypeMap[5],
         ];
@@ -99,6 +116,7 @@ const Cards: React.FC<PDropdownProps> = memo(
         return [
           attestationTypeMap[2],
           attestationTypeMap[3],
+          attestationTypeMap[17],
           attestationTypeMap[5],
         ];
       if (dataSourceName === 'tiktok' || dataSourceName === 'google')

@@ -116,7 +116,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         if (activeDataSouceUserInfo) {
           let symbolList: any[] = [];
           if (dataSourceId === 'okx') {
-            symbolList = Object.values(activeDataSouceUserInfo.tokenListMap).map((i:any)=>i.symbol);
+            symbolList = Object.values(
+              activeDataSouceUserInfo.tokenListMap
+            ).map((i: any) => i.symbol);
           } else if (dataSourceId === 'binance') {
             symbolList = Object.keys(
               activeDataSouceUserInfo.tradingAccountFreeTokenAmountObj
@@ -215,7 +217,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         : 'Next';
     }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
-      debugger
       if (!formLegal) {
         return;
       }
@@ -447,7 +448,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 </div>
               )}
               {pswForm.verificationContent === 'Spot 30-Day Trade Vol' && (
-                <div className="balance"></div>
+                <div className="balance">
+                  $
+                  {new BigNumber(
+                    activeDataSouceUserInfo.spot30dVol ?? 0
+                  ).toFixed(2)}
+                </div>
               )}
             </div>
           </div>

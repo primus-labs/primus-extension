@@ -24,8 +24,12 @@ class WebExchange {
     this.totalAccountTokenMap = {};
     this.totalAccountBalance = BIGZERO;
     this.userInfo = {};
+    this.spot30dVol = 0;
   }
 
+  getVipFeeSummary() {
+    
+  }
   async getFundingAccountTokenAmountMap() {
     console.log('getFundingAccountTokenAmountMap');
     return this.fundingAccountTokenAmountMap;
@@ -192,7 +196,11 @@ class WebExchange {
 
   async getInfo() {
     try {
-      await Promise.all([this.getTotalAccountBalance(), this.getUserInfo()]);
+      await Promise.all([
+        this.getTotalAccountBalance(),
+        this.getUserInfo(),
+        this.getVipFeeSummary(),
+      ]);
       //return this.exchange;
     } catch (error) {
       console.log('exchange getInfo error:', error);

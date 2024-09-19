@@ -151,7 +151,9 @@ const Cards: React.FC<PDropdownProps> = memo(
     const getValue = (i) => {
       let str: any = i.verificationValue;
       if (i.attestationType === 'Assets Verification') {
-        if (i.verificationContent === 'Assets Proof') {
+        if (['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
+              i.verificationContent
+            )) {
           str = `> $${i.verificationValue}`;
         } else if (i.verificationContent === 'Token Holding') {
           const dataSourceIconSrc = tokenIconFn(
@@ -383,7 +385,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                       {/* TODO-newui config uiTemplate */}
                       <div className="descItem">
                         <div className="label">Content</div>
-                        <div className="value">{getContent(i)}</div>
+                        <div className="value longValue">{getContent(i)}</div>
                       </div>
                       <div className="descItem">
                         <div className="label">Value</div>

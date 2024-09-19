@@ -38,7 +38,7 @@ export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   },
   'Spot 30-Day Trade Vol': {
     value: 'Spot 30-Day Trade Vol',
-    label: 'Spot 30-Day Trade Vol',
+    label: 'Spot 30-day trade vol',
   },
 };
 
@@ -68,10 +68,10 @@ export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[
   Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
 
 export const ASSETSVOLVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  // '0.01': {
-  //   value: '0.01',
-  //   label: '> $0.01',
-  // }, //delete TODO-newui
+  '0': {
+    value: '0',
+    label: '> $0',
+  }, //delete TODO-newattestations
   '100': {
     value: '100',
     label: '> $100',

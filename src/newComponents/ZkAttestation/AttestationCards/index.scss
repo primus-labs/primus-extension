@@ -173,6 +173,9 @@
                     }
                   }
                 }
+                &.longValue {
+                  max-width: 140px;
+                }
               }
               .icon-Add {
                 font-size: var(--spacing-24);
