@@ -36,6 +36,10 @@ export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
     value: 'Token Holding',
     label: 'Token holding',
   },
+  'Spot 30-Day Trade Vol': {
+    value: 'Spot 30-Day Trade Vol',
+    label: 'Spot 30-Day Trade Vol',
+  },
 };
 
 export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
@@ -62,6 +66,31 @@ export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 };
 export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
+
+export const ASSETSVOLVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
+  // '0.01': {
+  //   value: '0.01',
+  //   label: '> $0.01',
+  // }, //delete TODO-newui
+  '100': {
+    value: '100',
+    label: '> $100',
+  },
+  '300': {
+    value: '300',
+    label: '> $300',
+  },
+  '500': {
+    value: '500',
+    label: '> $500',
+  },
+  '1000': {
+    value: '1000',
+    label: '> $1000',
+  },
+};
+export const ASSETSVOLVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
+  Object.values(ASSETSVOLVERIFICATIONVALUETYPEEMAP);
 
 export const ASSETSVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(ASSETSVERIFICATIONCONTENTTYPEEMAP);

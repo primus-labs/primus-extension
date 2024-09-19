@@ -6,6 +6,7 @@ import useMsgs from '@/hooks/useMsgs';
 import {
   ASSETSVERIFICATIONCONTENTTYPELIST,
   ASSETSVERIFICATIONVALUETYPELIST,
+  ASSETSVOLVERIFICATIONVALUETYPELIST,
   ASSETSVERIFICATIONCONTENTTYPEEMAP,
   ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
@@ -155,6 +156,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             icon: tokenIconFn({ symbol: i }, dataSourceId),
           }));
         }
+      } else if (pswForm.verificationContent === 'Spot 30-Day Trade Vol') {
+        list = [...ASSETSVOLVERIFICATIONVALUETYPELIST];
       }
       console.log('222valueList', list, pswForm.verificationContent);
       return list;
@@ -212,6 +215,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         : 'Next';
     }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
+      debugger
       if (!formLegal) {
         return;
       }
@@ -225,6 +229,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       } else {
         //different
         if (
+          pswForm.verificationContent === 'Assets Proof' &&
           activeDataSouceUserInfo &&
           gt(Number(pswForm.verificationValue), Number(totalBalanceForAttest))
         ) {
@@ -440,6 +445,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 <div className="balance">
                   ${new BigNumber(totalBalanceForAttest).toFixed(2)}
                 </div>
+              )}
+              {pswForm.verificationContent === 'Spot 30-Day Trade Vol' && (
+                <div className="balance"></div>
               )}
             </div>
           </div>
