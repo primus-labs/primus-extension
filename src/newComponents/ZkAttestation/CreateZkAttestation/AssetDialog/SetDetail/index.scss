@@ -6,7 +6,8 @@
   --verificationContent-width: 0.92rem;
   --verificationContent-input-width: 1.02rem;
   // --verificationContent-select-width: 0.9513rem;
-  --verificationContent-select-width: 1.2708rem;
+  --verificationContent-select-width: 1.2777rem;
+  --verificationContent-dropdown-width: 1.1458rem;
   --verificationValue-select-width: 0.8541rem;
   --verificationValue-input-width: 0.6111rem;
   --verificationValue-input-hasValue-width: 0.4166rem;
@@ -16,7 +17,8 @@
     --verificationContent-width: 132px;
     --verificationContent-input-width: 147px;
     // --verificationContent-select-width: 137px;
-    --verificationContent-select-width: 183px;
+    --verificationContent-select-width: 184px;
+    --verificationContent-dropdown-width: 165px;
     --verificationValue-select-width: 123px;
     --verificationValue-input-width: 88px;
     --verificationValue-input-hasValue-width: 60px;
@@ -39,7 +41,7 @@
         }
       }
       .selectOptionswrapper {
-        width: var(--verificationContent-select-width);
+        width: var(--verificationContent-dropdown-width);
       }
     }
     .verificationValue {

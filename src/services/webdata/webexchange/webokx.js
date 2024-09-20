@@ -11,6 +11,18 @@ class WebOKX extends WebExchange {
     super('okx');
   }
 
+  async getVipFeeSummary() {
+    const params = {};
+    params.url = 'https://www.okx.com/v3/users/fee/get-level-volume-summary?t=' +
+      new Date().getTime();
+    params.method = 'GET';
+    const res = await this.request(params);
+    console.log(res);
+    if (res.code === 0) {
+      this.spot30dVol = res.data.spotVolume;
+    }
+    return this.spot30dVol;
+  }
   async getFundingAccountTokenAmountMap() {
     const params = {};
     params.url =
@@ -101,16 +113,16 @@ class WebOKX extends WebExchange {
   }
 
   async getTotalAccountTokenMap() {
-    await this.getTokenPriceMap()
+    await this.getTokenPriceMap();
     const params = {};
-    params.url = 
+    params.url =
       'https://www.okx.com/v2/asset/balance/balance-portfolio?valuationUnit=USDT&operationControl=true&t=' +
       new Date().getTime();
     params.method = 'GET';
     const res = await this.request(params);
     console.log('333-getTotalAccountTokenMap', res);
-    res.data.crypto.balances.forEach(i => {
-      const { currency, balance } = i
+    res.data.crypto.balances.forEach((i) => {
+      const { currency, balance } = i;
       const price = this.tokenPriceMap[currency] || ZERO + '';
       const value = mul(balance, price).toFixed();
       // hidden tokens value less than
@@ -119,13 +131,12 @@ class WebOKX extends WebExchange {
           symbol: currency,
           amount: balance,
           price,
-          value 
+          value,
         };
       }
-    })
-     console.log('333-getTotalAccountTokenMap2', this.totalAccountTokenMap);
+    });
+    console.log('333-getTotalAccountTokenMap2', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;
-
   }
   async getTotalAccountBalance() {
     await this.getTotalAccountTokenMap();

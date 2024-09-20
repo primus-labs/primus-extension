@@ -451,7 +451,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
                 <div className="balance">
                   $
                   {new BigNumber(
-                    activeDataSouceUserInfo.spot30dVol ?? 0
+                    activeDataSouceUserInfo.spot30dVol
                   ).toFixed(2)}
                 </div>
               )}
