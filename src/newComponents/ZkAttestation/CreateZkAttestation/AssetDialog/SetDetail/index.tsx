@@ -15,6 +15,7 @@ import useDataSource from '@/hooks/useDataSource';
 import {
   mul,
   gt,
+  gte,
   getTotalBalFromNumObjAPriceObj,
   getTotalBalFromAssetsMap,
   getAccount,
@@ -195,6 +196,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         if (activeDataSouceUserInfo) {
           valueLegal = gt(
             Number(totalBalanceForAttest),
+            Number(pswForm.verificationValue)
+          );
+        }
+      }
+      if (pswForm.verificationContent === 'Spot 30-Day Trade Vol') {
+        if (activeDataSouceUserInfo) {
+          // TODO-newattestations
+          valueLegal = gte(
+            Number(activeDataSouceUserInfo.spot30dVol),
             Number(pswForm.verificationValue)
           );
         }
