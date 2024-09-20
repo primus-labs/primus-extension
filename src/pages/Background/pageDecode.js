@@ -11,10 +11,7 @@ let currExtentionId;
 
 let isReadyRequest = false;
 let operationType = null;
-const handlerForSdk = async (
-  processAlgorithmReq,
-  operation
-) => {
+const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKDappTabId: dappTabId,
@@ -47,14 +44,13 @@ const handlerForSdk = async (
     }
     try {
       chrome.tabs.sendMessage(dappTabId, {
-      type: 'padoZKAttestationJSSDK',
-      name: 'startAttestationRes',
-      params: resParams,
-    });
+        type: 'padoZKAttestationJSSDK',
+        name: 'startAttestationRes',
+        params: resParams,
+      });
     } catch (error) {
       console.log('handlerForSdk error:', handlerForSdk);
     }
-    
   }
 };
 // inject-dynamic
@@ -233,6 +229,7 @@ export const pageDecodeMsgListener = async (
       const checkReadyStatusFn = async () => {
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
         const interceptorUrlArr = interceptorRequests.map((i) => i.url);
+        // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
         const storageObj = await chrome.storage.local.get(interceptorUrlArr);
         const storageArr = Object.values(storageObj);
         if (storageArr.length === interceptorUrlArr.length) {
@@ -285,6 +282,11 @@ export const pageDecodeMsgListener = async (
         currentWindow: true,
       });
       currExtentionId = currentWindowTabs[0]?.id;
+      const interceptorUrlArr = requests.filter((r) => r.name !== 'first').map((i) => i.url);
+      const aaa = await chrome.storage.local.get(interceptorUrlArr);
+      await chrome.storage.local.remove(interceptorUrlArr);
+      const bbb = await chrome.storage.local.get(interceptorUrlArr);
+      // console.log('555-newattestations', capturedUrlKeyArr, aaa, bbb);
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
         { urls: ['<all_urls>'] },
@@ -295,7 +297,6 @@ export const pageDecodeMsgListener = async (
         { urls: ['<all_urls>'] },
         ['requestBody']
       );
-
       tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });
