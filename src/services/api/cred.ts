@@ -82,7 +82,7 @@ export const validateAttestationForAnt = (data: object, config: any) => {
 
 export const regenerateAttestation = (data: any, config?: any) => {
   if (data && data.rawParam) {
-    if (data.rawParam.verificationContent === 'Assets Proof') {
+    if (['Spot 30-Day Trade Vol','Assets Proof'].includes(data.rawParam.verificationContent)) {
       data.rawParam.ext = {};
       data.rawParam.ext.extRequests = {};
       data.rawParam.ext.extRequests['asset-proof'] = {};
