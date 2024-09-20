@@ -64,6 +64,15 @@ window.addEventListener('message', (e) => {
         params,
       });
     }
+    if (name === 'removeActiveAttestation') {
+      chrome.storage.local.remove([
+        'padoZKAttestationJSSDKBeginAttest',
+        'padoZKAttestationJSSDKWalletAddress',
+        'padoZKAttestationJSSDKAttestationPresetParams',
+        'padoZKAttestationJSSDKXFollowerCount',
+        'activeRequestAttestation',
+      ]);
+    }
   }
 });
 

@@ -108,8 +108,12 @@ const useALGAttest = function useAttest() {
     async (res: any) => {
       const { retcode, retdesc } = JSON.parse(res);
       if (retcode === '0') {
-        // setTimeoutSwitch(true);
         setIntervalSwitch(true);
+        // Restart timing
+        setTimeoutSwitch(false);
+        setTimeout(() => {
+          setTimeoutSwitch(true);
+        }, 50);
       } else if (retcode === '2') {
         const errorMsgTitle = [
           'Assets Verification',

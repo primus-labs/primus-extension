@@ -115,14 +115,28 @@ export const algorithmMsgListener = async (
         reqMethodName: 'init',
       });
 
-      const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+      const { padoZKAttestationJSSDKDappTabId: dappTabId, webProofTypes } =
+        await chrome.storage.local.get([
+          'padoZKAttestationJSSDKDappTabId',
+          'webProofTypes',
+        ]);
       // console.log('333jssdk-init-completed', dappTabId);
+      const attestationTypeIdList = (
+        webProofTypes ? JSON.parse(webProofTypes) : []
+      ).map((i) => {
+        return {
+          text: i.description,
+          value: i.id,
+        };
+      });
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestationRes',
         params: {
           result: true,
+          data: {
+            attestationTypeIdList,
+          },
         },
       });
     }
