@@ -19,9 +19,8 @@ class WebBinance extends WebExchange {
       'https://www.binance.com/bapi/accounts/v1/private/vip/vip-portal/vip-fee/vip-fee-summary';
     params.method = 'GET';
     const res = await this.request(params);
-    console.log(res);
-    if (res.code === '00000') {
-      this.spot30dVol = res.data.spot30dVol
+    if (res.code === '000000') {
+      this.spot30dVol = res.data.spot30dVol;
     }
     return this.spot30dVol;
   }
