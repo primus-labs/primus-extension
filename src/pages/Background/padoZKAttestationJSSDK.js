@@ -182,7 +182,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
     ).find((k) => {
       const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
       const { name } = activeWebProofTemplate;
-      if (['Assets Proof', 'Token Holding', 'X Followers'].includes(name)) {
+      if (
+        [
+          'Assets Proof',
+          'Token Holding',
+          'X Followers',
+          'Spot 30-Day Trade Vol',
+        ].includes(name)
+      ) {
         return name === obj.value;
       }
       return name === obj.label || name === obj.templateName;
