@@ -17,7 +17,9 @@ import { EASInfo } from '@/config/chain';
 import {
   ATTESTATIONTYPEMAP,
   ASSETSVERIFICATIONCONTENTTYPEEMAP,
+  ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
+
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -31,6 +33,7 @@ import PDropdown from '@/newComponents/PDropdown';
 import ConfirmDeleteDialog from '../ConfirmDeleteDialog';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import './index.scss';
+import iconProviderBrevis from '@/assets/newImg/zkAttestation/iconProviderBrevis.svg';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 
 type NavItem = {
@@ -130,8 +133,12 @@ const Cards: React.FC<PDropdownProps> = memo(
     };
     const getContent = (i) => {
       let str = i.verificationContent;
-      if (i.attestationType === 'Assets Verification') {
-        str = ASSETSVERIFICATIONCONTENTTYPEEMAP[i.verificationContent].label;
+      if (
+        ['Assets Verification', 'On-chain Transactions'].includes(
+          i.attestationType
+        )
+      ) {
+        str = ALLVERIFICATIONCONTENTTYPEEMAP[i.verificationContent].label;
       }
       // if (i.attestationType === 'Assets Verification') {
       //   if (i.verificationContent === 'Assets Proof') {
@@ -182,7 +189,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       return str;
     };
     const getResult = (i) => {
-      if (['coinbase', 'google'].includes(i.source)) {
+      if (['coinbase', 'google', 'web3 wallet'].includes(i.source)) {
         return 'Verified';
       }
       if (i.attestationType === 'Social Connections') {
@@ -379,6 +386,13 @@ const Cards: React.FC<PDropdownProps> = memo(
                         {/* <img src={iconUpdate} alt="" className="iconUpdate" /> */}
                       </div>
                     </div>
+                    {i.source === 'web3 wallet' && (
+                      <div className="provider">
+                        <span>by</span>
+                        <img src={iconProviderBrevis} alt="" />
+                        <span>Brevis</span>
+                      </div>
+                    )}
                   </div>
                   <div className="details">
                     <div className="descItems">
@@ -433,11 +447,14 @@ const Cards: React.FC<PDropdownProps> = memo(
                         <div className="label">
                           <span>On-chain</span>
                           <span>
-                            {!i.attestOrigin && (i.event
-                              ? `(${eventMetaMap[i.event]?.nameInAttestation})`
-                              : i?.provided?.length > 0
-                              ? `(${i?.provided?.length})`
-                              : '')}
+                            {!i.attestOrigin &&
+                              (i.event
+                                ? `(${
+                                    eventMetaMap[i.event]?.nameInAttestation
+                                  })`
+                                : i?.provided?.length > 0
+                                ? `(${i?.provided?.length})`
+                                : '')}
                           </span>
                           {i.attestOrigin && '('}
                           <span className="attestOrigin">{i.attestOrigin}</span>

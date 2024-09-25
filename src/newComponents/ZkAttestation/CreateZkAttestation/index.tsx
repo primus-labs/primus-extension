@@ -58,7 +58,7 @@ const PClose: React.FC<PBackProps> = memo(
                 onSubmit={onSubmit}
               />
             )}
-            {type === 'On-chain Transaction' && (
+            {type === 'On-chain Transactions' && (
               <OnChainDialog
                 presets={presets}
                 type={type}

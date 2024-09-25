@@ -20,18 +20,18 @@ interface PDropdownProps {
   // list: NavItem[];
 }
 
-const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => { } }) => {
-  const theme = useSelector((state: UserState) => state.theme)
+const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
+  const theme = useSelector((state: UserState) => state.theme);
   const supportList = useMemo(() => {
     return ATTESTATIONTYPELIST.filter((i) => !!i.show);
   }, []);
 
   const handleClick = useCallback(
     (i) => {
-      if (i.id === 'On-chain Transaction') {
-      } else {
-        onClick(i);
-      }
+      // if (i.id === 'On-chain Transactions') {
+      // } else {
+      onClick(i);
+      // }
     },
     [onClick]
   );

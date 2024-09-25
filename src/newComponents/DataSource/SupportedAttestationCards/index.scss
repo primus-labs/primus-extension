@@ -40,6 +40,11 @@
       .provider {
         @include Hint;
         color: var(--text-tokens-text-tertiary);
+        @include frsc;
+        gap: 2px;
+        >img{
+          font-size: var(--spacing-12);
+        }
       }
       .createBtn {
         height: var(--spacing-16);

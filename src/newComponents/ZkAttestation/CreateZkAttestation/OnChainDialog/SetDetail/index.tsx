@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { utils } from 'ethers';
 import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import useMsgs from '@/hooks/useMsgs';
-import { ONCHAINVERIFICATIONCONTENTTYPELIST } from '@/config/attestation';
+import {
+  ONCHAINVERIFICATIONCONTENTTYPELIST,
+  ALLVERIFICATIONCONTENTTYPEEMAP,
+} from '@/config/attestation';
 import useDataSource from '@/hooks/useDataSource';
 import {
   gt,
@@ -62,6 +65,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
       return cN;
     }, [pswForm.verificationContent]);
+    const verificationValueCN = useMemo(() => {
+      let cN = 'verificationValue';
+      const v = pswForm.verificationValue;
+      // console.log('555-v', v)
+      if (v) {
+        cN += ' hasValue';
+      }
+      return cN;
+    }, [pswForm.verificationValue]);
     const accountCN = useMemo(() => {
       let cN = 'account';
       const v = pswForm.account;
@@ -75,10 +87,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       let list = Object.values(onChainAssetsSources).map((i: any) => ({
         label: formatAddress(utils.getAddress(i.address), 7, 5),
         value: i.address,
-        icon: iconWalletMetamask, //TODO-newui
+        // icon: iconWalletMetamask, //TODO-newui
       }));
       return list;
     }, [onChainAssetsSources]);
+    
     //different
     const formLegal = useMemo(() => {
       return !!(pswForm.verificationContent && pswForm.account);
@@ -94,6 +107,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           : 'OK'
         : 'Next';
     }, [attestLoading, activeAttestation]);
+    const valueList = useMemo(() => {
+      let list: any[] = [];
+      return list;
+    }, [pswForm.verificationContent]);
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
         return;
@@ -129,36 +146,124 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         </div>
       );
     };
+    useEffect(() => {
+      if (!presets.verificationContent) {
+        if (pswForm.verificationContent) {
+          let newValue = '';
+          if (pswForm.verificationContent === '3') {
+            newValue = 'since 2024 July';
+          }
+          handleChangePswForm(newValue, 'verificationValue');
+        }
+      }
+    }, [pswForm.verificationContent, handleChangePswForm, presets]);
+    useEffect(() => {
+      setPswForm(presets);
+    }, [presets]);
+    useEffect(() => {
+      if (accountList.length === 1) {
+        handleChangePswForm(accountList[0].value, 'account');
+      }
+    }, [accountList]);
+    // const initActiveDataSouceUserInfo = useCallback(async () => {
+    //   const res = await chrome.storage.local.get([dataSourceId]);
+    //   if (res[dataSourceId]) {
+    //     const newObj = JSON.parse(res[dataSourceId]);
+    //     setActiveDataSouceUserInfo(newObj);
+    //   }
+    // }, []);
+    // useEffect(() => {
+    //   initActiveDataSouceUserInfo();
+    // }, []);
+    const initAttestLoadingFn = useCallback(() => {
+      if (attestLoading > 1) {
+        dispatch(setAttestLoading(0));
+      }
+    }, [attestLoading, dispatch]);
+    useEffect(() => {
+      initAttestLoadingFn();
+    }, [pswForm]);
 
     return (
-      <div className="pFormWrapper detailForm2">
-        <div className="formItem">
-          <PSelect
-            className={verificationContentCN}
-            label="Verification Content"
-            align="horizontal"
-            placeholder="Select content"
-            list={ONCHAINVERIFICATIONCONTENTTYPELIST}
-            onChange={(p) => {
-              handleChangePswForm(p, 'verificationContent');
-            }}
-            value={pswForm.verificationContent}
-            optionSuffix={optionSuffixEl()}
-          />
+      <div className="pFormWrapper detailForm4">
+        <div
+          className={`formItem ${presets.verificationContent ? 'preset' : ''}`}
+        >
+          {presets.verificationContent ? (
+            <>
+              <div className="label">Verification Content</div>
+              <div className="value">
+                {
+                  ALLVERIFICATIONCONTENTTYPEEMAP[presets.verificationContent]
+                    .label
+                }
+              </div>
+            </>
+          ) : (
+            <PSelect
+              className={verificationContentCN}
+              label="Verification Content"
+              align="horizontal"
+              placeholder="Select content"
+              list={ONCHAINVERIFICATIONCONTENTTYPELIST}
+              onChange={(p) => {
+                handleChangePswForm(p, 'verificationContent');
+              }}
+              value={pswForm.verificationContent}
+              disabled={presets?.verificationContent}
+              // optionSuffix={optionSuffixEl()}
+            />
+          )}
+        </div>
+        <div
+          className={`formItem ${presets.verificationValue ? 'preset' : ''} ${
+            !presets.verificationContent && pswForm.verificationContent
+              ? 'hasDefaultValue'
+              : ''
+          }`}
+        >
+          {pswForm.verificationContent ? (
+            <>
+              <div className="label">Verification Value</div>
+              <div className="value">
+                {presets.verificationValue || pswForm.verificationValue}
+              </div>
+            </>
+          ) : (
+            <PSelect
+              className={verificationValueCN}
+              label="Verification Value"
+              align="horizontal"
+              placeholder="Select value"
+              list={valueList}
+              onChange={(p) => {
+                handleChangePswForm(p, 'verificationValue');
+              }}
+              value={pswForm.verificationValue}
+              disabled={presets?.verificationValue}
+            />
+          )}
         </div>
         {/* different */}
-        <div className="formItem">
-          <PSelect
-            className={accountCN}
-            label="Data Account"
-            align="horizontal"
-            placeholder="Select account"
-            list={accountList}
-            onChange={(p) => {
-              handleChangePswForm(p, 'account');
-            }}
-            value={pswForm.account}
-          />
+        <div className={`formItem ${accountList.length === 1 ? 'preset' : ''}`}>
+          {accountList.length > 1 ? (
+            <PSelect
+              className={accountCN}
+              label="Data Account"
+              align="horizontal"
+              placeholder="Select account"
+              list={accountList}
+              onChange={(p) => {
+                handleChangePswForm(p, 'account');
+              }}
+              value={pswForm.account}
+            />
+          ) : (
+            <>
+              <div className="label">Verification Content</div>
+              <div className="value">{accountList[0].label}</div>
+            </>
+          )}
         </div>
         {/* <div className="staticItem">
           <label>Account</label>

@@ -122,6 +122,12 @@ const Nav: React.FC<PButtonProps> = memo(
       attestBrevisRequestProcess &&
         setActiveSendToChainRequest(attestBrevisRequestProcess);
     }, [attestBrevisRequestProcess]);
+    useEffect(() => {
+      if (presets) {
+        setAssetForm(presets);
+        setStep(2);
+      }
+    }, [presets]);
     return (
       <>
         {step === 3 ? (

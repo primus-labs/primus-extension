@@ -6,10 +6,11 @@ import iconAttestationHumanity from '@/assets/newImg/zkAttestation/iconAttestati
 import iconAttestationAssets from '@/assets/newImg/zkAttestation/iconAttestationTypeAssets.svg';
 import iconAttestationOnChain from '@/assets/newImg/zkAttestation/iconAttestationTypeOnChain.svg';
 import iconAttestationTypeSocial from '@/assets/newImg/zkAttestation/iconAttestationTypeSocial.svg';
+import iconProviderBrevis from '@/assets/newImg/zkAttestation/iconProviderBrevis.svg';
 import './index.scss';
 
 import { UserState } from '@/types/store';
-import { ATTESTATIONTYPEMAP } from '@/config/attestation';
+import { ATTESTATIONTYPEMAP as ATTESTATIONTYPEINFOMAP } from '@/config/attestation';
 
 type NavItem = {
   type: string;
@@ -26,9 +27,9 @@ interface PDropdownProps {
 // verificationContent: '';
 // verificationValue: '';
 // account: string;
-const attestationTypeMap = {
+const attestationTypeMap: any = {
   1: {
-    attestationType: 'On-chain Transaction',
+    attestationType: 'On-chain Transactions',
     verificationContent: '1',
     desc: 'Largest ETH/USDC Uniswap transaction',
     type: 'Powered by Brevis',
@@ -93,6 +94,19 @@ const attestationTypeMap = {
     id: '17',
     webTemplateId: '17',
   },
+  101: {
+    attestationType: 'On-chain Transactions',
+    verificationContent: '3',
+    verificationValue: 'since 2024 July',
+    desc: 'Has transactions on BNB Chain',
+    type: 'Provider',
+    provider: {
+      name: 'Brevis',
+      icon: iconProviderBrevis,
+    },
+    id: '101',
+    webTemplateId: '101',
+  },
 };
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
@@ -101,8 +115,7 @@ const Cards: React.FC<PDropdownProps> = memo(
     const theme = useSelector((state: UserState) => state.theme);
     const supportList = useMemo(() => {
       if (dataSourceName === 'web3 wallet') {
-        // return [attestationTypeMap[1]];
-        return [];
+        return [attestationTypeMap[101]];
       }
       if (dataSourceName === 'binance')
         return [
@@ -122,7 +135,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       if (dataSourceName === 'tiktok' || dataSourceName === 'google')
         return [attestationTypeMap[4]];
       if (dataSourceName === 'x') {
-        return [attestationTypeMap[4], attestationTypeMap[16]];
+        return [attestationTypeMap[4], attestationTypeMap[15]];
       }
       if (dataSourceName === 'coinbase') return [attestationTypeMap[2]];
       // if (dataSourceName === 'zan') return [attestationTypeMap[5]];
@@ -138,7 +151,7 @@ const Cards: React.FC<PDropdownProps> = memo(
             <li className="supportSttestationCard" key={i.id}>
               <div className="left">
                 <img
-                  src={ATTESTATIONTYPEMAP[i.attestationType].icon[theme]}
+                  src={ATTESTATIONTYPEINFOMAP[i.attestationType].icon[theme]}
                   alt=""
                 />
                 <div className="introTxt">
@@ -147,7 +160,18 @@ const Cards: React.FC<PDropdownProps> = memo(
                 </div>
               </div>
               <div className="right">
-                <div className="provider">{i.type}</div>
+                <div className="provider">
+                  {i.type === 'Provider' ? (
+                    <>
+                      <span>by</span>
+                      <img src={i.provider?.icon} alt="" />
+                      <span>{i.provider?.name}</span>
+                    </>
+                  ) : (
+                    i.type
+                  )}
+                </div>
+
                 <PButton
                   className="createBtn"
                   text="Create"

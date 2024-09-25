@@ -144,16 +144,20 @@ export const HUMANITYVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 export const HUMANITYVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(HUMANITYVERIFICATIONVALUETYPEEMAP);
 
-// On-chain Transaction content/value options
+// On-chain Transactions content/value options
 export const ONCHAINVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  '1': {
-    value: '1',
-    label: 'Largest ETH/USDC Uniswap transaction',
-  },
+  // '1': {
+  //   value: '1',
+  //   label: 'Largest ETH/USDC Uniswap transaction',
+  // },
   // '2': {
   //   value: '2',
   //   label: 'Sum of WETH/USDC Uniswap Volume',
   // },
+  '3': {
+    value: '3',
+    label: 'Has transactions on BNB Chain',
+  },
 };
 export const ONCHAINVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(ONCHAINVERIFICATIONCONTENTTYPEEMAP);
@@ -207,9 +211,9 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     show: true,
     shortName: 'social',
   },
-  'On-chain Transaction': {
-    id: 'On-chain Transaction',
-    name: 'On-chain Transaction',
+  'On-chain Transactions': {
+    id: 'On-chain Transactions',
+    name: 'On-chain Transactions',
     icon: {
       dark: iconAttestationTypeOnChainForDark,
       light: iconAttestationTypeOnChain,
@@ -217,7 +221,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     color: 'blue',
     childMap: ONCHAINVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#1192E8',
-    disabled: true,
+    disabled: false,
     show: true,
     shortName: 'on-chain',
   },
@@ -258,7 +262,7 @@ export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
 export const CredVersion = '1.0.5';
 // const attestationTypeMap = {
 //   1: {
-//     title: 'On-chain Transaction Proof',
+//     title: 'On-chain Transactions Proof',
 //     desc: 'Largest ETH/USDC Uniswap transaction',
 //     type: 'Powered by Brevis',
 //     icon: iconAttestationOnChain,

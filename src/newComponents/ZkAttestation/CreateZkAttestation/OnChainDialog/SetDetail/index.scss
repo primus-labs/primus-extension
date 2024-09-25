@@ -2,42 +2,58 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/dialog.scss';
 @import '../../attestationForm.scss';
-.pFormWrapper.detailForm2 {
-  --verificationContent-input-width: 137px;
-  --verificationContent-select-width: 349px;
-  --account-input-width: 139px;
-  --account-select-width: 178px;
+.pFormWrapper.detailForm4 {
+  --verificationContent-input-width: 1.6944rem;
+  --verificationContent-selectOptions-width: 1.5833rem;
+  --account-select-width: 1.0694rem;
+  --account-input-width: 1rem;
+  --verificationValue-input-width: 0.8542rem;
+}
+@media (max-width: 1470px) {
+  .pFormWrapper.detailForm4 {
+    --verificationContent-input-width: 244px;
+    --verificationContent-selectOptions-width: 228px;
+    --account-select-width: 154px;
+    --account-input-width: 139px;
+    --verificationValue-input-width: 123px;
+  }
+}
+
+.pFormWrapper.detailForm4 {
   gap: var(--spacing-12) !important;
   .formItem {
     @include attestationForm;
-
+    &.preset {
+      @include hasPresetFormItem;
+    }
+    &.hasDefaultValue {
+      @include plainTextFormItem;
+    }
     .verificationContent {
       &.hasValue {
         .selectInput {
-          width: 291px;
-          gap: 0;
+          width: var(--verificationContent-select-width);
         }
-      }
-      .selectInput {
-        width: var(--verificationContent-input-width);
       }
       .selectOptionswrapper {
         width: var(--verificationContent-select-width);
       }
-      .optionSuffixProvider {
-        @include Hint;
-        @include frsc;
-        gap: var(--spacing-2);
-        > img {
-          width: var(--spacing-12);
+    }
+    .verificationValue {
+      &.hasValue {
+        .selectInput {
+          width: var(--verificationContent-select-width);
         }
       }
+      .selectInput {
+        width: var(--verificationValue-input-width);
+      }
     }
+
     .account {
       &.hasValue {
         .selectInput {
           width: var(--account-select-width);
-          
         }
       }
       .selectInput {

@@ -85,6 +85,8 @@
           }
         }
         .brief {
+          width: 100%;
+          position: relative;
           @include frsc;
           gap: var(--spacing-16);
 
@@ -109,6 +111,18 @@
               .iconUpdate {
                 width: var(--spacing-12);
               }
+            }
+          }
+          .provider{
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: var(--spacing-16);
+            @include frsc;
+            gap: 2px;
+            @include Hint;
+            >img{
+              width: var(--spacing-12);
             }
           }
         }

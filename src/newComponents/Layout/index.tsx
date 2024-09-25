@@ -119,7 +119,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
           }
         } else if (i.type === 'UNISWAP_PROOF') {
           delete newCredentialObj[credentialKey];
-          // i.attestationType = 'On-chain Transaction';
+          // i.attestationType = 'On-chain Transactions';
           // i.verificationContent = 'Largest ETH/USDC Uniwap Transaction';
           // i.verificationValue = i.dataToBeSigned.content;
         }
@@ -176,7 +176,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     }
 
     // await chrome.storage.local.remove(sourceNameList.concat(['x', 'zan']));
-   
+
     dispatch(setExSourcesAsync());
     dispatch(setSocialSourcesAsync());
     dispatch(setKYCsAsync());
