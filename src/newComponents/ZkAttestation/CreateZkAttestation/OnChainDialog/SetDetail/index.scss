@@ -71,4 +71,22 @@
       }
     }
   }
+  .staticItem {
+    @include hasPresetFormItem;
+    @include plainTextFormItem;
+    .value {
+      height: var(--spacing-32);
+      border-radius: var(--spacing-4);
+      background: var(--border-tokens-border-chart);
+      padding: var(--spacing-4) var(--spacing-12);
+      .balance {
+        @include BodyBody300;
+        margin-left: var(--spacing-6);
+        color: var(--text-tokens-text-placeholder);
+      }
+    }
+  }
+  .confirmBtn{
+    margin-top: var(--spacing-24);
+  }
 }

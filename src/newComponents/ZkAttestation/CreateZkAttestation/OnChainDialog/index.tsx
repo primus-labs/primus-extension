@@ -65,6 +65,14 @@ const Nav: React.FC<PButtonProps> = memo(
         return {};
       }
     }, [assetForm.dataSourceId]);
+    const dataSourceEl = useMemo(() => {
+      return (
+        <div className="dataSourceIntro">
+          <img src={dataSourceMetaInfo?.icon} alt="" />
+          <span>{dataSourceMetaInfo?.name}</span>
+        </div>
+      );
+    }, [dataSourceMetaInfo]);
     const handleSubmitSetPwdDialog = useCallback((dataSourceId: string) => {
       setAssetForm((f) => ({ ...f, dataSourceId: dataSourceId }));
       setStep(2);
@@ -124,6 +132,7 @@ const Nav: React.FC<PButtonProps> = memo(
     }, [attestBrevisRequestProcess]);
     useEffect(() => {
       if (presets) {
+        debugger
         setAssetForm(presets);
         setStep(2);
       }
@@ -146,7 +155,40 @@ const Nav: React.FC<PButtonProps> = memo(
                   <h1>Create zkAttestation</h1>
                   <h2>You're creating {type.toLowerCase()} proof.</h2>
                 </header>
-                {step === 1 && (
+                {presets ? (
+                  <div className="dataSourceWrapper">
+                    <label>Data Source</label>
+                    {dataSourceEl}
+                  </div>
+                ) : (
+                  <>
+                    {step === 1 && (
+                      <section className="detailWrapper">
+                        <div className="step step1">
+                          <OrderItem order="1" text="Connect data source" />
+                        </div>
+                      </section>
+                    )}
+                    {step === 2 && (
+                      <section className="detailWrapper">
+                        <div className="step step1 done">
+                          <img className="iconDone" src={iconDone} alt="" />
+                          <div className="txt">
+                            <div className="title">Connect Data Source</div>
+                            {dataSourceEl}
+                          </div>
+                        </div>
+                        <div className="step step2">
+                          <OrderItem
+                            order="2"
+                            text="Confirm attestation details"
+                          />
+                        </div>
+                      </section>
+                    )}
+                  </>
+                )}
+                {/* {step === 1 && (
                   <section className="detailWrapper">
                     <div className="step step1">
                       <OrderItem order="1" text="Connect data source" />
@@ -169,7 +211,7 @@ const Nav: React.FC<PButtonProps> = memo(
                       <OrderItem order="2" text="Confirm attestation details" />
                     </div>
                   </section>
-                )}
+                )} */}
                 {step === 1 && (
                   <SetDataSource onSubmit={handleSubmitSetPwdDialog} />
                 )}

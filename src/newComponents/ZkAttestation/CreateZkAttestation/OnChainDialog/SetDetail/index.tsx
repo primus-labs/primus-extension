@@ -245,7 +245,9 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           )}
         </div>
         {/* different */}
-        <div className={`formItem ${accountList.length === 1 ? 'preset' : ''}`}>
+        <div
+          className={`formItem ${accountList.length === 1 ? 'staticItem' : ''}`}
+        >
           {accountList.length > 1 ? (
             <PSelect
               className={accountCN}
