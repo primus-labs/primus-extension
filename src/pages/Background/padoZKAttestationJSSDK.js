@@ -157,6 +157,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       chainName,
       walletAddress,
       dappSymbol,
+      spot30dTradeVol
     } = params;
     chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
@@ -208,6 +209,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
       await chrome.storage.local.set({
         padoZKAttestationJSSDKXFollowerCount: verificationValue,
       });
+    } else if (verificationContent === 'Spot 30-Day Trade Vol') {
+      verificationValue = spot30dTradeVol;
+      
     }
     const requestid = uuidv4();
 
@@ -223,7 +227,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
     );
     activeAttestationParams.account = acc;
 
-    if (['Assets Proof', 'Token Holding'].includes(verificationContent)) {
+    if (
+      ['Assets Proof', 'Token Holding', 'Spot 30-Day Trade Vol'].includes(
+        verificationContent
+      )
+    ) {
       activeAttestationParams.attestationType = 'Assets Verification';
       const responses = activeWebProofTemplate.datasourceTemplate.responses;
       const lastResponse = responses[responses.length - 1];
@@ -261,7 +269,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
       activeAttestationParams.attestationType = 'Social Connections';
       activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
         followersNO;
+    } else if (['3'].includes(verificationContent)) {
+      activeAttestationParams.attestationType = 'On-chain Transactions';
     }
+
 
     await chrome.storage.local.set({
       padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(

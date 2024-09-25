@@ -97,7 +97,7 @@ const request = async (fetchParams) => {
   }
 };
 const eventReport = async (data) => {
-  let storedata= {};
+  let storedata = {};
   storedata.eventType = data.eventType;
   const { keyStore } = await chrome.storage.local.get(['keyStore']);
   if (keyStore) {
@@ -139,7 +139,6 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     await chrome.runtime.sendMessage(msgObj);
   }, []);
   const handleConfirm = useCallback(async () => {
-    
     var eventInfo = {
       eventType: 'ATTESTATION_START',
       rawData: {
@@ -150,9 +149,9 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
       },
     };
     const { padoZKAttestationJSSDKBeginAttest } =
-    await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
     if (padoZKAttestationJSSDKBeginAttest === '1') {
-      eventInfo.rawData.origin = 'padoAttestationJSSDK'
+      eventInfo.rawData.origin = 'padoAttestationJSSDK';
     }
     eventReport(eventInfo);
 
@@ -256,6 +255,8 @@ function DescEl({ status, resultStatus, errorTxt }) {
           vC = 'Followers number';
           vV = `> ${verificationValue}`;
         }
+      } else if (attestationType === 'On-chain Transactions') {
+        
       }
 
       return [
@@ -527,11 +528,11 @@ chrome.runtime.sendMessage(
       }
       // render
       activeRequest = { ...response.params };
-      delete activeRequest.PADOSERVERURL
+      delete activeRequest.PADOSERVERURL;
       delete activeRequest.padoExtensionVersion;
       PADOSERVERURL = response.params.PADOSERVERURL;
       padoExtensionVersion = response.params.padoExtensionVersion;
-      activeRequestid =response.params.requestid
+      activeRequestid = response.params.requestid;
       console.log('222response', response); //delete
       operationType = response.operation;
       const container = document.getElementById('pado-extension-content');
