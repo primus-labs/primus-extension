@@ -178,17 +178,30 @@ const processAlgorithmReq = async (message, port) => {
         const {
           padoZKAttestationJSSDKBeginAttest,
           padoZKAttestationJSSDKDappTabId: dappTabId,
+          webProofTypes,
         } = await chrome.storage.local.get([
           'padoZKAttestationJSSDKBeginAttest',
           'padoZKAttestationJSSDKDappTabId',
+          'webProofTypes',
         ]);
 
         if (padoZKAttestationJSSDKBeginAttest === '1') {
+          const attestationTypeIdList = (
+            webProofTypes ? JSON.parse(webProofTypes) : []
+          ).map((i) => {
+            return {
+              text: i.description,
+              value: i.id,
+            };
+          });
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
             name: 'initAttestationRes',
             params: {
               result: true,
+              data: {
+                attestationTypeIdList,
+              },
             },
           });
         }
