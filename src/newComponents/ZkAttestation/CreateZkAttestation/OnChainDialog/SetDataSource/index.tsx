@@ -48,7 +48,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
     //   const isDisabled = !sourceMap['onChainAssetsSources'];
     //   return {
     //     account: i.address,
-    //     origin: 'Metamsk', // TODO-newui
+    //     origin: 'Metamsk',
     //     initTime: i.timestamp,
 
     //     label: i.address,

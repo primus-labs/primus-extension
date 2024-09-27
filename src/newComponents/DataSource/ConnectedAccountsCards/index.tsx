@@ -41,13 +41,12 @@ const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
     } = useDataSource(lowerCaseDataSourceName);
     console.log('222activeDataSouceUserInfo', activeDataSouceUserInfo);
     const connectedList = useMemo(() => {
-      // TODO-newui
       if (activeDataSouceUserInfo) {
         var account = '';
         if (lowerCaseDataSourceName === 'web3 wallet') {
           const list = Object.values(activeDataSouceUserInfo).map((i: any) => ({
             account: i.address,
-            origin: 'Metamsk', // TODO-newui
+            origin: 'Metamsk',
             initTime: i.timestamp,
           }));
           return list;

@@ -46,7 +46,7 @@ export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   // '0.01': {
   //   value: '0.01',
   //   label: '> $0.01',
-  // }, //delete TODO-newui
+  // }, //delete TEST-assetsbalance
   '10': {
     value: '10',
     label: '> $10',
@@ -71,7 +71,7 @@ export const ASSETSVOLVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   '0': {
     value: '0',
     label: '> $0',
-  }, //delete TODO-newattestations
+  }, // TEST-spot30dVol
   '100': {
     value: '100',
     label: '> $100',

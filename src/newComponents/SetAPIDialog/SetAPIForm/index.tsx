@@ -88,7 +88,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     //         dispatch(setSocialSourcesAsync());
     //       });
     //     } else if (item.type === 'Identity') {
-    //       // TODO
     //       setActiveSource(item);
     //       setStep(0);
     //       setKYCDialogVisible(true);

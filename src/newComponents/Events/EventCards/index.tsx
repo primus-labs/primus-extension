@@ -33,7 +33,7 @@ const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
       return true;
     }
     if (i.periodType === '0') {
-      return false; // TODO-newui
+      return false;
     }
   };
   const formatPeriod = (period) => {

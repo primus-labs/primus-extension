@@ -100,7 +100,6 @@ const DataSourceItem = memo(() => {
           let currRequestObj = webProofTypes.find(
             (r: any) => r.dataSource === lowerCaseDataSourceName
           );
-          // TODO-newui
           /*if (lowerCaseDataSourceName === 'tiktok') {
         currRequestObj.datasourceTemplate.requests[0] = {
           name: 'first',
@@ -115,7 +114,6 @@ const DataSourceItem = memo(() => {
           if (!currRequestObj) {
             currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
           }
-          // TODO END
           chrome.runtime.sendMessage({
             type: 'dataSourceWeb',
             name: 'init',

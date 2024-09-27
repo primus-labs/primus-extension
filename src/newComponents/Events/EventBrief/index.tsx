@@ -82,7 +82,7 @@ const DataSourceItem = memo(() => {
     }
   }, [connectedWallet?.address, earlyBirdNFTs]);
   useEffect(() => {
-    initTaskStatus(); // TODO-newui2 after submit to chain
+    initTaskStatus();
   }, [initTaskStatus]);
   useEffect(() => {
     if (attestLoading > 1 || activeOnChain?.loading === 0) {

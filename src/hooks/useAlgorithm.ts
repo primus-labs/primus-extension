@@ -73,7 +73,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
           }
         }
         if (resMethodName === `getAttestation`) {
-          // TODO wheather wait getAttestation msg back
+          // wheather wait getAttestation msg back
           if (res) {
             let eventInfo = {
               eventType: 'ATTESTATION_START_FRONTEND',

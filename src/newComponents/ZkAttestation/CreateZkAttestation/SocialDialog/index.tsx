@@ -185,7 +185,6 @@ const Social: React.FC<PButtonProps> = memo(
         );
         // sessionStorage.setItem('xFollowerCount', form?.verificationValue);
 
-        // TODO-newui get account from attestation???
         let currRequestTemplate = {
           ...activeWebProofTemplate,
           schemaType:

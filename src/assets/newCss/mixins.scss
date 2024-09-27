@@ -35,7 +35,7 @@
   @include pCard;
   cursor: pointer;
   &:not(.disabled):hover {
-    border-color: var(--border-tokens-border-bp); // TODO
+    border-color: var(--border-tokens-border-bp);
     @include card-xs_shadow;
   }
   &.done {

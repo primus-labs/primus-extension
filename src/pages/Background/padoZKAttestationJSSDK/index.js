@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { eventReport } from '@/services/api/usertracker';
 import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
-import { pageDecodeMsgListener } from './pageDecode.js';
-
+import { pageDecodeMsgListener } from '../pageDecode.js';
+import { attestBrevisFn } from './brevis';
 import {
   LINEASCHEMANAME,
   SCROLLSCHEMANAME,
@@ -19,9 +18,10 @@ import {
 import { PADOADDRESS } from '@/config/envConstants';
 import { regenerateAttestation } from '@/services/api/cred';
 import { strToHexSha256 } from '@/utils/utils';
-import { getDataSourceAccount } from './dataSourceUtils';
+import { getDataSourceAccount } from '../dataSourceUtils';
 
 let hasGetTwitterScreenName = false;
+let sdkParams = {};
 const fetchAttestationTemplateList = async () => {
   try {
     const fetchRes = await getProofTypes({
@@ -148,7 +148,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       });
       return;
     }
-
+    sdkParams = params;
     const {
       attestationTypeID,
       tokenSymbol,
@@ -157,7 +157,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
       chainName,
       walletAddress,
       dappSymbol,
-      spot30dTradeVol
+      spot30dTradeVol,
+      signature,
+      timestamp,
     } = params;
     chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
@@ -178,140 +180,153 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const activeWebProofTemplate = webProofTypesList.find(
       (i) => i.id === attestationTypeID
     );
-    let verificationContent = ''
-    if (attestationTypeID === '101') {
-      verificationContent = '3'
-    } else {
-      verificationContent = Object.keys(
-        ALLVERIFICATIONCONTENTTYPEEMAP
-      ).find((k) => {
-        const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
-        const { name } = activeWebProofTemplate;
-        if (
-          [
-            'Assets Proof',
-            'Token Holding',
-            'X Followers',
-            'Spot 30-Day Trade Vol',
-          ].includes(name)
-        ) {
-          return name === obj.value;
-        }
-        return name === obj.label || name === obj.templateName;
-      });
-    }
-    // TODO-new
+    let verificationContent = '';
     let verificationValue;
-    if (verificationContent === 'KYC Status') {
-      verificationValue = 'Basic Verification';
-    } else if (verificationContent === 'Account ownership') {
-      verificationValue = 'Account owner';
-    } else if (verificationContent === 'Assets Proof') {
-      verificationValue = assetsBalance;
-    } else if (verificationContent === 'Token Holding') {
-      verificationValue = tokenSymbol;
-    } else if (verificationContent === 'X Followers') {
-      verificationValue = followersNO;
-      await chrome.storage.local.set({
-        padoZKAttestationJSSDKXFollowerCount: verificationValue,
-      });
-    } else if (verificationContent === 'Spot 30-Day Trade Vol') {
-      verificationValue = spot30dTradeVol;
-    } else if (verificationContent === '3' && attestationTypeID === '101') {
-      verificationValue = 'since 2024 July';
-    }
+    let activeAttestationParams = {};
+    let acc = '';
     const requestid = uuidv4();
+    if (attestationTypeID === '101') {
+      verificationContent = '3';
+      verificationValue = 'since 2024 July';
+      acc = walletAddress;
+      activeAttestationParams = {
+        dataSourceId: 'web3 wallet',
+        verificationContent,
+        verificationValue,
+        fetchType: 'Web',
+        attestOrigin: dappSymbol,
+        account: walletAddress,
+        attestationType: 'On-chain Transactions',
+        fetchType: 'API',
+        requestid,
+        signature,
+        timestamp,
+      };
+      attestBrevisFn(activeAttestationParams, dappTabId);
+    } else {
+      verificationContent = Object.keys(ALLVERIFICATIONCONTENTTYPEEMAP).find(
+        (k) => {
+          const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
+          const { name } = activeWebProofTemplate;
+          if (
+            [
+              'Assets Proof',
+              'Token Holding',
+              'X Followers',
+              'Spot 30-Day Trade Vol',
+            ].includes(name)
+          ) {
+            return name === obj.value;
+          }
+          return name === obj.label || name === obj.templateName;
+        }
+      );
 
-    let activeAttestationParams = {
-      dataSourceId: activeWebProofTemplate.dataSource,
-      verificationContent,
-      verificationValue,
-      fetchType: 'Web',
-      attestOrigin: dappSymbol,
-    };
-    const acc = await getDataSourceAccount(
-      activeAttestationParams.dataSourceId
-    );
-    activeAttestationParams.account = acc;
+      if (verificationContent === 'KYC Status') {
+        verificationValue = 'Basic Verification';
+      } else if (verificationContent === 'Account ownership') {
+        verificationValue = 'Account owner';
+      } else if (verificationContent === 'Assets Proof') {
+        verificationValue = assetsBalance;
+      } else if (verificationContent === 'Token Holding') {
+        verificationValue = tokenSymbol;
+      } else if (verificationContent === 'X Followers') {
+        verificationValue = followersNO;
+        await chrome.storage.local.set({
+          padoZKAttestationJSSDKXFollowerCount: verificationValue,
+        });
+      } else if (verificationContent === 'Spot 30-Day Trade Vol') {
+        verificationValue = spot30dTradeVol;
+      }
 
-    if (
-      ['Assets Proof', 'Token Holding', 'Spot 30-Day Trade Vol'].includes(
-        verificationContent
-      )
-    ) {
-      activeAttestationParams.attestationType = 'Assets Verification';
-      const responses = activeWebProofTemplate.datasourceTemplate.responses;
-      const lastResponse = responses[responses.length - 1];
-      const lastResponseConditions = lastResponse.conditions;
-      const lastResponseConditionsSubconditions =
-        lastResponseConditions.subconditions;
-      if (activeAttestationParams.verificationContent === 'Assets Proof') {
-        // change verification value
-        lastResponseConditions.value =
-          activeAttestationParams.verificationValue;
-        // for okx
-        if (lastResponseConditionsSubconditions) {
-          const lastSubCondition =
-            lastResponseConditionsSubconditions[
-              lastResponseConditionsSubconditions.length - 1
-            ];
-          lastSubCondition.value = activeAttestationParams.verificationValue;
+      activeAttestationParams = {
+        dataSourceId: activeWebProofTemplate.dataSource,
+        verificationContent,
+        verificationValue,
+        fetchType: 'Web',
+        attestOrigin: dappSymbol,
+      };
+      acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
+      activeAttestationParams.account = acc;
+
+      if (
+        ['Assets Proof', 'Token Holding', 'Spot 30-Day Trade Vol'].includes(
+          verificationContent
+        )
+      ) {
+        activeAttestationParams.attestationType = 'Assets Verification';
+        const responses = activeWebProofTemplate.datasourceTemplate.responses;
+        const lastResponse = responses[responses.length - 1];
+        const lastResponseConditions = lastResponse.conditions;
+        const lastResponseConditionsSubconditions =
+          lastResponseConditions.subconditions;
+        if (activeAttestationParams.verificationContent === 'Assets Proof') {
+          // change verification value
+          lastResponseConditions.value =
+            activeAttestationParams.verificationValue;
+          // for okx
+          if (lastResponseConditionsSubconditions) {
+            const lastSubCondition =
+              lastResponseConditionsSubconditions[
+                lastResponseConditionsSubconditions.length - 1
+              ];
+            lastSubCondition.value = activeAttestationParams.verificationValue;
+          }
+        } else if (
+          activeAttestationParams.verificationContent === 'Token Holding'
+        ) {
+          if (lastResponseConditionsSubconditions) {
+            const firstSubCondition = lastResponseConditionsSubconditions[0];
+            firstSubCondition.value = activeAttestationParams.verificationValue;
+            firstSubCondition.subconditions[0].value =
+              activeAttestationParams.verificationValue;
+          }
         }
       } else if (
-        activeAttestationParams.verificationContent === 'Token Holding'
+        ['KYC Status', 'Account ownership'].includes(verificationContent)
       ) {
-        if (lastResponseConditionsSubconditions) {
-          const firstSubCondition = lastResponseConditionsSubconditions[0];
-          firstSubCondition.value = activeAttestationParams.verificationValue;
-          firstSubCondition.subconditions[0].value =
-            activeAttestationParams.verificationValue;
-        }
+        activeAttestationParams.attestationType = 'Humanity Verification';
+      } else if (['X Followers'].includes(verificationContent)) {
+        activeAttestationParams.attestationType = 'Social Connections';
+        activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
+          followersNO;
       }
-    } else if (
-      ['KYC Status', 'Account ownership'].includes(verificationContent)
-    ) {
-      activeAttestationParams.attestationType = 'Humanity Verification';
-    } else if (['X Followers'].includes(verificationContent)) {
-      activeAttestationParams.attestationType = 'Social Connections';
-      activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
-        followersNO;
-    } else if (['3'].includes(verificationContent) && attestationTypeID === '101') {
-      activeAttestationParams.attestationType = 'On-chain Transactions';
-    }
-    chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
 
-    await chrome.storage.local.set({
-      padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
-        Object.assign({ chainName }, activeAttestationParams)
-      ),
-    });
-    const currRequestTemplate = {
-      ...activeAttestationParams,
-      ...activeWebProofTemplate,
-    };
+      chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
+      await chrome.storage.local.set({
+        padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
+          Object.assign({ chainName }, activeAttestationParams)
+        ),
+      });
 
-    // console.log(
-    //   '333-bg-startAttest',
-    //   activeAttestationParams,
-    //   activeWebProofTemplate
-    // );
-    pageDecodeMsgListener(
-      {
-        type: 'pageDecode',
-        name: 'init',
-        params: {
-          ...currRequestTemplate,
-          requestid,
+      const currRequestTemplate = {
+        ...activeAttestationParams,
+        ...activeWebProofTemplate,
+      };
+
+      // console.log(
+      //   '333-bg-startAttest',
+      //   activeAttestationParams,
+      //   activeWebProofTemplate
+      // );
+      pageDecodeMsgListener(
+        {
+          type: 'pageDecode',
+          name: 'init',
+          params: {
+            ...currRequestTemplate,
+            requestid,
+          },
+          // extensionTabId: currentWindowTabs[0]?.id,
+          operation: 'attest',
         },
-        // extensionTabId: currentWindowTabs[0]?.id,
-        operation: 'attest',
-      },
-      sender,
-      sendResponse,
-      USERPASSWORD,
-      fullscreenPort,
-      hasGetTwitterScreenName
-    );
+        sender,
+        sendResponse,
+        USERPASSWORD,
+        fullscreenPort,
+        hasGetTwitterScreenName
+      );
+    }
   }
 
   if (name === 'getAttestationResult') {
@@ -322,6 +337,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
 
   if (name === 'getAttestationResultTimeout') {
+    if (sdkParams.attestationTypeID === '101') {
+      return;
+    }
     const { configMap, padoZKAttestationJSSDKAttestationPresetParams } =
       await chrome.storage.local.get([
         'configMap',

@@ -76,7 +76,7 @@ const useUpdateExSources = (flag = false) => {
             });
           }
         } else {
-          if (msg === 'AuthenticationError') { // TODO-newui
+          if (msg === 'AuthenticationError') {
             if (curSourceUserInfo) {
               curSourceUserInfo.expired = '1';
               await chrome.storage.local.set({

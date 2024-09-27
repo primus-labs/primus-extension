@@ -129,7 +129,7 @@ const processNetworkReq = async (message, port, USERPASSWORD) => {
           JSON.stringify(exCipherData),
           USERPASSWORD
         );
-        // TODO get storage from store first,then store new info of new apikey
+        // get storage from store first,then store new info of new apikey
         await chrome.storage.local.set({
           [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
         });
@@ -181,19 +181,19 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     requestid: prevRequestid || timeStampStr,
     //version: CredVersion,
     baseName, // host, such as "api.binance.com"
-    padoUrl: padoUrl, // client <----> pado-server // TODO
+    padoUrl: padoUrl, // client <----> pado-server
     proxyUrl: proxyUrl,
     errLogUrl: 'wss://api.padolabs.org/logs',
     // if cipher non-exist or empty use default. options:
     //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
-    cipher: '', // TODO
+    cipher: '',
     getdatatime: timeStampStr,
     credVersion: CredVersion,
 
-    sigFormat: 'EAS-Ethereum', // TODO
+    sigFormat: 'EAS-Ethereum',
     schemaType,
     user,
-    // holdingToken // TODO
+    // holdingToken
     authUseridHash,
     event,
     setHostName: 'true',
@@ -215,7 +215,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   } else if (type === 'TOKEN_HOLDINGS') {
     params.baseValue = '0';
     params.holdingToken = holdingToken;
-    calculationType = `SUM_OF__A_KEY_VALUES`; // TODO
+    calculationType = `SUM_OF__A_KEY_VALUES`;
   }
   if (baseValue) {
     params.baseValue = baseValue;
@@ -279,7 +279,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
       ext = {
         calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
         extRequests: {
-          orders: ['uid-hash', extRequestsOrder], // TODO
+          orders: ['uid-hash', extRequestsOrder],
           'uid-hash': extUidHashRequestsInfo,
           [extRequestsOrder]: extRequestsOrderInfo,
         },
@@ -288,7 +288,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
       ext = {
         calculationType: calculationType, // NO_ACTION/A_PURE_NUMBER/OKX_ACCOUNT_BALANCE/OKX_ASSET_BALANCES
         extRequests: {
-          orders: [extRequestsOrder], // TODO
+          orders: [extRequestsOrder],
           [extRequestsOrder]: extRequestsOrderInfo,
         },
       };

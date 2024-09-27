@@ -156,7 +156,7 @@ const Nav: React.FC<PButtonProps> = memo(
             // change verification value
             lastResponseConditions.value =
               activeAttestationParams.verificationValue;
-            // TODO-newattestations
+            // DEL!!!-TEST-spot30dVol
             lastResponseConditions.op = '>=';
             // for okx
             if (lastResponseConditionsSubconditions) {

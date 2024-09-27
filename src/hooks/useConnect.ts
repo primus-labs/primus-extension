@@ -42,7 +42,7 @@ const useConnect: UseInterval = function useConnect(
         await dispatch(setConnectWalletDialogVisibleAction(0));
         return;
       }
-      // TODO
+
       const handler = () => savedCallback.current();
       handler();
       await dispatch(setConnectWalletDialogVisibleAction(1));

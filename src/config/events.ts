@@ -124,7 +124,7 @@ export const eventMetaMap = {
       },
       { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
     ],
-    nameInAttestation: 'Early Bird NFT', // TODO-newui ???
+    nameInAttestation: 'Early Bird NFT',
     picTxt: 'PADO Early Bird NFT Rewards',
     desc: 'Complete an attestation with any kind of Asset Certificate.',
     chainIds: [], // TODOnewui ???

@@ -116,12 +116,11 @@ const useSource = (sourceName: string) => {
       // await chrome.storage.local.set({
       //   credentials: JSON.stringify(newCredentialObj),
       // });
-      // Delete on-chain datas // TODO-newui
+      // Delete on-chain datas
 
       // dispatch action & report event
       dispatch(setCredentialsAsync());
       if (activeDataSouceMetaInfo?.type === 'Assets') {
-        // TODO-newui
         // if (i.name.startsWith('0x')) {
         if (lowerCaseName !== 'web3 wallet' && !lowerCaseName.startsWith('0x')) {
           dispatch(setExSourcesAsync());

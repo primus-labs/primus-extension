@@ -84,7 +84,7 @@ const Nav: React.FC<PButtonProps> = memo(
         const activeAttestationParams = {
           ...assetForm,
           ...form,
-          attestationType: type, // TODO-newui
+          attestationType: type,
           fetchType: 'API',
           // loading: 1,
         };

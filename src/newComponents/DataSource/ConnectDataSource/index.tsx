@@ -65,7 +65,6 @@ const ConnectDataSource: React.FC = memo(({}) => {
       let currRequestObj = webProofTypes.find(
         (r: any) => r.dataSource === lowerCaseDataSourceName
       );
-      // TODO-newui
       /*if (lowerCaseDataSourceName === 'tiktok') {
         currRequestObj.datasourceTemplate.requests[0] = {
           name: 'first',
@@ -76,7 +75,7 @@ const ConnectDataSource: React.FC = memo(({}) => {
           cookies: ['sessionid', 'tt-target-idc'],
         };
       }*/
-      // TODO END
+      
       if (!currRequestObj) {
         currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
       }

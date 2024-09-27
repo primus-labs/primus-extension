@@ -455,8 +455,7 @@ export async function bulkAttest(params) {
       schemauid = activeSchemaInfo.schemaUidTokenHoldings;
     } else if (item.type === 'IDENTIFICATION_PROOF') {
       schemauid = activeSchemaInfo.schemaUidIdentification;
-    } else if (item.type === 'web') {
-      // TODO
+    } else if (item.type === 'web' || item.type === 'BREVIS_TRANSACTION_PROOF#1') {
       schemauid = activeSchemaInfo.schemaUidWeb;
     }
     if (eventSchemauid) {

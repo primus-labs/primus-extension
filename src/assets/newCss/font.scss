@@ -171,7 +171,6 @@
   line-height: 16px;
 }
 
-// TODO-newui
 @mixin Error {
   color: var(--text-tokens-text-error, #fa4d56);
   font-feature-settings: 'ss08' on, 'clig' off, 'liga' off;

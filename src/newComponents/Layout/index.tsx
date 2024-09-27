@@ -79,7 +79,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     for (const credentialKey of Object.keys(credentialObj)) {
       const i = newCredentialObj[credentialKey];
       const compareRes =
-        i.credVersion && compareVersions('1.0.5', i.credVersion); // TODO-newui!!!
+        i.credVersion && compareVersions('1.0.5', i.credVersion);
       // google attestation has no set credVersion
       if (!i.credVersion || compareRes > 0) {
         // attestation credVersion < '1.0.5'
@@ -209,27 +209,6 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
     initStoreData();
   }, [initStoreData]);
 
-  // TODO-newui create wallet
-  // const handleClickStart = useCallback(() => {
-  //   const msg = {
-  //     fullScreenType: 'wallet',
-  //     reqMethodName: 'create',
-  //     params: {},
-  //   };
-  //   postMsg(padoServicePort, msg);
-  // }, [padoServicePort]);
-  // const createPadoId = async () => {
-  //   const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
-  //     await chrome.storage.local.get([
-  //       'keyStore',
-  //       'padoCreatedWalletAddress',
-  //       'privateKey',
-  //       'userInfo',
-  //     ]);
-  //   if (!keyStore && !privateKey) {
-  //     handleClickStart();
-  //   }
-  // };
   const queryUserPassword = async () => {
     const msg2 = {
       fullScreenType: 'wallet',

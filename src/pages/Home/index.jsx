@@ -92,7 +92,6 @@ createWeb3Modal({
 });
 console.log('Page initialization');
 
-// TODO
 root.render(
   <>
     <Provider store={store}>

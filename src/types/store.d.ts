@@ -60,7 +60,7 @@ type activeOnChainRequest = {
 };
 type activeConnectWalletRequest = {
   network?: any;
-  loading?: 0 | 1; // TODO-newui0
+  loading?: 0 | 1;
 };
 type Msg = {
   id: string;

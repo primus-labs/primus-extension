@@ -94,9 +94,7 @@ const useListener: UseListener = function useListener() {
           params = {
             result: 'fail',
           };
-          // TODO-newui eventReport
-          // result: 'warn',
-          // failReason,
+          
           if (msg === 'AuthenticationError') {
             msgObj = {
               type: 'error',

@@ -24,11 +24,11 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
       newSourceUserData = {
         totalBalance: ex.totalAccountBalance,
         tokenListMap: ex.totalAccountTokenMap,
-        apiKey: apiKey, // TODO-newui
+        apiKey: apiKey,
         // date: getCurrentDate(),
         // timestamp: +new Date(),
-        version: ExchangeStoreVersion, // TODO-newui
-        label: '', // TODO-newui
+        version: ExchangeStoreVersion,
+        label: '',
         flexibleAccountTokenMap: ex.flexibleAccountTokenMap,
         spotAccountTokenMap: ex.spotAccountTokenMap,
         tokenPriceMap: ex.tokenPriceMap,
@@ -92,7 +92,6 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
         errMsg = 'UnhnowError';
       }
     } else if (sourceType === 'Social') {
-      // TODO-newui
       errMsg = 'UnhnowError';
     }
     postMsg(port, {

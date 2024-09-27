@@ -477,9 +477,6 @@ const useALGAttest = function useAttest() {
   const timeoutFn = useCallback(async () => {
     console.log('120s timeout');
     clearFetchAttestationTimer();
-    // if (activeRequest?.type === 'suc') {
-    //   return;
-    // }// TODO-newui
     const { activeRequestAttestation } = await chrome.storage.local.get([
       'activeRequestAttestation',
     ]);
@@ -626,7 +623,7 @@ const useALGAttest = function useAttest() {
               })
             );
           }
-          // if (activeRequest?.type === 'loading' || !activeRequest?.type) {//TODO-newui
+          // if (activeRequest?.type === 'loading' || !activeRequest?.type) {
           //   setActiveRequest({
           //     type: 'warn',
           //     title: 'Unable to proceed',

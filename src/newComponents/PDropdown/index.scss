@@ -41,8 +41,6 @@
       }
       &.disabled {
         cursor: not-allowed;
-        // TODO-newui
-        // background: var(--button-tokens-button-disabled);
         .left {
           .desc {
             opacity: 0.2;

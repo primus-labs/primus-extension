@@ -368,7 +368,7 @@ export const pageDecodeMsgListener = async (
       const form = {
         source: dataSource,
         type: category,
-        label: null, // TODO
+        label: null,
         exUserId: null,
         requestid,
       };

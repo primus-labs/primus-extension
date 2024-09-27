@@ -398,7 +398,6 @@ const Cards: React.FC<PDropdownProps> = memo(
                   </div>
                   <div className="details">
                     <div className="descItems">
-                      {/* TODO-newui config uiTemplate */}
                       <div className="descItem">
                         <div className="label">Content</div>
                         <div className="value longValue">{getContent(i)}</div>

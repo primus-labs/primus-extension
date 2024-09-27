@@ -41,7 +41,6 @@
             gap: var(--spacing-4);
             .title {
               @include HeadlineH3;
-              // color: var(--Text-headline)// TODO-newui
             }
             .subTitle {
               @include BodyBody100;

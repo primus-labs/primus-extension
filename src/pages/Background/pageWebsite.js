@@ -17,7 +17,7 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
   } else if (name === 'upperChain') {
     if (operation === 'openPadoWebsite') {
       tabCreatedByPado = await chrome.tabs.create({
-        url: BNBGREENFIELDURL, // TODO
+        url: BNBGREENFIELDURL,
       });
       currExtentionId = sender.tab.id;
       console.log('22212345', currExtentionId, tabCreatedByPado);

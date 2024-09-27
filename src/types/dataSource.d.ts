@@ -41,7 +41,7 @@ export type ExchangeMeta = {
   requirePassphase?: boolean;
   constructorF?: any;
   baseName?: string;
-  accountBalanceUrl?: string; // TODO
+  accountBalanceUrl?: string;
   userId?: string;
   label?: string;
   desc?: string;

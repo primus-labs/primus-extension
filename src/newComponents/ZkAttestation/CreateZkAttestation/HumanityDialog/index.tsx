@@ -208,7 +208,7 @@ const Nav: React.FC<PButtonProps> = memo(
             requestid: attestationId,
             sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
             event: fromEvents,
-            templateId: '100', // TODO google template id
+            templateId: '100', // google template id
             dataSourceId: 'google',
             account: '',
             credVersion: CredVersion,
@@ -347,7 +347,6 @@ const Nav: React.FC<PButtonProps> = memo(
               (i.name === contentObj.label ||
                 i.name === contentObj.templateName)
           );
-          // TODO-newui get account from attestation???
           const currRequestTemplate = {
             ...activeWebProofTemplate,
             schemaType:

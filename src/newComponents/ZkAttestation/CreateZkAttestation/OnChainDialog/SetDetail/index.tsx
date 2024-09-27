@@ -87,7 +87,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       let list = Object.values(onChainAssetsSources).map((i: any) => ({
         label: formatAddress(utils.getAddress(i.address), 7, 5),
         value: i.address,
-        // icon: iconWalletMetamask, //TODO-newui
+        // icon: iconWalletMetamask,
       }));
       return list;
     }, [onChainAssetsSources]);

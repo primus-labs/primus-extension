@@ -31,7 +31,7 @@ import './pageDecode.js';
 import { pageDecodeMsgListener } from './pageDecode.js';
 import { PadoWebsiteMsgListener } from './pageWebsite.js';
 import { dataSourceWebMsgListener } from './dataSourceWeb.js';
-import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK.js';
+import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');

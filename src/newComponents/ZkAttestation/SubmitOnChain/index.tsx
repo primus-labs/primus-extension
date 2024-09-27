@@ -98,7 +98,6 @@ const Nav: React.FC<PButtonProps> = memo(
     //       }
     //       if (fromEvents === 'Scroll') {
     //         if (i.title.indexOf('Scroll') > -1) {
-    //           // TODO!!!
     //           i.disabled = false;
     //           return { ...i };
     //         }
@@ -292,7 +291,7 @@ const Nav: React.FC<PButtonProps> = memo(
               type:
                 i?.reqType === 'web' || i?.source === 'google'
                   ? 'web'
-                  : i?.type, // TODO-newui
+                  : i?.type,
               schemaName: i?.schemaName ?? LineaSchemaName,
             };
           });
@@ -399,7 +398,6 @@ const Nav: React.FC<PButtonProps> = memo(
               (i: any) => formatNetworkName === i.title
             );
             // currentChainObj.attestationUID = upChainRes;
-            // TODO???
             currentChainObj.submitAddress = walletObj.address;
 
             // for (let i = 0; i < toBeUpperChainCreds.length; i++) {
@@ -535,7 +533,7 @@ const Nav: React.FC<PButtonProps> = memo(
           let LineaSchemaName = LineaSchemaNameFn(formatNetworkName);
           const eventId = fromEvents ?? activeOnChainAttestation.event;
           if (eventId === 'Scroll') {
-            // scrollEventFn(walletObj, LineaSchemaName);// TODO-newui
+            // scrollEventFn(walletObj, LineaSchemaName);
           } else if (eventId === BASEVENTNAME) {
             BASEventFn(walletObj, LineaSchemaName, formatNetworkName);
           } else {
@@ -554,13 +552,13 @@ const Nav: React.FC<PButtonProps> = memo(
               networkName: formatNetworkName,
               metamaskprovider: walletObj.provider,
               receipt: activeOnChainAttestation?.address,
-              // receipt: '0x4813e2ea41ff0e8ff2f60cc484bc832776314980',// TODO DEL!!!  TODO-newattestations DEL!!!
+              // receipt: '0x4813e2ea41ff0e8ff2f60cc484bc832776314980',// DEL!!!-TEST-brevis DEL!!!
               attesteraddr: PADOADDRESS,
               data: activeOnChainAttestation?.encodedData,
               signature: activeOnChainAttestation?.signature,
               type: curType,
               schemaName:
-                activeOnChainAttestation?.schemaName ?? LineaSchemaName, // TODO-basevent
+                activeOnChainAttestation?.schemaName ?? LineaSchemaName,
             };
 
             let upChainRes;
@@ -572,7 +570,7 @@ const Nav: React.FC<PButtonProps> = memo(
                 (i) => i.sigFormat === LineaSchemaName
               );
               upChainParams.eventSchemauid = schemaUidObj.schemaUid;
-            } // TODO-basevent
+            }
             if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
               const requestParams: any = {
                 rawParam:

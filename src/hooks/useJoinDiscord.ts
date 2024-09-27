@@ -104,13 +104,13 @@ const useAuthorization2 = () => {
         const discordObj = JSON.parse(data.discord);
         let ext = {
           discordUserId: discordObj.uniqueId.replace('DISCORD_', ''),
-          // name: eventId //TODO-newui
+          // name: eventId 
         };
         const finishCheckRsp = await finishTaskForEvent(ext);
         if (finishCheckRsp.rc === 0) {
           // setFinished(true);
           clearInterval(joinTimer);
-          // redresh score TODO
+          // redresh score 
           setAuthWindowId(undefined);
           newWindowId &&
             chrome.windows.get(newWindowId, {}, (win) => {
