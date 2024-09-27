@@ -202,8 +202,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       }
       if (pswForm.verificationContent === 'Spot 30-Day Trade Vol') {
         if (activeDataSouceUserInfo) {
-          // DEL!!!-TEST-spoy30dVol
-          valueLegal = gte(
+          // gte DEL!!!-TEST-spot30dVol
+          valueLegal = gt(
             Number(activeDataSouceUserInfo.spot30dVol),
             Number(pswForm.verificationValue)
           );

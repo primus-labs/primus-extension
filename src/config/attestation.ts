@@ -68,10 +68,10 @@ export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[
   Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
 
 export const ASSETSVOLVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  '0': {
-    value: '0',
-    label: '> $0',
-  }, // TEST-spot30dVol
+  // '0': {
+  //   value: '0',
+  //   label: '> $0',
+  // }, // TEST-spot30dVol
   '100': {
     value: '100',
     label: '> $100',

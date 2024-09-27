@@ -10,7 +10,7 @@ import { getUserInfo } from '@/services/api/achievements';
 import useAllSources from '@/hooks/useAllSources';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import useSocialStatistic from '@/hooks/useSocialStatistic';
-import { gte, sub, add, getCurrentDate, formatFullTime } from '@/utils/utils';
+import { sub, add, getCurrentDate, formatFullTime } from '@/utils/utils';
 import { exportCsv } from '@/utils/exportFile';
 
 import { BIGZERO } from '@/config/constants';
