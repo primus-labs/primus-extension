@@ -10,12 +10,15 @@ type GETUNISWAPPROOFPARAMS = {
   transactionHash: string;
   addressId: string;
 };
-type GETUNINFTPROOFRESULTPARAMS = { requestId: string };
+
 type CLAIMUNINFTPARAMS = {
-  requestId: string;
   signature: string;
   address: string;
   timestamp: string;
+};
+type GETUNINFTPROOFRESULTPARAMS = {
+  address: string;
+  blockNumber: string;
 };
 type GETEVENTSINGNATURE = {
   rawParam: any;
@@ -40,15 +43,19 @@ export const getNFTInfo = (data: GETNFTINFO) => {
 
 export const claimUniNFT = (data: CLAIMUNINFTPARAMS) => {
   return request({
-    method: 'post',
-    url: `/celer/nft/request?requestId=${data.requestId}`,
+    method: 'get',
+    url: `/brevis-network/transaction/proof`,
     data,
   });
 };
 export const getUniNFTResult = (data: GETUNINFTPROOFRESULTPARAMS) => {
   return request({
     method: 'get',
-    url: `/celer/nft/result?requestId=${data.requestId}`,
+    url: `/brevis-proof/result`,
+    data,
+    config: {
+      timeout: 2000
+    }
   });
 };
 export const getUniswapProof = (data: GETUNISWAPPROOFPARAMS) => {

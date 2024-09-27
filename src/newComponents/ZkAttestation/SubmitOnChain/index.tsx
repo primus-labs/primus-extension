@@ -553,8 +553,8 @@ const Nav: React.FC<PButtonProps> = memo(
             let upChainParams: any = {
               networkName: formatNetworkName,
               metamaskprovider: walletObj.provider,
-              receipt: activeOnChainAttestation?.address, // TODO DEL!!! for uniswap proof
-              // receipt: '0xd4b69e8d62c880e9dd55d419d5e07435c3538342',
+              receipt: activeOnChainAttestation?.address,
+              // receipt: '0x4813e2ea41ff0e8ff2f60cc484bc832776314980',// TODO DEL!!!  TODO-newattestations DEL!!!
               attesteraddr: PADOADDRESS,
               data: activeOnChainAttestation?.encodedData,
               signature: activeOnChainAttestation?.signature,
@@ -576,7 +576,7 @@ const Nav: React.FC<PButtonProps> = memo(
             if (formatNetworkName !== FIRSTVERSIONSUPPORTEDNETWORKNAME) {
               const requestParams: any = {
                 rawParam:
-                  curCredential.type === 'UNISWAP_PROOF' ||
+                  curCredential.type === 'BREVIS_TRANSACTION_PROOF#1' ||
                   curCredential.source === 'google'
                     ? curCredential.rawParam
                     : Object.assign(curCredential, {
@@ -585,10 +585,7 @@ const Nav: React.FC<PButtonProps> = memo(
                 greaterThanBaseValue: true,
                 signature: curCredential.signature,
                 newSigFormat: LineaSchemaName, // TODO-basevent
-                sourceUseridHash:
-                  curCredential.type === 'UNISWAP_PROOF'
-                    ? undefined
-                    : curCredential.sourceUseridHash,
+                sourceUseridHash: curCredential.sourceUseridHash,
               };
               if (activeOnChainAttestation?.source === 'zan') {
                 const authUseridHash = await getAuthUserIdHash();
@@ -601,7 +598,10 @@ const Nav: React.FC<PButtonProps> = memo(
                   result: true,
                 };
               }
-              if (activeOnChainAttestation?.type === 'UNISWAP_PROOF') {
+              
+              if (
+                activeOnChainAttestation?.type === 'BREVIS_TRANSACTION_PROOF#1'
+              ) {
                 requestParams.dataToBeSigned =
                   activeOnChainAttestation?.dataToBeSigned;
               }

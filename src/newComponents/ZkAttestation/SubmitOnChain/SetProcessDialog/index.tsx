@@ -10,6 +10,7 @@ import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 
+
 interface DataSourcesDialogProps {
   preset: any;
   onClose?: () => void;
@@ -60,6 +61,9 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
               )}
               {activeRequest?.type === 'fail' && (
                 <img src={iconConnectWalletFail} alt="" className="resultImg" />
+              )}
+              {activeRequest?.type === 'warn' && (
+                <i className={`iconfont icon-iconInfoColorful`}></i>
               )}
             </div>
             <div className="descWrapper">

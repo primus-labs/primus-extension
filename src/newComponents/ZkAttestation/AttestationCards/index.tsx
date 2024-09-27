@@ -371,19 +371,21 @@ const Cards: React.FC<PDropdownProps> = memo(
                     </div>
                   </div>
                   <div className="brief">
-                    <SplicedIcons
-                      list={[
-                        ATTESTATIONTYPEMAP[i.attestationType]?.icon[theme],
-                        getDataSourceMetaInfo(i.source)?.icon,
-                      ]}
-                    />
-                    <div className="intro">
-                      <div className="name">
-                        {getDataSourceMetaInfo(i.source).name}
-                      </div>
-                      <div className="updateTime">
-                        <span> {formatDate(Number(i?.getDataTime))}</span>
-                        {/* <img src={iconUpdate} alt="" className="iconUpdate" /> */}
+                    <div className="left">
+                      <SplicedIcons
+                        list={[
+                          ATTESTATIONTYPEMAP[i.attestationType]?.icon[theme],
+                          getDataSourceMetaInfo(i.source)?.icon,
+                        ]}
+                      />
+                      <div className="intro">
+                        <div className="name">
+                          {getDataSourceMetaInfo(i.source).name}
+                        </div>
+                        <div className="updateTime">
+                          <span> {formatDate(Number(i?.getDataTime))}</span>
+                          {/* <img src={iconUpdate} alt="" className="iconUpdate" /> */}
+                        </div>
                       </div>
                     </div>
                     {i.source === 'web3 wallet' && (
@@ -414,7 +416,14 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <div className="descItem">
                         <div className="label">Data account</div>
                         <div className="value">
-                          {i.account
+                          {i.attestationType === 'On-chain Transactions'
+                            ? formatAddress(
+                                utils.getAddress(i.address),
+                                7,
+                                5,
+                                '...'
+                              )
+                            : i.account
                             ? `${i.dataSourceId === 'x' ? '@' : ''}${i.account}`
                             : i.sourceUseridHash}
                         </div>

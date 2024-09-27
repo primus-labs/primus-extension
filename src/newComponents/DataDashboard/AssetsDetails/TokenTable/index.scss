@@ -5,7 +5,7 @@
 .tokenTable {
   width: 100%;
   @include fcss;
-  // gap: var(--spacing-16);
+  gap: var(--spacing-16);
   .title {
     @include HeadlineH3;
     @include frsc;

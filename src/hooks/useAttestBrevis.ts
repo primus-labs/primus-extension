@@ -16,7 +16,7 @@ import {
   getUniswapProof,
 } from '@/services/api/event';
 import { useDispatch } from 'react-redux';
-import { initRewardsActionAsync, setCredentialsAsync } from '@/store/actions';
+import { initRewardsActionAsync, setCredentialsAsync, setAttestLoading } from '@/store/actions';
 import { CredVersion } from '@/config/attestation';
 import type { Dispatch } from 'react';
 type CreateAuthWindowCallBack = (
@@ -28,6 +28,7 @@ type CreateAuthWindowCallBack = (
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 
+const errorDescEl = ''
 const useAttestBrevis = () => {
   const { sourceMap2 } = useAllSources();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
@@ -35,7 +36,7 @@ const useAttestBrevis = () => {
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
   const [checkIsJoinDialogTimer, setCheckIsJoinDialogTimer] = useState<any>();
-
+  const [claimResult, setClaimResult] = useState<any>({});
   const dispatch: Dispatch<any> = useDispatch();
   const [uniSwapProofRequestId, setUniSwapProofRequestId] =
     useState<string>('');
@@ -80,122 +81,58 @@ const useAttestBrevis = () => {
   const pollingUniProofResult = useCallback(async () => {
     try {
       const { rc, result } = await getUniNFTResult({
-        requestId: uniSwapProofRequestId,
+        address: claimResult.address,
+        blockNumber: claimResult.blockNumber,
       });
       if (rc === 0) {
+        setPollingUniProofIntervalSwitch(false);
         const {
-          status,
-          reason,
-          nft,
-          transactionHash,
-          swapSizeDollars,
-          signatureInfo,
-          signatureRawInfo,
+          dataSignatureResponse: { result : dataSignatureResponseResult, ...otherResponse },
+          dataSignatureParams,
         } = result;
         var eventInfo: any = {
           eventType: 'API_ATTESTATION_GENERATE',
           rawData: {
             source: 'brevis',
-            schemaType: 'UNISWAP_PROOF',
+            schemaType: 'BREVIS_TRANSACTION_PROOF#1', // UNISWAP_PROOF
             sigFormat: 'EAS-Ethereum',
             attestationId: uniSwapProofRequestId,
-            // status: 'SUCCESS',
-            // reason: '',
             event: fromEvents,
           },
         };
-        if (status === 'COMPLETE' || status === 'ERROR') {
-          setPollingUniProofIntervalSwitch(false);
-        }
-        // store nft & proof
-        if (status === 'COMPLETE') {
-          // store nft & credit
-          const { rewards } = await chrome.storage.local.get(['rewards']);
-          const newRewardsObj = rewards ? JSON.parse(rewards) : {};
-          newRewardsObj['brevis' + uniSwapProofRequestId] = {
-            title: nft.nftTitle,
-            name: nft.nftName,
-            image: nft.image,
-            nftAddress: nft.nftAddress,
-            accountAddress: activeAttestForm?.address.toLowerCase(),
-            type: 'NFT',
-            event: 'brevis',
-          };
-          await chrome.storage.local.set({
-            rewards: JSON.stringify(newRewardsObj),
-          });
-          await dispatch(initRewardsActionAsync());
-          const fullAttestation = {
-            ...signatureInfo,
-            ...signatureRawInfo,
-            nft,
-            address: connectedWallet?.address,
-            ...activeAttestForm,
-            version: CredVersion,
-            requestid: uniSwapProofRequestId,
-          };
-          const credentialsObj = { ...credentialsFromStore };
-          credentialsObj[uniSwapProofRequestId] = fullAttestation;
-          await chrome.storage.local.set({
-            credentials: JSON.stringify(credentialsObj),
-          });
-          await initCredList();
-          eventInfo.rawData.status = 'SUCCESS';
-          eventInfo.rawData.reason = '';
-          eventReport(eventInfo);
-          setActiveRequest({
-            type: 'suc',
-            title: 'Congratulations',
-            desc: 'Successfully get your rewards.',
-          });
-          // setActiveRequest({
-          //   type: 'suc',
-          //   title: 'Congratulations',
-          //   desc: 'Your proof is created!',
-          // });
-        }
-        if (status === 'ERROR') {
-          //         const resonMap = {
-          //           SIGNATURE_WRONG
-          // NO_ELIGIBILITY：
-          // INTERNAL_ERROR：
-          // TRANSACTION_ERROR:
-          // UNKNOWN：
-          // SUCCESS：
-          //         }
 
-          if (reason === 'NO_ELIGIBILITY') {
-            setActiveRequest({
-              type: 'warn',
-              title: 'Not meet the requirements',
-              desc: 'Do not have an eligible transaction. ',
-              btnTxt: '',
-            });
-          } else if (reason === 'UNKNOWN') {
-            setActiveRequest({
-              type: 'warn',
-              title: 'Unable to proceed',
-              desc: 'Some transaction error occurs. Please try again later.',
-              btnTxt: '',
-            });
-          } else {
-            setActiveRequest({
-              type: 'warn',
-              title: 'Something went wrong',
-              desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
-            });
-          }
-          eventInfo.rawData.status = 'FAILED';
-          eventInfo.rawData.reason = reason;
-          eventReport(eventInfo);
-        }
+        const fullAttestation = {
+          ...dataSignatureResponseResult,
+          ...otherResponse,
+          ...dataSignatureParams,
+          address: connectedWallet?.address,
+          source: activeAttestForm.dataSourceId,
+          ...activeAttestForm,
+          requestid: uniSwapProofRequestId,
+          event: fromEvents,
+          version: CredVersion,
+          credVersion: CredVersion,
+          type: 'BREVIS_TRANSACTION_PROOF#1',
+          templateId: '101', // brevis template id
+        };
+        const credentialsObj = { ...credentialsFromStore };
+        credentialsObj[uniSwapProofRequestId] = fullAttestation;
+        await chrome.storage.local.set({
+          credentials: JSON.stringify(credentialsObj),
+        });
+        await initCredList();
+        eventInfo.rawData.status = 'SUCCESS';
+        eventInfo.rawData.reason = '';
+        eventReport(eventInfo);
+        setActiveRequest({
+          type: 'suc',
+          title: 'Congratulations',
+          desc: 'Successfully get your rewards.',
+        });
+        dispatch(setAttestLoading(2));
+      } else {
       }
     } catch {
-      setActiveRequest({
-        type: 'warn',
-        title: 'Something went wrong',
-        desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
-      });
     } finally {
     }
   }, [
@@ -206,10 +143,11 @@ const useAttestBrevis = () => {
     credentialsFromStore,
     initCredList,
     dispatch,
+    claimResult,
   ]);
   useInterval(
     pollingUniProofResult,
-    3000,
+    5000,
     pollingUniProofIntervalSwitch,
     false
   );
@@ -218,46 +156,50 @@ const useAttestBrevis = () => {
     try {
       const curRequestId = uuidv4();
       setUniSwapProofRequestId(curRequestId);
-      // const curConnectedAddr = connectedWallet?.address;
-      const curConnectedAddr = '0xfb19212dc11a7c6f00aadf685cc00f97b4c17011'; // stone TODO DEL!!!222123
+      const curConnectedAddr = connectedWallet?.address;
+      // const curConnectedAddr = '0x4813e2ea41ff0e8ff2f60cc484bc832776314980'; // TODO-newattestations TODO DEL!!!
       const timestamp: string = +new Date() + '';
-      const signature = await requestSign(form?.account, timestamp); // TODO DEL !!!
-      // if (!signature) {
-      //   setActiveRequest({
-      //     type: 'warn',
-      //     title: 'Unable to proceed',
-      //     desc: errorDescEl,
-      //   });
-      //   return;
-      // }
+      const signature = await requestSign(form?.account, timestamp);
+      if (!signature) {
+        setActiveRequest({
+          type: 'warn',
+          title: 'Something went wrong',
+          desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+        });
+        dispatch(setAttestLoading(3));
+        return;
+      }
       const proofParams = {
         signature,
         address: curConnectedAddr,
         provider: connectedWallet?.provider,
       };
       setUniSwapProofParams(proofParams);
-      const { rc, result, msg } = await claimUniNFT({
-        requestId: curRequestId,
+      const { rc, result, mc } = await claimUniNFT({
         signature,
         address: curConnectedAddr,
         timestamp,
       });
 
       if (rc === 0 && result) {
+        setClaimResult({ ...result, address: curConnectedAddr });
         setPollingUniProofIntervalSwitch(true);
       } else {
-        // setActiveRequest({
-        //   type: 'error',
-        //   title: 'Failed',
-        //   desc: msg,
-        // });
+        setActiveRequest({
+          type: 'warn',
+          title: 'Not meet the requirements',
+          desc: 'Do not have an eligible transaction. ',
+          btnTxt: '',
+        });
+        dispatch(setAttestLoading(3));
       }
     } catch (e) {
-      // setActiveRequest({
-      //   type: 'warn',
-      //   title: 'Unable to proceed',
-      //   desc: errorDescEl,
-      // });
+      setActiveRequest({
+        type: 'warn',
+        title: 'Something went wrong',
+        desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+      });
+      dispatch(setAttestLoading(3));
     }
   }, []);
 

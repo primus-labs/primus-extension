@@ -263,6 +263,7 @@ export const switchAccount = async (provider) => {
           })
         );
       }
+      return Promise.resolve(currActiveAccount);
     }
   } catch (error) {
     store.dispatch(

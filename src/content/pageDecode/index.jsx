@@ -255,9 +255,10 @@ function DescEl({ status, resultStatus, errorTxt }) {
           vC = 'Followers number';
           vV = `> ${verificationValue}`;
         }
-      } else if (attestationType === 'On-chain Transactions') {
-        
       }
+      // else if (attestationType === 'On-chain Transactions') {
+        
+      // }
 
       return [
         { label: 'Data Source', value: host },

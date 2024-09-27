@@ -86,42 +86,42 @@
         }
         .brief {
           width: 100%;
-          position: relative;
-          @include frsc;
-          gap: var(--spacing-16);
+          @include frbs;
+          .left {
+            width: 100%;
+            @include frsc;
+            gap: var(--spacing-16);
 
-          .splicedIcons > img:nth-child(2) {
-            left: calc(-1 * var(--spacing-8));
-          }
-          .intro {
-            @include fcss;
-            gap: var(--spacing-2);
-            color: var(--text-tokens-text-primary);
-            .name {
-              @include BodyBody100Semibold;
+            .splicedIcons > img:nth-child(2) {
+              left: calc(-1 * var(--spacing-8));
             }
-            .updateTime {
-              @include frsc;
-              gap: var(--spacing-8);
-              @include NumberHint;
-              // .iconfont {
-              //   font-size: var(--spacing-12);
-              //   color: var(--icon-tokens-icon-primary);
-              // }
-              .iconUpdate {
-                width: var(--spacing-12);
+            .intro {
+              @include fcss;
+              gap: var(--spacing-2);
+              color: var(--text-tokens-text-primary);
+              .name {
+                @include BodyBody100Semibold;
+              }
+              .updateTime {
+                @include frsc;
+                gap: var(--spacing-8);
+                @include NumberHint;
+                // .iconfont {
+                //   font-size: var(--spacing-12);
+                //   color: var(--icon-tokens-icon-primary);
+                // }
+                .iconUpdate {
+                  width: var(--spacing-12);
+                }
               }
             }
           }
-          .provider{
-            position: absolute;
-            right: 0;
-            top: 0;
+          .provider {
             height: var(--spacing-16);
             @include frsc;
             gap: 2px;
             @include Hint;
-            >img{
+            > img {
               width: var(--spacing-12);
             }
           }
@@ -188,7 +188,7 @@
                   }
                 }
                 &.longValue {
-                  max-width: 140px;
+                  max-width: 208px;
                 }
               }
               .icon-Add {

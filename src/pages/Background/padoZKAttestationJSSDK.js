@@ -178,23 +178,29 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const activeWebProofTemplate = webProofTypesList.find(
       (i) => i.id === attestationTypeID
     );
-    const verificationContent = Object.keys(
-      ALLVERIFICATIONCONTENTTYPEEMAP
-    ).find((k) => {
-      const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
-      const { name } = activeWebProofTemplate;
-      if (
-        [
-          'Assets Proof',
-          'Token Holding',
-          'X Followers',
-          'Spot 30-Day Trade Vol',
-        ].includes(name)
-      ) {
-        return name === obj.value;
-      }
-      return name === obj.label || name === obj.templateName;
-    });
+    let verificationContent = ''
+    if (attestationTypeID === '101') {
+      verificationContent = '3'
+    } else {
+      verificationContent = Object.keys(
+        ALLVERIFICATIONCONTENTTYPEEMAP
+      ).find((k) => {
+        const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
+        const { name } = activeWebProofTemplate;
+        if (
+          [
+            'Assets Proof',
+            'Token Holding',
+            'X Followers',
+            'Spot 30-Day Trade Vol',
+          ].includes(name)
+        ) {
+          return name === obj.value;
+        }
+        return name === obj.label || name === obj.templateName;
+      });
+    }
+    // TODO-new
     let verificationValue;
     if (verificationContent === 'KYC Status') {
       verificationValue = 'Basic Verification';
@@ -211,7 +217,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
       });
     } else if (verificationContent === 'Spot 30-Day Trade Vol') {
       verificationValue = spot30dTradeVol;
-      
+    } else if (verificationContent === '3' && attestationTypeID === '101') {
+      verificationValue = 'since 2024 July';
     }
     const requestid = uuidv4();
 
@@ -260,7 +267,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
             activeAttestationParams.verificationValue;
         }
       }
-      chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
     } else if (
       ['KYC Status', 'Account ownership'].includes(verificationContent)
     ) {
@@ -269,10 +275,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
       activeAttestationParams.attestationType = 'Social Connections';
       activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
         followersNO;
-    } else if (['3'].includes(verificationContent)) {
+    } else if (['3'].includes(verificationContent) && attestationTypeID === '101') {
       activeAttestationParams.attestationType = 'On-chain Transactions';
     }
-
+    chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
 
     await chrome.storage.local.set({
       padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(

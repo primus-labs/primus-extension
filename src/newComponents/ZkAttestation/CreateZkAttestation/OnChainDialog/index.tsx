@@ -22,7 +22,7 @@ import SetDataSource from './SetDataSource';
 import OrderItem from '@/newComponents/OrderItem';
 import SetProcessDialog from '@/newComponents/ZkAttestation/SubmitOnChain/SetProcessDialog';
 import iconDone from '@/assets/newImg/layout/iconDone.svg';
-
+import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import '../AssetDialog/index.scss';
 
 interface PButtonProps {
@@ -78,7 +78,7 @@ const Nav: React.FC<PButtonProps> = memo(
       setStep(2);
     }, []);
     const handleSubmitSetDetail = useCallback(
-      async (form = {}) => {
+      async (form:any = {}) => {
         // setAssetForm((f) => ({ ...f, ...form }));
         // 1.store attestation in process params in react store
         const activeAttestationParams = {
@@ -89,7 +89,7 @@ const Nav: React.FC<PButtonProps> = memo(
           // loading: 1,
         };
         // form.sourceUseridHash = activeSource?.address?.toLowerCase() as string;
-        dispatch(setActiveAttestation({ activeAttestationParams, loading: 1 }));
+        dispatch(setActiveAttestation({ ...activeAttestationParams, loading: 1 }));
         dispatch(setAttestLoading(1));
         // 2.check select account if connected
         // 3.request
@@ -97,31 +97,43 @@ const Nav: React.FC<PButtonProps> = memo(
           setStep(3);
           const curConnectedAddr = connectedWallet?.address;
           // if did‘t connected with the selected account
-          // if (curConnectedAddr.toLowerCase() !== form?.account?.toLowerCase()) {
-          //   const formatAddr = formatAddress(
-          //     form?.account || '',
-          //     7,
-          //     5,
-          //     '......'
-          //   );
-          //   setActiveSendToChainRequest({
-          //     type: 'loading',
-          //     title: 'Attesting...',
-          //     desc: `Check your wallet to confirm the connection with ${formatAddr}`,
-          //   });
-          //   await switchAccount(connectedWallet?.provider);
-          //   // setActiveRequest(undefined);
-          //   // setActiveSourceName(form?.sourceUseridHash);
-          //   // setStep(1);
-          //   return;
-          // } else {
+          if (curConnectedAddr.toLowerCase() !== form?.account?.toLowerCase()) {
+            const formatAddr = formatAddress(
+              form?.account || '',
+              7,
+              5,
+              '......'
+            );
+            setActiveSendToChainRequest({
+              type: 'loading',
+              title: 'Attesting...',
+              desc: `Check your wallet to confirm the connection with ${formatAddr}`,
+            });
+            const newAddr = await switchAccount(connectedWallet?.provider);
+            if (form?.account?.toLowerCase() === newAddr.toLowerCase()) {
+              setActiveSendToChainRequest({
+                type: 'loading',
+                title: 'Attesting...',
+                desc: `This may take a few seconds.`,
+              });
+              attestBrevisFn(activeAttestationParams);
+            } else {
+              setActiveSendToChainRequest({
+                type: 'warn',
+                title: 'Something went wrong',
+                desc: `Check your wallet to confirm the connection with ${formatAddr}`,
+              });
+              dispatch(setAttestLoading(3));
+            }
+            return;
+          } else {
             setActiveSendToChainRequest({
               type: 'loading',
               title: 'Attesting...',
               desc: `This may take a few seconds.`,
             });
             attestBrevisFn(activeAttestationParams);
-          // }
+          }
         }
       },
       [assetForm, fromEvents, BASEventDetail, dispatch, type, connectedWallet]
@@ -132,7 +144,6 @@ const Nav: React.FC<PButtonProps> = memo(
     }, [attestBrevisRequestProcess]);
     useEffect(() => {
       if (presets) {
-        debugger
         setAssetForm(presets);
         setStep(2);
       }
@@ -141,7 +152,11 @@ const Nav: React.FC<PButtonProps> = memo(
       <>
         {step === 3 ? (
           <SetProcessDialog
-            preset={DATASOURCEMAP['coinbase'].icon}
+            preset={
+              assetForm.dataSourceId === 'web3 wallet'
+                ? iconWalletMetamask
+                : DATASOURCEMAP['coinbase'].icon
+            }
             onClose={onClose}
             onSubmit={handleSubmitSetDetail}
             activeRequest={activeSendToChainRequest}

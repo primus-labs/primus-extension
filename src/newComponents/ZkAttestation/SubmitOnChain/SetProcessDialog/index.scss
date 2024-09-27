@@ -20,6 +20,10 @@
       .walletImg {
         width: 70px;
       }
+      .iconfont{
+        font-size: 128px;
+        color: var(--layer-tokens-layer-blue)
+      }
       .spiner {
         @include pSpiner(
           105px,
