@@ -97,7 +97,7 @@ const Nav: React.FC<PButtonProps> = memo(
           setStep(3);
           const curConnectedAddr = connectedWallet?.address;
           // if did‘t connected with the selected account
-          if (curConnectedAddr.toLowerCase() !== form?.account?.toLowerCase()) {
+          if (curConnectedAddr?.toLowerCase() !== form?.account?.toLowerCase()) {
             const formatAddr = formatAddress(
               form?.account || '',
               7,
@@ -110,7 +110,7 @@ const Nav: React.FC<PButtonProps> = memo(
               desc: `Check your wallet to confirm the connection with ${formatAddr}`,
             });
             const newAddr = await switchAccount(connectedWallet?.provider);
-            if (form?.account?.toLowerCase() === newAddr.toLowerCase()) {
+            if (form?.account?.toLowerCase() === newAddr?.toLowerCase()) {
               setActiveSendToChainRequest({
                 type: 'loading',
                 title: 'Attesting...',
@@ -120,7 +120,7 @@ const Nav: React.FC<PButtonProps> = memo(
             } else {
               setActiveSendToChainRequest({
                 type: 'warn',
-                title: 'Something went wrong',
+                title: 'Incorrect wallet address',
                 desc: `Check your wallet to confirm the connection with ${formatAddr}`,
               });
               dispatch(setAttestLoading(3));

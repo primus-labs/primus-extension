@@ -126,8 +126,8 @@ const useAttestBrevis = () => {
         eventReport(eventInfo);
         setActiveRequest({
           type: 'suc',
-          title: 'Congratulations',
-          desc: 'Successfully get your rewards.',
+          title: 'Attestation created!',
+          desc: '',
         });
         dispatch(setAttestLoading(2));
       } else {
@@ -163,8 +163,8 @@ const useAttestBrevis = () => {
       if (!signature) {
         setActiveRequest({
           type: 'warn',
-          title: 'Something went wrong',
-          desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+          title: 'Unable to proceed',
+          desc: 'Not complete the signature request in your wallet.',
         });
         dispatch(setAttestLoading(3));
         return;
@@ -186,18 +186,18 @@ const useAttestBrevis = () => {
         setPollingUniProofIntervalSwitch(true);
       } else {
         setActiveRequest({
-          type: 'warn',
-          title: 'Not meet the requirements',
-          desc: 'Do not have an eligible transaction. ',
+          type: 'fail',
+          title: 'Verification failed',
+          desc: 'Do not have eligible transactions.',
           btnTxt: '',
         });
         dispatch(setAttestLoading(3));
       }
     } catch (e) {
       setActiveRequest({
-        type: 'warn',
-        title: 'Something went wrong',
-        desc: 'The attestation process has been interrupted for some unknown reason. Please try again later.',
+        type: 'fail',
+        title: 'Verification failed',
+        desc: 'The attestation process has been interrupted for some unknown service breakdown. Please try again later.',
       });
       dispatch(setAttestLoading(3));
     }

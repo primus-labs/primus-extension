@@ -6,6 +6,7 @@ import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
 import iconConnectWalletSuc from '@/assets/newImg/layout/iconConnectWalletSuc.png';
 import iconConnectWalletFail from '@/assets/newImg/layout/iconConnectWalletFail.svg';
+import iconConnectWalletWarn from '@/assets/newImg/layout/iconConnectWalletWarn.svg';
 import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
@@ -63,7 +64,7 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
                 <img src={iconConnectWalletFail} alt="" className="resultImg" />
               )}
               {activeRequest?.type === 'warn' && (
-                <i className={`iconfont icon-iconInfoColorful`}></i>
+                <img src={iconConnectWalletWarn} alt="" className="resultImg" />
               )}
             </div>
             <div className="descWrapper">
@@ -73,9 +74,10 @@ const ConnectWalletDialog: React.FC<DataSourcesDialogProps> = memo(
             </div>
           </main>
           {(activeRequest?.type === 'suc' ||
-            activeRequest?.type === 'fail') && (
+            activeRequest?.type === 'fail' ||
+            activeRequest?.type === 'warn') && (
             <PButton
-              text={activeRequest?.btnTxt ?? 'Ok'}
+              text={activeRequest?.btnTxt ? activeRequest?.btnTxt : 'Ok'}
               onClick={handleSubmit}
               className="fullWidth"
             />
