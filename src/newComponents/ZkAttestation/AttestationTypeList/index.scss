@@ -1,6 +1,7 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
+// default show 4 items: item width flex,column-gap fixed
 .allAttestationTypeCards {
   width: 100%;
   @include frss;
@@ -20,6 +21,7 @@
       .top{
         .typeName{
           color: var(--text-tokens-text-disabled);
+          white-space: nowrap;
         }
       }
     }
@@ -58,6 +60,14 @@
           font-weight: 700;
         }
       }
+    }
+  }
+}
+// <1365px show 2 items: item width flex,column-gap fixed
+@media (max-width: 1365px) {
+  .allAttestationTypeCards {
+    .attestationTypeCard {
+      width: calc((100% - var(--spacing-16) * 1) / 2);
     }
   }
 }

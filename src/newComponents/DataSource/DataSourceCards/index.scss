@@ -1,19 +1,19 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
-
+// default show 4 items: item width flex,column-gap fixed
 .dataSourceCardsWrapper {
   width: 100%;
   .dataSourceCards {
     @include frss;
     flex-wrap: wrap;
     row-gap: var(--spacing-16);
-    // column-gap: var(--spacing-16);
-    column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);
+    column-gap: var(--spacing-16);
+    // column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);
     width: 100%;
     .dataSourceCard {
-      // width: calc((100% - var(--spacing-16) * 2) / 3);
-      width: var(--dataSourceCard-width);
+      width: calc((100% - var(--spacing-16) * 3) / 4);
+      // width: var(--dataSourceCard-width);
       height: 204px;
       padding: var(--spacing-16) var(--spacing-24);
       @include fcss;
@@ -101,10 +101,24 @@
     }
   }
 }
+// <1819px show 3 items: item width flex,column-gap fixed
 @media (max-width: 1819px) {
   .dataSourceCardsWrapper {
     .dataSourceCards {
-      column-gap: calc((100% - var(--dataSourceCard-width) * 3) / 2);
+      // column-gap: calc((100% - var(--dataSourceCard-width) * 3) / 2);
+      .dataSourceCard {
+        width: calc((100% - var(--spacing-16) * 2) / 3);
+      }
+    }
+  }
+}
+// <1365px show 2 items: item width flex,column-gap fixed
+@media (max-width: 1365px) {
+  .dataSourceCardsWrapper {
+    .dataSourceCards {
+      .dataSourceCard {
+        width: calc((100% - var(--spacing-16) * 1) / 2);
+      }
     }
   }
 }

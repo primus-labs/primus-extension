@@ -85,6 +85,14 @@ var options = {
           {
             loader: 'css-loader',
           },
+          // {
+          //   loader: 'postcss-loader',
+          //   options: {
+          //     postcssOptions: {
+          //       // config: true, // Point to the postcss.config.js file
+          //     },
+          //   },
+          // },
         ],
       },
       {

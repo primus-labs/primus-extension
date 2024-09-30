@@ -2,16 +2,18 @@
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
 
+// default show 4 items: item width fixed,column-gap flex
 .currentEventsCards {
   --eventCard-width: 356px;
   @include frss;
   flex-wrap: wrap;
   row-gap: var(--spacing-16);
-  // column-gap: var(--spacing-23);
   column-gap: calc((100% - var(--eventCard-width) * 4) / 3);
+  // column-gap: var(--spacing-23);
   width: 100%;
   .dataSourceCard {
     width: var(--eventCard-width);
+    // width: calc((100% - var(--spacing-23)*2) / 3);
     height: 358px;
     @include fcss;
     @include clickableCard;
@@ -67,6 +69,9 @@
         gap: var(--spacing-4);
         .title {
           @include HeadlineH3;
+          white-space: nowrap;
+          overflow: hidden; 
+          text-overflow: ellipsis;
         }
         .descItems {
           @include fcss;
@@ -109,8 +114,23 @@
     }
   }
 }
+// <1819px show 3 items: item width fixed,column-gap flex
 @media (max-width: 1819px) {
   .currentEventsCards {
     column-gap: calc((100% - var(--eventCard-width) * 3) / 2);
+  }
+}
+// <1439px show 3 items: item width flex,column-gap fixed
+@media (max-width: 1439px) {
+  .currentEventsCards {
+    --eventCard-width: calc((100% - var(--spacing-16) * 2) / 3);
+    column-gap:  var(--spacing-16);
+  }
+}
+// <1365px show 2 items: item width flex,column-gap fixed
+@media (max-width: 1365px) {
+  .currentEventsCards {
+    --eventCard-width: calc((100% - var(--spacing-23)) / 2);
+    column-gap: var(--spacing-23);
   }
 }

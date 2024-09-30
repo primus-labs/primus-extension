@@ -10,9 +10,11 @@ import PTooltip from '@/newComponents/PTooltip';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useAllSources from '@/hooks/useAllSources';
+import useBreakPoint from '@/hooks/useBreakPoint';
 import { UserState } from '@/types/store';
 
 const Overview = memo(() => {
+  const breakPoint = useBreakPoint();
   const { sourceMap, sourceMap2 } = useAllSources();
   const dispatch = useDispatch();
   const activeConnectDataSource = useSelector(
@@ -21,7 +23,10 @@ const Overview = memo(() => {
   const [activeConnectDataSourceId, setActiveConnectDataSourceId] =
     useState<string>();
   const navigate = useNavigate();
-  const dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance', 'okx'];
+  const dataSourceList =
+    breakPoint === 'l'
+      ? ['web3 wallet', 'x', 'tiktok']
+      : ['web3 wallet', 'x', 'tiktok', 'binance', 'okx'];
   const checkIsConnectedDataSourceFn = useCallback(
     (i) => {
       let hasConnectCurrent = !!sourceMap2[i] && sourceMap2[i]?.expired !== '1';

@@ -35,7 +35,7 @@
         .btnText {
           line-height: var(--spacing-24);
         }
-        .spinnerWrapper{
+        .spinnerWrapper {
           width: 16px;
           .loading-spinner {
             width: var(--spacing-12);
@@ -68,6 +68,16 @@
             }
           }
         }
+      }
+    }
+  }
+}
+@media (max-width: 1365px) {
+  .homeDataSources {
+    
+    .dataSourceItems {
+      .dataSourceItem {
+        width: calc((100% - var(--spacing-16) * 2) / 3);
       }
     }
   }

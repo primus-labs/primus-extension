@@ -15,3 +15,14 @@
     }
   }
 }
+@media (max-width: 1365px) {
+  .dataSourcesModule {
+    width: 100%;
+    &.fdRow {
+      .homeAssetsDistribution,
+      .socialInsights {
+        width: 100%;
+      }
+    }
+  }
+}

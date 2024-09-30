@@ -121,16 +121,19 @@
   }
 }
 @media (max-width: 1439px) {
-  /* :root {
-    --pageContent-width: 7.7778rem;
-  } */
+  :root {
+    /* --pageContent-width: 736px; */
+    --pageContent-width: 7.1875rem;
+    /* --pageContent-maxWidth: 1399px; */
+  }
 }
-@media (max-width: 1366px) {
+
+/* @media (max-width: 1366px) {
   :root {
     --pageContent-width: 1109px;
     --sidebar-width: 224px;
   }
-}
+} */
 .light,
 .white,
 #pado-extension-content,
@@ -354,4 +357,6 @@
 .pageContent {
   width: var(--pageContent-width);
   max-width: var(--pageContent-maxWidth);
+
 }
+

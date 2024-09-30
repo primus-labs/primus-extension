@@ -1,17 +1,19 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
+// default show 4 items: item width flex,column-gap fixed
 .attestationsWrapper {
   width: 100%;
   .attestationCards {
     @include frss;
     flex-wrap: wrap;
     gap: var(--spacing-16);
-    column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);
+    // column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);
+    column-gap: var(--spacing-16);
     width: 100%;
     .attestationCard {
-      // width: calc((100% - var(--spacing-16) * 2) / 3);
-      width: var(--dataSourceCard-width);
+      width: calc((100% - var(--spacing-16) * 3) / 4);
+      // width: var(--dataSourceCard-width);
       // height: 204px;
       padding: var(--spacing-16) var(--spacing-24);
       @include fcss;
@@ -209,11 +211,23 @@
     }
   }
 }
-
+// <1819px show 3 items: item width flex,column-gap fixed
 @media (max-width: 1819px) {
   .attestationsWrapper {
     .attestationCards {
-      column-gap: calc((100% - var(--dataSourceCard-width) * 3) / 2);
+      .attestationCard{
+        width: calc((100% - var(--spacing-16) * 2) / 3);
+      }
+    }
+  }
+}
+// <1365px show 2 items: item width flex,column-gap fixed
+@media (max-width: 1365px) {
+  .attestationsWrapper {
+    .attestationCards {
+      .attestationCard {
+        width: calc((100% - var(--spacing-16) * 1) / 2);
+      }
     }
   }
 }

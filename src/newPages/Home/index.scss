@@ -36,3 +36,12 @@
     }
   }
 }
+@media (max-width: 1365px) {
+  .pageHome {
+    .pageContent {
+      .pRow {
+        flex-wrap: wrap;
+      }
+    }
+  }
+}

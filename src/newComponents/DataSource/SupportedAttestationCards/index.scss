@@ -1,14 +1,17 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
+// default show 4 items: item width flex,column-gap fixed
 .supportSttestationCards {
   width: 100%;
   @include frss;
   flex-wrap: wrap;
   row-gap: var(--spacing-16);
-  column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);
+  // column-gap: calc((100% - var(--dataSourceCard-width) * 4) / 3);
+  column-gap: var(--spacing-16);
   .supportSttestationCard {
-    width: var(--dataSourceCard-width);
+    // width: var(--dataSourceCard-width);
+    width: calc((100% - var(--spacing-16) * 3) / 4);
     height: 164px;
     padding: var(--spacing-24);
     @include frbc;
@@ -82,9 +85,19 @@
     }
   }
 }
-
+// <1819px show 3 items: item width flex,column-gap fixed
 @media (max-width: 1819px) {
   .supportSttestationCards {
-    column-gap: calc((100% - var(--dataSourceCard-width) * 3) / 2);
+    .supportSttestationCard {
+      width: calc((100% - var(--spacing-16) * 2) / 3);
+    }
+  }
+}
+// <365px show 2 items: item width flex,column-gap fixed
+@media (max-width: 1365px) {
+  .supportSttestationCards {
+    .supportSttestationCard {
+      width: calc((100% - var(--spacing-16) * 1) / 2);
+    }
   }
 }
