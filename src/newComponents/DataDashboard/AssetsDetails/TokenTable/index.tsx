@@ -2,6 +2,7 @@ import React, { memo, useCallback, useState, useMemo, FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Pagination } from 'antd';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
+import useBreakPoint from '@/hooks/useBreakPoint';
 import { sub, formatNumeral } from '@/utils/utils';
 import './index.scss';
 import idex from 'ccxt/js/src/pro/idex';
@@ -16,6 +17,7 @@ interface TokenTableProps {
 
 const TokenTable: FC<TokenTableProps> = memo(
   ({ title = 'Tokens', id, listMap, others = {} }) => {
+    const breakPoint = useBreakPoint();
     const { tokenIconFn } = useAssetsStatistic();
     const { spotAccountTokenMap, flexibleAccountTokenMap } = others;
     const totolCount = listMap.length;
@@ -58,7 +60,7 @@ const TokenTable: FC<TokenTableProps> = memo(
             <div className="token">
               {title === 'Portfolio' ? 'Portfolio' : 'Token'}
             </div>
-            {!!spotAccountTokenMap && (
+            {!!spotAccountTokenMap && ['xl'].includes(breakPoint) && (
               <>
                 <div className="fixed">Spot & Funding</div>
                 <div className="flexible">Earn</div>
@@ -75,7 +77,7 @@ const TokenTable: FC<TokenTableProps> = memo(
                   <img src={tokenIconFn(j, id)} alt="" />
                   <span>{j.symbol.split('---')[0]}</span>
                 </div>
-                {!!spotAccountTokenMap && (
+                {!!spotAccountTokenMap && ['xl'].includes(breakPoint) && (
                   <>
                     <div className="fixed">
                       {formatNumeral(

@@ -12,6 +12,7 @@ import PStar from '@/newComponents/PStar';
 import './index.scss';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import PArrow from '@/newComponents/PArrow';
+import TokenTable from '../TokenTable';
 import NFTList from '../NFTList';
 const MAX = 5;
 
@@ -237,7 +238,11 @@ const Chain = memo(() => {
                     </div>
                   </div>
                   {tableTab === 'Token' && (
-                   <></>
+                    <TokenTable
+                      title=""
+                      id={i.id}
+                      listMap={sortListMapFn(i.tokenListMap)}
+                    />
                   )}
                   {tableTab === 'NFT' && (
                     <NFTList list={currentAccountNftsFn(i.id)} />
