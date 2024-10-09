@@ -40,7 +40,7 @@
           right: 0;
           top: 50%;
           transform: translateY(-50%);
-          width: 872px;
+          // width: 872px;
           height: 144px;
         }
         .content {
@@ -132,3 +132,17 @@
     }
   }
 }
+// @media (max-width: 1365px) {
+//   .eventsSlider {
+//     .slick-slider {
+//       .slick-list .slick-slide > div {
+//         .homeBanner {
+//           .bg {
+//             width: 540.64px;
+//             height: calc( 540.64px / (872/144) );
+//           }
+//         }
+//       }
+//     }
+//   }
+// }

@@ -3,11 +3,16 @@
 .homeSupport {
   --homeSupport-width: 1.9097rem;
 }
-// @media (max-width: 1819px) {
-//   .homeSupport {
-//     --homeSupport-width: 275px;
-//   }
-// }
+@media (max-width: 1819px) {
+  .homeSupport {
+    --homeSupport-width: 275px;
+  }
+}
+@media (max-width: 1439px) {
+  .homeSupport {
+    --homeSupport-width: 200px;
+  }
+}
 .homeSupport {
   @include fccs;
   width: var(--homeSupport-width);
@@ -47,6 +52,17 @@
         > .iconfont {
           font-size: var(--spacing-16);
           color: var(--icon-tokens-icon-primary);
+        }
+      }
+    }
+  }
+}
+@media (max-width: 1439px) {
+  .homeSupport {
+    .content {
+      .mediaItems {
+        .mediaItem {
+          width: 100%;
         }
       }
     }

@@ -70,9 +70,9 @@ const Nav: React.FC = memo(({}) => {
         /> */}
           <Notification />
           <PConnect />
-          <div className="avatar">
+          {/* <div className="avatar">
             <img src={iconAvatar} alt="" />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

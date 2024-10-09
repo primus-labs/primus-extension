@@ -10,6 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import useListener from '@/hooks/useListener';
 import useTimeout from '@/hooks/useTimeout';
+import useWinWidth from '@/hooks/useWinWidth';
 import { postMsg } from '@/utils/utils';
 import ReferralCodeInput from '@/newComponents/Ahievements/ReferralCodeInput';
 import page1 from '@/assets/newImg/guide/page1.png';
@@ -23,17 +24,28 @@ import './home.scss';
 import useCreateAccount from '@/hooks/useCreateAccount';
 
 const Home = memo(() => {
+  const size = useWinWidth();
   const { createAccountFn } = useCreateAccount();
   const guideImg = useRef(null);
   useListener();
   const navigate = useNavigate();
   const [visibleReferralCodeDialog, setVisibleReferralCodeDialog] = useState();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(2);
   const [timeoutStep2Switch, setTimeoutStep2Switch] = useState(false);
   const [showInputPasswordDialog, setShowInputPasswordDialog] = useState(false);
   const [lastTheme, setLastTheme] = useState('light');
   const padoServicePort = useSelector((state) => state.padoServicePort);
-
+  const cName = useMemo(() => {
+    if (size.width >= 1366) {
+      if ([0, 4, 5].includes(step)) {
+        return 'fixedH';
+      } else if ([1, 2, 3].includes(step)) {
+        return 'autoH';
+      }
+    } else {
+      return 'autoH';
+    }
+  }, [step, size]);
   const imgSrc = useMemo(() => {
     let s = page1;
     switch (step) {
@@ -58,18 +70,14 @@ const Home = memo(() => {
     }
     return s;
   }, [step]);
-  const timeoutStep1Fn = async () => {
-    const f = await checkIsFirstLogin();
-    if (f) {
-      setStep(2);
-      setTimeoutStep2Switch(true);
-    }
-  };
-  useTimeout(timeoutStep1Fn, 1300, true, false);
-  // const timeoutStep2Fn = () => {
-  //   setStep(2);
+  // const timeoutStep1Fn = async () => {
+  //   const f = await checkIsFirstLogin();
+  //   if (f) {
+  //     setStep(2);
+  //     setTimeoutStep2Switch(true);
+  //   }
   // };
-  // useTimeout(timeoutStep2Fn, 1000, timeoutStep2Switch, false);
+  // useTimeout(timeoutStep1Fn, 1300, true, false);
   const initAccount = useCallback(async () => {
     const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
       await chrome.storage.local.get([
@@ -121,7 +129,7 @@ const Home = memo(() => {
   //   checkIsFirstLogin();
   // }, [checkIsFirstLogin]);
   useEffect(() => {
-    if (guideImg.current) {
+    if (guideImg.current && size.width >= 1366) {
       if (step === 4) {
         guideImg.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
         // guideImg.current.scrollTop = (460 / 1440) * window.innerWidth;
@@ -130,7 +138,7 @@ const Home = memo(() => {
         guideImg.current.scrollIntoView({ block: 'start', behavior: 'smooth' });
       }
     }
-  }, [step, guideImg]);
+  }, [step, guideImg, size]);
   useEffect(() => {
     initAccount();
   }, [initAccount]);
@@ -143,13 +151,7 @@ const Home = memo(() => {
 
   return (
     <div
-      className={`pageGuide ${lastTheme} ${
-        [0, 4, 5].includes(step)
-          ? 'fixedH'
-          : [1, 2, 3].includes(step)
-          ? 'autoH'
-          : ''
-      }`}
+      className={`pageGuide ${lastTheme} ${cName} `}
     >
       {step > 0 && (
         <img

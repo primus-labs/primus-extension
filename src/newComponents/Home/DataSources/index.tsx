@@ -11,10 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useAllSources from '@/hooks/useAllSources';
 import useBreakPoint from '@/hooks/useBreakPoint';
+import useWinWidth from '@/hooks/useWinWidth';
 import { UserState } from '@/types/store';
 
 const Overview = memo(() => {
   const breakPoint = useBreakPoint();
+  const size = useWinWidth();
   const { sourceMap, sourceMap2 } = useAllSources();
   const dispatch = useDispatch();
   const activeConnectDataSource = useSelector(
@@ -23,10 +25,14 @@ const Overview = memo(() => {
   const [activeConnectDataSourceId, setActiveConnectDataSourceId] =
     useState<string>();
   const navigate = useNavigate();
-  const dataSourceList =
-    breakPoint === 'l'
-      ? ['web3 wallet', 'x', 'tiktok']
-      : ['web3 wallet', 'x', 'tiktok', 'binance', 'okx'];
+  let dataSourceList = ['web3 wallet', 'x'];
+  if ( size.width >= 1342 ) {
+    dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance', 'okx']
+  } else if ( size.width >= 1128 ) {
+    dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance']
+  } else if ( size.width >= 914 ) {
+    dataSourceList = ['web3 wallet', 'x', 'tiktok']
+  }
   const checkIsConnectedDataSourceFn = useCallback(
     (i) => {
       let hasConnectCurrent = !!sourceMap2[i] && sourceMap2[i]?.expired !== '1';

@@ -123,17 +123,18 @@
 @media (max-width: 1439px) {
   :root {
     /* --pageContent-width: 736px; */
-    --pageContent-width: 7.1875rem;
+    /* --pageContent-width: 7.1875rem; */
+    --pageContent-width: calc(100vw - var(--sidebar-width) - 24px * 2);
     /* --pageContent-maxWidth: 1399px; */
   }
 }
 
-/* @media (max-width: 1366px) {
+@media (max-width: 1366px) {
   :root {
-    --pageContent-width: 1109px;
+    /* --pageContent-width: 1109px; */
     --sidebar-width: 224px;
   }
-} */
+}
 .light,
 .white,
 #pado-extension-content,
