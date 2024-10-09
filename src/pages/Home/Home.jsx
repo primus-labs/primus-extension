@@ -37,11 +37,12 @@ const Home = memo(() => {
   const padoServicePort = useSelector((state) => state.padoServicePort);
   const cName = useMemo(() => {
     if (size.width >= 1366) {
-      if ([0, 4, 5].includes(step)) {
-        return 'fixedH';
-      } else if ([1, 2, 3].includes(step)) {
-        return 'autoH';
-      }
+      // if ([0, 4, 5].includes(step)) {
+      //   return 'fixedH';
+      // } else if ([1, 2, 3].includes(step)) {
+      //   return 'autoH';
+      // }
+      return 'autoH'
     } else {
       return 'autoH';
     }
@@ -131,7 +132,10 @@ const Home = memo(() => {
   useEffect(() => {
     if (guideImg.current && size.width >= 1366) {
       if (step === 4) {
-        guideImg.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
+        guideImg.current.scrollIntoView({
+          block: 'center',
+          behavior: 'smooth',
+        });
         // guideImg.current.scrollTop = (460 / 1440) * window.innerWidth;
       }
       if ([0, 1, 2, 3].includes(step)) {
