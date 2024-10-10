@@ -126,9 +126,9 @@ const Home = memo(() => {
     navigate('/home');
   }, []);
 
-  // useEffect(() => {
-  //   checkIsFirstLogin();
-  // }, [checkIsFirstLogin]);
+  useEffect(() => {
+    checkIsFirstLogin();
+  }, [checkIsFirstLogin]);
   useEffect(() => {
     if (guideImg.current && size.width >= 1366) {
       if (step === 4) {
