@@ -151,15 +151,16 @@ export const padoZKAttestationJSSDKMsgListener = async (
     sdkParams = params;
     const {
       attestationTypeID,
-      tokenSymbol,
-      assetsBalance,
-      followersNO,
       chainName,
       walletAddress,
       dappSymbol,
-      spot30dTradeVol,
-      signature,
-      timestamp,
+      attestationParameters,
+      // tokenSymbol,
+      // assetsBalance,
+      // followersNO,
+      // spot30dTradeVol,
+      // signature,
+      // timestamp,
     } = params;
     chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
@@ -199,8 +200,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
         attestationType: 'On-chain Transactions',
         fetchType: 'API',
         requestid,
-        signature,
-        timestamp,
+        signature: attestationParameters[0],
+        timestamp: attestationParameters[1],
       };
       attestBrevisFn(activeAttestationParams, dappTabId);
     } else {
@@ -227,16 +228,16 @@ export const padoZKAttestationJSSDKMsgListener = async (
       } else if (verificationContent === 'Account ownership') {
         verificationValue = 'Account owner';
       } else if (verificationContent === 'Assets Proof') {
-        verificationValue = assetsBalance;
+        verificationValue = attestationParameters[0];
       } else if (verificationContent === 'Token Holding') {
-        verificationValue = tokenSymbol;
+        verificationValue = attestationParameters[0];
       } else if (verificationContent === 'X Followers') {
-        verificationValue = followersNO;
+        verificationValue = attestationParameters[0];
         await chrome.storage.local.set({
           padoZKAttestationJSSDKXFollowerCount: verificationValue,
         });
       } else if (verificationContent === 'Spot 30-Day Trade Vol') {
-        verificationValue = spot30dTradeVol;
+        verificationValue = attestationParameters[0];
       }
 
       activeAttestationParams = {
@@ -289,7 +290,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       } else if (['X Followers'].includes(verificationContent)) {
         activeAttestationParams.attestationType = 'Social Connections';
         activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
-          followersNO;
+          attestationParameters[0];
       }
 
       chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
