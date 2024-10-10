@@ -261,7 +261,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
         const lastResponseConditions = lastResponse.conditions;
         const lastResponseConditionsSubconditions =
           lastResponseConditions.subconditions;
-        if (activeAttestationParams.verificationContent === 'Assets Proof') {
+        
+        if (['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
+              activeAttestationParams.verificationContent) ){
           // change verification value
           lastResponseConditions.value =
             activeAttestationParams.verificationValue;
