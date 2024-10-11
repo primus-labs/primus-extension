@@ -147,7 +147,7 @@ const useAttestBrevis = () => {
   ]);
   useInterval(
     pollingUniProofResult,
-    5000,
+    10000,
     pollingUniProofIntervalSwitch,
     false
   );

@@ -35,7 +35,7 @@ export const attestBrevisFn = async (form, dappTabId) => {
       claimResult = { ...result, address: curConnectedAddr };
       pollingUniProofIntervalTimer = setInterval(() => {
         pollingUniProofResult(claimResult);
-      }, 5000);
+      }, 10000);
     } else {
       await removeCacheFn()
       chrome.tabs.sendMessage(dappTabId, {
@@ -124,11 +124,12 @@ const pollingUniProofResult = async (claimResult) => {
       eventInfo.rawData.status = 'SUCCESS';
       eventInfo.rawData.reason = '';
       eventReport(eventInfo);
-      chrome.tabs.sendMessage(dappTabId, {
+      console.log('bg-sdk-brevis-startAttestationRes', dappTabId);
+      await chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestationRes',
         params: {
-          result: false,
+          result: true,
           data: {
             attestationRequestId: uniSwapProofRequestId,
             eip712MessageRawDataWithSignature:
@@ -136,9 +137,11 @@ const pollingUniProofResult = async (claimResult) => {
           },
         },
       });
+      
     } else {
     }
-  } catch {
+  } catch (e) {
+    console.log('pollingUniProofResult e', e);
   } finally {
   }
 };
@@ -152,3 +155,11 @@ const removeCacheFn = async () => {
     'activeRequestAttestation',
   ]);
 };
+
+chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+  if (tabId === dappTabId) {
+    if (pollingUniProofIntervalTimer) {
+      clearInterval(pollingUniProofIntervalTimer);
+    }
+  }
+});
