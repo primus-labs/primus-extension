@@ -3,13 +3,8 @@ import { regenerateAttestation } from '@/services/api/cred';
 import { pageDecodeMsgListener } from './pageDecode.js';
 import { postMsg, strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from './dataSourceUtils';
-import {
-  LINEASCHEMANAME,
-  SCROLLSCHEMANAME,
-  BNBSCHEMANAME,
-  BNBGREENFIELDSCHEMANAME,
-  OPBNBSCHEMANAME,
-} from '@/config/chain';
+import { schemaNameFn } from './padoZKAttestationJSSDK/utils';
+
 const regenerateAttest = async (orginAttestation, chainName) => {
   const { signature, sourceUseridHash } = orginAttestation;
   const requestParams = {
@@ -24,36 +19,7 @@ const regenerateAttest = async (orginAttestation, chainName) => {
   const regenerateAttestRes = await regenerateAttestation(requestParams);
   return regenerateAttestRes;
 };
-const schemaNameFn = (networkName) => {
-  const formatNetworkName = networkName;
-  let Name;
-  if (formatNetworkName?.startsWith('Linea')) {
-    Name = LINEASCHEMANAME;
-  } else if (
-    formatNetworkName &&
-    (formatNetworkName.indexOf('BSC') > -1 ||
-      formatNetworkName.indexOf('BNB Greenfield') > -1)
-  ) {
-    Name = BNBSCHEMANAME;
-  } else if (formatNetworkName && formatNetworkName.indexOf('Scroll') > -1) {
-    Name = SCROLLSCHEMANAME;
-  } else if (
-    formatNetworkName &&
-    formatNetworkName.indexOf('BNB Greenfield') > -1
-  ) {
-    Name = BNBGREENFIELDSCHEMANAME;
-  } else if (formatNetworkName && formatNetworkName.indexOf('opBNB') > -1) {
-    Name = OPBNBSCHEMANAME;
-  } else if (formatNetworkName && formatNetworkName.startsWith('Sepolia')) {
-    Name = 'EAS-Sepolia';
-  } else if (formatNetworkName && formatNetworkName.startsWith('Arbitrum')) {
-    Name = 'EAS-Ethereum';
-  } else {
-    Name = 'EAS';
-    // Name = 'EAS-Ethereum';
-  }
-  return Name;
-};
+
 export const algorithmMsgListener = async (
   message,
   sender,

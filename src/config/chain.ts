@@ -13,7 +13,7 @@ import iconOptimism from '@/assets/img/iconOptimism.svg';
 // import { CURENV } from './envConstants';
 export const CURENV = process.env.NODE_ENV as any;
 // export const CURENV = 'production';
-const EASINFOMAP = {
+export const EASINFOMAP = {
   development: {
     'Scroll Sepolia': {
       showName: 'Scroll',
@@ -55,49 +55,49 @@ const EASINFOMAP = {
       },
       transactionDetailUrl: 'https://sepolia.scrollscan.com/tx',
     },
-    'Linea Goerli': {
-      showName: 'Linea',
-      icon: iconNetworkLinea,
-      title: 'Linea Goerli',
-      rpcUrl:
-        'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      erc721Contract: '',
-      easContact: '',
-      easProxyContrac: '',
-      easProxyFeeContract: '0x515b9dd670176e68b9623926d12082d6f37786f4',
-      schemas: {
-        'Verax-Linea-Goerli': {
-          schemaUid:
-            '0x89C0A9424F9D62C6CDE9FEB83653033899FE5DF952BEAB024E38A13C3AAE3EE9',
-          schemaUidTokenHoldings:
-            '0xC9992483A7DA0207213D34288B835094B48567290CECF044C48913D3F1472A3A',
-          schemaUidIdentification:
-            '0x26F9780B51AEFE9581802FF0B315DECB36701D39766FBB78DBD9B4596B6DA0BD',
-          schemaUidWeb:
-            '0x84FDF5748D9AF166503472FF5DEB0CD5F61F006169424805FD5554356AC6DF10',
-        },
-        PolygonID: {
-          schemaUid:
-            '0x35E2EB198B2D9019F0D7C70EA2327C669A81B67721049D65CEC92EC5FA5E2905',
-          schemaUidTokenHoldings:
-            '0x640B7A045D305F646074AC038830AAA2E8EDFAAC069F7CC2BE53AE9034D13AD4',
-          schemaUidIdentification:
-            '0xF406CE092700219C3BE1729E52A0BC9539177E96B4A63D73D1E846CA20E1E900',
-        },
-      },
-      chainId: '0xE704', //59140
-      chainName: 'Linea Goerli',
-      rpcUrls: [
-        'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-      ],
-      blockExplorerUrls: ['https://goerli.lineascan.build'],
-      nativeCurrency: {
-        name: 'LineaETH',
-        symbol: 'LineaETH',
-        decimals: 18,
-      },
-      transactionDetailUrl: 'https://goerli.lineascan.build/tx',
-    },
+    // 'Linea Goerli': {
+    //   showName: 'Linea',
+    //   icon: iconNetworkLinea,
+    //   title: 'Linea Goerli',
+    //   rpcUrl:
+    //     'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+    //   erc721Contract: '',
+    //   easContact: '',
+    //   easProxyContrac: '',
+    //   easProxyFeeContract: '0x515b9dd670176e68b9623926d12082d6f37786f4',
+    //   schemas: {
+    //     'Verax-Linea-Goerli': {
+    //       schemaUid:
+    //         '0x89C0A9424F9D62C6CDE9FEB83653033899FE5DF952BEAB024E38A13C3AAE3EE9',
+    //       schemaUidTokenHoldings:
+    //         '0xC9992483A7DA0207213D34288B835094B48567290CECF044C48913D3F1472A3A',
+    //       schemaUidIdentification:
+    //         '0x26F9780B51AEFE9581802FF0B315DECB36701D39766FBB78DBD9B4596B6DA0BD',
+    //       schemaUidWeb:
+    //         '0x84FDF5748D9AF166503472FF5DEB0CD5F61F006169424805FD5554356AC6DF10',
+    //     },
+    //     PolygonID: {
+    //       schemaUid:
+    //         '0x35E2EB198B2D9019F0D7C70EA2327C669A81B67721049D65CEC92EC5FA5E2905',
+    //       schemaUidTokenHoldings:
+    //         '0x640B7A045D305F646074AC038830AAA2E8EDFAAC069F7CC2BE53AE9034D13AD4',
+    //       schemaUidIdentification:
+    //         '0xF406CE092700219C3BE1729E52A0BC9539177E96B4A63D73D1E846CA20E1E900',
+    //     },
+    //   },
+    //   chainId: '0xE704', //59140
+    //   chainName: 'Linea Goerli',
+    //   rpcUrls: [
+    //     'https://linea-goerli.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
+    //   ],
+    //   blockExplorerUrls: ['https://goerli.lineascan.build'],
+    //   nativeCurrency: {
+    //     name: 'LineaETH',
+    //     symbol: 'LineaETH',
+    //     decimals: 18,
+    //   },
+    //   transactionDetailUrl: 'https://goerli.lineascan.build/tx',
+    // },
     Sepolia: {
       showName: 'Sepolia',
       icon: iconUpChainEthereum,
@@ -578,12 +578,12 @@ const LINEASCHEMANAMEMAP = {
   production: 'Verax-Linea-Mainnet',
 };
 export let LINEASCHEMANAME = LINEASCHEMANAMEMAP[CURENV];
-const SCROLLSCHEMANAMEMAP = {
+export const SCROLLSCHEMANAMEMAP = {
   development: 'Verax-Scroll-Sepolia',
   production: 'Verax-Scroll-Mainnet',
 };
 export let SCROLLSCHEMANAME = SCROLLSCHEMANAMEMAP[CURENV];
-const BNBSCHEMANAMEMAP = {
+export const BNBSCHEMANAMEMAP = {
   development: 'BAS-BSC-Testnet',
   production: 'BAS-BSC-Mainnet',
 };
@@ -593,7 +593,7 @@ const BNBGREENFIELDSCHEMANAMEMAP = {
   production: 'BNB Greenfield Mainnet',
 };
 export let BNBGREENFIELDSCHEMANAME = BNBGREENFIELDSCHEMANAMEMAP[CURENV];
-const OPBNBSCHEMANAMEMAP = {
+export const OPBNBSCHEMANAMEMAP = {
   development: 'Ethsign-opBNB-Testnet',
   production: 'Ethsign-opBNB-Mainnet',
 };

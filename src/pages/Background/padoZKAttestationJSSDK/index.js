@@ -6,15 +6,9 @@ import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { pageDecodeMsgListener } from '../pageDecode.js';
 import { attestBrevisFn } from './brevis';
-import {
-  LINEASCHEMANAME,
-  SCROLLSCHEMANAME,
-  BNBSCHEMANAME,
-  BNBGREENFIELDSCHEMANAME,
-  OPBNBSCHEMANAME,
-  CURENV,
-  ONCHAINLIST,
-} from '@/config/chain';
+import { schemaNameFn } from './utils';
+
+import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
 import { PADOADDRESS } from '@/config/envConstants';
 import { regenerateAttestation } from '@/services/api/cred';
 import { strToHexSha256 } from '@/utils/utils';
@@ -445,62 +439,43 @@ export const padoZKAttestationJSSDKMsgListener = async (
       attestationRequestId,
       chainName
     );
+    const testNetNameMap = {
+      'Scroll Sepolia': 'Scroll Sepolia',
+      Sepolia: 'Sepolia',
+      BSCTestnet: 'BSC',
+      opBNBTestnet: 'opBNB',
+    };
+    const isTestNet = Object.keys(testNetNameMap).includes(chainName);
+    const upperChainEventType = isTestNet
+      ? 'UPPER_CHAIN_TESTNET'
+      : 'UPPER_CHAIN';
     if (curCredential) {
       const { address, schemaType, source } = curCredential;
       // console.log('333-bg-sdk-receive-sendToChain2');
-      const schemaNameFn = (networkName) => {
-        const formatNetworkName = networkName;
-        let Name;
-        if (formatNetworkName?.startsWith('Linea')) {
-          Name = LINEASCHEMANAME;
-        } else if (
-          formatNetworkName &&
-          (formatNetworkName.indexOf('BSC') > -1 ||
-            formatNetworkName.indexOf('BNB Greenfield') > -1)
-        ) {
-          Name = BNBSCHEMANAME;
-        } else if (
-          formatNetworkName &&
-          formatNetworkName.indexOf('Scroll') > -1
-        ) {
-          Name = SCROLLSCHEMANAME;
-        } else if (
-          formatNetworkName &&
-          formatNetworkName.indexOf('BNB Greenfield') > -1
-        ) {
-          Name = BNBGREENFIELDSCHEMANAME;
-        } else if (
-          formatNetworkName &&
-          formatNetworkName.indexOf('opBNB') > -1
-        ) {
-          Name = OPBNBSCHEMANAME;
-        } else {
-          Name = 'EAS';
-          // Name = 'EAS-Ethereum';
-        }
-        return Name;
-      };
+      
       try {
-        const eventType = `${schemaType}-${schemaNameFn(chainName)}`;
-        // console.log('333-bg-sdk-receive-sendToChain3', eventType);
-        let upchainNetwork = chainName;
+        const rawDataType = `${schemaType}-${schemaNameFn(chainName)}`;
+        // console.log('333-bg-sdk-receive-sendToChain3', rawDataType);
+        let upchainNetwork = isTestNet ? testNetNameMap[chainName] : chainName;
         if (CURENV === 'production' && chainName === 'Linea Goerli') {
           upchainNetwork = 'Linea Mainnet';
           // console.log('333-CURENV', CURENV, upchainNetwork);
         }
         // const uniqueId = strToHexSha256(upChainParams.signature);
         var eventInfo = {
-          eventType: 'UPPER_CHAIN',
+          eventType: upperChainEventType,
           rawData: {
             network: upchainNetwork,
-            type: eventType,
+            type: rawDataType,
             source: source,
             // attestationId: uniqueId,
             address,
           },
         };
         eventInfo.rawData.attestOrigin = curCredential.attestOrigin;
+        // console.log('333-bg-sdk-receive-sendToChain4', eventInfo);
         if (upChainRes) {
+          // console.log('333-bg-sdk-receive-sendToChain5', upChainRes);
           if (upChainRes.error) {
             // if (upChainRes.error === 1) {
             //   sendToChainResult = false;
@@ -516,24 +491,41 @@ export const padoZKAttestationJSSDKMsgListener = async (
             eventReport(eventInfo);
             return;
           }
-          const newProvided = curCredential.provided ?? [];
-          const currentChainObj = ONCHAINLIST.find(
-            (i) => chainName === i.title
-          );
-          currentChainObj.attestationUID = upChainRes;
-          currentChainObj.submitAddress = address;
-          newProvided.push(currentChainObj);
-          const { credentials } = await chrome.storage.local.get([
-            'credentials',
-          ]);
-          const cObj = { ...JSON.parse(credentials) };
+          if (
+            (CURENV === 'production' && !isTestNet) ||
+            (CURENV === 'development' && !!isTestNet)
+          ) {
+            const newProvided = curCredential.provided ?? [];
+            const curEnvChainList = isTestNet
+              ? Object.values(EASINFOMAP['development'])
+              : ONCHAINLIST;
+            // console.log('333-bg-sdk-receive-sendToChain6', curEnvChainList);
+            const currentChainObj = curEnvChainList.find(
+              (i) => {
+                if (CURENV === 'production' && chainName === 'Linea Mainnet') {
+                  return 'Linea Goerli' === i.title;
+                } else {
+                  return upchainNetwork === i.title;
+                }
+              }
+            );
+            currentChainObj.attestationUID = upChainRes;
+            currentChainObj.submitAddress = address;
+            newProvided.push(currentChainObj);
+            // console.log('333-bg-sdk-receive-sendToChain7', currentChainObj);
+            const { credentials } = await chrome.storage.local.get([
+              'credentials',
+            ]);
+            const cObj = { ...JSON.parse(credentials) };
 
-          cObj[attestationRequestId] = Object.assign(curCredential, {
-            provided: newProvided,
-          });
-          await chrome.storage.local.set({
-            credentials: JSON.stringify(cObj),
-          });
+            cObj[attestationRequestId] = Object.assign(curCredential, {
+              provided: newProvided,
+            });
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(cObj),
+            });
+            // console.log('333-bg-sdk-receive-sendToChain8');
+          }
 
           if (curCredential.reqType === 'web') {
             if (newProvided.length && newProvided.length > 0) {

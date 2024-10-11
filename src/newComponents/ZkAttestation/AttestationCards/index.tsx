@@ -13,7 +13,7 @@ import { compareVersions } from '@/utils/utils';
 import { ETHSIGNEVENTNAME, eventMetaMap } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOADDRESS } from '@/config/envConstants';
-import { EASInfo } from '@/config/chain';
+import { EASInfo, CURENV } from '@/config/chain';
 import {
   ATTESTATIONTYPEMAP,
   ASSETSVERIFICATIONCONTENTTYPEEMAP,
@@ -482,7 +482,16 @@ const Cards: React.FC<PDropdownProps> = memo(
                               </a>
                             ))}
                           </div>
-                          {i.type !== 'ASSETS_PROOF' &&
+                          {!(
+                            CURENV === 'production' &&
+                            [
+                              'Scroll Sepolia',
+                              'Sepolia',
+                              'BSCTestnet',
+                              'opBNBTestnet',
+                            ].includes(i.chainName)
+                          ) &&
+                            i.type !== 'ASSETS_PROOF' &&
                             i.type !== 'TOKEN_HOLDINGS' &&
                             !(i.event && i?.provided?.length > 0) && (
                               <PButton
