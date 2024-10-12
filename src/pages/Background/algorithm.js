@@ -4,7 +4,7 @@ import { pageDecodeMsgListener } from './pageDecode.js';
 import { postMsg, strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from './dataSourceUtils';
 import { schemaNameFn } from './padoZKAttestationJSSDK/utils';
-
+import { padoExtensionVersion } from '@/config/constants';
 const regenerateAttest = async (orginAttestation, chainName) => {
   const { signature, sourceUseridHash } = orginAttestation;
   const requestParams = {
@@ -102,6 +102,7 @@ export const algorithmMsgListener = async (
           result: true,
           data: {
             attestationTypeIdList,
+            padoExtensionVersion
           },
         },
       });

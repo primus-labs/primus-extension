@@ -12,11 +12,14 @@ import {
   getCurrentDate,
   postMsg,
   sub,
+  compareVersions,
   getAccount,
   strToHexSha256,
 } from '@/utils/utils';
+
 import {
   SocailStoreVersion,
+  padoExtensionVersion,
   ATTESTATIONPOLLINGTIMEOUT,
 } from '@/config/constants';
 import {
@@ -45,7 +48,8 @@ const padoServices = {
   refreshAuthData,
   getProofTypes,
 };
-
+// const compareRes = compareVersions('0.3.14', padoExtensionVersion);
+// console.log('padoExtensionVersion', padoExtensionVersion, compareRes);
 let USERPASSWORD = '';
 const creatUserInfo = async () => {
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
@@ -201,6 +205,7 @@ const processAlgorithmReq = async (message, port) => {
               result: true,
               data: {
                 attestationTypeIdList,
+                padoExtensionVersion,
               },
             },
           });
