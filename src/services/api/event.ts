@@ -46,6 +46,9 @@ export const claimUniNFT = (data: CLAIMUNINFTPARAMS) => {
     method: 'get',
     url: `/brevis-network/transaction/proof`,
     data,
+    config: {
+      timeout: 2 * 60 * 1000,
+    },
   });
 };
 export const getUniNFTResult = (data: GETUNINFTPROOFRESULTPARAMS) => {
@@ -53,9 +56,6 @@ export const getUniNFTResult = (data: GETUNINFTPROOFRESULTPARAMS) => {
     method: 'get',
     url: `/brevis-proof/result`,
     data,
-    config: {
-      timeout: 2000
-    }
   });
 };
 export const getUniswapProof = (data: GETUNISWAPPROOFPARAMS) => {
