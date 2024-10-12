@@ -139,6 +139,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     await chrome.runtime.sendMessage(msgObj);
   }, []);
   const handleConfirm = useCallback(async () => {
+    sessionStorage.setItem('clicked', '1'); //TODO-test-yilin
     var eventInfo = {
       eventType: 'ATTESTATION_START',
       rawData: {
@@ -163,6 +164,19 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     setStatus('verifying');
     sessionStorage.setItem('padoAttestRequestStatus', 'verifying');
   }, []);
+  //TODO-TEST-yilin
+  useEffect(() => {
+    if (isReadyFetch) {
+      const clickedFlag = sessionStorage.getItem('clicked');
+      if (clickedFlag !== '1') {
+        console.log('444-try');
+        setTimeout(() => {
+          handleConfirm();
+        }, 10000);
+      }
+    }
+  }, [isReadyFetch, status]);
+  //TODO-TEST-yilin
   return status === 'initialized' ? (
     <div className="pado-extension-footer initialized">
       <PButton

@@ -567,15 +567,17 @@ export const pageDecodeMsgListener = async (
     }
     if (name === 'end') {
       if (tabCreatedByPado) {
-        chrome.tabs.sendMessage(
-          tabCreatedByPado.id,
-          request,
-          function (response) {}
-        );
+        //TODO-test-yilin
+        // chrome.tabs.sendMessage(
+        //   tabCreatedByPado.id,
+        //   request,
+        //   function (response) {}
+        // );
         chrome.webRequest.onBeforeSendHeaders.removeListener(
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+        await chrome.tabs.remove(tabCreatedByPado.id);//TODO-test-yilin
       }
     }
   } else {
