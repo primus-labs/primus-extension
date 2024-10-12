@@ -35,7 +35,7 @@ import SplicedIcons from '@/newComponents/SplicedIcons';
 import './index.scss';
 import iconProviderBrevis from '@/assets/newImg/zkAttestation/iconProviderBrevis.svg';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
-
+import testModeTag from '@/assets/newImg/zkAttestation/testModeTag.svg'
 type NavItem = {
   type: string;
   icon: any;
@@ -501,6 +501,15 @@ const Cards: React.FC<PDropdownProps> = memo(
                                   handleOnChain(i);
                                 }}
                               />
+                            )}
+                          {CURENV === 'production' &&
+                            [
+                              'Scroll Sepolia',
+                              'Sepolia',
+                              'BSCTestnet',
+                              'opBNBTestnet',
+                            ].includes(i.chainName) && (
+                              <img className="testModeTag" src={testModeTag} />
                             )}
                         </div>
                       </div>

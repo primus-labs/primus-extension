@@ -181,6 +181,9 @@
                 &.onChain {
                   @include frsc;
                   gap: var(--spacing-4);
+                  .testModeTag{
+                    width: 65px;
+                  }
                   .chains {
                     @include frsc;
                     gap: var(--spacing-4);
