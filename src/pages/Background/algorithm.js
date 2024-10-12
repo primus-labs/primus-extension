@@ -333,36 +333,37 @@ export const algorithmMsgListener = async (
             sourcePageTip: '',
           };
           let errorCode;
-          if (activeAttestationParams?.verificationContent === 'Assets Proof') {
-            let type, desc, title;
-            if (activeAttestationParams?.dataSourceId === 'okx') {
-              errorCode = '00101';
-            } else if (activeAttestationParams?.dataSourceId === 'binance') {
-              errorCode = '00102';
-            }
-            type = attestTipMap[errorCode].type;
-            desc = attestTipMap[errorCode].desc;
-            title = attestTipMap[errorCode].title;
-            Object.assign(msgObj, {
-              type,
-              desc,
-              sourcePageTip: title,
-            });
-          }
 
           if (parsedActiveRequestAttestation.reqType === 'web') {
             if (!content.signature && content.encodedData) {
               errorCode = '00103';
               // linea event had bund
             } else {
+              if (
+                activeAttestationParams?.verificationContent ===
+                  'Assets Proof' &&
+                activeAttestationParams?.dataSourceId === 'binance'
+              ) {
+                let type, desc, title;
+                errorCode = '00102';
+                type = attestTipMap[errorCode].type;
+                desc = attestTipMap[errorCode].desc;
+                title = attestTipMap[errorCode].title;
+                Object.assign(msgObj, {
+                  type,
+                  desc,
+                  sourcePageTip: title,
+                });
+              } else {
+                errorCode = '00104';
+                Object.assign(msgObj, {
+                  type: attestTipMap[errorCode].type,
+                  desc: attestTipMap[errorCode].desc,
+                  sourcePageTip: attestTipMap[errorCode].title,
+                });
+              }
               // console.log('333-bg-al-notMeet2', attestTipMap);
-              errorCode = '00104';
             }
-            Object.assign(msgObj, {
-              type: attestTipMap[errorCode].type,
-              desc: attestTipMap[errorCode].desc,
-              sourcePageTip: attestTipMap[errorCode].title,
-            });
             pageDecodeMsgListener(
               {
                 name: 'end',

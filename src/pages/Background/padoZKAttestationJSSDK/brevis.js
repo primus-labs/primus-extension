@@ -13,8 +13,15 @@ let errorCode = '00010'
 let uniSwapProofRequestId = null
 let attestationForm = {}
 
-export const attestBrevisFn = async (form, dappTabId) => {
-  dappTabId = dappTabId;
+export const attestBrevisFn = async (form, dappTabIdP) => {
+  
+  const {
+    padoZKAttestationJSSDKDappTabId: dappTabId2,
+  } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKDappTabId',
+  ]);
+  dappTabId = dappTabIdP || dappTabId2;
+  console.log('attestBrevisFn-dappTabId', dappTabIdP, dappTabId2);
   attestationForm = form
   const { account, requestid, signature, timestamp } = form;
   uniSwapProofRequestId = requestid;

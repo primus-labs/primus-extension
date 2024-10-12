@@ -311,23 +311,6 @@ const useALGAttest = function useAttest() {
             desc: '',
             sourcePageTip: '',
           };
-          if (activeAttestation?.verificationContent === 'Assets Proof') {
-            let type, desc, title;
-            if (activeAttestation?.dataSourceId === 'okx') {
-              type = attestTipMap['00101'].type;
-              desc = attestTipMap['00101'].desc;
-              title = attestTipMap['00101'].title;
-            } else if (activeAttestation?.dataSourceId === 'binance') {
-              type = attestTipMap['00102'].type;
-              desc = attestTipMap['00102'].desc;
-              title = attestTipMap['00102'].title;
-            }
-            Object.assign(msgObj, {
-              type,
-              desc,
-              sourcePageTip: title,
-            });
-          }
           let btnTxt = '';
 
           if (parsedActiveRequestAttestation.reqType === 'web') {
@@ -339,11 +322,26 @@ const useALGAttest = function useAttest() {
                 sourcePageTip: attestTipMap['00103'].title,
               });
             } else {
-              Object.assign(msgObj, {
-                type: attestTipMap['00104'].type,
-                desc: attestTipMap['00104'].desc,
-                sourcePageTip: attestTipMap['00104'].title,
-              });
+              if (
+                activeAttestation?.verificationContent === 'Assets Proof' &&
+                activeAttestation?.dataSourceId === 'binance'
+              ) {
+                let type, desc, title;
+                type = attestTipMap['00102'].type;
+                desc = attestTipMap['00102'].desc;
+                title = attestTipMap['00102'].title;
+                Object.assign(msgObj, {
+                  type,
+                  desc,
+                  sourcePageTip: title,
+                });
+              } else {
+                Object.assign(msgObj, {
+                  type: attestTipMap['00104'].type,
+                  desc: attestTipMap['00104'].desc,
+                  sourcePageTip: attestTipMap['00104'].title,
+                });
+              }
             }
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
