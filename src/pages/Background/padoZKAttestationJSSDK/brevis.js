@@ -122,6 +122,8 @@ const pollingUniProofResult = async (claimResult) => {
         type: 'BREVIS_TRANSACTION_PROOF#1',
         templateId: '101', // brevis template id
       };
+      fullAttestation.attestOrigin = attestationForm.attestOrigin;
+      fullAttestation.schemaType = 'BREVIS_TRANSACTION_PROOF#1';
       console.log(
         'del-fullAttestation',
         fullAttestation,
@@ -130,6 +132,7 @@ const pollingUniProofResult = async (claimResult) => {
         dataSignatureParams,
         attestationForm
       );
+      
       const credentialsFromStore = JSON.parse(
         (await chrome.storage.local.get('credentials'))?.credentials || '{}'
       );
@@ -147,6 +150,7 @@ const pollingUniProofResult = async (claimResult) => {
         await removeCacheFn();
         eventInfo.rawData.status = 'SUCCESS';
         eventInfo.rawData.reason = '';
+        eventInfo.rawData.attestOrigin = fullAttestation.attestOrigin;
         eventReport(eventInfo);
         console.log('bg-sdk-brevis-startAttestationRes', dappTabId);
         await chrome.tabs.sendMessage(dappTabId, {
