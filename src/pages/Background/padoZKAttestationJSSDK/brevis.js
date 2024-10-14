@@ -104,13 +104,17 @@ const pollingUniProofResult = async (claimResult) => {
       };
       const { account, requestid, signature, timestamp, dataSourceId } =
         attestationForm;
+      const formatForm = { ...attestationForm };
+      if (formatForm['signature']) {
+        delete formatForm['signature']
+      }
       const fullAttestation = {
         ...dataSignatureResponseResult,
         ...otherResponse,
         ...dataSignatureParams,
         address: account,
         source: dataSourceId,
-        ...attestationForm,
+        ...formatForm,
         requestid: uniSwapProofRequestId,
         // event: fromEvents,
         version: CredVersion,
@@ -118,6 +122,14 @@ const pollingUniProofResult = async (claimResult) => {
         type: 'BREVIS_TRANSACTION_PROOF#1',
         templateId: '101', // brevis template id
       };
+      console.log(
+        'del-fullAttestation',
+        fullAttestation,
+        dataSignatureResponseResult,
+        otherResponse,
+        dataSignatureParams,
+        attestationForm
+      );
       const credentialsFromStore = JSON.parse(
         (await chrome.storage.local.get('credentials'))?.credentials || '{}'
       );
