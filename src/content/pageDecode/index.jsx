@@ -139,7 +139,11 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     await chrome.runtime.sendMessage(msgObj);
   }, []);
   const handleConfirm = useCallback(async () => {
+    if (sessionStorage.getItem('clicked')) {
+      return;
+    }
     sessionStorage.setItem('clicked', '1'); //TODO-test-yilin
+    console.log('555-try2');
     var eventInfo = {
       eventType: 'ATTESTATION_START',
       rawData: {
@@ -169,7 +173,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     if (isReadyFetch) {
       const clickedFlag = sessionStorage.getItem('clicked');
       if (clickedFlag !== '1') {
-        console.log('444-try');
+        console.log('555-try1');
         setTimeout(() => {
           handleConfirm();
         }, 10000);
@@ -474,6 +478,7 @@ function PadoCard() {
         console.log('222content receive:end', request, failReason);
         setStatus('result');
         sessionStorage.setItem('padoAttestRequestStatus', 'result');
+        sessionStorage.removeItem('clicked');
         setResultStatus(result);
         setErrorTxt(failReason);
       }

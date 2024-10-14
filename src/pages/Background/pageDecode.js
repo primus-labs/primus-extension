@@ -229,7 +229,7 @@ export const pageDecodeMsgListener = async (
       const checkReadyStatusFn = async () => {
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
         const interceptorUrlArr = interceptorRequests.map((i) => i.url);
-        // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
+        console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
         const storageObj = await chrome.storage.local.get(interceptorUrlArr);
         const storageArr = Object.values(storageObj);
         if (storageArr.length === interceptorUrlArr.length) {
@@ -352,6 +352,7 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'start') {
+      console.log('555-try3');
       await chrome.storage.local.set({
         beginAttest: '1',
       });
@@ -378,6 +379,7 @@ export const pageDecodeMsgListener = async (
       }
       // "X Followers" required update baseValue
       console.log('222activeTemplate', activeTemplate);
+      console.log('555-try5');
       if (activeTemplate.id === '15') {
         form.baseValue =
           activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
@@ -568,11 +570,11 @@ export const pageDecodeMsgListener = async (
     if (name === 'end') {
       if (tabCreatedByPado) {
         //TODO-test-yilin
-        // chrome.tabs.sendMessage(
-        //   tabCreatedByPado.id,
-        //   request,
-        //   function (response) {}
-        // );
+        await chrome.tabs.sendMessage(
+          tabCreatedByPado.id,
+          request,
+          function (response) {}
+        );
         chrome.webRequest.onBeforeSendHeaders.removeListener(
           onBeforeSendHeadersFn
         );
