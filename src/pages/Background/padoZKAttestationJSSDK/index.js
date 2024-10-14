@@ -446,9 +446,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
       opBNBTestnet: 'opBNB',
     };
     const isTestNet = Object.keys(testNetNameMap).includes(chainName);
-    const upperChainEventType = isTestNet
-      ? 'UPPER_CHAIN_TESTNET'
-      : 'UPPER_CHAIN';
+    const upperChainEventType =
+      CURENV === 'production' && isTestNet
+        ? 'UPPER_CHAIN_TESTNET'
+        : 'UPPER_CHAIN';
     if (curCredential) {
       const { address, schemaType, source } = curCredential;
       // console.log('333-bg-sdk-receive-sendToChain2');
@@ -540,7 +541,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 }
               } 
             } catch {
-              
+
             }
           }
           // sendToChainResult = true;
