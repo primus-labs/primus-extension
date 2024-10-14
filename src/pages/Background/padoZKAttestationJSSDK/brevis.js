@@ -5,6 +5,7 @@ import {
   getUniNFTResult,
 } from '@/services/api/event';
 import { CredVersion } from '@/config/attestation';
+import { regenerateAttest } from './utils';
 
 let pollingUniProofIntervalTimer = ''
 let claimResult = {}
@@ -55,10 +56,6 @@ export const attestBrevisFn = async (form, dappTabIdP) => {
             desc: 'Do not have eligible transactions.',
             code: errorCode,
           },
-          // data: {
-          //   attestationRequestId: activeRequestId,
-          //   eip712MessageRawDataWithSignature,
-          // },
         },
       });
     }
@@ -85,7 +82,7 @@ const pollingUniProofResult = async (claimResult) => {
       address: claimResult.address,
       blockNumber: claimResult.blockNumber,
     });
-    if (rc === 0) {
+    if (rc === 0 && result) {
       clearInterval(pollingUniProofIntervalTimer)
       const {
         dataSignatureResponse: {
@@ -128,23 +125,29 @@ const pollingUniProofResult = async (claimResult) => {
       await chrome.storage.local.set({
         credentials: JSON.stringify(credentialsObj),
       });
-      eventInfo.rawData.status = 'SUCCESS';
-      eventInfo.rawData.reason = '';
-      eventReport(eventInfo);
-      console.log('bg-sdk-brevis-startAttestationRes', dappTabId);
-      await chrome.tabs.sendMessage(dappTabId, {
-        type: 'padoZKAttestationJSSDK',
-        name: 'startAttestationRes',
-        params: {
-          result: true,
-          data: {
-            attestationRequestId: uniSwapProofRequestId,
-            eip712MessageRawDataWithSignature:
-              result.dataSignatureResponse.eip712MessageRawDataWithSignature,
+      const { rc, result } = await regenerateAttest(
+        fullAttestation,
+        attestationForm.chainName
+      );
+      if (rc === 0) {
+        const { eip712MessageRawDataWithSignature } = result;
+        await removeCacheFn()
+        eventInfo.rawData.status = 'SUCCESS';
+        eventInfo.rawData.reason = '';
+        eventReport(eventInfo);
+        console.log('bg-sdk-brevis-startAttestationRes', dappTabId);
+        await chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'startAttestationRes',
+          params: {
+            result: true,
+            data: {
+              attestationRequestId: uniSwapProofRequestId,
+              eip712MessageRawDataWithSignature,
+            },
           },
-        },
-      });
-      
+        });
+      }
     } else {
     }
   } catch (e) {
