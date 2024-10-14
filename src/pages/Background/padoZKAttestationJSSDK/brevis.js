@@ -39,7 +39,7 @@ export const attestBrevisFn = async (form, dappTabIdP) => {
       timestamp,
     });
 
-    if (rc === 0 && result) {
+    if (rc === 0) {
       claimResult = { ...result, address: curConnectedAddr };
       pollingUniProofIntervalTimer = setInterval(() => {
         pollingUniProofResult(claimResult);
@@ -78,19 +78,20 @@ export const attestBrevisFn = async (form, dappTabIdP) => {
 
 const pollingUniProofResult = async (claimResult) => {
   try {
-    const { rc, result } = await getUniNFTResult({
+    const pResult = await getUniNFTResult({
       address: claimResult.address,
       blockNumber: claimResult.blockNumber,
     });
-    if (rc === 0 && result) {
-      clearInterval(pollingUniProofIntervalTimer)
+
+    if (pResult.rc === 0) {
+      clearInterval(pollingUniProofIntervalTimer);
       const {
         dataSignatureResponse: {
           result: dataSignatureResponseResult,
           ...otherResponse
         },
         dataSignatureParams,
-      } = result;
+      } = pResult.result;
       var eventInfo = {
         eventType: 'API_ATTESTATION_GENERATE',
         rawData: {
@@ -125,13 +126,13 @@ const pollingUniProofResult = async (claimResult) => {
       await chrome.storage.local.set({
         credentials: JSON.stringify(credentialsObj),
       });
-      const { rc, result } = await regenerateAttest(
+      const regenerateAttestRes = await regenerateAttest(
         fullAttestation,
         attestationForm.chainName
       );
-      if (rc === 0) {
-        const { eip712MessageRawDataWithSignature } = result;
-        await removeCacheFn()
+      if (regenerateAttestRes.rc === 0) {
+        const { eip712MessageRawDataWithSignature } = regenerateAttestRes.result;
+        await removeCacheFn();
         eventInfo.rawData.status = 'SUCCESS';
         eventInfo.rawData.reason = '';
         eventReport(eventInfo);

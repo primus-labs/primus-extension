@@ -54,16 +54,29 @@ export const schemaNameFn = (networkName) => {
 };
 
 export const regenerateAttest = async (orginAttestation, chainName) => {
-  const { signature, sourceUseridHash } = orginAttestation;
+  const {
+    signature,
+    sourceUseridHash,
+    type,
+    dataToBeSigned,
+    source,
+    rawParam,
+  } = orginAttestation;
   const requestParams = {
-    rawParam: Object.assign(orginAttestation, {
-      ext: null,
-    }),
+    rawParam:
+      type === 'BREVIS_TRANSACTION_PROOF#1' || source === 'google'
+        ? orginAttestation.rawParam
+        : Object.assign(orginAttestation, {
+            ext: null,
+          }),
     greaterThanBaseValue: true,
     signature,
     newSigFormat: schemaNameFn(chainName),
     sourceUseridHash: sourceUseridHash,
   };
+  if (type === 'BREVIS_TRANSACTION_PROOF#1') {
+    requestParams.dataToBeSigned = dataToBeSigned;
+  }
   const regenerateAttestRes = await regenerateAttestation(requestParams);
   return regenerateAttestRes;
 };

@@ -196,6 +196,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         requestid,
         signature: attestationParameters[0],
         timestamp: attestationParameters[1],
+        chainName,
       };
       attestBrevisFn(activeAttestationParams, dappTabId);
     } else {
