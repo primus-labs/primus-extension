@@ -77,7 +77,7 @@ const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
       [navigate]
     );
     const formatTime = (datastamp) => {
-      return dayjs.utc(+datastamp).format('YYYY.MM.DD hh:mm');
+      return dayjs.utc(+datastamp).format('YYYY.MM.DD HH:mm');
     };
     const titleElFn = useCallback((i) => {
       if (activeDataSouceMetaInfo.connectType === 'API') {

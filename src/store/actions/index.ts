@@ -1260,7 +1260,7 @@ export const initSetNotificationsAction = () => {
             title,
             desc: content,
             link,
-            time:  dayjs.utc(publishTime-0).format('YYYY/MM/DD hh:mm'),
+            time:  dayjs.utc(publishTime-0).format('YYYY/MM/DD HH:mm'),
             // collapse: k !== 0,
             // disableCollapse: k === 0,
           };
