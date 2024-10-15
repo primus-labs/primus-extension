@@ -176,7 +176,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
         console.log('555-try1');
         setTimeout(() => {
           handleConfirm();
-        }, 10000);
+        }, 5000);
       }
     }
   }, [isReadyFetch, status]);
