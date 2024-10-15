@@ -196,6 +196,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         requestid,
         signature: attestationParameters[0],
         timestamp: attestationParameters[1],
+        chainName,
       };
       attestBrevisFn(activeAttestationParams, dappTabId);
     } else {
@@ -446,9 +447,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
       opBNBTestnet: 'opBNB',
     };
     const isTestNet = Object.keys(testNetNameMap).includes(chainName);
-    const upperChainEventType = isTestNet
-      ? 'UPPER_CHAIN_TESTNET'
-      : 'UPPER_CHAIN';
+    const upperChainEventType =
+      CURENV === 'production' && isTestNet
+        ? 'UPPER_CHAIN_TESTNET'
+        : 'UPPER_CHAIN';
     if (curCredential) {
       const { address, schemaType, source } = curCredential;
       // console.log('333-bg-sdk-receive-sendToChain2');
@@ -491,11 +493,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
             eventReport(eventInfo);
             return;
           }
+          const newProvided = curCredential.provided ?? [];
           if (
             (CURENV === 'production' && !isTestNet) ||
             (CURENV === 'development' && !!isTestNet)
           ) {
-            const newProvided = curCredential.provided ?? [];
             const curEnvChainList = isTestNet
               ? Object.values(EASINFOMAP['development'])
               : ONCHAINLIST;
@@ -528,15 +530,19 @@ export const padoZKAttestationJSSDKMsgListener = async (
           }
 
           if (curCredential.reqType === 'web') {
-            if (newProvided.length && newProvided.length > 0) {
-              const flag = newProvided.some(
-                (i) => i.chainName.indexOf('Linea') > -1
-              );
-              if (flag) {
-                await chrome.storage.local.set({
-                  mysteryBoxRewards: '1',
-                });
-              }
+            try {
+              if (newProvided.length && newProvided.length > 0) {
+                const flag = newProvided.some(
+                  (i) => i.chainName.indexOf('Linea') > -1
+                );
+                if (flag) {
+                  await chrome.storage.local.set({
+                    mysteryBoxRewards: '1',
+                  });
+                }
+              } 
+            } catch {
+
             }
           }
           // sendToChainResult = true;
@@ -556,7 +562,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
           });
           eventReport(eventInfo);
         }
-      } catch {}
+      } catch (e){
+        console.log('333-bg-sdk-receive-sendToChainRes-catch', e);
+      }
     }
   }
 };

@@ -84,7 +84,7 @@ const useAttestBrevis = () => {
         address: claimResult.address,
         blockNumber: claimResult.blockNumber,
       });
-      if (rc === 0) {
+      if (rc === 0 && result) {
         setPollingUniProofIntervalSwitch(false);
         const {
           dataSignatureResponse: { result : dataSignatureResponseResult, ...otherResponse },

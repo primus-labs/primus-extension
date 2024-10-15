@@ -8,6 +8,7 @@ import {
   SCROLLSCHEMANAMEMAP,
   OPBNBSCHEMANAMEMAP,
 } from '@/config/chain';
+import { regenerateAttestation } from '@/services/api/cred';
 export const schemaNameFn = (networkName) => {
   const formatNetworkName = networkName;
   let Name;
@@ -50,4 +51,32 @@ export const schemaNameFn = (networkName) => {
     // Name = 'EAS-Ethereum';
   }
   return Name;
+};
+
+export const regenerateAttest = async (orginAttestation, chainName) => {
+  const {
+    signature,
+    sourceUseridHash,
+    type,
+    dataToBeSigned,
+    source,
+    rawParam,
+  } = orginAttestation;
+  const requestParams = {
+    rawParam:
+      type === 'BREVIS_TRANSACTION_PROOF#1' || source === 'google'
+        ? orginAttestation.rawParam
+        : Object.assign(orginAttestation, {
+            ext: null,
+          }),
+    greaterThanBaseValue: true,
+    signature,
+    newSigFormat: schemaNameFn(chainName),
+    sourceUseridHash: sourceUseridHash,
+  };
+  if (type === 'BREVIS_TRANSACTION_PROOF#1') {
+    requestParams.dataToBeSigned = dataToBeSigned;
+  }
+  const regenerateAttestRes = await regenerateAttestation(requestParams);
+  return regenerateAttestRes;
 };

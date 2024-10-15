@@ -5,6 +5,7 @@ import {
   getUniNFTResult,
 } from '@/services/api/event';
 import { CredVersion } from '@/config/attestation';
+import { regenerateAttest } from './utils';
 
 let pollingUniProofIntervalTimer = ''
 let claimResult = {}
@@ -38,7 +39,7 @@ export const attestBrevisFn = async (form, dappTabIdP) => {
       timestamp,
     });
 
-    if (rc === 0 && result) {
+    if (rc === 0) {
       claimResult = { ...result, address: curConnectedAddr };
       pollingUniProofIntervalTimer = setInterval(() => {
         pollingUniProofResult(claimResult);
@@ -55,10 +56,6 @@ export const attestBrevisFn = async (form, dappTabIdP) => {
             desc: 'Do not have eligible transactions.',
             code: errorCode,
           },
-          // data: {
-          //   attestationRequestId: activeRequestId,
-          //   eip712MessageRawDataWithSignature,
-          // },
         },
       });
     }
@@ -81,19 +78,20 @@ export const attestBrevisFn = async (form, dappTabIdP) => {
 
 const pollingUniProofResult = async (claimResult) => {
   try {
-    const { rc, result } = await getUniNFTResult({
+    const pResult = await getUniNFTResult({
       address: claimResult.address,
       blockNumber: claimResult.blockNumber,
     });
-    if (rc === 0) {
-      clearInterval(pollingUniProofIntervalTimer)
+
+    if (pResult.rc === 0) {
+      clearInterval(pollingUniProofIntervalTimer);
       const {
         dataSignatureResponse: {
           result: dataSignatureResponseResult,
           ...otherResponse
         },
         dataSignatureParams,
-      } = result;
+      } = pResult.result;
       var eventInfo = {
         eventType: 'API_ATTESTATION_GENERATE',
         rawData: {
@@ -106,13 +104,17 @@ const pollingUniProofResult = async (claimResult) => {
       };
       const { account, requestid, signature, timestamp, dataSourceId } =
         attestationForm;
+      const formatForm = { ...attestationForm };
+      if (formatForm['signature']) {
+        delete formatForm['signature']
+      }
       const fullAttestation = {
         ...dataSignatureResponseResult,
         ...otherResponse,
         ...dataSignatureParams,
         address: account,
         source: dataSourceId,
-        ...attestationForm,
+        ...formatForm,
         requestid: uniSwapProofRequestId,
         // event: fromEvents,
         version: CredVersion,
@@ -120,6 +122,17 @@ const pollingUniProofResult = async (claimResult) => {
         type: 'BREVIS_TRANSACTION_PROOF#1',
         templateId: '101', // brevis template id
       };
+      fullAttestation.attestOrigin = attestationForm.attestOrigin;
+      fullAttestation.schemaType = 'BREVIS_TRANSACTION_PROOF#1';
+      console.log(
+        'del-fullAttestation',
+        fullAttestation,
+        dataSignatureResponseResult,
+        otherResponse,
+        dataSignatureParams,
+        attestationForm
+      );
+      
       const credentialsFromStore = JSON.parse(
         (await chrome.storage.local.get('credentials'))?.credentials || '{}'
       );
@@ -128,23 +141,30 @@ const pollingUniProofResult = async (claimResult) => {
       await chrome.storage.local.set({
         credentials: JSON.stringify(credentialsObj),
       });
-      eventInfo.rawData.status = 'SUCCESS';
-      eventInfo.rawData.reason = '';
-      eventReport(eventInfo);
-      console.log('bg-sdk-brevis-startAttestationRes', dappTabId);
-      await chrome.tabs.sendMessage(dappTabId, {
-        type: 'padoZKAttestationJSSDK',
-        name: 'startAttestationRes',
-        params: {
-          result: true,
-          data: {
-            attestationRequestId: uniSwapProofRequestId,
-            eip712MessageRawDataWithSignature:
-              result.dataSignatureResponse.eip712MessageRawDataWithSignature,
+      const regenerateAttestRes = await regenerateAttest(
+        fullAttestation,
+        attestationForm.chainName
+      );
+      if (regenerateAttestRes.rc === 0) {
+        const { eip712MessageRawDataWithSignature } = regenerateAttestRes.result;
+        await removeCacheFn();
+        eventInfo.rawData.status = 'SUCCESS';
+        eventInfo.rawData.reason = '';
+        eventInfo.rawData.attestOrigin = fullAttestation.attestOrigin;
+        eventReport(eventInfo);
+        console.log('bg-sdk-brevis-startAttestationRes', dappTabId);
+        await chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'startAttestationRes',
+          params: {
+            result: true,
+            data: {
+              attestationRequestId: uniSwapProofRequestId,
+              eip712MessageRawDataWithSignature,
+            },
           },
-        },
-      });
-      
+        });
+      }
     } else {
     }
   } catch (e) {
