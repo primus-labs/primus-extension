@@ -163,10 +163,21 @@ const processAlgorithmReq = async (message, port) => {
   console.log(
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
   );
+  const { padoZKAttestationJSSDKBeginAttest } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKBeginAttest',
+  ]);
   switch (reqMethodName) {
     case 'start':
       const offscreenDocumentPath = 'offscreen.html';
-      if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
+      const hasFlag = await hasOffscreenDocument(offscreenDocumentPath);
+      console.log(
+        'debugSDK-1-2-bg-start',
+        'hasOffscreenDocument:',
+        hasFlag,
+        'isFromSDK:',
+        padoZKAttestationJSSDKBeginAttest
+      );
+      if (!hasFlag) {
         console.log(
           `${new Date().toLocaleString()} create offscreen document...........`
         );
@@ -179,16 +190,6 @@ const processAlgorithmReq = async (message, port) => {
           `${new Date().toLocaleString()} offscreen document created`
         );
       } else {
-        const {
-          padoZKAttestationJSSDKBeginAttest,
-          padoZKAttestationJSSDKDappTabId: dappTabId,
-          webProofTypes,
-        } = await chrome.storage.local.get([
-          'padoZKAttestationJSSDKBeginAttest',
-          'padoZKAttestationJSSDKDappTabId',
-          'webProofTypes',
-        ]);
-
         if (padoZKAttestationJSSDKBeginAttest === '1') {
           const attestationTypeIdList = (
             webProofTypes ? JSON.parse(webProofTypes) : []
@@ -216,6 +217,7 @@ const processAlgorithmReq = async (message, port) => {
       }
       break;
     case 'init':
+      console.log('debugSDK-1-3-bg-init');
       var eventInfo = {
         eventType: 'ATTESTATION_INIT_3',
         rawData: {},
@@ -228,6 +230,7 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestation':
+      console.log('debugSDK-3-4-bg-getAttestation');
       const attestationParams = await assembleAlgorithmParams(
         params,
         USERPASSWORD,

@@ -43,6 +43,7 @@ export const algorithmMsgListener = async (
     };
     eventReport(eventInfo);
   } else if (resMethodName === `getAttestation`) {
+    console.log('debugSDK-3-5-bg-algorithm-receive-offscreen-getAttestation');
     var eventInfo = {
       eventType: 'ATTESTATION_START_BACKGROUND',
       rawData: {
@@ -82,6 +83,7 @@ export const algorithmMsgListener = async (
           value: i.id,
         };
       });
+      console.log('debugSDK-2-bg-response-sdk-initAttestationRes');
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestationRes',
@@ -146,6 +148,10 @@ export const algorithmMsgListener = async (
           code: '00001',
         };
       }
+      console.log(
+        'debugSDK-4-bg-algorithm-send-sdk-getAttestationRes',
+        resParams
+      );
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'getAttestationRes',
@@ -154,6 +160,7 @@ export const algorithmMsgListener = async (
     }
     if (resMethodName === 'getAttestationResult') {
       // console.log('333-bg-recceive-getAttestationResult', message.res);
+      console.log('debugSDK-5-2-bg-algorithm-receive-offscreen-getAttestationResult', message.res);
       const attestTipMap =
         JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
       // console.log('333-bg-recceive-getAttestationResult2', dappTabId);
@@ -275,6 +282,10 @@ export const algorithmMsgListener = async (
               //   activeRequestId,
               //   eip712MessageRawDataWithSignature
               // );
+              console.log(
+                'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+                activeRequestId
+              );
               chrome.tabs.sendMessage(dappTabId, {
                 type: 'padoZKAttestationJSSDK',
                 name: 'startAttestationRes',
@@ -381,6 +392,10 @@ export const algorithmMsgListener = async (
                 code: errorCode,
               };
             }
+            console.log(
+              'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+              resParams
+            );
             chrome.tabs.sendMessage(dappTabId, {
               type: 'padoZKAttestationJSSDK',
               name: 'startAttestationRes',
@@ -488,6 +503,10 @@ export const algorithmMsgListener = async (
             };
             resParams.reStartFlag = true;
           }
+          console.log(
+            'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+            resParams
+          );
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
             name: 'startAttestationRes',
