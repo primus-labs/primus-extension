@@ -120,7 +120,7 @@ export const algorithmMsgListener = async (
           sourcePageTip: errorMsgTitle,
         };
         // algorithm is not initialized
-        pageDecodeMsgListener(
+        await pageDecodeMsgListener(
           {
             name: 'end',
             params: {
@@ -352,7 +352,7 @@ export const algorithmMsgListener = async (
               }
               // console.log('333-bg-al-notMeet2', attestTipMap);
             }
-            pageDecodeMsgListener(
+            await pageDecodeMsgListener(
               {
                 name: 'end',
                 params: {
@@ -458,7 +458,7 @@ export const algorithmMsgListener = async (
         eventReport(eventInfoEnd);
 
         if (parsedActiveRequestAttestation.reqType === 'web') {
-          pageDecodeMsgListener(
+          await pageDecodeMsgListener(
             {
               name: 'end',
               params: {

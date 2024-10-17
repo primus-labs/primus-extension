@@ -604,7 +604,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
   let hasGetTwitterScreenName = false;
   if (type === 'pageDecode') {
-    pageDecodeMsgListener(
+    await pageDecodeMsgListener(
       message,
       sender,
       sendResponse,

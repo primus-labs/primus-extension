@@ -49,16 +49,11 @@ const fetchConfigure = async () => {
   } catch {}
 };
 
-const storeDappTabId = async () => {
-  const currentWindowTabs = await chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  });
-  const dappTabId = currentWindowTabs[0]?.id;
+const storeDappTabId = async (id) => {
   await chrome.storage.local.set({
-    padoZKAttestationJSSDKDappTabId: dappTabId,
+    padoZKAttestationJSSDKDappTabId: id,
   });
-  return dappTabId;
+  return id;
 };
 
 const getAttestation = async (attetstationRequestId) => {
@@ -88,7 +83,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sdkSupportHosts,
       params.hostname
     );
-    const dappTabId = await storeDappTabId();
+    const dappTabId = await storeDappTabId(sender.tab.id);
     if (params.hostname === 'localhost') {
     } else if (!sdkSupportHosts.includes(params.hostname)) {
       chrome.tabs.sendMessage(dappTabId, {
@@ -307,7 +302,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       //   activeAttestationParams,
       //   activeWebProofTemplate
       // );
-      pageDecodeMsgListener(
+      await pageDecodeMsgListener(
         {
           type: 'pageDecode',
           name: 'init',
@@ -371,7 +366,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
     ]);
-    pageDecodeMsgListener(
+    await pageDecodeMsgListener(
       {
         name: 'end',
         params: {
@@ -578,7 +573,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest === '1') {
-    pageDecodeMsgListener({
+    await pageDecodeMsgListener({
       type: 'pageDecode',
       name: 'cancel',
     });
