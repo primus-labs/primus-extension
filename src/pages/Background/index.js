@@ -163,10 +163,21 @@ const processAlgorithmReq = async (message, port) => {
   console.log(
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
   );
+  
   switch (reqMethodName) {
     case 'start':
       const offscreenDocumentPath = 'offscreen.html';
-      if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
+      const hasFlag = await hasOffscreenDocument(offscreenDocumentPath);
+      const { padoZKAttestationJSSDKBeginAttest: isFromSDK } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      console.log(
+        'debugSDK-1-2-bg-start',
+        'hasOffscreenDocument:',
+        hasFlag,
+        'isFromSDK:',
+        isFromSDK
+      );
+      if (!hasFlag) {
         console.log(
           `${new Date().toLocaleString()} create offscreen document...........`
         );
@@ -188,7 +199,6 @@ const processAlgorithmReq = async (message, port) => {
           'padoZKAttestationJSSDKDappTabId',
           'webProofTypes',
         ]);
-
         if (padoZKAttestationJSSDKBeginAttest === '1') {
           const attestationTypeIdList = (
             webProofTypes ? JSON.parse(webProofTypes) : []
@@ -198,6 +208,15 @@ const processAlgorithmReq = async (message, port) => {
               value: i.id,
             };
           });
+          chrome.tabs.query({}, function (tabs) {
+            console.log(
+              'debugSDK-2-bg-response-sdk-initAttestationRes',
+              'dappId:',
+              dappTabId,
+              tabs
+            );
+          });
+          
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
             name: 'initAttestationRes',
@@ -216,6 +235,7 @@ const processAlgorithmReq = async (message, port) => {
       }
       break;
     case 'init':
+      console.log('debugSDK-1-3-bg-init');
       var eventInfo = {
         eventType: 'ATTESTATION_INIT_3',
         rawData: {},
@@ -604,7 +624,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
   let hasGetTwitterScreenName = false;
   if (type === 'pageDecode') {
-    pageDecodeMsgListener(
+    await pageDecodeMsgListener(
       message,
       sender,
       sendResponse,

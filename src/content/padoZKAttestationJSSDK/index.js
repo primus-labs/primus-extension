@@ -1,6 +1,7 @@
 console.log('333web 2', +new Date());
 window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
+  // console.log("debug-SDK-e",e)
   if (target === 'padoExtension') {
     // console.log('333pado-content-sdk-listen-message', e.data);
     if (name === 'initAttestation') {

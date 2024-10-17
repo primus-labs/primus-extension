@@ -49,16 +49,11 @@ const fetchConfigure = async () => {
   } catch {}
 };
 
-const storeDappTabId = async () => {
-  const currentWindowTabs = await chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  });
-  const dappTabId = currentWindowTabs[0]?.id;
+const storeDappTabId = async (id) => {
   await chrome.storage.local.set({
-    padoZKAttestationJSSDKDappTabId: dappTabId,
+    padoZKAttestationJSSDKDappTabId: id,
   });
-  return dappTabId;
+  return id;
 };
 
 const getAttestation = async (attetstationRequestId) => {
@@ -78,6 +73,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   const { name, params } = request;
 
   if (name === 'initAttestation') {
+    
     await fetchAttestationTemplateList();
     await fetchConfigure();
     const { configMap } = await chrome.storage.local.get(['configMap']);
@@ -88,7 +84,18 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sdkSupportHosts,
       params.hostname
     );
-    const dappTabId = await storeDappTabId();
+    const dappTabId = await storeDappTabId(sender.tab.id);
+    chrome.tabs.query({}, function (tabs) {
+      console.log(
+        'debugSDK-1-1-bg-padoZKAttestationJSSDK-receive-sdk-initAttestation',
+        'dappId:',
+        dappTabId,
+        tabs,
+        sender
+      );
+    });
+    console.log('', sender);
+    
     if (params.hostname === 'localhost') {
     } else if (!sdkSupportHosts.includes(params.hostname)) {
       chrome.tabs.sendMessage(dappTabId, {
@@ -116,6 +123,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
+    console.log(
+      'debugSDK-3-1-bg-padoZKAttestationJSSDK-receive-sdk-startAttestation'
+    );
     const {
       activeRequestAttestation: lastActiveRequestAttestationStr,
       padoZKAttestationJSSDKDappTabId: dappTabId,
@@ -135,6 +145,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
           code: '00003',
         };
       }
+      console.log(
+        'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+        resParams
+      );
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestationRes',
@@ -256,9 +270,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
         const lastResponseConditions = lastResponse.conditions;
         const lastResponseConditionsSubconditions =
           lastResponseConditions.subconditions;
-        
-        if (['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
-              activeAttestationParams.verificationContent) ){
+
+        if (
+          ['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
+            activeAttestationParams.verificationContent
+          )
+        ) {
           // change verification value
           lastResponseConditions.value =
             activeAttestationParams.verificationValue;
@@ -307,7 +324,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       //   activeAttestationParams,
       //   activeWebProofTemplate
       // );
-      pageDecodeMsgListener(
+      await pageDecodeMsgListener(
         {
           type: 'pageDecode',
           name: 'init',
@@ -328,6 +345,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
 
   if (name === 'getAttestationResult') {
+    console.log('debugSDK-5-1-bg-algorithm-receive-sdk-getAttestationResult');
     processAlgorithmReq({
       reqMethodName: 'getAttestationResult',
       params: {},
@@ -371,7 +389,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
     ]);
-    pageDecodeMsgListener(
+    await pageDecodeMsgListener(
       {
         name: 'end',
         params: {
@@ -401,6 +419,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
       };
       resParams.reStartFlag = true;
     }
+    console.log(
+      'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+      resParams
+    );
     chrome.tabs.sendMessage(dappTabId, {
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
@@ -454,7 +476,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (curCredential) {
       const { address, schemaType, source } = curCredential;
       // console.log('333-bg-sdk-receive-sendToChain2');
-      
+
       try {
         const rawDataType = `${schemaType}-${schemaNameFn(chainName)}`;
         // console.log('333-bg-sdk-receive-sendToChain3', rawDataType);
@@ -502,15 +524,13 @@ export const padoZKAttestationJSSDKMsgListener = async (
               ? Object.values(EASINFOMAP['development'])
               : ONCHAINLIST;
             // console.log('333-bg-sdk-receive-sendToChain6', curEnvChainList);
-            const currentChainObj = curEnvChainList.find(
-              (i) => {
-                if (CURENV === 'production' && chainName === 'Linea Mainnet') {
-                  return 'Linea Goerli' === i.title;
-                } else {
-                  return upchainNetwork === i.title;
-                }
+            const currentChainObj = curEnvChainList.find((i) => {
+              if (CURENV === 'production' && chainName === 'Linea Mainnet') {
+                return 'Linea Goerli' === i.title;
+              } else {
+                return upchainNetwork === i.title;
               }
-            );
+            });
             currentChainObj.attestationUID = upChainRes;
             currentChainObj.submitAddress = address;
             newProvided.push(currentChainObj);
@@ -540,10 +560,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
                     mysteryBoxRewards: '1',
                   });
                 }
-              } 
-            } catch {
-
-            }
+              }
+            } catch {}
           }
           // sendToChainResult = true;
           // sendToChainMsg = 'Your attestation is recorded on-chain!';
@@ -562,7 +580,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
           });
           eventReport(eventInfo);
         }
-      } catch (e){
+      } catch (e) {
         console.log('333-bg-sdk-receive-sendToChainRes-catch', e);
       }
     }
@@ -578,7 +596,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest === '1') {
-    pageDecodeMsgListener({
+    await pageDecodeMsgListener({
       type: 'pageDecode',
       name: 'cancel',
     });
