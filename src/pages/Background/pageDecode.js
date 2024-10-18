@@ -552,7 +552,7 @@ export const pageDecodeMsgListener = async (
     }
     if (name === 'end') {
       if (dataSourcePageTabId) {
-        await chrome.tabs.sendMessage(
+        chrome.tabs.sendMessage(
           dataSourcePageTabId,
           request,
           function (response) {}
@@ -566,7 +566,7 @@ export const pageDecodeMsgListener = async (
   } else {
     if (name === 'end') {
       if (dataSourcePageTabId) {
-        await chrome.tabs.sendMessage(
+        chrome.tabs.sendMessage(
           dataSourcePageTabId,
           request,
           function (response) {}

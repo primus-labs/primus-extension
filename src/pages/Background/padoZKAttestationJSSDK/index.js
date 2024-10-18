@@ -302,7 +302,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       //   activeAttestationParams,
       //   activeWebProofTemplate
       // );
-      await pageDecodeMsgListener(
+      pageDecodeMsgListener(
         {
           type: 'pageDecode',
           name: 'init',
@@ -366,7 +366,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
     ]);
-    await pageDecodeMsgListener(
+    pageDecodeMsgListener(
       {
         name: 'end',
         params: {
@@ -573,7 +573,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest === '1') {
-    await pageDecodeMsgListener({
+    pageDecodeMsgListener({
       type: 'pageDecode',
       name: 'cancel',
     });
