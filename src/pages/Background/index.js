@@ -99,7 +99,6 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version }) => {
     eventReport(eventInfo);
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
     await chrome.storage.local.remove(['activeRequestAttestation']);
-    console.log('333-bg-update');
   }
 });
 
@@ -269,7 +268,6 @@ const processAlgorithmReq = async (message, port) => {
       break;
     case 'stop':
       const stopFn = async () => {
-        console.log('333-bg-stop', params);
         await chrome.offscreen.closeDocument();
         await chrome.storage.local.remove(['activeRequestAttestation']);
         fullscreenPort &&

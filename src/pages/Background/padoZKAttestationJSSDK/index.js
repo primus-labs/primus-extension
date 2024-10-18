@@ -26,7 +26,6 @@ const fetchAttestationTemplateList = async () => {
       await chrome.storage.local.set({
         webProofTypes: JSON.stringify(result),
       });
-      // console.log('333-bg-sdk-fetchAttestationTemplateList', result);
     } else {
       // alert('getProofTypes network error');
     }
@@ -44,7 +43,6 @@ const fetchConfigure = async () => {
       await chrome.storage.local.set({
         configMap: JSON.stringify(configMap),
       });
-      // console.log('333-bg-sdk-fetchConfigure', configMap);
     }
   } catch {}
 };
@@ -78,11 +76,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const { configMap } = await chrome.storage.local.get(['configMap']);
     const sdkSupportHosts =
       JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST) ?? [];
-    console.log(
-      '333-bg-sdk-padoZKAttestationJSSDKMsgListener-sdkSupportHosts',
-      sdkSupportHosts,
-      params.hostname
-    );
     const dappTabId = await storeDappTabId(sender.tab.id);
     if (params.hostname === 'localhost') {
     } else if (!sdkSupportHosts.includes(params.hostname)) {
@@ -297,11 +290,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
         ...activeWebProofTemplate,
       };
 
-      // console.log(
-      //   '333-bg-startAttest',
-      //   activeAttestationParams,
-      //   activeWebProofTemplate
-      // );
       pageDecodeMsgListener(
         {
           type: 'pageDecode',
@@ -340,10 +328,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ]);
     const attestTipMap =
       JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
-    // console.log(
-    //   '333-bg-getAttestationResultTimeout',
-    //   padoZKAttestationJSSDKAttestationPresetParams
-    // );
+    
     const activeAttestationParams = JSON.parse(
       padoZKAttestationJSSDKAttestationPresetParams
     );
@@ -415,7 +400,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
   //       processAlgorithmReq({
   //         reqMethodName: 'stop',
   //       });
-  //       console.log('333-Attesting-remove10');
   //       await chrome.storage.local.remove([
   //         'padoZKAttestationJSSDKBeginAttest',
   //         'padoZKAttestationJSSDKAttestationPresetParams',
@@ -430,7 +414,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
     const curCredential = await getAttestation(attestationRequestId);
     console.log(
-      '333-bg-sdk-receive-sendToChainRes',
+      'sdk-bg-sdk-receive-sendToChainRes',
       curCredential,
       attestationRequestId,
       chainName
@@ -448,17 +432,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
         : 'UPPER_CHAIN';
     if (curCredential) {
       const { address, schemaType, source } = curCredential;
-      // console.log('333-bg-sdk-receive-sendToChain2');
-      
       try {
         const rawDataType = `${schemaType}-${schemaNameFn(chainName)}`;
-        // console.log('333-bg-sdk-receive-sendToChain3', rawDataType);
         let upchainNetwork = isTestNet ? testNetNameMap[chainName] : chainName;
         if (CURENV === 'production' && chainName === 'Linea Goerli') {
           upchainNetwork = 'Linea Mainnet';
-          // console.log('333-CURENV', CURENV, upchainNetwork);
         }
-        // const uniqueId = strToHexSha256(upChainParams.signature);
         var eventInfo = {
           eventType: upperChainEventType,
           rawData: {
@@ -470,9 +449,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
           },
         };
         eventInfo.rawData.attestOrigin = curCredential.attestOrigin;
-        // console.log('333-bg-sdk-receive-sendToChain4', eventInfo);
+        
         if (upChainRes) {
-          // console.log('333-bg-sdk-receive-sendToChain5', upChainRes);
+          
           if (upChainRes.error) {
             // if (upChainRes.error === 1) {
             //   sendToChainResult = false;
@@ -496,7 +475,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
             const curEnvChainList = isTestNet
               ? Object.values(EASINFOMAP['development'])
               : ONCHAINLIST;
-            // console.log('333-bg-sdk-receive-sendToChain6', curEnvChainList);
             const currentChainObj = curEnvChainList.find(
               (i) => {
                 if (CURENV === 'production' && chainName === 'Linea Mainnet') {
@@ -509,7 +487,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
             currentChainObj.attestationUID = upChainRes;
             currentChainObj.submitAddress = address;
             newProvided.push(currentChainObj);
-            // console.log('333-bg-sdk-receive-sendToChain7', currentChainObj);
             const { credentials } = await chrome.storage.local.get([
               'credentials',
             ]);
@@ -521,7 +498,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             await chrome.storage.local.set({
               credentials: JSON.stringify(cObj),
             });
-            // console.log('333-bg-sdk-receive-sendToChain8');
+            
           }
 
           if (curCredential.reqType === 'web') {
@@ -558,7 +535,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
           eventReport(eventInfo);
         }
       } catch (e){
-        console.log('333-bg-sdk-receive-sendToChainRes-catch', e);
+        console.log('sdk-bg-sdk-receive-sendToChainRes-catch', e);
       }
     }
   }

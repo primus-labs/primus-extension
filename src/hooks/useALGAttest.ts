@@ -210,7 +210,6 @@ const useALGAttest = function useAttest() {
 
       if (retcode === '0') {
         clearFetchAttestationTimer();
-        console.log('333-Attesting-remove1');
         await chrome.storage.local.remove(['activeRequestAttestation']);
 
         if (
@@ -218,11 +217,6 @@ const useALGAttest = function useAttest() {
           content.signature
         ) {
           const activeRequestId = parsedActiveRequestAttestation.requestid;
-          console.log(
-            '333-debug',
-            content?.requestid,
-            parsedActiveRequestAttestation
-          );
           if (activeRequestId !== content?.requestid) {
             return;
           }
@@ -378,7 +372,6 @@ const useALGAttest = function useAttest() {
         }
       } else if (retcode === '2') {
         clearFetchAttestationTimer();
-        console.log('333-Attesting-remove2');
         await chrome.storage.local.remove(['activeRequestAttestation']);
 
         const {
@@ -552,7 +545,6 @@ const useALGAttest = function useAttest() {
     };
     console.log('after timeout port', padoServicePort);
     postMsg(padoServicePort, msg);
-    console.log('333-Attesting-remove3');
     await chrome.storage.local.remove(['activeRequestAttestation']);
   }, [
     padoServicePort,
@@ -641,7 +633,6 @@ const useALGAttest = function useAttest() {
         if (['stop', 'cancel', 'close'].includes(name)) {
           clearFetchAttestationTimer();
           if (['stop', 'cancel'].includes(name)) {
-            console.log('333-Attesting-remove4');
             chrome.storage.local.remove(['activeRequestAttestation']);
           }
         }
