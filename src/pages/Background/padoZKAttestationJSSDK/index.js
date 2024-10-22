@@ -88,6 +88,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     chrome.tabs.query({}, function (tabs) {
       console.log(
         'debugSDK-1-1-bg-padoZKAttestationJSSDK-receive-sdk-initAttestation',
+        new Date().toLocaleString(),
         'dappId:',
         dappTabId,
         tabs,
@@ -124,7 +125,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
   if (name === 'startAttestation') {
     console.log(
-      'debugSDK-3-1-bg-padoZKAttestationJSSDK-receive-sdk-startAttestation'
+      'debugSDK-3-1-bg-padoZKAttestationJSSDK-receive-sdk-startAttestation',
+      new Date().toLocaleString()
     );
     const {
       activeRequestAttestation: lastActiveRequestAttestationStr,
@@ -147,6 +149,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       }
       console.log(
         'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+        new Date().toLocaleString(),
         resParams
       );
       chrome.tabs.sendMessage(dappTabId, {
@@ -324,7 +327,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       //   activeAttestationParams,
       //   activeWebProofTemplate
       // );
-      await pageDecodeMsgListener(
+      pageDecodeMsgListener(
         {
           type: 'pageDecode',
           name: 'init',
@@ -345,7 +348,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
 
   if (name === 'getAttestationResult') {
-    console.log('debugSDK-5-1-bg-algorithm-receive-sdk-getAttestationResult');
+    console.log(
+      'debugSDK-5-1-bg-algorithm-receive-sdk-getAttestationResult',
+      new Date().toLocaleString()
+    );
     processAlgorithmReq({
       reqMethodName: 'getAttestationResult',
       params: {},
@@ -389,7 +395,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
     ]);
-    await pageDecodeMsgListener(
+    pageDecodeMsgListener(
       {
         name: 'end',
         params: {
@@ -421,6 +427,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
     console.log(
       'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+      new Date().toLocaleString(),
       resParams
     );
     chrome.tabs.sendMessage(dappTabId, {
@@ -596,7 +603,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest === '1') {
-    await pageDecodeMsgListener({
+    pageDecodeMsgListener({
       type: 'pageDecode',
       name: 'cancel',
     });

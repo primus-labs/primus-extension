@@ -11,6 +11,7 @@ let currExtentionId;
 
 let isReadyRequest = false;
 let operationType = null;
+let attestFinishFlag = false;
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
@@ -43,13 +44,15 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
       resParams.reStartFlag = true;
     }
     try {
-      chrome.tabs.sendMessage(dappTabId, {
-        type: 'padoZKAttestationJSSDK',
-        name: 'startAttestationRes',
-        params: resParams,
-      });
+      if (!attestFinishFlag) {
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'startAttestationRes',
+          params: resParams,
+        });
+      } // TODO-test-yilin
     } catch (error) {
-      console.log('handlerForSdk error:', handlerForSdk);
+      console.log('handlerForSdk error:', error);
     }
   }
 };
@@ -261,18 +264,20 @@ export const pageDecodeMsgListener = async (
         }
       };
       isReadyRequest = await checkReadyStatusFn();
-      console.log('web requests are captured');
-      chrome.tabs.sendMessage(
-        dataSourcePageTabId,
-        {
-          type: 'pageDecode',
-          name: 'webRequestIsReady',
-          params: {
-            isReady: isReadyRequest,
+      if (isReadyRequest) {
+        console.log('web requests are captured');
+        chrome.tabs.sendMessage(
+          dataSourcePageTabId,
+          {
+            type: 'pageDecode',
+            name: 'webRequestIsReady',
+            params: {
+              isReady: isReadyRequest,
+            },
           },
-        },
-        function (response) {}
-      );
+          function (response) {}
+        );
+      }
     };
 
     if (name === 'init') {
@@ -282,7 +287,9 @@ export const pageDecodeMsgListener = async (
         currentWindow: true,
       });
       currExtentionId = currentWindowTabs[0]?.id;
-      const interceptorUrlArr = requests.filter((r) => r.name !== 'first').map((i) => i.url);
+      const interceptorUrlArr = requests
+        .filter((r) => r.name !== 'first')
+        .map((i) => i.url);
       const aaa = await chrome.storage.local.get(interceptorUrlArr);
       await chrome.storage.local.remove(interceptorUrlArr);
       const bbb = await chrome.storage.local.get(interceptorUrlArr);
@@ -300,10 +307,11 @@ export const pageDecodeMsgListener = async (
       const tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });
-      dataSourcePageTabId = tabCreatedByPado.id
+      dataSourcePageTabId = tabCreatedByPado.id;
       console.log('create dataSourcePageTabId', dataSourcePageTabId);
       console.log(
         'debugSDK-3-2-bg-pageDecode-init',
+        new Date().toLocaleString(),
         'dataSourcePageTabId:',
         dataSourcePageTabId
       );
@@ -359,7 +367,6 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'start') {
-      console.log('555-try3');
       await chrome.storage.local.set({
         beginAttest: '1',
       });
@@ -373,7 +380,11 @@ export const pageDecodeMsgListener = async (
     }, {});*/
 
       const { category, requestid } = activeTemplate;
-      console.log('debugSDK-3-3-bg-pageDecode-start', requestid);
+      console.log(
+        'debugSDK-3-3-bg-pageDecode-start',
+        new Date().toLocaleString(),
+        requestid
+      );
       const form = {
         source: dataSource,
         type: category,
@@ -387,7 +398,6 @@ export const pageDecodeMsgListener = async (
       }
       // "X Followers" required update baseValue
       console.log('222activeTemplate', activeTemplate);
-      console.log('555-try5');
       if (activeTemplate.id === '15') {
         form.baseValue =
           activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
@@ -524,7 +534,12 @@ export const pageDecodeMsgListener = async (
             : '';
       }
       eventReport(eventInfo);
-      console.log('debugSDK-3-4-bg-pageDecode-getAttestation');
+      console.log(
+        'debugSDK-3-4-bg-pageDecode-getAttestation',
+        new Date().toLocaleString(),
+        JSON.stringify(aligorithmParams),
+        formatRequests
+      );
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
@@ -570,7 +585,9 @@ export const pageDecodeMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-        await chrome.tabs.remove(dataSourcePageTabId);//TODO-test-yilin
+        //TODO-test-yilin
+        attestFinishFlag = true;
+        await chrome.tabs.remove(dataSourcePageTabId); //TODO-test-yilin
       }
     }
   } else {

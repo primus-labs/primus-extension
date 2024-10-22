@@ -275,6 +275,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       resType: 'algorithm',
       resMethodName: 'getAttestationResult',
       res: res,
+      timestamp: message.timestamp,
     });
   } else if (
     message.type === 'algorithm' &&

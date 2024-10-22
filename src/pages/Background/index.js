@@ -172,6 +172,7 @@ const processAlgorithmReq = async (message, port) => {
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       console.log(
         'debugSDK-1-2-bg-start',
+        new Date().toLocaleString(),
         'hasOffscreenDocument:',
         hasFlag,
         'isFromSDK:',
@@ -211,6 +212,7 @@ const processAlgorithmReq = async (message, port) => {
           chrome.tabs.query({}, function (tabs) {
             console.log(
               'debugSDK-2-bg-response-sdk-initAttestationRes',
+              new Date().toLocaleString(),
               'dappId:',
               dappTabId,
               tabs
@@ -235,7 +237,7 @@ const processAlgorithmReq = async (message, port) => {
       }
       break;
     case 'init':
-      console.log('debugSDK-1-3-bg-init');
+      console.log('debugSDK-1-3-bg-init', new Date().toLocaleString());
       var eventInfo = {
         eventType: 'ATTESTATION_INIT_3',
         rawData: {},
@@ -274,10 +276,12 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestationResult':
+
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestationResult',
         params: params,
+        timestamp: + new Date()
       });
       break;
     case 'startOffline':
@@ -624,7 +628,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
   let hasGetTwitterScreenName = false;
   if (type === 'pageDecode') {
-    await pageDecodeMsgListener(
+    pageDecodeMsgListener(
       message,
       sender,
       sendResponse,

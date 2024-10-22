@@ -43,7 +43,7 @@ export const algorithmMsgListener = async (
     };
     eventReport(eventInfo);
   } else if (resMethodName === `getAttestation`) {
-    console.log('debugSDK-3-5-bg-algorithm-receive-offscreen-getAttestation');
+    console.log('debugSDK-3-5-bg-algorithm-receive-offscreen-getAttestation', (new Date()).toLocaleString());
     var eventInfo = {
       eventType: 'ATTESTATION_START_BACKGROUND',
       rawData: {
@@ -83,7 +83,10 @@ export const algorithmMsgListener = async (
           value: i.id,
         };
       });
-      console.log('debugSDK-2-bg-response-sdk-initAttestationRes');
+      console.log(
+        'debugSDK-2-bg-response-sdk-initAttestationRes',
+        new Date().toLocaleString()
+      );
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestationRes',
@@ -122,7 +125,7 @@ export const algorithmMsgListener = async (
           sourcePageTip: errorMsgTitle,
         };
         // algorithm is not initialized
-        await pageDecodeMsgListener(
+        pageDecodeMsgListener(
           {
             name: 'end',
             params: {
@@ -150,6 +153,7 @@ export const algorithmMsgListener = async (
       }
       console.log(
         'debugSDK-4-bg-algorithm-send-sdk-getAttestationRes',
+        new Date().toLocaleString(),
         resParams
       );
       chrome.tabs.sendMessage(dappTabId, {
@@ -160,7 +164,13 @@ export const algorithmMsgListener = async (
     }
     if (resMethodName === 'getAttestationResult') {
       // console.log('333-bg-recceive-getAttestationResult', message.res);
-      console.log('debugSDK-5-2-bg-algorithm-receive-offscreen-getAttestationResult', message.res);
+      console.log(
+        'debugSDK-5-2-bg-algorithm-receive-offscreen-getAttestationResult',
+        new Date().toLocaleString(),
+        message.res,
+        'messageResuestTime:',
+        message.timestamp.toLocaleString()
+      );
       const attestTipMap =
         JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
       // console.log('333-bg-recceive-getAttestationResult2', dappTabId);
@@ -254,7 +264,7 @@ export const algorithmMsgListener = async (
             );
             if (rc === 0) {
               const { eip712MessageRawDataWithSignature } = result;
-              await pageDecodeMsgListener(
+              pageDecodeMsgListener(
                 {
                   name: 'end',
                   params: {
@@ -284,6 +294,7 @@ export const algorithmMsgListener = async (
               // );
               console.log(
                 'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+                new Date().toLocaleString(),
                 activeRequestId
               );
               chrome.tabs.sendMessage(dappTabId, {
@@ -363,7 +374,7 @@ export const algorithmMsgListener = async (
               }
               // console.log('333-bg-al-notMeet2', attestTipMap);
             }
-            await pageDecodeMsgListener(
+            pageDecodeMsgListener(
               {
                 name: 'end',
                 params: {
@@ -394,6 +405,7 @@ export const algorithmMsgListener = async (
             }
             console.log(
               'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+              new Date().toLocaleString(),
               resParams
             );
             chrome.tabs.sendMessage(dappTabId, {
@@ -420,7 +432,7 @@ export const algorithmMsgListener = async (
         const {
           errlog: { code, desc },
         } = details;
-        processAlgorithmReq({ reqMethodName: 'stop' });
+        // processAlgorithmReq({ reqMethodName: 'stop' });// TODO-test-yilin
         var eventInfoMsg = 'Something went wrong';
         let title = errorMsgTitle;
         let msgObj = {
@@ -473,7 +485,7 @@ export const algorithmMsgListener = async (
         eventReport(eventInfoEnd);
 
         if (parsedActiveRequestAttestation.reqType === 'web') {
-          await pageDecodeMsgListener(
+          pageDecodeMsgListener(
             {
               name: 'end',
               params: {
@@ -505,6 +517,7 @@ export const algorithmMsgListener = async (
           }
           console.log(
             'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+            new Date().toLocaleString(),
             resParams
           );
           chrome.tabs.sendMessage(dappTabId, {
