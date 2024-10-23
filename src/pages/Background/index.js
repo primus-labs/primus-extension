@@ -147,7 +147,7 @@ async function hasOffscreenDocument(path) {
   const offscreenUrl = chrome.runtime.getURL(path);
   console.log(offscreenUrl);
   const matchedClients = await clients.matchAll();
-  console.log('matchedClients', matchedClients);
+  // console.log('matchedClients', matchedClients);
   for (const client of matchedClients) {
     if (client.url === offscreenUrl) {
       return true;
@@ -158,7 +158,7 @@ async function hasOffscreenDocument(path) {
 
 const processAlgorithmReq = async (message, port) => {
   const matchedClients = await clients.matchAll();
-  console.log('matchedClients', matchedClients);
+  // console.log('matchedClients', matchedClients);
   let { reqMethodName, params = {} } = message;
   console.log(
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`

@@ -72,7 +72,7 @@ class WebTwitter extends WebSocial {
         break;
       }
     }
-    console.log(`twitter totalPost is:${totalPost}`)
+    // console.log(`twitter totalPost is:${totalPost}`)
     this.posts = totalPost
   }
 

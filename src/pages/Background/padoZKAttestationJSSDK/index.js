@@ -148,9 +148,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
         };
       }
       console.log(
-        'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+        'debugSDK-6-bg-padoZKAttestationJSSDK-send-sdk-startAttestationRes',
         new Date().toLocaleString(),
-        resParams
+        JSON.stringify(resParams)
       );
       chrome.tabs.sendMessage(dappTabId, {
         type: 'padoZKAttestationJSSDK',
@@ -359,6 +359,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
 
   if (name === 'getAttestationResultTimeout') {
+    console.log(
+      'debugSDK-5-3-bg-padoZKAttestationJSSDK-receive-sdk-getAttestationResultTimeout',
+      new Date().toLocaleString(),
+    );
     if (sdkParams.attestationTypeID === '101') {
       return;
     }
@@ -411,9 +415,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
       fullscreenPort,
       hasGetTwitterScreenName
     );
-    processAlgorithmReq({
-      reqMethodName: 'stop',
-    });
+    // processAlgorithmReq({
+    //   reqMethodName: 'stop',
+    // });// TODO-test-yilin
     const { padoZKAttestationJSSDKDappTabId: dappTabId } =
       await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
     let resParams = { result: false };
@@ -426,9 +430,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
       resParams.reStartFlag = true;
     }
     console.log(
-      'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
+      'debugSDK-6-bg-padoZKAttestationJSSDK-send-sdk-startAttestationRes',
       new Date().toLocaleString(),
-      resParams
+      JSON.stringify(resParams)
     );
     chrome.tabs.sendMessage(dappTabId, {
       type: 'padoZKAttestationJSSDK',

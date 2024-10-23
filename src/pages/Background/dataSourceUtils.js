@@ -11,7 +11,7 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
   try {
     // const ex = new constructorF();
     await ex.getInfo();
-    console.log(`222dataSourceWeb getInfo ${dataSourceId}= `, ex);
+    // console.log(`222dataSourceWeb getInfo ${dataSourceId}= `, ex);
     var newSourceUserData = {};
     let storageRes = await chrome.storage.local.get(dataSourceId);
     const lastData = storageRes[dataSourceId];

@@ -87,7 +87,7 @@ export const dataSourceWebMsgListener = async (
         if (addQueryStr) {
           newCurrRequestObj.queryString = addQueryStr;
         }
-        console.log('222222listen', formatUrlKey);
+        // console.log('222222listen', formatUrlKey);
         await chrome.storage.local.set({
           [formatUrlKey]: JSON.stringify(newCurrRequestObj),
         });

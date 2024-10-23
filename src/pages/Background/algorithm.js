@@ -6,7 +6,6 @@ import { getDataSourceAccount } from './dataSourceUtils';
 import { schemaNameFn, regenerateAttest } from './padoZKAttestationJSSDK/utils';
 import { padoExtensionVersion } from '@/config/constants';
 
-
 export const algorithmMsgListener = async (
   message,
   sender,
@@ -43,7 +42,10 @@ export const algorithmMsgListener = async (
     };
     eventReport(eventInfo);
   } else if (resMethodName === `getAttestation`) {
-    console.log('debugSDK-3-5-bg-algorithm-receive-offscreen-getAttestation', (new Date()).toLocaleString());
+    console.log(
+      'debugSDK-3-5-bg-algorithm-receive-offscreen-getAttestation',
+      new Date().toLocaleString()
+    );
     var eventInfo = {
       eventType: 'ATTESTATION_START_BACKGROUND',
       rawData: {
@@ -94,7 +96,7 @@ export const algorithmMsgListener = async (
           result: true,
           data: {
             attestationTypeIdList,
-            padoExtensionVersion
+            padoExtensionVersion,
           },
         },
       });
@@ -406,7 +408,7 @@ export const algorithmMsgListener = async (
             console.log(
               'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
               new Date().toLocaleString(),
-              resParams
+              JSON.stringify(resParams)
             );
             chrome.tabs.sendMessage(dappTabId, {
               type: 'padoZKAttestationJSSDK',
@@ -432,7 +434,12 @@ export const algorithmMsgListener = async (
         const {
           errlog: { code, desc },
         } = details;
-        // processAlgorithmReq({ reqMethodName: 'stop' });// TODO-test-yilin
+        // TODO-test-yilin
+        if (code === '30004') {
+        } else {
+          processAlgorithmReq({ reqMethodName: 'stop' });
+        }
+        // TODO-test-yilin
         var eventInfoMsg = 'Something went wrong';
         let title = errorMsgTitle;
         let msgObj = {
@@ -518,7 +525,7 @@ export const algorithmMsgListener = async (
           console.log(
             'debugSDK-6-bg-algorithm-send-sdk-startAttestationRes',
             new Date().toLocaleString(),
-            resParams
+            JSON.stringify(resParams)
           );
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',

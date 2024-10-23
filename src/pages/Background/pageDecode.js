@@ -28,11 +28,12 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
       'activeRequestAttestation',
     ]);
 
-    if (processAlgorithmReq) {
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-      });
-    }
+    // if (processAlgorithmReq) {
+    //   processAlgorithmReq({
+    //     reqMethodName: 'stop',
+    //   });
+    // }
+    // TODO-test-yilin
     let desc = `The user ${operation} the attestation`;
     let resParams = { result: false };
     if (!resParams.result) {
@@ -147,7 +148,7 @@ export const pageDecodeMsgListener = async (
         if (addQueryStr) {
           newCurrRequestObj.queryString = addQueryStr;
         }
-        console.log('222222listen', formatUrlKey);
+        // console.log('222222listen', formatUrlKey);
         await chrome.storage.local.set({
           [formatUrlKey]: JSON.stringify(newCurrRequestObj),
         });
@@ -232,7 +233,7 @@ export const pageDecodeMsgListener = async (
       const checkReadyStatusFn = async () => {
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
         const interceptorUrlArr = interceptorRequests.map((i) => i.url);
-        console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
+        // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
         const storageObj = await chrome.storage.local.get(interceptorUrlArr);
         const storageArr = Object.values(storageObj);
         if (storageArr.length === interceptorUrlArr.length) {
@@ -265,7 +266,7 @@ export const pageDecodeMsgListener = async (
       };
       isReadyRequest = await checkReadyStatusFn();
       if (isReadyRequest) {
-        console.log('web requests are captured');
+        console.log('web requests are captured', requests);
         chrome.tabs.sendMessage(
           dataSourcePageTabId,
           {
@@ -293,7 +294,7 @@ export const pageDecodeMsgListener = async (
       const aaa = await chrome.storage.local.get(interceptorUrlArr);
       await chrome.storage.local.remove(interceptorUrlArr);
       const bbb = await chrome.storage.local.get(interceptorUrlArr);
-      // console.log('555-newattestations', capturedUrlKeyArr, aaa, bbb);
+      // console.log('555-newattestations', interceptorUrlArr, aaa, bbb);
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
         { urls: ['<all_urls>'] },
@@ -308,12 +309,20 @@ export const pageDecodeMsgListener = async (
         url: jumpTo,
       });
       dataSourcePageTabId = tabCreatedByPado.id;
-      console.log('create dataSourcePageTabId', dataSourcePageTabId);
+      // console.log('create dataSourcePageTabId', dataSourcePageTabId);
       console.log(
         'debugSDK-3-2-bg-pageDecode-init',
         new Date().toLocaleString(),
         'dataSourcePageTabId:',
-        dataSourcePageTabId
+        dataSourcePageTabId,
+        'activeTemplate:',
+        JSON.stringify(activeTemplate),
+        'interceptorUrlArr:',
+        JSON.stringify(interceptorUrlArr),
+        'before:',
+        aaa,
+        'after:',
+        bbb
       );
       const injectFn = async () => {
         await chrome.scripting.executeScript({
@@ -353,7 +362,7 @@ export const pageDecodeMsgListener = async (
       // injectFn();
     }
     if (name === 'initCompleted') {
-      console.log('content_scripts-bg-decode receive:initCompleted');
+      // console.log('content_scripts-bg-decode receive:initCompleted');
       sendResponse({
         name: 'append',
         params: {
@@ -397,7 +406,7 @@ export const pageDecodeMsgListener = async (
         form.event = event;
       }
       // "X Followers" required update baseValue
-      console.log('222activeTemplate', activeTemplate);
+      // console.log('222activeTemplate', activeTemplate);
       if (activeTemplate.id === '15') {
         form.baseValue =
           activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
@@ -420,13 +429,13 @@ export const pageDecodeMsgListener = async (
           r.url = url;
         }
         const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-
+        console.log('debugSDK-captured-requestInfoObj', requestInfoObj);
         const {
           headers: curRequestHeader,
           body: curRequestBody,
           queryString,
         } = (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
-
+        
         const cookiesObj = curRequestHeader
           ? parseCookie(curRequestHeader.Cookie)
           : {};
@@ -537,8 +546,10 @@ export const pageDecodeMsgListener = async (
       console.log(
         'debugSDK-3-4-bg-pageDecode-getAttestation',
         new Date().toLocaleString(),
+        'aligorithmParams:',
         JSON.stringify(aligorithmParams),
-        formatRequests
+        "formatRequests:",
+        JSON.stringify(formatRequests)
       );
       chrome.runtime.sendMessage({
         type: 'algorithm',
