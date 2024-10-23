@@ -15,9 +15,9 @@ export const CURENV = process.env.NODE_ENV as ENVTYPE;
 // export const CURENV = 'production';
 console.log('222CURENV', CURENV, process.env);
 const PADOURLMAP = {
-  development: 'wss://api-dev.padolabs.org/algorithmV2',
+  development: 'wss://api-dev.padolabs.org/algorithm',
   test: '18.179.8.186:8888',
-  production: 'wss://api.padolabs.org/algorithmV2',
+  production: 'wss://api.padolabs.org/algorithm',
 };
 export let PADOURL = PADOURLMAP[CURENV];
 
@@ -728,7 +728,7 @@ export const updateAlgoUrl = async () => {
         console.log('updateAlgoUrl onopen url=', item.algoProxyDomain);
         if (!isInited) {
           console.log('updateAlgoUrl onopen update url new');
-          PADOURL = `wss://${item.algorithmDomain}/algorithmV2`;
+          PADOURL = `wss://${item.algorithmDomain}/algorithm`;
           PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
           const jsonobj = {
             padoUrl: PADOURL,
