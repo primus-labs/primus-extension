@@ -163,7 +163,7 @@ const processAlgorithmReq = async (message, port) => {
   console.log(
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
   );
-  
+
   switch (reqMethodName) {
     case 'start':
       const offscreenDocumentPath = 'offscreen.html';
@@ -218,7 +218,7 @@ const processAlgorithmReq = async (message, port) => {
               tabs
             );
           });
-          
+
           chrome.tabs.sendMessage(dappTabId, {
             type: 'padoZKAttestationJSSDK',
             name: 'initAttestationRes',
@@ -246,7 +246,9 @@ const processAlgorithmReq = async (message, port) => {
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'init',
-        params: params,
+        params: {
+          errLogUrl: 'wss://api.padolabs.org/logs',
+        },
       });
       break;
     case 'getAttestation':
@@ -276,12 +278,11 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestationResult':
-
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestationResult',
         params: params,
-        timestamp: + new Date()
+        timestamp: +new Date(),
       });
       break;
     case 'startOffline':

@@ -435,10 +435,10 @@ export const algorithmMsgListener = async (
           errlog: { code, desc },
         } = details;
         // TODO-test-yilin
-        if (code === '30004') {
-        } else {
-          processAlgorithmReq({ reqMethodName: 'stop' });
-        }
+        // if (code === '30004') {
+        // } else {
+          // processAlgorithmReq({ reqMethodName: 'stop' });
+        // }
         // TODO-test-yilin
         var eventInfoMsg = 'Something went wrong';
         let title = errorMsgTitle;
