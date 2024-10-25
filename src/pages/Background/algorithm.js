@@ -446,7 +446,7 @@ export const algorithmMsgListener = async (
         // TODO-test-yilin
         // if (code === '30004') {
         // } else {
-        // processAlgorithmReq({ reqMethodName: 'stop' });
+        processAlgorithmReq({ reqMethodName: 'stop' });
         // }
         // TODO-test-yilin
         var eventInfoMsg = 'Something went wrong';

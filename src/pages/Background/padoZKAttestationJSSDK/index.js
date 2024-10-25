@@ -416,9 +416,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
       fullscreenPort,
       hasGetTwitterScreenName
     );
-    // processAlgorithmReq({
-    //   reqMethodName: 'stop',
-    // });// TODO-test-yilin
+    processAlgorithmReq({
+      reqMethodName: 'stop',
+    });// TODO-test-yilin
     const { padoZKAttestationJSSDKDappTabId: dappTabId } =
       await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
     let resParams = { result: false };

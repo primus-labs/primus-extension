@@ -32,11 +32,11 @@ const handlerForSdk = async (
       'padoZKAttestationJSSDKXFollowerCount',
       'activeRequestAttestation',
     ]);
-    // if (processAlgorithmReq) {
-    //   processAlgorithmReq({
-    //     reqMethodName: 'stop',
-    //   });
-    // }
+    if (processAlgorithmReq) {
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+      });
+    }
     // TODO-test-yilin
     if (informFlag) {
       let desc = `The user ${operation} the attestation`;
@@ -605,7 +605,7 @@ export const pageDecodeMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-        handlerForSdk(undefined, undefined, false);
+        // handlerForSdk(undefined, undefined, false);
         //TODO-test-yilin
         attestFinishFlag = true;
         await chrome.tabs.remove(dataSourcePageTabId); //TODO-test-yilin
