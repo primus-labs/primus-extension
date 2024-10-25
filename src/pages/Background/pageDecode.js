@@ -12,7 +12,11 @@ let currExtentionId;
 let isReadyRequest = false;
 let operationType = null;
 let attestFinishFlag = false;
-const handlerForSdk = async (processAlgorithmReq, operation) => {
+const handlerForSdk = async (
+  processAlgorithmReq,
+  operation,
+  informFlag = true
+) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKDappTabId: dappTabId,
@@ -23,37 +27,39 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
   if (padoZKAttestationJSSDKBeginAttest === '1') {
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
+      'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'padoZKAttestationJSSDKXFollowerCount',
       'activeRequestAttestation',
     ]);
-
     // if (processAlgorithmReq) {
     //   processAlgorithmReq({
     //     reqMethodName: 'stop',
     //   });
     // }
     // TODO-test-yilin
-    let desc = `The user ${operation} the attestation`;
-    let resParams = { result: false };
-    if (!resParams.result) {
-      resParams.errorData = {
-        title: '',
-        desc: desc,
-        code: '00004',
-      };
-      resParams.reStartFlag = true;
-    }
-    try {
-      if (!attestFinishFlag) {
-        chrome.tabs.sendMessage(dappTabId, {
-          type: 'padoZKAttestationJSSDK',
-          name: 'startAttestationRes',
-          params: resParams,
-        });
-      } // TODO-test-yilin
-    } catch (error) {
-      console.log('handlerForSdk error:', error);
+    if (informFlag) {
+      let desc = `The user ${operation} the attestation`;
+      let resParams = { result: false };
+      if (!resParams.result) {
+        resParams.errorData = {
+          title: '',
+          desc: desc,
+          code: '00004',
+        };
+        resParams.reStartFlag = true;
+      }
+      try {
+        if (!attestFinishFlag) {
+          chrome.tabs.sendMessage(dappTabId, {
+            type: 'padoZKAttestationJSSDK',
+            name: 'startAttestationRes',
+            params: resParams,
+          });
+        } // TODO-test-yilin
+      } catch (error) {
+        console.log('handlerForSdk error:', error);
+      }
     }
   }
 };
@@ -435,7 +441,7 @@ export const pageDecodeMsgListener = async (
           body: curRequestBody,
           queryString,
         } = (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
-        
+
         const cookiesObj = curRequestHeader
           ? parseCookie(curRequestHeader.Cookie)
           : {};
@@ -548,7 +554,7 @@ export const pageDecodeMsgListener = async (
         new Date().toLocaleString(),
         'aligorithmParams:',
         JSON.stringify(aligorithmParams),
-        "formatRequests:",
+        'formatRequests:',
         JSON.stringify(formatRequests)
       );
       chrome.runtime.sendMessage({
@@ -596,6 +602,7 @@ export const pageDecodeMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+        handlerForSdk(undefined, undefined, false);
         //TODO-test-yilin
         attestFinishFlag = true;
         await chrome.tabs.remove(dataSourcePageTabId); //TODO-test-yilin
