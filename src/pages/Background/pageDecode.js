@@ -239,7 +239,7 @@ export const pageDecodeMsgListener = async (
       const checkReadyStatusFn = async () => {
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
         const interceptorUrlArr = interceptorRequests.map((i) => i.url);
-        // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
+        console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
         const storageObj = await chrome.storage.local.get(interceptorUrlArr);
         const storageArr = Object.values(storageObj);
         if (storageArr.length === interceptorUrlArr.length) {
@@ -300,7 +300,7 @@ export const pageDecodeMsgListener = async (
       const aaa = await chrome.storage.local.get(interceptorUrlArr);
       await chrome.storage.local.remove(interceptorUrlArr);
       const bbb = await chrome.storage.local.get(interceptorUrlArr);
-      // console.log('555-newattestations', interceptorUrlArr, aaa, bbb);
+      console.log('debugSDK-remove-lastRequestInfos', interceptorUrlArr, aaa, bbb);
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
         { urls: ['<all_urls>'] },
@@ -435,7 +435,10 @@ export const pageDecodeMsgListener = async (
           r.url = url;
         }
         const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-        console.log('debugSDK-captured-requestInfoObj', requestInfoObj);
+        console.log(
+          'debugSDK-captured-requestInfoObj',
+          formatUrlKey, requestInfoObj
+        );
         const {
           headers: curRequestHeader,
           body: curRequestBody,

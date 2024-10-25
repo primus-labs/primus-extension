@@ -108,42 +108,51 @@ export const algorithmMsgListener = async (
       let result = false;
       if (retcode === '0') {
         result = true;
-      } else if (retcode === '2') {
-        result = false;
-        const activeAttestationParams = JSON.parse(
-          padoZKAttestationJSSDKAttestationPresetParams
-        );
-        const errorMsgTitle = [
-          'Assets Verification',
-          'Humanity Verification',
-        ].includes(activeAttestationParams.attestationType)
-          ? `${activeAttestationParams.attestationType} failed!`
-          : `${activeAttestationParams.attestationType} proof failed!`;
+      } else {
+        if (retcode === '2') {
+          result = false;
+          const activeAttestationParams = JSON.parse(
+            padoZKAttestationJSSDKAttestationPresetParams
+          );
+          const errorMsgTitle = [
+            'Assets Verification',
+            'Humanity Verification',
+          ].includes(activeAttestationParams.attestationType)
+            ? `${activeAttestationParams.attestationType} failed!`
+            : `${activeAttestationParams.attestationType} proof failed!`;
 
-        msgObj = {
-          type: 'error',
-          title: errorMsgTitle,
-          desc: 'The algorithm has not been initialized.Please try again later.',
-          sourcePageTip: errorMsgTitle,
-        };
-        // algorithm is not initialized
-        pageDecodeMsgListener(
-          {
-            name: 'end',
-            params: {
-              result: 'warn',
-              failReason: {
-                ...msgObj,
+          msgObj = {
+            type: 'error',
+            title: errorMsgTitle,
+            desc: 'The algorithm has not been initialized.Please try again later.',
+            sourcePageTip: errorMsgTitle,
+          };
+          // algorithm is not initialized
+          pageDecodeMsgListener(
+            {
+              name: 'end',
+              params: {
+                result: 'warn',
+                failReason: {
+                  ...msgObj,
+                },
               },
             },
-          },
-          sender,
-          sendResponse,
-          USERPASSWORD,
-          fullscreenPort,
-          hasGetTwitterScreenName,
-          undefined
-        );
+            sender,
+            sendResponse,
+            USERPASSWORD,
+            fullscreenPort,
+            hasGetTwitterScreenName,
+            undefined
+          );
+        }
+        await chrome.storage.local.remove([
+          'padoZKAttestationJSSDKBeginAttest',
+          'padoZKAttestationJSSDKWalletAddress',
+          'padoZKAttestationJSSDKAttestationPresetParams',
+          'padoZKAttestationJSSDKXFollowerCount',
+          'activeRequestAttestation',
+        ]);
       }
       let resParams = { result };
       if (!result) {
@@ -437,7 +446,7 @@ export const algorithmMsgListener = async (
         // TODO-test-yilin
         // if (code === '30004') {
         // } else {
-          // processAlgorithmReq({ reqMethodName: 'stop' });
+        // processAlgorithmReq({ reqMethodName: 'stop' });
         // }
         // TODO-test-yilin
         var eventInfoMsg = 'Something went wrong';
