@@ -422,7 +422,7 @@ export const pageDecodeMsgListener = async (
       }
       let aligorithmParams = await assembleAlgorithmParams(form, password);
       const formatRequests = [];
-      for (const r of requests) {
+      for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
           continue;
         }
