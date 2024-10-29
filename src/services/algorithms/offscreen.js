@@ -115,13 +115,13 @@ Module.onRuntimeInitialized = async () => {
 var AlgorithmInited = false;
 var ClientVersion = '1.1.1';
 
-function init() {
-  console.log('init');
+function init(params) {
+  console.log('init', params);
 
   var req_obj = {
     method: 'init',
     version: ClientVersion,
-    params: {},
+    params,
   };
   var json_str = JSON.stringify(req_obj);
 
@@ -205,7 +205,7 @@ function startOffline(params) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('offscreen onMessage message', message);
   if (message.type === 'algorithm' && message.method === 'init') {
-    const res = init();
+    const res = init(message.params);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'init',
