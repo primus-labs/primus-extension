@@ -363,6 +363,7 @@ export const dataSourceWebMsgListener = async (
         active: true,
       });
       await chrome.tabs.remove(tabCreatedByPado.id);
+      activeTemplate = {};
     }
     if (name === 'end') {
       if (tabCreatedByPado) {
@@ -375,6 +376,7 @@ export const dataSourceWebMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+        activeTemplate = {};
       }
     }
   } else {
@@ -385,6 +387,7 @@ export const dataSourceWebMsgListener = async (
           request,
           function (response) {}
         );
+        activeTemplate = {};
       }
     }
   }

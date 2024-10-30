@@ -592,6 +592,7 @@ export const pageDecodeMsgListener = async (
       if (dataSourcePageTabId) {
         await chrome.tabs.remove(dataSourcePageTabId);
       }
+      activeTemplate = {};
       handlerForSdk(processAlgorithmReq, 'cancel');
     }
     if (name === 'end') {
@@ -608,6 +609,7 @@ export const pageDecodeMsgListener = async (
         // handlerForSdk(undefined, undefined, false);
         //TODO-test-yilin
         attestFinishFlag = true;
+        activeTemplate = {};
         await chrome.tabs.remove(dataSourcePageTabId); //TODO-test-yilin
       }
     }
@@ -619,6 +621,7 @@ export const pageDecodeMsgListener = async (
           request,
           function (response) {}
         );
+        activeTemplate = {};
       }
     }
   }
