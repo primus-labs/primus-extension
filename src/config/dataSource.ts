@@ -273,6 +273,17 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceYoutube,
   },*/
+  chatgpt: {
+    id: 'chatgpt',
+    name: 'chatgpt',
+    type: 'Social',
+    icon: iconDataSourceTwitter,
+    desc: 'Support fetching tweet & followers data for management and attestation creation.',
+    unConnectTip:
+      'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
+    // constructorF: WebTwitter,
+    connectType: 'Web',
+  },
 };
 export const DATASOURCEMAPVALUES: DataSourceItemType[] =
   Object.values(DATASOURCEMAP);

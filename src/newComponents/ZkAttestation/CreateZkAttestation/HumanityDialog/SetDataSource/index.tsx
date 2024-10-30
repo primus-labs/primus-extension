@@ -23,7 +23,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
   }, [formLegal, dataSourceName]);
   // different
   const tList = useMemo(() => {
-    const sourceNameArr = ['binance', 'okx', 'tiktok', 'x', 'google'];
+    const sourceNameArr = ['binance', 'okx', 'tiktok', 'x', 'google', 'chatgpt'];
     // 'zan'
     const newArr = sourceNameArr.map((i) => {
       const metaInfo = DATASOURCEMAP[i];

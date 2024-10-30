@@ -107,6 +107,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             // selected: true,
           },
         ];
+        // @ts-ignore
+      } else if (pswForm.verificationContent === 'ChatGPT conversation proof') {
+        list = [
+          {
+            label: 'Account owner',
+            value: 'Account owner',
+            // selected: true,
+          },
+        ];
       }
       return list;
     }, [pswForm.verificationContent]);
@@ -170,8 +179,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             newValue = 'Basic Verification';
           } else if (pswForm.verificationContent === 'Account ownership') {
             newValue = 'Account owner';
+          } else if (pswForm.verificationContent === 'ChatGPT conversation proof') {
+            newValue = 'Account owner';
           }
-          handleChangePswForm(newValue, 'verificationValue');
+            handleChangePswForm(newValue, 'verificationValue');
         }
       }
     }, [pswForm.verificationContent, handleChangePswForm, presets]);
