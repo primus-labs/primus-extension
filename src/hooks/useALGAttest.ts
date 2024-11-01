@@ -241,6 +241,7 @@ const useALGAttest = function useAttest() {
             fullAttestation.xFollowerCount = xFollowerCount;
             sessionStorage.removeItem('xFollowerCount');
           }
+          
 
           const credentialsObj = { ...credentialsFromStore };
           credentialsObj[activeRequestId] = fullAttestation;

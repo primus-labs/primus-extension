@@ -4,13 +4,14 @@ import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
-
+import customFetch from './utils/request';
 let tabCreatedByPado;
 let activeTemplate = {};
 let currExtentionId;
 
 let isReadyRequest = false;
 let operationType = null;
+let RequestsHasCompleted = false;
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
@@ -233,6 +234,7 @@ export const pageDecodeMsgListener = async (
         const storageObj = await chrome.storage.local.get(interceptorUrlArr);
         const storageArr = Object.values(storageObj);
         if (storageArr.length === interceptorUrlArr.length) {
+          let chatgptHasLogin = false
           const f = interceptorRequests.every(async (r) => {
             // const storageR = Object.keys(storageObj).find(
             //   (sRKey) => sRKey === r.url
@@ -245,6 +247,8 @@ export const pageDecodeMsgListener = async (
             const sRrequestObj = storageObj[url]
               ? JSON.parse(storageObj[url])
               : {};
+            console.log('sRrequestObj', sRrequestObj, r);
+            chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
             const headersFlag =
               !r.headers || (!!r.headers && !!sRrequestObj.headers);
             const bodyFlag = !r.body || (!!r.body && !!sRrequestObj.body);
@@ -255,24 +259,33 @@ export const pageDecodeMsgListener = async (
                 !!sRrequestObj.headers.Cookie);
             return headersFlag && bodyFlag && cookieFlag;
           });
-          return f;
+          return dataSource === 'chatgpt'
+            ? !!f && chatgptHasLogin && RequestsHasCompleted
+            : f;
         } else {
           return false;
         }
       };
       isReadyRequest = await checkReadyStatusFn();
-      console.log('web requests are captured');
-      chrome.tabs.sendMessage(
-        tabCreatedByPado.id,
-        {
-          type: 'pageDecode',
-          name: 'webRequestIsReady',
-          params: {
-            isReady: isReadyRequest,
+      if (isReadyRequest) {
+        console.log('web requests are captured');
+        chrome.tabs.sendMessage(
+          tabCreatedByPado.id,
+          {
+            type: 'pageDecode',
+            name: 'webRequestIsReady',
+            params: {
+              isReady: isReadyRequest,
+            },
           },
-        },
-        function (response) {}
-      );
+          function (response) {}
+        );
+      }
+    };
+    const onCompletedFn = async (details) => {
+      console.log('onCompletedFn', details);
+      RequestsHasCompleted = true;
+      checkWebRequestIsReadyFn();
     };
 
     if (name === 'init') {
@@ -282,7 +295,9 @@ export const pageDecodeMsgListener = async (
         currentWindow: true,
       });
       currExtentionId = currentWindowTabs[0]?.id;
-      const interceptorUrlArr = requests.filter((r) => r.name !== 'first').map((i) => i.url);
+      const interceptorUrlArr = requests
+        .filter((r) => r.name !== 'first')
+        .map((i) => i.url);
       const aaa = await chrome.storage.local.get(interceptorUrlArr);
       await chrome.storage.local.remove(interceptorUrlArr);
       const bbb = await chrome.storage.local.get(interceptorUrlArr);
@@ -296,6 +311,12 @@ export const pageDecodeMsgListener = async (
         onBeforeRequestFn,
         { urls: ['<all_urls>'] },
         ['requestBody']
+      );
+
+      chrome.webRequest.onCompleted.addListener(
+        onCompletedFn,
+        { urls: interceptorUrlArr },
+        ['responseHeaders', 'extraHeaders']
       );
       tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
@@ -365,6 +386,7 @@ export const pageDecodeMsgListener = async (
     }, {});*/
 
       const { category, requestid } = activeTemplate;
+
       const form = {
         source: dataSource,
         type: category,
@@ -372,6 +394,7 @@ export const pageDecodeMsgListener = async (
         exUserId: null,
         requestid,
       };
+
       // console.log(WorkerGlobalScope.location)
       if (event) {
         form.event = event;
@@ -459,20 +482,62 @@ export const pageDecodeMsgListener = async (
       await chrome.storage.local.set({
         [authInfoName]: JSON.stringify(activeHeader),
       });
-
+      let formatResponse = JSON.parse(JSON.stringify(responses));
       if (dataSource === 'binance') {
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';
           }
         }
+      } else if (dataSource === 'chatgpt') {
+        const tabs = await chrome.tabs.query({ currentWindow: true });
+        const dataSourcePageTabObj = tabs.find(
+          (i) => i.id === tabCreatedByPado.id
+        );
+        const pathname = new URL(dataSourcePageTabObj.url).pathname;
+        const arr = pathname.split('/');
+        const chatgptQuestionSessionId = arr[arr.length - 1];
+        const requestUrl = 'https://chatgpt.com/backend-api/conversation';
+        const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
+        formatRequests[1].url = fullRequestUrl;
+        formatRequests[1].method = 'GET';
+        formatRequests[1].headers.host = 'chatgpt.com';
+        const storageRes = await chrome.storage.local.get(requestUrl);
+        try {
+          const requestRes = await customFetch(
+          `https://chatgpt.com/backend-api/conversation/${chatgptQuestionSessionId}`,
+            {
+              method: 'GET',
+              headers: JSON.parse(storageRes[requestUrl]).headers,
+            }
+          );
+          let originSubConditionItem =
+            formatResponse[1].conditions.subconditions[0];
+          formatResponse[1].conditions.subconditions = [];
+          Object.keys(requestRes.mapping).forEach((mK) => {
+            const fieldArr = originSubConditionItem.field.split('.');
+            fieldArr[2] = mK;
+            const parts = requestRes.mapping[mK]?.message?.content?.parts;
+            debugger;
+            if (parts && parts[0]) {
+              formatResponse[1].conditions.subconditions.push({
+                ...originSubConditionItem,
+                reveal_id: mK,
+                field: fieldArr.join('.'),
+              });
+            }
+          });
+        } catch (e) {
+          console.log('fetch chatgpt conversation error', e)
+        }
       }
+
       Object.assign(aligorithmParams, {
         reqType: 'web',
         host: host,
         schemaType,
         requests: formatRequests,
-        responses,
+        responses: formatResponse,
         uiTemplate,
         templateId: id,
         calculations,
@@ -514,12 +579,11 @@ export const pageDecodeMsgListener = async (
             : '';
       }
       eventReport(eventInfo);
-
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
         params: {
-          ...aligorithmParams,
+          ...JSON.parse(JSON.stringify(aligorithmParams)),
           PADOSERVERURL,
           padoExtensionVersion,
           requestid: aligorithmParams.requestid,
@@ -527,13 +591,14 @@ export const pageDecodeMsgListener = async (
       });
 
       const { constructorF } = DATASOURCEMAP[dataSource];
-      const ex = new constructorF();
-
-      // const storageRes = await chrome.storage.local.get([dataSource]);
-      // const hadConnectedCurrDataSource = !!storageRes[dataSource];
-      await storeDataSource(dataSource, ex, port, {
-        withoutMsg: true,
-      });
+      if (constructorF) {
+        const ex = new constructorF();
+        // const storageRes = await chrome.storage.local.get([dataSource]);
+        // const hadConnectedCurrDataSource = !!storageRes[dataSource];
+        await storeDataSource(dataSource, ex, port, {
+          withoutMsg: true,
+        });
+      }
     }
 
     // if (name === 'attestResult') {
@@ -555,6 +620,7 @@ export const pageDecodeMsgListener = async (
     //   await chrome.tabs.remove(dataSourcePageTabId);
     // }
     if (name === 'close' || name === 'cancel') {
+      RequestsHasCompleted = false;
       try {
         await chrome.tabs.update(currExtentionId, {
           active: true,
@@ -567,6 +633,7 @@ export const pageDecodeMsgListener = async (
     }
     if (name === 'end') {
       if (tabCreatedByPado) {
+        RequestsHasCompleted = false;
         chrome.tabs.sendMessage(
           tabCreatedByPado.id,
           request,
@@ -581,6 +648,7 @@ export const pageDecodeMsgListener = async (
   } else {
     if (name === 'end') {
       if (tabCreatedByPado) {
+        RequestsHasCompleted = false;
         chrome.tabs.sendMessage(
           tabCreatedByPado.id,
           request,
