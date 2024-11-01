@@ -123,7 +123,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           'attestOffChainWithGreenFieldWithFixValue',
           JSON.stringify(params)
         );
-        console.log('222 content receive upperChain', params);
         upperChainEl.click();
       }
     }
