@@ -5,13 +5,22 @@ import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import customFetch from './utils/request';
-let tabCreatedByPado;
+let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
 
 let isReadyRequest = false;
 let operationType = null;
 let RequestsHasCompleted = false;
+
+const resetVarsFn = () => {
+  dataSourcePageTabId = null
+  activeTemplate = {};
+  currExtentionId = null
+  isReadyRequest = false;
+  operationType = null;
+  RequestsHasCompleted = false;
+}
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
@@ -166,7 +175,7 @@ export const pageDecodeMsgListener = async (
           );
           const result = await res.json();
           //need to go profile page
-          await chrome.tabs.update(tabCreatedByPado.id, {
+          await chrome.tabs.update(dataSourcePageTabId, {
             url: jumpTo + result.screen_name,
           });
         }
@@ -226,6 +235,11 @@ export const pageDecodeMsgListener = async (
         }
       }
     };
+    const onCompletedFn = async (details) => {
+      console.log('onCompletedFn', details);
+      RequestsHasCompleted = true;
+      checkWebRequestIsReadyFn();
+    };
     const checkWebRequestIsReadyFn = async () => {
       const checkReadyStatusFn = async () => {
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
@@ -270,7 +284,7 @@ export const pageDecodeMsgListener = async (
       if (isReadyRequest) {
         console.log('web requests are captured');
         chrome.tabs.sendMessage(
-          tabCreatedByPado.id,
+          dataSourcePageTabId,
           {
             type: 'pageDecode',
             name: 'webRequestIsReady',
@@ -281,11 +295,6 @@ export const pageDecodeMsgListener = async (
           function (response) {}
         );
       }
-    };
-    const onCompletedFn = async (details) => {
-      console.log('onCompletedFn', details);
-      RequestsHasCompleted = true;
-      checkWebRequestIsReadyFn();
     };
 
     if (name === 'init') {
@@ -318,19 +327,20 @@ export const pageDecodeMsgListener = async (
         { urls: interceptorUrlArr },
         ['responseHeaders', 'extraHeaders']
       );
-      tabCreatedByPado = await chrome.tabs.create({
+      const tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });
-      console.log('222pageDecode tabCreatedByPado', tabCreatedByPado);
+      dataSourcePageTabId = tabCreatedByPado.id;
+      console.log('222pageDecode dataSourcePageTabId:', dataSourcePageTabId);
       const injectFn = async () => {
         await chrome.scripting.executeScript({
           target: {
-            tabId: tabCreatedByPado.id,
+            tabId: dataSourcePageTabId,
           },
           files: ['pageDecode.bundle.js'],
         });
         await chrome.scripting.insertCSS({
-          target: { tabId: tabCreatedByPado.id },
+          target: { tabId: dataSourcePageTabId },
           files: ['static/css/pageDecode.css'],
         });
       };
@@ -338,7 +348,7 @@ export const pageDecodeMsgListener = async (
       checkWebRequestIsReadyFn();
       chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         if (
-          tabId === tabCreatedByPado.id &&
+          tabId === dataSourcePageTabId &&
           (changeInfo.url || changeInfo.title)
         ) {
           await injectFn();
@@ -347,12 +357,13 @@ export const pageDecodeMsgListener = async (
       });
 
       chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-        if (tabId === tabCreatedByPado.id) {
+        if (tabId === dataSourcePageTabId) {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             // name: 'abortAttest',
             name: 'stop',
           });
+          dataSourcePageTabId = null;
           handlerForSdk(processAlgorithmReq, 'cancel');
         }
       });
@@ -367,7 +378,7 @@ export const pageDecodeMsgListener = async (
           PADOSERVERURL,
           padoExtensionVersion,
         },
-        dataSourcePageTabId: tabCreatedByPado.id,
+        dataSourcePageTabId: dataSourcePageTabId,
         isReady: isReadyRequest,
         operation: operationType,
       });
@@ -410,7 +421,7 @@ export const pageDecodeMsgListener = async (
       }
       let aligorithmParams = await assembleAlgorithmParams(form, password);
       const formatRequests = [];
-      for (const r of requests) {
+      for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
           continue;
         }
@@ -492,7 +503,7 @@ export const pageDecodeMsgListener = async (
       } else if (dataSource === 'chatgpt') {
         const tabs = await chrome.tabs.query({ currentWindow: true });
         const dataSourcePageTabObj = tabs.find(
-          (i) => i.id === tabCreatedByPado.id
+          (i) => i.id === dataSourcePageTabId
         );
         const pathname = new URL(dataSourcePageTabObj.url).pathname;
         const arr = pathname.split('/');
@@ -601,26 +612,7 @@ export const pageDecodeMsgListener = async (
       }
     }
 
-    // if (name === 'attestResult') {
-    //   // to send back your response  to the current tab
-    //   chrome.tabs.sendMessage(
-    //     tabCreatedByPado.id,
-    //     request,
-    //     function (response) {}
-    //   );
-    //   chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeadersFn);
-    //   chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestFn);
-    // }
-    // if (name === 'closeDataSourcePage' || name === 'cancelAttest') {
-    //   await chrome.tabs.update(currExtentionId, {
-    //     active: true,
-    //   });
-    //   const { dataSourcePageTabId } = request;
-
-    //   await chrome.tabs.remove(dataSourcePageTabId);
-    // }
     if (name === 'close' || name === 'cancel') {
-      RequestsHasCompleted = false;
       try {
         await chrome.tabs.update(currExtentionId, {
           active: true,
@@ -628,14 +620,16 @@ export const pageDecodeMsgListener = async (
       } catch (error) {
         console.log('cancel error:', error);
       }
-      await chrome.tabs.remove(tabCreatedByPado.id);
+      if (dataSourcePageTabId) {
+        await chrome.tabs.remove(dataSourcePageTabId);
+      }
+      resetVarsFn()
       handlerForSdk(processAlgorithmReq, 'cancel');
     }
     if (name === 'end') {
-      if (tabCreatedByPado) {
-        RequestsHasCompleted = false;
+      if (dataSourcePageTabId) {
         chrome.tabs.sendMessage(
-          tabCreatedByPado.id,
+          dataSourcePageTabId,
           request,
           function (response) {}
         );
@@ -643,17 +637,18 @@ export const pageDecodeMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+        resetVarsFn()
       }
     }
   } else {
     if (name === 'end') {
-      if (tabCreatedByPado) {
-        RequestsHasCompleted = false;
+      if (dataSourcePageTabId) {
         chrome.tabs.sendMessage(
-          tabCreatedByPado.id,
+          dataSourcePageTabId,
           request,
           function (response) {}
         );
+        resetVarsFn()
       }
     }
   }

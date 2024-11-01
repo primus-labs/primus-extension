@@ -12,11 +12,11 @@ import PButton from '@/newComponents/PButton';
 import adLinea from '@/assets/newImg/events/adLinea.svg';
 import adBas from '@/assets/newImg/events/adBas.svg';
 import adEthSign from '@/assets/newImg/events/adEthSign.svg';
-// import bannerBgBas from '@/assets/newImg/events/bannerBgBas.svg';
+import bannerBgBas from '@/assets/newImg/events/bannerBgBas.svg';
 // import bannerBgBas from '@/assets/newImg/events/a0.svg';
 // import bannerBgBas from '@/assets/newImg/events/a1.svg';
 // import bannerBgBas from '@/assets/newImg/events/a3.svg';
-import bannerBgBas from '@/assets/newImg/events/a4.svg';
+// import bannerBgBas from '@/assets/newImg/events/a4.svg';
 
 import bannerBgLinea from '@/assets/newImg/events/bannerBgLinea.svg';
 import bannerBgEthSign from '@/assets/newImg/events/bannerBgEthSign.svg';
@@ -29,7 +29,7 @@ var settings = {
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
-  // autoplay: true,// TODO!!!
+  autoplay: true,
   pauseOnHover: true,
   nextArrow: <></>,
   prevArrow: <></>,

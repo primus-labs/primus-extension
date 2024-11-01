@@ -55,9 +55,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
   const handleDisConnect = useCallback(
     async (e, wk, addrK) => {
       e.stopPropagation();
-      // console.log('222', wk, addrK);
-      
-      
+
       const newrecords = { ...connectedWallets };
       delete newrecords[wk][addrK];
       if (Object.keys(newrecords[wk]).length === 0) {

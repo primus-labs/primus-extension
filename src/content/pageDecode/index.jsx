@@ -379,6 +379,7 @@ function PadoCard() {
     gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
     mexc: chrome.runtime.getURL(`iconDataSourceMEXC.png`),
     huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
+    chatgpt: chrome.runtime.getURL(`iconDataSourceX.svg`),
   };
   var iconDataSource = iconMap[activeRequest.dataSource];
 

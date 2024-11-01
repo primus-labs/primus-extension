@@ -120,7 +120,6 @@ class WebOKX extends WebExchange {
       new Date().getTime();
     params.method = 'GET';
     const res = await this.request(params);
-    console.log('333-getTotalAccountTokenMap', res);
     res.data.crypto.balances.forEach((i) => {
       const { currency, balance } = i;
       const price = this.tokenPriceMap[currency] || ZERO + '';
@@ -135,7 +134,6 @@ class WebOKX extends WebExchange {
         };
       }
     });
-    console.log('333-getTotalAccountTokenMap2', this.totalAccountTokenMap);
     return this.totalAccountTokenMap;
   }
   async getTotalAccountBalance() {

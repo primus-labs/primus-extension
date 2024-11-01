@@ -43,7 +43,7 @@ window.addEventListener('message', (e) => {
     }
     
     // if (name === 'beforeunload') {
-    //   console.log('333-content-padoZKAttestationJSSDK-beforeunload')
+    //   console.log('sdk-content-padoZKAttestationJSSDK-beforeunload')
     //   var msgObj = {
     //     type: 'pageDecode',
     //     name: 'cancel',
@@ -96,11 +96,14 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         name: 'getAttestationRes',
         params,
       });
-      // console.log('333-content-sdk-receive-getAttestation', params);
+      console.log('padoExtension-content-sdk-receive-getAttestation', params);
     }
 
     if (name === 'startAttestationRes') {
-      console.log('333-content-sdk-receive-startAttestationRes', params);
+      console.log(
+        'padoExtension-content-sdk-receive-startAttestationRes',
+        params
+      );
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
@@ -110,7 +113,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 
     if (name === 'sendToChainRes') {
-      // console.log('333-content-sdk-receive-sendToChainRes', params);
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
