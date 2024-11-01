@@ -261,18 +261,20 @@ export const pageDecodeMsgListener = async (
         }
       };
       isReadyRequest = await checkReadyStatusFn();
-      console.log('web requests are captured');
-      chrome.tabs.sendMessage(
-        dataSourcePageTabId,
-        {
-          type: 'pageDecode',
-          name: 'webRequestIsReady',
-          params: {
-            isReady: isReadyRequest,
+      if (isReadyRequest) {
+        console.log('web requests are captured');
+        chrome.tabs.sendMessage(
+          dataSourcePageTabId,
+          {
+            type: 'pageDecode',
+            name: 'webRequestIsReady',
+            params: {
+              isReady: isReadyRequest,
+            },
           },
-        },
-        function (response) {}
-      );
+          function (response) {}
+        );
+      }
     };
 
     if (name === 'init') {
@@ -282,7 +284,9 @@ export const pageDecodeMsgListener = async (
         currentWindow: true,
       });
       currExtentionId = currentWindowTabs[0]?.id;
-      const interceptorUrlArr = requests.filter((r) => r.name !== 'first').map((i) => i.url);
+      const interceptorUrlArr = requests
+        .filter((r) => r.name !== 'first')
+        .map((i) => i.url);
       const aaa = await chrome.storage.local.get(interceptorUrlArr);
       await chrome.storage.local.remove(interceptorUrlArr);
       const bbb = await chrome.storage.local.get(interceptorUrlArr);
@@ -300,7 +304,7 @@ export const pageDecodeMsgListener = async (
       const tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });
-      dataSourcePageTabId = tabCreatedByPado.id
+      dataSourcePageTabId = tabCreatedByPado.id;
       console.log('222pageDecode dataSourcePageTabId:', dataSourcePageTabId);
       const injectFn = async () => {
         await chrome.scripting.executeScript({
@@ -389,7 +393,7 @@ export const pageDecodeMsgListener = async (
       }
       let aligorithmParams = await assembleAlgorithmParams(form, password);
       const formatRequests = [];
-      for (const r of requests) {
+      for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
           continue;
         }
@@ -538,7 +542,6 @@ export const pageDecodeMsgListener = async (
       });
     }
 
-    
     if (name === 'close' || name === 'cancel') {
       try {
         await chrome.tabs.update(currExtentionId, {
@@ -547,7 +550,10 @@ export const pageDecodeMsgListener = async (
       } catch (error) {
         console.log('cancel error:', error);
       }
-      await chrome.tabs.remove(dataSourcePageTabId);
+      if (dataSourcePageTabId) {
+        await chrome.tabs.remove(dataSourcePageTabId);
+      }
+      activeTemplate = {};
       handlerForSdk(processAlgorithmReq, 'cancel');
     }
     if (name === 'end') {
@@ -561,6 +567,7 @@ export const pageDecodeMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+        activeTemplate = {};
       }
     }
   } else {
@@ -571,6 +578,7 @@ export const pageDecodeMsgListener = async (
           request,
           function (response) {}
         );
+        activeTemplate = {};
       }
     }
   }

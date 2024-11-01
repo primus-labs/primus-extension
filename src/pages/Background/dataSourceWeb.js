@@ -206,7 +206,7 @@ export const dataSourceWebMsgListener = async (
     };
     const formatRequestsFn = async () => {
       const formatRequests = [];
-      for (const r of requests) {
+      for (const r of JSON.parse(JSON.stringify(requests))) {
         const { headers, cookies, body, url } = r;
         const formatUrlKey = url;
         const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
@@ -363,6 +363,7 @@ export const dataSourceWebMsgListener = async (
         active: true,
       });
       await chrome.tabs.remove(tabCreatedByPado.id);
+      activeTemplate = {};
     }
     if (name === 'end') {
       if (tabCreatedByPado) {
@@ -385,6 +386,7 @@ export const dataSourceWebMsgListener = async (
           request,
           function (response) {}
         );
+        activeTemplate = {};
       }
     }
   }

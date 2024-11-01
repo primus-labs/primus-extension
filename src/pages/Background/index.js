@@ -223,7 +223,9 @@ const processAlgorithmReq = async (message, port) => {
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'init',
-        params: params,
+        params: {
+          errLogUrl: 'wss://api.padolabs.org/logs',
+        },
       });
       break;
     case 'getAttestation':

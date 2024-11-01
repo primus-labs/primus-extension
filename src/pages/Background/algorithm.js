@@ -136,6 +136,13 @@ export const algorithmMsgListener = async (
           hasGetTwitterScreenName,
           undefined
         );
+        await chrome.storage.local.remove([
+          'padoZKAttestationJSSDKBeginAttest',
+          'padoZKAttestationJSSDKWalletAddress',
+          'padoZKAttestationJSSDKAttestationPresetParams',
+          'padoZKAttestationJSSDKXFollowerCount',
+          'activeRequestAttestation',
+        ]);
       }
       let resParams = { result };
       if (!result) {
