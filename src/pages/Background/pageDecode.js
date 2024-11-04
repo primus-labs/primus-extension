@@ -14,9 +14,6 @@ let operationType = null;
 let RequestsHasCompleted = false;
 
 const resetVarsFn = () => {
-  dataSourcePageTabId = null
-  activeTemplate = {};
-  currExtentionId = null
   isReadyRequest = false;
   operationType = null;
   RequestsHasCompleted = false;
@@ -75,6 +72,7 @@ export const pageDecodeMsgListener = async (
 ) => {
   const { name, params, operation } = request;
   if (name === 'init') {
+    activeTemplate = {};
     activeTemplate = params;
   }
   if (activeTemplate.dataSource) {
@@ -529,7 +527,6 @@ export const pageDecodeMsgListener = async (
             const fieldArr = originSubConditionItem.field.split('.');
             fieldArr[2] = mK;
             const parts = requestRes.mapping[mK]?.message?.content?.parts;
-            debugger;
             if (parts && parts[0]) {
               formatResponse[1].conditions.subconditions.push({
                 ...originSubConditionItem,

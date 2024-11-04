@@ -223,7 +223,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
     ? new URL(activeRequest.jumpTo).origin
     : activeRequest?.datasourceTemplate.host;
 
-  var uiTemplate = activeRequest.uiTemplate;
+  // var uiTemplate = activeRequest.uiTemplate;
   const [loadingTxt, setLoadingTxt] = useState('Connecting to PADO node...');
   const [errorTxtSelf, setErrorTxtSelf] = useState({
     sourcePageTip: 'Error Message.',

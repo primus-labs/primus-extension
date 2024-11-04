@@ -221,7 +221,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
         });
       } else if (verificationContent === 'Spot 30-Day Trade Vol') {
         verificationValue = attestationParameters[0];
-      }
+      } else if (attestationTypeID === '19') {
+        verificationValue = 'Account owner';
+      } 
 
       activeAttestationParams = {
         dataSourceId: activeWebProofTemplate.dataSource,
@@ -244,9 +246,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
         const lastResponseConditions = lastResponse.conditions;
         const lastResponseConditionsSubconditions =
           lastResponseConditions.subconditions;
-        
-        if (['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
-              activeAttestationParams.verificationContent) ){
+
+        if (
+          ['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
+            activeAttestationParams.verificationContent
+          )
+        ) {
           // change verification value
           lastResponseConditions.value =
             activeAttestationParams.verificationValue;
@@ -276,7 +281,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
         activeAttestationParams.attestationType = 'Social Connections';
         activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
           attestationParameters[0];
-      }
+      } else if (attestationTypeID === '19') {
+        activeAttestationParams.attestationType = 'Humanity Verification';
+      } 
 
       chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
       await chrome.storage.local.set({
@@ -328,7 +335,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ]);
     const attestTipMap =
       JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
-    
+
     const activeAttestationParams = JSON.parse(
       padoZKAttestationJSSDKAttestationPresetParams
     );
@@ -450,9 +457,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
           },
         };
         eventInfo.rawData.attestOrigin = curCredential.attestOrigin;
-        
+
         if (upChainRes) {
-          
           if (upChainRes.error) {
             // if (upChainRes.error === 1) {
             //   sendToChainResult = false;
@@ -476,15 +482,13 @@ export const padoZKAttestationJSSDKMsgListener = async (
             const curEnvChainList = isTestNet
               ? Object.values(EASINFOMAP['development'])
               : ONCHAINLIST;
-            const currentChainObj = curEnvChainList.find(
-              (i) => {
-                if (CURENV === 'production' && chainName === 'Linea Mainnet') {
-                  return 'Linea Goerli' === i.title;
-                } else {
-                  return upchainNetwork === i.title;
-                }
+            const currentChainObj = curEnvChainList.find((i) => {
+              if (CURENV === 'production' && chainName === 'Linea Mainnet') {
+                return 'Linea Goerli' === i.title;
+              } else {
+                return upchainNetwork === i.title;
               }
-            );
+            });
             currentChainObj.attestationUID = upChainRes;
             currentChainObj.submitAddress = address;
             newProvided.push(currentChainObj);
@@ -499,7 +503,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
             await chrome.storage.local.set({
               credentials: JSON.stringify(cObj),
             });
-            
           }
 
           if (curCredential.reqType === 'web') {
@@ -513,10 +516,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
                     mysteryBoxRewards: '1',
                   });
                 }
-              } 
-            } catch {
-
-            }
+              }
+            } catch {}
           }
           // sendToChainResult = true;
           // sendToChainMsg = 'Your attestation is recorded on-chain!';
@@ -535,7 +536,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
           });
           eventReport(eventInfo);
         }
-      } catch (e){
+      } catch (e) {
         console.log('sdk-bg-sdk-receive-sendToChainRes-catch', e);
       }
     }
