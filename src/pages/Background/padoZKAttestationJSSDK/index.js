@@ -223,7 +223,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         verificationValue = attestationParameters[0];
       } else if (attestationTypeID === '19') {
         verificationValue = 'Account owner';
-      } 
+      }
 
       activeAttestationParams = {
         dataSourceId: activeWebProofTemplate.dataSource,
@@ -283,7 +283,13 @@ export const padoZKAttestationJSSDKMsgListener = async (
           attestationParameters[0];
       } else if (attestationTypeID === '19') {
         activeAttestationParams.attestationType = 'Humanity Verification';
-      } 
+        if (attestationParameters && attestationParameters[0]) {
+          activeAttestationParams.chatGPTExpression = {
+            expression: attestationParameters[1] || 'EQUALS', //CONTAINS OR EQUALS
+            value: attestationParameters[0],
+          };
+        }
+      }
 
       chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
       await chrome.storage.local.set({

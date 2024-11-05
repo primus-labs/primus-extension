@@ -17,7 +17,7 @@ const resetVarsFn = () => {
   isReadyRequest = false;
   operationType = null;
   RequestsHasCompleted = false;
-}
+};
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
@@ -246,7 +246,7 @@ export const pageDecodeMsgListener = async (
         const storageObj = await chrome.storage.local.get(interceptorUrlArr);
         const storageArr = Object.values(storageObj);
         if (storageArr.length === interceptorUrlArr.length) {
-          let chatgptHasLogin = false
+          let chatgptHasLogin = false;
           const f = interceptorRequests.every(async (r) => {
             // const storageR = Object.keys(storageObj).find(
             //   (sRKey) => sRKey === r.url
@@ -499,6 +499,10 @@ export const pageDecodeMsgListener = async (
           }
         }
       } else if (dataSource === 'chatgpt') {
+        const { chatGPTExpression } = activeTemplate;
+        if (chatGPTExpression) {
+          aligorithmParams.chatGPTExpression = chatGPTExpression;
+        }
         const tabs = await chrome.tabs.query({ currentWindow: true });
         const dataSourcePageTabObj = tabs.find(
           (i) => i.id === dataSourcePageTabId
@@ -514,7 +518,7 @@ export const pageDecodeMsgListener = async (
         const storageRes = await chrome.storage.local.get(requestUrl);
         try {
           const requestRes = await customFetch(
-          `https://chatgpt.com/backend-api/conversation/${chatgptQuestionSessionId}`,
+            `https://chatgpt.com/backend-api/conversation/${chatgptQuestionSessionId}`,
             {
               method: 'GET',
               headers: JSON.parse(storageRes[requestUrl]).headers,
@@ -536,7 +540,7 @@ export const pageDecodeMsgListener = async (
             }
           });
         } catch (e) {
-          console.log('fetch chatgpt conversation error', e)
+          console.log('fetch chatgpt conversation error', e);
         }
       }
 
@@ -620,7 +624,7 @@ export const pageDecodeMsgListener = async (
       if (dataSourcePageTabId) {
         await chrome.tabs.remove(dataSourcePageTabId);
       }
-      resetVarsFn()
+      resetVarsFn();
       handlerForSdk(processAlgorithmReq, 'cancel');
     }
     if (name === 'end') {
@@ -634,7 +638,7 @@ export const pageDecodeMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-        resetVarsFn()
+        resetVarsFn();
       }
     }
   } else {
@@ -645,7 +649,7 @@ export const pageDecodeMsgListener = async (
           request,
           function (response) {}
         );
-        resetVarsFn()
+        resetVarsFn();
       }
     }
   }

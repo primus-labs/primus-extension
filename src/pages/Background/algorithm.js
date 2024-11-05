@@ -6,7 +6,6 @@ import { getDataSourceAccount } from './dataSourceUtils';
 import { schemaNameFn, regenerateAttest } from './padoZKAttestationJSSDK/utils';
 import { padoExtensionVersion } from '@/config/constants';
 
-
 export const algorithmMsgListener = async (
   message,
   sender,
@@ -89,7 +88,7 @@ export const algorithmMsgListener = async (
           result: true,
           data: {
             attestationTypeIdList,
-            padoExtensionVersion
+            padoExtensionVersion,
           },
         },
       });
@@ -299,71 +298,80 @@ export const algorithmMsgListener = async (
             sourcePageTip: '',
           };
           let errorCode;
-
-          if (parsedActiveRequestAttestation.reqType === 'web') {
-            if (!content.signature && content.encodedData) {
-              errorCode = '00103';
-              // linea event had bund
+          if (!content.signature && content.encodedData) {
+            if (content.extraData) {
+              // chatgpt input error
+              errorCode = JSON.parse(content.extraData).errorCode + '';
+              Object.assign(msgObj, {
+                type: '',
+                desc: JSON.parse(content.extraData).errorMsg,
+                sourcePageTip: JSON.parse(content.extraData).errorMsg,
+              });
             } else {
-              if (
-                activeAttestationParams?.verificationContent ===
-                  'Assets Proof' &&
-                activeAttestationParams?.dataSourceId === 'binance'
-              ) {
-                let type, desc, title;
-                errorCode = '00102';
-                type = attestTipMap[errorCode].type;
-                desc = attestTipMap[errorCode].desc;
-                title = attestTipMap[errorCode].title;
-                Object.assign(msgObj, {
-                  type,
-                  desc,
-                  sourcePageTip: title,
-                });
-              } else {
-                errorCode = '00104';
-                Object.assign(msgObj, {
-                  type: attestTipMap[errorCode].type,
-                  desc: attestTipMap[errorCode].desc,
-                  sourcePageTip: attestTipMap[errorCode].title,
-                });
-              }
+              errorCode = '00103'; // linea event had bund
+              Object.assign(msgObj, {
+                type: attestTipMap[errorCode].type,
+                desc: attestTipMap[errorCode].desc,
+                sourcePageTip: attestTipMap[errorCode].title,
+              });
             }
-            pageDecodeMsgListener(
-              {
-                name: 'end',
-                params: {
-                  result: 'warn',
-                  failReason: { ...msgObj },
-                },
-              },
-              sender,
-              sendResponse,
-              USERPASSWORD,
-              fullscreenPort,
-              hasGetTwitterScreenName
-            );
-            await chrome.storage.local.remove([
-              'padoZKAttestationJSSDKBeginAttest',
-              'padoZKAttestationJSSDKWalletAddress',
-              'padoZKAttestationJSSDKAttestationPresetParams',
-              'padoZKAttestationJSSDKXFollowerCount',
-              'activeRequestAttestation',
-            ]);
-            let resParams = { result: false };
-            if (!resParams.result) {
-              resParams.errorData = {
-                title: msgObj.title,
-                desc: msgObj.desc,
-                code: errorCode,
-              };
-            }
-            chrome.tabs.sendMessage(dappTabId, {
-              type: 'padoZKAttestationJSSDK',
-              name: 'startAttestationRes',
-              params: resParams,
+          } else if (
+            activeAttestationParams?.verificationContent === 'Assets Proof' &&
+            activeAttestationParams?.dataSourceId === 'binance'
+          ) {
+            let type, desc, title;
+            errorCode = '00102';
+            type = attestTipMap[errorCode].type;
+            desc = attestTipMap[errorCode].desc;
+            title = attestTipMap[errorCode].title;
+            Object.assign(msgObj, {
+              type,
+              desc,
+              sourcePageTip: title,
+            });
+          } else {
+            errorCode = '00104';
+            Object.assign(msgObj, {
+              type: attestTipMap[errorCode].type,
+              desc: attestTipMap[errorCode].desc,
+              sourcePageTip: attestTipMap[errorCode].title,
             });
           }
+
+          pageDecodeMsgListener(
+            {
+              name: 'end',
+              params: {
+                result: 'warn',
+                failReason: { ...msgObj },
+              },
+            },
+            sender,
+            sendResponse,
+            USERPASSWORD,
+            fullscreenPort,
+            hasGetTwitterScreenName
+          );
+          await chrome.storage.local.remove([
+            'padoZKAttestationJSSDKBeginAttest',
+            'padoZKAttestationJSSDKWalletAddress',
+            'padoZKAttestationJSSDKAttestationPresetParams',
+            'padoZKAttestationJSSDKXFollowerCount',
+            'activeRequestAttestation',
+          ]);
+          let resParams = { result: false };
+          if (!resParams.result) {
+            resParams.errorData = {
+              title: msgObj.title,
+              desc: msgObj.desc,
+              code: errorCode,
+            };
+          }
+          chrome.tabs.sendMessage(dappTabId, {
+            type: 'padoZKAttestationJSSDK',
+            name: 'startAttestationRes',
+            params: resParams,
+          });
 
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
             status: 'FAILED',
