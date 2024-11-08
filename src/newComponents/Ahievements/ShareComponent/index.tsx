@@ -4,7 +4,7 @@ import TokenPie from '@/newComponents/Home/DataSourcesModule/TokenPie';
 import PButton from '@/newComponents/PButton';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
-import padoLogo from '@/assets/newImg/achievements/pado.svg';
+import primusLogo from '@/assets/newImg/achievements/primus.svg';
 import lineLogo from '@/assets/newImg/achievements/line.svg';
 import greenCircle from '@/assets/newImg/achievements/greenCircle.svg';
 import whiteCircle from '@/assets/newImg/achievements/whiteCircle.svg';
@@ -155,10 +155,10 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                     <img className={'green-circle'} src={greenCircle}></img>
                     <img className={'white-circle'} src={whiteCircle}></img>
                     <img className={'blue-rectangle'} src={blueRect}></img>
-                    <img className="logo" src={padoLogo}></img>
+                    <img className="logo" src={primusLogo}></img>
                     {shareType === 'score' && (
                       <div className={'shareContent'}>
-                        <div className="title">My achievements in PADO</div>
+                        <div className="title">My achievements in Primus</div>
                         <div
                           style={{
                             fontWeight: '600',
@@ -196,7 +196,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                     {shareType === 'referralCode' && (
                       <div className={'shareContent'}>
                         <div className="title">
-                          Sign up to PADO and use my referral code to earn extra
+                          Sign up to Primus and use my referral code to earn extra
                           points!
                         </div>
                         <div
@@ -220,10 +220,10 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                               scoreShareProps.attestationType as string
                             ].shortName
                           }{' '}
-                          attestation on PADO.
+                          attestation on Primus.
                         </div>
                         <div className="desc">
-                          Sign up to PADO today and use my referral code{' '}
+                          Sign up to Primus today and use my referral code{' '}
                           <span className="inviteCode">
                             {scoreShareProps.referralCode}
                           </span>{' '}
@@ -243,7 +243,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                           'https://chromewebstore.google.com/detail/pado/oeiomhmbaapihbilkfkhmlajkeegnjhe'
                         }
                       >
-                        Download PADO
+                        Download Primus Extension
                         <img src={lineLogo} style={{ marginLeft: '5px' }} />
                       </a>
                     </div>
@@ -252,9 +252,9 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                 {shareType === 'data_dashboard' && (
                   <div className={'shareContent data_dashboard'}>
                     <div className="topCon">
-                      <img className="left" src={padoLogo}></img>
+                      <img className="left" src={primusLogo}></img>
                       <div className="right">
-                        <div className="title">Checkout My Balance on PADO</div>
+                        <div className="title">Checkout My Balance on Primus</div>
                         <div className="desc">
                           My referral code:{' '}
                           <div className="inviteCode">
@@ -265,7 +265,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
 
                         <PButton
                           type="text"
-                          text="Download PADO"
+                          text="Download Primus Extension"
                           className="downloadBtn"
                           onClick={handleDownload}
                         />
