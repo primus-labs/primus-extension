@@ -137,6 +137,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       walletAddress,
       dappSymbol,
       attestationParameters,
+      algorithmType
       // tokenSymbol,
       // assetsBalance,
       // followersNO,
@@ -231,6 +232,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         verificationValue,
         fetchType: 'Web',
         attestOrigin: dappSymbol,
+        algorithmType,
       };
       acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
       activeAttestationParams.account = acc;

@@ -394,7 +394,7 @@ export const pageDecodeMsgListener = async (
       return prev;
     }, {});*/
 
-      const { category, requestid } = activeTemplate;
+      const { category, requestid, algorithmType } = activeTemplate;
 
       const form = {
         source: dataSource,
@@ -402,6 +402,7 @@ export const pageDecodeMsgListener = async (
         label: null,
         exUserId: null,
         requestid,
+        algorithmType: algorithmType || 'mpctls',
       };
 
       // console.log(WorkerGlobalScope.location)

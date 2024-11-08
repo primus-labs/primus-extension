@@ -46,6 +46,8 @@ export const schemaNameFn = (networkName) => {
     Name = 'EAS-Sepolia';
   } else if (formatNetworkName && formatNetworkName.startsWith('Arbitrum')) {
     Name = 'EAS-Ethereum';
+  } else if (formatNetworkName && formatNetworkName.startsWith('Holesky')) {
+    Name = 'Verax-Holesky';
   } else {
     Name = 'EAS';
     // Name = 'EAS-Ethereum';
