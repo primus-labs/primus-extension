@@ -242,7 +242,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           const msgId = addMsg({
             type: 'info',
             title: 'Not qualified',
-            desc: `No GM messages found for ${checkRsp.result.discordName} on PADO Discord.`,
+            desc: `No GM messages found for ${checkRsp.result.discordName} on Primus Discord.`,
             link: '',
           });
           setTimeout(() => {
@@ -854,7 +854,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           title = 'Not qualified';
           const res = await getDataSourceData('discord');
           const discordInfo = JSON.parse(res['discord']);
-          msg = `No GM messages found for ${discordInfo.userName} on PADO Discord.`;
+          msg = `No GM messages found for ${discordInfo.userName} on Primus Discord.`;
         }
 
         if (mc === '-1100012') {
