@@ -18,8 +18,8 @@ import page2 from '@/assets/newImg/guide/page2.png';
 import page3 from '@/assets/newImg/guide/page3.png';
 import page4 from '@/assets/newImg/guide/page4.png';
 import page5 from '@/assets/newImg/guide/page5.png';
-import iconLogoPado from '@/assets/newImg/guide/iconLogoPado.svg';
-import iconLogoPadoForDark from '@/assets/newImg/guide/iconLogoPadoForDark.svg';
+import iconLogoPrimus from '@/assets/newImg/guide/iconLogoPrimus.svg';
+import iconLogoPrimusForDark from '@/assets/newImg/guide/iconLogoPrimusForDark.svg';
 import './home.scss';
 import useCreateAccount from '@/hooks/useCreateAccount';
 
@@ -169,7 +169,7 @@ const Home = memo(() => {
       {step === 0 && (
         <div className="animationWrapper animate__animated animate__fadeIn">
           <img
-            src={lastTheme === 'dark' ? iconLogoPadoForDark : iconLogoPado}
+            src={lastTheme === 'dark' ? iconLogoPrimusForDark : iconLogoPrimus}
             alt=""
           />
           {/* <i></i>
