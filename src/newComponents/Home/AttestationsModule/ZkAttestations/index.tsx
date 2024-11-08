@@ -89,7 +89,7 @@ const Overview = memo(() => {
   return (
     <div className="homeZkattestations">
       <div className="title">
-        <span>zkAttestations</span>
+        <span>Attestations</span>
       </div>
       <div className="content">
         <div className="top">

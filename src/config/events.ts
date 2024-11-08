@@ -16,7 +16,7 @@ export const EVENTNAMEMAP = {
   [BASEVENTNAME]: 'BAS Event',
   [LINEAEVENTNAME]: 'Linea Voyage',
   [SCROLLEVENTNAME]: 'Scroll zkAttestation',
-  [LUCKYDRAWEVENTNAME]: 'PADO Lucky Draw',
+  [LUCKYDRAWEVENTNAME]: 'Lucky Draw',
   [EARLYBIRDNFTEVENTNAME]: 'Early Bird NFT',
 };
 export const eventMetaMap = {
@@ -29,13 +29,13 @@ export const eventMetaMap = {
     periodType: '1',
 
     // chainDesc: 'BAS XPS',
-    // gift: '100 PADO points',
+    // gift: '100 points',
     points: [
       {
         pointIconFont: 'icon-iconBlockChain',
         pointDesc: 'BAS XPS',
       },
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
+      { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
     ],
 
     nameInAttestation: 'BAS event-specific',
@@ -64,16 +64,16 @@ export const eventMetaMap = {
     icon: iconNetworkLinea,
     title: 'The Linea Voyage: Proof of Humanity',
     longDesc:
-      "PADO's zkAttestation capability enables the secure and private application of off-chain data to the blockchain. Through this collaboration, we aim to familiarize users with zkAttestation and enhance the on-chain ecosystem of Linea.",
+      "Primus' data verification capability enables the secure and private application of off-chain data to the blockchain. Through this collaboration, we aim to familiarize users with data verification and enhance the on-chain ecosystem of Linea.",
     periodType: '1',
     // chainDesc: 'Linea Voyage XP',
-    // gift: '100 PADO points',
+    // gift: '100 points',
     points: [
       {
         pointIconFont: 'icon-iconBlockChain',
         pointDesc: 'Linea Voyage XP',
       },
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
+      { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
     ],
 
     nameInAttestation: 'Linea voyage specific',
@@ -111,21 +111,21 @@ export const eventMetaMap = {
   [EARLYBIRDNFTEVENTNAME]: {
     combineType: '0',
     // icon: iconDataSourceBinance,
-    title: 'PADO Early Bird NFT Rewards',
+    title: 'Early Bird NFT Rewards',
     longDesc:
-      'For trying things out, make attestation, submit it to Linea, and share your referral code. This will grant you the eligibility to mint the PADO early bird NFT.',
+      'For trying things out, make attestation, submit it to Linea, and share your referral code. This will grant you the eligibility to mint the early bird NFT.',
     periodType: '1',
     // chainDesc: 'Early Bird NFT',
-    // gift: '100 PADO points',
+    // gift: '100 points',
     points: [
       {
         pointIconFont: 'icon-iconBlockChain',
-        pointDesc: 'PADO Early Birld NFT',
+        pointDesc: 'Early Birld NFT',
       },
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
+      { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
     ],
     nameInAttestation: 'Early Bird NFT',
-    picTxt: 'PADO Early Bird NFT Rewards',
+    picTxt: 'Early Bird NFT Rewards',
     desc: 'Complete an attestation with any kind of Asset Certificate.',
     chainIds: [], // TODOnewui ???
     taskMap: {
@@ -150,8 +150,8 @@ export const eventMetaMap = {
     periodType: '1',
 
     chainDesc: 'Linea Voyage XP',
-    gift: '100 PADO points',
-    points: [{ pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' }],
+    gift: '100 points',
+    points: [{ pointIconFont: 'icon-iconGift', pointDesc: '100 points' }],
 
     nameInAttestation: 'SignX Program',
     picTxt: 'SignX Program',

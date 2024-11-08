@@ -45,7 +45,7 @@ const eventIntroMap = {
     ],
     points: [
       { pointIconFont: 'icon-iconBlockChain', pointDesc: 'LXP' },
-      { pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' },
+      { pointIconFont: 'icon-iconGift', pointDesc: '100 Points' },
     ],
     bg: bannerBgLinea,
   },
@@ -58,17 +58,17 @@ const eventIntroMap = {
     ],
     points: [
       { pointIconFont: 'icon-iconBlockChain', pointDesc: 'BAS XP' },
-      { pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' },
+      { pointIconFont: 'icon-iconGift', pointDesc: '100 Points' },
     ],
     bg: bannerBgBas,
   },
-  [ETHSIGNEVENTNAME]: {
+  /*[ETHSIGNEVENTNAME]: {
     id: ETHSIGNEVENTNAME,
     title: 'SignX Program',
     desc: ['Attest your X followers, building trust in trustless systems.'],
     points: [{ pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' }],
     bg: bannerBgEthSign,
-  },
+  },*/
 };
 const PBack: React.FC<PBackProps> = memo(({}) => {
   const navigate = useNavigate();

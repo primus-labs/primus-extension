@@ -38,7 +38,7 @@ const Overview = memo(() => {
     },
     zkAttestation: {
       id: 'zkAttestation',
-      title: 'zkAttestation',
+      title: 'Attestations',
       num: 0,
       operationName: 'Create zkAttestation',
       link: '/zkAttestation',

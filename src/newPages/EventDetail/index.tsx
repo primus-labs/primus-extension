@@ -25,7 +25,7 @@ type StepItem = {
 const stepList: StepItem[] = [
   {
     id: 1,
-    title: 'Follow PADO social medial',
+    title: 'Follow Primus social medial',
     finished: false,
     tasksProcess: {
       total: 2,

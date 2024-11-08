@@ -55,7 +55,7 @@ const socialTaskMap = {
   1: {
     id: '1',
     dataSourceId: 'x',
-    title: 'Follow @padolabs',
+    title: 'Follow @primus_labs',
     subTitle: 'Authorize twitter and follow ',
   },
   2: {
@@ -69,7 +69,7 @@ const socialTaskMap = {
 const lineaTaskMap: { [propName: string]: StepItem } = {
   follow: {
     id: 'follow',
-    title: 'Follow PADO social medial',
+    title: 'Follow Primus social medial',
     finished: false,
     tasksProcess: {
       total: 2,
@@ -113,7 +113,7 @@ const lineaTaskMap: { [propName: string]: StepItem } = {
 const basTaskMap: { [propName: string]: StepItem } = {
   follow: {
     id: 'follow',
-    title: 'Follow PADO social medial',
+    title: 'Follow Primus social medial',
     finished: false,
     tasksProcess: {
       total: 2,
@@ -126,7 +126,7 @@ const basTaskMap: { [propName: string]: StepItem } = {
   },
   attestation: {
     id: 'attestation',
-    title: 'Complete zkAttestations',
+    title: 'Complete Attestation Tasks',
     finished: false,
     tasksProcess: {
       total: 4,
@@ -156,7 +156,7 @@ const basTaskMap: { [propName: string]: StepItem } = {
 const earlyBirdNftTskMap = {
   follow: {
     id: 'follow',
-    title: 'Follow PADO social medial',
+    title: 'Follow Primus social medial',
     finished: false,
     tasksProcess: {
       total: 2,
@@ -196,7 +196,7 @@ const earlyBirdNftTskMap = {
   // },
   claim: {
     id: 'claim',
-    title: 'Claim PADO Early Bird NFT ',
+    title: 'Claim Early Bird NFT ',
     finished: false,
     tasksProcess: {
       total: 1,
@@ -208,7 +208,7 @@ const earlyBirdNftTskMap = {
 const ethSignTaskMap: { [propName: string]: StepItem } = {
   follow: {
     id: 'follow',
-    title: 'Follow PADO social medial',
+    title: 'Follow Primus social medial',
     finished: false,
     tasksProcess: {
       total: 2,

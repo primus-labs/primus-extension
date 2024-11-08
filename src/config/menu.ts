@@ -29,7 +29,7 @@ export const menuList: NavItem[] = [
     link: '/dataDashboard',
   },
   {
-    label: 'zkAttestation',
+    label: 'Attestation',
     value: 'zkAttestation',
     iconName: 'icon-iconMenuZkAttestation',
     link: '/zkAttestation',

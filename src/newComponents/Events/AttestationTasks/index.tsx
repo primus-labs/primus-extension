@@ -35,7 +35,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       x: {
         id: '1',
         dataSourceId: 'x',
-        title: 'Follow @padolabs',
+        title: 'Follow @primus_labs',
         subTitle: 'Authorize twitter and follow ',
       },
       discord: {
