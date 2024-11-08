@@ -13,6 +13,8 @@ import { PADOADDRESS } from '@/config/envConstants';
 import { regenerateAttestation } from '@/services/api/cred';
 import { strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from '../dataSourceUtils';
+import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
+import { STARTOFFLINETIMEOUT } from '@/config/constants';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -189,6 +191,21 @@ export const padoZKAttestationJSSDKMsgListener = async (
       };
       attestBrevisFn(activeAttestationParams, dappTabId);
     } else {
+      let padoUrl;
+      if (algorithmType === "proxytls") {
+        padoUrl = await getZkPadoUrl();
+      } else {
+        padoUrl = await getPadoUrl();
+      }
+      const proxyUrl = await getProxyUrl();
+      chrome.runtime.sendMessage({
+        type: 'algorithm',
+        method: 'startOffline',
+        params: {offlineTimeout: STARTOFFLINETIMEOUT,
+                  padoUrl,
+                  proxyUrl,},
+      });
+
       verificationContent = Object.keys(ALLVERIFICATIONCONTENTTYPEEMAP).find(
         (k) => {
           const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
