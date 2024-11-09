@@ -70,7 +70,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["primus.js"],
-      "world": "MAIN"
+      "world": "MAIN",
+      "run_at": "document_start"
     }
   ]
 }
