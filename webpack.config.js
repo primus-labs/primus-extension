@@ -422,6 +422,11 @@ var options = {
           to: path.join(__dirname, 'build'),
           force: true,
         },
+        {
+          from: 'src/assets/img/iconDataSourceChatgpt.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
       ],
     }),
     new CopyWebpackPlugin({

@@ -16,6 +16,7 @@ import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
 import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.png';
+import iconDataSourceChatgpt from '@/assets/img/iconDataSourceChatgpt.svg';
 
 import Binance from '@/services/webdata/webexchange/webbinance';
 
@@ -277,7 +278,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'chatgpt',
     name: 'chatgpt',
     type: 'Social',
-    icon: iconDataSourceTwitter,
+    icon: iconDataSourceChatgpt,
     desc: 'Support fetching tweet & followers data for management and attestation creation.',
     unConnectTip:
       'You can fetch tweet & followers data from your X account to manage your data or create attestations.',

@@ -461,7 +461,7 @@ const Nav: React.FC<PButtonProps> = memo(
               <PClose onClick={onClose} />
               <main>
                 <header>
-                  <h1>Create zkAttestation</h1>
+                  <h1>Create Attestation</h1>
                   <h2>You're creating {type.toLowerCase()}.</h2>
                 </header>
                 {presets ? (

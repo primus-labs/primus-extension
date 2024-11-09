@@ -172,7 +172,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
         onClick={handleCancel}
       />
       <PButton
-        text="Confirm"
+        text="Start"
         type="secondary"
         className="confirmBtn"
         disabled={!isReadyFetch}
@@ -197,7 +197,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     </div>
   ) : (
     <div className="pado-extension-footer result ">
-      <PButton text="OK" type="text2" onClick={handleOK} />
+      <PButton text="Back" type="text2" onClick={handleOK} />
     </div>
   );
 }
@@ -379,7 +379,7 @@ function PadoCard() {
     gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
     mexc: chrome.runtime.getURL(`iconDataSourceMEXC.png`),
     huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
-    chatgpt: chrome.runtime.getURL(`iconDataSourceX.svg`),
+    chatgpt: chrome.runtime.getURL(`iconDataSourceChatgpt.svg`),
   };
   var iconDataSource = iconMap[activeRequest.dataSource];
 
@@ -479,7 +479,7 @@ function PadoCard() {
       </div>
       <div className="pado-extenstion-center">
         <div className="pado-extenstion-center-title">
-          PADO zkAttestation Process
+          Data Verification
         </div>
         <DescEl
           status={status}

@@ -79,7 +79,7 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
         periodType: '1',
 
         picTxt: 'Early Bird NFT Rewards',
-        title: 'BNBChain Attestation Alliance',
+        title: 'Early Bird Rewards',
         desc: 'Complete an attestation with any kind of Asset Certificate.',
         points: [
           {

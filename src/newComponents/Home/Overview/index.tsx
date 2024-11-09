@@ -40,7 +40,7 @@ const Overview = memo(() => {
       id: 'zkAttestation',
       title: 'Attestations',
       num: 0,
-      operationName: 'Create zkAttestation',
+      operationName: 'Create Attestation',
       link: '/zkAttestation',
     },
     achievement: {
