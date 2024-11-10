@@ -106,6 +106,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
+    processAlgorithmReq({
+      reqMethodName: 'start',
+    });
     const {
       activeRequestAttestation: lastActiveRequestAttestationStr,
       padoZKAttestationJSSDKDappTabId: dappTabId,
