@@ -60,6 +60,51 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
     }
   }
 };
+
+const extraRequestFn = async () => {
+  const tabs = await chrome.tabs.query({ currentWindow: true });
+  const dataSourcePageTabObj = tabs.find((i) => i.id === dataSourcePageTabId);
+  const pathname = new URL(dataSourcePageTabObj.url).pathname;
+  const arr = pathname.split('/');
+  const chatgptQuestionSessionId = arr[arr.length - 1];
+  const requestUrl = 'https://chatgpt.com/backend-api/conversation';
+  const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
+
+  const storageRes = await chrome.storage.local.get(requestUrl);
+  try {
+    const requestRes = await customFetch(fullRequestUrl, {
+      method: 'GET',
+      headers: JSON.parse(storageRes[requestUrl]).headers,
+    });
+
+    const messageIds = [];
+    Object.keys(requestRes.mapping).forEach((mK) => {
+      const parts = requestRes.mapping[mK]?.message?.content?.parts;
+      if (parts && parts[0]) {
+        messageIds.push(mK);
+      }
+    });
+
+    chrome.storage.local.set({
+      [`${requestUrl}-extra`]: JSON.stringify({
+        request: {
+          url: fullRequestUrl,
+          method: 'GET',
+          headers: {
+            host: 'chatgpt.com',
+          },
+        },
+        response: {
+          messageIds,
+        },
+      }),
+    });
+    RequestsHasCompleted = true;
+  } catch (e) {
+    console.log('fetch chatgpt conversation error', e);
+  }
+};
+
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -234,9 +279,13 @@ export const pageDecodeMsgListener = async (
       }
     };
     const onCompletedFn = async (details) => {
-      console.log('onCompletedFn', details);
-      RequestsHasCompleted = true;
-      checkWebRequestIsReadyFn();
+      if (dataSource === 'chatgpt') {
+        // chatgpt has only one requestUrl
+        console.log('onCompletedFn', details);
+        await extraRequestFn();
+        console.log('RequestsHasCompleted=', RequestsHasCompleted);
+        checkWebRequestIsReadyFn();
+      }
     };
     const checkWebRequestIsReadyFn = async () => {
       const checkReadyStatusFn = async () => {
@@ -504,45 +553,35 @@ export const pageDecodeMsgListener = async (
         if (chatGPTExpression) {
           aligorithmParams.chatGPTExpression = chatGPTExpression;
         }
-        const tabs = await chrome.tabs.query({ currentWindow: true });
-        const dataSourcePageTabObj = tabs.find(
-          (i) => i.id === dataSourcePageTabId
-        );
-        const pathname = new URL(dataSourcePageTabObj.url).pathname;
-        const arr = pathname.split('/');
-        const chatgptQuestionSessionId = arr[arr.length - 1];
-        const requestUrl = 'https://chatgpt.com/backend-api/conversation';
-        const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
-        formatRequests[1].url = fullRequestUrl;
-        formatRequests[1].method = 'GET';
-        formatRequests[1].headers.host = 'chatgpt.com';
-        const storageRes = await chrome.storage.local.get(requestUrl);
-        try {
-          const requestRes = await customFetch(
-            `https://chatgpt.com/backend-api/conversation/${chatgptQuestionSessionId}`,
-            {
-              method: 'GET',
-              headers: JSON.parse(storageRes[requestUrl]).headers,
-            }
-          );
-          let originSubConditionItem =
-            formatResponse[1].conditions.subconditions[0];
-          formatResponse[1].conditions.subconditions = [];
-          Object.keys(requestRes.mapping).forEach((mK) => {
-            const fieldArr = originSubConditionItem.field.split('.');
-            fieldArr[2] = mK;
-            const parts = requestRes.mapping[mK]?.message?.content?.parts;
-            if (parts && parts[0]) {
-              formatResponse[1].conditions.subconditions.push({
-                ...originSubConditionItem,
-                reveal_id: mK,
-                field: fieldArr.join('.'),
-              });
-            }
+        const extraRequestSK = `https://chatgpt.com/backend-api/conversation-extra`;
+        const extraSObj = await chrome.storage.local.get([extraRequestSK]);
+        const extraRequestInfo = extraSObj[extraRequestSK]
+          ? JSON.parse(extraSObj[extraRequestSK])
+          : {};
+        const {
+          request: {
+            url,
+            method,
+            headers: { host },
+          },
+          response: { messageIds },
+        } = extraRequestInfo;
+
+        formatRequests[1].url = url;
+        formatRequests[1].method = method;
+        formatRequests[1].headers.host = host;
+        let originSubConditionItem =
+          formatResponse[1].conditions.subconditions[0];
+        formatResponse[1].conditions.subconditions = [];
+        messageIds.forEach((mK) => {
+          const fieldArr = originSubConditionItem.field.split('.');
+          fieldArr[2] = mK;
+          formatResponse[1].conditions.subconditions.push({
+            ...originSubConditionItem,
+            reveal_id: mK,
+            field: fieldArr.join('.'),
           });
-        } catch (e) {
-          console.log('fetch chatgpt conversation error', e);
-        }
+        });
       }
 
       Object.assign(aligorithmParams, {
