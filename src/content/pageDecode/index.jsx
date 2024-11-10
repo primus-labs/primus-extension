@@ -335,7 +335,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
         <img src={iconSuc} alt="" />
         <span>{sucTxt}</span>
       </div>
-      <div className="value">Please return to PADO.</div>
+      <div className="value">Please return to Primus.</div>
     </div>
   ) : (
     <div className="descWrapper result fail">
@@ -348,7 +348,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
           <span className="errorCode">{errorTxtSelf?.code}</span>
         )}
       </div>
-      <div className="value">Please return to PADO and try again.</div>
+      <div className="value">Please return to Primus and try again.</div>
     </div>
   );
 }
@@ -479,7 +479,7 @@ function PadoCard() {
       </div>
       <div className="pado-extenstion-center">
         <div className="pado-extenstion-center-title">
-          Data Verification
+        Verify Your Data 
         </div>
         <DescEl
           status={status}

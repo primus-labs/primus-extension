@@ -49,7 +49,7 @@ function FooterEl({ status, setStatus, isReadyFetch = false, resultStatus }) {
         onClick={handleCancel}
       />
       <PButton
-        text="Confirm"
+        text="Start"
         type="secondary"
         className="confirmBtn"
         disabled={!isReadyFetch}
@@ -74,7 +74,7 @@ function FooterEl({ status, setStatus, isReadyFetch = false, resultStatus }) {
     </div>
   ) : (
     <div className="pado-extension-footer result ">
-      <PButton text="OK" type="text2" onClick={handleOK} />
+      <PButton text="Back" type="text2" onClick={handleOK} />
     </div>
   );
 }
@@ -155,7 +155,7 @@ function DescEl({ status, resultStatus }) {
         <img src={iconSuc} alt="" />
         <span>{sucTxt}</span>
       </div>
-      <div className="value">Please return to PADO.</div>
+      <div className="value">Please return to Primus.</div>
     </div>
   ) : (
     <div className="descWrapper result fail">
@@ -163,7 +163,7 @@ function DescEl({ status, resultStatus }) {
         <img src={iconFail} alt="" />
         <span>{errorTxt}</span>
       </div>
-      <div className="value">Please return to PADO and try again.</div>
+      <div className="value">Please return to Primus and try again.</div>
     </div>
   );
 }
@@ -309,7 +309,7 @@ function PadoCard() {
       </div>
       <div className="pado-extenstion-center">
         <div className="pado-extension-center-title">
-          PADO Data Connection Process
+        Connect Your Data
         </div>
         <DescEl status={status} resultStatus={resultStatus} />
       </div>
