@@ -57,8 +57,8 @@
     },
     {
       "matches": [
-        "https://twitter.com/intent/follow?screen_name=padolabs",
-        "https://x.com/intent/follow?screen_name=padolabs"
+        "https://twitter.com/intent/follow?screen_name=primus_labs",
+        "https://x.com/intent/follow?screen_name=primus_labs"
       ],
       "js": ["xFollow.js"]
     },

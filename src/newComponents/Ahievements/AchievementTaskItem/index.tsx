@@ -116,7 +116,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
 
     const onFollowX = useCallback(async () => {
       const targetUrl =
-        'https://x.com/intent/follow?screen_name=padolabs';
+        'https://x.com/intent/follow?screen_name=primus_labs';
       const openXUrlFn = async () => {
         const currentWindowTabs = await chrome.tabs.query({
           active: true,
