@@ -16,6 +16,7 @@ let formatAlgorithmParams = null;
 let preAlgorithmStatus = '';
 let preAlgorithmTimer = null;
 let preAlgorithmFlag = false;
+let chatgptHasLogin = false;
 console.log('1110-preAlgorithmTimer-init', preAlgorithmTimer);
 
 const resetVarsFn = () => {
@@ -26,6 +27,7 @@ const resetVarsFn = () => {
   preAlgorithmStatus = '';
   preAlgorithmTimer = null;
   preAlgorithmFlag = false;
+  chatgptHasLogin = false;
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
@@ -158,6 +160,7 @@ export const pageDecodeMsgListener = async (
       let formatUrlKey = currRequestUrl;
       let addQueryStr = '';
       let needQueryDetail = false;
+
       const isTarget = requests.some((r) => {
         if (r.queryParams && r.queryParams[0]) {
           const urlStrArr = currRequestUrl.split('?');
@@ -195,6 +198,26 @@ export const pageDecodeMsgListener = async (
           prev[name] = value;
           return prev;
         }, {});
+        if (
+          currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
+        ) {
+          chatgptHasLogin = !!formatHeader.Authorization;
+          if (dataSource === 'chatgpt') {
+            const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
+            console.log('1110-setUIStep-', tipStr);
+            chrome.tabs.sendMessage(
+              dataSourcePageTabId,
+              {
+                type: 'pageDecode',
+                name: 'setUIStep',
+                params: {
+                  step: tipStr,
+                },
+              },
+              function (response) {}
+            );
+          }
+        }
         // const requestHeadersObj = JSON.stringify(formatHeader);
         const storageObj = await chrome.storage.local.get([formatUrlKey]);
         const currRequestUrlStorage = storageObj[formatUrlKey];
@@ -294,6 +317,19 @@ export const pageDecodeMsgListener = async (
         // chatgpt has only one requestUrl
         console.log('onCompletedFn', details);
         await extraRequestFn();
+        console.log('1110-setUIStep-toVerify');
+        chrome.tabs.sendMessage(
+          dataSourcePageTabId,
+          {
+            type: 'pageDecode',
+            name: 'setUIStep',
+            params: {
+              step: 'toVerify',
+            },
+          },
+          function (response) {}
+        );
+
         await formatAlgorithmParamsFn();
         console.log('RequestsHasCompleted=', RequestsHasCompleted);
         preAlgorithmFn();
@@ -308,7 +344,6 @@ export const pageDecodeMsgListener = async (
         const storageObj = await chrome.storage.local.get(interceptorUrlArr);
         const storageArr = Object.values(storageObj);
         if (storageArr.length === interceptorUrlArr.length) {
-          let chatgptHasLogin = false;
           const f = interceptorRequests.every(async (r) => {
             // const storageR = Object.keys(storageObj).find(
             //   (sRKey) => sRKey === r.url
@@ -333,7 +368,6 @@ export const pageDecodeMsgListener = async (
                 !!sRrequestObj.headers.Cookie);
             return headersFlag && bodyFlag && cookieFlag;
           });
-
           const fl =
             dataSource === 'chatgpt'
               ? !!f &&
@@ -341,9 +375,12 @@ export const pageDecodeMsgListener = async (
                 RequestsHasCompleted &&
                 preAlgorithmStatus === '1'
               : f;
-          if (fl && dataSource !== 'chatgpt') {
-            if (!formatAlgorithmParams) {
-              await formatAlgorithmParamsFn();
+          if (fl) {
+            if (dataSource === 'chatgpt') {
+            } else {
+              if (!formatAlgorithmParams) {
+                await formatAlgorithmParamsFn();
+              }
             }
           }
           return fl;
@@ -391,7 +428,6 @@ export const pageDecodeMsgListener = async (
         form.requestid = activeTemplate.requestid;
       }
       let aligorithmParams = await assembleAlgorithmParams(form, password);
-      // debugger;
       const formatRequests = [];
       for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
@@ -507,7 +543,6 @@ export const pageDecodeMsgListener = async (
           });
         });
       }
-      // debugger;
       Object.assign(aligorithmParams, {
         reqType: 'web',
         host: host,
@@ -531,7 +566,6 @@ export const pageDecodeMsgListener = async (
         formatAlgorithmParams,
         activeTemplate
       );
-      // debugger
     };
 
     const preAlgorithmFn = async () => {
@@ -716,7 +750,7 @@ export const pageDecodeMsgListener = async (
           files: ['static/css/pageDecode.css'],
         });
       };
-      await injectFn();
+
       checkWebRequestIsReadyFn();
       chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         if (
@@ -739,7 +773,7 @@ export const pageDecodeMsgListener = async (
           handlerForSdk(processAlgorithmReq, 'cancel');
         }
       });
-      // injectFn();
+      await injectFn();
     }
     if (name === 'initCompleted') {
       console.log('content_scripts-bg-decode receive:initCompleted');

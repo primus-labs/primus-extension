@@ -309,8 +309,8 @@ export const algorithmMsgListener = async (
                 errorCode = JSON.parse(content.extraData).errorCode + '';
                 Object.assign(msgObj, {
                   type: '',
-                  desc: JSON.parse(content.extraData).errorMsg,
-                  sourcePageTip: JSON.parse(content.extraData).errorMsg,
+                  desc: 'Invalid response.',
+                  sourcePageTip: 'Invalid response.',
                 });
               } else {
                 errorCode = '00103'; // linea event had bund

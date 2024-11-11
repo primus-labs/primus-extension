@@ -276,7 +276,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
   },*/
   chatgpt: {
     id: 'chatgpt',
-    name: 'chatgpt',
+    name: 'ChatGPT',
     type: 'Social',
     icon: iconDataSourceChatgpt,
     desc: '',

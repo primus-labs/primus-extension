@@ -307,6 +307,7 @@ const Nav: React.FC<PButtonProps> = memo(
     );
     const handleSubmitSetDetail = useCallback(
       async (form = {}) => {
+        debugger
         const { activeRequestAttestation: lastActiveRequestAttestationStr } =
           await chrome.storage.local.get(['activeRequestAttestation']);
         if (lastActiveRequestAttestationStr) {

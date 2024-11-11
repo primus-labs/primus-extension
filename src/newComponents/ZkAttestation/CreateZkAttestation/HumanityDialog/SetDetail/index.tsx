@@ -108,11 +108,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           },
         ];
         // @ts-ignore
-      } else if (pswForm.verificationContent === 'ChatGPT conversation proof') {
+      } else if (pswForm.verificationContent === 'Defined input') {
         list = [
           {
-            label: 'Account owner',
-            value: 'Account owner',
+            label: 'GPT response',
+            value: 'GPT response',
             // selected: true,
           },
         ];
@@ -142,6 +142,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         : 'Next';
     }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
+      debugger
       if (!formLegal) {
         return;
       }
@@ -179,8 +180,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             newValue = 'Basic Verification';
           } else if (pswForm.verificationContent === 'Account ownership') {
             newValue = 'Account owner';
-          } else if (pswForm.verificationContent === 'ChatGPT conversation proof') {
-            newValue = 'Account owner';
+          } else if (pswForm.verificationContent === 'Defined input') {
+            newValue = 'GPT response';
           }
             handleChangePswForm(newValue, 'verificationValue');
         }

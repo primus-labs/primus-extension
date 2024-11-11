@@ -258,15 +258,13 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
   chatgpt: {
     id: 'chatgpt',
-    name: 'chatgpt',
+    name: 'ChatGPT',
     type: 'Social',
     icon: iconDataSourceChatgpt,
     desc: '',
-    unConnectTip:
-      '',
+    unConnectTip: '',
     connectType: 'Web',
   },
-
 
   /*youtube: {
     id:'youtube',

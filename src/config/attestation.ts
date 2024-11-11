@@ -128,10 +128,10 @@ export const HUMANITYVERIFICATIONCONTENTTYPEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
     label: 'Account ownership',
     templateName: 'Account Ownership',
   },
-  'ChatGPT conversation proof': {
-    value: 'ChatGPT conversation proof',
-    label: 'ChatGPT conversation proof',
-    templateName: 'ChatGPT conversation proof',
+  'Defined input': {
+    value: 'Defined input',
+    label: 'Defined input',
+    templateName: 'Defined input',
   },
 };
 export const HUMANITYVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =

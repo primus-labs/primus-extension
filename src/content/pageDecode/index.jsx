@@ -257,7 +257,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
         }
       }
       // else if (attestationType === 'On-chain Transactions') {
-        
+
       // }
 
       return [
@@ -328,7 +328,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
   return status === 'initialized' ? (
     <DataSourceLineEl list={descList} />
   ) : status === 'verifying' ? (
-    <div className="descWrapper verifying">{loadingTxt}</div>
+    <DataSourceLineEl list={descList} />
   ) : status === 'result' && resultStatus === 'success' ? (
     <div className="descWrapper result suc">
       <div className="label">
@@ -348,11 +348,12 @@ function DescEl({ status, resultStatus, errorTxt }) {
           <span className="errorCode">{errorTxtSelf?.code}</span>
         )}
       </div>
-      <div className="value">Please return to Primus and try again.</div>
+      <div className="value">Please return to Primus.</div>
     </div>
   );
 }
 function PadoCard() {
+  const [UIStep, setUIStep] = useState('loading');
   const [status, setStatus] = useState('initialized');
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
@@ -367,6 +368,7 @@ function PadoCard() {
     setErrorTxt(str);
   }, [operationType]);
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
+  var iconPrimusSquare = chrome.runtime.getURL(`iconPrimusSquare.svg`);
   var iconLink = chrome.runtime.getURL(`iconLink.svg`);
 
   const iconMap = {
@@ -389,69 +391,37 @@ function PadoCard() {
   useEffect(() => {
     const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
     const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
+    const lastPrimusUIStep = sessionStorage.getItem('primusUIStep');
     if (lastStatus) {
       setStatus(lastStatus);
     }
     if (lastIsReadyFetch) {
       setIsReadyFetch(!!lastIsReadyFetch);
     }
+    if (lastPrimusUIStep) {
+      setUIStep(lastPrimusUIStep);
+    }
+    // let changeUITimer = setTimeout(() => {
+    //   setUIStep('toLogin');
+    // }, 500);
+    // return () => {
+    //   if (changeUITimer) {
+    //     clearTimeout(changeUITimer);
+    //   }
+    // };
   }, []);
+
   useEffect(() => {
     const listenerFn = (request, sender, sendResponse) => {
       var {
         name,
-        params: { result, failReason, isReady },
+        params: { result, failReason, isReady, step },
       } = request;
-      // if (name === 'attestResult') {
-      //   var padoRightEl = document.querySelector('.pado-right');
-      //   var padoCenterCenterEl = document.querySelector('.pado-center-center');
-      //   var padoCenterEl = document.querySelector('.pado-center');
-      //   var {
-      //     jumpTo,
-      //     uiTemplate: { condition, subProofContent },
-      //     processUiTemplate: { proofContent, successMsg, failedMsg },
-      //     event,
-      //   } = activeTemplate;
-      //   var aactiveOrigin = new URL(jumpTo).origin;
-      //   var aactiveDesc = successMsg;
-      //   var fn = (tryFlag) => {
-      //     var btnTxt = tryFlag ? 'Try again' : 'OK';
-      //     var padoCenterBottomOKNode = createDomElement(
-      //       `<div class="pado-center-bottom"><button class="okBtn">${btnTxt}</button></div>`
-      //     );
-      //     padoCenterBottomOKNode.onclick = () => {
-      //       chrome.runtime.sendMessage({
-      //         type: 'pageDecode',
-      //         name: 'closeDataSourcePage',
-      //         dataSourcePageTabId,
-      //         tryFlag,
-      //       });
-      //       return;
-      //     };
-      //     if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
-      //       padoCenterEl.appendChild(padoCenterBottomOKNode);
-      //     }
-      //   };
-      //   if (result === 'success') {
-      //     padoRightEl.innerHTML = '3/3';
-      //     var iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
-      //     padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
-      //     fn();
-      //   } else if (result === 'fail') {
-      //     aactiveDesc = failedMsg;
-      //     padoRightEl.innerHTML = '3/3';
-      //     padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}</span></p>`;
-      //     fn();
-      //   } else if (result === 'warn') {
-      //     padoRightEl.innerHTML = '2/3';
-      //     var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a zkAttestation with another Binance account.</p>`;
-      //     padoCenterCenterEl.innerHTML =
-      //       failReason === 'Not meeting the uniqueness requirement.'
-      //         ? str3
-      //         : `<p class="warn-tip">${failReason.title}</p><p>${failReason.desc}</p>`;
-      //     fn();
-      //   }
-      // }
+      if (name === 'setUIStep') {
+        console.log('content receive:setUIStep');
+        setUIStep(step);
+        sessionStorage.setItem('primusUIStep', step);
+      }
       if (name === 'webRequestIsReady') {
         console.log('content receive:webRequestIsReady');
         setIsReadyFetch(true);
@@ -470,31 +440,60 @@ function PadoCard() {
       chrome.runtime.onMessage.removeListener(listenerFn);
     };
   }, []);
+
+  const FriendlyTip = ({ tipKey }) => {
+    const tipMap = {
+      toLogin: 'Login to start...',
+      toMessage: 'Message GPT and wait for a reply...',
+      toVerify: 'Launching data verification process...',
+    };
+    return (
+      <div className="tipStep">
+        <img src={iconPrimusSquare} className="iconPrimusSquare" />
+        <div className="tip">{tipMap[tipKey]}</div>
+      </div>
+    );
+  };
+
   return (
-    <div className={`pado-extension-card  ${status}`}>
-      <div className="pado-extension-header">
-        <img src={iconPado} className="iconPado" />
-        <img src={iconLink} className="iconLink" />
-        <img src={iconDataSource} className="iconSource" />
-      </div>
-      <div className="pado-extenstion-center">
-        <div className="pado-extenstion-center-title">
-        Verify Your Data 
+    <>
+      {isReadyFetch ? (
+        <div className={`pado-extension-card  ${status}`}>
+          <div className="pado-extension-header">
+            <img src={iconPado} className="iconPado" />
+            <img src={iconLink} className="iconLink" />
+            <img src={iconDataSource} className="iconSource" />
+          </div>
+          <div className="pado-extenstion-center">
+            <div className="pado-extenstion-center-title">Verify Your Data</div>
+            <DescEl
+              status={status}
+              resultStatus={resultStatus}
+              errorTxt={errorTxt}
+            />
+          </div>
+          <FooterEl
+            status={status}
+            setStatus={setStatus}
+            isReadyFetch={isReadyFetch}
+            resultStatus={resultStatus}
+            errorTxt={errorTxt}
+          />
         </div>
-        <DescEl
-          status={status}
-          resultStatus={resultStatus}
-          errorTxt={errorTxt}
-        />
-      </div>
-      <FooterEl
-        status={status}
-        setStatus={setStatus}
-        isReadyFetch={isReadyFetch}
-        resultStatus={resultStatus}
-        errorTxt={errorTxt}
-      />
-    </div>
+      ) : (
+        <div className="padoWrapper">
+          {['toLogin', 'toMessage', 'toVerify'].includes(UIStep) && (
+            <FriendlyTip tipKey={UIStep}></FriendlyTip>
+          )}
+          {!isReadyFetch && (
+            <div className="loadingStep">
+              <img src={iconPado} className="iconPado" />
+              <div className="loading-spinner loader"></div>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 }
 function createDomElement(html) {
@@ -504,7 +503,10 @@ function createDomElement(html) {
 var padoStr = `<div id="pado-extension-content"></div>`;
 var injectEl = createDomElement(padoStr);
 document.body.appendChild(injectEl);
-console.log('content_scripts-content-decode inject');
+console.log(
+  'content_scripts-content-decode inject',
+  new Date().toLocaleString()
+);
 chrome.runtime.sendMessage(
   {
     type: 'pageDecode',

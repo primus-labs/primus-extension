@@ -38,7 +38,8 @@
         "iconDataSourceGate.svg",
         "iconDataSourceMEXC.png",
         "iconDataSourceHuobi.svg",
-        "iconDataSourceChatgpt.svg"
+        "iconDataSourceChatgpt.svg",
+        "iconPrimusSquare.svg"
       ],
       "matches": ["<all_urls>"]
     }
