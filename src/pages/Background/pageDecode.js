@@ -369,7 +369,7 @@ export const pageDecodeMsgListener = async (
     };
     // 369-500
     const formatAlgorithmParamsFn = async () => {
-      const { category, requestid, algorithmType } = activeTemplate;
+      const { dataSource, category, requestid, algorithmType } = activeTemplate;
       const form = {
         source: dataSource,
         type: category,
@@ -391,6 +391,7 @@ export const pageDecodeMsgListener = async (
         form.requestid = activeTemplate.requestid;
       }
       let aligorithmParams = await assembleAlgorithmParams(form, password);
+      // debugger;
       const formatRequests = [];
       for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
@@ -506,7 +507,7 @@ export const pageDecodeMsgListener = async (
           });
         });
       }
-
+      // debugger;
       Object.assign(aligorithmParams, {
         reqType: 'web',
         host: host,
@@ -525,7 +526,12 @@ export const pageDecodeMsgListener = async (
       }
 
       formatAlgorithmParams = aligorithmParams;
-      console.log('1110-formatAlgorithmParams', formatAlgorithmParams);
+      console.log(
+        '1110-formatAlgorithmParams',
+        formatAlgorithmParams,
+        activeTemplate
+      );
+      // debugger
     };
 
     const preAlgorithmFn = async () => {
