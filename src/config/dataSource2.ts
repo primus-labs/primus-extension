@@ -261,10 +261,9 @@ export const DATASOURCEMAP: DataSourceMapType = {
     name: 'chatgpt',
     type: 'Social',
     icon: iconDataSourceChatgpt,
-    desc: 'Support fetching tweet & followers data for management and attestation creation.',
+    desc: '',
     unConnectTip:
-      'You can fetch tweet & followers data from your X account to manage your data or create attestations.',
-    // constructorF: WebTwitter,
+      '',
     connectType: 'Web',
   },
 

@@ -12,6 +12,11 @@ let currExtentionId;
 let isReadyRequest = false;
 let operationType = null;
 let RequestsHasCompleted = false;
+let formatAlgorithmParams = {};
+let preAlgorithmStatus = '';
+let preAlgorithmTimer = null;
+let preAlgorithmFlag = false;
+console.log('1110-preAlgorithmTimer-init', preAlgorithmTimer);
 
 const resetVarsFn = () => {
   isReadyRequest = false;
@@ -62,7 +67,8 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
 };
 
 const extraRequestFn = async () => {
-  const tabs = await chrome.tabs.query({ currentWindow: true });
+  // { currentWindow: true }
+  const tabs = await chrome.tabs.query({});
   const dataSourcePageTabObj = tabs.find((i) => i.id === dataSourcePageTabId);
   const pathname = new URL(dataSourcePageTabObj.url).pathname;
   const arr = pathname.split('/');
@@ -84,21 +90,22 @@ const extraRequestFn = async () => {
         messageIds.push(mK);
       }
     });
-
+    const obj = {
+      request: {
+        url: fullRequestUrl,
+        method: 'GET',
+        headers: {
+          host: 'chatgpt.com',
+        },
+      },
+      response: {
+        messageIds,
+      },
+    };
     chrome.storage.local.set({
-      [`${requestUrl}-extra`]: JSON.stringify({
-        request: {
-          url: fullRequestUrl,
-          method: 'GET',
-          headers: {
-            host: 'chatgpt.com',
-          },
-        },
-        response: {
-          messageIds,
-        },
-      }),
+      [`${requestUrl}-extra`]: JSON.stringify(obj),
     });
+    console.log('1110-setExtra', `${requestUrl}-extra`, obj);
     RequestsHasCompleted = true;
   } catch (e) {
     console.log('fetch chatgpt conversation error', e);
@@ -283,7 +290,9 @@ export const pageDecodeMsgListener = async (
         // chatgpt has only one requestUrl
         console.log('onCompletedFn', details);
         await extraRequestFn();
+        await formatAlgorithmParamsFn();
         console.log('RequestsHasCompleted=', RequestsHasCompleted);
+        preAlgorithmFn();
         checkWebRequestIsReadyFn();
       }
     };
@@ -321,7 +330,10 @@ export const pageDecodeMsgListener = async (
             return headersFlag && bodyFlag && cookieFlag;
           });
           return dataSource === 'chatgpt'
-            ? !!f && chatgptHasLogin && RequestsHasCompleted
+            ? !!f &&
+                chatgptHasLogin &&
+                RequestsHasCompleted &&
+                preAlgorithmStatus === '1'
             : f;
         } else {
           return false;
@@ -343,108 +355,9 @@ export const pageDecodeMsgListener = async (
         );
       }
     };
-
-    if (name === 'init') {
-      operationType = request.operation;
-      const currentWindowTabs = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      currExtentionId = currentWindowTabs[0]?.id;
-      const interceptorUrlArr = requests
-        .filter((r) => r.name !== 'first')
-        .map((i) => i.url);
-      const aaa = await chrome.storage.local.get(interceptorUrlArr);
-      await chrome.storage.local.remove(interceptorUrlArr);
-      const bbb = await chrome.storage.local.get(interceptorUrlArr);
-      // console.log('555-newattestations', capturedUrlKeyArr, aaa, bbb);
-      chrome.webRequest.onBeforeSendHeaders.addListener(
-        onBeforeSendHeadersFn,
-        { urls: ['<all_urls>'] },
-        ['requestHeaders', 'extraHeaders']
-      );
-      chrome.webRequest.onBeforeRequest.addListener(
-        onBeforeRequestFn,
-        { urls: ['<all_urls>'] },
-        ['requestBody']
-      );
-
-      chrome.webRequest.onCompleted.addListener(
-        onCompletedFn,
-        { urls: interceptorUrlArr },
-        ['responseHeaders', 'extraHeaders']
-      );
-      const tabCreatedByPado = await chrome.tabs.create({
-        url: jumpTo,
-      });
-      dataSourcePageTabId = tabCreatedByPado.id;
-      console.log('222pageDecode dataSourcePageTabId:', dataSourcePageTabId);
-      const injectFn = async () => {
-        await chrome.scripting.executeScript({
-          target: {
-            tabId: dataSourcePageTabId,
-          },
-          files: ['pageDecode.bundle.js'],
-        });
-        await chrome.scripting.insertCSS({
-          target: { tabId: dataSourcePageTabId },
-          files: ['static/css/pageDecode.css'],
-        });
-      };
-      await injectFn();
-      checkWebRequestIsReadyFn();
-      chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-        if (
-          tabId === dataSourcePageTabId &&
-          (changeInfo.url || changeInfo.title)
-        ) {
-          await injectFn();
-          checkWebRequestIsReadyFn();
-        }
-      });
-
-      chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-        if (tabId === dataSourcePageTabId) {
-          chrome.runtime.sendMessage({
-            type: 'pageDecode',
-            // name: 'abortAttest',
-            name: 'stop',
-          });
-          dataSourcePageTabId = null;
-          handlerForSdk(processAlgorithmReq, 'cancel');
-        }
-      });
-      // injectFn();
-    }
-    if (name === 'initCompleted') {
-      console.log('content_scripts-bg-decode receive:initCompleted');
-      sendResponse({
-        name: 'append',
-        params: {
-          ...activeTemplate,
-          PADOSERVERURL,
-          padoExtensionVersion,
-        },
-        dataSourcePageTabId: dataSourcePageTabId,
-        isReady: isReadyRequest,
-        operation: operationType,
-      });
-    }
-    if (name === 'start') {
-      await chrome.storage.local.set({
-        beginAttest: '1',
-      });
-      /*const dataSourceCookies = await chrome.cookies.getAll({
-      url: new URL(jumpTo).origin,
-    });
-    const cookiesObj = dataSourceCookies.reduce((prev, curr) => {
-      const { name, value } = curr;
-      prev[name] = value;
-      return prev;
-    }, {});*/
-
+    // 369-500
+    const formatAlgorithmParamsFn = async () => {
       const { category, requestid, algorithmType } = activeTemplate;
-
       const form = {
         source: dataSource,
         type: category,
@@ -453,8 +366,6 @@ export const pageDecodeMsgListener = async (
         requestid,
         algorithmType: algorithmType || 'mpctls',
       };
-
-      // console.log(WorkerGlobalScope.location)
       if (event) {
         form.event = event;
       }
@@ -593,11 +504,247 @@ export const pageDecodeMsgListener = async (
         uiTemplate,
         templateId: id,
         calculations,
+        PADOSERVERURL,
+        padoExtensionVersion,
       });
       if (schemaType.startsWith('OKX_TOKEN_HOLDING')) {
         aligorithmParams.requests[2].url =
           aligorithmParams.requests[2].url.replace('limit=5', 'limit=100');
       }
+
+      formatAlgorithmParams = aligorithmParams;
+      console.log('1110-formatAlgorithmParams', formatAlgorithmParams);
+    };
+
+    const preAlgorithmFn = async () => {
+      console.log('1110-preAlgorithmFn');
+      if (preAlgorithmFlag) {
+        return;
+      }
+
+      let aligorithmParams = Object.assign(
+        { isUserClick: 'false' },
+        formatAlgorithmParams
+      );
+      chrome.runtime.sendMessage({
+        type: 'algorithm',
+        method: 'getAttestation',
+        params: JSON.parse(JSON.stringify(aligorithmParams)),
+      });
+      preAlgorithmFlag = true;
+    };
+
+    chrome.runtime.onMessage.addListener(
+      async (message, sender, sendResponse) => {
+        const { padoZKAttestationJSSDKBeginAttest } =
+          await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+        if (padoZKAttestationJSSDKBeginAttest === '1') {
+          const { resType, resMethodName } = message;
+          const errorFn = async () => {
+            let resParams = {
+              result: false,
+              errorData: {
+                title: 'Launch failed: unstable connection.',
+                desc: 'Launch failed: unstable connection.',
+                code: '00011',
+              },
+            };
+            const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+              await chrome.storage.local.get([
+                'padoZKAttestationJSSDKDappTabId',
+              ]);
+            chrome.tabs.sendMessage(dappTabId, {
+              type: 'padoZKAttestationJSSDK',
+              name: 'getAttestationRes',
+              params: resParams,
+            });
+            const attestationType = formatAlgorithmParams?.attestationType;
+            const errorMsgTitle = [
+              'Assets Verification',
+              'Humanity Verification',
+            ].includes(attestationType)
+              ? `${attestationType} failed!`
+              : `${attestationType} proof failed!`;
+
+            msgObj = {
+              type: 'error',
+              title: errorMsgTitle,
+              desc: 'The algorithm has not been initialized.Please try again later.',
+              sourcePageTip: errorMsgTitle,
+            };
+            await chrome.storage.local.remove([
+              'padoZKAttestationJSSDKBeginAttest',
+              'padoZKAttestationJSSDKWalletAddress',
+              'padoZKAttestationJSSDKAttestationPresetParams',
+              'padoZKAttestationJSSDKXFollowerCount',
+              'activeRequestAttestation',
+            ]);
+            if (dataSourcePageTabId) {
+              await chrome.tabs.remove(dataSourcePageTabId);
+            }
+          };
+          if (
+            resType === 'algorithm' &&
+            ['getAttestation', 'getAttestationResult'].includes(resMethodName)
+          ) {
+            console.log('preAlgorithm message', message);
+            if (resMethodName === 'getAttestation') {
+              const { retcode, isUserClick } = JSON.parse(message.res);
+              if (isUserClick === 'false') {
+                if (retcode === '0') {
+                  if (!preAlgorithmTimer) {
+                    preAlgorithmTimer = setInterval(() => {
+                      chrome.runtime.sendMessage({
+                        type: 'algorithm',
+                        method: 'getAttestationResult',
+                        params: {},
+                      });
+                    }, 1000);
+                    console.log(
+                      '1110-preAlgorithmTimer-set',
+                      preAlgorithmTimer
+                    );
+                  }
+                } else {
+                  errorFn();
+                }
+              }
+            }
+            if (resMethodName === 'getAttestationResult') {
+              if (!message.res) {
+                return;
+              }
+              const { retcode, content, retdesc, details, isUserClick } =
+                JSON.parse(message.res);
+              if (isUserClick === 'false') {
+                if (retcode === '1') {
+                  console.log(
+                    '1110-statusDescription',
+                    details.online.statusDescription
+                  );
+                  if (details.online.statusDescription === 'RUNNING_PAUSE') {
+                    console.log(
+                      '1110-preAlgorithmTimer-clear',
+                      preAlgorithmTimer,
+                      'preAlgorithmStatus',
+                      retcode
+                    );
+                    clearInterval(preAlgorithmTimer);
+                    preAlgorithmStatus = retcode;
+                    checkWebRequestIsReadyFn();
+                  }
+                } else if (retcode === '2') {
+                  console.log(
+                    '1110-preAlgorithmTimer-clear',
+                    preAlgorithmTimer,
+                    'preAlgorithmStatus',
+                    retcode
+                  );
+                  clearInterval(preAlgorithmTimer);
+                  preAlgorithmStatus = retcode;
+                  errorFn();
+                }
+              }
+            }
+          }
+        }
+      }
+    );
+
+    if (name === 'init') {
+      operationType = request.operation;
+      const currentWindowTabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      currExtentionId = currentWindowTabs[0]?.id;
+      const interceptorUrlArr = requests
+        .filter((r) => r.name !== 'first')
+        .map((i) => i.url);
+      const aaa = await chrome.storage.local.get(interceptorUrlArr);
+      await chrome.storage.local.remove(interceptorUrlArr);
+      const bbb = await chrome.storage.local.get(interceptorUrlArr);
+      // console.log('555-newattestations', capturedUrlKeyArr, aaa, bbb);
+      chrome.webRequest.onBeforeSendHeaders.addListener(
+        onBeforeSendHeadersFn,
+        { urls: ['<all_urls>'] },
+        ['requestHeaders', 'extraHeaders']
+      );
+      chrome.webRequest.onBeforeRequest.addListener(
+        onBeforeRequestFn,
+        { urls: ['<all_urls>'] },
+        ['requestBody']
+      );
+
+      chrome.webRequest.onCompleted.addListener(
+        onCompletedFn,
+        { urls: interceptorUrlArr },
+        ['responseHeaders', 'extraHeaders']
+      );
+      const tabCreatedByPado = await chrome.tabs.create({
+        url: jumpTo,
+      });
+      dataSourcePageTabId = tabCreatedByPado.id;
+      console.log('222pageDecode dataSourcePageTabId:', dataSourcePageTabId);
+      const injectFn = async () => {
+        await chrome.scripting.executeScript({
+          target: {
+            tabId: dataSourcePageTabId,
+          },
+          files: ['pageDecode.bundle.js'],
+        });
+        await chrome.scripting.insertCSS({
+          target: { tabId: dataSourcePageTabId },
+          files: ['static/css/pageDecode.css'],
+        });
+      };
+      await injectFn();
+      checkWebRequestIsReadyFn();
+      chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+        if (
+          tabId === dataSourcePageTabId &&
+          (changeInfo.url || changeInfo.title)
+        ) {
+          await injectFn();
+          checkWebRequestIsReadyFn();
+        }
+      });
+
+      chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+        if (tabId === dataSourcePageTabId) {
+          chrome.runtime.sendMessage({
+            type: 'pageDecode',
+            // name: 'abortAttest',
+            name: 'stop',
+          });
+          dataSourcePageTabId = null;
+          handlerForSdk(processAlgorithmReq, 'cancel');
+        }
+      });
+      // injectFn();
+    }
+    if (name === 'initCompleted') {
+      console.log('content_scripts-bg-decode receive:initCompleted');
+      sendResponse({
+        name: 'append',
+        params: {
+          ...activeTemplate,
+          PADOSERVERURL,
+          padoExtensionVersion,
+        },
+        dataSourcePageTabId: dataSourcePageTabId,
+        isReady: isReadyRequest,
+        operation: operationType,
+      });
+    }
+    if (name === 'start') {
+      await chrome.storage.local.set({
+        beginAttest: '1',
+      });
+      let aligorithmParams = Object.assign(
+        { isUserClick: 'true' },
+        formatAlgorithmParams
+      );
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(aligorithmParams),
       });
@@ -634,12 +781,7 @@ export const pageDecodeMsgListener = async (
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
-        params: {
-          ...JSON.parse(JSON.stringify(aligorithmParams)),
-          PADOSERVERURL,
-          padoExtensionVersion,
-          requestid: aligorithmParams.requestid,
-        },
+        params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
 
       const { constructorF } = DATASOURCEMAP[dataSource];
