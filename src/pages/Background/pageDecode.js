@@ -12,7 +12,7 @@ let currExtentionId;
 let isReadyRequest = false;
 let operationType = null;
 let RequestsHasCompleted = false;
-let formatAlgorithmParams = {};
+let formatAlgorithmParams = null;
 let preAlgorithmStatus = '';
 let preAlgorithmTimer = null;
 let preAlgorithmFlag = false;
@@ -22,6 +22,10 @@ const resetVarsFn = () => {
   isReadyRequest = false;
   operationType = null;
   RequestsHasCompleted = false;
+  formatAlgorithmParams = null;
+  preAlgorithmStatus = '';
+  preAlgorithmTimer = null;
+  preAlgorithmFlag = false;
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
@@ -329,12 +333,20 @@ export const pageDecodeMsgListener = async (
                 !!sRrequestObj.headers.Cookie);
             return headersFlag && bodyFlag && cookieFlag;
           });
-          return dataSource === 'chatgpt'
-            ? !!f &&
+
+          const fl =
+            dataSource === 'chatgpt'
+              ? !!f &&
                 chatgptHasLogin &&
                 RequestsHasCompleted &&
                 preAlgorithmStatus === '1'
-            : f;
+              : f;
+          if (fl && dataSource !== 'chatgpt') {
+            if (!formatAlgorithmParams) {
+              await formatAlgorithmParamsFn();
+            }
+          }
+          return fl;
         } else {
           return false;
         }
