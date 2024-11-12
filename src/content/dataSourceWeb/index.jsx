@@ -148,7 +148,7 @@ function DescEl({ status, resultStatus }) {
   return status === 'initialized' ? (
     <DataSourceLineEl list={descList} />
   ) : status === 'verifying' ? (
-    <div className="descWrapper verifying">{loadingTxt}</div>
+    <DataSourceLineEl list={descList} />
   ) : status === 'result' && resultStatus === 'success' ? (
     <div className="descWrapper result suc">
       <div className="label">

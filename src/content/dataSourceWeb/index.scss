@@ -35,7 +35,7 @@
     @include card-xs_shadow;
     padding: var(--spacing-32, 32px) var(--spacing-24, 24px)
       var(--spacing-24, 24px);
-    width: 384px;
+    width: 360px;
     // height: 216px;
     border: 0;
     box-sizing: border-box;
@@ -143,6 +143,7 @@
       }
       .confirmBtn {
         height: 32px;
+        width: 66px;
         .loading-spinner {
           width: 16px;
           height: 16px;
