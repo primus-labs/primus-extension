@@ -5,6 +5,7 @@ import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import customFetch from './utils/request';
+
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -525,26 +526,53 @@ export const pageDecodeMsgListener = async (
               headers: JSON.parse(storageRes[requestUrl]).headers,
             }
           );
-          let originSubConditionItem =
-            formatResponse[1].conditions.subconditions[0];
-          formatResponse[1].conditions.subconditions = [];
-          Object.keys(requestRes.mapping).forEach((mK) => {
-            const fieldArr = originSubConditionItem.field.split('.');
-            fieldArr[2] = mK;
-            const parts = requestRes.mapping[mK]?.message?.content?.parts;
-            if (parts && parts[0]) {
-              formatResponse[1].conditions.subconditions.push({
-                ...originSubConditionItem,
-                reveal_id: mK,
-                field: fieldArr.join('.'),
-              });
+
+          for (const mK of Object.keys(requestRes.mapping)) {
+            if (schemaType === 'CHATGPT_IMAGE_PROOF#1') {
+              const parts = requestRes.mapping[mK]?.message?.content?.parts;
+              debugger;
+              if (
+                parts &&
+                parts[0] &&
+                parts[0].content_type === 'image_asset_pointer'
+              ) {
+                const assetPointer = parts[0].asset_pointer;
+                const parts = assetPointer.split('//');
+                const filePart = parts[1];
+                const requestResDownload = await customFetch(
+                  `https://chatgpt.com/backend-api/files/download/${filePart}`,
+                  {
+                    method: 'GET',
+                    headers: JSON.parse(storageRes[requestUrl]).headers,
+                  }
+                );
+                debugger;
+                const downloadUrl = requestResDownload.download_url;
+                formatRequests[1].url = downloadUrl;
+                formatRequests[1].method = 'GET';
+                break;
+              }
+            } else {
+              let originSubConditionItem =
+                formatResponse[1].conditions.subconditions[0];
+              formatResponse[1].conditions.subconditions = [];
+              const fieldArr = originSubConditionItem.field.split('.');
+              fieldArr[2] = mK;
+              const parts = requestRes.mapping[mK]?.message?.content?.parts;
+              if (parts && parts[0]) {
+                formatResponse[1].conditions.subconditions.push({
+                  ...originSubConditionItem,
+                  reveal_id: mK,
+                  field: fieldArr.join('.'),
+                });
+              }
             }
-          });
+          }
         } catch (e) {
           console.log('fetch chatgpt conversation error', e);
         }
       }
-
+      debugger;
       Object.assign(aligorithmParams, {
         reqType: 'web',
         host: host,

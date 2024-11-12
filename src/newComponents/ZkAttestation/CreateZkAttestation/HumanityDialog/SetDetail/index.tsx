@@ -70,7 +70,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [pswForm.verificationValue]);
     const contentList = useMemo(() => {
       let supportedContentIdArr: any = [];
-
       if (dataSourceId === 'google') {
         supportedContentIdArr = ['Account ownership'];
       } else {
@@ -116,6 +115,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             // selected: true,
           },
         ];
+      }else { // @ts-ignore
+        if (pswForm.verificationContent === 'ChatGPT image proof') {
+                list = [
+                  {
+                    label: 'Account owner',
+                    value: 'Account owner',
+                    // selected: true,
+                  },
+                ];
+              }
       }
       return list;
     }, [pswForm.verificationContent]);
@@ -181,6 +190,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             newValue = 'Account owner';
           } else if (pswForm.verificationContent === 'ChatGPT conversation proof') {
             newValue = 'Account owner';
+          }else if (pswForm.verificationContent === 'ChatGPT image proof') {
+            newValue = 'Proof of image';
           }
             handleChangePswForm(newValue, 'verificationValue');
         }
