@@ -318,8 +318,8 @@ const useALGAttest = function useAttest() {
                 errorCode = JSON.parse(content.extraData).errorCode + '';
                 Object.assign(msgObj, {
                   type: '',
-                  desc: 'Invalid response.',
-                  sourcePageTip: 'Invalid response.',
+                  desc: 'Invalid message.',
+                  sourcePageTip: 'Invalid message.',
                 });
               } else {
                 errorCode = '00103'; // linea event had bund
