@@ -74,8 +74,11 @@
       > img {
         width: 24px;
       }
+      /* HTML: <div class="loader"></div> */
       .loader {
+        border-color: transparent;
         width: 14px;
+        height: 14px;
         aspect-ratio: 1;
         display: grid;
         border-radius: 50%;
@@ -94,7 +97,8 @@
             )
             50%/100% 8%;
         background-repeat: no-repeat;
-        animation: l23 1.5s infinite steps(12);
+        animation: l23 1s infinite steps(12);
+        animation: none;
       }
       .loader::before,
       .loader::after {
@@ -114,6 +118,7 @@
           transform: rotate(1turn);
         }
       }
+
       // .loading-spinner {
       // width: 16px;
       // height: 16px;
@@ -144,13 +149,8 @@
       line-height: 18px; /* 128.571% */
       letter-spacing: 0.16px;
 
-      // height: 0;
       animation: growFromBottom 1s forwards ease-out;
-
-      // transform-origin: bottom; /* 动画从底部开始 */
-      // transform: scaleY(0); /* 初始时完全扁平化 */
-      transform: translateX(-16px); /* 初始时完全扁平化 */
-      opacity: 1;
+      transform: translateX(-16px);
 
       > img {
         width: 20px;
@@ -160,13 +160,15 @@
   .pado-extension-card {
     @include fcss;
     @include pCard;
-    @include card-xs_shadow;
+    @include card-s_shadow;
     padding: var(--spacing-32, 32px) var(--spacing-24, 24px)
       var(--spacing-24, 24px);
     width: 384px;
     // height: 216px;
-    border: 0;
     box-sizing: border-box;
+    border: 0.5px solid var(--Layer-Tokens-layer-02, #e0e0e0);
+    animation: growFromBottom 1s forwards ease-out;
+    transform: translateX(-16px);
     &.initialized {
       padding-top: var(--spacing-32, 32px);
       .pado-extenstion-center {
