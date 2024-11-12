@@ -280,9 +280,9 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceChatgpt,
     desc: '',
-    unConnectTip:
-      '',
+    unConnectTip: '',
     connectType: 'Web',
+    hidden: true,
   },
 };
 export const DATASOURCEMAPVALUES: DataSourceItemType[] =

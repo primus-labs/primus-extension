@@ -264,6 +264,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: '',
     unConnectTip: '',
     connectType: 'Web',
+    hidden: true,
   },
 
   /*youtube: {

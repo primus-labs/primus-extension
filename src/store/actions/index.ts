@@ -1154,7 +1154,7 @@ export const initSetNewRewardsAction = () => {
             desc: 'Primus event badge',
           },
           [SCROLLEVENTNAME]: {
-            title: 'Scroll zkAttestation Medal',
+            title: 'Scroll Attestation Medal',
             desc: 'Primus event badge',
           },
         };

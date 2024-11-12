@@ -453,7 +453,7 @@ function PadoCard() {
     const tipMap = {
       toLogin: 'Login to start...',
       toMessage: 'Message GPT and wait for a reply...',
-      toVerify: 'Launching data verification process...',
+      toVerify: 'Processing the data parameters...',
     };
     return (
       <div className="tipStep">

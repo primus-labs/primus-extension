@@ -316,11 +316,20 @@ const useALGAttest = function useAttest() {
               if (content.extraData) {
                 // chatgpt input error
                 errorCode = JSON.parse(content.extraData).errorCode + '';
-                Object.assign(msgObj, {
-                  type: '',
-                  desc: 'Invalid message.',
-                  sourcePageTip: 'Invalid message.',
-                });
+                if (errorCode === '-1200010') {
+                  Object.assign(msgObj, {
+                    type: '',
+                    desc: 'Invalid message.',
+                    sourcePageTip: 'Invalid message.',
+                  });
+                } else {
+                  errorCode = '00103'; // linea event had bund
+                  Object.assign(msgObj, {
+                    type: attestTipMap[errorCode].type,
+                    desc: attestTipMap[errorCode].desc,
+                    sourcePageTip: attestTipMap[errorCode].title,
+                  });
+                }
               } else {
                 errorCode = '00103'; // linea event had bund
                 Object.assign(msgObj, {

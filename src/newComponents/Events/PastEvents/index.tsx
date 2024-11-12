@@ -46,9 +46,9 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
           period: { startTime, endTime }, // required when periodType is 0
           // chainDesc: '', // required when periodType is 1
 
-          picTxt: 'Scroll zkAttestation Launch Compaign',
+          picTxt: 'Scroll Attestation Launch Compaign',
 
-          title: 'Scroll zkAttestation Launch Compaign',
+          title: 'Scroll Attestation Launch Compaign',
           desc: 'Join this Campaign on QuestN to submit your first zkAttestation on-chain.',
 
           points: [

@@ -79,7 +79,7 @@ const useRewardsStatistics = function (eventFilter = '') {
             title = '1st Commemorative Badge';
             desc = 'Primus event badge';
           } else if (eName === SCROLLEVENTNAME) {
-            title = 'Scroll zkAttestation Medal';
+            title = 'Scroll Attestation Medal';
             desc = 'Primus event badge';
           }
           list.push({
