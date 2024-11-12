@@ -128,10 +128,10 @@ export const HUMANITYVERIFICATIONCONTENTTYPEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
     label: 'Account ownership',
     templateName: 'Account Ownership',
   },
-  'Message sent to GPT': {
-    value: 'Message sent to GPT',
-    label: 'Message sent to GPT',
-    templateName: 'Message sent to GPT',
+  'GPT message': {
+    value: 'GPT message',
+    label: 'GPT message',
+    templateName: 'GPT message',
   },
 };
 export const HUMANITYVERIFICATIONCONTENTTYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
