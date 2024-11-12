@@ -61,7 +61,7 @@ const socialTaskMap = {
   2: {
     id: '2',
     dataSourceId: 'discord',
-    title: 'Join PADO Server',
+    title: 'Join Primus Server',
     subTitle: 'Authorize discord and join',
   },
 };
@@ -520,7 +520,7 @@ const DataSourceItem = memo(() => {
         setClaiming(false);
         const eventInfo = {
           eventType: 'EVENTS',
-          rawData: { name: 'Get on-boarding reward', issuer: 'PADO' },
+          rawData: { name: 'Get on-boarding reward', issuer: 'Primus' },
         };
         eventReport(eventInfo);
       } else {

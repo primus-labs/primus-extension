@@ -228,7 +228,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           const msgId = addMsg({
             type: 'info',
             title: 'Not qualified',
-            desc: 'Please complete the Join PADO Discord event first.',
+            desc: 'Please complete the Join Primus Discord event first.',
             link: '',
           });
           setTimeout(() => {

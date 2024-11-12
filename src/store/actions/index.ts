@@ -1151,11 +1151,11 @@ export const initSetNewRewardsAction = () => {
         const extraInfoObj = {
           [LUCKYDRAWEVENTNAME]: {
             title: '1st Commemorative Badge',
-            desc: 'PADO event badge',
+            desc: 'Primus event badge',
           },
           [SCROLLEVENTNAME]: {
             title: 'Scroll zkAttestation Medal',
-            desc: 'PADO event badge',
+            desc: 'Primus event badge',
           },
         };
         if (lotteryResultObj[eName]) {

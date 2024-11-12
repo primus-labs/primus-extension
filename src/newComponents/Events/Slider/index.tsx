@@ -66,7 +66,7 @@ const eventIntroMap = {
     id: ETHSIGNEVENTNAME,
     title: 'SignX Program',
     desc: ['Attest your X followers, building trust in trustless systems.'],
-    points: [{ pointIconFont: 'icon-iconGift', pointDesc: 'PADO Points' }],
+    points: [{ pointIconFont: 'icon-iconGift', pointDesc: 'Primus Points' }],
     bg: bannerBgEthSign,
   },*/
 };

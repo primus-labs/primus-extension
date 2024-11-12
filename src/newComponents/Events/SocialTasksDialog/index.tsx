@@ -166,7 +166,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           <PClose onClick={onClose} />
           <main>
             <header>
-              <h1>Follow PADO</h1>
+              <h1>Follow Primus</h1>
             </header>
             <ul className="socialTasks">
               {questionList.map((i, k) => {

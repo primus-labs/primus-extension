@@ -224,7 +224,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
     : activeRequest?.datasourceTemplate.host;
 
   // var uiTemplate = activeRequest.uiTemplate;
-  const [loadingTxt, setLoadingTxt] = useState('Connecting to PADO node...');
+  const [loadingTxt, setLoadingTxt] = useState('Connecting to Primus node...');
   const [errorTxtSelf, setErrorTxtSelf] = useState({
     sourcePageTip: 'Error Message.',
   });
@@ -283,14 +283,14 @@ function DescEl({ status, resultStatus, errorTxt }) {
       str = 'Connecting ...';
       setLoadingTxt(str);
     } else {
-      str = 'Connecting to PADO node...';
+      str = 'Connecting to Primus node...';
       setLoadingTxt(str);
       var progressPercentage = 0;
       function simulateFileUpload() {
         progressPercentage += 1;
         if (progressPercentage > 0 && progressPercentage <= 2) {
           // 1.25
-          str = 'Connecting to PADO node...';
+          str = 'Connecting to Primus node...';
         } else if (progressPercentage > 2 && progressPercentage <= 3) {
           // 6.25
           // 1.25 - 2.5

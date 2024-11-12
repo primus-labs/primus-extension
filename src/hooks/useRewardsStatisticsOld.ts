@@ -42,7 +42,7 @@ const useRewardsStatistics = function (eventFilter = '') {
       //   id: EARLYBIRDNFTEVENTNAME,
       //   img: iconOpenSea,
       //   title: 'Early Adopters #001',
-      //   desc: 'PADO Early Bird NFT',
+      //   desc: 'Primus Early Bird NFT',
       //   linkIcon: iconOpenSea,
       //   link: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98/${tokenId}`,
       // },
@@ -77,10 +77,10 @@ const useRewardsStatistics = function (eventFilter = '') {
             desc = '';
           if (eName === LUCKYDRAWEVENTNAME) {
             title = '1st Commemorative Badge';
-            desc = 'PADO event badge';
+            desc = 'Primus event badge';
           } else if (eName === SCROLLEVENTNAME) {
             title = 'Scroll zkAttestation Medal';
-            desc = 'PADO event badge';
+            desc = 'Primus event badge';
           }
           list.push({
             id: eName,

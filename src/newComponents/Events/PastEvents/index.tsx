@@ -71,9 +71,9 @@ const Cards: React.FC<PDropdownProps> = memo(({ onClick = (item) => {} }) => {
           periodType: '0',
           period: { startTime, endTime },
 
-          picTxt: 'PADO Lucky Draw for Product Debut',
+          picTxt: 'Primus Lucky Draw for Product Debut',
 
-          title: 'PADO Lucky Draw for Product Debut',
+          title: 'Primus Lucky Draw for Product Debut',
           desc: 'Create an attestation to confirm your humanity through an exchange accounts.',
 
           points: [
