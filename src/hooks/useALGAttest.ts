@@ -363,27 +363,27 @@ const useALGAttest = function useAttest() {
             if (activeAttestation.dataSourceId !== 'coinbase') {
               addMsg(msgObj);
             }
-          }
-          dispatch(setAttestLoading(3));
-          dispatch(
-            setActiveAttestation({
-              loading: 3,
-              msgObj: { ...msgObj, btnTxt },
-            })
-          );
+            dispatch(setAttestLoading(3));
+            dispatch(
+              setActiveAttestation({
+                loading: 3,
+                msgObj: { ...msgObj, btnTxt },
+              })
+            );
 
-          eventInfo.rawData = Object.assign(eventInfo.rawData, {
-            status: 'FAILED',
-            reason: 'Not met the requirements',
-            event: fromEvents,
-            address: parsedActiveRequestAttestation?.address,
-          });
-          eventReport(eventInfo);
-          var eventInfoEnd = {
-            ...eventInfo,
-            eventType: 'ATTESTATION_END',
-          };
-          eventReport(eventInfoEnd);
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              status: 'FAILED',
+              reason: 'Not met the requirements',
+              event: fromEvents,
+              address: parsedActiveRequestAttestation?.address,
+            });
+            eventReport(eventInfo);
+            var eventInfoEnd = {
+              ...eventInfo,
+              eventType: 'ATTESTATION_END',
+            };
+            eventReport(eventInfoEnd);
+          }
         } else if (retcode === '2') {
           clearFetchAttestationTimer();
           await chrome.storage.local.remove(['activeRequestAttestation']);
