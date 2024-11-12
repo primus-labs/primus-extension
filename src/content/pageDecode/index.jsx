@@ -335,7 +335,11 @@ function DescEl({ status, resultStatus, errorTxt }) {
         <img src={iconSuc} alt="" />
         <span>{sucTxt}</span>
       </div>
-      <div className="value">Please return to Primus.</div>
+      <div className="value">
+        {activeRequest.dataSourceId === 'chatgpt'
+          ? 'Please return to event page.'
+          : 'Please return to Primus.'}
+      </div>
     </div>
   ) : (
     <div className="descWrapper result fail">
@@ -348,7 +352,11 @@ function DescEl({ status, resultStatus, errorTxt }) {
           <span className="errorCode">{errorTxtSelf?.code}</span>
         )}
       </div>
-      <div className="value">Please return to Primus.</div>
+      <div className="value">
+        {activeRequest.dataSourceId === 'chatgpt'
+          ? 'Please return to event page.'
+          : 'Please return to Primus.'}
+      </div>
     </div>
   );
 }
