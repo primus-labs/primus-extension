@@ -142,7 +142,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         : 'Next';
     }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
-      debugger;
       if (!formLegal) {
         return;
       }
