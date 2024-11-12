@@ -243,7 +243,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       } else if (verificationContent === 'Spot 30-Day Trade Vol') {
         verificationValue = attestationParameters[0];
       } else if (attestationTypeID === '19') {
-        verificationValue = 'GPT response';
+        verificationValue = 'Defined input';
       }
 
       activeAttestationParams = {

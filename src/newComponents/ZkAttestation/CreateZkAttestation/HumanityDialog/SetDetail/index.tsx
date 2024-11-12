@@ -108,11 +108,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           },
         ];
         // @ts-ignore
-      } else if (pswForm.verificationContent === 'Defined input') {
+      } else if (pswForm.verificationContent === 'Message sent to GPT') {
         list = [
           {
-            label: 'GPT response',
-            value: 'GPT response',
+            label: 'Defined input',
+            value: 'Defined input',
             // selected: true,
           },
         ];
@@ -142,7 +142,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         : 'Next';
     }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
-      debugger
+      debugger;
       if (!formLegal) {
         return;
       }
@@ -180,10 +180,10 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             newValue = 'Basic Verification';
           } else if (pswForm.verificationContent === 'Account ownership') {
             newValue = 'Account owner';
-          } else if (pswForm.verificationContent === 'Defined input') {
-            newValue = 'GPT response';
+          } else if (pswForm.verificationContent === 'Message sent to GPT') {
+            newValue = 'Defined input';
           }
-            handleChangePswForm(newValue, 'verificationValue');
+          handleChangePswForm(newValue, 'verificationValue');
         }
       }
     }, [pswForm.verificationContent, handleChangePswForm, presets]);
