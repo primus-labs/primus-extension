@@ -249,7 +249,7 @@ function PadoCard() {
       //     fn();
       //   } else if (result === 'warn') {
       //     padoRightEl.innerHTML = '2/3';
-      //     var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a zkAttestation with another Binance account.</p>`;
+      //     var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a Attestation with another Binance account.</p>`;
       //     padoCenterCenterEl.innerHTML =
       //       failReason === 'Not meeting the uniqueness requirement.'
       //         ? str3

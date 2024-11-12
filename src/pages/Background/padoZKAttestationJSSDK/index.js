@@ -119,7 +119,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (lastActiveRequestAttestationStr) {
       await chrome.storage.local.remove(['padoZKAttestationJSSDKBeginAttest']);
       const desc =
-        'A zkAttestation process is currently being generated. Please try again later.';
+        'An attestation process is currently being generated. Please try again later.';
       let resParams = { result: false };
       if (!resParams.result) {
         resParams.errorData = {

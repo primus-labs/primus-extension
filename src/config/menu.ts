@@ -30,9 +30,9 @@ export const menuList: NavItem[] = [
   },
   {
     label: 'Attestation',
-    value: 'zkAttestation',
+    value: 'Attestation',
     iconName: 'icon-iconMenuZkAttestation',
-    link: '/zkAttestation',
+    link: '/Attestation',
   },
   {
     label: 'Events',

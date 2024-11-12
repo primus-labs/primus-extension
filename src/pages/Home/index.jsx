@@ -79,7 +79,7 @@ const chains = [
 // 3. Create modal
 const metadata = {
   name: 'Primus',
-  description: 'The Decentralized zkAttestation and Computation Network',
+  description: 'The Decentralized attestation and Computation Network',
   url: 'https://padolabs.org/',
   icons: ['https://avatars.mywebsite.com/'],
 };

@@ -272,10 +272,10 @@ const useALGAttest = function useAttest() {
               type: 'suc',
               title: sucMsgTitle,
               desc: '',
-              link: '/zkAttestation',
+              link: '/Attestation',
             };
-            if (pathname !== '/zkAttestation') {
-              msgObj.desc = 'See details in the zkAttestation page.';
+            if (pathname !== '/Attestation') {
+              msgObj.desc = 'See details in the Attestation page.';
             }
             if (activeAttestation.dataSourceId !== 'coinbase') {
               addMsg(msgObj);

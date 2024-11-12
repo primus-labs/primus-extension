@@ -83,7 +83,7 @@ const Overview = memo(() => {
   }, [onChainAttestationsTypeChainMap]);
 
   const handleMore = useCallback(() => {
-    navigate('/zkAttestation');
+    navigate('/Attestation');
   }, [navigate]);
 
   return (

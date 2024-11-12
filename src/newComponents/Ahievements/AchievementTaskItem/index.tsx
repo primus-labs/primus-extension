@@ -870,15 +870,15 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         }
         if (mc === '-110009') {
           title = 'No attestation created';
-          msg = 'Go to zkAttestation page to create.';
-          link = '/zkAttestation';
+          msg = 'Go to Attestation page to create.';
+          link = '/Attestation';
           linkText = 'View details';
         }
 
         if (mc === '-110010') {
           title = 'No new attestation submitted';
-          msg = 'Go to zkAttestation page to submit.';
-          link = '/zkAttestation';
+          msg = 'Go to Attestation page to submit.';
+          link = '/Attestation';
           linkText = 'View details';
         }
 
