@@ -465,7 +465,8 @@ function PadoCard() {
 
   return (
     <>
-      {isReadyFetch ? (
+      {(activeRequest.dataSourceId === 'chatgpt' && isReadyFetch) ||
+      activeRequest.dataSourceId !== 'chatgpt' ? (
         <div className={`pado-extension-card  ${status}`}>
           <div className="pado-extension-header">
             <img src={iconPado} className="iconPado" />

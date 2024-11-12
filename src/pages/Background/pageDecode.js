@@ -17,7 +17,11 @@ let preAlgorithmStatus = '';
 let preAlgorithmTimer = null;
 let preAlgorithmFlag = false;
 let chatgptHasLogin = false;
-console.log('1110-preAlgorithmTimer-init', preAlgorithmTimer);
+let listenerFn = () => {};
+let onBeforeSendHeadersFn = () => {};
+let onBeforeRequestFn = () => {};
+let onCompletedFn = () => {};
+console.log('preAlgorithmTimer-init', preAlgorithmTimer);
 
 const resetVarsFn = () => {
   isReadyRequest = false;
@@ -28,6 +32,7 @@ const resetVarsFn = () => {
   preAlgorithmTimer = null;
   preAlgorithmFlag = false;
   chatgptHasLogin = false;
+  chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
@@ -111,7 +116,6 @@ const extraRequestFn = async () => {
     chrome.storage.local.set({
       [`${requestUrl}-extra`]: JSON.stringify(obj),
     });
-    console.log('1110-setExtra', `${requestUrl}-extra`, obj);
     RequestsHasCompleted = true;
   } catch (e) {
     console.log('fetch chatgpt conversation error', e);
@@ -155,7 +159,12 @@ export const pageDecodeMsgListener = async (
       });
       return isUrlWithQuery ? queryStr : false;
     };
-    const onBeforeSendHeadersFn = async (details) => {
+    onBeforeSendHeadersFn = async (details) => {
+      let {
+        dataSource,
+        jumpTo,
+        datasourceTemplate: { requests },
+      } = activeTemplate;
       const { url: currRequestUrl, requestHeaders } = details;
       let formatUrlKey = currRequestUrl;
       let addQueryStr = '';
@@ -185,6 +194,7 @@ export const pageDecodeMsgListener = async (
             chrome.storage.local.set({
               [r.url]: currRequestUrl,
             });
+            console.log('lastStorage-set-url', r.url, currRequestUrl);
             formatUrlKey = currRequestUrl;
           }
           return result;
@@ -204,7 +214,7 @@ export const pageDecodeMsgListener = async (
           chatgptHasLogin = !!formatHeader.Authorization;
           if (dataSource === 'chatgpt') {
             const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
-            console.log('1110-setUIStep-', tipStr);
+            console.log('setUIStep-', tipStr);
             chrome.tabs.sendMessage(
               dataSourcePageTabId,
               {
@@ -231,10 +241,11 @@ export const pageDecodeMsgListener = async (
         if (addQueryStr) {
           newCurrRequestObj.queryString = addQueryStr;
         }
-        console.log('222222listen', formatUrlKey);
+        // console.log('222222listen', formatUrlKey);
         await chrome.storage.local.set({
           [formatUrlKey]: JSON.stringify(newCurrRequestObj),
         });
+        console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
         if (
           needQueryDetail &&
           formatUrlKey.startsWith(
@@ -259,7 +270,10 @@ export const pageDecodeMsgListener = async (
         checkWebRequestIsReadyFn();
       }
     };
-    const onBeforeRequestFn = async (subDetails) => {
+    onBeforeRequestFn = async (subDetails) => {
+      let {
+        datasourceTemplate: { host, requests },
+      } = activeTemplate;
       const { url: currRequestUrl, requestBody } = subDetails;
       let formatUrlKey = currRequestUrl;
       const isTarget = requests.some((r) => {
@@ -280,6 +294,7 @@ export const pageDecodeMsgListener = async (
             chrome.storage.local.set({
               [r.url]: currRequestUrl,
             });
+            console.log('lastStorage-set', r.url, currRequestUrl);
           }
           return result;
         } else {
@@ -308,16 +323,22 @@ export const pageDecodeMsgListener = async (
             await chrome.storage.local.set({
               [formatUrlKey]: JSON.stringify(newCurrRequestObj),
             });
+            console.log(
+              'lastStorage-set',
+              formatUrlKey,
+              newCurrRequestObj
+            );
           }
         }
       }
     };
-    const onCompletedFn = async (details) => {
+    onCompletedFn = async (details) => {
+      let { dataSource } = activeTemplate;
       if (dataSource === 'chatgpt') {
         // chatgpt has only one requestUrl
         console.log('onCompletedFn', details);
         await extraRequestFn();
-        console.log('1110-setUIStep-toVerify');
+        console.log('setUIStep-toVerify');
         chrome.tabs.sendMessage(
           dataSourcePageTabId,
           {
@@ -329,7 +350,6 @@ export const pageDecodeMsgListener = async (
           },
           function (response) {}
         );
-
         await formatAlgorithmParamsFn();
         console.log('RequestsHasCompleted=', RequestsHasCompleted);
         preAlgorithmFn();
@@ -338,6 +358,10 @@ export const pageDecodeMsgListener = async (
     };
     const checkWebRequestIsReadyFn = async () => {
       const checkReadyStatusFn = async () => {
+        let {
+          dataSource,
+          datasourceTemplate: { requests },
+        } = activeTemplate;
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
         const interceptorUrlArr = interceptorRequests.map((i) => i.url);
         // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
@@ -375,9 +399,12 @@ export const pageDecodeMsgListener = async (
                 RequestsHasCompleted &&
                 preAlgorithmStatus === '1'
               : f;
+
           if (fl) {
+            console.log('lastStorage-urlRequests', interceptorRequests);
             if (dataSource === 'chatgpt') {
             } else {
+              // debugger
               if (!formatAlgorithmParams) {
                 await formatAlgorithmParamsFn();
               }
@@ -406,7 +433,17 @@ export const pageDecodeMsgListener = async (
     };
     // 369-500
     const formatAlgorithmParamsFn = async () => {
-      const { dataSource, category, requestid, algorithmType } = activeTemplate;
+      let {
+        dataSource,
+        schemaType,
+        datasourceTemplate: { host, requests, responses, calculations },
+        uiTemplate,
+        id,
+        event,
+        category,
+        requestid,
+        algorithmType,
+      } = activeTemplate;
       const form = {
         source: dataSource,
         type: category,
@@ -419,7 +456,7 @@ export const pageDecodeMsgListener = async (
         form.event = event;
       }
       // "X Followers" required update baseValue
-      console.log('222activeTemplate', activeTemplate);
+      // console.log('activeTemplate', activeTemplate, dataSource);
       if (activeTemplate.id === '15') {
         form.baseValue =
           activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
@@ -442,13 +479,14 @@ export const pageDecodeMsgListener = async (
           r.url = url;
         }
         const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-
+        const currRequestInfoObj =
+          (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
         const {
           headers: curRequestHeader,
           body: curRequestBody,
           queryString,
-        } = (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
-
+        } = currRequestInfoObj;
+        console.log('lastStorage-get', url, currRequestInfoObj);
         const cookiesObj = curRequestHeader
           ? parseCookie(curRequestHeader.Cookie)
           : {};
@@ -562,14 +600,15 @@ export const pageDecodeMsgListener = async (
 
       formatAlgorithmParams = aligorithmParams;
       console.log(
-        '1110-formatAlgorithmParams',
+        'formatAlgorithmParams',
         formatAlgorithmParams,
+        form,
         activeTemplate
       );
     };
 
     const preAlgorithmFn = async () => {
-      console.log('1110-preAlgorithmFn');
+      console.log('preAlgorithmFn');
       if (preAlgorithmFlag) {
         return;
       }
@@ -585,123 +624,112 @@ export const pageDecodeMsgListener = async (
       });
       preAlgorithmFlag = true;
     };
-
-    chrome.runtime.onMessage.addListener(
-      async (message, sender, sendResponse) => {
-        const { padoZKAttestationJSSDKBeginAttest } =
-          await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-        if (padoZKAttestationJSSDKBeginAttest === '1') {
-          const { resType, resMethodName } = message;
-          const errorFn = async () => {
-            let resParams = {
-              result: false,
-              errorData: {
-                title: 'Launch failed: unstable connection.',
-                desc: 'Launch failed: unstable connection.',
-                code: '00011',
-              },
-            };
-            const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-              await chrome.storage.local.get([
-                'padoZKAttestationJSSDKDappTabId',
-              ]);
-            chrome.tabs.sendMessage(dappTabId, {
-              type: 'padoZKAttestationJSSDK',
-              name: 'getAttestationRes',
-              params: resParams,
-            });
-            const attestationType = formatAlgorithmParams?.attestationType;
-            const errorMsgTitle = [
-              'Assets Verification',
-              'Humanity Verification',
-            ].includes(attestationType)
-              ? `${attestationType} failed!`
-              : `${attestationType} proof failed!`;
-
-            msgObj = {
-              type: 'error',
-              title: errorMsgTitle,
-              desc: 'The algorithm has not been initialized.Please try again later.',
-              sourcePageTip: errorMsgTitle,
-            };
-            await chrome.storage.local.remove([
-              'padoZKAttestationJSSDKBeginAttest',
-              'padoZKAttestationJSSDKWalletAddress',
-              'padoZKAttestationJSSDKAttestationPresetParams',
-              'padoZKAttestationJSSDKXFollowerCount',
-              'activeRequestAttestation',
-            ]);
-            if (dataSourcePageTabId) {
-              await chrome.tabs.remove(dataSourcePageTabId);
-            }
+    listenerFn = async (message, sender, sendResponse) => {
+      const { padoZKAttestationJSSDKBeginAttest } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      if (padoZKAttestationJSSDKBeginAttest === '1') {
+        const { resType, resMethodName } = message;
+        const errorFn = async () => {
+          let resParams = {
+            result: false,
+            errorData: {
+              title: 'Launch failed: unstable connection.',
+              desc: 'Launch failed: unstable connection.',
+              code: '00011',
+            },
           };
-          if (
-            resType === 'algorithm' &&
-            ['getAttestation', 'getAttestationResult'].includes(resMethodName)
-          ) {
-            console.log('preAlgorithm message', message);
-            if (resMethodName === 'getAttestation') {
-              const { retcode, isUserClick } = JSON.parse(message.res);
-              if (isUserClick === 'false') {
-                if (retcode === '0') {
-                  if (!preAlgorithmTimer) {
-                    preAlgorithmTimer = setInterval(() => {
-                      chrome.runtime.sendMessage({
-                        type: 'algorithm',
-                        method: 'getAttestationResult',
-                        params: {},
-                      });
-                    }, 1000);
-                    console.log(
-                      '1110-preAlgorithmTimer-set',
-                      preAlgorithmTimer
-                    );
-                  }
-                } else {
-                  errorFn();
+          const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+            await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+          chrome.tabs.sendMessage(dappTabId, {
+            type: 'padoZKAttestationJSSDK',
+            name: 'getAttestationRes',
+            params: resParams,
+          });
+          const attestationType = formatAlgorithmParams?.attestationType;
+          const errorMsgTitle = [
+            'Assets Verification',
+            'Humanity Verification',
+          ].includes(attestationType)
+            ? `${attestationType} failed!`
+            : `${attestationType} proof failed!`;
+
+          msgObj = {
+            type: 'error',
+            title: errorMsgTitle,
+            desc: 'The algorithm has not been initialized.Please try again later.',
+            sourcePageTip: errorMsgTitle,
+          };
+          await chrome.storage.local.remove([
+            'padoZKAttestationJSSDKBeginAttest',
+            'padoZKAttestationJSSDKWalletAddress',
+            'padoZKAttestationJSSDKAttestationPresetParams',
+            'padoZKAttestationJSSDKXFollowerCount',
+            'activeRequestAttestation',
+          ]);
+          if (dataSourcePageTabId) {
+            await chrome.tabs.remove(dataSourcePageTabId);
+          }
+        };
+        if (
+          resType === 'algorithm' &&
+          ['getAttestation', 'getAttestationResult'].includes(resMethodName)
+        ) {
+          console.log('preAlgorithm message', message);
+          if (resMethodName === 'getAttestation') {
+            const { retcode, isUserClick } = JSON.parse(message.res);
+            if (isUserClick === 'false') {
+              if (retcode === '0') {
+                if (!preAlgorithmTimer) {
+                  preAlgorithmTimer = setInterval(() => {
+                    chrome.runtime.sendMessage({
+                      type: 'algorithm',
+                      method: 'getAttestationResult',
+                      params: {},
+                    });
+                  }, 1000);
+                  console.log('preAlgorithmTimer-set', preAlgorithmTimer);
                 }
+              } else {
+                errorFn();
               }
             }
-            if (resMethodName === 'getAttestationResult') {
-              if (!message.res) {
-                return;
-              }
-              const { retcode, content, retdesc, details, isUserClick } =
-                JSON.parse(message.res);
-              if (isUserClick === 'false') {
-                if (retcode === '1') {
+          }
+          if (resMethodName === 'getAttestationResult') {
+            if (!message.res) {
+              return;
+            }
+            const { retcode, content, retdesc, details, isUserClick } =
+              JSON.parse(message.res);
+            if (isUserClick === 'false') {
+              if (retcode === '1') {
+                if (details.online.statusDescription === 'RUNNING_PAUSE') {
                   console.log(
-                    '1110-statusDescription',
-                    details.online.statusDescription
-                  );
-                  if (details.online.statusDescription === 'RUNNING_PAUSE') {
-                    console.log(
-                      '1110-preAlgorithmTimer-clear',
-                      preAlgorithmTimer,
-                      'preAlgorithmStatus',
-                      retcode
-                    );
-                    clearInterval(preAlgorithmTimer);
-                    preAlgorithmStatus = retcode;
-                    checkWebRequestIsReadyFn();
-                  }
-                } else if (retcode === '2') {
-                  console.log(
-                    '1110-preAlgorithmTimer-clear',
+                    'preAlgorithmTimer-clear',
                     preAlgorithmTimer,
                     'preAlgorithmStatus',
                     retcode
                   );
                   clearInterval(preAlgorithmTimer);
                   preAlgorithmStatus = retcode;
-                  errorFn();
+                  checkWebRequestIsReadyFn();
                 }
+              } else if (retcode === '2') {
+                console.log(
+                  'preAlgorithmTimer-clear',
+                  preAlgorithmTimer,
+                  'preAlgorithmStatus',
+                  retcode
+                );
+                clearInterval(preAlgorithmTimer);
+                preAlgorithmStatus = retcode;
+                errorFn();
               }
             }
           }
         }
       }
-    );
+    };
+    chrome.runtime.onMessage.addListener(listenerFn);
 
     if (name === 'init') {
       operationType = request.operation;
@@ -713,10 +741,29 @@ export const pageDecodeMsgListener = async (
       const interceptorUrlArr = requests
         .filter((r) => r.name !== 'first')
         .map((i) => i.url);
-      const aaa = await chrome.storage.local.get(interceptorUrlArr);
+      // const aaa = await chrome.storage.local.get(interceptorUrlArr);
       await chrome.storage.local.remove(interceptorUrlArr);
-      const bbb = await chrome.storage.local.get(interceptorUrlArr);
+      console.log('lastStorage-remove', interceptorUrlArr);
+      // const bbb = await chrome.storage.local.get(interceptorUrlArr);
       // console.log('555-newattestations', capturedUrlKeyArr, aaa, bbb);
+
+      chrome.webRequest.onBeforeSendHeaders.removeListener(
+        onBeforeSendHeadersFn,
+        { urls: ['<all_urls>'] },
+        ['requestHeaders', 'extraHeaders']
+      );
+      chrome.webRequest.onBeforeRequest.removeListener(
+        onBeforeRequestFn,
+        { urls: ['<all_urls>'] },
+        ['requestBody']
+      );
+
+      chrome.webRequest.onCompleted.removeListener(
+        onCompletedFn,
+        { urls: interceptorUrlArr },
+        ['responseHeaders', 'extraHeaders']
+      );
+
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
         { urls: ['<all_urls>'] },
@@ -737,7 +784,7 @@ export const pageDecodeMsgListener = async (
         url: jumpTo,
       });
       dataSourcePageTabId = tabCreatedByPado.id;
-      console.log('222pageDecode dataSourcePageTabId:', dataSourcePageTabId);
+      console.log('pageDecode dataSourcePageTabId:', dataSourcePageTabId);
       const injectFn = async () => {
         await chrome.scripting.executeScript({
           target: {
@@ -776,6 +823,7 @@ export const pageDecodeMsgListener = async (
       await injectFn();
     }
     if (name === 'initCompleted') {
+      // debugger
       console.log('content_scripts-bg-decode receive:initCompleted');
       sendResponse({
         name: 'append',
@@ -800,7 +848,7 @@ export const pageDecodeMsgListener = async (
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(aligorithmParams),
       });
-      console.log('222222pageDecode-aligorithmParams', aligorithmParams);
+      console.log('pageDecode-algorithmParams', aligorithmParams);
 
       var eventInfo = {
         eventType: 'ATTESTATION_START_PAGEDECODE',
