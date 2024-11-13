@@ -22,8 +22,8 @@ const PADOURLMAP = {
 export let PADOURL = PADOURLMAP[CURENV];
 
 const ZKPADOURLMAP = {
-  development: 'wss://api-dev.padolabs.org/algorithm-proxy',
-  production: 'wss://api.padolabs.org/algorithm-proxy',
+  development: 'wss://api-dev.padolabs.org/algorithm-proxy-zk',
+  production: 'wss://api.padolabs.org/algorithm-proxy-zk',
 };
 export let ZKPADOURL = ZKPADOURLMAP[CURENV];
 
@@ -736,7 +736,7 @@ export const updateAlgoUrl = async () => {
         if (!isInited) {
           console.log('updateAlgoUrl onopen update url new');
           PADOURL = `wss://${item.algorithmDomain}/algorithm`;
-          ZKPADOURL = `wss://${item.algorithmDomain}/algorithm-proxy`;
+          ZKPADOURL = `wss://${item.algorithmDomain}/algorithm-proxy-zk`;
           PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
           const jsonobj = {
             padoUrl: PADOURL,

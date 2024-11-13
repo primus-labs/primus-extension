@@ -530,15 +530,13 @@ export const pageDecodeMsgListener = async (
           for (const mK of Object.keys(requestRes.mapping)) {
             if (schemaType === 'CHATGPT_IMAGE_PROOF#1') {
               const parts = requestRes.mapping[mK]?.message?.content?.parts;
-              debugger;
               if (
                 parts &&
                 parts[0] &&
                 parts[0].content_type === 'image_asset_pointer'
               ) {
                 const assetPointer = parts[0].asset_pointer;
-                const parts = assetPointer.split('//');
-                const filePart = parts[1];
+                const filePart = assetPointer.split('//')[1];
                 const requestResDownload = await customFetch(
                   `https://chatgpt.com/backend-api/files/download/${filePart}`,
                   {
@@ -546,10 +544,11 @@ export const pageDecodeMsgListener = async (
                     headers: JSON.parse(storageRes[requestUrl]).headers,
                   }
                 );
-                debugger;
+                debugger
                 const downloadUrl = requestResDownload.download_url;
                 formatRequests[1].url = downloadUrl;
                 formatRequests[1].method = 'GET';
+                formatRequests[1].headers = { };
                 break;
               }
             } else {

@@ -392,7 +392,7 @@ const useALGAttest = function useAttest() {
           reqMethodName: 'stop',
           params: {},
         };
-        postMsg(padoServicePort, msg);
+        // postMsg(padoServicePort, msg);
         var eventInfoMsg = 'Something went wrong';
         let title = errorMsgTitle;
         let msgObj = {
@@ -554,7 +554,7 @@ const useALGAttest = function useAttest() {
       params: {},
     };
     console.log('after timeout port', padoServicePort);
-    postMsg(padoServicePort, msg);
+    // postMsg(padoServicePort, msg);
     await chrome.storage.local.remove(['activeRequestAttestation']);
   }, [
     padoServicePort,
