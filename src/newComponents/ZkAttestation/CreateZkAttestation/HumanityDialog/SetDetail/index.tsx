@@ -116,6 +116,16 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             // selected: true,
           },
         ];
+      } else { // @ts-ignore
+        if (pswForm.verificationContent === 'ChatGPT image proof') {
+                list = [
+                  {
+                    label: 'Account owner',
+                    value: 'Account owner',
+                    // selected: true,
+                  },
+                ];
+              }
       }
       return list;
     }, [pswForm.verificationContent]);
@@ -181,6 +191,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             newValue = 'Account owner';
           } else if (pswForm.verificationContent === 'GPT message') {
             newValue = 'Defined input';
+          } else if (pswForm.verificationContent === 'ChatGPT image proof') {
+            newValue = 'Proof of image';
           }
           handleChangePswForm(newValue, 'verificationValue');
         }
