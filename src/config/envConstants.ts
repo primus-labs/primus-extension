@@ -28,9 +28,9 @@ const ZKPADOURLMAP = {
 export let ZKPADOURL = ZKPADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
-  development: 'wss://api-dev.padolabs.org/algoproxy',
+  development: 'wss://api-dev.padolabs.org/algoproxy-zk',
   test: '18.179.8.186:9000',
-  production: 'wss://api.padolabs.org/algoproxy',
+  production: 'wss://api.padolabs.org/algoproxy-zk',
 };
 export let PROXYURL = PROXYURLMAP[CURENV];
 
@@ -730,14 +730,14 @@ export const updateAlgoUrl = async () => {
   if (res?.rc === 0) {
     let isInited = false;
     res.result.forEach((item: any) => {
-      let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);
+      let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy-zk`);
       ws.onopen = async function (e) {
         console.log('updateAlgoUrl onopen url=', item.algoProxyDomain);
         if (!isInited) {
           console.log('updateAlgoUrl onopen update url new');
           PADOURL = `wss://${item.algorithmDomain}/algorithm`;
           ZKPADOURL = `wss://${item.algorithmDomain}/algorithm-proxy-zk`;
-          PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
+          PROXYURL = `wss://${item.algoProxyDomain}/algoproxy-zk`;
           const jsonobj = {
             padoUrl: PADOURL,
             zkPadoUrl: ZKPADOURL,
