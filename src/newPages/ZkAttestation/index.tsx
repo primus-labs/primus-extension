@@ -13,6 +13,8 @@ import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
 import Search from '@/newComponents/ZkAttestation/Search';
 import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
+import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
+import { STARTOFFLINETIMEOUT } from '@/config/constants';
 
 import './index.scss';
 import useMsgs from '@/hooks/useMsgs';
@@ -42,8 +44,12 @@ const ZkAttestation = memo(() => {
     return Object.keys(credentialsFromStore).length > 0;
   }, [credentialsFromStore]);
 
+  const padoServicePort = useSelector(
+      (state: UserState) => state.padoServicePort
+  );
+
   const handleCreate = useCallback(
-    (typeItem) => {
+    async (typeItem) => {
       if (attestLoading === 1) {
         addMsg({
           type: 'info',
@@ -53,6 +59,18 @@ const ZkAttestation = memo(() => {
         return;
       } else {
         setVisibleAssetDialog(typeItem.id);
+        const padoUrl = await getZkPadoUrl();
+        //const padoUrl = await getPadoUrl();
+        const proxyUrl = await getProxyUrl();
+        postMsg(padoServicePort, {
+              fullScreenType: 'algorithm',
+              reqMethodName: 'startOffline',
+              params: {
+                offlineTimeout: STARTOFFLINETIMEOUT,
+                padoUrl,
+                proxyUrl,
+              },
+        });
       }
     },
     [attestLoading]
@@ -90,7 +108,7 @@ const ZkAttestation = memo(() => {
           <div className="hasNoContent">
             <img src={empty} alt="" />
             <div className="introTxt">
-              <div className="title">No zkAttestation </div>
+              <div className="title">No Attestation </div>
             </div>
           </div>
         )}

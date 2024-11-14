@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Primus (prev. PADO)",
-  "description": "Primus extension uses MPC-TLS to enable trusted and verifiable data flows from Web2 to Web3.",
+  "description": "Use MPC-TLS to enable trusted and verifiable data flows from Web2 to Web3.",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
     "default_icon": "logo.png"
@@ -38,7 +38,8 @@
         "iconDataSourceGate.svg",
         "iconDataSourceMEXC.png",
         "iconDataSourceHuobi.svg",
-        "iconDataSourceChatgpt.svg"
+        "iconDataSourceChatgpt.svg",
+        "iconPrimusSquare.svg"
       ],
       "matches": ["<all_urls>"]
     }
@@ -57,8 +58,8 @@
     },
     {
       "matches": [
-        "https://twitter.com/intent/follow?screen_name=padolabs",
-        "https://x.com/intent/follow?screen_name=padolabs"
+        "https://twitter.com/intent/follow?screen_name=primus_labs",
+        "https://x.com/intent/follow?screen_name=primus_labs"
       ],
       "js": ["xFollow.js"]
     },

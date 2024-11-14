@@ -12,6 +12,20 @@
     transform: rotate(360deg);
   }
 }
+@keyframes growFromBottom {
+  0% {
+    // height: 0;
+    // transform: scaleY(0); /* 完全展开 */
+    // opacity: 0; /* 完全不透明 */
+    transform: translateX(16px);
+  }
+  100% {
+    // height: 44px;
+    // transform: scaleY(1); /* 完全展开 */
+    // opacity: 1; /* 完全不透明 */
+    transform: translateX(0px);
+  }
+}
 // .dark {
 //   #pado-extension-content {
 //     --text-tokens-text-tertiary: #6f6f6f;
@@ -38,17 +52,122 @@
   z-index: 1000;
   bottom: 30px;
   right: 35px;
+
   box-sizing: border-box;
+  .padoWrapper {
+    position: relative;
+    bottom: 60px;
+    right: 21px;
+    @include fcss;
+    gap: 6px;
+    align-items: flex-end;
+    .loadingStep,
+    .tipStep {
+      @include frcc;
+    }
+    .loadingStep {
+      padding: 4px 8px;
+      gap: 10px;
+      border-radius: 20px;
+      border: 0.5px solid var(--Layer-Tokens-layer-secondary, #c6c6c6);
+      background: var(--Layer-Tokens-layer-primary, #fff);
+      > img {
+        width: 24px;
+      }
+      /* HTML: <div class="loader"></div> */
+      .loader {
+        border-color: transparent;
+        width: 14px;
+        height: 14px;
+        aspect-ratio: 1;
+        display: grid;
+        border-radius: 50%;
+        background: linear-gradient(
+              0deg,
+              rgb(0 0 0/50%) 30%,
+              #0000 0 70%,
+              rgb(0 0 0/100%) 0
+            )
+            50%/8% 100%,
+          linear-gradient(
+              90deg,
+              rgb(0 0 0/25%) 30%,
+              #0000 0 70%,
+              rgb(0 0 0/75%) 0
+            )
+            50%/100% 8%;
+        background-repeat: no-repeat;
+        animation: l23 1s infinite steps(12);
+      }
+      .loader::before,
+      .loader::after {
+        content: '';
+        grid-area: 1/1;
+        border-radius: 50%;
+        background: inherit;
+        opacity: 0.915;
+        transform: rotate(30deg);
+      }
+      .loader::after {
+        opacity: 0.83;
+        transform: rotate(60deg);
+      }
+      @keyframes l23 {
+        100% {
+          transform: rotate(1turn);
+        }
+      }
+
+      // .loading-spinner {
+      // width: 16px;
+      // height: 16px;
+      // border-radius: 50%;
+      // border: 2px solid var(--icon-tokens-icon-primary, #161616);
+      // border-top: 2px solid var(--layer-tokens-layer-primary, #fff);
+      // animation: spin 1s linear infinite;
+      /* HTML: <div class="loader"></div> */
+
+      // }
+    }
+    .tipStep {
+      padding: 12px 40px 12px 12px;
+      gap: 12px;
+      border-radius: var(--Radius-radius-m, 8px);
+      border: 0.5px solid var(--Layer-Tokens-layer-02, #e0e0e0);
+      background: var(--Layer-Tokens-layer-primary, #fff);
+      box-shadow: 0px 4px 24px 0px rgba(0, 0, 0, 0.06);
+
+      color: var(--Text-Tokens-text-tertiary, #6f6f6f);
+      text-align: right;
+      font-feature-settings: 'ss08' on, 'liga' off, 'clig' off;
+      /* Body/Body 100 */
+      font-family: 'IBM Plex Sans';
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 18px; /* 128.571% */
+      letter-spacing: 0.16px;
+
+      animation: growFromBottom 1s forwards ease-out;
+      transform: translateX(-16px);
+
+      > img {
+        width: 20px;
+      }
+    }
+  }
   .pado-extension-card {
     @include fcss;
     @include pCard;
-    @include card-xs_shadow;
+    @include card-s_shadow;
     padding: var(--spacing-32, 32px) var(--spacing-24, 24px)
       var(--spacing-24, 24px);
     width: 384px;
     // height: 216px;
-    border: 0;
     box-sizing: border-box;
+    border: 0.5px solid var(--Layer-Tokens-layer-02, #e0e0e0);
+    animation: growFromBottom 1s forwards ease-out;
+    transform: translateX(-16px);
     &.initialized {
       padding-top: var(--spacing-32, 32px);
       .pado-extenstion-center {
@@ -166,6 +285,8 @@
       }
       .confirmBtn {
         height: 32px;
+        width: 66px;
+        box-sizing: border-box;
         .loading-spinner {
           width: 16px;
           height: 16px;

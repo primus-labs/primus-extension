@@ -351,7 +351,7 @@ const Overview = memo(() => {
       //   value: `${authSource}Account`,
       // },
       {
-        label: 'PADO Account',
+        label: 'Primus Account',
         value: address,
       },
       {

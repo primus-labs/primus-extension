@@ -32,7 +32,7 @@ const Home = memo(() => {
             <div className="left">
               <i className="iconfont icon-iconInfoColorful"></i>
               <p>
-                Waiting for the PADO serial number to be bound. The PADO
+                Waiting for the Primus serial number to be bound. The Primus
                 extension will be available in a few seconds...
               </p>
             </div>

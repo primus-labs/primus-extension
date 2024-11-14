@@ -10,7 +10,7 @@ const DEFAULTCREDTYPELIST = [
     credLogoUrl:
       'https://storage.googleapis.com/primus-online/others/iconCredAsset.svg',
     credDetails:
-      'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. PADO uses TLS-MPC to verify the authenticity of your data.',
+      'Proving you have a certain amount of assets, which may come from bank deposits or from a crypto exchange balance. Primus uses TLS-MPC to verify the authenticity of your data.',
     credProofContent: 'Balance of assets',
     credProofConditions:
       process.env.NODE_ENV === 'development' ? '["1000"]' : '["10"]',
@@ -26,7 +26,7 @@ const DEFAULTCREDTYPELIST = [
     credLogoUrl:
       'https://storage.googleapis.com/primus-online/others/iconCredToken.svg',
     credDetails:
-      'Proving you hold a certain kind of TOKEN. PADO uses TLS-MPC to validate your data authenticity.',
+      'Proving you hold a certain kind of TOKEN. Primus uses TLS-MPC to validate your data authenticity.',
     credProofContent: 'Hold this kind of Token',
     credProofConditions: '["USDT","LAT"]',
     simplifiedName: 'Token',
@@ -41,7 +41,7 @@ const DEFAULTCREDTYPELIST = [
     credLogoUrl:
       'https://storage.googleapis.com/primus-online/others/iconCredCred.svg',
     credDetails:
-      'Proving you have completed the identity verification process. PADO verifies the authenticity of the verification result.',
+      'Proving you have completed the identity verification process. Primus verifies the authenticity of the verification result.',
     credProofContent: 'Identity verification',
     credProofConditions: 'Verified',
     simplifiedName: 'Identity',

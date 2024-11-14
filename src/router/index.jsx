@@ -50,8 +50,8 @@ const router = [
         ],
       },
       {
-        path: 'zkAttestation',
-        name: 'zkAttestation',
+        path: 'Attestation',
+        name: 'Attestation',
         element: <ZkAttestation />,
       },
       {

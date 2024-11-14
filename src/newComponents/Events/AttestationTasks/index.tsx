@@ -41,7 +41,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       discord: {
         id: '2',
         dataSourceId: 'discord',
-        title: 'Join PADO Server',
+        title: 'Join Primus Server',
         subTitle: 'Authorize discord and join',
       },
     };

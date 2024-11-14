@@ -1,8 +1,17 @@
-.light,.white,#pado-extension-content,.light #pado-extension-content,.white #pado-extension-content {
+.light,
+.white,
+#pado-extension-content,
+.light #pado-extension-content,
+.white #pado-extension-content {
   --shadow-color: rgba(0, 0, 0, 0.06);
+  --button-tokens-button-primary: #161616;
 }
-.dark,.black,.dark #pado-extension-content,.black #pado-extension-content {
+.dark,
+.black,
+.dark #pado-extension-content,
+.black #pado-extension-content {
   --shadow-color: rgba(0, 0, 0, 0.12);
+  --button-tokens-button-primary: #fffff;
 }
 @mixin shadow($x: 0px, $y: 0px, $blur: 12px, $color: var(--shadow-color)) {
   box-shadow: $x $y $blur $color;
@@ -39,7 +48,7 @@
     @include card-xs_shadow;
   }
   &.done {
-    cursor:default;
+    cursor: default;
     &:hover {
       box-shadow: none;
     }

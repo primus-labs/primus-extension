@@ -106,78 +106,80 @@ const useALGAttest = function useAttest() {
   }, []);
   const getAttestationCallback = useCallback(
     async (res: any) => {
-      const { retcode, retdesc } = JSON.parse(res);
-      if (retcode === '0') {
-        setIntervalSwitch(true);
-        // Restart timing
-        setTimeoutSwitch(false);
-        setTimeout(() => {
-          setTimeoutSwitch(true);
-        }, 50);
-      } else if (retcode === '2') {
-        const errorMsgTitle = [
-          'Assets Verification',
-          'Humanity Verification',
-        ].includes(activeAttestation.attestationType)
-          ? `${activeAttestation.attestationType} failed!`
-          : `${activeAttestation.attestationType} proof failed!`;
-        const msgObj = {
-          type: 'error',
-          title: errorMsgTitle,
-          desc: 'The algorithm has not been initialized.Please try again later.',
-          sourcePageTip: errorMsgTitle,
-        };
-        if (activeAttestation.dataSourceId === 'coinbase') {
-        } else {
-          addMsg(msgObj);
-        }
-        dispatch(setAttestLoading(3));
-        dispatch(
-          setActiveAttestation({
-            loading: 3,
-            msgObj: { ...msgObj, btnTxt: 'Try Again' },
-          })
-        );
+      const { retcode, retdesc, isUserClick } = JSON.parse(res);
+      if (isUserClick === 'true') {
+        if (retcode === '0') {
+          setIntervalSwitch(true);
+          // Restart timing
+          setTimeoutSwitch(false);
+          setTimeout(() => {
+            setTimeoutSwitch(true);
+          }, 50);
+        } else if (retcode === '2') {
+          const errorMsgTitle = [
+            'Assets Verification',
+            'Humanity Verification',
+          ].includes(activeAttestation.attestationType)
+            ? `${activeAttestation.attestationType} failed!`
+            : `${activeAttestation.attestationType} proof failed!`;
+          const msgObj = {
+            type: 'error',
+            title: errorMsgTitle,
+            desc: 'The algorithm has not been initialized.Please try again later.',
+            sourcePageTip: errorMsgTitle,
+          };
+          if (activeAttestation.dataSourceId === 'coinbase') {
+          } else {
+            addMsg(msgObj);
+          }
+          dispatch(setAttestLoading(3));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { ...msgObj, btnTxt: 'Try Again' },
+            })
+          );
 
-        // algorithm is not initialized
+          // algorithm is not initialized
 
-        const { activeRequestAttestation } = await chrome.storage.local.get([
-          'activeRequestAttestation',
-        ]);
-        const parsedActiveRequestAttestation = activeRequestAttestation
-          ? JSON.parse(activeRequestAttestation)
-          : {};
-        if (parsedActiveRequestAttestation.reqType === 'web') {
-          await chrome.runtime.sendMessage({
-            type: 'pageDecode',
-            name: 'end',
-            params: {
-              result: 'warn',
-              failReason: {
-                ...msgObj,
+          const { activeRequestAttestation } = await chrome.storage.local.get([
+            'activeRequestAttestation',
+          ]);
+          const parsedActiveRequestAttestation = activeRequestAttestation
+            ? JSON.parse(activeRequestAttestation)
+            : {};
+          if (parsedActiveRequestAttestation.reqType === 'web') {
+            await chrome.runtime.sendMessage({
+              type: 'pageDecode',
+              name: 'end',
+              params: {
+                result: 'warn',
+                failReason: {
+                  ...msgObj,
+                },
               },
+            });
+          }
+          var eventInfo: any = {
+            eventType: 'ATTESTATION_GENERATE',
+            rawData: {
+              source: parsedActiveRequestAttestation.source,
+              schemaType: parsedActiveRequestAttestation.schemaType,
+              sigFormat: parsedActiveRequestAttestation.sigFormat,
+              // attestationId: uniqueId,
+              status: 'FAILED',
+              reason: 'algorithm is not initialized',
+              event: fromEvents,
+              address: parsedActiveRequestAttestation?.address,
             },
-          });
+          };
+          eventReport(eventInfo);
+          var eventInfoEnd = {
+            ...eventInfo,
+            eventType: 'ATTESTATION_END',
+          };
+          eventReport(eventInfoEnd);
         }
-        var eventInfo: any = {
-          eventType: 'ATTESTATION_GENERATE',
-          rawData: {
-            source: parsedActiveRequestAttestation.source,
-            schemaType: parsedActiveRequestAttestation.schemaType,
-            sigFormat: parsedActiveRequestAttestation.sigFormat,
-            // attestationId: uniqueId,
-            status: 'FAILED',
-            reason: 'algorithm is not initialized',
-            event: fromEvents,
-            address: parsedActiveRequestAttestation?.address,
-          },
-        };
-        eventReport(eventInfo);
-        var eventInfoEnd = {
-          ...eventInfo,
-          eventType: 'ATTESTATION_END',
-        };
-        eventReport(eventInfoEnd);
       }
     },
     [dispatch, activeAttestation.dataSourceId, fromEvents]
@@ -185,107 +187,272 @@ const useALGAttest = function useAttest() {
   const getAttestationResultCallback = useCallback(
     async (res: any) => {
       await chrome.storage.local.set({ getAttestationResultRes: res });
-      const { retcode, content, retdesc, details } = JSON.parse(res);
-      const { activeRequestAttestation } = await chrome.storage.local.get([
-        'activeRequestAttestation',
-      ]);
+      const { retcode, content, retdesc, details, isUserClick } =
+        JSON.parse(res);
+      if (isUserClick === 'true') {
+        const { activeRequestAttestation } = await chrome.storage.local.get([
+          'activeRequestAttestation',
+        ]);
 
-      const parsedActiveRequestAttestation = activeRequestAttestation
-        ? JSON.parse(activeRequestAttestation)
-        : {};
-      const errorMsgTitle = [
-        'Assets Verification',
-        'Humanity Verification',
-      ].includes(activeAttestation.attestationType)
-        ? `${activeAttestation.attestationType} failed!`
-        : `${activeAttestation.attestationType} proof failed!`;
-      var eventInfo: any = {
-        eventType: 'ATTESTATION_GENERATE',
-        rawData: {
-          source: parsedActiveRequestAttestation.source,
-          schemaType: parsedActiveRequestAttestation.schemaType,
-          sigFormat: parsedActiveRequestAttestation.sigFormat,
-        },
-      };
+        const parsedActiveRequestAttestation = activeRequestAttestation
+          ? JSON.parse(activeRequestAttestation)
+          : {};
+        const errorMsgTitle = [
+          'Assets Verification',
+          'Humanity Verification',
+        ].includes(activeAttestation.attestationType)
+          ? `${activeAttestation.attestationType} failed!`
+          : `${activeAttestation.attestationType} proof failed!`;
+        var eventInfo: any = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData: {
+            source: parsedActiveRequestAttestation.source,
+            schemaType: parsedActiveRequestAttestation.schemaType,
+            sigFormat: parsedActiveRequestAttestation.sigFormat,
+          },
+        };
 
-      if (retcode === '0') {
-        clearFetchAttestationTimer();
-        await chrome.storage.local.remove(['activeRequestAttestation']);
+        if (retcode === '0') {
+          clearFetchAttestationTimer();
+          await chrome.storage.local.remove(['activeRequestAttestation']);
 
-        if (
-          content.balanceGreaterThanBaseValue === 'true' &&
-          content.signature
-        ) {
-          const activeRequestId = parsedActiveRequestAttestation.requestid;
-          if (activeRequestId !== content?.requestid) {
-            return;
-          }
-          const acc = getAccount(
-            DATASOURCEMAP[activeAttestation.dataSourceId],
-            sourceMap2[activeAttestation.dataSourceId]
-          );
-          let fullAttestation = {
-            ...content,
-            ...parsedActiveRequestAttestation,
-            ...activeAttestation,
-            account: acc,
-          };
-          if (fullAttestation.verificationContent === 'X Followers') {
-            const xFollowerCount = sessionStorage.getItem('xFollowerCount');
-            fullAttestation.xFollowerCount = xFollowerCount;
-            sessionStorage.removeItem('xFollowerCount');
-          }
+          if (
+            content.balanceGreaterThanBaseValue === 'true' &&
+            content.signature
+          ) {
+            const activeRequestId = parsedActiveRequestAttestation.requestid;
+            if (activeRequestId !== content?.requestid) {
+              return;
+            }
+            const acc = getAccount(
+              DATASOURCEMAP[activeAttestation.dataSourceId],
+              sourceMap2[activeAttestation.dataSourceId]
+            );
+            let fullAttestation = {
+              ...content,
+              ...parsedActiveRequestAttestation,
+              ...activeAttestation,
+              account: acc,
+            };
+            if (fullAttestation.verificationContent === 'X Followers') {
+              const xFollowerCount = sessionStorage.getItem('xFollowerCount');
+              fullAttestation.xFollowerCount = xFollowerCount;
+              sessionStorage.removeItem('xFollowerCount');
+            }
 
-          const credentialsObj = { ...credentialsFromStore };
-          credentialsObj[activeRequestId] = fullAttestation;
-          await chrome.storage.local.set({
-            credentials: JSON.stringify(credentialsObj),
-          });
+            const credentialsObj = { ...credentialsFromStore };
+            credentialsObj[activeRequestId] = fullAttestation;
+            await chrome.storage.local.set({
+              credentials: JSON.stringify(credentialsObj),
+            });
 
-          await initCredList();
-          if (fullAttestation.reqType === 'web') {
-            if (fullAttestation.event) {
-              await storeEventInfoFn(fullAttestation);
+            await initCredList();
+            if (fullAttestation.reqType === 'web') {
+              if (fullAttestation.event) {
+                await storeEventInfoFn(fullAttestation);
+              }
+
+              await chrome.runtime.sendMessage({
+                type: 'pageDecode',
+                name: 'end',
+                params: {
+                  result: 'success',
+                },
+              });
+            }
+            setCredRequestId(activeRequestId);
+            // suc
+            const sucMsgTitle = [
+              'Assets Verification',
+              'Humanity Verification',
+            ].includes(activeAttestation.attestationType)
+              ? `${activeAttestation.attestationType} is created!`
+              : `${activeAttestation.attestationType} proof is created!`;
+            const msgObj = {
+              type: 'suc',
+              title: sucMsgTitle,
+              desc: '',
+              link: '/Attestation',
+            };
+            if (pathname !== '/Attestation') {
+              msgObj.desc = 'See details in the Attestation page.';
+            }
+            if (activeAttestation.dataSourceId !== 'coinbase') {
+              addMsg(msgObj);
+            }
+            dispatch(setAttestLoading(2));
+            dispatch(setActiveAttestation({ loading: 2, msgObj }));
+
+            const uniqueId = strToHexSha256(fullAttestation.signature);
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              attestationId: uniqueId,
+              status: 'SUCCESS',
+              reason: '',
+              event: fromEvents,
+              address: fullAttestation?.address,
+            });
+            eventReport(eventInfo);
+            var eventInfoEnd = {
+              ...eventInfo,
+              eventType: 'ATTESTATION_END',
+            };
+            eventReport(eventInfoEnd);
+          } else if (
+            !content.signature ||
+            content.balanceGreaterThanBaseValue === 'false'
+          ) {
+            // attestTipMap
+            let title = errorMsgTitle;
+            let msgObj = {
+              type: 'error',
+              title,
+              desc: '',
+              sourcePageTip: '',
+            };
+            let btnTxt = '';
+
+            let errorCode;
+            if (!content.signature && content.encodedData) {
+              if (content.extraData) {
+                // chatgpt input error
+                errorCode = JSON.parse(content.extraData).errorCode + '';
+                if (errorCode === '-1200010') {
+                  Object.assign(msgObj, {
+                    type: '',
+                    desc: 'Invalid message.',
+                    sourcePageTip: 'Invalid message.',
+                  });
+                } else {
+                  errorCode = '00103'; // linea event had bund
+                  Object.assign(msgObj, {
+                    type: attestTipMap[errorCode].type,
+                    desc: attestTipMap[errorCode].desc,
+                    sourcePageTip: attestTipMap[errorCode].title,
+                  });
+                }
+              } else {
+                errorCode = '00103'; // linea event had bund
+                Object.assign(msgObj, {
+                  type: attestTipMap[errorCode].type,
+                  desc: attestTipMap[errorCode].desc,
+                  sourcePageTip: attestTipMap[errorCode].title,
+                });
+              }
+            } else if (
+              activeAttestation?.verificationContent === 'Assets Proof' &&
+              activeAttestation?.dataSourceId === 'binance'
+            ) {
+              let type, desc, title;
+              errorCode = '00102';
+              type = attestTipMap[errorCode].type;
+              desc = attestTipMap[errorCode].desc;
+              title = attestTipMap[errorCode].title;
+              Object.assign(msgObj, {
+                type,
+                desc,
+                sourcePageTip: title,
+              });
+            } else {
+              errorCode = '00104';
+              Object.assign(msgObj, {
+                type: attestTipMap[errorCode].type,
+                desc: attestTipMap[errorCode].desc,
+                sourcePageTip: attestTipMap[errorCode].title,
+              });
             }
 
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
               name: 'end',
               params: {
-                result: 'success',
+                result: 'warn',
+                failReason: { ...msgObj },
               },
             });
+            if (activeAttestation.dataSourceId !== 'coinbase') {
+              addMsg(msgObj);
+            }
+            dispatch(setAttestLoading(3));
+            dispatch(
+              setActiveAttestation({
+                loading: 3,
+                msgObj: { ...msgObj, btnTxt },
+              })
+            );
+
+            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+              status: 'FAILED',
+              reason: 'Not met the requirements',
+              event: fromEvents,
+              address: parsedActiveRequestAttestation?.address,
+            });
+            eventReport(eventInfo);
+            var eventInfoEnd = {
+              ...eventInfo,
+              eventType: 'ATTESTATION_END',
+            };
+            eventReport(eventInfoEnd);
           }
-          setCredRequestId(activeRequestId);
-          // suc
-          const sucMsgTitle = [
-            'Assets Verification',
-            'Humanity Verification',
-          ].includes(activeAttestation.attestationType)
-            ? `${activeAttestation.attestationType} is created!`
-            : `${activeAttestation.attestationType} proof is created!`;
-          const msgObj = {
-            type: 'suc',
-            title: sucMsgTitle,
-            desc: '',
-            link: '/zkAttestation',
+        } else if (retcode === '2') {
+          clearFetchAttestationTimer();
+          await chrome.storage.local.remove(['activeRequestAttestation']);
+
+          const {
+            errlog: { code, desc },
+          } = details;
+          const msg = {
+            fullScreenType: 'algorithm',
+            reqMethodName: 'stop',
+            params: {},
           };
-          if (pathname !== '/zkAttestation') {
-            msgObj.desc = 'See details in the zkAttestation page.';
+          postMsg(padoServicePort, msg);
+          var eventInfoMsg = 'Something went wrong';
+          let title = errorMsgTitle;
+          let msgObj = {
+            type: 'warn',
+            title,
+            desc: '',
+            sourcePageTip: '',
+            code: '',
+          };
+          let codeTipObj = attestTipMap[code];
+          if (codeTipObj) {
+          } else {
+            codeTipObj = attestTipMap['99999'];
           }
+          Object.assign(msgObj, {
+            type: codeTipObj.type,
+            desc: codeTipObj.desc,
+            sourcePageTip: codeTipObj.title,
+            code: `Error code: ${code}`,
+          });
+
           if (activeAttestation.dataSourceId !== 'coinbase') {
             addMsg(msgObj);
           }
-          dispatch(setAttestLoading(2));
-          dispatch(setActiveAttestation({ loading: 2, msgObj }));
-
-          const uniqueId = strToHexSha256(fullAttestation.signature);
+          dispatch(setAttestLoading(3));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { ...msgObj, btnTxt: 'Try Again' },
+            })
+          );
+          if (
+            retdesc.indexOf('connect to proxy error') > -1 ||
+            retdesc.indexOf('WebSocket On Error') > -1 ||
+            retdesc.indexOf('connection error') > -1
+          ) {
+            eventInfoMsg = 'Unstable internet connection';
+          }
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
-            attestationId: uniqueId,
-            status: 'SUCCESS',
-            reason: '',
+            status: 'FAILED',
+            reason: eventInfoMsg,
+            detail: {
+              code,
+              desc,
+            },
             event: fromEvents,
-            address: fullAttestation?.address,
+            address: parsedActiveRequestAttestation?.address,
           });
           eventReport(eventInfo);
           var eventInfoEnd = {
@@ -293,169 +460,16 @@ const useALGAttest = function useAttest() {
             eventType: 'ATTESTATION_END',
           };
           eventReport(eventInfoEnd);
-        } else if (
-          !content.signature ||
-          content.balanceGreaterThanBaseValue === 'false'
-        ) {
-          // attestTipMap
-          let title = errorMsgTitle;
-          let msgObj = {
-            type: 'error',
-            title,
-            desc: '',
-            sourcePageTip: '',
-          };
-          let btnTxt = '';
-
-          let errorCode;
-          if (!content.signature && content.encodedData) {
-            if (content.extraData) {
-              // chatgpt input error
-              errorCode = JSON.parse(content.extraData).errorCode + '';
-              Object.assign(msgObj, {
-                type: '',
-                desc: JSON.parse(content.extraData).errorMsg,
-                sourcePageTip: JSON.parse(content.extraData).errorMsg,
-              });
-            } else {
-              errorCode = '00103'; // linea event had bund
-              Object.assign(msgObj, {
-                type: attestTipMap[errorCode].type,
-                desc: attestTipMap[errorCode].desc,
-                sourcePageTip: attestTipMap[errorCode].title,
-              });
-            }
-          } else if (
-            activeAttestation?.verificationContent === 'Assets Proof' &&
-            activeAttestation?.dataSourceId === 'binance'
-          ) {
-            let type, desc, title;
-            errorCode = '00102';
-            type = attestTipMap[errorCode].type;
-            desc = attestTipMap[errorCode].desc;
-            title = attestTipMap[errorCode].title;
-            Object.assign(msgObj, {
-              type,
-              desc,
-              sourcePageTip: title,
-            });
-          } else {
-            errorCode = '00104';
-            Object.assign(msgObj, {
-              type: attestTipMap[errorCode].type,
-              desc: attestTipMap[errorCode].desc,
-              sourcePageTip: attestTipMap[errorCode].title,
+          if (parsedActiveRequestAttestation.reqType === 'web') {
+            await chrome.runtime.sendMessage({
+              type: 'pageDecode',
+              name: 'end',
+              params: {
+                result: 'warn',
+                failReason: { ...msgObj },
+              },
             });
           }
-
-          await chrome.runtime.sendMessage({
-            type: 'pageDecode',
-            name: 'end',
-            params: {
-              result: 'warn',
-              failReason: { ...msgObj },
-            },
-          });
-          if (activeAttestation.dataSourceId !== 'coinbase') {
-            addMsg(msgObj);
-          }
-        }
-        dispatch(setAttestLoading(3));
-        dispatch(
-          setActiveAttestation({
-            loading: 3,
-            msgObj: { ...msgObj, btnTxt },
-          })
-        );
-
-        eventInfo.rawData = Object.assign(eventInfo.rawData, {
-          status: 'FAILED',
-          reason: 'Not met the requirements',
-          event: fromEvents,
-          address: parsedActiveRequestAttestation?.address,
-        });
-        eventReport(eventInfo);
-        var eventInfoEnd = {
-          ...eventInfo,
-          eventType: 'ATTESTATION_END',
-        };
-        eventReport(eventInfoEnd);
-      } else if (retcode === '2') {
-        clearFetchAttestationTimer();
-        await chrome.storage.local.remove(['activeRequestAttestation']);
-
-        const {
-          errlog: { code, desc },
-        } = details;
-        const msg = {
-          fullScreenType: 'algorithm',
-          reqMethodName: 'stop',
-          params: {},
-        };
-        // postMsg(padoServicePort, msg);
-        var eventInfoMsg = 'Something went wrong';
-        let title = errorMsgTitle;
-        let msgObj = {
-          type: 'warn',
-          title,
-          desc: '',
-          sourcePageTip: '',
-          code: '',
-        };
-        let codeTipObj = attestTipMap[code];
-        if (codeTipObj) {
-        } else {
-          codeTipObj = attestTipMap['99999'];
-        }
-        Object.assign(msgObj, {
-          type: codeTipObj.type,
-          desc: codeTipObj.desc,
-          sourcePageTip: codeTipObj.title,
-          code: `Error code: ${code}`,
-        });
-
-        if (activeAttestation.dataSourceId !== 'coinbase') {
-          addMsg(msgObj);
-        }
-        dispatch(setAttestLoading(3));
-        dispatch(
-          setActiveAttestation({
-            loading: 3,
-            msgObj: { ...msgObj, btnTxt: 'Try Again' },
-          })
-        );
-        if (
-          retdesc.indexOf('connect to proxy error') > -1 ||
-          retdesc.indexOf('WebSocket On Error') > -1 ||
-          retdesc.indexOf('connection error') > -1
-        ) {
-          eventInfoMsg = 'Unstable internet connection';
-        }
-        eventInfo.rawData = Object.assign(eventInfo.rawData, {
-          status: 'FAILED',
-          reason: eventInfoMsg,
-          detail: {
-            code,
-            desc,
-          },
-          event: fromEvents,
-          address: parsedActiveRequestAttestation?.address,
-        });
-        eventReport(eventInfo);
-        var eventInfoEnd = {
-          ...eventInfo,
-          eventType: 'ATTESTATION_END',
-        };
-        eventReport(eventInfoEnd);
-        if (parsedActiveRequestAttestation.reqType === 'web') {
-          await chrome.runtime.sendMessage({
-            type: 'pageDecode',
-            name: 'end',
-            params: {
-              result: 'warn',
-              failReason: { ...msgObj },
-            },
-          });
         }
       }
     },
@@ -554,7 +568,7 @@ const useALGAttest = function useAttest() {
       params: {},
     };
     console.log('after timeout port', padoServicePort);
-    // postMsg(padoServicePort, msg);
+    postMsg(padoServicePort, msg);
     await chrome.storage.local.remove(['activeRequestAttestation']);
   }, [
     padoServicePort,

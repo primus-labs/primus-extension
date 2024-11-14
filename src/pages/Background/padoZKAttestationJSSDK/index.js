@@ -106,6 +106,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
+    processAlgorithmReq({
+      reqMethodName: 'start',
+    });
     const {
       activeRequestAttestation: lastActiveRequestAttestationStr,
       padoZKAttestationJSSDKDappTabId: dappTabId,
@@ -116,7 +119,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (lastActiveRequestAttestationStr) {
       await chrome.storage.local.remove(['padoZKAttestationJSSDKBeginAttest']);
       const desc =
-        'A zkAttestation process is currently being generated. Please try again later.';
+        'An attestation process is currently being generated. Please try again later.';
       let resParams = { result: false };
       if (!resParams.result) {
         resParams.errorData = {
@@ -240,7 +243,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       } else if (verificationContent === 'Spot 30-Day Trade Vol') {
         verificationValue = attestationParameters[0];
       } else if (attestationTypeID === '19') {
-        verificationValue = 'Account owner';
+        verificationValue = 'Defined input';
       }
 
       activeAttestationParams = {

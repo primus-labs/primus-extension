@@ -372,6 +372,11 @@ var options = {
           force: true,
         },
         {
+          from: 'src/assets/img/content/iconPrimusSquare.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
           from: 'src/assets/img/content/iconSucc.svg',
           to: path.join(__dirname, 'build'),
           force: true,

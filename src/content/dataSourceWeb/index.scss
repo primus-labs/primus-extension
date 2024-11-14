@@ -12,7 +12,20 @@
     transform: rotate(360deg);
   }
 }
-
+@keyframes growFromBottom {
+  0% {
+    // height: 0;
+    // transform: scaleY(0); /* 完全展开 */
+    // opacity: 0; /* 完全不透明 */
+    transform: translateX(16px);
+  }
+  100% {
+    // height: 44px;
+    // transform: scaleY(1); /* 完全展开 */
+    // opacity: 1; /* 完全不透明 */
+    transform: translateX(0px);
+  }
+}
 #pado-extension-content {
   ul,
   li,
@@ -32,13 +45,15 @@
   .pado-extension-card {
     @include fcss;
     @include pCard;
-    @include card-xs_shadow;
+    @include card-s_shadow;
     padding: var(--spacing-32, 32px) var(--spacing-24, 24px)
       var(--spacing-24, 24px);
-    width: 384px;
+    width: 360px;
     // height: 216px;
-    border: 0;
     box-sizing: border-box;
+    border: 0.5px solid var(--Layer-Tokens-layer-02, #e0e0e0);
+    animation: growFromBottom 1s forwards ease-out;
+    transform: translateX(-16px);
     &.initialized {
       padding-top: var(--spacing-32, 32px);
       .pado-extenstion-center {
@@ -143,6 +158,7 @@
       }
       .confirmBtn {
         height: 32px;
+        width: 66px;
         .loading-spinner {
           width: 16px;
           height: 16px;

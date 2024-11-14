@@ -55,7 +55,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
 
     const onFollowX = useCallback(async () => {
       const targetUrl =
-        'https://x.com/intent/follow?screen_name=padolabs';
+        'https://x.com/intent/follow?screen_name=primus_labs';
       const openXUrlFn = async () => {
         const currentWindowTabs = await chrome.tabs.query({
           active: true,
@@ -166,7 +166,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           <PClose onClick={onClose} />
           <main>
             <header>
-              <h1>Follow PADO</h1>
+              <h1>Follow Primus</h1>
             </header>
             <ul className="socialTasks">
               {questionList.map((i, k) => {

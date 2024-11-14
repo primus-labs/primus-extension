@@ -116,7 +116,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
 
     const onFollowX = useCallback(async () => {
       const targetUrl =
-        'https://x.com/intent/follow?screen_name=padolabs';
+        'https://x.com/intent/follow?screen_name=primus_labs';
       const openXUrlFn = async () => {
         const currentWindowTabs = await chrome.tabs.query({
           active: true,
@@ -228,7 +228,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           const msgId = addMsg({
             type: 'info',
             title: 'Not qualified',
-            desc: 'Please complete the Join PADO Discord event first.',
+            desc: 'Please complete the Join Primus Discord event first.',
             link: '',
           });
           setTimeout(() => {
@@ -870,15 +870,15 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         }
         if (mc === '-110009') {
           title = 'No attestation created';
-          msg = 'Go to zkAttestation page to create.';
-          link = '/zkAttestation';
+          msg = 'Go to Attestation page to create.';
+          link = '/Attestation';
           linkText = 'View details';
         }
 
         if (mc === '-110010') {
           title = 'No new attestation submitted';
-          msg = 'Go to zkAttestation page to submit.';
-          link = '/zkAttestation';
+          msg = 'Go to Attestation page to submit.';
+          link = '/Attestation';
           linkText = 'View details';
         }
 

@@ -15,7 +15,7 @@ export const EVENTNAMEMAP = {
   [ETHSIGNEVENTNAME]: 'SignX Program',
   [BASEVENTNAME]: 'BAS Event',
   [LINEAEVENTNAME]: 'Linea Voyage',
-  [SCROLLEVENTNAME]: 'Scroll zkAttestation',
+  [SCROLLEVENTNAME]: 'Scroll Attestation',
   [LUCKYDRAWEVENTNAME]: 'Lucky Draw',
   [EARLYBIRDNFTEVENTNAME]: 'Early Bird NFT',
 };
