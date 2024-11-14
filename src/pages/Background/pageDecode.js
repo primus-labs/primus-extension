@@ -553,7 +553,7 @@ export const pageDecodeMsgListener = async (
         if (chatGPTExpression) {
           aligorithmParams.chatGPTExpression = chatGPTExpression;
         }
-        const tabs = await chrome.tabs.query({ currentWindow: true });
+        const tabs = await chrome.tabs.query({ /*currentWindow: true*/ });
         const dataSourcePageTabObj = tabs.find(
           (i) => i.id === dataSourcePageTabId
         );
@@ -651,7 +651,7 @@ export const pageDecodeMsgListener = async (
     };
 
     const preAlgorithmFn = async () => {
-      console.log('preAlgorithmFn');
+      console.log('preAlgorithmFn preAlgorithmFlag=', preAlgorithmFlag);
       if (preAlgorithmFlag) {
         return;
       }
