@@ -654,6 +654,7 @@ export const pageDecodeMsgListener = async (
       //if (padoZKAttestationJSSDKBeginAttest === '1') {
       const { resType, resMethodName } = message;
       const errorFn = async () => {
+        preAlgorithmFlag = false;
         let resParams = {
           result: false,
           errorData: {
@@ -730,6 +731,7 @@ export const pageDecodeMsgListener = async (
                   retcode
                 );
                 clearInterval(preAlgorithmTimer);
+                preAlgorithmFlag = false;
                 preAlgorithmStatus = retcode;
                 checkWebRequestIsReadyFn();
               }
