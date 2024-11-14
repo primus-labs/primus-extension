@@ -256,6 +256,9 @@ function DescEl({ status, resultStatus, errorTxt }) {
           vV = `> ${verificationValue}`;
         }
       }
+      if (i.verificationContent === 'ChatGPT image proof') {
+        vC = 'GPT message';
+      }
       // else if (attestationType === 'On-chain Transactions') {
 
       // }
