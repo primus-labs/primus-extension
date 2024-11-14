@@ -140,8 +140,8 @@ const Cards: React.FC<PDropdownProps> = memo(
       ) {
         str = ALLVERIFICATIONCONTENTTYPEEMAP[i.verificationContent].label;
       }
-      if (i.verificationContent === 'i.verificationContent') {
-        str = 'GPT message'
+      if (i.verificationContent === 'ChatGPT image proof') {
+        str = 'GPT message';
       }
       // if (i.attestationType === 'Assets Verification') {
       //   if (i.verificationContent === 'Assets Proof') {
