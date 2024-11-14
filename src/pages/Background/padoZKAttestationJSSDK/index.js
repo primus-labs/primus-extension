@@ -244,6 +244,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
         verificationValue = attestationParameters[0];
       } else if (attestationTypeID === '19') {
         verificationValue = 'Defined input';
+      }else if (attestationTypeID === '20'||attestationTypeID === '21') {
+        verificationValue = 'Defined input';
       }
 
       activeAttestationParams = {

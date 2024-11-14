@@ -595,7 +595,11 @@ export const pageDecodeMsgListener = async (
                 const downloadUrl = requestResDownload.download_url;
                 formatRequests[1].url = downloadUrl;
                 formatRequests[1].method = 'GET';
-                formatRequests[1].headers = { };
+                const headers = formatRequests[1].headers
+                formatRequests[1].headers = {
+                  'host': headers['host']
+                };
+                formatRequests[0] = formatRequests[1];
                 break;
               }
             } else {
