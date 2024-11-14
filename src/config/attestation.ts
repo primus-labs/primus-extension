@@ -223,7 +223,8 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   },
   'On-chain Transactions': {
     id: 'On-chain Transactions',
-    name: 'On-chain Transactions',
+    // name: 'On-chain Transactions',
+    name: 'GPT Message',
     icon: {
       dark: iconAttestationTypeOnChainForDark,
       light: iconAttestationTypeOnChain,

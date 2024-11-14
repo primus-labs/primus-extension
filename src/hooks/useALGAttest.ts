@@ -583,7 +583,8 @@ const useALGAttest = function useAttest() {
       params: {},
     };
     postMsg(padoServicePort, msg);
-    console.log('page_send:getAttestationResult request');
+    console.log('send-getAttestation', new Date().toLocaleString());
+    // console.log('page_send:getAttestationResult request');
   }, [padoServicePort]);
   useTimeout(timeoutFn, ATTESTATIONPOLLINGTIMEOUT, timeoutSwitch, false);
   useInterval(intervalFn, ATTESTATIONPOLLINGTIME, intervalSwitch, false);

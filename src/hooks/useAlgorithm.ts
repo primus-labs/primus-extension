@@ -88,6 +88,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
           }
         }
         if (resMethodName === `getAttestationResult`) {
+          console.log('receive-getAttestationResult', new Date().toLocaleString());
           if (res) {
             const handler = () =>
               savedGetAttestationResultCallback.current(res);

@@ -8,6 +8,7 @@ import AssetDialog from './AssetDialog';
 import HumanityDialog from './HumanityDialog';
 import OnChainDialog from './OnChainDialog';
 import SocialDialog from './SocialDialog';
+import ChatGPTImgDialog from './ChatGPTImgDialog';
 import useMsgs from '@/hooks/useMsgs';
 
 interface PBackProps {
@@ -58,18 +59,31 @@ const PClose: React.FC<PBackProps> = memo(
                 onSubmit={onSubmit}
               />
             )}
-            {type === 'On-chain Transactions' && (
-              <OnChainDialog
+
+            {type === 'Social Connections' && (
+              <SocialDialog
                 presets={presets}
                 type={type}
                 onClose={handleClose}
                 onSubmit={onSubmit}
               />
             )}
-            {type === 'Social Connections' && (
-              <SocialDialog
+            {/* {type === 'On-chain Transactions' && (
+              <OnChainDialog
                 presets={presets}
                 type={type}
+                onClose={handleClose}
+                onSubmit={onSubmit}
+              />
+            )} */}
+            {type === 'On-chain Transactions' && (
+              <ChatGPTImgDialog
+                presets={{
+                  dataSourceId: 'chatgpt',
+                  verificationContent: 'ChatGPT image proof',
+                  verificationValue: 'Proof of image',
+                }}
+                type="Humanity Verification"
                 onClose={handleClose}
                 onSubmit={onSubmit}
               />
