@@ -81,7 +81,7 @@ const PClose: React.FC<PBackProps> = memo(
                 presets={{
                   dataSourceId: 'chatgpt',
                   verificationContent: 'ChatGPT image proof',
-                  verificationValue: 'Proof of image',
+                  verificationValue: 'Image creation',
                 }}
                 type="Humanity Verification"
                 onClose={handleClose}

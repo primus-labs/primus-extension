@@ -119,8 +119,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         if (pswForm.verificationContent === 'ChatGPT image proof') {
                 list = [
                   {
-                    label: 'Account owner',
-                    value: 'Account owner',
+                    label: 'Image creation',
+                    value: 'Image creation',
                     // selected: true,
                   },
                 ];
@@ -191,7 +191,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           } else if (pswForm.verificationContent === 'ChatGPT conversation proof') {
             newValue = 'Account owner';
           }else if (pswForm.verificationContent === 'ChatGPT image proof') {
-            newValue = 'Proof of image';
+            newValue = 'Image creation';
           }
           handleChangePswForm(newValue, 'verificationValue');
         }
