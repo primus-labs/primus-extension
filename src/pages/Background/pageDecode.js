@@ -548,6 +548,7 @@ export const pageDecodeMsgListener = async (
           }
         }
       } else if (dataSource === 'chatgpt') {
+        //debugger
         const { chatGPTExpression } = activeTemplate;
         if (chatGPTExpression) {
           aligorithmParams.chatGPTExpression = chatGPTExpression;
@@ -591,7 +592,7 @@ export const pageDecodeMsgListener = async (
                     headers: JSON.parse(storageRes[requestUrl]).headers,
                   }
                 );
-                debugger
+                //debugger
                 const downloadUrl = requestResDownload.download_url;
                 formatRequests[1].url = downloadUrl;
                 formatRequests[1].method = 'GET';
@@ -622,7 +623,7 @@ export const pageDecodeMsgListener = async (
           console.log('fetch chatgpt conversation error', e);
         }
       }
-      debugger;
+      //debugger;
       Object.assign(aligorithmParams, {
         reqType: 'web',
         host: host,
@@ -669,7 +670,7 @@ export const pageDecodeMsgListener = async (
     listenerFn = async (message, sender, sendResponse) => {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-      if (padoZKAttestationJSSDKBeginAttest === '1') {
+      //if (padoZKAttestationJSSDKBeginAttest === '1') {
         const { resType, resMethodName } = message;
         const errorFn = async () => {
           let resParams = {
@@ -769,7 +770,7 @@ export const pageDecodeMsgListener = async (
             }
           }
         }
-      }
+      //}
     };
     chrome.runtime.onMessage.addListener(listenerFn);
 
