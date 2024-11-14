@@ -87,24 +87,43 @@ const extraRequestFn = async () => {
   const chatgptQuestionSessionId = arr[arr.length - 1];
   const requestUrl = 'https://chatgpt.com/backend-api/conversation';
   const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
-
   const storageRes = await chrome.storage.local.get(requestUrl);
   try {
-    const requestRes = await customFetch(fullRequestUrl, {
+    const { mapping } = await customFetch(fullRequestUrl, {
       method: 'GET',
       headers: JSON.parse(storageRes[requestUrl]).headers,
     });
-
     const messageIds = [];
-    Object.keys(requestRes.mapping).forEach((mK) => {
-      const parts = requestRes.mapping[mK]?.message?.content?.parts;
+    let firstImgPart = '';
+    let extraRequestUrl = '';
+    Object.keys(mapping).forEach((mK) => {
+      const parts = mapping[mK]?.message?.content?.parts;
       if (parts && parts[0]) {
         messageIds.push(mK);
+        if (parts[0].content_type === 'image_asset_pointer') {
+          const assetPointer = parts[0].asset_pointer;
+          if (!firstImgPart) {
+            firstImgPart = assetPointer.split('//')[1];
+          }
+        }
       }
     });
-    const obj = {
+
+    if (activeTemplate.schemaType === 'CHATGPT_IMAGE_PROOF#1') {
+      const requestResDownload = await customFetch(
+        `https://chatgpt.com/backend-api/files/download/${firstImgPart}`,
+        {
+          method: 'GET',
+          headers: JSON.parse(storageRes[requestUrl]).headers,
+        }
+      );
+      extraRequestUrl = requestResDownload.download_url;
+    } else {
+      extraRequestUrl = fullRequestUrl;
+    }
+    const extraRequestStorageObj = {
       request: {
-        url: fullRequestUrl,
+        url: extraRequestUrl,
         method: 'GET',
         headers: {
           host: 'chatgpt.com',
@@ -115,7 +134,7 @@ const extraRequestFn = async () => {
       },
     };
     chrome.storage.local.set({
-      [`${requestUrl}-extra`]: JSON.stringify(obj),
+      [`${requestUrl}-extra`]: JSON.stringify(extraRequestStorageObj),
     });
     RequestsHasCompleted = true;
   } catch (e) {
@@ -324,11 +343,7 @@ export const pageDecodeMsgListener = async (
             await chrome.storage.local.set({
               [formatUrlKey]: JSON.stringify(newCurrRequestObj),
             });
-            console.log(
-              'lastStorage-set',
-              formatUrlKey,
-              newCurrRequestObj
-            );
+            console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
           }
         }
       }
@@ -381,7 +396,7 @@ export const pageDecodeMsgListener = async (
             const sRrequestObj = storageObj[url]
               ? JSON.parse(storageObj[url])
               : {};
-            console.log('sRrequestObj', sRrequestObj, r);
+            // console.log('sRrequestObj', sRrequestObj, r);
             chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
             const headersFlag =
               !r.headers || (!!r.headers && !!sRrequestObj.headers);
@@ -553,74 +568,39 @@ export const pageDecodeMsgListener = async (
         if (chatGPTExpression) {
           aligorithmParams.chatGPTExpression = chatGPTExpression;
         }
-        const tabs = await chrome.tabs.query({ /*currentWindow: true*/ });
-        const dataSourcePageTabObj = tabs.find(
-          (i) => i.id === dataSourcePageTabId
-        );
-        const pathname = new URL(dataSourcePageTabObj.url).pathname;
-        const arr = pathname.split('/');
-        const chatgptQuestionSessionId = arr[arr.length - 1];
-        const requestUrl = 'https://chatgpt.com/backend-api/conversation';
-        const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
-        formatRequests[1].url = fullRequestUrl;
-        formatRequests[1].method = 'GET';
-        formatRequests[1].headers.host = 'chatgpt.com';
-        const storageRes = await chrome.storage.local.get(requestUrl);
-        try {
-          const requestRes = await customFetch(
-            `https://chatgpt.com/backend-api/conversation/${chatgptQuestionSessionId}`,
-            {
-              method: 'GET',
-              headers: JSON.parse(storageRes[requestUrl]).headers,
-            }
-          );
+        const extraRequestSK = `https://chatgpt.com/backend-api/conversation-extra`;
+        const extraSObj = await chrome.storage.local.get([extraRequestSK]);
+        const extraRequestInfo = extraSObj[extraRequestSK]
+          ? JSON.parse(extraSObj[extraRequestSK])
+          : {};
+        const {
+          request: {
+            url,
+            method,
+            headers: { host },
+          },
+          response: { messageIds },
+        } = extraRequestInfo;
 
-          for (const mK of Object.keys(requestRes.mapping)) {
-            if (schemaType === 'CHATGPT_IMAGE_PROOF#1') {
-              const parts = requestRes.mapping[mK]?.message?.content?.parts;
-              if (
-                parts &&
-                parts[0] &&
-                parts[0].content_type === 'image_asset_pointer'
-              ) {
-                const assetPointer = parts[0].asset_pointer;
-                const filePart = assetPointer.split('//')[1];
-                const requestResDownload = await customFetch(
-                  `https://chatgpt.com/backend-api/files/download/${filePart}`,
-                  {
-                    method: 'GET',
-                    headers: JSON.parse(storageRes[requestUrl]).headers,
-                  }
-                );
-                //debugger
-                const downloadUrl = requestResDownload.download_url;
-                formatRequests[1].url = downloadUrl;
-                formatRequests[1].method = 'GET';
-                const headers = formatRequests[1].headers
-                formatRequests[1].headers = {
-                  'host': headers['host']
-                };
-                formatRequests[0] = formatRequests[1];
-                break;
-              }
-            } else {
-              let originSubConditionItem =
-                formatResponse[1].conditions.subconditions[0];
-              formatResponse[1].conditions.subconditions = [];
-              const fieldArr = originSubConditionItem.field.split('.');
-              fieldArr[2] = mK;
-              const parts = requestRes.mapping[mK]?.message?.content?.parts;
-              if (parts && parts[0]) {
-                formatResponse[1].conditions.subconditions.push({
-                  ...originSubConditionItem,
-                  reveal_id: mK,
-                  field: fieldArr.join('.'),
-                });
-              }
-            }
-          }
-        } catch (e) {
-          console.log('fetch chatgpt conversation error', e);
+        formatRequests[1].url = url;
+        formatRequests[1].method = method;
+        formatRequests[1].headers.host = host;
+        if (schemaType === 'CHATGPT_IMAGE_PROOF#1') {
+          formatRequests[0] = formatRequests[1];
+          formatRequests[1].headers = {host};
+        } else {
+          let originSubConditionItem =
+            formatResponse[1].conditions.subconditions[0];
+          formatResponse[1].conditions.subconditions = [];
+          messageIds.forEach((mK) => {
+            const fieldArr = originSubConditionItem.field.split('.');
+            fieldArr[2] = mK;
+            formatResponse[1].conditions.subconditions.push({
+              ...originSubConditionItem,
+              reveal_id: mK,
+              field: fieldArr.join('.'),
+            });
+          });
         }
       }
       //debugger;
@@ -665,98 +645,84 @@ export const pageDecodeMsgListener = async (
         method: 'getAttestation',
         params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
+      console.log('preAlgorithmFn sendMsg-getAttestation', preAlgorithmFlag);
       preAlgorithmFlag = true;
     };
     listenerFn = async (message, sender, sendResponse) => {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       //if (padoZKAttestationJSSDKBeginAttest === '1') {
-        const { resType, resMethodName } = message;
-        const errorFn = async () => {
-          let resParams = {
-            result: false,
-            errorData: {
-              title: 'Launch failed: unstable connection.',
-              desc: 'Launch failed: unstable connection.',
-              code: '00011',
-            },
-          };
-          const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-            await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-          chrome.tabs.sendMessage(dappTabId, {
-            type: 'padoZKAttestationJSSDK',
-            name: 'getAttestationRes',
-            params: resParams,
-          });
-          const attestationType = formatAlgorithmParams?.attestationType;
-          const errorMsgTitle = [
-            'Assets Verification',
-            'Humanity Verification',
-          ].includes(attestationType)
-            ? `${attestationType} failed!`
-            : `${attestationType} proof failed!`;
-
-          msgObj = {
-            type: 'error',
-            title: errorMsgTitle,
-            desc: 'The algorithm has not been initialized.Please try again later.',
-            sourcePageTip: errorMsgTitle,
-          };
-          await chrome.storage.local.remove([
-            'padoZKAttestationJSSDKBeginAttest',
-            'padoZKAttestationJSSDKWalletAddress',
-            'padoZKAttestationJSSDKAttestationPresetParams',
-            'padoZKAttestationJSSDKXFollowerCount',
-            'activeRequestAttestation',
-          ]);
-          if (dataSourcePageTabId) {
-            await chrome.tabs.remove(dataSourcePageTabId);
-          }
+      const { resType, resMethodName } = message;
+      const errorFn = async () => {
+        let resParams = {
+          result: false,
+          errorData: {
+            title: 'Launch failed: unstable connection.',
+            desc: 'Launch failed: unstable connection.',
+            code: '00011',
+          },
         };
-        if (
-          resType === 'algorithm' &&
-          ['getAttestation', 'getAttestationResult'].includes(resMethodName)
-        ) {
+        const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+          await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'getAttestationRes',
+          params: resParams,
+        });
+        const attestationType = formatAlgorithmParams?.attestationType;
+        const errorMsgTitle = [
+          'Assets Verification',
+          'Humanity Verification',
+        ].includes(attestationType)
+          ? `${attestationType} failed!`
+          : `${attestationType} proof failed!`;
+
+        msgObj = {
+          type: 'error',
+          title: errorMsgTitle,
+          desc: 'The algorithm has not been initialized.Please try again later.',
+          sourcePageTip: errorMsgTitle,
+        };
+        await chrome.storage.local.remove([
+          'padoZKAttestationJSSDKBeginAttest',
+          'padoZKAttestationJSSDKWalletAddress',
+          'padoZKAttestationJSSDKAttestationPresetParams',
+          'padoZKAttestationJSSDKXFollowerCount',
+          'activeRequestAttestation',
+        ]);
+        if (dataSourcePageTabId) {
+          await chrome.tabs.remove(dataSourcePageTabId);
+        }
+      };
+      if (
+        resType === 'algorithm' &&
+        ['getAttestation', 'getAttestationResult'].includes(resMethodName)
+      ) {
+        const messageObj = message.res ? JSON.parse(message.res) : {};
+        const { retcode, isUserClick } = messageObj;
+        if (isUserClick === 'false') {
           console.log('preAlgorithm message', message);
           if (resMethodName === 'getAttestation') {
-            const { retcode, isUserClick } = JSON.parse(message.res);
-            if (isUserClick === 'false') {
-              if (retcode === '0') {
-                if (!preAlgorithmTimer) {
-                  preAlgorithmTimer = setInterval(() => {
-                    chrome.runtime.sendMessage({
-                      type: 'algorithm',
-                      method: 'getAttestationResult',
-                      params: {},
-                    });
-                  }, 1000);
-                  console.log('preAlgorithmTimer-set', preAlgorithmTimer);
-                }
-              } else {
-                errorFn();
+            if (retcode === '0') {
+              if (!preAlgorithmTimer) {
+                preAlgorithmTimer = setInterval(() => {
+                  chrome.runtime.sendMessage({
+                    type: 'algorithm',
+                    method: 'getAttestationResult',
+                    params: {},
+                  });
+                }, 1000);
+                console.log('preAlgorithmTimer-set', preAlgorithmTimer);
               }
+            } else {
+              errorFn();
             }
           }
           if (resMethodName === 'getAttestationResult') {
-            if (!message.res) {
-              return;
-            }
             const { retcode, content, retdesc, details, isUserClick } =
-              JSON.parse(message.res);
-            if (isUserClick === 'false') {
-              if (retcode === '1') {
-                if (details.online.statusDescription === 'RUNNING_PAUSE') {
-                  console.log(
-                    'preAlgorithmTimer-clear',
-                    preAlgorithmTimer,
-                    'preAlgorithmStatus',
-                    retcode
-                  );
-                  clearInterval(preAlgorithmTimer);
-                  preAlgorithmStatus = retcode;
-                  checkWebRequestIsReadyFn();
-                }
-              } else if (retcode === '2') {
+              messageObj;
+            if (retcode === '1') {
+              if (details.online.statusDescription === 'RUNNING_PAUSE') {
                 console.log(
                   'preAlgorithmTimer-clear',
                   preAlgorithmTimer,
@@ -765,16 +731,28 @@ export const pageDecodeMsgListener = async (
                 );
                 clearInterval(preAlgorithmTimer);
                 preAlgorithmStatus = retcode;
-                errorFn();
+                checkWebRequestIsReadyFn();
               }
+            } else if (retcode === '2') {
+              console.log(
+                'preAlgorithmTimer-clear',
+                preAlgorithmTimer,
+                'preAlgorithmStatus',
+                retcode
+              );
+              clearInterval(preAlgorithmTimer);
+              preAlgorithmStatus = retcode;
+              errorFn();
             }
           }
         }
+      }
       //}
     };
     chrome.runtime.onMessage.addListener(listenerFn);
 
     if (name === 'init') {
+      resetVarsFn();
       operationType = request.operation;
       const currentWindowTabs = await chrome.tabs.query({
         active: true,
