@@ -587,7 +587,7 @@ export const pageDecodeMsgListener = async (
         formatRequests[1].headers.host = host;
         if (schemaType === 'CHATGPT_IMAGE_PROOF#1') {
           formatRequests[0] = formatRequests[1];
-          formatRequests[1].headers = {host};
+          formatRequests[1].headers = { host };
         } else {
           let originSubConditionItem =
             formatResponse[1].conditions.subconditions[0];
@@ -663,13 +663,18 @@ export const pageDecodeMsgListener = async (
             code: '00011',
           },
         };
-        const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-          await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-        chrome.tabs.sendMessage(dappTabId, {
-          type: 'padoZKAttestationJSSDK',
-          name: 'getAttestationRes',
-          params: resParams,
-        });
+        const { padoZKAttestationJSSDKBeginAttest } =
+          await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+        if (padoZKAttestationJSSDKBeginAttest === '1') {
+          const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+            await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+          dappTabId && chrome.tabs.sendMessage(dappTabId, {
+            type: 'padoZKAttestationJSSDK',
+            name: 'getAttestationRes',
+            params: resParams,
+          });
+        }
+
         const attestationType = formatAlgorithmParams?.attestationType;
         const errorMsgTitle = [
           'Assets Verification',
@@ -678,12 +683,19 @@ export const pageDecodeMsgListener = async (
           ? `${attestationType} failed!`
           : `${attestationType} proof failed!`;
 
-        msgObj = {
+        let msgObj = {
           type: 'error',
           title: errorMsgTitle,
           desc: 'The algorithm has not been initialized.Please try again later.',
           sourcePageTip: errorMsgTitle,
         };
+        var msgObj2 = {
+          type: 'pageDecode',
+          name: 'error',
+          errorData: msgObj,
+        };
+        await chrome.runtime.sendMessage(msgObj2);
+
         await chrome.storage.local.remove([
           'padoZKAttestationJSSDKBeginAttest',
           'padoZKAttestationJSSDKWalletAddress',
@@ -695,6 +707,7 @@ export const pageDecodeMsgListener = async (
           await chrome.tabs.remove(dataSourcePageTabId);
         }
       };
+
       if (
         resType === 'algorithm' &&
         ['getAttestation', 'getAttestationResult'].includes(resMethodName)
@@ -919,6 +932,7 @@ export const pageDecodeMsgListener = async (
     }
 
     if (name === 'close' || name === 'cancel') {
+      console.log('close or cancel', name, dataSourcePageTabId);
       try {
         await chrome.tabs.update(currExtentionId, {
           active: true,

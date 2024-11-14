@@ -648,6 +648,12 @@ const useALGAttest = function useAttest() {
           // if (activeRequest?.type === 'loading') {
           //   setIntervalSwitch(false);
           // }
+        } else if (name === 'error') {
+          addMsg({
+            type: 'error',
+            title: `Humanity Verification failed!`,
+            desc: 'Unable to proceed. Please try again later.',
+          });
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
