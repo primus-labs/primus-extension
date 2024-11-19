@@ -603,6 +603,11 @@ const Nav: React.FC<PButtonProps> = memo(
                 requestParams.dataToBeSigned =
                   activeOnChainAttestation?.dataToBeSigned;
               }
+              if (activeOnChainAttestation?.source === 'chatgpt') {
+                requestParams.extendedData =
+                  activeOnChainAttestation?.extendedData;
+              }
+              ;
               const { rc, result } = await regenerateAttestation(requestParams);
               if (rc === 0) {
                 upChainParams.signature = result.result.signature;

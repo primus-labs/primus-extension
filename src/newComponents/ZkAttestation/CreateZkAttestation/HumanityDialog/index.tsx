@@ -235,10 +235,10 @@ const Nav: React.FC<PButtonProps> = memo(
             type: 'suc',
             title: 'Humanity Verification is created!',
             desc: '',
-            link: '/zkAttestation',
+            link: '/Attestation',
           };
-          if (pathname !== '/zkAttestation') {
-            msgObj.desc = 'See details in the zkAttestation page.';
+          if (pathname !== '/Attestation') {
+            msgObj.desc = 'See details in the Attestation page.';
           }
           const msgId = await addMsg(msgObj);
           const delay = msgObj?.link === pathname ? 5000 : 8000;
@@ -311,7 +311,7 @@ const Nav: React.FC<PButtonProps> = memo(
           await chrome.storage.local.get(['activeRequestAttestation']);
         if (lastActiveRequestAttestationStr) {
           alert(
-            'A zkAttestation process is currently being generated. Please try again later.'
+            'An attestation process is currently being generated. Please try again later.'
           );
           return;
         } else {
@@ -461,7 +461,7 @@ const Nav: React.FC<PButtonProps> = memo(
               <PClose onClick={onClose} />
               <main>
                 <header>
-                  <h1>Create zkAttestation</h1>
+                  <h1>Create Attestation</h1>
                   <h2>You're creating {type.toLowerCase()}.</h2>
                 </header>
                 {presets ? (

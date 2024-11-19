@@ -323,6 +323,15 @@ var options = {
         },
       ],
     }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/content/primus.js',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+      ],
+    }),
     // new CopyWebpackPlugin({
     //   patterns: [
     //     {
@@ -359,6 +368,11 @@ var options = {
         },
         {
           from: 'src/assets/img/content/iconPado.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/iconPrimusSquare.svg',
           to: path.join(__dirname, 'build'),
           force: true,
         },
@@ -419,6 +433,11 @@ var options = {
         },
         {
           from: 'src/assets/img/iconDataSourceGate.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/iconDataSourceChatgpt.svg',
           to: path.join(__dirname, 'build'),
           force: true,
         },

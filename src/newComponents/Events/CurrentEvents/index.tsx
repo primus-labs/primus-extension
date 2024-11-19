@@ -33,7 +33,7 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
             pointIconFont: 'icon-iconBlockChain',
             pointDesc: 'Linea Voyage XP',
           },
-          { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
+          { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
         ],
         // chainDesc: 'Linea Voyage XP', // required when period is 1
       },
@@ -53,7 +53,7 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
             pointIconFont: 'icon-iconBlockChain',
             pointDesc: 'BAS XPS',
           },
-          { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
+          { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
         ],
       },
       {
@@ -69,7 +69,7 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
         title: 'SignX Program',
         desc: 'Building Trust in Trustless Systems',
         points: [
-          { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
+          { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
         ],
       },
       {
@@ -78,15 +78,15 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
 
         periodType: '1',
 
-        picTxt: 'PADO Early Bird NFT Rewards',
-        title: 'BNBChain Attestation Alliance',
+        picTxt: 'Early Bird NFT Rewards',
+        title: 'Early Bird Rewards',
         desc: 'Complete an attestation with any kind of Asset Certificate.',
         points: [
           {
             pointIconFont: 'icon-iconBlockChain',
-            pointDesc: 'PADO Early Birld NFT',
+            pointDesc: 'Early Birld NFT',
           },
-          { pointIconFont: 'icon-iconGift', pointDesc: '100 PADO points' },
+          { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
         ],
       },
     ];

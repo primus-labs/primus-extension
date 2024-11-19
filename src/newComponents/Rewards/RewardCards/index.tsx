@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import SplicedIcons from '@/newComponents/SplicedIcons';
-import iconPado from '@/assets/newImg/layout/iconPado.svg';
+import iconPado from '@/assets/img/content/iconPado.svg';
 import './index.scss';
 dayjs.extend(utc);
 type NavItem = {

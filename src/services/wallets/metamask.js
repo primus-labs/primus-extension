@@ -133,10 +133,10 @@ export const requestSign = async (
         },
         primaryType: 'Request',
         domain: {
-          name: 'PADO Labs',
+          name: 'Primus Labs',
         },
         message: {
-          desc: 'PADO Labs',
+          desc: 'Primus Labs',
           address,
           timestamp,
         },
@@ -159,10 +159,10 @@ export const requestSign = async (
         },
         primaryType: 'Request',
         domain: {
-          name: 'PADO Labs',
+          name: 'Primus Labs',
         },
         message: {
-          desc: 'PADO Labs',
+          desc: 'Primus Labs',
           address,
           timestamp,
         },

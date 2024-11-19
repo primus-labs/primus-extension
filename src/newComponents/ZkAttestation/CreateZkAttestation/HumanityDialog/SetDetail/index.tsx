@@ -107,6 +107,15 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             // selected: true,
           },
         ];
+        // @ts-ignore
+      } else if (pswForm.verificationContent === 'GPT message') {
+        list = [
+          {
+            label: 'Defined input',
+            value: 'Defined input',
+            // selected: true,
+          },
+        ];
       }
       return list;
     }, [pswForm.verificationContent]);
@@ -170,6 +179,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             newValue = 'Basic Verification';
           } else if (pswForm.verificationContent === 'Account ownership') {
             newValue = 'Account owner';
+          } else if (pswForm.verificationContent === 'GPT message') {
+            newValue = 'Defined input';
           }
           handleChangePswForm(newValue, 'verificationValue');
         }

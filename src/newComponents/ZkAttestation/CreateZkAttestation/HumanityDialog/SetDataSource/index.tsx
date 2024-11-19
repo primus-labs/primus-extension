@@ -24,7 +24,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
   // different
   const tList = useMemo(() => {
     const sourceNameArr = ['binance', 'okx', 'tiktok', 'x', 'google'];
-    // 'zan'
+    // 'zan' 'chatgpt'
     const newArr = sourceNameArr.map((i) => {
       const metaInfo = DATASOURCEMAP[i];
       // const isDisabled = !sourceMap2[i];

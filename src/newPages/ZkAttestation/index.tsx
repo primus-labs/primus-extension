@@ -90,7 +90,7 @@ const ZkAttestation = memo(() => {
           <div className="hasNoContent">
             <img src={empty} alt="" />
             <div className="introTxt">
-              <div className="title">No zkAttestation </div>
+              <div className="title">No Attestation </div>
             </div>
           </div>
         )}

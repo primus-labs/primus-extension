@@ -21,6 +21,12 @@ const PADOURLMAP = {
 };
 export let PADOURL = PADOURLMAP[CURENV];
 
+const ZKPADOURLMAP = {
+  development: 'wss://api-dev.padolabs.org/algorithm-proxy',
+  production: 'wss://api.padolabs.org/algorithm-proxy',
+};
+export let ZKPADOURL = ZKPADOURLMAP[CURENV];
+
 const PROXYURLMAP = {
   development: 'wss://api-dev.padolabs.org/algoproxy',
   test: '18.179.8.186:9000',
@@ -694,6 +700,7 @@ export const updateAlgoUrl = async () => {
     console.log('updateAlgoUrl store first');
     const algojsonobj = {
       padoUrl: PADOURL,
+      zkPadoUrl: ZKPADOURL,
       proxyUrl: PROXYURL,
     };
     await chrome.storage.local.set({
@@ -729,9 +736,11 @@ export const updateAlgoUrl = async () => {
         if (!isInited) {
           console.log('updateAlgoUrl onopen update url new');
           PADOURL = `wss://${item.algorithmDomain}/algorithm`;
+          ZKPADOURL = `wss://${item.algorithmDomain}/algorithm-proxy`;
           PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
           const jsonobj = {
             padoUrl: PADOURL,
+            zkPadoUrl: ZKPADOURL,
             proxyUrl: PROXYURL,
           };
           if (jsonobj) {
@@ -766,6 +775,17 @@ export const getPadoUrl = async () => {
     const algorithmUrlObj = JSON.parse(algorithmUrl);
     console.log('updateAlgoUrl getPadoUrl PADOURL=', algorithmUrlObj.padoUrl);
     return algorithmUrlObj.padoUrl;
+  } else {
+    return '';
+  }
+};
+
+export const getZkPadoUrl = async () => {
+  const { algorithmUrl } = await chrome.storage.local.get(['algorithmUrl']);
+  if (algorithmUrl) {
+    const algorithmUrlObj = JSON.parse(algorithmUrl);
+    console.log('updateAlgoUrl getZkPadoUrl ZKPADOURL=', algorithmUrlObj.zkPadoUrl);
+    return algorithmUrlObj.zkPadoUrl;
   } else {
     return '';
   }

@@ -36,12 +36,12 @@ const Overview = memo(() => {
       operationName: 'Connect Data Source',
       link: '/datas',
     },
-    zkAttestation: {
-      id: 'zkAttestation',
-      title: 'zkAttestation',
+    Attestation: {
+      id: 'Attestation',
+      title: 'Attestations',
       num: 0,
-      operationName: 'Create zkAttestation',
-      link: '/zkAttestation',
+      operationName: 'Create Attestation',
+      link: '/Attestation',
     },
     achievement: {
       id: 'achievement',
@@ -102,7 +102,7 @@ const Overview = memo(() => {
     }, {});
     setOnChains(m);
     setItemMap((m) => {
-      m.zkAttestation.num = Object.keys(credentialsFromStore).length;
+      m.Attestation.num = Object.keys(credentialsFromStore).length;
       let newM = { ...m };
       return newM;
     });
@@ -112,7 +112,7 @@ const Overview = memo(() => {
       if (id === 'dataSource') {
         const l = Object.values(connectedDataSources).map((i: any) => i.icon);
         return l;
-      } else if (id === 'zkAttestation') {
+      } else if (id === 'Attestation') {
         return Object.values(onChains).map((i: any) => i.icon);
       } else {
         return [];
@@ -167,7 +167,7 @@ const Overview = memo(() => {
               <div className="desc">
                 <div className="num">{i.num}</div>
                 {i.num > 0 ? (
-                  ['dataSource', 'zkAttestation'].includes(i.id) && (
+                  ['dataSource', 'Attestation'].includes(i.id) && (
                     <SplicedIcons list={iconListFn(i.id)} />
                   )
                 ) : (

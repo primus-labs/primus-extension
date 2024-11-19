@@ -5,7 +5,7 @@ import './index.scss';
 import PButton from '@/newComponents/PButton';
 import { useNavigate } from 'react-router-dom';
 import useRewardsStatistics from '@/hooks/useRewardsStatistics';
-import iconPado from '@/assets/newImg/layout/iconPado.svg';
+import iconPado from '@/assets/img/content/iconPado.svg';
 const Rewards = memo(() => {
   const { rewardsList } = useRewardsStatistics();
   console.log('rewardsList', rewardsList);

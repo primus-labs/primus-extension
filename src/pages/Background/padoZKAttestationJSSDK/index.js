@@ -13,6 +13,8 @@ import { PADOADDRESS } from '@/config/envConstants';
 import { regenerateAttestation } from '@/services/api/cred';
 import { strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from '../dataSourceUtils';
+import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
+import { STARTOFFLINETIMEOUT } from '@/config/constants';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -104,6 +106,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
+    processAlgorithmReq({
+      reqMethodName: 'start',
+    });
     const {
       activeRequestAttestation: lastActiveRequestAttestationStr,
       padoZKAttestationJSSDKDappTabId: dappTabId,
@@ -114,7 +119,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (lastActiveRequestAttestationStr) {
       await chrome.storage.local.remove(['padoZKAttestationJSSDKBeginAttest']);
       const desc =
-        'A zkAttestation process is currently being generated. Please try again later.';
+        'An attestation process is currently being generated. Please try again later.';
       let resParams = { result: false };
       if (!resParams.result) {
         resParams.errorData = {
@@ -137,6 +142,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       walletAddress,
       dappSymbol,
       attestationParameters,
+      algorithmType
       // tokenSymbol,
       // assetsBalance,
       // followersNO,
@@ -188,6 +194,21 @@ export const padoZKAttestationJSSDKMsgListener = async (
       };
       attestBrevisFn(activeAttestationParams, dappTabId);
     } else {
+      let padoUrl;
+      if (algorithmType === "proxytls") {
+        padoUrl = await getZkPadoUrl();
+      } else {
+        padoUrl = await getPadoUrl();
+      }
+      const proxyUrl = await getProxyUrl();
+      chrome.runtime.sendMessage({
+        type: 'algorithm',
+        method: 'startOffline',
+        params: {offlineTimeout: STARTOFFLINETIMEOUT,
+                  padoUrl,
+                  proxyUrl,},
+      });
+
       verificationContent = Object.keys(ALLVERIFICATIONCONTENTTYPEEMAP).find(
         (k) => {
           const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
@@ -221,6 +242,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
         });
       } else if (verificationContent === 'Spot 30-Day Trade Vol') {
         verificationValue = attestationParameters[0];
+      } else if (attestationTypeID === '19') {
+        verificationValue = 'Defined input';
       }
 
       activeAttestationParams = {
@@ -229,6 +252,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         verificationValue,
         fetchType: 'Web',
         attestOrigin: dappSymbol,
+        algorithmType,
       };
       acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
       activeAttestationParams.account = acc;
@@ -244,9 +268,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
         const lastResponseConditions = lastResponse.conditions;
         const lastResponseConditionsSubconditions =
           lastResponseConditions.subconditions;
-        
-        if (['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
-              activeAttestationParams.verificationContent) ){
+
+        if (
+          ['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
+            activeAttestationParams.verificationContent
+          )
+        ) {
           // change verification value
           lastResponseConditions.value =
             activeAttestationParams.verificationValue;
@@ -276,6 +303,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
         activeAttestationParams.attestationType = 'Social Connections';
         activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
           attestationParameters[0];
+      } else if (attestationTypeID === '19') {
+        activeAttestationParams.attestationType = 'Humanity Verification';
+        if (attestationParameters && attestationParameters[0]) {
+          activeAttestationParams.chatGPTExpression = {
+            expression: attestationParameters[1] || 'EQUALS', //CONTAINS OR EQUALS
+            value: attestationParameters[0],
+          };
+        }
       }
 
       chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
@@ -328,7 +363,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ]);
     const attestTipMap =
       JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
-    
+
     const activeAttestationParams = JSON.parse(
       padoZKAttestationJSSDKAttestationPresetParams
     );
@@ -450,9 +485,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
           },
         };
         eventInfo.rawData.attestOrigin = curCredential.attestOrigin;
-        
+
         if (upChainRes) {
-          
           if (upChainRes.error) {
             // if (upChainRes.error === 1) {
             //   sendToChainResult = false;
@@ -476,15 +510,13 @@ export const padoZKAttestationJSSDKMsgListener = async (
             const curEnvChainList = isTestNet
               ? Object.values(EASINFOMAP['development'])
               : ONCHAINLIST;
-            const currentChainObj = curEnvChainList.find(
-              (i) => {
-                if (CURENV === 'production' && chainName === 'Linea Mainnet') {
-                  return 'Linea Goerli' === i.title;
-                } else {
-                  return upchainNetwork === i.title;
-                }
+            const currentChainObj = curEnvChainList.find((i) => {
+              if (CURENV === 'production' && chainName === 'Linea Mainnet') {
+                return 'Linea Goerli' === i.title;
+              } else {
+                return upchainNetwork === i.title;
               }
-            );
+            });
             currentChainObj.attestationUID = upChainRes;
             currentChainObj.submitAddress = address;
             newProvided.push(currentChainObj);
@@ -499,7 +531,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
             await chrome.storage.local.set({
               credentials: JSON.stringify(cObj),
             });
-            
           }
 
           if (curCredential.reqType === 'web') {
@@ -513,10 +544,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
                     mysteryBoxRewards: '1',
                   });
                 }
-              } 
-            } catch {
-
-            }
+              }
+            } catch {}
           }
           // sendToChainResult = true;
           // sendToChainMsg = 'Your attestation is recorded on-chain!';
@@ -535,7 +564,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
           });
           eventReport(eventInfo);
         }
-      } catch (e){
+      } catch (e) {
         console.log('sdk-bg-sdk-receive-sendToChainRes-catch', e);
       }
     }

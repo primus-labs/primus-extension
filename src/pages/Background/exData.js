@@ -3,7 +3,7 @@ import { DATASOURCEMAP } from '@/config/dataSource';
 import { SCROLLEVENTNAME, BASEVENTNAME } from '@/config/events';
 import { schemaTypeMap } from '@/config/constants';
 import { CredVersion } from '@/config/attestation';
-import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
+import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
 import { storeDataSource } from './dataSourceUtils';
 
@@ -160,6 +160,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     requestid: prevRequestid,
     event,
+    algorithmType = 'mpctls'
   } = form;
   // const { baseName } = DATASOURCEMAP[source];
   const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName; // unnecessary for web proof
@@ -173,6 +174,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   let schemaType = schemaTypeMap[type];
   const padoUrl = await getPadoUrl();
   const proxyUrl = await getProxyUrl();
+  const zkPadoUrl = await getZkPadoUrl();
   const params = {
     type,
     label,
@@ -181,7 +183,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     requestid: prevRequestid || timeStampStr,
     //version: CredVersion,
     baseName, // host, such as "api.binance.com"
-    padoUrl: padoUrl, // client <----> pado-server
+    padoUrl: algorithmType === 'proxytls' ? zkPadoUrl : padoUrl, // client <----> pado-server
     proxyUrl: proxyUrl,
     errLogUrl: 'wss://api.padolabs.org/logs',
     // if cipher non-exist or empty use default. options:

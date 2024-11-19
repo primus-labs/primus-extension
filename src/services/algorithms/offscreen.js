@@ -118,6 +118,7 @@ var ClientVersion = '1.1.1';
 function init(params) {
   console.log('init');
 
+  params.errLogUrl = "";
   var req_obj = {
     method: 'init',
     version: ClientVersion,

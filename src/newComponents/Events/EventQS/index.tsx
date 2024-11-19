@@ -36,9 +36,9 @@ const basQsMap = {
   },
   5: {
     id: 5,
-    question: 'How are PADO points for this event counted?',
+    question: 'How are Primus points for this event counted?',
     answer:
-      'For PADO points, it is counted based on your PADO extension account, which means PADO points will not be double counted when you switch wallet address.',
+      'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
   },
 };
 const lineaQsMap = {
@@ -90,9 +90,9 @@ const lineaQsMap = {
   },
   5: {
     id: 5,
-    question: 'How are PADO points for this event counted?',
+    question: 'How are Primus points for this event counted?',
     answer:
-      'For PADO points, it is counted based on your PADO extension account, which means PADO points will not be double counted when you switch wallet address.',
+      'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
     // expand: true,
   },
 };
@@ -101,7 +101,7 @@ const earluBirdQsMap = {
     id: 1,
     question: 'Can I join this event with a different wallet address? ',
     answer:
-      'No, the Early Bird NFT event is only available to early active users, based on the PADO extension account and the wallet address that participated in the event. If you have already claimed an NFT through your current PADO extension, you will not be able to claim again by connecting another wallet through the top right corner.',
+      'No, the Early Bird NFT event is only available to early active users, based on the Primus extension account and the wallet address that participated in the event. If you have already claimed an NFT through your current Primus extension, you will not be able to claim again by connecting another wallet through the top right corner.',
     // expand: true,
   },
   2: {
@@ -113,9 +113,9 @@ const earluBirdQsMap = {
   },
   3: {
     id: 3,
-    question: 'How are PADO points for this event counted?',
+    question: 'How are Primus points for this event counted?',
     answer:
-      'For PADO points, it is counted based on your PADO extension account, which means PADO points will not be double counted when you switch wallet address.',
+      'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
     // expand: true,
   },
 };
@@ -143,9 +143,9 @@ const ethSignQsMap = {
   },
   4: {
     id: 4,
-    question: 'How are PADO points for this event counted?',
+    question: 'How are Primus points for this event counted?',
     answer:
-      'For PADO points, it is counted based on your PADO extension account, which means PADO points will not be double counted when you switch wallet address.',
+      'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
     // expand: true,
   },
 };

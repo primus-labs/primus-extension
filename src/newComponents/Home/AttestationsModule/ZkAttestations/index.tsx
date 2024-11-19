@@ -83,13 +83,13 @@ const Overview = memo(() => {
   }, [onChainAttestationsTypeChainMap]);
 
   const handleMore = useCallback(() => {
-    navigate('/zkAttestation');
+    navigate('/Attestation');
   }, [navigate]);
 
   return (
     <div className="homeZkattestations">
       <div className="title">
-        <span>zkAttestations</span>
+        <span>Attestations</span>
       </div>
       <div className="content">
         <div className="top">

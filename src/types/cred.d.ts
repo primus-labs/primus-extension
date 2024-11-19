@@ -53,6 +53,7 @@ export type CredTypeItemType = {
   fetchType?: string; // Web ,API
   account?: string;
   credVersion: string;
+  extendedData?: string;
 };
 export type CREDENTIALS = {
   [propName: string]: CredTypeItemType;

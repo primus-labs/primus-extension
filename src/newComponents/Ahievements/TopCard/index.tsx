@@ -42,7 +42,7 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(
     const { msgs, addMsg } = useMsgs();
 
     const copyReferralCodeFn = () => {
-      const copyDetail = `Download and install the PADO Chrome extension from https://padolabs.org/. Remember to sign up and fill in my referral code ${referralCode}  to earn extra points.`;
+      const copyDetail = `Download and install the Primus Chrome extension from https://primuslabs.xyz/. Remember to sign up and fill in my referral code ${referralCode}  to earn extra points.`;
       copy(copyDetail);
 
       addMsg({

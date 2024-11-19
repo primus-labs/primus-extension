@@ -16,6 +16,7 @@ import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
 import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.png';
+import iconDataSourceChatgpt from '@/assets/img/iconDataSourceChatgpt.svg';
 
 // import Binance from '@/services/webdata/webexchange/webbinance';
 
@@ -252,6 +253,17 @@ export const DATASOURCEMAP: DataSourceMapType = {
     disabled: true,
 
     connectType: 'API',
+    hidden: true,
+  },
+
+  chatgpt: {
+    id: 'chatgpt',
+    name: 'ChatGPT',
+    type: 'Social',
+    icon: iconDataSourceChatgpt,
+    desc: '',
+    unConnectTip: '',
+    connectType: 'Web',
     hidden: true,
   },
 

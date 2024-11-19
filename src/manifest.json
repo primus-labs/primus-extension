@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "PADO",
-  "description": "PADO Browser Extension",
+  "name": "Primus (prev. PADO)",
+  "description": "Use MPC-TLS to enable trusted and verifiable data flows from Web2 to Web3.",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
     "default_icon": "logo.png"
@@ -37,7 +37,9 @@
         "iconDataSourceBitget.svg",
         "iconDataSourceGate.svg",
         "iconDataSourceMEXC.png",
-        "iconDataSourceHuobi.svg"
+        "iconDataSourceHuobi.svg",
+        "iconDataSourceChatgpt.svg",
+        "iconPrimusSquare.svg"
       ],
       "matches": ["<all_urls>"]
     }
@@ -56,14 +58,20 @@
     },
     {
       "matches": [
-        "https://twitter.com/intent/follow?screen_name=padolabs",
-        "https://x.com/intent/follow?screen_name=padolabs"
+        "https://twitter.com/intent/follow?screen_name=primus_labs",
+        "https://x.com/intent/follow?screen_name=primus_labs"
       ],
       "js": ["xFollow.js"]
     },
     {
       "matches": ["<all_urls>"],
       "js": ["padoZKAttestationJSSDK.bundle.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["primus.js"],
+      "world": "MAIN",
       "run_at": "document_start"
     }
   ]
