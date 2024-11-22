@@ -36,6 +36,8 @@ import { PadoWebsiteMsgListener } from './pageWebsite.js';
 import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm.js';
+import { devconsoleMsgListener } from './devconsole/index.js';
+
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -645,6 +647,15 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       USERPASSWORD,
       fullscreenPort,
       processAlgorithmReq
+    );
+  }
+  if (type === 'devconsole') {
+    devconsoleMsgListener(
+      message,
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort
     );
   }
 });

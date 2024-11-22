@@ -73,6 +73,11 @@
       "js": ["primus.js"],
       "world": "MAIN",
       "run_at": "document_start"
+    },
+    {
+      "matches": ["http://localhost:5173/*"],
+      "js": ["devconsole.bundle.js"],
+      "run_at": "document_start"
     }
   ]
 }

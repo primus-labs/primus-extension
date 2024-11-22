@@ -1,4 +1,3 @@
-console.log('333web 2', +new Date());
 window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
   if (target === 'padoExtension') {
@@ -8,7 +7,7 @@ window.addEventListener('message', (e) => {
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestation',
         params: {
-          hostname: window.location.hostname
+          hostname: window.location.hostname,
         },
       });
     }
@@ -41,7 +40,7 @@ window.addEventListener('message', (e) => {
         params: true,
       });
     }
-    
+
     // if (name === 'beforeunload') {
     //   console.log('sdk-content-padoZKAttestationJSSDK-beforeunload')
     //   var msgObj = {

@@ -58,6 +58,13 @@ var options = {
       'padoZKAttestationJSSDK',
       'index.js'
     ),
+    devconsole: path.join(
+      __dirname,
+      'src',
+      'content',
+      'devconsole',
+      'index.js'
+    ),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
     //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },
