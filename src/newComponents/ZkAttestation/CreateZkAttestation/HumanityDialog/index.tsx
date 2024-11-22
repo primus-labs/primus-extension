@@ -331,6 +331,8 @@ const Nav: React.FC<PButtonProps> = memo(
         dispatch(setActiveAttestation(activeAttestationParams));
 
         if (activeAttestationParams.dataSourceId === 'google') {
+          dispatch(setAttestLoading(1));
+          dispatch(setActiveAttestation({ loading: 1 }));
           await fetchAttestForGoogle(activeAttestationParams);
         } else {
           dispatch(setAttestLoading(1));
