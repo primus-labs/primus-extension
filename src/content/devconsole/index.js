@@ -23,6 +23,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         name: 'checkDataSourceRes',
         params,
       });
+    } else if (name === 'close') {
+      window.postMessage({
+        target: 'devconsole',
+        origin: 'primusExtension',
+        name: 'close',
+        params,
+      });
     }
   }
 });

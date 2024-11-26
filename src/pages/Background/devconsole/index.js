@@ -129,9 +129,10 @@ export const devconsoleMsgListener = async (
     checkDataSourcePageTabId = tabCreatedByPado.id;
     chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
       if (tabId === checkDataSourcePageTabId) {
+        console.log('devconsole-user close data source page')
         chrome.runtime.sendMessage({
           type: 'devconsole',
-          name: 'stop',
+          name: 'close',
         });
       }
     });
