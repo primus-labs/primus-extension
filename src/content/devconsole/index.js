@@ -8,6 +8,12 @@ window.addEventListener('message', (e) => {
         name: 'init',
         params,
       });
+    } else if (name === 'testTemplate') {
+      chrome.runtime.sendMessage({
+        type: 'devconsole',
+        name: 'testTemplate',
+        params,
+      });
     }
   }
 });

@@ -58,7 +58,7 @@ const getExchange = async (message, USERPASSWORD, port) => {
     type,
     params: { apiKey },
   } = message;
-  const exchangeName = type.split('-')[1];  
+  const exchangeName = type.split('-')[1];
   // console.log('getExchange exData type:', type);
   // get ex constructor params
   // request ex data
@@ -160,7 +160,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     requestid: prevRequestid,
     event,
-    algorithmType = 'mpctls'
+    algorithmType = 'mpctls',
   } = form;
   // const { baseName } = DATASOURCEMAP[source];
   const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName; // unnecessary for web proof
@@ -308,6 +308,42 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
   return params;
 }
+export async function assembleAlgorithmParamsForSDK(form) {
+  const {
+    dataSource,
+    algorithmType = 'mpctls',
+    requestid: prevRequestid,
+  } = form;
+  // const urlObj = new URL(dataPageTemplate.baseUrl);
+  // const baseName = urlObj.host;
+  const user = await assembleUserInfoParams();
+  const { userInfo } = await chrome.storage.local.get(['userInfo']);
+  const { id: authUserId } = JSON.parse(userInfo);
+  const authUseridHash = strToHex(authUserId);
+
+  const timeStampStr = (+new Date()).toString();
+  const padoUrl = await getPadoUrl();
+  const proxyUrl = await getProxyUrl();
+  const zkPadoUrl = await getZkPadoUrl();
+  const params = {
+    source: dataSource,
+    requestid: prevRequestid || timeStampStr,
+    padoUrl: algorithmType === 'proxytls' ? zkPadoUrl : padoUrl, // client <----> pado-server
+    proxyUrl: proxyUrl,
+    errLogUrl: 'wss://api.padolabs.org/logs',
+    cipher: '',
+    getdatatime: timeStampStr,
+    credVersion: CredVersion,
+    // sigFormat: 'EAS-Ethereum',
+    // schemaType,
+    user,
+    authUseridHash,
+    setHostName: 'true',
+    ext: { signedAttRequest: JSON.stringify({}) }, // TODO-zktls
+  };
+
+  return params;
+}
 
 async function assembleUidHashRequestsParams(form, USERPASSWORD, port) {
   const sourceLowerCaseName = form.source.toLowerCase();
@@ -436,7 +472,11 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
 }
 async function assembleUserInfoParams(form) {
   const { event } = form;
-  const { connectedWalletAddress, userInfo,padoZKAttestationJSSDKWalletAddress } = await chrome.storage.local.get([
+  const {
+    connectedWalletAddress,
+    userInfo,
+    padoZKAttestationJSSDKWalletAddress,
+  } = await chrome.storage.local.get([
     'connectedWalletAddress',
     'userInfo',
     'padoZKAttestationJSSDKWalletAddress',

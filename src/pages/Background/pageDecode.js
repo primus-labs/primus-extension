@@ -1,4 +1,7 @@
-import { assembleAlgorithmParams } from './exData';
+import {
+  assembleAlgorithmParams,
+  assembleAlgorithmParamsForSDK,
+} from './exData';
 import { storeDataSource } from './dataSourceUtils';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
@@ -141,13 +144,8 @@ export const pageDecodeMsgListener = async (
     let {
       dataSource,
       jumpTo,
-      schemaType,
-      datasourceTemplate: { host, requests, responses, calculations },
-      uiTemplate,
-      id,
-      event,
+      datasourceTemplate: { requests },
     } = activeTemplate;
-    const requestUrlList = requests.map((r) => r.url);
     const isUrlWithQueryFn = (url, queryKeyArr) => {
       const urlStrArr = url.split('?');
       const queryStr = urlStrArr[1];
@@ -165,7 +163,7 @@ export const pageDecodeMsgListener = async (
         jumpTo,
         datasourceTemplate: { requests },
       } = activeTemplate;
-      const { url: currRequestUrl, requestHeaders } = details;
+      const { url: currRequestUrl, requestHeaders ,method} = details;
       let formatUrlKey = currRequestUrl;
       let addQueryStr = '';
       let needQueryDetail = false;
@@ -272,7 +270,7 @@ export const pageDecodeMsgListener = async (
     };
     onBeforeRequestFn = async (subDetails) => {
       let {
-        datasourceTemplate: { host, requests },
+        datasourceTemplate: { requests },
       } = activeTemplate;
       const { url: currRequestUrl, requestBody } = subDetails;
       let formatUrlKey = currRequestUrl;
@@ -323,11 +321,7 @@ export const pageDecodeMsgListener = async (
             await chrome.storage.local.set({
               [formatUrlKey]: JSON.stringify(newCurrRequestObj),
             });
-            console.log(
-              'lastStorage-set',
-              formatUrlKey,
-              newCurrRequestObj
-            );
+            console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
           }
         }
       }
@@ -431,7 +425,7 @@ export const pageDecodeMsgListener = async (
         );
       }
     };
-    // 369-500
+
     const formatAlgorithmParamsFn = async () => {
       let {
         dataSource,
@@ -443,6 +437,7 @@ export const pageDecodeMsgListener = async (
         category,
         requestid,
         algorithmType,
+        sdkVersion,
       } = activeTemplate;
       const form = {
         source: dataSource,
@@ -464,7 +459,17 @@ export const pageDecodeMsgListener = async (
       if (activeTemplate.requestid) {
         form.requestid = activeTemplate.requestid;
       }
-      let aligorithmParams = await assembleAlgorithmParams(form, password);
+      let aligorithmParams = {};
+      if (sdkVersion) {
+        aligorithmParams = await assembleAlgorithmParamsForSDK({
+          dataSource: activeTemplate.dataSource,
+          algorithmType: activeTemplate.algorithmType,
+          requestid: activeTemplate.requestid,
+        });
+      } else {
+        aligorithmParams = await assembleAlgorithmParams(form, password);
+      }
+
       const formatRequests = [];
       for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
@@ -493,44 +498,55 @@ export const pageDecodeMsgListener = async (
         let formateHeader = {},
           formateCookie = {},
           formateBody = {};
-        if (headers && headers.length > 0) {
-          headers.forEach((hk) => {
-            if (curRequestHeader) {
-              const inDataSourceHeaderKey = Object.keys(curRequestHeader).find(
-                (h) => h.toLowerCase() === hk.toLowerCase()
-              );
-              formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
-            }
-          });
-          Object.assign(r, {
-            headers: formateHeader,
-          });
-        }
-        if (cookies && cookies.length > 0) {
-          cookies.forEach((ck) => {
-            formateCookie[ck] = cookiesObj[ck];
-          });
-          Object.assign(r, {
-            cookies: formateCookie,
-          });
-        }
-        if (body && body.length > 0) {
-          body.forEach((hk) => {
-            formateBody[hk] = curRequestBody[hk];
-          });
-          Object.assign(r, {
-            body: formateBody,
-          });
-        }
-        if (queryString) {
-          Object.assign(r, {
-            url: r.url + '?' + queryString,
-          });
-        }
-        if ('queryParams' in r) {
-          delete r.queryParams;
-        }
 
+        if (sdkVersion) {
+          Object.assign(r, {
+            headers: { ...curRequestHeader },
+            cookies: { ...cookiesObj },
+            body: { ...curRequestBody },
+            url: r.url + '?' + queryString,
+            // method: r.method, // TODO-zktls
+          });
+        } else {
+          if (headers && headers.length > 0) {
+            headers.forEach((hk) => {
+              if (curRequestHeader) {
+                const inDataSourceHeaderKey = Object.keys(
+                  curRequestHeader
+                ).find((h) => h.toLowerCase() === hk.toLowerCase());
+                formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
+              }
+            });
+            Object.assign(r, {
+              headers: formateHeader,
+            });
+          }
+
+          if (cookies && cookies.length > 0) {
+            cookies.forEach((ck) => {
+              formateCookie[ck] = cookiesObj[ck];
+            });
+            Object.assign(r, {
+              cookies: formateCookie,
+            });
+          }
+          if (body && body.length > 0) {
+            body.forEach((hk) => {
+              formateBody[hk] = curRequestBody[hk];
+            });
+            Object.assign(r, {
+              body: formateBody,
+            });
+          }
+          if (queryString) {
+            Object.assign(r, {
+              url: r.url + '?' + queryString,
+            });
+          }
+          if ('queryParams' in r) {
+            delete r.queryParams;
+          }
+        }
         formatRequests.push(r);
       }
       const activeInfo = formatRequests.find((i) => i.headers);

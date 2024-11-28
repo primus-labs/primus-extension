@@ -10,7 +10,6 @@ console.log(
 );
 let activeRequest;
 let operationType;
-let attestType;
 let PADOSERVERURL;
 let padoExtensionVersion;
 let activeRequestid;
@@ -391,7 +390,7 @@ function PadoCard() {
     huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
     chatgpt: chrome.runtime.getURL(`iconDataSourceChatgpt.svg`),
   };
-  var iconDataSource = iconMap[activeRequest.dataSource];
+  var iconDataSource = iconMap[activeRequest.dataSource] || iconPado; // TODO-zktls
 
   // useEffect(() => {
   //   rem();

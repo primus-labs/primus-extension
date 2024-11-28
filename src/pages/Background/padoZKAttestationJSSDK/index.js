@@ -18,6 +18,7 @@ import { STARTOFFLINETIMEOUT } from '@/config/constants';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
+let sdkVersion = '';
 const fetchAttestationTemplateList = async () => {
   try {
     const fetchRes = await getProofTypes({
@@ -75,26 +76,31 @@ export const padoZKAttestationJSSDKMsgListener = async (
   if (name === 'initAttestation') {
     await fetchAttestationTemplateList();
     await fetchConfigure();
+    sdkVersion = params.version;
     const { configMap } = await chrome.storage.local.get(['configMap']);
     const sdkSupportHosts =
       JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST) ?? [];
     const dappTabId = await storeDappTabId(sender.tab.id);
-    if (params.hostname === 'localhost') {
-    } else if (!sdkSupportHosts.includes(params.hostname)) {
-      chrome.tabs.sendMessage(dappTabId, {
-        type: 'padoZKAttestationJSSDK',
-        name: 'initAttestationRes',
-        params: {
-          result: false,
-          errorData: {
-            title: '',
-            desc: 'Your dapp is not authorized',
-            code: '00009',
+
+    if (!sdkVersion) {
+      if (params.hostname === 'localhost') {
+      } else if (!sdkSupportHosts.includes(params.hostname)) {
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'initAttestationRes',
+          params: {
+            result: false,
+            errorData: {
+              title: '',
+              desc: 'Your dapp is not authorized',
+              code: '00009',
+            },
           },
-        },
-      });
-      return;
+        });
+        return;
+      }
     }
+
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
     });
@@ -135,214 +141,322 @@ export const padoZKAttestationJSSDKMsgListener = async (
       });
       return;
     }
+    let activeWebProofTemplate = {};
+    let activeAttestationParams = {};
+    let chainName;
+    const requestid = uuidv4();
     sdkParams = params;
-    const {
-      attestationTypeID,
-      chainName,
-      walletAddress,
-      dappSymbol,
-      attestationParameters,
-      algorithmType
-      // tokenSymbol,
-      // assetsBalance,
-      // followersNO,
-      // spot30dTradeVol,
-      // signature,
-      // timestamp,
-    } = params;
+    const { walletAddress } = params;
+    chainName = params.chainName;
     chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
       padoZKAttestationJSSDKWalletAddress: walletAddress,
     });
-    const { webProofTypes } = await chrome.storage.local.get(['webProofTypes']);
-    let webProofTypesList = [];
-    if (webProofTypes) {
-      webProofTypesList = JSON.parse(webProofTypes);
+
+    if (sdkVersion) {
+      // TODO-zktls
+      const templateObj = {
+        id: '1862022265361666048',
+        templateId: 'Test-00011',
+        name: 'baidu fanyi 2',
+        description: 'baidu fanyi 2',
+        category: 'OTHER',
+        status: 'DRAFT',
+        dataSource: 'baidu',
+        dataPageTemplate: '{\n    "baseUrl": "https://fanyi.baidu.com/"\n}',
+        dataSourceTemplate:
+          '[\n    {\n        "requestTemplate": {\n            "targetUrlExpression": "https://fanyi.baidu.com/mtpe/v2/user/getInfo.*",\n            "targetUrlType": "REGX",\n            "ext": {\n            },\n            "dynamicParamters": [\n            ]\n        },\n        "responseTemplate": [\n            {\n                "resolver": {\n                    "type": "JSON_PATH",\n                    "expression": "$.errno"\n                },\n                "valueType": "FIXED_VALUE",\n                "feilds": [\n                    {\n                        "fieldName": "",\n                        "showName": "",\n                        "key": "errno",\n                        "DataType": "number"\n                    }\n                ]\n            }\n        ]\n    }\n]',
+        creator: '1861711491309244416',
+        mine: true,
+        createdTime: '2024-11-28T06:34:38',
+        updatedTime: null,
+      };
+      const {
+        id,
+        name,
+        description,
+        category,
+        dataSource,
+        dataPageTemplate,
+        dataSourceTemplate,
+      } = templateObj;
+      const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
+      const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
+      const host = new URL(jumpTo);
+      const newRequests = dataSourceTemplateObj.reduce((prev, curr, idx) => {
+        const {
+          requestTemplate: { targetUrlExpression, targetUrlType },
+        } = curr;
+        const requestItem = {
+          name: `sdk-${idx}`,
+          url: targetUrlExpression,
+          urlType: targetUrlType,
+        };
+        prev.push(requestItem);
+        return prev;
+      }, []);
+      const opMap = {
+        string: 'REVEAL_STRING',
+        number: 'REVEAL_NUMBER',
+        boolean: 'REVEAL_BOOLEAN',
+      };
+      const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
+        const { responseTemplate } = curr;
+        const subconditions = responseTemplate.reduce((prevS, currS) => {
+          const {
+            resolver: { type, expression },
+            valueType,
+            fieldtype, // TODO-zktls
+            feilds,
+          } = currS;
+          const subconditionItem = {
+            field: expression,
+            op: opMap[feilds[0].DataType],
+            reveal_id: feilds[0].key,
+            type: 'FIELD_REVEAL', // TODO-zktls fieldtype
+          };
+          prevS.push(subconditionItem);
+          return prev;
+        }, []);
+        let responseItem = {
+          conditions: {
+            type: 'CONDITION_EXPANSION',
+            op: '&',
+            subconditions,
+          },
+        };
+        prev.push(responseItem);
+        return prev;
+      }, []);
+      activeWebProofTemplate = {
+        id,
+        name,
+        category,
+        description,
+        dataSource,
+        jumpTo,
+        datasourceTemplate: {
+          host,
+          requests: newRequests,
+          responses: newResponses,
+        },
+      };
+      activeAttestationParams = {
+        dataSourceId: dataSource,
+        verificationContent: name,
+        verificationValue: description,
+        fetchType: 'Web',
+        attestOrigin: 'appId', // TODO-zktls
+        account: '', // TODO-zktls
+        attestationType: category, // TODO-zktls
+        requestid,
+        algorithmType: 'proxytls', // TODO-zktls
+        sdkVersion,
+      };
+      debugger;
     } else {
-      await fetchAttestationTemplateList();
+      sdkParams = params;
+      const {
+        attestationTypeID,
+        dappSymbol,
+        attestationParameters,
+        algorithmType,
+      } = params;
+      chainName = params.chainName;
+
       const { webProofTypes } = await chrome.storage.local.get([
         'webProofTypes',
       ]);
-      webProofTypesList = JSON.parse(webProofTypes);
-    }
-
-    const activeWebProofTemplate = webProofTypesList.find(
-      (i) => i.id === attestationTypeID
-    );
-    let verificationContent = '';
-    let verificationValue;
-    let activeAttestationParams = {};
-    let acc = '';
-    const requestid = uuidv4();
-    if (attestationTypeID === '101') {
-      verificationContent = '3';
-      verificationValue = 'since 2024 July';
-      acc = walletAddress;
-      activeAttestationParams = {
-        dataSourceId: 'web3 wallet',
-        verificationContent,
-        verificationValue,
-        fetchType: 'Web',
-        attestOrigin: dappSymbol,
-        account: walletAddress,
-        attestationType: 'On-chain Transactions',
-        fetchType: 'API',
-        requestid,
-        signature: attestationParameters[0],
-        timestamp: attestationParameters[1],
-        chainName,
-      };
-      attestBrevisFn(activeAttestationParams, dappTabId);
-    } else {
-      let padoUrl;
-      if (algorithmType === "proxytls") {
-        padoUrl = await getZkPadoUrl();
+      let webProofTypesList = [];
+      if (webProofTypes) {
+        webProofTypesList = JSON.parse(webProofTypes);
       } else {
-        padoUrl = await getPadoUrl();
+        await fetchAttestationTemplateList();
+        const { webProofTypes } = await chrome.storage.local.get([
+          'webProofTypes',
+        ]);
+        webProofTypesList = JSON.parse(webProofTypes);
       }
-      const proxyUrl = await getProxyUrl();
-      chrome.runtime.sendMessage({
-        type: 'algorithm',
-        method: 'startOffline',
-        params: {offlineTimeout: STARTOFFLINETIMEOUT,
-                  padoUrl,
-                  proxyUrl,},
-      });
 
-      verificationContent = Object.keys(ALLVERIFICATIONCONTENTTYPEEMAP).find(
-        (k) => {
-          const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
-          const { name } = activeWebProofTemplate;
-          if (
-            [
-              'Assets Proof',
-              'Token Holding',
-              'X Followers',
-              'Spot 30-Day Trade Vol',
-            ].includes(name)
-          ) {
-            return name === obj.value;
-          }
-          return name === obj.label || name === obj.templateName;
-        }
+      activeWebProofTemplate = webProofTypesList.find(
+        (i) => i.id === attestationTypeID
       );
+      let verificationContent = '';
+      let verificationValue;
 
-      if (verificationContent === 'KYC Status') {
-        verificationValue = 'Basic Verification';
-      } else if (verificationContent === 'Account ownership') {
-        verificationValue = 'Account owner';
-      } else if (verificationContent === 'Assets Proof') {
-        verificationValue = attestationParameters[0];
-      } else if (verificationContent === 'Token Holding') {
-        verificationValue = attestationParameters[0];
-      } else if (verificationContent === 'X Followers') {
-        verificationValue = attestationParameters[0];
-        await chrome.storage.local.set({
-          padoZKAttestationJSSDKXFollowerCount: verificationValue,
+      let acc = '';
+
+      if (attestationTypeID === '101') {
+        verificationContent = '3';
+        verificationValue = 'since 2024 July';
+        acc = walletAddress;
+        activeAttestationParams = {
+          dataSourceId: 'web3 wallet',
+          verificationContent,
+          verificationValue,
+          fetchType: 'Web',
+          attestOrigin: dappSymbol,
+          account: walletAddress,
+          attestationType: 'On-chain Transactions',
+          fetchType: 'API',
+          requestid,
+          signature: attestationParameters[0],
+          timestamp: attestationParameters[1],
+          chainName,
+        };
+        attestBrevisFn(activeAttestationParams, dappTabId);
+      } else {
+        let padoUrl;
+        if (algorithmType === 'proxytls') {
+          padoUrl = await getZkPadoUrl();
+        } else {
+          padoUrl = await getPadoUrl();
+        }
+        const proxyUrl = await getProxyUrl();
+        chrome.runtime.sendMessage({
+          type: 'algorithm',
+          method: 'startOffline',
+          params: { offlineTimeout: STARTOFFLINETIMEOUT, padoUrl, proxyUrl },
         });
-      } else if (verificationContent === 'Spot 30-Day Trade Vol') {
-        verificationValue = attestationParameters[0];
-      } else if (attestationTypeID === '19') {
-        verificationValue = 'Defined input';
-      }
 
-      activeAttestationParams = {
-        dataSourceId: activeWebProofTemplate.dataSource,
-        verificationContent,
-        verificationValue,
-        fetchType: 'Web',
-        attestOrigin: dappSymbol,
-        algorithmType,
-      };
-      acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
-      activeAttestationParams.account = acc;
+        verificationContent = Object.keys(ALLVERIFICATIONCONTENTTYPEEMAP).find(
+          (k) => {
+            const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
+            const { name } = activeWebProofTemplate;
+            if (
+              [
+                'Assets Proof',
+                'Token Holding',
+                'X Followers',
+                'Spot 30-Day Trade Vol',
+              ].includes(name)
+            ) {
+              return name === obj.value;
+            }
+            return name === obj.label || name === obj.templateName;
+          }
+        );
 
-      if (
-        ['Assets Proof', 'Token Holding', 'Spot 30-Day Trade Vol'].includes(
-          verificationContent
-        )
-      ) {
-        activeAttestationParams.attestationType = 'Assets Verification';
-        const responses = activeWebProofTemplate.datasourceTemplate.responses;
-        const lastResponse = responses[responses.length - 1];
-        const lastResponseConditions = lastResponse.conditions;
-        const lastResponseConditionsSubconditions =
-          lastResponseConditions.subconditions;
+        if (verificationContent === 'KYC Status') {
+          verificationValue = 'Basic Verification';
+        } else if (verificationContent === 'Account ownership') {
+          verificationValue = 'Account owner';
+        } else if (verificationContent === 'Assets Proof') {
+          verificationValue = attestationParameters[0];
+        } else if (verificationContent === 'Token Holding') {
+          verificationValue = attestationParameters[0];
+        } else if (verificationContent === 'X Followers') {
+          verificationValue = attestationParameters[0];
+          await chrome.storage.local.set({
+            padoZKAttestationJSSDKXFollowerCount: verificationValue,
+          });
+        } else if (verificationContent === 'Spot 30-Day Trade Vol') {
+          verificationValue = attestationParameters[0];
+        } else if (attestationTypeID === '19') {
+          verificationValue = 'Defined input';
+        }
+
+        activeAttestationParams = {
+          dataSourceId: activeWebProofTemplate.dataSource,
+          verificationContent,
+          verificationValue,
+          fetchType: 'Web',
+          attestOrigin: dappSymbol,
+          algorithmType,
+        };
+
+        acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
+        activeAttestationParams.account = acc;
 
         if (
-          ['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
-            activeAttestationParams.verificationContent
+          ['Assets Proof', 'Token Holding', 'Spot 30-Day Trade Vol'].includes(
+            verificationContent
           )
         ) {
-          // change verification value
-          lastResponseConditions.value =
-            activeAttestationParams.verificationValue;
-          // for okx
-          if (lastResponseConditionsSubconditions) {
-            const lastSubCondition =
-              lastResponseConditionsSubconditions[
-                lastResponseConditionsSubconditions.length - 1
-              ];
-            lastSubCondition.value = activeAttestationParams.verificationValue;
+          activeAttestationParams.attestationType = 'Assets Verification';
+          const responses = activeWebProofTemplate.datasourceTemplate.responses;
+          const lastResponse = responses[responses.length - 1];
+          const lastResponseConditions = lastResponse.conditions;
+          const lastResponseConditionsSubconditions =
+            lastResponseConditions.subconditions;
+
+          if (
+            ['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
+              activeAttestationParams.verificationContent
+            )
+          ) {
+            // change verification value
+            lastResponseConditions.value =
+              activeAttestationParams.verificationValue;
+            // for okx
+            if (lastResponseConditionsSubconditions) {
+              const lastSubCondition =
+                lastResponseConditionsSubconditions[
+                  lastResponseConditionsSubconditions.length - 1
+                ];
+              lastSubCondition.value =
+                activeAttestationParams.verificationValue;
+            }
+          } else if (
+            activeAttestationParams.verificationContent === 'Token Holding'
+          ) {
+            if (lastResponseConditionsSubconditions) {
+              const firstSubCondition = lastResponseConditionsSubconditions[0];
+              firstSubCondition.value =
+                activeAttestationParams.verificationValue;
+              firstSubCondition.subconditions[0].value =
+                activeAttestationParams.verificationValue;
+            }
           }
         } else if (
-          activeAttestationParams.verificationContent === 'Token Holding'
+          ['KYC Status', 'Account ownership'].includes(verificationContent)
         ) {
-          if (lastResponseConditionsSubconditions) {
-            const firstSubCondition = lastResponseConditionsSubconditions[0];
-            firstSubCondition.value = activeAttestationParams.verificationValue;
-            firstSubCondition.subconditions[0].value =
-              activeAttestationParams.verificationValue;
+          activeAttestationParams.attestationType = 'Humanity Verification';
+        } else if (['X Followers'].includes(verificationContent)) {
+          activeAttestationParams.attestationType = 'Social Connections';
+          activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
+            attestationParameters[0];
+        } else if (attestationTypeID === '19') {
+          activeAttestationParams.attestationType = 'Humanity Verification';
+          if (attestationParameters && attestationParameters[0]) {
+            activeAttestationParams.chatGPTExpression = {
+              expression: attestationParameters[1] || 'EQUALS', //CONTAINS OR EQUALS
+              value: attestationParameters[0],
+            };
           }
         }
-      } else if (
-        ['KYC Status', 'Account ownership'].includes(verificationContent)
-      ) {
-        activeAttestationParams.attestationType = 'Humanity Verification';
-      } else if (['X Followers'].includes(verificationContent)) {
-        activeAttestationParams.attestationType = 'Social Connections';
-        activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
-          attestationParameters[0];
-      } else if (attestationTypeID === '19') {
-        activeAttestationParams.attestationType = 'Humanity Verification';
-        if (attestationParameters && attestationParameters[0]) {
-          activeAttestationParams.chatGPTExpression = {
-            expression: attestationParameters[1] || 'EQUALS', //CONTAINS OR EQUALS
-            value: attestationParameters[0],
-          };
-        }
       }
-
-      chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
-      await chrome.storage.local.set({
-        padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
-          Object.assign({ chainName }, activeAttestationParams)
-        ),
-      });
-
-      const currRequestTemplate = {
-        ...activeAttestationParams,
-        ...activeWebProofTemplate,
-      };
-
-      pageDecodeMsgListener(
-        {
-          type: 'pageDecode',
-          name: 'init',
-          params: {
-            ...currRequestTemplate,
-            requestid,
-          },
-          // extensionTabId: currentWindowTabs[0]?.id,
-          operation: 'attest',
-        },
-        sender,
-        sendResponse,
-        USERPASSWORD,
-        fullscreenPort,
-        hasGetTwitterScreenName
-      );
     }
+
+    chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
+    await chrome.storage.local.set({
+      padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
+        Object.assign({ chainName }, activeAttestationParams)
+      ),
+    }); // old version's sdk need chainName
+
+    const currRequestTemplate = {
+      ...activeAttestationParams,
+      ...activeWebProofTemplate,
+    };
+
+    pageDecodeMsgListener(
+      {
+        type: 'pageDecode',
+        name: 'init',
+        params: {
+          ...currRequestTemplate,
+          requestid,
+        },
+        // extensionTabId: currentWindowTabs[0]?.id,
+        operation: 'attest',
+      },
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort,
+      hasGetTwitterScreenName
+    );
   }
 
   if (name === 'getAttestationResult') {
