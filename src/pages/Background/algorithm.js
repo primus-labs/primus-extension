@@ -100,6 +100,14 @@ export const algorithmMsgListener = async (
         let result = false;
         if (retcode === '0') {
           result = true;
+          // TODO-zktls
+
+          chrome.runtime.sendMessage({
+            type: 'devconsole',
+            name: 'testInterval',
+          });
+
+          // TODO-zktls
         } else if (retcode === '2') {
           result = false;
           const activeAttestationParams = JSON.parse(

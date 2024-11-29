@@ -308,7 +308,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
   return params;
 }
-export async function assembleAlgorithmParamsForSDK(form) {
+export async function assembleAlgorithmParamsForSDK(form, signedAttRequest) {
   const {
     dataSource,
     algorithmType = 'mpctls',
@@ -316,7 +316,7 @@ export async function assembleAlgorithmParamsForSDK(form) {
   } = form;
   // const urlObj = new URL(dataPageTemplate.baseUrl);
   // const baseName = urlObj.host;
-  const user = await assembleUserInfoParams();
+  const user = await assembleUserInfoParams({});
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   const { id: authUserId } = JSON.parse(userInfo);
   const authUseridHash = strToHex(authUserId);
@@ -339,7 +339,7 @@ export async function assembleAlgorithmParamsForSDK(form) {
     user,
     authUseridHash,
     setHostName: 'true',
-    ext: { signedAttRequest: JSON.stringify({}) }, // TODO-zktls
+    ext: { signedAttRequest: JSON.stringify(signedAttRequest) },
   };
 
   return params;

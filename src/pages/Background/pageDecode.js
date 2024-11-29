@@ -163,7 +163,7 @@ export const pageDecodeMsgListener = async (
         jumpTo,
         datasourceTemplate: { requests },
       } = activeTemplate;
-      const { url: currRequestUrl, requestHeaders ,method} = details;
+      const { url: currRequestUrl, requestHeaders, method } = details;
       let formatUrlKey = currRequestUrl;
       let addQueryStr = '';
       let needQueryDetail = false;
@@ -361,6 +361,7 @@ export const pageDecodeMsgListener = async (
         // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
         const storageObj = await chrome.storage.local.get(interceptorUrlArr);
         const storageArr = Object.values(storageObj);
+        // debugger
         if (storageArr.length === interceptorUrlArr.length) {
           const f = interceptorRequests.every(async (r) => {
             // const storageR = Object.keys(storageObj).find(
@@ -460,12 +461,16 @@ export const pageDecodeMsgListener = async (
         form.requestid = activeTemplate.requestid;
       }
       let aligorithmParams = {};
+      // debugger
       if (sdkVersion) {
-        aligorithmParams = await assembleAlgorithmParamsForSDK({
-          dataSource: activeTemplate.dataSource,
-          algorithmType: activeTemplate.algorithmType,
-          requestid: activeTemplate.requestid,
-        });
+        aligorithmParams = await assembleAlgorithmParamsForSDK(
+          {
+            dataSource: activeTemplate.dataSource,
+            algorithmType: activeTemplate.algorithmType,
+            requestid: activeTemplate.requestid,
+          },
+          activeTemplate
+        );
       } else {
         aligorithmParams = await assembleAlgorithmParams(form, password);
       }
@@ -550,7 +555,7 @@ export const pageDecodeMsgListener = async (
         formatRequests.push(r);
       }
       const activeInfo = formatRequests.find((i) => i.headers);
-      const activeHeader = Object.assign({}, activeInfo.headers);
+      const activeHeader = Object.assign({}, activeInfo?.headers);
       const authInfoName = dataSource + '-auth';
       await chrome.storage.local.set({
         [authInfoName]: JSON.stringify(activeHeader),
@@ -609,7 +614,7 @@ export const pageDecodeMsgListener = async (
         PADOSERVERURL,
         padoExtensionVersion,
       });
-      if (schemaType.startsWith('OKX_TOKEN_HOLDING')) {
+      if (schemaType?.startsWith('OKX_TOKEN_HOLDING')) {
         aligorithmParams.requests[2].url =
           aligorithmParams.requests[2].url.replace('limit=5', 'limit=100');
       }
@@ -690,35 +695,43 @@ export const pageDecodeMsgListener = async (
           resType === 'algorithm' &&
           ['getAttestation', 'getAttestationResult'].includes(resMethodName)
         ) {
-          console.log('preAlgorithm message', message);
-          if (resMethodName === 'getAttestation') {
+          if (message.res) {
             const { retcode, isUserClick } = JSON.parse(message.res);
             if (isUserClick === 'false') {
-              if (retcode === '0') {
-                if (!preAlgorithmTimer) {
-                  preAlgorithmTimer = setInterval(() => {
-                    chrome.runtime.sendMessage({
-                      type: 'algorithm',
-                      method: 'getAttestationResult',
-                      params: {},
-                    });
-                  }, 1000);
-                  console.log('preAlgorithmTimer-set', preAlgorithmTimer);
+              console.log('preAlgorithm message', message);
+              if (resMethodName === 'getAttestation') {
+                if (retcode === '0') {
+                  if (!preAlgorithmTimer) {
+                    preAlgorithmTimer = setInterval(() => {
+                      chrome.runtime.sendMessage({
+                        type: 'algorithm',
+                        method: 'getAttestationResult',
+                        params: {},
+                      });
+                    }, 1000);
+                    console.log('preAlgorithmTimer-set', preAlgorithmTimer);
+                  }
+                } else {
+                  errorFn();
                 }
-              } else {
-                errorFn();
               }
-            }
-          }
-          if (resMethodName === 'getAttestationResult') {
-            if (!message.res) {
-              return;
-            }
-            const { retcode, content, retdesc, details, isUserClick } =
-              JSON.parse(message.res);
-            if (isUserClick === 'false') {
-              if (retcode === '1') {
-                if (details.online.statusDescription === 'RUNNING_PAUSE') {
+              if (resMethodName === 'getAttestationResult') {
+                const { retcode, content, retdesc, details, isUserClick } =
+                  JSON.parse(message.res);
+
+                if (retcode === '1') {
+                  if (details.online.statusDescription === 'RUNNING_PAUSE') {
+                    console.log(
+                      'preAlgorithmTimer-clear',
+                      preAlgorithmTimer,
+                      'preAlgorithmStatus',
+                      retcode
+                    );
+                    clearInterval(preAlgorithmTimer);
+                    preAlgorithmStatus = retcode;
+                    checkWebRequestIsReadyFn();
+                  }
+                } else if (retcode === '2') {
                   console.log(
                     'preAlgorithmTimer-clear',
                     preAlgorithmTimer,
@@ -727,18 +740,8 @@ export const pageDecodeMsgListener = async (
                   );
                   clearInterval(preAlgorithmTimer);
                   preAlgorithmStatus = retcode;
-                  checkWebRequestIsReadyFn();
+                  errorFn();
                 }
-              } else if (retcode === '2') {
-                console.log(
-                  'preAlgorithmTimer-clear',
-                  preAlgorithmTimer,
-                  'preAlgorithmStatus',
-                  retcode
-                );
-                clearInterval(preAlgorithmTimer);
-                preAlgorithmStatus = retcode;
-                errorFn();
               }
             }
           }
@@ -894,20 +897,22 @@ export const pageDecodeMsgListener = async (
             : '';
       }
       eventReport(eventInfo);
+      // debugger;
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
         params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
-
-      const { constructorF } = DATASOURCEMAP[dataSource];
-      if (constructorF) {
-        const ex = new constructorF();
-        // const storageRes = await chrome.storage.local.get([dataSource]);
-        // const hadConnectedCurrDataSource = !!storageRes[dataSource];
-        await storeDataSource(dataSource, ex, port, {
-          withoutMsg: true,
-        });
+      if (!activeTemplate.sdkVersion) {
+        const { constructorF } = DATASOURCEMAP[dataSource];
+        if (constructorF) {
+          const ex = new constructorF();
+          // const storageRes = await chrome.storage.local.get([dataSource]);
+          // const hadConnectedCurrDataSource = !!storageRes[dataSource];
+          await storeDataSource(dataSource, ex, port, {
+            withoutMsg: true,
+          });
+        }
       }
     }
 

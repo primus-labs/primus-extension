@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { eventReport } from '@/services/api/usertracker';
+import { queryTemplateById } from '@/services/api/devconsole';
 import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
@@ -74,9 +75,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
   const { name, params } = request;
 
   if (name === 'initAttestation') {
+    console.log('debuge-zktls-initAttestation');
     await fetchAttestationTemplateList();
     await fetchConfigure();
-    sdkVersion = params.version;
+    sdkVersion = params?.sdkVersion || 'TODO-zktls';
+
     const { configMap } = await chrome.storage.local.get(['configMap']);
     const sdkSupportHosts =
       JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST) ?? [];
@@ -100,7 +103,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
         return;
       }
     }
-
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: '1',
     });
@@ -112,6 +114,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
+    console.log('debuge-zktls-startAttestation', params);
     processAlgorithmReq({
       reqMethodName: 'start',
     });
@@ -146,115 +149,126 @@ export const padoZKAttestationJSSDKMsgListener = async (
     let chainName;
     const requestid = uuidv4();
     sdkParams = params;
-    const { walletAddress } = params;
-    chainName = params.chainName;
-    chrome.storage.local.set({
-      padoZKAttestationJSSDKBeginAttest: '1',
-      padoZKAttestationJSSDKWalletAddress: walletAddress,
-    });
 
-    if (sdkVersion) {
-      // TODO-zktls
-      const templateObj = {
-        id: '1862022265361666048',
-        templateId: 'Test-00011',
-        name: 'baidu fanyi 2',
-        description: 'baidu fanyi 2',
-        category: 'OTHER',
-        status: 'DRAFT',
-        dataSource: 'baidu',
-        dataPageTemplate: '{\n    "baseUrl": "https://fanyi.baidu.com/"\n}',
-        dataSourceTemplate:
-          '[\n    {\n        "requestTemplate": {\n            "targetUrlExpression": "https://fanyi.baidu.com/mtpe/v2/user/getInfo.*",\n            "targetUrlType": "REGX",\n            "ext": {\n            },\n            "dynamicParamters": [\n            ]\n        },\n        "responseTemplate": [\n            {\n                "resolver": {\n                    "type": "JSON_PATH",\n                    "expression": "$.errno"\n                },\n                "valueType": "FIXED_VALUE",\n                "feilds": [\n                    {\n                        "fieldName": "",\n                        "showName": "",\n                        "key": "errno",\n                        "DataType": "number"\n                    }\n                ]\n            }\n        ]\n    }\n]',
-        creator: '1861711491309244416',
-        mine: true,
-        createdTime: '2024-11-28T06:34:38',
-        updatedTime: null,
-      };
+    chainName = params.chainName;
+    let walletAddress;
+    // debugger
+    // TODO-zktls
+    if ('sdkVersion') {
+      // debugger;
       const {
-        id,
-        name,
-        description,
-        category,
-        dataSource,
-        dataPageTemplate,
-        dataSourceTemplate,
-      } = templateObj;
-      const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
-      const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
-      const host = new URL(jumpTo);
-      const newRequests = dataSourceTemplateObj.reduce((prev, curr, idx) => {
-        const {
-          requestTemplate: { targetUrlExpression, targetUrlType },
-        } = curr;
-        const requestItem = {
-          name: `sdk-${idx}`,
-          url: targetUrlExpression,
-          urlType: targetUrlType,
-        };
-        prev.push(requestItem);
-        return prev;
-      }, []);
-      const opMap = {
-        string: 'REVEAL_STRING',
-        number: 'REVEAL_NUMBER',
-        boolean: 'REVEAL_BOOLEAN',
-      };
-      const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
-        const { responseTemplate } = curr;
-        const subconditions = responseTemplate.reduce((prevS, currS) => {
+        attRequest: { attTemplateID, userAddress },
+        appSignature,
+      } = params;
+      walletAddress = userAddress;
+      try {
+        const { rc, result } = await queryTemplateById(attTemplateID);
+        // debugger;
+        if (rc === 0 && result) {
           const {
-            resolver: { type, expression },
-            valueType,
-            fieldtype, // TODO-zktls
-            feilds,
-          } = currS;
-          const subconditionItem = {
-            field: expression,
-            op: opMap[feilds[0].DataType],
-            reveal_id: feilds[0].key,
-            type: 'FIELD_REVEAL', // TODO-zktls fieldtype
+            id,
+            name,
+            description,
+            category,
+            dataSource,
+            dataPageTemplate,
+            dataSourceTemplate,
+          } = result;
+          const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
+          const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
+          const host = new URL(jumpTo).host;
+          const newRequests = dataSourceTemplateObj.reduce(
+            (prev, curr, idx) => {
+              const {
+                requestTemplate: { targetUrlExpression, targetUrlType, method },
+              } = curr;
+              const requestItem = {
+                name: `sdk-${idx}`,
+                url: targetUrlExpression,
+                urlType: targetUrlType,
+                method,
+              };
+              prev.push(requestItem);
+              return prev;
+            },
+            []
+          );
+          const opMap = {
+            string: 'REVEAL_STRING',
+            number: 'REVEAL_NUMBER',
+            boolean: 'REVEAL_BOOLEAN',
           };
-          prevS.push(subconditionItem);
-          return prev;
-        }, []);
-        let responseItem = {
-          conditions: {
-            type: 'CONDITION_EXPANSION',
-            op: '&',
-            subconditions,
-          },
-        };
-        prev.push(responseItem);
-        return prev;
-      }, []);
-      activeWebProofTemplate = {
-        id,
-        name,
-        category,
-        description,
-        dataSource,
-        jumpTo,
-        datasourceTemplate: {
-          host,
-          requests: newRequests,
-          responses: newResponses,
-        },
-      };
-      activeAttestationParams = {
-        dataSourceId: dataSource,
-        verificationContent: name,
-        verificationValue: description,
-        fetchType: 'Web',
-        attestOrigin: 'appId', // TODO-zktls
-        account: '', // TODO-zktls
-        attestationType: category, // TODO-zktls
-        requestid,
-        algorithmType: 'proxytls', // TODO-zktls
-        sdkVersion,
-      };
-      debugger;
+          const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
+            const { responseTemplate } = curr;
+            const subconditions = responseTemplate.reduce((prevS, currS) => {
+              const {
+                resolver: { type, expression },
+                valueType,
+                fieldType, // TODO-zktls
+                feilds,
+              } = currS;
+              const subconditionItem = {
+                field: expression,
+                op: opMap[feilds[0].DataType],
+                reveal_id: feilds[0].key,
+                type: fieldType, // TODO-zktls fieldType
+              };
+              prevS.push(subconditionItem);
+              return prevS;
+            }, []);
+            let responseItem = {
+              conditions: {
+                type: 'CONDITION_EXPANSION',
+                op: '&',
+                subconditions,
+              },
+            };
+            prev.push(responseItem);
+            return prev;
+          }, []);
+          activeWebProofTemplate = {
+            id,
+            name,
+            category,
+            description,
+            dataSource,
+            jumpTo,
+            datasourceTemplate: {
+              host,
+              requests: newRequests,
+              responses: newResponses,
+            },
+            sdkVersion: 'TODO-zktls', // TODO-zktls
+          };
+          activeAttestationParams = {
+            dataSourceId: dataSource,
+            verificationContent: name,
+            verificationValue: description,
+            fetchType: 'Web',
+            attestOrigin: '0xad0c72c8d4f9c5bb1dcf591748e49645b21fe4dd', // TODO-zktls
+            account: '', // TODO-zktls
+            attestationType: category, // TODO-zktls
+            requestid,
+            algorithmType: 'proxytls', // TODO-zktls
+            sdkVersion: 'TODO-zktls', // TODO-zktls
+          };
+        }
+      } catch {}
+
+      // attRequest: {
+      //   appId,
+      //   attTemplateID: templateId,
+      //   userAddress: walletAddress,
+      //   timestamp: +new Date(),
+      //   // attMode: {
+      //   //   algorithmType: "proxytls",
+      //   //   resultType: "plain",
+      //   // },
+      // },
+      // appSignature: signStr,
+      // TODO-zktls
     } else {
+      walletAddress = params.walletAddress;
       sdkParams = params;
       const {
         attestationTypeID,
@@ -428,6 +442,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
       }
     }
 
+    chrome.storage.local.set({
+      padoZKAttestationJSSDKBeginAttest: '1',
+      padoZKAttestationJSSDKWalletAddress: walletAddress,
+    });
     chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
     await chrome.storage.local.set({
       padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
@@ -439,6 +457,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ...activeAttestationParams,
       ...activeWebProofTemplate,
     };
+    // debugger
 
     pageDecodeMsgListener(
       {
