@@ -562,13 +562,7 @@ export const pageDecodeMsgListener = async (
         [authInfoName]: JSON.stringify(activeHeader),
       });
       let formatResponse = JSON.parse(JSON.stringify(responses));
-      if (dataSource === 'binance') {
-        for (const fr of formatRequests) {
-          if (fr.headers) {
-            fr.headers['Accept-Encoding'] = 'identity';
-          }
-        }
-      } else if (dataSource === 'chatgpt') {
+      if (dataSource === 'chatgpt') {
         const { chatGPTExpression } = activeTemplate;
         if (chatGPTExpression) {
           aligorithmParams.chatGPTExpression = chatGPTExpression;
@@ -602,6 +596,12 @@ export const pageDecodeMsgListener = async (
             field: fieldArr.join('.'),
           });
         });
+      } else {
+        for (const fr of formatRequests) {
+          if (fr.headers) {
+            fr.headers['Accept-Encoding'] = 'identity';
+          }
+        }
       }
       Object.assign(aligorithmParams, {
         reqType: 'web',
