@@ -328,9 +328,10 @@ export const pageDecodeMsgListener = async (
     };
     onCompletedFn = async (details) => {
       let { dataSource } = activeTemplate;
+      console.log('onCompletedFn', dataSource, details);
       if (dataSource === 'chatgpt') {
         // chatgpt has only one requestUrl
-        console.log('onCompletedFn', details);
+
         await extraRequestFn();
         console.log('setUIStep-toVerify');
         chrome.tabs.sendMessage(
@@ -509,7 +510,7 @@ export const pageDecodeMsgListener = async (
             headers: { ...curRequestHeader },
             cookies: { ...cookiesObj },
             body: { ...curRequestBody },
-            url: r.url + '?' + queryString,
+            url: queryString ? r.url + '?' + queryString : r.url,
             // method: r.method, // TODO-zktls
           });
         } else {
