@@ -75,10 +75,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
   const { name, params } = request;
 
   if (name === 'initAttestation') {
-    console.log('debuge-zktls-initAttestation');
+    console.log('debuge-zktls-initAttestation', params?.sdkVersion);
     await fetchAttestationTemplateList();
     await fetchConfigure();
-    sdkVersion = params?.sdkVersion || 'TODO-zktls';
+    sdkVersion = params?.sdkVersion;
 
     const { configMap } = await chrome.storage.local.get(['configMap']);
     const sdkSupportHosts =
@@ -114,7 +114,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
-    console.log('debuge-zktls-startAttestation', params);
+    console.log('debuge-zktls-startAttestation', sdkVersion, params);
+    sdkVersion = params.sdkVersion;
     processAlgorithmReq({
       reqMethodName: 'start',
     });
@@ -154,7 +155,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     let walletAddress;
     // debugger
     // TODO-zktls
-    if ('sdkVersion') {
+    if (sdkVersion) {
       // debugger;
       const {
         attRequest: { attTemplateID, userAddress },
@@ -238,7 +239,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
               requests: newRequests,
               responses: newResponses,
             },
-            sdkVersion: 'TODO-zktls', // TODO-zktls
           };
           activeAttestationParams = {
             dataSourceId: dataSource,
@@ -250,7 +250,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             attestationType: category, // TODO-zktls
             requestid,
             algorithmType: 'proxytls', // TODO-zktls
-            sdkVersion: 'TODO-zktls', // TODO-zktls
+            sdkVersion,
           };
         }
       } catch {}

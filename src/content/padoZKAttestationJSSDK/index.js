@@ -8,6 +8,7 @@ window.addEventListener('message', (e) => {
         name: 'initAttestation',
         params: {
           hostname: window.location.hostname,
+          ...params,
         },
       });
     }
