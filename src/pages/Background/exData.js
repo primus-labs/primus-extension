@@ -199,6 +199,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     authUseridHash,
     event,
     setHostName: 'true',
+    hasFirstReq: 'true' // default  false
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
