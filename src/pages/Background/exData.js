@@ -326,6 +326,8 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   const padoUrl = await getPadoUrl();
   const proxyUrl = await getProxyUrl();
   const zkPadoUrl = await getZkPadoUrl();
+
+  const appSignParameters = JSON.parse(ext.appSignParameters);
   const params = {
     source: dataSource,
     requestid: prevRequestid || timeStampStr,
@@ -340,7 +342,12 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
     user,
     authUseridHash,
     setHostName: 'true',
-    ext,
+    appParameters: {
+      appId: appSignParameters.appId,
+      appSignParameters: ext.appSignParameters,
+      appSignature: ext.appSignature,
+      additionParams: appSignParameters.additionParams ? appSignParameters.additionParams:""
+    }
   };
 
   return params;
