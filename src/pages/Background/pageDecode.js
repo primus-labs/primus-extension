@@ -45,7 +45,7 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
   ]);
-  if (padoZKAttestationJSSDKBeginAttest === '1') {
+  if (padoZKAttestationJSSDKBeginAttest) {
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -470,7 +470,7 @@ export const pageDecodeMsgListener = async (
             algorithmType: activeTemplate.algorithmType,
             requestid: activeTemplate.requestid,
           },
-          activeTemplate
+          activeTemplate.ext
         );
       } else {
         aligorithmParams = await assembleAlgorithmParams(form, password);
@@ -511,7 +511,6 @@ export const pageDecodeMsgListener = async (
             cookies: { ...cookiesObj },
             body: { ...curRequestBody },
             url: queryString ? r.url + '?' + queryString : r.url,
-            // method: r.method, // TODO-zktls
           });
         } else {
           if (headers && headers.length > 0) {
@@ -649,7 +648,7 @@ export const pageDecodeMsgListener = async (
     listenerFn = async (message, sender, sendResponse) => {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-      if (padoZKAttestationJSSDKBeginAttest === '1') {
+      if (padoZKAttestationJSSDKBeginAttest) {
         const { resType, resMethodName } = message;
         const errorFn = async () => {
           let resParams = {
@@ -890,12 +889,15 @@ export const pageDecodeMsgListener = async (
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
-      if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrigin =
+      if (padoZKAttestationJSSDKBeginAttest) {
+        const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
-            ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
-                .attestOrigin
-            : '';
+        );
+        const formatOrigin =
+          padoZKAttestationJSSDKBeginAttest === '1'
+            ? prestParamsObj.attestOrigin
+            : prestParamsObj.appId;
+        eventInfo.rawData.attestOrigin = formatOrigin;
       }
       eventReport(eventInfo);
       // debugger;

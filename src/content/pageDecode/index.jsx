@@ -149,7 +149,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     };
     const { padoZKAttestationJSSDKBeginAttest } =
       await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-    if (padoZKAttestationJSSDKBeginAttest === '1') {
+    if (padoZKAttestationJSSDKBeginAttest) {
       eventInfo.rawData.origin = 'padoAttestationJSSDK';
     }
     eventReport(eventInfo);

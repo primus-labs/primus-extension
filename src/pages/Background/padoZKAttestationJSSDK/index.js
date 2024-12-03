@@ -104,7 +104,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       }
     }
     await chrome.storage.local.set({
-      padoZKAttestationJSSDKBeginAttest: '1',
+      padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
     });
     processAlgorithmReq({
       reqMethodName: 'start',
@@ -153,10 +153,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
 
     chainName = params.chainName;
     let walletAddress;
-    // debugger
-    // TODO-zktls
     if (sdkVersion) {
-      // debugger;
       const {
         attRequest: { attTemplateID, userAddress },
         appSignature,
@@ -205,14 +202,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
               const {
                 resolver: { type, expression },
                 valueType,
-                fieldType, // TODO-zktls
+                fieldType,
                 feilds,
               } = currS;
               const subconditionItem = {
                 field: expression,
                 op: opMap[feilds[0].DataType],
                 reveal_id: feilds[0].key,
-                type: fieldType, // TODO-zktls fieldType
+                type: fieldType,
               };
               prevS.push(subconditionItem);
               return prevS;
@@ -245,28 +242,21 @@ export const padoZKAttestationJSSDKMsgListener = async (
             verificationContent: name,
             verificationValue: description,
             fetchType: 'Web',
-            attestOrigin: '0xad0c72c8d4f9c5bb1dcf591748e49645b21fe4dd', // TODO-zktls
-            account: '', // TODO-zktls
-            attestationType: category, // TODO-zktls
+            attestOrigin: params.appId, // TODO-zktls
+            account: '',
+            attestationType: category,
             requestid,
-            algorithmType: 'proxytls', // TODO-zktls
+            algorithmType: params.attMode?.algorithmType ||  'proxytls', // TODO-zktls
             sdkVersion,
+            ext: {
+              appSignParameters: JSON.stringify(params.attRequest),
+              appSignature,
+            },
           };
         }
-      } catch {}
-
-      // attRequest: {
-      //   appId,
-      //   attTemplateID: templateId,
-      //   userAddress: walletAddress,
-      //   timestamp: +new Date(),
-      //   // attMode: {
-      //   //   algorithmType: "proxytls",
-      //   //   resultType: "plain",
-      //   // },
-      // },
-      // appSignature: signStr,
-      // TODO-zktls
+      } catch (e) {
+        console.log('sdk template error:',e);
+      }
     } else {
       walletAddress = params.walletAddress;
       sdkParams = params;
@@ -443,7 +433,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
 
     chrome.storage.local.set({
-      padoZKAttestationJSSDKBeginAttest: '1',
+      padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
       padoZKAttestationJSSDKWalletAddress: walletAddress,
     });
     chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
@@ -457,7 +447,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ...activeAttestationParams,
       ...activeWebProofTemplate,
     };
-    // debugger
 
     pageDecodeMsgListener(
       {
@@ -712,7 +701,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
   ]);
-  if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest === '1') {
+  if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest) {
     pageDecodeMsgListener({
       type: 'pageDecode',
       name: 'cancel',

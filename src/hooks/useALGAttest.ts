@@ -594,7 +594,7 @@ const useALGAttest = function useAttest() {
       if (type === 'pageDecode') {
         const { padoZKAttestationJSSDKBeginAttest } =
           await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-        if (padoZKAttestationJSSDKBeginAttest === '1') {
+        if (padoZKAttestationJSSDKBeginAttest) {
           return;
         }
         console.log('222message', message, activeAttestation);

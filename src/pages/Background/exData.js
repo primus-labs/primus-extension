@@ -309,7 +309,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 
   return params;
 }
-export async function assembleAlgorithmParamsForSDK(form, signedAttRequest) {
+export async function assembleAlgorithmParamsForSDK(form, ext) {
   const {
     dataSource,
     algorithmType = 'mpctls',
@@ -340,7 +340,7 @@ export async function assembleAlgorithmParamsForSDK(form, signedAttRequest) {
     user,
     authUseridHash,
     setHostName: 'true',
-    ext: { signedAttRequest: JSON.stringify(signedAttRequest) },
+    ext,
   };
 
   return params;

@@ -190,7 +190,7 @@ const processAlgorithmReq = async (message, port) => {
           'webProofTypes',
         ]);
 
-        if (padoZKAttestationJSSDKBeginAttest === '1') {
+        if (padoZKAttestationJSSDKBeginAttest) {
           const attestationTypeIdList = (
             webProofTypes ? JSON.parse(webProofTypes) : []
           ).map((i) => {
@@ -285,7 +285,7 @@ const processAlgorithmReq = async (message, port) => {
       if (params?.from === 'beforeunload') {
         const { padoZKAttestationJSSDKBeginAttest } =
           await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-        if (padoZKAttestationJSSDKBeginAttest !== '1') {
+        if (!padoZKAttestationJSSDKBeginAttest) {
           await stopFn();
         }
       } else {
@@ -594,12 +594,16 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
-      if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrigin =
+      if (padoZKAttestationJSSDKBeginAttest) {
+        const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
-            ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
-                .attestOrigin
-            : '';
+        );
+        const formatOrigin =
+          padoZKAttestationJSSDKBeginAttest === '1'
+            ? prestParamsObj.attestOrigin
+            : prestParamsObj.appId;
+
+        eventInfo.rawData.attestOrigin = formatOrigin;
       }
       eventReport(eventInfo);
     }

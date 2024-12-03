@@ -8,36 +8,6 @@ window.addEventListener('message', (e) => {
         name: 'init',
         params,
       });
-    } else if (name === 'testTemplate') {
-      // TODO-zktls
-      // chrome.runtime.sendMessage({
-      //   type: 'devconsole',
-      //   name: 'testTemplate',
-      //   params,
-      // });
-      chrome.runtime.sendMessage({
-        type: 'padoZKAttestationJSSDK',
-        name: 'initAttestation',
-        params,
-      });
-      setTimeout(() => {
-        chrome.runtime.sendMessage({
-          type: 'padoZKAttestationJSSDK',
-          name: 'startAttestation',
-          params,
-        });
-        // TODO-zktls
-        // setTimeout(() => {
-        //   setInterval(() => {
-        //     chrome.runtime.sendMessage({
-        //       type: 'padoZKAttestationJSSDK',
-        //       name: 'getAttestationResult',
-        //       params: {},
-        //     });
-        //   }, 1000);
-        // }, 10000);
-        // TODO-zktls
-      }, 3000);
     }
   }
 });
@@ -60,16 +30,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         name: 'close',
         params,
       });
-    } else if (name === 'testInterval') {
-      // TODO-zktls
-      setInterval(() => {
-        chrome.runtime.sendMessage({
-          type: 'padoZKAttestationJSSDK',
-          name: 'getAttestationResult',
-          params,
-        });
-      }, 1000);
-      // TODO-zktls
     }
   }
 });
