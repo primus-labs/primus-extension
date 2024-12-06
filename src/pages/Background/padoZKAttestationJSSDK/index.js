@@ -242,11 +242,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
             verificationContent: name,
             verificationValue: description,
             fetchType: 'Web',
-            attestOrigin: params.appId, // TODO-zktls
+            attestOrigin: params.attRequest?.appId, // TODO-zktls
             account: '',
             attestationType: category,
             requestid,
-            algorithmType: params.attMode?.algorithmType ||  'proxytls', // TODO-zktls
+            algorithmType: params.attRequest?.attMode?.algorithmType ||  'proxytls', // TODO-zktls
             sdkVersion,
             ext: {
               appSignParameters: JSON.stringify(params.attRequest),
