@@ -349,6 +349,10 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
       additionParams: appSignParameters.additionParams ? appSignParameters.additionParams:""
     }
   };
+  if (ext.padoUrl && ext.proxyUrl) {
+    params.padoUrl = ext.padoUrl;
+    params.proxyUrl = ext.proxyUrl;
+  }
 
   return params;
 }

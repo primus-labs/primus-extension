@@ -153,6 +153,26 @@ export const padoZKAttestationJSSDKMsgListener = async (
 
     chainName = params.chainName;
     let walletAddress;
+
+    let padoUrl;
+    let algorithmType;
+    if (sdkVersion) {
+      algorithmType = params.attRequest?.attMode?.algorithmType ||  'proxytls';
+    } else {
+      algorithmType = params.algorithmType;
+    }
+    if (algorithmType === 'proxytls') {
+      padoUrl = await getZkPadoUrl();
+    } else {
+      padoUrl = await getPadoUrl();
+    }
+    const proxyUrl = await getProxyUrl();
+    chrome.runtime.sendMessage({
+      type: 'algorithm',
+      method: 'startOffline',
+      params: { offlineTimeout: STARTOFFLINETIMEOUT, padoUrl, proxyUrl },
+    });
+
     if (sdkVersion) {
       const {
         attRequest: { attTemplateID, userAddress },
@@ -251,6 +271,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
             ext: {
               appSignParameters: JSON.stringify(params.attRequest),
               appSignature,
+              padoUrl,
+              proxyUrl
             },
           };
         }
@@ -310,19 +332,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
         };
         attestBrevisFn(activeAttestationParams, dappTabId);
       } else {
-        let padoUrl;
-        if (algorithmType === 'proxytls') {
-          padoUrl = await getZkPadoUrl();
-        } else {
-          padoUrl = await getPadoUrl();
-        }
-        const proxyUrl = await getProxyUrl();
-        chrome.runtime.sendMessage({
-          type: 'algorithm',
-          method: 'startOffline',
-          params: { offlineTimeout: STARTOFFLINETIMEOUT, padoUrl, proxyUrl },
-        });
-
         verificationContent = Object.keys(ALLVERIFICATIONCONTENTTYPEEMAP).find(
           (k) => {
             const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
