@@ -138,16 +138,30 @@ export const devconsoleMsgListener = async (
         );
       }
     });
-  } else if (name === 'testTemplate') {
-    // padoZKAttestationJSSDKMsgListener({
-    //   name: 'initAttestation',
-    //   params: { sdkVersion: '1.0.0' },
-    // }, {tab: {id: 1}});
-    // setTimeout(() => {
-    //   padoZKAttestationJSSDKMsgListener({
-    //     name: 'startAttestation',
-    //     params,
-    //   });
-    // }, 3000);
+    const injectFn = async () => {
+      await chrome.scripting.executeScript({
+        target: {
+          tabId: checkDataSourcePageTabId,
+        },
+        files: ['catchFavicon.bundle.js'],
+      });
+    };
+
+    const handleTabUpdate = async (tabId, changeInfo, tab) => {
+      if (
+        tabId === checkDataSourcePageTabId &&
+        changeInfo.status === 'complete'
+      ) {
+        injectFn();
+        chrome.tabs.onUpdated.removeListener(handleTabUpdate);
+      }
+    };
+    chrome.tabs.onUpdated.addListener(handleTabUpdate);
+  } else if (name === 'FAVICON_URL') {
+    chrome.tabs.sendMessage(devconsoleTabId, {
+      type: 'devconsole',
+      name: 'FAVICON_URL',
+      params,
+    });
   }
 };

@@ -209,36 +209,42 @@ export const algorithmMsgListener = async (
             if (activeRequestId !== content?.requestid) {
               return;
             }
-            const acc = await getDataSourceAccount(
-              activeAttestationParams.dataSourceId
-            );
-            let fullAttestation = {
-              ...content,
-              ...parsedActiveRequestAttestation,
-              ...activeAttestationParams,
-              account: acc,
-            };
-            if (fullAttestation.verificationContent === 'X Followers') {
-              let count = 0;
-              if (padoZKAttestationJSSDKBeginAttest) {
-                const { padoZKAttestationJSSDKXFollowerCount } =
-                  await chrome.storage.local.get([
-                    'padoZKAttestationJSSDKXFollowerCount',
-                  ]);
-                count = padoZKAttestationJSSDKXFollowerCount;
+            if (
+              !padoZKAttestationJSSDKBeginAttest ||
+              padoZKAttestationJSSDKBeginAttest === '1'
+            ) {
+              const acc = await getDataSourceAccount(
+                activeAttestationParams.dataSourceId
+              );
+              let fullAttestation = {
+                ...content,
+                ...parsedActiveRequestAttestation,
+                ...activeAttestationParams,
+                account: acc,
+              };
+              if (fullAttestation.verificationContent === 'X Followers') {
+                let count = 0;
+                if (padoZKAttestationJSSDKBeginAttest) {
+                  const { padoZKAttestationJSSDKXFollowerCount } =
+                    await chrome.storage.local.get([
+                      'padoZKAttestationJSSDKXFollowerCount',
+                    ]);
+                  count = padoZKAttestationJSSDKXFollowerCount;
+                }
+                fullAttestation.xFollowerCount = count;
               }
-              fullAttestation.xFollowerCount = count;
+              const { credentials } = await chrome.storage.local.get([
+                'credentials',
+              ]);
+              const credentialsObj = credentials
+                ? { ...JSON.parse(credentials) }
+                : {};
+              credentialsObj[activeRequestId] = fullAttestation;
+              await chrome.storage.local.set({
+                credentials: JSON.stringify(credentialsObj),
+              });
             }
-            const { credentials } = await chrome.storage.local.get([
-              'credentials',
-            ]);
-            const credentialsObj = credentials
-              ? { ...JSON.parse(credentials) }
-              : {};
-            credentialsObj[activeRequestId] = fullAttestation;
-            await chrome.storage.local.set({
-              credentials: JSON.stringify(credentialsObj),
-            });
+
             const sucFn = async (resData) => {
               pageDecodeMsgListener(
                 {

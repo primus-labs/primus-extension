@@ -15,7 +15,7 @@ window.addEventListener('message', (e) => {
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   const { type, name, params } = message;
   if (type === 'devconsole') {
-    console.log('devconsole-content-listen-chrome-message', message);
+    console.log('devconsole-content-listen-chrome-message', name, message);
     if (name === 'checkDataSourceRes') {
       window.postMessage({
         target: 'devconsole',
@@ -29,6 +29,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         origin: 'primusExtension',
         name: 'close',
         params,
+      });
+    } else if (name === 'FAVICON_URL') {
+      window.postMessage({
+        target: 'devconsole',
+        origin: 'primusExtension',
+        name: 'FAVICON_URL',
+        params
       });
     }
   }
