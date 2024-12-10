@@ -75,7 +75,11 @@
       "run_at": "document_start"
     },
     {
-      "matches": ["http://localhost:5173/*"],
+      "matches": [
+        "http://localhost:5173/*",
+        "http://api-dev.padolabs.org:38082/*",
+        "http://dev.primus.xyz/*"
+      ],
       "js": ["devconsole.bundle.js"],
       "run_at": "document_start"
     }

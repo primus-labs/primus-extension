@@ -8,6 +8,7 @@ import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import customFetch from './utils/request';
+import { isJSONString } from './utils/utils';
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -184,7 +185,7 @@ export const pageDecodeMsgListener = async (
           }
           formatUrlKey = hostUrl;
           return !!curUrlWithQuery;
-        } else if (r.urlType === 'REGX') {
+        } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
           var regex = new RegExp(r.url, 'g');
           const isTarget = currRequestUrl.match(regex);
           const result = isTarget && isTarget.length > 0;
@@ -284,7 +285,7 @@ export const pageDecodeMsgListener = async (
           }
           formatUrlKey = hostUrl;
           return curUrlWithQuery;
-        } else if (r.urlType === 'REGX') {
+        } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
           var regex = new RegExp(r.url, 'g');
           const isTarget = currRequestUrl.match(regex);
           const result = isTarget && isTarget.length > 0;
@@ -371,7 +372,9 @@ export const pageDecodeMsgListener = async (
             let url = r.url;
             if (r.urlType === 'REGX') {
               const realUrl = await chrome.storage.local.get(r.url);
-              url = realUrl[r.url];
+              if (!isJSONString(realUrl[r.url])) {
+                url = realUrl[r.url];
+              }
             }
             const sRrequestObj = storageObj[url]
               ? JSON.parse(storageObj[url])
@@ -486,8 +489,10 @@ export const pageDecodeMsgListener = async (
         if (urlType === 'REGX') {
           formatUrlKey = await chrome.storage.local.get(url);
           formatUrlKey = formatUrlKey[url];
-          url = formatUrlKey;
-          r.url = url;
+          if (!isJSONString(formatUrlKey)) {
+            url = formatUrlKey;
+            r.url = url;
+          }
         }
         const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
         const currRequestInfoObj =

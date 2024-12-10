@@ -127,6 +127,7 @@ export const devconsoleMsgListener = async (
 
     const tabCreatedByPado = await chrome.tabs.create({
       url: params.expectedUrl,
+      active: false,
     });
     checkDataSourcePageTabId = tabCreatedByPado.id;
     chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
