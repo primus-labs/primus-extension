@@ -209,6 +209,7 @@ export const algorithmMsgListener = async (
             if (activeRequestId !== content?.requestid) {
               return;
             }
+            let fullAttestation = {}
             if (
               !padoZKAttestationJSSDKBeginAttest ||
               padoZKAttestationJSSDKBeginAttest === '1'
@@ -216,7 +217,7 @@ export const algorithmMsgListener = async (
               const acc = await getDataSourceAccount(
                 activeAttestationParams.dataSourceId
               );
-              let fullAttestation = {
+              fullAttestation = {
                 ...content,
                 ...parsedActiveRequestAttestation,
                 ...activeAttestationParams,

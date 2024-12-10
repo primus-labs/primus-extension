@@ -1,4 +1,5 @@
 import { customFetch2 } from '../utils/request';
+
 let checkDataSourcePageTabId;
 let devconsoleTabId;
 
@@ -6,14 +7,16 @@ const extraRequestFn = async (params) => {
   try {
     const { locationPageUrl, ...requestParams } = params;
     const requestRes = await customFetch2(requestParams);
-    chrome.tabs.sendMessage(devconsoleTabId, {
-      type: 'devconsole',
-      name: 'checkDataSourceRes',
-      params: {
-        request: params,
-        response: requestRes,
-      },
-    });
+    if (typeof requestRes === 'object' && requestRes !== null) {
+      chrome.tabs.sendMessage(devconsoleTabId, {
+        type: 'devconsole',
+        name: 'checkDataSourceRes',
+        params: {
+          request: params,
+          response: requestRes,
+        },
+      });
+    }
   } catch (e) {
     console.log('fetch custom request error', e);
   }
@@ -34,8 +37,10 @@ export const devconsoleMsgListener = async (
     let dataSourceRequestsObj = dataSourceRequestsStr
       ? JSON.parse(dataSourceRequestsStr)
       : {};
+
+    const lastStoreRequestObj = dataSourceRequestsObj[url] || {};
     Object.assign(dataSourceRequestsObj, {
-      [url]: urlInfo,
+      [url]: { ...lastStoreRequestObj, ...urlInfo },
     });
     await chrome.storage.local.set({
       dataSourceRequests: JSON.stringify(dataSourceRequestsObj),
@@ -67,13 +72,14 @@ export const devconsoleMsgListener = async (
         }
         return prev;
       }, {});
-      await storeDataSourceRequestsFn(formatUrlKey, { method });
+      // await storeDataSourceRequestsFn(formatUrlKey, { method });
       const dataSourceRequestsObj = await storeDataSourceRequestsFn(
         formatUrlKey,
         { header: formatHeader, method, locationPageUrl }
       );
 
       console.log('444-listen', formatUrlKey);
+
       extraRequestFn({ ...dataSourceRequestsObj, url: currRequestUrl });
     }
   };

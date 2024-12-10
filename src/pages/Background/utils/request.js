@@ -1,3 +1,4 @@
+import { isJSONString } from './utils';
 export default async function customFetch(url, options = {}) {
   const defaultOptions = {
     method: 'GET',
@@ -7,9 +8,15 @@ export default async function customFetch(url, options = {}) {
     credentials: 'include',
   };
   const finalOptions = { ...defaultOptions, ...options };
-  if (finalOptions.method === 'POST' && finalOptions.body) {
-    finalOptions.headers['Content-Type'] = 'application/json';
-    finalOptions.body = JSON.stringify(finalOptions.body);
+   if (
+    ['POST', 'PUT', 'PATCH'].includes(finalOptions.method.toUpperCase()) &&
+    finalOptions.body
+  ) {
+    if (isJSONString(finalOptions.body)) {
+      finalOptions.body = finalOptions.body;
+    } else {
+      finalOptions.body = JSON.stringify(finalOptions.body);
+    }
   }
 
   try {
@@ -34,11 +41,16 @@ export async function customFetch2({ url, method, body, header }) {
     },
     credentials: 'include',
   };
-  // debugger;
   const finalOptions = { ...defaultOptions, ...options };
-  if (finalOptions.method === 'POST' && finalOptions.body) {
-    finalOptions.headers['Content-Type'] = 'application/json';
-    finalOptions.body = JSON.stringify(finalOptions.body);
+  if (
+    ['POST', 'PUT', 'PATCH'].includes(finalOptions.method.toUpperCase()) &&
+    finalOptions.body
+  ) {
+    if (isJSONString(finalOptions.body)) {
+      finalOptions.body = finalOptions.body;
+    } else {
+      finalOptions.body = JSON.stringify(finalOptions.body);
+    }
   }
 
   try {
@@ -46,8 +58,17 @@ export async function customFetch2({ url, method, body, header }) {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    const contentType = response.headers.get('Content-Type') || '';
+
+    if (contentType.includes('application/json')) {
+      return await response.json();
+    } else if (contentType.includes('text/')) {
+      return await response.text();
+    } else if (contentType.includes('application/octet-stream')) {
+      return await response.blob();
+    } else {
+      return await response.text();
+    }
   } catch (error) {
     console.error('Fetch error:', error);
     throw error;
