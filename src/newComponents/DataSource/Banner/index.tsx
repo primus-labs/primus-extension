@@ -4,7 +4,9 @@ import './index.scss';
 import PTooltip from '@/newComponents/PTooltip';
 
 const Search: React.FC = () => {
-  const handleStart = useCallback(() => {}, []);
+  const handleStart = useCallback(() => {
+    window.open('http://dev.primus.xyz/');
+  }, []);
   return (
     <div className="dataSourceBanner">
       <div className="intro">
@@ -22,7 +24,7 @@ const Search: React.FC = () => {
           </p>
         </div>
       </div>
-      <PTooltip title={`coming soon`}>
+      
         <PButton
           className="startBtn"
           text="Start now"
@@ -30,7 +32,7 @@ const Search: React.FC = () => {
           size="s"
           onClick={handleStart}
         />
-      </PTooltip>
+    
     </div>
   );
 };
