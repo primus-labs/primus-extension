@@ -54,47 +54,44 @@
     border: 0.5px solid var(--Layer-Tokens-layer-02, #e0e0e0);
     animation: growFromBottom 1s forwards ease-out;
     transform: translateX(-16px);
-    &.initialized {
-      padding-top: var(--spacing-32, 32px);
-      .pado-extenstion-center {
-        padding: var(--spacing-24, 24px) 0;
-      }
-    }
-    &.verifying {
-      padding-top: var(--spacing-32, 32px);
-      .pado-extenstion-center {
-        padding: var(--spacing-24, 24px) 0;
-      }
-    }
-    &.result {
-      // padding-top: var(--spacing-24, 24px);
-      .pado-extenstion-center {
-        padding: var(--spacing-24, 24px) 0;
-      }
-    }
+    // &.initialized {
+    //   padding-top: var(--spacing-32, 32px);
+    //   .pado-extenstion-center {
+    //     padding: var(--spacing-24, 24px) 0;
+    //   }
+    // }
+    // &.verifying {
+    //   padding-top: var(--spacing-32, 32px);
+    //   .pado-extenstion-center {
+    //     padding: var(--spacing-24, 24px) 0;
+    //   }
+    // }
+    // &.result {
+    //   // padding-top: var(--spacing-24, 24px);
+    //   .pado-extenstion-center {
+    //     padding: var(--spacing-24, 24px) 0;
+    //   }
+    // }
     .pado-extension-header {
       width: 100%;
-      @include frcc;
+      @include frbc;
       gap: var(--spacing-8, 8px);
-      .iconPado,
-      .iconSource {
-        width: var(--spacing-32, 32px);
+      .iconPado {
+        width: var(--spacing-28, 28px);
       }
-      .iconLink {
-        width: var(--spacing-16, 16px);
+      .pado-extension-center-title {
+        width: 100%;
+        @include HeadlineH2;
+        color: var(--text-tokens-text-primary);
       }
     }
     .pado-extenstion-center {
       width: 100%;
-      @include fccs;
+      @include fcss;
       gap: var(--spacing-16, 16px);
       color: var(--text-tokens-text-primary);
       @include BodyBody100;
-      .pado-extension-center-title {
-        width: 100%;
-        @include HeadlineH2;
-        text-align: center;
-      }
+      padding: var(--spacing-24, 24px) 0 var(--spacing-32, 32px) 0;
       .descWrapper {
         width: 100%;
         &.initialized {
@@ -127,14 +124,13 @@
           }
           .label {
             width: 100%;
-            @include frcc;
+            @include frsc;
             gap: var(--spacing-4, 4px);
             > img {
               width: var(--spacing-16, 16px);
             }
           }
           .value {
-            text-align: center;
             width: 100%;
             color: var(--text-tokens-text-tertiary, #6f6f6f);
           }

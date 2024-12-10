@@ -4,8 +4,8 @@ let devconsoleTabId;
 
 const extraRequestFn = async (params) => {
   try {
-    const requestRes = await customFetch2(params);
-    // debugger;
+    const { locationPageUrl, ...requestParams } = params;
+    const requestRes = await customFetch2(requestParams);
     chrome.tabs.sendMessage(devconsoleTabId, {
       type: 'devconsole',
       name: 'checkDataSourceRes',
@@ -58,15 +58,19 @@ export const devconsoleMsgListener = async (
     ) {
       console.log('444-onBeforeSendHeadersFn-details', details);
       let formatUrlKey = currRequestUrl;
+      let locationPageUrl = '';
       let formatHeader = requestHeaders.reduce((prev, curr) => {
         const { name, value } = curr;
         prev[name] = value;
+        if (name === 'Referer') {
+          locationPageUrl = value;
+        }
         return prev;
       }, {});
       await storeDataSourceRequestsFn(formatUrlKey, { method });
       const dataSourceRequestsObj = await storeDataSourceRequestsFn(
         formatUrlKey,
-        { header: formatHeader, method }
+        { header: formatHeader, method, locationPageUrl }
       );
 
       console.log('444-listen', formatUrlKey);
