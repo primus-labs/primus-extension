@@ -160,7 +160,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     requestid: prevRequestid,
     event,
-    algorithmType = 'mpctls',
+    algorithmType = 'proxytls',
   } = form;
   // const { baseName } = DATASOURCEMAP[source];
   const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName; // unnecessary for web proof
@@ -312,7 +312,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
 export async function assembleAlgorithmParamsForSDK(form, ext) {
   const {
     dataSource,
-    algorithmType = 'mpctls',
+    algorithmType = 'proxytls',
     requestid: prevRequestid,
   } = form;
   // const urlObj = new URL(dataPageTemplate.baseUrl);

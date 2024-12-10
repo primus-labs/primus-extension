@@ -447,7 +447,7 @@ export const pageDecodeMsgListener = async (
         label: null,
         exUserId: null,
         requestid,
-        algorithmType: algorithmType || 'mpctls',
+        algorithmType: algorithmType || 'proxytls',
       };
       if (event) {
         form.event = event;
