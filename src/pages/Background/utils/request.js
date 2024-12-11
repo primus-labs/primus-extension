@@ -8,13 +8,11 @@ export default async function customFetch(url, options = {}) {
     credentials: 'include',
   };
   const finalOptions = { ...defaultOptions, ...options };
-   if (
+  if (
     ['POST', 'PUT', 'PATCH'].includes(finalOptions.method.toUpperCase()) &&
     finalOptions.body
   ) {
-    if (isJSONString(finalOptions.body)) {
-      finalOptions.body = finalOptions.body;
-    } else {
+    if (!isJSONString(finalOptions.body)) {
       finalOptions.body = JSON.stringify(finalOptions.body);
     }
   }
@@ -42,13 +40,12 @@ export async function customFetch2({ url, method, body, header }) {
     credentials: 'include',
   };
   const finalOptions = { ...defaultOptions, ...options };
+
   if (
     ['POST', 'PUT', 'PATCH'].includes(finalOptions.method.toUpperCase()) &&
     finalOptions.body
   ) {
-    if (isJSONString(finalOptions.body)) {
-      finalOptions.body = finalOptions.body;
-    } else {
+    if (!isJSONString(finalOptions.body)) {
       finalOptions.body = JSON.stringify(finalOptions.body);
     }
   }

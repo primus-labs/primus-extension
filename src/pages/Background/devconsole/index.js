@@ -2,6 +2,7 @@ import { customFetch2 } from '../utils/request';
 
 let checkDataSourcePageTabId;
 let devconsoleTabId;
+let requestsMap = {};
 
 const extraRequestFn = async (params) => {
   try {
@@ -30,22 +31,19 @@ export const devconsoleMsgListener = async (
   port
 ) => {
   const { name, params } = request;
-
+  const removeStoreDataSourceRequestsFn = async (url) => {
+    console.log('requestsMap-remove', url);
+    delete requestsMap[url];
+  };
   const storeDataSourceRequestsFn = async (url, urlInfo) => {
-    const { dataSourceRequests: dataSourceRequestsStr } =
-      await chrome.storage.local.get(['dataSourceRequests']);
-    let dataSourceRequestsObj = dataSourceRequestsStr
-      ? JSON.parse(dataSourceRequestsStr)
-      : {};
+    const lastStoreRequestObj = requestsMap[url] || {};
 
-    const lastStoreRequestObj = dataSourceRequestsObj[url] || {};
-    Object.assign(dataSourceRequestsObj, {
+    console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+
+    Object.assign(requestsMap, {
       [url]: { ...lastStoreRequestObj, ...urlInfo },
     });
-    await chrome.storage.local.set({
-      dataSourceRequests: JSON.stringify(dataSourceRequestsObj),
-    });
-    return dataSourceRequestsObj[url];
+    return requestsMap[url];
   };
 
   const onBeforeSendHeadersFn = async (details) => {
@@ -72,13 +70,13 @@ export const devconsoleMsgListener = async (
         }
         return prev;
       }, {});
-      // await storeDataSourceRequestsFn(formatUrlKey, { method });
+
       const dataSourceRequestsObj = await storeDataSourceRequestsFn(
         formatUrlKey,
         { header: formatHeader, method, locationPageUrl }
       );
 
-      console.log('444-listen', formatUrlKey);
+      // console.log('444-listen', formatUrlKey);
 
       extraRequestFn({ ...dataSourceRequestsObj, url: currRequestUrl });
     }
@@ -91,6 +89,7 @@ export const devconsoleMsgListener = async (
       tabId,
       method,
     } = subDetails;
+    await removeStoreDataSourceRequestsFn(currRequestUrl);
     if (
       tabId === checkDataSourcePageTabId &&
       ['xmlhttprequest', 'fetch'].includes(type) &&

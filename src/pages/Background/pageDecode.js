@@ -488,8 +488,8 @@ export const pageDecodeMsgListener = async (
         let formatUrlKey = url;
         if (urlType === 'REGX') {
           formatUrlKey = await chrome.storage.local.get(url);
-          formatUrlKey = formatUrlKey[url];
           if (!isJSONString(formatUrlKey)) {
+            formatUrlKey = formatUrlKey[url];
             url = formatUrlKey;
             r.url = url;
           }
