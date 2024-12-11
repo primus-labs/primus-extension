@@ -351,10 +351,10 @@ function DescEl({ status, resultStatus, errorTxt }) {
         <div className="errorTipWrapper">
           <img src={iconFail} alt="" />
           <span>{errorTxtSelf?.sourcePageTip}</span>
+          {errorTxtSelf?.code && (
+            <span className="errorCode">{errorTxtSelf?.code}</span>
+          )}
         </div>
-        {errorTxtSelf?.code && (
-          <span className="errorCode">{errorTxtSelf?.code}</span>
-        )}
       </div>
       <div className="value">
         {activeRequest.dataSourceId === 'chatgpt'

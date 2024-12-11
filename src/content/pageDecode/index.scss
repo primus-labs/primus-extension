@@ -238,9 +238,10 @@
               .errorTipWrapper {
                 @include frsc;
                 gap: var(--spacing-4);
-              }
-              .errorCode {
-                @include Hint;
+                .errorCode {
+                  @include Hint;
+                  color: var(--Functional-Red-Red-50, #fa4d56);
+                }
               }
             }
           }
