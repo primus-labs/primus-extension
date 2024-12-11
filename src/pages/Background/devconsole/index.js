@@ -3,7 +3,18 @@ import { customFetch2 } from '../utils/request';
 let checkDataSourcePageTabId;
 let devconsoleTabId;
 let requestsMap = {};
-
+const removeRequestsMap = async (url) => {
+  console.log('requestsMap-remove', url);
+  delete requestsMap[url];
+};
+const storeRequestsMap = async (url, urlInfo) => {
+  const lastStoreRequestObj = requestsMap[url] || {};
+  console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  Object.assign(requestsMap, {
+    [url]: { ...lastStoreRequestObj, ...urlInfo },
+  });
+  return requestsMap[url];
+};
 const extraRequestFn = async (params) => {
   try {
     const { locationPageUrl, ...requestParams } = params;
@@ -31,20 +42,6 @@ export const devconsoleMsgListener = async (
   port
 ) => {
   const { name, params } = request;
-  const removeStoreDataSourceRequestsFn = async (url) => {
-    console.log('requestsMap-remove', url);
-    delete requestsMap[url];
-  };
-  const storeDataSourceRequestsFn = async (url, urlInfo) => {
-    const lastStoreRequestObj = requestsMap[url] || {};
-
-    console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
-
-    Object.assign(requestsMap, {
-      [url]: { ...lastStoreRequestObj, ...urlInfo },
-    });
-    return requestsMap[url];
-  };
 
   const onBeforeSendHeadersFn = async (details) => {
     const {
@@ -71,10 +68,11 @@ export const devconsoleMsgListener = async (
         return prev;
       }, {});
 
-      const dataSourceRequestsObj = await storeDataSourceRequestsFn(
-        formatUrlKey,
-        { header: formatHeader, method, locationPageUrl }
-      );
+      const dataSourceRequestsObj = await storeRequestsMap(formatUrlKey, {
+        header: formatHeader,
+        method,
+        locationPageUrl,
+      });
 
       // console.log('444-listen', formatUrlKey);
 
@@ -89,7 +87,7 @@ export const devconsoleMsgListener = async (
       tabId,
       method,
     } = subDetails;
-    await removeStoreDataSourceRequestsFn(currRequestUrl);
+    await removeRequestsMap(currRequestUrl);
     if (
       tabId === checkDataSourcePageTabId &&
       ['xmlhttprequest', 'fetch'].includes(type) &&
@@ -105,7 +103,7 @@ export const devconsoleMsgListener = async (
           // console.log(
           //   `444-url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
           // );
-          await storeDataSourceRequestsFn(formatUrlKey, { body: bodyText });
+          await storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
         }
       }
     }

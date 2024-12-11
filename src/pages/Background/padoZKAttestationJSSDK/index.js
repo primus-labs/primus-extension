@@ -157,7 +157,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     let padoUrl;
     let algorithmType;
     if (sdkVersion) {
-      algorithmType = params.attRequest?.attMode?.algorithmType ||  'proxytls';
+      algorithmType = params.attRequest?.attMode?.algorithmType || 'proxytls';
     } else {
       algorithmType = params.algorithmType;
     }
@@ -266,18 +266,19 @@ export const padoZKAttestationJSSDKMsgListener = async (
             account: '',
             attestationType: category,
             requestid,
-            algorithmType: params.attRequest?.attMode?.algorithmType ||  'proxytls', // TODO-zktls
+            algorithmType:
+              params.attRequest?.attMode?.algorithmType || 'proxytls', // TODO-zktls
             sdkVersion,
             ext: {
               appSignParameters: JSON.stringify(params.attRequest),
               appSignature,
               padoUrl,
-              proxyUrl
+              proxyUrl,
             },
           };
         }
       } catch (e) {
-        console.log('sdk template error:',e);
+        console.log('sdk template error:', e);
       }
     } else {
       walletAddress = params.walletAddress;
@@ -456,7 +457,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ...activeAttestationParams,
       ...activeWebProofTemplate,
     };
-
     pageDecodeMsgListener(
       {
         type: 'pageDecode',

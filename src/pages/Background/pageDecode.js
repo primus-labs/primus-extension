@@ -25,8 +25,20 @@ let listenerFn = () => {};
 let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
 let onCompletedFn = () => {};
-console.log('preAlgorithmTimer-init', preAlgorithmTimer);
+let requestsMap = {};
 
+const removeRequestsMap = async (url) => {
+  console.log('requestsMap-remove', url);
+  delete requestsMap[url];
+};
+const storeRequestsMap = (url, urlInfo) => {
+  const lastStoreRequestObj = requestsMap[url] || {};
+  console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  Object.assign(requestsMap, {
+    [url]: { ...lastStoreRequestObj, ...urlInfo },
+  });
+  return requestsMap[url];
+};
 const resetVarsFn = () => {
   isReadyRequest = false;
   operationType = null;
@@ -36,6 +48,7 @@ const resetVarsFn = () => {
   preAlgorithmTimer = null;
   preAlgorithmFlag = false;
   chatgptHasLogin = false;
+  requestsMap = {};
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -91,11 +104,13 @@ const extraRequestFn = async () => {
   const requestUrl = 'https://chatgpt.com/backend-api/conversation';
   const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
 
-  const storageRes = await chrome.storage.local.get(requestUrl);
+  // const storageRes = await chrome.storage.local.get(requestUrl);
+  const storageRes = requestsMap;
   try {
     const requestRes = await customFetch(fullRequestUrl, {
       method: 'GET',
-      headers: JSON.parse(storageRes[requestUrl]).headers,
+      // headers: JSON.parse(storageRes[requestUrl]).headers,
+      headers: storageRes[requestUrl].headers,
     });
 
     const messageIds = [];
@@ -170,6 +185,9 @@ export const pageDecodeMsgListener = async (
       let needQueryDetail = false;
 
       const isTarget = requests.some((r) => {
+        if (r.name === 'first') {
+          return false;
+        }
         if (r.queryParams && r.queryParams[0]) {
           const urlStrArr = currRequestUrl.split('?');
           const hostUrl = urlStrArr[0];
@@ -227,24 +245,35 @@ export const pageDecodeMsgListener = async (
             );
           }
         }
-        // const requestHeadersObj = JSON.stringify(formatHeader);
-        const storageObj = await chrome.storage.local.get([formatUrlKey]);
-        const currRequestUrlStorage = storageObj[formatUrlKey];
-        const currRequestObj = currRequestUrlStorage
-          ? JSON.parse(currRequestUrlStorage)
-          : {};
-        const newCurrRequestObj = {
-          ...currRequestObj,
+        let newCapturedInfo = {
           headers: formatHeader,
+          method,
         };
         if (addQueryStr) {
-          newCurrRequestObj.queryString = addQueryStr;
+          newCapturedInfo.queryString = addQueryStr;
         }
-        // console.log('222222listen', formatUrlKey);
-        await chrome.storage.local.set({
-          [formatUrlKey]: JSON.stringify(newCurrRequestObj),
-        });
-        console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
+        const newCurrRequestObj = storeRequestsMap(
+          formatUrlKey,
+          newCapturedInfo
+        );
+        // const requestHeadersObj = JSON.stringify(formatHeader);
+        // const storageObj = await chrome.storage.local.get([formatUrlKey]);
+        // const currRequestUrlStorage = storageObj[formatUrlKey];
+        // const currRequestObj = currRequestUrlStorage
+        //   ? JSON.parse(currRequestUrlStorage)
+        //   : {};
+        // const newCurrRequestObj = {
+        //   ...currRequestObj,
+        //   headers: formatHeader,
+        // };
+        // if (addQueryStr) {
+        //   newCurrRequestObj.queryString = addQueryStr;
+        // }
+        // // console.log('222222listen', formatUrlKey);
+        // await chrome.storage.local.set({
+        //   [formatUrlKey]: JSON.stringify(newCurrRequestObj),
+        // });
+        // console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
         if (
           needQueryDetail &&
           formatUrlKey.startsWith(
@@ -274,8 +303,12 @@ export const pageDecodeMsgListener = async (
         datasourceTemplate: { requests },
       } = activeTemplate;
       const { url: currRequestUrl, requestBody } = subDetails;
+      removeRequestsMap(currRequestUrl);
       let formatUrlKey = currRequestUrl;
       const isTarget = requests.some((r) => {
+        if (r.name === 'first') {
+          return false;
+        }
         if (r.queryParams && r.queryParams[0]) {
           const urlStrArr = currRequestUrl.split('?');
           const hostUrl = urlStrArr[0];
@@ -309,20 +342,21 @@ export const pageDecodeMsgListener = async (
             console.log(
               `url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
             );
+            storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
 
-            const storageObj = await chrome.storage.local.get([formatUrlKey]);
-            const currRequestUrlStorage = storageObj[formatUrlKey];
-            const currRequestObj = currRequestUrlStorage
-              ? JSON.parse(currRequestUrlStorage)
-              : {};
-            const newCurrRequestObj = {
-              ...currRequestObj,
-              body: JSON.parse(bodyText),
-            };
-            await chrome.storage.local.set({
-              [formatUrlKey]: JSON.stringify(newCurrRequestObj),
-            });
-            console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
+            // const storageObj = await chrome.storage.local.get([formatUrlKey]);
+            // const currRequestUrlStorage = storageObj[formatUrlKey];
+            // const currRequestObj = currRequestUrlStorage
+            //   ? JSON.parse(currRequestUrlStorage)
+            //   : {};
+            // const newCurrRequestObj = {
+            //   ...currRequestObj,
+            //   body: JSON.parse(bodyText),
+            // };
+            // await chrome.storage.local.set({
+            //   [formatUrlKey]: JSON.stringify(newCurrRequestObj),
+            // });
+            // console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
           }
         }
       }
@@ -358,28 +392,31 @@ export const pageDecodeMsgListener = async (
           dataSource,
           datasourceTemplate: { requests },
         } = activeTemplate;
+
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
         const interceptorUrlArr = interceptorRequests.map((i) => i.url);
         // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
-        const storageObj = await chrome.storage.local.get(interceptorUrlArr);
+        // const storageObj = await chrome.storage.local.get(interceptorUrlArr);
+        // const storageArr = Object.values(storageObj);
+        const storageObj = requestsMap;
         const storageArr = Object.values(storageObj);
+
         // debugger
-        if (storageArr.length === interceptorUrlArr.length) {
+        if (
+          interceptorUrlArr.length > 0 &&
+          storageArr.length === interceptorUrlArr.length
+        ) {
           const f = interceptorRequests.every(async (r) => {
-            // const storageR = Object.keys(storageObj).find(
-            //   (sRKey) => sRKey === r.url
-            // );
             let url = r.url;
             if (r.urlType === 'REGX') {
-              const realUrl = await chrome.storage.local.get(r.url);
-              if (!isJSONString(realUrl[r.url])) {
-                url = realUrl[r.url];
+              const storageObj = await chrome.storage.local.get(r.url);
+              if (realUrl[r.url] && !isJSONString(storageObj[r.url])) {
+                url = storageObj[r.url];
               }
             }
-            const sRrequestObj = storageObj[url]
-              ? JSON.parse(storageObj[url])
-              : {};
-            console.log('sRrequestObj', sRrequestObj, r);
+
+            const sRrequestObj = storageObj[url] || {};
+            console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
             chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
             const headersFlag =
               !r.headers || (!!r.headers && !!sRrequestObj.headers);
@@ -389,8 +426,10 @@ export const pageDecodeMsgListener = async (
               (!!r.cookies &&
                 !!sRrequestObj.headers &&
                 !!sRrequestObj.headers.Cookie);
+
             return headersFlag && bodyFlag && cookieFlag;
           });
+
           const fl =
             dataSource === 'chatgpt'
               ? !!f &&
@@ -400,7 +439,12 @@ export const pageDecodeMsgListener = async (
               : f;
 
           if (fl) {
-            console.log('lastStorage-urlRequests', interceptorRequests);
+            console.log(
+              'lastStorage-urlRequests--',
+              interceptorRequests,
+              Object.keys(requestsMap),
+              JSON.stringify(requestsMap)
+            );
             if (dataSource === 'chatgpt') {
             } else {
               // debugger
@@ -487,22 +531,30 @@ export const pageDecodeMsgListener = async (
         let { headers, cookies, body, url, urlType } = r;
         let formatUrlKey = url;
         if (urlType === 'REGX') {
-          formatUrlKey = await chrome.storage.local.get(url);
-          if (!isJSONString(formatUrlKey)) {
-            formatUrlKey = formatUrlKey[url];
+          const storageObj = await chrome.storage.local.get(url);
+          if (storageObj[url] && !isJSONString(storageObj[url])) {
+            console.log('formatAlgorithmParamsFn-regx-storageObj', storageObj);
+            formatUrlKey = storageObj[url];
             url = formatUrlKey;
             r.url = url;
           }
         }
-        const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-        const currRequestInfoObj =
-          (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
+        const currRequestInfoObj = requestsMap[formatUrlKey] || {};
+
+        console.log(
+          'lastStorage-get-formatAlgorithmParamsFn',
+          'formatUrlKey:',
+          formatUrlKey,
+          'currRequestInfoObj:',
+          JSON.stringify(currRequestInfoObj),
+          JSON.stringify(requestsMap)
+        );
         const {
           headers: curRequestHeader,
           body: curRequestBody,
           queryString,
         } = currRequestInfoObj;
-        console.log('lastStorage-get', url, currRequestInfoObj);
+
         const cookiesObj = curRequestHeader
           ? parseCookie(curRequestHeader.Cookie)
           : {};
