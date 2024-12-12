@@ -78,7 +78,7 @@
       "matches": [
         "http://localhost:5173/*",
         "http://api-dev.padolabs.org:38082/*",
-        "http://dev.primus.xyz/*"
+        "https://dev.primuslabs.xyz/*"
       ],
       "js": ["devconsole.bundle.js"],
       "run_at": "document_start"
