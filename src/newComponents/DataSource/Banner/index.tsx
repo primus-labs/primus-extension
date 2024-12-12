@@ -10,29 +10,25 @@ const Search: React.FC = () => {
   return (
     <div className="dataSourceBanner">
       <div className="intro">
-        <div className="title">
-          Didn't find the data source you want to connect?
-        </div>
+        <div className="title">Can’t find the data you need?</div>
         <div className="desc">
           <p>
-            {' '}
-            Become a developer and contribute to our community! Use our data
-            source templates to develop your own solution stacks.
+            Use our Developer Hub to create more data verification templates and
+            contribute to our community!
           </p>
           <p>
             Connect more Real World Assets and data to fulfill Web3 ecosystems.
           </p>
         </div>
       </div>
-      
-        <PButton
-          className="startBtn"
-          text="Start now"
-          type="secondary"
-          size="s"
-          onClick={handleStart}
-        />
-    
+
+      <PButton
+        className="startBtn"
+        text="Start now"
+        type="secondary"
+        size="s"
+        onClick={handleStart}
+      />
     </div>
   );
 };
