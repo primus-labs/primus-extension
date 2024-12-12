@@ -108,7 +108,7 @@ export const algorithmMsgListener = async (
           const activeAttestationParams = JSON.parse(
             padoZKAttestationJSSDKAttestationPresetParams
           );
-          const errorMsgTitle = [
+          let errorMsgTitle = [
             'Assets Verification',
             'Humanity Verification',
           ].includes(activeAttestationParams.attestationType)
