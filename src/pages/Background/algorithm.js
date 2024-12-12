@@ -118,7 +118,7 @@ export const algorithmMsgListener = async (
             padoZKAttestationJSSDKBeginAttest &&
             padoZKAttestationJSSDKBeginAttest !== '1'
           ) {
-            errorMsgTitle = 'Verification failed!';
+            errorMsgTitle = 'Something went wrong!';
           }
           msgObj = {
             type: 'error',
