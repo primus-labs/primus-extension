@@ -497,6 +497,10 @@ async function assembleUserInfoParams(form) {
   if (connectedWalletAddress) {
     formatAddress = JSON.parse(connectedWalletAddress).address;
   }
+  console.log(
+    'debuge-zktls-startAttestation3',
+    padoZKAttestationJSSDKWalletAddress
+  );
   if (event === SCROLLEVENTNAME) {
     const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
     const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};

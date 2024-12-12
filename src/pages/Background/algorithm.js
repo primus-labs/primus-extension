@@ -114,7 +114,12 @@ export const algorithmMsgListener = async (
           ].includes(activeAttestationParams.attestationType)
             ? `${activeAttestationParams.attestationType} failed!`
             : `${activeAttestationParams.attestationType} proof failed!`;
-
+          if (
+            padoZKAttestationJSSDKBeginAttest &&
+            padoZKAttestationJSSDKBeginAttest !== '1'
+          ) {
+            errorMsgTitle = 'Verification failed!';
+          }
           msgObj = {
             type: 'error',
             title: errorMsgTitle,
@@ -178,7 +183,7 @@ export const algorithmMsgListener = async (
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
-        const errorMsgTitle = [
+        let errorMsgTitle = [
           'Assets Verification',
           'Humanity Verification',
         ].includes(activeAttestationParams.attestationType)
@@ -209,7 +214,7 @@ export const algorithmMsgListener = async (
             if (activeRequestId !== content?.requestid) {
               return;
             }
-            let fullAttestation = {}
+            let fullAttestation = {};
             if (
               !padoZKAttestationJSSDKBeginAttest ||
               padoZKAttestationJSSDKBeginAttest === '1'

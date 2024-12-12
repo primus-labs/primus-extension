@@ -179,6 +179,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         appSignature,
       } = params;
       walletAddress = userAddress;
+      
       try {
         const { rc, result } = await queryTemplateById(attTemplateID);
         // debugger;
@@ -442,10 +443,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
       }
     }
 
-    chrome.storage.local.set({
+    await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
       padoZKAttestationJSSDKWalletAddress: walletAddress,
     });
+    console.log('debuge-zktls-startAttestation2', walletAddress);
     chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
     await chrome.storage.local.set({
       padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(

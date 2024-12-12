@@ -4,12 +4,12 @@ let checkDataSourcePageTabId;
 let devconsoleTabId;
 let requestsMap = {};
 const removeRequestsMap = async (url) => {
-  console.log('requestsMap-remove', url);
+  // console.log('requestsMap-remove', url);
   delete requestsMap[url];
 };
 const storeRequestsMap = async (url, urlInfo) => {
   const lastStoreRequestObj = requestsMap[url] || {};
-  console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  // console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
   Object.assign(requestsMap, {
     [url]: { ...lastStoreRequestObj, ...urlInfo },
   });
@@ -56,7 +56,7 @@ export const devconsoleMsgListener = async (
       ['xmlhttprequest', 'fetch'].includes(type) &&
       method !== 'OPTIONS'
     ) {
-      console.log('444-onBeforeSendHeadersFn-details', details);
+      // console.log('444-onBeforeSendHeadersFn-details', details);
       let formatUrlKey = currRequestUrl;
       let locationPageUrl = '';
       let formatHeader = requestHeaders.reduce((prev, curr) => {
@@ -93,7 +93,6 @@ export const devconsoleMsgListener = async (
       ['xmlhttprequest', 'fetch'].includes(type) &&
       method !== 'OPTIONS'
     ) {
-      console.log('444-onBeforeRequestFn-subDetails', subDetails);
       let formatUrlKey = currRequestUrl;
       if (requestBody && requestBody.raw) {
         const rawBody = requestBody.raw[0];

@@ -28,12 +28,12 @@ let onCompletedFn = () => {};
 let requestsMap = {};
 
 const removeRequestsMap = async (url) => {
-  console.log('requestsMap-remove', url);
+  // console.log('requestsMap-remove', url);
   delete requestsMap[url];
 };
 const storeRequestsMap = (url, urlInfo) => {
   const lastStoreRequestObj = requestsMap[url] || {};
-  console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  // console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
   Object.assign(requestsMap, {
     [url]: { ...lastStoreRequestObj, ...urlInfo },
   });
@@ -438,12 +438,7 @@ export const pageDecodeMsgListener = async (
               : f;
 
           if (fl) {
-            console.log(
-              'lastStorage-urlRequests--',
-              interceptorRequests,
-              Object.keys(requestsMap),
-              JSON.stringify(requestsMap)
-            );
+            
             if (dataSource === 'chatgpt') {
             } else {
               // debugger
@@ -540,14 +535,14 @@ export const pageDecodeMsgListener = async (
         }
         const currRequestInfoObj = requestsMap[formatUrlKey] || {};
 
-        console.log(
-          'lastStorage-get-formatAlgorithmParamsFn',
-          'formatUrlKey:',
-          formatUrlKey,
-          'currRequestInfoObj:',
-          JSON.stringify(currRequestInfoObj),
-          JSON.stringify(requestsMap)
-        );
+        // console.log(
+        //   'lastStorage-get-formatAlgorithmParamsFn',
+        //   'formatUrlKey:',
+        //   formatUrlKey,
+        //   'currRequestInfoObj:',
+        //   JSON.stringify(currRequestInfoObj),
+        //   JSON.stringify(requestsMap)
+        // );
         const {
           headers: curRequestHeader,
           body: curRequestBody,
