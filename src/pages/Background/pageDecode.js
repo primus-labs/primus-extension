@@ -183,7 +183,31 @@ export const pageDecodeMsgListener = async (
       let formatUrlKey = currRequestUrl;
       let addQueryStr = '';
       let needQueryDetail = false;
-
+      let formatHeader = requestHeaders.reduce((prev, curr) => {
+        const { name, value } = curr;
+        prev[name] = value;
+        return prev;
+      }, {});
+      if (
+        currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
+      ) {
+        chatgptHasLogin = !!formatHeader.Authorization;
+        if (dataSource === 'chatgpt') {
+          const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
+          console.log('setUIStep-', tipStr);
+          chrome.tabs.sendMessage(
+            dataSourcePageTabId,
+            {
+              type: 'pageDecode',
+              name: 'setUIStep',
+              params: {
+                step: tipStr,
+              },
+            },
+            function (response) {}
+          );
+        }
+      }
       const isTarget = requests.some((r) => {
         if (r.name === 'first') {
           return false;
@@ -220,31 +244,6 @@ export const pageDecodeMsgListener = async (
         }
       });
       if (isTarget) {
-        let formatHeader = requestHeaders.reduce((prev, curr) => {
-          const { name, value } = curr;
-          prev[name] = value;
-          return prev;
-        }, {});
-        if (
-          currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
-        ) {
-          chatgptHasLogin = !!formatHeader.Authorization;
-          if (dataSource === 'chatgpt') {
-            const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
-            console.log('setUIStep-', tipStr);
-            chrome.tabs.sendMessage(
-              dataSourcePageTabId,
-              {
-                type: 'pageDecode',
-                name: 'setUIStep',
-                params: {
-                  step: tipStr,
-                },
-              },
-              function (response) {}
-            );
-          }
-        }
         let newCapturedInfo = {
           headers: formatHeader,
           method,

@@ -16,12 +16,8 @@ const Search: React.FC = () => {
             Use our Developer Hub to create more data verification templates and
             contribute to our community!
           </p>
-          <p>
-            Connect more Real World Assets and data to fulfill Web3 ecosystems.
-          </p>
         </div>
       </div>
-
       <PButton
         className="startBtn"
         text="Start now"
