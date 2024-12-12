@@ -109,6 +109,9 @@ export const devconsoleMsgListener = async (
   };
 
   if (name === 'init') {
+    checkDataSourcePageTabId = null;
+    devconsoleTabId = null;
+    requestsMap = {};
     devconsoleTabId = sender.tab.id;
     chrome.webRequest.onBeforeSendHeaders.addListener(
       onBeforeSendHeadersFn,
@@ -170,5 +173,10 @@ export const devconsoleMsgListener = async (
       name: 'FAVICON_URL',
       params,
     });
+  } else if (name === 'closeDataSource') {
+    console.log('debuge-zktls-closeDataSource-bg', checkDataSourcePageTabId);
+    if (checkDataSourcePageTabId) {
+      await chrome.tabs.remove(checkDataSourcePageTabId);
+    }
   }
 };

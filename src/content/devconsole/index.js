@@ -8,6 +8,13 @@ window.addEventListener('message', (e) => {
         name: 'init',
         params,
       });
+    } else if (name === 'closeDataSource') {
+      console.log('debuge-zktls-closeDataSource-content');
+      chrome.runtime.sendMessage({
+        type: 'devconsole',
+        name: 'closeDataSource',
+        params,
+      });
     }
   }
 });
@@ -35,7 +42,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         target: 'devconsole',
         origin: 'primusExtension',
         name: 'FAVICON_URL',
-        params
+        params,
       });
     }
   }
