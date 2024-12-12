@@ -23,13 +23,13 @@
 button.PButton {
   @include frcc;
   @include Button;
-  
+
   color: var(--text-tokens-text-inverse, #fff);
   box-sizing: border-box;
   cursor: pointer;
   width: fit-content;
   white-space: nowrap;
-  .btnText{
+  .btnText {
     @include Button;
   }
   &.disabled {
@@ -111,24 +111,23 @@ button.PButton {
       }
     }
   }
-  .spinnerWrapper{
+  .spinnerWrapper {
     @include frcc;
     .loading-spinner {
-    // width: var(--spacing-16,16px);
-    // height: var(--spacing-16,16px);
-    // border-radius: 50%;
-    // border: 2px solid var(--layer-tokens-layer-primary, #fff);
-    // border-top: 2px solid var(--icon-tokens-icon-primary, #161616);
-    // animation: spin 1s linear infinite;
-    @include pSpiner;
+      // width: var(--spacing-16,16px);
+      // height: var(--spacing-16,16px);
+      // border-radius: 50%;
+      // border: 2px solid var(--layer-tokens-layer-primary, #fff);
+      // border-top: 2px solid var(--icon-tokens-icon-primary, #161616);
+      // animation: spin 1s linear infinite;
+      @include pSpiner;
+    }
   }
-  }
-  
-
 }
 .dark {
   button.PButton {
     &.primary {
+      background: #fff !important;
       &.disabled {
         color: var(--text-tokens-text-hover);
         background: var(--button-tokens-button-primary);
