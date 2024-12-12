@@ -155,6 +155,7 @@ export const pageDecodeMsgListener = async (
   if (name === 'init') {
     activeTemplate = {};
     activeTemplate = params;
+    resetVarsFn();
   }
   if (activeTemplate.dataSource) {
     let {
@@ -409,7 +410,7 @@ export const pageDecodeMsgListener = async (
             let url = r.url;
             if (r.urlType === 'REGX') {
               const storageObj = await chrome.storage.local.get(r.url);
-              if (realUrl[r.url] && !isJSONString(storageObj[r.url])) {
+              if (storageObj[r.url] && !isJSONString(storageObj[r.url])) {
                 url = storageObj[r.url];
               }
             }
@@ -438,7 +439,6 @@ export const pageDecodeMsgListener = async (
               : f;
 
           if (fl) {
-            
             if (dataSource === 'chatgpt') {
             } else {
               // debugger
