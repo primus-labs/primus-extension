@@ -199,7 +199,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     authUseridHash,
     event,
     setHostName: 'true',
-    hasFirstReq: 'true' // default  false
+    hasFirstReq: 'true', // default  false
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
@@ -314,6 +314,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
     dataSource,
     algorithmType = 'proxytls',
     requestid: prevRequestid,
+    sslCipherSuite,
   } = form;
   // const urlObj = new URL(dataPageTemplate.baseUrl);
   // const baseName = urlObj.host;
@@ -334,7 +335,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
     padoUrl: algorithmType === 'proxytls' ? zkPadoUrl : padoUrl, // client <----> pado-server
     proxyUrl: proxyUrl,
     errLogUrl: 'wss://api.padolabs.org/logs',
-    cipher: '',
+    cipher: sslCipherSuite || '',
     getdatatime: timeStampStr,
     credVersion: CredVersion,
     // sigFormat: 'EAS-Ethereum',
@@ -346,8 +347,10 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
       appId: appSignParameters.appId,
       appSignParameters: ext.appSignParameters,
       appSignature: ext.appSignature,
-      additionParams: appSignParameters.additionParams ? appSignParameters.additionParams:""
-    }
+      additionParams: appSignParameters.additionParams
+        ? appSignParameters.additionParams
+        : '',
+    },
   };
   if (ext.padoUrl && ext.proxyUrl) {
     params.padoUrl = ext.padoUrl;

@@ -510,6 +510,7 @@ export const pageDecodeMsgListener = async (
             dataSource: activeTemplate.dataSource,
             algorithmType: activeTemplate.algorithmType,
             requestid: activeTemplate.requestid,
+            sslCipherSuite: activeTemplate.sslCipherSuite,
           },
           activeTemplate.ext
         );
