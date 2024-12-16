@@ -29,6 +29,11 @@ let requestsMap = {};
 
 const removeRequestsMap = async (url) => {
   // console.log('requestsMap-remove', url);
+  // console.log('x-remove');
+  // await chrome.storage.local.remove([
+  //   'https://www.tiktok.com/passport/web/account/info/',
+  //   'https://api.x.com/1.1/account/settings.json',
+  // ]);
   delete requestsMap[url];
 };
 const storeRequestsMap = (url, urlInfo) => {
@@ -37,6 +42,7 @@ const storeRequestsMap = (url, urlInfo) => {
   Object.assign(requestsMap, {
     [url]: { ...lastStoreRequestObj, ...urlInfo },
   });
+
   return requestsMap[url];
 };
 const resetVarsFn = () => {
@@ -256,6 +262,18 @@ export const pageDecodeMsgListener = async (
           formatUrlKey,
           newCapturedInfo
         );
+        const requireUrlArr = [
+          'https://www.tiktok.com/passport/web/account/info/',
+          'https://api.x.com/1.1/account/settings.json',
+        ];
+        const curRequireUrl = requireUrlArr.find((i) =>
+          currRequestUrl.includes(i)
+        );
+        if (curRequireUrl) {
+          await chrome.storage.local.set({
+            [curRequireUrl]: JSON.stringify(newCurrRequestObj),
+          });
+        }
         // const requestHeadersObj = JSON.stringify(formatHeader);
         // const storageObj = await chrome.storage.local.get([formatUrlKey]);
         // const currRequestUrlStorage = storageObj[formatUrlKey];
@@ -342,6 +360,7 @@ export const pageDecodeMsgListener = async (
             console.log(
               `url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
             );
+
             storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
 
             // const storageObj = await chrome.storage.local.get([formatUrlKey]);
@@ -558,7 +577,7 @@ export const pageDecodeMsgListener = async (
           formateBody = {};
 
         if (sdkVersion) {
-          let headerNoCookie = { ...curRequestHeader } ;
+          let headerNoCookie = { ...curRequestHeader };
           delete headerNoCookie.Cookie;
           Object.assign(r, {
             headers: { ...headerNoCookie },
@@ -961,7 +980,6 @@ export const pageDecodeMsgListener = async (
         params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
       if (!activeTemplate.sdkVersion) {
-        // debugger
         const { constructorF } = DATASOURCEMAP[dataSource];
         if (constructorF) {
           const ex = new constructorF();

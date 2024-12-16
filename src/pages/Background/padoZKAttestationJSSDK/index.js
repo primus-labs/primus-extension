@@ -195,6 +195,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             dataSource,
             dataPageTemplate,
             dataSourceTemplate,
+            sslCipherSuite,
           } = result;
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
           const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
@@ -260,6 +261,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               requests: newRequests,
               responses: newResponses,
             },
+            sslCipherSuite,
           };
           activeAttestationParams = {
             dataSourceId: dataSource,
