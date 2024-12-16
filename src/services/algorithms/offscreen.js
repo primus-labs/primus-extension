@@ -116,7 +116,11 @@ var AlgorithmInited = false;
 var ClientVersion = '1.1.1';
 
 function init(params) {
-  console.log('init');
+  console.log('init algorithms AlgorithmInited=', AlgorithmInited);
+  if (AlgorithmInited) {
+    return;
+  }
+  console.log('init...');
 
   params.errLogUrl = "";
   var req_obj = {
