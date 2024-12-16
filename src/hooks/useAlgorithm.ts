@@ -40,19 +40,19 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
       if (resType === 'algorithm') {
         console.log(`page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
-          console.log(`page_get:start:`, message.res);
-          let eventInfo = {
-            eventType: 'ATTESTATION_INIT_2',
-            rawData: {},
-          };
-          eventReport(eventInfo);
-          const msg = {
-            fullScreenType: 'algorithm',
-            reqMethodName: 'init',
-            params: {},
-          };
-          postMsg(padoServicePort, msg);
-          console.log(`page_send:init request`);
+          // console.log(`page_get:start:`, message.res);
+          // let eventInfo = {
+          //   eventType: 'ATTESTATION_INIT_2',
+          //   rawData: {},
+          // };
+          // eventReport(eventInfo);
+          // const msg = {
+          //   fullScreenType: 'algorithm',
+          //   reqMethodName: 'init',
+          //   params: {},
+          // };
+          // postMsg(padoServicePort, msg);
+          // console.log(`page_send:init request`);
         }
         if (resMethodName === `init`) {
           if (res) {

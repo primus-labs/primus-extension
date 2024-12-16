@@ -114,6 +114,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
+    await chrome.storage.local.set({
+      padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
+    });
     console.log('debuge-zktls-startAttestation', sdkVersion, params);
     sdkVersion = params.sdkVersion;
     processAlgorithmReq({
@@ -179,7 +182,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         appSignature,
       } = params;
       walletAddress = userAddress;
-      
+
       try {
         const { rc, result } = await queryTemplateById(attTemplateID);
         // debugger;
@@ -444,7 +447,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
 
     await chrome.storage.local.set({
-      padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
       padoZKAttestationJSSDKWalletAddress: walletAddress,
     });
     console.log('debuge-zktls-startAttestation2', walletAddress);

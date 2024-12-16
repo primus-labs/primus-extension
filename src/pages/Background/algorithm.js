@@ -35,6 +35,9 @@ export const algorithmMsgListener = async (
       rawData: {},
     };
     eventReport(eventInfo);
+    processAlgorithmReq({
+      reqMethodName: 'init',
+    });
   } else if (resMethodName === `init`) {
     var eventInfo = {
       eventType: 'ATTESTATION_INIT_4',
@@ -66,10 +69,6 @@ export const algorithmMsgListener = async (
 
   if (padoZKAttestationJSSDKBeginAttest) {
     if (resMethodName === 'start') {
-      processAlgorithmReq({
-        reqMethodName: 'init',
-      });
-
       const { padoZKAttestationJSSDKDappTabId: dappTabId, webProofTypes } =
         await chrome.storage.local.get([
           'padoZKAttestationJSSDKDappTabId',
