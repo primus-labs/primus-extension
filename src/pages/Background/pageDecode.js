@@ -557,8 +557,10 @@ export const pageDecodeMsgListener = async (
           formateBody = {};
 
         if (sdkVersion) {
+          let headerNoCookie = { ...curRequestHeader } ;
+          delete headerNoCookie.Cookie;
           Object.assign(r, {
-            headers: { ...curRequestHeader },
+            headers: { ...headerNoCookie },
             cookies: { ...cookiesObj },
             body: { ...curRequestBody },
             url: queryString ? r.url + '?' + queryString : r.url,
