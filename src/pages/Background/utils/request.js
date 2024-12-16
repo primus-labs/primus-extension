@@ -49,6 +49,31 @@ export async function customFetch2({ url, method, body, header }) {
       finalOptions.body = JSON.stringify(finalOptions.body);
     }
   }
+  // const formencodeType = 'application/x-www-form-urlencoded';
+  // if (
+  //   (finalOptions.body && header['content-type']?.includes(formencodeType)) ||
+  //   header['Content-Type']?.includes(formencodeType)
+  // ) {
+  //   let str;
+  //   // debugger;
+  //   if (isJSONString(finalOptions.body)) {
+  //     str = finalOptions.body;
+  //   } else {
+  //     str = JSON.stringify(finalOptions.body);
+  //   }
+  //   // let params = new URLSearchParams(str);
+  //   // let formData = {};
+  //   // for (let [key, value] of params.entries()) {
+  //   //   formData[key] = value;
+  //   // }
+  //   // const finBody =
+  //   //   formData instanceof URLSearchParams
+  //   //     ? formData
+  //   //     : new URLSearchParams(formData);
+  //   debugger;
+  //   finalOptions.body = str;
+  //   console.log('onBeforeRequestFn-formData-send', formData, finBody);
+  // }
 
   try {
     const response = await fetch(url, finalOptions);
@@ -67,7 +92,7 @@ export async function customFetch2({ url, method, body, header }) {
       return await response.text();
     }
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error('Fetch error:', url, error);
     throw error;
   }
 }

@@ -67,6 +67,17 @@ export const devconsoleMsgListener = async (
         }
         return prev;
       }, {});
+      if (
+        formatHeader['content-type']?.includes(
+          'application/x-www-form-urlencoded'
+        ) ||
+        formatHeader['Content-Type']?.includes(
+          'application/x-www-form-urlencoded'
+        )
+      ) {
+        console.log('onBeforeSendHeadersFn-details', details);
+        // debugger;
+      }
 
       const dataSourceRequestsObj = await storeRequestsMap(formatUrlKey, {
         header: formatHeader,
@@ -105,6 +116,10 @@ export const devconsoleMsgListener = async (
           await storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
         }
       }
+      // if (requestBody && requestBody.formData) {
+      //   // debugger;
+      //   await storeRequestsMap(formatUrlKey, { body: requestBody.formData });
+      // }
     }
   };
 
@@ -115,12 +130,12 @@ export const devconsoleMsgListener = async (
     devconsoleTabId = sender.tab.id;
     chrome.webRequest.onBeforeSendHeaders.addListener(
       onBeforeSendHeadersFn,
-      { urls: ['<all_urls>'] },
+      { urls: ['<all_urls>'],types: ['xmlhttprequest']},
       ['requestHeaders', 'extraHeaders']
     );
     chrome.webRequest.onBeforeRequest.addListener(
       onBeforeRequestFn,
-      { urls: ['<all_urls>'] },
+      { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
       ['requestBody']
     );
 
