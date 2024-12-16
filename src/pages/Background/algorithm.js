@@ -298,13 +298,13 @@ export const algorithmMsgListener = async (
               await sucFn(JSON.parse(content.encodedData));
             }
 
-            const uniqueId = strToHexSha256(fullAttestation.signature);
+            const uniqueId = strToHexSha256(content.signature);
             eventInfo.rawData = Object.assign(eventInfo.rawData, {
               attestationId: uniqueId,
               status: 'SUCCESS',
               reason: '',
               // event: fromEvents,
-              address: fullAttestation?.address,
+              address: content?.address,
             });
             eventReport(eventInfo);
             var eventInfoEnd = {
