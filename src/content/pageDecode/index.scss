@@ -207,6 +207,11 @@
       padding: var(--spacing-24, 24px) 0 var(--spacing-32, 32px) 0;
       .descWrapper {
         width: 100%;
+        .descItem {
+          .value {
+            text-align: right;
+          }
+        }
         &.initialized {
           @include fcss;
           gap: var(--spacing-8, 8px);

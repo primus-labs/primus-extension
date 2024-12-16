@@ -164,57 +164,58 @@ const processAlgorithmReq = async (message, port) => {
   console.log(
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
   );
+  const startFn = async () => {
+    const offscreenDocumentPath = 'offscreen.html';
+    if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
+      console.log(
+        `${new Date().toLocaleString()} create offscreen document...........`
+      );
+      await chrome.offscreen.createDocument({
+        url: chrome.runtime.getURL(offscreenDocumentPath),
+        reasons: ['IFRAME_SCRIPTING'],
+        justification: 'WORKERS for needing the document',
+      });
+      console.log(`${new Date().toLocaleString()} offscreen document created`);
+    } else {
+      const {
+        padoZKAttestationJSSDKBeginAttest,
+        padoZKAttestationJSSDKDappTabId: dappTabId,
+        webProofTypes,
+      } = await chrome.storage.local.get([
+        'padoZKAttestationJSSDKBeginAttest',
+        'padoZKAttestationJSSDKDappTabId',
+        'webProofTypes',
+      ]);
+
+      if (padoZKAttestationJSSDKBeginAttest) {
+        const attestationTypeIdList = (
+          webProofTypes ? JSON.parse(webProofTypes) : []
+        ).map((i) => {
+          return {
+            text: i.description,
+            value: i.id,
+          };
+        });
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'initAttestationRes',
+          params: {
+            result: true,
+            data: {
+              attestationTypeIdList,
+              padoExtensionVersion,
+            },
+          },
+        });
+      }
+      console.log(
+        `${new Date().toLocaleString()} offscreen document has already created`
+      );
+    }
+  };
   switch (reqMethodName) {
     case 'start':
-      const offscreenDocumentPath = 'offscreen.html';
-      if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
-        console.log(
-          `${new Date().toLocaleString()} create offscreen document...........`
-        );
-        await chrome.offscreen.createDocument({
-          url: chrome.runtime.getURL(offscreenDocumentPath),
-          reasons: ['IFRAME_SCRIPTING'],
-          justification: 'WORKERS for needing the document',
-        });
-        console.log(
-          `${new Date().toLocaleString()} offscreen document created`
-        );
-      } else {
-        const {
-          padoZKAttestationJSSDKBeginAttest,
-          padoZKAttestationJSSDKDappTabId: dappTabId,
-          webProofTypes,
-        } = await chrome.storage.local.get([
-          'padoZKAttestationJSSDKBeginAttest',
-          'padoZKAttestationJSSDKDappTabId',
-          'webProofTypes',
-        ]);
-
-        if (padoZKAttestationJSSDKBeginAttest) {
-          const attestationTypeIdList = (
-            webProofTypes ? JSON.parse(webProofTypes) : []
-          ).map((i) => {
-            return {
-              text: i.description,
-              value: i.id,
-            };
-          });
-          chrome.tabs.sendMessage(dappTabId, {
-            type: 'padoZKAttestationJSSDK',
-            name: 'initAttestationRes',
-            params: {
-              result: true,
-              data: {
-                attestationTypeIdList,
-                padoExtensionVersion,
-              },
-            },
-          });
-        }
-        console.log(
-          `${new Date().toLocaleString()} offscreen document has already created`
-        );
-      }
+      startFn();
       break;
     case 'init':
       var eventInfo = {
@@ -274,13 +275,16 @@ const processAlgorithmReq = async (message, port) => {
       const stopFn = async () => {
         await chrome.offscreen.closeDocument();
         await chrome.storage.local.remove(['activeRequestAttestation']);
-        fullscreenPort &&
+        if (fullscreenPort) {
           postMsg(fullscreenPort, {
             resType: 'algorithm',
             resMethodName: 'stop',
             res: { retcode: 0 },
             params,
           });
+        } else {
+          await startFn();
+        }
       };
       if (params?.from === 'beforeunload') {
         const { padoZKAttestationJSSDKBeginAttest } =

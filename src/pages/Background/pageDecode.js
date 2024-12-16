@@ -960,6 +960,7 @@ export const pageDecodeMsgListener = async (
         params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
       if (!activeTemplate.sdkVersion) {
+        // debugger
         const { constructorF } = DATASOURCEMAP[dataSource];
         if (constructorF) {
           const ex = new constructorF();
