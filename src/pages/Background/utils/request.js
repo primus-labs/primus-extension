@@ -1,4 +1,4 @@
-import { isJSONString } from './utils';
+import { isJSONString, encodeFormData } from './utils';
 export default async function customFetch(url, options = {}) {
   const defaultOptions = {
     method: 'GET',
@@ -30,7 +30,7 @@ export default async function customFetch(url, options = {}) {
   }
 }
 
-export async function customFetch2({ url, method, body, header }) {
+export async function customFetch2({ url, method, body, header, isFormData }) {
   const options = { method, body, headers: header };
   const defaultOptions = {
     method: 'GET',
@@ -49,31 +49,17 @@ export async function customFetch2({ url, method, body, header }) {
       finalOptions.body = JSON.stringify(finalOptions.body);
     }
   }
-  // const formencodeType = 'application/x-www-form-urlencoded';
-  // if (
-  //   (finalOptions.body && header['content-type']?.includes(formencodeType)) ||
-  //   header['Content-Type']?.includes(formencodeType)
-  // ) {
-  //   let str;
-  //   // debugger;
-  //   if (isJSONString(finalOptions.body)) {
-  //     str = finalOptions.body;
-  //   } else {
-  //     str = JSON.stringify(finalOptions.body);
-  //   }
-  //   // let params = new URLSearchParams(str);
-  //   // let formData = {};
-  //   // for (let [key, value] of params.entries()) {
-  //   //   formData[key] = value;
-  //   // }
-  //   // const finBody =
-  //   //   formData instanceof URLSearchParams
-  //   //     ? formData
-  //   //     : new URLSearchParams(formData);
-  //   debugger;
-  //   finalOptions.body = str;
-  //   console.log('onBeforeRequestFn-formData-send', formData, finBody);
-  // }
+
+  const formencodeType = 'application/x-www-form-urlencoded';
+  if (
+    (finalOptions.body && header['content-type']?.includes(formencodeType)) ||
+    (header['Content-Type']?.includes(formencodeType) && isFormData)
+  ) {
+    let obj = isJSONString(finalOptions.body)
+      ? JSON.parse(finalOptions.body)
+      : finalOptions.body;
+    finalOptions.body = encodeFormData(obj);
+  }
 
   try {
     const response = await fetch(url, finalOptions);

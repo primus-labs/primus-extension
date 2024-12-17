@@ -6,3 +6,8 @@ export function isJSONString(str) {
     return false;
   }
 }
+export function encodeFormData(data) {
+  return Object.keys(data)
+    .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+    .join('&');
+}

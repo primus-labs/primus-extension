@@ -116,10 +116,12 @@ export const devconsoleMsgListener = async (
           await storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
         }
       }
-      // if (requestBody && requestBody.formData) {
-      //   // debugger;
-      //   await storeRequestsMap(formatUrlKey, { body: requestBody.formData });
-      // }
+      if (requestBody && requestBody.formData) {
+        await storeRequestsMap(formatUrlKey, {
+          body: requestBody.formData,
+          isFormData: true,
+        });
+      }
     }
   };
 
@@ -130,7 +132,7 @@ export const devconsoleMsgListener = async (
     devconsoleTabId = sender.tab.id;
     chrome.webRequest.onBeforeSendHeaders.addListener(
       onBeforeSendHeadersFn,
-      { urls: ['<all_urls>'],types: ['xmlhttprequest']},
+      { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
       ['requestHeaders', 'extraHeaders']
     );
     chrome.webRequest.onBeforeRequest.addListener(
@@ -161,6 +163,7 @@ export const devconsoleMsgListener = async (
           { urls: ['<all_urls>'] },
           ['requestBody']
         );
+        checkDataSourcePageTabId = null;
       }
     });
     const injectFn = async () => {
