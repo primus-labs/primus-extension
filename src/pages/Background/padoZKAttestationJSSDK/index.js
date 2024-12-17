@@ -218,7 +218,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
           );
           const opMap = {
             string: 'REVEAL_STRING',
-            number: 'REVEAL_NUMBER',
+            number: 'REVEAL_STRING',
             boolean: 'REVEAL_BOOLEAN',
           };
           const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
