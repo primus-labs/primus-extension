@@ -2,11 +2,10 @@ import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 dayjs.extend(utc);
 import {
-  postMsg,
-  strToHex,
-  base64ToHex,
-  strToHexSha256,
   getAccount,
+  sub,
+  getStatisticalData,
+  getCurrentDate,
 } from '@/utils/utils';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import {
