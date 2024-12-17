@@ -46,6 +46,7 @@ export type ExchangeMeta = {
   label?: string;
   desc?: string;
   disabled?: boolean;
+  attestationRequestid?: string;
 };
 
 type ExInfo = {

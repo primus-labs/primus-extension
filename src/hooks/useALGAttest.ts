@@ -224,10 +224,14 @@ const useALGAttest = function useAttest() {
             if (activeRequestId !== content?.requestid) {
               return;
             }
-            const acc = getAccount(
-              DATASOURCEMAP[activeAttestation.dataSourceId],
+            const acc =
               sourceMap2[activeAttestation.dataSourceId]
-            );
+                ?.attestationRequestid === activeRequestId
+                ? getAccount(
+                    DATASOURCEMAP[activeAttestation.dataSourceId],
+                    sourceMap2[activeAttestation.dataSourceId]
+                  )
+                : '';
             let fullAttestation = {
               ...content,
               ...parsedActiveRequestAttestation,

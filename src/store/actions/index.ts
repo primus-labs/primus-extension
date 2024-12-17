@@ -1,7 +1,13 @@
-import dayjs from 'dayjs'; 
+import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 dayjs.extend(utc);
-import { sub, getStatisticalData, getCurrentDate } from '@/utils/utils';
+import {
+  postMsg,
+  strToHex,
+  base64ToHex,
+  strToHexSha256,
+  getAccount,
+} from '@/utils/utils';
 import { connectWallet, requestSign } from '@/services/wallets/metamask';
 import {
   bindConnectedWallet,
@@ -37,7 +43,6 @@ import { OPENSEALINK } from '@/config/envConstants';
 import type { ExchangeMeta, AssetsMap } from '@/types/dataSource';
 import type { PROOFTYPEITEM } from '@/types/cred';
 import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
-
 
 export type DataSourceStorages = {
   binance?: any;
@@ -687,6 +692,32 @@ export const setExSourcesAsync = () => {
       return prev;
     };
     const exDatas = Object.keys(res).reduce(reduceF, {});
+
+    let changeCredFlag = false;
+    const { credentials: credentialsStr } = await chrome.storage.local.get([
+      'credentials',
+    ]);
+    const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
+    Object.keys(credentialObj).forEach((k: any) => {
+      const { account, requestid, dataSourceId } = credentialObj[k];
+      if (
+        exDatas[dataSourceId]?.attestationRequestid === requestid &&
+        !account
+      ) {
+        changeCredFlag = true;
+        credentialObj[k].account = getAccount(
+          DATASOURCEMAP[dataSourceId],
+          exDatas[dataSourceId]
+        );
+      }
+    });
+    if (changeCredFlag) {
+      await chrome.storage.local.set({
+        credentials: JSON.stringify(credentialObj),
+      });
+      dispatch(setCredentialsAsync());
+    }
+
     dispatch(setExSourcesData(exDatas));
   };
 };
@@ -698,6 +729,7 @@ export const setSocialSourcesAsync = () => {
     const res: DataSourceStorages = await chrome.storage.local.get(
       sourceNameList
     );
+
     const reduceF = (prev: any, curr: string) => {
       const sourceData = JSON.parse(res[curr]);
       prev[curr] = {
@@ -706,7 +738,34 @@ export const setSocialSourcesAsync = () => {
       };
       return prev;
     };
+
     const datasMap = Object.keys(res).reduce(reduceF, {});
+
+    let changeCredFlag = false;
+    const { credentials: credentialsStr } = await chrome.storage.local.get([
+      'credentials',
+    ]);
+    const credentialObj = credentialsStr ? JSON.parse(credentialsStr) : {};
+    Object.keys(credentialObj).forEach((k: any) => {
+      const { account, requestid, dataSourceId } = credentialObj[k];
+      if (
+        datasMap[dataSourceId]?.attestationRequestid === requestid &&
+        !account
+      ) {
+        changeCredFlag = true;
+        credentialObj[k].account = getAccount(
+          DATASOURCEMAP[dataSourceId],
+          datasMap[dataSourceId]
+        );
+      }
+    });
+    if (changeCredFlag) {
+      await chrome.storage.local.set({
+        credentials: JSON.stringify(credentialObj),
+      });
+      dispatch(setCredentialsAsync());
+    }
+
     dispatch(setSocialSourcesAction(datasMap));
   };
 };
@@ -1260,7 +1319,7 @@ export const initSetNotificationsAction = () => {
             title,
             desc: content,
             link,
-            time:  dayjs.utc(publishTime-0).format('YYYY/MM/DD HH:mm'),
+            time: dayjs.utc(publishTime - 0).format('YYYY/MM/DD HH:mm'),
             // collapse: k !== 0,
             // disableCollapse: k === 0,
           };

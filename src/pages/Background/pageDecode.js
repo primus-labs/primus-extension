@@ -987,6 +987,7 @@ export const pageDecodeMsgListener = async (
           // const hadConnectedCurrDataSource = !!storageRes[dataSource];
           await storeDataSource(dataSource, ex, port, {
             withoutMsg: true,
+            attestationRequestid: aligorithmParams.requestid,
           });
         }
       }

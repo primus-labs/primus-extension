@@ -4,7 +4,7 @@ import { DATASOURCEMAP } from '@/config/dataSource2';
 // ex : exhange service Constructor instance
 export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
   otherParams = otherParams || {};
-  const { apiKey, withoutMsg } = otherParams;
+  const { apiKey, withoutMsg, attestationRequestid } = otherParams;
   const resType = `set-${dataSourceId}`;
   const exchangeInfo = DATASOURCEMAP[dataSourceId];
   const { type: sourceType, connectType } = exchangeInfo;
@@ -60,6 +60,7 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
     Object.assign(newSourceUserData, {
       date: getCurrentDate(),
       timestamp: +new Date(),
+      attestationRequestid,
     });
     await chrome.storage.local.set({
       [dataSourceId]: JSON.stringify(newSourceUserData),
