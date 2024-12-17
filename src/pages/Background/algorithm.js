@@ -451,7 +451,8 @@ export const algorithmMsgListener = async (
           Object.assign(msgObj, {
             type: codeTipObj.type,
             desc: codeTipObj.desc,
-            sourcePageTip: codeTipObj.title,
+            sourcePageTip:
+              code === '40002' ? 'SSLCertificateError' : codeTipObj.title,
             code: `Error code: ${code}`,
           });
 
