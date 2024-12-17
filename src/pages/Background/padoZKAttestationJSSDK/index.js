@@ -199,7 +199,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
           } = result;
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
           const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
-          const host = dataSourceTemplateObj[0].requestTemplate.host;
+          const host =
+            dataSourceTemplateObj[0]?.requestTemplate?.host ||
+            new URL(jumpTo).host;
           const newRequests = dataSourceTemplateObj.reduce(
             (prev, curr, idx) => {
               const {
