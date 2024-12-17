@@ -99,6 +99,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version }) => {
       rawData: '',
     };
     eventReport(eventInfo);
+    processAlgorithmReq({
+      reqMethodName: 'start',
+    });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
     await chrome.storage.local.remove(['activeRequestAttestation']);
   }
