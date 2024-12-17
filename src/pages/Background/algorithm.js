@@ -150,6 +150,7 @@ export const algorithmMsgListener = async (
             'padoZKAttestationJSSDKXFollowerCount',
             'activeRequestAttestation',
           ]);
+          processAlgorithmReq({ reqMethodName: 'stop' });
         }
         let resParams = { result };
         if (!result) {
