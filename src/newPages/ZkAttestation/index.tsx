@@ -13,6 +13,8 @@ import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
 import Search from '@/newComponents/ZkAttestation/Search';
 import { postMsg } from '@/utils/utils';
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
+import { getZkPadoUrl, getProxyUrl } from '@/config/envConstants';
+import { STARTOFFLINETIMEOUT } from '@/config/constants';
 
 import './index.scss';
 import useMsgs from '@/hooks/useMsgs';
@@ -41,9 +43,12 @@ const ZkAttestation = memo(() => {
   const hasConnected = useMemo(() => {
     return Object.keys(credentialsFromStore).length > 0;
   }, [credentialsFromStore]);
+  const padoServicePort = useSelector(
+    (state: UserState) => state.padoServicePort
+  );
 
   const handleCreate = useCallback(
-    (typeItem) => {
+    async (typeItem) => {
       if (attestLoading === 1) {
         addMsg({
           type: 'info',
@@ -52,6 +57,19 @@ const ZkAttestation = memo(() => {
         });
         return;
       } else {
+          if ("On-chain Transactions" !== typeItem.id) {
+          const padoUrl = await getZkPadoUrl();
+          const proxyUrl = await getProxyUrl();
+          postMsg(padoServicePort, {
+            fullScreenType: 'algorithm',
+            reqMethodName: 'startOffline',
+            params: {
+              offlineTimeout: STARTOFFLINETIMEOUT,
+              padoUrl,
+              proxyUrl,
+            },
+          });
+        }
         setVisibleAssetDialog(typeItem.id);
       }
     },

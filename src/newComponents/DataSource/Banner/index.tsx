@@ -4,33 +4,27 @@ import './index.scss';
 import PTooltip from '@/newComponents/PTooltip';
 
 const Search: React.FC = () => {
-  const handleStart = useCallback(() => {}, []);
+  const handleStart = useCallback(() => {
+    window.open('http://dev.primus.xyz/');
+  }, []);
   return (
     <div className="dataSourceBanner">
       <div className="intro">
-        <div className="title">
-          Didn't find the data source you want to connect?
-        </div>
+        <div className="title">Can’t find the data you need?</div>
         <div className="desc">
           <p>
-            {' '}
-            Become a developer and contribute to our community! Use our data
-            source templates to develop your own solution stacks.
-          </p>
-          <p>
-            Connect more Real World Assets and data to fulfill Web3 ecosystems.
+            Use our Developer Hub to create more data verification templates and
+            contribute to our community!
           </p>
         </div>
       </div>
-      <PTooltip title={`coming soon`}>
-        <PButton
-          className="startBtn"
-          text="Start now"
-          type="secondary"
-          size="s"
-          onClick={handleStart}
-        />
-      </PTooltip>
+      <PButton
+        className="startBtn"
+        text="Start now"
+        type="secondary"
+        size="s"
+        onClick={handleStart}
+      />
     </div>
   );
 };

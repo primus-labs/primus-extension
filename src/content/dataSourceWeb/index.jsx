@@ -173,20 +173,20 @@ function PadoCard() {
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
-  var iconLink = chrome.runtime.getURL(`iconLink.svg`);
+  // var iconLink = chrome.runtime.getURL(`iconLink.svg`);
 
-  const iconMap = {
-    binance: chrome.runtime.getURL(`iconDataSourceBinance.svg`),
-    coinbase: chrome.runtime.getURL(`iconDataSourceCoinbase.png`),
-    okx: chrome.runtime.getURL(`iconDataSourceOKX.svg`),
-    x: chrome.runtime.getURL(`iconDataSourceX.svg`),
-    tiktok: chrome.runtime.getURL(`iconDataSourceTikTok.svg`),
-    bitget: chrome.runtime.getURL(`iconDataSourceBitget.svg`),
-    gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
-    mexc: chrome.runtime.getURL(`iconDataSourceMEXC.png`),
-    huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
-  };
-  var iconDataSource = iconMap[activeRequest.dataSource];
+  // const iconMap = {
+  //   binance: chrome.runtime.getURL(`iconDataSourceBinance.svg`),
+  //   coinbase: chrome.runtime.getURL(`iconDataSourceCoinbase.png`),
+  //   okx: chrome.runtime.getURL(`iconDataSourceOKX.svg`),
+  //   x: chrome.runtime.getURL(`iconDataSourceX.svg`),
+  //   tiktok: chrome.runtime.getURL(`iconDataSourceTikTok.svg`),
+  //   bitget: chrome.runtime.getURL(`iconDataSourceBitget.svg`),
+  //   gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
+  //   mexc: chrome.runtime.getURL(`iconDataSourceMEXC.png`),
+  //   huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
+  // };
+  // var iconDataSource = iconMap[activeRequest.dataSource];
 
   // useEffect(() => {
   //   rem();
@@ -303,14 +303,10 @@ function PadoCard() {
   return (
     <div className={`pado-extension-card  ${status} ${colorTheme}`}>
       <div className="pado-extension-header">
+        <div className="pado-extension-center-title">Connect Your Data</div>
         <img src={iconPado} className="iconPado" />
-        <img src={iconLink} className="iconLink" />
-        <img src={iconDataSource} className="iconSource" />
       </div>
       <div className="pado-extenstion-center">
-        <div className="pado-extension-center-title">
-        Connect Your Data
-        </div>
         <DescEl status={status} resultStatus={resultStatus} />
       </div>
       <FooterEl

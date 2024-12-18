@@ -264,7 +264,7 @@
   --border-tokens-border-bp: var(--brand-primary-color-bp-50);
   --border-tokens-border-primary-selected-gray: var(--neutral-color-gray-70);
   --button-tokens-button-disabled: var(--neutral-color-gray-90);
-  --button-tokens-button-primary: var(--neutral-color-white);
+  --button-tokens-button-primary: #ffffff;
   --button-tokens-button-primary-active: var(--neutral-color-gray-80);
   --button-tokens-button-primary-hover: var(--neutral-color-gray-70);
 

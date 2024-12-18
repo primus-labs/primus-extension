@@ -1,5 +1,3 @@
-
-
 @mixin frcc {
   display: flex;
   flex-direction: row;
@@ -21,8 +19,6 @@
   border-top: $borderWidth solid $borderTopColor;
   animation: spin $time linear infinite;
 }
-
-
 
 @keyframes spin {
   0% {
@@ -144,12 +140,14 @@ button.PButton {
 .dark {
   button.PButton {
     &.primary {
+      background: #fff;
       &.disabled {
         color: var(--text-tokens-text-hover);
         background: var(--button-tokens-button-primary);
       }
     }
     &.secondary {
+      border: 1px solid #fff !important;
       &.disabled {
         color: var(--text-button-disabled);
         border: 1px solid var(--button-tokens-button-disabled);

@@ -58,7 +58,7 @@ const getExchange = async (message, USERPASSWORD, port) => {
     type,
     params: { apiKey },
   } = message;
-  const exchangeName = type.split('-')[1];  
+  const exchangeName = type.split('-')[1];
   // console.log('getExchange exData type:', type);
   // get ex constructor params
   // request ex data
@@ -160,7 +160,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     exUserId,
     requestid: prevRequestid,
     event,
-    algorithmType = 'mpctls'
+    algorithmType = 'proxytls',
   } = form;
   // const { baseName } = DATASOURCEMAP[source];
   const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName; // unnecessary for web proof
@@ -199,6 +199,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     authUseridHash,
     event,
     setHostName: 'true',
+    hasFirstReq: 'true', // default  false
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
@@ -304,6 +305,56 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     Object.assign(params, {
       ext: { event },
     });
+  }
+
+  return params;
+}
+export async function assembleAlgorithmParamsForSDK(form, ext) {
+  const {
+    dataSource,
+    algorithmType = 'proxytls',
+    requestid: prevRequestid,
+    sslCipherSuite,
+  } = form;
+  // const urlObj = new URL(dataPageTemplate.baseUrl);
+  // const baseName = urlObj.host;
+  const user = await assembleUserInfoParams({});
+  const { userInfo } = await chrome.storage.local.get(['userInfo']);
+  const { id: authUserId } = JSON.parse(userInfo);
+  const authUseridHash = strToHex(authUserId);
+
+  const timeStampStr = (+new Date()).toString();
+  const padoUrl = await getPadoUrl();
+  const proxyUrl = await getProxyUrl();
+  const zkPadoUrl = await getZkPadoUrl();
+
+  const appSignParameters = JSON.parse(ext.appSignParameters);
+  const params = {
+    source: dataSource,
+    requestid: prevRequestid || timeStampStr,
+    padoUrl: algorithmType === 'proxytls' ? zkPadoUrl : padoUrl, // client <----> pado-server
+    proxyUrl: proxyUrl,
+    errLogUrl: 'wss://api.padolabs.org/logs',
+    cipher: sslCipherSuite || '',
+    getdatatime: timeStampStr,
+    credVersion: CredVersion,
+    // sigFormat: 'EAS-Ethereum',
+    // schemaType,
+    user,
+    authUseridHash,
+    setHostName: 'true',
+    appParameters: {
+      appId: appSignParameters.appId,
+      appSignParameters: ext.appSignParameters,
+      appSignature: ext.appSignature,
+      additionParams: appSignParameters.additionParams
+        ? appSignParameters.additionParams
+        : '',
+    },
+  };
+  if (ext.padoUrl && ext.proxyUrl) {
+    params.padoUrl = ext.padoUrl;
+    params.proxyUrl = ext.proxyUrl;
   }
 
   return params;
@@ -436,7 +487,11 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
 }
 async function assembleUserInfoParams(form) {
   const { event } = form;
-  const { connectedWalletAddress, userInfo,padoZKAttestationJSSDKWalletAddress } = await chrome.storage.local.get([
+  const {
+    connectedWalletAddress,
+    userInfo,
+    padoZKAttestationJSSDKWalletAddress,
+  } = await chrome.storage.local.get([
     'connectedWalletAddress',
     'userInfo',
     'padoZKAttestationJSSDKWalletAddress',
@@ -445,6 +500,10 @@ async function assembleUserInfoParams(form) {
   if (connectedWalletAddress) {
     formatAddress = JSON.parse(connectedWalletAddress).address;
   }
+  console.log(
+    'debuge-zktls-startAttestation3',
+    padoZKAttestationJSSDKWalletAddress
+  );
   if (event === SCROLLEVENTNAME) {
     const { scrollEvent } = await chrome.storage.local.get(['scrollEvent']);
     const scrollEventObj = scrollEvent ? JSON.parse(scrollEvent) : {};

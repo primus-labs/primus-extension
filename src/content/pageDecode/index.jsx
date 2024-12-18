@@ -10,7 +10,6 @@ console.log(
 );
 let activeRequest;
 let operationType;
-let attestType;
 let PADOSERVERURL;
 let padoExtensionVersion;
 let activeRequestid;
@@ -150,7 +149,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     };
     const { padoZKAttestationJSSDKBeginAttest } =
       await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-    if (padoZKAttestationJSSDKBeginAttest === '1') {
+    if (padoZKAttestationJSSDKBeginAttest) {
       eventInfo.rawData.origin = 'padoAttestationJSSDK';
     }
     eventReport(eventInfo);
@@ -216,7 +215,6 @@ function DataSourceLineEl({ list }) {
   );
 }
 function DescEl({ status, resultStatus, errorTxt }) {
-  console.log('222DescEl', errorTxt);
   var iconSuc = chrome.runtime.getURL(`iconSucc.svg`);
   var iconFail = chrome.runtime.getURL(`iconFail.svg`);
   var host = activeRequest?.jumpTo
@@ -235,8 +233,12 @@ function DescEl({ status, resultStatus, errorTxt }) {
     if (operationType === 'connect') {
       return [{ label: 'Data Source', value: host }];
     } else {
-      const { attestationType, verificationContent, verificationValue } =
-        activeRequest;
+      const {
+        attestationType,
+        verificationContent,
+        verificationValue,
+        sdkVersion,
+      } = activeRequest;
 
       let vC = verificationContent,
         vV = verificationValue;
@@ -259,15 +261,17 @@ function DescEl({ status, resultStatus, errorTxt }) {
       // else if (attestationType === 'On-chain Transactions') {
 
       // }
-
-      return [
+      let arr = [
         { label: 'Data Source', value: host },
         {
           label: 'Verification Content',
           value: vC,
         },
-        { label: 'Verification Value', value: vV },
       ];
+      if (!sdkVersion) {
+        arr.push({ label: 'Verification Value', value: vV });
+      }
+      return arr;
     }
   }, []);
   // const loadingTxt = useMemo(() => {
@@ -347,10 +351,10 @@ function DescEl({ status, resultStatus, errorTxt }) {
         <div className="errorTipWrapper">
           <img src={iconFail} alt="" />
           <span>{errorTxtSelf?.sourcePageTip}</span>
+          {errorTxtSelf?.code && (
+            <span className="errorCode">{errorTxtSelf?.code}</span>
+          )}
         </div>
-        {errorTxtSelf?.code && (
-          <span className="errorCode">{errorTxtSelf?.code}</span>
-        )}
       </div>
       <div className="value">
         {activeRequest.dataSourceId === 'chatgpt'
@@ -377,21 +381,21 @@ function PadoCard() {
   }, [operationType]);
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
   var iconPrimusSquare = chrome.runtime.getURL(`iconPrimusSquare.svg`);
-  var iconLink = chrome.runtime.getURL(`iconLink.svg`);
+  // var iconLink = chrome.runtime.getURL(`iconLink.svg`);
 
-  const iconMap = {
-    binance: chrome.runtime.getURL(`iconDataSourceBinance.svg`),
-    coinbase: chrome.runtime.getURL(`iconDataSourceCoinbase.png`),
-    okx: chrome.runtime.getURL(`iconDataSourceOKX.svg`),
-    x: chrome.runtime.getURL(`iconDataSourceX.svg`),
-    tiktok: chrome.runtime.getURL(`iconDataSourceTikTok.svg`),
-    bitget: chrome.runtime.getURL(`iconDataSourceBitget.svg`),
-    gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
-    mexc: chrome.runtime.getURL(`iconDataSourceMEXC.png`),
-    huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
-    chatgpt: chrome.runtime.getURL(`iconDataSourceChatgpt.svg`),
-  };
-  var iconDataSource = iconMap[activeRequest.dataSource];
+  // const iconMap = {
+  //   binance: chrome.runtime.getURL(`iconDataSourceBinance.svg`),
+  //   coinbase: chrome.runtime.getURL(`iconDataSourceCoinbase.png`),
+  //   okx: chrome.runtime.getURL(`iconDataSourceOKX.svg`),
+  //   x: chrome.runtime.getURL(`iconDataSourceX.svg`),
+  //   tiktok: chrome.runtime.getURL(`iconDataSourceTikTok.svg`),
+  //   bitget: chrome.runtime.getURL(`iconDataSourceBitget.svg`),
+  //   gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
+  //   mexc: chrome.runtime.getURL(`iconDataSourceMEXC.png`),
+  //   huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
+  //   chatgpt: chrome.runtime.getURL(`iconDataSourceChatgpt.svg`),
+  // };
+  // var iconDataSource = iconMap[activeRequest.dataSource] || iconPado; // TODO-zktls
 
   // useEffect(() => {
   //   rem();
@@ -469,12 +473,10 @@ function PadoCard() {
       activeRequest.dataSourceId !== 'chatgpt' ? (
         <div className={`pado-extension-card  ${status}`}>
           <div className="pado-extension-header">
+            <div className="pado-extenstion-center-title">Verify Your Data</div>
             <img src={iconPado} className="iconPado" />
-            <img src={iconLink} className="iconLink" />
-            <img src={iconDataSource} className="iconSource" />
           </div>
           <div className="pado-extenstion-center">
-            <div className="pado-extenstion-center-title">Verify Your Data</div>
             <DescEl
               status={status}
               resultStatus={resultStatus}

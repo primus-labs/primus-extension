@@ -1,10 +1,14 @@
-import { assembleAlgorithmParams } from './exData';
+import {
+  assembleAlgorithmParams,
+  assembleAlgorithmParamsForSDK,
+} from './exData';
 import { storeDataSource } from './dataSourceUtils';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import customFetch from './utils/request';
+import { isJSONString } from './utils/utils';
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -21,8 +25,26 @@ let listenerFn = () => {};
 let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
 let onCompletedFn = () => {};
-console.log('preAlgorithmTimer-init', preAlgorithmTimer);
+let requestsMap = {};
 
+const removeRequestsMap = async (url) => {
+  // console.log('requestsMap-remove', url);
+  // console.log('x-remove');
+  // await chrome.storage.local.remove([
+  //   'https://www.tiktok.com/passport/web/account/info/',
+  //   'https://api.x.com/1.1/account/settings.json',
+  // ]);
+  delete requestsMap[url];
+};
+const storeRequestsMap = (url, urlInfo) => {
+  const lastStoreRequestObj = requestsMap[url] || {};
+  // console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  Object.assign(requestsMap, {
+    [url]: { ...lastStoreRequestObj, ...urlInfo },
+  });
+
+  return requestsMap[url];
+};
 const resetVarsFn = () => {
   isReadyRequest = false;
   operationType = null;
@@ -32,6 +54,7 @@ const resetVarsFn = () => {
   preAlgorithmTimer = null;
   preAlgorithmFlag = false;
   chatgptHasLogin = false;
+  requestsMap = {};
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -42,7 +65,7 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
   ]);
-  if (padoZKAttestationJSSDKBeginAttest === '1') {
+  if (padoZKAttestationJSSDKBeginAttest) {
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -87,11 +110,13 @@ const extraRequestFn = async () => {
   const requestUrl = 'https://chatgpt.com/backend-api/conversation';
   const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
 
-  const storageRes = await chrome.storage.local.get(requestUrl);
+  // const storageRes = await chrome.storage.local.get(requestUrl);
+  const storageRes = requestsMap;
   try {
     const requestRes = await customFetch(fullRequestUrl, {
       method: 'GET',
-      headers: JSON.parse(storageRes[requestUrl]).headers,
+      // headers: JSON.parse(storageRes[requestUrl]).headers,
+      headers: storageRes[requestUrl].headers,
     });
 
     const messageIds = [];
@@ -136,18 +161,14 @@ export const pageDecodeMsgListener = async (
   if (name === 'init') {
     activeTemplate = {};
     activeTemplate = params;
+    resetVarsFn();
   }
   if (activeTemplate.dataSource) {
     let {
       dataSource,
       jumpTo,
-      schemaType,
-      datasourceTemplate: { host, requests, responses, calculations },
-      uiTemplate,
-      id,
-      event,
+      datasourceTemplate: { requests },
     } = activeTemplate;
-    const requestUrlList = requests.map((r) => r.url);
     const isUrlWithQueryFn = (url, queryKeyArr) => {
       const urlStrArr = url.split('?');
       const queryStr = urlStrArr[1];
@@ -165,12 +186,39 @@ export const pageDecodeMsgListener = async (
         jumpTo,
         datasourceTemplate: { requests },
       } = activeTemplate;
-      const { url: currRequestUrl, requestHeaders } = details;
+      const { url: currRequestUrl, requestHeaders, method } = details;
       let formatUrlKey = currRequestUrl;
       let addQueryStr = '';
       let needQueryDetail = false;
-
+      let formatHeader = requestHeaders.reduce((prev, curr) => {
+        const { name, value } = curr;
+        prev[name] = value;
+        return prev;
+      }, {});
+      if (
+        currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
+      ) {
+        chatgptHasLogin = !!formatHeader.Authorization;
+        if (dataSource === 'chatgpt') {
+          const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
+          console.log('setUIStep-', tipStr);
+          chrome.tabs.sendMessage(
+            dataSourcePageTabId,
+            {
+              type: 'pageDecode',
+              name: 'setUIStep',
+              params: {
+                step: tipStr,
+              },
+            },
+            function (response) {}
+          );
+        }
+      }
       const isTarget = requests.some((r) => {
+        if (r.name === 'first') {
+          return false;
+        }
         if (r.queryParams && r.queryParams[0]) {
           const urlStrArr = currRequestUrl.split('?');
           const hostUrl = urlStrArr[0];
@@ -186,7 +234,7 @@ export const pageDecodeMsgListener = async (
           }
           formatUrlKey = hostUrl;
           return !!curUrlWithQuery;
-        } else if (r.urlType === 'REGX') {
+        } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
           var regex = new RegExp(r.url, 'g');
           const isTarget = currRequestUrl.match(regex);
           const result = isTarget && isTarget.length > 0;
@@ -203,49 +251,47 @@ export const pageDecodeMsgListener = async (
         }
       });
       if (isTarget) {
-        let formatHeader = requestHeaders.reduce((prev, curr) => {
-          const { name, value } = curr;
-          prev[name] = value;
-          return prev;
-        }, {});
-        if (
-          currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
-        ) {
-          chatgptHasLogin = !!formatHeader.Authorization;
-          if (dataSource === 'chatgpt') {
-            const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
-            console.log('setUIStep-', tipStr);
-            chrome.tabs.sendMessage(
-              dataSourcePageTabId,
-              {
-                type: 'pageDecode',
-                name: 'setUIStep',
-                params: {
-                  step: tipStr,
-                },
-              },
-              function (response) {}
-            );
-          }
-        }
-        // const requestHeadersObj = JSON.stringify(formatHeader);
-        const storageObj = await chrome.storage.local.get([formatUrlKey]);
-        const currRequestUrlStorage = storageObj[formatUrlKey];
-        const currRequestObj = currRequestUrlStorage
-          ? JSON.parse(currRequestUrlStorage)
-          : {};
-        const newCurrRequestObj = {
-          ...currRequestObj,
+        let newCapturedInfo = {
           headers: formatHeader,
+          method,
         };
         if (addQueryStr) {
-          newCurrRequestObj.queryString = addQueryStr;
+          newCapturedInfo.queryString = addQueryStr;
         }
-        // console.log('222222listen', formatUrlKey);
-        await chrome.storage.local.set({
-          [formatUrlKey]: JSON.stringify(newCurrRequestObj),
-        });
-        console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
+        const newCurrRequestObj = storeRequestsMap(
+          formatUrlKey,
+          newCapturedInfo
+        );
+        const requireUrlArr = [
+          'https://www.tiktok.com/passport/web/account/info/',
+          'https://api.x.com/1.1/account/settings.json',
+        ];
+        const curRequireUrl = requireUrlArr.find((i) =>
+          currRequestUrl.includes(i)
+        );
+        if (curRequireUrl) {
+          await chrome.storage.local.set({
+            [curRequireUrl]: JSON.stringify(newCurrRequestObj),
+          });
+        }
+        // const requestHeadersObj = JSON.stringify(formatHeader);
+        // const storageObj = await chrome.storage.local.get([formatUrlKey]);
+        // const currRequestUrlStorage = storageObj[formatUrlKey];
+        // const currRequestObj = currRequestUrlStorage
+        //   ? JSON.parse(currRequestUrlStorage)
+        //   : {};
+        // const newCurrRequestObj = {
+        //   ...currRequestObj,
+        //   headers: formatHeader,
+        // };
+        // if (addQueryStr) {
+        //   newCurrRequestObj.queryString = addQueryStr;
+        // }
+        // // console.log('222222listen', formatUrlKey);
+        // await chrome.storage.local.set({
+        //   [formatUrlKey]: JSON.stringify(newCurrRequestObj),
+        // });
+        // console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
         if (
           needQueryDetail &&
           formatUrlKey.startsWith(
@@ -272,11 +318,15 @@ export const pageDecodeMsgListener = async (
     };
     onBeforeRequestFn = async (subDetails) => {
       let {
-        datasourceTemplate: { host, requests },
+        datasourceTemplate: { requests },
       } = activeTemplate;
       const { url: currRequestUrl, requestBody } = subDetails;
+      removeRequestsMap(currRequestUrl);
       let formatUrlKey = currRequestUrl;
       const isTarget = requests.some((r) => {
+        if (r.name === 'first') {
+          return false;
+        }
         if (r.queryParams && r.queryParams[0]) {
           const urlStrArr = currRequestUrl.split('?');
           const hostUrl = urlStrArr[0];
@@ -286,7 +336,7 @@ export const pageDecodeMsgListener = async (
           }
           formatUrlKey = hostUrl;
           return curUrlWithQuery;
-        } else if (r.urlType === 'REGX') {
+        } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
           var regex = new RegExp(r.url, 'g');
           const isTarget = currRequestUrl.match(regex);
           const result = isTarget && isTarget.length > 0;
@@ -311,32 +361,31 @@ export const pageDecodeMsgListener = async (
               `url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
             );
 
-            const storageObj = await chrome.storage.local.get([formatUrlKey]);
-            const currRequestUrlStorage = storageObj[formatUrlKey];
-            const currRequestObj = currRequestUrlStorage
-              ? JSON.parse(currRequestUrlStorage)
-              : {};
-            const newCurrRequestObj = {
-              ...currRequestObj,
-              body: JSON.parse(bodyText),
-            };
-            await chrome.storage.local.set({
-              [formatUrlKey]: JSON.stringify(newCurrRequestObj),
-            });
-            console.log(
-              'lastStorage-set',
-              formatUrlKey,
-              newCurrRequestObj
-            );
+            storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
+
+            // const storageObj = await chrome.storage.local.get([formatUrlKey]);
+            // const currRequestUrlStorage = storageObj[formatUrlKey];
+            // const currRequestObj = currRequestUrlStorage
+            //   ? JSON.parse(currRequestUrlStorage)
+            //   : {};
+            // const newCurrRequestObj = {
+            //   ...currRequestObj,
+            //   body: JSON.parse(bodyText),
+            // };
+            // await chrome.storage.local.set({
+            //   [formatUrlKey]: JSON.stringify(newCurrRequestObj),
+            // });
+            // console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
           }
         }
       }
     };
     onCompletedFn = async (details) => {
       let { dataSource } = activeTemplate;
+      console.log('onCompletedFn', dataSource, details);
       if (dataSource === 'chatgpt') {
         // chatgpt has only one requestUrl
-        console.log('onCompletedFn', details);
+
         await extraRequestFn();
         console.log('setUIStep-toVerify');
         chrome.tabs.sendMessage(
@@ -362,25 +411,31 @@ export const pageDecodeMsgListener = async (
           dataSource,
           datasourceTemplate: { requests },
         } = activeTemplate;
+
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
         const interceptorUrlArr = interceptorRequests.map((i) => i.url);
         // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
-        const storageObj = await chrome.storage.local.get(interceptorUrlArr);
+        // const storageObj = await chrome.storage.local.get(interceptorUrlArr);
+        // const storageArr = Object.values(storageObj);
+        const storageObj = requestsMap;
         const storageArr = Object.values(storageObj);
-        if (storageArr.length === interceptorUrlArr.length) {
+
+        // debugger
+        if (
+          interceptorUrlArr.length > 0 &&
+          storageArr.length === interceptorUrlArr.length
+        ) {
           const f = interceptorRequests.every(async (r) => {
-            // const storageR = Object.keys(storageObj).find(
-            //   (sRKey) => sRKey === r.url
-            // );
             let url = r.url;
             if (r.urlType === 'REGX') {
-              const realUrl = await chrome.storage.local.get(r.url);
-              url = realUrl[r.url];
+              const storageObj = await chrome.storage.local.get(r.url);
+              if (storageObj[r.url] && !isJSONString(storageObj[r.url])) {
+                url = storageObj[r.url];
+              }
             }
-            const sRrequestObj = storageObj[url]
-              ? JSON.parse(storageObj[url])
-              : {};
-            console.log('sRrequestObj', sRrequestObj, r);
+
+            const sRrequestObj = storageObj[url] || {};
+            console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
             chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
             const headersFlag =
               !r.headers || (!!r.headers && !!sRrequestObj.headers);
@@ -390,8 +445,10 @@ export const pageDecodeMsgListener = async (
               (!!r.cookies &&
                 !!sRrequestObj.headers &&
                 !!sRrequestObj.headers.Cookie);
+
             return headersFlag && bodyFlag && cookieFlag;
           });
+
           const fl =
             dataSource === 'chatgpt'
               ? !!f &&
@@ -401,7 +458,6 @@ export const pageDecodeMsgListener = async (
               : f;
 
           if (fl) {
-            console.log('lastStorage-urlRequests', interceptorRequests);
             if (dataSource === 'chatgpt') {
             } else {
               // debugger
@@ -431,7 +487,7 @@ export const pageDecodeMsgListener = async (
         );
       }
     };
-    // 369-500
+
     const formatAlgorithmParamsFn = async () => {
       let {
         dataSource,
@@ -443,6 +499,7 @@ export const pageDecodeMsgListener = async (
         category,
         requestid,
         algorithmType,
+        sdkVersion,
       } = activeTemplate;
       const form = {
         source: dataSource,
@@ -450,7 +507,7 @@ export const pageDecodeMsgListener = async (
         label: null,
         exUserId: null,
         requestid,
-        algorithmType: algorithmType || 'mpctls',
+        algorithmType: algorithmType || 'proxytls',
       };
       if (event) {
         form.event = event;
@@ -464,7 +521,22 @@ export const pageDecodeMsgListener = async (
       if (activeTemplate.requestid) {
         form.requestid = activeTemplate.requestid;
       }
-      let aligorithmParams = await assembleAlgorithmParams(form, password);
+      let aligorithmParams = {};
+      // debugger
+      if (sdkVersion) {
+        aligorithmParams = await assembleAlgorithmParamsForSDK(
+          {
+            dataSource: activeTemplate.dataSource,
+            algorithmType: activeTemplate.algorithmType,
+            requestid: activeTemplate.requestid,
+            sslCipherSuite: activeTemplate.sslCipherSuite,
+          },
+          activeTemplate.ext
+        );
+      } else {
+        aligorithmParams = await assembleAlgorithmParams(form, password);
+      }
+
       const formatRequests = [];
       for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
@@ -473,80 +545,96 @@ export const pageDecodeMsgListener = async (
         let { headers, cookies, body, url, urlType } = r;
         let formatUrlKey = url;
         if (urlType === 'REGX') {
-          formatUrlKey = await chrome.storage.local.get(url);
-          formatUrlKey = formatUrlKey[url];
-          url = formatUrlKey;
-          r.url = url;
+          const storageObj = await chrome.storage.local.get(url);
+          if (storageObj[url] && !isJSONString(storageObj[url])) {
+            console.log('formatAlgorithmParamsFn-regx-storageObj', storageObj);
+            formatUrlKey = storageObj[url];
+            url = formatUrlKey;
+            r.url = url;
+          }
         }
-        const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
-        const currRequestInfoObj =
-          (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
+        const currRequestInfoObj = requestsMap[formatUrlKey] || {};
+
+        // console.log(
+        //   'lastStorage-get-formatAlgorithmParamsFn',
+        //   'formatUrlKey:',
+        //   formatUrlKey,
+        //   'currRequestInfoObj:',
+        //   JSON.stringify(currRequestInfoObj),
+        //   JSON.stringify(requestsMap)
+        // );
         const {
           headers: curRequestHeader,
           body: curRequestBody,
           queryString,
         } = currRequestInfoObj;
-        console.log('lastStorage-get', url, currRequestInfoObj);
+
         const cookiesObj = curRequestHeader
           ? parseCookie(curRequestHeader.Cookie)
           : {};
         let formateHeader = {},
           formateCookie = {},
           formateBody = {};
-        if (headers && headers.length > 0) {
-          headers.forEach((hk) => {
-            if (curRequestHeader) {
-              const inDataSourceHeaderKey = Object.keys(curRequestHeader).find(
-                (h) => h.toLowerCase() === hk.toLowerCase()
-              );
-              formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
-            }
-          });
-          Object.assign(r, {
-            headers: formateHeader,
-          });
-        }
-        if (cookies && cookies.length > 0) {
-          cookies.forEach((ck) => {
-            formateCookie[ck] = cookiesObj[ck];
-          });
-          Object.assign(r, {
-            cookies: formateCookie,
-          });
-        }
-        if (body && body.length > 0) {
-          body.forEach((hk) => {
-            formateBody[hk] = curRequestBody[hk];
-          });
-          Object.assign(r, {
-            body: formateBody,
-          });
-        }
-        if (queryString) {
-          Object.assign(r, {
-            url: r.url + '?' + queryString,
-          });
-        }
-        if ('queryParams' in r) {
-          delete r.queryParams;
-        }
 
+        if (sdkVersion) {
+          let headerNoCookie = { ...curRequestHeader };
+          delete headerNoCookie.Cookie;
+          Object.assign(r, {
+            headers: { ...headerNoCookie },
+            cookies: { ...cookiesObj },
+            body: { ...curRequestBody },
+            url: queryString ? r.url + '?' + queryString : r.url,
+          });
+        } else {
+          if (headers && headers.length > 0) {
+            headers.forEach((hk) => {
+              if (curRequestHeader) {
+                const inDataSourceHeaderKey = Object.keys(
+                  curRequestHeader
+                ).find((h) => h.toLowerCase() === hk.toLowerCase());
+                formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
+              }
+            });
+            Object.assign(r, {
+              headers: formateHeader,
+            });
+          }
+
+          if (cookies && cookies.length > 0) {
+            cookies.forEach((ck) => {
+              formateCookie[ck] = cookiesObj[ck];
+            });
+            Object.assign(r, {
+              cookies: formateCookie,
+            });
+          }
+          if (body && body.length > 0) {
+            body.forEach((hk) => {
+              formateBody[hk] = curRequestBody[hk];
+            });
+            Object.assign(r, {
+              body: formateBody,
+            });
+          }
+          if (queryString) {
+            Object.assign(r, {
+              url: r.url + '?' + queryString,
+            });
+          }
+          if ('queryParams' in r) {
+            delete r.queryParams;
+          }
+        }
         formatRequests.push(r);
       }
       const activeInfo = formatRequests.find((i) => i.headers);
-      const activeHeader = Object.assign({}, activeInfo.headers);
+      const activeHeader = Object.assign({}, activeInfo?.headers);
       const authInfoName = dataSource + '-auth';
       await chrome.storage.local.set({
         [authInfoName]: JSON.stringify(activeHeader),
       });
       let formatResponse = JSON.parse(JSON.stringify(responses));
-      if (dataSource === 'binance') {
-        for (const fr of formatRequests) {
-          if (fr.headers) {
-            fr.headers['Accept-Encoding'] = 'identity';
-          }
-        }
-      } else if (dataSource === 'chatgpt') {
+      if (dataSource === 'chatgpt') {
         const { chatGPTExpression } = activeTemplate;
         if (chatGPTExpression) {
           aligorithmParams.chatGPTExpression = chatGPTExpression;
@@ -580,6 +668,12 @@ export const pageDecodeMsgListener = async (
             field: fieldArr.join('.'),
           });
         });
+      } else {
+        for (const fr of formatRequests) {
+          if (fr.headers) {
+            fr.headers['Accept-Encoding'] = 'identity';
+          }
+        }
       }
       Object.assign(aligorithmParams, {
         reqType: 'web',
@@ -593,7 +687,7 @@ export const pageDecodeMsgListener = async (
         PADOSERVERURL,
         padoExtensionVersion,
       });
-      if (schemaType.startsWith('OKX_TOKEN_HOLDING')) {
+      if (schemaType?.startsWith('OKX_TOKEN_HOLDING')) {
         aligorithmParams.requests[2].url =
           aligorithmParams.requests[2].url.replace('limit=5', 'limit=100');
       }
@@ -627,7 +721,7 @@ export const pageDecodeMsgListener = async (
     listenerFn = async (message, sender, sendResponse) => {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-      if (padoZKAttestationJSSDKBeginAttest === '1') {
+      if (padoZKAttestationJSSDKBeginAttest) {
         const { resType, resMethodName } = message;
         const errorFn = async () => {
           let resParams = {
@@ -674,35 +768,43 @@ export const pageDecodeMsgListener = async (
           resType === 'algorithm' &&
           ['getAttestation', 'getAttestationResult'].includes(resMethodName)
         ) {
-          console.log('preAlgorithm message', message);
-          if (resMethodName === 'getAttestation') {
+          if (message.res) {
             const { retcode, isUserClick } = JSON.parse(message.res);
             if (isUserClick === 'false') {
-              if (retcode === '0') {
-                if (!preAlgorithmTimer) {
-                  preAlgorithmTimer = setInterval(() => {
-                    chrome.runtime.sendMessage({
-                      type: 'algorithm',
-                      method: 'getAttestationResult',
-                      params: {},
-                    });
-                  }, 1000);
-                  console.log('preAlgorithmTimer-set', preAlgorithmTimer);
+              console.log('preAlgorithm message', message);
+              if (resMethodName === 'getAttestation') {
+                if (retcode === '0') {
+                  if (!preAlgorithmTimer) {
+                    preAlgorithmTimer = setInterval(() => {
+                      chrome.runtime.sendMessage({
+                        type: 'algorithm',
+                        method: 'getAttestationResult',
+                        params: {},
+                      });
+                    }, 1000);
+                    console.log('preAlgorithmTimer-set', preAlgorithmTimer);
+                  }
+                } else {
+                  errorFn();
                 }
-              } else {
-                errorFn();
               }
-            }
-          }
-          if (resMethodName === 'getAttestationResult') {
-            if (!message.res) {
-              return;
-            }
-            const { retcode, content, retdesc, details, isUserClick } =
-              JSON.parse(message.res);
-            if (isUserClick === 'false') {
-              if (retcode === '1') {
-                if (details.online.statusDescription === 'RUNNING_PAUSE') {
+              if (resMethodName === 'getAttestationResult') {
+                const { retcode, content, retdesc, details, isUserClick } =
+                  JSON.parse(message.res);
+
+                if (retcode === '1') {
+                  if (details.online.statusDescription === 'RUNNING_PAUSE') {
+                    console.log(
+                      'preAlgorithmTimer-clear',
+                      preAlgorithmTimer,
+                      'preAlgorithmStatus',
+                      retcode
+                    );
+                    clearInterval(preAlgorithmTimer);
+                    preAlgorithmStatus = retcode;
+                    checkWebRequestIsReadyFn();
+                  }
+                } else if (retcode === '2') {
                   console.log(
                     'preAlgorithmTimer-clear',
                     preAlgorithmTimer,
@@ -711,18 +813,8 @@ export const pageDecodeMsgListener = async (
                   );
                   clearInterval(preAlgorithmTimer);
                   preAlgorithmStatus = retcode;
-                  checkWebRequestIsReadyFn();
+                  errorFn();
                 }
-              } else if (retcode === '2') {
-                console.log(
-                  'preAlgorithmTimer-clear',
-                  preAlgorithmTimer,
-                  'preAlgorithmStatus',
-                  retcode
-                );
-                clearInterval(preAlgorithmTimer);
-                preAlgorithmStatus = retcode;
-                errorFn();
               }
             }
           }
@@ -870,28 +962,34 @@ export const pageDecodeMsgListener = async (
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
-      if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrigin =
+      if (padoZKAttestationJSSDKBeginAttest) {
+        const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
-            ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
-                .attestOrigin
-            : '';
+        );
+        const formatOrigin =
+          padoZKAttestationJSSDKBeginAttest === '1'
+            ? prestParamsObj.attestOrigin
+            : prestParamsObj.appId;
+        eventInfo.rawData.attestOrigin = formatOrigin;
       }
       eventReport(eventInfo);
+      // debugger;
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
         params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
-
-      const { constructorF } = DATASOURCEMAP[dataSource];
-      if (constructorF) {
-        const ex = new constructorF();
-        // const storageRes = await chrome.storage.local.get([dataSource]);
-        // const hadConnectedCurrDataSource = !!storageRes[dataSource];
-        await storeDataSource(dataSource, ex, port, {
-          withoutMsg: true,
-        });
+      if (!activeTemplate.sdkVersion) {
+        const { constructorF } = DATASOURCEMAP[dataSource];
+        if (constructorF) {
+          const ex = new constructorF();
+          // const storageRes = await chrome.storage.local.get([dataSource]);
+          // const hadConnectedCurrDataSource = !!storageRes[dataSource];
+          await storeDataSource(dataSource, ex, port, {
+            withoutMsg: true,
+            attestationRequestid: aligorithmParams.requestid,
+          });
+        }
       }
     }
 

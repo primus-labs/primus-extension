@@ -36,6 +36,8 @@ import { PadoWebsiteMsgListener } from './pageWebsite.js';
 import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm.js';
+import { devconsoleMsgListener } from './devconsole/index.js';
+
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -97,6 +99,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version }) => {
       rawData: '',
     };
     eventReport(eventInfo);
+    processAlgorithmReq({
+      reqMethodName: 'start',
+    });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
     await chrome.storage.local.remove(['activeRequestAttestation']);
   }
@@ -162,57 +167,58 @@ const processAlgorithmReq = async (message, port) => {
   console.log(
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
   );
+  const startFn = async () => {
+    const offscreenDocumentPath = 'offscreen.html';
+    if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
+      console.log(
+        `${new Date().toLocaleString()} create offscreen document...........`
+      );
+      await chrome.offscreen.createDocument({
+        url: chrome.runtime.getURL(offscreenDocumentPath),
+        reasons: ['IFRAME_SCRIPTING'],
+        justification: 'WORKERS for needing the document',
+      });
+      console.log(`${new Date().toLocaleString()} offscreen document created`);
+    } else {
+      const {
+        padoZKAttestationJSSDKBeginAttest,
+        padoZKAttestationJSSDKDappTabId: dappTabId,
+        webProofTypes,
+      } = await chrome.storage.local.get([
+        'padoZKAttestationJSSDKBeginAttest',
+        'padoZKAttestationJSSDKDappTabId',
+        'webProofTypes',
+      ]);
+
+      if (padoZKAttestationJSSDKBeginAttest) {
+        const attestationTypeIdList = (
+          webProofTypes ? JSON.parse(webProofTypes) : []
+        ).map((i) => {
+          return {
+            text: i.description,
+            value: i.id,
+          };
+        });
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'initAttestationRes',
+          params: {
+            result: true,
+            data: {
+              attestationTypeIdList,
+              padoExtensionVersion,
+            },
+          },
+        });
+      }
+      console.log(
+        `${new Date().toLocaleString()} offscreen document has already created`
+      );
+    }
+  };
   switch (reqMethodName) {
     case 'start':
-      const offscreenDocumentPath = 'offscreen.html';
-      if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
-        console.log(
-          `${new Date().toLocaleString()} create offscreen document...........`
-        );
-        await chrome.offscreen.createDocument({
-          url: chrome.runtime.getURL(offscreenDocumentPath),
-          reasons: ['IFRAME_SCRIPTING'],
-          justification: 'WORKERS for needing the document',
-        });
-        console.log(
-          `${new Date().toLocaleString()} offscreen document created`
-        );
-      } else {
-        const {
-          padoZKAttestationJSSDKBeginAttest,
-          padoZKAttestationJSSDKDappTabId: dappTabId,
-          webProofTypes,
-        } = await chrome.storage.local.get([
-          'padoZKAttestationJSSDKBeginAttest',
-          'padoZKAttestationJSSDKDappTabId',
-          'webProofTypes',
-        ]);
-
-        if (padoZKAttestationJSSDKBeginAttest === '1') {
-          const attestationTypeIdList = (
-            webProofTypes ? JSON.parse(webProofTypes) : []
-          ).map((i) => {
-            return {
-              text: i.description,
-              value: i.id,
-            };
-          });
-          chrome.tabs.sendMessage(dappTabId, {
-            type: 'padoZKAttestationJSSDK',
-            name: 'initAttestationRes',
-            params: {
-              result: true,
-              data: {
-                attestationTypeIdList,
-                padoExtensionVersion,
-              },
-            },
-          });
-        }
-        console.log(
-          `${new Date().toLocaleString()} offscreen document has already created`
-        );
-      }
+      startFn();
       break;
     case 'init':
       var eventInfo = {
@@ -272,18 +278,21 @@ const processAlgorithmReq = async (message, port) => {
       const stopFn = async () => {
         await chrome.offscreen.closeDocument();
         await chrome.storage.local.remove(['activeRequestAttestation']);
-        fullscreenPort &&
+        if (fullscreenPort) {
           postMsg(fullscreenPort, {
             resType: 'algorithm',
             resMethodName: 'stop',
             res: { retcode: 0 },
             params,
           });
+        } else {
+          await startFn();
+        }
       };
       if (params?.from === 'beforeunload') {
         const { padoZKAttestationJSSDKBeginAttest } =
           await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-        if (padoZKAttestationJSSDKBeginAttest !== '1') {
+        if (!padoZKAttestationJSSDKBeginAttest) {
           await stopFn();
         }
       } else {
@@ -592,12 +601,16 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
-      if (padoZKAttestationJSSDKBeginAttest === '1') {
-        eventInfo.rawData.attestOrigin =
+      if (padoZKAttestationJSSDKBeginAttest) {
+        const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
-            ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
-                .attestOrigin
-            : '';
+        );
+        const formatOrigin =
+          padoZKAttestationJSSDKBeginAttest === '1'
+            ? prestParamsObj.attestOrigin
+            : prestParamsObj.appId;
+
+        eventInfo.rawData.attestOrigin = formatOrigin;
       }
       eventReport(eventInfo);
     }
@@ -645,6 +658,15 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       USERPASSWORD,
       fullscreenPort,
       processAlgorithmReq
+    );
+  }
+  if (type === 'devconsole') {
+    devconsoleMsgListener(
+      message,
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort
     );
   }
 });

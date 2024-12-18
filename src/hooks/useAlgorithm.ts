@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { postMsg } from '@/utils/utils';
 import { useSelector } from 'react-redux';
-import { getPadoUrl, getProxyUrl } from '@/config/envConstants';
+import { getZkPadoUrl, getProxyUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import type { UserState } from '@/types/store';
 import { eventReport } from '@/services/api/usertracker';
@@ -40,19 +40,19 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
       if (resType === 'algorithm') {
         console.log(`page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
-          console.log(`page_get:start:`, message.res);
-          let eventInfo = {
-            eventType: 'ATTESTATION_INIT_2',
-            rawData: {},
-          };
-          eventReport(eventInfo);
-          const msg = {
-            fullScreenType: 'algorithm',
-            reqMethodName: 'init',
-            params: {},
-          };
-          postMsg(padoServicePort, msg);
-          console.log(`page_send:init request`);
+          // console.log(`page_get:start:`, message.res);
+          // let eventInfo = {
+          //   eventType: 'ATTESTATION_INIT_2',
+          //   rawData: {},
+          // };
+          // eventReport(eventInfo);
+          // const msg = {
+          //   fullScreenType: 'algorithm',
+          //   reqMethodName: 'init',
+          //   params: {},
+          // };
+          // postMsg(padoServicePort, msg);
+          // console.log(`page_send:init request`);
         }
         if (resMethodName === `init`) {
           if (res) {
@@ -107,7 +107,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
         }
         if (resMethodName === 'lineaEventStartOffline') {
           if (cancelCallStartOfflineFlag) {
-            const padoUrl = await getPadoUrl();
+            const padoUrl = await getZkPadoUrl();
             const proxyUrl = await getProxyUrl();
             postMsg(padoServicePort, {
               fullScreenType: 'algorithm',
