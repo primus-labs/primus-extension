@@ -20,7 +20,6 @@ import {
   ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
 
-
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 // import type { CredTypeItemType } from '@/types/cred';
@@ -35,7 +34,7 @@ import SplicedIcons from '@/newComponents/SplicedIcons';
 import './index.scss';
 import iconProviderBrevis from '@/assets/newImg/zkAttestation/iconProviderBrevis.svg';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
-import testModeTag from '@/assets/newImg/zkAttestation/testModeTag.svg'
+import testModeTag from '@/assets/newImg/zkAttestation/testModeTag.svg';
 type NavItem = {
   type: string;
   icon: any;
@@ -81,7 +80,12 @@ const Cards: React.FC<PDropdownProps> = memo(
     const filterdList: any = useMemo(() => {
       const obj = { ...credentialsFromStore };
 
-      var newList = Object.values(obj).sort((a: any, b: any) => {
+      var newList = Object.values(obj).filter((a: any) => {
+        return (
+          a.source in DATASOURCEMAP && a.attestationType in ATTESTATIONTYPEMAP
+        );
+      });
+      newList = newList.sort((a: any, b: any) => {
         return b.getDataTime - a.getDataTime;
       });
       if (attestationQueryType && attestationQueryType !== 'All') {
@@ -158,9 +162,11 @@ const Cards: React.FC<PDropdownProps> = memo(
     const getValue = (i) => {
       let str: any = i.verificationValue;
       if (i.attestationType === 'Assets Verification') {
-        if (['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
-              i.verificationContent
-            )) {
+        if (
+          ['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
+            i.verificationContent
+          )
+        ) {
           str = `> $${i.verificationValue}`;
         } else if (i.verificationContent === 'Token Holding') {
           const dataSourceIconSrc = tokenIconFn(

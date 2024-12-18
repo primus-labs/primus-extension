@@ -114,11 +114,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
+    sdkVersion = params?.sdkVersion;
+    console.log('debuge-zktls-startAttestation', sdkVersion, params);
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
     });
-    console.log('debuge-zktls-startAttestation', sdkVersion, params);
-    sdkVersion = params.sdkVersion;
     processAlgorithmReq({
       reqMethodName: 'start',
     });
