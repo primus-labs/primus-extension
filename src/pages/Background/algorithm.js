@@ -432,7 +432,7 @@ export const algorithmMsgListener = async (
           const {
             errlog: { code, desc },
           } = details;
-          processAlgorithmReq({ reqMethodName: 'stop' });
+          // processAlgorithmReq({ reqMethodName: 'stop' });
           var eventInfoMsg = 'Something went wrong';
           let title = errorMsgTitle;
           let msgObj = {
