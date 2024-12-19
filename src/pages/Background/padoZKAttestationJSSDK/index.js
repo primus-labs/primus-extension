@@ -284,9 +284,40 @@ export const padoZKAttestationJSSDKMsgListener = async (
               proxyUrl,
             },
           };
+        } else {
+          const resParams = {
+            result: false,
+            errorData: {
+              title: 'Invalid Template ID.',
+              desc: 'Invalid Template ID.',
+              code: '00012',
+            },
+          };
+          const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+            await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+          chrome.tabs.sendMessage(dappTabId, {
+            type: 'padoZKAttestationJSSDK',
+            name: 'getAttestationRes',
+            params: resParams,
+          });
         }
       } catch (e) {
         console.log('sdk template error:', e);
+        const resParams = {
+          result: false,
+          errorData: {
+            title: 'Invalid Template ID.',
+            desc: 'Invalid Template ID.',
+            code: '00012',
+          },
+        };
+        const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+          await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'getAttestationRes',
+          params: resParams,
+        });
       }
     } else {
       walletAddress = params.walletAddress;

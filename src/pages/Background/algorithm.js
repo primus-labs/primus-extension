@@ -326,53 +326,58 @@ export const algorithmMsgListener = async (
               sourcePageTip: '',
             };
             let errorCode;
-            if (!content.signature && content.encodedData) {
-              if (content.extraData) {
-                // chatgpt input error
-                errorCode = JSON.parse(content.extraData).errorCode + '';
-                if (errorCode === '-1200010') {
-                  Object.assign(msgObj, {
-                    type: '',
-                    desc: 'Invalid message.',
-                    sourcePageTip: 'Invalid message.',
-                  });
-                } else {
-                  errorCode = '00103'; // linea event had bund
-                  Object.assign(msgObj, {
-                    type: attestTipMap[errorCode].type,
-                    desc: attestTipMap[errorCode].desc,
-                    sourcePageTip: attestTipMap[errorCode].title,
-                  });
-                }
-              } else {
+
+            const { extraData } = content;
+            if (
+              extraData &&
+              JSON.parse(extraData) &&
+              ['-1200010', '-1002001', '-1002002'].includes(
+                JSON.parse(extraData).errorCode + ''
+              )
+            ) {
+              const tipMapForSdk = {
+                '-1200010': 'Invalid message.', // chatgpt input error
+                '-1002001': 'Invalid App ID.',
+                '-1002002': 'Invalid App Secret.',
+              };
+              errorCode = JSON.parse(extraData).errorCode + '';
+              const showTip = tipMapForSdk[errorCode];
+              Object.assign(msgObj, {
+                type: '',
+                desc: showTip,
+                sourcePageTip: showTip,
+              });
+            } else {
+              if (!content.signature && content.encodedData) {
                 errorCode = '00103'; // linea event had bund
                 Object.assign(msgObj, {
                   type: attestTipMap[errorCode].type,
                   desc: attestTipMap[errorCode].desc,
                   sourcePageTip: attestTipMap[errorCode].title,
                 });
+              } else if (
+                activeAttestationParams?.verificationContent ===
+                  'Assets Proof' &&
+                activeAttestationParams?.dataSourceId === 'binance'
+              ) {
+                let type, desc, title;
+                errorCode = '00102';
+                type = attestTipMap[errorCode].type;
+                desc = attestTipMap[errorCode].desc;
+                title = attestTipMap[errorCode].title;
+                Object.assign(msgObj, {
+                  type,
+                  desc,
+                  sourcePageTip: title,
+                });
+              } else {
+                errorCode = '00104';
+                Object.assign(msgObj, {
+                  type: attestTipMap[errorCode].type,
+                  desc: attestTipMap[errorCode].desc,
+                  sourcePageTip: attestTipMap[errorCode].title,
+                });
               }
-            } else if (
-              activeAttestationParams?.verificationContent === 'Assets Proof' &&
-              activeAttestationParams?.dataSourceId === 'binance'
-            ) {
-              let type, desc, title;
-              errorCode = '00102';
-              type = attestTipMap[errorCode].type;
-              desc = attestTipMap[errorCode].desc;
-              title = attestTipMap[errorCode].title;
-              Object.assign(msgObj, {
-                type,
-                desc,
-                sourcePageTip: title,
-              });
-            } else {
-              errorCode = '00104';
-              Object.assign(msgObj, {
-                type: attestTipMap[errorCode].type,
-                desc: attestTipMap[errorCode].desc,
-                sourcePageTip: attestTipMap[errorCode].title,
-              });
             }
 
             pageDecodeMsgListener(
