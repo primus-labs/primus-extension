@@ -286,7 +286,9 @@ const processAlgorithmReq = async (message, port) => {
             params,
           });
         } else {
-          await startFn();
+          if (!params?.noRestart) {
+            await startFn();
+          }
         }
       };
       if (params?.from === 'beforeunload') {
