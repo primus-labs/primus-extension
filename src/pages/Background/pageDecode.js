@@ -42,8 +42,8 @@ const storeRequestsMap = (url, urlInfo) => {
   const urlInfoHeaders = urlInfo?.headers;
   if (
     urlInfoHeaders &&
-    (urlInfoHeaders?.['Content-Type'].includes('text/plain') ||
-      urlInfoHeaders?.['content-type'].includes('text/plain')) &&
+    (urlInfoHeaders?.['Content-Type']?.includes('text/plain') ||
+      urlInfoHeaders?.['content-type']?.includes('text/plain')) &&
     lastStoreRequestObj.body
   ) {
     urlInfo.body = JSON.stringify(lastStoreRequestObj.body);
