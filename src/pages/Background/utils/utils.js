@@ -11,3 +11,7 @@ export function encodeFormData(data) {
     .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
     .join('&');
 }
+
+export function isObject(obj) {
+  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
+}

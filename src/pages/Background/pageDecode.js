@@ -8,7 +8,7 @@ import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import customFetch from './utils/request';
-import { isJSONString } from './utils/utils';
+import { isJSONString, isObject } from './utils/utils';
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -39,6 +39,15 @@ const removeRequestsMap = async (url) => {
 const storeRequestsMap = (url, urlInfo) => {
   const lastStoreRequestObj = requestsMap[url] || {};
   // console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  const urlInfoHeaders = urlInfo?.headers;
+  if (
+    urlInfoHeaders &&
+    (urlInfoHeaders?.['Content-Type'].includes('text/plain') ||
+      urlInfoHeaders?.['content-type'].includes('text/plain')) &&
+    lastStoreRequestObj.body
+  ) {
+    urlInfo.body = JSON.stringify(lastStoreRequestObj.body);
+  }
   Object.assign(requestsMap, {
     [url]: { ...lastStoreRequestObj, ...urlInfo },
   });
@@ -359,7 +368,7 @@ export const pageDecodeMsgListener = async (
             const byteArray = new Uint8Array(rawBody.bytes);
             const bodyText = new TextDecoder().decode(byteArray);
             console.log(
-              `url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
+              `targeturl:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
             );
 
             storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
@@ -581,7 +590,9 @@ export const pageDecodeMsgListener = async (
         if (sdkVersion) {
           Object.assign(r, {
             headers: { ...curRequestHeader },
-            body: { ...curRequestBody },
+            body: isObject(curRequestBody)
+              ? { ...curRequestBody }
+              : curRequestBody,
             url: queryString ? r.url + '?' + queryString : r.url,
           });
         } else {
