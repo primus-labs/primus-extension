@@ -383,10 +383,10 @@ export const pageDecodeMsgListener = async (
     };
     onCompletedFn = async (details) => {
       let { dataSource } = activeTemplate;
-      console.log('onCompletedFn', dataSource, details);
-      if (dataSource === 'chatgpt') {
-        // chatgpt has only one requestUrl
 
+      if (dataSource === 'chatgpt') {
+        console.log('onCompletedFn', dataSource, details);
+        // chatgpt has only one requestUrl
         await extraRequestFn();
         console.log('setUIStep-toVerify');
         chrome.tabs.sendMessage(
@@ -421,10 +421,9 @@ export const pageDecodeMsgListener = async (
         const storageObj = requestsMap;
         const storageArr = Object.values(storageObj);
 
-        // debugger
         if (
           interceptorUrlArr.length > 0 &&
-          storageArr.length === interceptorUrlArr.length
+          storageArr.length >= interceptorUrlArr.length
         ) {
           const f = interceptorRequests.every(async (r) => {
             let url = r.url;
@@ -461,7 +460,6 @@ export const pageDecodeMsgListener = async (
           if (fl) {
             if (dataSource === 'chatgpt') {
             } else {
-              // debugger
               if (!formatAlgorithmParams) {
                 await formatAlgorithmParamsFn();
               }
@@ -474,7 +472,11 @@ export const pageDecodeMsgListener = async (
       };
       isReadyRequest = await checkReadyStatusFn();
       if (isReadyRequest) {
-        console.log('web requests are captured');
+        console.log(
+          'all web requests are captured',
+          isReadyRequest,
+          dataSourcePageTabId
+        );
         chrome.tabs.sendMessage(
           dataSourcePageTabId,
           {
@@ -523,7 +525,6 @@ export const pageDecodeMsgListener = async (
         form.requestid = activeTemplate.requestid;
       }
       let aligorithmParams = {};
-      // debugger
       if (sdkVersion) {
         aligorithmParams = await assembleAlgorithmParamsForSDK(
           {
@@ -913,7 +914,6 @@ export const pageDecodeMsgListener = async (
       await injectFn();
     }
     if (name === 'initCompleted') {
-      // debugger
       console.log('content_scripts-bg-decode receive:initCompleted');
       sendResponse({
         name: 'append',
@@ -926,6 +926,7 @@ export const pageDecodeMsgListener = async (
         isReady: isReadyRequest,
         operation: operationType,
       });
+      checkWebRequestIsReadyFn();
     }
     if (name === 'start') {
       await chrome.storage.local.set({
@@ -971,7 +972,6 @@ export const pageDecodeMsgListener = async (
         eventInfo.rawData.attestOrigin = formatOrigin;
       }
       eventReport(eventInfo);
-      // debugger;
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
