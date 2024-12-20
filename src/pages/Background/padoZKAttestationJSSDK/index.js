@@ -221,7 +221,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
           const opMap = {
             string: 'REVEAL_STRING',
             number: 'REVEAL_STRING',
-            boolean: 'REVEAL_BOOLEAN',
+            boolean: 'REVEAL_STRING',
           };
           const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
             const { responseTemplate } = curr;
@@ -234,7 +234,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               } = currS;
               const subconditionItem = {
                 field: expression,
-                op: opMap[feilds[0].DataType],
+                op: opMap[feilds[0].DataType] || 'REVEAL_STRING',
                 reveal_id: feilds[0].key,
                 type: fieldType,
               };
