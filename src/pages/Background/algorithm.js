@@ -102,7 +102,8 @@ export const algorithmMsgListener = async (
         let result = false;
         if (retcode === '0') {
           result = true;
-        } else if (retcode === '2') {
+        } else {
+          // if (retcode === '2' || retcode === '1')
           result = false;
           const activeAttestationParams = JSON.parse(
             padoZKAttestationJSSDKAttestationPresetParams
@@ -141,7 +142,7 @@ export const algorithmMsgListener = async (
             USERPASSWORD,
             fullscreenPort,
             hasGetTwitterScreenName,
-            undefined
+            processAlgorithmReq
           );
           await chrome.storage.local.remove([
             'padoZKAttestationJSSDKBeginAttest',
@@ -264,7 +265,7 @@ export const algorithmMsgListener = async (
                 USERPASSWORD,
                 fullscreenPort,
                 hasGetTwitterScreenName,
-                undefined
+                processAlgorithmReq
               );
               await chrome.storage.local.remove([
                 'padoZKAttestationJSSDKBeginAttest',
@@ -379,7 +380,6 @@ export const algorithmMsgListener = async (
                 });
               }
             }
-
             pageDecodeMsgListener(
               {
                 name: 'end',
@@ -392,7 +392,8 @@ export const algorithmMsgListener = async (
               sendResponse,
               USERPASSWORD,
               fullscreenPort,
-              hasGetTwitterScreenName
+              hasGetTwitterScreenName,
+              processAlgorithmReq
             );
             await chrome.storage.local.remove([
               'padoZKAttestationJSSDKBeginAttest',
@@ -484,7 +485,6 @@ export const algorithmMsgListener = async (
             eventType: 'ATTESTATION_END',
           };
           eventReport(eventInfoEnd);
-
           pageDecodeMsgListener(
             {
               name: 'end',
@@ -497,7 +497,8 @@ export const algorithmMsgListener = async (
             sendResponse,
             USERPASSWORD,
             fullscreenPort,
-            hasGetTwitterScreenName
+            hasGetTwitterScreenName,
+            processAlgorithmReq
           );
           await chrome.storage.local.remove([
             'padoZKAttestationJSSDKBeginAttest',

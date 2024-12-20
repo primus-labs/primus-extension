@@ -281,46 +281,6 @@ function DescEl({ status, resultStatus, errorTxt }) {
   //     return 'Verifying ...';
   //   }
   // }, []);
-  useEffect(() => {
-    let str = '';
-    if (operationType === 'connect') {
-      str = 'Connecting ...';
-      setLoadingTxt(str);
-    } else {
-      str = 'Connecting to Primus node...';
-      setLoadingTxt(str);
-      var progressPercentage = 0;
-      function simulateFileUpload() {
-        progressPercentage += 1;
-        if (progressPercentage > 0 && progressPercentage <= 2) {
-          // 1.25
-          str = 'Connecting to Primus node...';
-        } else if (progressPercentage > 2 && progressPercentage <= 3) {
-          // 6.25
-          // 1.25 - 2.5
-          str = 'Connecting to data source...';
-        } else if (progressPercentage > 3 && progressPercentage <= 18) {
-          // 12.5
-          // 2.5 - 5
-          str = 'MPC-TLS executing...';
-        } else if (progressPercentage > 18 && progressPercentage < 300) {
-          // 5 - 100
-          str = 'IZK proving and verifying...';
-        } else if (progressPercentage >= 300) {
-          str = 'IZK proving and verifying ...';
-
-          clearInterval(intervalTimer);
-          if (!resultStatus) {
-            setErrorTxtSelf({
-              sourcePageTip: 'Request Timed Out',
-            });
-          }
-        }
-        setLoadingTxt(str);
-      }
-      var intervalTimer = setInterval(simulateFileUpload, 1000); // algorithm timeout
-    }
-  }, [operationType, resultStatus]);
   const sucTxt = useMemo(() => {
     if (operationType === 'connect') {
       return 'Connect successfully!';

@@ -511,7 +511,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName
+      hasGetTwitterScreenName,
+      processAlgorithmReq
     );
   }
 
@@ -571,7 +572,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName
+      hasGetTwitterScreenName,
+      processAlgorithmReq
     );
     processAlgorithmReq({
       reqMethodName: 'stop',
@@ -750,9 +752,17 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest) {
-    pageDecodeMsgListener({
-      type: 'pageDecode',
-      name: 'cancel',
-    });
+    pageDecodeMsgListener(
+      {
+        type: 'pageDecode',
+        name: 'cancel',
+      },
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort,
+      hasGetTwitterScreenName,
+      processAlgorithmReq
+    );
   }
 });

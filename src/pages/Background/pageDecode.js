@@ -65,6 +65,13 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
   ]);
+  const { activeRequestAttestation: lastActiveRequestAttestationStr } =
+    await chrome.storage.local.get(['activeRequestAttestation']);
+  if (processAlgorithmReq && lastActiveRequestAttestationStr) {
+    processAlgorithmReq({
+      reqMethodName: 'stop',
+    });
+  }
   if (padoZKAttestationJSSDKBeginAttest) {
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
@@ -72,12 +79,6 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
       'padoZKAttestationJSSDKXFollowerCount',
       'activeRequestAttestation',
     ]);
-
-    if (processAlgorithmReq) {
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-      });
-    }
     let desc = `The user ${operation} the attestation`;
     let resParams = { result: false };
     if (!resParams.result) {
@@ -435,7 +436,7 @@ export const pageDecodeMsgListener = async (
             }
 
             const sRrequestObj = storageObj[url] || {};
-            console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
+            // console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
             chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
             const headersFlag =
               !r.headers || (!!r.headers && !!sRrequestObj.headers);
