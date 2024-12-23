@@ -27,6 +27,7 @@ let onBeforeRequestFn = () => {};
 let onCompletedFn = () => {};
 let requestsMap = {};
 
+
 const removeRequestsMap = async (url) => {
   // console.log('requestsMap-remove', url);
   // console.log('x-remove');
@@ -38,7 +39,7 @@ const removeRequestsMap = async (url) => {
 };
 const storeRequestsMap = (url, urlInfo) => {
   const lastStoreRequestObj = requestsMap[url] || {};
-  // console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
   const urlInfoHeaders = urlInfo?.headers;
   if (
     urlInfoHeaders &&
@@ -54,6 +55,7 @@ const storeRequestsMap = (url, urlInfo) => {
 
   return requestsMap[url];
 };
+
 const resetVarsFn = () => {
   isReadyRequest = false;
   operationType = null;
@@ -191,12 +193,16 @@ export const pageDecodeMsgListener = async (
       return isUrlWithQuery ? queryStr : false;
     };
     onBeforeSendHeadersFn = async (details) => {
+      if (details.tabId !== dataSourcePageTabId) {
+        return;
+      }
       let {
         dataSource,
         jumpTo,
         datasourceTemplate: { requests },
       } = activeTemplate;
       const { url: currRequestUrl, requestHeaders, method } = details;
+
       let formatUrlKey = currRequestUrl;
       let addQueryStr = '';
       let needQueryDetail = false;
@@ -252,7 +258,15 @@ export const pageDecodeMsgListener = async (
             chrome.storage.local.set({
               [r.url]: currRequestUrl,
             });
+            // if (
+            //   currRequestUrl.includes(
+            //     'eyan-Ile-how-Gold-Fee-of-Blood-expose-Banques-aw'
+            //   )
+            // ) {
+            //   // debugger;
             console.log('lastStorage-set-url', r.url, currRequestUrl);
+            // }
+
             formatUrlKey = currRequestUrl;
           }
           return result;
@@ -327,10 +341,14 @@ export const pageDecodeMsgListener = async (
       }
     };
     onBeforeRequestFn = async (subDetails) => {
+      if (subDetails.tabId !== dataSourcePageTabId) {
+        return;
+      }
       let {
         datasourceTemplate: { requests },
       } = activeTemplate;
       const { url: currRequestUrl, requestBody } = subDetails;
+
       removeRequestsMap(currRequestUrl);
       let formatUrlKey = currRequestUrl;
       const isTarget = requests.some((r) => {
@@ -391,6 +409,9 @@ export const pageDecodeMsgListener = async (
       }
     };
     onCompletedFn = async (details) => {
+      if (details.tabId !== dataSourcePageTabId) {
+        return;
+      }
       let { dataSource } = activeTemplate;
 
       if (dataSource === 'chatgpt') {
@@ -851,35 +872,35 @@ export const pageDecodeMsgListener = async (
 
       chrome.webRequest.onBeforeSendHeaders.removeListener(
         onBeforeSendHeadersFn,
-        { urls: ['<all_urls>'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
         ['requestHeaders', 'extraHeaders']
       );
       chrome.webRequest.onBeforeRequest.removeListener(
         onBeforeRequestFn,
-        { urls: ['<all_urls>'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
         ['requestBody']
       );
 
       chrome.webRequest.onCompleted.removeListener(
         onCompletedFn,
-        { urls: interceptorUrlArr },
+        { urls: interceptorUrlArr, types: ['xmlhttprequest'] },
         ['responseHeaders', 'extraHeaders']
       );
 
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
-        { urls: ['<all_urls>'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
         ['requestHeaders', 'extraHeaders']
       );
       chrome.webRequest.onBeforeRequest.addListener(
         onBeforeRequestFn,
-        { urls: ['<all_urls>'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
         ['requestBody']
       );
 
       chrome.webRequest.onCompleted.addListener(
         onCompletedFn,
-        { urls: interceptorUrlArr },
+        { urls: interceptorUrlArr, types: ['xmlhttprequest'] },
         ['responseHeaders', 'extraHeaders']
       );
       const tabCreatedByPado = await chrome.tabs.create({
