@@ -513,6 +513,7 @@ export const algorithmMsgListener = async (
               title: msgObj.title,
               desc: msgObj.desc,
               code: code,
+              data: message.res,
             };
             resParams.reStartFlag = true;
           }
