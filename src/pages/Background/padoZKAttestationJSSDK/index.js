@@ -185,7 +185,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
 
       try {
         const { rc, result } = await queryTemplateById(attTemplateID);
-        // debugger;
         if (rc === 0 && result) {
           const {
             id,

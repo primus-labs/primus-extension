@@ -10,6 +10,15 @@ const removeRequestsMap = async (url) => {
 const storeRequestsMap = async (url, urlInfo) => {
   const lastStoreRequestObj = requestsMap[url] || {};
   // console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  const urlInfoHeaders = urlInfo?.headers;
+  if (
+    urlInfoHeaders &&
+    (urlInfoHeaders?.['Content-Type']?.includes('text/plain') ||
+      urlInfoHeaders?.['content-type']?.includes('text/plain')) &&
+    lastStoreRequestObj.body
+  ) {
+    urlInfo.body = JSON.stringify(lastStoreRequestObj.body);
+  }
   Object.assign(requestsMap, {
     [url]: { ...lastStoreRequestObj, ...urlInfo },
   });
@@ -76,11 +85,11 @@ export const devconsoleMsgListener = async (
         )
       ) {
         console.log('onBeforeSendHeadersFn-details', details);
-        // debugger;
       }
 
       const dataSourceRequestsObj = await storeRequestsMap(formatUrlKey, {
         header: formatHeader,
+        headers: formatHeader,
         method,
         locationPageUrl,
       });
@@ -155,12 +164,12 @@ export const devconsoleMsgListener = async (
         });
         chrome.webRequest.onBeforeSendHeaders.removeListener(
           onBeforeSendHeadersFn,
-          { urls: ['<all_urls>'] },
+          { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
           ['requestHeaders', 'extraHeaders']
         );
         chrome.webRequest.onBeforeRequest.removeListener(
           onBeforeRequestFn,
-          { urls: ['<all_urls>'] },
+          { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
           ['requestBody']
         );
         checkDataSourcePageTabId = null;
