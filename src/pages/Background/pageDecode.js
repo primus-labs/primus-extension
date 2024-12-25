@@ -67,6 +67,7 @@ const resetVarsFn = () => {
   preAlgorithmFlag = false;
   chatgptHasLogin = false;
   requestsMap = {};
+  sdkTargetRequestUrlfromMutiple = '';
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -942,7 +943,7 @@ export const pageDecodeMsgListener = async (
         { urls: interceptorUrlArr, types: ['xmlhttprequest'] },
         ['responseHeaders', 'extraHeaders']
       );
-
+      
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
         { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
