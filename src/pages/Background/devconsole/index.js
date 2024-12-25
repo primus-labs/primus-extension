@@ -3,6 +3,8 @@ import { customFetch2 } from '../utils/request';
 let checkDataSourcePageTabId;
 let devconsoleTabId;
 let requestsMap = {};
+let onBeforeSendHeadersFn = () => {};
+let onBeforeRequestFn = () => {};
 const removeRequestsMap = async (url) => {
   // console.log('requestsMap-remove', url);
   delete requestsMap[url];
@@ -52,103 +54,106 @@ export const devconsoleMsgListener = async (
 ) => {
   const { name, params } = request;
 
-  const onBeforeSendHeadersFn = async (details) => {
-    const {
-      url: currRequestUrl,
-      requestHeaders,
-      method,
-      type,
-      tabId,
-    } = details;
-    if (
-      tabId === checkDataSourcePageTabId &&
-      ['xmlhttprequest', 'fetch'].includes(type) &&
-      method !== 'OPTIONS'
-    ) {
-      // console.log('444-onBeforeSendHeadersFn-details', details);
-      let formatUrlKey = currRequestUrl;
-      let locationPageUrl = '';
-      let formatHeader = requestHeaders.reduce((prev, curr) => {
-        const { name, value } = curr;
-        prev[name] = value;
-        if (name === 'Referer') {
-          locationPageUrl = value;
-        }
-        return prev;
-      }, {});
-      if (
-        formatHeader['content-type']?.includes(
-          'application/x-www-form-urlencoded'
-        ) ||
-        formatHeader['Content-Type']?.includes(
-          'application/x-www-form-urlencoded'
-        )
-      ) {
-        console.log('onBeforeSendHeadersFn-details', details);
-      }
-
-      const dataSourceRequestsObj = await storeRequestsMap(formatUrlKey, {
-        header: formatHeader,
-        headers: formatHeader,
-        method,
-        locationPageUrl,
-      });
-
-      // console.log('444-listen', formatUrlKey);
-
-      extraRequestFn({ ...dataSourceRequestsObj, url: currRequestUrl });
-    }
-  };
-  const onBeforeRequestFn = async (subDetails) => {
-    const {
-      url: currRequestUrl,
-      requestBody,
-      type,
-      tabId,
-      method,
-    } = subDetails;
-    await removeRequestsMap(currRequestUrl);
-    if (
-      tabId === checkDataSourcePageTabId &&
-      ['xmlhttprequest', 'fetch'].includes(type) &&
-      method !== 'OPTIONS'
-    ) {
-      let formatUrlKey = currRequestUrl;
-      if (requestBody && requestBody.raw) {
-        const rawBody = requestBody.raw[0];
-        if (rawBody && rawBody.bytes) {
-          const byteArray = new Uint8Array(rawBody.bytes);
-          const bodyText = new TextDecoder().decode(byteArray);
-          // console.log(
-          //   `444-url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
-          // );
-          await storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
-        }
-      }
-      if (requestBody && requestBody.formData) {
-        await storeRequestsMap(formatUrlKey, {
-          body: requestBody.formData,
-          isFormData: true,
-        });
-      }
-    }
-  };
-
   if (name === 'init') {
     checkDataSourcePageTabId = null;
     devconsoleTabId = null;
     requestsMap = {};
     devconsoleTabId = sender.tab.id;
-    chrome.webRequest.onBeforeSendHeaders.addListener(
-      onBeforeSendHeadersFn,
-      { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
-      ['requestHeaders', 'extraHeaders']
-    );
-    chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequestFn,
-      { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
-      ['requestBody']
-    );
+    chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
+    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+    onBeforeSendHeadersFn = async (details) => {
+      const {
+        url: currRequestUrl,
+        requestHeaders,
+        method,
+        type,
+        tabId,
+      } = details;
+      if (
+        tabId === checkDataSourcePageTabId &&
+        ['xmlhttprequest', 'fetch'].includes(type) &&
+        method !== 'OPTIONS'
+      ) {
+        // console.log('444-onBeforeSendHeadersFn-details', details);
+        let formatUrlKey = currRequestUrl;
+        let locationPageUrl = '';
+        let formatHeader = requestHeaders.reduce((prev, curr) => {
+          const { name, value } = curr;
+          prev[name] = value;
+          if (name === 'Referer') {
+            locationPageUrl = value;
+          }
+          return prev;
+        }, {});
+        if (
+          formatHeader['content-type']?.includes(
+            'application/x-www-form-urlencoded'
+          ) ||
+          formatHeader['Content-Type']?.includes(
+            'application/x-www-form-urlencoded'
+          )
+        ) {
+          console.log('onBeforeSendHeadersFn-details', details);
+        }
+
+        const dataSourceRequestsObj = await storeRequestsMap(formatUrlKey, {
+          header: formatHeader,
+          headers: formatHeader,
+          method,
+          locationPageUrl,
+        });
+
+        // console.log('444-listen', formatUrlKey);
+
+        extraRequestFn({ ...dataSourceRequestsObj, url: currRequestUrl });
+      }
+    };
+    onBeforeRequestFn = async (subDetails) => {
+      const {
+        url: currRequestUrl,
+        requestBody,
+        type,
+        tabId,
+        method,
+      } = subDetails;
+      await removeRequestsMap(currRequestUrl);
+      if (
+        tabId === checkDataSourcePageTabId &&
+        ['xmlhttprequest', 'fetch'].includes(type) &&
+        method !== 'OPTIONS'
+      ) {
+        let formatUrlKey = currRequestUrl;
+        if (requestBody && requestBody.raw) {
+          const rawBody = requestBody.raw[0];
+          if (rawBody && rawBody.bytes) {
+            const byteArray = new Uint8Array(rawBody.bytes);
+            const bodyText = new TextDecoder().decode(byteArray);
+            // console.log(
+            //   `444-url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
+            // );
+            await storeRequestsMap(formatUrlKey, {
+              body: JSON.parse(bodyText),
+            });
+          }
+        }
+        if (requestBody && requestBody.formData) {
+          await storeRequestsMap(formatUrlKey, {
+            body: requestBody.formData,
+            isFormData: true,
+          });
+        }
+      }
+    };
+   chrome.webRequest.onBeforeSendHeaders.addListener(
+     onBeforeSendHeadersFn,
+     { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+     ['requestHeaders', 'extraHeaders']
+   );
+   chrome.webRequest.onBeforeRequest.addListener(
+     onBeforeRequestFn,
+     { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+     ['requestBody']
+   );
 
     const tabCreatedByPado = await chrome.tabs.create({
       url: params.expectedUrl,
@@ -163,15 +168,9 @@ export const devconsoleMsgListener = async (
           name: 'close',
         });
         chrome.webRequest.onBeforeSendHeaders.removeListener(
-          onBeforeSendHeadersFn,
-          { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
-          ['requestHeaders', 'extraHeaders']
+          onBeforeSendHeadersFn
         );
-        chrome.webRequest.onBeforeRequest.removeListener(
-          onBeforeRequestFn,
-          { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
-          ['requestBody']
-        );
+        chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
         checkDataSourcePageTabId = null;
       }
     });

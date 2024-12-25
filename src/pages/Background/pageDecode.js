@@ -205,220 +205,7 @@ export const pageDecodeMsgListener = async (
       });
       return isUrlWithQuery ? queryStr : false;
     };
-    onBeforeSendHeadersFn = async (details) => {
-      if (details.tabId !== dataSourcePageTabId) {
-        return;
-      }
-      let {
-        dataSource,
-        jumpTo,
-        datasourceTemplate: { requests },
-        sdkVersion,
-      } = activeTemplate;
-      const { url: currRequestUrl, requestHeaders, method } = details;
 
-      let formatUrlKey = currRequestUrl;
-      let addQueryStr = '';
-      let needQueryDetail = false;
-      let formatHeader = requestHeaders.reduce((prev, curr) => {
-        const { name, value } = curr;
-        prev[name] = value;
-        return prev;
-      }, {});
-      if (
-        currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
-      ) {
-        chatgptHasLogin = !!formatHeader.Authorization;
-        if (dataSource === 'chatgpt') {
-          const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
-          console.log('setUIStep-', tipStr);
-          chrome.tabs.sendMessage(
-            dataSourcePageTabId,
-            {
-              type: 'pageDecode',
-              name: 'setUIStep',
-              params: {
-                step: tipStr,
-              },
-            },
-            function (response) {}
-          );
-        }
-      }
-      const isTarget = requests.some((r) => {
-        if (r.name === 'first') {
-          return false;
-        }
-        if (r.queryParams && r.queryParams[0]) {
-          const urlStrArr = currRequestUrl.split('?');
-          const hostUrl = urlStrArr[0];
-          let curUrlWithQuery = r.url === hostUrl;
-          if (r.queryDetail) {
-            needQueryDetail = r.queryDetail;
-          }
-          if (r.url === hostUrl) {
-            curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
-          }
-          if (curUrlWithQuery) {
-            addQueryStr = curUrlWithQuery;
-          }
-          formatUrlKey = hostUrl;
-          return !!curUrlWithQuery;
-        } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
-          var regex = new RegExp(r.url, 'g');
-          const isTarget = currRequestUrl.match(regex);
-          const result = isTarget && isTarget.length > 0;
-          if (result) {
-            chrome.storage.local.set({
-              [r.url]: currRequestUrl,
-            });
-            // console.log('lastStorage-set-url', r.url, currRequestUrl);
-            formatUrlKey = currRequestUrl;
-          }
-          return result;
-        } else {
-          return r.url === currRequestUrl;
-        }
-      });
-      if (isTarget) {
-        let newCapturedInfo = {
-          headers: formatHeader,
-          method,
-        };
-        if (addQueryStr) {
-          newCapturedInfo.queryString = addQueryStr;
-        }
-        const newCurrRequestObj = storeRequestsMap(
-          formatUrlKey,
-          newCapturedInfo
-        );
-        const requireUrlArr = [
-          'https://www.tiktok.com/passport/web/account/info/',
-          'https://api.x.com/1.1/account/settings.json',
-        ];
-        const curRequireUrl = requireUrlArr.find((i) =>
-          currRequestUrl.includes(i)
-        );
-        if (curRequireUrl) {
-          await chrome.storage.local.set({
-            [curRequireUrl]: JSON.stringify(newCurrRequestObj),
-          });
-        }
-        if (
-          needQueryDetail &&
-          formatUrlKey.startsWith(
-            'https://api.x.com/1.1/account/settings.json'
-          ) &&
-          !hasGetTwitterScreenName
-        ) {
-          const options = {
-            headers: newCurrRequestObj.headers,
-          };
-          hasGetTwitterScreenName = true;
-          const res = await fetch(
-            formatUrlKey + '?' + newCurrRequestObj.queryString,
-            options
-          );
-          const result = await res.json();
-          //need to go profile page
-          await chrome.tabs.update(dataSourcePageTabId, {
-            url: jumpTo + result.screen_name,
-          });
-        }
-        if (sdkVersion) {
-          await checkSDKTargetRequestFn();
-        }
-        checkWebRequestIsReadyFn();
-      }
-    };
-    onBeforeRequestFn = async (subDetails) => {
-      if (subDetails.tabId !== dataSourcePageTabId) {
-        return;
-      }
-      let {
-        datasourceTemplate: { requests },
-      } = activeTemplate;
-      const { url: currRequestUrl, requestBody } = subDetails;
-
-      removeRequestsMap(currRequestUrl);
-      let formatUrlKey = currRequestUrl;
-      const isTarget = requests.some((r) => {
-        if (r.name === 'first') {
-          return false;
-        }
-        if (r.queryParams && r.queryParams[0]) {
-          const urlStrArr = currRequestUrl.split('?');
-          const hostUrl = urlStrArr[0];
-          let curUrlWithQuery = r.url === hostUrl;
-          if (r.url === hostUrl) {
-            curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
-          }
-          formatUrlKey = hostUrl;
-          return curUrlWithQuery;
-        } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
-          var regex = new RegExp(r.url, 'g');
-          const isTarget = currRequestUrl.match(regex);
-          const result = isTarget && isTarget.length > 0;
-          if (result) {
-            chrome.storage.local.set({
-              [r.url]: currRequestUrl,
-            });
-            console.log('lastStorage-set', r.url, currRequestUrl);
-          }
-          return result;
-        } else {
-          return r.url === currRequestUrl;
-        }
-      });
-      if (isTarget) {
-        if (requestBody && requestBody.raw) {
-          const rawBody = requestBody.raw[0];
-          if (rawBody && rawBody.bytes) {
-            const byteArray = new Uint8Array(rawBody.bytes);
-            const bodyText = new TextDecoder().decode(byteArray);
-            // console.log(
-            //   `targeturl:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
-            // );
-
-            storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
-          }
-        }
-        if (requestBody && requestBody.formData) {
-          await storeRequestsMap(formatUrlKey, {
-            body: requestBody.formData,
-            isFormData: true,
-          });
-        }
-      }
-    };
-    onCompletedFn = async (details) => {
-      if (details.tabId !== dataSourcePageTabId) {
-        return;
-      }
-      let { dataSource } = activeTemplate;
-
-      if (dataSource === 'chatgpt') {
-        console.log('onCompletedFn', dataSource, details);
-        // chatgpt has only one requestUrl
-        await extraRequestFn();
-        console.log('setUIStep-toVerify');
-        chrome.tabs.sendMessage(
-          dataSourcePageTabId,
-          {
-            type: 'pageDecode',
-            name: 'setUIStep',
-            params: {
-              step: 'toVerify',
-            },
-          },
-          function (response) {}
-        );
-        await formatAlgorithmParamsFn();
-        console.log('RequestsHasCompleted=', RequestsHasCompleted);
-        preAlgorithmFn();
-        checkWebRequestIsReadyFn();
-      }
-    };
     const checkSDKTargetRequestFn = async () => {
       const {
         datasourceTemplate: { requests, responses },
@@ -928,22 +715,225 @@ export const pageDecodeMsgListener = async (
       // console.log('555-newattestations', capturedUrlKeyArr, aaa, bbb);
 
       chrome.webRequest.onBeforeSendHeaders.removeListener(
-        onBeforeSendHeadersFn,
-        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
-        ['requestHeaders', 'extraHeaders']
+        onBeforeSendHeadersFn
       );
-      chrome.webRequest.onBeforeRequest.removeListener(
-        onBeforeRequestFn,
-        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
-        ['requestBody']
-      );
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+      chrome.webRequest.onCompleted.removeListener(onCompletedFn);
+      onBeforeSendHeadersFn = async (details) => {
+        if (details.tabId !== dataSourcePageTabId) {
+          return;
+        }
+        let {
+          dataSource,
+          jumpTo,
+          datasourceTemplate: { requests },
+          sdkVersion,
+        } = activeTemplate;
+        const { url: currRequestUrl, requestHeaders, method } = details;
 
-      chrome.webRequest.onCompleted.removeListener(
-        onCompletedFn,
-        { urls: interceptorUrlArr, types: ['xmlhttprequest'] },
-        ['responseHeaders', 'extraHeaders']
-      );
-      
+        let formatUrlKey = currRequestUrl;
+        let addQueryStr = '';
+        let needQueryDetail = false;
+        let formatHeader = requestHeaders.reduce((prev, curr) => {
+          const { name, value } = curr;
+          prev[name] = value;
+          return prev;
+        }, {});
+        if (
+          currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
+        ) {
+          chatgptHasLogin = !!formatHeader.Authorization;
+          if (dataSource === 'chatgpt') {
+            const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
+            console.log('setUIStep-', tipStr);
+            chrome.tabs.sendMessage(
+              dataSourcePageTabId,
+              {
+                type: 'pageDecode',
+                name: 'setUIStep',
+                params: {
+                  step: tipStr,
+                },
+              },
+              function (response) {}
+            );
+          }
+        }
+        const isTarget = requests.some((r) => {
+          if (r.name === 'first') {
+            return false;
+          }
+          if (r.queryParams && r.queryParams[0]) {
+            const urlStrArr = currRequestUrl.split('?');
+            const hostUrl = urlStrArr[0];
+            let curUrlWithQuery = r.url === hostUrl;
+            if (r.queryDetail) {
+              needQueryDetail = r.queryDetail;
+            }
+            if (r.url === hostUrl) {
+              curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
+            }
+            if (curUrlWithQuery) {
+              addQueryStr = curUrlWithQuery;
+            }
+            formatUrlKey = hostUrl;
+            return !!curUrlWithQuery;
+          } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
+            var regex = new RegExp(r.url, 'g');
+            const isTarget = currRequestUrl.match(regex);
+            const result = isTarget && isTarget.length > 0;
+            if (result) {
+              chrome.storage.local.set({
+                [r.url]: currRequestUrl,
+              });
+              // console.log('lastStorage-set-url', r.url, currRequestUrl);
+              formatUrlKey = currRequestUrl;
+            }
+            return result;
+          } else {
+            return r.url === currRequestUrl;
+          }
+        });
+        if (isTarget) {
+          let newCapturedInfo = {
+            headers: formatHeader,
+            method,
+          };
+          if (addQueryStr) {
+            newCapturedInfo.queryString = addQueryStr;
+          }
+          const newCurrRequestObj = storeRequestsMap(
+            formatUrlKey,
+            newCapturedInfo
+          );
+          const requireUrlArr = [
+            'https://www.tiktok.com/passport/web/account/info/',
+            'https://api.x.com/1.1/account/settings.json',
+          ];
+          const curRequireUrl = requireUrlArr.find((i) =>
+            currRequestUrl.includes(i)
+          );
+          if (curRequireUrl) {
+            await chrome.storage.local.set({
+              [curRequireUrl]: JSON.stringify(newCurrRequestObj),
+            });
+          }
+          if (
+            needQueryDetail &&
+            formatUrlKey.startsWith(
+              'https://api.x.com/1.1/account/settings.json'
+            ) &&
+            !hasGetTwitterScreenName
+          ) {
+            const options = {
+              headers: newCurrRequestObj.headers,
+            };
+            hasGetTwitterScreenName = true;
+            const res = await fetch(
+              formatUrlKey + '?' + newCurrRequestObj.queryString,
+              options
+            );
+            const result = await res.json();
+            //need to go profile page
+            await chrome.tabs.update(dataSourcePageTabId, {
+              url: jumpTo + result.screen_name,
+            });
+          }
+          if (sdkVersion) {
+            await checkSDKTargetRequestFn();
+          }
+          checkWebRequestIsReadyFn();
+        }
+      };
+      onBeforeRequestFn = async (subDetails) => {
+        if (subDetails.tabId !== dataSourcePageTabId) {
+          return;
+        }
+        let {
+          datasourceTemplate: { requests },
+        } = activeTemplate;
+        const { url: currRequestUrl, requestBody } = subDetails;
+
+        removeRequestsMap(currRequestUrl);
+        let formatUrlKey = currRequestUrl;
+        const isTarget = requests.some((r) => {
+          if (r.name === 'first') {
+            return false;
+          }
+          if (r.queryParams && r.queryParams[0]) {
+            const urlStrArr = currRequestUrl.split('?');
+            const hostUrl = urlStrArr[0];
+            let curUrlWithQuery = r.url === hostUrl;
+            if (r.url === hostUrl) {
+              curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
+            }
+            formatUrlKey = hostUrl;
+            return curUrlWithQuery;
+          } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
+            var regex = new RegExp(r.url, 'g');
+            const isTarget = currRequestUrl.match(regex);
+            const result = isTarget && isTarget.length > 0;
+            if (result) {
+              chrome.storage.local.set({
+                [r.url]: currRequestUrl,
+              });
+              console.log('lastStorage-set', r.url, currRequestUrl);
+            }
+            return result;
+          } else {
+            return r.url === currRequestUrl;
+          }
+        });
+        if (isTarget) {
+          if (requestBody && requestBody.raw) {
+            const rawBody = requestBody.raw[0];
+            if (rawBody && rawBody.bytes) {
+              const byteArray = new Uint8Array(rawBody.bytes);
+              const bodyText = new TextDecoder().decode(byteArray);
+              // console.log(
+              //   `targeturl:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
+              // );
+
+              storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
+            }
+          }
+          if (requestBody && requestBody.formData) {
+            await storeRequestsMap(formatUrlKey, {
+              body: requestBody.formData,
+              isFormData: true,
+            });
+          }
+        }
+      };
+      onCompletedFn = async (details) => {
+        if (details.tabId !== dataSourcePageTabId) {
+          return;
+        }
+        let { dataSource } = activeTemplate;
+
+        if (dataSource === 'chatgpt') {
+          console.log('onCompletedFn', dataSource, details);
+          // chatgpt has only one requestUrl
+          await extraRequestFn();
+          console.log('setUIStep-toVerify');
+          chrome.tabs.sendMessage(
+            dataSourcePageTabId,
+            {
+              type: 'pageDecode',
+              name: 'setUIStep',
+              params: {
+                step: 'toVerify',
+              },
+            },
+            function (response) {}
+          );
+          await formatAlgorithmParamsFn();
+          console.log('RequestsHasCompleted=', RequestsHasCompleted);
+          preAlgorithmFn();
+          checkWebRequestIsReadyFn();
+        }
+      };
+
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
         { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
@@ -998,6 +988,11 @@ export const pageDecodeMsgListener = async (
           });
           dataSourcePageTabId = null;
           handlerForSdk(processAlgorithmReq, 'cancel');
+          chrome.webRequest.onBeforeSendHeaders.removeListener(
+            onBeforeSendHeadersFn
+          );
+          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+          chrome.webRequest.onCompleted.removeListener(onCompletedFn);
         }
       });
       await injectFn();
@@ -1105,6 +1100,7 @@ export const pageDecodeMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+        chrome.webRequest.onCompleted.removeListener(onCompletedFn);
         resetVarsFn();
       }
     }
