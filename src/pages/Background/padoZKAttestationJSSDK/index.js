@@ -580,11 +580,16 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const { padoZKAttestationJSSDKDappTabId: dappTabId } =
       await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
     let resParams = { result: false };
+
     if (!resParams.result) {
+      const { attestationLogInQuery } = await chrome.storage.local.get([
+        'attestationLogInQuery',
+      ]);
       resParams.errorData = {
         title: msgObj.title,
         desc: msgObj.desc,
         code,
+        data: attestationLogInQuery || JSON.stringify({}),
       };
       resParams.reStartFlag = true;
     }

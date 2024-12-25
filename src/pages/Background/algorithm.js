@@ -523,6 +523,10 @@ export const algorithmMsgListener = async (
             name: 'startAttestationRes',
             params: resParams,
           });
+        } else {
+          chrome.storage.local.set({
+            attestationLogInQuery: message.res,
+          });
         }
       }
     }

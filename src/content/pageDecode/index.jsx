@@ -331,15 +331,15 @@ function PadoCard() {
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   const [errorTxt, setErrorTxt] = useState();
-  useEffect(() => {
-    let str = {};
-    if (operationType === 'connect') {
-      str = { title: 'Connect failed.' };
-    } else {
-      str = { title: 'Error Message.' };
-    }
-    setErrorTxt(str);
-  }, [operationType]);
+  // useEffect(() => {
+  //   let str = {};
+  //   if (operationType === 'connect') {
+  //     str = { title: 'Connect failed.' };
+  //   } else {
+  //     str = { title: 'Error Message.' };
+  //   }
+  //   setErrorTxt(str);
+  // }, [operationType]);
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
   var iconPrimusSquare = chrome.runtime.getURL(`iconPrimusSquare.svg`);
   // var iconLink = chrome.runtime.getURL(`iconLink.svg`);
