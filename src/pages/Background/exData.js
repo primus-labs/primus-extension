@@ -184,6 +184,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     //version: CredVersion,
     baseName, // host, such as "api.binance.com"
     padoUrl: algorithmType === 'proxytls' ? zkPadoUrl : padoUrl, // client <----> pado-server
+    modelType: algorithmType,
     proxyUrl: proxyUrl,
     errLogUrl: 'wss://api.padolabs.org/logs',
     // if cipher non-exist or empty use default. options:
@@ -333,6 +334,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
     source: dataSource,
     requestid: prevRequestid || timeStampStr,
     padoUrl: algorithmType === 'proxytls' ? zkPadoUrl : padoUrl, // client <----> pado-server
+    modelType: algorithmType,
     proxyUrl: proxyUrl,
     errLogUrl: 'wss://api.padolabs.org/logs',
     cipher: sslCipherSuite || '',
