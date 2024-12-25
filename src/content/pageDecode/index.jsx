@@ -227,6 +227,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
     sourcePageTip: 'Error Message.',
   });
   useEffect(() => {
+    console.log('222content receive:end-2', errorTxt);
     setErrorTxtSelf(errorTxt);
   }, [errorTxt]);
   const descList = useMemo(() => {

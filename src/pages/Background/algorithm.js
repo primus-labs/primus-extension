@@ -114,16 +114,16 @@ export const algorithmMsgListener = async (
           ].includes(activeAttestationParams.attestationType)
             ? `${activeAttestationParams.attestationType} failed!`
             : `${activeAttestationParams.attestationType} proof failed!`;
-          if (
-            padoZKAttestationJSSDKBeginAttest &&
-            padoZKAttestationJSSDKBeginAttest !== '1'
-          ) {
-            errorMsgTitle = 'Something went wrong!';
-          }
+
+          errorMsgTitle =
+            retcode === '2'
+              ? 'Wrong parameters. '
+              : 'Too many requests. Please try again later.';
+
           msgObj = {
             type: 'error',
-            title: errorMsgTitle,
-            desc: 'The algorithm has not been initialized.Please try again later.',
+            title: errorMsgTitle, // no use
+            desc: 'The algorithm has not been initialized.Please try again later.', // no use
             sourcePageTip: errorMsgTitle,
           };
           // algorithm is not initialized
@@ -158,7 +158,8 @@ export const algorithmMsgListener = async (
           resParams.errorData = {
             title: msgObj.title,
             desc: msgObj.desc,
-            code: '00001',
+            code: retcode === '2' ? '00001' : '00000',
+            data: message.res,
           };
         }
         chrome.tabs.sendMessage(dappTabId, {
