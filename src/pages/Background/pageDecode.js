@@ -1,3 +1,4 @@
+import jp from 'jsonpath';
 import {
   assembleAlgorithmParams,
   assembleAlgorithmParamsForSDK,
@@ -7,8 +8,8 @@ import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
-import customFetch from './utils/request';
-import { isJSONString } from './utils/utils';
+import customFetch, { customFetch2 } from './utils/request';
+import { isJSONString, isObject } from './utils/utils';
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -21,6 +22,7 @@ let preAlgorithmStatus = '';
 let preAlgorithmTimer = null;
 let preAlgorithmFlag = false;
 let chatgptHasLogin = false;
+let sdkTargetRequestUrlfromMutiple = '';
 let listenerFn = () => {};
 let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
@@ -38,13 +40,23 @@ const removeRequestsMap = async (url) => {
 };
 const storeRequestsMap = (url, urlInfo) => {
   const lastStoreRequestObj = requestsMap[url] || {};
-  // console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
+  const urlInfoHeaders = urlInfo?.headers;
+  if (
+    urlInfoHeaders &&
+    (urlInfoHeaders?.['Content-Type']?.includes('text/plain') ||
+      urlInfoHeaders?.['content-type']?.includes('text/plain')) &&
+    lastStoreRequestObj.body
+  ) {
+    urlInfo.body = JSON.stringify(lastStoreRequestObj.body);
+  }
   Object.assign(requestsMap, {
     [url]: { ...lastStoreRequestObj, ...urlInfo },
   });
 
   return requestsMap[url];
 };
+
 const resetVarsFn = () => {
   isReadyRequest = false;
   operationType = null;
@@ -55,6 +67,7 @@ const resetVarsFn = () => {
   preAlgorithmFlag = false;
   chatgptHasLogin = false;
   requestsMap = {};
+  sdkTargetRequestUrlfromMutiple = '';
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -65,6 +78,13 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
   ]);
+  const { activeRequestAttestation: lastActiveRequestAttestationStr } =
+    await chrome.storage.local.get(['activeRequestAttestation']);
+  if (processAlgorithmReq && lastActiveRequestAttestationStr) {
+    processAlgorithmReq({
+      reqMethodName: 'stop',
+    });
+  }
   if (padoZKAttestationJSSDKBeginAttest) {
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
@@ -72,12 +92,6 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
       'padoZKAttestationJSSDKXFollowerCount',
       'activeRequestAttestation',
     ]);
-
-    if (processAlgorithmReq) {
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-      });
-    }
     let desc = `The user ${operation} the attestation`;
     let resParams = { result: false };
     if (!resParams.result) {
@@ -146,6 +160,17 @@ const extraRequestFn = async () => {
     console.log('fetch chatgpt conversation error', e);
   }
 };
+const extraRequestFn2 = async (params) => {
+  try {
+    const { ...requestParams } = params;
+    const requestRes = await customFetch2(requestParams);
+    if (typeof requestRes === 'object' && requestRes !== null) {
+      return requestRes;
+    }
+  } catch (e) {
+    console.log('fetch custom request error', e);
+  }
+};
 
 // inject-dynamic
 export const pageDecodeMsgListener = async (
@@ -180,250 +205,91 @@ export const pageDecodeMsgListener = async (
       });
       return isUrlWithQuery ? queryStr : false;
     };
-    onBeforeSendHeadersFn = async (details) => {
-      let {
-        dataSource,
-        jumpTo,
-        datasourceTemplate: { requests },
+
+    const checkSDKTargetRequestFn = async () => {
+      const {
+        datasourceTemplate: { requests, responses },
       } = activeTemplate;
-      const { url: currRequestUrl, requestHeaders, method } = details;
-      let formatUrlKey = currRequestUrl;
-      let addQueryStr = '';
-      let needQueryDetail = false;
-      let formatHeader = requestHeaders.reduce((prev, curr) => {
-        const { name, value } = curr;
-        prev[name] = value;
-        return prev;
-      }, {});
-      if (
-        currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
-      ) {
-        chatgptHasLogin = !!formatHeader.Authorization;
-        if (dataSource === 'chatgpt') {
-          const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
-          console.log('setUIStep-', tipStr);
-          chrome.tabs.sendMessage(
-            dataSourcePageTabId,
-            {
-              type: 'pageDecode',
-              name: 'setUIStep',
-              params: {
-                step: tipStr,
-              },
-            },
-            function (response) {}
-          );
-        }
-      }
-      const isTarget = requests.some((r) => {
-        if (r.name === 'first') {
-          return false;
-        }
-        if (r.queryParams && r.queryParams[0]) {
-          const urlStrArr = currRequestUrl.split('?');
-          const hostUrl = urlStrArr[0];
-          let curUrlWithQuery = r.url === hostUrl;
-          if (r.queryDetail) {
-            needQueryDetail = r.queryDetail;
-          }
-          if (r.url === hostUrl) {
-            curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
-          }
-          if (curUrlWithQuery) {
-            addQueryStr = curUrlWithQuery;
-          }
-          formatUrlKey = hostUrl;
-          return !!curUrlWithQuery;
-        } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
-          var regex = new RegExp(r.url, 'g');
-          const isTarget = currRequestUrl.match(regex);
-          const result = isTarget && isTarget.length > 0;
-          if (result) {
-            chrome.storage.local.set({
-              [r.url]: currRequestUrl,
-            });
-            console.log('lastStorage-set-url', r.url, currRequestUrl);
-            formatUrlKey = currRequestUrl;
-          }
-          return result;
-        } else {
-          return r.url === currRequestUrl;
-        }
+      let targetRequestUrl = '';
+      const sdkRequestUrl = requests[0].url;
+      var regex = new RegExp(sdkRequestUrl, 'g');
+      const matchRequestUrlArr = Object.keys(requestsMap).filter((key) => {
+        // const flag = regex.test(key);
+        const isTarget = key.match(regex);
+        const result = isTarget && isTarget.length > 0;
+        const flag = isTarget && result;
+        // console.log('regex', key, flag, sdkRequestUrl);
+        return flag;
       });
-      if (isTarget) {
-        let newCapturedInfo = {
-          headers: formatHeader,
-          method,
-        };
-        if (addQueryStr) {
-          newCapturedInfo.queryString = addQueryStr;
+      // const matchRequestUrlArrNum = matchRequestUrlArr.length;
+      // console.log(
+      //   'regex-total',
+      //   regex,
+      //   matchRequestUrlArrNum,
+      //   matchRequestUrlArr,
+      //   Object.keys(requestsMap)
+      // );
+
+      targetRequestUrl = '';
+      const hadTargetUrl = Object.keys(requestsMap).some((k) => {
+        if (requestsMap[k].isTarget === 1) {
+          targetRequestUrl = k;
         }
-        const newCurrRequestObj = storeRequestsMap(
-          formatUrlKey,
-          newCapturedInfo
-        );
-        const requireUrlArr = [
-          'https://www.tiktok.com/passport/web/account/info/',
-          'https://api.x.com/1.1/account/settings.json',
-        ];
-        const curRequireUrl = requireUrlArr.find((i) =>
-          currRequestUrl.includes(i)
-        );
-        if (curRequireUrl) {
-          await chrome.storage.local.set({
-            [curRequireUrl]: JSON.stringify(newCurrRequestObj),
-          });
-        }
-        // const requestHeadersObj = JSON.stringify(formatHeader);
-        // const storageObj = await chrome.storage.local.get([formatUrlKey]);
-        // const currRequestUrlStorage = storageObj[formatUrlKey];
-        // const currRequestObj = currRequestUrlStorage
-        //   ? JSON.parse(currRequestUrlStorage)
-        //   : {};
-        // const newCurrRequestObj = {
-        //   ...currRequestObj,
-        //   headers: formatHeader,
-        // };
-        // if (addQueryStr) {
-        //   newCurrRequestObj.queryString = addQueryStr;
-        // }
-        // // console.log('222222listen', formatUrlKey);
-        // await chrome.storage.local.set({
-        //   [formatUrlKey]: JSON.stringify(newCurrRequestObj),
-        // });
-        // console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
-        if (
-          needQueryDetail &&
-          formatUrlKey.startsWith(
-            'https://api.x.com/1.1/account/settings.json'
-          ) &&
-          !hasGetTwitterScreenName
-        ) {
-          const options = {
-            headers: newCurrRequestObj.headers,
-          };
-          hasGetTwitterScreenName = true;
-          const res = await fetch(
-            formatUrlKey + '?' + newCurrRequestObj.queryString,
-            options
-          );
-          const result = await res.json();
-          //need to go profile page
-          await chrome.tabs.update(dataSourcePageTabId, {
-            url: jumpTo + result.screen_name,
-          });
-        }
-        checkWebRequestIsReadyFn();
-      }
-    };
-    onBeforeRequestFn = async (subDetails) => {
-      let {
-        datasourceTemplate: { requests },
-      } = activeTemplate;
-      const { url: currRequestUrl, requestBody } = subDetails;
-      removeRequestsMap(currRequestUrl);
-      let formatUrlKey = currRequestUrl;
-      const isTarget = requests.some((r) => {
-        if (r.name === 'first') {
-          return false;
-        }
-        if (r.queryParams && r.queryParams[0]) {
-          const urlStrArr = currRequestUrl.split('?');
-          const hostUrl = urlStrArr[0];
-          let curUrlWithQuery = r.url === hostUrl;
-          if (r.url === hostUrl) {
-            curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
-          }
-          formatUrlKey = hostUrl;
-          return curUrlWithQuery;
-        } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
-          var regex = new RegExp(r.url, 'g');
-          const isTarget = currRequestUrl.match(regex);
-          const result = isTarget && isTarget.length > 0;
-          if (result) {
-            chrome.storage.local.set({
-              [r.url]: currRequestUrl,
-            });
-            console.log('lastStorage-set', r.url, currRequestUrl);
-          }
-          return result;
-        } else {
-          return r.url === currRequestUrl;
-        }
+        return requestsMap[k].isTarget === 1;
       });
-      if (isTarget) {
-        if (requestBody && requestBody.raw) {
-          const rawBody = requestBody.raw[0];
-          if (rawBody && rawBody.bytes) {
-            const byteArray = new Uint8Array(rawBody.bytes);
-            const bodyText = new TextDecoder().decode(byteArray);
-            console.log(
-              `url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
+      if (!hadTargetUrl) {
+        for (const matchRequestUrl of [...matchRequestUrlArr]) {
+          if (requestsMap[matchRequestUrl].isTarget === 1) {
+            targetRequestUrl = matchRequestUrl;
+            break;
+          } else if (requestsMap[matchRequestUrl].isTarget === 2) {
+          } else {
+            const jsonPathArr = responses[0].conditions.subconditions.map(
+              (i) => i.field
             );
+            const matchRequestUrlResult = await extraRequestFn2({
+              ...requestsMap[matchRequestUrl],
+              header: requestsMap[matchRequestUrl].headers,
+              url: matchRequestUrl,
+            });
+            const isTargetUrl = jsonPathArr.every((jpItem) => {
+              const hasField =
+                jp.query(matchRequestUrlResult, jpItem).length > 0;
+              return hasField;
+            });
 
-            storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
-
-            // const storageObj = await chrome.storage.local.get([formatUrlKey]);
-            // const currRequestUrlStorage = storageObj[formatUrlKey];
-            // const currRequestObj = currRequestUrlStorage
-            //   ? JSON.parse(currRequestUrlStorage)
-            //   : {};
-            // const newCurrRequestObj = {
-            //   ...currRequestObj,
-            //   body: JSON.parse(bodyText),
-            // };
-            // await chrome.storage.local.set({
-            //   [formatUrlKey]: JSON.stringify(newCurrRequestObj),
-            // });
-            // console.log('lastStorage-set', formatUrlKey, newCurrRequestObj);
+            if (isTargetUrl) {
+              targetRequestUrl = matchRequestUrl;
+              storeRequestsMap(matchRequestUrl, { isTarget: 1 });
+              await chrome.storage.local.set({
+                [sdkRequestUrl]: matchRequestUrl,
+              });
+              break;
+            } else {
+              storeRequestsMap(matchRequestUrl, { isTarget: 2 });
+            }
           }
         }
       }
-    };
-    onCompletedFn = async (details) => {
-      let { dataSource } = activeTemplate;
-      console.log('onCompletedFn', dataSource, details);
-      if (dataSource === 'chatgpt') {
-        // chatgpt has only one requestUrl
-
-        await extraRequestFn();
-        console.log('setUIStep-toVerify');
-        chrome.tabs.sendMessage(
-          dataSourcePageTabId,
-          {
-            type: 'pageDecode',
-            name: 'setUIStep',
-            params: {
-              step: 'toVerify',
-            },
-          },
-          function (response) {}
-        );
-        await formatAlgorithmParamsFn();
-        console.log('RequestsHasCompleted=', RequestsHasCompleted);
-        preAlgorithmFn();
-        checkWebRequestIsReadyFn();
-      }
+      sdkTargetRequestUrlfromMutiple = targetRequestUrl;
     };
     const checkWebRequestIsReadyFn = async () => {
       const checkReadyStatusFn = async () => {
         let {
           dataSource,
-          datasourceTemplate: { requests },
+          datasourceTemplate: { requests, responses },
+          sdkVersion,
         } = activeTemplate;
 
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
         const interceptorUrlArr = interceptorRequests.map((i) => i.url);
-        // console.log('555-newsttestations-interceptorUrlArr', interceptorUrlArr);
-        // const storageObj = await chrome.storage.local.get(interceptorUrlArr);
-        // const storageArr = Object.values(storageObj);
+
         const storageObj = requestsMap;
         const storageArr = Object.values(storageObj);
 
-        // debugger
         if (
           interceptorUrlArr.length > 0 &&
-          storageArr.length === interceptorUrlArr.length
+          storageArr.length >= interceptorUrlArr.length
         ) {
           const f = interceptorRequests.every(async (r) => {
             let url = r.url;
@@ -435,7 +301,7 @@ export const pageDecodeMsgListener = async (
             }
 
             const sRrequestObj = storageObj[url] || {};
-            console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
+            // console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
             chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
             const headersFlag =
               !r.headers || (!!r.headers && !!sRrequestObj.headers);
@@ -449,18 +315,16 @@ export const pageDecodeMsgListener = async (
             return headersFlag && bodyFlag && cookieFlag;
           });
 
-          const fl =
-            dataSource === 'chatgpt'
-              ? !!f &&
-                chatgptHasLogin &&
-                RequestsHasCompleted &&
-                preAlgorithmStatus === '1'
-              : f;
+          let fl = false;
+          if (sdkVersion) {
+            fl = f && !!sdkTargetRequestUrlfromMutiple;
+          } else {
+            fl = f;
+          }
 
           if (fl) {
             if (dataSource === 'chatgpt') {
             } else {
-              // debugger
               if (!formatAlgorithmParams) {
                 await formatAlgorithmParamsFn();
               }
@@ -473,7 +337,11 @@ export const pageDecodeMsgListener = async (
       };
       isReadyRequest = await checkReadyStatusFn();
       if (isReadyRequest) {
-        console.log('web requests are captured');
+        console.log(
+          'all web requests are captured',
+          isReadyRequest,
+          dataSourcePageTabId
+        );
         chrome.tabs.sendMessage(
           dataSourcePageTabId,
           {
@@ -522,7 +390,6 @@ export const pageDecodeMsgListener = async (
         form.requestid = activeTemplate.requestid;
       }
       let aligorithmParams = {};
-      // debugger
       if (sdkVersion) {
         aligorithmParams = await assembleAlgorithmParamsForSDK(
           {
@@ -545,12 +412,21 @@ export const pageDecodeMsgListener = async (
         let { headers, cookies, body, url, urlType } = r;
         let formatUrlKey = url;
         if (urlType === 'REGX') {
-          const storageObj = await chrome.storage.local.get(url);
-          if (storageObj[url] && !isJSONString(storageObj[url])) {
-            console.log('formatAlgorithmParamsFn-regx-storageObj', storageObj);
-            formatUrlKey = storageObj[url];
+          if (sdkVersion && sdkTargetRequestUrlfromMutiple) {
+            formatUrlKey = sdkTargetRequestUrlfromMutiple;
             url = formatUrlKey;
             r.url = url;
+          } else {
+            const storageObj = await chrome.storage.local.get(url);
+            if (storageObj[url] && !isJSONString(storageObj[url])) {
+              console.log(
+                'formatAlgorithmParamsFn-regx-storageObj',
+                storageObj
+              );
+              formatUrlKey = storageObj[url];
+              url = formatUrlKey;
+              r.url = url;
+            }
           }
         }
         const currRequestInfoObj = requestsMap[formatUrlKey] || {};
@@ -577,12 +453,11 @@ export const pageDecodeMsgListener = async (
           formateBody = {};
 
         if (sdkVersion) {
-          let headerNoCookie = { ...curRequestHeader };
-          delete headerNoCookie.Cookie;
           Object.assign(r, {
-            headers: { ...headerNoCookie },
-            cookies: { ...cookiesObj },
-            body: { ...curRequestBody },
+            headers: { ...curRequestHeader },
+            body: isObject(curRequestBody)
+              ? { ...curRequestBody }
+              : curRequestBody,
             url: queryString ? r.url + '?' + queryString : r.url,
           });
         } else {
@@ -840,36 +715,239 @@ export const pageDecodeMsgListener = async (
       // console.log('555-newattestations', capturedUrlKeyArr, aaa, bbb);
 
       chrome.webRequest.onBeforeSendHeaders.removeListener(
-        onBeforeSendHeadersFn,
-        { urls: ['<all_urls>'] },
-        ['requestHeaders', 'extraHeaders']
+        onBeforeSendHeadersFn
       );
-      chrome.webRequest.onBeforeRequest.removeListener(
-        onBeforeRequestFn,
-        { urls: ['<all_urls>'] },
-        ['requestBody']
-      );
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+      chrome.webRequest.onCompleted.removeListener(onCompletedFn);
+      onBeforeSendHeadersFn = async (details) => {
+        if (details.tabId !== dataSourcePageTabId) {
+          return;
+        }
+        let {
+          dataSource,
+          jumpTo,
+          datasourceTemplate: { requests },
+          sdkVersion,
+        } = activeTemplate;
+        const { url: currRequestUrl, requestHeaders, method } = details;
 
-      chrome.webRequest.onCompleted.removeListener(
-        onCompletedFn,
-        { urls: interceptorUrlArr },
-        ['responseHeaders', 'extraHeaders']
-      );
+        let formatUrlKey = currRequestUrl;
+        let addQueryStr = '';
+        let needQueryDetail = false;
+        let formatHeader = requestHeaders.reduce((prev, curr) => {
+          const { name, value } = curr;
+          prev[name] = value;
+          return prev;
+        }, {});
+        if (
+          currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
+        ) {
+          chatgptHasLogin = !!formatHeader.Authorization;
+          if (dataSource === 'chatgpt') {
+            const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
+            console.log('setUIStep-', tipStr);
+            chrome.tabs.sendMessage(
+              dataSourcePageTabId,
+              {
+                type: 'pageDecode',
+                name: 'setUIStep',
+                params: {
+                  step: tipStr,
+                },
+              },
+              function (response) {}
+            );
+          }
+        }
+        const isTarget = requests.some((r) => {
+          if (r.name === 'first') {
+            return false;
+          }
+          if (r.queryParams && r.queryParams[0]) {
+            const urlStrArr = currRequestUrl.split('?');
+            const hostUrl = urlStrArr[0];
+            let curUrlWithQuery = r.url === hostUrl;
+            if (r.queryDetail) {
+              needQueryDetail = r.queryDetail;
+            }
+            if (r.url === hostUrl) {
+              curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
+            }
+            if (curUrlWithQuery) {
+              addQueryStr = curUrlWithQuery;
+            }
+            formatUrlKey = hostUrl;
+            return !!curUrlWithQuery;
+          } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
+            var regex = new RegExp(r.url, 'g');
+            const isTarget = currRequestUrl.match(regex);
+            const result = isTarget && isTarget.length > 0;
+            if (result) {
+              chrome.storage.local.set({
+                [r.url]: currRequestUrl,
+              });
+              // console.log('lastStorage-set-url', r.url, currRequestUrl);
+              formatUrlKey = currRequestUrl;
+            }
+            return result;
+          } else {
+            return r.url === currRequestUrl;
+          }
+        });
+        if (isTarget) {
+          let newCapturedInfo = {
+            headers: formatHeader,
+            method,
+          };
+          if (addQueryStr) {
+            newCapturedInfo.queryString = addQueryStr;
+          }
+          const newCurrRequestObj = storeRequestsMap(
+            formatUrlKey,
+            newCapturedInfo
+          );
+          const requireUrlArr = [
+            'https://www.tiktok.com/passport/web/account/info/',
+            'https://api.x.com/1.1/account/settings.json',
+          ];
+          const curRequireUrl = requireUrlArr.find((i) =>
+            currRequestUrl.includes(i)
+          );
+          if (curRequireUrl) {
+            await chrome.storage.local.set({
+              [curRequireUrl]: JSON.stringify(newCurrRequestObj),
+            });
+          }
+          if (
+            needQueryDetail &&
+            formatUrlKey.startsWith(
+              'https://api.x.com/1.1/account/settings.json'
+            ) &&
+            !hasGetTwitterScreenName
+          ) {
+            const options = {
+              headers: newCurrRequestObj.headers,
+            };
+            hasGetTwitterScreenName = true;
+            const res = await fetch(
+              formatUrlKey + '?' + newCurrRequestObj.queryString,
+              options
+            );
+            const result = await res.json();
+            //need to go profile page
+            await chrome.tabs.update(dataSourcePageTabId, {
+              url: jumpTo + result.screen_name,
+            });
+          }
+          if (sdkVersion) {
+            await checkSDKTargetRequestFn();
+          }
+          checkWebRequestIsReadyFn();
+        }
+      };
+      onBeforeRequestFn = async (subDetails) => {
+        if (subDetails.tabId !== dataSourcePageTabId) {
+          return;
+        }
+        let {
+          datasourceTemplate: { requests },
+        } = activeTemplate;
+        const { url: currRequestUrl, requestBody } = subDetails;
+
+        removeRequestsMap(currRequestUrl);
+        let formatUrlKey = currRequestUrl;
+        const isTarget = requests.some((r) => {
+          if (r.name === 'first') {
+            return false;
+          }
+          if (r.queryParams && r.queryParams[0]) {
+            const urlStrArr = currRequestUrl.split('?');
+            const hostUrl = urlStrArr[0];
+            let curUrlWithQuery = r.url === hostUrl;
+            if (r.url === hostUrl) {
+              curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
+            }
+            formatUrlKey = hostUrl;
+            return curUrlWithQuery;
+          } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
+            var regex = new RegExp(r.url, 'g');
+            const isTarget = currRequestUrl.match(regex);
+            const result = isTarget && isTarget.length > 0;
+            if (result) {
+              chrome.storage.local.set({
+                [r.url]: currRequestUrl,
+              });
+              console.log('lastStorage-set', r.url, currRequestUrl);
+            }
+            return result;
+          } else {
+            return r.url === currRequestUrl;
+          }
+        });
+        if (isTarget) {
+          if (requestBody && requestBody.raw) {
+            const rawBody = requestBody.raw[0];
+            if (rawBody && rawBody.bytes) {
+              const byteArray = new Uint8Array(rawBody.bytes);
+              const bodyText = new TextDecoder().decode(byteArray);
+              // console.log(
+              //   `targeturl:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
+              // );
+
+              storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
+            }
+          }
+          if (requestBody && requestBody.formData) {
+            await storeRequestsMap(formatUrlKey, {
+              body: requestBody.formData,
+              isFormData: true,
+            });
+          }
+        }
+      };
+      onCompletedFn = async (details) => {
+        if (details.tabId !== dataSourcePageTabId) {
+          return;
+        }
+        let { dataSource } = activeTemplate;
+
+        if (dataSource === 'chatgpt') {
+          console.log('onCompletedFn', dataSource, details);
+          // chatgpt has only one requestUrl
+          await extraRequestFn();
+          console.log('setUIStep-toVerify');
+          chrome.tabs.sendMessage(
+            dataSourcePageTabId,
+            {
+              type: 'pageDecode',
+              name: 'setUIStep',
+              params: {
+                step: 'toVerify',
+              },
+            },
+            function (response) {}
+          );
+          await formatAlgorithmParamsFn();
+          console.log('RequestsHasCompleted=', RequestsHasCompleted);
+          preAlgorithmFn();
+          checkWebRequestIsReadyFn();
+        }
+      };
 
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
-        { urls: ['<all_urls>'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
         ['requestHeaders', 'extraHeaders']
       );
       chrome.webRequest.onBeforeRequest.addListener(
         onBeforeRequestFn,
-        { urls: ['<all_urls>'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
         ['requestBody']
       );
 
       chrome.webRequest.onCompleted.addListener(
         onCompletedFn,
-        { urls: interceptorUrlArr },
+        { urls: interceptorUrlArr, types: ['xmlhttprequest'] },
         ['responseHeaders', 'extraHeaders']
       );
       const tabCreatedByPado = await chrome.tabs.create({
@@ -910,12 +988,16 @@ export const pageDecodeMsgListener = async (
           });
           dataSourcePageTabId = null;
           handlerForSdk(processAlgorithmReq, 'cancel');
+          chrome.webRequest.onBeforeSendHeaders.removeListener(
+            onBeforeSendHeadersFn
+          );
+          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+          chrome.webRequest.onCompleted.removeListener(onCompletedFn);
         }
       });
       await injectFn();
     }
     if (name === 'initCompleted') {
-      // debugger
       console.log('content_scripts-bg-decode receive:initCompleted');
       sendResponse({
         name: 'append',
@@ -928,6 +1010,7 @@ export const pageDecodeMsgListener = async (
         isReady: isReadyRequest,
         operation: operationType,
       });
+      checkWebRequestIsReadyFn();
     }
     if (name === 'start') {
       await chrome.storage.local.set({
@@ -973,7 +1056,6 @@ export const pageDecodeMsgListener = async (
         eventInfo.rawData.attestOrigin = formatOrigin;
       }
       eventReport(eventInfo);
-      // debugger;
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
@@ -1018,6 +1100,7 @@ export const pageDecodeMsgListener = async (
           onBeforeSendHeadersFn
         );
         chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+        chrome.webRequest.onCompleted.removeListener(onCompletedFn);
         resetVarsFn();
       }
     }

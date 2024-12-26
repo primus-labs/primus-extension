@@ -185,7 +185,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
 
       try {
         const { rc, result } = await queryTemplateById(attTemplateID);
-        // debugger;
         if (rc === 0 && result) {
           const {
             id,
@@ -221,7 +220,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
           const opMap = {
             string: 'REVEAL_STRING',
             number: 'REVEAL_STRING',
-            boolean: 'REVEAL_BOOLEAN',
+            boolean: 'REVEAL_STRING',
           };
           const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
             const { responseTemplate } = curr;
@@ -234,7 +233,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               } = currS;
               const subconditionItem = {
                 field: expression,
-                op: opMap[feilds[0].DataType],
+                op: opMap[feilds[0].DataType] || 'REVEAL_STRING',
                 reveal_id: feilds[0].key,
                 type: fieldType,
               };
@@ -284,9 +283,40 @@ export const padoZKAttestationJSSDKMsgListener = async (
               proxyUrl,
             },
           };
+        } else {
+          const resParams = {
+            result: false,
+            errorData: {
+              title: 'Invalid Template ID.',
+              desc: 'Invalid Template ID.',
+              code: '00012',
+            },
+          };
+          const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+            await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+          chrome.tabs.sendMessage(dappTabId, {
+            type: 'padoZKAttestationJSSDK',
+            name: 'getAttestationRes',
+            params: resParams,
+          });
         }
       } catch (e) {
         console.log('sdk template error:', e);
+        const resParams = {
+          result: false,
+          errorData: {
+            title: 'Invalid Template ID.',
+            desc: 'Invalid Template ID.',
+            code: '00012',
+          },
+        };
+        const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+          await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+        chrome.tabs.sendMessage(dappTabId, {
+          type: 'padoZKAttestationJSSDK',
+          name: 'getAttestationRes',
+          params: resParams,
+        });
       }
     } else {
       walletAddress = params.walletAddress;
@@ -480,7 +510,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName
+      hasGetTwitterScreenName,
+      processAlgorithmReq
     );
   }
 
@@ -540,7 +571,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
       sendResponse,
       USERPASSWORD,
       fullscreenPort,
-      hasGetTwitterScreenName
+      hasGetTwitterScreenName,
+      processAlgorithmReq
     );
     processAlgorithmReq({
       reqMethodName: 'stop',
@@ -548,11 +580,16 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const { padoZKAttestationJSSDKDappTabId: dappTabId } =
       await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
     let resParams = { result: false };
+
     if (!resParams.result) {
+      const { attestationLogInQuery } = await chrome.storage.local.get([
+        'attestationLogInQuery',
+      ]);
       resParams.errorData = {
         title: msgObj.title,
         desc: msgObj.desc,
         code,
+        data: attestationLogInQuery || JSON.stringify({}),
       };
       resParams.reStartFlag = true;
     }
@@ -719,9 +756,17 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest) {
-    pageDecodeMsgListener({
-      type: 'pageDecode',
-      name: 'cancel',
-    });
+    pageDecodeMsgListener(
+      {
+        type: 'pageDecode',
+        name: 'cancel',
+      },
+      sender,
+      sendResponse,
+      USERPASSWORD,
+      fullscreenPort,
+      hasGetTwitterScreenName,
+      processAlgorithmReq
+    );
   }
 });

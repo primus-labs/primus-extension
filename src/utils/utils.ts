@@ -516,3 +516,4 @@ export const getAccount = (metaInfo: any, useInfo: any) => {
   }
   return account;
 };
+

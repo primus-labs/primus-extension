@@ -115,18 +115,26 @@ const useALGAttest = function useAttest() {
           setTimeout(() => {
             setTimeoutSwitch(true);
           }, 50);
-        } else if (retcode === '2') {
+        } else {
           const errorMsgTitle = [
             'Assets Verification',
             'Humanity Verification',
           ].includes(activeAttestation.attestationType)
             ? `${activeAttestation.attestationType} failed!`
             : `${activeAttestation.attestationType} proof failed!`;
+          
+          //  else if (retcode === '2') 
           const msgObj = {
             type: 'error',
             title: errorMsgTitle,
-            desc: 'The algorithm has not been initialized.Please try again later.',
-            sourcePageTip: errorMsgTitle,
+            desc:
+              retcode === '2'
+                ? 'Algorithm startup exception.'
+                : 'Operation too frequent. Please try again later.',
+            sourcePageTip:
+              retcode === '2'
+                ? 'Wrong parameters. '
+                : 'Too many requests. Please try again later.',
           };
           if (activeAttestation.dataSourceId === 'coinbase') {
           } else {

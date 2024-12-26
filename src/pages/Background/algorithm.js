@@ -102,7 +102,8 @@ export const algorithmMsgListener = async (
         let result = false;
         if (retcode === '0') {
           result = true;
-        } else if (retcode === '2') {
+        } else {
+          // if (retcode === '2' || retcode === '1')
           result = false;
           const activeAttestationParams = JSON.parse(
             padoZKAttestationJSSDKAttestationPresetParams
@@ -113,16 +114,16 @@ export const algorithmMsgListener = async (
           ].includes(activeAttestationParams.attestationType)
             ? `${activeAttestationParams.attestationType} failed!`
             : `${activeAttestationParams.attestationType} proof failed!`;
-          if (
-            padoZKAttestationJSSDKBeginAttest &&
-            padoZKAttestationJSSDKBeginAttest !== '1'
-          ) {
-            errorMsgTitle = 'Something went wrong!';
-          }
+
+          errorMsgTitle =
+            retcode === '2'
+              ? 'Wrong parameters. '
+              : 'Too many requests. Please try again later.';
+
           msgObj = {
             type: 'error',
-            title: errorMsgTitle,
-            desc: 'The algorithm has not been initialized.Please try again later.',
+            title: errorMsgTitle, // no use
+            desc: 'The algorithm has not been initialized.Please try again later.', // no use
             sourcePageTip: errorMsgTitle,
           };
           // algorithm is not initialized
@@ -141,7 +142,7 @@ export const algorithmMsgListener = async (
             USERPASSWORD,
             fullscreenPort,
             hasGetTwitterScreenName,
-            undefined
+            processAlgorithmReq
           );
           await chrome.storage.local.remove([
             'padoZKAttestationJSSDKBeginAttest',
@@ -157,7 +158,8 @@ export const algorithmMsgListener = async (
           resParams.errorData = {
             title: msgObj.title,
             desc: msgObj.desc,
-            code: '00001',
+            code: retcode === '2' ? '00001' : '00000',
+            data: message.res,
           };
         }
         chrome.tabs.sendMessage(dappTabId, {
@@ -264,7 +266,7 @@ export const algorithmMsgListener = async (
                 USERPASSWORD,
                 fullscreenPort,
                 hasGetTwitterScreenName,
-                undefined
+                processAlgorithmReq
               );
               await chrome.storage.local.remove([
                 'padoZKAttestationJSSDKBeginAttest',
@@ -326,55 +328,59 @@ export const algorithmMsgListener = async (
               sourcePageTip: '',
             };
             let errorCode;
-            if (!content.signature && content.encodedData) {
-              if (content.extraData) {
-                // chatgpt input error
-                errorCode = JSON.parse(content.extraData).errorCode + '';
-                if (errorCode === '-1200010') {
-                  Object.assign(msgObj, {
-                    type: '',
-                    desc: 'Invalid message.',
-                    sourcePageTip: 'Invalid message.',
-                  });
-                } else {
-                  errorCode = '00103'; // linea event had bund
-                  Object.assign(msgObj, {
-                    type: attestTipMap[errorCode].type,
-                    desc: attestTipMap[errorCode].desc,
-                    sourcePageTip: attestTipMap[errorCode].title,
-                  });
-                }
-              } else {
+
+            const { extraData } = content;
+            if (
+              extraData &&
+              JSON.parse(extraData) &&
+              ['-1200010', '-1002001', '-1002002'].includes(
+                JSON.parse(extraData).errorCode + ''
+              )
+            ) {
+              const tipMapForSdk = {
+                '-1200010': 'Invalid message.', // chatgpt input error
+                '-1002001': 'Invalid App ID.',
+                '-1002002': 'Invalid App Secret.',
+              };
+              errorCode = JSON.parse(extraData).errorCode + '';
+              const showTip = tipMapForSdk[errorCode];
+              Object.assign(msgObj, {
+                type: '',
+                desc: showTip,
+                sourcePageTip: showTip,
+              });
+            } else {
+              if (!content.signature && content.encodedData) {
                 errorCode = '00103'; // linea event had bund
                 Object.assign(msgObj, {
                   type: attestTipMap[errorCode].type,
                   desc: attestTipMap[errorCode].desc,
                   sourcePageTip: attestTipMap[errorCode].title,
                 });
+              } else if (
+                activeAttestationParams?.verificationContent ===
+                  'Assets Proof' &&
+                activeAttestationParams?.dataSourceId === 'binance'
+              ) {
+                let type, desc, title;
+                errorCode = '00102';
+                type = attestTipMap[errorCode].type;
+                desc = attestTipMap[errorCode].desc;
+                title = attestTipMap[errorCode].title;
+                Object.assign(msgObj, {
+                  type,
+                  desc,
+                  sourcePageTip: title,
+                });
+              } else {
+                errorCode = '00104';
+                Object.assign(msgObj, {
+                  type: attestTipMap[errorCode].type,
+                  desc: attestTipMap[errorCode].desc,
+                  sourcePageTip: attestTipMap[errorCode].title,
+                });
               }
-            } else if (
-              activeAttestationParams?.verificationContent === 'Assets Proof' &&
-              activeAttestationParams?.dataSourceId === 'binance'
-            ) {
-              let type, desc, title;
-              errorCode = '00102';
-              type = attestTipMap[errorCode].type;
-              desc = attestTipMap[errorCode].desc;
-              title = attestTipMap[errorCode].title;
-              Object.assign(msgObj, {
-                type,
-                desc,
-                sourcePageTip: title,
-              });
-            } else {
-              errorCode = '00104';
-              Object.assign(msgObj, {
-                type: attestTipMap[errorCode].type,
-                desc: attestTipMap[errorCode].desc,
-                sourcePageTip: attestTipMap[errorCode].title,
-              });
             }
-
             pageDecodeMsgListener(
               {
                 name: 'end',
@@ -387,7 +393,8 @@ export const algorithmMsgListener = async (
               sendResponse,
               USERPASSWORD,
               fullscreenPort,
-              hasGetTwitterScreenName
+              hasGetTwitterScreenName,
+              processAlgorithmReq
             );
             await chrome.storage.local.remove([
               'padoZKAttestationJSSDKBeginAttest',
@@ -479,7 +486,6 @@ export const algorithmMsgListener = async (
             eventType: 'ATTESTATION_END',
           };
           eventReport(eventInfoEnd);
-
           pageDecodeMsgListener(
             {
               name: 'end',
@@ -492,7 +498,8 @@ export const algorithmMsgListener = async (
             sendResponse,
             USERPASSWORD,
             fullscreenPort,
-            hasGetTwitterScreenName
+            hasGetTwitterScreenName,
+            processAlgorithmReq
           );
           await chrome.storage.local.remove([
             'padoZKAttestationJSSDKBeginAttest',
@@ -507,6 +514,7 @@ export const algorithmMsgListener = async (
               title: msgObj.title,
               desc: msgObj.desc,
               code: code,
+              data: message.res,
             };
             resParams.reStartFlag = true;
           }
@@ -514,6 +522,10 @@ export const algorithmMsgListener = async (
             type: 'padoZKAttestationJSSDK',
             name: 'startAttestationRes',
             params: resParams,
+          });
+        } else {
+          chrome.storage.local.set({
+            attestationLogInQuery: message.res,
           });
         }
       }
