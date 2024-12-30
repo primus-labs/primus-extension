@@ -220,7 +220,7 @@ export const pageDecodeMsgListener = async (
       const hadTargetRequestId = Object.keys(requestsMap).some((k) => {
         if (matchRequestIdArr.includes(k)) {
           if (requestsMap[k].isTarget === 1) {
-            targetRequestUrl = k;
+            sdkTargetRequestId = k;
           }
           return requestsMap[k].isTarget === 1;
         } else {
