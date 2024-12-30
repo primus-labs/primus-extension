@@ -9,7 +9,13 @@ import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import customFetch, { customFetch2 } from './utils/request';
-import { isJSONString, isObject } from './utils/utils';
+import {
+  isJSONString,
+  isObject,
+  parseCookie,
+  isUrlWithQueryFn,
+  checkIsRequiredUrl,
+} from './utils/utils';
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -22,7 +28,7 @@ let preAlgorithmStatus = '';
 let preAlgorithmTimer = null;
 let preAlgorithmFlag = false;
 let chatgptHasLogin = false;
-let sdkTargetRequestUrlfromMutiple = '';
+let sdkTargetRequestId = '';
 let listenerFn = () => {};
 let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
@@ -31,7 +37,6 @@ let requestsMap = {};
 
 const removeRequestsMap = async (url) => {
   // console.log('requestsMap-remove', url);
-  // console.log('x-remove');
   // await chrome.storage.local.remove([
   //   'https://www.tiktok.com/passport/web/account/info/',
   //   'https://api.x.com/1.1/account/settings.json',
@@ -67,7 +72,7 @@ const resetVarsFn = () => {
   preAlgorithmFlag = false;
   chatgptHasLogin = false;
   requestsMap = {};
-  sdkTargetRequestUrlfromMutiple = '';
+  sdkTargetRequestId = '';
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -194,84 +199,69 @@ export const pageDecodeMsgListener = async (
       jumpTo,
       datasourceTemplate: { requests },
     } = activeTemplate;
-    const isUrlWithQueryFn = (url, queryKeyArr) => {
-      const urlStrArr = url.split('?');
-      const queryStr = urlStrArr[1];
-      const queryStrArr = queryStr.split('&');
-      const isUrlWithQuery = queryKeyArr.every((tQItem) => {
-        return queryStrArr.some((qItem) => {
-          return qItem.split('=')[0] === tQItem;
-        });
-      });
-      return isUrlWithQuery ? queryStr : false;
-    };
 
     const checkSDKTargetRequestFn = async () => {
       const {
         datasourceTemplate: { requests, responses },
       } = activeTemplate;
-      let targetRequestUrl = '';
-      const sdkRequestUrl = requests[0].url;
-      var regex = new RegExp(sdkRequestUrl, 'g');
-      const matchRequestUrlArr = Object.keys(requestsMap).filter((key) => {
-        // const flag = regex.test(key);
-        const isTarget = key.match(regex);
-        const result = isTarget && isTarget.length > 0;
-        const flag = isTarget && result;
-        // console.log('regex', key, flag, sdkRequestUrl);
-        return flag;
-      });
-      // const matchRequestUrlArrNum = matchRequestUrlArr.length;
-      // console.log(
-      //   'regex-total',
-      //   regex,
-      //   matchRequestUrlArrNum,
-      //   matchRequestUrlArr,
-      //   Object.keys(requestsMap)
-      // );
 
-      targetRequestUrl = '';
-      const hadTargetUrl = Object.keys(requestsMap).some((k) => {
-        if (requestsMap[k].isTarget === 1) {
-          targetRequestUrl = k;
-        }
-        return requestsMap[k].isTarget === 1;
+      const sdkRequestUrl = requests[0].url;
+
+      const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
+        const checkRes = checkIsRequiredUrl({
+          requestUrl: requestsMap[key].url,
+          requiredUrl: sdkRequestUrl,
+          urlType: requests[0].urlType || 'REGX',
+          queryParams: requests[0].queryParams,
+        });
+        return checkRes;
       });
-      if (!hadTargetUrl) {
-        for (const matchRequestUrl of [...matchRequestUrlArr]) {
-          if (requestsMap[matchRequestUrl].isTarget === 1) {
-            targetRequestUrl = matchRequestUrl;
+
+      const hadTargetRequestId = Object.keys(requestsMap).some((k) => {
+        if (matchRequestIdArr.includes(k)) {
+          if (requestsMap[k].isTarget === 1) {
+            targetRequestUrl = k;
+          }
+          return requestsMap[k].isTarget === 1;
+        } else {
+          return false;
+        }
+      });
+      if (!hadTargetRequestId) {
+        for (const matchRequestId of [...matchRequestIdArr]) {
+          if (requestsMap[matchRequestId].isTarget === 1) {
+            sdkTargetRequestId = matchRequestId;
             break;
-          } else if (requestsMap[matchRequestUrl].isTarget === 2) {
+          } else if (requestsMap[matchRequestId].isTarget === 2) {
           } else {
             const jsonPathArr = responses[0].conditions.subconditions.map(
               (i) => i.field
             );
             const matchRequestUrlResult = await extraRequestFn2({
-              ...requestsMap[matchRequestUrl],
-              header: requestsMap[matchRequestUrl].headers,
-              url: matchRequestUrl,
+              ...requestsMap[matchRequestId],
+              header: requestsMap[matchRequestId].headers,
+              url: requestsMap[matchRequestId].url,
             });
             const isTargetUrl = jsonPathArr.every((jpItem) => {
-              const hasField =
-                jp.query(matchRequestUrlResult, jpItem).length > 0;
-              return hasField;
+              try {
+                const hasField =
+                  jp.query(matchRequestUrlResult, jpItem).length > 0;
+                return hasField;
+              } catch {
+                return false;
+              }
             });
 
             if (isTargetUrl) {
-              targetRequestUrl = matchRequestUrl;
-              storeRequestsMap(matchRequestUrl, { isTarget: 1 });
-              await chrome.storage.local.set({
-                [sdkRequestUrl]: matchRequestUrl,
-              });
+              sdkTargetRequestId = matchRequestId;
+              storeRequestsMap(matchRequestId, { isTarget: 1 });
               break;
             } else {
-              storeRequestsMap(matchRequestUrl, { isTarget: 2 });
+              storeRequestsMap(matchRequestId, { isTarget: 2 });
             }
           }
         }
       }
-      sdkTargetRequestUrlfromMutiple = targetRequestUrl;
     };
     const checkWebRequestIsReadyFn = async () => {
       const checkReadyStatusFn = async () => {
@@ -291,33 +281,47 @@ export const pageDecodeMsgListener = async (
           interceptorUrlArr.length > 0 &&
           storageArr.length >= interceptorUrlArr.length
         ) {
-          const f = interceptorRequests.every(async (r) => {
-            let url = r.url;
-            if (r.urlType === 'REGX') {
-              const storageObj = await chrome.storage.local.get(r.url);
-              if (storageObj[r.url] && !isJSONString(storageObj[r.url])) {
-                url = storageObj[r.url];
+          let captureNum = 0;
+          let f = interceptorRequests.every(async (r) => {
+            const activeRequestInfo = Object.values(requestsMap).find(
+              (rInfo) => {
+                const checkRes = checkIsRequiredUrl({
+                  requestUrl: rInfo.url,
+                  requiredUrl: r.url,
+                  urlType: r.urlType,
+                  queryParams: r.queryParams,
+                });
+                return checkRes;
+                // return matchReg(r.url, rInfo.url);
               }
+            );
+            if (activeRequestInfo) {
+              let targetRequestId = activeRequestInfo.requestId;
+              const sRrequestObj = requestsMap[targetRequestId] || {};
+              // console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
+              chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
+              const headersFlag =
+                !r.headers || (!!r.headers && !!sRrequestObj.headers);
+              const bodyFlag = !r.body || (!!r.body && !!sRrequestObj.body);
+              const cookieFlag =
+                !r.cookies ||
+                (!!r.cookies &&
+                  !!sRrequestObj.headers &&
+                  !!sRrequestObj.headers.Cookie);
+
+              if (activeRequestInfo && headersFlag && bodyFlag && cookieFlag) {
+                captureNum += 1;
+              }
+              return activeRequestInfo && headersFlag && bodyFlag && cookieFlag;
+            } else {
+              return false;
             }
-
-            const sRrequestObj = storageObj[url] || {};
-            // console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
-            chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
-            const headersFlag =
-              !r.headers || (!!r.headers && !!sRrequestObj.headers);
-            const bodyFlag = !r.body || (!!r.body && !!sRrequestObj.body);
-            const cookieFlag =
-              !r.cookies ||
-              (!!r.cookies &&
-                !!sRrequestObj.headers &&
-                !!sRrequestObj.headers.Cookie);
-
-            return headersFlag && bodyFlag && cookieFlag;
           });
+          f = captureNum === interceptorRequests.length;
 
           let fl = false;
           if (sdkVersion) {
-            fl = f && !!sdkTargetRequestUrlfromMutiple;
+            fl = f && !!sdkTargetRequestId;
           } else {
             fl = f;
           }
@@ -337,11 +341,7 @@ export const pageDecodeMsgListener = async (
       };
       isReadyRequest = await checkReadyStatusFn();
       if (isReadyRequest) {
-        console.log(
-          'all web requests are captured',
-          isReadyRequest,
-          dataSourcePageTabId
-        );
+        console.log('all web requests are captured', requestsMap);
         chrome.tabs.sendMessage(
           dataSourcePageTabId,
           {
@@ -409,40 +409,36 @@ export const pageDecodeMsgListener = async (
         if (r.queryDetail) {
           continue;
         }
-        let { headers, cookies, body, url, urlType } = r;
-        let formatUrlKey = url;
-        if (urlType === 'REGX') {
-          if (sdkVersion && sdkTargetRequestUrlfromMutiple) {
-            formatUrlKey = sdkTargetRequestUrlfromMutiple;
-            url = formatUrlKey;
-            r.url = url;
-          } else {
-            const storageObj = await chrome.storage.local.get(url);
-            if (storageObj[url] && !isJSONString(storageObj[url])) {
-              console.log(
-                'formatAlgorithmParamsFn-regx-storageObj',
-                storageObj
-              );
-              formatUrlKey = storageObj[url];
-              url = formatUrlKey;
-              r.url = url;
-            }
-          }
-        }
-        const currRequestInfoObj = requestsMap[formatUrlKey] || {};
 
-        // console.log(
-        //   'lastStorage-get-formatAlgorithmParamsFn',
-        //   'formatUrlKey:',
-        //   formatUrlKey,
-        //   'currRequestInfoObj:',
-        //   JSON.stringify(currRequestInfoObj),
-        //   JSON.stringify(requestsMap)
-        // );
+        let { headers, cookies, body, urlType } = r;
+        // let formatUrlKey = url;
+        let targetRequestId = '';
+        if (sdkVersion && sdkTargetRequestId) {
+          targetRequestId = sdkTargetRequestId;
+        } else {
+          targetRequestId = Object.values(requestsMap).find((rInfo) => {
+            const checkRes = checkIsRequiredUrl({
+              requestUrl: rInfo.url,
+              requiredUrl: r.url,
+              urlType: r.urlType,
+              queryParams: r.queryParams,
+            });
+            return checkRes;
+            // return matchReg(url, rInfo.url);
+          })?.requestId;
+          console.log(
+            'formatAlgorithmParamsFn-after',
+            requestsMap,
+            targetRequestId
+          );
+        }
+
+        const currRequestInfoObj = requestsMap[targetRequestId] || {};
         const {
           headers: curRequestHeader,
           body: curRequestBody,
           queryString,
+          url,
         } = currRequestInfoObj;
 
         const cookiesObj = curRequestHeader
@@ -500,7 +496,7 @@ export const pageDecodeMsgListener = async (
             delete r.queryParams;
           }
         }
-        formatRequests.push(r);
+        formatRequests.push({ ...r, url: r.name === 'first' ? r.url : url });
       }
       const activeInfo = formatRequests.find((i) => i.headers);
       const activeHeader = Object.assign({}, activeInfo?.headers);
@@ -729,7 +725,12 @@ export const pageDecodeMsgListener = async (
           datasourceTemplate: { requests },
           sdkVersion,
         } = activeTemplate;
-        const { url: currRequestUrl, requestHeaders, method } = details;
+        const {
+          url: currRequestUrl,
+          requestHeaders,
+          method,
+          requestId,
+        } = details;
 
         let formatUrlKey = currRequestUrl;
         let addQueryStr = '';
@@ -777,33 +778,28 @@ export const pageDecodeMsgListener = async (
               addQueryStr = curUrlWithQuery;
             }
             formatUrlKey = hostUrl;
-            return !!curUrlWithQuery;
-          } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
-            var regex = new RegExp(r.url, 'g');
-            const isTarget = currRequestUrl.match(regex);
-            const result = isTarget && isTarget.length > 0;
-            if (result) {
-              chrome.storage.local.set({
-                [r.url]: currRequestUrl,
-              });
-              // console.log('lastStorage-set-url', r.url, currRequestUrl);
-              formatUrlKey = currRequestUrl;
-            }
-            return result;
-          } else {
-            return r.url === currRequestUrl;
           }
+          const checkRes = checkIsRequiredUrl({
+            requestUrl: currRequestUrl,
+            requiredUrl: r.url,
+            urlType: r.urlType,
+            queryParams: r.queryParams,
+          });
+          return checkRes;
         });
+
         if (isTarget) {
           let newCapturedInfo = {
             headers: formatHeader,
             method,
+            url: currRequestUrl,
+            requestId,
           };
           if (addQueryStr) {
             newCapturedInfo.queryString = addQueryStr;
           }
           const newCurrRequestObj = storeRequestsMap(
-            formatUrlKey,
+            requestId,
             newCapturedInfo
           );
           const requireUrlArr = [
@@ -852,37 +848,21 @@ export const pageDecodeMsgListener = async (
         let {
           datasourceTemplate: { requests },
         } = activeTemplate;
-        const { url: currRequestUrl, requestBody } = subDetails;
+        const { url: currRequestUrl, requestBody, requestId } = subDetails;
 
-        removeRequestsMap(currRequestUrl);
+        removeRequestsMap(requestId);
         let formatUrlKey = currRequestUrl;
         const isTarget = requests.some((r) => {
           if (r.name === 'first') {
             return false;
           }
-          if (r.queryParams && r.queryParams[0]) {
-            const urlStrArr = currRequestUrl.split('?');
-            const hostUrl = urlStrArr[0];
-            let curUrlWithQuery = r.url === hostUrl;
-            if (r.url === hostUrl) {
-              curUrlWithQuery = isUrlWithQueryFn(currRequestUrl, r.queryParams);
-            }
-            formatUrlKey = hostUrl;
-            return curUrlWithQuery;
-          } else if (r.urlType === 'REGX' && r.url !== currRequestUrl) {
-            var regex = new RegExp(r.url, 'g');
-            const isTarget = currRequestUrl.match(regex);
-            const result = isTarget && isTarget.length > 0;
-            if (result) {
-              chrome.storage.local.set({
-                [r.url]: currRequestUrl,
-              });
-              console.log('lastStorage-set', r.url, currRequestUrl);
-            }
-            return result;
-          } else {
-            return r.url === currRequestUrl;
-          }
+          const checkRes = checkIsRequiredUrl({
+            requestUrl: currRequestUrl,
+            requiredUrl: r.url,
+            urlType: r.urlType,
+            queryParams: r.queryParams,
+          });
+          return checkRes;
         });
         if (isTarget) {
           if (requestBody && requestBody.raw) {
@@ -894,11 +874,13 @@ export const pageDecodeMsgListener = async (
               //   `targeturl:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
               // );
 
-              storeRequestsMap(formatUrlKey, { body: JSON.parse(bodyText) });
+              storeRequestsMap(requestId, {
+                body: JSON.parse(bodyText),
+              });
             }
           }
           if (requestBody && requestBody.formData) {
-            await storeRequestsMap(formatUrlKey, {
+            await storeRequestsMap(requestId, {
               body: requestBody.formData,
               isFormData: true,
             });
@@ -1118,16 +1100,4 @@ export const pageDecodeMsgListener = async (
   }
 };
 
-const parseCookie = (str) => {
-  str = str || '';
-  return str
-    .split(';')
-    .map((v) => v.split('='))
-    .reduce((acc, v) => {
-      if (v[0] && v[1]) {
-        acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
-      }
 
-      return acc;
-    }, {});
-};

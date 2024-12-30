@@ -28,7 +28,7 @@ const storeRequestsMap = async (url, urlInfo) => {
 };
 const extraRequestFn = async (params) => {
   try {
-    const { locationPageUrl, ...requestParams } = params;
+    const { locationPageUrl, requestId, ...requestParams } = params;
     const requestRes = await customFetch2(requestParams);
     if (typeof requestRes === 'object' && requestRes !== null) {
       chrome.tabs.sendMessage(devconsoleTabId, {
@@ -68,6 +68,7 @@ export const devconsoleMsgListener = async (
         method,
         type,
         tabId,
+        requestId,
       } = details;
       if (
         tabId === checkDataSourcePageTabId &&
@@ -96,16 +97,18 @@ export const devconsoleMsgListener = async (
           console.log('onBeforeSendHeadersFn-details', details);
         }
 
-        const dataSourceRequestsObj = await storeRequestsMap(formatUrlKey, {
+        const dataSourceRequestsObj = await storeRequestsMap(requestId, {
           header: formatHeader,
           headers: formatHeader,
           method,
           locationPageUrl,
+          url: currRequestUrl,
+          requestId,
         });
 
         // console.log('444-listen', formatUrlKey);
 
-        extraRequestFn({ ...dataSourceRequestsObj, url: currRequestUrl });
+        extraRequestFn({ ...dataSourceRequestsObj });
       }
     };
     onBeforeRequestFn = async (subDetails) => {
@@ -115,8 +118,9 @@ export const devconsoleMsgListener = async (
         type,
         tabId,
         method,
+        requestId,
       } = subDetails;
-      await removeRequestsMap(currRequestUrl);
+      await removeRequestsMap(requestId);
       if (
         tabId === checkDataSourcePageTabId &&
         ['xmlhttprequest', 'fetch'].includes(type) &&
@@ -131,29 +135,29 @@ export const devconsoleMsgListener = async (
             // console.log(
             //   `444-url:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
             // );
-            await storeRequestsMap(formatUrlKey, {
+            await storeRequestsMap(requestId, {
               body: JSON.parse(bodyText),
             });
           }
         }
         if (requestBody && requestBody.formData) {
-          await storeRequestsMap(formatUrlKey, {
+          await storeRequestsMap(requestId, {
             body: requestBody.formData,
             isFormData: true,
           });
         }
       }
     };
-   chrome.webRequest.onBeforeSendHeaders.addListener(
-     onBeforeSendHeadersFn,
-     { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
-     ['requestHeaders', 'extraHeaders']
-   );
-   chrome.webRequest.onBeforeRequest.addListener(
-     onBeforeRequestFn,
-     { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
-     ['requestBody']
-   );
+    chrome.webRequest.onBeforeSendHeaders.addListener(
+      onBeforeSendHeadersFn,
+      { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+      ['requestHeaders', 'extraHeaders']
+    );
+    chrome.webRequest.onBeforeRequest.addListener(
+      onBeforeRequestFn,
+      { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+      ['requestBody']
+    );
 
     const tabCreatedByPado = await chrome.tabs.create({
       url: params.expectedUrl,
