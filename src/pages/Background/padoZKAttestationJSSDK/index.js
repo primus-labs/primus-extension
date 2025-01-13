@@ -226,7 +226,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 resolver: { type, expression },
                 valueType,
                 fieldType,
-                feilds,
+                feilds: [{ key}],
               } = currS;
               const opMap = {
                 string: 'REVEAL_STRING',
@@ -239,15 +239,16 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 // reveal_id: feilds[0].key, // required if type is REVEAL_STRING
                 // type: fieldType, // "FIELD_REVEAL" FIELD_VALUE  FIELD_RANGE
               };
+              
               const subItemCondition = params.attRequest?.attConditions?.[0]?.find(
                 (i) => {
-                  return i.jsonPath === expression;
+                  return i.feild === key;
                 }
               );
               const handleREVEALFn = () => {
                 subconditionItem.op = 'REVEAL_STRING';
                 subconditionItem.type = 'FIELD_REVEAL';
-                subconditionItem.reveal_id = expression.replace(/\./g, '-');
+                subconditionItem.reveal_id = key;
               };
               if (subItemCondition) {
                 const { op, value } = subItemCondition;
