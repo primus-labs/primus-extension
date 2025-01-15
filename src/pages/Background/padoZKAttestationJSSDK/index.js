@@ -242,7 +242,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               
               const subItemCondition = params.attRequest?.attConditions?.[0]?.find(
                 (i) => {
-                  return i.feild === key;
+                  return i.field === key;
                 }
               );
               const handleREVEALFn = () => {

@@ -137,7 +137,8 @@ button.PButton {
     }
   }
 }
-.dark {
+.dark ,
+.black{
   button.PButton {
     &.primary {
       background: #fff;
@@ -148,6 +149,7 @@ button.PButton {
     }
     &.secondary {
       border: 1px solid #fff !important;
+      color: #fff !important;
       &.disabled {
         color: var(--text-button-disabled);
         border: 1px solid var(--button-tokens-button-disabled);
