@@ -69,20 +69,20 @@ const Cards: React.FC<PDropdownProps> = memo(
 
     const handleDetail = useCallback(
       (i) => {
-        if (sourceMap2[i.id]?.expired === '1') {
-          if (activeConnectDataSource.loading === 1) {
-            return;
-          } else {
-            dispatch(
-              setActiveConnectDataSource({
-                dataSourceId: i.id,
-                loading: 0,
-              })
-            );
-          }
-        } else {
+        // if (sourceMap2[i.id]?.expired === '1') {
+        //   if (activeConnectDataSource.loading === 1) {
+        //     return;
+        //   } else {
+        //     dispatch(
+        //       setActiveConnectDataSource({
+        //         dataSourceId: i.id,
+        //         loading: 0,
+        //       })
+        //     );
+        //   }
+        // } else {
           navigate(`/datas/data?dataSourceId=${i.id}`);
-        }
+        // }
       },
       [navigate, activeConnectDataSource]
     );
@@ -171,7 +171,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                 </div>
                 <PButton
                   className="connectBtn"
-                  text="Connect"
+                  text="Detail"
                   type="text"
                   loading={
                     activeConnectDataSource.dataSourceId === i.id &&
