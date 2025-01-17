@@ -130,7 +130,6 @@ const Cards: React.FC<PDropdownProps> = memo(
     const dataSourceName = searchParams.get('dataSourceId');
     const theme = useSelector((state: UserState) => state.theme);
     const supportList = useMemo(() => {
-      debugger;
       if (dataSourceName === 'web3 wallet') {
         return [attestationTypeMap[101]];
       }
@@ -155,7 +154,6 @@ const Cards: React.FC<PDropdownProps> = memo(
         return [attestationTypeMap[4], attestationTypeMap[15]];
       }
       if (dataSourceName === 'coinbase') return [attestationTypeMap[2]];
-      debugger;
       if (dataSourceName === 'bitget') return [attestationTypeMap[22]];
       if (dataSourceName === 'bybit') return [attestationTypeMap[23]];
       // if (dataSourceName === 'zan') return [attestationTypeMap[5]];

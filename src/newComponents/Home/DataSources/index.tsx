@@ -12,24 +12,9 @@ import { useSelector } from 'react-redux';
 import useAllSources from '@/hooks/useAllSources';
 import useBreakPoint from '@/hooks/useBreakPoint';
 import useWinWidth from '@/hooks/useWinWidth';
-import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import { UserState } from '@/types/store';
 
 const Overview = memo(() => {
-  const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
-  const { connected } = useCheckIsConnectedWallet(checkIsConnectFlag);
-  const connectWalletDialogVisible = useSelector(
-    (state: UserState) => state.connectWalletDialogVisible
-  );
-  useEffect(() => {
-    if (connectWalletDialogVisible === 0) {
-      setCheckIsConnectFlag(false);
-    }
-  }, [connectWalletDialogVisible]);
-  useEffect(() => {
-    if (connected) {
-    }
-  }, [connected]);
   const breakPoint = useBreakPoint();
   const size = useWinWidth();
   const { sourceMap, sourceMap2 } = useAllSources();
@@ -59,31 +44,24 @@ const Overview = memo(() => {
     },
     [sourceMap, sourceMap2]
   );
-  const handleClick = useCallback(
-    (i) => {
-      // setActiveConnectDataSourceId(i);
-      // if (checkIsConnectedDataSourceFn(i)) {
-      // navigate(`/datas/data?dataSourceId=${i}`);
-      // } else {
-      //   if (activeConnectDataSource.loading === 1) {
-      //     return;
-      //   } else {
-      //     dispatch(
-      //       setActiveConnectDataSource({
-      //         dataSourceId: i,
-      //         loading: 0,
-      //       })
-      //     );
-      //   }
-      // }
-      if (connected) {
-        navigate(`/datas/data?dataSourceId=${i}`);
-      } else {
-        setCheckIsConnectFlag(true);
-      }
-    },
-    [connected]
-  );
+  const handleClick = useCallback((i) => {
+    // setActiveConnectDataSourceId(i);
+    // if (checkIsConnectedDataSourceFn(i)) {
+    // navigate(`/datas/data?dataSourceId=${i}`);
+    // } else {
+    //   if (activeConnectDataSource.loading === 1) {
+    //     return;
+    //   } else {
+    //     dispatch(
+    //       setActiveConnectDataSource({
+    //         dataSourceId: i,
+    //         loading: 0,
+    //       })
+    //     );
+    //   }
+    // }
+    navigate(`/datas/data?dataSourceId=${i}`);
+  }, []);
   // const handleClick = useCallback(
   //   (i) => {
   //     // setActiveConnectDataSourceId(i);
