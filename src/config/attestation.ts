@@ -72,13 +72,13 @@ export const ASSETSVOLVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
   //   value: '0',
   //   label: '> $0',
   // }, // TEST-spot30dVol
+  '10': {
+    value: '10',
+    label: '> $10',
+  },
   '100': {
     value: '100',
     label: '> $100',
-  },
-  '300': {
-    value: '300',
-    label: '> $300',
   },
   '500': {
     value: '500',

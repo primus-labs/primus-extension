@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setActiveConnectDataSource } from '@/store/actions';
 
@@ -12,9 +12,24 @@ import { useSelector } from 'react-redux';
 import useAllSources from '@/hooks/useAllSources';
 import useBreakPoint from '@/hooks/useBreakPoint';
 import useWinWidth from '@/hooks/useWinWidth';
+import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import { UserState } from '@/types/store';
 
 const Overview = memo(() => {
+  const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
+  const { connected } = useCheckIsConnectedWallet(checkIsConnectFlag);
+  const connectWalletDialogVisible = useSelector(
+    (state: UserState) => state.connectWalletDialogVisible
+  );
+  useEffect(() => {
+    if (connectWalletDialogVisible === 0) {
+      setCheckIsConnectFlag(false);
+    }
+  }, [connectWalletDialogVisible]);
+  useEffect(() => {
+    if (connected) {
+    }
+  }, [connected]);
   const breakPoint = useBreakPoint();
   const size = useWinWidth();
   const { sourceMap, sourceMap2 } = useAllSources();
@@ -26,12 +41,12 @@ const Overview = memo(() => {
     useState<string>();
   const navigate = useNavigate();
   let dataSourceList = ['web3 wallet', 'x'];
-  if ( size.width >= 1342 ) {
-    dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance', 'okx']
-  } else if ( size.width >= 1128 ) {
-    dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance']
-  } else if ( size.width >= 914 ) {
-    dataSourceList = ['web3 wallet', 'x', 'tiktok']
+  if (size.width >= 1342) {
+    dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance', 'okx'];
+  } else if (size.width >= 1128) {
+    dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance'];
+  } else if (size.width >= 914) {
+    dataSourceList = ['web3 wallet', 'x', 'tiktok'];
   }
   const checkIsConnectedDataSourceFn = useCallback(
     (i) => {
@@ -47,23 +62,48 @@ const Overview = memo(() => {
   const handleClick = useCallback(
     (i) => {
       // setActiveConnectDataSourceId(i);
-      if (checkIsConnectedDataSourceFn(i)) {
+      // if (checkIsConnectedDataSourceFn(i)) {
+      // navigate(`/datas/data?dataSourceId=${i}`);
+      // } else {
+      //   if (activeConnectDataSource.loading === 1) {
+      //     return;
+      //   } else {
+      //     dispatch(
+      //       setActiveConnectDataSource({
+      //         dataSourceId: i,
+      //         loading: 0,
+      //       })
+      //     );
+      //   }
+      // }
+      if (connected) {
         navigate(`/datas/data?dataSourceId=${i}`);
       } else {
-        if (activeConnectDataSource.loading === 1) {
-          return;
-        } else {
-          dispatch(
-            setActiveConnectDataSource({
-              dataSourceId: i,
-              loading: 0,
-            })
-          );
-        }
+        setCheckIsConnectFlag(true);
       }
     },
-    [dispatch, sourceMap, sourceMap2, navigate, activeConnectDataSource]
+    [connected]
   );
+  // const handleClick = useCallback(
+  //   (i) => {
+  //     // setActiveConnectDataSourceId(i);
+  //     // if (checkIsConnectedDataSourceFn(i)) {
+  //     // navigate(`/datas/data?dataSourceId=${i}`);
+  //     // } else {
+  //     //   if (activeConnectDataSource.loading === 1) {
+  //     //     return;
+  //     //   } else {
+  //     //     dispatch(
+  //     //       setActiveConnectDataSource({
+  //     //         dataSourceId: i,
+  //     //         loading: 0,
+  //     //       })
+  //     //     );
+  //     //   }
+  //     // }
+  //   },
+  //   [dispatch, sourceMap, sourceMap2, navigate, activeConnectDataSource]
+  // );
   const handleClickCard = useCallback(
     (i) => {
       if (checkIsConnectedDataSourceFn(i)) {
@@ -78,7 +118,7 @@ const Overview = memo(() => {
   return (
     <div className="homeDataSources">
       <div className="title">
-        <span>Data Sources</span>
+        <span>Verify Your Data</span>
         <PButton
           className="moreBtn"
           text="View More"
@@ -113,7 +153,7 @@ const Overview = memo(() => {
               </div>
               <PButton
                 className="connectBtn"
-                text="Connect"
+                text="Verify"
                 type="text"
                 loading={
                   activeConnectDataSource.dataSourceId === i &&

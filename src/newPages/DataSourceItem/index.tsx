@@ -209,21 +209,23 @@ const DataSourceItem = memo(() => {
               />
             )}
           </div>
-          {hasConnected ? (
-            <div className="hasContent">
+
+          <div className="hasContent">
+            {hasConnected && (
               <div className="connectedInfo sectionInfo">
                 <h2 className="sectionTitle">Connected data</h2>
                 <ConnectedAccountsCards />
               </div>
-              {SUPPORTATTESTDATASOURCES.includes(dataSourceName) && (
-                <div className="attestationTypes sectionInfo">
-                  <h2 className="sectionTitle">Create your attestation</h2>
-                  <SupportedAttestationCards onClick={handleAttest} />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="hasNoContent">
+            )}
+            {SUPPORTATTESTDATASOURCES.includes(dataSourceName) && (
+              <div className="attestationTypes sectionInfo">
+                <h2 className="sectionTitle">Create your attestation</h2>
+                <SupportedAttestationCards onClick={handleAttest} />
+              </div>
+            )}
+          </div>
+
+          {/* <div className="hasNoContent">
               <img src={empty} alt="" />
               <div className="introTxt">
                 <div className="title">No data connected</div>
@@ -244,8 +246,8 @@ const DataSourceItem = memo(() => {
                   handleConnect(1);
                 }}
               />
-            </div>
-          )}
+            </div> */}
+          
         </div>
       </div>
       {visibleConnectByWeb && (

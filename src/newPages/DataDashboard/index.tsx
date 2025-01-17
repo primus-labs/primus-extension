@@ -6,6 +6,7 @@ import DataOverview from '@/newComponents/DataDashboard/DataOverview';
 import AssetsDetails from '@/newComponents/DataDashboard/AssetsDetails';
 import SocialDetails from '@/newComponents/DataDashboard/SocialDetails';
 import ExpiredTips from '@/newComponents/DataDashboard/ExpiredTips';
+import OriginTip from '@/newComponents/DataDashboard/OriginTip';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 import useSocialStatistic from '@/hooks/useSocialStatistic';
 
@@ -27,6 +28,7 @@ const DataDashboard: React.FC = memo(({}) => {
           <>
             <ExpiredTips />
             <DataOverview />
+            <OriginTip />
             {hasConnectedAssetsDataSources && <AssetsDetails />}
             {hasConnectedSocialDataSources && <SocialDetails />}
           </>
