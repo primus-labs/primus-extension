@@ -107,6 +107,22 @@ const attestationTypeMap: any = {
     id: '101',
     webTemplateId: '101',
   },
+  22: {
+    attestationType: 'Assets Verification',
+    verificationContent: 'Spot 30-Day Trade Vol',
+    desc: 'Spot 30-day trade vol',
+    type: 'Web Data',
+    id: '22',
+    webTemplateId: '22',
+  },
+  23: {
+    attestationType: 'Assets Verification',
+    verificationContent: 'Spot 30-Day Trade Vol',
+    desc: 'Spot 30-day trade vol',
+    type: 'Web Data',
+    id: '23',
+    webTemplateId: '23',
+  },
 };
 const Cards: React.FC<PDropdownProps> = memo(
   ({ onClick = (item: NavItem) => {} }) => {
@@ -138,6 +154,8 @@ const Cards: React.FC<PDropdownProps> = memo(
         return [attestationTypeMap[4], attestationTypeMap[15]];
       }
       if (dataSourceName === 'coinbase') return [attestationTypeMap[2]];
+      if (dataSourceName === 'bitget') return [attestationTypeMap[22]];
+      if (dataSourceName === 'bybit') return [attestationTypeMap[23]];
       // if (dataSourceName === 'zan') return [attestationTypeMap[5]];
       return [];
     }, []);

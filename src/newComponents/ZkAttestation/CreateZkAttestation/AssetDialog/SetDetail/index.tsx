@@ -101,6 +101,12 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           (i) => ASSETSVERIFICATIONCONTENTTYPEEMAP[i]
         );
         return list;
+      }else if (['bitget', 'bybit'].includes(dataSourceId)) {
+        supportedContentIdArr = ['Spot 30-Day Trade Vol'];
+        let list = supportedContentIdArr.map(
+          (i) => ASSETSVERIFICATIONCONTENTTYPEEMAP[i]
+        );
+        return list;
       } else {
         return ASSETSVERIFICATIONCONTENTTYPELIST;
       }

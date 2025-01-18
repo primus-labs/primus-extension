@@ -139,6 +139,7 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose, onSubmit }) => {
       handleSubmitConnectWallet({ id: 'metamask' });
     }
   }, [connectWalletDialogVisible]);
+
   return (
     <div
       className={
