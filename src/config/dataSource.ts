@@ -17,6 +17,8 @@ import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAsset
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
 import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.png';
 import iconDataSourceChatgpt from '@/assets/img/iconDataSourceChatgpt.svg';
+import iconDataSourceXiaohongshu from '@/assets/img/iconDataSourceXiaohongshu.svg';
+import iconDataSourceInstagram from '@/assets/img/iconDataSourceInstagram.svg';
 
 import Binance from '@/services/webdata/webexchange/webbinance';
 
@@ -37,6 +39,7 @@ import Webhuobi from '@/services/webdata/webexchange/webhuobi';
 import WebHuoBi from '@/services/webdata/webexchange/webhuobi';
 import WebMexc from '@/services/webdata/webexchange/webmexc';
 import WebTwitter from '@/services/webdata/websocial/webtwitter';
+import WebXiaohongshu from '@/services/webdata/websocial/webxiaohongshu.js';
 
 export type DataSourceItemType = ExchangeMeta & {
   provider?: any;
@@ -87,11 +90,9 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceTikTok,
     desc: 'Support fetching account name & status data for management and attestation creation.',
-    unConnectTip:
-      'You can fetch account name & status data from your TikTok account to manage your data or create attestations.',
+    unConnectTip: 'You can fetch account name & status data from your TikTok account to manage your data or create attestations.',
     constructorF: WebTikTok,
-
-    connectType: 'Web',
+    connectType: 'Web'
   },
   binance: {
     id: 'binance',
@@ -265,11 +266,10 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceZan,
     desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
     unConnectTip:
-      'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
+      'You can fetch basic identity and KYC verification status data from ZANs service to manage your data or create attestations.',
     disabled: true,
-
     connectType: 'API',
-    hidden: true,
+    hidden: true
   },
 
   /*youtube: {
@@ -286,7 +286,50 @@ export const DATASOURCEMAP: DataSourceMapType = {
     desc: '',
     unConnectTip: '',
     connectType: 'Web',
-    hidden: true,
+    hidden: true
+  },
+  xiaohongshu: {
+    id: 'xiaohongshu',
+    name: 'Xiaohongshu',
+    type: 'Social',
+    icon: iconDataSourceXiaohongshu,
+    desc: 'Support fetching account data for management and attestation creation.',
+    unConnectTip: 'You can fetch account data from your Xiaohongshu account to manage your data or create attestations.',
+    constructorF: WebXiaohongshu,
+    connectType: 'Web',
+    datasourceTemplate: {
+      requests: [
+        {
+          name: 'first',
+          url: 'https://edith.xiaohongshu.com/api/sns/web/v2/user/me',
+          method: 'GET',
+          headers: ['cookie'],
+          cookies: ['web_session']
+        }
+      ],
+      responses: [
+        {
+          conditions: {
+            status: 200
+          },
+          exchangeInfo: {
+            type: 'Social',
+            platform: 'xiaohongshu',
+            proofType: 'Account Ownership'
+          }
+        }
+      ]
+    }
+  },
+  instagram: {
+    id: 'instagram',
+    name: 'Instagram',
+    type: 'Social',
+    icon: iconDataSourceInstagram,
+    desc: 'Support fetching account data for management and attestation creation.',
+    unConnectTip: 'You can fetch account data from your Instagram account to manage your data or create attestations.',
+    connectType: 'Web',
+    hidden: true
   },
 };
 export const DATASOURCEMAPVALUES: DataSourceItemType[] =
@@ -315,5 +358,6 @@ export const SUPPORTATTESTDATASOURCES = [
   'google',
   'coinbase',
   'bitget',
-  'bybit'
+  'bybit',
+  'xiaohongshu'
 ];

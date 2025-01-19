@@ -14,6 +14,8 @@ import Setting from '@/newPages/Setting';
 import ComingSoon from '@/newPages/ComingSoon';
 import Home from '@/newPages/Home';
 import DataDashboard from '@/newPages/DataDashboard';
+import IdentityBridge from '@/newPages/IdentityBridge';
+
 const router = [
   {
     path: '/',
@@ -21,7 +23,8 @@ const router = [
     children: [
       {
         index: true,
-        element: <Guide />,
+        // element: <Guide />,
+        element: <IdentityBridge />,
       },
     ],
   },

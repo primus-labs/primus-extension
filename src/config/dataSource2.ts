@@ -17,6 +17,8 @@ import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAsset
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
 import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.png';
 import iconDataSourceChatgpt from '@/assets/img/iconDataSourceChatgpt.svg';
+import iconDataSourceXiaohongshu from '@/assets/img/iconDataSourceXiaohongshu.svg';
+import WebXiaohongshu from '@/services/webdata/websocial/webxiaohongshu.js';
 
 // import Binance from '@/services/webdata/webexchange/webbinance';
 
@@ -249,7 +251,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     icon: iconDataSourceZan,
     desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
     unConnectTip:
-      'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
+      'You can fetch basic identity and KYC verification status data from ZANs service to manage your data or create attestations.',
     disabled: true,
 
     connectType: 'API',
@@ -265,6 +267,46 @@ export const DATASOURCEMAP: DataSourceMapType = {
     unConnectTip: '',
     connectType: 'Web',
     hidden: true,
+  },
+
+  xiaohongshu: {
+    id: 'xiaohongshu',
+    name: 'Xiaohongshu',
+    type: 'Social',
+    platform: 'xiaohongshu',
+    icon: iconDataSourceXiaohongshu,
+    desc: 'Support fetching account data for management and attestation creation.',
+    unConnectTip: 'You can fetch account data from your Xiaohongshu account to manage your data or create attestations.',
+    constructorF: WebXiaohongshu,
+    connectType: 'Web',
+    exchangeInfo: {
+      type: 'Social',
+      platform: 'xiaohongshu',
+      proofType: 'Account Ownership'
+    },
+    datasourceTemplate: {
+      requests: [
+        {
+          name: 'first',
+          url: 'https://edith.xiaohongshu.com/api/sns/web/v2/user/me',
+          method: 'GET',
+          headers: ['cookie'],
+          cookies: ['web_session']
+        }
+      ],
+      responses: [
+        {
+          conditions: {
+            status: 200
+          },
+          exchangeInfo: {
+            type: 'Social',
+            platform: 'xiaohongshu',
+            proofType: 'Account Ownership'
+          }
+        }
+      ]
+    }
   },
 
   /*youtube: {
