@@ -20,6 +20,23 @@ import WebXiaohongshu from '@/services/webdata/websocial/webxiaohongshu';
 import iconDataSourceInstagram from '@/assets/img/iconDataSourceInstagram.svg';
 import './index.scss';
 
+interface TikTokFollower {
+  userId: string;
+  uniqueId: string;
+  nickname: string;
+  avatar: string;
+  followerCount: number;
+  followingCount: number;
+  signature: string;
+}
+
+interface TikTokFollowersData {
+  followers: TikTokFollower[];
+  hasMore: boolean;
+  total: number;
+  cursor: number;
+}
+
 const IdentityBridge = () => {
   const { addMsg, deleteMsg } = useMsgs();
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
@@ -32,6 +49,10 @@ const IdentityBridge = () => {
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort);
   const theme = useSelector((state: UserState) => state.theme);
+  const [followers, setFollowers] = useState<TikTokFollower[]>([]);
+  const [hasMoreFollowers, setHasMoreFollowers] = useState(false);
+  const [followersCursor, setFollowersCursor] = useState(0);
+  const [totalFollowers, setTotalFollowers] = useState(0);
 
   const {
     metaInfo: activeDataSouceMetaInfo,
@@ -60,31 +81,52 @@ const IdentityBridge = () => {
   useEffect(() => {
     // Only create a new port if we don't have one
     if (!portRef.current) {
-      const port = chrome.runtime.connect({ name: `fullscreen${new Date()}` });
+      console.log('Creating new port connection');
+      const port = chrome.runtime.connect({ name: `identityBridge-${Date.now()}` });
       portRef.current = port;
       isActiveRef.current = true;
 
       port.onMessage.addListener((message: any) => {
         console.log('Port message received:', message);
         
-        // Handle both TikTok and Xiaohongshu responses
-        if ((message.resType === 'set-tiktok' || message.resType === 'set-xiaohongshu') && message.res === true) {
-          console.log(`${message.resType} success message received`);
-          
-          if (isActiveRef.current) {
-            // Reset loading state
-            dispatch(setActiveConnectDataSource({ 
-              loading: 0,
-              dataSourceId: message.resType === 'set-tiktok' ? 'tiktok' : 'xiaohongshu'
-            }));
-            
-            // Update social sources
-            dispatch(setSocialSourcesAsync());
-            
+        if (message.type === 'tiktok_followers_data') {
+          console.log('Processing followers data:', message.data);
+          const data = message.data;
+          setFollowers(prevFollowers => {
+            const existingIds = new Set(prevFollowers.map(f => f.userId));
+            const newFollowers = data.followers.filter(f => !existingIds.has(f.userId));
+            return [...prevFollowers, ...newFollowers];
+          });
+          setHasMoreFollowers(data.hasMore);
+          setFollowersCursor(data.cursor);
+          setTotalFollowers(data.total);
+        }
+        
+        if (message.resType === 'set-tiktok') {
+          if (message.res === true) {
+            console.log('TikTok connection successful');
+            if (isActiveRef.current) {
+              dispatch(setActiveConnectDataSource({ 
+                loading: 0,
+                dataSourceId: 'tiktok'
+              }));
+              
+              dispatch(setSocialSourcesAsync());
+              
+              const msgId = addMsg({
+                type: 'success',
+                title: 'TikTok Connected',
+                desc: 'Your TikTok account has been successfully connected.',
+                showTime: 5000,
+              });
+              setTimeout(() => deleteMsg(msgId), 5000);
+            }
+          } else {
+            console.error('TikTok connection failed:', message.error);
             const msgId = addMsg({
-              type: 'success',
-              title: `${message.resType === 'set-tiktok' ? 'TikTok' : 'Xiaohongshu'} Connected`,
-              desc: `Your ${message.resType === 'set-tiktok' ? 'TikTok' : 'Xiaohongshu'} account has been successfully connected.`,
+              type: 'error',
+              title: 'Connection Failed',
+              desc: message.error || 'Failed to connect TikTok account. Please try again.',
               showTime: 5000,
             });
             setTimeout(() => deleteMsg(msgId), 5000);
@@ -99,58 +141,16 @@ const IdentityBridge = () => {
       });
     }
 
-    // Handle runtime messages
-    const handleRuntimeMessage = (message: any) => {
-      console.log('Runtime message received:', message);
-      
-      if (message.type === 'dataSourceWeb') {
-        if (
-          message.name === 'webRequestIsReady' && 
-          message.params.isReady && 
-          message.params.dataSource === 'tiktok'
-        ) {
-          console.log('Web request ready, sending start message');
-          // Send start message when ready
-          chrome.runtime.sendMessage({
-            type: 'dataSourceWeb',
-            name: 'start',
-            operation: 'connect'
-          });
-        } else if (message.name === 'error' || message.name === 'stop') {
-          console.log('Error or stop message received');
-          if (isActiveRef.current) {
-            dispatch(setActiveConnectDataSource({ 
-              loading: 0,
-              dataSourceId: 'tiktok'
-            }));
-            
-            if (message.name === 'error') {
-              const msgId = addMsg({
-                type: 'error',
-                title: 'Connection Failed',
-                desc: message.params?.error || 'Failed to connect TikTok account. Please try again.',
-                showTime: 5000,
-              });
-              setTimeout(() => deleteMsg(msgId), 5000);
-            }
-          }
-        }
-      }
-    };
-
-    chrome.runtime.onMessage.addListener(handleRuntimeMessage);
-
-    // Only clean up when component is actually unmounting
+    // Clean up function
     return () => {
-      console.log('Component unmounting, cleaning up listeners');
+      console.log('Cleaning up port connection');
       isActiveRef.current = false;
-      chrome.runtime.onMessage.removeListener(handleRuntimeMessage);
       if (portRef.current) {
         portRef.current.disconnect();
         portRef.current = null;
       }
     };
-  }, []); // Empty dependency array to prevent recreation
+  }, [dispatch, addMsg, deleteMsg]);
 
   // Update theme initialization
   useEffect(() => {
@@ -404,6 +404,60 @@ const IdentityBridge = () => {
     dispatch(setSocialSourcesAsync());
   }, [deleteXiaohongshuFn, addMsg, deleteMsg, dispatch]);
 
+  // Add listener for follower data
+  useEffect(() => {
+    const handleMessage = (message: any) => {
+      console.log('Received message in IdentityBridge:', message);
+      if (message.type === 'tiktok_followers_data') {
+        console.log('Received followers data:', message.data);
+        const data: TikTokFollowersData = message.data;
+        setFollowers(prevFollowers => {
+          // Deduplicate followers based on userId
+          const existingIds = new Set(prevFollowers.map(f => f.userId));
+          const newFollowers = data.followers.filter(f => !existingIds.has(f.userId));
+          return [...prevFollowers, ...newFollowers];
+        });
+        setHasMoreFollowers(data.hasMore);
+        setFollowersCursor(data.cursor);
+        setTotalFollowers(data.total);
+      }
+    };
+
+    console.log('Setting up message listener in IdentityBridge');
+    chrome.runtime.onMessage.addListener(handleMessage);
+    
+    // Try to get any stored followers data
+    chrome.storage.local.get('tiktok-followers-data', (result) => {
+      if (result['tiktok-followers-data']) {
+        try {
+          const data = JSON.parse(result['tiktok-followers-data']);
+          console.log('Found stored followers data:', data);
+          setFollowers(data.followers);
+          setHasMoreFollowers(data.hasMore);
+          setFollowersCursor(data.cursor);
+          setTotalFollowers(data.total);
+        } catch (error) {
+          console.error('Error parsing stored followers data:', error);
+        }
+      }
+    });
+
+    return () => {
+      console.log('Removing message listener in IdentityBridge');
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
+  }, []);
+
+  // Function to load more followers
+  const loadMoreFollowers = useCallback(() => {
+    if (hasMoreFollowers) {
+      chrome.runtime.sendMessage({
+        type: 'fetch_more_followers',
+        data: { cursor: followersCursor }
+      });
+    }
+  }, [hasMoreFollowers, followersCursor]);
+
   return (
     <div className={`pageContent ${theme}`}>
       <div className="homeDataSources">
@@ -429,7 +483,11 @@ const IdentityBridge = () => {
                   </div>
                   <div className="bottom">
                     <div className="balance">
-                      {hasConnected ? `@${activeDataSouceUserInfo.userName}` : 'Not Connected'}
+                      {hasConnected ? (
+                        <div>@{activeDataSouceUserInfo.userName}</div>
+                      ) : (
+                        'Not Connected'
+                      )}
                     </div>
                   </div>
                 </div>
@@ -448,9 +506,9 @@ const IdentityBridge = () => {
                     <button
                       onClick={handleConnect}
                       className={`PButton secondary connectBtn ${theme}`}
-                      disabled={isLoading}
+                      disabled={activeConnectDataSource.loading === 1 && activeConnectDataSource.dataSourceId === 'tiktok'}
                     >
-                      {isLoading ? (
+                      {activeConnectDataSource.loading === 1 && activeConnectDataSource.dataSourceId === 'tiktok' ? (
                         <div className="loading-spinner"></div>
                       ) : (
                         'Connect TikTok'
@@ -545,18 +603,68 @@ const IdentityBridge = () => {
             </div>
           </li>
         </ul>
-      </div>
 
-      {visibleAssetDialog && (
-        <CreateZkAttestation
-          presets={attestationPresets}
-          type={visibleAssetDialog}
-          onClose={handleCloseAssetDialog}
-          onSubmit={handleSubmitAssetDialog}
-        />
-      )}
+        {hasConnected && followers.length > 0 && (
+          <div className="followers-section">
+            <div className="followers-header">
+              <h3>TikTok Followers ({totalFollowers})</h3>
+            </div>
+            <div className="followers-table-container">
+              <table className="followers-table">
+                <thead>
+                  <tr>
+                    <th>Avatar</th>
+                    <th>Username</th>
+                    <th>Nickname</th>
+                    <th>Followers</th>
+                    <th>Following</th>
+                    <th>Bio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {followers.map(follower => (
+                    <tr key={follower.userId}>
+                      <td>
+                        <img 
+                          src={follower.avatar} 
+                          alt={follower.uniqueId} 
+                          className="follower-avatar"
+                        />
+                      </td>
+                      <td>@{follower.uniqueId}</td>
+                      <td>{follower.nickname}</td>
+                      <td>{follower.followerCount.toLocaleString()}</td>
+                      <td>{follower.followingCount.toLocaleString()}</td>
+                      <td className="bio-cell">{follower.signature}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {hasMoreFollowers && (
+                <div className="load-more-container">
+                  <button 
+                    onClick={loadMoreFollowers}
+                    className={`PButton secondary ${theme}`}
+                  >
+                    Load More
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {visibleAssetDialog && (
+          <CreateZkAttestation
+            presets={attestationPresets}
+            type={visibleAssetDialog}
+            onClose={handleCloseAssetDialog}
+            onSubmit={handleSubmitAssetDialog}
+          />
+        )}
+      </div>
     </div>
   );
 };
 
-export default IdentityBridge; 
+export default IdentityBridge;
