@@ -65,7 +65,7 @@ function FooterEl({ status, setStatus, isReadyFetch = false, resultStatus }) {
         onClick={handleCancel}
       />
       <PButton
-        text={<div class="loading-spinner"></div>}
+        text={<div className="loading-spinner"></div>}
         type="secondary"
         className="confirmBtn"
         disabled
@@ -222,7 +222,7 @@ function PadoCard() {
       //   var fn = (tryFlag) => {
       //     var btnTxt = tryFlag ? 'Try again' : 'OK';
       //     var padoCenterBottomOKNode = createDomElement(
-      //       `<div class="pado-center-bottom"><button class="okBtn">${btnTxt}</button></div>`
+      //       `<div className="pado-center-bottom"><button className="okBtn">${btnTxt}</button></div>`
       //     );
       //     padoCenterBottomOKNode.onclick = () => {
       //       chrome.runtime.sendMessage({
@@ -253,7 +253,7 @@ function PadoCard() {
       //     padoCenterCenterEl.innerHTML =
       //       failReason === 'Not meeting the uniqueness requirement.'
       //         ? str3
-      //         : `<p class="warn-tip">${failReason.title}</p><p>${failReason.desc}</p>`;
+      //         : `<p className="warn-tip">${failReason.title}</p><p>${failReason.desc}</p>`;
       //     fn();
       //   }
       // }

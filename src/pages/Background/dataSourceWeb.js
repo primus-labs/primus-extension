@@ -10,6 +10,7 @@ let isNavigatingToProfile = false;  // Add flag to track navigation state
 let activePort = null;
 let lastRequestTimestamp = 0;
 const DEBOUNCE_INTERVAL = 1000; // 1 second
+let completedDataTypes = new Set();
 
 // Add new function to handle TikTok profile navigation
 async function handleTikTokProfile(tab, username, port) {
@@ -105,6 +106,37 @@ async function handleTikTokProfile(tab, username, port) {
                   console.log('Found followers tab with selector:', selector);
                   tabDiv.click();
                   hasClickedTab = true;
+                  
+                  // After clicking Followers tab, set up a timer to click Following tab
+                  setTimeout(() => {
+                    const followingSelectors = [
+                      '//div[contains(text(), "Following")]',
+                      '//span[contains(text(), "Following")]',
+                      'div[data-e2e="following-tab"]'
+                    ];
+                    
+                    for (const followingSelector of followingSelectors) {
+                      let followingDiv;
+                      if (followingSelector.startsWith('//')) {
+                        followingDiv = document.evaluate(
+                          followingSelector,
+                          document,
+                          null,
+                          XPathResult.FIRST_ORDERED_NODE_TYPE,
+                          null
+                        ).singleNodeValue;
+                      } else {
+                        followingDiv = document.querySelector(followingSelector);
+                      }
+                      
+                      if (followingDiv) {
+                        console.log('Found following tab with selector:', followingSelector);
+                        followingDiv.click();
+                        break;
+                      }
+                    }
+                  }, 2000); // Wait 2 seconds before clicking Following tab
+                  
                   return true;
                 }
               }
@@ -149,183 +181,130 @@ async function handleTikTokProfile(tab, username, port) {
 
 // Helper function to set up network listeners
 function setupFollowerDataListeners(tabId, port) {
-  // Store the port for later use
+  console.log('Setting up follower data listeners with port:', port);
   activePort = port;
   
-  // Listen for the request headers without blocking
-  chrome.webRequest.onSendHeaders.addListener(
-    async function(details) {
-      // Debounce the request
-      const now = Date.now();
-      if (now - lastRequestTimestamp < DEBOUNCE_INTERVAL) {
-        return;
-      }
-      lastRequestTimestamp = now;
+  let followersListener = null;
+  let followingListener = null;
 
-      if (details.url.includes('/api/user/list/') && details.url.includes('scene=67')) {
-        console.log('Found followers list request:', details.url);
-        try {
-          const headers = {};
-          details.requestHeaders.forEach(header => {
-            headers[header.name.toLowerCase()] = header.value;
-          });
-          
-          // Store headers with additional metadata
-          const headerData = {
-            headers,
-            timestamp: now,
-            url: details.url
-          };
-          
-          await chrome.storage.local.set({
+  // Create the listeners
+  followersListener = async function(details) {
+    if (completedDataTypes.has('followers')) {
+      console.log('Followers data already complete, ignoring request');
+      return;
+    }
+    
+    if (details.url.includes('/api/user/list/') && details.url.includes('scene=67')) {
+      console.log('Found followers list request:', details.url);
+      try {
+        const headers = {};
+        details.requestHeaders.forEach(header => {
+          headers[header.name.toLowerCase()] = header.value;
+        });
+        
+        const headerData = {
+          headers,
+          timestamp: Date.now(),
+          url: details.url
+        };
+        
+        await Promise.all([
+          chrome.storage.local.set({
             'tiktok-followers-headers': JSON.stringify(headerData)
-          });
-          
-          console.log('Stored followers request headers:', headerData);
-        } catch (error) {
-          console.error('Error storing followers request headers:', error);
-        }
+          }),
+          chrome.storage.local.set({
+            [`tiktok-followers-headers-${tabId}`]: JSON.stringify(headerData)
+          })
+        ]);
+      } catch (error) {
+        console.error('Error storing followers headers:', error);
       }
-    },
+    }
+  };
+
+  followingListener = async function(details) {
+    if (completedDataTypes.has('following')) {
+      console.log('Following data already complete, ignoring request');
+      return;
+    }
+    
+    if (details.url.includes('/api/user/list/') && details.url.includes('scene=21')) {
+      console.log('Found following list request:', details.url);
+      try {
+        const headers = {};
+        details.requestHeaders.forEach(header => {
+          headers[header.name.toLowerCase()] = header.value;
+        });
+        
+        const headerData = {
+          headers,
+          timestamp: Date.now(),
+          url: details.url
+        };
+        
+        await Promise.all([
+          chrome.storage.local.set({
+            'tiktok-following-headers': JSON.stringify(headerData)
+          }),
+          chrome.storage.local.set({
+            [`tiktok-following-headers-${tabId}`]: JSON.stringify(headerData)
+          })
+        ]);
+      } catch (error) {
+        console.error('Error storing following headers:', error);
+      }
+    }
+  };
+
+  // Add the listeners
+  chrome.webRequest.onSendHeaders.addListener(
+    followersListener,
     { urls: ['https://www.tiktok.com/*'] },
     ['requestHeaders']
   );
 
-  // Add response listener to capture the actual followers data
-  chrome.webRequest.onCompleted.addListener(
-    async function(details) {
-      // Debounce the response handling
-      const now = Date.now();
-      if (now - lastRequestTimestamp < DEBOUNCE_INTERVAL) {
+  chrome.webRequest.onSendHeaders.addListener(
+    followingListener,
+    { urls: ['https://www.tiktok.com/*'] },
+    ['requestHeaders']
+  );
+
+  // Response listener for both followers and following
+  const responseListener = async function(details) {
+    if (details.url.includes('/api/user/list/')) {
+      const isFollowing = details.url.includes('scene=21');
+      const listType = isFollowing ? 'following' : 'followers';
+      
+      // Skip if we've already completed this type
+      if (completedDataTypes.has(listType)) {
+        console.log(`${listType} data already complete, ignoring response`);
         return;
       }
-      lastRequestTimestamp = now;
 
-      if (details.url.includes('/api/user/list/') && details.url.includes('scene=67')) {
-        console.log('Intercepted followers response:', details.url);
-        try {
-          // Get stored headers
-          const storedData = await chrome.storage.local.get('tiktok-followers-headers');
-          let headers = null;
-          
-          if (storedData['tiktok-followers-headers']) {
-            const headerData = JSON.parse(storedData['tiktok-followers-headers']);
-            headers = headerData.headers;
-            
-            // Check if headers are still valid (within 5 minutes)
-            const isValid = now - headerData.timestamp < 5 * 60 * 1000;
-            if (!isValid) {
-              console.warn('Stored headers are too old, will try to refresh');
-              return;
-            }
-          }
-
-          if (headers) {
-            console.log('Using stored headers for followers request:', headers);
-            
-            // Ensure critical headers are present
-            const criticalHeaders = {
-              'user-agent': headers['user-agent'] || navigator.userAgent,
-              'cookie': headers['cookie'],
-              'referer': headers['referer'] || 'https://www.tiktok.com/',
-              'accept': 'application/json, text/plain, */*',
-              'accept-language': 'en-US,en;q=0.9'
-            };
-
-            const response = await fetch(details.url, { 
-              headers: criticalHeaders,
-              credentials: 'include',
-              mode: 'cors'
-            });
-            
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Raw followers data:', data);
-
-            if (data.userList && Array.isArray(data.userList)) {
-              const followers = data.userList.map(user => ({
-                userId: user.user.id,
-                uniqueId: user.user.uniqueId,
-                nickname: user.user.nickname,
-                avatar: user.user.avatarThumb,
-                followerCount: user.stats.followerCount,
-                followingCount: user.stats.followingCount,
-                signature: user.user.signature
-              }));
-
-              console.log('Processed followers:', followers);
-
-              // Store the followers data
-              const followersData = {
-                followers,
-                hasMore: data.hasMore,
-                total: data.total,
-                cursor: data.minCursor
-              };
-
-              await chrome.storage.local.set({
-                'tiktok-followers-data': JSON.stringify(followersData)
-              });
-
-              // Send via port if available
-              if (activePort) {
-                console.log('Sending followers data via port');
-                try {
-                  activePort.postMessage({
-                    type: 'tiktok_followers_data',
-                    data: followersData
-                  });
-                } catch (error) {
-                  console.error('Error sending message via port:', error);
-                  // If port is dead, clear it
-                  if (error.message.includes('disconnected')) {
-                    activePort = null;
-                  }
-                }
-              } else {
-                console.warn('No active port available to send followers data');
-                // Try to send via runtime message as fallback
-                try {
-                  chrome.runtime.sendMessage({
-                    type: 'tiktok_followers_data',
-                    data: followersData
-                  });
-                } catch (error) {
-                  console.error('Error sending runtime message:', error);
-                }
-              }
-            }
-          } else {
-            console.warn('No stored headers found for followers request');
-          }
-        } catch (error) {
-          console.error('Error processing followers response:', error);
+      try {
+        const storedData = await chrome.storage.local.get([
+          isFollowing ? 'tiktok-following-headers' : 'tiktok-followers-headers',
+          `${isFollowing ? 'tiktok-following-headers' : 'tiktok-followers-headers'}-${tabId}`
+        ]);
+        
+        let headers = null;
+        let headerData = null;
+        
+        const headerKey = isFollowing ? 'tiktok-following-headers' : 'tiktok-followers-headers';
+        if (storedData[`${headerKey}-${tabId}`]) {
+          headerData = JSON.parse(storedData[`${headerKey}-${tabId}`]);
+          headers = headerData.headers;
+        } else if (storedData[headerKey]) {
+          headerData = JSON.parse(storedData[headerKey]);
+          headers = headerData.headers;
         }
-      }
-    },
-    { urls: ['https://www.tiktok.com/*'] }
-  );
-}
 
-// Handle fetching more followers
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'fetch_more_followers') {
-    const { cursor } = message.data;
-    chrome.storage.local.get('tiktok-followers-headers', async (result) => {
-      if (result['tiktok-followers-headers']) {
-        try {
-          const headers = JSON.parse(result['tiktok-followers-headers']);
-          // Construct the URL with the cursor and scene parameter
-          const url = `https://www.tiktok.com/api/user/list/?scene=67&cursor=${cursor}`;
-          
-          const response = await fetch(url, { headers });
+        if (headers) {
+          const response = await fetch(details.url, { headers });
           const data = await response.json();
           
           if (data.userList && Array.isArray(data.userList)) {
-            const followers = data.userList.map(user => ({
+            const users = data.userList.map(user => ({
               userId: user.user.id,
               uniqueId: user.user.uniqueId,
               nickname: user.user.nickname,
@@ -335,11 +314,127 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               signature: user.user.signature
             }));
 
-            // Send new page of follower data
-            chrome.runtime.sendMessage({
-              type: 'tiktok_followers_data',
+            const messageData = {
+              type: isFollowing ? 'tiktok_following_data' : 'tiktok_followers_data',
               data: {
-                followers,
+                users,
+                hasMore: data.hasMore,
+                total: data.total,
+                cursor: data.minCursor,
+                timestamp: Date.now()
+              },
+              url: details.url
+            };
+
+            // If hasMore is false, mark this type as complete
+            if (!data.hasMore) {
+              console.log(`${listType} data complete, removing listeners`);
+              completedDataTypes.add(listType);
+              
+              // Remove the specific listener for this type
+              if (isFollowing) {
+                chrome.webRequest.onSendHeaders.removeListener(followingListener);
+              } else {
+                chrome.webRequest.onSendHeaders.removeListener(followersListener);
+              }
+              
+              // If both types are complete, remove response listener
+              if (completedDataTypes.size === 2) {
+                console.log('All data complete, removing response listener');
+                chrome.webRequest.onCompleted.removeListener(responseListener);
+              }
+            }
+
+            // Try multiple ways to send the data
+            let messageSent = false;
+
+            if (activePort) {
+              try {
+                activePort.postMessage(messageData);
+                console.log('Successfully sent via port');
+                messageSent = true;
+              } catch (error) {
+                console.error('Error sending via port:', error);
+                activePort = null;
+              }
+            }
+
+            if (!messageSent) {
+              try {
+                await chrome.runtime.sendMessage(messageData);
+                console.log('Successfully sent via runtime message');
+                messageSent = true;
+              } catch (error) {
+                console.error('Error sending runtime message:', error);
+              }
+            }
+
+            if (!messageSent) {
+              try {
+                await chrome.tabs.sendMessage(tabId, messageData);
+                console.log('Successfully sent via tab message');
+              } catch (error) {
+                console.error('Error sending tab message:', error);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error processing response:', error);
+      }
+    }
+  };
+
+  chrome.webRequest.onCompleted.addListener(
+    responseListener,
+    { urls: ['https://www.tiktok.com/*'] }
+  );
+
+  // Return cleanup function
+  return () => {
+    console.log('Cleaning up follower data listeners');
+    chrome.webRequest.onSendHeaders.removeListener(followersListener);
+    chrome.webRequest.onSendHeaders.removeListener(followingListener);
+    chrome.webRequest.onCompleted.removeListener(responseListener);
+    completedDataTypes.clear();
+    activePort = null;
+  };
+}
+
+// Handle fetching more followers and following
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'fetch_more_followers' || message.type === 'fetch_more_following') {
+    const { cursor } = message.data;
+    const isFollowing = message.type === 'fetch_more_following';
+    const headerKey = isFollowing ? 'tiktok-following-headers' : 'tiktok-followers-headers';
+    const scene = isFollowing ? '21' : '67';
+    
+    chrome.storage.local.get(headerKey, async (result) => {
+      if (result[headerKey]) {
+        try {
+          const headers = JSON.parse(result[headerKey]);
+          // Construct the URL with the cursor and scene parameter
+          const url = `https://www.tiktok.com/api/user/list/?scene=${scene}&cursor=${cursor}`;
+          
+          const response = await fetch(url, { headers });
+          const data = await response.json();
+          
+          if (data.userList && Array.isArray(data.userList)) {
+            const users = data.userList.map(user => ({
+              userId: user.user.id,
+              uniqueId: user.user.uniqueId,
+              nickname: user.user.nickname,
+              avatar: user.user.avatarThumb,
+              followerCount: user.stats.followerCount,
+              followingCount: user.stats.followingCount,
+              signature: user.user.signature
+            }));
+
+            // Send new page of data
+            chrome.runtime.sendMessage({
+              type: isFollowing ? 'tiktok_following_data' : 'tiktok_followers_data',
+              data: {
+                users,
                 hasMore: data.hasMore,
                 total: data.total,
                 cursor: data.minCursor
@@ -347,7 +442,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
           }
         } catch (error) {
-          console.error('Error fetching more followers:', error);
+          console.error(`Error fetching more ${isFollowing ? 'following' : 'followers'}:`, error);
         }
       }
     });
@@ -407,6 +502,7 @@ export const dataSourceWebMsgListener = async (
       const { url: currRequestUrl, requestHeaders } = details;
       let formatUrlKey = currRequestUrl;
       let addQueryStr = '';
+      
       const isTarget = requests.some((r) => {
         if (r.queryParams && r.queryParams[0]) {
           const urlStrArr = currRequestUrl.split('?');
@@ -426,13 +522,20 @@ export const dataSourceWebMsgListener = async (
       });
 
       if (isTarget) {
-        let formatHeader = requestHeaders.reduce((prev, curr) => {
-          const { name, value } = curr;
-          prev[name] = value;
-          return prev;
-        }, {});
+        // Create a case-sensitive map of all headers
+        const formatHeader = {};
+        const headerMap = new Map();
+        
+        // Store headers with their original case
+        requestHeaders.forEach(header => {
+          formatHeader[header.name] = header.value;
+          headerMap.set(header.name.toLowerCase(), {
+            originalName: header.name,
+            value: header.value
+          });
+        });
 
-        // Store the request data with the base URL as key
+        // Store the request data with all necessary information
         const baseUrl = formatUrlKey.split('?')[0];
         const storageObj = await chrome.storage.local.get([baseUrl]);
         const currRequestUrlStorage = storageObj[baseUrl];
@@ -443,6 +546,13 @@ export const dataSourceWebMsgListener = async (
         const newCurrRequestObj = {
           ...currRequestObj,
           headers: formatHeader,
+          headerMap: Object.fromEntries(headerMap),
+          originalHeaders: requestHeaders.map(h => ({ 
+            name: h.name, 
+            value: h.value,
+            lowercaseName: h.name.toLowerCase()
+          })),
+          timestamp: Date.now()
         };
 
         if (addQueryStr) {
@@ -451,7 +561,7 @@ export const dataSourceWebMsgListener = async (
 
         console.log('Storing request data for:', baseUrl, newCurrRequestObj);
         await chrome.storage.local.set({
-          [baseUrl]: JSON.stringify(newCurrRequestObj),
+          [baseUrl]: JSON.stringify(newCurrRequestObj)
         });
 
         checkWebRequestIsReadyFn();
@@ -570,62 +680,78 @@ export const dataSourceWebMsgListener = async (
     const formatRequestsFn = async () => {
       const formatRequests = [];
       for (const r of JSON.parse(JSON.stringify(requests))) {
-        const { headers, cookies, body, url } = r;
+        const { headers: requestedHeaders, cookies, body, url } = r;
         const formatUrlKey = url;
         const requestInfoObj = await chrome.storage.local.get([formatUrlKey]);
         const {
-          headers: curRequestHeader,
+          headers: storedHeaders,
+          headerMap,
+          originalHeaders,
           body: curRequestBody,
           queryString,
         } = (requestInfoObj[url] && JSON.parse(requestInfoObj[url])) || {};
 
-        const cookiesObj = curRequestHeader
-          ? parseCookie(curRequestHeader.Cookie)
-          : {};
-        let formateHeader = {},
-          formateCookie = {},
-          formateBody = {};
-        if (headers && headers.length > 0) {
-          headers.forEach((hk) => {
-            if (curRequestHeader) {
-              const inDataSourceHeaderKey = Object.keys(curRequestHeader).find(
-                (h) => h.toLowerCase() === hk.toLowerCase()
+        // Handle headers with case sensitivity
+        let formattedHeaders = {};
+        if (requestedHeaders && requestedHeaders.length > 0) {
+          requestedHeaders.forEach((headerName) => {
+            const headerLowerCase = headerName.toLowerCase();
+            if (headerMap && headerMap[headerLowerCase]) {
+              // Use the original header name and value from our stored map
+              formattedHeaders[headerMap[headerLowerCase].originalName] = headerMap[headerLowerCase].value;
+            } else if (storedHeaders) {
+              // Fallback to case-insensitive search in stored headers
+              const foundHeader = Object.entries(storedHeaders).find(
+                ([key]) => key.toLowerCase() === headerLowerCase
               );
-              formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
+              if (foundHeader) {
+                formattedHeaders[foundHeader[0]] = foundHeader[1];
+              }
             }
           });
-          Object.assign(r, {
-            headers: formateHeader,
-          });
+        } else {
+          // If no specific headers requested, use all stored headers
+          formattedHeaders = storedHeaders || {};
         }
-        if (cookies && cookies.length > 0) {
+
+        // Add headers to the request
+        Object.assign(r, {
+          headers: formattedHeaders,
+          originalHeaders
+        });
+
+        // Handle cookies if specified
+        if (cookies && cookies.length > 0 && storedHeaders?.Cookie) {
+          const cookiesObj = parseCookie(storedHeaders.Cookie);
+          const formateCookie = {};
           cookies.forEach((ck) => {
             formateCookie[ck] = cookiesObj[ck];
           });
-          Object.assign(r, {
-            cookies: formateCookie,
-          });
+          Object.assign(r, { cookies: formateCookie });
         }
-        if (body && body.length > 0) {
-          body.forEach((hk) => {
-            formateBody[hk] = curRequestBody[hk];
+
+        // Handle body if specified
+        if (body && body.length > 0 && curRequestBody) {
+          const formateBody = {};
+          body.forEach((key) => {
+            formateBody[key] = curRequestBody[key];
           });
-          Object.assign(r, {
-            body: formateBody,
-          });
+          Object.assign(r, { body: formateBody });
         }
+
         if (queryString) {
           Object.assign(r, {
             url: r.url + '?' + queryString,
           });
         }
+
         if ('queryParams' in r) {
           delete r.queryParams;
         }
 
         formatRequests.push(r);
       }
-      console.log('222formatRequests', formatRequests);
+      console.log('Formatted requests with headers:', formatRequests);
       return formatRequests;
     };
 
@@ -717,22 +843,46 @@ export const dataSourceWebMsgListener = async (
             throw new Error('No valid request headers found');
           }
 
-          // Store the request data before creating the constructor
+          // Store the complete request data
           const baseUrl = activeInfo.url.split('?')[0];
           const requestData = {
             headers: activeInfo.headers,
             cookies: activeInfo.cookies
           };
+
+          // Only add originalHeaders and headerMap if originalHeaders exists
+          if (activeInfo.originalHeaders && Array.isArray(activeInfo.originalHeaders)) {
+            requestData.originalHeaders = activeInfo.originalHeaders;
+            requestData.headerMap = Object.fromEntries(
+              activeInfo.originalHeaders.map(h => [
+                h.name.toLowerCase(),
+                { originalName: h.name, value: h.value }
+              ])
+            );
+          } else {
+            // Create originalHeaders from regular headers if not present
+            const headers = activeInfo.headers || {};
+            requestData.originalHeaders = Object.entries(headers).map(([name, value]) => ({
+              name,
+              value,
+              lowercaseName: name.toLowerCase()
+            }));
+            requestData.headerMap = Object.fromEntries(
+              requestData.originalHeaders.map(h => [
+                h.lowercaseName,
+                { originalName: h.name, value: h.value }
+              ])
+            );
+          }
           
           await chrome.storage.local.set({
             [baseUrl]: JSON.stringify(requestData)
           });
 
-          const activeHeader = Object.assign({}, activeInfo.headers);
+          // Store auth info with all headers
           const authInfoName = exchangeName + '-auth';
-          
           await chrome.storage.local.set({
-            [authInfoName]: JSON.stringify(activeHeader),
+            [authInfoName]: JSON.stringify(activeInfo.headers),
           });
 
           const ex = new constructorF();
@@ -741,12 +891,10 @@ export const dataSourceWebMsgListener = async (
           // After successful connection, navigate to profile page
           if (exchangeName === 'tiktok' && ex.userName) {
             console.log('Successfully connected TikTok, navigating to profile:', ex.userName);
-            // Reset navigation flag since we're starting a new navigation
             isNavigatingToProfile = false;
             await handleTikTokProfile(tabCreatedByPado, ex.userName, port);
           }
           
-          // Send success message back to content script
           if (port) {
             port.postMessage({
               resType: `set-${exchangeName}`,
@@ -756,7 +904,6 @@ export const dataSourceWebMsgListener = async (
         }
       } catch (error) {
         console.error('Connection error:', error);
-        // Send error message back to content script
         if (port) {
           port.postMessage({
             resType: `set-${exchangeName}`,

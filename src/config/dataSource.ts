@@ -303,7 +303,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
           name: 'first',
           url: 'https://edith.xiaohongshu.com/api/sns/web/v2/user/me',
           method: 'GET',
-          headers: ['cookie'],
+          headers: ['cookie', 'X-s', 'X-t', 'Origin', 'Referer', 'X-S-Common'],
           cookies: ['web_session']
         }
       ],

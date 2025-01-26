@@ -31,10 +31,11 @@ interface TikTokFollower {
 }
 
 interface TikTokFollowersData {
-  followers: TikTokFollower[];
+  users: TikTokFollower[];
   hasMore: boolean;
   total: number;
   cursor: number;
+  timestamp?: number;
 }
 
 const IdentityBridge = () => {
@@ -53,6 +54,10 @@ const IdentityBridge = () => {
   const [hasMoreFollowers, setHasMoreFollowers] = useState(false);
   const [followersCursor, setFollowersCursor] = useState(0);
   const [totalFollowers, setTotalFollowers] = useState(0);
+  const [following, setFollowing] = useState<TikTokFollower[]>([]);
+  const [hasMoreFollowing, setHasMoreFollowing] = useState(false);
+  const [followingCursor, setFollowingCursor] = useState(0);
+  const [totalFollowing, setTotalFollowing] = useState(0);
 
   const {
     metaInfo: activeDataSouceMetaInfo,
@@ -87,19 +92,42 @@ const IdentityBridge = () => {
       isActiveRef.current = true;
 
       port.onMessage.addListener((message: any) => {
-        console.log('Port message received:', message);
+        console.log('Port message received in IdentityBridge:', message);
         
         if (message.type === 'tiktok_followers_data') {
-          console.log('Processing followers data:', message.data);
+          console.log('Processing followers data in IdentityBridge:', message.data);
           const data = message.data;
+          
+          // Update followers with deduplication
           setFollowers(prevFollowers => {
             const existingIds = new Set(prevFollowers.map(f => f.userId));
-            const newFollowers = data.followers.filter(f => !existingIds.has(f.userId));
-            return [...prevFollowers, ...newFollowers];
+            const newFollowers = data.users.filter(f => !existingIds.has(f.userId));
+            const updatedFollowers = [...prevFollowers, ...newFollowers];
+            console.log('Updated followers list:', updatedFollowers);
+            return updatedFollowers;
           });
+          
           setHasMoreFollowers(data.hasMore);
           setFollowersCursor(data.cursor);
           setTotalFollowers(data.total);
+        }
+        
+        if (message.type === 'tiktok_following_data') {
+          console.log('Processing following data in IdentityBridge:', message.data);
+          const data = message.data;
+          
+          // Update following with deduplication
+          setFollowing(prevFollowing => {
+            const existingIds = new Set(prevFollowing.map(f => f.userId));
+            const newFollowing = data.users.filter(f => !existingIds.has(f.userId));
+            const updatedFollowing = [...prevFollowing, ...newFollowing];
+            console.log('Updated following list:', updatedFollowing);
+            return updatedFollowing;
+          });
+          
+          setHasMoreFollowing(data.hasMore);
+          setFollowingCursor(data.cursor);
+          setTotalFollowing(data.total);
         }
         
         if (message.resType === 'set-tiktok') {
@@ -135,7 +163,7 @@ const IdentityBridge = () => {
       });
 
       port.onDisconnect.addListener(() => {
-        console.log('Port disconnected');
+        console.log('Port disconnected in IdentityBridge');
         isActiveRef.current = false;
         portRef.current = null;
       });
@@ -143,7 +171,7 @@ const IdentityBridge = () => {
 
     // Clean up function
     return () => {
-      console.log('Cleaning up port connection');
+      console.log('Cleaning up port connection in IdentityBridge');
       isActiveRef.current = false;
       if (portRef.current) {
         portRef.current.disconnect();
@@ -162,6 +190,20 @@ const IdentityBridge = () => {
 
   const handleDelete = useCallback(async () => {
     await deleteDataSourceFn('tiktok');
+    
+    // Clear follower and following data from storage
+    await chrome.storage.local.remove(['tiktok-followers-data', 'tiktok-following-data']);
+    
+    // Clear state
+    setFollowers([]);
+    setFollowing([]);
+    setHasMoreFollowers(false);
+    setHasMoreFollowing(false);
+    setFollowersCursor(0);
+    setFollowingCursor(0);
+    setTotalFollowers(0);
+    setTotalFollowing(0);
+    
     const msgId = addMsg({
       type: 'info',
       title: 'TikTok data deleted',
@@ -404,35 +446,63 @@ const IdentityBridge = () => {
     dispatch(setSocialSourcesAsync());
   }, [deleteXiaohongshuFn, addMsg, deleteMsg, dispatch]);
 
-  // Add listener for follower data
+  // Add listener for follower data via runtime messages
   useEffect(() => {
     const handleMessage = (message: any) => {
-      console.log('Received message in IdentityBridge:', message);
+      console.log('Runtime message received in IdentityBridge:', message);
       if (message.type === 'tiktok_followers_data') {
-        console.log('Received followers data:', message.data);
+        console.log('Processing followers data from runtime message:', message.data);
         const data: TikTokFollowersData = message.data;
+        
+        // Store followers data in chrome.storage.local
+        chrome.storage.local.set({
+          'tiktok-followers-data': JSON.stringify(data)
+        });
+        
         setFollowers(prevFollowers => {
-          // Deduplicate followers based on userId
           const existingIds = new Set(prevFollowers.map(f => f.userId));
-          const newFollowers = data.followers.filter(f => !existingIds.has(f.userId));
-          return [...prevFollowers, ...newFollowers];
+          const newFollowers = data.users.filter(f => !existingIds.has(f.userId));
+          const updatedFollowers = [...prevFollowers, ...newFollowers];
+          console.log('Updated followers list from runtime message:', updatedFollowers);
+          return updatedFollowers;
         });
         setHasMoreFollowers(data.hasMore);
         setFollowersCursor(data.cursor);
         setTotalFollowers(data.total);
       }
+      
+      if (message.type === 'tiktok_following_data') {
+        console.log('Processing following data from runtime message:', message.data);
+        const data: TikTokFollowersData = message.data;
+        
+        // Store following data in chrome.storage.local
+        chrome.storage.local.set({
+          'tiktok-following-data': JSON.stringify(data)
+        });
+        
+        setFollowing(prevFollowing => {
+          const existingIds = new Set(prevFollowing.map(f => f.userId));
+          const newFollowing = data.users.filter(f => !existingIds.has(f.userId));
+          const updatedFollowing = [...prevFollowing, ...newFollowing];
+          console.log('Updated following list from runtime message:', updatedFollowing);
+          return updatedFollowing;
+        });
+        setHasMoreFollowing(data.hasMore);
+        setFollowingCursor(data.cursor);
+        setTotalFollowing(data.total);
+      }
     };
 
-    console.log('Setting up message listener in IdentityBridge');
+    console.log('Setting up runtime message listener in IdentityBridge');
     chrome.runtime.onMessage.addListener(handleMessage);
     
-    // Try to get any stored followers data
-    chrome.storage.local.get('tiktok-followers-data', (result) => {
+    // Try to get any stored data on mount
+    chrome.storage.local.get(['tiktok-followers-data', 'tiktok-following-data'], (result) => {
       if (result['tiktok-followers-data']) {
         try {
           const data = JSON.parse(result['tiktok-followers-data']);
           console.log('Found stored followers data:', data);
-          setFollowers(data.followers);
+          setFollowers(data.users);
           setHasMoreFollowers(data.hasMore);
           setFollowersCursor(data.cursor);
           setTotalFollowers(data.total);
@@ -440,10 +510,23 @@ const IdentityBridge = () => {
           console.error('Error parsing stored followers data:', error);
         }
       }
+      
+      if (result['tiktok-following-data']) {
+        try {
+          const data = JSON.parse(result['tiktok-following-data']);
+          console.log('Found stored following data:', data);
+          setFollowing(data.users);
+          setHasMoreFollowing(data.hasMore);
+          setFollowingCursor(data.cursor);
+          setTotalFollowing(data.total);
+        } catch (error) {
+          console.error('Error parsing stored following data:', error);
+        }
+      }
     });
 
     return () => {
-      console.log('Removing message listener in IdentityBridge');
+      console.log('Removing runtime message listener in IdentityBridge');
       chrome.runtime.onMessage.removeListener(handleMessage);
     };
   }, []);
@@ -451,12 +534,24 @@ const IdentityBridge = () => {
   // Function to load more followers
   const loadMoreFollowers = useCallback(() => {
     if (hasMoreFollowers) {
+      console.log('Loading more followers with cursor:', followersCursor);
       chrome.runtime.sendMessage({
         type: 'fetch_more_followers',
         data: { cursor: followersCursor }
       });
     }
   }, [hasMoreFollowers, followersCursor]);
+
+  // Add function to load more following
+  const loadMoreFollowing = useCallback(() => {
+    if (hasMoreFollowing) {
+      console.log('Loading more following with cursor:', followingCursor);
+      chrome.runtime.sendMessage({
+        type: 'fetch_more_following',
+        data: { cursor: followingCursor }
+      });
+    }
+  }, [hasMoreFollowing, followingCursor]);
 
   return (
     <div className={`pageContent ${theme}`}>
@@ -604,7 +699,7 @@ const IdentityBridge = () => {
           </li>
         </ul>
 
-        {hasConnected && followers.length > 0 && (
+        {hasConnected && followers?.length > 0 && (
           <div className="followers-section">
             <div className="followers-header">
               <h3>TikTok Followers ({totalFollowers})</h3>
@@ -644,6 +739,56 @@ const IdentityBridge = () => {
                 <div className="load-more-container">
                   <button 
                     onClick={loadMoreFollowers}
+                    className={`PButton secondary ${theme}`}
+                  >
+                    Load More
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {hasConnected && following?.length > 0 && (
+          <div className="followers-section">
+            <div className="followers-header">
+              <h3>TikTok Following ({totalFollowing})</h3>
+            </div>
+            <div className="followers-table-container">
+              <table className="followers-table">
+                <thead>
+                  <tr>
+                    <th>Avatar</th>
+                    <th>Username</th>
+                    <th>Nickname</th>
+                    <th>Followers</th>
+                    <th>Following</th>
+                    <th>Bio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {following.map(user => (
+                    <tr key={user.userId}>
+                      <td>
+                        <img 
+                          src={user.avatar} 
+                          alt={user.uniqueId} 
+                          className="follower-avatar"
+                        />
+                      </td>
+                      <td>@{user.uniqueId}</td>
+                      <td>{user.nickname}</td>
+                      <td>{user.followerCount.toLocaleString()}</td>
+                      <td>{user.followingCount.toLocaleString()}</td>
+                      <td className="bio-cell">{user.signature}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {hasMoreFollowing && (
+                <div className="load-more-container">
+                  <button 
+                    onClick={loadMoreFollowing}
                     className={`PButton secondary ${theme}`}
                   >
                     Load More
