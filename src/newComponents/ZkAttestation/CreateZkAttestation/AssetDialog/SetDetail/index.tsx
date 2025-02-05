@@ -101,7 +101,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           (i) => ASSETSVERIFICATIONCONTENTTYPEEMAP[i]
         );
         return list;
-      }else if (['bitget', 'bybit'].includes(dataSourceId)) {
+      } else if (['bitget', 'bybit'].includes(dataSourceId)) {
         supportedContentIdArr = ['Spot 30-Day Trade Vol'];
         let list = supportedContentIdArr.map(
           (i) => ASSETSVERIFICATIONCONTENTTYPEEMAP[i]
@@ -368,7 +368,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             activeDataSouceUserInfo ? (
               <PSelect
                 className={verificationValueCN}
-                label="Verification Value"
+                label="Verification Condition"
                 align="horizontal"
                 placeholder="Select value"
                 list={valueList}
@@ -386,7 +386,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             ) : pswForm.verificationContent === 'Token Holding' ? (
               <PInput
                 className={verificationValueCN}
-                label="Verification Value"
+                label="Verification Condition"
                 align="horizontal"
                 placeholder="USDT"
                 onChange={(p) => {
@@ -403,7 +403,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             ) : (
               <PSelect
                 className={verificationValueCN}
-                label="Verification Value"
+                label="Verification Condition"
                 align="horizontal"
                 placeholder="Select value"
                 list={valueList}
@@ -422,7 +422,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           ) : (
             <PSelect
               className={verificationValueCN}
-              label="Verification Value"
+              label="Verification Condition"
               align="horizontal"
               placeholder="Select value"
               list={valueList}
@@ -466,9 +466,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               {pswForm.verificationContent === 'Spot 30-Day Trade Vol' && (
                 <div className="balance">
                   $
-                  {new BigNumber(
-                    activeDataSouceUserInfo.spot30dVol
-                  ).toFixed(2)}
+                  {new BigNumber(activeDataSouceUserInfo.spot30dVol).toFixed(2)}
                 </div>
               )}
             </div>

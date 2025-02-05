@@ -231,7 +231,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         >
           <PSelect
             className={verificationValueCN}
-            label="Verification Value"
+            label="Verification Condition"
             align="horizontal"
             placeholder="Select value"
             list={valueList}

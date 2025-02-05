@@ -118,7 +118,7 @@ function DescEl({ status, resultStatus }) {
             label: 'Verification Content',
             value: uiTemplate.proofContent,
           },
-          { label: 'Verification Value', value: uiTemplate.condition },
+          { label: 'Verification Condition', value: uiTemplate.condition },
         ];
       }
     }

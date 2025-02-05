@@ -409,7 +409,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                         <div className="value longValue">{getContent(i)}</div>
                       </div>
                       <div className="descItem">
-                        <div className="label">Value</div>
+                        <div className="label">Condition</div>
                         <div className="value">{getValue(i)}</div>
                       </div>
                       <div className="descItem">

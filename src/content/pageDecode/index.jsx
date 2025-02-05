@@ -270,7 +270,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
         },
       ];
       if (!sdkVersion) {
-        arr.push({ label: 'Verification Value', value: vV });
+        arr.push({ label: 'Verification Condition', value: vV });
       }
       return arr;
     }

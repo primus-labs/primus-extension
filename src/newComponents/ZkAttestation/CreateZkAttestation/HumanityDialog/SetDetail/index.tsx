@@ -246,7 +246,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         >
           {pswForm.verificationContent ? (
             <>
-              <div className="label">Verification Value</div>
+              <div className="label">Verification Condition</div>
               <div className="value">
                 {presets.verificationValue || pswForm.verificationValue}
               </div>
@@ -254,7 +254,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           ) : (
             <PSelect
               className={verificationValueCN}
-              label="Verification Value"
+              label="Verification Condition"
               align="horizontal"
               placeholder="Select value"
               list={valueList}
