@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
-// import { eventReport } from '@/services/api/usertracker';
-// import rem from '@/utils/rem.js';
+import {
+  injectFont,
+  createDomElement,
+  eventReport,
+} from './utils';
 import PButton from '../PButton';
 import './index.scss';
 console.log(
@@ -14,113 +17,41 @@ let PADOSERVERURL;
 let padoExtensionVersion;
 let activeRequestid;
 
-const request = async (fetchParams) => {
-  let { method, url, data = {}, config } = fetchParams;
-  const baseUrl = PADOSERVERURL;
-  method = method.toUpperCase();
-  url = url.startsWith('http') || url.startsWith('https') ? url : baseUrl + url;
-
-  if (method === 'GET') {
-    let dataStr = '';
-    Object.keys(data).forEach((key) => {
-      dataStr += key + '=' + data[key] + '&';
-    });
-    if (dataStr !== '') {
-      dataStr = dataStr.substr(0, dataStr.lastIndexOf('&'));
-      url = url + '?' + dataStr;
-    }
-  }
-  let golbalHeader = {
-    'client-type': 'WEB',
-    'client-version': padoExtensionVersion,
-  };
-  const { userInfo } = await chrome.storage.local.get(['userInfo']);
-  if (userInfo) {
-    const userInfoObj = JSON.parse(userInfo);
-    const { id, token } = userInfoObj;
-    if (
-      !url.startsWith('https://storage.googleapis.com/primus-online') &&
-      token
-    ) {
-      golbalHeader.Authorization = `Bearer ${token}`;
-    }
-    if (url.includes('/public/event/report')) {
-      golbalHeader['user-id'] = id;
-    }
-  }
-  const controller = new AbortController();
-  const signal = controller.signal;
-  const timeout = config?.timeout ?? 60000;
-  const timeoutTimer = setTimeout(() => {
-    controller.abort();
-  }, timeout);
-  let requestConfig = {
-    credentials: 'same-origin',
-    method: method,
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      ...golbalHeader,
-
-      ...config?.extraHeader,
-    },
-    mode: 'cors', //  same-origin | no-cors（default）|cores;
-    cache: config?.cache ?? 'default', //  default | no-store | reload | no-cache | force-cache | only-if-cached 。
-    signal: signal,
-  };
-
-  if (method === 'POST') {
-    Object.defineProperty(requestConfig, 'body', {
-      value: JSON.stringify(data),
-    });
-  }
-  try {
-    const response = await fetch(url, requestConfig);
-    const responseJson = await response.json();
-    clearTimeout(timeoutTimer);
-    if (responseJson.rc === 1 && responseJson.mc === '-999999') {
-      store.dispatch({
-        type: 'setRequireUpgrade',
-        payload: true,
-      });
-    }
-    return responseJson;
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      console.log(`fetch ${url} timeout`);
-    } else {
-      throw new Error(error);
-    }
-  } finally {
-    clearTimeout(timeoutTimer);
-  }
-};
-const eventReport = async (data) => {
-  let storedata = {};
-  storedata.eventType = data.eventType;
-  const { keyStore } = await chrome.storage.local.get(['keyStore']);
-  if (keyStore) {
-    const { address } = JSON.parse(keyStore);
-    storedata.walletAddressOnChainId = '0x' + address;
-  }
-  if (data.rawData) {
-    storedata.rawData = JSON.stringify(data.rawData);
-  }
-
-  return request({
-    method: 'post',
-    url: `/public/event/report`,
-    data: storedata,
-  });
-};
-
 function removeStorageValuesFn() {
   sessionStorage.removeItem('padoAttestRequestStatus');
   sessionStorage.removeItem('padoAttestRequestReady');
   activeRequest = null;
   operationType = null;
 }
-function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
+function RightEl({ status }) {
+  const handleOK = useCallback(async () => {
+    removeStorageValuesFn();
+    var msgObj = {
+      type: 'pageDecode',
+      name: 'close',
+    };
+    await chrome.runtime.sendMessage(msgObj);
+  }, []);
+  return status === 'initialized' ? (
+    <div className="pado-extension-right initialized"></div>
+  ) : status === 'verifying' ? (
+    <div className="pado-extension-right verifying">
+      <div className="loading-spinner"></div>
+    </div>
+  ) : (
+    <div className={`pado-extension-right result`}>
+      <PButton text="Back" onClick={handleOK} />
+    </div>
+  );
+}
+function FooterEl({ status, setStatus, isReadyFetch, resultStatus, errorTxt }) {
+  const [errorTxtSelf, setErrorTxtSelf] = useState({
+    sourcePageTip: 'Error Message.',
+  });
+  useEffect(() => {
+    console.log('222content receive:end-2', errorTxt);
+    setErrorTxtSelf(errorTxt);
+  }, [errorTxt]);
   const handleOK = useCallback(async () => {
     removeStorageValuesFn();
     var msgObj = {
@@ -152,7 +83,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     if (padoZKAttestationJSSDKBeginAttest) {
       eventInfo.rawData.origin = 'padoAttestationJSSDK';
     }
-    eventReport(eventInfo);
+    eventReport(eventInfo, PADOSERVERURL, padoExtensionVersion);
 
     var msgObj = {
       type: 'pageDecode',
@@ -162,41 +93,40 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus }) {
     setStatus('verifying');
     sessionStorage.setItem('padoAttestRequestStatus', 'verifying');
   }, []);
+  useEffect(() => {
+    if (isReadyFetch && status === 'initialized') {
+      if (!sessionStorage.getItem('autoStartFlag')) {
+        sessionStorage.setItem('autoStartFlag', '1');
+        handleConfirm();
+        console.log('start----');
+      }
+    }
+  }, [isReadyFetch, status, handleConfirm]);
+
   return status === 'initialized' ? (
     <div className="pado-extension-footer initialized">
-      <PButton
-        text="Cancel"
-        type="text2"
-        className="cancelBtn"
-        onClick={handleCancel}
-      />
-      <PButton
-        text="Start"
-        type="secondary"
-        className="confirmBtn"
-        disabled={!isReadyFetch}
-        onClick={handleConfirm}
-      />
+      Processing data... Please log in or go to the right page.
     </div>
   ) : status === 'verifying' ? (
     <div className="pado-extension-footer verifying">
-      <PButton
-        text="Cancel"
-        type="text2"
-        className="cancelBtn"
-        onClick={handleCancel}
-      />
-      <PButton
-        text={<div className="loading-spinner"></div>}
-        type="secondary"
-        className="confirmBtn"
-        disabled
-        onClick={() => {}}
-      />
+      {activeRequest.verificationContent}
     </div>
   ) : (
-    <div className="pado-extension-footer result ">
-      <PButton text="Back" type="text2" onClick={handleOK} />
+    <div
+      className={`pado-extension-footer result ${
+        resultStatus === 'success' ? 'suc' : 'fail'
+      }`}
+    >
+      {resultStatus === 'success' ? (
+        'Successfully verified.'
+      ) : (
+        <>
+          {errorTxtSelf?.code && (
+            <span className="errorCode">{errorTxtSelf?.code}</span>
+          )}
+          <span>{errorTxtSelf?.sourcePageTip}</span>
+        </>
+      )}
     </div>
   );
 }
@@ -259,9 +189,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
           vV = `> ${verificationValue}`;
         }
       }
-      // else if (attestationType === 'On-chain Transactions') {
 
-      // }
       let arr = [
         { label: 'Data Source', value: host },
         {
@@ -275,13 +203,7 @@ function DescEl({ status, resultStatus, errorTxt }) {
       return arr;
     }
   }, []);
-  // const loadingTxt = useMemo(() => {
-  //   if (operationType === 'connect') {
-  //     return 'Connecting ...';
-  //   } else {
-  //     return 'Verifying ...';
-  //   }
-  // }, []);
+
   const sucTxt = useMemo(() => {
     if (operationType === 'connect') {
       return 'Connect successfully!';
@@ -331,36 +253,10 @@ function PadoCard() {
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   const [errorTxt, setErrorTxt] = useState();
-  // useEffect(() => {
-  //   let str = {};
-  //   if (operationType === 'connect') {
-  //     str = { title: 'Connect failed.' };
-  //   } else {
-  //     str = { title: 'Error Message.' };
-  //   }
-  //   setErrorTxt(str);
-  // }, [operationType]);
+
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
   var iconPrimusSquare = chrome.runtime.getURL(`iconPrimusSquare.svg`);
-  // var iconLink = chrome.runtime.getURL(`iconLink.svg`);
 
-  // const iconMap = {
-  //   binance: chrome.runtime.getURL(`iconDataSourceBinance.svg`),
-  //   coinbase: chrome.runtime.getURL(`iconDataSourceCoinbase.png`),
-  //   okx: chrome.runtime.getURL(`iconDataSourceOKX.svg`),
-  //   x: chrome.runtime.getURL(`iconDataSourceX.svg`),
-  //   tiktok: chrome.runtime.getURL(`iconDataSourceTikTok.svg`),
-  //   bitget: chrome.runtime.getURL(`iconDataSourceBitget.svg`),
-  //   gate: chrome.runtime.getURL(`iconDataSourceGate.svg`),
-  //   mexc: chrome.runtime.getURL(`iconDataSourceMEXC.png`),
-  //   huobi: chrome.runtime.getURL(`iconDataSourceHuobi.svg`),
-  //   chatgpt: chrome.runtime.getURL(`iconDataSourceChatgpt.svg`),
-  // };
-  // var iconDataSource = iconMap[activeRequest.dataSource] || iconPado; // TODO-zktls
-
-  // useEffect(() => {
-  //   rem();
-  // }, []);
   useEffect(() => {
     const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
     const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
@@ -374,14 +270,6 @@ function PadoCard() {
     if (lastPrimusUIStep) {
       setUIStep(lastPrimusUIStep);
     }
-    // let changeUITimer = setTimeout(() => {
-    //   setUIStep('toLogin');
-    // }, 500);
-    // return () => {
-    //   if (changeUITimer) {
-    //     clearTimeout(changeUITimer);
-    //   }
-    // };
   }, []);
 
   useEffect(() => {
@@ -404,6 +292,7 @@ function PadoCard() {
         console.log('222content receive:end', request, failReason);
         setStatus('result');
         sessionStorage.setItem('padoAttestRequestStatus', 'result');
+        sessionStorage.removeItem('autoStartFlag');
         setResultStatus(result);
         setErrorTxt(failReason);
       }
@@ -433,24 +322,22 @@ function PadoCard() {
       {(activeRequest.dataSourceId === 'chatgpt' && isReadyFetch) ||
       activeRequest.dataSourceId !== 'chatgpt' ? (
         <div className={`pado-extension-card  ${status}`}>
-          <div className="pado-extension-header">
-            <div className="pado-extenstion-center-title">Verify Your Data</div>
-            <img src={iconPado} className="iconPado" />
-          </div>
-          <div className="pado-extenstion-center">
-            <DescEl
+          <div className="pado-extension-left">
+            <div className="pado-extension-header">
+              <img src={iconPado} className="iconPado" />
+              <div className="pado-extenstion-center-title">
+                Verify Your Data
+              </div>
+            </div>
+            <FooterEl
               status={status}
+              setStatus={setStatus}
+              isReadyFetch={isReadyFetch}
               resultStatus={resultStatus}
               errorTxt={errorTxt}
             />
           </div>
-          <FooterEl
-            status={status}
-            setStatus={setStatus}
-            isReadyFetch={isReadyFetch}
-            resultStatus={resultStatus}
-            errorTxt={errorTxt}
-          />
+          <RightEl status={status} />
         </div>
       ) : (
         <div className="padoWrapper">
@@ -468,10 +355,7 @@ function PadoCard() {
     </>
   );
 }
-function createDomElement(html) {
-  var dom = new DOMParser().parseFromString(html, 'text/html');
-  return dom.body.firstElementChild;
-}
+
 var padoStr = `<div id="pado-extension-content"></div>`;
 var injectEl = createDomElement(padoStr);
 document.body.appendChild(injectEl);
@@ -518,14 +402,4 @@ chrome.runtime.sendMessage(
   }
 );
 
-const injectFont = () => {
-  const linkElement = document.createElement('link');
-  linkElement.href =
-    'https://fonts.googleapis.com/css2?family=Archivo:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Overpass&display=swap" rel="stylesheet">';
-  linkElement.rel = 'stylesheet';
-  const headElement = document.head;
-  if (headElement) {
-    headElement.appendChild(linkElement);
-  }
-};
 injectFont();
