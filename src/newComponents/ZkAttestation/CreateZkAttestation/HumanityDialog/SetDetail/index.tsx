@@ -139,7 +139,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         ? activeAttestation?.msgObj?.btnTxt
           ? activeAttestation?.msgObj?.btnTxt
           : 'OK'
-        : 'Next';
+        : 'To Verify';
     }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {

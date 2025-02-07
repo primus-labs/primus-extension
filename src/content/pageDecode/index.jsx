@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-  useReducer,
-} from 'react';
-import { flushSync } from 'react-dom';
+import React, { useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import RightEl from './RightEl';
 import FooterEl from './FooterEl';
@@ -31,25 +25,22 @@ function removeStorageValuesFn() {
 
 function PadoCard() {
   const [UIStep, setUIStep] = useState('loading');
-  const [status, setStatus] = useReducer(
-    (_, newStatus) => newStatus,
-    'uninitialized'
-  );
+  const [status, setStatus] = useState('uninitialized');
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   const [errorTxt, setErrorTxt] = useState();
 
   var iconPado = chrome.runtime.getURL(`iconPado.svg`);
- 
 
   useEffect(() => {
     const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
     const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
     const lastPrimusUIStep = sessionStorage.getItem('primusUIStep');
+
     if (lastStatus) {
-      flushSync(() => {
-        setStatus(lastStatus);
-      });
+      setStatus(lastStatus);
+    } else {
+      setStatus('uninitialized');
     }
     if (lastIsReadyFetch) {
       setIsReadyFetch(!!lastIsReadyFetch);
@@ -75,13 +66,9 @@ function PadoCard() {
         sessionStorage.setItem('padoAttestRequestReady', '1');
       }
       if (name === 'end') {
-        console.log('start4----', +new Date());
-        console.log('222content receive:end', request, failReason);
-
+        console.log('content receive:end', request, failReason);
         setStatus('result');
-
         sessionStorage.setItem('padoAttestRequestStatus', 'result');
-        sessionStorage.removeItem('autoStartFlag');
         setResultStatus(result);
         setErrorTxt(failReason);
       }
@@ -122,44 +109,38 @@ function PadoCard() {
       name: 'start',
     };
     await chrome.runtime.sendMessage(msgObj);
-
-    flushSync(() => {
-      setStatus('verifying');
-    });
-
-    console.log('start3----', +new Date());
-    sessionStorage.setItem('padoAttestRequestStatus', 'verifying');
   }, []);
   useEffect(() => {
-    if (isReadyFetch && ['uninitialized', 'initialized'].includes(status)) {
-      if (!sessionStorage.getItem('autoStartFlag')) {
-        sessionStorage.setItem('autoStartFlag', '1');
-        handleConfirm();
+    if (isReadyFetch) {
+      const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
+      if (!['result'].includes(lastStatus)) {
+        setStatus('verifying');
+        sessionStorage.setItem('padoAttestRequestStatus', 'verifying');
+        if (lastStatus !== 'verifying') {
+          handleConfirm();
+        }
       }
     }
-  }, [isReadyFetch, handleConfirm, status]);
+  }, [isReadyFetch]);
+
   useEffect(() => {
     let timer = setTimeout(() => {
-      if (!sessionStorage.getItem('autoStartFlag')) {
-        flushSync(() => {
-          setStatus('initialized');
-        });
-        console.log('start2----', +new Date());
+      const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
+      if (!['verifying', 'result'].includes(lastStatus)) {
+        setStatus('initialized');
+        sessionStorage.setItem('padoAttestRequestStatus', 'initialized');
       }
     }, 3000);
     return () => {
       clearTimeout(timer);
     };
   }, []);
-  useEffect(() => {
-    console.log('start1----', +new Date());
-  }, []);
 
   return (
     <>
       {(activeRequest.dataSourceId === 'chatgpt' && isReadyFetch) ||
       activeRequest.dataSourceId !== 'chatgpt' ? (
-        <div className={`pado-extension-card  ${status}`}>
+        <div className={`pado-extension-card  ${status}`} key="primus">
           <div className="pado-extension-left">
             <HeaderEl />
             <FooterEl

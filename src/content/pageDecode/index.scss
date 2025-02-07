@@ -14,16 +14,10 @@
 }
 @keyframes growFromBottom {
   0% {
-    // height: 0;
-    // transform: scaleY(0); /* 完全展开 */
-    // opacity: 0; /* 完全不透明 */
-    transform: translateX(16px);
+    transform: translateY(16px);
   }
   100% {
-    // height: 44px;
-    // transform: scaleY(1); /* 完全展开 */
-    // opacity: 1; /* 完全不透明 */
-    transform: translateX(0px);
+    transform: translateY(0px);
   }
 }
 
@@ -161,7 +155,7 @@
       letter-spacing: 0.16px;
 
       animation: growFromBottom 1s forwards ease-out;
-      transform: translateX(-16px);
+      transform: translateY(-16px);
 
       > img {
         width: 20px;
@@ -173,7 +167,7 @@
 
     padding: var(--spacing-16, 16px);
     // width: 384px;
-    width: 469px;
+    width: 428px;
     // height: 216px;
     box-sizing: border-box;
     border: 1px solid var(--Border-default, #e4e4e7);
@@ -185,7 +179,7 @@
     box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.05),
       0px 4px 6px -2px rgba(0, 0, 0, 0.05);
     animation: growFromBottom 1s forwards ease-out;
-    transform: translateX(-16px);
+    transform: translateY(-16px);
     &.initialized {
       .pado-extension-left {
         width: 100%;
@@ -194,7 +188,7 @@
     .pado-extension-left {
       @include fcss;
       gap: 8px;
-      width: 373px;
+      width: 331px;
       .pado-extension-header {
         width: 100%;
         @include frsc;
@@ -221,12 +215,12 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        /* text-base/regular */
+        color: var(--Foreground-muted, #71717a);
         font-family: Inter;
-        font-size: 16px;
+        font-size: 14px;
         font-style: normal;
         font-weight: 400;
-        line-height: 24px; /* 150% */
+        line-height: 24px; /* 171.429% */
         &.result {
           &.suc {
             color: var(--text-tokens-text-correct, #24a148);
