@@ -257,7 +257,6 @@
       font-weight: 400;
       line-height: 24px; /* 150% */
       &.result {
-        gap: var(--spacing-16, 16px);
         &.suc {
           color: var(--text-tokens-text-correct, #24a148);
         }

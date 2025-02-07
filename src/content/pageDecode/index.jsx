@@ -122,9 +122,9 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus, errorTxt }) {
       ) : (
         <>
           {errorTxtSelf?.code && (
-            <span className="errorCode">{errorTxtSelf?.code}</span>
+            <span className="errorCode">{errorTxtSelf?.code}.</span>
           )}
-          <span>{errorTxtSelf?.sourcePageTip}</span>
+          <span>{errorTxtSelf?.sourcePageTip}.</span>
         </>
       )}
     </div>
