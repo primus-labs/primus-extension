@@ -210,6 +210,9 @@ const useListener: UseListener = function useListener() {
               },
               {}
             );
+            await chrome.storage.local.set({
+              configMap: JSON.stringify(configMap),
+            });
             dispatch(setSysConfigAction(configMap));
           } else {
             //alert('getSysConfig network error');

@@ -105,7 +105,7 @@ function FooterEl({ status, setStatus, isReadyFetch, resultStatus, errorTxt }) {
 
   return status === 'initialized' ? (
     <div className="pado-extension-footer initialized">
-      Processing data... Please log in or go to the right page.
+      {activeRequest.PRE_ATTEST_PROMOT}
     </div>
   ) : status === 'verifying' ? (
     <div className="pado-extension-footer verifying">
