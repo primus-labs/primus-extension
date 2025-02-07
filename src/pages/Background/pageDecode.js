@@ -698,9 +698,9 @@ export const pageDecodeMsgListener = async (
 
     if (name === 'init') {
       const { configMap } = await chrome.storage.local.get(['configMap']);
-      PRE_ATTEST_PROMOT =
-        JSON.parse(configMap).PRE_ATTEST_PROMOT ??
-        'Processing data... Please log in or go to the right page.';
+      PRE_ATTEST_PROMOT = JSON.parse(
+        JSON.parse(configMap).PRE_ATTEST_PROMOT
+      ) ?? ['Processing data......', 'Please login or go to the right page.'];
       operationType = request.operation;
       const currentWindowTabs = await chrome.tabs.query({
         active: true,

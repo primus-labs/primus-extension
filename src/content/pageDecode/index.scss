@@ -26,18 +26,6 @@
     transform: translateX(0px);
   }
 }
-// .dark {
-//   #pado-extension-content {
-//     --text-tokens-text-tertiary: #6f6f6f;
-//     --text-tokens-text-primary: #161616;
-//   }
-// }
-// .light {
-//   #pado-extension-content {
-//     --text-tokens-text-tertiary: #6f6f6f;
-//     --text-tokens-text-primary: #161616;
-//   }
-// }
 
 .light,
 .white,
@@ -207,6 +195,47 @@
       @include fcss;
       gap: 8px;
       width: 373px;
+      .pado-extension-header {
+        width: 100%;
+        @include frsc;
+        gap: var(--spacing-8, 8px);
+        .iconPado {
+          width: var(--spacing-28, 28px);
+        }
+        .pado-extenstion-center-title {
+          width: 100%;
+          font-family: Inter;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: 24px;
+          color: var(--Foreground-default, #09090b);
+        }
+      }
+      .pado-extension-footer {
+        width: 100%;
+        @include frsc;
+        // justify-content: flex-end;
+        color: var(--Foreground-muted, #71717a);
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* text-base/regular */
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px; /* 150% */
+        &.result {
+          &.suc {
+            color: var(--text-tokens-text-correct, #24a148);
+          }
+          &.fail {
+            color: var(--text-tokens-text-error, #fa4d56);
+          }
+        }
+      }
     }
     .pado-extension-right {
       text-align: right;
@@ -223,62 +252,6 @@
           animation: spin 1s linear infinite;
         }
       }
-    }
-    .pado-extension-header {
-      width: 100%;
-      @include frsc;
-      gap: var(--spacing-8, 8px);
-      .iconPado {
-        width: var(--spacing-28, 28px);
-      }
-      .pado-extenstion-center-title {
-        width: 100%;
-        font-family: Inter;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 24px;
-        color: var(--Foreground-default, #09090b);
-      }
-    }
-    .pado-extension-footer {
-      width: 100%;
-      @include frsc;
-      // justify-content: flex-end;
-      color: var(--Foreground-muted, #71717a);
-
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      /* text-base/regular */
-      font-family: Inter;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 24px; /* 150% */
-      &.result {
-        &.suc {
-          color: var(--text-tokens-text-correct, #24a148);
-        }
-        &.fail {
-          color: var(--text-tokens-text-error, #fa4d56);
-        }
-      }
-      // &.initialized {
-      //   gap: var(--spacing-16, 16px);
-      // }
-      // &.verifying {
-      //   gap: var(--spacing-16, 16px);
-      //   .confirmBtn {
-      //     padding: 7px 32px;
-      //   }
-      // }
-      // .cancelBtn {
-      // }
-      // .confirmBtn {
-      //   height: 32px;
-      //   width: 66px;
-      //   box-sizing: border-box;
     }
   }
 }
