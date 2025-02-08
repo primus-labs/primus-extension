@@ -3,7 +3,38 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
-
+@keyframes dots {
+  0% {
+    content: '';
+  }
+  // 33% {
+  //   content: '.';
+  // }
+  // 66% {
+  //   content: '..';
+  // }
+  // 100% {
+  //   content: '...';
+  // }
+  16.66% {
+    content: '.';
+  }
+  33.33% {
+    content: '..';
+  }
+  50% {
+    content: '...';
+  }
+  66.66% {
+    content: '....';
+  }
+  83.33% {
+    content: '.....';
+  }
+  100% {
+    content: '.....';
+  }
+}
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -31,7 +62,7 @@
   --Border-default: #e4e4e7;
   --Background-default: #fff;
   --Foreground-Primary-default: #fafafa;
-  --Icon-accent: #18181b;
+  --my-icon-accent: #18181b;
 }
 .dark,
 .black,
@@ -42,7 +73,25 @@
   --Border-default: #3f3f46;
   --Background-default: #09090b;
   --Foreground-Primary-default: #18181b;
-  --Icon-accent: #fafafa;
+  --my-icon-accent: #fafafa;
+  #pado-extension-content .pado-extension-card .pado-extension-right.verifying {
+    .loader {
+      background: linear-gradient(
+            0deg,
+            rgb(255 255 255/50%) 30%,
+            #0000 0 70%,
+            rgb(255 255 255/100%) 0
+          )
+          50%/8% 100%,
+        linear-gradient(
+            90deg,
+            rgb(255 255 255/25%) 30%,
+            #0000 0 70%,
+            rgb(255 255 255/75%) 0
+          )
+          50%/100% 8%;
+    }
+  }
 }
 #pado-extension-content {
   ul,
@@ -123,17 +172,6 @@
           transform: rotate(1turn);
         }
       }
-
-      // .loading-spinner {
-      // width: 16px;
-      // height: 16px;
-      // border-radius: 50%;
-      // border: 2px solid var(--icon-tokens-icon-primary, #161616);
-      // border-top: 2px solid var(--layer-tokens-layer-primary, #fff);
-      // animation: spin 1s linear infinite;
-      /* HTML: <div class="loader"></div> */
-
-      // }
     }
     .tipStep {
       padding: 12px 40px 12px 12px;
@@ -165,7 +203,7 @@
   .pado-extension-card {
     @include frbc;
 
-    padding: var(--spacing-16, 16px);
+    padding: 15px;
     // width: 384px;
     width: 428px;
     // height: 216px;
@@ -194,10 +232,9 @@
         @include frsc;
         gap: var(--spacing-8, 8px);
         .iconPado {
-          width: var(--spacing-28, 28px);
+          width: var(--spacing-24, 24px);
         }
         .pado-extenstion-center-title {
-          width: 100%;
           font-family: Inter;
           font-size: 16px;
           font-style: normal;
@@ -229,6 +266,14 @@
             color: var(--text-tokens-text-error, #fa4d56);
           }
         }
+        .loading-text::after {
+          content: '';
+          display: inline-block;
+          width: 1em;
+          text-align: left;
+          animation: dots 1.5s steps(3, end) infinite;
+          color: var(--Foreground-muted, #71717a);
+        }
       }
     }
     .pado-extension-right {
@@ -238,12 +283,54 @@
       &.verifying {
         padding: 12px;
         .loading-spinner {
-          width: 24px;
-          height: 24px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
-          border: 2px solid var(--Icon-accent);
+          border: 2px solid var(--my-icon-accent, #18181b);
           border-top: 2px solid var(--layer-tokens-layer-primary, #fff);
           animation: spin 1s linear infinite;
+        }
+        .loader {
+          border-color: transparent;
+          width: 20px;
+          height: 20px;
+          aspect-ratio: 1;
+          display: grid;
+          border-radius: 50%;
+          background: linear-gradient(
+                0deg,
+                rgb(0 0 0/50%) 30%,
+                #0000 0 70%,
+                rgb(0 0 0/100%) 0
+              )
+              50%/8% 100%,
+            linear-gradient(
+                90deg,
+                rgb(0 0 0/25%) 30%,
+                #0000 0 70%,
+                rgb(0 0 0/75%) 0
+              )
+              50%/100% 8%;
+          background-repeat: no-repeat;
+          animation: l23 1s infinite steps(12);
+        }
+        .loader::before,
+        .loader::after {
+          content: '';
+          grid-area: 1/1;
+          border-radius: 50%;
+          background: inherit;
+          opacity: 0.915;
+          transform: rotate(30deg);
+        }
+        .loader::after {
+          opacity: 0.83;
+          transform: rotate(60deg);
+        }
+        @keyframes l23 {
+          100% {
+            transform: rotate(1turn);
+          }
         }
       }
     }

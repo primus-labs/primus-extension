@@ -141,5 +141,5 @@ export const getContentWithValue = ({
       vV = `> ${verificationValue}`;
     }
   }
-  return [vC, vV];
+  return { verificationContent: vC, verificationValue: vV };
 };

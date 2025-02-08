@@ -9,6 +9,7 @@ const RightEl = ({ status, onBack }) => {
         break;
       case 'verifying':
         el = <div className="loading-spinner"></div>;
+        // el = <div className="loader"></div>;
         break;
       case 'result':
         el = <PButton text="Back" onClick={onBack} />;

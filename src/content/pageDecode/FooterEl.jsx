@@ -1,11 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-const FooterEl = ({
-  status,
-  resultStatus,
-  errorTxt,
-  PRE_ATTEST_PROMOT,
-  verificationContent,
-}) => {
+import { getContentWithValue } from './utils';
+const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
   const ref = useRef(null);
   const [errorTxtSelf, setErrorTxtSelf] = useState({
     sourcePageTip: 'Error Message.',
@@ -15,15 +10,38 @@ const FooterEl = ({
   }, [errorTxt]);
   const ElCon = useMemo(() => {
     let el = null;
+    const {
+      PRE_ATTEST_PROMOT,
+      verificationContent,
+      attestationType,
+      verificationValue,
+    } = activeRequest;
     switch (status) {
       case 'uninitialized':
-        el = PRE_ATTEST_PROMOT?.[0];
+        el = (
+          <>
+            <span>{PRE_ATTEST_PROMOT?.[0]}</span>
+            &nbsp;
+            <p class="loading-text"></p>
+          </>
+        );
         break;
       case 'initialized':
-        el = PRE_ATTEST_PROMOT?.[1];
+        el = (
+          <>
+            <span>{PRE_ATTEST_PROMOT?.[1]}</span>
+            &nbsp;
+            <p class="loading-text"></p>
+          </>
+        );
         break;
       case 'verifying':
-        el = verificationContent;
+        const { verificationContent: vC } = getContentWithValue({
+          attestationType,
+          verificationContent,
+          verificationValue,
+        });
+        el = `Verifying ${vC}`;
         break;
       case 'result':
         if (resultStatus === 'success') {
@@ -42,13 +60,7 @@ const FooterEl = ({
     }
 
     return el;
-  }, [
-    status,
-    resultStatus,
-    errorTxtSelf,
-    PRE_ATTEST_PROMOT,
-    verificationContent,
-  ]);
+  }, [status, resultStatus, errorTxtSelf, activeRequest]);
 
   return (
     <div
@@ -63,4 +75,3 @@ const FooterEl = ({
 };
 
 export default FooterEl;
-

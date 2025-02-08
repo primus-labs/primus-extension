@@ -147,8 +147,7 @@ function PadoCard() {
               status={status}
               resultStatus={resultStatus}
               errorTxt={errorTxt}
-              PRE_ATTEST_PROMOT={activeRequest.PRE_ATTEST_PROMOT}
-              verificationContent={activeRequest.verificationContent}
+              activeRequest={activeRequest}
             />
           </div>
           <RightEl status={status} onBack={handleBack} />
