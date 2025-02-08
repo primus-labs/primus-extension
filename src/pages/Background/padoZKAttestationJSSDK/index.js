@@ -217,8 +217,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             },
             []
           );
-          
-          
+
           const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
             const { responseTemplate } = curr;
             const subconditions = responseTemplate.reduce((prevS, currS) => {
@@ -226,7 +225,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 resolver: { type, expression },
                 valueType,
                 fieldType,
-                feilds: [{ key}],
+                feilds: [{ key }],
               } = currS;
               const opMap = {
                 string: 'REVEAL_STRING',
@@ -239,12 +238,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 // reveal_id: feilds[0].key, // required if type is REVEAL_STRING
                 // type: fieldType, // "FIELD_REVEAL" FIELD_VALUE  FIELD_RANGE
               };
-              
-              const subItemCondition = params.attRequest?.attConditions?.[0]?.find(
-                (i) => {
+
+              const subItemCondition =
+                params.attRequest?.attConditions?.[0]?.find((i) => {
                   return i.field === key;
-                }
-              );
+                });
               const handleREVEALFn = () => {
                 subconditionItem.op = 'REVEAL_STRING';
                 subconditionItem.type = 'FIELD_REVEAL';
@@ -262,7 +260,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   handleREVEALFn();
                 }
               } else {
-                handleREVEALFn()
+                handleREVEALFn();
               }
               // TODO
               // field: '$.data.create_time';

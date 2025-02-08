@@ -66,11 +66,11 @@ function PadoCard() {
         sessionStorage.setItem('padoAttestRequestReady', '1');
       }
       if (name === 'end') {
-        // console.log('content receive:end', request, failReason);
-        // setStatus('result');
-        // sessionStorage.setItem('padoAttestRequestStatus', 'result');
-        // setResultStatus(result);
-        // setErrorTxt(failReason);
+        console.log('content receive:end', request, failReason);
+        setStatus('result');
+        sessionStorage.setItem('padoAttestRequestStatus', 'result');
+        setResultStatus(result);
+        setErrorTxt(failReason);
       }
     };
     chrome.runtime.onMessage.addListener(listenerFn);
@@ -140,7 +140,7 @@ function PadoCard() {
     <>
       {(activeRequest.dataSourceId === 'chatgpt' && isReadyFetch) ||
       activeRequest.dataSourceId !== 'chatgpt' ? (
-        <div className={`pado-extension-card  ${status}`} key="primus">
+        <div className={`pado-extension-card  ${status}`}>
           <div className="pado-extension-left">
             <HeaderEl />
             <FooterEl

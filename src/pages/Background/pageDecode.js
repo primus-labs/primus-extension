@@ -130,14 +130,17 @@ const extraRequestFn = async () => {
   const chatgptQuestionSessionId = arr[arr.length - 1];
   const requestUrl = 'https://chatgpt.com/backend-api/conversation';
   const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
-
+  
   // const storageRes = await chrome.storage.local.get(requestUrl);
   const storageRes = requestsMap;
+  const activeInfo = Object.values(storageRes).find(
+    (i) => i.url === requestUrl
+  );
   try {
     const requestRes = await customFetch(fullRequestUrl, {
       method: 'GET',
       // headers: JSON.parse(storageRes[requestUrl]).headers,
-      headers: storageRes[requestUrl].headers,
+      headers: activeInfo.headers,
     });
 
     const messageIds = [];
@@ -330,6 +333,11 @@ export const pageDecodeMsgListener = async (
 
           if (fl) {
             if (dataSource === 'chatgpt') {
+              fl =
+                !!f &&
+                chatgptHasLogin &&
+                RequestsHasCompleted &&
+                preAlgorithmStatus === '1';
             } else {
               if (!formatAlgorithmParams) {
                 await formatAlgorithmParamsFn();

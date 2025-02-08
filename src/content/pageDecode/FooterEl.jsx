@@ -22,7 +22,7 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
           <>
             <span>{PRE_ATTEST_PROMOT?.[0]}</span>
             &nbsp;
-            <p class="loading-text"></p>
+            <p className="loading-text"></p>
           </>
         );
         break;
@@ -31,7 +31,7 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
           <>
             <span>{PRE_ATTEST_PROMOT?.[1]}</span>
             &nbsp;
-            <p class="loading-text"></p>
+            <p className="loading-text"></p>
           </>
         );
         break;
