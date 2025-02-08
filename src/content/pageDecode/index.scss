@@ -63,6 +63,7 @@
   --Background-default: #fff;
   --Foreground-Primary-default: #fafafa;
   --my-icon-accent: #18181b;
+  --my-loading-color: #6f6f6f;
 }
 .dark,
 .black,
@@ -74,6 +75,7 @@
   --Background-default: #09090b;
   --Foreground-Primary-default: #18181b;
   --my-icon-accent: #fafafa;
+  --my-loading-color: #8d8d8d;
   #pado-extension-content .pado-extension-card .pado-extension-right.verifying {
     .loader {
       background: linear-gradient(
@@ -290,46 +292,24 @@
           border-top: 2px solid var(--layer-tokens-layer-primary, #fff);
           animation: spin 1s linear infinite;
         }
-        .loader {
-          border-color: transparent;
+        .loader2 {
           width: 20px;
-          height: 20px;
+          padding: 2px;
           aspect-ratio: 1;
-          display: grid;
           border-radius: 50%;
-          background: linear-gradient(
-                0deg,
-                rgb(0 0 0/50%) 30%,
-                #0000 0 70%,
-                rgb(0 0 0/100%) 0
-              )
-              50%/8% 100%,
-            linear-gradient(
-                90deg,
-                rgb(0 0 0/25%) 30%,
-                #0000 0 70%,
-                rgb(0 0 0/75%) 0
-              )
-              50%/100% 8%;
-          background-repeat: no-repeat;
-          animation: l23 1s infinite steps(12);
-        }
-        .loader::before,
-        .loader::after {
-          content: '';
-          grid-area: 1/1;
-          border-radius: 50%;
-          background: inherit;
-          opacity: 0.915;
-          transform: rotate(30deg);
-        }
-        .loader::after {
-          opacity: 0.83;
-          transform: rotate(60deg);
-        }
-        @keyframes l23 {
-          100% {
-            transform: rotate(1turn);
+          background: var(--my-loading-color,#6f6f6f);
+          --_m: conic-gradient(#0000 10%, #000),
+            linear-gradient(#000 0 0) content-box;
+          -webkit-mask: var(--_m);
+          mask: var(--_m);
+          -webkit-mask-composite: source-out;
+          mask-composite: subtract;
+          animation: l3 1s infinite linear;
+
+          @keyframes l3 {
+            to {
+              transform: rotate(1turn);
+            }
           }
         }
       }

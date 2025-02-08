@@ -8,8 +8,7 @@ const RightEl = ({ status, onBack }) => {
       case 'initialized':
         break;
       case 'verifying':
-        el = <div className="loading-spinner"></div>;
-        // el = <div className="loader"></div>;
+        el = <div className="loader2"></div>;
         break;
       case 'result':
         el = <PButton text="Back" onClick={onBack} />;
