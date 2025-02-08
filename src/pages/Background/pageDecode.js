@@ -130,7 +130,7 @@ const extraRequestFn = async () => {
   const chatgptQuestionSessionId = arr[arr.length - 1];
   const requestUrl = 'https://chatgpt.com/backend-api/conversation';
   const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
-  
+
   // const storageRes = await chrome.storage.local.get(requestUrl);
   const storageRes = requestsMap;
   const activeInfo = Object.values(storageRes).find(
@@ -706,9 +706,13 @@ export const pageDecodeMsgListener = async (
 
     if (name === 'init') {
       const { configMap } = await chrome.storage.local.get(['configMap']);
-      PRE_ATTEST_PROMOT = JSON.parse(
-        JSON.parse(configMap).PRE_ATTEST_PROMOT
-      ) ?? ['Processing data......', 'Please login or go to the right page.'];
+      PRE_ATTEST_PROMOT = [
+        'Processing data',
+        'Please login or go to the right page',
+      ];
+      if (configMap && JSON.parse(configMap).PRE_ATTEST_PROMOT) {
+        PRE_ATTEST_PROMOT = JSON.parse(JSON.parse(configMap).PRE_ATTEST_PROMOT);
+      }
       operationType = request.operation;
       const currentWindowTabs = await chrome.tabs.query({
         active: true,
