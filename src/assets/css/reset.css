@@ -39,34 +39,34 @@ h6 {
   line-height: normal;
 }
 
-/* 实现1px边框 */
+
 table {
   border-collapse: collapse;
 }
 
-/* 左浮动 */
+
 .fl {
   float: left;
 }
 
-/* 右浮动 */
+
 .fr {
   float: right;
 }
 
-/* 清浮动 */
+
 .clearfix::after {
   content: '';
   display: block;
   clear: both;
 }
 
-/* 解决图片下间隙 */
+
 img {
   vertical-align: middle;
 }
 
-/* 去掉轮廓线 */
+
 input,
 textarea {
   outline: none;
@@ -83,12 +83,12 @@ b {
   font-weight: normal;
 }
 
-/* 去掉下划线 */
+
 a {
   text-decoration: none;
 }
 
-/* 去掉自带列表符 */
+
 ul,
 ol {
   list-style: none;
@@ -108,7 +108,6 @@ body {
 }
 
 textarea {
-  /*禁止用户改变尺寸*/
   resize: none;
 }
 

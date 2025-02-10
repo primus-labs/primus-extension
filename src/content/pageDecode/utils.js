@@ -127,19 +127,21 @@ export const getContentWithValue = ({
     vV = verificationValue;
   if (attestationType === 'Assets Verification') {
     if (verificationContent === 'Assets Proof') {
-      vC = 'Asset balance';
+      vC = 'Asset Balance';
       vV = `> $${verificationValue}`;
     } else if (verificationContent === 'Token Holding') {
-      vC = 'Token holding';
+      vC = 'Token Holding';
     } else if (verificationContent === 'Spot 30-Day Trade Vol') {
-      vC = 'Spot 30-day trade vol';
+      vC = 'Spot 30-day Trade Vol';
       vV = `> $${verificationValue}`;
     }
   } else if (attestationType === 'Social Connections') {
     if (verificationContent === 'X Followers') {
-      vC = 'Followers number';
+      vC = 'Followers Number';
       vV = `> ${verificationValue}`;
     }
+  } else if (verificationContent === 'Account ownership') {
+    vC = 'Account Ownership';
   }
   return { verificationContent: vC, verificationValue: vV };
 };
