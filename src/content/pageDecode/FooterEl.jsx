@@ -52,7 +52,7 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
               {errorTxtSelf?.code && (
                 <span className="errorCode">{errorTxtSelf?.code}.</span>
               )}
-              <span>{errorTxtSelf?.sourcePageTip}.</span>
+              <span>&nbsp;{errorTxtSelf?.sourcePageTip}.</span>
             </>
           );
         }
