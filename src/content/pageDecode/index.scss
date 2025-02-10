@@ -192,7 +192,7 @@
     .pado-extension-left {
       @include fcss;
       gap: 8px;
-      width: 331px;
+      width: 299px;
       .pado-extension-header {
         width: 100%;
         @include frsc;
@@ -217,6 +217,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        display: inline-block;
         color: var(--Foreground-muted, #71717a);
         color: var(--Foreground-muted, #71717a);
         font-family: Inter;
