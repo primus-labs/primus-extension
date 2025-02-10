@@ -233,13 +233,16 @@
             color: var(--text-tokens-text-error, #fa4d56);
           }
         }
-        .loading-text::after {
-          content: '';
+        .loading-text {
           display: inline-block;
-          width: 1em;
-          text-align: left;
-          animation: dots 1.5s steps(3, end) infinite;
-          color: var(--Foreground-muted, #71717a);
+          &::after {
+            content: '';
+            display: inline-block;
+            width: 1em;
+            text-align: left;
+            animation: dots 1.5s steps(3, end) infinite;
+            color: var(--Foreground-muted, #71717a);
+          }
         }
       }
     }
