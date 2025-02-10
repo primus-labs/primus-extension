@@ -132,7 +132,7 @@ export const getContentWithValue = ({
     } else if (verificationContent === 'Token Holding') {
       vC = 'Token Holding';
     } else if (verificationContent === 'Spot 30-Day Trade Vol') {
-      vC = 'Spot 30-day Trade Vol';
+      vC = 'Spot 30-day Trade Volume';
       vV = `> $${verificationValue}`;
     }
   } else if (attestationType === 'Social Connections') {
