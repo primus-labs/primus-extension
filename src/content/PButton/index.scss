@@ -59,8 +59,8 @@ button.PButton {
     border-radius: var(--Radius-radius-xs, 4px);
     width: fit-content;
     &.m {
-      // padding: var(--spacing-11, 11px) var(--spacing-16, 16px);
-      padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
+      padding: var(--spacing-11, 11px) var(--spacing-16, 16px);
+      // padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
     }
     &.s {
       padding: var(--spacing-7, 7px) var(--spacing-16, 16px);

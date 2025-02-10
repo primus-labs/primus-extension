@@ -171,8 +171,8 @@
   .pado-extension-card {
     @include frbc;
 
-    padding: 15px;
-    width: 428px;
+    padding: 16.5px 15px;
+    width: 392px;
     box-sizing: border-box;
     border: 1px solid var(--Border-default, #e4e4e7);
     border-radius: var(--Radius-radius-md, 8px);
@@ -198,14 +198,14 @@
         @include frsc;
         gap: var(--spacing-8, 8px);
         .iconPado {
-          width: var(--spacing-24, 24px);
+          width: var(--spacing-20, 20px);
         }
         .pado-extenstion-center-title {
           font-family: Inter;
-          font-size: 16px;
+          font-size: 14px;
           font-style: normal;
-          font-weight: 600;
-          line-height: 24px;
+          font-weight: 500;
+          line-height: 120%;
           color: var(--Foreground-default, #09090b);
         }
       }
@@ -213,17 +213,17 @@
         width: 100%;
         @include frsc;
         // justify-content: flex-end;
-        color: var(--Foreground-muted, #71717a);
 
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         color: var(--Foreground-muted, #71717a);
+        color: var(--Foreground-muted, #71717a);
         font-family: Inter;
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
-        line-height: 24px; /* 171.429% */
+        line-height: 17px;
         &.result {
           &.suc {
             color: var(--text-tokens-text-correct, #24a148);
@@ -246,6 +246,14 @@
       text-align: right;
       @include frss;
       flex-direction: end;
+      .PButton {
+        width: 45px;
+        height: 28px;
+
+        .btnText {
+          font-size: 12px;
+        }
+      }
       &.verifying {
         padding: 12px;
         .loader2 {
@@ -253,7 +261,7 @@
           padding: 2px;
           aspect-ratio: 1;
           border-radius: 50%;
-          background: var(--my-loading-color,#6f6f6f);
+          background: var(--my-loading-color, #6f6f6f);
           --_m: conic-gradient(#0000 10%, #000),
             linear-gradient(#000 0 0) content-box;
           -webkit-mask: var(--_m);
