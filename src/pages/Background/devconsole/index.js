@@ -1,10 +1,17 @@
 import { customFetch2 } from '../utils/request';
 
 let checkDataSourcePageTabId;
+let checkDataSourcePageTabUrl;
+let checkDataSourcePageTabUrls = [];
 let devconsoleTabId;
 let requestsMap = {};
 let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
+const sendMsgToDevconsole = async (msg) => {
+  if (devconsoleTabId) {
+    chrome.tabs.sendMessage(devconsoleTabId, msg);
+  }
+};
 const removeRequestsMap = async (url) => {
   // console.log('requestsMap-remove', url);
   delete requestsMap[url];
@@ -31,7 +38,7 @@ const extraRequestFn = async (params) => {
     const { locationPageUrl, requestId, ...requestParams } = params;
     const requestRes = await customFetch2(requestParams);
     if (typeof requestRes === 'object' && requestRes !== null) {
-      chrome.tabs.sendMessage(devconsoleTabId, {
+      sendMsgToDevconsole({
         type: 'devconsole',
         name: 'checkDataSourceRes',
         params: {
@@ -56,6 +63,8 @@ export const devconsoleMsgListener = async (
 
   if (name === 'init') {
     checkDataSourcePageTabId = null;
+    checkDataSourcePageTabUrl = null;
+    checkDataSourcePageTabUrls = [];
     devconsoleTabId = null;
     requestsMap = {};
     devconsoleTabId = sender.tab.id;
@@ -102,6 +111,7 @@ export const devconsoleMsgListener = async (
           headers: formatHeader,
           method,
           locationPageUrl,
+          checkDataSourcePageTabUrl,
           url: currRequestUrl,
           requestId,
         });
@@ -164,6 +174,15 @@ export const devconsoleMsgListener = async (
       active: false,
     });
     checkDataSourcePageTabId = tabCreatedByPado.id;
+    if (tabCreatedByPado.url) {
+      checkDataSourcePageTabUrl = tabCreatedByPado.url;
+      checkDataSourcePageTabUrls = [tabCreatedByPado.url];
+      sendMsgToDevconsole({
+        type: 'devconsole',
+        name: 'visitedPagePaths',
+        params: checkDataSourcePageTabUrls,
+      });
+    }
     chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
       if (tabId === checkDataSourcePageTabId) {
         console.log('devconsole-user close data source page');
@@ -171,6 +190,7 @@ export const devconsoleMsgListener = async (
           type: 'devconsole',
           name: 'close',
         });
+        chrome.tabs.onUpdated.removeListener(handleTabUpdate);
         chrome.webRequest.onBeforeSendHeaders.removeListener(
           onBeforeSendHeadersFn
         );
@@ -186,19 +206,42 @@ export const devconsoleMsgListener = async (
         files: ['catchFavicon.bundle.js'],
       });
     };
-
     const handleTabUpdate = async (tabId, changeInfo, tab) => {
-      if (
-        tabId === checkDataSourcePageTabId &&
-        changeInfo.status === 'complete'
-      ) {
-        injectFn();
-        chrome.tabs.onUpdated.removeListener(handleTabUpdate);
+      if (tabId === checkDataSourcePageTabId) {
+        checkDataSourcePageTabUrl = tab.url;
+        if (changeInfo.url && !checkDataSourcePageTabUrls.includes(tab.url)) {
+          checkDataSourcePageTabUrls.push(tab.url);
+          sendMsgToDevconsole({
+            type: 'devconsole',
+            name: 'visitedPagePaths',
+            params: checkDataSourcePageTabUrls,
+          });
+        }
+        if (changeInfo.favIconUrl) {
+          sendMsgToDevconsole({
+            type: 'devconsole',
+            name: 'FAVICON_URL',
+            params: {
+              url: changeInfo.favIconUrl,
+            },
+          });
+        }
+        // console.log(
+        //   'handleTabUpdate',
+        //   tabId,
+        //   changeInfo,
+        //   tab,
+        //   checkDataSourcePageTabUrl
+        // );
+
+        if (changeInfo.status === 'complete') {
+          injectFn();
+        }
       }
     };
     chrome.tabs.onUpdated.addListener(handleTabUpdate);
   } else if (name === 'FAVICON_URL') {
-    chrome.tabs.sendMessage(devconsoleTabId, {
+    sendMsgToDevconsole({
       type: 'devconsole',
       name: 'FAVICON_URL',
       params,

@@ -16,6 +16,8 @@ import {
   isUrlWithQueryFn,
   checkIsRequiredUrl,
 } from './utils/utils';
+
+let PRE_ATTEST_PROMOT = '';
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -131,11 +133,14 @@ const extraRequestFn = async () => {
 
   // const storageRes = await chrome.storage.local.get(requestUrl);
   const storageRes = requestsMap;
+  const activeInfo = Object.values(storageRes).find(
+    (i) => i.url === requestUrl
+  );
   try {
     const requestRes = await customFetch(fullRequestUrl, {
       method: 'GET',
       // headers: JSON.parse(storageRes[requestUrl]).headers,
-      headers: storageRes[requestUrl].headers,
+      headers: activeInfo.headers,
     });
 
     const messageIds = [];
@@ -328,6 +333,11 @@ export const pageDecodeMsgListener = async (
 
           if (fl) {
             if (dataSource === 'chatgpt') {
+              fl =
+                !!f &&
+                chatgptHasLogin &&
+                RequestsHasCompleted &&
+                preAlgorithmStatus === '1';
             } else {
               if (!formatAlgorithmParams) {
                 await formatAlgorithmParamsFn();
@@ -695,6 +705,14 @@ export const pageDecodeMsgListener = async (
     chrome.runtime.onMessage.addListener(listenerFn);
 
     if (name === 'init') {
+      const { configMap } = await chrome.storage.local.get(['configMap']);
+      PRE_ATTEST_PROMOT = [
+        'Processing data',
+        'Please login or go to the right page',
+      ];
+      if (configMap && JSON.parse(configMap).PRE_ATTEST_PROMOT) {
+        PRE_ATTEST_PROMOT = JSON.parse(JSON.parse(configMap).PRE_ATTEST_PROMOT);
+      }
       operationType = request.operation;
       const currentWindowTabs = await chrome.tabs.query({
         active: true,
@@ -987,6 +1005,7 @@ export const pageDecodeMsgListener = async (
           ...activeTemplate,
           PADOSERVERURL,
           padoExtensionVersion,
+          PRE_ATTEST_PROMOT,
         },
         dataSourcePageTabId: dataSourcePageTabId,
         isReady: isReadyRequest,
@@ -1099,5 +1118,3 @@ export const pageDecodeMsgListener = async (
     }
   }
 };
-
-

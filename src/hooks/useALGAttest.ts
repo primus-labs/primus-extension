@@ -436,7 +436,7 @@ const useALGAttest = function useAttest() {
             type: codeTipObj.type,
             desc: codeTipObj.desc,
             sourcePageTip: codeTipObj.title,
-            code: `Error code: ${code}`,
+            code: `Error ${code}`,
           });
 
           if (activeAttestation.dataSourceId !== 'coinbase') {

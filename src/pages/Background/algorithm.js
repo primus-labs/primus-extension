@@ -460,7 +460,7 @@ export const algorithmMsgListener = async (
             desc: codeTipObj.desc,
             sourcePageTip:
               code === '40002' ? 'SSLCertificateError' : codeTipObj.title,
-            code: `Error code: ${code}`,
+            code: `Error ${code}`,
           });
 
           if (

@@ -44,6 +44,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         name: 'FAVICON_URL',
         params,
       });
+    } else if (name === 'visitedPagePaths') {
+      window.postMessage({
+        target: 'devconsole',
+        origin: 'primusExtension',
+        name: 'visitedPagePaths',
+        params,
+      });
     }
   }
 });
