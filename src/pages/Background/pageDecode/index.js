@@ -314,7 +314,7 @@ export const pageDecodeMsgListener = async (
                   monadFields['api_id'] = {
                     key: 'api_id',
                     value: profileUrlResult?.user.api_id,
-                    jsonPath: `$.profileUrlResult.user.api_id`,
+                    jsonPath: `$.user.api_id`,
                   };
                   isTargetUrl = true;
                 }
