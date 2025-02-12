@@ -5,6 +5,7 @@ import FooterEl from './FooterEl';
 import HeaderEl from './HeaderEl';
 import FriendlyTip from './FriendlyTip';
 import { injectFont, createDomElement, eventReport } from './utils';
+import { logicForMonad } from './logicForSdk';
 
 import './index.scss';
 console.log(
@@ -199,8 +200,15 @@ chrome.runtime.sendMessage(
         }
         return;
       }
+
       // render
       activeRequest = { ...response.params };
+      // TODO - templateId
+      if (
+        activeRequest.attTemplateID === 'be2268c1-56b2-438a-80cb-eddf2e850b63'
+      ) {
+        logicForMonad();
+      }
       delete activeRequest.PADOSERVERURL;
       delete activeRequest.padoExtensionVersion;
       PADOSERVERURL = response.params.PADOSERVERURL;

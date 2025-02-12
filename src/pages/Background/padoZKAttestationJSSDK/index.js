@@ -312,6 +312,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               padoUrl,
               proxyUrl,
             },
+            attTemplateID,
           };
         } else {
           const resParams = {

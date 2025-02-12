@@ -17,6 +17,16 @@ import {
   checkIsRequiredUrl,
 } from './utils/utils';
 
+const monadEventName = 'zkIgnite'; // TODO
+const monadTemplateId = 'be2268c1-56b2-438a-80cb-eddf2e850b63';
+let monadFields = {};
+let monadEventListUrlFn = (url) => {
+  return url.replace('pagination_limit=25', 'pagination_limit=1000');
+};
+let monadProfileUrlFn = (userId) => {
+  return `https://api.lu.ma/user/profile?username=${userId}`;
+};
+
 let PRE_ATTEST_PROMOT = '';
 let dataSourcePageTabId;
 let activeTemplate = {};
@@ -242,12 +252,20 @@ export const pageDecodeMsgListener = async (
             const jsonPathArr = responses[0].conditions.subconditions.map(
               (i) => i.field
             );
-            const matchRequestUrlResult = await extraRequestFn2({
+            let targetRequestUrl = requestsMap[matchRequestId].url;
+            if (activeTemplate?.attTemplateID === monadTemplateId) {
+              // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
+              targetRequestUrl = monadEventListUrlFn(targetRequestUrl); // TODO
+            }
+            let matchRequestUrlResult = await extraRequestFn2({
               ...requestsMap[matchRequestId],
               header: requestsMap[matchRequestId].headers,
-              url: requestsMap[matchRequestId].url,
+              url: targetRequestUrl,
             });
-            const isTargetUrl = jsonPathArr.every((jpItem) => {
+            // TODO del
+            
+
+            let isTargetUrl = jsonPathArr.every((jpItem) => {
               try {
                 const hasField =
                   jp.query(matchRequestUrlResult, jpItem).length > 0;
@@ -256,6 +274,71 @@ export const pageDecodeMsgListener = async (
                 return false;
               }
             });
+            if (
+              matchRequestUrlResult &&
+              activeTemplate?.attTemplateID === monadTemplateId
+            ) {
+              const monadEventIdx = matchRequestUrlResult?.entries.findIndex(
+                (i) => {
+                  return i.event.name.includes(monadEventName);
+                }
+              );
+              if (monadEventIdx >= 0) {
+                monadFields.name = {
+                  key: 'name',
+                  value:
+                    matchRequestUrlResult?.entries[monadEventIdx].event.name,
+                  jsonPath: `$.entries[${monadEventIdx}].event.name`,
+                };
+                const cookieObj = parseCookie(
+                  requestsMap[matchRequestId].headers.Cookie
+                );
+                const userId =
+                  cookieObj['luma.auth-session-key']?.split('.')[0];
+                if (userId) {
+                  const profileUrl = monadProfileUrlFn(userId);
+                  const profileUrlResult = await extraRequestFn2({
+                    ...requestsMap[matchRequestId],
+                    header: requestsMap[matchRequestId].headers,
+                    url: profileUrl,
+                  });
+                  monadFields['api_id'] = {
+                    key: 'api_id',
+                    value: profileUrlResult?.user.api_id,
+                    jsonPath: `$.profileUrlResult.user.api_id`,
+                  };
+                  isTargetUrl = true;
+                }
+              } else {
+                let errorMsgTitle = [
+                  'Assets Verification',
+                  'Humanity Verification',
+                ].includes(activeTemplate.attestationType)
+                  ? `${activeTemplate.attestationType} failed!`
+                  : `${activeTemplate.attestationType} proof failed!`;
+                const { configMap } = await chrome.storage.local.get([
+                  'configMap',
+                ]);
+                const attestTipMap =
+                  JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ??
+                  {};
+                const errorCode = '00104';
+                let msgObj = {
+                  title: errorMsgTitle,
+                  type: attestTipMap[errorCode].type,
+                  desc: attestTipMap[errorCode].desc,
+                  sourcePageTip: attestTipMap[errorCode].title,
+                };
+                const msg = {
+                  name: 'end',
+                  params: {
+                    result: 'warn',
+                    failReason: { ...msgObj },
+                  },
+                };
+                handleEnd(msg);
+              }
+            }
 
             if (isTargetUrl) {
               sdkTargetRequestId = matchRequestId;
@@ -550,6 +633,31 @@ export const pageDecodeMsgListener = async (
           });
         });
       } else {
+        if (activeTemplate.attTemplateID === monadTemplateId) {
+          formatRequests[0].url = monadEventListUrlFn(formatRequests[0].url);
+          const profileUrl = monadProfileUrlFn(monadFields['api_id'].value);
+          formatRequests[1] = {
+            ...formatRequests[0],
+            url: profileUrl,
+          };
+          const formatResponseItemFn = (idx, { key, value, jsonPath }) => {
+            formatResponse[idx] = {
+              op: 'BOOLEAN_AND',
+              type: 'CONDITION_EXPANSION',
+              subconditions: [
+                {
+                  field: jsonPath,
+                  op: '=',
+                  reveal_id: key,
+                  type: 'FIELD_RANGE',
+                  value,
+                },
+              ],
+            };
+          };
+          formatResponseItemFn(0, monadFields['name']);
+          formatResponseItemFn(1, monadFields['api_id']);
+        }
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';
@@ -1091,30 +1199,25 @@ export const pageDecodeMsgListener = async (
       handlerForSdk(processAlgorithmReq, 'cancel');
     }
     if (name === 'end') {
-      if (dataSourcePageTabId) {
-        chrome.tabs.sendMessage(
-          dataSourcePageTabId,
-          request,
-          function (response) {}
-        );
-        chrome.webRequest.onBeforeSendHeaders.removeListener(
-          onBeforeSendHeadersFn
-        );
-        chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-        chrome.webRequest.onCompleted.removeListener(onCompletedFn);
-        resetVarsFn();
-      }
+      handleEnd(request);
     }
   } else {
     if (name === 'end') {
-      if (dataSourcePageTabId) {
-        chrome.tabs.sendMessage(
-          dataSourcePageTabId,
-          request,
-          function (response) {}
-        );
-        resetVarsFn();
-      }
+      handleEnd(request);
     }
+  }
+};
+
+const handleEnd = (request) => {
+  if (dataSourcePageTabId) {
+    chrome.tabs.sendMessage(
+      dataSourcePageTabId,
+      request,
+      function (response) {}
+    );
+    chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
+    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+    chrome.webRequest.onCompleted.removeListener(onCompletedFn);
+    resetVarsFn();
   }
 };
