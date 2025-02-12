@@ -263,7 +263,6 @@ export const pageDecodeMsgListener = async (
               url: targetRequestUrl,
             });
             // TODO del
-            
 
             let isTargetUrl = jsonPathArr.every((jpItem) => {
               try {
@@ -657,6 +656,20 @@ export const pageDecodeMsgListener = async (
           };
           formatResponseItemFn(0, monadFields['name']);
           formatResponseItemFn(1, monadFields['api_id']);
+          aligorithmParams.calculations = {
+            type: 'CONDITION_EXPANSION',
+            op: '&',
+            subconditions: [
+              {
+                type: 'RESPONSE_ID',
+                id: 0,
+              },
+              {
+                type: 'RESPONSE_ID',
+                id: 1,
+              },
+            ],
+          };
         }
         for (const fr of formatRequests) {
           if (fr.headers) {
