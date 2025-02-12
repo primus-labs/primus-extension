@@ -16,6 +16,7 @@ import { strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from '../dataSourceUtils';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
+import { monadTemplateId, monadCalculations } from './lumaMonad.js';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -196,6 +197,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             dataSourceTemplate,
             sslCipherSuite,
           } = result;
+
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
           const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
           const host =
@@ -291,6 +293,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
               host,
               requests: newRequests,
               responses: newResponses,
+              calculations:
+                attTemplateID === monadTemplateId
+                  ? monadCalculations
+                  : undefined,
             },
             sslCipherSuite,
           };
