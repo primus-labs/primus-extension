@@ -5,7 +5,7 @@ import { queryTemplateById } from '@/services/api/devconsole';
 import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
-import { pageDecodeMsgListener } from '../pageDecode.js';
+import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { attestBrevisFn } from './brevis';
 import { schemaNameFn } from './utils';
 

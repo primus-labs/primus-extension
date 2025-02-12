@@ -2,26 +2,26 @@ import jp from 'jsonpath';
 import {
   assembleAlgorithmParams,
   assembleAlgorithmParamsForSDK,
-} from './exData';
-import { storeDataSource } from './dataSourceUtils';
+} from '../exData';
+import { storeDataSource } from '../dataSourceUtils';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
-import customFetch, { customFetch2 } from './utils/request';
+import customFetch, { customFetch2 } from '../utils/request';
 import {
   monadEventName,
   monadTemplateId,
   monadEventListUrlFn,
   monadProfileUrlFn,
-} from './padoZKAttestationJSSDK/lumaMonad.js';
+} from '../padoZKAttestationJSSDK/lumaMonad.js';
 import {
   isJSONString,
   isObject,
   parseCookie,
   isUrlWithQueryFn,
   checkIsRequiredUrl,
-} from './utils/utils';
+} from '../utils/utils';
 
 let monadFields = {};
 
@@ -261,7 +261,9 @@ export const pageDecodeMsgListener = async (
               header: requestsMap[matchRequestId].headers,
               url: targetRequestUrl,
             });
+            // TODO del
             
+
             let isTargetUrl = jsonPathArr.every((jpItem) => {
               try {
                 const hasField =
@@ -277,7 +279,10 @@ export const pageDecodeMsgListener = async (
             ) {
               const monadEventIdx = matchRequestUrlResult?.entries.findIndex(
                 (i) => {
-                  return i.event.name.includes(monadEventName);
+                  return (
+                    i.event.name.includes(monadEventName) &&
+                    i.role.approval_status === 'approved'
+                  );
                 }
               );
               if (monadEventIdx >= 0) {
@@ -286,6 +291,13 @@ export const pageDecodeMsgListener = async (
                   value:
                     matchRequestUrlResult?.entries[monadEventIdx].event.name,
                   jsonPath: `$.entries[${monadEventIdx}].event.name`,
+                };
+                monadFields.approval_status = {
+                  key: 'approval_status',
+                  value:
+                    matchRequestUrlResult?.entries[monadEventIdx].role
+                      .approval_status,
+                  jsonPath: `$.entries[${monadEventIdx}].role.approval_status`,
                 };
                 const cookieObj = parseCookie(
                   requestsMap[matchRequestId].headers.Cookie
@@ -637,23 +649,28 @@ export const pageDecodeMsgListener = async (
             ...formatRequests[0],
             url: profileUrl,
           };
-          const formatResponseItemFn = (idx, { key, value, jsonPath }) => {
+          const formatResponseItemFn = (idx, subconditionItems) => {
+            const subconditions = subconditionItems.map(
+              ({ key, value, jsonPath }) => ({
+                field: jsonPath,
+                op: '=',
+                reveal_id: key,
+                type: 'FIELD_RANGE',
+                value,
+              })
+            );
+
             formatResponse[idx] = {
               op: 'BOOLEAN_AND',
               type: 'CONDITION_EXPANSION',
-              subconditions: [
-                {
-                  field: jsonPath,
-                  op: '=',
-                  reveal_id: key,
-                  type: 'FIELD_RANGE',
-                  value,
-                },
-              ],
+              subconditions,
             };
           };
-          formatResponseItemFn(0, monadFields['name']);
-          formatResponseItemFn(1, monadFields['api_id']);
+          formatResponseItemFn(0, [
+            monadFields['name'],
+            monadFields['approval_status'],
+          ]);
+          formatResponseItemFn(1, [monadFields['api_id']]);
         }
         for (const fr of formatRequests) {
           if (fr.headers) {

@@ -30,8 +30,8 @@ import {
   EXCHANGEINFO,
 } from './exData';
 import { eventReport } from '@/services/api/usertracker';
-import './pageDecode.js';
-import { pageDecodeMsgListener } from './pageDecode.js';
+import './pageDecode/index.js';
+import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { PadoWebsiteMsgListener } from './pageWebsite.js';
 import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
