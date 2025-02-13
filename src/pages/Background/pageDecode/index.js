@@ -8,22 +8,22 @@ import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
-import customFetch, { customFetch2 } from '../utils/request';
+import customFetch from '../utils/request';
 import {
-  monadEventName,
-  monadTemplateId,
-  monadEventListUrlFn,
-  monadProfileUrlFn,
-} from '../padoZKAttestationJSSDK/lumaMonad.js';
+  templateIdForMonad,
+  eventListUrlForMonad,
+  changeFieldsObjFnForMonad,
+  checkTargetRequestFnForMonad,
+  formatRequestResponseFnForMonad,
+} from './lumaMonad.js';
 import {
-  isJSONString,
   isObject,
   parseCookie,
   isUrlWithQueryFn,
   checkIsRequiredUrl,
+  getErrorMsgFn,
 } from '../utils/utils';
-
-let monadFields = {};
+import { extraRequestFn2 } from './utils';
 
 let PRE_ATTEST_PROMOT = '';
 let dataSourcePageTabId;
@@ -83,7 +83,7 @@ const resetVarsFn = () => {
   chatgptHasLogin = false;
   requestsMap = {};
   sdkTargetRequestId = '';
-  monadFields = {};
+  changeFieldsObjFnForMonad('reset');
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -179,17 +179,6 @@ const extraRequestFn = async () => {
     console.log('fetch chatgpt conversation error', e);
   }
 };
-const extraRequestFn2 = async (params) => {
-  try {
-    const { ...requestParams } = params;
-    const requestRes = await customFetch2(requestParams);
-    if (typeof requestRes === 'object' && requestRes !== null) {
-      return requestRes;
-    }
-  } catch (e) {
-    console.log('fetch custom request error', e);
-  }
-};
 
 // inject-dynamic
 export const pageDecodeMsgListener = async (
@@ -252,9 +241,9 @@ export const pageDecodeMsgListener = async (
               (i) => i.field
             );
             let targetRequestUrl = requestsMap[matchRequestId].url;
-            if (activeTemplate?.attTemplateID === monadTemplateId) {
+            if (activeTemplate?.attTemplateID === templateIdForMonad) {
               // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
-              targetRequestUrl = monadEventListUrlFn(targetRequestUrl); // TODO
+              targetRequestUrl = eventListUrlForMonad(targetRequestUrl); // TODO
             }
             let matchRequestUrlResult = await extraRequestFn2({
               ...requestsMap[matchRequestId],
@@ -274,78 +263,20 @@ export const pageDecodeMsgListener = async (
             });
             if (
               matchRequestUrlResult &&
-              activeTemplate?.attTemplateID === monadTemplateId
+              activeTemplate?.attTemplateID === templateIdForMonad
             ) {
-              const monadEventIdx = matchRequestUrlResult?.entries.findIndex(
-                (i) => {
-                  return (
-                    i.event.name.includes(monadEventName) &&
-                    i.role.approval_status === 'approved'
-                  );
-                }
-              );
-              if (monadEventIdx >= 0) {
-                monadFields.name = {
-                  key: 'name',
-                  value:
-                    matchRequestUrlResult?.entries[monadEventIdx].event.name,
-                  jsonPath: `$.entries[${monadEventIdx}].event.name`,
-                };
-                monadFields.approval_status = {
-                  key: 'approval_status',
-                  value:
-                    matchRequestUrlResult?.entries[monadEventIdx].role
-                      .approval_status,
-                  jsonPath: `$.entries[${monadEventIdx}].role.approval_status`,
-                };
-                const cookieObj = parseCookie(
-                  requestsMap[matchRequestId].headers.Cookie
+              const notMetHandler = async () => {
+                const netMetMsg = await getErrorMsgFn(
+                  activeTemplate.attestationType,
+                  '00104'
                 );
-                const userId =
-                  cookieObj['luma.auth-session-key']?.split('.')[0];
-                if (userId) {
-                  const profileUrl = monadProfileUrlFn(userId);
-                  const profileUrlResult = await extraRequestFn2({
-                    ...requestsMap[matchRequestId],
-                    header: requestsMap[matchRequestId].headers,
-                    url: profileUrl,
-                  });
-                  monadFields['api_id'] = {
-                    key: 'api_id',
-                    value: profileUrlResult?.user.api_id,
-                    jsonPath: `$.user.api_id`,
-                  };
-                  isTargetUrl = true;
-                }
-              } else {
-                let errorMsgTitle = [
-                  'Assets Verification',
-                  'Humanity Verification',
-                ].includes(activeTemplate.attestationType)
-                  ? `${activeTemplate.attestationType} failed!`
-                  : `${activeTemplate.attestationType} proof failed!`;
-                const { configMap } = await chrome.storage.local.get([
-                  'configMap',
-                ]);
-                const attestTipMap =
-                  JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ??
-                  {};
-                const errorCode = '00104';
-                let msgObj = {
-                  title: errorMsgTitle,
-                  type: attestTipMap[errorCode].type,
-                  desc: attestTipMap[errorCode].desc,
-                  sourcePageTip: attestTipMap[errorCode].title,
-                };
-                const msg = {
-                  name: 'end',
-                  params: {
-                    result: 'warn',
-                    failReason: { ...msgObj },
-                  },
-                };
-                handleEnd(msg);
-              }
+                handleEnd(netMetMsg);
+              };
+              isTargetUrl = await checkTargetRequestFnForMonad(
+                matchRequestUrlResult,
+                requestsMap[matchRequestId],
+                notMetHandler
+              );
             }
 
             if (isTargetUrl) {
@@ -505,7 +436,7 @@ export const pageDecodeMsgListener = async (
         aligorithmParams = await assembleAlgorithmParams(form, password);
       }
 
-      const formatRequests = [];
+      let formatRequests = [];
       for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
           continue;
@@ -641,37 +572,11 @@ export const pageDecodeMsgListener = async (
           });
         });
       } else {
-        if (activeTemplate.attTemplateID === monadTemplateId) {
-          formatRequests[0].url = monadEventListUrlFn(formatRequests[0].url);
-          const profileUrl = monadProfileUrlFn(monadFields['api_id'].value);
-          formatRequests[1] = {
-            ...formatRequests[0],
-            url: profileUrl,
-            name: 'sdk-1',
-          };
-          const formatResponseItemFn = (idx, subconditionItems) => {
-            const subconditions = subconditionItems.map(
-              ({ key, value, jsonPath }) => ({
-                field: jsonPath,
-                op: '=',
-                type: 'FIELD_RANGE',
-                value,
-              })
-            );
-
-            formatResponse[idx] = {
-              conditions: {
-                op: 'BOOLEAN_AND',
-                type: 'CONDITION_EXPANSION',
-                subconditions,
-              },
-            };
-          };
-          formatResponseItemFn(0, [
-            monadFields['name'],
-            monadFields['approval_status'],
-          ]);
-          formatResponseItemFn(1, [monadFields['api_id']]);
+        if (activeTemplate.attTemplateID === templateIdForMonad) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForMonad(formatRequests, formatResponse);
+          formatRequests = req;
+          formatResponse = res;
         }
         for (const fr of formatRequests) {
           if (fr.headers) {
