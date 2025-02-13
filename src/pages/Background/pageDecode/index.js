@@ -262,7 +262,6 @@ export const pageDecodeMsgListener = async (
               url: targetRequestUrl,
             });
             // TODO del
-            
 
             let isTargetUrl = jsonPathArr.every((jpItem) => {
               try {
@@ -648,22 +647,24 @@ export const pageDecodeMsgListener = async (
           formatRequests[1] = {
             ...formatRequests[0],
             url: profileUrl,
+            name: 'sdk-1',
           };
           const formatResponseItemFn = (idx, subconditionItems) => {
             const subconditions = subconditionItems.map(
               ({ key, value, jsonPath }) => ({
                 field: jsonPath,
                 op: '=',
-                reveal_id: key,
                 type: 'FIELD_RANGE',
                 value,
               })
             );
 
             formatResponse[idx] = {
-              op: 'BOOLEAN_AND',
-              type: 'CONDITION_EXPANSION',
-              subconditions,
+              conditions: {
+                op: 'BOOLEAN_AND',
+                type: 'CONDITION_EXPANSION',
+                subconditions,
+              },
             };
           };
           formatResponseItemFn(0, [
