@@ -34,7 +34,7 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
           <>
             <span>{initializedTxt1}</span>
             <p className="loading-text"></p>
-            <span>{initializedTxt2}</span>
+            <p className="anotherLine">{initializedTxt2}</p>
           </>
         );
         break;
