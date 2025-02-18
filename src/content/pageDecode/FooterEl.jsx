@@ -22,7 +22,6 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
         el = (
           <>
             <span>{uninitializedTxt}</span>
-            &nbsp;
             <p className="loading-text"></p>
           </>
         );
@@ -35,7 +34,6 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
           <>
             <span>{initializedTxt1}</span>
             <p className="loading-text"></p>
-            &nbsp;
             <span>{initializedTxt2}</span>
           </>
         );
