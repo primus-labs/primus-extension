@@ -11,27 +11,32 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
   const ElCon = useMemo(() => {
     let el = null;
     const {
-      PRE_ATTEST_PROMOT,
+      PRE_ATTEST_PROMOT_V2,
       verificationContent,
       attestationType,
       verificationValue,
     } = activeRequest;
     switch (status) {
       case 'uninitialized':
+        const uninitializedTxt = PRE_ATTEST_PROMOT_V2?.[0]?.text[0];
         el = (
           <>
-            <span>{PRE_ATTEST_PROMOT?.[0]}</span>
+            <span>{uninitializedTxt}</span>
             &nbsp;
             <p className="loading-text"></p>
           </>
         );
         break;
       case 'initialized':
+        const initializedTxtArr = PRE_ATTEST_PROMOT_V2?.[1]?.text;
+        const initializedTxt1 = initializedTxtArr[0];
+        const initializedTxt2 = initializedTxtArr[1];
         el = (
           <>
-            <span>{PRE_ATTEST_PROMOT?.[1]}</span>
-            &nbsp;
+            <span>{initializedTxt1}</span>
             <p className="loading-text"></p>
+            &nbsp;
+            <span>{initializedTxt2}</span>
           </>
         );
         break;
