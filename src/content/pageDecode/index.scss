@@ -238,11 +238,16 @@
           &::after {
             content: '';
             display: inline-block;
-            width: 1em;
+            width: 26px;
             text-align: left;
             animation: dots 1.5s steps(3, end) infinite;
             color: var(--Foreground-muted, #71717a);
           }
+        }
+        .anotherLine {
+          font-size: 12px;
+          line-height: 14px;
+          margin-top: 8px;
         }
       }
     }
