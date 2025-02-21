@@ -1,7 +1,7 @@
 import { extraRequestFn2 } from './utils';
 import { parseCookie } from '../utils/utils';
 
-export const monadEventName = 'zkIgnite'; // TODO
+export const monadEventName = 'DTLA'; // TODO
 export const templateIdForMonad = 'be2268c1-56b2-438a-80cb-eddf2e850b63'; // TODO
 
 export let monadFields = {};
@@ -116,4 +116,16 @@ export const formatRequestResponseFnForMonad = (
   ]);
   formatResponseItemFn(1, [monadFields['api_id']]);
   return { formatRequests, formatResponse };
+};
+
+export const informFollowXForMonad = async (params) => {
+  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+  if (dappTabId) {
+    chrome.tabs.sendMessage(dappTabId, {
+      type: 'padoZKAttestationJSSDK',
+      name: 'followX',
+      params,
+    });
+  }
 };

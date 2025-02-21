@@ -59,7 +59,8 @@
     {
       "matches": [
         "https://twitter.com/intent/follow?screen_name=primus_labs",
-        "https://x.com/intent/follow?screen_name=primus_labs"
+        "https://x.com/intent/follow?screen_name=primus_labs",
+        "https://x.com/intent/follow?screen_name=monad_xyz"
       ],
       "js": ["xFollow.js"]
     },
@@ -83,6 +84,13 @@
       ],
       "js": ["devconsole.bundle.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://localhost:5173/",
+        "http://api-dev.padolabs.org:38086/"
+      ],
+      "js": ["lumaMonadEvent.bundle.js"]
     }
   ]
 }
