@@ -144,7 +144,7 @@ function PadoCard() {
             setErrorTxt({
               code: '00013',
               sourcePageTip:
-                'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+                'Target data missing.',
             });
             var msgObj = {
               type: 'pageDecode',

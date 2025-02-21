@@ -22,6 +22,7 @@ import {
   isUrlWithQueryFn,
   checkIsRequiredUrl,
   getErrorMsgFn,
+  sendMsgToTab,
 } from '../utils/utils';
 import { extraRequestFn2 } from './utils';
 
@@ -53,6 +54,19 @@ let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
 let onCompletedFn = () => {};
 let requestsMap = {};
+
+const sendMsgToSdk = async (msg) => {
+  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+  if (dappTabId) {
+    sendMsgToTab(dappTabId, msg);
+  }
+};
+const sendMsgToDataSourcePage = async (msg) => {
+  if (dataSourcePageTabId) {
+    sendMsgToTab(dataSourcePageTabId, msg);
+  }
+};
 
 const removeRequestsMap = async (url) => {
   // console.log('requestsMap-remove', url);
@@ -128,7 +142,7 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
       resParams.reStartFlag = true;
     }
     try {
-      chrome.tabs.sendMessage(dappTabId, {
+      sendMsgToSdk({
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestationRes',
         params: resParams,
@@ -219,6 +233,9 @@ export const pageDecodeMsgListener = async (
       const sdkRequestUrl = requests[0].url;
 
       const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
+        // if (!requestsMap[key].url) {
+        //   debugger;
+        // }
         const checkRes = checkIsRequiredUrl({
           requestUrl: requestsMap[key].url,
           requiredUrl: sdkRequestUrl,
@@ -240,10 +257,14 @@ export const pageDecodeMsgListener = async (
       });
       if (!hadTargetRequestId) {
         for (const matchRequestId of [...matchRequestIdArr]) {
-          if (requestsMap[matchRequestId].isTarget === 1) {
+          // if (!requestsMap[matchRequestId]) {
+          //   debugger;
+          //   break;
+          // }
+          if (requestsMap[matchRequestId]?.isTarget === 1) {
             sdkTargetRequestId = matchRequestId;
             break;
-          } else if (requestsMap[matchRequestId].isTarget === 2) {
+          } else if (requestsMap[matchRequestId]?.isTarget === 2) {
           } else {
             const jsonPathArr = responses[0].conditions.subconditions.map(
               (i) => i.field
@@ -274,11 +295,22 @@ export const pageDecodeMsgListener = async (
               activeTemplate?.attTemplateID === templateIdForMonad
             ) {
               const notMetHandler = async () => {
+                const notMetCode = '00104';
                 const netMetMsg = await getErrorMsgFn(
                   activeTemplate.attestationType,
-                  '00104'
+                  notMetCode
                 );
                 handleEnd(netMetMsg);
+                sendMsgToSdk({
+                  type: 'padoZKAttestationJSSDK',
+                  name: 'startAttestationRes',
+                  params: {
+                    result: false,
+                    errorData: {
+                      code: notMetCode,
+                    },
+                  },
+                });
               };
               isTargetUrl = await checkTargetRequestFnForMonad(
                 matchRequestUrlResult,
@@ -292,7 +324,9 @@ export const pageDecodeMsgListener = async (
               storeRequestsMap(matchRequestId, { isTarget: 1 });
               break;
             } else {
-              storeRequestsMap(matchRequestId, { isTarget: 2 });
+              if (requestsMap[matchRequestId]) {
+                storeRequestsMap(matchRequestId, { isTarget: 2 });
+              }
             }
           }
         }
@@ -320,6 +354,9 @@ export const pageDecodeMsgListener = async (
           let f = interceptorRequests.every(async (r) => {
             const activeRequestInfo = Object.values(requestsMap).find(
               (rInfo) => {
+                // if (!rInfo.url) {
+                //   debugger;
+                // }
                 const checkRes = checkIsRequiredUrl({
                   requestUrl: rInfo.url,
                   requiredUrl: r.url,
@@ -382,17 +419,13 @@ export const pageDecodeMsgListener = async (
       isReadyRequest = await checkReadyStatusFn();
       if (isReadyRequest) {
         console.log('all web requests are captured', requestsMap);
-        chrome.tabs.sendMessage(
-          dataSourcePageTabId,
-          {
-            type: 'pageDecode',
-            name: 'webRequestIsReady',
-            params: {
-              isReady: isReadyRequest,
-            },
+        sendMsgToDataSourcePage({
+          type: 'pageDecode',
+          name: 'webRequestIsReady',
+          params: {
+            isReady: isReadyRequest,
           },
-          function (response) {}
-        );
+        });
       }
     };
 
@@ -457,6 +490,9 @@ export const pageDecodeMsgListener = async (
           targetRequestId = sdkTargetRequestId;
         } else {
           targetRequestId = Object.values(requestsMap).find((rInfo) => {
+            // if (!rInfo.url) {
+            //   debugger;
+            // }
             const checkRes = checkIsRequiredUrl({
               requestUrl: rInfo.url,
               requiredUrl: r.url,
@@ -771,17 +807,13 @@ export const pageDecodeMsgListener = async (
           if (dataSource === 'chatgpt') {
             const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
             console.log('setUIStep-', tipStr);
-            chrome.tabs.sendMessage(
-              dataSourcePageTabId,
-              {
-                type: 'pageDecode',
-                name: 'setUIStep',
-                params: {
-                  step: tipStr,
-                },
+            sendMsgToDataSourcePage({
+              type: 'pageDecode',
+              name: 'setUIStep',
+              params: {
+                step: tipStr,
               },
-              function (response) {}
-            );
+            });
           }
         }
         const isTarget = requests.some((r) => {
@@ -803,6 +835,10 @@ export const pageDecodeMsgListener = async (
             }
             formatUrlKey = hostUrl;
           }
+
+          // if (!currRequestUrl) {
+          //   debugger;
+          // }
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -880,6 +916,9 @@ export const pageDecodeMsgListener = async (
           if (r.name === 'first') {
             return false;
           }
+          // if (!currRequestUrl) {
+          //   debugger;
+          // }
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -922,17 +961,14 @@ export const pageDecodeMsgListener = async (
           // chatgpt has only one requestUrl
           await extraRequestFn();
           console.log('setUIStep-toVerify');
-          chrome.tabs.sendMessage(
-            dataSourcePageTabId,
-            {
-              type: 'pageDecode',
-              name: 'setUIStep',
-              params: {
-                step: 'toVerify',
-              },
+          sendMsgToDataSourcePage({
+            type: 'pageDecode',
+            name: 'setUIStep',
+            params: {
+              step: 'toVerify',
             },
-            function (response) {}
-          );
+          });
+
           await formatAlgorithmParamsFn();
           console.log('RequestsHasCompleted=', RequestsHasCompleted);
           preAlgorithmFn();
@@ -1116,11 +1152,7 @@ export const pageDecodeMsgListener = async (
 
 const handleEnd = (request) => {
   if (dataSourcePageTabId) {
-    chrome.tabs.sendMessage(
-      dataSourcePageTabId,
-      request,
-      function (response) {}
-    );
+    sendMsgToDataSourcePage(request);
     chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
     chrome.webRequest.onCompleted.removeListener(onCompletedFn);

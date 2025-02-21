@@ -1,7 +1,7 @@
 import { extraRequestFn2 } from './utils';
 import { parseCookie } from '../utils/utils';
 
-export const monadEventName = 'DTLA'; // TODO
+export const monadEventName = 'Love'; // TODO
 export const templateIdForMonad = 'be2268c1-56b2-438a-80cb-eddf2e850b63'; // TODO
 
 export let monadFields = {};
@@ -46,7 +46,7 @@ export const checkTargetRequestFnForMonad = async (
   // matchRequestUrlResult  requestsMap[matchRequestId] notMetHandler
   const monadEventIdx = matchRequestUrlResult?.entries.findIndex((i) => {
     return (
-      i.event.name.includes(monadEventName) &&
+      i.event.name.toLowerCase().includes(monadEventName.toLowerCase()) &&
       i.role.approval_status === 'approved'
     );
   });

@@ -57,7 +57,7 @@ const ZkAttestation = memo(() => {
         });
         return;
       } else {
-          if ("On-chain Transactions" !== typeItem.id) {
+        if ('On-chain Transactions' !== typeItem.id) {
           const padoUrl = await getZkPadoUrl();
           const proxyUrl = await getProxyUrl();
           postMsg(padoServicePort, {

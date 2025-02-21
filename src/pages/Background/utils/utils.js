@@ -98,3 +98,7 @@ export const getErrorMsgFn = async (attestationType, errorCode) => {
   };
   return msg;
 };
+
+export const sendMsgToTab = async (tabId, msg) => {
+  await chrome.tabs.sendMessage(tabId, msg);
+};
