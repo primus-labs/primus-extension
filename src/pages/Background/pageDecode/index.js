@@ -25,7 +25,16 @@ import {
 } from '../utils/utils';
 import { extraRequestFn2 } from './utils';
 
-let PRE_ATTEST_PROMOT = '';
+let PRE_ATTEST_PROMOT_V2 = [
+  {
+    text: ['Processing data'],
+    showTime: 5000,
+  },
+  {
+    text: ['Checking data', 'Ensure login and on target page.'],
+    showTime: 30000,
+  },
+];
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -179,7 +188,6 @@ const extraRequestFn = async () => {
     console.log('fetch chatgpt conversation error', e);
   }
 };
-
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -582,6 +590,7 @@ export const pageDecodeMsgListener = async (
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';
           }
+          fr.url = fr.url.split('#')[0];
         }
       }
       Object.assign(aligorithmParams, {
@@ -632,47 +641,7 @@ export const pageDecodeMsgListener = async (
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest) {
         const { resType, resMethodName } = message;
-        const errorFn = async () => {
-          let resParams = {
-            result: false,
-            errorData: {
-              title: 'Launch failed: unstable connection.',
-              desc: 'Launch failed: unstable connection.',
-              code: '00011',
-            },
-          };
-          const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-            await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-          chrome.tabs.sendMessage(dappTabId, {
-            type: 'padoZKAttestationJSSDK',
-            name: 'getAttestationRes',
-            params: resParams,
-          });
-          const attestationType = formatAlgorithmParams?.attestationType;
-          const errorMsgTitle = [
-            'Assets Verification',
-            'Humanity Verification',
-          ].includes(attestationType)
-            ? `${attestationType} failed!`
-            : `${attestationType} proof failed!`;
 
-          msgObj = {
-            type: 'error',
-            title: errorMsgTitle,
-            desc: 'The algorithm has not been initialized.Please try again later.',
-            sourcePageTip: errorMsgTitle,
-          };
-          await chrome.storage.local.remove([
-            'padoZKAttestationJSSDKBeginAttest',
-            'padoZKAttestationJSSDKWalletAddress',
-            'padoZKAttestationJSSDKAttestationPresetParams',
-            'padoZKAttestationJSSDKXFollowerCount',
-            'activeRequestAttestation',
-          ]);
-          if (dataSourcePageTabId) {
-            await chrome.tabs.remove(dataSourcePageTabId);
-          }
-        };
         if (
           resType === 'algorithm' &&
           ['getAttestation', 'getAttestationResult'].includes(resMethodName)
@@ -694,7 +663,11 @@ export const pageDecodeMsgListener = async (
                     console.log('preAlgorithmTimer-set', preAlgorithmTimer);
                   }
                 } else {
-                  errorFn();
+                  errorFn({
+                    title: 'Launch failed: unstable connection.',
+                    desc: 'Launch failed: unstable connection.',
+                    code: '00011',
+                  });
                 }
               }
               if (resMethodName === 'getAttestationResult') {
@@ -722,7 +695,11 @@ export const pageDecodeMsgListener = async (
                   );
                   clearInterval(preAlgorithmTimer);
                   preAlgorithmStatus = retcode;
-                  errorFn();
+                  errorFn({
+                    title: 'Launch failed: unstable connection.',
+                    desc: 'Launch failed: unstable connection.',
+                    code: '00011',
+                  });
                 }
               }
             }
@@ -734,13 +711,14 @@ export const pageDecodeMsgListener = async (
 
     if (name === 'init') {
       const { configMap } = await chrome.storage.local.get(['configMap']);
-      PRE_ATTEST_PROMOT = [
-        'Processing data',
-        'Please login or go to the right page',
-      ];
-      if (configMap && JSON.parse(configMap).PRE_ATTEST_PROMOT) {
-        PRE_ATTEST_PROMOT = JSON.parse(JSON.parse(configMap).PRE_ATTEST_PROMOT);
+      if (configMap) {
+        const PRE_ATTEST_PROMOTStr =
+          JSON.parse(configMap)?.PRE_ATTEST_PROMOT_V2;
+        if (PRE_ATTEST_PROMOTStr) {
+          PRE_ATTEST_PROMOT_V2 = JSON.parse(PRE_ATTEST_PROMOTStr);
+        }
       }
+
       operationType = request.operation;
       const currentWindowTabs = await chrome.tabs.query({
         active: true,
@@ -1033,7 +1011,7 @@ export const pageDecodeMsgListener = async (
           ...activeTemplate,
           PADOSERVERURL,
           padoExtensionVersion,
-          PRE_ATTEST_PROMOT,
+          PRE_ATTEST_PROMOT_V2,
         },
         dataSourcePageTabId: dataSourcePageTabId,
         isReady: isReadyRequest,
@@ -1120,6 +1098,14 @@ export const pageDecodeMsgListener = async (
     }
     if (name === 'end') {
       handleEnd(request);
+    }
+    if (name === 'interceptionFail') {
+      errorFn({
+        title:
+          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        code: '00013',
+      });
     }
   } else {
     if (name === 'end') {

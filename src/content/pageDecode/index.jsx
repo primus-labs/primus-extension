@@ -125,15 +125,43 @@ function PadoCard() {
   }, [isReadyFetch]);
 
   useEffect(() => {
+    const { PRE_ATTEST_PROMOT_V2 } = activeRequest;
+    const uninitializedShowTime = PRE_ATTEST_PROMOT_V2?.[0]?.showTime;
+    const initializedShowTime = PRE_ATTEST_PROMOT_V2?.[1]?.showTime;
+    let timer2;
     let timer = setTimeout(() => {
       const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
       if (!['verifying', 'result'].includes(lastStatus)) {
         setStatus('initialized');
         sessionStorage.setItem('padoAttestRequestStatus', 'initialized');
+        timer2 = setTimeout(() => {
+          if (!['verifying', 'result'].includes(lastStatus)) {
+            // It prompts that the requests for the template cannot be intercepted.
+
+            setStatus('result');
+            sessionStorage.setItem('padoAttestRequestStatus', 'result');
+            setResultStatus('warn');
+            setErrorTxt({
+              code: '00013',
+              sourcePageTip:
+                'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+            });
+            var msgObj = {
+              type: 'pageDecode',
+              name: 'interceptionFail',
+            };
+            chrome.runtime.sendMessage(msgObj);
+          }
+        }, initializedShowTime);
       }
-    }, 3000);
+    }, uninitializedShowTime);
     return () => {
-      clearTimeout(timer);
+      if (timer) {
+        clearTimeout(timer);
+      }
+      if (timer2) {
+        clearTimeout(timer2);
+      }
     };
   }, []);
 
