@@ -226,7 +226,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
     color: 'blue',
     childMap: ONCHAINVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#1192E8',
-    disabled: false,
+    disabled: true,
     show: true,
     shortName: 'on-chain',
   },

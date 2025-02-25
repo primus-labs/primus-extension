@@ -87,9 +87,9 @@
     },
     {
       "matches": [
-        "http://localhost:5173/",
-        "http://api-dev.padolabs.org:38086/",
-        "https://luckydraw.primuslabs.xyz"
+        "http://localhost:5173/*",
+        "http://api-dev.padolabs.org:38086/*",
+        "https://luckydraw.primuslabs.xyz/*"
       ],
       "js": ["lumaMonadEvent.bundle.js"]
     }

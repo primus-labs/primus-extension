@@ -25,13 +25,13 @@ const Overview = memo(() => {
   const [activeConnectDataSourceId, setActiveConnectDataSourceId] =
     useState<string>();
   const navigate = useNavigate();
-  let dataSourceList = ['web3 wallet', 'x'];
+  let dataSourceList = ['x', 'tiktok'];
   if (size.width >= 1342) {
-    dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance', 'okx'];
+    dataSourceList = ['x', 'tiktok', 'binance', 'okx', 'bybit'];
   } else if (size.width >= 1128) {
-    dataSourceList = ['web3 wallet', 'x', 'tiktok', 'binance'];
+    dataSourceList = ['x', 'tiktok', 'binance', 'okx'];
   } else if (size.width >= 914) {
-    dataSourceList = ['web3 wallet', 'x', 'tiktok'];
+    dataSourceList = ['x', 'tiktok', 'binance'];
   }
   const checkIsConnectedDataSourceFn = useCallback(
     (i) => {
