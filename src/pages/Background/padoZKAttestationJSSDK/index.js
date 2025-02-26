@@ -81,7 +81,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     sdkVersion = params?.sdkVersion;
 
     const { configMap } = await chrome.storage.local.get(['configMap']);
-    const sdkSupportHosts = [];
+    let sdkSupportHosts = [];
     if (
       configMap &&
       JSON.parse(configMap) &&
