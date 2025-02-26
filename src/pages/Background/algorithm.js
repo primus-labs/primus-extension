@@ -170,8 +170,16 @@ export const algorithmMsgListener = async (
       }
     }
     if (resMethodName === 'getAttestationResult') {
-      const attestTipMap =
-        JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
+      let attestTipMap = {};
+      if (
+        configMap &&
+        JSON.parse(configMap) &&
+        JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
+      ) {
+        attestTipMap = JSON.parse(
+          JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
+        );
+      }
       if (!message.res) {
         return;
       }
