@@ -6,8 +6,10 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
     sourcePageTip: 'Error Message.',
   });
   useEffect(() => {
-    setErrorTxtSelf(errorTxt);
-  }, [errorTxt]);
+    if (status === 'result' && errorTxt) {
+      setErrorTxtSelf(errorTxt);
+    }
+  }, [errorTxt, status]);
   const ElCon = useMemo(() => {
     let el = null;
     const {
