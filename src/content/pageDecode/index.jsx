@@ -144,7 +144,7 @@ function PadoCard() {
             setErrorTxt({
               code: '00013',
               sourcePageTip:
-                'Target data missing.',
+                'Target data missing',
             });
             var msgObj = {
               type: 'pageDecode',

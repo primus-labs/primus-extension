@@ -1,7 +1,7 @@
 import { extraRequestFn2 } from './utils';
 import { parseCookie } from '../utils/utils';
 
-export const monadEventName = 'love'; // TODO
+export const monadEventName = 'dtla'; // TODO
 export const templateIdForMonad = 'be2268c1-56b2-438a-80cb-eddf2e850b63'; // TODO
 
 export let monadFields = {};
@@ -130,4 +130,66 @@ export const informFollowXForMonad = async (params) => {
       params,
     });
   }
+};
+
+export const formatRequestResponseFnForMonad2 = (
+  formatRequests,
+  formatResponse
+) => {
+  formatRequests[0].url = eventListUrlForMonad(formatRequests[0].url);
+  const profileUrl = monadProfileUrlFn(monadFields['api_id'].value);
+  formatRequests[1] = {
+    ...formatRequests[0],
+    url: profileUrl,
+    name: 'sdk-1',
+  };
+  const formatResponseItemFn = (idx, subconditionItems) => {
+    const subconditions = subconditionItems.map(({ key, value, jsonPath }) => ({
+      field: jsonPath,
+      op: 'STREQ',
+      type: 'FIELD_RANGE',
+      value,
+    }));
+
+    formatResponse[idx] = {
+      conditions: {
+        op: 'BOOLEAN_AND',
+        type: 'CONDITION_EXPANSION',
+        subconditions,
+      },
+    };
+  };
+  formatResponseItemFn(0, [
+    monadFields['name'],
+    monadFields['approval_status'],
+  ]);
+  formatResponseItemFn(1, [monadFields['api_id']]);
+  formatResponse[0] = {
+    conditions: {
+      type: 'CONDITION_EXPANSION',
+      op: 'MATCH_ONE',
+      field: '$.entries[*]+',
+      subconditions: [
+        {
+          type: 'CONDITION_EXPANSION',
+          op: '&',
+          subconditions: [
+            {
+              type: 'FIELD_RANGE',
+              op: 'STREQ',
+              field: '+.event.name',
+              value: monadFields['name'].value,
+            },
+            // {
+            //   type: 'FIELD_RANGE',
+            //   op: 'STREQ',
+            //   field: '+.role.approval_status',
+            //   value: monadFields['approval_status'].value,
+            // },
+          ],
+        },
+      ],
+    },
+  };
+  return { formatRequests, formatResponse };
 };
