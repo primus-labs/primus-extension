@@ -26,7 +26,7 @@ const basQsMap = {
     id: 3,
     question: 'What should I do if the attestation process fails? ',
     answer:
-      'As the attestation is under zk-TLS process, it often depends on your internet condition. A quick solution is to connect with a new Wifi network/connection, or change to a different VPN node, if possible.If you get an error message with an error code, feel free to contact us in the Discord #help channel.',
+      'As the attestation is undergoing the zkTLS process, it often depends on your internet connection. A quick solution is to connect to a new wifi network or switch to a different VPN node, if possible. If you receive an error message with an error code, feel free to contact us in the Discord #help channel.',
   },
   4: {
     id: 4,
@@ -53,7 +53,7 @@ const lineaQsMap = {
     id: 2,
     question: 'What should I do if the attestation process fails? ',
     answer:
-      'As the attestation is under zk-TLS process, it often depends on your internet condition. A quick solution is to connect with a new Wifi network/connection, or change to a different VPN node, if possible. If you get an error message with an error code, feel free to contact us in the Discord #help channel.',
+      'As the attestation is undergoing the zkTLS process, it often depends on your internet connection. A quick solution is to connect to a new wifi network or switch to a different VPN node, if possible. If you receive an error message with an error code, feel free to contact us in the Discord #help channel.',
     // expand: true,
   },
   3: {
@@ -108,7 +108,7 @@ const earluBirdQsMap = {
     id: 2,
     question: 'What should I do if the attestation process fails? ',
     answer:
-      'As the attestation is under zk-TLS process, it often depends on your internet condition. A quick.solution is to connect with a new Wifi network/connection, or change to a different VPN node, if possible. If you get an error message with an error code, feel free to contact us in the Discord #help channel.',
+      'As the attestation is undergoing the zkTLS process, it often depends on your internet connection. A quick solution is to connect to a new wifi network or switch to a different VPN node, if possible. If you receive an error message with an error code, feel free to contact us in the Discord #help channel.',
     // expand: true,
   },
   3: {
@@ -131,7 +131,7 @@ const ethSignQsMap = {
     id: 2,
     question: 'What should I do if the attestation process fails?',
     answer:
-      'As the attestation is under zk-TLS process, it often depends on your internet condition. A quick solution is to connect with a new Wifi network/connection, or change to a different VPN node, if possible. If you get an error message with an error code, feel free to contact us in the Discord #help channel.',
+      'As the attestation is undergoing the zkTLS process, it often depends on your internet connection. A quick solution is to connect to a new wifi network or switch to a different VPN node, if possible. If you receive an error message with an error code, feel free to contact us in the Discord #help channel.',
     // expand: true,
   },
   3: {
