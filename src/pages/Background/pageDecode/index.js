@@ -24,7 +24,7 @@ import {
   getErrorMsgFn,
   sendMsgToTab,
 } from '../utils/utils';
-import { extraRequestFn2 } from './utils';
+import { extraRequestFn2, errorFn } from './utils';
 
 let PRE_ATTEST_PROMOT_V2 = [
   {

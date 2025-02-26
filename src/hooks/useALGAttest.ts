@@ -659,6 +659,21 @@ const useALGAttest = function useAttest() {
           // if (activeRequest?.type === 'loading') {
           //   setIntervalSwitch(false);
           // }
+        } else if (name === 'interceptionFail') {
+          clearFetchAttestationTimer();
+          await chrome.storage.local.remove(['activeRequestAttestation']);
+          addMsg({
+            type: 'error',
+            title,
+            desc: 'Unable to proceed. Target data missing.',
+          });
+          dispatch(setAttestLoading(3));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { btnTxt: 'Try Again' },
+            })
+          );
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
