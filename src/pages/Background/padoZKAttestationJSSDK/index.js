@@ -15,7 +15,7 @@ import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import {
   templateIdForMonad,
   monadCalculations,
-} from '../pageDecode/lumaMonad.js';
+} from '../lumaMonadEvent/index.js';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};

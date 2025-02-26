@@ -15,7 +15,7 @@ import {
   changeFieldsObjFnForMonad,
   checkTargetRequestFnForMonad,
   formatRequestResponseFnForMonad,
-} from './lumaMonad.js';
+} from '../lumaMonadEvent/index.js';
 import {
   isObject,
   parseCookie,
@@ -279,7 +279,6 @@ export const pageDecodeMsgListener = async (
               header: requestsMap[matchRequestId].headers,
               url: targetRequestUrl,
             });
-            // TODO del
 
             let isTargetUrl = jsonPathArr.every((jpItem) => {
               try {

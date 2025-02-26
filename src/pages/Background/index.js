@@ -37,7 +37,6 @@ import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
-import { informFollowXForMonad } from './pageDecode/lumaMonad';
 import { listener as lumaMonadEventMsgListener } from './lumaMonadEvent/index.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
@@ -636,7 +635,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (type === 'xFollow') {
     const { name } = message;
     if (name === 'follow') {
-      // informFollowXForMonad(params);
       lumaMonadEventMsgListener(message, sender);
     }
   }
