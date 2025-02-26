@@ -30,7 +30,7 @@ export const listener = async (request, sender) => {
   }
 };
 
-export const monadEventName = 'Monad'; // TODO
+export const monadEventName = 'love'; // TODOMonad
 export const templateIdForMonad = 'be2268c1-56b2-438a-80cb-eddf2e850b63'; // TODO
 
 export let monadFields = {};
