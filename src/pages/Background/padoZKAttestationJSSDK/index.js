@@ -81,8 +81,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
     sdkVersion = params?.sdkVersion;
 
     const { configMap } = await chrome.storage.local.get(['configMap']);
-    const sdkSupportHosts =
-      JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST) ?? [];
+    let sdkSupportHosts = [];
+    if (
+      configMap &&
+      JSON.parse(configMap) &&
+      JSON.parse(configMap).SDK_SUPPORT_HOST
+    ) {
+      sdkSupportHosts = JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST);
+    }
     const dappTabId = await storeDappTabId(sender.tab.id);
 
     if (!sdkVersion) {
@@ -561,8 +567,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
         'configMap',
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
-    const attestTipMap =
-      JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
+    let attestTipMap = {};
+    if (
+      configMap &&
+      JSON.parse(configMap) &&
+      JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
+    ) {
+      attestTipMap = JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE);
+    }
 
     const activeAttestationParams = JSON.parse(
       padoZKAttestationJSSDKAttestationPresetParams

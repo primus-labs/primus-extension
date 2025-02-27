@@ -319,7 +319,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   } = form;
   // const urlObj = new URL(dataPageTemplate.baseUrl);
   // const baseName = urlObj.host;
-  const user = await assembleUserInfoParams({});
+  const user = await assembleUserInfoParams({}, true);
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   const { id: authUserId } = JSON.parse(userInfo);
   const authUseridHash = strToHex(authUserId);
@@ -487,7 +487,7 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   }
   return extRequestsOrderInfo;
 }
-async function assembleUserInfoParams(form) {
+async function assembleUserInfoParams(form, isFromSDK) {
   const { event } = form;
   const {
     connectedWalletAddress,
@@ -522,8 +522,9 @@ async function assembleUserInfoParams(form) {
       }
     }
   }
-  if (padoZKAttestationJSSDKWalletAddress) {
+  if (isFromSDK && padoZKAttestationJSSDKWalletAddress) {
     formatAddress = padoZKAttestationJSSDKWalletAddress;
+    console.log('algorithmParams-userAddress-isFromSDK', formatAddress);
   }
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {

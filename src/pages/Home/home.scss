@@ -8,9 +8,9 @@
   &.dark{
     background: #161616;
   }
-  // &.fixedH {
-  //   height: 100vh;
-  // }
+  &.fixedH {
+    height: 100vh;
+  }
   &.autoH {
     height: fit-content;
   }

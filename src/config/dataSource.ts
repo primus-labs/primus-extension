@@ -307,7 +307,7 @@ export const guideMap = {
 };
 
 export const SUPPORTATTESTDATASOURCES = [
-  'web3 wallet',
+  // 'web3 wallet',
   'binance',
   'okx',
   'x',
