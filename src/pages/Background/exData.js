@@ -526,6 +526,7 @@ async function assembleUserInfoParams(form, isFromSDK) {
   }
   if (isFromSDK && padoZKAttestationJSSDKWalletAddress) {
     formatAddress = padoZKAttestationJSSDKWalletAddress;
+    console.log('algorithmParams-userAddress-isFromSDK', formatAddress);
   }
   console.log(
     'algorithmParams-userAddress',

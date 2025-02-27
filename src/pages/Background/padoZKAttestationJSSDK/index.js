@@ -577,7 +577,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
         'configMap',
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
-
     let attestTipMap = {};
     if (
       configMap &&

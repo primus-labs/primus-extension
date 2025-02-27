@@ -31,7 +31,7 @@ export const listener = async (request, sender) => {
 };
 
 export const monadEventName = 'Monad'; // TODOMonad
-export const templateIdForMonad = 'be2268c1-56b2-438a-80cb-eddf2e850b63'; // TODO
+export const templateIdForMonad = 'be2268c1-56b2-438a-80cb-eddf2e850b63';
 
 export let monadFields = {};
 export let eventListUrlForMonad = (url, paginationCursor) => {

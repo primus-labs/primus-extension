@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
-
+import { EARLYBIRDNFTEVENTNAME } from '@/config/events';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import SplicedIcons from '@/newComponents/SplicedIcons';
@@ -29,6 +29,9 @@ interface PDropdownProps {
 const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
   const navigate = useNavigate();
   const checkIsActive = (i) => {
+    if (i.id === EARLYBIRDNFTEVENTNAME) {
+      return false;
+    }
     if (i.periodType === '1') {
       return true;
     }

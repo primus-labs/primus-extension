@@ -122,8 +122,8 @@ const useALGAttest = function useAttest() {
           ].includes(activeAttestation.attestationType)
             ? `${activeAttestation.attestationType} failed!`
             : `${activeAttestation.attestationType} proof failed!`;
-          
-          //  else if (retcode === '2') 
+
+          //  else if (retcode === '2')
           const msgObj = {
             type: 'error',
             title: errorMsgTitle,
