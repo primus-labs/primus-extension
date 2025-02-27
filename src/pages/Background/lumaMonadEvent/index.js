@@ -30,12 +30,16 @@ export const listener = async (request, sender) => {
   }
 };
 
-export const monadEventName = 'Monad'; // TODO
+export const monadEventName = 'Monad'; // TODOMonad
 export const templateIdForMonad = 'be2268c1-56b2-438a-80cb-eddf2e850b63'; // TODO
 
 export let monadFields = {};
-export let eventListUrlForMonad = (url) => {
-  return url.replace('pagination_limit=25', 'pagination_limit=1000');
+export let eventListUrlForMonad = (url, paginationCursor) => {
+  let newUrl = url.replace('pagination_limit=25', `pagination_limit=10`);
+  if (paginationCursor) {
+    newUrl += `&pagination_cursor=${paginationCursor}`;
+  }
+  return newUrl;
 };
 export let monadProfileUrlFn = (userId) => {
   return `https://api.lu.ma/user/profile?username=${userId}`;
@@ -68,31 +72,27 @@ export const changeFieldsObjFnForMonad = (op, key, value) => {
 };
 
 export const checkTargetRequestFnForMonad = async (
+  targetRequestUrl,
   matchRequestUrlResult,
   requestMetaInfo,
   notMetHandler
 ) => {
-  // matchRequestUrlResult  requestsMap[matchRequestId] notMetHandler
-  const monadEventIdx = matchRequestUrlResult?.entries.findIndex((i) => {
-    const lcEventName = i.event.name.toLowerCase();
-    const lcMonadEventName = monadEventName.toLowerCase();
-    return (
-      lcEventName.includes(lcMonadEventName) &&
-      i.role.approval_status === 'approved'
-    );
-  });
-  if (monadEventIdx >= 0) {
+  let checkRes = false;
+  const metHandler = async (eventList, monadEventIdx, metUrl) => {
     changeFieldsObjFnForMonad('add', 'name', {
       key: 'name',
-      value: matchRequestUrlResult?.entries[monadEventIdx].event.name,
+      value: eventList[monadEventIdx].event.name,
       jsonPath: `$.entries[${monadEventIdx}].event.name`,
     });
     changeFieldsObjFnForMonad('add', 'approval_status', {
       key: 'approval_status',
-      value: matchRequestUrlResult?.entries[monadEventIdx].role.approval_status,
+      value: eventList[monadEventIdx].role.approval_status,
       jsonPath: `$.entries[${monadEventIdx}].role.approval_status`,
     });
-
+    changeFieldsObjFnForMonad('add', 'eventListUrl', {
+      key: 'eventListUrl',
+      value: metUrl,
+    });
     const cookieObj = parseCookie(requestMetaInfo?.headers?.Cookie);
     const userId = cookieObj['luma.auth-session-key']?.split('.')[0];
     if (userId) {
@@ -107,18 +107,59 @@ export const checkTargetRequestFnForMonad = async (
         value: profileUrlResult?.user.api_id,
         jsonPath: `$.user.api_id`,
       });
-      return true;
+
+      checkRes = true;
     }
-  } else {
-    await notMetHandler();
-  }
+  };
+
+  const checkFn = async (result, checkUrl) => {
+    if (result) {
+      const eventList = result?.entries || [];
+      const monadEventIdx = eventList.findIndex((i) => {
+        const lcEventName = i.event.name.toLowerCase();
+        const lcMonadEventName = monadEventName.toLowerCase();
+        return (
+          lcEventName.includes(lcMonadEventName) &&
+          i.role.approval_status === 'approved'
+        );
+        // TODO
+      });
+
+      if (monadEventIdx >= 0) {
+        console.log('monad-check-met');
+        await metHandler(eventList, monadEventIdx, checkUrl);
+      } else {
+        if (result?.has_more) {
+          targetRequestUrl = eventListUrlForMonad(
+            requestMetaInfo.url,
+            result?.next_cursor
+          );
+          let nextResult = await extraRequestFn2({
+            ...requestMetaInfo,
+            header: requestMetaInfo.headers,
+            url: targetRequestUrl,
+          });
+          console.log('monad-check-2');
+          await checkFn(nextResult, targetRequestUrl);
+        } else {
+          console.log('monad-check-notmet');
+          await notMetHandler();
+        }
+      }
+    } else {
+      await notMetHandler();
+    }
+  };
+  console.log('monad-check1');
+  await checkFn(matchRequestUrlResult, targetRequestUrl);
+  return checkRes;
 };
 
 export const formatRequestResponseFnForMonad = (
   formatRequests,
   formatResponse
 ) => {
-  formatRequests[0].url = eventListUrlForMonad(formatRequests[0].url);
+  formatRequests[0].url = monadFields['eventListUrl'].value;
   const profileUrl = monadProfileUrlFn(monadFields['api_id'].value);
   formatRequests[1] = {
     ...formatRequests[0],
@@ -143,7 +184,7 @@ export const formatRequestResponseFnForMonad = (
   };
   formatResponseItemFn(0, [
     monadFields['name'],
-    monadFields['approval_status'],
+    monadFields['approval_status'],// TODO
   ]);
   formatResponseItemFn(1, [monadFields['api_id']]);
   return { formatRequests, formatResponse };

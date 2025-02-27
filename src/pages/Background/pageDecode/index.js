@@ -233,9 +233,6 @@ export const pageDecodeMsgListener = async (
       const sdkRequestUrl = requests[0].url;
 
       const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
-        // if (!requestsMap[key].url) {
-        //   debugger;
-        // }
         const checkRes = checkIsRequiredUrl({
           requestUrl: requestsMap[key].url,
           requiredUrl: sdkRequestUrl,
@@ -257,10 +254,6 @@ export const pageDecodeMsgListener = async (
       });
       if (!hadTargetRequestId) {
         for (const matchRequestId of [...matchRequestIdArr]) {
-          // if (!requestsMap[matchRequestId]) {
-          //   debugger;
-          //   break;
-          // }
           if (requestsMap[matchRequestId]?.isTarget === 1) {
             sdkTargetRequestId = matchRequestId;
             break;
@@ -312,6 +305,7 @@ export const pageDecodeMsgListener = async (
                 });
               };
               isTargetUrl = await checkTargetRequestFnForMonad(
+                targetRequestUrl,
                 matchRequestUrlResult,
                 requestsMap[matchRequestId],
                 notMetHandler
@@ -353,9 +347,6 @@ export const pageDecodeMsgListener = async (
           let f = interceptorRequests.every(async (r) => {
             const activeRequestInfo = Object.values(requestsMap).find(
               (rInfo) => {
-                // if (!rInfo.url) {
-                //   debugger;
-                // }
                 const checkRes = checkIsRequiredUrl({
                   requestUrl: rInfo.url,
                   requiredUrl: r.url,
@@ -489,9 +480,6 @@ export const pageDecodeMsgListener = async (
           targetRequestId = sdkTargetRequestId;
         } else {
           targetRequestId = Object.values(requestsMap).find((rInfo) => {
-            // if (!rInfo.url) {
-            //   debugger;
-            // }
             const checkRes = checkIsRequiredUrl({
               requestUrl: rInfo.url,
               requiredUrl: r.url,
@@ -778,6 +766,9 @@ export const pageDecodeMsgListener = async (
         if (details.tabId !== dataSourcePageTabId) {
           return;
         }
+        if (details.method === 'OPTIONS') {
+          return;
+        }
         let {
           dataSource,
           jumpTo,
@@ -835,9 +826,7 @@ export const pageDecodeMsgListener = async (
             formatUrlKey = hostUrl;
           }
 
-          // if (!currRequestUrl) {
-          //   debugger;
-          // }
+          
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -848,6 +837,7 @@ export const pageDecodeMsgListener = async (
         });
 
         if (isTarget) {
+          console.log('monad-details', details);
           let newCapturedInfo = {
             headers: formatHeader,
             method,
@@ -904,6 +894,9 @@ export const pageDecodeMsgListener = async (
         if (subDetails.tabId !== dataSourcePageTabId) {
           return;
         }
+        if (subDetails.method === 'OPTIONS') {
+          return;
+        }
         let {
           datasourceTemplate: { requests },
         } = activeTemplate;
@@ -915,9 +908,7 @@ export const pageDecodeMsgListener = async (
           if (r.name === 'first') {
             return false;
           }
-          // if (!currRequestUrl) {
-          //   debugger;
-          // }
+          
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,

@@ -11,7 +11,7 @@ export const extraRequestFn2 = async (params) => {
   }
 };
 
-export const errorFn = async (errorData) => {
+export const errorFn = async (errorData, dataSourcePageTabId) => {
   let resParams = {
     result: false,
     errorData,
