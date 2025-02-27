@@ -122,8 +122,8 @@ const useALGAttest = function useAttest() {
           ].includes(activeAttestation.attestationType)
             ? `${activeAttestation.attestationType} failed!`
             : `${activeAttestation.attestationType} proof failed!`;
-          
-          //  else if (retcode === '2') 
+
+          //  else if (retcode === '2')
           const msgObj = {
             type: 'error',
             title: errorMsgTitle,
@@ -659,6 +659,21 @@ const useALGAttest = function useAttest() {
           // if (activeRequest?.type === 'loading') {
           //   setIntervalSwitch(false);
           // }
+        } else if (name === 'interceptionFail') {
+          clearFetchAttestationTimer();
+          await chrome.storage.local.remove(['activeRequestAttestation']);
+          addMsg({
+            type: 'error',
+            title,
+            desc: 'Unable to proceed. Target data missing.',
+          });
+          dispatch(setAttestLoading(3));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { btnTxt: 'Try Again' },
+            })
+          );
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&

@@ -4,13 +4,13 @@
   cursor: pointer;
   @include frcc;
   height: 100vh;
-  background: #F9F9F9;
-  &.dark{
+  background: #f9f9f9;
+  &.dark {
     background: #161616;
   }
-  // &.fixedH {
-  //   height: 100vh;
-  // }
+  &.fixedH {
+    height: 100vh;
+  }
   &.autoH {
     height: fit-content;
   }

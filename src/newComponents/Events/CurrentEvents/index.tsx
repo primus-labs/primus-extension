@@ -72,23 +72,23 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
           { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
         ],
       },
-      {
-        id: EARLYBIRDNFTEVENTNAME,
-        combineType: '0',
+      // {
+      //   id: EARLYBIRDNFTEVENTNAME,
+      //   combineType: '0',
 
-        periodType: '1',
+      //   periodType: '1',
 
-        picTxt: 'Early Bird NFT Rewards',
-        title: 'Early Bird Rewards',
-        desc: 'Complete an attestation with any kind of Asset Certificate.',
-        points: [
-          {
-            pointIconFont: 'icon-iconBlockChain',
-            pointDesc: 'Early Birld NFT',
-          },
-          { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
-        ],
-      },
+      //   picTxt: 'Early Bird NFT Rewards',
+      //   title: 'Early Bird Rewards',
+      //   desc: 'Complete an attestation with any kind of Asset Certificate.',
+      //   points: [
+      //     {
+      //       pointIconFont: 'icon-iconBlockChain',
+      //       pointDesc: 'Early Birld NFT',
+      //     },
+      //     { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
+      //   ],
+      // },
     ];
 
     return newList;

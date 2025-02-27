@@ -59,7 +59,8 @@
     {
       "matches": [
         "https://twitter.com/intent/follow?screen_name=primus_labs",
-        "https://x.com/intent/follow?screen_name=primus_labs"
+        "https://x.com/intent/follow?screen_name=primus_labs",
+        "https://x.com/intent/follow?screen_name=monad_xyz"
       ],
       "js": ["xFollow.js"]
     },
@@ -83,6 +84,14 @@
       ],
       "js": ["devconsole.bundle.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://localhost:5173/*",
+        "https://luckydraw.primuslabs.xyz/*",
+        "https://test-luckydraw.primuslabs.xyz/*"
+      ],
+      "js": ["lumaMonadEvent.bundle.js"]
     }
   ]
 }

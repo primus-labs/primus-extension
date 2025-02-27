@@ -81,8 +81,14 @@ export const getErrorMsgFn = async (attestationType, errorCode) => {
     ? `${attestationType} failed!`
     : `${attestationType} proof failed!`;
   const { configMap } = await chrome.storage.local.get(['configMap']);
-  const attestTipMap =
-    JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
+  let attestTipMap = {};
+  if (
+    configMap &&
+    JSON.parse(configMap) &&
+    JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
+  ) {
+    attestTipMap = JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE);
+  }
   let msgObj = {
     title: errorMsgTitle,
     type: attestTipMap[errorCode].type,
@@ -97,4 +103,8 @@ export const getErrorMsgFn = async (attestationType, errorCode) => {
     },
   };
   return msg;
+};
+
+export const sendMsgToTab = async (tabId, msg) => {
+  await chrome.tabs.sendMessage(tabId, msg);
 };

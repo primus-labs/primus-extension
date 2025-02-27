@@ -11,4 +11,28 @@ export const extraRequestFn2 = async (params) => {
   }
 };
 
+export const errorFn = async (errorData, dataSourcePageTabId) => {
+  let resParams = {
+    result: false,
+    errorData,
+  };
+  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+  chrome.tabs.sendMessage(dappTabId, {
+    type: 'padoZKAttestationJSSDK',
+    name: 'getAttestationRes',
+    params: resParams,
+  });
+  await chrome.storage.local.remove([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKWalletAddress',
+    'padoZKAttestationJSSDKAttestationPresetParams',
+    'padoZKAttestationJSSDKXFollowerCount',
+    'activeRequestAttestation',
+  ]);
+  if (dataSourcePageTabId) {
+    await chrome.tabs.remove(dataSourcePageTabId);
+  }
+};
+
 

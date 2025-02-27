@@ -120,5 +120,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         params,
       });
     }
+    if (name === 'followX') {
+      window.postMessage({
+        target: 'padoZKAttestationJSSDK',
+        origin: 'padoExtension',
+        name: 'followX',
+        params,
+      });
+    }
   }
 });

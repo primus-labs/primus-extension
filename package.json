@@ -1,6 +1,6 @@
 {
   "name": "PADO",
-  "version": "0.3.23",
+  "version": "0.3.26",
   "description": "PADO Browser Extension",
   "license": "MIT",
   "repository": {
@@ -11,6 +11,7 @@
     "build": "node utils/build.js",
     "build:test": "node utils/buildtest.js",
     "start": "node utils/webserver.js",
+    "dev": "node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
