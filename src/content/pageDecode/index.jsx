@@ -81,13 +81,16 @@ function PadoCard() {
   }, []);
 
   const handleBack = useCallback(async () => {
-    removeStorageValuesFn();
     var msgObj = {
       type: 'pageDecode',
       name: 'close',
+      params: {
+        tabId: activeRequest?.tabId,
+      },
     };
     await chrome.runtime.sendMessage(msgObj);
-  }, []);
+    removeStorageValuesFn();
+  }, [activeRequest?.tabId]);
   const handleConfirm = useCallback(async () => {
     var eventInfo = {
       eventType: 'ATTESTATION_START',
@@ -135,16 +138,16 @@ function PadoCard() {
         setStatus('initialized');
         sessionStorage.setItem('padoAttestRequestStatus', 'initialized');
         timer2 = setTimeout(() => {
-          if (!['verifying', 'result'].includes(lastStatus)) {
+          const lastStatus2 = sessionStorage.getItem('padoAttestRequestStatus');
+          console.log('timer2', lastStatus, lastStatus2);
+          if (!['verifying', 'result'].includes(lastStatus2)) {
             // It prompts that the requests for the template cannot be intercepted.
-
             setStatus('result');
             sessionStorage.setItem('padoAttestRequestStatus', 'result');
             setResultStatus('warn');
             setErrorTxt({
               code: '00013',
-              sourcePageTip:
-                'Target data missing',
+              sourcePageTip: 'Target data missing',
             });
             var msgObj = {
               type: 'pageDecode',
@@ -231,6 +234,7 @@ chrome.runtime.sendMessage(
 
       // render
       activeRequest = { ...response.params };
+      console.log('activeRequest', activeRequest);
       // TODO - templateId
       if (
         activeRequest.attTemplateID === 'be2268c1-56b2-438a-80cb-eddf2e850b63'

@@ -19,9 +19,12 @@ function FooterEl({ status, setStatus, isReadyFetch = false, resultStatus }) {
     var msgObj = {
       type: 'dataSourceWeb',
       name: 'close',
+      params: {
+        tabId: activeRequest?.tabId,
+      },
     };
     await chrome.runtime.sendMessage(msgObj);
-  }, []);
+  }, [activeRequest?.tabId]);
   const handleCancel = useCallback(async () => {
     removeStorageValuesFn();
     var msgObj = {

@@ -1,4 +1,3 @@
-
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { storeDataSource } from './dataSourceUtils';
 
@@ -334,6 +333,7 @@ export const dataSourceWebMsgListener = async (
         name: 'append',
         params: {
           ...activeTemplate,
+          tabId: tabCreatedByPado.id,
         },
         dataSourcePageTabId: tabCreatedByPado.id,
         isReady: isReadyRequest,
@@ -357,12 +357,15 @@ export const dataSourceWebMsgListener = async (
         await storeDataSource(exchangeName, ex, port);
       }
     }
-   
+
     if (name === 'close' || name === 'cancel' || name === 'cancelByPado') {
       await chrome.tabs.update(currExtentionId, {
         active: true,
       });
-      await chrome.tabs.remove(tabCreatedByPado.id);
+      const deleteTabId = params?.tabId || tabCreatedByPado.id;
+      if (deleteTabId) {
+        await chrome.tabs.remove(deleteTabId);
+      }
       activeTemplate = {};
     }
     if (name === 'end') {

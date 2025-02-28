@@ -826,7 +826,6 @@ export const pageDecodeMsgListener = async (
             formatUrlKey = hostUrl;
           }
 
-          
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -908,7 +907,7 @@ export const pageDecodeMsgListener = async (
           if (r.name === 'first') {
             return false;
           }
-          
+
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -1038,6 +1037,7 @@ export const pageDecodeMsgListener = async (
           PADOSERVERURL,
           padoExtensionVersion,
           PRE_ATTEST_PROMOT_V2,
+          tabId: dataSourcePageTabId,
         },
         dataSourcePageTabId: dataSourcePageTabId,
         isReady: isReadyRequest,
@@ -1116,8 +1116,10 @@ export const pageDecodeMsgListener = async (
       } catch (error) {
         console.log('cancel error:', error);
       }
-      if (dataSourcePageTabId) {
-        await chrome.tabs.remove(dataSourcePageTabId);
+
+      const deleteTabId = params?.tabId || dataSourcePageTabId;
+      if (deleteTabId) {
+        await chrome.tabs.remove(deleteTabId);
       }
       resetVarsFn();
       handlerForSdk(processAlgorithmReq, 'cancel');
