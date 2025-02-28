@@ -81,6 +81,7 @@ function PadoCard() {
   }, []);
 
   const handleBack = useCallback(async () => {
+    console.log('handleBack-tabId', activeRequest?.tabId);
     var msgObj = {
       type: 'pageDecode',
       name: 'close',

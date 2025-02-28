@@ -1118,6 +1118,7 @@ export const pageDecodeMsgListener = async (
       }
 
       const deleteTabId = params?.tabId || dataSourcePageTabId;
+      console.log('pageDecode-close-tabId', params?.tabId, dataSourcePageTabId);
       if (deleteTabId) {
         await chrome.tabs.remove(deleteTabId);
       }
