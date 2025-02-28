@@ -15,12 +15,13 @@ function removeStorageValuesFn() {
 }
 function FooterEl({ status, setStatus, isReadyFetch = false, resultStatus }) {
   const handleOK = useCallback(async () => {
-    removeStorageValuesFn();
+    // removeStorageValuesFn();
     var msgObj = {
       type: 'dataSourceWeb',
       name: 'close',
       params: {
         tabId: activeRequest?.tabId,
+        extensionVersion: '0.3.27',
       },
     };
     await chrome.runtime.sendMessage(msgObj);

@@ -87,10 +87,11 @@ function PadoCard() {
       name: 'close',
       params: {
         tabId: activeRequest?.tabId,
+        extensionVersion: '0.3.27'
       },
     };
     await chrome.runtime.sendMessage(msgObj);
-    removeStorageValuesFn();
+    // removeStorageValuesFn();
   }, [activeRequest?.tabId]);
   const handleConfirm = useCallback(async () => {
     var eventInfo = {
