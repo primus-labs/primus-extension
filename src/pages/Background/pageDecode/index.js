@@ -1137,6 +1137,24 @@ export const pageDecodeMsgListener = async (
     if (name === 'close' || name === 'cancel') {
       chandleClose(params, processAlgorithmReq);
     }
+    if (name === 'interceptionFail') {
+      errorFn({
+        title:
+          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        code: '00013',
+      });
+    }
+    if (name === 'dataSourcePageDialogTimeout') {
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+      });
+      errorFn({
+        title: 'Request Timed Out',
+        desc: 'The process did not respond within 2 minutes. Please try again later.',
+        code: '00002',
+      });
+    }
     if (name === 'end') {
       handleEnd(request);
     }
