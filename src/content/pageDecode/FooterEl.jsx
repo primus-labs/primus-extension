@@ -64,7 +64,6 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
         }
         break;
     }
-    console.log('timer2-3', status, resultStatus, errorTxtSelf, el);
     return el;
   }, [status, resultStatus, errorTxtSelf?.code, activeRequest]);
 

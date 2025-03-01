@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import RightEl from './RightEl';
 import FooterEl from './FooterEl';
@@ -26,8 +26,10 @@ function removeStorageValuesFn() {
 }
 
 function PadoCard() {
+  
   const [UIStep, setUIStep] = useState('loading');
   const [status, setStatus] = useState('uninitialized');
+  const statusRef = useRef(status);
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   const [errorTxt, setErrorTxt] = useState();
@@ -133,47 +135,59 @@ function PadoCard() {
   useEffect(() => {
     const { PRE_ATTEST_PROMOT_V2 } = activeRequest;
     const uninitializedShowTime = PRE_ATTEST_PROMOT_V2?.[0]?.showTime;
-    const initializedShowTime = PRE_ATTEST_PROMOT_V2?.[1]?.showTime;
-    let timer2;
-    let timer3;
     let timer = setTimeout(() => {
       const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
       if (!['verifying', 'result'].includes(lastStatus)) {
         setStatus('initialized');
         sessionStorage.setItem('padoAttestRequestStatus', 'initialized');
-        timer2 = setTimeout(() => {
-          const lastStatus2 = sessionStorage.getItem('padoAttestRequestStatus');
-          console.log('timer2', lastStatus, lastStatus2);
-          if (!['verifying', 'result'].includes(lastStatus2)) {
-            // It prompts that the requests for the template cannot be intercepted.
-            setStatus('result');
-            sessionStorage.setItem('padoAttestRequestStatus', 'result');
-            setResultStatus('warn');
-            setErrorTxt({
-              code: '00013',
-              sourcePageTip: 'Target data missing',
-            });
-            console.log('timer2-1');
-            var msgObj = {
-              type: 'pageDecode',
-              name: 'interceptionFail',
-            };
-            chrome.runtime.sendMessage(msgObj);
-          }
-        }, initializedShowTime); // initializedShowTime
       }
     }, uninitializedShowTime); // uninitializedShowTime
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, []);
+  useEffect(() => {
+    const { PRE_ATTEST_PROMOT_V2 } = activeRequest;
+    const initializedShowTime = PRE_ATTEST_PROMOT_V2?.[1]?.showTime;
+    let timer2;
+    if (status === 'initialized') {
+      timer2 = setTimeout(() => {
+        const lastStatus2 = sessionStorage.getItem('padoAttestRequestStatus');
+        console.log('timer2', lastStatus2, statusRef.current);
+        if (!['verifying', 'result'].includes(statusRef.current)) {
+          // It prompts that the requests for the template cannot be intercepted.
+          sessionStorage.setItem('padoAttestRequestStatus', 'result');
+          // setStatus('verifying');
+          // setTimeout(() => {
+          setStatus((s) => 'result');
+          setResultStatus((s) => 'warn');
+          setErrorTxt((s) => ({
+            code: '00013',
+            sourcePageTip: 'Target data missing',
+          }));
+          // }, 100);
+
+          var msgObj = {
+            type: 'pageDecode',
+            name: 'interceptionFail',
+          };
+          chrome.runtime.sendMessage(msgObj);
+        }
+      }, initializedShowTime); // initializedShowTime
+    }
+    let timer3;
+
     if (status === 'verifying') {
       timer3 = setTimeout(() => {
         const lastStatus3 = sessionStorage.getItem('padoAttestRequestStatus');
-        console.log('timer3', lastStatus3);
-        if (timer) {
-          clearTimeout(timer);
-        }
+        console.log('timer3', lastStatus3, statusRef.current);
         if (timer2) {
           clearTimeout(timer2);
         }
-        if (!['result'].includes(lastStatus3)) {
+        if (!['result'].includes(statusRef.current)) {
           // It automatically shows as a timeout.
           setStatus('result');
           sessionStorage.setItem('padoAttestRequestStatus', 'result');
@@ -192,9 +206,6 @@ function PadoCard() {
     }
 
     return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
       if (timer2) {
         clearTimeout(timer2);
       }
@@ -203,18 +214,10 @@ function PadoCard() {
       }
     };
   }, [status]);
-  const vDom = useMemo(() => {
-    const a = (
-      <FooterEl
-        status={status}
-        resultStatus={resultStatus}
-        errorTxt={errorTxt}
-        activeRequest={activeRequest}
-      />
-    );
-    console.log('vDom', status, resultStatus, errorTxt, a);
-  }, [status, resultStatus, errorTxt, activeRequest]);
-
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
+  
   return (
     <>
       {(activeRequest.dataSourceId === 'chatgpt' && isReadyFetch) ||
