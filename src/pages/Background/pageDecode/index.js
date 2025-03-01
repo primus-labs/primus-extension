@@ -1109,21 +1109,7 @@ export const pageDecodeMsgListener = async (
     }
 
     if (name === 'close' || name === 'cancel') {
-      try {
-        await chrome.tabs.update(currExtentionId, {
-          active: true,
-        });
-      } catch (error) {
-        console.log('cancel error:', error);
-      }
-
-      const deleteTabId = params?.tabId || dataSourcePageTabId;
-      console.log('pageDecode-close-tabId', params?.tabId, dataSourcePageTabId);
-      if (deleteTabId) {
-        await chrome.tabs.remove(deleteTabId);
-      }
-      resetVarsFn();
-      handlerForSdk(processAlgorithmReq, 'cancel');
+      chandleClose(params, processAlgorithmReq);
     }
     if (name === 'end') {
       handleEnd(request);
@@ -1158,4 +1144,29 @@ const handleEnd = (request) => {
     chrome.webRequest.onCompleted.removeListener(onCompletedFn);
     resetVarsFn();
   }
+};
+const chandleClose = async (params, processAlgorithmReq) => {
+  console.log('pageDecode-close');
+  const deleteTabId = params?.tabId || dataSourcePageTabId;
+  console.log('pageDecode-close-tabId', params?.tabId, dataSourcePageTabId);
+  if (deleteTabId) {
+    try {
+      await chrome.tabs.remove(deleteTabId);
+    } catch (e) {
+      console.log('chrome.tabs.remove error:', error);
+    }
+  }
+  console.log('pageDecode-close-currExtentionId', currExtentionId);
+  try {
+    if (currExtentionId) {
+      await chrome.tabs.update(currExtentionId, {
+        active: true,
+      });
+    }
+  } catch (error) {
+    console.log('chrome.tabs.update error:', error);
+  }
+
+  resetVarsFn();
+  handlerForSdk(processAlgorithmReq, 'cancel');
 };
