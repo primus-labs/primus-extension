@@ -43,13 +43,20 @@ function PadoCard() {
 
   useEffect(() => {
     const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
+    const lastResultStatus = sessionStorage.getItem(
+      'padoAttestRequestResultStatus'
+    );
     const lastErrorTxt = sessionStorage.getItem('padoAttestRequestErrorTxt');
     const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
     const lastPrimusUIStep = sessionStorage.getItem('primusUIStep');
 
     if (lastStatus) {
       setStatus(lastStatus);
-      if (lastErrorTxt) {
+      if (lastResultStatus === 'success') {
+        setResultStatus('success');
+      }
+      if (lastErrorTxt && lastErrorTxt !== 'undefined') {
+        console.log('lastErrorTxt', lastErrorTxt);
         setErrorTxt(JSON.parse(lastErrorTxt));
       }
     } else {
@@ -82,7 +89,15 @@ function PadoCard() {
         console.log('content receive:end', request, failReason);
         setStatus('result');
         sessionStorage.setItem('padoAttestRequestStatus', 'result');
-        sessionStorage.setItem('padoAttestRequestErrorTxt', JSON.stringify(failReason));
+        if (failReason) {
+          sessionStorage.setItem(
+            'padoAttestRequestErrorTxt',
+            JSON.stringify(failReason)
+          );
+        }
+        if (result === 'success') {
+          sessionStorage.setItem('padoAttestRequestResultStatus', 'success');
+        }
         setResultStatus(result);
         setErrorTxt(failReason);
       }
@@ -174,7 +189,10 @@ function PadoCard() {
             code: '00013',
             sourcePageTip: 'Target data missing',
           };
-          sessionStorage.setItem('padoAttestRequestErrorTxt', JSON.stringify(errorObj));
+          sessionStorage.setItem(
+            'padoAttestRequestErrorTxt',
+            JSON.stringify(errorObj)
+          );
           setStatus((s) => 'result');
           setResultStatus((s) => 'warn');
           setErrorTxt((s) => errorObj);
@@ -204,7 +222,10 @@ function PadoCard() {
             code: '00002',
             sourcePageTip: 'Request Timed Out',
           };
-          sessionStorage.setItem('padoAttestRequestErrorTxt', JSON.stringify(errorObj));
+          sessionStorage.setItem(
+            'padoAttestRequestErrorTxt',
+            JSON.stringify(errorObj)
+          );
           setResultStatus('warn');
           setErrorTxt(errorObj);
           var msgObj = {
