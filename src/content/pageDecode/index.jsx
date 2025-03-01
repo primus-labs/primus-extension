@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from 'react';
 import { createRoot } from 'react-dom/client';
 import RightEl from './RightEl';
 import FooterEl from './FooterEl';
@@ -26,7 +32,6 @@ function removeStorageValuesFn() {
 }
 
 function PadoCard() {
-  
   const [UIStep, setUIStep] = useState('loading');
   const [status, setStatus] = useState('uninitialized');
   const statusRef = useRef(status);
@@ -38,11 +43,15 @@ function PadoCard() {
 
   useEffect(() => {
     const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
+    const lastErrorTxt = sessionStorage.getItem('padoAttestRequestErrorTxt');
     const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
     const lastPrimusUIStep = sessionStorage.getItem('primusUIStep');
 
     if (lastStatus) {
       setStatus(lastStatus);
+      if (lastErrorTxt) {
+        setErrorTxt(JSON.parse(lastErrorTxt));
+      }
     } else {
       setStatus('uninitialized');
     }
@@ -73,6 +82,7 @@ function PadoCard() {
         console.log('content receive:end', request, failReason);
         setStatus('result');
         sessionStorage.setItem('padoAttestRequestStatus', 'result');
+        sessionStorage.setItem('padoAttestRequestErrorTxt', JSON.stringify(failReason));
         setResultStatus(result);
         setErrorTxt(failReason);
       }
@@ -160,15 +170,14 @@ function PadoCard() {
         if (!['verifying', 'result'].includes(statusRef.current)) {
           // It prompts that the requests for the template cannot be intercepted.
           sessionStorage.setItem('padoAttestRequestStatus', 'result');
-          // setStatus('verifying');
-          // setTimeout(() => {
-          setStatus((s) => 'result');
-          setResultStatus((s) => 'warn');
-          setErrorTxt((s) => ({
+          const errorObj = {
             code: '00013',
             sourcePageTip: 'Target data missing',
-          }));
-          // }, 100);
+          };
+          sessionStorage.setItem('padoAttestRequestErrorTxt', JSON.stringify(errorObj));
+          setStatus((s) => 'result');
+          setResultStatus((s) => 'warn');
+          setErrorTxt((s) => errorObj);
 
           var msgObj = {
             type: 'pageDecode',
@@ -191,11 +200,13 @@ function PadoCard() {
           // It automatically shows as a timeout.
           setStatus('result');
           sessionStorage.setItem('padoAttestRequestStatus', 'result');
-          setResultStatus('warn');
-          setErrorTxt({
+          const errorObj = {
             code: '00002',
             sourcePageTip: 'Request Timed Out',
-          });
+          };
+          sessionStorage.setItem('padoAttestRequestErrorTxt', JSON.stringify(errorObj));
+          setResultStatus('warn');
+          setErrorTxt(errorObj);
           var msgObj = {
             type: 'pageDecode',
             name: 'dataSourcePageDialogTimeout',
@@ -217,7 +228,7 @@ function PadoCard() {
   useEffect(() => {
     statusRef.current = status;
   }, [status]);
-  
+
   return (
     <>
       {(activeRequest.dataSourceId === 'chatgpt' && isReadyFetch) ||
