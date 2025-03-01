@@ -5,11 +5,15 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
     sourcePageTip: 'Error Message.',
   });
   useEffect(() => {
-    console.log('timer2-2', status, errorTxt, resultStatus);
-    if (status === 'result' && errorTxt) {
+    console.log('timer2-2', status, resultStatus, errorTxt, errorTxtSelf);
+    if (status === 'result' && errorTxt?.sourcePageTip) {
+      console.log('timer2-7');
       setErrorTxtSelf(errorTxt);
     }
-  }, [errorTxt, status]);
+  }, [errorTxt?.sourcePageTip, status]);
+  useEffect(() => {
+    console.log('timer2-4', errorTxtSelf);
+  }, [errorTxtSelf]);
   const ElCon = useMemo(() => {
     let el = null;
     const {
@@ -65,7 +69,7 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
         break;
     }
     return el;
-  }, [status, resultStatus, errorTxtSelf?.code, activeRequest]);
+  }, [status, resultStatus, errorTxtSelf, activeRequest]);
 
   return (
     <div
