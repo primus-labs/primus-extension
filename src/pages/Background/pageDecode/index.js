@@ -1124,6 +1124,9 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'dataSourcePageDialogTimeout') {
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+      });
       errorFn({
         title: 'Request Timed Out',
         desc: 'The process did not respond within 2 minutes. Please try again later.',
