@@ -1136,6 +1136,13 @@ export const pageDecodeMsgListener = async (
         code: '00013',
       });
     }
+    if (name === 'dataSourcePageDialogTimeout') {
+      errorFn({
+        title: 'Request Timed Out',
+        desc: 'The process did not respond within 2 minutes. Please try again later.',
+        code: '00002',
+      });
+    }
   } else {
     if (name === 'end') {
       handleEnd(request);

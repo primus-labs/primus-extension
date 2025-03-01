@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import RightEl from './RightEl';
 import FooterEl from './FooterEl';
@@ -6,6 +6,7 @@ import HeaderEl from './HeaderEl';
 import FriendlyTip from './FriendlyTip';
 import { injectFont, createDomElement, eventReport } from './utils';
 import { logicForMonad } from './logicForSdk';
+const ATTESTATIONPOLLINGTIMEOUT = 2 * 60 * 1000;
 
 import './index.scss';
 console.log(
@@ -87,7 +88,7 @@ function PadoCard() {
       name: 'close',
       params: {
         tabId: activeRequest?.tabId,
-        extensionVersion: '0.3.27'
+        extensionVersion: '0.3.27',
       },
     };
     await chrome.runtime.sendMessage(msgObj);
@@ -134,6 +135,7 @@ function PadoCard() {
     const uninitializedShowTime = PRE_ATTEST_PROMOT_V2?.[0]?.showTime;
     const initializedShowTime = PRE_ATTEST_PROMOT_V2?.[1]?.showTime;
     let timer2;
+    let timer3;
     let timer = setTimeout(() => {
       const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
       if (!['verifying', 'result'].includes(lastStatus)) {
@@ -151,15 +153,44 @@ function PadoCard() {
               code: '00013',
               sourcePageTip: 'Target data missing',
             });
+            console.log('timer2-1');
             var msgObj = {
               type: 'pageDecode',
               name: 'interceptionFail',
             };
             chrome.runtime.sendMessage(msgObj);
           }
-        }, initializedShowTime);
+        }, initializedShowTime); // initializedShowTime
       }
-    }, uninitializedShowTime);
+    }, uninitializedShowTime); // uninitializedShowTime
+    if (status === 'verifying') {
+      timer3 = setTimeout(() => {
+        const lastStatus3 = sessionStorage.getItem('padoAttestRequestStatus');
+        console.log('timer3', lastStatus3);
+        if (timer) {
+          clearTimeout(timer);
+        }
+        if (timer2) {
+          clearTimeout(timer2);
+        }
+        if (!['result'].includes(lastStatus3)) {
+          // It automatically shows as a timeout.
+          setStatus('result');
+          sessionStorage.setItem('padoAttestRequestStatus', 'result');
+          setResultStatus('warn');
+          setErrorTxt({
+            code: '00002',
+            sourcePageTip: 'Request Timed Out',
+          });
+          var msgObj = {
+            type: 'pageDecode',
+            name: 'dataSourcePageDialogTimeout',
+          };
+          chrome.runtime.sendMessage(msgObj);
+        }
+      }, ATTESTATIONPOLLINGTIMEOUT);
+    }
+
     return () => {
       if (timer) {
         clearTimeout(timer);
@@ -167,8 +198,22 @@ function PadoCard() {
       if (timer2) {
         clearTimeout(timer2);
       }
+      if (timer3) {
+        clearTimeout(timer3);
+      }
     };
-  }, []);
+  }, [status]);
+  const vDom = useMemo(() => {
+    const a = (
+      <FooterEl
+        status={status}
+        resultStatus={resultStatus}
+        errorTxt={errorTxt}
+        activeRequest={activeRequest}
+      />
+    );
+    console.log('vDom', status, resultStatus, errorTxt, a);
+  }, [status, resultStatus, errorTxt, activeRequest]);
 
   return (
     <>
