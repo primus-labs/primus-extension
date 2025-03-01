@@ -213,6 +213,7 @@ export const pageDecodeMsgListener = async (
   processAlgorithmReq
 ) => {
   const { name, params, operation } = request;
+  console.log('pageDecodeMsgListener');
   if (name === 'init') {
     activeTemplate = {};
     activeTemplate = params;
@@ -1130,6 +1131,9 @@ export const pageDecodeMsgListener = async (
       });
     }
   } else {
+    if (name === 'close' || name === 'cancel') {
+      chandleClose(params, processAlgorithmReq);
+    }
     if (name === 'end') {
       handleEnd(request);
     }
