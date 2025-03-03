@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import type { Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuthAttestation } from '@/services/api/cred';
 import type { UserState } from '@/types/store';
@@ -12,6 +13,7 @@ import { schemaTypeMap } from '../config/constants';
 import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
 import { finishTaskForEvent } from '@/services/api/achievements';
+import { setSocialSourcesAsync } from '@/store/actions';
 
 type CreateAuthWindowCallBack = (
   state: string,
@@ -24,6 +26,7 @@ type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 // connect & join discord
 
 const useAuthorization2 = () => {
+  const dispatch: Dispatch<any> = useDispatch();
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
   const DISCORDINVITEURL = useMemo(() => {
     return sysConfig.DISCORD_INVITE_LINK;
@@ -86,6 +89,7 @@ const useAuthorization2 = () => {
             await chrome.storage.local.set({
               [lowerCaseSourceName]: JSON.stringify(socialSourceData),
             });
+            dispatch(setSocialSourcesAsync());
           }
         };
         timer = setInterval(() => {
@@ -104,13 +108,13 @@ const useAuthorization2 = () => {
         const discordObj = JSON.parse(data.discord);
         let ext = {
           discordUserId: discordObj.uniqueId.replace('DISCORD_', ''),
-          // name: eventId 
+          // name: eventId
         };
         const finishCheckRsp = await finishTaskForEvent(ext);
         if (finishCheckRsp.rc === 0) {
           // setFinished(true);
           clearInterval(joinTimer);
-          // redresh score 
+          // redresh score
           setAuthWindowId(undefined);
           newWindowId &&
             chrome.windows.get(newWindowId, {}, (win) => {

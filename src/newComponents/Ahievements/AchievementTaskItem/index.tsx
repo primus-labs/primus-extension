@@ -970,6 +970,11 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
             onClick={handleClickFn}
             className={'achievementTaskitemFinishBtn'}
             loading={btnIsLoading}
+            disabled={[
+              'CONNECT_HUOBI_DATA',
+              'CONNECT_MEXC_DATA',
+              'CONNECT_GITHUB_DATA',
+            ].includes(taskItem.taskIdentifier)}
           />
         )}
       </div>

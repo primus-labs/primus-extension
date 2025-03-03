@@ -674,6 +674,21 @@ const useALGAttest = function useAttest() {
               msgObj: { btnTxt: 'Try Again' },
             })
           );
+        } else if (name === 'dataSourcePageDialogTimeout') {
+          clearFetchAttestationTimer();
+          await chrome.storage.local.remove(['activeRequestAttestation']);
+          addMsg({
+            type: 'error',
+            title,
+            desc: 'The process did not respond within 2 minutes. Please try again later.',
+          });
+          dispatch(setAttestLoading(3));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { btnTxt: 'Try Again' },
+            })
+          );
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&

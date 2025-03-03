@@ -213,6 +213,7 @@ export const pageDecodeMsgListener = async (
   processAlgorithmReq
 ) => {
   const { name, params, operation } = request;
+  console.log('pageDecodeMsgListener');
   if (name === 'init') {
     activeTemplate = {};
     activeTemplate = params;
@@ -826,7 +827,6 @@ export const pageDecodeMsgListener = async (
             formatUrlKey = hostUrl;
           }
 
-          
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -908,7 +908,7 @@ export const pageDecodeMsgListener = async (
           if (r.name === 'first') {
             return false;
           }
-          
+
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -1038,6 +1038,7 @@ export const pageDecodeMsgListener = async (
           PADOSERVERURL,
           padoExtensionVersion,
           PRE_ATTEST_PROMOT_V2,
+          tabId: dataSourcePageTabId,
         },
         dataSourcePageTabId: dataSourcePageTabId,
         isReady: isReadyRequest,
@@ -1109,18 +1110,7 @@ export const pageDecodeMsgListener = async (
     }
 
     if (name === 'close' || name === 'cancel') {
-      try {
-        await chrome.tabs.update(currExtentionId, {
-          active: true,
-        });
-      } catch (error) {
-        console.log('cancel error:', error);
-      }
-      if (dataSourcePageTabId) {
-        await chrome.tabs.remove(dataSourcePageTabId);
-      }
-      resetVarsFn();
-      handlerForSdk(processAlgorithmReq, 'cancel');
+      chandleClose(params, processAlgorithmReq);
     }
     if (name === 'end') {
       handleEnd(request);
@@ -1133,7 +1123,38 @@ export const pageDecodeMsgListener = async (
         code: '00013',
       });
     }
+    if (name === 'dataSourcePageDialogTimeout') {
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+      });
+      errorFn({
+        title: 'Request Timed Out',
+        desc: 'The process did not respond within 2 minutes. Please try again later.',
+        code: '00002',
+      });
+    }
   } else {
+    if (name === 'close' || name === 'cancel') {
+      chandleClose(params, processAlgorithmReq);
+    }
+    if (name === 'interceptionFail') {
+      errorFn({
+        title:
+          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        code: '00013',
+      });
+    }
+    if (name === 'dataSourcePageDialogTimeout') {
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+      });
+      errorFn({
+        title: 'Request Timed Out',
+        desc: 'The process did not respond within 2 minutes. Please try again later.',
+        code: '00002',
+      });
+    }
     if (name === 'end') {
       handleEnd(request);
     }
@@ -1148,4 +1169,29 @@ const handleEnd = (request) => {
     chrome.webRequest.onCompleted.removeListener(onCompletedFn);
     resetVarsFn();
   }
+};
+const chandleClose = async (params, processAlgorithmReq) => {
+  console.log('pageDecode-close');
+  const deleteTabId = params?.tabId || dataSourcePageTabId;
+  console.log('pageDecode-close-tabId', params?.tabId, dataSourcePageTabId);
+  if (deleteTabId) {
+    try {
+      await chrome.tabs.remove(deleteTabId);
+    } catch (e) {
+      console.log('chrome.tabs.remove error:', error);
+    }
+  }
+  console.log('pageDecode-close-currExtentionId', currExtentionId);
+  try {
+    if (currExtentionId) {
+      await chrome.tabs.update(currExtentionId, {
+        active: true,
+      });
+    }
+  } catch (error) {
+    console.log('chrome.tabs.update error:', error);
+  }
+
+  resetVarsFn();
+  handlerForSdk(processAlgorithmReq, 'cancel');
 };

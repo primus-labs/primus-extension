@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from 'react';
 import { createRoot } from 'react-dom/client';
 import RightEl from './RightEl';
 import FooterEl from './FooterEl';
@@ -6,6 +12,7 @@ import HeaderEl from './HeaderEl';
 import FriendlyTip from './FriendlyTip';
 import { injectFont, createDomElement, eventReport } from './utils';
 import { logicForMonad } from './logicForSdk';
+const ATTESTATIONPOLLINGTIMEOUT = 2 * 60 * 1000;
 
 import './index.scss';
 console.log(
@@ -27,6 +34,7 @@ function removeStorageValuesFn() {
 function PadoCard() {
   const [UIStep, setUIStep] = useState('loading');
   const [status, setStatus] = useState('uninitialized');
+  const statusRef = useRef(status);
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   const [errorTxt, setErrorTxt] = useState();
@@ -35,11 +43,22 @@ function PadoCard() {
 
   useEffect(() => {
     const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
+    const lastResultStatus = sessionStorage.getItem(
+      'padoAttestRequestResultStatus'
+    );
+    const lastErrorTxt = sessionStorage.getItem('padoAttestRequestErrorTxt');
     const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
     const lastPrimusUIStep = sessionStorage.getItem('primusUIStep');
 
     if (lastStatus) {
       setStatus(lastStatus);
+      if (lastResultStatus === 'success') {
+        setResultStatus('success');
+      }
+      if (lastErrorTxt && lastErrorTxt !== 'undefined') {
+        console.log('lastErrorTxt', lastErrorTxt);
+        setErrorTxt(JSON.parse(lastErrorTxt));
+      }
     } else {
       setStatus('uninitialized');
     }
@@ -70,6 +89,15 @@ function PadoCard() {
         console.log('content receive:end', request, failReason);
         setStatus('result');
         sessionStorage.setItem('padoAttestRequestStatus', 'result');
+        if (failReason) {
+          sessionStorage.setItem(
+            'padoAttestRequestErrorTxt',
+            JSON.stringify(failReason)
+          );
+        }
+        if (result === 'success') {
+          sessionStorage.setItem('padoAttestRequestResultStatus', 'success');
+        }
         setResultStatus(result);
         setErrorTxt(failReason);
       }
@@ -81,13 +109,18 @@ function PadoCard() {
   }, []);
 
   const handleBack = useCallback(async () => {
-    removeStorageValuesFn();
+    console.log('handleBack-tabId', activeRequest?.tabId);
     var msgObj = {
       type: 'pageDecode',
       name: 'close',
+      params: {
+        tabId: activeRequest?.tabId,
+        extensionVersion: '0.3.27',
+      },
     };
     await chrome.runtime.sendMessage(msgObj);
-  }, []);
+    // removeStorageValuesFn();
+  }, [activeRequest?.tabId]);
   const handleConfirm = useCallback(async () => {
     var eventInfo = {
       eventType: 'ATTESTATION_START',
@@ -127,43 +160,95 @@ function PadoCard() {
   useEffect(() => {
     const { PRE_ATTEST_PROMOT_V2 } = activeRequest;
     const uninitializedShowTime = PRE_ATTEST_PROMOT_V2?.[0]?.showTime;
-    const initializedShowTime = PRE_ATTEST_PROMOT_V2?.[1]?.showTime;
-    let timer2;
     let timer = setTimeout(() => {
       const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
       if (!['verifying', 'result'].includes(lastStatus)) {
         setStatus('initialized');
         sessionStorage.setItem('padoAttestRequestStatus', 'initialized');
-        timer2 = setTimeout(() => {
-          if (!['verifying', 'result'].includes(lastStatus)) {
-            // It prompts that the requests for the template cannot be intercepted.
-
-            setStatus('result');
-            sessionStorage.setItem('padoAttestRequestStatus', 'result');
-            setResultStatus('warn');
-            setErrorTxt({
-              code: '00013',
-              sourcePageTip:
-                'Target data missing',
-            });
-            var msgObj = {
-              type: 'pageDecode',
-              name: 'interceptionFail',
-            };
-            chrome.runtime.sendMessage(msgObj);
-          }
-        }, initializedShowTime);
       }
-    }, uninitializedShowTime);
+    }, uninitializedShowTime); // uninitializedShowTime
+
     return () => {
       if (timer) {
         clearTimeout(timer);
       }
+    };
+  }, []);
+  useEffect(() => {
+    const { PRE_ATTEST_PROMOT_V2 } = activeRequest;
+    const initializedShowTime = PRE_ATTEST_PROMOT_V2?.[1]?.showTime;
+    let timer2;
+    if (status === 'initialized') {
+      timer2 = setTimeout(() => {
+        const lastStatus2 = sessionStorage.getItem('padoAttestRequestStatus');
+        console.log('timer2', lastStatus2, statusRef.current);
+        if (!['verifying', 'result'].includes(statusRef.current)) {
+          // It prompts that the requests for the template cannot be intercepted.
+          sessionStorage.setItem('padoAttestRequestStatus', 'result');
+          const errorObj = {
+            code: '00013',
+            sourcePageTip: 'Target data missing',
+          };
+          sessionStorage.setItem(
+            'padoAttestRequestErrorTxt',
+            JSON.stringify(errorObj)
+          );
+          setStatus((s) => 'result');
+          setResultStatus((s) => 'warn');
+          setErrorTxt((s) => errorObj);
+
+          var msgObj = {
+            type: 'pageDecode',
+            name: 'interceptionFail',
+          };
+          chrome.runtime.sendMessage(msgObj);
+        }
+      }, initializedShowTime); // initializedShowTime
+    }
+    let timer3;
+
+    if (status === 'verifying') {
+      timer3 = setTimeout(() => {
+        const lastStatus3 = sessionStorage.getItem('padoAttestRequestStatus');
+        console.log('timer3', lastStatus3, statusRef.current);
+        if (timer2) {
+          clearTimeout(timer2);
+        }
+        if (!['result'].includes(statusRef.current)) {
+          // It automatically shows as a timeout.
+          setStatus('result');
+          sessionStorage.setItem('padoAttestRequestStatus', 'result');
+          const errorObj = {
+            code: '00002',
+            sourcePageTip: 'Request Timed Out',
+          };
+          sessionStorage.setItem(
+            'padoAttestRequestErrorTxt',
+            JSON.stringify(errorObj)
+          );
+          setResultStatus('warn');
+          setErrorTxt(errorObj);
+          var msgObj = {
+            type: 'pageDecode',
+            name: 'dataSourcePageDialogTimeout',
+          };
+          chrome.runtime.sendMessage(msgObj);
+        }
+      }, ATTESTATIONPOLLINGTIMEOUT);
+    }
+
+    return () => {
       if (timer2) {
         clearTimeout(timer2);
       }
+      if (timer3) {
+        clearTimeout(timer3);
+      }
     };
-  }, []);
+  }, [status]);
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
 
   return (
     <>
@@ -231,6 +316,7 @@ chrome.runtime.sendMessage(
 
       // render
       activeRequest = { ...response.params };
+      console.log('activeRequest', activeRequest);
       // TODO - templateId
       if (
         activeRequest.attTemplateID === 'be2268c1-56b2-438a-80cb-eddf2e850b63'
