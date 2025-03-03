@@ -728,7 +728,7 @@ const useALGAttest = function useAttest() {
   useEffect(() => {
     if (attestLoading === 1) {
       if (
-        !['google', 'discord', 'web3 wallet'].includes(
+        !['web3 wallet'].includes(
           activeAttestation.dataSourceId
         )
       ) {
