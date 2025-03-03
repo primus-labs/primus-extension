@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import type { Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuthAttestation } from '@/services/api/cred';
 import type { UserState } from '@/types/store';
@@ -25,7 +26,7 @@ type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
 // connect & join discord
 
 const useAuthorization2 = () => {
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<any> = useDispatch();
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
   const DISCORDINVITEURL = useMemo(() => {
     return sysConfig.DISCORD_INVITE_LINK;
