@@ -727,7 +727,11 @@ const useALGAttest = function useAttest() {
   }, [dispatch, attestLoading, activeAttestation]);
   useEffect(() => {
     if (attestLoading === 1) {
-      if (!['google', 'web3 wallet'].includes(activeAttestation.dataSourceId)) {
+      if (
+        !['google', 'discord', 'web3 wallet'].includes(
+          activeAttestation.dataSourceId
+        )
+      ) {
         setTimeoutSwitch(true);
       }
     }

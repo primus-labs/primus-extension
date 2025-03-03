@@ -71,7 +71,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const contentList = useMemo(() => {
       let supportedContentIdArr: any = [];
 
-      if (dataSourceId === 'google') {
+      if (['google', 'discord'].includes(dataSourceId)) {
         supportedContentIdArr = ['Account ownership'];
       } else {
         supportedContentIdArr = Object.keys(

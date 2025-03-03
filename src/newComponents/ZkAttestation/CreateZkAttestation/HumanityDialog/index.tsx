@@ -444,7 +444,7 @@ const Nav: React.FC<PButtonProps> = memo(
       }
     }, [presets]);
     useEffect(() => {
-      if (assetForm.dataSourceId === 'google') {
+      if (['google', 'discord'].includes(assetForm.dataSourceId)) {
         if (attestLoading === 3) {
           setStep(3);
           setActiveSendToChainRequest({
@@ -461,7 +461,7 @@ const Nav: React.FC<PButtonProps> = memo(
       <>
         {step === 3 ? (
           <SetProcessDialog
-            preset={DATASOURCEMAP['google'].icon}
+            preset={DATASOURCEMAP[assetForm.dataSourceId].icon}
             onClose={onClose}
             onSubmit={handleSubmitSetDetail}
             activeRequest={activeSendToChainRequest}

@@ -72,52 +72,40 @@ const useAuthorization2 = () => {
           const storeRes = await chrome.storage.local.get([
             lowerCaseSourceName,
           ]);
-          if (storeRes[lowerCaseSourceName]) {
-            fn();
-          } else {
-            const fetchRes = await checkIsLogin({
-              state,
-              source,
-            });
-            const { rc, result, mc } = fetchRes;
-            if (rc === 0) {
-              const { dataInfo, userInfo } = result;
-              let storageRes = await chrome.storage.local.get(
-                lowerCaseSourceName
-              );
-              const lastData = storageRes[lowerCaseSourceName];
-              let pnl: any = null;
-              if (lastData) {
-                const lastTotalBal = JSON.parse(lastData).followers;
-                pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
-              }
-              if (pnl !== null && pnl !== undefined) {
-                dataInfo.pnl = pnl;
-              }
 
-              const socialSourceData = {
-                ...dataInfo,
-                date: getCurrentDate(),
-                timestamp: +new Date(),
-                version: SocailStoreVersion,
-              };
-              socialSourceData.userInfo = {};
-              socialSourceData.userInfo.userName = socialSourceData.userName;
-              await chrome.storage.local.set({
-                [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-              });
-              dispatch(setSocialSourcesAsync());
-
-              const eventInfo = {
-                eventType: 'DATA_SOURCE_INIT',
-                rawData: { type: 'Social', dataSource: source },
-              };
-              eventReport(eventInfo);
-              fn();
-            } else {
-            }
+          const {
+            rawUserInfo: { dataInfo },
+          } = res.result;
+          let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
+          const lastData = storageRes[lowerCaseSourceName];
+          let pnl: any = null;
+          if (lastData) {
+            const lastTotalBal = JSON.parse(lastData).followers;
+            pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
           }
-        } else {
+          if (pnl !== null && pnl !== undefined) {
+            dataInfo.pnl = pnl;
+          }
+
+          const socialSourceData = {
+            ...dataInfo,
+            date: getCurrentDate(),
+            timestamp: +new Date(),
+            version: SocailStoreVersion,
+          };
+          socialSourceData.userInfo = {};
+          socialSourceData.userInfo.userName = socialSourceData.userName;
+          await chrome.storage.local.set({
+            [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+          });
+          dispatch(setSocialSourcesAsync());
+
+          const eventInfo = {
+            eventType: 'DATA_SOURCE_INIT',
+            rawData: { type: 'Social', dataSource: source },
+          };
+          eventReport(eventInfo);
+          fn();
         }
       };
       let timer: any = setInterval(() => {

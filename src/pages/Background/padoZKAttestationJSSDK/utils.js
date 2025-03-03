@@ -67,7 +67,8 @@ export const regenerateAttest = async (orginAttestation, chainName) => {
   } = orginAttestation;
   const requestParams = {
     rawParam:
-      type === 'BREVIS_TRANSACTION_PROOF#1' || source === 'google'
+      type === 'BREVIS_TRANSACTION_PROOF#1' ||
+      ['google', 'discord'].includes(source)
         ? orginAttestation.rawParam
         : Object.assign(orginAttestation, {
             ext: null,
