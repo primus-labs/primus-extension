@@ -11,7 +11,7 @@ import {
 import useMsgs from '@/hooks/useMsgs';
 import useEventDetail from '@/hooks/useEventDetail';
 import useAuthorization2 from '@/hooks/useAuthorization2';
-
+import useAuthorizationDiscord from '@/hooks/useAuthorizationDiscord';
 import { eventReport } from '@/services/api/usertracker';
 import { getAccount } from '@/utils/utils';
 import { BASEVENTNAME } from '@/config/events';
@@ -48,6 +48,7 @@ const Nav: React.FC<PButtonProps> = memo(
     const { pathname } = useLocation();
     const { msgs, addMsg, deleteMsg } = useMsgs();
     const authorize = useAuthorization2();
+    const authDiscord = useAuthorizationDiscord();
 
     const dispatch: Dispatch<any> = useDispatch();
     const [searchParams] = useSearchParams();
@@ -162,10 +163,17 @@ const Nav: React.FC<PButtonProps> = memo(
     // }, []);
     const fetchAttestForGoogle = useCallback(
       async (form) => {
-        const isFromBASEvent = fromEvents === BASEVENTNAME;
-        const schemaType = isFromBASEvent
-          ? BASEventDetail?.ext?.schemaType
-          : 'GOOGLE_ACCOUNT_OWNER';
+        const { dataSourceId } = form;
+        const templateId = dataSourceId === 'google' ? '100' : '101';
+        const authFn = dataSourceId === 'google' ? authorize : authDiscord; //TODO-discordAttestation
+        const isFromBASEvent =
+          dataSourceId === 'google' ? fromEvents === BASEVENTNAME : false;
+        const schemaType =
+          dataSourceId === 'google'
+            ? isFromBASEvent
+              ? BASEventDetail?.ext?.schemaType
+              : 'GOOGLE_ACCOUNT_OWNER'
+            : 'DISCORD_ACCOUNT_OWNER'; // TODO-discordAttestation
         const attestationId = uuidv4();
 
         const getCredAddrFn = async () => {
@@ -190,7 +198,7 @@ const Nav: React.FC<PButtonProps> = memo(
             schemaType,
             sigFormat: 'EAS-Ethereum',
             attestationId: attestationId,
-            event: fromEvents,
+            event: dataSourceId === 'google' ? fromEvents : false,
             address: credAddress,
           },
         };
@@ -203,20 +211,20 @@ const Nav: React.FC<PButtonProps> = memo(
             ...signatureRawInfo,
             address: credAddress,
             ...form,
-            source: form.dataSourceId,
+            source: dataSourceId,
             version: CredVersion,
             requestid: attestationId,
             sourceUseridHash: signatureRawInfo.rawParam.sourceUseridHash,
             event: fromEvents,
-            templateId: '100', // google template id
-            dataSourceId: 'google',
+            templateId,
+            dataSourceId,
             account: '',
             credVersion: CredVersion,
           };
-          const storeRes = await chrome.storage.local.get(['google']);
+          const storeRes = await chrome.storage.local.get([dataSourceId]);
           const acc = getAccount(
-            DATASOURCEMAP['google'],
-            JSON.parse(storeRes['google'])
+            DATASOURCEMAP[dataSourceId],
+            JSON.parse(storeRes[dataSourceId])
           );
           fullAttestation.account = acc;
           if (fromEvents) {
@@ -260,7 +268,7 @@ const Nav: React.FC<PButtonProps> = memo(
         };
 
         try {
-          await authorize(form.dataSourceId.toUpperCase(), storeGoogleCred);
+          await authFn(form.dataSourceId.toUpperCase(), storeGoogleCred);
         } catch {
           setStep(-1);
           // addMsg({
@@ -285,7 +293,7 @@ const Nav: React.FC<PButtonProps> = memo(
           eventInfo.rawData = Object.assign(eventInfo.rawData, {
             // attestationId: uniqueId,
             status: 'FAILED',
-            reason: 'attestForGoogle network error',
+            reason: `attestFor${dataSourceId} network error`,
           });
           eventReport(eventInfo);
         }
@@ -330,7 +338,9 @@ const Nav: React.FC<PButtonProps> = memo(
         };
         dispatch(setActiveAttestation(activeAttestationParams));
 
-        if (activeAttestationParams.dataSourceId === 'google') {
+        if (
+          ['google', 'discord'].includes(activeAttestationParams.dataSourceId)
+        ) {
           dispatch(setAttestLoading(1));
           dispatch(setActiveAttestation({ loading: 1 }));
           await fetchAttestForGoogle(activeAttestationParams);
