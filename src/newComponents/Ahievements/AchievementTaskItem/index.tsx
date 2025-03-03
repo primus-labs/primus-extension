@@ -6,6 +6,7 @@ import React, {
   useState,
   useMemo,
 } from 'react';
+import type { Dispatch } from 'react';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';
@@ -31,8 +32,9 @@ import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
 import useMsgs from '@/hooks/useMsgs';
 import { eventReport } from '@/services/api/usertracker';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import type { UserState } from '@/types/store';
+import { setSocialSourcesAsync } from '@/store/actions';
 
 export type TaskItem = {
   taskIcon: string;
@@ -56,6 +58,7 @@ export type TaskItemWithClick = {
 
 const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
   (taskItemWithClick: TaskItemWithClick) => {
+    const dispatch: Dispatch<any> = useDispatch();
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const DISCORDINVITEURL = useMemo(() => {
       return sysConfig.DISCORD_INVITE_LINK;
@@ -115,8 +118,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
     };
 
     const onFollowX = useCallback(async () => {
-      const targetUrl =
-        'https://x.com/intent/follow?screen_name=primus_labs';
+      const targetUrl = 'https://x.com/intent/follow?screen_name=primus_labs';
       const openXUrlFn = async () => {
         const currentWindowTabs = await chrome.tabs.query({
           active: true,
@@ -933,6 +935,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         await chrome.storage.local.set({
           [lowerCaseSourceName]: JSON.stringify(socialSourceData),
         });
+        dispatch(setSocialSourcesAsync());
       }
     };
 
