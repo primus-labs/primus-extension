@@ -64,39 +64,39 @@ const useAuthorization2 = () => {
           }
         }
       });
-      if (needCheckLogin) {
-        const checkIsLoginFn = async (state, source) => {
-          const res = await checkIsLogin({
-            state: state,
-            source: source,
-            data_type: 'LOGIN',
+
+      const checkIsLoginFn = async (state, source) => {
+        const res = await checkIsLogin({
+          state: state,
+          source: source,
+          data_type: 'LOGIN',
+        });
+        const rc = res.rc;
+        const result = res.result;
+        if (rc === 0) {
+          clearInterval(timer);
+          timer = null;
+          const { dataInfo, userInfo } = result;
+          const lowerCaseSourceName = source.toLowerCase();
+          const socialSourceData = {
+            ...dataInfo,
+            date: getCurrentDate(),
+            timestamp: +new Date(),
+            version: SocailStoreVersion,
+          };
+          socialSourceData.userInfo = {};
+          socialSourceData.userInfo.userName = socialSourceData.userName;
+          await chrome.storage.local.set({
+            [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           });
-          const rc = res.rc;
-          const result = res.result;
-          if (rc === 0) {
-            clearInterval(timer);
-            timer = null;
-            const { dataInfo, userInfo } = result;
-            const lowerCaseSourceName = source.toLowerCase();
-            const socialSourceData = {
-              ...dataInfo,
-              date: getCurrentDate(),
-              timestamp: +new Date(),
-              version: SocailStoreVersion,
-            };
-            socialSourceData.userInfo = {};
-            socialSourceData.userInfo.userName = socialSourceData.userName;
-            await chrome.storage.local.set({
-              [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-            });
-            dispatch(setSocialSourcesAsync());
-          }
-        };
-        timer = setInterval(() => {
-          checkIsLoginFn(state, source);
-        }, 1000);
-        setCheckIsAuthDialogTimer(timer);
-      }
+          dispatch(setSocialSourcesAsync());
+        }
+      };
+      timer = setInterval(() => {
+        checkIsLoginFn(state, source);
+      }, 1000);
+      setCheckIsAuthDialogTimer(timer);
+
       const pollingResultFn = async (state: string, source: string) => {
         const data = await chrome.storage.local.get(['discord']);
         if (!data.discord) {
@@ -147,13 +147,13 @@ const useAuthorization2 = () => {
           token: parseUserInfo.token,
         });
         let needCheckLogin = false;
-        if (sourceMap2['discord']) {
-          authUrl = DISCORDINVITEURL;
-          needCheckLogin = false;
-        } else {
+        // if (sourceMap2['discord']) {
+        //   authUrl = DISCORDINVITEURL;
+        //   needCheckLogin = false;
+        // } else {
           authUrl = `${authUrl}&redirectUrl=${DISCORDINVITEURL}`;
           needCheckLogin = true;
-        }
+        // }
         const windowOptions: chrome.windows.CreateData = {
           url: authUrl,
           type: 'popup',

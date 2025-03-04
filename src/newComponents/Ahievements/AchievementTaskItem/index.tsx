@@ -35,6 +35,7 @@ import { eventReport } from '@/services/api/usertracker';
 import { useSelector, useDispatch } from 'react-redux';
 import type { UserState } from '@/types/store';
 import { setSocialSourcesAsync } from '@/store/actions';
+import useAllSources from '@/hooks/useAllSources';
 
 export type TaskItem = {
   taskIcon: string;
@@ -58,6 +59,7 @@ export type TaskItemWithClick = {
 
 const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
   (taskItemWithClick: TaskItemWithClick) => {
+     const { sourceMap2 } = useAllSources();
     const dispatch: Dispatch<any> = useDispatch();
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const DISCORDINVITEURL = useMemo(() => {
@@ -225,7 +227,9 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       }
       if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
         //check the main wallet whether it has joined discord
-        const checkRsp = await checkHasFinishJoinDiscord();
+        const checkRsp = await checkHasFinishJoinDiscord(
+          sourceMap2?.discord?.uniqueId
+        );
         if (!checkRsp.result.hasJoinDiscord) {
           const msgId = addMsg({
             type: 'info',
@@ -530,19 +534,19 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         let authUrl;
         let needCheckLogin = false;
         const state = uuidv4();
-        if (!res['discord']) {
-          const { userInfo } = await chrome.storage.local.get(['userInfo']);
-          const parseUserInfo = JSON.parse(userInfo);
-          authUrl = getAuthUrl({
-            source: 'DISCORD',
-            state: state,
-            token: parseUserInfo.token,
-          });
-          authUrl = authUrl + `&redirectUrl=${DISCORDINVITEURL}`;
-          needCheckLogin = true;
-        } else {
-          authUrl = DISCORDINVITEURL;
-        }
+        // if (!res['discord']) {
+        const { userInfo } = await chrome.storage.local.get(['userInfo']);
+        const parseUserInfo = JSON.parse(userInfo);
+        authUrl = getAuthUrl({
+          source: 'DISCORD',
+          state: state,
+          token: parseUserInfo.token,
+        });
+        authUrl = authUrl + `&redirectUrl=${DISCORDINVITEURL}`;
+        needCheckLogin = true;
+        // } else {
+        //   authUrl = DISCORDINVITEURL;
+        // }
         var width = 520;
         var height = 620;
         const windowScreen: Screen = window.screen;
