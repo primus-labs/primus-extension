@@ -19,6 +19,7 @@ import {
 } from '@/services/api/achievements';
 import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
+import { MSGSHOWTIME1, MSGSHOWTIME2 } from '@/config/constants';
 
 import {
   SCROLLEVENTNAME,
@@ -185,7 +186,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
                     });
                     setTimeout(() => {
                       deleteMsg(msgId);
-                    }, 5000);
+                    }, MSGSHOWTIME2);
 
                     setFinished(true);
                     refreshTotalScore(
@@ -200,7 +201,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
                     });
                     setTimeout(() => {
                       deleteMsg(msgId);
-                    }, 5000);
+                    }, MSGSHOWTIME2);
                   }
                 }
                 await chrome.tabs.remove(xTabId as number);
@@ -239,7 +240,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME2);
           return;
         } else if (
           checkRsp.result.hasJoinDiscord &&
@@ -253,7 +254,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME2);
           return;
         } else {
           ext = {};
@@ -271,7 +272,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME2);
           return;
         }
         const xUserInfo = JSON.parse(res['x']);
@@ -292,7 +293,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['bitget']);
@@ -314,7 +315,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['huobi']);
@@ -336,7 +337,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['mexc']);
@@ -358,7 +359,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['gate']);
@@ -380,7 +381,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['bybit']);
@@ -402,7 +403,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['kucoin']);
@@ -424,7 +425,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         await onFollowX();
@@ -444,7 +445,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const discordUserInfo = JSON.parse(res['discord']);
@@ -466,7 +467,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const coinbaseUserInfo = JSON.parse(res['coinbase']);
@@ -488,7 +489,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const googleUserInfo = JSON.parse(res['google']);
@@ -510,7 +511,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const githubUserInfo = JSON.parse(res['github']);
@@ -747,7 +748,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const tiktokUserInfo = JSON.parse(res['tiktok']);
@@ -769,7 +770,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const googleUserInfo = JSON.parse(res['google']);
@@ -791,7 +792,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const binanceInfo = JSON.parse(res['binance']);
@@ -818,7 +819,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const coinbaseInfo = JSON.parse(res['coinbase']);
@@ -845,7 +846,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const okxInfo = JSON.parse(res['okx']);
@@ -876,7 +877,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         });
         setTimeout(() => {
           deleteMsg(msgId);
-        }, 5000);
+        }, MSGSHOWTIME2);
         setFinished(true);
         refreshTotalScore(points, taskItem.taskIdentifier);
       } else {
@@ -943,7 +944,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         });
         setTimeout(() => {
           deleteMsg(msgId);
-        }, 5000);
+        }, MSGSHOWTIME1);
       }
     };
 
