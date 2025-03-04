@@ -59,7 +59,7 @@ export type TaskItemWithClick = {
 
 const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
   (taskItemWithClick: TaskItemWithClick) => {
-     const { sourceMap2 } = useAllSources();
+    const { sourceMap2 } = useAllSources();
     const dispatch: Dispatch<any> = useDispatch();
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const DISCORDINVITEURL = useMemo(() => {
@@ -234,7 +234,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           const msgId = addMsg({
             type: 'info',
             title: 'Not qualified',
-            desc: 'Please complete the Join Primus Discord event first.',
+            desc: 'Please join the Primus Discord first.',
             link: '',
           });
           setTimeout(() => {
@@ -568,36 +568,66 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           newWindowId = window?.id;
         });
         let checkLoginTimer;
+        let checkDiscordTaskTimer;
+        const checkIsLoginFn = async (state, source, data_type) => {
+          const res = await checkIsLogin({
+            state: state,
+            source: source,
+            data_type: data_type,
+          });
+          const rc = res.rc;
+          const result = res.result;
+          if (rc === 0) {
+            const { dataInfo, userInfo } = result;
+            const lowerCaseSourceName = source.toLowerCase();
+            const socialSourceData = {
+              ...dataInfo,
+              date: getCurrentDate(),
+              timestamp: +new Date(),
+              version: SocailStoreVersion,
+            };
+            socialSourceData.userInfo = {};
+            socialSourceData.userInfo.userName = socialSourceData.userName;
+            await chrome.storage.local.set({
+              [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+            });
+            dispatch(setSocialSourcesAsync());
+            checkDiscordTaskTimer = setInterval(async () => {
+              //check has join discord
+              const res = await getDataSourceData('discord');
+              if (!res['discord']) {
+                return;
+              }
+              if (checkLoginTimer) {
+                clearInterval(checkLoginTimer);
+              }
+              const discordUserInfo = JSON.parse(res['discord']);
+              ext = {
+                name: discordUserInfo.userName,
+                discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
+              };
+              const finishBody = {
+                taskIdentifier: taskItem.taskIdentifier,
+                ext: ext,
+              };
+              const finishCheckRsp = await finishTask(finishBody);
+              if (finishCheckRsp.rc === 0) {
+                setFinished(true);
+                clearInterval(checkDiscordTaskTimer);
+                refreshTotalScore(
+                  taskItem.taskXpScore,
+                  taskItem.taskIdentifier
+                );
+              }
+            }, 1000);
+          }
+        };
         if (needCheckLogin) {
           checkLoginTimer = setInterval(async () => {
             await checkIsLoginFn(state, 'DISCORD', 'LOGIN');
           }, 1000);
         }
-        const checkDiscordTaskTimer = setInterval(async () => {
-          //check has join discord
-          const res = await getDataSourceData('discord');
-          if (!res['discord']) {
-            return;
-          }
-          if (checkLoginTimer) {
-            clearInterval(checkLoginTimer);
-          }
-          const discordUserInfo = JSON.parse(res['discord']);
-          ext = {
-            name: discordUserInfo.userName,
-            discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
-          };
-          const finishBody = {
-            taskIdentifier: taskItem.taskIdentifier,
-            ext: ext,
-          };
-          const finishCheckRsp = await finishTask(finishBody);
-          if (finishCheckRsp.rc === 0) {
-            setFinished(true);
-            clearInterval(checkDiscordTaskTimer);
-            refreshTotalScore(taskItem.taskXpScore, taskItem.taskIdentifier);
-          }
-        }, 1000);
+
         chrome.windows.onRemoved.addListener((windowId) => {
           if (windowId === newWindowId) {
             clearInterval(checkDiscordTaskTimer);
@@ -914,32 +944,6 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         setTimeout(() => {
           deleteMsg(msgId);
         }, 5000);
-      }
-    };
-
-    const checkIsLoginFn = async (state, source, data_type) => {
-      const res = await checkIsLogin({
-        state: state,
-        source: source,
-        data_type: data_type,
-      });
-      const rc = res.rc;
-      const result = res.result;
-      if (rc === 0) {
-        const { dataInfo, userInfo } = result;
-        const lowerCaseSourceName = source.toLowerCase();
-        const socialSourceData = {
-          ...dataInfo,
-          date: getCurrentDate(),
-          timestamp: +new Date(),
-          version: SocailStoreVersion,
-        };
-        socialSourceData.userInfo = {};
-        socialSourceData.userInfo.userName = socialSourceData.userName;
-        await chrome.storage.local.set({
-          [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-        });
-        dispatch(setSocialSourcesAsync());
       }
     };
 

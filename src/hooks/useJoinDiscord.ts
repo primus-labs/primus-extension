@@ -90,6 +90,10 @@ const useAuthorization2 = () => {
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           });
           dispatch(setSocialSourcesAsync());
+          joinTimer = setInterval(() => {
+            pollingResultFn(state, source);
+          }, 1000);
+          setCheckIsJoinDialogTimer(joinTimer);
         }
       };
       timer = setInterval(() => {
@@ -123,10 +127,6 @@ const useAuthorization2 = () => {
           onSubmit && onSubmit(true);
         }
       };
-      joinTimer = setInterval(() => {
-        pollingResultFn(state, source);
-      }, 1000);
-      setCheckIsJoinDialogTimer(joinTimer);
     },
     [connectedWallet?.address, BASEventDetail?.ext?.schemaType, fromEvents]
   );
@@ -151,8 +151,8 @@ const useAuthorization2 = () => {
         //   authUrl = DISCORDINVITEURL;
         //   needCheckLogin = false;
         // } else {
-          authUrl = `${authUrl}&redirectUrl=${DISCORDINVITEURL}`;
-          needCheckLogin = true;
+        authUrl = `${authUrl}&redirectUrl=${DISCORDINVITEURL}`;
+        needCheckLogin = true;
         // }
         const windowOptions: chrome.windows.CreateData = {
           url: authUrl,
