@@ -507,6 +507,9 @@ const useALGAttest = function useAttest() {
     const { activeRequestAttestation } = await chrome.storage.local.get([
       'activeRequestAttestation',
     ]);
+    if (!activeRequestAttestation) {
+      return;
+    }
     const parsedActiveRequestAttestation = activeRequestAttestation
       ? JSON.parse(activeRequestAttestation)
       : {};
@@ -727,11 +730,7 @@ const useALGAttest = function useAttest() {
   }, [dispatch, attestLoading, activeAttestation]);
   useEffect(() => {
     if (attestLoading === 1) {
-      if (
-        !['web3 wallet'].includes(
-          activeAttestation.dataSourceId
-        )
-      ) {
+      if (!['web3 wallet'].includes(activeAttestation.dataSourceId)) {
         setTimeoutSwitch(true);
       }
     }
