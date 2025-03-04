@@ -26,7 +26,10 @@ import { eventReport } from '@/services/api/usertracker';
 import { getProofTypes } from '@/services/api/config';
 import { getEARLYBIRDNFT } from '@/services/chains/erc721';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import {
+  DEFAULTDATASOURCEPOLLINGTIMENUM,
+  WALLETASSETSPOLLINGTIME,
+} from '@/config/constants';
 import {
   SCROLLEVENTNAME,
   BASEVENTNAME,
@@ -531,10 +534,11 @@ export const getChainAssets = async ({
             }
           }
         } catch (err) {
-          console.log('getChainAssetsResult catch err=', err);
+          console.log('getChainAssetsResult-TOKEN catch err=', err);
         }
       };
-      let pollingTimer = setInterval(pollingFn, 5000);
+      console.log('setInterval-TOKEN', curConnectedAddr);
+      let pollingTimer = setInterval(pollingFn, WALLETASSETSPOLLINGTIME);
     }
   } catch (e) {
     console.log('getChainAssets-fn catch e=', e);
@@ -1056,10 +1060,11 @@ export const getChainAssetsNFT = async ({
               return resolve(requestRes.data);
             }
           } catch (err) {
-            console.log('getChainAssetsResult catch err=', err);
+            console.log('getChainAssetsResult-NFT catch err=', err);
           }
         };
-        let pollingTimer = setInterval(pollingFn, 5000);
+        console.log('setInterval-NFT', curConnectedAddr);
+        let pollingTimer = setInterval(pollingFn, WALLETASSETSPOLLINGTIME);
       }
     } catch (e) {
       reject(e);

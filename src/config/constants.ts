@@ -83,6 +83,8 @@ export const STARTOFFLINETIMEOUT = 3 * ONEMINUTE + '';
 export const DEFAULTDATASOURCEPOLLINGTIMENUM = '10';
 // export const DEFAULTFETCHTIMEOUT = 10 * ONESECOND;
 export const DEFAULTFETCHTIMEOUT = 1 * ONEMINUTE;
+// export const WALLETASSETSPOLLINGTIME = 5 * ONEMINUTE;
+export const WALLETASSETSPOLLINGTIME = 10 * ONESECOND;
 export const BIGZERO = new BigNumber(0);
 
 export const DATASOURCEMAP: DataSourceMapType = {
