@@ -314,5 +314,6 @@ export const SUPPORTATTESTDATASOURCES = [
   'google',
   'coinbase',
   'bitget',
-  'bybit'
+  'bybit',
+  'discord'
 ];

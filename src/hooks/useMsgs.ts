@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { setMsgsAsync } from '@/store/actions';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
+import { MSGSHOWTIME1, MSGSHOWTIME2 } from '@/config/constants';
 
 const useMsgs = function useMsgs() {
   const { pathname } = useLocation();
@@ -68,7 +69,8 @@ const useMsgs = function useMsgs() {
   useEffect(() => {
     // console.log('222useMsgs-useEffect1', msgObj);
     if (msgObj?.id) {
-      let delay = msgObj?.link && msgObj?.link !== pathname ? 10000 : 8000;
+      let delay =
+        msgObj?.link && msgObj?.link !== pathname ? MSGSHOWTIME1 : MSGSHOWTIME2;
       // if (msgObj?.type === 'suc') {
       //   delay = 8000;
       // }

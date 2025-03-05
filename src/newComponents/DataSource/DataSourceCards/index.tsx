@@ -52,15 +52,6 @@ const Cards: React.FC<PDropdownProps> = memo(
     const { sourceMap, sourceMap2 } = useAllSources();
     const filterdList = useMemo(() => {
       var newList = list;
-      newList = list.filter((i) => {
-        if (i.id === 'discord') {
-          if (sourceMap2?.discord) {
-            return true;
-          }
-        } else {
-          return true;
-        }
-      });
       if (dataSourceQueryType && dataSourceQueryType !== 'All') {
         newList = list.filter((i) => {
           return i.type === dataSourceQueryType;
@@ -74,8 +65,7 @@ const Cards: React.FC<PDropdownProps> = memo(
         });
       }
       return newList;
-    }, [list, dataSourceQueryStr, dataSourceQueryType, sourceMap2]);
-    
+    }, [list, dataSourceQueryStr, dataSourceQueryType]);
 
     const handleDetail = useCallback(
       (i) => {

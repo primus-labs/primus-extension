@@ -195,7 +195,7 @@ const Cards: React.FC<PDropdownProps> = memo(
       return str;
     };
     const getResult = (i) => {
-      if (['coinbase', 'google', 'web3 wallet'].includes(i.source)) {
+      if (['coinbase', 'google', 'discord', 'web3 wallet'].includes(i.source)) {
         return 'Verified';
       }
       if (i.attestationType === 'Social Connections') {

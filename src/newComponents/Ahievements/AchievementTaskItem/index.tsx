@@ -6,6 +6,7 @@ import React, {
   useState,
   useMemo,
 } from 'react';
+import type { Dispatch } from 'react';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';
@@ -18,6 +19,7 @@ import {
 } from '@/services/api/achievements';
 import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
+import { MSGSHOWTIME1, MSGSHOWTIME2 } from '@/config/constants';
 
 import {
   SCROLLEVENTNAME,
@@ -31,8 +33,10 @@ import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
 import useMsgs from '@/hooks/useMsgs';
 import { eventReport } from '@/services/api/usertracker';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import type { UserState } from '@/types/store';
+import { setSocialSourcesAsync } from '@/store/actions';
+import useAllSources from '@/hooks/useAllSources';
 
 export type TaskItem = {
   taskIcon: string;
@@ -56,6 +60,8 @@ export type TaskItemWithClick = {
 
 const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
   (taskItemWithClick: TaskItemWithClick) => {
+    const { sourceMap2 } = useAllSources();
+    const dispatch: Dispatch<any> = useDispatch();
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const DISCORDINVITEURL = useMemo(() => {
       return sysConfig.DISCORD_INVITE_LINK;
@@ -115,8 +121,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
     };
 
     const onFollowX = useCallback(async () => {
-      const targetUrl =
-        'https://x.com/intent/follow?screen_name=primus_labs';
+      const targetUrl = 'https://x.com/intent/follow?screen_name=primus_labs';
       const openXUrlFn = async () => {
         const currentWindowTabs = await chrome.tabs.query({
           active: true,
@@ -181,7 +186,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
                     });
                     setTimeout(() => {
                       deleteMsg(msgId);
-                    }, 5000);
+                    }, MSGSHOWTIME2);
 
                     setFinished(true);
                     refreshTotalScore(
@@ -196,7 +201,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
                     });
                     setTimeout(() => {
                       deleteMsg(msgId);
-                    }, 5000);
+                    }, MSGSHOWTIME2);
                   }
                 }
                 await chrome.tabs.remove(xTabId as number);
@@ -223,17 +228,19 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
       }
       if (taskItem.taskIdentifier === 'DAILY_DISCORD_GM') {
         //check the main wallet whether it has joined discord
-        const checkRsp = await checkHasFinishJoinDiscord();
+        const checkRsp = await checkHasFinishJoinDiscord(
+          sourceMap2?.discord?.uniqueId
+        );
         if (!checkRsp.result.hasJoinDiscord) {
           const msgId = addMsg({
             type: 'info',
             title: 'Not qualified',
-            desc: 'Please complete the Join Primus Discord event first.',
+            desc: 'Please join the Primus Discord first.',
             link: '',
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME2);
           return;
         } else if (
           checkRsp.result.hasJoinDiscord &&
@@ -247,7 +254,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME2);
           return;
         } else {
           ext = {};
@@ -265,7 +272,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME2);
           return;
         }
         const xUserInfo = JSON.parse(res['x']);
@@ -286,7 +293,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['bitget']);
@@ -308,7 +315,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['huobi']);
@@ -330,7 +337,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['mexc']);
@@ -352,7 +359,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['gate']);
@@ -374,7 +381,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['bybit']);
@@ -396,7 +403,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const bitgetUserInfo = JSON.parse(res['kucoin']);
@@ -418,7 +425,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         await onFollowX();
@@ -438,7 +445,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const discordUserInfo = JSON.parse(res['discord']);
@@ -460,7 +467,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const coinbaseUserInfo = JSON.parse(res['coinbase']);
@@ -482,7 +489,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const googleUserInfo = JSON.parse(res['google']);
@@ -504,7 +511,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const githubUserInfo = JSON.parse(res['github']);
@@ -528,19 +535,19 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         let authUrl;
         let needCheckLogin = false;
         const state = uuidv4();
-        if (!res['discord']) {
-          const { userInfo } = await chrome.storage.local.get(['userInfo']);
-          const parseUserInfo = JSON.parse(userInfo);
-          authUrl = getAuthUrl({
-            source: 'DISCORD',
-            state: state,
-            token: parseUserInfo.token,
-          });
-          authUrl = authUrl + `&redirectUrl=${DISCORDINVITEURL}`;
-          needCheckLogin = true;
-        } else {
-          authUrl = DISCORDINVITEURL;
-        }
+        // if (!res['discord']) {
+        const { userInfo } = await chrome.storage.local.get(['userInfo']);
+        const parseUserInfo = JSON.parse(userInfo);
+        authUrl = getAuthUrl({
+          source: 'DISCORD',
+          state: state,
+          token: parseUserInfo.token,
+        });
+        authUrl = authUrl + `&redirectUrl=${DISCORDINVITEURL}`;
+        needCheckLogin = true;
+        // } else {
+        //   authUrl = DISCORDINVITEURL;
+        // }
         var width = 520;
         var height = 620;
         const windowScreen: Screen = window.screen;
@@ -562,36 +569,66 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           newWindowId = window?.id;
         });
         let checkLoginTimer;
+        let checkDiscordTaskTimer;
+        const checkIsLoginFn = async (state, source, data_type) => {
+          const res = await checkIsLogin({
+            state: state,
+            source: source,
+            data_type: data_type,
+          });
+          const rc = res.rc;
+          const result = res.result;
+          if (rc === 0) {
+            const { dataInfo, userInfo } = result;
+            const lowerCaseSourceName = source.toLowerCase();
+            const socialSourceData = {
+              ...dataInfo,
+              date: getCurrentDate(),
+              timestamp: +new Date(),
+              version: SocailStoreVersion,
+            };
+            socialSourceData.userInfo = {};
+            socialSourceData.userInfo.userName = socialSourceData.userName;
+            await chrome.storage.local.set({
+              [lowerCaseSourceName]: JSON.stringify(socialSourceData),
+            });
+            dispatch(setSocialSourcesAsync());
+            checkDiscordTaskTimer = setInterval(async () => {
+              //check has join discord
+              const res = await getDataSourceData('discord');
+              if (!res['discord']) {
+                return;
+              }
+              if (checkLoginTimer) {
+                clearInterval(checkLoginTimer);
+              }
+              const discordUserInfo = JSON.parse(res['discord']);
+              ext = {
+                name: discordUserInfo.userName,
+                discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
+              };
+              const finishBody = {
+                taskIdentifier: taskItem.taskIdentifier,
+                ext: ext,
+              };
+              const finishCheckRsp = await finishTask(finishBody);
+              if (finishCheckRsp.rc === 0) {
+                setFinished(true);
+                clearInterval(checkDiscordTaskTimer);
+                refreshTotalScore(
+                  taskItem.taskXpScore,
+                  taskItem.taskIdentifier
+                );
+              }
+            }, 1000);
+          }
+        };
         if (needCheckLogin) {
           checkLoginTimer = setInterval(async () => {
             await checkIsLoginFn(state, 'DISCORD', 'LOGIN');
           }, 1000);
         }
-        const checkDiscordTaskTimer = setInterval(async () => {
-          //check has join discord
-          const res = await getDataSourceData('discord');
-          if (!res['discord']) {
-            return;
-          }
-          if (checkLoginTimer) {
-            clearInterval(checkLoginTimer);
-          }
-          const discordUserInfo = JSON.parse(res['discord']);
-          ext = {
-            name: discordUserInfo.userName,
-            discordUserId: discordUserInfo.uniqueId.replace('DISCORD_', ''),
-          };
-          const finishBody = {
-            taskIdentifier: taskItem.taskIdentifier,
-            ext: ext,
-          };
-          const finishCheckRsp = await finishTask(finishBody);
-          if (finishCheckRsp.rc === 0) {
-            setFinished(true);
-            clearInterval(checkDiscordTaskTimer);
-            refreshTotalScore(taskItem.taskXpScore, taskItem.taskIdentifier);
-          }
-        }, 1000);
+
         chrome.windows.onRemoved.addListener((windowId) => {
           if (windowId === newWindowId) {
             clearInterval(checkDiscordTaskTimer);
@@ -711,7 +748,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const tiktokUserInfo = JSON.parse(res['tiktok']);
@@ -733,7 +770,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const googleUserInfo = JSON.parse(res['google']);
@@ -755,7 +792,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const binanceInfo = JSON.parse(res['binance']);
@@ -782,7 +819,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const coinbaseInfo = JSON.parse(res['coinbase']);
@@ -809,7 +846,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
           });
           setTimeout(() => {
             deleteMsg(msgId);
-          }, 5000);
+          }, MSGSHOWTIME1);
           return;
         }
         const okxInfo = JSON.parse(res['okx']);
@@ -840,7 +877,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         });
         setTimeout(() => {
           deleteMsg(msgId);
-        }, 5000);
+        }, MSGSHOWTIME2);
         setFinished(true);
         refreshTotalScore(points, taskItem.taskIdentifier);
       } else {
@@ -907,32 +944,7 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
         });
         setTimeout(() => {
           deleteMsg(msgId);
-        }, 5000);
-      }
-    };
-
-    const checkIsLoginFn = async (state, source, data_type) => {
-      const res = await checkIsLogin({
-        state: state,
-        source: source,
-        data_type: data_type,
-      });
-      const rc = res.rc;
-      const result = res.result;
-      if (rc === 0) {
-        const { dataInfo, userInfo } = result;
-        const lowerCaseSourceName = source.toLowerCase();
-        const socialSourceData = {
-          ...dataInfo,
-          date: getCurrentDate(),
-          timestamp: +new Date(),
-          version: SocailStoreVersion,
-        };
-        socialSourceData.userInfo = {};
-        socialSourceData.userInfo.userName = socialSourceData.userName;
-        await chrome.storage.local.set({
-          [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-        });
+        }, MSGSHOWTIME1);
       }
     };
 

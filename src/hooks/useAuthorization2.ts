@@ -11,7 +11,10 @@ import { checkIsLogin } from '@/services/api/user';
 import useInterval from './useInterval';
 import { BASEVENTNAME } from '@/config/events';
 import useEventDetail from './useEventDetail';
-import { SocailStoreVersion } from '@/config/constants';
+import {
+  SocailStoreVersion,
+  ATTESTATIONPOLLINGTIMEOUT,
+} from '@/config/constants';
 import type { Dispatch } from 'react';
 type CreateAuthWindowCallBack = (
   state: string,
@@ -50,6 +53,9 @@ const useAuthorization2 = () => {
     (state, source, res, onSubmit) => {
       const newWindowId = res?.id;
       setAuthWindowId(newWindowId);
+      chrome.storage.local.set({
+        authWinId: newWindowId,
+      });
       chrome.windows.onRemoved.addListener((windowId) => {
         if (windowId === newWindowId) {
           if (timer) {
@@ -84,6 +90,7 @@ const useAuthorization2 = () => {
               chrome.windows.get(newWindowId, {}, (win) => {
                 win?.id && chrome.windows.remove(newWindowId);
               });
+            chrome.storage.local.remove(['authWinId']);
             onSubmit && onSubmit(res.result);
           };
           const lowerCaseSourceName = source.toLowerCase(); // google
@@ -202,6 +209,24 @@ const useAuthorization2 = () => {
     },
     [authWindowId, createAuthWindowCallBack]
   );
+  useEffect(() => {
+    if (checkIsAuthDialogTimer) {
+      let clearTimer;
+      clearTimer = setTimeout(async () => {
+        checkIsAuthDialogTimer && clearInterval(checkIsAuthDialogTimer);
+        const { authWinId } = await chrome.storage.local.get(['authWinId']);
+        if (authWinId) {
+          chrome.windows.get(authWinId, {}, (win) => {
+            win?.id && chrome.windows.remove(authWinId);
+          });
+          chrome.storage.local.remove(['authWinId']);
+        }
+      }, ATTESTATIONPOLLINGTIMEOUT);
+      return () => {
+        clearTimer && clearTimeout(clearTimer);
+      };
+    }
+  }, [checkIsAuthDialogTimer]);
   useEffect(() => {
     return () => {
       checkIsAuthDialogTimer && clearInterval(checkIsAuthDialogTimer);
