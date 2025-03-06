@@ -45,7 +45,7 @@ const Home = memo(() => {
       // } else if ([1, 2, 3].includes(step)) {
       //   return 'autoH';
       // }
-      return 'autoH'
+      return 'autoH';
     } else {
       return 'autoH';
     }
@@ -157,9 +157,7 @@ const Home = memo(() => {
   }, []);
 
   return (
-    <div
-      className={`pageGuide ${lastTheme} ${cName} `}
-    >
+    <div className={`pageGuide ${lastTheme} ${cName} `}>
       {step > 0 && (
         <img
           ref={guideImg}

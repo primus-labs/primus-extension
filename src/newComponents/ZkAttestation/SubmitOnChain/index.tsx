@@ -289,7 +289,8 @@ const Nav: React.FC<PButtonProps> = memo(
               attesteraddr: PADOADDRESS,
               receipt: i?.address,
               type:
-                i?.reqType === 'web' || i?.source === 'google'
+                i?.reqType === 'web' ||
+                ['google', 'discord'].includes(i?.source)
                   ? 'web'
                   : i?.type,
               schemaName: i?.schemaName ?? LineaSchemaName,
@@ -300,12 +301,11 @@ const Nav: React.FC<PButtonProps> = memo(
             const regenerateAttestationParamsArr = toBeUpperChainCreds.map(
               (i: any) => {
                 return {
-                  rawParam:
-                    i.source === 'google'
-                      ? i.rawParam
-                      : Object.assign(i, {
-                          ext: { event: BASEVENTNAME },
-                        }),
+                  rawParam: ['google', 'discord'].includes(i.source)
+                    ? i.rawParam
+                    : Object.assign(i, {
+                        ext: { event: BASEVENTNAME },
+                      }),
                   greaterThanBaseValue: true,
                   signature: i?.signature,
                   newSigFormat: LineaSchemaName,
@@ -454,7 +454,7 @@ const Nav: React.FC<PButtonProps> = memo(
                 rawData: Object.assign(i.rawData, {
                   status: 'SUCCESS',
                   reason: '',
-                  txHash: upChainRes[0]
+                  txHash: upChainRes[0],
                 }),
               };
             });
@@ -540,7 +540,7 @@ const Nav: React.FC<PButtonProps> = memo(
             let curType = activeOnChainAttestation?.type;
             if (
               activeOnChainAttestation?.reqType === 'web' ||
-              activeOnChainAttestation?.source === 'google'
+              ['google', 'discord'].includes(activeOnChainAttestation?.source)
             ) {
               curType = 'web';
             }
@@ -575,7 +575,7 @@ const Nav: React.FC<PButtonProps> = memo(
               const requestParams: any = {
                 rawParam:
                   curCredential.type === 'BREVIS_TRANSACTION_PROOF#1' ||
-                  curCredential.source === 'google'
+                  ['google', 'discord'].includes(curCredential.source)
                     ? curCredential.rawParam
                     : Object.assign(curCredential, {
                         ext: null,
@@ -596,7 +596,7 @@ const Nav: React.FC<PButtonProps> = memo(
                   result: true,
                 };
               }
-              
+
               if (
                 activeOnChainAttestation?.type === 'BREVIS_TRANSACTION_PROOF#1'
               ) {
@@ -607,7 +607,6 @@ const Nav: React.FC<PButtonProps> = memo(
                 requestParams.extendedData =
                   activeOnChainAttestation?.extendedData;
               }
-              ;
               const { rc, result } = await regenerateAttestation(requestParams);
               if (rc === 0) {
                 upChainParams.signature = result.result.signature;

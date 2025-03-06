@@ -1,15 +1,19 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { getContentWithValue } from './utils';
 const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
-  const ref = useRef(null);
   const [errorTxtSelf, setErrorTxtSelf] = useState({
     sourcePageTip: 'Error Message.',
   });
   useEffect(() => {
-    if (status === 'result' && errorTxt) {
+    console.log('timer2-2', status, resultStatus, errorTxt, errorTxtSelf);
+    if (status === 'result' && errorTxt?.sourcePageTip) {
+      console.log('timer2-7');
       setErrorTxtSelf(errorTxt);
     }
-  }, [errorTxt, status]);
+  }, [errorTxt?.sourcePageTip, status]);
+  useEffect(() => {
+    console.log('timer2-4', errorTxtSelf);
+  }, [errorTxtSelf]);
   const ElCon = useMemo(() => {
     let el = null;
     const {
@@ -18,6 +22,7 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
       attestationType,
       verificationValue,
     } = activeRequest;
+
     switch (status) {
       case 'uninitialized':
         const uninitializedTxt = PRE_ATTEST_PROMOT_V2?.[0]?.text[0];
@@ -63,7 +68,6 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
         }
         break;
     }
-
     return el;
   }, [status, resultStatus, errorTxtSelf, activeRequest]);
 
@@ -72,7 +76,6 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
       className={`pado-extension-footer ${status} ${
         resultStatus === 'success' ? 'suc' : 'fail'
       }`}
-      ref={ref}
     >
       {ElCon}
     </div>

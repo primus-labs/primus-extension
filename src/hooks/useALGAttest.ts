@@ -507,6 +507,9 @@ const useALGAttest = function useAttest() {
     const { activeRequestAttestation } = await chrome.storage.local.get([
       'activeRequestAttestation',
     ]);
+    if (!activeRequestAttestation) {
+      return;
+    }
     const parsedActiveRequestAttestation = activeRequestAttestation
       ? JSON.parse(activeRequestAttestation)
       : {};
@@ -674,6 +677,21 @@ const useALGAttest = function useAttest() {
               msgObj: { btnTxt: 'Try Again' },
             })
           );
+        } else if (name === 'dataSourcePageDialogTimeout') {
+          clearFetchAttestationTimer();
+          await chrome.storage.local.remove(['activeRequestAttestation']);
+          addMsg({
+            type: 'error',
+            title,
+            desc: 'The process did not respond within 2 minutes. Please try again later.',
+          });
+          dispatch(setAttestLoading(3));
+          dispatch(
+            setActiveAttestation({
+              loading: 3,
+              msgObj: { btnTxt: 'Try Again' },
+            })
+          );
         }
         // else if (
         //   message.name === 'closeDataSourcePage' &&
@@ -712,7 +730,7 @@ const useALGAttest = function useAttest() {
   }, [dispatch, attestLoading, activeAttestation]);
   useEffect(() => {
     if (attestLoading === 1) {
-      if (!['google', 'web3 wallet'].includes(activeAttestation.dataSourceId)) {
+      if (!['web3 wallet'].includes(activeAttestation.dataSourceId)) {
         setTimeoutSwitch(true);
       }
     }

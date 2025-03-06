@@ -15,10 +15,17 @@ window.onload = () => {
     console.log('222x follow btn', element);
     if (element) {
       element.addEventListener('click', () => {
-        console.log('222x follow btn clicked');
+        const currentUrl = window.location.href;
+        const url = new URL(currentUrl);
+        const searchParams = url.searchParams;
+        const specificParamValue = searchParams.get('screen_name');
+        console.log('222x follow btn clicked', specificParamValue);
         chrome.runtime.sendMessage({
           type: 'xFollow',
           name: 'follow',
+          params: {
+            screen_name: specificParamValue,
+          },
         });
       });
       clearInterval(checkFollowElTimer);

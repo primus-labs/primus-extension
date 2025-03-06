@@ -2,20 +2,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { eventReport } from '@/services/api/usertracker';
 import { queryTemplateById } from '@/services/api/devconsole';
-import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
-import { pageDecodeMsgListener } from '../pageDecode.js';
+import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { attestBrevisFn } from './brevis';
 import { schemaNameFn } from './utils';
 
 import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
-import { PADOADDRESS } from '@/config/envConstants';
-import { regenerateAttestation } from '@/services/api/cred';
-import { strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from '../dataSourceUtils';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
+import {
+  templateIdForMonad,
+  monadCalculations,
+} from '../lumaMonadEvent/index.js';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -202,6 +202,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             dataSourceTemplate,
             sslCipherSuite,
           } = result;
+
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
           const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
           const host =
@@ -257,7 +258,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
               if (subItemCondition) {
                 const { op, value } = subItemCondition;
                 subconditionItem.op = op;
-                if (['>', '>=', '=', '!=', '<', '<='].includes(op)) {
+                if (
+                  ['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ'].includes(
+                    op
+                  )
+                ) {
                   subconditionItem.type = 'FIELD_RANGE';
                   subconditionItem.value = value;
                 } else if (op === 'SHA256') {
@@ -297,6 +302,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
               host,
               requests: newRequests,
               responses: newResponses,
+              calculations:
+                attTemplateID === templateIdForMonad
+                  ? monadCalculations
+                  : undefined,
             },
             sslCipherSuite,
           };
@@ -318,6 +327,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               padoUrl,
               proxyUrl,
             },
+            attTemplateID,
           };
         } else {
           const resParams = {

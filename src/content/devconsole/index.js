@@ -1,7 +1,7 @@
 window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
   if (target === 'primusExtension') {
-    console.log('devconsole-content-listen-message', e.data);
+    // console.log('devconsole-content-listen-message', e.data);
     if (name === 'checkDataSource') {
       chrome.runtime.sendMessage({
         type: 'devconsole',

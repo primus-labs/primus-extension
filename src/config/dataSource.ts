@@ -79,7 +79,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
       'You can fetch user account name & status data from your Discord account to manage your data or create attestations.',
 
     connectType: 'Auth',
-    hidden: true,
   },
   tiktok: {
     id: 'tiktok',
@@ -315,5 +314,6 @@ export const SUPPORTATTESTDATASOURCES = [
   'google',
   'coinbase',
   'bitget',
-  'bybit'
+  'bybit',
+  'discord'
 ];

@@ -30,14 +30,14 @@ import {
   EXCHANGEINFO,
 } from './exData';
 import { eventReport } from '@/services/api/usertracker';
-import './pageDecode.js';
-import { pageDecodeMsgListener } from './pageDecode.js';
+import './pageDecode/index.js';
+import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { PadoWebsiteMsgListener } from './pageWebsite.js';
 import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
-
+import { listener as lumaMonadEventMsgListener } from './lumaMonadEvent/index.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -635,6 +635,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (type === 'xFollow') {
     const { name } = message;
     if (name === 'follow') {
+      lumaMonadEventMsgListener(message, sender);
     }
   }
   if (type === 'googleAuth') {
@@ -670,5 +671,9 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       USERPASSWORD,
       fullscreenPort
     );
+  }
+  if (type === 'lumaMonadEvent') {
+    console.log('content2', message);
+    lumaMonadEventMsgListener(message, sender);
   }
 });

@@ -512,6 +512,7 @@ async function assembleUserInfoParams(form, isFromSDK) {
     if (scrollEventObj.address) {
       formatAddress = scrollEventObj.address;
     }
+    console.log('algorithmParams-userAddress-scroll', formatAddress);
   } else if (event === BASEVENTNAME) {
     const res = await chrome.storage.local.get([BASEVENTNAME]);
     if (res[BASEVENTNAME]) {
@@ -520,12 +521,19 @@ async function assembleUserInfoParams(form, isFromSDK) {
       if (lastCredAddress) {
         formatAddress = lastCredAddress;
       }
+      console.log('algorithmParams-userAddress-bas', formatAddress);
     }
   }
   if (isFromSDK && padoZKAttestationJSSDKWalletAddress) {
     formatAddress = padoZKAttestationJSSDKWalletAddress;
     console.log('algorithmParams-userAddress-isFromSDK', formatAddress);
   }
+  console.log(
+    'algorithmParams-userAddress',
+    connectedWalletAddress,
+    padoZKAttestationJSSDKWalletAddress
+  );
+
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
     userid: id,

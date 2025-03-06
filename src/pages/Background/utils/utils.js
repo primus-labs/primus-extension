@@ -49,7 +49,12 @@ export const isUrlWithQueryFn = (url, queryKeyArr) => {
   return isUrlWithQuery ? queryStr : false;
 };
 
-export function checkIsRequiredUrl({ requestUrl, requiredUrl, urlType, queryParams }) {
+export function checkIsRequiredUrl({
+  requestUrl,
+  requiredUrl,
+  urlType,
+  queryParams,
+}) {
   const specifiedQueryParams = queryParams?.[0] ? queryParams : null;
   const hostUrl = requestUrl.split('?')[0];
   const type =
@@ -68,3 +73,38 @@ export function checkIsRequiredUrl({ requestUrl, requiredUrl, urlType, queryPara
     return requestUrl === requiredUrl;
   }
 }
+
+export const getErrorMsgFn = async (attestationType, errorCode) => {
+  let errorMsgTitle = ['Assets Verification', 'Humanity Verification'].includes(
+    attestationType
+  )
+    ? `${attestationType} failed!`
+    : `${attestationType} proof failed!`;
+  const { configMap } = await chrome.storage.local.get(['configMap']);
+  let attestTipMap = {};
+  if (
+    configMap &&
+    JSON.parse(configMap) &&
+    JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
+  ) {
+    attestTipMap = JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE);
+  }
+  let msgObj = {
+    title: errorMsgTitle,
+    type: attestTipMap[errorCode].type,
+    desc: attestTipMap[errorCode].desc,
+    sourcePageTip: attestTipMap[errorCode].title,
+  };
+  const msg = {
+    name: 'end',
+    params: {
+      result: 'warn',
+      failReason: { ...msgObj },
+    },
+  };
+  return msg;
+};
+
+export const sendMsgToTab = async (tabId, msg) => {
+  await chrome.tabs.sendMessage(tabId, msg);
+};
