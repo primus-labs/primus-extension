@@ -597,7 +597,7 @@ export const proxyabi = [
         },
         {
           "internalType": "uint256",
-          "name": "ammount",
+          "name": "amount",
           "type": "uint256"
         }
       ],
