@@ -110,17 +110,54 @@ const IdentityBridge = () => {
     dispatch(setSocialSourcesAsync());
   }, [dispatch]);
 
-  // Listen for connection success and errors
+  // Create a more robust port connection
   useEffect(() => {
     // Only create a new port if we don't have one
     if (!portRef.current) {
       console.log('Creating new port connection');
-      const port = chrome.runtime.connect({ name: `identityBridge-${Date.now()}` });
+      
+      const portName = `identityBridge-${Date.now()}`;
+      const port = chrome.runtime.connect({ name: portName });
       portRef.current = port;
       isActiveRef.current = true;
 
+      // Helper function to reconnect if needed
+      const reconnectIfNeeded = () => {
+        if (!portRef.current && isActiveRef.current) {
+          console.log('Attempting to reconnect port');
+          const newPort = chrome.runtime.connect({ name: `identityBridge-${Date.now()}` });
+          portRef.current = newPort;
+          
+          // Set up new disconnect listener
+          newPort.onDisconnect.addListener(() => {
+            console.log('Port disconnected in IdentityBridge');
+            portRef.current = null;
+            // Don't set isActiveRef to false here to allow reconnection
+            setTimeout(reconnectIfNeeded, 1000); // Try to reconnect after 1 second
+          });
+        }
+      };
+      
+      // Set up heartbeat to check connection
+      const heartbeatInterval = setInterval(() => {
+        if (portRef.current && isActiveRef.current) {
+          try {
+            portRef.current.postMessage({ type: 'ping' });
+          } catch (e) {
+            console.log('Heartbeat failed, port may be disconnected');
+            portRef.current = null;
+            reconnectIfNeeded();
+          }
+        }
+      }, 5000);
+
       port.onMessage.addListener((message: any) => {
         console.log('Port message received in IdentityBridge:', message);
+        
+        if (message.type === 'pong') {
+          // Heartbeat response, connection is alive
+          return;
+        }
         
         if (message.type === 'tiktok_followers_data') {
           console.log('Processing followers data in IdentityBridge:', message.data);
@@ -138,6 +175,14 @@ const IdentityBridge = () => {
           setHasMoreFollowers(data.hasMore);
           setFollowersCursor(data.cursor);
           setTotalFollowers(data.total);
+          
+          // Save to storage
+          chrome.storage.local.set({
+            'tiktok-followers-data': JSON.stringify({
+              ...data,
+              timestamp: Date.now()
+            })
+          });
         }
         
         if (message.type === 'tiktok_following_data') {
@@ -156,6 +201,14 @@ const IdentityBridge = () => {
           setHasMoreFollowing(data.hasMore);
           setFollowingCursor(data.cursor);
           setTotalFollowing(data.total);
+          
+          // Save to storage
+          chrome.storage.local.set({
+            'tiktok-following-data': JSON.stringify({
+              ...data,
+              timestamp: Date.now()
+            })
+          });
         }
         
         if (message.resType === 'set-tiktok') {
@@ -190,22 +243,30 @@ const IdentityBridge = () => {
         }
       });
 
+      // Add disconnect listener 
       port.onDisconnect.addListener(() => {
         console.log('Port disconnected in IdentityBridge');
-        isActiveRef.current = false;
         portRef.current = null;
+        // We don't set isActiveRef to false here to allow reconnection
+        setTimeout(reconnectIfNeeded, 1000);
       });
+      
+      // Clean up function
+      return () => {
+        console.log('Cleaning up port connection in IdentityBridge');
+        isActiveRef.current = false;
+        clearInterval(heartbeatInterval);
+        
+        if (portRef.current) {
+          try {
+            portRef.current.disconnect();
+          } catch (e) {
+            console.log('Error disconnecting port:', e);
+          }
+          portRef.current = null;
+        }
+      };
     }
-
-    // Clean up function
-    return () => {
-      console.log('Cleaning up port connection in IdentityBridge');
-      isActiveRef.current = false;
-      if (portRef.current) {
-        portRef.current.disconnect();
-        portRef.current = null;
-      }
-    };
   }, [dispatch, addMsg, deleteMsg]);
 
   // Update theme initialization
@@ -474,91 +535,6 @@ const IdentityBridge = () => {
     dispatch(setSocialSourcesAsync());
   }, [deleteXiaohongshuFn, addMsg, deleteMsg, dispatch]);
 
-  // Add listener for follower data via runtime messages
-  useEffect(() => {
-    const handleMessage = (message: any) => {
-      console.log('Runtime message received in IdentityBridge:', message);
-      if (message.type === 'tiktok_followers_data') {
-        console.log('Processing followers data from runtime message:', message.data);
-        const data: TikTokFollowersData = message.data;
-        
-        // Store followers data in chrome.storage.local
-        chrome.storage.local.set({
-          'tiktok-followers-data': JSON.stringify(data)
-        });
-        
-        setFollowers(prevFollowers => {
-          const existingIds = new Set(prevFollowers.map(f => f.userId));
-          const newFollowers = data.users.filter(f => !existingIds.has(f.userId));
-          const updatedFollowers = [...prevFollowers, ...newFollowers];
-          console.log('Updated followers list from runtime message:', updatedFollowers);
-          return updatedFollowers;
-        });
-        setHasMoreFollowers(data.hasMore);
-        setFollowersCursor(data.cursor);
-        setTotalFollowers(data.total);
-      }
-      
-      if (message.type === 'tiktok_following_data') {
-        console.log('Processing following data from runtime message:', message.data);
-        const data: TikTokFollowersData = message.data;
-        
-        // Store following data in chrome.storage.local
-        chrome.storage.local.set({
-          'tiktok-following-data': JSON.stringify(data)
-        });
-        
-        setFollowing(prevFollowing => {
-          const existingIds = new Set(prevFollowing.map(f => f.userId));
-          const newFollowing = data.users.filter(f => !existingIds.has(f.userId));
-          const updatedFollowing = [...prevFollowing, ...newFollowing];
-          console.log('Updated following list from runtime message:', updatedFollowing);
-          return updatedFollowing;
-        });
-        setHasMoreFollowing(data.hasMore);
-        setFollowingCursor(data.cursor);
-        setTotalFollowing(data.total);
-      }
-    };
-
-    console.log('Setting up runtime message listener in IdentityBridge');
-    chrome.runtime.onMessage.addListener(handleMessage);
-    
-    // Try to get any stored data on mount
-    chrome.storage.local.get(['tiktok-followers-data', 'tiktok-following-data'], (result) => {
-      if (result['tiktok-followers-data']) {
-        try {
-          const data = JSON.parse(result['tiktok-followers-data']);
-          console.log('Found stored followers data:', data);
-          setFollowers(data.users);
-          setHasMoreFollowers(data.hasMore);
-          setFollowersCursor(data.cursor);
-          setTotalFollowers(data.total);
-        } catch (error) {
-          console.error('Error parsing stored followers data:', error);
-        }
-      }
-      
-      if (result['tiktok-following-data']) {
-        try {
-          const data = JSON.parse(result['tiktok-following-data']);
-          console.log('Found stored following data:', data);
-          setFollowing(data.users);
-          setHasMoreFollowing(data.hasMore);
-          setFollowingCursor(data.cursor);
-          setTotalFollowing(data.total);
-        } catch (error) {
-          console.error('Error parsing stored following data:', error);
-        }
-      }
-    });
-
-    return () => {
-      console.log('Removing runtime message listener in IdentityBridge');
-      chrome.runtime.onMessage.removeListener(handleMessage);
-    };
-  }, []);
-
   // Function to load more followers
   const loadMoreFollowers = useCallback(() => {
     if (hasMoreFollowers) {
@@ -592,6 +568,105 @@ const IdentityBridge = () => {
       exportToCSV(following, `tiktok_following_${activeDataSouceUserInfo?.userName}_${new Date().toISOString().split('T')[0]}`);
     }
   }, [following, activeDataSouceUserInfo?.userName]);
+
+  // Add listener for follower data via runtime messages
+  useEffect(() => {
+    const handleMessage = (message: any) => {
+      console.log('Runtime message received in IdentityBridge:', message);
+      if (message.type === 'tiktok_followers_data') {
+        console.log('Processing followers data from runtime message:', message.data);
+        const data: TikTokFollowersData = message.data;
+        
+        // Store followers data in chrome.storage.local
+        chrome.storage.local.set({
+          'tiktok-followers-data': JSON.stringify({
+            ...data,
+            timestamp: Date.now() // Add current timestamp
+          })
+        }, () => {
+          console.log('Follower data saved to storage:', data);
+        });
+        
+        setFollowers(prevFollowers => {
+          const existingIds = new Set(prevFollowers.map(f => f.userId));
+          const newFollowers = data.users.filter(f => !existingIds.has(f.userId));
+          const updatedFollowers = [...prevFollowers, ...newFollowers];
+          console.log('Updated followers list from runtime message:', updatedFollowers);
+          return updatedFollowers;
+        });
+        setHasMoreFollowers(data.hasMore);
+        setFollowersCursor(data.cursor);
+        setTotalFollowers(data.total);
+      }
+      
+      if (message.type === 'tiktok_following_data') {
+        console.log('Processing following data from runtime message:', message.data);
+        const data: TikTokFollowersData = message.data;
+        
+        // Store following data in chrome.storage.local
+        chrome.storage.local.set({
+          'tiktok-following-data': JSON.stringify({
+            ...data,
+            timestamp: Date.now() // Add current timestamp
+          })
+        }, () => {
+          console.log('Following data saved to storage:', data);
+        });
+        
+        setFollowing(prevFollowing => {
+          const existingIds = new Set(prevFollowing.map(f => f.userId));
+          const newFollowing = data.users.filter(f => !existingIds.has(f.userId));
+          const updatedFollowing = [...prevFollowing, ...newFollowing];
+          console.log('Updated following list from runtime message:', updatedFollowing);
+          return updatedFollowing;
+        });
+        setHasMoreFollowing(data.hasMore);
+        setFollowingCursor(data.cursor);
+        setTotalFollowing(data.total);
+      }
+    };
+
+    console.log('Setting up runtime message listener in IdentityBridge');
+    chrome.runtime.onMessage.addListener(handleMessage);
+    
+    // Try to get any stored data on mount
+    chrome.storage.local.get(['tiktok-followers-data', 'tiktok-following-data'], (result) => {
+      if (result['tiktok-followers-data']) {
+        try {
+          const data = JSON.parse(result['tiktok-followers-data']);
+          console.log('Found stored followers data:', data);
+          if (data.users && Array.isArray(data.users)) {
+            setFollowers(data.users);
+            setHasMoreFollowers(data.hasMore);
+            setFollowersCursor(data.cursor);
+            setTotalFollowers(data.total);
+          }
+        } catch (error) {
+          console.error('Error parsing stored followers data:', error);
+        }
+      }
+      
+      if (result['tiktok-following-data']) {
+        try {
+          const data = JSON.parse(result['tiktok-following-data']);
+          console.log('Found stored following data:', data);
+          if (data.users && Array.isArray(data.users)) {
+            setFollowing(data.users);
+            setHasMoreFollowing(data.hasMore);
+            setFollowingCursor(data.cursor);
+            setTotalFollowing(data.total);
+          }
+        } catch (error) {
+          console.error('Error parsing stored following data:', error);
+        }
+      }
+    });
+
+    return () => {
+      console.log('Removing runtime message listener in IdentityBridge');
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
+  }, []);
 
   return (
     <div className={`pageContent ${theme}`}>

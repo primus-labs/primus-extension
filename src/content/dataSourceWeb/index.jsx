@@ -207,64 +207,28 @@ function PadoCard() {
   }, []);
   useEffect(() => {
     const listenerFn = (request, sender, sendResponse) => {
-      var {
-        name,
-        params: { result, failReason, isReady },
-      } = request;
-      // if (name === 'attestResult') {
-      //   var padoRightEl = document.querySelector('.pado-right');
-      //   var padoCenterCenterEl = document.querySelector('.pado-center-center');
-      //   var padoCenterEl = document.querySelector('.pado-center');
-      //   var {
-      //     jumpTo,
-      //     uiTemplate: { condition, subProofContent },
-      //     processUiTemplate: { proofContent, successMsg, failedMsg },
-      //     event,
-      //   } = activeTemplate;
-      //   var aactiveOrigin = new URL(jumpTo).origin;
-      //   var aactiveDesc = successMsg;
-      //   var fn = (tryFlag) => {
-      //     var btnTxt = tryFlag ? 'Try again' : 'OK';
-      //     var padoCenterBottomOKNode = createDomElement(
-      //       `<div className="pado-center-bottom"><button className="okBtn">${btnTxt}</button></div>`
-      //     );
-      //     padoCenterBottomOKNode.onclick = () => {
-      //       chrome.runtime.sendMessage({
-      //         type: 'pageDecode',
-      //         name: 'closeDataSourcePage',
-      //         dataSourcePageTabId,
-      //         tryFlag,
-      //       });
-      //       return;
-      //     };
-      //     if (padoCenterEl.lastChild.className !== 'pado-center-bottom') {
-      //       padoCenterEl.appendChild(padoCenterBottomOKNode);
-      //     }
-      //   };
-      //   if (result === 'success') {
-      //     padoRightEl.innerHTML = '3/3';
-      //     var iconSuc = chrome.runtime.getURL(`iconSuc.svg`);
-      //     padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}<img src=${iconSuc}></span></p>`;
-      //     fn();
-      //   } else if (result === 'fail') {
-      //     aactiveDesc = failedMsg;
-      //     padoRightEl.innerHTML = '3/3';
-      //     padoCenterCenterEl.innerHTML = `<p><span>Data Source</span><span>${aactiveOrigin}</span></p><p><span>Proof Result</span><span>${aactiveDesc}</span></p>`;
-      //     fn();
-      //   } else if (result === 'warn') {
-      //     padoRightEl.innerHTML = '2/3';
-      //     var str3 = `<p>Not meeting the uniqueness requirement...</p><p>This account may have already been bound to a wallet address, or your wallet address may already have a Attestation with another Binance account.</p>`;
-      //     padoCenterCenterEl.innerHTML =
-      //       failReason === 'Not meeting the uniqueness requirement.'
-      //         ? str3
-      //         : `<p className="warn-tip">${failReason.title}</p><p>${failReason.desc}</p>`;
-      //     fn();
-      //   }
-      // }
+      console.log('content_scripts-bg-web receive:' + request?.name);
+      
+      // Handle ping for heartbeat
+      if (request.type === 'ping') {
+        sendResponse({ type: 'pong' });
+        return;
+      }
+      
+      var name, params;
+      if (request && typeof request === 'object') {
+        name = request.name;
+        params = request.params || {};
+      }
+      
+      if (name === 'initCompleted') {
+        console.log('web requests are captured');
+        setIsReadyFetch(true);
+      }
+      
       if (name === 'webRequestIsReady') {
         console.log('content receive:webRequestIsReady');
         setIsReadyFetch(true);
-        sessionStorage.setItem('padoRequestReady', '1');
       }
       if (name === 'end') {
         console.log('content receive:end', request);
