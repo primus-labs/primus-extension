@@ -40,6 +40,7 @@
     "ethereumjs-util": "^7.1.5",
     "ethers": "5.7.2",
     "file-saver": "^2.0.5",
+    "firebase": "^11.4.0",
     "html-to-image": "^1.11.11",
     "jsonpath": "^1.1.1",
     "metamask-extension-provider": "^3.0.0",

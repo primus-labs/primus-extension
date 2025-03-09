@@ -20,7 +20,7 @@
 
 .homeDataSources {
   width: 100%;
-  flex: 1;
+  flex: auto;
   @include fcss;
   gap: var(--spacing-16);
 
@@ -43,7 +43,7 @@
       .description {
         @include BodyBody200;
         color: var(--text-tokens-text-secondary);
-        max-width: 400px;
+        max-width: 600px;
       }
     }
 
@@ -54,11 +54,12 @@
 
   .dataSourceItems {
     width: 100%;
-    overflow-x: auto;
     @include frss;
     flex-wrap: wrap;
     row-gap: var(--spacing-16);
     column-gap: var(--spacing-16);
+    height: auto;
+    min-height: fit-content;
 
     .dataSourceItem {
       width: 360px;
@@ -264,6 +265,34 @@
   }
 }
 
+.tables-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+  width: 100%;
+  
+  // &.dark {
+  //   .followers-section {
+  //     background: #2a2a2a;
+  //     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  //   }
+  // }
+  
+  .followers-section {
+    flex: 1;
+    min-width: 500px;
+    
+    @media (max-width: 768px) {
+      min-width: 100%;
+    }
+    
+    @media (min-width: 769px) and (max-width: 1200px) {
+      min-width: 450px;
+    }
+  }
+}
+
 .followers-section {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -273,7 +302,7 @@
 
   .followers-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 1rem;
 
@@ -281,13 +310,28 @@
       font-size: 1.25rem;
       font-weight: 600;
       color: var(--color-text-primary);
-
       margin: 0;
+      margin-right: 12px;
     }
 
-    button {
-      padding: 0.5rem 1rem;
-      // font-size: 0.875rem;
+    button.PButton.secondary {
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      min-height: 24px;
+      height: 24px;
+      min-width: 75px;
+      text-transform: none;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      box-shadow: none;
+      border-radius: 8px;
+      
+      &:hover {
+        background-color: rgba(116, 103, 239, 0.1);
+      }
     }
   }
 
@@ -329,6 +373,98 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      
+      .loading-indicator {
+        font-style: italic;
+        color: #888;
+        font-size: 0.9em;
+        
+        &:before {
+          content: '';
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border: 2px solid #888;
+          border-top-color: transparent;
+          border-radius: 50%;
+          margin-right: 6px;
+          vertical-align: middle;
+          animation: spin 1s linear infinite;
+        }
+      }
+      
+      .xiaohongshu-handle {
+        color: #7467ef;
+        font-weight: 500;
+      }
+      
+      .not-found {
+        color: #aaa;
+      }
+      
+      .following-status {
+        display: inline-block;
+        padding: 3px 6px;
+        border-radius: 3px;
+        font-size: 0.85em;
+        font-weight: 500;
+        
+        &.yes {
+          background-color: rgba(46, 125, 50, 0.15);
+          color: #2e7d32;
+        }
+        
+        &.no {
+          background-color: rgba(211, 47, 47, 0.1);
+          color: #d32f2f;
+        }
+      }
+      
+      .expanded-details {
+        background-color: rgba(0, 0, 0, 0.02);
+        
+        td {
+          padding: 0;
+        }
+        
+        .details-container {
+          padding: 12px 15px;
+          
+          .details-row {
+            display: flex;
+            margin-bottom: 8px;
+            
+            &:last-child {
+              margin-bottom: 0;
+            }
+            
+            .details-label {
+              width: 90px;
+              font-weight: 500;
+              color: #666;
+            }
+            
+            .details-value {
+              flex: 1;
+              
+              &.bio-text {
+                white-space: pre-line;
+                line-height: 1.4;
+              }
+            }
+          }
+        }
+      }
+      
+      // Make avatar interactive
+      .follower-avatar {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+      }
     }
   }
 
@@ -352,6 +488,18 @@
       color: var(--color-text-primary-dark);
     }
     
+    .followers-header button.PButton.secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border-radius: 8px;
+      border: 1px solid var(--border-tokens-border-primary) !important;
+      box-shadow: none;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+    }
+    
     .followers-table {
       th {
         background-color: var(--color-bg-tertiary-dark);
@@ -362,6 +510,327 @@
         color: var(--color-text-primary-dark);
         border-bottom-color: var(--color-border-dark);
       }
+      
+      .loading-indicator {
+        color: #aaa;
+        
+        &:before {
+          border-color: #aaa;
+          border-top-color: transparent;
+        }
+      }
+      
+      .xiaohongshu-handle {
+        color: #9d92ff;  /* Brighter purple in dark mode */
+      }
+      
+      .not-found {
+        color: #666;
+      }
+      
+      .following-status {
+        &.yes {
+          background-color: rgba(129, 199, 132, 0.2);
+          color: #81c784;
+        }
+        
+        &.no {
+          background-color: rgba(229, 115, 115, 0.15);
+          color: #e57373;
+        }
+      }
+      
+      .expanded-details {
+        background-color: rgba(255, 255, 255, 0.05);
+        
+        .details-container {
+          .details-row {
+            .details-label {
+              color: #aaa;
+            }
+            
+            .details-value {
+              color: #ddd;
+            }
+          }
+        }
+      }
     }
+  }
+}
+
+.dataSourceItem.mapping-action {
+  background-color: #f8f7ff;
+  // margin-top: 15px;
+  // margin-bottom: 15px;
+  
+  .mapping-action-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    width: 100%;
+    
+    .mapping-info {
+      flex: 1;
+      
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 1.1rem;
+        color: #333;
+      }
+      
+      p {
+        margin: 0 0 10px 0;
+        color: #666;
+        font-size: 0.9rem;
+      }
+      
+      .mapping-error {
+        margin-top: 10px;
+        color: #d32f2f;
+        background-color: #ffebee;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+      
+      .mapping-success {
+        margin-top: 10px;
+        color: #2e7d32;
+        background-color: #e8f5e9;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+    }
+    
+    button.PButton {
+      min-width: 120px;
+      
+      &.primary {
+        background-color: #7467ef;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        
+        &:hover {
+          background-color: #5a4fd6;
+        }
+      }
+    }
+  }
+  
+  &.dark {
+    background-color: #2a2a2a;
+    
+    .mapping-info {
+      h3 {
+        color: #f0f0f0;
+      }
+      
+      p {
+        color: #c0c0c0;
+      }
+    }
+  }
+}
+
+.dataSourceItem.mapping-status {
+  background-color: #f8f7ff;
+  
+  .mapping-status-container {
+    display: flex;
+    padding: 15px;
+    width: 100%;
+    
+    .mapping-info {
+      flex: 1;
+      
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 1.1rem;
+        color: #333;
+      }
+      
+      .mapping-error {
+        margin-top: 10px;
+        color: #d32f2f;
+        background-color: #ffebee;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+      
+      .mapping-success {
+        color: #2e7d32;
+        
+        p {
+          margin: 0 0 10px 0;
+          color: #2e7d32;
+          font-size: 0.9rem;
+          
+          &.timestamp {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0;
+          }
+        }
+      }
+      
+      .mapping-progress {
+        color: #0277bd;
+        font-style: italic;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        
+        &:before {
+          content: '';
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border: 2px solid #0277bd;
+          border-top-color: transparent;
+          border-radius: 50%;
+          margin-right: 8px;
+          animation: spin 1s linear infinite;
+        }
+      }
+    }
+  }
+  
+  &.dark {
+    background-color: #2a2a2a;
+    
+    .mapping-info {
+      h3 {
+        color: #f0f0f0;
+      }
+      
+      .mapping-success {
+        color: #81c784;
+        
+        p {
+          color: #81c784;
+          
+          &.timestamp {
+            color: #aaa;
+          }
+        }
+      }
+      
+      .mapping-progress {
+        color: #4fc3f7;
+        
+        &:before {
+          border-color: #4fc3f7;
+          border-top-color: transparent;
+        }
+      }
+    }
+  }
+}
+
+.switchWrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .switch-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    margin-right: -4px;
+    
+    .dark & {
+      color: #aaa;
+    }
+  }
+  
+  .debug-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #7467ef;
+    margin-right: 8px;
+    animation: fadeIn 0.3s ease-in-out;
+    
+    .dark & {
+      color: #9d92ff;
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .debug-switch {
+    width: 44px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: var(--layer-tokens-layer-02);
+    border-radius: 100px;
+    cursor: pointer;
+    padding: 2px;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    
+    .knob-icon {
+      width: 20px;
+      height: 20px;
+      background-color: white;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    &.active {
+      background-color: rgba(116, 103, 239, 0.2);
+      justify-content: flex-end;
+    }
+    
+    &.dark {
+      background-color: var(--layer-tokens-layer-02);
+      
+      .knob-icon {
+        background-color: white;
+      }
+      
+      &.active {
+        background-color: rgba(157, 146, 255, 0.2);
+      }
+    }
+  }
+  
+  .pSwitch,
+  .debug-switch {
+    width: 44px;
+    height: 24px;
+  }
+}
+
+// Add a specific style for the debugging section
+.dataSourceItems.debugging {
+  margin-top: 20px;
+  // border-top: 1px dashed #ddd;
+  padding-top: 20px;
+  
+  &.dark {
+    border-top-color: #444;
   }
 } 
