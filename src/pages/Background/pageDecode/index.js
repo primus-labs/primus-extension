@@ -2,20 +2,40 @@ import jp from 'jsonpath';
 import {
   assembleAlgorithmParams,
   assembleAlgorithmParamsForSDK,
-} from './exData';
-import { storeDataSource } from './dataSourceUtils';
+} from '../exData';
+import { storeDataSource } from '../dataSourceUtils';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
-import customFetch, { customFetch2 } from './utils/request';
+import customFetch from '../utils/request';
 import {
-  isJSONString,
+  templateIdForMonad,
+  eventListUrlForMonad,
+  changeFieldsObjFnForMonad,
+  checkTargetRequestFnForMonad,
+  formatRequestResponseFnForMonad,
+} from '../lumaMonadEvent/index.js';
+import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
   checkIsRequiredUrl,
-} from './utils/utils';
+  getErrorMsgFn,
+  sendMsgToTab,
+} from '../utils/utils';
+import { extraRequestFn2, errorFn } from './utils';
+
+let PRE_ATTEST_PROMOT_V2 = [
+  {
+    text: ['Processing data'],
+    showTime: 5000,
+  },
+  {
+    text: ['Checking data', 'Ensure login and on target page.'],
+    showTime: 30000,
+  },
+];
 let dataSourcePageTabId;
 let activeTemplate = {};
 let currExtentionId;
@@ -34,6 +54,19 @@ let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
 let onCompletedFn = () => {};
 let requestsMap = {};
+
+const sendMsgToSdk = async (msg) => {
+  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+  if (dappTabId) {
+    sendMsgToTab(dappTabId, msg);
+  }
+};
+const sendMsgToDataSourcePage = async (msg) => {
+  if (dataSourcePageTabId) {
+    sendMsgToTab(dataSourcePageTabId, msg);
+  }
+};
 
 const removeRequestsMap = async (url) => {
   // console.log('requestsMap-remove', url);
@@ -73,6 +106,7 @@ const resetVarsFn = () => {
   chatgptHasLogin = false;
   requestsMap = {};
   sdkTargetRequestId = '';
+  changeFieldsObjFnForMonad('reset');
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -108,7 +142,7 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
       resParams.reStartFlag = true;
     }
     try {
-      chrome.tabs.sendMessage(dappTabId, {
+      sendMsgToSdk({
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestationRes',
         params: resParams,
@@ -131,11 +165,14 @@ const extraRequestFn = async () => {
 
   // const storageRes = await chrome.storage.local.get(requestUrl);
   const storageRes = requestsMap;
+  const activeInfo = Object.values(storageRes).find(
+    (i) => i.url === requestUrl
+  );
   try {
     const requestRes = await customFetch(fullRequestUrl, {
       method: 'GET',
       // headers: JSON.parse(storageRes[requestUrl]).headers,
-      headers: storageRes[requestUrl].headers,
+      headers: activeInfo.headers,
     });
 
     const messageIds = [];
@@ -165,18 +202,6 @@ const extraRequestFn = async () => {
     console.log('fetch chatgpt conversation error', e);
   }
 };
-const extraRequestFn2 = async (params) => {
-  try {
-    const { ...requestParams } = params;
-    const requestRes = await customFetch2(requestParams);
-    if (typeof requestRes === 'object' && requestRes !== null) {
-      return requestRes;
-    }
-  } catch (e) {
-    console.log('fetch custom request error', e);
-  }
-};
-
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -188,6 +213,7 @@ export const pageDecodeMsgListener = async (
   processAlgorithmReq
 ) => {
   const { name, params, operation } = request;
+  console.log('pageDecodeMsgListener');
   if (name === 'init') {
     activeTemplate = {};
     activeTemplate = params;
@@ -229,20 +255,26 @@ export const pageDecodeMsgListener = async (
       });
       if (!hadTargetRequestId) {
         for (const matchRequestId of [...matchRequestIdArr]) {
-          if (requestsMap[matchRequestId].isTarget === 1) {
+          if (requestsMap[matchRequestId]?.isTarget === 1) {
             sdkTargetRequestId = matchRequestId;
             break;
-          } else if (requestsMap[matchRequestId].isTarget === 2) {
+          } else if (requestsMap[matchRequestId]?.isTarget === 2) {
           } else {
             const jsonPathArr = responses[0].conditions.subconditions.map(
               (i) => i.field
             );
-            const matchRequestUrlResult = await extraRequestFn2({
+            let targetRequestUrl = requestsMap[matchRequestId].url;
+            if (activeTemplate?.attTemplateID === templateIdForMonad) {
+              // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
+              targetRequestUrl = eventListUrlForMonad(targetRequestUrl); // TODO
+            }
+            let matchRequestUrlResult = await extraRequestFn2({
               ...requestsMap[matchRequestId],
               header: requestsMap[matchRequestId].headers,
-              url: requestsMap[matchRequestId].url,
+              url: targetRequestUrl,
             });
-            const isTargetUrl = jsonPathArr.every((jpItem) => {
+
+            let isTargetUrl = jsonPathArr.every((jpItem) => {
               try {
                 const hasField =
                   jp.query(matchRequestUrlResult, jpItem).length > 0;
@@ -251,13 +283,44 @@ export const pageDecodeMsgListener = async (
                 return false;
               }
             });
+            if (
+              matchRequestUrlResult &&
+              activeTemplate?.attTemplateID === templateIdForMonad
+            ) {
+              const notMetHandler = async () => {
+                const notMetCode = '00104';
+                const netMetMsg = await getErrorMsgFn(
+                  activeTemplate.attestationType,
+                  notMetCode
+                );
+                handleEnd(netMetMsg);
+                sendMsgToSdk({
+                  type: 'padoZKAttestationJSSDK',
+                  name: 'startAttestationRes',
+                  params: {
+                    result: false,
+                    errorData: {
+                      code: notMetCode,
+                    },
+                  },
+                });
+              };
+              isTargetUrl = await checkTargetRequestFnForMonad(
+                targetRequestUrl,
+                matchRequestUrlResult,
+                requestsMap[matchRequestId],
+                notMetHandler
+              );
+            }
 
             if (isTargetUrl) {
               sdkTargetRequestId = matchRequestId;
               storeRequestsMap(matchRequestId, { isTarget: 1 });
               break;
             } else {
-              storeRequestsMap(matchRequestId, { isTarget: 2 });
+              if (requestsMap[matchRequestId]) {
+                storeRequestsMap(matchRequestId, { isTarget: 2 });
+              }
             }
           }
         }
@@ -328,6 +391,11 @@ export const pageDecodeMsgListener = async (
 
           if (fl) {
             if (dataSource === 'chatgpt') {
+              fl =
+                !!f &&
+                chatgptHasLogin &&
+                RequestsHasCompleted &&
+                preAlgorithmStatus === '1';
             } else {
               if (!formatAlgorithmParams) {
                 await formatAlgorithmParamsFn();
@@ -342,17 +410,13 @@ export const pageDecodeMsgListener = async (
       isReadyRequest = await checkReadyStatusFn();
       if (isReadyRequest) {
         console.log('all web requests are captured', requestsMap);
-        chrome.tabs.sendMessage(
-          dataSourcePageTabId,
-          {
-            type: 'pageDecode',
-            name: 'webRequestIsReady',
-            params: {
-              isReady: isReadyRequest,
-            },
+        sendMsgToDataSourcePage({
+          type: 'pageDecode',
+          name: 'webRequestIsReady',
+          params: {
+            isReady: isReadyRequest,
           },
-          function (response) {}
-        );
+        });
       }
     };
 
@@ -404,7 +468,7 @@ export const pageDecodeMsgListener = async (
         aligorithmParams = await assembleAlgorithmParams(form, password);
       }
 
-      const formatRequests = [];
+      let formatRequests = [];
       for (const r of JSON.parse(JSON.stringify(requests))) {
         if (r.queryDetail) {
           continue;
@@ -540,10 +604,17 @@ export const pageDecodeMsgListener = async (
           });
         });
       } else {
+        if (activeTemplate.attTemplateID === templateIdForMonad) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForMonad(formatRequests, formatResponse);
+          formatRequests = req;
+          formatResponse = res;
+        }
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';
           }
+          fr.url = fr.url.split('#')[0];
         }
       }
       Object.assign(aligorithmParams, {
@@ -594,47 +665,7 @@ export const pageDecodeMsgListener = async (
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest) {
         const { resType, resMethodName } = message;
-        const errorFn = async () => {
-          let resParams = {
-            result: false,
-            errorData: {
-              title: 'Launch failed: unstable connection.',
-              desc: 'Launch failed: unstable connection.',
-              code: '00011',
-            },
-          };
-          const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-            await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-          chrome.tabs.sendMessage(dappTabId, {
-            type: 'padoZKAttestationJSSDK',
-            name: 'getAttestationRes',
-            params: resParams,
-          });
-          const attestationType = formatAlgorithmParams?.attestationType;
-          const errorMsgTitle = [
-            'Assets Verification',
-            'Humanity Verification',
-          ].includes(attestationType)
-            ? `${attestationType} failed!`
-            : `${attestationType} proof failed!`;
 
-          msgObj = {
-            type: 'error',
-            title: errorMsgTitle,
-            desc: 'The algorithm has not been initialized.Please try again later.',
-            sourcePageTip: errorMsgTitle,
-          };
-          await chrome.storage.local.remove([
-            'padoZKAttestationJSSDKBeginAttest',
-            'padoZKAttestationJSSDKWalletAddress',
-            'padoZKAttestationJSSDKAttestationPresetParams',
-            'padoZKAttestationJSSDKXFollowerCount',
-            'activeRequestAttestation',
-          ]);
-          if (dataSourcePageTabId) {
-            await chrome.tabs.remove(dataSourcePageTabId);
-          }
-        };
         if (
           resType === 'algorithm' &&
           ['getAttestation', 'getAttestationResult'].includes(resMethodName)
@@ -656,7 +687,11 @@ export const pageDecodeMsgListener = async (
                     console.log('preAlgorithmTimer-set', preAlgorithmTimer);
                   }
                 } else {
-                  errorFn();
+                  errorFn({
+                    title: 'Launch failed: unstable connection.',
+                    desc: 'Launch failed: unstable connection.',
+                    code: '00011',
+                  });
                 }
               }
               if (resMethodName === 'getAttestationResult') {
@@ -684,7 +719,11 @@ export const pageDecodeMsgListener = async (
                   );
                   clearInterval(preAlgorithmTimer);
                   preAlgorithmStatus = retcode;
-                  errorFn();
+                  errorFn({
+                    title: 'Launch failed: unstable connection.',
+                    desc: 'Launch failed: unstable connection.',
+                    code: '00011',
+                  });
                 }
               }
             }
@@ -695,6 +734,15 @@ export const pageDecodeMsgListener = async (
     chrome.runtime.onMessage.addListener(listenerFn);
 
     if (name === 'init') {
+      const { configMap } = await chrome.storage.local.get(['configMap']);
+      if (configMap) {
+        const PRE_ATTEST_PROMOTStr =
+          JSON.parse(configMap)?.PRE_ATTEST_PROMOT_V2;
+        if (PRE_ATTEST_PROMOTStr) {
+          PRE_ATTEST_PROMOT_V2 = JSON.parse(PRE_ATTEST_PROMOTStr);
+        }
+      }
+
       operationType = request.operation;
       const currentWindowTabs = await chrome.tabs.query({
         active: true,
@@ -717,6 +765,9 @@ export const pageDecodeMsgListener = async (
       chrome.webRequest.onCompleted.removeListener(onCompletedFn);
       onBeforeSendHeadersFn = async (details) => {
         if (details.tabId !== dataSourcePageTabId) {
+          return;
+        }
+        if (details.method === 'OPTIONS') {
           return;
         }
         let {
@@ -747,17 +798,13 @@ export const pageDecodeMsgListener = async (
           if (dataSource === 'chatgpt') {
             const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
             console.log('setUIStep-', tipStr);
-            chrome.tabs.sendMessage(
-              dataSourcePageTabId,
-              {
-                type: 'pageDecode',
-                name: 'setUIStep',
-                params: {
-                  step: tipStr,
-                },
+            sendMsgToDataSourcePage({
+              type: 'pageDecode',
+              name: 'setUIStep',
+              params: {
+                step: tipStr,
               },
-              function (response) {}
-            );
+            });
           }
         }
         const isTarget = requests.some((r) => {
@@ -779,6 +826,7 @@ export const pageDecodeMsgListener = async (
             }
             formatUrlKey = hostUrl;
           }
+
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -789,6 +837,7 @@ export const pageDecodeMsgListener = async (
         });
 
         if (isTarget) {
+          console.log('monad-details', details);
           let newCapturedInfo = {
             headers: formatHeader,
             method,
@@ -845,6 +894,9 @@ export const pageDecodeMsgListener = async (
         if (subDetails.tabId !== dataSourcePageTabId) {
           return;
         }
+        if (subDetails.method === 'OPTIONS') {
+          return;
+        }
         let {
           datasourceTemplate: { requests },
         } = activeTemplate;
@@ -856,6 +908,7 @@ export const pageDecodeMsgListener = async (
           if (r.name === 'first') {
             return false;
           }
+
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -898,17 +951,14 @@ export const pageDecodeMsgListener = async (
           // chatgpt has only one requestUrl
           await extraRequestFn();
           console.log('setUIStep-toVerify');
-          chrome.tabs.sendMessage(
-            dataSourcePageTabId,
-            {
-              type: 'pageDecode',
-              name: 'setUIStep',
-              params: {
-                step: 'toVerify',
-              },
+          sendMsgToDataSourcePage({
+            type: 'pageDecode',
+            name: 'setUIStep',
+            params: {
+              step: 'toVerify',
             },
-            function (response) {}
-          );
+          });
+
           await formatAlgorithmParamsFn();
           console.log('RequestsHasCompleted=', RequestsHasCompleted);
           preAlgorithmFn();
@@ -987,6 +1037,8 @@ export const pageDecodeMsgListener = async (
           ...activeTemplate,
           PADOSERVERURL,
           padoExtensionVersion,
+          PRE_ATTEST_PROMOT_V2,
+          tabId: dataSourcePageTabId,
         },
         dataSourcePageTabId: dataSourcePageTabId,
         isReady: isReadyRequest,
@@ -1058,46 +1110,88 @@ export const pageDecodeMsgListener = async (
     }
 
     if (name === 'close' || name === 'cancel') {
-      try {
-        await chrome.tabs.update(currExtentionId, {
-          active: true,
-        });
-      } catch (error) {
-        console.log('cancel error:', error);
-      }
-      if (dataSourcePageTabId) {
-        await chrome.tabs.remove(dataSourcePageTabId);
-      }
-      resetVarsFn();
-      handlerForSdk(processAlgorithmReq, 'cancel');
+      chandleClose(params, processAlgorithmReq);
     }
     if (name === 'end') {
-      if (dataSourcePageTabId) {
-        chrome.tabs.sendMessage(
-          dataSourcePageTabId,
-          request,
-          function (response) {}
-        );
-        chrome.webRequest.onBeforeSendHeaders.removeListener(
-          onBeforeSendHeadersFn
-        );
-        chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-        chrome.webRequest.onCompleted.removeListener(onCompletedFn);
-        resetVarsFn();
-      }
+      handleEnd(request);
+    }
+    if (name === 'interceptionFail') {
+      errorFn({
+        title:
+          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        code: '00013',
+      });
+    }
+    if (name === 'dataSourcePageDialogTimeout') {
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+      });
+      errorFn({
+        title: 'Request Timed Out',
+        desc: 'The process did not respond within 2 minutes. Please try again later.',
+        code: '00002',
+      });
     }
   } else {
+    if (name === 'close' || name === 'cancel') {
+      chandleClose(params, processAlgorithmReq);
+    }
+    if (name === 'interceptionFail') {
+      errorFn({
+        title:
+          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+        code: '00013',
+      });
+    }
+    if (name === 'dataSourcePageDialogTimeout') {
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+      });
+      errorFn({
+        title: 'Request Timed Out',
+        desc: 'The process did not respond within 2 minutes. Please try again later.',
+        code: '00002',
+      });
+    }
     if (name === 'end') {
-      if (dataSourcePageTabId) {
-        chrome.tabs.sendMessage(
-          dataSourcePageTabId,
-          request,
-          function (response) {}
-        );
-        resetVarsFn();
-      }
+      handleEnd(request);
     }
   }
 };
 
+const handleEnd = (request) => {
+  if (dataSourcePageTabId) {
+    sendMsgToDataSourcePage(request);
+    chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
+    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
+    chrome.webRequest.onCompleted.removeListener(onCompletedFn);
+    resetVarsFn();
+  }
+};
+const chandleClose = async (params, processAlgorithmReq) => {
+  console.log('pageDecode-close');
+  const deleteTabId = params?.tabId || dataSourcePageTabId;
+  console.log('pageDecode-close-tabId', params?.tabId, dataSourcePageTabId);
+  if (deleteTabId) {
+    try {
+      await chrome.tabs.remove(deleteTabId);
+    } catch (e) {
+      console.log('chrome.tabs.remove error:', error);
+    }
+  }
+  console.log('pageDecode-close-currExtentionId', currExtentionId);
+  try {
+    if (currExtentionId) {
+      await chrome.tabs.update(currExtentionId, {
+        active: true,
+      });
+    }
+  } catch (error) {
+    console.log('chrome.tabs.update error:', error);
+  }
 
+  resetVarsFn();
+  handlerForSdk(processAlgorithmReq, 'cancel');
+};

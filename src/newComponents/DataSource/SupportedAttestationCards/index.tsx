@@ -148,7 +148,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           attestationTypeMap[17],
           attestationTypeMap[5],
         ];
-      if (dataSourceName === 'tiktok' || dataSourceName === 'google')
+      if (['tiktok', 'google', 'discord'].includes(dataSourceName as string))
         return [attestationTypeMap[4]];
       if (dataSourceName === 'x') {
         return [attestationTypeMap[4], attestationTypeMap[15]];

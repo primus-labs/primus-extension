@@ -72,6 +72,13 @@ var options = {
       'devconsole',
       'catchFavicon.js'
     ),
+    lumaMonadEvent: path.join(
+      __dirname,
+      'src',
+      'content',
+      'lumaMonadEvent',
+      'index.js'
+    ),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
     //sandbox: path.join(__dirname, 'src', 'services', 'chains', 'useBAS.ts'),
   },

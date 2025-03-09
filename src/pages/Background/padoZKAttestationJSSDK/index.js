@@ -2,20 +2,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { eventReport } from '@/services/api/usertracker';
 import { queryTemplateById } from '@/services/api/devconsole';
-import { attestByDelegationProxyFee } from '@/services/chains/eas.js';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
-import { pageDecodeMsgListener } from '../pageDecode.js';
+import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { attestBrevisFn } from './brevis';
 import { schemaNameFn } from './utils';
 
 import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
-import { PADOADDRESS } from '@/config/envConstants';
-import { regenerateAttestation } from '@/services/api/cred';
-import { strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from '../dataSourceUtils';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
+import {
+  templateIdForMonad,
+  monadCalculations,
+} from '../lumaMonadEvent/index.js';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -81,8 +81,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
     sdkVersion = params?.sdkVersion;
 
     const { configMap } = await chrome.storage.local.get(['configMap']);
-    const sdkSupportHosts =
-      JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST) ?? [];
+    let sdkSupportHosts = [];
+    if (
+      configMap &&
+      JSON.parse(configMap) &&
+      JSON.parse(configMap).SDK_SUPPORT_HOST
+    ) {
+      sdkSupportHosts = JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST);
+    }
     const dappTabId = await storeDappTabId(sender.tab.id);
 
     if (!sdkVersion) {
@@ -196,6 +202,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             dataSourceTemplate,
             sslCipherSuite,
           } = result;
+
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
           const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
           const host =
@@ -217,8 +224,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             },
             []
           );
-          
-          
+
           const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
             const { responseTemplate } = curr;
             const subconditions = responseTemplate.reduce((prevS, currS) => {
@@ -226,7 +232,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 resolver: { type, expression },
                 valueType,
                 fieldType,
-                feilds: [{ key}],
+                feilds: [{ key }],
               } = currS;
               const opMap = {
                 string: 'REVEAL_STRING',
@@ -239,12 +245,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 // reveal_id: feilds[0].key, // required if type is REVEAL_STRING
                 // type: fieldType, // "FIELD_REVEAL" FIELD_VALUE  FIELD_RANGE
               };
-              
-              const subItemCondition = params.attRequest?.attConditions?.[0]?.find(
-                (i) => {
+
+              const subItemCondition =
+                params.attRequest?.attConditions?.[0]?.find((i) => {
                   return i.field === key;
-                }
-              );
+                });
               const handleREVEALFn = () => {
                 subconditionItem.op = 'REVEAL_STRING';
                 subconditionItem.type = 'FIELD_REVEAL';
@@ -253,7 +258,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
               if (subItemCondition) {
                 const { op, value } = subItemCondition;
                 subconditionItem.op = op;
-                if (['>', '>=', '=', '!=', '<', '<='].includes(op)) {
+                if (
+                  ['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ'].includes(
+                    op
+                  )
+                ) {
                   subconditionItem.type = 'FIELD_RANGE';
                   subconditionItem.value = value;
                 } else if (op === 'SHA256') {
@@ -262,7 +271,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   handleREVEALFn();
                 }
               } else {
-                handleREVEALFn()
+                handleREVEALFn();
               }
               // TODO
               // field: '$.data.create_time';
@@ -293,6 +302,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
               host,
               requests: newRequests,
               responses: newResponses,
+              calculations:
+                attTemplateID === templateIdForMonad
+                  ? monadCalculations
+                  : undefined,
             },
             sslCipherSuite,
           };
@@ -314,6 +327,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               padoUrl,
               proxyUrl,
             },
+            attTemplateID,
           };
         } else {
           const resParams = {
@@ -563,8 +577,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
         'configMap',
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
-    const attestTipMap =
-      JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
+    let attestTipMap = {};
+    if (
+      configMap &&
+      JSON.parse(configMap) &&
+      JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
+    ) {
+      attestTipMap = JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE);
+    }
 
     const activeAttestationParams = JSON.parse(
       padoZKAttestationJSSDKAttestationPresetParams

@@ -15,13 +15,17 @@ function removeStorageValuesFn() {
 }
 function FooterEl({ status, setStatus, isReadyFetch = false, resultStatus }) {
   const handleOK = useCallback(async () => {
-    removeStorageValuesFn();
+    // removeStorageValuesFn();
     var msgObj = {
       type: 'dataSourceWeb',
       name: 'close',
+      params: {
+        tabId: activeRequest?.tabId,
+        extensionVersion: '0.3.27',
+      },
     };
     await chrome.runtime.sendMessage(msgObj);
-  }, []);
+  }, [activeRequest?.tabId]);
   const handleCancel = useCallback(async () => {
     removeStorageValuesFn();
     var msgObj = {
@@ -118,7 +122,7 @@ function DescEl({ status, resultStatus }) {
             label: 'Verification Content',
             value: uiTemplate.proofContent,
           },
-          { label: 'Verification Value', value: uiTemplate.condition },
+          { label: 'Verification Condition', value: uiTemplate.condition },
         ];
       }
     }
@@ -358,3 +362,15 @@ chrome.runtime.sendMessage(
     }
   }
 );
+
+const injectFont = () => {
+  const linkElement = document.createElement('link');
+  linkElement.href =
+    'https://fonts.googleapis.com/css2?family=Archivo:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Overpass&display=swap" rel="stylesheet">';
+  linkElement.rel = 'stylesheet';
+  const headElement = document.head;
+  if (headElement) {
+    headElement.appendChild(linkElement);
+  }
+};
+injectFont();

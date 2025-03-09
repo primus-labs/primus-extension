@@ -38,6 +38,34 @@ interface TikTokFollowersData {
   timestamp?: number;
 }
 
+function exportToCSV(data: TikTokFollower[], filename: string) {
+  // Define CSV headers
+  const headers = ['Username', 'Nickname', 'Followers', 'Following', 'Bio'];
+  
+  // Convert data to CSV format
+  const csvContent = [
+    headers.join(','),
+    ...data.map(user => [
+      `@${user.uniqueId}`,
+      `"${user.nickname.replace(/"/g, '""')}"`, // Escape quotes in nicknames
+      user.followerCount,
+      user.followingCount,
+      `"${user.signature.replace(/"/g, '""')}"` // Escape quotes in bios
+    ].join(','))
+  ].join('\n');
+
+  // Create blob and download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `${filename}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 const IdentityBridge = () => {
   const { addMsg, deleteMsg } = useMsgs();
   const [visibleAssetDialog, setVisibleAssetDialog] = useState<string>('');
@@ -553,6 +581,18 @@ const IdentityBridge = () => {
     }
   }, [hasMoreFollowing, followingCursor]);
 
+  const handleExportFollowers = useCallback(() => {
+    if (followers.length > 0) {
+      exportToCSV(followers, `tiktok_followers_${activeDataSouceUserInfo?.userName}_${new Date().toISOString().split('T')[0]}`);
+    }
+  }, [followers, activeDataSouceUserInfo?.userName]);
+
+  const handleExportFollowing = useCallback(() => {
+    if (following.length > 0) {
+      exportToCSV(following, `tiktok_following_${activeDataSouceUserInfo?.userName}_${new Date().toISOString().split('T')[0]}`);
+    }
+  }, [following, activeDataSouceUserInfo?.userName]);
+
   return (
     <div className={`pageContent ${theme}`}>
       <div className="homeDataSources">
@@ -703,6 +743,13 @@ const IdentityBridge = () => {
           <div className="followers-section">
             <div className="followers-header">
               <h3>TikTok Followers ({totalFollowers})</h3>
+              <button 
+                onClick={handleExportFollowers}
+                className={`PButton secondary ${theme}`}
+                title="Export followers to CSV"
+              >
+                Export CSV
+              </button>
             </div>
             <div className="followers-table-container">
               <table className="followers-table">
@@ -753,6 +800,13 @@ const IdentityBridge = () => {
           <div className="followers-section">
             <div className="followers-header">
               <h3>TikTok Following ({totalFollowing})</h3>
+              <button 
+                onClick={handleExportFollowing}
+                className={`PButton secondary ${theme}`}
+                title="Export following to CSV"
+              >
+                Export CSV
+              </button>
             </div>
             <div className="followers-table-container">
               <table className="followers-table">

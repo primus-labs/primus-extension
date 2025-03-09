@@ -3,41 +3,64 @@
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
-
-@keyframes spin {
+@keyframes dots {
   0% {
-    transform: rotate(0deg);
+    content: '.....';
+  }
+  16.66% {
+    content: '.';
+  }
+  33.33% {
+    content: '..';
+  }
+  50% {
+    content: '...';
+  }
+  66.66% {
+    content: '....';
+  }
+  83.33% {
+    content: '.....';
   }
   100% {
-    transform: rotate(360deg);
+    content: '.....';
   }
 }
+
 @keyframes growFromBottom {
   0% {
-    // height: 0;
-    // transform: scaleY(0); /* 完全展开 */
-    // opacity: 0; /* 完全不透明 */
-    transform: translateX(16px);
+    transform: translateY(16px);
   }
   100% {
-    // height: 44px;
-    // transform: scaleY(1); /* 完全展开 */
-    // opacity: 1; /* 完全不透明 */
-    transform: translateX(0px);
+    transform: translateY(0px);
   }
 }
-// .dark {
-//   #pado-extension-content {
-//     --text-tokens-text-tertiary: #6f6f6f;
-//     --text-tokens-text-primary: #161616;
-//   }
-// }
-// .light {
-//   #pado-extension-content {
-//     --text-tokens-text-tertiary: #6f6f6f;
-//     --text-tokens-text-primary: #161616;
-//   }
-// }
+
+.light,
+.white,
+#pado-extension-content,
+.light #pado-extension-content,
+.white #pado-extension-content {
+  --Foreground-default: #09090b;
+  --Foreground-muted: #71717a;
+  --Border-default: #e4e4e7;
+  --Background-default: #fff;
+  --Foreground-Primary-default: #fafafa;
+  --my-icon-accent: #18181b;
+  --my-loading-color: #6f6f6f;
+}
+.dark,
+.black,
+.dark #pado-extension-content,
+.black #pado-extension-content {
+  --Foreground-default: #fafafa;
+  --Foreground-muted: #a1a1aa;
+  --Border-default: #3f3f46;
+  --Background-default: #09090b;
+  --Foreground-Primary-default: #18181b;
+  --my-icon-accent: #fafafa;
+  --my-loading-color: #8d8d8d;
+}
 #pado-extension-content {
   ul,
   li,
@@ -49,8 +72,8 @@
   @include frcc;
   display: flex;
   position: fixed;
-  z-index: 1000;
-  bottom: 30px;
+  z-index: 10000000;
+  bottom: 60px;
   right: 35px;
 
   box-sizing: border-box;
@@ -117,17 +140,6 @@
           transform: rotate(1turn);
         }
       }
-
-      // .loading-spinner {
-      // width: 16px;
-      // height: 16px;
-      // border-radius: 50%;
-      // border: 2px solid var(--icon-tokens-icon-primary, #161616);
-      // border-top: 2px solid var(--layer-tokens-layer-primary, #fff);
-      // animation: spin 1s linear infinite;
-      /* HTML: <div class="loader"></div> */
-
-      // }
     }
     .tipStep {
       padding: 12px 40px 12px 12px;
@@ -149,7 +161,7 @@
       letter-spacing: 0.16px;
 
       animation: growFromBottom 1s forwards ease-out;
-      transform: translateX(-16px);
+      transform: translateY(-16px);
 
       > img {
         width: 20px;
@@ -157,142 +169,121 @@
     }
   }
   .pado-extension-card {
-    @include fcss;
-    @include pCard;
-    @include card-s_shadow;
-    padding: var(--spacing-32, 32px) var(--spacing-24, 24px)
-      var(--spacing-24, 24px);
-    width: 384px;
-    // height: 216px;
+    @include frbc;
+
+    padding: 16.5px 15px;
+    width: 392px;
     box-sizing: border-box;
-    border: 0.5px solid var(--Layer-Tokens-layer-02, #e0e0e0);
+    border: 1px solid var(--Border-default, #e4e4e7);
+    border-radius: var(--Radius-radius-md, 8px);
+    border: 1px solid var(--Border-default, #3f3f46);
+    background: var(--Background-default, #09090b);
+
+    /* Shadows/shadow-lg */
+    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.05),
+      0px 4px 6px -2px rgba(0, 0, 0, 0.05);
     animation: growFromBottom 1s forwards ease-out;
-    transform: translateX(-16px);
-    // &.initialized {
-
-    //   .pado-extenstion-center {
-    //     padding: var(--spacing-24, 24px) 0;
-    //   }
-    // }
-    // &.verifying {
-
-    //   .pado-extenstion-center {
-    //     padding: var(--spacing-24, 24px) 0;
-    //   }
-    // }
-    // &.result {
-    //   .pado-extenstion-center {
-    //     padding: var(--spacing-24, 24px);
-    //   }
-    // }
-    .pado-extension-header {
-      width: 100%;
-      @include frbc;
-      gap: var(--spacing-8, 8px);
-      .iconPado {
-        width: var(--spacing-28, 28px);
-      }
-      .pado-extenstion-center-title {
+    transform: translateY(-16px);
+    &.initialized {
+      .pado-extension-left {
         width: 100%;
-        @include HeadlineH2;
-        color: var(--text-tokens-text-primary);
       }
     }
-    .pado-extenstion-center {
-      width: 100%;
+    .pado-extension-left {
       @include fcss;
-      gap: var(--spacing-16, 16px);
-      color: var(--text-tokens-text-primary);
-      @include BodyBody100;
-      padding: var(--spacing-24, 24px) 0 var(--spacing-32, 32px) 0;
-      .descWrapper {
+      gap: 8px;
+      width: 299px;
+      .pado-extension-header {
         width: 100%;
-        .descItem {
-          .value {
-            text-align: right;
-          }
+        @include frsc;
+        gap: var(--spacing-8, 8px);
+        .iconPado {
+          width: var(--spacing-20, 20px);
         }
-        &.initialized {
-          @include fcss;
-          gap: var(--spacing-8, 8px);
-          .descItem {
-            width: 100%;
-            @include frbc;
-            .label {
-              color: var(--text-tokens-text-tertiary);
-            }
-          }
+        .pado-extenstion-center-title {
+          font-family: Inter;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 120%;
+          color: var(--Foreground-default, #09090b);
         }
-        &.verifying {
-          @include frcc;
-          color: var(--text-tokens-text-tertiary);
-        }
+      }
+      .pado-extension-footer {
+        width: 100%;
+        @include frsc;
+        // justify-content: flex-end;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        color: var(--Foreground-muted, #71717a);
+        color: var(--Foreground-muted, #71717a);
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 17px;
         &.result {
-          @include fccs;
-          gap: var(--spacing-8, 8px);
           &.suc {
-            .label {
-              color: var(--text-tokens-text-correct, #24a148);
-            }
+            color: var(--text-tokens-text-correct, #24a148);
           }
           &.fail {
-            .label {
-              color: var(--text-tokens-text-error, #fa4d56);
-              @include fcss;
-              .errorTipWrapper {
-                @include frsc;
-                gap: var(--spacing-8);
-                .errorCode {
-                  @include Hint;
-                  color: var(--Functional-Red-Red-50, #fa4d56);
-                }
-              }
-            }
+            color: var(--text-tokens-text-error, #fa4d56);
           }
-          .label {
-            width: 100%;
-            min-height: var(--spacing-18);
-            @include frsc;
-            align-items: flex-start;
-            gap: var(--spacing-8, 8px);
-            > img {
-              width: var(--spacing-16, 16px);
-              margin-top: 1px;
-            }
+        }
+        .loading-text {
+          display: inline-block;
+          &::after {
+            content: '';
+            display: inline-block;
+            width: 26px;
+            text-align: left;
+            animation: dots 1.5s steps(3, end) infinite;
+            color: var(--Foreground-muted, #71717a);
           }
-          .value {
-            width: 100%;
-            color: var(--text-tokens-text-tertiary, #6f6f6f);
-          }
+        }
+        .anotherLine {
+          font-size: 12px;
+          line-height: 14px;
+          margin-top: 8px;
         }
       }
     }
-    .pado-extension-footer {
-      width: 100%;
-      @include frsc;
-      justify-content: flex-end;
-      &.initialized {
-        gap: var(--spacing-16, 16px);
-      }
-      &.verifying {
-        gap: var(--spacing-16, 16px);
-        .confirmBtn {
-          padding: 7px 32px;
+    .pado-extension-right {
+      text-align: right;
+      @include frss;
+      flex-direction: end;
+      .PButton {
+        width: 45px;
+        height: 28px;
+
+        .btnText {
+          font-size: 12px;
         }
       }
-      .cancelBtn {
-      }
-      .confirmBtn {
-        height: 32px;
-        width: 66px;
-        box-sizing: border-box;
-        .loading-spinner {
-          width: 16px;
-          height: 16px;
+      &.verifying {
+        padding: 12px;
+        .loader2 {
+          width: 18.5px;
+          padding: 1.5px;
+          aspect-ratio: 1;
           border-radius: 50%;
-          border: 2px solid var(--icon-tokens-icon-primary, #161616);
-          border-top: 2px solid var(--layer-tokens-layer-primary, #fff);
-          animation: spin 1s linear infinite;
+          background: var(--my-loading-color, #6f6f6f);
+          --_m: conic-gradient(#0000 10%, #000),
+            linear-gradient(#000 0 0) content-box;
+          -webkit-mask: var(--_m);
+          mask: var(--_m);
+          -webkit-mask-composite: source-out;
+          mask-composite: subtract;
+          animation: l3 1s infinite linear;
+
+          @keyframes l3 {
+            to {
+              transform: rotate(1turn);
+            }
+          }
         }
       }
     }

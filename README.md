@@ -1,6 +1,6 @@
 <img src="src/assets/img/logo.png" width="64"/>
 
-# PADO Browser Extension
+# Primus Browser Extension
 
 ## Features
 

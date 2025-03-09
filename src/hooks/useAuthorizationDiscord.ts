@@ -1,83 +1,99 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import type { Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { setSocialSourcesAsync } from '@/store/actions';
 import { getAuthAttestation } from '@/services/api/cred';
 import type { UserState } from '@/types/store';
-import { postMsg, getAuthUrl, getCurrentDate } from '@/utils/utils';
+import { getCurrentDate, postMsg, sub, getAuthUrl } from '@/utils/utils';
+import { eventReport } from '@/services/api/usertracker';
+import { checkIsLogin } from '@/services/api/user';
+import useInterval from './useInterval';
 import { BASEVENTNAME } from '@/config/events';
 import useEventDetail from './useEventDetail';
-import useAllSources from './useAllSources';
-import { schemaTypeMap } from '../config/constants';
-import { SocailStoreVersion } from '@/config/constants';
-import { checkIsLogin } from '@/services/api/user';
-import { finishTaskForEvent } from '@/services/api/achievements';
-import { setSocialSourcesAsync } from '@/store/actions';
-
+import {
+  SocailStoreVersion,
+  ATTESTATIONPOLLINGTIMEOUT,
+} from '@/config/constants';
+import type { Dispatch } from 'react';
 type CreateAuthWindowCallBack = (
   state: string,
   source: string,
   window?: chrome.windows.Window | undefined,
-  onSubmit?: (p: any) => void,
-  needCheckLogin?: boolean
+  onSubmit?: (p: any) => void
 ) => void;
 type OauthFn = (source: string, onSubmit?: (p: any) => void) => void;
-// connect & join discord
-
+// create discord account attestation
 const useAuthorization2 = () => {
   const dispatch: Dispatch<any> = useDispatch();
-  const sysConfig = useSelector((state: UserState) => state.sysConfig);
-  const DISCORDINVITEURL = useMemo(() => {
-    return sysConfig.DISCORD_INVITE_LINK;
-  }, [sysConfig]);
-  const { sourceMap2 } = useAllSources();
   const [BASEventDetail] = useEventDetail(BASEVENTNAME);
   const [searchParams] = useSearchParams();
-  const fromEvents = searchParams.get('fromEvents');
+  const fromEvents = searchParams.get('id');
   const [authWindowId, setAuthWindowId] = useState<number>();
   const [checkIsAuthDialogTimer, setCheckIsAuthDialogTimer] = useState<any>();
-  const [checkIsJoinDialogTimer, setCheckIsJoinDialogTimer] = useState<any>();
-
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
-
   const createAuthWindowCallBack: CreateAuthWindowCallBack = useCallback(
-    (state, source, res, onSubmit, needCheckLogin) => {
+    (state, source, res, onSubmit) => {
       const newWindowId = res?.id;
       setAuthWindowId(newWindowId);
-      let timer, joinTimer;
+      chrome.storage.local.set({
+        authWinId: newWindowId,
+      });
       chrome.windows.onRemoved.addListener((windowId) => {
         if (windowId === newWindowId) {
           if (timer) {
-            // chrome.runtime.sendMessage({
-            //   type: 'googleAuth',
-            //   name: 'cancelAttest',
-            // });
+            chrome.runtime.sendMessage({
+              type: 'googleAuth',
+              name: 'cancelAttest',
+            });
             clearInterval(timer);
             timer = null;
-          }
-          if (joinTimer) {
-            clearInterval(joinTimer);
-            joinTimer = null;
           }
         }
       });
 
-      const checkIsLoginFn = async (state, source) => {
-        const res = await checkIsLogin({
-          state: state,
-          source: source,
-          data_type: 'LOGIN',
+      const pollingResultFn = async (state: string, source: string) => {
+        const res = await getAuthAttestation({
+          state,
+          source,
+          address: connectedWallet.address,
+          schemaType: 'DISCORD_ACCOUNT_OWNER',
         });
-        const rc = res.rc;
-        const result = res.result;
-        if (rc === 0) {
-          clearInterval(timer);
-          timer = null;
-          const { dataInfo, userInfo } = result;
+        if (res.rc === 0 && res.result) {
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+          const fn = () => {
+            setAuthWindowId(undefined);
+            newWindowId &&
+              chrome.windows.get(newWindowId, {}, (win) => {
+                win?.id && chrome.windows.remove(newWindowId);
+              });
+            chrome.storage.local.remove(['authWinId']);
+            onSubmit && onSubmit(res.result);
+          };
           const lowerCaseSourceName = source.toLowerCase();
+          const storeRes = await chrome.storage.local.get([
+            lowerCaseSourceName,
+          ]);
+
+          const {
+            rawUserInfo: { dataInfo },
+          } = res.result;
+          let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
+          const lastData = storageRes[lowerCaseSourceName];
+          let pnl: any = null;
+          if (lastData) {
+            const lastTotalBal = JSON.parse(lastData).followers;
+            pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
+          }
+          if (pnl !== null && pnl !== undefined) {
+            dataInfo.pnl = pnl;
+          }
+
           const socialSourceData = {
             ...dataInfo,
             date: getCurrentDate(),
@@ -90,45 +106,26 @@ const useAuthorization2 = () => {
             [lowerCaseSourceName]: JSON.stringify(socialSourceData),
           });
           dispatch(setSocialSourcesAsync());
-          joinTimer = setInterval(() => {
-            pollingResultFn(state, source);
-          }, 1000);
-          setCheckIsJoinDialogTimer(joinTimer);
+
+          const eventInfo = {
+            eventType: 'DATA_SOURCE_INIT',
+            rawData: { type: 'Social', dataSource: source },
+          };
+          eventReport(eventInfo);
+          fn();
         }
       };
-      timer = setInterval(() => {
-        checkIsLoginFn(state, source);
+      let timer: any = setInterval(() => {
+        pollingResultFn(state, source);
       }, 1000);
       setCheckIsAuthDialogTimer(timer);
-
-      const pollingResultFn = async (state: string, source: string) => {
-        const data = await chrome.storage.local.get(['discord']);
-        if (!data.discord) {
-          return;
-        }
-        if (timer) {
-          clearInterval(timer);
-        }
-        const discordObj = JSON.parse(data.discord);
-        let ext = {
-          discordUserId: discordObj.uniqueId.replace('DISCORD_', ''),
-          // name: eventId
-        };
-        const finishCheckRsp = await finishTaskForEvent(ext);
-        if (finishCheckRsp.rc === 0) {
-          // setFinished(true);
-          clearInterval(joinTimer);
-          // redresh score
-          setAuthWindowId(undefined);
-          newWindowId &&
-            chrome.windows.get(newWindowId, {}, (win) => {
-              win?.id && chrome.windows.remove(newWindowId);
-            });
-          onSubmit && onSubmit(true);
-        }
-      };
     },
-    [connectedWallet?.address, BASEventDetail?.ext?.schemaType, fromEvents]
+    [
+      connectedWallet?.address,
+      BASEventDetail?.ext?.schemaType,
+      fromEvents,
+      dispatch,
+    ]
   );
   const handleClickOAuthSource: OauthFn = useCallback(
     async (source, onSubmit) => {
@@ -141,19 +138,12 @@ const useAuthorization2 = () => {
         var top = Math.round(windowScreen.height / 2 - height / 2);
         const { userInfo } = await chrome.storage.local.get(['userInfo']);
         const parseUserInfo = JSON.parse(userInfo);
-        let authUrl = getAuthUrl({
+        const authUrl = getAuthUrl({
           source,
           state,
           token: parseUserInfo.token,
         });
-        let needCheckLogin = false;
-        // if (sourceMap2['discord']) {
-        //   authUrl = DISCORDINVITEURL;
-        //   needCheckLogin = false;
-        // } else {
-        authUrl = `${authUrl}&redirectUrl=${DISCORDINVITEURL}`;
-        needCheckLogin = true;
-        // }
+
         const windowOptions: chrome.windows.CreateData = {
           url: authUrl,
           type: 'popup',
@@ -165,13 +155,7 @@ const useAuthorization2 = () => {
           height,
         };
         chrome.windows.create(windowOptions, (window) => {
-          createAuthWindowCallBack(
-            state,
-            source,
-            window,
-            onSubmit,
-            needCheckLogin
-          );
+          createAuthWindowCallBack(state, source, window, onSubmit);
         });
       };
       // If the authorization window is open,focus on it
@@ -193,8 +177,26 @@ const useAuthorization2 = () => {
       }
       fn();
     },
-    [authWindowId, createAuthWindowCallBack, sourceMap2, DISCORDINVITEURL]
+    [authWindowId, createAuthWindowCallBack]
   );
+  useEffect(() => {
+    if (checkIsAuthDialogTimer) {
+      let clearTimer;
+      clearTimer = setTimeout(async () => {
+        checkIsAuthDialogTimer && clearInterval(checkIsAuthDialogTimer);
+        const { authWinId } = await chrome.storage.local.get(['authWinId']);
+        if (authWinId) {
+          chrome.windows.get(authWinId, {}, (win) => {
+            win?.id && chrome.windows.remove(authWinId);
+          });
+          chrome.storage.local.remove(['authWinId']);
+        }
+      }, ATTESTATIONPOLLINGTIMEOUT);
+      return () => {
+        clearTimer && clearTimeout(clearTimer);
+      };
+    }
+  }, [checkIsAuthDialogTimer]);
   useEffect(() => {
     return () => {
       checkIsAuthDialogTimer && clearInterval(checkIsAuthDialogTimer);

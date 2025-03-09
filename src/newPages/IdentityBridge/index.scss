@@ -272,12 +272,22 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .followers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1rem;
-    
+
     h3 {
       font-size: 1.25rem;
       font-weight: 600;
       color: var(--color-text-primary);
+
+      margin: 0;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      // font-size: 0.875rem;
     }
   }
 

@@ -82,7 +82,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
       'You can fetch user account name & status data from your Discord account to manage your data or create attestations.',
 
     connectType: 'Auth',
-    hidden: true,
   },
   tiktok: {
     id: 'tiktok',
@@ -350,7 +349,7 @@ export const guideMap = {
 };
 
 export const SUPPORTATTESTDATASOURCES = [
-  'web3 wallet',
+  // 'web3 wallet',
   'binance',
   'okx',
   'x',
@@ -359,5 +358,6 @@ export const SUPPORTATTESTDATASOURCES = [
   'coinbase',
   'bitget',
   'bybit',
+  'discord',
   'xiaohongshu'
 ];

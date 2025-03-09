@@ -71,7 +71,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     const contentList = useMemo(() => {
       let supportedContentIdArr: any = [];
 
-      if (dataSourceId === 'google') {
+      if (['google', 'discord'].includes(dataSourceId)) {
         supportedContentIdArr = ['Account ownership'];
       } else {
         supportedContentIdArr = Object.keys(
@@ -139,7 +139,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         ? activeAttestation?.msgObj?.btnTxt
           ? activeAttestation?.msgObj?.btnTxt
           : 'OK'
-        : 'Next';
+        : 'To Verify';
     }, [attestLoading, activeAttestation]);
     const handleClickNext = useCallback(async () => {
       if (!formLegal) {
@@ -246,7 +246,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         >
           {pswForm.verificationContent ? (
             <>
-              <div className="label">Verification Value</div>
+              <div className="label">Verification Condition</div>
               <div className="value">
                 {presets.verificationValue || pswForm.verificationValue}
               </div>
@@ -254,7 +254,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           ) : (
             <PSelect
               className={verificationValueCN}
-              label="Verification Value"
+              label="Verification Condition"
               align="horizontal"
               placeholder="Select value"
               list={valueList}

@@ -1,6 +1,6 @@
 import { eventReport } from '@/services/api/usertracker';
 import { regenerateAttestation } from '@/services/api/cred';
-import { pageDecodeMsgListener } from './pageDecode.js';
+import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { postMsg, strToHexSha256 } from '@/utils/utils';
 import { getDataSourceAccount } from './dataSourceUtils';
 import { schemaNameFn, regenerateAttest } from './padoZKAttestationJSSDK/utils';
@@ -170,8 +170,16 @@ export const algorithmMsgListener = async (
       }
     }
     if (resMethodName === 'getAttestationResult') {
-      const attestTipMap =
-        JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE) ?? {};
+      let attestTipMap = {};
+      if (
+        configMap &&
+        JSON.parse(configMap) &&
+        JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
+      ) {
+        attestTipMap = JSON.parse(
+          JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
+        );
+      }
       if (!message.res) {
         return;
       }
@@ -460,7 +468,7 @@ export const algorithmMsgListener = async (
             desc: codeTipObj.desc,
             sourcePageTip:
               code === '40002' ? 'SSLCertificateError' : codeTipObj.title,
-            code: `Error code: ${code}`,
+            code: `Error ${code}`,
           });
 
           if (

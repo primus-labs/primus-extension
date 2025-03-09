@@ -319,7 +319,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   } = form;
   // const urlObj = new URL(dataPageTemplate.baseUrl);
   // const baseName = urlObj.host;
-  const user = await assembleUserInfoParams({});
+  const user = await assembleUserInfoParams({}, true);
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   const { id: authUserId } = JSON.parse(userInfo);
   const authUseridHash = strToHex(authUserId);
@@ -487,7 +487,7 @@ async function assembleAccountBalanceRequestParams(form, USERPASSWORD, port) {
   }
   return extRequestsOrderInfo;
 }
-async function assembleUserInfoParams(form) {
+async function assembleUserInfoParams(form, isFromSDK) {
   const { event } = form;
   const {
     connectedWalletAddress,
@@ -512,6 +512,7 @@ async function assembleUserInfoParams(form) {
     if (scrollEventObj.address) {
       formatAddress = scrollEventObj.address;
     }
+    console.log('algorithmParams-userAddress-scroll', formatAddress);
   } else if (event === BASEVENTNAME) {
     const res = await chrome.storage.local.get([BASEVENTNAME]);
     if (res[BASEVENTNAME]) {
@@ -520,11 +521,19 @@ async function assembleUserInfoParams(form) {
       if (lastCredAddress) {
         formatAddress = lastCredAddress;
       }
+      console.log('algorithmParams-userAddress-bas', formatAddress);
     }
   }
-  if (padoZKAttestationJSSDKWalletAddress) {
+  if (isFromSDK && padoZKAttestationJSSDKWalletAddress) {
     formatAddress = padoZKAttestationJSSDKWalletAddress;
+    console.log('algorithmParams-userAddress-isFromSDK', formatAddress);
   }
+  console.log(
+    'algorithmParams-userAddress',
+    connectedWalletAddress,
+    padoZKAttestationJSSDKWalletAddress
+  );
+
   const { id, token: loginToken } = JSON.parse(userInfo);
   const user = {
     userid: id,
